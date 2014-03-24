@@ -1,3 +1,30 @@
-from django.test import TestCase
+import pyjsonrpc
+import unittest
+from abc_search_engine import ABCSearchEngine, Questionnaires
+        
 
-# Create your tests here.
+class ABCSearchEngineTest(unittest.TestCase):
+
+    def test_findAllQuestionnaires_method_returns_correct_result(self):
+        server = pyjsonrpc.HttpClient("http://noel.ime.usp.br/index.php/admin/remotecontrol")
+        session_key = server.get_session_key("mori","u4drrxp963n5")
+        q = Questionnaires()
+        list_survey = server.list_surveys(session_key, None)
+        server.release_session_key(session_key)
+        self.assertEqual(q.findAllQuestionnaires(), list_survey)
+
+    def test_findQuestionnaireByID_method_found_survey(self):
+        server = pyjsonrpc.HttpClient("http://noel.ime.usp.br/index.php/admin/remotecontrol")
+        session_key = server.get_session_key("mori","u4drrxp963n5")
+        q = Questionnaires()
+        list_survey = server.list_surveys(session_key, None)
+        server.release_session_key(session_key)
+        self.assertEqual(q.findQuestionnaireByID(list_survey[3]['sid']), list_survey[3])
+
+    def test_findQuestionnaireByID_method_not_found_survey_by_string(self):
+        q = Questionnaires()
+        self.assertEqual(None, q.findQuestionnaireByID('three'))
+
+    def test_findQuestionnaireByID_method_not_found_survey_by_out_of_range(self):
+        q = Questionnaires()
+        self.assertEqual(None, q.findQuestionnaireByID(10000000))
