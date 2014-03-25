@@ -1,9 +1,9 @@
 import pyjsonrpc
-import unittest
-from abc_search_engine import ABCSearchEngine, Questionnaires
+from django.test import TestCase
+from quiz.abc_search_engine import ABCSearchEngine, Questionnaires
         
 
-class ABCSearchEngineTest(unittest.TestCase):
+class ABCSearchEngineTest(TestCase):
 
     def test_findAllQuestionnaires_method_returns_correct_result(self):
         server = pyjsonrpc.HttpClient("http://noel.ime.usp.br/index.php/admin/remotecontrol")
