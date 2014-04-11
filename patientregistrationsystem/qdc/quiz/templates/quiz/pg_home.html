@@ -83,15 +83,14 @@
 <div class="col-md-1"></div>
 <div class="col-md-10">
 <div class="container span6 offset3 well ">
-    <form role="form">
+    <form id="tab1form" role="form" method="post" action="">{% csrf_token %}
         <div class="row">
-            <div class="col-md-12">
+            <div <h2></h2>class="col-md-12">
                 <div class="form-group">
                     <label>Nome Completo</label>
-
                     <div class="input-group  input-group-sm">
                         <span class="input-group-addon"> <span class="glyphicon glyphicon-user"></span></span>
-                        <input class="form-control" placeholder="Entrar nome completo" id="full_name" type="text">
+                          <input class="form-control" placeholder="Entrar nome completo" id="full_name" name="name_txt"  type="text">
                     </div>
                 </div>
             </div>
@@ -103,7 +102,7 @@
 
                     <div class="input-group  input-group-sm">
                         <span class="input-group-addon"> <span class="glyphicon glyphicon-asterisk"></span></span>
-                        <input class="form-control" placeholder="Entrar CPF" id="id" type="text">
+                        <input class="form-control" name="cpf_id" placeholder="Entrar CPF" id="id" type="text">
                     </div>
                 </div>
             </div>
@@ -174,7 +173,7 @@
 
                     <div class="input-group  input-group-sm ">
                         <span class="input-group-addon"> <span class="glyphicon glyphicon-home"></span></span>
-                        <input class="form-control" placeholder="Entrar cidade" id="city" type="text">
+                        <input class="form-control" name="city_birth_txt" placeholder="Entrar cidade" id="city" type="text">
                     </div>
                 </div>
             </div>
@@ -189,11 +188,9 @@
                 </div>
             </div>
         </div>
-    </form>
     <div class="col-md-1"></div>
 </div>
 <div class="container span6 offset3 well ">
-<form role="form">
 <div class="row">
     <div class="col-md-12">
         <h4>Responder na opção indicada pelo entrevistado:</h4>
@@ -211,7 +208,7 @@
 
             <div class="input-group  input-group-sm">
                 <span class="input-group-addon"> <span class="glyphicon glyphicon-calendar"></span></span>
-                <input class="form-control" placeholder="dia/mês/ano" id="birthday" type="text">
+                <input class="form-control" name="dt_birth_txt" placeholder="dia/mês/ano" id="birthday" type="text">
             </div>
         </div>
     </div>
@@ -296,14 +293,15 @@
             <label>Recebe algum benefício de escala municipal, estadual ou federal de governo?</label>
 
             <div class="input-group  input-group-sm">
+	      {{ pd.dt_birth_txt }}
+	      {{ test }}
                 <div class="radio-inline" i="id_benefit">
                     <label>
-                        <input name="optionsRadios" id="optionsRadios1" value="option1" checked=""
-                               type="radio">Sim</label>
+                        <input name="benefit_gov_bool" id="optionsRadios1" value="1" checked="" type="radio">Sim</label>
                 </div>
                 <div class="radio-inline">
                     <label>
-                        <input name="optionsRadios" id="optionsRadios2" value="option2" type="radio">Não</label>
+                        <input name="benefit_gov_bool" id="optionsRadios2" value="0" type="radio">Não</label>
                 </div>
             </div>
         </div>
@@ -650,7 +648,7 @@
         <div class="col-md-1"></div>
         <div class="col-md-10">
             <div class="container span6 offset3 well ">
-                <form role="form">
+                <form id="tab2form" role="form" method="post" action="">{% csrf_token %}
                     <div class="row">
                         <div class="col-xs-6 col-sm-4">
                             <div class="form-group">
@@ -784,7 +782,7 @@
     <div class="col-md-1"></div>
     <div class="col-md-10">
         <div class="container span6 offset3 well ">
-            <form role="form">
+            <form id="tab3form" role="form" method="post" action="">{% csrf_token %}
                 <div class="col-xs-6 col-sm-4">
                     <div class="form-group">
                         <label>HAS</label>
@@ -841,7 +839,6 @@
                         </div>
                     </div>
                 </div>
-            </form>
         </div>
     </div>
     <div class="col-md-1"></div>
@@ -850,7 +847,6 @@
 <div class="col-md-1"></div>
 <div class="col-md-10">
 <div class="container span6 offset3 well ">
-<form role="form">
 <div class="row">
     <div class="col-xs-6 col-sm-12">
         <div class="form-group">
@@ -1136,12 +1132,10 @@
     </div>
 </div>
 </fieldset>
-</form>
 </div>
 <div class="row">
     <div class="col-md-12">
         <div class="container span6 offset3 well ">
-            <form role="form">
                 <div class="row">
                     <div class="col-xs-6 col-sm-12">
                         <div class="form-group">
@@ -1315,14 +1309,12 @@
                         </div>
                     </div>
                 </fieldset>
-            </form>
         </div>
     </div>
 </div>
 <div class="row">
     <div class="col-md-12">
         <div class="container span6 offset3 well ">
-            <form role="form">
                 <div class="row">
                     <div class="col-xs-6 col-sm-3">
                         <div class="form-group">
@@ -1525,7 +1517,7 @@
     <div class="col-md-1"></div>
     <div class="col-md-10">
         <div class="container span6 offset3 well ">
-            <form role="form">
+            <form id="tab4form" role="form" method="post" action="">{% csrf_token %}
                 <div class="row">
                     <div class="col-xs-6 col-sm-12">
                         <div class="form-group">
@@ -1644,7 +1636,6 @@
                         </div>
                     </div>
                 </div>
-            </form>
         </div>
     </div>
     <div class="col-md-1"></div>
@@ -1653,7 +1644,6 @@
 <div class="col-md-1"></div>
 <div class="col-md-10">
 <div class="container span6 offset3 well ">
-<form role="form">
 <div class="row">
     <div class="col-xs-6 col-sm-12">
         <div class="form-group">
@@ -1938,12 +1928,10 @@
     </div>
 </div>
 </fieldset>
-</form>
 </div>
 <div class="row">
     <div class="col-md-12">
         <div class="container span6 offset3 well ">
-            <form role="form">
                 <div class="row">
                     <div class="col-xs-6 col-sm-12">
                         <div class="form-group">
@@ -2125,7 +2113,6 @@
                         </div>
                     </div>
                 </div>
-            </form>
         </div>
     </div>
 </div>
@@ -2141,7 +2128,7 @@
         <div class="btn-group pull-right">
             <button type="button" class="btn btn-default" id="prevtab">Anterior</button>
             <button type="button" class="btn btn-default" id="nexttab">Próximo</button>
-            <button type="button" class="btn btn-primary disabled">Salvar</button>
+            <button type="button" class="btn btn-primary" id="savetab">Salvar</button>
         </div>
     </div>
     <div class="col-md-1">
@@ -2156,7 +2143,6 @@
 
     <div class="col-md-10">
    <div class="container span6 offset3 well ">
-      <form role="form">
          <div class="row">
             <div class="col-md-12">
                <h5>Especificar nome OU CPF para a busca.</h5>
@@ -2250,283 +2236,296 @@
  $('.nav-tabs').tabdrop();
  </script>-->
 <script>
-         $(document).ready(function(){
-             $("#birthday").mask("99/99/9999");
+$(document).ready(function(){
+    $("#birthday").mask("99/99/9999");
+    
+});
 
-         });
+$(document).ready(function(){
+    $("#smokingOptionsRadios1").click(function(){
+        $("#id_amount_cigarrets").prop('disabled', false);
+    });
+});
 
-         $(document).ready(function(){
-          $("#smokingOptionsRadios1").click(function(){
-            $("#id_amount_cigarrets").prop('disabled', false);
-          });
-         });
 
+$(document).ready(function(){
+    $("#verCerFractOptionsRadios1").click(function(){
+        $("#id_fieldSetClavFract").prop('disabled', false);
+    });
+});
 
-         $(document).ready(function(){
-          $("#verCerFractOptionsRadios1").click(function(){
-               $("#id_fieldSetClavFract").prop('disabled', false);
-          });
-         });
+//exame complementar
 
-         //exame complementar
+$(document).ready(function(){
+    $("#complementaryExameOptionsRadios1").click(function(){
+        $("#id_whichComplementaryExame").prop('disabled', false);
+    });
+});
 
-           $(document).ready(function(){
-          $("#complementaryExameOptionsRadios1").click(function(){
-               $("#id_whichComplementaryExame").prop('disabled', false);
-          });
-         });
+$(document).ready(function(){
+    $("#complementaryExameOptionsRadios2").click(function(){
+        $("#id_whichComplementaryExame").prop('disabled', true);
+    });
+});
 
-              $(document).ready(function(){
-          $("#complementaryExameOptionsRadios2").click(function(){
-               $("#id_whichComplementaryExame").prop('disabled', true);
-          });
-         });
 
+//cirurgia de nervo
 
-         //cirurgia de nervo
 
+$(document).ready(function(){
+    $("#nerveSurgOptionsRadios1").click(function(){
+        $("#id_nerveSurgery").prop('disabled', false);
+    });
+});
 
-         $(document).ready(function(){
-          $("#nerveSurgOptionsRadios1").click(function(){
-               $("#id_nerveSurgery").prop('disabled', false);
-          });
-         });
 
 
+$(document).ready(function(){
+    $("#nerveSurgOptionsRadios2").click(function(){
+        $("#id_nerveSurgery").prop('disabled', true);
+    });
+});
 
-            $(document).ready(function(){
-          $("#nerveSurgOptionsRadios2").click(function(){
-               $("#id_nerveSurgery").prop('disabled', true);
-          });
-         });
+//vertebral lombo sacral
 
-         //vertebral lombo sacral
 
+$(document).ready(function(){
+    $("#verLomSacOptionsRadios1").click(function(){
+        $("#id_fieldVerLomSac").prop('disabled', false);
+    });
+});
 
-         $(document).ready(function(){
-          $("#verLomSacOptionsRadios1").click(function(){
-               $("#id_fieldVerLomSac").prop('disabled', false);
-          });
-         });
 
 
+$(document).ready(function(){
+    $("#verLomSacOptionsRadios2").click(function(){
+        $("#id_fieldVerLomSac").prop('disabled', true);
+    });
+});
 
-            $(document).ready(function(){
-          $("#verLomSacOptionsRadios2").click(function(){
-               $("#id_fieldVerLomSac").prop('disabled', true);
-          });
-         });
 
+//vertebral lombo sacral relacionada
 
-          //vertebral lombo sacral relacionada
 
+$(document).ready(function(){
+    $("#verLomSacRelatedOptionsRadios1").click(function(){
+        $("#id_fieldVerLomSacRelated").prop('disabled', false);
+    });
+});
 
-         $(document).ready(function(){
-          $("#verLomSacRelatedOptionsRadios1").click(function(){
-               $("#id_fieldVerLomSacRelated").prop('disabled', false);
-          });
-         });
 
 
+$(document).ready(function(){
+    $("#verLomSacRelatedOptionsRadios2").click(function(){
+        $("#id_fieldVerLomSacRelated").prop('disabled', true);
+    });
+});
 
-            $(document).ready(function(){
-          $("#verLomSacRelatedOptionsRadios2").click(function(){
-               $("#id_fieldVerLomSacRelated").prop('disabled', true);
-          });
-         });
 
+//historia da fratura
+$(document).ready(function(){
+    $("#fractHistOptionsRadios1").click(function(){
+        $("#id_fieldFractHistory").prop('disabled', false);
+    });
+});
 
-         //historia da fratura
-        $(document).ready(function(){
-          $("#fractHistOptionsRadios1").click(function(){
-               $("#id_fieldFractHistory").prop('disabled', false);
-          });
-         });
+$(document).ready(function(){
+    $("#fractHistOptionsRadios2").click(function(){
+        $("#id_fieldFractHistory").prop('disabled', true);
+    });
+});
 
-         $(document).ready(function(){
-          $("#fractHistOptionsRadios2").click(function(){
-               $("#id_fieldFractHistory").prop('disabled', true);
-          });
-         });
 
+//historia da fratura relacionada
+$(document).ready(function(){
+    $("#relatedFractOptionsRadios1").click(function(){
+        $("#id_fieldRelatedFractHistory").prop('disabled', false);
+    });
+});
 
-          //historia da fratura relacionada
-        $(document).ready(function(){
-          $("#relatedFractOptionsRadios1").click(function(){
-               $("#id_fieldRelatedFractHistory").prop('disabled', false);
-          });
-         });
+$(document).ready(function(){
+    $("#relatedFractOptionsRadios2").click(function(){
+        $("#id_fieldRelatedFractHistory").prop('disabled', true);
+    });
+});
 
-         $(document).ready(function(){
-          $("#relatedFractOptionsRadios2").click(function(){
-               $("#id_fieldRelatedFractHistory").prop('disabled', true);
-          });
-         });
 
 
+//historia cirurgia ortopedica
 
-         //historia cirurgia ortopedica
+$(document).ready(function(){
+    $("#orthSurgOptionsRadios1").click(function(){
+        $("#id_fieldSetOrtSurg").prop('disabled', false);
+    });
+});
 
-         $(document).ready(function(){
-          $("#orthSurgOptionsRadios1").click(function(){
-               $("#id_fieldSetOrtSurg").prop('disabled', false);
-          });
-         });
+$(document).ready(function(){
+    $("#orthSurgOptionsRadios2").click(function(){
+        $("#id_fieldSetOrtSurg").prop('disabled', true);
+    });
+});
 
-         $(document).ready(function(){
-          $("#orthSurgOptionsRadios2").click(function(){
-               $("#id_fieldSetOrtSurg").prop('disabled', true);
-          });
-         });
 
 
+$(document).ready(function(){
+    $("#verCerFractOptionsRadios2").click(function(){
+        $("#id_fieldSetClavFract").prop('disabled', true);
+    });
+});
 
-         $(document).ready(function(){
-          $("#verCerFractOptionsRadios2").click(function(){
-               $("#id_fieldSetClavFract").prop('disabled', true);
-          });
-         });
 
+//fratura vertebral toracica relacionada
+$(document).ready(function(){
+    $("#verTorFractRelatedOptionsRadios1").click(function(){
+        $("#id_fieldSetVerTorFractRelated").prop('disabled', false);
+    });
+});
 
-         //fratura vertebral toracica relacionada
-         $(document).ready(function(){
-          $("#verTorFractRelatedOptionsRadios1").click(function(){
-               $("#id_fieldSetVerTorFractRelated").prop('disabled', false);
-          });
-         });
+$(document).ready(function(){
+    $("#verTorFractRelatedOptionsRadios2").click(function(){
+        $("#id_fieldSetVerTorFractRelated").prop('disabled', true);
+    });
+});
 
-         $(document).ready(function(){
-          $("#verTorFractRelatedOptionsRadios2").click(function(){
-               $("#id_fieldSetVerTorFractRelated").prop('disabled', true);
-          });
-         });
 
+//fratura vertebral toracica
+$(document).ready(function(){
+    $("#verTorFractOptionsRadios1").click(function(){
+        $("#id_fieldSetVerTorFract").prop('disabled', false);
+    });
+});
 
-         //fratura vertebral toracica
-         $(document).ready(function(){
-          $("#verTorFractOptionsRadios1").click(function(){
-               $("#id_fieldSetVerTorFract").prop('disabled', false);
-          });
-         });
+$(document).ready(function(){
+    $("#verTorFractOptionsRadios2").click(function(){
+        $("#id_fieldSetVerTorFract").prop('disabled', true);
+    });
+});
 
-         $(document).ready(function(){
-          $("#verTorFractOptionsRadios2").click(function(){
-               $("#id_fieldSetVerTorFract").prop('disabled', true);
-          });
-         });
 
+//lesoes vasculares
+$(document).ready(function(){
+    $("#vascularLesionsOptionsRadios1").click(function(){
+        $("#id_fieldSetvascularLesions").prop('disabled', false);
+    });
+});
 
-               //lesoes vasculares
-         $(document).ready(function(){
-          $("#vascularLesionsOptionsRadios1").click(function(){
-               $("#id_fieldSetvascularLesions").prop('disabled', false);
-          });
-         });
+$(document).ready(function(){
+    $("#vascularLesionsOptionsRadios2").click(function(){
+        $("#id_fieldSetvascularLesions").prop('disabled', true);
+    });
+});
 
-         $(document).ready(function(){
-          $("#vascularLesionsOptionsRadios2").click(function(){
-               $("#id_fieldSetvascularLesions").prop('disabled', true);
-          });
-         });
 
 
+//fratura vertebral cervical relacionada
+$(document).ready(function(){
+    $("#verCerFractRelatedOptionsRadios1").click(function(){
+        $("#id_fieldSetClavFractRelated").prop('disabled', false);
+    });
+});
 
-         //fratura vertebral cervical relacionada
-         $(document).ready(function(){
-          $("#verCerFractRelatedOptionsRadios1").click(function(){
-               $("#id_fieldSetClavFractRelated").prop('disabled', false);
-          });
-         });
+$(document).ready(function(){
+    $("#verCerFractRelatedOptionsRadios2").click(function(){
+        $("#id_fieldSetClavFractRelated").prop('disabled', true);
+    });
+});
 
-         $(document).ready(function(){
-          $("#verCerFractRelatedOptionsRadios2").click(function(){
-               $("#id_fieldSetClavFractRelated").prop('disabled', true);
-          });
-         });
 
 
 
+$(document).ready(function(){
+    $("#smokingOptionsRadios2").click(function(){
 
-         $(document).ready(function(){
-          $("#smokingOptionsRadios2").click(function(){
 
 
+        $("#id_amount_cigarrets").prop('disabled', true);
 
-              $("#id_amount_cigarrets").prop('disabled', true);
 
 
 
+    });
+});
 
-          });
-         });
 
+$(document).ready(function(){
+    $("#alcoholismOptionsRadios1").click(function(){
 
-         $(document).ready(function(){
-          $("#alcoholismOptionsRadios1").click(function(){
 
 
+        $("#id_freqSmok").prop('disabled', false);
+        $("#id_peridoSmok").prop('disabled', false);
 
-              $("#id_freqSmok").prop('disabled', false);
-                            $("#id_peridoSmok").prop('disabled', false);
 
 
 
+    });
+});
 
-          });
-         });
+$(document).ready(function(){
+    $("#alcoholismOptionsRadios2").click(function(){
 
-         $(document).ready(function(){
-          $("#alcoholismOptionsRadios2").click(function(){
 
 
+        $("#id_freqSmok").prop('disabled', true);
+        $("#id_peridoSmok").prop('disabled', true);
 
-              $("#id_freqSmok").prop('disabled', true);
-              $("#id_peridoSmok").prop('disabled', true);
 
 
 
+    });
+});
 
-          });
-         });
 
 
+$(document).ready(function(){
 
-         $(document).ready(function(){
+    $("#id").mask("999.999.999-99");
+});
 
-             $("#id").mask("999.999.999-99");
-         });
+$(document).ready(function(){
 
-          $(document).ready(function(){
+    $("#id_chosen_state").on("change.bfhselectbox",function(){
+        var state = $(this).val();
+        if(state == "SP")
+            $("#phone").mask("(99) 99999-9999");
+        else
+            $("#phone").mask("(99) 9999-9999");
 
-              $("#id_chosen_state").on("change.bfhselectbox",function(){
-                    var state = $(this).val();
-                    if(state == "SP")
-                        $("#phone").mask("(99) 99999-9999");
-                    else
-                        $("#phone").mask("(99) 9999-9999");
 
+    });
 
-                });
 
+});
 
-         });
 
+var $tabs = $('.tabbable li');
 
-         var $tabs = $('.tabbable li');
+<!-- $("a[href$='prevtab']").on('click', function() { -->
+<!--       $tabs.filter('.active').prev('li').find('a[data-toggle="tab"]').tab('show'); -->
+<!-- }); -->
 
-         //$("a[href$='prevtab']").on('click', function() {
-          //      $tabs.filter('.active').prev('li').find('a[data-toggle="tab"]').tab('show');
-         //});
+$("#prevtab").on('click', function() {
+    $tabs.filter('.active').prev('li').find('a[data-toggle="tab"]').tab('show');
+});
 
-         $("#prevtab").on('click', function() {
-               $tabs.filter('.active').prev('li').find('a[data-toggle="tab"]').tab('show');
-         });
+$("#nexttab").on('click', function() {
+    $tabs.filter('.active').next('li').find('a[data-toggle="tab"]').tab('show');
 
-         $("#nexttab").on('click', function() {
-                $tabs.filter('.active').next('li').find('a[data-toggle="tab"]').tab('show');
 
+});
 
-         });
+$("#savetab").on('click', function (e) {
+  var target = $(e.target).attr("href");
+  if ((target == '#tab1')) {
+    $("#tab1form").submit();
+  }else if((target == '#tab2')){
+    $("#tab2form").submit();
+  }else if((target == '#tab3')){
+    $("#tab3form").submit();
+  }else if((target == '#tab4')){
+    $("#tab4form").submit();
+  }
+});
 
 
 
