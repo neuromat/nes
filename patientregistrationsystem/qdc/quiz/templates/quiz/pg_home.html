@@ -83,7 +83,7 @@
 <div class="col-md-1"></div>
 <div class="col-md-10">
 <div class="container span6 offset3 well ">
-    <form id="tab1form" role="form" method="post" action="">{% csrf_token %}
+    <form id="tabform" role="form" method="post" action="">{% csrf_token %}
         <div class="row">
             <div <h2></h2>class="col-md-12">
                 <div class="form-group">
@@ -648,7 +648,7 @@
         <div class="col-md-1"></div>
         <div class="col-md-10">
             <div class="container span6 offset3 well ">
-                <form id="tab2form" role="form" method="post" action="">{% csrf_token %}
+                <form id="tabform" role="form" method="post" action="">{% csrf_token %}
                     <div class="row">
                         <div class="col-xs-6 col-sm-4">
                             <div class="form-group">
@@ -782,7 +782,7 @@
     <div class="col-md-1"></div>
     <div class="col-md-10">
         <div class="container span6 offset3 well ">
-            <form id="tab3form" role="form" method="post" action="">{% csrf_token %}
+            <form id="tabform" role="form" method="post" action="">{% csrf_token %}
                 <div class="col-xs-6 col-sm-4">
                     <div class="form-group">
                         <label>HAS</label>
@@ -1517,7 +1517,7 @@
     <div class="col-md-1"></div>
     <div class="col-md-10">
         <div class="container span6 offset3 well ">
-            <form id="tab4form" role="form" method="post" action="">{% csrf_token %}
+            <form id="tabform" role="form" method="post" action="">{% csrf_token %}
                 <div class="row">
                     <div class="col-xs-6 col-sm-12">
                         <div class="form-group">
@@ -2510,24 +2510,11 @@ $("#prevtab").on('click', function() {
 
 $("#nexttab").on('click', function() {
     $tabs.filter('.active').next('li').find('a[data-toggle="tab"]').tab('show');
-
-
 });
 
-$("#savetab").on('click', function (e) {
-  var target = $(e.target).attr("href");
-  if ((target == '#tab1')) {
-    $("#tab1form").submit();
-  }else if((target == '#tab2')){
-    $("#tab2form").submit();
-  }else if((target == '#tab3')){
-    $("#tab3form").submit();
-  }else if((target == '#tab4')){
-    $("#tab4form").submit();
-  }
+$("#savetab").on('click', function(){
+	$tabs.find(".active #tabform").submit()
 });
-
-
 
 
 </script>
