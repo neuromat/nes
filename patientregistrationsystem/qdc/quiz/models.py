@@ -10,7 +10,7 @@ from django.db import models
 class Patient(models.Model):
     cpf_id = models.CharField(max_length=15, primary_key=True)
     name_txt = models.CharField(max_length=50)
-    nr_record = models.CharField(max_length=15)
+    nr_record = models.AutoField(primary_key=True)
 
     def __unicode__(self):  # Python 3: def __str__(self):
         return self.name_txt
@@ -61,7 +61,7 @@ class SchoolingOption(models.Model):
 class PersonalData(models.Model):
     id_patient = models.OneToOneField(Patient)
     dt_birth_txt = models.DateField()
-    city_birth_txt = models.CharField(max_length=50)
+    # city_birth_txt = models.CharField(max_length=50)
     benefit_gov_bool = models.BooleanField()
     payment_opt = models.OneToOneField(PaymentOption)
     gender_opt = models.OneToOneField(GenderOption)

@@ -83,9 +83,12 @@
 <div class="col-md-1"></div>
 <div class="col-md-10">
 <div class="container span6 offset3 well ">
-    <form id="tabform" role="form" method="post" action="">{% csrf_token %}
+  {{ new_patient }}
+  {{ new_personaldata }}
+  {{ test }}
+    <form id="tab1form" role="form" method="post" action="">{% csrf_token %}
         <div class="row">
-            <div <h2></h2>class="col-md-12">
+            <div class="col-md-12">
                 <div class="form-group">
                     <label>Nome Completo</label>
                     <div class="input-group  input-group-sm">
@@ -272,7 +275,7 @@
 
             <div class="input-group  input-group-sm ">
                 <span class="input-group-addon"> <span class="glyphicon"></span></span>
-                <input class="form-control" placeholder="Entrar profissão " id="profession" type="text">
+                <input class="form-control" name="profession_txt" placeholder="Entrar profissão " id="profession" type="text">
             </div>
         </div>
     </div>
@@ -282,7 +285,7 @@
 
             <div class="input-group  input-group-sm">
                 <span class="input-group-addon"> <span class="glyphicon"></span></span>
-                <input class="form-control" placeholder="Entrar ocupação" id="occupation" type="text">
+                <input class="form-control" name="occupation_txt" placeholder="Entrar ocupação" id="occupation" type="text">
             </div>
         </div>
     </div>
@@ -293,8 +296,6 @@
             <label>Recebe algum benefício de escala municipal, estadual ou federal de governo?</label>
 
             <div class="input-group  input-group-sm">
-	      {{ pd.dt_birth_txt }}
-	      {{ test }}
                 <div class="radio-inline" i="id_benefit">
                     <label>
                         <input name="benefit_gov_bool" id="optionsRadios1" value="1" checked="" type="radio">Sim</label>
@@ -361,7 +362,7 @@
 
                 <div class="input-group  input-group-sm ">
                     <span class="input-group-addon"> <span class="glyphicon glyphicon-book"></span></span>
-                    <input class="form-control" placeholder="Entrar tempo de estudo " id="total_studying" type="text">
+                    <input class="form-control" name="years_studying_int" placeholder="Entrar tempo de estudo " id="total_studying" type="text">
                 </div>
             </div>
         </div>
@@ -648,7 +649,6 @@
         <div class="col-md-1"></div>
         <div class="col-md-10">
             <div class="container span6 offset3 well ">
-                <form id="tabform" role="form" method="post" action="">{% csrf_token %}
                     <div class="row">
                         <div class="col-xs-6 col-sm-4">
                             <div class="form-group">
@@ -2181,7 +2181,6 @@
                </div>
             </div>
          </div>
-      </form>
    </div>
 </div>
 
@@ -2513,7 +2512,8 @@ $("#nexttab").on('click', function() {
 });
 
 $("#savetab").on('click', function(){
-	$tabs.find(".active #tabform").submit()
+<!-- $("#tabform").filter(".active").submit(); -->
+	$("#tab1form").submit();
 });
 
 

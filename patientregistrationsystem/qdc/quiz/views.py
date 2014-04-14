@@ -18,12 +18,16 @@ def pg_home(request):
     schooling_options = SchoolingOption.objects.all()
     payment_options = PaymentOption.objects.all()
     religion_options = ReligionOption.objects.all()
-    pd = PersonalDataForm
-    test = "Test"
+    #pd = PersonalDataForm
+    new_patient = None
+    new_personaldata = None
+    test = None
     if request.method == "POST":
         test = request.POST
-        form = PatientForm(request.POST)
-        if form.is_valid():
-            new_patient = form.save(commit=False)
-    context = {'fleshtone_options': fleshtone_options,'marital_status_options':marital_status_options,'schooling_options':schooling_options,'payment_options':payment_options,'religion_options':religion_options,'test':test,'pd':pd}
+        fPacient = PatientForm(request.POST)
+        fPersonalData = PersonalDataForm(request.POST)
+        if fPacient.is_valid() and fPersonalData.is_valid():
+            new_patient = fPacient.save(commit=False)
+            new_personaldata = fPersonalData.save(commit=False)
+    context = {'fleshtone_options': fleshtone_options,'marital_status_options':marital_status_options,'schooling_options':schooling_options,'payment_options':payment_options,'religion_options':religion_options,'new_patient':new_patient,'new_personaldata':new_personaldata,'test':test}
     return render(request,'quiz/pg_home.html',context)
