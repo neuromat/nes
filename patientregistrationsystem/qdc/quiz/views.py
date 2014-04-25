@@ -23,11 +23,13 @@ def pg_home(request):
     new_personaldata = None
     test = None
     if request.method == "POST":
-        test = request.POST
         fPacient = PatientForm(request.POST)
+        test = request.POST
         fPersonalData = PersonalDataForm(request.POST)
         if fPacient.is_valid() and fPersonalData.is_valid():
             new_patient = fPacient.save(commit=False)
             new_personaldata = fPersonalData.save(commit=False)
+            new_personaldata.id_patient = new_patient
+            new_personaldata.city_birth_txt = 'test'
     context = {'fleshtone_options': fleshtone_options,'marital_status_options':marital_status_options,'schooling_options':schooling_options,'payment_options':payment_options,'religion_options':religion_options,'new_patient':new_patient,'new_personaldata':new_personaldata,'test':test}
     return render(request,'quiz/pg_home.html',context)
