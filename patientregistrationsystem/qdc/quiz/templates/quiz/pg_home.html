@@ -315,7 +315,7 @@
 
             <div class="input-group  input-group-sm">
 
-                <select class="form-control" id="payment_option">
+                <select class="form-control" name="payment_option" id="payment_option">
                 {% for payment in payment_options %}
                 <option>{{payment.payment_txt}}</option>
                 {% endfor %}
@@ -331,7 +331,7 @@
 
             <div class="input-group  input-group-sm">
 
-                <select class="form-control" id="skin_color">
+                <select class="form-control" name="fleshtone_options" id="skin_color">
                     {% for fleshtone in fleshtone_options %}
                     <option>{{fleshtone.flesh_tone_txt}}</option>
                     {% endfor %}
