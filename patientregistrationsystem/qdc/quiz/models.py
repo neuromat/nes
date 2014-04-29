@@ -57,6 +57,20 @@ class SchoolingOption(models.Model):
     def __unicode__(self):  # Python 3: def __str__(self):
         return self.schooling_txt
 
+class SocialClass(models.Model):
+    social_class_txt = models.CharField(max_length=50)
+    points = models.IntegerField
+
+#    def __unicode__(self):
+#        return self.social_class_txt
+
+    def calculateSocialClass(**keywords):
+        for kw in keywords.keys():
+            print kw, "-", keywords[kw]
+        #para cada item adicionar um valor na pontuacao
+
+#chamada:
+#calculateSocialClass(tvs='1', dvds='2', banheiros='3', ...)
 
 class PersonalData(models.Model):
     id_patient = models.OneToOneField(Patient)
@@ -72,6 +86,6 @@ class PersonalData(models.Model):
     religion_opt = models.OneToOneField(ReligionOption)
     schooling_opt = models.OneToOneField(SchoolingOption)
     years_studying_int = models.IntegerField()
-
+#    social_class_opt = models.OneToOneField(SocialClass)
     def __unicode__(self):  # Python 3: def __str__(self):
         return self.id_patient, self.dt_birth_txt, self.city_birth_txt, self.benefit_gov_bool, self.flesh_tone_opt, self.gender_opt, self.marital_status_opt, self.occupation_txt, self.payment_opt, self.profession_txt, self.religion_opt, self.schooling_opt, self.years_studying_int
