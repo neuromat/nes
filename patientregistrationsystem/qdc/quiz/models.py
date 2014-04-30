@@ -57,17 +57,17 @@ class SchoolingOption(models.Model):
     def __unicode__(self):  # Python 3: def __str__(self):
         return self.schooling_txt
 
-class SocialClass(models.Model):
-    social_class_txt = models.CharField(max_length=50)
-    points = models.IntegerField
+#class SocialClass(models.Model):
+#    social_class_txt = models.CharField(max_length=50)
+#    points = models.IntegerField
 
 #    def __unicode__(self):
 #        return self.social_class_txt
 
-    def calculateSocialClass(**keywords):
-        for kw in keywords.keys():
-            print kw, "-", keywords[kw]
-        #para cada item adicionar um valor na pontuacao
+#    def calculateSocialClass(**keywords):
+#        for kw in keywords.keys():
+#            print kw, "-", keywords[kw]
+#        #para cada item adicionar um valor na pontuacao
 
 #chamada:
 #calculateSocialClass(tvs='1', dvds='2', banheiros='3', ...)

@@ -7,7 +7,7 @@ from django import forms
 from django.core.context_processors import csrf
 
 
-from quiz.models import FleshToneOption, MaritalStatusOption, SchoolingOption, PaymentOption, ReligionOption, SocialClass
+from quiz.models import FleshToneOption, MaritalStatusOption, SchoolingOption, PaymentOption, ReligionOption
 
 from quiz.forms import PatientForm, PersonalDataForm
 

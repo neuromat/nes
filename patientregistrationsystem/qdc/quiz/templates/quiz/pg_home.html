@@ -138,8 +138,19 @@
 
                     <div class="input-group  input-group-sm">
                         <span class="input-group-addon"> <span class="glyphicon glyphicon-flag"></span></span>
-
-                        <div class="bfh-selectbox bfh-countries" data-country="BR" data-flags="true"></div>
+                        <div class="bfh-selectbox bfh-countries" data-country="BR" data-flags="true">
+                            <input type="hidden" value="">
+                            <a class="bfh-selectbox-toggle" role="button" data-toggle="bfh-selectbox" href="#">
+                                <span class="bfh-selectbox-option input-medium" data-option="" name="citizenship" id="citizenship"></span>
+                                <b class="caret"></b>
+                            </a>
+                            <div class="bfh-selectbox-options">
+                                <input name="citizenship" type="text" class="bfh-selectbox-filter">
+                                <div role="listbox">
+                                    <ul role="option"></ul>
+                                </div>
+                            </div>
+                        </div>
                     </div>
                 </div>
             </div>
@@ -151,7 +162,7 @@
 
                     <div class="input-group  input-group-sm ">
                         <span class="input-group-addon"> <span class="glyphicon glyphicon-home"></span></span>
-                        <input class="form-control" placeholder="Rua - Complemento " id="street" type="text">
+                        <input name="street" class="form-control" placeholder="Rua - Complemento " id="street" type="text">
                     </div>
                 </div>
             </div>
@@ -161,7 +172,7 @@
 
                     <div class="input-group  input-group-sm">
                         <span class="input-group-addon"> <span class="glyphicon glyphicon-home"></span></span>
-                        <input class="form-control" placeholder="Entrar CEP" id="zipcode" type="text">
+                        <input name="zipcode" class="form-control" placeholder="Entrar CEP" id="zipcode" type="text">
                     </div>
                 </div>
             </div>
@@ -175,7 +186,7 @@
                         <span class="input-group-addon"> <span class="glyphicon glyphicon-home"></span></span>
 
                         <div class="bfh-selectbox bfh-countries" data-country="BR" data-flags="true"
-                             id="id_country_state_address"></div>
+                             id="id_country_state_address"> <input name="country"></div>
                     </div>
                 </div>
             </div>
@@ -187,7 +198,7 @@
                         <span class="input-group-addon"> <span class="glyphicon glyphicon-home"></span></span>
 
                         <div class="bfh-selectbox bfh-states" data-country="id_country_state_address"
-                             id="id_chosen_state"></div>
+                             id="id_chosen_state"><input name="state"></div>
                     </div>
                 </div>
             </div>
@@ -199,7 +210,7 @@
 
                     <div class="input-group  input-group-sm ">
                         <span class="input-group-addon"> <span class="glyphicon glyphicon-home"></span></span>
-                        <input class="form-control" placeholder="Entrar cidade" id="city" type="text">
+                        <input class="form-control" name="city" placeholder="Entrar cidade" id="city" type="text">
                     </div>
                 </div>
             </div>
@@ -209,7 +220,7 @@
 
                     <div class="input-group  input-group-sm">
                         <span class="input-group-addon"> <span class="glyphicon glyphicon-earphone"></span></span>
-                        <input class="form-control" placeholder="Entrar telefone para contato" id="phone" type="text">
+                        <input class="form-control" name="phone" placeholder="Entrar telefone para contato" id="phone" type="text">
                     </div>
                 </div>
             </div>
@@ -221,7 +232,7 @@
 
                     <div class="input-group input-group-sm">
                         <span class="input-group-addon"> <span class="glyphicon glyphicon-earphone"></span></span>
-                        <input class="form-control" placeholder="Entrar celular" id="celphone" type="text">
+                        <input class="form-control" name="celphone" placeholder="Entrar celular" id="celphone" type="text">
                     </div>
                 </div>
             </div>
@@ -231,7 +242,7 @@
 
                     <div class="input-group input-group-sm">
                         <span class="input-group-addon"> <span class="glyphicon glyphicon-envelope"></span></span>
-                        <input class="form-control" placeholder="Entrar e-mail" id="email" type="email">
+                        <input class="form-control" name="email" placeholder="Entrar e-mail" id="email" type="email">
                     </div>
                 </div>
             </div>
@@ -243,7 +254,7 @@
 
                     <div class="input-group input-group-sm">
                         <span class="input-group-addon"> <span class="glyphicon glyphicon-list-alt"></span></span>
-                        <input class="form-control" placeholder="Entrar número do prontuário" id="records_number" type="text">
+                        <input class="form-control" name="records_number" placeholder="Entrar número do prontuário" id="records_number" type="text">
                     </div>
                 </div>
             </div>
@@ -296,7 +307,7 @@
 
             <div class="input-group  input-group-sm">
                 {% if religion_options%}
-                <select class="form-control" id="religion_id">
+                <select name="religion_id" class="form-control" id="religion_id">
                     {% for religion in religion_options%}
                     <option>{{religion.religion_txt}}</option>
                     {% endfor %}
@@ -313,7 +324,7 @@
 
             <div class="input-group  input-group-sm">
                 {% if marital_status_options%}
-                <select class="form-control" id="marital_status">
+                <select name="marital_status" class="form-control" id="marital_status">
                     {% for marital_status in marital_status_options%}
                     <option>{{marital_status.marital_status_txt}}</option>
                     {% endfor %}
@@ -433,7 +444,7 @@
             <label>Grau de instrução do chefe de família - Critério Brasil 2013</label>
 
             <div class="input-group input-group-sm">
-                <select class="form-control" id="scolarity">
+                <select name="scolarity" class="form-control" id="scolarity">
                     {% for schooling in schooling_options %}
                     <option>{{schooling.schooling_txt}}</option>
                     {% endfor %}
@@ -448,7 +459,7 @@
 <div class="row">
 <div class="col-xs-6 col-sm-12">
 <div class="form-group">
-<label>Quantidade de iItens de conforto familiar - Critério Brasil 2008</label>
+<label>Quantidade de iItens de conforto familiar - Critério Brasil 2013</label>
 
 <div class="form-group">
     <label class="col-sm-5 control-label">Televisores em cores</label>
@@ -1729,6 +1740,7 @@
                         </div>
                     </div>
                 </div>
+            </form>
         </div>
     </div>
     <div class="col-md-1"></div>
@@ -2213,8 +2225,9 @@
 </div>
 </div>
 </div>
-</div>
 -->
+</div>
+
 <div class="row">
     <div class="col-md-1">
     </div>
