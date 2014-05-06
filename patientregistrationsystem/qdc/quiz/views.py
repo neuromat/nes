@@ -1,4 +1,5 @@
 from django.shortcuts import render
+from django.contrib.auth.decorators import login_required
 
 # Create your views here.
 from django.http import HttpResponse
@@ -11,7 +12,7 @@ from quiz.models import FleshToneOption, MaritalStatusOption, SchoolingOption, P
 
 from quiz.forms import PatientForm, PersonalDataForm
 
-
+@login_required
 def pg_home(request):
     fleshtone_options = FleshToneOption.objects.all()
     marital_status_options = MaritalStatusOption.objects.all()

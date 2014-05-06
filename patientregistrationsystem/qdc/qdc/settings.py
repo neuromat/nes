@@ -63,13 +63,11 @@ DATABASES = {
         'USER': 'qdc',
         'PASSWORD': 'DEVqdc1716',
         'HOST': '200.144.254.136',
-        'PORT': '5432'
     }
 }
 
 
 TEMPLATE_DIRS = [os.path.join(BASE_DIR, 'templates')]
-
 
 # Internationalization
 # https://docs.djangoproject.com/en/1.6/topics/i18n/
