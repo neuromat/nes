@@ -62,6 +62,8 @@ DATABASES = {
         'NAME': 'qdcdb',
         'USER': 'qdc',
         'PASSWORD': 'DEVqdc1716',
+        'HOST': '200.144.254.136',
+        'PORT': '5432'
     }
 }
 
