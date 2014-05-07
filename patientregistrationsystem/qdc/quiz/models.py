@@ -4,17 +4,22 @@
 from __future__ import unicode_literals
 from django.db import models
 
-# Create your models here.
-
 
 class Patient(models.Model):
-    cpf_id = models.CharField(max_length=15, unique=True)
-    name_txt = models.CharField(max_length=50)
     nr_record = models.AutoField(primary_key=True)
+    name_txt = models.CharField(max_length=50)
+    cpf_id = models.CharField(max_length=15, unique=True)
+    # Entries add by Caco
+    #citizenship = models.CharField(max_length=30)
+    #address = models.CharField(max_length=100)
+    #cep = models.PositiveIntegerField()
+
 
     def __unicode__(self):  # Python 3: def __str__(self):
         return self.name_txt
 
+    def get_absolute_url(self):
+        return "/patients/get/%i/" % self.id  
 
 class PaymentOption(models.Model):
     payment_txt = models.CharField(max_length=50)
@@ -61,7 +66,7 @@ class SchoolingOption(models.Model):
 class PersonalData(models.Model):
     id_patient = models.OneToOneField(Patient)
     dt_birth_txt = models.DateField()
-    city_birth_txt = models.CharField(max_length=50)
+    # city_birth_txt = models.CharField(max_length=50)
     benefit_gov_bool = models.BooleanField()
     payment_opt = models.OneToOneField(PaymentOption)
     gender_opt = models.OneToOneField(GenderOption)
