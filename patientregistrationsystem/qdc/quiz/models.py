@@ -8,8 +8,9 @@ from django.db import models
 
 
 class Patient(models.Model):
-    cpf_id = models.CharField(max_length=15, unique=True)
     name_txt = models.CharField(max_length=50)
+    cpf_id = models.CharField(max_length=15, unique=True)
+    rg_id = models.CharField(max_length=50)
     nr_record = models.AutoField(primary_key=True)
 
     def __unicode__(self):  # Python 3: def __str__(self):
@@ -89,3 +90,4 @@ class PersonalData(models.Model):
 #    social_class_opt = models.OneToOneField(SocialClass)
     def __unicode__(self):  # Python 3: def __str__(self):
         return self.id_patient, self.dt_birth_txt, self.city_birth_txt, self.benefit_gov_bool, self.flesh_tone_opt, self.gender_opt, self.marital_status_opt, self.occupation_txt, self.payment_opt, self.profession_txt, self.religion_opt, self.schooling_opt, self.years_studying_int
+

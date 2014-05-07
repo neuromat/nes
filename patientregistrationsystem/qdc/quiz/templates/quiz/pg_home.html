@@ -84,7 +84,7 @@
 <div class="col-md-10">
 <div class="container span6 offset3 well ">
     {{ new_patient }}
-    {{ new_personaldata }}
+    {{ new_personal_data }}
     {{ test }}
     <form id="tab1form" role="form" method="post" action="">{% csrf_token %}
         <div class="row">
@@ -292,7 +292,7 @@
 
             <div class="input-group  input-group-sm">
                 {% if religion_options%}
-                <select name="religion_id" class="form-control" id="religion_id">
+                <select name="religion" class="form-control" id="religion_id">
                     {% for religion in religion_options%}
                     <option>{{religion.religion_txt}}</option>
                     {% endfor %}
@@ -429,7 +429,7 @@
             <label>Grau de instrução do chefe de família - Critério Brasil 2013</label>
 
             <div class="input-group input-group-sm">
-                <select name="scolarity" class="form-control" id="scolarity">
+                <select name="schooling" class="form-control" id="schooling">
                     {% for schooling in schooling_options %}
                     <option>{{schooling.schooling_txt}}</option>
                     {% endfor %}
@@ -708,7 +708,7 @@
         <h6>*Aparelho independente ou parte da geladeira duplex.</h6>
     </div>
 </div>
-</form>
+<!--</form>-->
 <div class="col-md-1"></div>
 </div>
 </div>
@@ -745,7 +745,7 @@
                             <label>Cigarros/Dia</label>
 
                             <div class="input-group  input-group-sm">
-                                <select class="form-control" id="id_amount_cigarrets">
+                                <select class="form-control" name="amount_cigarrets" id="id_amount_cigarrets">
                                     <option id="amountCigOptionsRadios1">menos de 1 maço</option>
                                     <option id="amountCigOptionsRadios2"> 1-2 maços</option>
                                     <option id="amountCigOptionsRadios3">mais de 3 maços</option>
@@ -762,7 +762,7 @@
                                     <div class="radio-inline">
                                         <label>
                                             <input name="exSmokerOptionsRadios" id="exSmokerOptionsRadios1"
-                                                   value="exSmokergOption1" type="radio">Sim</label>
+                                                   value="exSmokerOption1" type="radio">Sim</label>
                                     </div>
                                     <div class="radio-inline">
                                         <label>
@@ -798,10 +798,10 @@
                             <label>Frequência</label>
 
                             <div class="input-group  input-group-sm">
-                                <select class="form-control" id="id_freqSmok">
-                                    <option id="freqSmokOptionsRadios1">esporadicamente</option>
-                                    <option id="freqSmokOptionsRadios2"> todos os finais de semana</option>
-                                    <option id="freqSmokOptionsRadios3">todos os dias</option>
+                                <select class="form-control" name="freqAlcohol" id="id_freqAlcohol">
+                                    <option id="freqAlcoholOptionsRadios1">esporadicamente</option>
+                                    <option id="freqAlcoholOptionsRadios2"> todos os finais de semana</option>
+                                    <option id="freqAlcoholOptionsRadios3">todos os dias</option>
                                 </select>
                             </div>
                         </div>
@@ -811,11 +811,11 @@
                             <label>Tempo</label>
 
                             <div class="input-group  input-group-sm">
-                                <select class="form-control" id="id_peridoSmok">
-                                    <option id="peridoSmokOptionsRadios1">meses</option>
-                                    <option id="peridoSmokOptionsRadios2"> 1-5 anos</option>
-                                    <option id="peridoSmokOptionsRadios3">5-10 anos</option>
-                                    <option id="peridoSmokOptionsRadios10">mais de 10 anos</option>
+                                <select class="form-control" name="periodAlcohol" id="id_periodAlcohol">
+                                    <option id="periodAlcoholOptionsRadios1">menos de 1 ano</option>
+                                    <option id="periodAlcoholOptionsRadios2"> 1-5 anos</option>
+                                    <option id="periodAlcoholOptionsRadios3">5-10 anos</option>
+                                    <option id="periodAlcoholOptionsRadios10">mais de 10 anos</option>
                                 </select>
                             </div>
                         </div>
@@ -846,7 +846,7 @@
                         </div>
                     </div>
                 </div>
-                </form>
+                <!--</form>-->
                 <div class="col-md-1"></div>
             </div>
         </div>
@@ -857,7 +857,7 @@
     <div class="col-md-1"></div>
     <div class="col-md-10">
         <div class="container span6 offset3 well ">
-            <form id="tabform" role="form" method="post" action="">{% csrf_token %}
+            <!--<form id="tabform" role="form" method="post" action="">{% csrf_token %}-->
                 <div class="col-xs-6 col-sm-4">
                     <div class="form-group">
                         <label>HAS</label>
@@ -954,7 +954,7 @@
             <label>Fratura de escápula</label>
 
             <div class="input-group  input-group-sm">
-                <select class="form-control" id="id_scap_fract_">
+                <select class="form-control" name="scap_fract" id="id_scap_fract_">
                     <option id="scapFractOptionsRadios1">Direita</option>
                     <option id="scapFractOptionsRadios2">Esquerda</option>
                     <option id="scapFractOptionsRadios3">Ambos</option>
@@ -967,7 +967,7 @@
             <label>Fratura de clavícula</label>
 
             <div class="input-group  input-group-sm">
-                <select class="form-control" id="id_clav_fract">
+                <select class="form-control" name="clav_fract" id="id_clav_fract">
                     <option id="clavFractOptionsRadios1">Direita</option>
                     <option id="clavFractOptionsRadios2">Esquerda</option>
                     <option id="clavFractOptionsRadios3">Ambos</option>
@@ -1020,25 +1020,25 @@
             <div class="input-group  input-group-sm">
                 <fieldset disabled id="id_fieldSetClavFract">
                     <label class="checkbox-inline">
-                        <input type="checkbox" id="clavFractCheckbox1" value="option1"> C1
+                        <input type="checkbox" name="verCerFractOptionsCheckbox" id="clavFractCheckbox1" value="option1"> C1
                     </label>
                     <label class="checkbox-inline">
-                        <input type="checkbox" id="clavFractCheckbox2" value="option2"> C2
+                        <input type="checkbox" name="verCerFractOptionsCheckbox" id="clavFractCheckbox2" value="option2"> C2
                     </label>
                     <label class="checkbox-inline">
-                        <input type="checkbox" id="clavFractCheckbox3" value="option3"> C3
+                        <input type="checkbox" name="verCerFractOptionsCheckbox" id="clavFractCheckbox3" value="option3"> C3
                     </label>
                     <label class="checkbox-inline">
-                        <input type="checkbox" id="clavFractCheckbox4" value="option1"> C4
+                        <input type="checkbox" name="verCerFractOptionsCheckbox" id="clavFractCheckbox4" value="option1"> C4
                     </label>
                     <label class="checkbox-inline">
-                        <input type="checkbox" id="clavFractCheckbox5" value="option2"> C5
+                        <input type="checkbox" name="verCerFractOptionsCheckbox" id="clavFractCheckbox5" value="option2"> C5
                     </label>
                     <label class="checkbox-inline">
-                        <input type="checkbox" id="clavFractCheckbox6" value="option3"> C6
+                        <input type="checkbox" name="verCerFractOptionsCheckbox" id="clavFractCheckbox6" value="option3"> C6
                     </label>
                     <label class="checkbox-inline">
-                        <input type="checkbox" id="clavFractCheckbox7" value="option3"> C7
+                        <input type="checkbox" name="verCerFractOptionsCheckbox" id="clavFractCheckbox7" value="option3"> C7
                     </label>
                 </fieldset>
             </div>
@@ -1071,40 +1071,40 @@
             <div class="input-group  input-group-sm">
                 <fieldset disabled id="id_fieldSetVerTorFract">
                     <label class="checkbox-inline">
-                        <input type="checkbox" id="verTorFractCheckbox1" value="option1"> T1
+                        <input type="checkbox" name="verTorFractOptionsCheckbox" id="verTorFractCheckbox1" value="option1"> T1
                     </label>
                     <label class="checkbox-inline">
-                        <input type="checkbox" id="verTorFractCheckbox2" value="option2"> T2
+                        <input type="checkbox" name="verTorFractOptionsCheckbox" id="verTorFractCheckbox2" value="option2"> T2
                     </label>
                     <label class="checkbox-inline">
-                        <input type="checkbox" id="verTorFractCheckbox3" value="option3"> T3
+                        <input type="checkbox" name="verTorFractOptionsCheckbox" id="verTorFractCheckbox3" value="option3"> T3
                     </label>
                     <label class="checkbox-inline">
-                        <input type="checkbox" id="verTorFractCheckbox4" value="option5"> T4
+                        <input type="checkbox" name="verTorFractOptionsCheckbox" id="verTorFractCheckbox4" value="option5"> T4
                     </label>
                     <label class="checkbox-inline">
-                        <input type="checkbox" id="verTorFractCheckbox5" value="option5"> T5
+                        <input type="checkbox" name="verTorFractOptionsCheckbox" id="verTorFractCheckbox5" value="option5"> T5
                     </label>
                     <label class="checkbox-inline">
-                        <input type="checkbox" id="verTorFractCheckbox6" value="option6"> T6
+                        <input type="checkbox" name="verTorFractOptionsCheckbox" id="verTorFractCheckbox6" value="option6"> T6
                     </label>
                     <label class="checkbox-inline">
-                        <input type="checkbox" id="verTorFractCheckbox7" value="option7"> T7
+                        <input type="checkbox" name="verTorFractOptionsCheckbox" id="verTorFractCheckbox7" value="option7"> T7
                     </label>
                     <label class="checkbox-inline">
-                        <input type="checkbox" id="verTorFractCheckbox8" value="option8"> T8
+                        <input type="checkbox" name="verTorFractOptionsCheckbox" id="verTorFractCheckbox8" value="option8"> T8
                     </label>
                     <label class="checkbox-inline">
-                        <input type="checkbox" id="verTorFractCheckbox9" value="option9"> T9
+                        <input type="checkbox" name="verTorFractOptionsCheckbox" id="verTorFractCheckbox9" value="option9"> T9
                     </label>
                     <label class="checkbox-inline">
-                        <input type="checkbox" id="verTorFractCheckbox10" value="option10"> T10
+                        <input type="checkbox" name="verTorFractOptionsCheckbox" id="verTorFractCheckbox10" value="option10"> T10
                     </label>
                     <label class="checkbox-inline">
-                        <input type="checkbox" id="verTorFractCheckbox11" value="option11"> T11
+                        <input type="checkbox" name="verTorFractOptionsCheckbox" id="verTorFractCheckbox11" value="option11"> T11
                     </label>
                     <label class="checkbox-inline">
-                        <input type="checkbox" id="verTorFractCheckbox12" value="option12"> T12
+                        <input type="checkbox" name="verTorFractOptionsCheckbox" id="verTorFractCheckbox12" value="option12"> T12
                     </label>
                 </fieldset>
             </div>
@@ -1137,28 +1137,28 @@
             <div class="input-group  input-group-sm">
                 <fieldset disabled id="id_fieldVerLomSac">
                     <label class="checkbox-inline">
-                        <input type="checkbox" id="verLomSacFractCheckbox1" value="option1"> L1
+                        <input type="checkbox" name="verLomSacOptionsCheckbox" id="verLomSacFractCheckbox1" value="option1"> L1
                     </label>
                     <label class="checkbox-inline">
-                        <input type="checkbox" id="verLomSacFractCheckbox2" value="option2"> L2
+                        <input type="checkbox" name="verLomSacOptionsCheckbox" id="verLomSacFractCheckbox2" value="option2"> L2
                     </label>
                     <label class="checkbox-inline">
-                        <input type="checkbox" id="verLomSacFractCheckbox3" value="option3"> L3
+                        <input type="checkbox" name="verLomSacOptionsCheckbox" id="verLomSacFractCheckbox3" value="option3"> L3
                     </label>
                     <label class="checkbox-inline">
-                        <input type="checkbox" id="verLomSacFractCheckbox4" value="option5"> L4
+                        <input type="checkbox" name="verLomSacOptionsCheckbox" id="verLomSacFractCheckbox4" value="option5"> L4
                     </label>
                     <label class="checkbox-inline">
-                        <input type="checkbox" id="verLomSacFractCheckbox5" value="option5"> L5
+                        <input type="checkbox" name="verLomSacOptionsCheckbox" id="verLomSacFractCheckbox5" value="option5"> L5
                     </label>
                     <label class="checkbox-inline">
-                        <input type="checkbox" id="verLomSacFractCheckbox6" value="option6"> S1
+                        <input type="checkbox" name="verLomSacOptionsCheckbox" id="verLomSacFractCheckbox6" value="option6"> S1
                     </label>
                     <label class="checkbox-inline">
-                        <input type="checkbox" id="verLomSacFractCheckbox7" value="option7"> S2
+                        <input type="checkbox" name="verLomSacOptionsCheckbox" id="verLomSacFractCheckbox7" value="option7"> S2
                     </label>
                     <label class="checkbox-inline">
-                        <input type="checkbox" id="verLomSacFractCheckbox8" value="option8"> S3
+                        <input type="checkbox" name="verLomSacOptionsCheckbox" id="verLomSacFractCheckbox8" value="option8"> S3
                     </label>
                 </fieldset>
             </div>
@@ -1171,7 +1171,7 @@
             <label>Fratura de Membros Superiores</label>
 
             <div class="input-group  input-group-sm">
-                <select class="form-control" id="id_upperLimbFractA">
+                <select class="form-control" name="upperLimbFractA" id="id_upperLimbFractA">
                     <option id="upperLimbOptionsRadios1">Direita</option>
                     <option id="upperLimbOptionsRadios2">Esquerda</option>
                     <option id="upperLimbOptionsRadios3">Ambos</option>
@@ -1184,7 +1184,7 @@
             <label>Fratura de Membros Inferiores</label>
 
             <div class="input-group  input-group-sm">
-                <select class="form-control" id="id_lowerLimbFractB">
+                <select class="form-control" name="lowerLimbFractB" id="id_lowerLimbFractB">
                     <option id="pelvisFractOptionsRadios1">Direita</option>
                     <option id="pelvisFractOptionsRadios2">Esquerda</option>
                     <option id="pelvisFractOptionsRadios3">Ambos</option>
@@ -1197,7 +1197,7 @@
             <label>Fratura de Pelve</label>
 
             <div class="input-group  input-group-sm">
-                <select class="form-control" id="id_LowerLimb">
+                <select class="form-control" name="LowerLimb" id="id_LowerLimb">
                     <option id="lowerLimbFractOptionsRadios1">Direita</option>
                     <option id="lowerLimbFractOptionsRadios2">Esquerda</option>
                     <option id="lowerLimbFractOptionsRadios3">Ambos</option>
@@ -1243,7 +1243,7 @@
                             <label>Escápula</label>
 
                             <div class="input-group  input-group-sm">
-                                <select class="form-control" id="id_scapSurg">
+                                <select class="form-control" name="scapSurg"  id="id_scapSurg">
                                     <option id="scapSurgOptionsRadios1">Direita</option>
                                     <option id="scapSurgOptionsRadios2">Esquerda</option>
                                     <option id="scapSurgOptionsRadios3">Ambos</option>
@@ -1256,7 +1256,7 @@
                             <label>Clavícula</label>
 
                             <div class="input-group  input-group-sm">
-                                <select class="form-control" id="id_clavSurg">
+                                <select class="form-control" name="clavSurg" id="id_clavSurg">
                                     <option id="clavSurgOptionsRadios1">Direita</option>
                                     <option id="clavSurgOptionsRadios2">Esquerda</option>
                                     <option id="clavSurgOptionsRadios3">Ambos</option>
@@ -1349,7 +1349,7 @@
                             <label>Membros Superiores</label>
 
                             <div class="input-group  input-group-sm">
-                                <select class="form-control" id="id_upperLimbSurg">
+                                <select class="form-control" name="upperLimbSurg" id="id_upperLimbSurg">
                                     <option id="upperLimbSurgOptionsRadios1">Direita</option>
                                     <option id="upperLimbSurgOptionsRadios2">Esquerda</option>
                                     <option id="upperLimbSurgOptionsRadios3">Ambos</option>
@@ -1362,7 +1362,7 @@
                             <label>Membros Inferiores</label>
 
                             <div class="input-group  input-group-sm">
-                                <select class="form-control" id="id_lowerLimbSurg">
+                                <select class="form-control" name="lowerLimbSurg" id="id_lowerLimbSurg">
                                     <option id="pelvisSurgOptionsRadios1">Direita</option>
                                     <option id="pelvisSurgOptionsRadios2">Esquerda</option>
                                     <option id="pelvisSurgOptionsRadios3">Ambos</option>
@@ -1375,7 +1375,7 @@
                             <label>Pelve</label>
 
                             <div class="input-group  input-group-sm">
-                                <select class="form-control" id="id_LowerLimbSurgA">
+                                <select class="form-control" name="LowerLimbSurgA" id="id_LowerLimbSurgA">
                                     <option id="lowerLimbSurgOptionsRadios1">Direita</option>
                                     <option id="lowerLimbSurgOptionsRadios2">Esquerda</option>
                                 </select>
@@ -1419,7 +1419,7 @@
 
                         <div class="input-group  input-group-sm ">
                             <span class="input-group-addon"> <span class="glyphicon glyphicon-edit"></span></span>
-                            <input class="form-control" placeholder="Especificar a cirurgia" id="id_nerveSurgery"
+                            <input class="form-control" name="nerveSurgery" placeholder="Especificar a cirurgia" id="id_nerveSurgery"
                                    type="text">
                         </div>
                     </div>
@@ -1582,7 +1582,7 @@
                     </div>
                 </div>
             </div>
-            </form>
+            <!--</form>-->
         </div>
     </div>
 </div>
@@ -1594,7 +1594,7 @@
     <div class="col-md-1"></div>
     <div class="col-md-10">
         <div class="container span6 offset3 well ">
-            <form id="tabform" role="form" method="post" action="">{% csrf_token %}
+            <!--<form id="tabform" role="form" method="post" action="">{% csrf_token %}-->
                 <!--
                 <div class="row">
                     <div class="col-xs-6 col-sm-12">
@@ -1702,14 +1702,14 @@
                                 </div>
                             </div>
                         </div>
-                    </div>
+                    </div>d
                     <div class="col-xs-6 col-sm-9">
                         <div class="form-group">
                             <label>Qual?</label>
 
                             <div class="input-group  input-group-sm ">
                                 <span class="input-group-addon"> <span class="glyphicon glyphicon-edit"></span></span>
-                                <input class="form-control" placeholder="Especificar o exame complementar"
+                                <input class="form-control" name="whichComplementaryExame" placeholder="Especificar o exame complementar"
                                        id="id_whichComplementaryExame" type="text">
                             </div>
                         </div>
@@ -1720,7 +1720,7 @@
 
                             <div class="input-group input-group-sm ">
                                 <span class="input-group-addon"> <span class="glyphicon glyphicon-edit"></span></span>
-                                <input class="form-control" placeholder="Data" id="dateOfComplementaryExame" type="date">
+                                <input class="form-control" name="dateOfComplementaryExame" placeholder="Data" id="dateOfComplementaryExame" type="date">
                             </div>
                         </div>
                     </div>
@@ -2481,13 +2481,13 @@ $(document).ready(function(){
 
 //fratura vertebral toracica
 $(document).ready(function(){
-    $("#verTorFractOptionsRadios1").click(function(){
+    $("#verTorFractOptionsRadiosA1").click(function(){
         $("#id_fieldSetVerTorFract").prop('disabled', false);
     });
 });
 
 $(document).ready(function(){
-    $("#verTorFractOptionsRadios2").click(function(){
+    $("#verTorFractOptionsRadiosA2").click(function(){
         $("#id_fieldSetVerTorFract").prop('disabled', true);
     });
 });
@@ -2543,8 +2543,8 @@ $(document).ready(function(){
 
 
 
-        $("#id_freqSmok").prop('disabled', false);
-        $("#id_peridoSmok").prop('disabled', false);
+        $("#id_freqAlcohol").prop('disabled', false);
+        $("#id_periodAlcohol").prop('disabled', false);
 
 
 
@@ -2557,8 +2557,8 @@ $(document).ready(function(){
 
 
 
-        $("#id_freqSmok").prop('disabled', true);
-        $("#id_peridoSmok").prop('disabled', true);
+        $("#id_freqAlcohol").prop('disabled', true);
+        $("#id_periodAlcohol").prop('disabled', true);
 
 
 
