@@ -28,7 +28,3 @@ class ABCSearchEngineTest(TestCase):
     def test_findQuestionnaireByID_method_not_found_survey_by_out_of_range(self):
         q = Questionnaires()
         self.assertEqual(None, q.findQuestionnaireByID(10000000))
-
-
-# comentario na branch DEV-Evandro-0.1
-# outro comentario

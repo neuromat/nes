@@ -62,12 +62,13 @@ DATABASES = {
         'NAME': 'qdcdb',
         'USER': 'qdc',
         'PASSWORD': 'DEVqdc1716',
-        'HOST': '200.144.254.136',
+        'HOST' : 'localhost',
     }
 }
 
 
 TEMPLATE_DIRS = [os.path.join(BASE_DIR, 'templates')]
+
 
 # Internationalization
 # https://docs.djangoproject.com/en/1.6/topics/i18n/
@@ -86,4 +87,5 @@ USE_TZ = True
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/1.6/howto/static-files/
 
+STATIC_ROOT = '/home/crns/PycharmProjects/neuromat-cc-ribas/patientregistrationsystem/qdc/quiz/'
 STATIC_URL = '/static/'
