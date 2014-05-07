@@ -12,6 +12,11 @@ class Patient(models.Model):
     name_txt = models.CharField(max_length=50)
     nr_record = models.AutoField(primary_key=True)
 
+    class Meta:
+        permissions = (
+            ("view_patient", "Can view patient"),
+        )
+
     def __unicode__(self):  # Python 3: def __str__(self):
         return self.name_txt
 

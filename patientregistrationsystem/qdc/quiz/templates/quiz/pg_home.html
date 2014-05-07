@@ -21,7 +21,6 @@
     <script src="{% static 'quiz/masked_input/jquery.maskedinput.min.js' %}"></script>
     <script src="{% static 'quiz/BootstrapFormHelpers-master/dist/js/bootstrap-formhelpers.min.js' %}"></script>
 
-
 </head>
 <body class="">
 <div class="container">
@@ -38,8 +37,8 @@
         </div>
         <div class="collapse navbar-collapse navbar-ex1-collapse">
             <ol class="nav navbar-nav navbar-right">
-                <li><a> Welcome, {{ user.first_name }}. </a></li>
-                <li><a href="index.html">Sair</a></li>
+                <li><a> User: {% if user.first_name %} {{ user.first_name }} {% else %} {{ user.username }} {% endif %} </a></li>
+                <li><a href="/logout">Sair</a></li>
             </ol>
         </div>
     </nav>
@@ -54,12 +53,33 @@
 <div class="col-md-2">
 
     <ul id="myMenu" class="nav nav-pills nav-stacked">
-        <li class="active"><a href="#mainMenuAddTab" data-toggle="tab">Cadastro</a>
+
+        <li class="active">
+            {% if perms.quiz.add_patient %}
+                <a href="#mainMenuAddTab" data-toggle="tab">
+            {% else %}
+                <a>
+            {% endif %}
+            Cadastro</a>
         </li>
-        <li><a href="#mainMenuSearchTab" data-toggle="tab">Busca</a>
+
+        <li>
+            {% if perms.quiz.view_patient %}
+            <a href="#mainMenuSearchTab" data-toggle="tab">
+            {% else %}
+                <a>
+            {% endif %}
+            Busca</a>
         </li>
+
         <li><a href="#mainMenuContactTab" data-toggle="tab">Contato</a>
         </li>
+
+        {% if user.is_superuser %}
+        <li><a href="/admin">Acesso Administração</a>
+        </li>
+        {% endif %}
+
     </ul>
 </div>
 
@@ -83,9 +103,7 @@
 <div class="col-md-1"></div>
 <div class="col-md-10">
 <div class="container span6 offset3 well ">
-    {{ new_patient }}
-    {{ new_personaldata }}
-    {{ test }}
+
     <form id="tab1form" role="form" method="post" action="">{% csrf_token %}
         <div class="row">
             <div class="col-md-12">
