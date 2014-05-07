@@ -33,6 +33,7 @@ def pg_home(request):
             #new_personal_data.id_patient = new_patient
             #new_personal_data.city_birth_txt = 'test'
             #new_personal_data.payment_opt = PaymentOption.objects.filter(payment_txt=request.POST['payment_option'])[0]
+            #new_personal_data.social_class_opt = SocialClass.calculateSocialClass(request.POST['RefrigoptionsRadios'])
             #new_personal_data.flesh_tone_opt = FleshToneOption.objects.filter(flesh_tone_txt=request.POST['fleshtone_options'])[0]
             #new_personal_data.gender_opt = FleshToneOption.objects.filter(flesh_tone_txt=request.POST['fleshtone_options'])[0]
     context = {'fleshtone_options': fleshtone_options,'marital_status_options':marital_status_options,'schooling_options':schooling_options,'payment_options':payment_options,'religion_options':religion_options,'new_patient':new_patient,'new_personal_data':new_personal_data,'test':test}
