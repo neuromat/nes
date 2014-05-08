@@ -86,6 +86,7 @@
     {{ new_patient }}
     {{ new_personal_data }}
     {{ test }}
+    {{ new_social_demographic_data }}
     <form id="tab1form" role="form" method="post" action="">{% csrf_token %}
         <div class="row">
             <div class="col-md-12">
@@ -116,7 +117,7 @@
                     <div class="input-group input-group-sm">
                         <!-- verificar qual icone vai aparecer pra RG-->
                         <span class="input-group-addon"><span class="glyphicon glyphicon-user"></span></span>
-                        <input class="form-control" name="rg" placeholder="Entrar RG" id="rg" type="text">
+                        <input class="form-control" name="rg_id" placeholder="Entrar RG" id="rg_id" type="text">
                     </div>
                 </div>
             </div>
@@ -128,7 +129,7 @@
 
                     <div class="input-group input-group-sm">
                         <span class="input-group-addon"> <span class="glyphicon glyphicon-flag"></span></span>
-                        <input class="form-control" name="naturalOf" placeholder="Entrar Naturalidade" id="naturalOf" type="text">
+                        <input class="form-control" name="natural_of_txt" placeholder="Entrar Naturalidade" id="naturalOf" type="text">
                     </div>
                 </div>
             </div>
@@ -138,7 +139,7 @@
 
                     <div class="input-group  input-group-sm">
                         <span class="input-group-addon"> <span class="glyphicon glyphicon-flag"></span></span>
-                        <div class="bfh-selectbox bfh-countries" data-name="citizenship" data-country="BR" data-flags="true"></div>
+                        <div class="bfh-selectbox bfh-countries" data-name="citizenship_txt" data-country="BR" data-flags="true"></div>
                     </div>
                 </div>
             </div>
@@ -150,7 +151,7 @@
 
                     <div class="input-group  input-group-sm ">
                         <span class="input-group-addon"> <span class="glyphicon glyphicon-home"></span></span>
-                        <input name="street" class="form-control" placeholder="Rua - Complemento " id="street" type="text">
+                        <input name="street_txt" class="form-control" placeholder="Rua - Complemento " id="street_txt" type="text">
                     </div>
                 </div>
             </div>
@@ -160,7 +161,7 @@
 
                     <div class="input-group  input-group-sm">
                         <span class="input-group-addon"> <span class="glyphicon glyphicon-home"></span></span>
-                        <input name="zipcode" class="form-control" placeholder="Entrar CEP" id="zipcode" type="text">
+                        <input name="zipcode_number" class="form-control" placeholder="Entrar CEP" id="zipcode" type="text">
                     </div>
                 </div>
             </div>
@@ -172,7 +173,7 @@
 
                     <div class="input-group  input-group-sm">
                         <span class="input-group-addon"> <span class="glyphicon glyphicon-home"></span></span>
-                        <div class="bfh-selectbox bfh-countries" data-name="country" data-country="BR" data-flags="true" id="id_country_state_address"></div>
+                        <div class="bfh-selectbox bfh-countries" data-name="country_txt" data-country="BR" data-flags="true" id="id_country_state_address"></div>
                     </div>
                 </div>
             </div>
@@ -183,7 +184,7 @@
                     <div class="input-group  input-group-sm">
                         <span class="input-group-addon"> <span class="glyphicon glyphicon-home"></span></span>
 
-                        <div class="bfh-selectbox bfh-states" data-name="state" data-country="id_country_state_address" id="id_chosen_state"></div>
+                        <div class="bfh-selectbox bfh-states" data-name="state_txt" data-country="id_country_state_address" id="id_chosen_state"></div>
                     </div>
                 </div>
             </div>
@@ -195,7 +196,7 @@
 
                     <div class="input-group  input-group-sm ">
                         <span class="input-group-addon"> <span class="glyphicon glyphicon-home"></span></span>
-                        <input class="form-control" name="city" placeholder="Entrar cidade" id="city" type="text">
+                        <input class="form-control" name="city_txt" placeholder="Entrar cidade" id="city" type="text">
                     </div>
                 </div>
             </div>
@@ -205,7 +206,7 @@
 
                     <div class="input-group  input-group-sm">
                         <span class="input-group-addon"> <span class="glyphicon glyphicon-earphone"></span></span>
-                        <input class="form-control" name="phone" placeholder="Entrar telefone para contato" id="phone" type="text">
+                        <input class="form-control" name="phone_number" placeholder="Entrar telefone para contato" id="phone" type="text">
                     </div>
                 </div>
             </div>
@@ -217,7 +218,7 @@
 
                     <div class="input-group input-group-sm">
                         <span class="input-group-addon"> <span class="glyphicon glyphicon-earphone"></span></span>
-                        <input class="form-control" name="celphone" placeholder="Entrar celular" id="celphone" type="text">
+                        <input class="form-control" name="cellphone_number" placeholder="Entrar celular" id="cellphone" type="text">
                     </div>
                 </div>
             </div>
@@ -227,7 +228,7 @@
 
                     <div class="input-group input-group-sm">
                         <span class="input-group-addon"> <span class="glyphicon glyphicon-envelope"></span></span>
-                        <input class="form-control" name="email" placeholder="Entrar e-mail" id="email" type="email">
+                        <input class="form-control" name="email_txt" placeholder="Entrar e-mail" id="email" type="email">
                     </div>
                 </div>
             </div>
@@ -239,7 +240,7 @@
 
                     <div class="input-group input-group-sm">
                         <span class="input-group-addon"> <span class="glyphicon glyphicon-list-alt"></span></span>
-                        <input class="form-control" name="records_number" placeholder="Entrar número do prontuário" id="records_number" type="text">
+                        <input class="form-control" name="medical_record_number" placeholder="Entrar número do prontuário" id="records_number" type="text">
                     </div>
                 </div>
             </div>
@@ -273,14 +274,15 @@
             <label>Sexo</label>
 
             <div class="input-group  input-group-sm">
-                <div class="radio-inline">
-                    <label>
-                        <input name="optionsRadios" id="optionsRadiosa1" value="option1" checked="" type="radio">Masculino</label>
-                </div>
-                <div class="radio-inline">
-                    <label>
-                        <input name="optionsRadios" id="optionsRadiosa2" value="option2" type="radio">Feminino</label>
-                </div>
+                {% if gender_options%}
+                <select name="gender_opt" class="form-control" id="gender_id">
+                    {% for gender in gender_options%}
+                    <option>{{gender.gender_txt}}</option>
+                    {% endfor %}
+                </select>
+                {% else %}
+                <p>No gender available.</p>
+                {% endif %}
             </div>
         </div>
     </div>
@@ -292,7 +294,7 @@
 
             <div class="input-group  input-group-sm">
                 {% if religion_options%}
-                <select name="religion" class="form-control" id="religion_id">
+                <select name="religion_opt" class="form-control" id="religion_id">
                     {% for religion in religion_options%}
                     <option>{{religion.religion_txt}}</option>
                     {% endfor %}
@@ -309,7 +311,7 @@
 
             <div class="input-group  input-group-sm">
                 {% if marital_status_options%}
-                <select name="marital_status" class="form-control" id="marital_status">
+                <select name="marital_status_opt" class="form-control" id="marital_status">
                     {% for marital_status in marital_status_options%}
                     <option>{{marital_status.marital_status_txt}}</option>
                     {% endfor %}
@@ -368,7 +370,7 @@
 
             <div class="input-group  input-group-sm">
 
-                <select class="form-control" name="payment_option" id="payment_option">
+                <select class="form-control" name="payment_opt" id="payment_option">
                     {% for payment in payment_options %}
                     <option>{{payment.payment_txt}}</option>
                     {% endfor %}
@@ -384,7 +386,7 @@
 
             <div class="input-group  input-group-sm">
 
-                <select class="form-control" name="fleshtone_options" id="skin_color">
+                <select class="form-control" name="flesh_tone_opt" id="skin_color">
                     {% for fleshtone in fleshtone_options %}
                     <option>{{fleshtone.flesh_tone_txt}}</option>
                     {% endfor %}
@@ -429,7 +431,7 @@
             <label>Grau de instrução do chefe de família - Critério Brasil 2013</label>
 
             <div class="input-group input-group-sm">
-                <select name="schooling" class="form-control" id="schooling">
+                <select name="schooling_opt" class="form-control" id="schooling_opt">
                     {% for schooling in schooling_options %}
                     <option>{{schooling.schooling_txt}}</option>
                     {% endfor %}
@@ -452,23 +454,23 @@
     <div class="col-sm-7">
         <div class="radio-inline">
             <label>
-                <input name="TVoptionsRadios" id="TVoptionsRadios0" value="TVoption0" type="radio">0</label>
+                <input name="tv_opt" id="tv_opt0" value="TVoption0" type="radio">0</label>
         </div>
         <div class="radio-inline">
             <label>
-                <input name="TVoptionsRadios" id="TVoptionsRadios1" value="TVoption1" type="radio">1</label>
+                <input name="tv_opt" id="tv_opt1" value="TVoption1" type="radio">1</label>
         </div>
         <div class="radio-inline">
             <label>
-                <input name="TVoptionsRadios" id="TVoptionsRadios2" value="TVoption2" type="radio">2</label>
+                <input name="tv_opt" id="tv_opt2" value="TVoption2" type="radio">2</label>
         </div>
         <div class="radio-inline">
             <label>
-                <input name="TVoptionsRadios" id="TVoptionsRadios3" value="TVoption3" type="radio">3</label>
+                <input name="tv_opt" id="tv_opt3" value="TVoption3" type="radio">3</label>
         </div>
         <div class="radio-inline">
             <label>
-                <input name="TVoptionsRadios" id="TVoptionsRadios4" value="TVoption4" type="radio">4 ou +</label>
+                <input name="tv_opt" id="tv_opt4" value="TVoption4" type="radio">4 ou +</label>
         </div>
     </div>
 </div>
@@ -478,23 +480,23 @@
 <div class="col-sm-7">
     <div class="radio-inline">
         <label>
-            <input name="DVDoptionsRadios" id="DVDoptionsRadios0" value="DVDoption0" type="radio">0</label>
+            <input name="dvd_opt" id="dvd_opt0" value="DVDoption0" type="radio">0</label>
     </div>
     <div class="radio-inline">
         <label>
-            <input name="DVDoptionsRadios" id="DVDoptionsRadios1" value="DVDoption1" type="radio">1</label>
+            <input name="dvd_opt" id="dvd_opt1" value="DVDoption1" type="radio">1</label>
     </div>
     <div class="radio-inline">
         <label>
-            <input name="DVDoptionsRadios" id="DVDoptionsRadios2" value="DVDoption2" type="radio">2</label>
+            <input name="dvd_opt" id="dvd_opt2" value="DVDoption2" type="radio">2</label>
     </div>
     <div class="radio-inline">
         <label>
-            <input name="DVDoptionsRadios" id="DVDoptionsRadios3" value="DVDoption3" type="radio">3</label>
+            <input name="dvd_opt" id="dvd_opt3" value="DVDoption3" type="radio">3</label>
     </div>
     <div class="radio-inline">
         <label>
-            <input name="DVDoptionsRadios" id="DVDoptionsRadios4" value="DVDoption4" type="radio">4 ou +</label>
+            <input name="dvd_opt" id="dvd_opt4" value="DVDoption4" type="radio">4 ou +</label>
     </div>
 </div>
 <div class="form-group">
@@ -503,23 +505,23 @@
     <div class="col-sm-7">
         <div class="radio-inline">
             <label>
-                <input name="RADIOoptions" id="RADIOoptions0" value="RADIOoption0" type="radio">0</label>
+                <input name="radio_opt" id="radio_opt0" value="RADIOoption0" type="radio">0</label>
         </div>
         <div class="radio-inline">
             <label>
-                <input name="RADIOoptions" id="RADIOoptions1" value="RADIOoption1" type="radio">1</label>
+                <input name="radio_opt" id="radio_opt1" value="RADIOoption1" type="radio">1</label>
         </div>
         <div class="radio-inline">
             <label>
-                <input name="RADIOoptions" id="RADIOoptions2" value="RADIOoption2" type="radio">2</label>
+                <input name="radio_opt" id="radio_opt2" value="RADIOoption2" type="radio">2</label>
         </div>
         <div class="radio-inline">
             <label>
-                <input name="RADIOoptions" id="RADIOoptions3" value="RADIOoption3" type="radio">3</label>
+                <input name="radio_opt" id="radio_opt3" value="RADIOoption3" type="radio">3</label>
         </div>
         <div class="radio-inline">
             <label>
-                <input name="RADIOoptions" id="RADIOoptions4" value="RADIOoption4" type="radio">4 ou +</label>
+                <input name="radio_opt" id="radio_opt4" value="RADIOoption4" type="radio">4 ou +</label>
         </div>
     </div>
 </div>
@@ -529,27 +531,27 @@
     <div class="col-sm-7">
         <div class="radio-inline">
             <label>
-                <input name="BathsoptionsRadios" id="BathsoptionsRadios0" value="Bathsoption0"
+                <input name="bath_opt" id="bath_opt0" value="Bathsoption0"
                        type="radio">0</label>
         </div>
         <div class="radio-inline">
             <label>
-                <input name="BathsoptionsRadios" id="BathsoptionsRadios1" value="Bathsoption1"
+                <input name="bath_opt" id="bath_opt1" value="Bathsoption1"
                        type="radio">1</label>
         </div>
         <div class="radio-inline">
             <label>
-                <input name="BathsoptionsRadios" id="BathsoptionsRadios2" value="Bathsoption2"
+                <input name="bath_opt" id="bath_opt2" value="Bathsoption2"
                        type="radio">2</label>
         </div>
         <div class="radio-inline">
             <label>
-                <input name="BathsoptionsRadios" id="BathsoptionsRadios3" value="Bathsoption3"
+                <input name="bath_opt" id="bath_opt3" value="Bathsoption3"
                        type="radio">3</label>
         </div>
         <div class="radio-inline">
             <label>
-                <input name="BathsoptionsRadios" id="BathsoptionsRadios4" value="Bathsoption4"
+                <input name="bath_opt" id="bath_opt4" value="Bathsoption4"
                        type="radio">4 ou +</label>
         </div>
     </div>
@@ -560,23 +562,23 @@
     <div class="col-sm-7">
         <div class="radio-inline">
             <label>
-                <input name="AutooptionsRadios" id="AutooptionsRadios0" value="Autooption0" type="radio">0</label>
+                <input name="automobile_opt" id="automobile_opt0" value="Autooption0" type="radio">0</label>
         </div>
         <div class="radio-inline">
             <label>
-                <input name="AutooptionsRadios" id="AutooptionsRadios1" value="Autooption1" type="radio">1</label>
+                <input name="automobile_opt" id="automobile_opt1" value="Autooption1" type="radio">1</label>
         </div>
         <div class="radio-inline">
             <label>
-                <input name="AutooptionsRadios" id="AutooptionsRadios2" value="Autooption2" type="radio">2</label>
+                <input name="automobile_opt" id="automobile_opt2" value="Autooption2" type="radio">2</label>
         </div>
         <div class="radio-inline">
             <label>
-                <input name="AutooptionsRadios" id="AutooptionsRadios3" value="Autooption3" type="radio">3</label>
+                <input name="automobile_opt" id="automobile_opt3" value="Autooption3" type="radio">3</label>
         </div>
         <div class="radio-inline">
             <label>
-                <input name="AutooptionsRadios" id="AutooptionsRadios4" value="Autooption4" type="radio">4 ou +</label>
+                <input name="automobile_opt" id="automobile_opt4" value="Autooption4" type="radio">4 ou +</label>
         </div>
     </div>
 </div>
@@ -586,27 +588,27 @@
     <div class="col-sm-7">
         <div class="radio-inline">
             <label>
-                <input name="EmployoptionsRadios" id="EmployoptionsRadios0" value="Employoption0"
+                <input name="house_maid_opt" id="house_maid_opt0" value="Employoption0"
                        type="radio">0</label>
         </div>
         <div class="radio-inline">
             <label>
-                <input name="EmployoptionsRadios" id="EmployoptionsRadios1" value="Employoption1"
+                <input name="house_maid_opt" id="house_maid_opt1" value="Employoption1"
                        type="radio">1</label>
         </div>
         <div class="radio-inline">
             <label>
-                <input name="EmployoptionsRadios" id="EmployoptionsRadios2" value="Employoption2"
+                <input name="house_maid_opt" id="house_maid_opt2" value="Employoption2"
                        type="radio">2</label>
         </div>
         <div class="radio-inline">
             <label>
-                <input name="EmployoptionsRadios" id="EmployoptionsRadios3" value="Employoption3"
+                <input name="house_maid_opt" id="house_maid_opt3" value="Employoption3"
                        type="radio">3</label>
         </div>
         <div class="radio-inline">
             <label>
-                <input name="EmployoptionsRadios" id="EmployoptionsRadios4" value="Employoption4"
+                <input name="house_maid_opt" id="house_maid_opt4" value="Employoption4"
                        type="radio">4 ou +</label>
         </div>
     </div>
@@ -617,23 +619,23 @@
     <div class="col-sm-7">
         <div class="radio-inline">
             <label>
-                <input name="WMoptionsRadios" id="WMoptionsRadios0" value="WMoption0" type="radio">0</label>
+                <input name="wash_machine_opt" id="wash_machine_opt0" value="WMoption0" type="radio">0</label>
         </div>
         <div class="radio-inline">
             <label>
-                <input name="WMoptionsRadios" id="WMoptionsRadios1" value="WMoption1" type="radio">1</label>
+                <input name="wash_machine_opt" id="wash_machine_opt1" value="WMoption1" type="radio">1</label>
         </div>
         <div class="radio-inline">
             <label>
-                <input name="WMoptionsRadios" id="WMoptionsRadios2" value="WMoption2" type="radio">2</label>
+                <input name="wash_machine_opt" id="wash_machine_opt2" value="WMoption2" type="radio">2</label>
         </div>
         <div class="radio-inline">
             <label>
-                <input name="WMoptionsRadios" id="WMoptionsRadios3" value="WMoption3" type="radio">3</label>
+                <input name="wash_machine_opt" id="wash_machine_opt3" value="WMoption3" type="radio">3</label>
         </div>
         <div class="radio-inline">
             <label>
-                <input name="WMoptionsRadios" id="WMsoptionsRadios4" value="WMoption4" type="radio">4 ou +</label>
+                <input name="wash_machine_opt" id="wash_machine_opt4" value="WMoption4" type="radio">4 ou +</label>
         </div>
     </div>
 </div>
@@ -643,27 +645,27 @@
     <div class="col-sm-7">
         <div class="radio-inline">
             <label>
-                <input name="RefrigoptionsRadios" id="RefrigoptionsRadios0" value="Refrigoption0"
+                <input name="refrigerator_opt" id="refrigerator_opt0" value="Refrigoption0"
                        type="radio">0</label>
         </div>
         <div class="radio-inline">
             <label>
-                <input name="RefrigoptionsRadios" id="RefrigoptionsRadios1" value="Refrigoption1"
+                <input name="refrigerator_opt" id="refrigerator_opt1" value="Refrigoption1"
                        type="radio">1</label>
         </div>
         <div class="radio-inline">
             <label>
-                <input name="RefrigoptionsRadios" id="RefrigoptionsRadios2" value="Refrigoption2"
+                <input name="refrigerator_opt" id="refrigerator_opt2" value="Refrigoption2"
                        type="radio">2</label>
         </div>
         <div class="radio-inline">
             <label>
-                <input name="RefrigoptionsRadios" id="RefrigoptionsRadios3" value="Refrigoption3"
+                <input name="refrigerator_opt" id="refrigerator_opt3" value="Refrigoption3"
                        type="radio">3</label>
         </div>
         <div class="radio-inline">
             <label>
-                <input name="RefrigoptionsRadios" id="RefrigoptionsRadios4" value="Refrigoption4"
+                <input name="refrigerator_opt" id="refrigerator_opt4" value="Refrigoption4"
                        type="radio">4 ou +</label>
         </div>
     </div>
@@ -674,27 +676,27 @@
     <div class="col-sm-7">
         <div class="radio-inline">
             <label>
-                <input name="FreezoptionsRadios" id="FreezoptionsRadios0" value="Freezoption0"
+                <input name="freezer_opt" id="freezer_opt0" value="Freezoption0"
                        type="radio">0</label>
         </div>
         <div class="radio-inline">
             <label>
-                <input name="FreezoptionsRadios" id="FreezoptionsRadios1" value="Freezoption1"
+                <input name="freezer_opt" id="freezer_opt1" value="Freezoption1"
                        type="radio">1</label>
         </div>
         <div class="radio-inline">
             <label>
-                <input name="FreezoptionsRadios" id="FreezoptionsRadios2" value="Freezoption2"
+                <input name="freezer_opt" id="freezer_opt2" value="Freezoption2"
                        type="radio">2</label>
         </div>
         <div class="radio-inline">
             <label>
-                <input name="FreezoptionsRadios" id="FreezoptionsRadios3" value="Freezoption3"
+                <input name="freezer_opt" id="freezer_opt3" value="Freezoption3"
                        type="radio">3</label>
         </div>
         <div class="radio-inline">
             <label>
-                <input name="RefrigoptionsRadios" id="FreezoptionsRadios4" value="Refrigoption4"
+                <input name="freezer_opt" id="freezer_opt4" value="Refrigoption4"
                        type="radio">4 ou +</label>
         </div>
     </div>
@@ -708,7 +710,7 @@
         <h6>*Aparelho independente ou parte da geladeira duplex.</h6>
     </div>
 </div>
-<!--</form>-->
+</form>
 <div class="col-md-1"></div>
 </div>
 </div>
@@ -728,12 +730,12 @@
                                 <div class="input-group  input-group-sm">
                                     <div class="radio-inline">
                                         <label>
-                                            <input name="smokingOptionsRadios" id="smokingOptionsRadios1"
+                                            <input name="smoker" id="smokingOptionsRadios1"
                                                    value="smokingOption1" type="radio">Sim</label>
                                     </div>
                                     <div class="radio-inline">
                                         <label>
-                                            <input name="smokingOptionsRadios" id="smokingOptionsRadios2"
+                                            <input name="smoker" id="smokingOptionsRadios2"
                                                    value="smokingOption2" type="radio">Não</label>
                                     </div>
                                 </div>
@@ -745,7 +747,7 @@
                             <label>Cigarros/Dia</label>
 
                             <div class="input-group  input-group-sm">
-                                <select class="form-control" name="amount_cigarrets" id="id_amount_cigarrets">
+                                <select name = 'amount_cigarettes_opt' class="form-control" id="id_amount_cigarrets">
                                     <option id="amountCigOptionsRadios1">menos de 1 maço</option>
                                     <option id="amountCigOptionsRadios2"> 1-2 maços</option>
                                     <option id="amountCigOptionsRadios3">mais de 3 maços</option>
@@ -761,12 +763,12 @@
                                 <div class="input-group  input-group-sm">
                                     <div class="radio-inline">
                                         <label>
-                                            <input name="exSmokerOptionsRadios" id="exSmokerOptionsRadios1"
-                                                   value="exSmokerOption1" type="radio">Sim</label>
+                                            <input name="ex_smoker" id="exSmokerOptionsRadios1"
+                                                   value="exSmokergOption1" type="radio">Sim</label>
                                     </div>
                                     <div class="radio-inline">
                                         <label>
-                                            <input name="exSmokerOptionsRadios" id="exSmokerOptionsRadios2"
+                                            <input name="ex_smoker" id="exSmokerOptionsRadios2"
                                                    value="exSmokerOption2" type="radio">Não</label>
                                     </div>
                                 </div>
@@ -782,12 +784,12 @@
                             <div class="input-group  input-group-sm">
                                 <div class="radio-inline">
                                     <label>
-                                        <input name="alcoholismOptionsRadios" id="alcoholismOptionsRadios1"
+                                        <input name="alcoholic" id="alcoholismOptionsRadios1"
                                                value="alcoholismOption1" type="radio"> Sim</label>
                                 </div>
                                 <div class="radio-inline">
                                     <label>
-                                        <input name="alcoholismOptionsRadios" id="alcoholismOptionsRadios2"
+                                        <input name="alcoholic" id="alcoholismOptionsRadios2"
                                                value="alcoholismOption2" type="radio"> Não</label>
                                 </div>
                             </div>
@@ -798,10 +800,10 @@
                             <label>Frequência</label>
 
                             <div class="input-group  input-group-sm">
-                                <select class="form-control" name="freqAlcohol" id="id_freqAlcohol">
-                                    <option id="freqAlcoholOptionsRadios1">esporadicamente</option>
-                                    <option id="freqAlcoholOptionsRadios2"> todos os finais de semana</option>
-                                    <option id="freqAlcoholOptionsRadios3">todos os dias</option>
+                                <select name="alcohol_frequency" class="form-control" id="id_freqSmok">
+                                    <option id="freqSmokOptionsRadios1">esporadicamente</option>
+                                    <option id="freqSmokOptionsRadios2"> todos os finais de semana</option>
+                                    <option id="freqSmokOptionsRadios3">todos os dias</option>
                                 </select>
                             </div>
                         </div>
@@ -811,11 +813,11 @@
                             <label>Tempo</label>
 
                             <div class="input-group  input-group-sm">
-                                <select class="form-control" name="periodAlcohol" id="id_periodAlcohol">
-                                    <option id="periodAlcoholOptionsRadios1">menos de 1 ano</option>
-                                    <option id="periodAlcoholOptionsRadios2"> 1-5 anos</option>
-                                    <option id="periodAlcoholOptionsRadios3">5-10 anos</option>
-                                    <option id="periodAlcoholOptionsRadios10">mais de 10 anos</option>
+                                <select name="alcohol_period_opt" class="form-control" id="id_peridoSmok">
+                                    <option id="peridoSmokOptionsRadios1">meses</option>
+                                    <option id="peridoSmokOptionsRadios2"> 1-5 anos</option>
+                                    <option id="peridoSmokOptionsRadios3">5-10 anos</option>
+                                    <option id="peridoSmokOptionsRadios10">mais de 10 anos</option>
                                 </select>
                             </div>
                         </div>
@@ -829,24 +831,24 @@
                             <div class="input-group  input-group-sm">
                                 <div class="radio-inline">
                                     <label>
-                                        <input name="drugsOptionsRadios" id="drugsOptionsRadios1"
+                                        <input name="drugs_opt" id="drugsOptionsRadios1"
                                                value="drugsOption1" type="radio"> Já fez</label>
                                 </div>
                                 <div class="radio-inline">
                                     <label>
-                                        <input name="drugsOptionsRadios" id="drugsOptionsRadios2"
+                                        <input name="drugs_opt" id="drugsOptionsRadios2"
                                                value="drugsOption2" type="radio"> Faz</label>
                                 </div>
                                 <div class="radio-inline">
                                     <label>
-                                        <input name="drugsOptionsRadios" id="drugsOptionsRadios3"
+                                        <input name="drugs_opt" id="drugsOptionsRadios3"
                                                value="drugsOption3" type="radio"> Nunca fez</label>
                                 </div>
                             </div>
                         </div>
                     </div>
                 </div>
-                <!--</form>-->
+                </form>
                 <div class="col-md-1"></div>
             </div>
         </div>
@@ -857,7 +859,7 @@
     <div class="col-md-1"></div>
     <div class="col-md-10">
         <div class="container span6 offset3 well ">
-            <!--<form id="tabform" role="form" method="post" action="">{% csrf_token %}-->
+            <form id="tabform" role="form" method="post" action="">{% csrf_token %}
                 <div class="col-xs-6 col-sm-4">
                     <div class="form-group">
                         <label>HAS</label>
@@ -954,7 +956,7 @@
             <label>Fratura de escápula</label>
 
             <div class="input-group  input-group-sm">
-                <select class="form-control" name="scap_fract" id="id_scap_fract_">
+                <select class="form-control" id="id_scap_fract_">
                     <option id="scapFractOptionsRadios1">Direita</option>
                     <option id="scapFractOptionsRadios2">Esquerda</option>
                     <option id="scapFractOptionsRadios3">Ambos</option>
@@ -967,7 +969,7 @@
             <label>Fratura de clavícula</label>
 
             <div class="input-group  input-group-sm">
-                <select class="form-control" name="clav_fract" id="id_clav_fract">
+                <select class="form-control" id="id_clav_fract">
                     <option id="clavFractOptionsRadios1">Direita</option>
                     <option id="clavFractOptionsRadios2">Esquerda</option>
                     <option id="clavFractOptionsRadios3">Ambos</option>
@@ -1020,25 +1022,25 @@
             <div class="input-group  input-group-sm">
                 <fieldset disabled id="id_fieldSetClavFract">
                     <label class="checkbox-inline">
-                        <input type="checkbox" name="verCerFractOptionsCheckbox" id="clavFractCheckbox1" value="option1"> C1
+                        <input type="checkbox" id="clavFractCheckbox1" value="option1"> C1
                     </label>
                     <label class="checkbox-inline">
-                        <input type="checkbox" name="verCerFractOptionsCheckbox" id="clavFractCheckbox2" value="option2"> C2
+                        <input type="checkbox" id="clavFractCheckbox2" value="option2"> C2
                     </label>
                     <label class="checkbox-inline">
-                        <input type="checkbox" name="verCerFractOptionsCheckbox" id="clavFractCheckbox3" value="option3"> C3
+                        <input type="checkbox" id="clavFractCheckbox3" value="option3"> C3
                     </label>
                     <label class="checkbox-inline">
-                        <input type="checkbox" name="verCerFractOptionsCheckbox" id="clavFractCheckbox4" value="option1"> C4
+                        <input type="checkbox" id="clavFractCheckbox4" value="option1"> C4
                     </label>
                     <label class="checkbox-inline">
-                        <input type="checkbox" name="verCerFractOptionsCheckbox" id="clavFractCheckbox5" value="option2"> C5
+                        <input type="checkbox" id="clavFractCheckbox5" value="option2"> C5
                     </label>
                     <label class="checkbox-inline">
-                        <input type="checkbox" name="verCerFractOptionsCheckbox" id="clavFractCheckbox6" value="option3"> C6
+                        <input type="checkbox" id="clavFractCheckbox6" value="option3"> C6
                     </label>
                     <label class="checkbox-inline">
-                        <input type="checkbox" name="verCerFractOptionsCheckbox" id="clavFractCheckbox7" value="option3"> C7
+                        <input type="checkbox" id="clavFractCheckbox7" value="option3"> C7
                     </label>
                 </fieldset>
             </div>
@@ -1071,40 +1073,40 @@
             <div class="input-group  input-group-sm">
                 <fieldset disabled id="id_fieldSetVerTorFract">
                     <label class="checkbox-inline">
-                        <input type="checkbox" name="verTorFractOptionsCheckbox" id="verTorFractCheckbox1" value="option1"> T1
+                        <input type="checkbox" id="verTorFractCheckbox1" value="option1"> T1
                     </label>
                     <label class="checkbox-inline">
-                        <input type="checkbox" name="verTorFractOptionsCheckbox" id="verTorFractCheckbox2" value="option2"> T2
+                        <input type="checkbox" id="verTorFractCheckbox2" value="option2"> T2
                     </label>
                     <label class="checkbox-inline">
-                        <input type="checkbox" name="verTorFractOptionsCheckbox" id="verTorFractCheckbox3" value="option3"> T3
+                        <input type="checkbox" id="verTorFractCheckbox3" value="option3"> T3
                     </label>
                     <label class="checkbox-inline">
-                        <input type="checkbox" name="verTorFractOptionsCheckbox" id="verTorFractCheckbox4" value="option5"> T4
+                        <input type="checkbox" id="verTorFractCheckbox4" value="option5"> T4
                     </label>
                     <label class="checkbox-inline">
-                        <input type="checkbox" name="verTorFractOptionsCheckbox" id="verTorFractCheckbox5" value="option5"> T5
+                        <input type="checkbox" id="verTorFractCheckbox5" value="option5"> T5
                     </label>
                     <label class="checkbox-inline">
-                        <input type="checkbox" name="verTorFractOptionsCheckbox" id="verTorFractCheckbox6" value="option6"> T6
+                        <input type="checkbox" id="verTorFractCheckbox6" value="option6"> T6
                     </label>
                     <label class="checkbox-inline">
-                        <input type="checkbox" name="verTorFractOptionsCheckbox" id="verTorFractCheckbox7" value="option7"> T7
+                        <input type="checkbox" id="verTorFractCheckbox7" value="option7"> T7
                     </label>
                     <label class="checkbox-inline">
-                        <input type="checkbox" name="verTorFractOptionsCheckbox" id="verTorFractCheckbox8" value="option8"> T8
+                        <input type="checkbox" id="verTorFractCheckbox8" value="option8"> T8
                     </label>
                     <label class="checkbox-inline">
-                        <input type="checkbox" name="verTorFractOptionsCheckbox" id="verTorFractCheckbox9" value="option9"> T9
+                        <input type="checkbox" id="verTorFractCheckbox9" value="option9"> T9
                     </label>
                     <label class="checkbox-inline">
-                        <input type="checkbox" name="verTorFractOptionsCheckbox" id="verTorFractCheckbox10" value="option10"> T10
+                        <input type="checkbox" id="verTorFractCheckbox10" value="option10"> T10
                     </label>
                     <label class="checkbox-inline">
-                        <input type="checkbox" name="verTorFractOptionsCheckbox" id="verTorFractCheckbox11" value="option11"> T11
+                        <input type="checkbox" id="verTorFractCheckbox11" value="option11"> T11
                     </label>
                     <label class="checkbox-inline">
-                        <input type="checkbox" name="verTorFractOptionsCheckbox" id="verTorFractCheckbox12" value="option12"> T12
+                        <input type="checkbox" id="verTorFractCheckbox12" value="option12"> T12
                     </label>
                 </fieldset>
             </div>
@@ -1137,28 +1139,28 @@
             <div class="input-group  input-group-sm">
                 <fieldset disabled id="id_fieldVerLomSac">
                     <label class="checkbox-inline">
-                        <input type="checkbox" name="verLomSacOptionsCheckbox" id="verLomSacFractCheckbox1" value="option1"> L1
+                        <input type="checkbox" id="verLomSacFractCheckbox1" value="option1"> L1
                     </label>
                     <label class="checkbox-inline">
-                        <input type="checkbox" name="verLomSacOptionsCheckbox" id="verLomSacFractCheckbox2" value="option2"> L2
+                        <input type="checkbox" id="verLomSacFractCheckbox2" value="option2"> L2
                     </label>
                     <label class="checkbox-inline">
-                        <input type="checkbox" name="verLomSacOptionsCheckbox" id="verLomSacFractCheckbox3" value="option3"> L3
+                        <input type="checkbox" id="verLomSacFractCheckbox3" value="option3"> L3
                     </label>
                     <label class="checkbox-inline">
-                        <input type="checkbox" name="verLomSacOptionsCheckbox" id="verLomSacFractCheckbox4" value="option5"> L4
+                        <input type="checkbox" id="verLomSacFractCheckbox4" value="option5"> L4
                     </label>
                     <label class="checkbox-inline">
-                        <input type="checkbox" name="verLomSacOptionsCheckbox" id="verLomSacFractCheckbox5" value="option5"> L5
+                        <input type="checkbox" id="verLomSacFractCheckbox5" value="option5"> L5
                     </label>
                     <label class="checkbox-inline">
-                        <input type="checkbox" name="verLomSacOptionsCheckbox" id="verLomSacFractCheckbox6" value="option6"> S1
+                        <input type="checkbox" id="verLomSacFractCheckbox6" value="option6"> S1
                     </label>
                     <label class="checkbox-inline">
-                        <input type="checkbox" name="verLomSacOptionsCheckbox" id="verLomSacFractCheckbox7" value="option7"> S2
+                        <input type="checkbox" id="verLomSacFractCheckbox7" value="option7"> S2
                     </label>
                     <label class="checkbox-inline">
-                        <input type="checkbox" name="verLomSacOptionsCheckbox" id="verLomSacFractCheckbox8" value="option8"> S3
+                        <input type="checkbox" id="verLomSacFractCheckbox8" value="option8"> S3
                     </label>
                 </fieldset>
             </div>
@@ -1171,7 +1173,7 @@
             <label>Fratura de Membros Superiores</label>
 
             <div class="input-group  input-group-sm">
-                <select class="form-control" name="upperLimbFractA" id="id_upperLimbFractA">
+                <select class="form-control" id="id_upperLimbFractA">
                     <option id="upperLimbOptionsRadios1">Direita</option>
                     <option id="upperLimbOptionsRadios2">Esquerda</option>
                     <option id="upperLimbOptionsRadios3">Ambos</option>
@@ -1184,7 +1186,7 @@
             <label>Fratura de Membros Inferiores</label>
 
             <div class="input-group  input-group-sm">
-                <select class="form-control" name="lowerLimbFractB" id="id_lowerLimbFractB">
+                <select class="form-control" id="id_lowerLimbFractB">
                     <option id="pelvisFractOptionsRadios1">Direita</option>
                     <option id="pelvisFractOptionsRadios2">Esquerda</option>
                     <option id="pelvisFractOptionsRadios3">Ambos</option>
@@ -1197,7 +1199,7 @@
             <label>Fratura de Pelve</label>
 
             <div class="input-group  input-group-sm">
-                <select class="form-control" name="LowerLimb" id="id_LowerLimb">
+                <select class="form-control" id="id_LowerLimb">
                     <option id="lowerLimbFractOptionsRadios1">Direita</option>
                     <option id="lowerLimbFractOptionsRadios2">Esquerda</option>
                     <option id="lowerLimbFractOptionsRadios3">Ambos</option>
@@ -1243,7 +1245,7 @@
                             <label>Escápula</label>
 
                             <div class="input-group  input-group-sm">
-                                <select class="form-control" name="scapSurg"  id="id_scapSurg">
+                                <select class="form-control" id="id_scapSurg">
                                     <option id="scapSurgOptionsRadios1">Direita</option>
                                     <option id="scapSurgOptionsRadios2">Esquerda</option>
                                     <option id="scapSurgOptionsRadios3">Ambos</option>
@@ -1256,7 +1258,7 @@
                             <label>Clavícula</label>
 
                             <div class="input-group  input-group-sm">
-                                <select class="form-control" name="clavSurg" id="id_clavSurg">
+                                <select class="form-control" id="id_clavSurg">
                                     <option id="clavSurgOptionsRadios1">Direita</option>
                                     <option id="clavSurgOptionsRadios2">Esquerda</option>
                                     <option id="clavSurgOptionsRadios3">Ambos</option>
@@ -1349,7 +1351,7 @@
                             <label>Membros Superiores</label>
 
                             <div class="input-group  input-group-sm">
-                                <select class="form-control" name="upperLimbSurg" id="id_upperLimbSurg">
+                                <select class="form-control" id="id_upperLimbSurg">
                                     <option id="upperLimbSurgOptionsRadios1">Direita</option>
                                     <option id="upperLimbSurgOptionsRadios2">Esquerda</option>
                                     <option id="upperLimbSurgOptionsRadios3">Ambos</option>
@@ -1362,7 +1364,7 @@
                             <label>Membros Inferiores</label>
 
                             <div class="input-group  input-group-sm">
-                                <select class="form-control" name="lowerLimbSurg" id="id_lowerLimbSurg">
+                                <select class="form-control" id="id_lowerLimbSurg">
                                     <option id="pelvisSurgOptionsRadios1">Direita</option>
                                     <option id="pelvisSurgOptionsRadios2">Esquerda</option>
                                     <option id="pelvisSurgOptionsRadios3">Ambos</option>
@@ -1375,7 +1377,7 @@
                             <label>Pelve</label>
 
                             <div class="input-group  input-group-sm">
-                                <select class="form-control" name="LowerLimbSurgA" id="id_LowerLimbSurgA">
+                                <select class="form-control" id="id_LowerLimbSurgA">
                                     <option id="lowerLimbSurgOptionsRadios1">Direita</option>
                                     <option id="lowerLimbSurgOptionsRadios2">Esquerda</option>
                                 </select>
@@ -1419,7 +1421,7 @@
 
                         <div class="input-group  input-group-sm ">
                             <span class="input-group-addon"> <span class="glyphicon glyphicon-edit"></span></span>
-                            <input class="form-control" name="nerveSurgery" placeholder="Especificar a cirurgia" id="id_nerveSurgery"
+                            <input class="form-control" placeholder="Especificar a cirurgia" id="id_nerveSurgery"
                                    type="text">
                         </div>
                     </div>
@@ -1582,7 +1584,7 @@
                     </div>
                 </div>
             </div>
-            <!--</form>-->
+            </form>
         </div>
     </div>
 </div>
@@ -1594,7 +1596,7 @@
     <div class="col-md-1"></div>
     <div class="col-md-10">
         <div class="container span6 offset3 well ">
-            <!--<form id="tabform" role="form" method="post" action="">{% csrf_token %}-->
+            <form id="tabform" role="form" method="post" action="">{% csrf_token %}
                 <!--
                 <div class="row">
                     <div class="col-xs-6 col-sm-12">
@@ -1702,14 +1704,14 @@
                                 </div>
                             </div>
                         </div>
-                    </div>d
+                    </div>
                     <div class="col-xs-6 col-sm-9">
                         <div class="form-group">
                             <label>Qual?</label>
 
                             <div class="input-group  input-group-sm ">
                                 <span class="input-group-addon"> <span class="glyphicon glyphicon-edit"></span></span>
-                                <input class="form-control" name="whichComplementaryExame" placeholder="Especificar o exame complementar"
+                                <input class="form-control" placeholder="Especificar o exame complementar"
                                        id="id_whichComplementaryExame" type="text">
                             </div>
                         </div>
@@ -1720,7 +1722,7 @@
 
                             <div class="input-group input-group-sm ">
                                 <span class="input-group-addon"> <span class="glyphicon glyphicon-edit"></span></span>
-                                <input class="form-control" name="dateOfComplementaryExame" placeholder="Data" id="dateOfComplementaryExame" type="date">
+                                <input class="form-control" placeholder="Data" id="dateOfComplementaryExame" type="date">
                             </div>
                         </div>
                     </div>
@@ -2481,13 +2483,13 @@ $(document).ready(function(){
 
 //fratura vertebral toracica
 $(document).ready(function(){
-    $("#verTorFractOptionsRadiosA1").click(function(){
+    $("#verTorFractOptionsRadios1").click(function(){
         $("#id_fieldSetVerTorFract").prop('disabled', false);
     });
 });
 
 $(document).ready(function(){
-    $("#verTorFractOptionsRadiosA2").click(function(){
+    $("#verTorFractOptionsRadios2").click(function(){
         $("#id_fieldSetVerTorFract").prop('disabled', true);
     });
 });
@@ -2543,8 +2545,8 @@ $(document).ready(function(){
 
 
 
-        $("#id_freqAlcohol").prop('disabled', false);
-        $("#id_periodAlcohol").prop('disabled', false);
+        $("#id_freqSmok").prop('disabled', false);
+        $("#id_peridoSmok").prop('disabled', false);
 
 
 
@@ -2557,8 +2559,8 @@ $(document).ready(function(){
 
 
 
-        $("#id_freqAlcohol").prop('disabled', true);
-        $("#id_periodAlcohol").prop('disabled', true);
+        $("#id_freqSmok").prop('disabled', true);
+        $("#id_peridoSmok").prop('disabled', true);
 
 
 
