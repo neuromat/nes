@@ -1,6 +1,7 @@
 # coding=utf-8
 from django.shortcuts import render
 from django.http import Http404
+from django.contrib.auth.decorators import login_required
 
 from django.http import HttpResponse
 from django.template import RequestContext, loader
@@ -14,6 +15,7 @@ from models import Patient, PersonalData, FleshToneOption, MaritalStatusOption, 
 from forms import PatientForm, PersonalDataForm
 
 
+@login_required
 def pg_home(request):
     fleshtone_options = FleshToneOption.objects.all()
     marital_status_options = MaritalStatusOption.objects.all()
@@ -67,12 +69,7 @@ def patients(request):
 def patient(request, patient_id):
     p = Patient.objects.get(nr_record=patient_id)
     #personal = PersonalData.objects.get(id_patient=patient_id)
-    context = {'name': p.name_txt, 'cpf': p.cpf_id} #debug: incluir "'data_nasc': personal.dt_birth_txt}"
-    # Aqui passamos o context para quiz/pg_home.html.
-    # Precisamos mostrar os dados de forma que
-    # chamemos pg_home(request) para que se dê o
-    # processo de atualização do banco de dados
-    # caso o usuário submeta novamente o formulário
+    context = {'name': p.name_txt, 'cpf': p.cpf_id}
     return render(request, 'quiz/pg_home.html', context)
 
 
