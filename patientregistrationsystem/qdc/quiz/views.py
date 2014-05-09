@@ -42,16 +42,20 @@ def pg_home(request):
             if social_demographic_form.is_valid():
                 new_social_demographic_data = social_demographic_form.save(commit=False)
                 new_social_demographic_data.id_patient = new_patient
+                new_social_demographic_data.religion_opt = ReligionOption.objects.filter(religion_txt=request.POST['religion_opt'])[0]
+                new_social_demographic_data.payment_opt = PaymentOption.objects.filter(payment_txt=request.POST['payment_opt'])[0]
+                new_social_demographic_data.flesh_tone_opt = FleshToneOption.objects.filter(flesh_tone_txt=request.POST['flesh_tone_opt'])[0]
+                new_social_demographic_data.schooling_opt = SchoolingOption.objects.filter(schooling_txt=request.POST['schooling_opt'])[0]
                 new_social_demographic_data.save()
                 new_social_demographic_data = None
-                new_social_demographic_data.religion_opt = ReligionOption.objects.filter(religion_txt = request.POST['religion_opt'])[0]
-                new_personal_data.payment_opt = PaymentOption.objects.filter(payment_txt=request.POST['payment_opt'])[0]
-                new_personal_data.flesh_tone_opt = FleshToneOption.objects.filter(flesh_tone_txt=request.POST['flesh_tone_opt'])[0]
-            if social_history_form.is_valid():
+            if social_history_form.is_valid() and False:
                 new_social_history_data = social_history_form.save(commit=False)
                 new_social_history_data.id_patient = new_patient
-                #new_social_history_data.amount_cigarettes_opt =
                 new_social_history_data.save()
                 new_social_history_data = None
-    context = {'gender_options': gender_options, 'new_social_history_data': new_social_history_data, 'new_social_demographic_data':new_social_demographic_data,'flesh_tone_options': flesh_tone_options,'marital_status_options':marital_status_options,'schooling_options':schooling_options,'payment_options':payment_options,'religion_options':religion_options,'new_patient':new_patient,'new_personal_data':new_personal_data,'test':test}
+    context = {'gender_options': gender_options, 'new_social_history_data': new_social_history_data,
+               'new_social_demographic_data':new_social_demographic_data,'flesh_tone_options': flesh_tone_options,
+               'marital_status_options':marital_status_options,'schooling_options':schooling_options,
+               'payment_options':payment_options,'religion_options':religion_options,'new_patient':new_patient,
+               'new_personal_data':new_personal_data,'test':test}
     return render(request, 'quiz/pg_home.html', context)

@@ -113,7 +113,7 @@ class SocialDemographicData(models.Model):
     religion_opt = models.ForeignKey(ReligionOption)
     profession_txt = models.CharField(null=True, blank=True, max_length=50)
     occupation_txt = models.CharField(max_length=50)
-    benefit_gov_bool = models.BooleanField()
+    benefit_gov_bool = models.CharField(max_length=10)
     payment_opt = models.ForeignKey(PaymentOption)
     flesh_tone_opt = models.ForeignKey(FleshToneOption)
     schooling_opt = models.ForeignKey(SchoolingOption)
@@ -130,7 +130,7 @@ class SocialDemographicData(models.Model):
 
     def __unicode__(self):
         return \
-            self.id_patient, self.religion_opt, self.profession_txt, self.occupation_txt, self.benefit_gov_bool, \
+            self.id_patient, self.religion_opt, self.profession_txt, self.occupation_txt, bool(self.benefit_gov_bool), \
             self.payment_opt, self.flesh_tone_opt, self.schooling_opt, self.tv_opt, self.dvd_opt, self.radio_opt, \
             self.bath_opt, self.automobile_opt, self.wash_machine_opt, self.refrigerator_opt, self.freezer_opt, \
             self.house_maid_opt
@@ -138,15 +138,15 @@ class SocialDemographicData(models.Model):
 
 class SocialHistoryData(models.Model):
     id_patient = models.ForeignKey(Patient)
-    smoker = models.BooleanField()
+    smoker = models.CharField(max_length=10)
     amount_cigarettes_opt = models.CharField(max_length=25)
-    ex_smoker = models.BooleanField()
-    alcoholic = models.BooleanField()
+    ex_smoker = models.CharField(max_length=10)
+    alcoholic = models.CharField(max_length=10)
     alcohol_frequency = models.CharField(max_length=25)
     alcohol_period_opt = models.CharField(max_length=25)
     drugs_opt = models.CharField(max_length=25)
 
     def __unicode__(self):
         return \
-            self.id_patient, self.smoker, self.amount_cigarettes_opt, self.ex_smoker, self.alcoholic, \
+            self.id_patient, bool(self.smoker), self.amount_cigarettes_opt, bool(self.ex_smoker), bool(self.alcoholic), \
             self.alcohol_frequency, self.alcohol_period_opt, self.drugs_opt
