@@ -1,5 +1,5 @@
 from django.forms import ModelForm
-from models import Patient, PersonalData, SocialDemographicData, SocialHistoryData
+from models import Patient, SocialDemographicData, SocialHistoryData
 from django.db import models
 
 # Create the form class.
@@ -8,14 +8,9 @@ from django.db import models
 class PatientForm(ModelForm):
     class Meta:
         model = Patient
-        fields = ['cpf_id', 'name_txt', 'rg_id', 'medical_record_number']
-
-
-class PersonalDataForm(ModelForm):
-    class Meta:
-        model = PersonalData
-        fields = ['natural_of_txt', 'citizenship_txt', 'street_txt', 'zipcode_number', 'country_txt', 'state_txt',
-                  'city_txt', 'phone_number', 'cellphone_number', 'email_txt', 'dt_birth_txt']
+        fields = ['cpf_id', 'name_txt', 'rg_id', 'medical_record_number','natural_of_txt', 'citizenship_txt',
+                  'street_txt', 'zipcode_number', 'country_txt', 'state_txt', 'city_txt', 'phone_number',
+                  'cellphone_number', 'email_txt', 'dt_birth_txt']
 
 
 class SocialDemographicDataForm(ModelForm):

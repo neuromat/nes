@@ -7,22 +7,6 @@ from django.db import models
 # Create your models here.
 
 
-class Patient(models.Model):
-    cpf_id = models.CharField(max_length=15, unique=True)
-    rg_id = models.CharField(max_length=15)
-    name_txt = models.CharField(max_length=50)
-    nr_record = models.AutoField(primary_key=True)
-    medical_record_number = models.CharField(max_length=25)
-
-    class Meta:
-        permissions = (
-            ("view_patient", "Can view patient"),
-        )
-
-    def __unicode__(self):  # Python 3: def __str__(self):
-        return self.name_txt, self.cpf_id, self.rg_id, self.medical_record_number
-
-
 class PaymentOption(models.Model):
     payment_txt = models.CharField(max_length=50)
 
@@ -90,8 +74,12 @@ class SchoolingOption(models.Model):
 #chamada:
 #calculateSocialClass(tvs='1', dvds='2', banheiros='3', ...)
 
-class PersonalData(models.Model):
-    id_patient = models.ForeignKey(Patient)
+class Patient(models.Model):
+    cpf_id = models.CharField(max_length=15, unique=True)
+    rg_id = models.CharField(max_length=15)
+    name_txt = models.CharField(max_length=50)
+    nr_record = models.AutoField(primary_key=True)
+    medical_record_number = models.CharField(max_length=25)
     natural_of_txt = models.CharField(max_length=50)
     citizenship_txt = models.CharField(max_length=50)
     street_txt = models.CharField(max_length=50)
@@ -106,11 +94,17 @@ class PersonalData(models.Model):
     gender_opt = models.ForeignKey(GenderOption)
     marital_status_opt = models.ForeignKey(MaritalStatusOption)
 
+    class Meta:
+        permissions = (
+            ("view_patient", "Can view patient"),
+        )
+
     def __unicode__(self):  # Python 3: def __str__(self):
         return \
-            self.id_patient, self.natural_of_txt, self.citizenship_txt, self.street_txt, self.zipcode_number, \
-            self.country_txt, self.state_txt, self.city_txt, self.phone_number, self.cellphone_number, \
-            self.email_txt, self.dt_birth_txt, self.gender_opt, self.marital_status_opt
+            self.name_txt, self.cpf_id, self.rg_id, self.medical_record_number, self.natural_of_txt, \
+            self.citizenship_txt, self.street_txt, self.zipcode_number, self.country_txt, self.state_txt, \
+            self.city_txt, self.phone_number, self.cellphone_number, self.email_txt, self.dt_birth_txt, \
+            self.gender_opt, self.marital_status_opt
 
 
 class SocialDemographicData(models.Model):
@@ -153,5 +147,5 @@ class SocialHistoryData(models.Model):
 
     def __unicode__(self):
         return \
-            self.id_patient, bool(self.smoker), self.amount_cigarettes_opt, bool(self.ex_smoker), bool(self.alcoholic), \
+            self.id_patient, bool(self.smoker), self.amount_cigarettes_opt, bool(self.ex_smoker), bool(self.alcoholic),\
             self.alcohol_frequency, self.alcohol_period_opt, self.drugs_opt
