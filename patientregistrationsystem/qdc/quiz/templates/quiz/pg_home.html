@@ -32,11 +32,12 @@
             <span class="icon-bar"></span>
         </button>
         <a class="navbar-brand" href="#">Dados Sociodemográficos e Clínicos</a>
+
         <div class="navbar-header">
         </div>
         <div class="collapse navbar-collapse navbar-ex1-collapse">
             <ol class="nav navbar-nav navbar-right">
-                <li><a> User: {% if user.first_name %} {{ user.first_name }} {% else %} {{ user.username }} {% endif %} </a></li>
+                <li><a> User: {% if user.first_name %} {{ user.first_name }} {% else %} {{ user.username }} {% endif %}</a></li>
                 <li><a href="/logout">Sair</a></li>
             </ol>
         </div>
@@ -51,29 +52,35 @@
 <div class="row">
 <form id="tab1form" role="form" method="post" action="/quiz/">{% csrf_token %}
 <div class="col-md-2">
+
     <ul id="myMenu" class="nav nav-pills nav-stacked">
+
         <li class="active">
             {% if perms.quiz.add_patient %}
-                <a href="#mainMenuAddTab" data-toggle="tab">
-            {% else %}
+            <a href="#mainMenuAddTab" data-toggle="tab">
+                {% else %}
                 <a>
-            {% endif %}
-            Cadastro</a>
+                    {% endif %}
+                    Cadastro</a>
         </li>
+
         <li>
             {% if perms.quiz.view_patient %}
             <a href="#mainMenuSearchTab" data-toggle="tab">
-            {% else %}
+                {% else %}
                 <a>
-            {% endif %}
-            Busca</a>
+                    {% endif %}
+                    Busca</a>
         </li>
+
         <li><a href="#mainMenuContactTab" data-toggle="tab">Contato</a>
         </li>
+
         {% if user.is_superuser %}
         <li><a href="/admin">Acesso Administração</a>
         </li>
         {% endif %}
+
     </ul>
 </div>
 
@@ -96,7 +103,6 @@
 <div class="col-md-1"></div>
 <div class="col-md-10">
 <div class="container span6 offset3 well ">
-    {{ new_patient }} {{ new_personaldata }} {{ test }}
     <div class="row">
         <div class="col-md-12">
             <div class="form-group">
@@ -117,36 +123,38 @@
                     <input class="form-control" name="cpf_id" placeholder="Entrar CPF" id="id" type="text" value="{{ cpf }}">
                 </div>
             </div>
-            <div class="col-xs-6 col-sm-6">
-                <div class="form-group">
-                    <label>RG</label>
+        </div>
+        <div class="col-xs-6 col-sm-6">
+            <div class="form-group">
+                <label>RG</label>
 
-                    <div class="input-group input-group-sm">
-                        <!-- verificar qual icone vai aparecer pra RG-->
-                        <span class="input-group-addon"><span class="glyphicon glyphicon-user"></span></span>
-                        <input class="form-control" name="rg" placeholder="Entrar RG" id="rg" type="text">
-                    </div>
+                <div class="input-group input-group-sm">
+                    <!-- verificar qual icone vai aparecer pra RG-->
+                    <span class="input-group-addon"><span class="glyphicon glyphicon-user"></span></span>
+                    <input class="form-control" name="rg" placeholder="Entrar RG" id="rg" type="text">
                 </div>
             </div>
         </div>
-        <div class="row">
-            <div class="col-xs-6 col-sm-6">
-                <div class="form-group">
-                    <label>Naturalidade</label>
+    </div>
+    <div class="row">
+        <div class="col-xs-6 col-sm-6">
+            <div class="form-group">
+                <label>Naturalidade</label>
 
-                    <div class="input-group input-group-sm">
-                        <span class="input-group-addon"> <span class="glyphicon glyphicon-flag"></span></span>
-                        <input class="form-control" name="naturalOf" placeholder="Entrar Naturalidade" id="naturalOf" type="text">
-                    </div>
+                <div class="input-group input-group-sm">
+                    <span class="input-group-addon"> <span class="glyphicon glyphicon-flag"></span></span>
+                    <input class="form-control" name="naturalOf" placeholder="Entrar Naturalidade" id="naturalOf" type="text">
                 </div>
             </div>
-            <div class="col-xs-6 col-sm-6">
-                <div class="form-group">
-                    <label>Nacionalidade</label>
-                    <div class="input-group  input-group-sm">
-                        <span class="input-group-addon"> <span class="glyphicon glyphicon-flag"></span></span>
-                        <div class="bfh-selectbox bfh-countries" data-name="citizenship" data-country="BR" data-flags="true"></div>
-                    </div>
+        </div>
+        <div class="col-xs-6 col-sm-6">
+            <div class="form-group">
+                <label>Nacionalidade</label>
+
+                <div class="input-group input-group-sm">
+                    <span class="input-group-addon"> <span class="glyphicon glyphicon-flag"></span></span>
+
+                    <div class="bfh-selectbox bfh-countries" data-name="citizenship" data-country="BR" id="id_chosen_country" data-flags="true"></div>
                 </div>
             </div>
         </div>
@@ -155,10 +163,10 @@
         <div class="col-xs-6 col-sm-6">
             <div class="form-group">
                 <label>Endereço</label>
-                    <div class="input-group  input-group-sm ">
-                        <span class="input-group-addon"> <span class="glyphicon glyphicon-home"></span></span>
-                        <input name="street" class="form-control" placeholder="Rua - Complemento " id="street" type="text">
-                    </div>
+
+                <div class="input-group  input-group-sm ">
+                    <span class="input-group-addon"> <span class="glyphicon glyphicon-home"></span></span>
+                    <input name="street" class="form-control" placeholder="Rua - Complemento " id="street" type="text">
                 </div>
             </div>
         </div>
@@ -166,10 +174,9 @@
             <div class="form-group">
                 <label> CEP</label>
 
-                    <div class="input-group  input-group-sm">
-                        <span class="input-group-addon"> <span class="glyphicon glyphicon-home"></span></span>
-                        <input class="form-control" placeholder="Entrar CEP" id="zipcode" type="text">
-                    </div>
+                <div class="input-group  input-group-sm">
+                    <span class="input-group-addon"> <span class="glyphicon glyphicon-home"></span></span>
+                    <input name="zipcode" class="form-control" placeholder="Entrar CEP" id="zipcode" type="text">
                 </div>
             </div>
         </div>
@@ -178,20 +185,24 @@
         <div class="col-xs-6 col-sm-6">
             <div class="form-group">
                 <label>País</label>
-                    <div class="input-group  input-group-sm">
-                        <span class="input-group-addon"> <span class="glyphicon glyphicon-home"></span></span>
-                        <div class="bfh-selectbox bfh-countries" data-name="country" data-country="BR" data-flags="true" id="id_country_state_address"></div>
-                    </div>
+
+                <div class="input-group  input-group-sm">
+                    <span class="input-group-addon"> <span class="glyphicon glyphicon-home"></span></span>
+
+                    <div class="bfh-selectbox bfh-countries" data-name="country" data-country="BR" data-flags="true"
+                         id="id_country_state_address"></div>
                 </div>
             </div>
         </div>
         <div class="col-xs-6 col-sm-6">
             <div class="form-group">
                 <label> Estado</label>
+
                 <div class="input-group  input-group-sm">
                     <span class="input-group-addon"> <span class="glyphicon glyphicon-home"></span></span>
-                        <div class="bfh-selectbox bfh-states" data-name="state" data-country="id_country_state_address" id="id_chosen_state"></div>
-                    </div>
+
+                    <div class="bfh-selectbox bfh-states" data-name="state" data-country="id_country_state_address"
+                         id="id_chosen_state"></div>
                 </div>
             </div>
         </div>
@@ -201,58 +212,58 @@
             <div class="form-group">
                 <label>Cidade</label>
 
-                    <div class="input-group  input-group-sm ">
-                        <span class="input-group-addon"> <span class="glyphicon glyphicon-home"></span></span>
-                        <input class="form-control" name="city" placeholder="Entrar cidade" id="city" type="text">
-                    </div>
-                </div>
-            </div>
-            <div class="col-xs-6 col-sm-6">
-                <div class="form-group">
-                    <label> Telefone fixo</label>
-
-                    <div class="input-group  input-group-sm">
-                        <span class="input-group-addon"> <span class="glyphicon glyphicon-earphone"></span></span>
-                        <input class="form-control" name="phone" placeholder="Entrar telefone para contato" id="phone" type="text">
-                    </div>
+                <div class="input-group  input-group-sm ">
+                    <span class="input-group-addon"> <span class="glyphicon glyphicon-home"></span></span>
+                    <input class="form-control" name="city" placeholder="Entrar cidade" id="city" type="text">
                 </div>
             </div>
         </div>
-        <div class="row">
-            <div class="col-xs-6 col-sm-6">
-                <div class="form-group">
-                    <label> Telefone celular</label>
+        <div class="col-xs-6 col-sm-6">
+            <div class="form-group">
+                <label> Telefone fixo</label>
 
-                    <div class="input-group input-group-sm">
-                        <span class="input-group-addon"> <span class="glyphicon glyphicon-earphone"></span></span>
-                        <input class="form-control" name="celphone" placeholder="Entrar celular" id="celphone" type="text">
-                    </div>
-                </div>
-            </div>
-            <div class="col-xs-6 col-sm-6">
-                <div class="form-group">
-                    <label>E-mail</label>
-
-                    <div class="input-group input-group-sm">
-                        <span class="input-group-addon"> <span class="glyphicon glyphicon-envelope"></span></span>
-                        <input class="form-control" name="email" placeholder="Entrar e-mail" id="email" type="email">
-                    </div>
+                <div class="input-group  input-group-sm">
+                    <span class="input-group-addon"> <span class="glyphicon glyphicon-earphone"></span></span>
+                    <input class="form-control" name="phone" placeholder="Entrar telefone para contato" id="phone" type="text">
                 </div>
             </div>
         </div>
-        <div class="row">
-            <div class="col-xs-6 col-sm-6">
-                <div class="form-group">
-                    <label>Número do prontuário</label>
+    </div>
+    <div class="row">
+        <div class="col-xs-6 col-sm-6">
+            <div class="form-group">
+                <label> Telefone celular</label>
 
-                    <div class="input-group input-group-sm">
-                        <span class="input-group-addon"> <span class="glyphicon glyphicon-list-alt"></span></span>
-                        <input class="form-control" name="records_number" placeholder="Entrar número do prontuário" id="records_number" type="text">
-                    </div>
+                <div class="input-group input-group-sm">
+                    <span class="input-group-addon"> <span class="glyphicon glyphicon-earphone"></span></span>
+                    <input class="form-control" name="celphone" placeholder="Entrar celular" id="celphone" type="text">
                 </div>
             </div>
         </div>
-        <div class="col-md-1"></div>
+        <div class="col-xs-6 col-sm-6">
+            <div class="form-group">
+                <label>E-mail</label>
+
+                <div class="input-group input-group-sm">
+                    <span class="input-group-addon"> <span class="glyphicon glyphicon-envelope"></span></span>
+                    <input class="form-control" name="email" placeholder="Entrar e-mail" id="email" type="email">
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-xs-6 col-sm-6">
+            <div class="form-group">
+                <label>Número do prontuário</label>
+
+                <div class="input-group input-group-sm">
+                    <span class="input-group-addon"> <span class="glyphicon glyphicon-list-alt"></span></span>
+                    <input class="form-control" name="records_number" placeholder="Entrar número do prontuário" id="records_number" type="text">
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-1"></div>
 </div>
 <div class="container span6 offset3 well ">
 <div class="row">
@@ -299,8 +310,8 @@
             <label>Religião</label>
 
             <div class="input-group  input-group-sm">
-                {% if religion_options%}
-                <select name="religion_id" class="form-control" id="religion_id">
+                {% if religion_options %}
+                <select class="form-control" name="religion_id" id="religion_id">
                     {% for religion in religion_options%}
                     <option>{{religion.religion_txt}}</option>
                     {% endfor %}
@@ -317,7 +328,7 @@
 
             <div class="input-group  input-group-sm">
                 {% if marital_status_options%}
-                <select name="marital_status" class="form-control" id="marital_status">
+                <select class="form-control" name="marital_status"  id="marital_status">
                     {% for marital_status in marital_status_options%}
                     <option>{{marital_status.marital_status_txt}}</option>
                     {% endfor %}
@@ -452,7 +463,7 @@
 <div class="row">
 <div class="col-xs-6 col-sm-12">
 <div class="form-group">
-<label>Quantidade de iItens de conforto familiar - Critério Brasil 2013</label>
+<label>Quantidade de iItens de conforto familiar - Critério Brasil 2008</label>
 
 <div class="form-group">
     <label class="col-sm-5 control-label">Televisores em cores</label>
@@ -726,10 +737,12 @@
         <div class="col-md-1"></div>
         <div class="col-md-10">
             <div class="container span6 offset3 well ">
-                    <div class="row">
-                        <div class="col-xs-6 col-sm-4">
-                            <div class="form-group">
-                                <label>Tabagismo</label>
+                <div class="row">
+                    <div class="col-xs-6 col-sm-4">
+                        <div class="form-group">
+                            <label>Tabagismo</label>
+
+                            <div class="input-group  input-group-sm">
                                 <div class="input-group  input-group-sm">
                                     <div class="radio-inline">
                                         <label>
@@ -748,10 +761,11 @@
                     <div class="col-xs-6 col-sm-4">
                         <div class="form-group">
                             <label>Cigarros/Dia</label>
+
                             <div class="input-group  input-group-sm">
                                 <select class="form-control" id="id_amount_cigarrets">
                                     <option id="amountCigOptionsRadios1">menos de 1 maço</option>
-                                    <option id="amountCigOptionsRadios2"> 1-2 maços</option>
+                                    <option id="amountCigOptionsRadios2">1-2 maços</option>
                                     <option id="amountCigOptionsRadios3">mais de 3 maços</option>
                                 </select>
                             </div>
@@ -760,6 +774,7 @@
                     <div class="col-xs-6 col-sm-4">
                         <div class="form-group">
                             <label>Ex-tabagista</label>
+
                             <div class="input-group  input-group-sm">
                                 <div class="input-group  input-group-sm">
                                     <div class="radio-inline">
@@ -776,28 +791,30 @@
                             </div>
                         </div>
                     </div>
-                </div>              
+                </div>
                 <div class="row">
                     <div class="col-xs-6 col-sm-4">
                         <div class="form-group">
-                            <label>Etilismo</label>            
-                                <div class="input-group  input-group-sm">
-                                    <div class="radio-inline">
-                                        <label>
-                                            <input name="alcoholismOptionsRadios" id="alcoholismOptionsRadios1"
-                                                   value="alcoholismOption1" type="radio"> Sim</label>
-                                    </div>
-                                    <div class="radio-inline">
-                                        <label>
-                                            <input name="alcoholismOptionsRadios" id="alcoholismOptionsRadios2"
-                                                   value="alcoholismOption2" type="radio"> Não</label>
-                                    </div>
+                            <label>Etilismo</label>
+
+                            <div class="input-group  input-group-sm">
+                                <div class="radio-inline">
+                                    <label>
+                                        <input name="alcoholismOptionsRadios" id="alcoholismOptionsRadios1"
+                                               value="alcoholismOption1" type="radio"> Sim</label>
+                                </div>
+                                <div class="radio-inline">
+                                    <label>
+                                        <input name="alcoholismOptionsRadios" id="alcoholismOptionsRadios2"
+                                               value="alcoholismOption2" type="radio"> Não</label>
                                 </div>
                             </div>
                         </div>
-                        <div class="col-xs-6 col-sm-4">
-                            <div class="form-group">
-                                <label>Frequência</label>
+                    </div>
+                    <div class="col-xs-6 col-sm-4">
+                        <div class="form-group">
+                            <label>Frequência</label>
+
                             <div class="input-group  input-group-sm">
                                 <select class="form-control" id="id_freqSmok">
                                     <option id="freqSmokOptionsRadios1">esporadicamente</option>
@@ -806,26 +823,26 @@
                                 </select>
                             </div>
                         </div>
-                            </div>
-                        <div class="col-xs-6 col-sm-4">
-                            <div class="form-group">
-                                <label>Tempo</label>
+                    </div>
+                    <div class="col-xs-6 col-sm-4">
+                        <div class="form-group">
+                            <label>Tempo</label>
 
-                                <div class="input-group  input-group-sm">
-                                    <select class="form-control" id="id_peridoSmok">
-                                        <option id="peridoSmokOptionsRadios1">meses</option>
-                                        <option id="peridoSmokOptionsRadios2"> 1-5 anos</option>
-                                        <option id="peridoSmokOptionsRadios3">5-10 anos</option>
-                                        <option id="peridoSmokOptionsRadios10">mais de 10 anos</option>
-                                    </select>
-                                </div>
+                            <div class="input-group  input-group-sm">
+                                <select class="form-control" id="id_peridoSmok">
+                                    <option id="peridoSmokOptionsRadios1">meses</option>
+                                    <option id="peridoSmokOptionsRadios2"> 1-5 anos</option>
+                                    <option id="peridoSmokOptionsRadios3">5-10 anos</option>
+                                    <option id="peridoSmokOptionsRadios10">mais de 10 anos</option>
+                                </select>
                             </div>
                         </div>
                     </div>
-                    <div class="row">
-                        <div class="col-xs-6 col-sm-12">
-                            <div class="form-group">
-                                <label>Drogas ilícitas</label>
+                </div>
+                <div class="row">
+                    <div class="col-xs-6 col-sm-12">
+                        <div class="form-group">
+                            <label>Drogas ilícitas</label>
 
                             <div class="input-group  input-group-sm">
                                 <div class="radio-inline">
@@ -844,9 +861,9 @@
                                                value="drugsOption3" type="radio"> Nunca fez</label>
                                 </div>
                             </div>
-                            </div>
                         </div>
                     </div>
+                </div>
                 <div class="col-md-1"></div>
             </div>
         </div>
@@ -857,30 +874,11 @@
     <div class="col-md-1"></div>
     <div class="col-md-10">
         <div class="container span6 offset3 well ">
-                <div class="col-xs-6 col-sm-4">
-                    <div class="form-group">
-                        <label>HAS</label>
+            <div class="col-xs-6 col-sm-4">
+                <div class="form-group">
+                    <label>HAS</label>
 
-                        <div class="input-group  input-group-sm">
-                            <div class="input-group  input-group-sm">
-                                <div class="radio-inline">
-                                    <label>
-                                        <input name="HASOptionsRadios" id="HASOptionsRadios1" value="HASOption1"
-                                               type="radio">Sim</label>
-                                </div>
-                                <div class="radio-inline">
-                                    <label>
-                                        <input name="HASOptionsRadios" id="HASOptionsRadios2" value="HASOption2"
-                                               type="radio">Não</label>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-                <div class="col-xs-6 col-sm-4">
-                    <div class="form-group">
-                        <label>Diabetes</label>
-
+                    <div class="input-group  input-group-sm">
                         <div class="input-group  input-group-sm">
                             <div class="radio-inline">
                                 <label>
@@ -895,24 +893,43 @@
                         </div>
                     </div>
                 </div>
-                <div class="col-xs-6 col-sm-4">
-                    <div class="form-group">
-                        <label>Disfunção Hormonal</label>
+            </div>
+            <div class="col-xs-6 col-sm-4">
+                <div class="form-group">
+                    <label>Diabetes</label>
 
-                        <div class="input-group  input-group-sm">
-                            <div class="radio-inline">
-                                <label>
-                                    <input name="hormDysfOptionsRadios" id="hormDysfOptionsRadios1"
-                                           value="hormDysfOption1" type="radio"> Sim</label>
-                            </div>
-                            <div class="radio-inline">
-                                <label>
-                                    <input name="hormDysfOptionsRadios" id="hormDysfOptionsRadios2"
-                                           value="hormDysfOption2" type="radio"> Não</label>
-                            </div>
+                    <div class="input-group  input-group-sm">
+                        <div class="radio-inline">
+                            <label>
+                                <input name="diabeteOptionsRadios" id="diabeteOptionsRadios1" value="diabeteOption1"
+                                       type="radio"> Sim</label>
+                        </div>
+                        <div class="radio-inline">
+                            <label>
+                                <input name="diabeteOptionsRadios" id="diabeteOptionsRadios2" value="diabeteOption2"
+                                       type="radio"> Não</label>
                         </div>
                     </div>
                 </div>
+            </div>
+            <div class="col-xs-6 col-sm-4">
+                <div class="form-group">
+                    <label>Disfunção Hormonal</label>
+
+                    <div class="input-group  input-group-sm">
+                        <div class="radio-inline">
+                            <label>
+                                <input name="hormDysfOptionsRadios" id="hormDysfOptionsRadios1"
+                                       value="hormDysfOption1" type="radio"> Sim</label>
+                        </div>
+                        <div class="radio-inline">
+                            <label>
+                                <input name="hormDysfOptionsRadios" id="hormDysfOptionsRadios2"
+                                       value="hormDysfOption2" type="radio"> Não</label>
+                        </div>
+                    </div>
+                </div>
+            </div>
         </div>
     </div>
     <div class="col-md-1"></div>
@@ -1210,13 +1227,14 @@
 <div class="row">
     <div class="col-md-12">
         <div class="container span6 offset3 well ">
-                <div class="row">
-                    <div class="col-xs-6 col-sm-12">
-                        <div class="form-group">
-                            <label>
-                                <h4>Cirurgia Ortopédica</h4>
-                            </label>
+            <div class="row">
+                <div class="col-xs-6 col-sm-12">
+                    <div class="form-group">
+                        <label>
+                            <h4>Cirurgia Ortopédica</h4>
+                        </label>
 
+                        <div class="input-group  input-group-sm">
                             <div class="input-group  input-group-sm">
                                 <div class="radio-inline">
                                     <label>
@@ -1395,8 +1413,8 @@
                             Cirurgia de Nervo
                         </label>
 
+                        <div class="input-group  input-group-sm">
                             <div class="input-group  input-group-sm">
-                                <div class="input-group  input-group-sm">
                                 <div class="radio-inline">
                                     <label>
                                         <input name="nerveSurgOptionsRadios" id="nerveSurgOptionsRadios1"
@@ -1580,7 +1598,6 @@
                     </div>
                 </div>
             </div>
-            </form>
         </div>
     </div>
 </div>
@@ -1592,139 +1609,140 @@
     <div class="col-md-1"></div>
     <div class="col-md-10">
         <div class="container span6 offset3 well ">
-            <form id="tabform" role="form" method="post" action="">{% csrf_token %}
-                <!--
-                <div class="row">
-                    <div class="col-xs-6 col-sm-12">
-                        <div class="form-group">
-                            <label>Tipo de trauma</label>
+            <!--
+            <div class="row">
+                <div class="col-xs-6 col-sm-12">
+                    <div class="form-group">
+                        <label>Tipo de trauma</label>
 
-                            <div class="form-group">
-                                <div class="input-group input-group-sm">
-                                    <div class="checkbox">
-                                        <input type="checkbox" id="traumaTypeCheckbox1" value="option1"> Acidentes
-                                        automobilísticos
-                                    </div>
-                                    <div class="checkbox">
-                                        <input type="checkbox" id="traumaTypeCheckbox2" value="option2"> Acidentes
-                                        motociclísticos
-                                    </div>
-                                    <div class="checkbox">
-                                        <input type="checkbox" id="traumaTypeCheckbox3" value="option3"> Acidentes
-                                        ocupacionais
-                                    </div>
-                                    <div class="checkbox">
-                                        <input type="checkbox" id="traumaTypeCheckbox4" value="option5"> Lesão por arma
-                                        de fogo
-                                    </div>
-                                    <div class="checkbox">
-                                        <input type="checkbox" id="traumaTypeCheckbox5" value="option5"> Lesão por
-                                        objeto perfuro-cortante
-                                    </div>
+                        <div class="form-group">
+                            <div class="input-group input-group-sm">
+                                <div class="checkbox">
+                                    <input type="checkbox" id="traumaTypeCheckbox1" value="option1"> Acidentes
+                                    automobilísticos
+                                </div>
+                                <div class="checkbox">
+                                    <input type="checkbox" id="traumaTypeCheckbox2" value="option2"> Acidentes
+                                    motociclísticos
+                                </div>
+                                <div class="checkbox">
+                                    <input type="checkbox" id="traumaTypeCheckbox3" value="option3"> Acidentes
+                                    ocupacionais
+                                </div>
+                                <div class="checkbox">
+                                    <input type="checkbox" id="traumaTypeCheckbox4" value="option5"> Lesão por arma
+                                    de fogo
+                                </div>
+                                <div class="checkbox">
+                                    <input type="checkbox" id="traumaTypeCheckbox5" value="option5"> Lesão por
+                                    objeto perfuro-cortante
                                 </div>
                             </div>
                         </div>
                     </div>
                 </div>
-                <div class="row">
-                    <div class="col-xs-6 col-sm-12">
-                        <div class="form-group">
-                            <label>Quais os medicamentos utilizados e respectivas doses?</label>
+            </div>
+            <div class="row">
+                <div class="col-xs-6 col-sm-12">
+                    <div class="form-group">
+                        <label>Quais os medicamentos utilizados e respectivas doses?</label>
 
-                            <div class="form-group">
-                                <div class="input-group input-group-sm">
-                                    <div class="checkbox">
-                                        <input type="checkbox" id="drugTypeCheckbox1" value="option1"> Opióides
-                                    </div>
-                                    <div class="checkbox">
-                                        <input type="checkbox" id="drugTypeCheckbox2" value="option2"> Antidepressivos
-                                    </div>
-                                    <div class="checkbox">
-                                        <input type="checkbox" id="drugTypeCheckbox3" value="option3">
-                                        Anticonvulsivantes
-                                    </div>
-                                    <div class="checkbox">
-                                        <input type="checkbox" id="drugTypeCheckbox4" value="option5"> Neurolépticos
-                                    </div>
-                                    <div class="checkbox">
-                                        <input type="checkbox" id="drugTypeCheckbox5" value="option5"> AINH
-                                    </div>
+                        <div class="form-group">
+                            <div class="input-group input-group-sm">
+                                <div class="checkbox">
+                                    <input type="checkbox" id="drugTypeCheckbox1" value="option1"> Opióides
+                                </div>
+                                <div class="checkbox">
+                                    <input type="checkbox" id="drugTypeCheckbox2" value="option2"> Antidepressivos
+                                </div>
+                                <div class="checkbox">
+                                    <input type="checkbox" id="drugTypeCheckbox3" value="option3">
+                                    Anticonvulsivantes
+                                </div>
+                                <div class="checkbox">
+                                    <input type="checkbox" id="drugTypeCheckbox4" value="option5"> Neurolépticos
+                                </div>
+                                <div class="checkbox">
+                                    <input type="checkbox" id="drugTypeCheckbox5" value="option5"> AINH
                                 </div>
                             </div>
                         </div>
                     </div>
                 </div>
-                <div class="row">
-                    <div class="col-xs-6 col-sm-12">
-                        <div class="form-group">
-                            <label> TCE associado?
-                            </label>
+            </div>
+            <div class="row">
+                <div class="col-xs-6 col-sm-12">
+                    <div class="form-group">
+                        <label> TCE associado?
+                        </label>
 
+                        <div class="input-group  input-group-sm">
                             <div class="input-group  input-group-sm">
-                                <div class="input-group  input-group-sm">
-                                    <div class="radio-inline">
-                                        <label>
-                                            <input name="relatedTCEOptionsRadios" id="relatedTCEOptionsRadios1"
-                                                   value="relatedTCEOption1" type="radio">Sim</label>
-                                    </div>
-                                    <div class="radio-inline">
-                                        <label>
-                                            <input name="relatedTCEOptionsRadios" id="relatedTCEOptionsRadios2"
-                                                   value="relatedTCEOption2" type="radio">Não</label>
-                                    </div>
+                                <div class="radio-inline">
+                                    <label>
+                                        <input name="relatedTCEOptionsRadios" id="relatedTCEOptionsRadios1"
+                                               value="relatedTCEOption1" type="radio">Sim</label>
+                                </div>
+                                <div class="radio-inline">
+                                    <label>
+                                        <input name="relatedTCEOptionsRadios" id="relatedTCEOptionsRadios2"
+                                               value="relatedTCEOption2" type="radio">Não</label>
                                 </div>
                             </div>
                         </div>
                     </div>
                 </div>
-                -->
-                <div class="row">
-                    <div class="col-xs-6 col-sm-3">
-                        <div class="form-group">
-                            <label> Exame Complementar </label>
+            </div>
+            -->
+            <div class="row">
+                <div class="col-xs-6 col-sm-3">
+                    <div class="form-group">
+                        <label> Exame Complementar </label>
 
+                        <div class="input-group  input-group-sm">
                             <div class="input-group  input-group-sm">
-                                <div class="input-group  input-group-sm">
-                                    <div class="radio-inline">
-                                        <label>
-                                            <input name="complementaryExameOptionsRadios"
-                                                   id="complementaryExameOptionsRadios1"
-                                                   value="complementaryExameOption1" type="radio">Sim</label>
-                                    </div>
-                                    <div class="radio-inline">
-                                        <label>
-                                            <input name="complementaryExameOptionsRadios"
-                                                   id="complementaryExameOptionsRadios2"
-                                                   value="complementaryExameOption2" type="radio">Não</label>
-                                    </div>
+                                <div class="radio-inline">
+                                    <label>
+                                        <input name="complementaryExameOptionsRadios"
+                                               id="complementaryExameOptionsRadios1"
+                                               value="complementaryExameOption1" type="radio">Sim</label>
+                                </div>
+                                <div class="radio-inline">
+                                    <label>
+                                        <input name="complementaryExameOptionsRadios"
+                                               id="complementaryExameOptionsRadios2"
+                                               value="complementaryExameOption2" type="radio">Não</label>
                                 </div>
                             </div>
                         </div>
                     </div>
-                    <div class="col-xs-6 col-sm-9">
-                        <div class="form-group">
-                            <label>Qual?</label>
+                </div>
+                <div class="col-xs-6 col-sm-9">
+                    <div class="form-group">
+                        <label>Qual?</label>
 
-                            <div class="input-group  input-group-sm ">
-                                <span class="input-group-addon"> <span class="glyphicon glyphicon-edit"></span></span>
-                                <input class="form-control" placeholder="Especificar o exame complementar"
-                                       id="id_whichComplementaryExame" type="text">
-                            </div>
-                        </div>
-                    </div>
-                    <div class="col-xs-6 col-sm-9">
-                        <div class="form-group">
-                            <label>Data:</label>
-
-                            <div class="input-group input-group-sm ">
-                                <span class="input-group-addon"> <span class="glyphicon glyphicon-edit"></span></span>
-                                <input class="form-control" placeholder="Data" id="dateOfComplementaryExame" type="date">
-                            </div>
+                        <div class="input-group  input-group-sm ">
+                            <span class="input-group-addon"> <span class="glyphicon glyphicon-edit"></span></span>
+                            <input class="form-control" placeholder="Especificar o exame complementar"
+                                   id="id_whichComplementaryExame" type="text">
                         </div>
                     </div>
                 </div>
+                <div class="col-xs-6 col-sm-9">
+                    <div class="form-group">
+                        <label>Data:</label>
 
+                        <div class="input-group input-group-sm ">
+                            <span class="input-group-addon"> <span class="glyphicon glyphicon-edit"></span></span>
+                            <input class="form-control" placeholder="Data" id="dateOfComplementaryExame" type="date">
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
     <div class="col-md-1"></div>
+</div>
 <!--
 <div class="row">
 <div class="col-md-1"></div>
@@ -2015,187 +2033,187 @@
 </div>
 </fieldset>
 </div>
+
 <div class="row">
     <div class="col-md-12">
         <div class="container span6 offset3 well ">
-                <div class="row">
-                    <div class="col-xs-6 col-sm-12">
-                        <div class="form-group">
-                            <label> Dreno de tórax
-                            </label>
+            <div class="row">
+                <div class="col-xs-6 col-sm-12">
+                    <div class="form-group">
+                        <label> Dreno de tórax
+                        </label>
 
-                            <div class="input-group  input-group-sm">
-                                <div class="input-group  input-group-sm">
-                                    <div class="radio-inline">
-                                        <label>
-                                            <input name="chestTubOptionsRadios" id="chestTubOptionsRadios1"
-                                                   value="chestTubOption1" type="radio">Sim</label>
-                                    </div>
-                                    <div class="radio-inline">
-                                        <label>
-                                            <input name="chestTubOptionsRadios" id="chestTubOptionsRadios2"
-                                                   value="chestTubOption2" type="radio">Não</label>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-                <div class="row">
-                    <div class="col-xs-6 col-sm-12">
-                        <div class="form-group">
-                            <label>Lesões vasculares associadas</label>
-
+                        <div class="input-group  input-group-sm">
                             <div class="input-group  input-group-sm">
                                 <div class="radio-inline">
                                     <label>
-                                        <input name="vascularLesionsOptionsRadios" id="vascularLesionsOptionsRadios1"
-                                               value="vascularLesionsOption1" type="radio">Sim</label>
+                                        <input name="chestTubOptionsRadios" id="chestTubOptionsRadios1"
+                                               value="chestTubOption1" type="radio">Sim</label>
                                 </div>
                                 <div class="radio-inline">
                                     <label>
-                                        <input name="vascularLesionsOptionsRadios" id="vascularLesionsOptionsRadios2"
-                                               value="vascularLesionsOption2" type="radio">Não</label>
+                                        <input name="chestTubOptionsRadios" id="chestTubOptionsRadios2"
+                                               value="chestTubOption2" type="radio">Não</label>
                                 </div>
                             </div>
                         </div>
                     </div>
                 </div>
-                <div class="row">
-                    <div class="col-xs-6 col-sm-12">
-                        <div class="form-group">
-                            <div class="input-group  input-group-sm">
-                                <fieldset id="id_fieldSetvascularLesions">
-                                    <label class="checkbox-inline">
-                                        <input type="checkbox" id="vascularLesionsCheckbox1" value="option1"> A
-                                        subclávia
-                                    </label>
-                                    <label class="checkbox-inline">
-                                        <input type="checkbox" id="vascularLesionsCheckbox2" value="option2"> V
-                                        subclávia
-                                    </label>
-                                    <label class="checkbox-inline">
-                                        <input type="checkbox" id="vascularLesionsCheckbox3" value="option3"> A axilar
-                                    </label>
-                                    <label class="checkbox-inline">
-                                        <input type="checkbox" id="vascularLesionsCheckbox4" value="option5"> V axilar
-                                    </label>
-                                    <label class="checkbox-inline">
-                                        <input type="checkbox" id="vascularLesionsCheckbox5" value="option5"> A braquial
-                                    </label>
-                                </fieldset>
+            </div>
+            <div class="row">
+                <div class="col-xs-6 col-sm-12">
+                    <div class="form-group">
+                        <label>Lesões vasculares associadas</label>
+
+                        <div class="input-group  input-group-sm">
+                            <div class="radio-inline">
+                                <label>
+                                    <input name="vascularLesionsOptionsRadios" id="vascularLesionsOptionsRadios1"
+                                           value="vascularLesionsOption1" type="radio">Sim</label>
+                            </div>
+                            <div class="radio-inline">
+                                <label>
+                                    <input name="vascularLesionsOptionsRadios" id="vascularLesionsOptionsRadios2"
+                                           value="vascularLesionsOption2" type="radio">Não</label>
                             </div>
                         </div>
                     </div>
                 </div>
-                <div class="row">
-                    <div class="col-xs-6 col-sm-12">
-                        <div class="form-group">
-                            <label>Localização da lesão ao exame clínico</label>
+            </div>
+            <div class="row">
+                <div class="col-xs-6 col-sm-12">
+                    <div class="form-group">
+                        <div class="input-group  input-group-sm">
+                            <fieldset id="id_fieldSetvascularLesions">
+                                <label class="checkbox-inline">
+                                    <input type="checkbox" id="vascularLesionsCheckbox1" value="option1"> A
+                                    subclávia
+                                </label>
+                                <label class="checkbox-inline">
+                                    <input type="checkbox" id="vascularLesionsCheckbox2" value="option2"> V
+                                    subclávia
+                                </label>
+                                <label class="checkbox-inline">
+                                    <input type="checkbox" id="vascularLesionsCheckbox3" value="option3"> A axilar
+                                </label>
+                                <label class="checkbox-inline">
+                                    <input type="checkbox" id="vascularLesionsCheckbox4" value="option5"> V axilar
+                                </label>
+                                <label class="checkbox-inline">
+                                    <input type="checkbox" id="vascularLesionsCheckbox5" value="option5"> A braquial
+                                </label>
+                            </fieldset>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-xs-6 col-sm-12">
+                    <div class="form-group">
+                        <label>Localização da lesão ao exame clínico</label>
 
-                            <div class="input-group  input-group-sm">
-                                <select class="form-control" id="id_lesionSite">
-                                    <option id="lesionSiteOptionsRadios1">Tronco superior</option>
-                                    <option id="lesionSiteOptionsRadios2">Tronco superior estendido (C5-C7)</option>
-                                    <option id="lesionSiteOptionsRadios3">Tronco inferior</option>
-                                    <option id="lesionSiteOptionsRadios4">C5-T1</option>
-                                </select>
+                        <div class="input-group  input-group-sm">
+                            <select class="form-control" id="id_lesionSite">
+                                <option id="lesionSiteOptionsRadios1">Tronco superior</option>
+                                <option id="lesionSiteOptionsRadios2">Tronco superior estendido (C5-C7)</option>
+                                <option id="lesionSiteOptionsRadios3">Tronco inferior</option>
+                                <option id="lesionSiteOptionsRadios4">C5-T1</option>
+                            </select>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-xs-6 col-sm-12">
+                    <div class="form-group">
+                        <label>Sente dor regularmente?</label>
+
+                        <div class="input-group  input-group-sm">
+                            <div class="radio-inline">
+                                <label>
+                                    <input name="regularPainOptionsRadios" id="regularPainOptionsRadios1"
+                                           value="regularPainOption1" type="radio">Sim</label>
+                            </div>
+                            <div class="radio-inline">
+                                <label>
+                                    <input name="regularPainOptionsRadios" id="regularPainOptionsRadios2"
+                                           value="regularPainOption2" type="radio">Não</label>
                             </div>
                         </div>
                     </div>
                 </div>
-                <div class="row">
-                    <div class="col-xs-6 col-sm-12">
-                        <div class="form-group">
-                            <label>Sente dor regularmente?</label>
+            </div>
+            <div class="row">
+                <div class="col-xs-6 col-sm-12">
+                    <div class="form-group">
+                        <label>Realiza fisioterapira/terapia ocupacional GERAL?</label>
 
-                            <div class="input-group  input-group-sm">
-                                <div class="radio-inline">
-                                    <label>
-                                        <input name="regularPainOptionsRadios" id="regularPainOptionsRadios1"
-                                               value="regularPainOption1" type="radio">Sim</label>
+                        <div class="input-group  input-group-sm">
+                            <div class="radio-inline">
+                                <label>
+                                    <input name="physiotherapyOptionsRadios" id="physiotherapyOptionsRadios1"
+                                           value="physiotherapyOption1" type="radio">Sim</label>
+                            </div>
+                            <div class="radio-inline">
+                                <label>
+                                    <input name="physiotherapyOptionsRadios" id="physiotherapyOptionsRadios2"
+                                           value="physiotherapyOption2" type="radio">Não</label>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-xs-6 col-sm-12">
+                    <div class="form-group">
+                        <label>Faz uso de dispositivo auxiliar?</label>
+
+                        <div class="form-group">
+                            <div class="input-group input-group-sm">
+                                <div class="checkbox">
+                                    <input type="checkbox" id="auxiliaryArtefactCheckbox1" value="option1"> Nenhum
                                 </div>
-                                <div class="radio-inline">
-                                    <label>
-                                        <input name="regularPainOptionsRadios" id="regularPainOptionsRadios2"
-                                               value="regularPainOption2" type="radio">Não</label>
+                                <div class="checkbox">
+                                    <input type="checkbox" id="auxiliaryArtefactCheckbox2" value="option2"> Tipóia
+                                </div>
+                                <div class="checkbox">
+                                    <input type="checkbox" id="auxiliaryArtefactCheckbox3" value="option3"> Suporte
+                                    de ombro
+                                </div>
+                                <div class="checkbox">
+                                    <input type="checkbox" id="auxiliaryArtefactCheckbox4" value="option5"> Órtese
+                                    de posicionamento de punho e dedos
+                                </div>
+                                <div class="checkbox">
+                                    <input type="checkbox" id="auxiliaryArtefactCheckbox5" value="option5"> Órtese
+                                    de posicionamento de dedos
                                 </div>
                             </div>
                         </div>
                     </div>
                 </div>
-                <div class="row">
-                    <div class="col-xs-6 col-sm-12">
-                        <div class="form-group">
-                            <label>Realiza fisioterapira/terapia ocupacional GERAL?</label>
+            </div>
+            <div class="row">
+                <div class="col-xs-6 col-sm-12">
+                    <h4>Exames Complementares</h4>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-xs-6 col-sm-6">
+                    <div class="form-group">
+                        <label>ENMG</label>
 
-                            <div class="input-group  input-group-sm">
-                                <div class="radio-inline">
-                                    <label>
-                                        <input name="physiotherapyOptionsRadios" id="physiotherapyOptionsRadios1"
-                                               value="physiotherapyOption1" type="radio">Sim</label>
-                                </div>
-                                <div class="radio-inline">
-                                    <label>
-                                        <input name="physiotherapyOptionsRadios" id="physiotherapyOptionsRadios2"
-                                               value="physiotherapyOption2" type="radio">Não</label>
-                                </div>
-                            </div>
+                        <div class="input-group  input-group-sm">
+                            <div class="bfh-datepicker"></div>
                         </div>
                     </div>
                 </div>
-                <div class="row">
-                    <div class="col-xs-6 col-sm-12">
-                        <div class="form-group">
-                            <label>Faz uso de dispositivo auxiliar?</label>
+                <div class="col-xs-6 col-sm-6">
+                    <div class="form-group">
+                        <label>RNM</label>
 
-                            <div class="form-group">
-                                <div class="input-group input-group-sm">
-                                    <div class="checkbox">
-                                        <input type="checkbox" id="auxiliaryArtefactCheckbox1" value="option1"> Nenhum
-                                    </div>
-                                    <div class="checkbox">
-                                        <input type="checkbox" id="auxiliaryArtefactCheckbox2" value="option2"> Tipóia
-                                    </div>
-                                    <div class="checkbox">
-                                        <input type="checkbox" id="auxiliaryArtefactCheckbox3" value="option3"> Suporte
-                                        de ombro
-                                    </div>
-                                    <div class="checkbox">
-                                        <input type="checkbox" id="auxiliaryArtefactCheckbox4" value="option5"> Órtese
-                                        de posicionamento de punho e dedos
-                                    </div>
-                                    <div class="checkbox">
-                                        <input type="checkbox" id="auxiliaryArtefactCheckbox5" value="option5"> Órtese
-                                        de posicionamento de dedos
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-                <div class="row">
-                    <div class="col-xs-6 col-sm-12">
-                        <h4>Exames Complementares</h4>
-                    </div>
-                </div>
-                <div class="row">
-                    <div class="col-xs-6 col-sm-6">
-                        <div class="form-group">
-                            <label>ENMG</label>
-
-                            <div class="input-group  input-group-sm">
-                                <div class="bfh-datepicker"></div>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="col-xs-6 col-sm-6">
-                        <div class="form-group">
-                            <label>RNM</label>
-
-                            <div class="input-group  input-group-sm">
-                                <div class="bfh-datepicker"></div>
-                            </div>
+                        <div class="input-group  input-group-sm">
+                            <div class="bfh-datepicker"></div>
                         </div>
                     </div>
                 </div>
@@ -2203,12 +2221,11 @@
         </div>
     </div>
 </div>
-
-</div>
 </div>
 </div>
 -->
-
+</div>
+</div>
 <div class="row">
     <div class="col-md-1">
     </div>
@@ -2226,56 +2243,54 @@
 </div>
 </div>
 
-
-
+<div class="tab-pane fade" id="mainMenuSearchTab">
     <div class="col-md-10">
-   <div class="container span6 offset3 well ">
-         <div class="row">
-            <div class="col-md-12">
-               <h5>Especificar nome OU CPF para a busca.</h5>
+        <div class="container span6 offset3 well ">
+            <div class="row">
+                <div class="col-md-12">
+                    <h5>Especificar nome OU CPF para a busca.</h5>
+                </div>
             </div>
-         </div>
-         <div class="row">
-            <div class="col-md-12">
-               <div class="row">
-                  <div class="col-xs-6 col-sm-6">
-                     <div class="form-group">
-                        <label>Nome</label>
-                        <div class="input-group  input-group-sm">
-                           <span class="input-group-addon"> <span class="glyphicon glyphicon-user"></span></span>
-                           <input class="form-control" placeholder="Entrar nome para buscar" id="nameKey" type="text">
+            <div class="row">
+                <div class="col-md-12">
+                    <div class="row">
+                        <div class="col-xs-6 col-sm-6">
+                            <div class="form-group">
+                                <label>Nome</label>
+                                <div class="input-group input-group-sm">
+                                    <span class="input-group-addon"> <span class="glyphicon glyphicon-user"></span></span>
+                                    <input class="form-control" placeholder="Entrar nome para buscar" id="nameKey" type="text">
+                                </div>
+                                {% csrf_token %}
+                                <ul id="search-results">
+                                </ul>
+                            </div>
                         </div>
-                     </div>
-                  </div>
-                  <div class="col-xs-6 col-sm-6">
-                     <div class="form-group">
-                        <label>CPF</label>
-                        <div class="input-group  input-group-sm">
-                           <span class="input-group-addon"> <span class="glyphicon glyphicon-asterisk"></span></span>
-                           <input class="form-control" placeholder="Entrar CPF para buscar" id="cpfKey" type="text">
+                        <div class="col-xs-6 col-sm-6">
+                            <div class="form-group">
+                                <label>CPF</label>
+                                <div class="input-group input-group-sm">
+                                    <span class="input-group-addon"> <span class="glyphicon glyphicon-asterisk"></span></span>
+                                    <input class="form-control" placeholder="Entrar CPF para buscar" id="cpfKey" type="text">
+                                </div>
+                            </div>
                         </div>
-                     </div>
-                  </div>
-                  <div class="row">
-                     <div class="col-md-1">
-                     </div>
-                     <div class="col-md-10">
-                        <div class="btn-group pull-right">
-                           <button type="button" class="btn btn-primary">Buscar</button>
+                        <div class="row">
+                            <div class="col-md-1">
+                            </div>
+                            <div class="col-md-10">
+                                <div class="btn-group pull-right">
+                                    <button type="button" class="btn btn-primary">Buscar</button>
+                                </div>
+                            </div>
                         </div>
-                     </div>
-                  </div>
-               </div>
+                    </div>
+                </div>
             </div>
-         </div>
-   </div>
+        </div>
+    </div>
 </div>
 
-
-
-
-
-</div>
 <div class="tab-pane fade" id="mainMenuContactTab">
     <div class="col-md-1">
     </div>
@@ -2293,7 +2308,6 @@
 </div>
 </form>
 </div>
-
 <div class="row">
     <div class="col-md-12">
         <hr>
@@ -2307,8 +2321,7 @@
 
 
             <br>
-            </p>
-        </div>
+        </p>
     </div>
 </div>
 </div>
@@ -2325,7 +2338,7 @@
 <script>
 $(document).ready(function(){
     $("#birthday").mask("99/99/9999");
-    
+
 });
 
 $(document).ready(function(){
@@ -2562,26 +2575,22 @@ $(document).ready(function(){
     });
 });
 
-
-
 $(document).ready(function(){
-
     $("#id").mask("999.999.999-99");
 });
 
 $(document).ready(function(){
+    $("#zipcode").mask("99999-99");
+});
 
+$(document).ready(function(){
     $("#id_chosen_state").on("change.bfhselectbox",function(){
         var state = $(this).val();
         if(state == "SP")
             $("#phone").mask("(99) 99999-9999");
         else
             $("#phone").mask("(99) 9999-9999");
-
-
     });
-
-
 });
 
 
