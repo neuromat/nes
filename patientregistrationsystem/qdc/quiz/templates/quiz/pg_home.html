@@ -37,8 +37,8 @@
         </div>
         <div class="collapse navbar-collapse navbar-ex1-collapse">
             <ol class="nav navbar-nav navbar-right">
-                <li></li>
-                <li><a href="index.html">Sair</a></li>
+                <li><a> User: {% if user.first_name %} {{ user.first_name }} {% else %} {{ user.username }} {% endif %}</a></li>
+                <li><a href="/logout">Sair</a></li>
             </ol>
         </div>
     </nav>
@@ -54,12 +54,33 @@
 <div class="col-md-2">
 
     <ul id="myMenu" class="nav nav-pills nav-stacked">
-        <li class="active"><a href="#mainMenuAddTab" data-toggle="tab">Cadastro</a>
+
+        <li class="active">
+            {% if perms.quiz.add_patient %}
+            <a href="#mainMenuAddTab" data-toggle="tab">
+                {% else %}
+                <a>
+                    {% endif %}
+                    Cadastro</a>
         </li>
-        <li><a href="#mainMenuSearchTab" data-toggle="tab">Busca</a>
+
+        <li>
+            {% if perms.quiz.view_patient %}
+            <a href="#mainMenuSearchTab" data-toggle="tab">
+                {% else %}
+                <a>
+                    {% endif %}
+                    Busca</a>
         </li>
+
         <li><a href="#mainMenuContactTab" data-toggle="tab">Contato</a>
         </li>
+
+        {% if user.is_superuser %}
+        <li><a href="/admin">Acesso Administração</a>
+        </li>
+        {% endif %}
+
     </ul>
 </div>
 
@@ -82,7 +103,6 @@
 <div class="col-md-1"></div>
 <div class="col-md-10">
 <div class="container span6 offset3 well ">
-    {{ new_patient }} {{ new_personaldata }} {{ test }}
     <div class="row">
         <div class="col-md-12">
             <div class="form-group">
@@ -106,12 +126,35 @@
         </div>
         <div class="col-xs-6 col-sm-6">
             <div class="form-group">
+                <label>RG</label>
+
+                <div class="input-group input-group-sm">
+                    <!-- verificar qual icone vai aparecer pra RG-->
+                    <span class="input-group-addon"><span class="glyphicon glyphicon-user"></span></span>
+                    <input class="form-control" name="rg" placeholder="Entrar RG" id="rg" type="text">
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-xs-6 col-sm-6">
+            <div class="form-group">
+                <label>Naturalidade</label>
+
+                <div class="input-group input-group-sm">
+                    <span class="input-group-addon"> <span class="glyphicon glyphicon-flag"></span></span>
+                    <input class="form-control" name="naturalOf" placeholder="Entrar Naturalidade" id="naturalOf" type="text">
+                </div>
+            </div>
+        </div>
+        <div class="col-xs-6 col-sm-6">
+            <div class="form-group">
                 <label>Nacionalidade</label>
 
                 <div class="input-group input-group-sm">
                     <span class="input-group-addon"> <span class="glyphicon glyphicon-flag"></span></span>
 
-                    <div class="bfh-selectbox bfh-countries" data-country="BR" id="id_chosen_country" data-flags="true"></div>
+                    <div class="bfh-selectbox bfh-countries" data-name="citizenship" data-country="BR" id="id_chosen_country" data-flags="true"></div>
                 </div>
             </div>
         </div>
@@ -123,7 +166,7 @@
 
                 <div class="input-group  input-group-sm ">
                     <span class="input-group-addon"> <span class="glyphicon glyphicon-home"></span></span>
-                    <input class="form-control" placeholder="Rua - Complemento " id="street" type="text">
+                    <input name="street" class="form-control" placeholder="Rua - Complemento " id="street" type="text">
                 </div>
             </div>
         </div>
@@ -133,7 +176,7 @@
 
                 <div class="input-group  input-group-sm">
                     <span class="input-group-addon"> <span class="glyphicon glyphicon-home"></span></span>
-                    <input class="form-control" placeholder="Entrar CEP" id="zipcode" type="text">
+                    <input name="zipcode" class="form-control" placeholder="Entrar CEP" id="zipcode" type="text">
                 </div>
             </div>
         </div>
@@ -146,7 +189,7 @@
                 <div class="input-group  input-group-sm">
                     <span class="input-group-addon"> <span class="glyphicon glyphicon-home"></span></span>
 
-                    <div class="bfh-selectbox bfh-countries" data-country="BR" data-flags="true"
+                    <div class="bfh-selectbox bfh-countries" data-name="country" data-country="BR" data-flags="true"
                          id="id_country_state_address"></div>
                 </div>
             </div>
@@ -158,7 +201,7 @@
                 <div class="input-group  input-group-sm">
                     <span class="input-group-addon"> <span class="glyphicon glyphicon-home"></span></span>
 
-                    <div class="bfh-selectbox bfh-states" data-country="id_country_state_address"
+                    <div class="bfh-selectbox bfh-states" data-name="state" data-country="id_country_state_address"
                          id="id_chosen_state"></div>
                 </div>
             </div>
@@ -171,17 +214,51 @@
 
                 <div class="input-group  input-group-sm ">
                     <span class="input-group-addon"> <span class="glyphicon glyphicon-home"></span></span>
-                    <input class="form-control" placeholder="Entrar cidade" id="city" type="text">
+                    <input class="form-control" name="city" placeholder="Entrar cidade" id="city" type="text">
                 </div>
             </div>
         </div>
         <div class="col-xs-6 col-sm-6">
             <div class="form-group">
-                <label> Telefone</label>
+                <label> Telefone fixo</label>
 
                 <div class="input-group  input-group-sm">
                     <span class="input-group-addon"> <span class="glyphicon glyphicon-earphone"></span></span>
-                    <input class="form-control" placeholder="Entrar telefone para contato" id="phone" type="text">
+                    <input class="form-control" name="phone" placeholder="Entrar telefone para contato" id="phone" type="text">
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-xs-6 col-sm-6">
+            <div class="form-group">
+                <label> Telefone celular</label>
+
+                <div class="input-group input-group-sm">
+                    <span class="input-group-addon"> <span class="glyphicon glyphicon-earphone"></span></span>
+                    <input class="form-control" name="celphone" placeholder="Entrar celular" id="celphone" type="text">
+                </div>
+            </div>
+        </div>
+        <div class="col-xs-6 col-sm-6">
+            <div class="form-group">
+                <label>E-mail</label>
+
+                <div class="input-group input-group-sm">
+                    <span class="input-group-addon"> <span class="glyphicon glyphicon-envelope"></span></span>
+                    <input class="form-control" name="email" placeholder="Entrar e-mail" id="email" type="email">
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-xs-6 col-sm-6">
+            <div class="form-group">
+                <label>Número do prontuário</label>
+
+                <div class="input-group input-group-sm">
+                    <span class="input-group-addon"> <span class="glyphicon glyphicon-list-alt"></span></span>
+                    <input class="form-control" name="records_number" placeholder="Entrar número do prontuário" id="records_number" type="text">
                 </div>
             </div>
         </div>
@@ -234,7 +311,7 @@
 
             <div class="input-group  input-group-sm">
                 {% if religion_options %}
-                <select class="form-control" id="religion_id" name="religion_id">
+                <select class="form-control" name="religion_id" id="religion_id">
                     {% for religion in religion_options%}
                     <option>{{religion.religion_txt}}</option>
                     {% endfor %}
@@ -251,7 +328,7 @@
 
             <div class="input-group  input-group-sm">
                 {% if marital_status_options%}
-                <select class="form-control" id="marital_status">
+                <select class="form-control" name="marital_status"  id="marital_status">
                     {% for marital_status in marital_status_options%}
                     <option>{{marital_status.marital_status_txt}}</option>
                     {% endfor %}
@@ -336,6 +413,7 @@
     </div>
 
 </div>
+<!--
 <div class="row">
     <div class="col-xs-6 col-sm-6">
         <div class="form-group">
@@ -359,6 +437,22 @@
                     <span class="input-group-addon"> <span class="glyphicon glyphicon-book"></span></span>
                     <input class="form-control" name="years_studying_int" placeholder="Entrar tempo de estudo " id="total_studying" type="text">
                 </div>
+            </div>
+        </div>
+    </div>
+</div>
+-->
+<div class="row">
+    <div class="col-xs-6 col-sm-12">
+        <div class="form-group">
+            <label>Grau de instrução do chefe de família - Critério Brasil 2013</label>
+
+            <div class="input-group input-group-sm">
+                <select name="scolarity" class="form-control" id="scolarity">
+                    {% for schooling in schooling_options %}
+                    <option>{{schooling.schooling_txt}}</option>
+                    {% endfor %}
+                </select>
             </div>
         </div>
     </div>
@@ -393,7 +487,7 @@
         </div>
         <div class="radio-inline">
             <label>
-                <input name="TVoptionsRadios" id="TVoptionsRadios4" value="TVoption4" type="radio">4</label>
+                <input name="TVoptionsRadios" id="TVoptionsRadios4" value="TVoption4" type="radio">4 ou +</label>
         </div>
     </div>
 </div>
@@ -419,7 +513,7 @@
     </div>
     <div class="radio-inline">
         <label>
-            <input name="DVDoptionsRadios" id="DVDoptionsRadios4" value="DVDoption4" type="radio">4</label>
+            <input name="DVDoptionsRadios" id="DVDoptionsRadios4" value="DVDoption4" type="radio">4 ou +</label>
     </div>
 </div>
 <div class="form-group">
@@ -444,7 +538,7 @@
         </div>
         <div class="radio-inline">
             <label>
-                <input name="RADIOoptions" id="RADIOoptions4" value="RADIOoption4" type="radio">4</label>
+                <input name="RADIOoptions" id="RADIOoptions4" value="RADIOoption4" type="radio">4 ou +</label>
         </div>
     </div>
 </div>
@@ -475,7 +569,7 @@
         <div class="radio-inline">
             <label>
                 <input name="BathsoptionsRadios" id="BathsoptionsRadios4" value="Bathsoption4"
-                       type="radio">4</label>
+                       type="radio">4 ou +</label>
         </div>
     </div>
 </div>
@@ -501,7 +595,7 @@
         </div>
         <div class="radio-inline">
             <label>
-                <input name="AutooptionsRadios" id="AutooptionsRadios4" value="Autooption4" type="radio">4</label>
+                <input name="AutooptionsRadios" id="AutooptionsRadios4" value="Autooption4" type="radio">4 ou +</label>
         </div>
     </div>
 </div>
@@ -532,7 +626,7 @@
         <div class="radio-inline">
             <label>
                 <input name="EmployoptionsRadios" id="EmployoptionsRadios4" value="Employoption4"
-                       type="radio">4</label>
+                       type="radio">4 ou +</label>
         </div>
     </div>
 </div>
@@ -558,7 +652,7 @@
         </div>
         <div class="radio-inline">
             <label>
-                <input name="WMoptionsRadios" id="WMsoptionsRadios4" value="WMoption4" type="radio">4</label>
+                <input name="WMoptionsRadios" id="WMsoptionsRadios4" value="WMoption4" type="radio">4 ou +</label>
         </div>
     </div>
 </div>
@@ -589,7 +683,7 @@
         <div class="radio-inline">
             <label>
                 <input name="RefrigoptionsRadios" id="RefrigoptionsRadios4" value="Refrigoption4"
-                       type="radio">4</label>
+                       type="radio">4 ou +</label>
         </div>
     </div>
 </div>
@@ -620,7 +714,7 @@
         <div class="radio-inline">
             <label>
                 <input name="RefrigoptionsRadios" id="FreezoptionsRadios4" value="Refrigoption4"
-                       type="radio">4</label>
+                       type="radio">4 ou +</label>
         </div>
     </div>
 </div>
@@ -630,7 +724,7 @@
 </div>
 <div class="row">
     <div class="col-sm-12">
-        <h6>*Independente ou na segunda porta da geladeira.</h6>
+        <h6>*Aparelho independente ou parte da geladeira duplex.</h6>
     </div>
 </div>
 <div class="col-md-1"></div>
@@ -754,12 +848,17 @@
                                 <div class="radio-inline">
                                     <label>
                                         <input name="drugsOptionsRadios" id="drugsOptionsRadios1"
-                                               value="drugsOption1" type="radio"> Sim</label>
+                                               value="drugsOption1" type="radio"> Já fez</label>
                                 </div>
                                 <div class="radio-inline">
                                     <label>
                                         <input name="drugsOptionsRadios" id="drugsOptionsRadios2"
-                                               value="drugsOption2" type="radio"> Não</label>
+                                               value="drugsOption2" type="radio"> Faz</label>
+                                </div>
+                                <div class="radio-inline">
+                                    <label>
+                                        <input name="drugsOptionsRadios" id="drugsOptionsRadios3"
+                                               value="drugsOption3" type="radio"> Nunca fez</label>
                                 </div>
                             </div>
                         </div>
@@ -1410,6 +1509,7 @@
                     </div>
                 </div>
             </div>
+            <!--
             <div class="row">
                 <div class="col-xs-6 col-sm-12">
                     <div class="form-group">
@@ -1425,6 +1525,7 @@
                     </div>
                 </div>
             </div>
+            -->
             <div class="row">
                 <div class="col-xs-6 col-sm-12">
                     <div class="form-group">
@@ -1508,6 +1609,7 @@
     <div class="col-md-1"></div>
     <div class="col-md-10">
         <div class="container span6 offset3 well ">
+            <!--
             <div class="row">
                 <div class="col-xs-6 col-sm-12">
                     <div class="form-group">
@@ -1591,6 +1693,7 @@
                     </div>
                 </div>
             </div>
+            -->
             <div class="row">
                 <div class="col-xs-6 col-sm-3">
                     <div class="form-group">
@@ -1625,11 +1728,22 @@
                         </div>
                     </div>
                 </div>
+                <div class="col-xs-6 col-sm-9">
+                    <div class="form-group">
+                        <label>Data:</label>
+
+                        <div class="input-group input-group-sm ">
+                            <span class="input-group-addon"> <span class="glyphicon glyphicon-edit"></span></span>
+                            <input class="form-control" placeholder="Data" id="dateOfComplementaryExame" type="date">
+                        </div>
+                    </div>
+                </div>
             </div>
         </div>
     </div>
     <div class="col-md-1"></div>
 </div>
+<!--
 <div class="row">
 <div class="col-md-1"></div>
 <div class="col-md-10">
@@ -2107,12 +2221,11 @@
         </div>
     </div>
 </div>
-
 </div>
 </div>
+-->
 </div>
 </div>
-
 <div class="row">
     <div class="col-md-1">
     </div>
@@ -2126,7 +2239,6 @@
     <div class="col-md-1">
     </div>
 </div>
-
 </div>
 </div>
 </div>
