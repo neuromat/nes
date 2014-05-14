@@ -65,7 +65,7 @@
 
         <li>
             {% if perms.quiz.view_patient %}
-            <a href="#mainMenuSearchTab" data-toggle="tab">
+                <a href="#mainMenuSearchTab" data-toggle="tab">
             {% else %}
                 <a>
             {% endif %}
@@ -76,8 +76,8 @@
         </li>
 
         {% if user.is_superuser %}
-        <li><a href="/admin">Acesso Administração</a>
-        </li>
+            <li><a href="/admin">Acesso Administração</a>
+            </li>
         {% endif %}
 
     </ul>
@@ -103,6 +103,14 @@
 <div class="col-md-1"></div>
 <div class="col-md-10">
 <div class="container span6 offset3 well ">
+    {% if messages %}
+        <div class="alert alert-success">
+            {{ messages }}
+            {% for message in messages %}
+                <li{% if message.tags %} class="{{ message.tags }}"{% endif %}>{{ message }}</li>
+            {% endfor %}
+        </div>
+    {% endif %}
 
     <form id="tab1form" role="form" method="post" action="">{% csrf_token %}
         <div class="row">
@@ -292,13 +300,13 @@
 
             <div class="input-group  input-group-sm">
                 {% if gender_options%}
-                <select name="gender_opt" class="form-control" id="gender_id">
-                    {% for gender in gender_options%}
-                    <option>{{gender.gender_txt}}</option>
-                    {% endfor %}
-                </select>
+                    <select name="gender_opt" class="form-control" id="gender_id">
+                        {% for gender in gender_options%}
+                            <option>{{gender.gender_txt}}</option>
+                        {% endfor %}
+                    </select>
                 {% else %}
-                <p>No gender available.</p>
+                    <p>No gender available.</p>
                 {% endif %}
             </div>
         </div>
@@ -311,13 +319,13 @@
 
             <div class="input-group  input-group-sm">
                 {% if religion_options%}
-                <select name="religion_opt" class="form-control" id="religion_id">
-                    {% for religion in religion_options%}
-                    <option>{{religion.religion_txt}}</option>
-                    {% endfor %}
-                </select>
+                    <select name="religion_opt" class="form-control" id="religion_id">
+                        {% for religion in religion_options%}
+                            <option>{{religion.religion_txt}}</option>
+                        {% endfor %}
+                    </select>
                 {% else %}
-                <p>No religion available.</p>
+                    <p>No religion available.</p>
                 {% endif %}
             </div>
         </div>
@@ -328,13 +336,13 @@
 
             <div class="input-group  input-group-sm">
                 {% if marital_status_options%}
-                <select name="marital_status_opt" class="form-control" id="marital_status">
-                    {% for marital_status in marital_status_options%}
-                    <option>{{marital_status.marital_status_txt}}</option>
-                    {% endfor %}
-                </select>
+                    <select name="marital_status_opt" class="form-control" id="marital_status">
+                        {% for marital_status in marital_status_options%}
+                            <option>{{marital_status.marital_status_txt}}</option>
+                        {% endfor %}
+                    </select>
                 {% else %}
-                <p>No marital status available.</p>
+                    <p>No marital status available.</p>
                 {% endif %}
             </div>
         </div>
@@ -387,13 +395,13 @@
 
             <div class="input-group  input-group-sm">
                 {% if payment_options%}
-                <select class="form-control" name="payment_opt" id="payment_id">
-                    {% for payment in payment_options %}
-                    <option>{{payment.payment_txt}}</option>
-                    {% endfor %}
-                </select>
+                    <select class="form-control" name="payment_opt" id="payment_id">
+                        {% for payment in payment_options %}
+                            <option>{{payment.payment_txt}}</option>
+                        {% endfor %}
+                    </select>
                 {% else %}
-                <p>No payment option available.</p>
+                    <p>No payment option available.</p>
                 {% endif %}
             </div>
         </div>
@@ -408,7 +416,7 @@
 
                 <select class="form-control" name="flesh_tone_opt" id="skin_color">
                     {% for fleshtone in flesh_tone_options %}
-                    <option>{{fleshtone.flesh_tone_txt}}</option>
+                        <option>{{fleshtone.flesh_tone_txt}}</option>
                     {% endfor %}
                 </select>
             </div>
@@ -453,7 +461,7 @@
             <div class="input-group input-group-sm">
                 <select name="schooling_opt" class="form-control" id="schooling_opt">
                     {% for schooling in schooling_options %}
-                    <option>{{schooling.schooling_txt}}</option>
+                        <option>{{schooling.schooling_txt}}</option>
                     {% endfor %}
                 </select>
             </div>
@@ -2351,7 +2359,7 @@
 <script>
 $(document).ready(function(){
     $("#birthday").mask("99/99/9999");
-    
+
 });
 
 $(document).ready(function(){
@@ -2626,8 +2634,21 @@ $("#nexttab").on('click', function() {
 });
 
 $("#savetab").on('click', function(){
-<!-- $("#tabform").filter(".active").submit(); -->
-	$("#tab1form").submit();
+    <!-- $("#tabform").filter(".active").submit(); -->
+    var value=$.trim($("#cpf_id").val());
+    if(value.length==0)
+    {
+        var r = confirm("Press a button!");
+        if (r == true) {
+            $("#tab1form").submit();
+        } else {
+            txt = "CPF não preenchido, deseja salvar?";
+        }
+        document.getElementById("demo").innerHTML = txt;
+    }
+    else{
+        $("#tab1form").submit();
+    }
 });
 
 
