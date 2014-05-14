@@ -1,6 +1,7 @@
 # coding=utf-8
 from django.shortcuts import render
 from django.http import Http404
+from django.contrib.auth.decorators import login_required
 
 from django.http import HttpResponse
 from django.template import RequestContext, loader
@@ -8,39 +9,50 @@ from django import forms
 from django.core.context_processors import csrf
 from django.shortcuts import render_to_response
 
-from models import Patient, PersonalData, FleshToneOption, MaritalStatusOption, SchoolingOption, PaymentOption, \
-    ReligionOption
-
-from forms import PatientForm, PersonalDataForm
+from models import Patient, FleshToneOption, MaritalStatusOption, SchoolingOption, PaymentOption, ReligionOption, GenderOption
+from forms import PatientForm, SocialDemographicDataForm, SocialHistoryDataForm
 
 
+@login_required
 def pg_home(request):
-    fleshtone_options = FleshToneOption.objects.all()
+    flesh_tone_options = FleshToneOption.objects.all()
     marital_status_options = MaritalStatusOption.objects.all()
+    gender_options = GenderOption.objects.all()
     schooling_options = SchoolingOption.objects.all()
     payment_options = PaymentOption.objects.all()
     religion_options = ReligionOption.objects.all()
-    #pd = PersonalDataForm
     new_patient = None
     new_personal_data = None
-    test = None
-
+    new_social_demographic_data = None
+    new_social_history_data = None
     if request.method == "POST":
         patient_form = PatientForm(request.POST)
-        test = request.POST
-        #personal_data_form = PersonalDataForm(request.POST)
-        if patient_form.is_valid():  #and personal_data_form.is_valid():
-            new_patient = patient_form.save()
-            # new_personal_data = personal_data_form.save()
-            # new_personal_data.id_patient = new_patient
-            # new_personal_data.city_birth_txt = 'test'
-            # new_personal_data.payment_opt = PaymentOption.objects.filter(payment_txt=request.POST['payment_option'])[0]
-            # new_personal_data.flesh_tone_opt = FleshToneOption.objects.filter(flesh_tone_txt=request.POST['fleshtone_options'])[0]
-            # new_personal_data.gender_opt = FleshToneOption.objects.filter(flesh_tone_txt=request.POST['fleshtone_options'])[0]
-    context = {'fleshtone_options': fleshtone_options, 'marital_status_options': marital_status_options,
-               'schooling_options': schooling_options, 'payment_options': payment_options,
-               'religion_options': religion_options, 'new_patient': new_patient, 'new_personal_data': new_personal_data,
-               'test': test}
+        social_demographic_form = SocialDemographicDataForm(request.POST)
+        social_history_form = SocialHistoryDataForm(request.POST)
+        if patient_form.is_valid():
+            new_patient = patient_form.save(commit=False)
+            new_patient.gender_opt = GenderOption.objects.filter(gender_txt=request.POST['gender_opt'])[0]
+            new_patient.marital_status_opt = MaritalStatusOption.objects.filter(marital_status_txt=request.POST['marital_status_opt'])[0]
+            new_patient.save()
+            if social_demographic_form.is_valid():
+                new_social_demographic_data = social_demographic_form.save(commit=False)
+                new_social_demographic_data.id_patient = new_patient
+                new_social_demographic_data.religion_opt = ReligionOption.objects.filter(religion_txt=request.POST['religion_opt'])[0]
+                new_social_demographic_data.payment_opt = PaymentOption.objects.filter(payment_txt=request.POST['payment_opt'])[0]
+                new_social_demographic_data.flesh_tone_opt = FleshToneOption.objects.filter(flesh_tone_txt=request.POST['flesh_tone_opt'])[0]
+                new_social_demographic_data.schooling_opt = SchoolingOption.objects.filter(schooling_txt=request.POST['schooling_opt'])[0]
+                new_social_demographic_data.save()
+                new_social_demographic_data = None
+            if social_history_form.is_valid() and False:
+                new_social_history_data = social_history_form.save(commit=False)
+                new_social_history_data.id_patient = new_patient
+                new_social_history_data.save()
+                new_social_history_data = None
+    context = {'gender_options': gender_options, 'new_social_history_data': new_social_history_data,
+               'new_social_demographic_data':new_social_demographic_data,'flesh_tone_options': flesh_tone_options,
+               'marital_status_options':marital_status_options,'schooling_options':schooling_options,
+               'payment_options':payment_options,'religion_options':religion_options,'new_patient':new_patient,
+               'new_personal_data':new_personal_data}
     return render(request, 'quiz/pg_home.html', context)
 
 
@@ -66,13 +78,7 @@ def patients(request):
 
 def patient(request, patient_id):
     p = Patient.objects.get(nr_record=patient_id)
-    #personal = PersonalData.objects.get(id_patient=patient_id)
-    context = {'name': p.name_txt, 'cpf': p.cpf_id} #debug: incluir "'data_nasc': personal.dt_birth_txt}"
-    # Aqui passamos o context para quiz/pg_home.html.
-    # Precisamos mostrar os dados de forma que
-    # chamemos pg_home(request) para que se dê o
-    # processo de atualização do banco de dados
-    # caso o usuário submeta novamente o formulário
+    context = {'name': p.name_txt, 'cpf': p.cpf_id}
     return render(request, 'quiz/pg_home.html', context)
 
 

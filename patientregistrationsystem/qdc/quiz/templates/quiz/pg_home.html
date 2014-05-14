@@ -57,20 +57,20 @@
 
         <li class="active">
             {% if perms.quiz.add_patient %}
-            <a href="#mainMenuAddTab" data-toggle="tab">
-                {% else %}
+                <a href="#mainMenuAddTab" data-toggle="tab">
+            {% else %}
                 <a>
-                    {% endif %}
-                    Cadastro</a>
+            {% endif %}
+            Cadastro</a>
         </li>
 
         <li>
             {% if perms.quiz.view_patient %}
-            <a href="#mainMenuSearchTab" data-toggle="tab">
-                {% else %}
+                <a href="#mainMenuSearchTab" data-toggle="tab">
+            {% else %}
                 <a>
-                    {% endif %}
-                    Busca</a>
+            {% endif %}
+            Busca</a>
         </li>
 
         <li><a href="#mainMenuContactTab" data-toggle="tab">Contato</a>
@@ -103,6 +103,8 @@
 <div class="col-md-1"></div>
 <div class="col-md-10">
 <div class="container span6 offset3 well ">
+
+
     <div class="row">
         <div class="col-md-12">
             <div class="form-group">
@@ -131,7 +133,7 @@
                 <div class="input-group input-group-sm">
                     <!-- verificar qual icone vai aparecer pra RG-->
                     <span class="input-group-addon"><span class="glyphicon glyphicon-user"></span></span>
-                    <input class="form-control" name="rg" placeholder="Entrar RG" id="rg" type="text">
+                    <input class="form-control" name="rg_id" placeholder="Entrar RG" id="rg_id" type="text">
                 </div>
             </div>
         </div>
@@ -143,7 +145,7 @@
 
                 <div class="input-group input-group-sm">
                     <span class="input-group-addon"> <span class="glyphicon glyphicon-flag"></span></span>
-                    <input class="form-control" name="naturalOf" placeholder="Entrar Naturalidade" id="naturalOf" type="text">
+                    <input class="form-control" name="natural_of_txt" placeholder="Entrar Naturalidade" id="naturalOf" type="text">
                 </div>
             </div>
         </div>
@@ -154,7 +156,7 @@
                 <div class="input-group input-group-sm">
                     <span class="input-group-addon"> <span class="glyphicon glyphicon-flag"></span></span>
 
-                    <div class="bfh-selectbox bfh-countries" data-name="citizenship" data-country="BR" id="id_chosen_country" data-flags="true"></div>
+                    <div class="bfh-selectbox bfh-countries" data-name="citizenship_txt" data-country="BR" id="id_chosen_country" data-flags="true"></div>
                 </div>
             </div>
         </div>
@@ -166,7 +168,7 @@
 
                 <div class="input-group  input-group-sm ">
                     <span class="input-group-addon"> <span class="glyphicon glyphicon-home"></span></span>
-                    <input name="street" class="form-control" placeholder="Rua - Complemento " id="street" type="text">
+                    <input name="street_txt" class="form-control" placeholder="Rua - Complemento " id="street_txt" type="text">
                 </div>
             </div>
         </div>
@@ -176,7 +178,7 @@
 
                 <div class="input-group  input-group-sm">
                     <span class="input-group-addon"> <span class="glyphicon glyphicon-home"></span></span>
-                    <input name="zipcode" class="form-control" placeholder="Entrar CEP" id="zipcode" type="text">
+                    <input name="zipcode_number" class="form-control" placeholder="Entrar CEP" id="zipcode" type="text">
                 </div>
             </div>
         </div>
@@ -189,8 +191,7 @@
                 <div class="input-group  input-group-sm">
                     <span class="input-group-addon"> <span class="glyphicon glyphicon-home"></span></span>
 
-                    <div class="bfh-selectbox bfh-countries" data-name="country" data-country="BR" data-flags="true"
-                         id="id_country_state_address"></div>
+                    <div class="bfh-selectbox bfh-countries" data-name="country_txt" data-country="BR" data-flags="true" id="id_country_state_address"></div>
                 </div>
             </div>
         </div>
@@ -201,8 +202,7 @@
                 <div class="input-group  input-group-sm">
                     <span class="input-group-addon"> <span class="glyphicon glyphicon-home"></span></span>
 
-                    <div class="bfh-selectbox bfh-states" data-name="state" data-country="id_country_state_address"
-                         id="id_chosen_state"></div>
+                    <div class="bfh-selectbox bfh-states" data-name="state_txt" data-country="id_country_state_address" id="id_chosen_state"></div>
                 </div>
             </div>
         </div>
@@ -214,7 +214,7 @@
 
                 <div class="input-group  input-group-sm ">
                     <span class="input-group-addon"> <span class="glyphicon glyphicon-home"></span></span>
-                    <input class="form-control" name="city" placeholder="Entrar cidade" id="city" type="text">
+                    <input class="form-control" name="city_txt" placeholder="Entrar cidade" id="city" type="text">
                 </div>
             </div>
         </div>
@@ -224,7 +224,7 @@
 
                 <div class="input-group  input-group-sm">
                     <span class="input-group-addon"> <span class="glyphicon glyphicon-earphone"></span></span>
-                    <input class="form-control" name="phone" placeholder="Entrar telefone para contato" id="phone" type="text">
+                    <input class="form-control" name="phone_number" placeholder="Entrar telefone para contato" id="phone" type="text">
                 </div>
             </div>
         </div>
@@ -236,7 +236,7 @@
 
                 <div class="input-group input-group-sm">
                     <span class="input-group-addon"> <span class="glyphicon glyphicon-earphone"></span></span>
-                    <input class="form-control" name="celphone" placeholder="Entrar celular" id="celphone" type="text">
+                    <input class="form-control" name="cellphone_number" placeholder="Entrar celular" id="cellphone" type="text">
                 </div>
             </div>
         </div>
@@ -246,7 +246,7 @@
 
                 <div class="input-group input-group-sm">
                     <span class="input-group-addon"> <span class="glyphicon glyphicon-envelope"></span></span>
-                    <input class="form-control" name="email" placeholder="Entrar e-mail" id="email" type="email">
+                    <input class="form-control" name="email_txt" placeholder="Entrar e-mail" id="email" type="email">
                 </div>
             </div>
         </div>
@@ -258,7 +258,7 @@
 
                 <div class="input-group input-group-sm">
                     <span class="input-group-addon"> <span class="glyphicon glyphicon-list-alt"></span></span>
-                    <input class="form-control" name="records_number" placeholder="Entrar número do prontuário" id="records_number" type="text">
+                    <input class="form-control" name="medical_record_number" placeholder="Entrar número do prontuário" id="records_number" type="text">
                 </div>
             </div>
         </div>
@@ -290,16 +290,16 @@
     <div class="col-xs-6 col-sm-6">
         <div class="form-group">
             <label>Sexo</label>
-
             <div class="input-group input-group-sm">
-                <div class="radio-inline">
-                    <label>
-                        <input name="optionsRadios" id="optionsRadiosa1" value="option1" checked="" type="radio">Masculino</label>
-                </div>
-                <div class="radio-inline">
-                    <label>
-                        <input name="optionsRadios" id="optionsRadiosa2" value="option2" type="radio">Feminino</label>
-                </div>
+                {% if gender_options%}
+                <select name="gender_opt" class="form-control" id="gender_id">
+                    {% for gender in gender_options%}
+                    <option>{{gender.gender_txt}}</option>
+                    {% endfor %}
+                </select>
+                {% else %}
+                <p>No gender available.</p>
+                {% endif %}
             </div>
         </div>
     </div>
@@ -311,7 +311,7 @@
 
             <div class="input-group  input-group-sm">
                 {% if religion_options %}
-                <select class="form-control" name="religion_id" id="religion_id">
+                <select class="form-control" name="religion_opt" id="religion_id">
                     {% for religion in religion_options%}
                     <option>{{religion.religion_txt}}</option>
                     {% endfor %}
@@ -328,7 +328,7 @@
 
             <div class="input-group  input-group-sm">
                 {% if marital_status_options%}
-                <select class="form-control" name="marital_status"  id="marital_status">
+                <select class="form-control" name="marital_status_opt"  id="marital_status">
                     {% for marital_status in marital_status_options%}
                     <option>{{marital_status.marital_status_txt}}</option>
                     {% endfor %}
@@ -383,15 +383,18 @@
 <div class="row">
     <div class="col-xs-6 col-sm-12">
         <div class="form-group">
-            <label for="payment_option">Qual a forma de pagamento do tratamento realizado?</label>
+            <label>Qual a forma de pagamento do tratamento realizado?</label>
 
             <div class="input-group  input-group-sm">
-
-                <select class="form-control" name="payment_option" id="payment_option">
+				{% if payment_options%}
+                <select class="form-control" name="payment_opt" id="payment_id">
                     {% for payment in payment_options %}
                     <option>{{payment.payment_txt}}</option>
                     {% endfor %}
                 </select>
+				{% else %}
+				<p>No payment option available.</p>
+				{% endif %}
             </div>
         </div>
     </div>
@@ -403,8 +406,8 @@
 
             <div class="input-group  input-group-sm">
 
-                <select class="form-control" name="fleshtone_options" id="skin_color">
-                    {% for fleshtone in fleshtone_options %}
+                <select class="form-control" name="flesh_tone_opt" id="skin_color">
+                    {% for fleshtone in flesh_tone_options %}
                     <option>{{fleshtone.flesh_tone_txt}}</option>
                     {% endfor %}
                 </select>
@@ -448,7 +451,7 @@
             <label>Grau de instrução do chefe de família - Critério Brasil 2013</label>
 
             <div class="input-group input-group-sm">
-                <select name="scolarity" class="form-control" id="scolarity">
+                <select name="schooling_opt" class="form-control" id="scolarity">
                     {% for schooling in schooling_options %}
                     <option>{{schooling.schooling_txt}}</option>
                     {% endfor %}
@@ -471,23 +474,23 @@
     <div class="col-sm-7">
         <div class="radio-inline">
             <label>
-                <input name="TVoptionsRadios" id="TVoptionsRadios0" value="TVoption0" type="radio">0</label>
+                <input name="tv_opt" id="tv_opt0" value="0" type="radio">0</label>
         </div>
         <div class="radio-inline">
             <label>
-                <input name="TVoptionsRadios" id="TVoptionsRadios1" value="TVoption1" type="radio">1</label>
+                <input name="tv_opt" id="tv_opt1" value="1" type="radio">1</label>
         </div>
         <div class="radio-inline">
             <label>
-                <input name="TVoptionsRadios" id="TVoptionsRadios2" value="TVoption2" type="radio">2</label>
+                <input name="tv_opt" id="tv_opt2" value="2" type="radio">2</label>
         </div>
         <div class="radio-inline">
             <label>
-                <input name="TVoptionsRadios" id="TVoptionsRadios3" value="TVoption3" type="radio">3</label>
+                <input name="tv_opt" id="tv_opt3" value="3" type="radio">3</label>
         </div>
         <div class="radio-inline">
             <label>
-                <input name="TVoptionsRadios" id="TVoptionsRadios4" value="TVoption4" type="radio">4 ou +</label>
+                <input name="tv_opt" id="tv_opt4" value="4" type="radio">4 ou +</label>
         </div>
     </div>
 </div>
@@ -497,23 +500,23 @@
 <div class="col-sm-7">
     <div class="radio-inline">
         <label>
-            <input name="DVDoptionsRadios" id="DVDoptionsRadios0" value="DVDoption0" type="radio">0</label>
+            <input name="dvd_opt" id="dvd_opt0" value="0" type="radio">0</label>
     </div>
     <div class="radio-inline">
         <label>
-            <input name="DVDoptionsRadios" id="DVDoptionsRadios1" value="DVDoption1" type="radio">1</label>
+            <input name="dvd_opt" id="dvd_opt1" value="1" type="radio">1</label>
     </div>
     <div class="radio-inline">
         <label>
-            <input name="DVDoptionsRadios" id="DVDoptionsRadios2" value="DVDoption2" type="radio">2</label>
+            <input name="dvd_opt" id="dvd_opt2" value="2" type="radio">2</label>
     </div>
     <div class="radio-inline">
         <label>
-            <input name="DVDoptionsRadios" id="DVDoptionsRadios3" value="DVDoption3" type="radio">3</label>
+            <input name="dvd_opt" id="dvd_opt3" value="3" type="radio">3</label>
     </div>
     <div class="radio-inline">
         <label>
-            <input name="DVDoptionsRadios" id="DVDoptionsRadios4" value="DVDoption4" type="radio">4 ou +</label>
+            <input name="dvd_opt" id="dvd_opt4" value="4" type="radio">4 ou +</label>
     </div>
 </div>
 <div class="form-group">
@@ -522,23 +525,23 @@
     <div class="col-sm-7">
         <div class="radio-inline">
             <label>
-                <input name="RADIOoptions" id="RADIOoptions0" value="RADIOoption0" type="radio">0</label>
+                <input name="radio_opt" id="radio_opt0" value="0" type="radio">0</label>
         </div>
         <div class="radio-inline">
             <label>
-                <input name="RADIOoptions" id="RADIOoptions1" value="RADIOoption1" type="radio">1</label>
+                <input name="radio_opt" id="radio_opt1" value="1" type="radio">1</label>
         </div>
         <div class="radio-inline">
             <label>
-                <input name="RADIOoptions" id="RADIOoptions2" value="RADIOoption2" type="radio">2</label>
+                <input name="radio_opt" id="radio_opt2" value="2" type="radio">2</label>
         </div>
         <div class="radio-inline">
             <label>
-                <input name="RADIOoptions" id="RADIOoptions3" value="RADIOoption3" type="radio">3</label>
+                <input name="radio_opt" id="radio_opt3" value="3" type="radio">3</label>
         </div>
         <div class="radio-inline">
             <label>
-                <input name="RADIOoptions" id="RADIOoptions4" value="RADIOoption4" type="radio">4 ou +</label>
+                <input name="radio_opt" id="radio_opt4" value="4" type="radio">4 ou +</label>
         </div>
     </div>
 </div>
@@ -548,27 +551,27 @@
     <div class="col-sm-7">
         <div class="radio-inline">
             <label>
-                <input name="BathsoptionsRadios" id="BathsoptionsRadios0" value="Bathsoption0"
+                <input name="bath_opt" id="bath_opt0" value="0"
                        type="radio">0</label>
         </div>
         <div class="radio-inline">
             <label>
-                <input name="BathsoptionsRadios" id="BathsoptionsRadios1" value="Bathsoption1"
+                <input name="bath_opt" id="bath_opt1" value="1"
                        type="radio">1</label>
         </div>
         <div class="radio-inline">
             <label>
-                <input name="BathsoptionsRadios" id="BathsoptionsRadios2" value="Bathsoption2"
+                <input name="bath_opt" id="bath_opt2" value="2"
                        type="radio">2</label>
         </div>
         <div class="radio-inline">
             <label>
-                <input name="BathsoptionsRadios" id="BathsoptionsRadios3" value="Bathsoption3"
+                <input name="bath_opt" id="bath_opt3" value="3"
                        type="radio">3</label>
         </div>
         <div class="radio-inline">
             <label>
-                <input name="BathsoptionsRadios" id="BathsoptionsRadios4" value="Bathsoption4"
+                <input name="bath_opt" id="bath_opt4" value="4"
                        type="radio">4 ou +</label>
         </div>
     </div>
@@ -579,23 +582,23 @@
     <div class="col-sm-7">
         <div class="radio-inline">
             <label>
-                <input name="AutooptionsRadios" id="AutooptionsRadios0" value="Autooption0" type="radio">0</label>
+                <input name="automobile_opt" id="automobile_opt0" value="0" type="radio">0</label>
         </div>
         <div class="radio-inline">
             <label>
-                <input name="AutooptionsRadios" id="AutooptionsRadios1" value="Autooption1" type="radio">1</label>
+                <input name="automobile_opt" id="automobile_opt1" value="1" type="radio">1</label>
         </div>
         <div class="radio-inline">
             <label>
-                <input name="AutooptionsRadios" id="AutooptionsRadios2" value="Autooption2" type="radio">2</label>
+                <input name="automobile_opt" id="automobile_opt2" value="2" type="radio">2</label>
         </div>
         <div class="radio-inline">
             <label>
-                <input name="AutooptionsRadios" id="AutooptionsRadios3" value="Autooption3" type="radio">3</label>
+                <input name="automobile_opt" id="automobile_opt3" value="3" type="radio">3</label>
         </div>
         <div class="radio-inline">
             <label>
-                <input name="AutooptionsRadios" id="AutooptionsRadios4" value="Autooption4" type="radio">4 ou +</label>
+                <input name="automobile_opt" id="automobile_opt4" value="4" type="radio">4 ou +</label>
         </div>
     </div>
 </div>
@@ -605,27 +608,27 @@
     <div class="col-sm-7">
         <div class="radio-inline">
             <label>
-                <input name="EmployoptionsRadios" id="EmployoptionsRadios0" value="Employoption0"
+                <input name="house_maid_opt" id="house_maid_opt0" value="0"
                        type="radio">0</label>
         </div>
         <div class="radio-inline">
             <label>
-                <input name="EmployoptionsRadios" id="EmployoptionsRadios1" value="Employoption1"
+                <input name="house_maid_opt" id="house_maid_opt1" value="1"
                        type="radio">1</label>
         </div>
         <div class="radio-inline">
             <label>
-                <input name="EmployoptionsRadios" id="EmployoptionsRadios2" value="Employoption2"
+                <input name="house_maid_opt" id="house_maid_opt2" value="2"
                        type="radio">2</label>
         </div>
         <div class="radio-inline">
             <label>
-                <input name="EmployoptionsRadios" id="EmployoptionsRadios3" value="Employoption3"
+                <input name="house_maid_opt" id="house_maid_opt3" value="3"
                        type="radio">3</label>
         </div>
         <div class="radio-inline">
             <label>
-                <input name="EmployoptionsRadios" id="EmployoptionsRadios4" value="Employoption4"
+                <input name="house_maid_opt" id="house_maid_opt4" value="4"
                        type="radio">4 ou +</label>
         </div>
     </div>
@@ -636,23 +639,23 @@
     <div class="col-sm-7">
         <div class="radio-inline">
             <label>
-                <input name="WMoptionsRadios" id="WMoptionsRadios0" value="WMoption0" type="radio">0</label>
+                <input name="wash_machine_opt" id="wash_machine_opt0" value="0" type="radio">0</label>
         </div>
         <div class="radio-inline">
             <label>
-                <input name="WMoptionsRadios" id="WMoptionsRadios1" value="WMoption1" type="radio">1</label>
+                <input name="wash_machine_opt" id="wash_machine_opt1" value="1" type="radio">1</label>
         </div>
         <div class="radio-inline">
             <label>
-                <input name="WMoptionsRadios" id="WMoptionsRadios2" value="WMoption2" type="radio">2</label>
+                <input name="wash_machine_opt" id="wash_machine_opt2" value="2" type="radio">2</label>
         </div>
         <div class="radio-inline">
             <label>
-                <input name="WMoptionsRadios" id="WMoptionsRadios3" value="WMoption3" type="radio">3</label>
+                <input name="wash_machine_opt" id="wash_machine_opt3" value="3" type="radio">3</label>
         </div>
         <div class="radio-inline">
             <label>
-                <input name="WMoptionsRadios" id="WMsoptionsRadios4" value="WMoption4" type="radio">4 ou +</label>
+                <input name="wash_machine_opt" id="WMsoptionsRadios4" value="4" type="radio">4 ou +</label>
         </div>
     </div>
 </div>
@@ -662,27 +665,27 @@
     <div class="col-sm-7">
         <div class="radio-inline">
             <label>
-                <input name="RefrigoptionsRadios" id="RefrigoptionsRadios0" value="Refrigoption0"
+                <input name="refrigerator_opt" id="refrigerator_opt0" value="0"
                        type="radio">0</label>
         </div>
         <div class="radio-inline">
             <label>
-                <input name="RefrigoptionsRadios" id="RefrigoptionsRadios1" value="Refrigoption1"
+                <input name="refrigerator_opt" id="refrigerator_opt1" value="1"
                        type="radio">1</label>
         </div>
         <div class="radio-inline">
             <label>
-                <input name="RefrigoptionsRadios" id="RefrigoptionsRadios2" value="Refrigoption2"
+                <input name="refrigerator_opt" id="refrigerator_opt2" value="2"
                        type="radio">2</label>
         </div>
         <div class="radio-inline">
             <label>
-                <input name="RefrigoptionsRadios" id="RefrigoptionsRadios3" value="Refrigoption3"
+                <input name="refrigerator_opt" id="refrigerator_opt3" value="3"
                        type="radio">3</label>
         </div>
         <div class="radio-inline">
             <label>
-                <input name="RefrigoptionsRadios" id="RefrigoptionsRadios4" value="Refrigoption4"
+                <input name="refrigerator_opt" id="refrigerator_opt4" value="4"
                        type="radio">4 ou +</label>
         </div>
     </div>
@@ -693,27 +696,27 @@
     <div class="col-sm-7">
         <div class="radio-inline">
             <label>
-                <input name="FreezoptionsRadios" id="FreezoptionsRadios0" value="Freezoption0"
+                <input name="freezer_opt" id="freezer_opt0" value="0"
                        type="radio">0</label>
         </div>
         <div class="radio-inline">
             <label>
-                <input name="FreezoptionsRadios" id="FreezoptionsRadios1" value="Freezoption1"
+                <input name="freezer_opt" id="freezer_opt1" value="1"
                        type="radio">1</label>
         </div>
         <div class="radio-inline">
             <label>
-                <input name="FreezoptionsRadios" id="FreezoptionsRadios2" value="Freezoption2"
+                <input name="freezer_opt" id="freezer_opt2" value="2"
                        type="radio">2</label>
         </div>
         <div class="radio-inline">
             <label>
-                <input name="FreezoptionsRadios" id="FreezoptionsRadios3" value="Freezoption3"
+                <input name="freezer_opt" id="freezer_opt3" value="3"
                        type="radio">3</label>
         </div>
         <div class="radio-inline">
             <label>
-                <input name="RefrigoptionsRadios" id="FreezoptionsRadios4" value="Refrigoption4"
+                <input name="freezer_opt" id="freezer_opt4" value="4"
                        type="radio">4 ou +</label>
         </div>
     </div>
@@ -746,13 +749,13 @@
                                 <div class="input-group  input-group-sm">
                                     <div class="radio-inline">
                                         <label>
-                                            <input name="smokingOptionsRadios" id="smokingOptionsRadios1"
-                                                   value="smokingOption1" type="radio">Sim</label>
+                                            <input name="smoker" id="smokingOptionsRadios1"
+                                                   value="1" type="radio">Sim</label>
                                     </div>
                                     <div class="radio-inline">
                                         <label>
-                                            <input name="smokingOptionsRadios" id="smokingOptionsRadios2"
-                                                   value="smokingOption2" type="radio">Não</label>
+                                            <input name="smoker" id="smokingOptionsRadios2"
+                                                   value="0" type="radio">Não</label>
                                     </div>
                                 </div>
                             </div>
@@ -763,7 +766,7 @@
                             <label>Cigarros/Dia</label>
 
                             <div class="input-group  input-group-sm">
-                                <select class="form-control" id="id_amount_cigarrets">
+                                <select name="amount_cigarettes_opt" class="form-control" id="id_amount_cigarrets">
                                     <option id="amountCigOptionsRadios1">menos de 1 maço</option>
                                     <option id="amountCigOptionsRadios2">1-2 maços</option>
                                     <option id="amountCigOptionsRadios3">mais de 3 maços</option>
@@ -779,13 +782,13 @@
                                 <div class="input-group  input-group-sm">
                                     <div class="radio-inline">
                                         <label>
-                                            <input name="exSmokerOptionsRadios" id="exSmokerOptionsRadios1"
-                                                   value="exSmokergOption1" type="radio">Sim</label>
+                                            <input name="ex_smoker" id="exSmokerOptionsRadios1"
+                                                   value="1" type="radio">Sim</label>
                                     </div>
                                     <div class="radio-inline">
                                         <label>
-                                            <input name="exSmokerOptionsRadios" id="exSmokerOptionsRadios2"
-                                                   value="exSmokerOption2" type="radio">Não</label>
+                                            <input name="ex_smoker" id="exSmokerOptionsRadios2"
+                                                   value="0" type="radio">Não</label>
                                     </div>
                                 </div>
                             </div>
@@ -800,13 +803,13 @@
                             <div class="input-group  input-group-sm">
                                 <div class="radio-inline">
                                     <label>
-                                        <input name="alcoholismOptionsRadios" id="alcoholismOptionsRadios1"
-                                               value="alcoholismOption1" type="radio"> Sim</label>
+                                        <input name="alcoholic" id="alcoholismOptionsRadios1"
+                                               value="1" type="radio"> Sim</label>
                                 </div>
                                 <div class="radio-inline">
                                     <label>
-                                        <input name="alcoholismOptionsRadios" id="alcoholismOptionsRadios2"
-                                               value="alcoholismOption2" type="radio"> Não</label>
+                                        <input name="alcoholic" id="alcoholismOptionsRadios2"
+                                               value="0" type="radio"> Não</label>
                                 </div>
                             </div>
                         </div>
@@ -816,10 +819,10 @@
                             <label>Frequência</label>
 
                             <div class="input-group  input-group-sm">
-                                <select class="form-control" id="id_freqSmok">
-                                    <option id="freqSmokOptionsRadios1">esporadicamente</option>
-                                    <option id="freqSmokOptionsRadios2"> todos os finais de semana</option>
-                                    <option id="freqSmokOptionsRadios3">todos os dias</option>
+                                <select name="alcohol_frequency" class="form-control" id="id_freqSmok">
+                                    <option id="freqSmokOptionsRadios1" value="1">esporadicamente</option>
+                                    <option id="freqSmokOptionsRadios2" value="2"> todos os finais de semana</option>
+                                    <option id="freqSmokOptionsRadios3" value="3">todos os dias</option>
                                 </select>
                             </div>
                         </div>
@@ -829,11 +832,11 @@
                             <label>Tempo</label>
 
                             <div class="input-group  input-group-sm">
-                                <select class="form-control" id="id_peridoSmok">
-                                    <option id="peridoSmokOptionsRadios1">meses</option>
-                                    <option id="peridoSmokOptionsRadios2"> 1-5 anos</option>
-                                    <option id="peridoSmokOptionsRadios3">5-10 anos</option>
-                                    <option id="peridoSmokOptionsRadios10">mais de 10 anos</option>
+                                <select name="alcohol_period_opt" class="form-control" id="id_peridoSmok">
+                                    <option id="peridoSmokOptionsRadios1" value="1">meses</option>
+                                    <option id="peridoSmokOptionsRadios2" value="2"> 1-5 anos</option>
+                                    <option id="peridoSmokOptionsRadios3" value="3">5-10 anos</option>
+                                    <option id="peridoSmokOptionsRadios10" value="4">mais de 10 anos</option>
                                 </select>
                             </div>
                         </div>
@@ -847,18 +850,18 @@
                             <div class="input-group  input-group-sm">
                                 <div class="radio-inline">
                                     <label>
-                                        <input name="drugsOptionsRadios" id="drugsOptionsRadios1"
-                                               value="drugsOption1" type="radio"> Já fez</label>
+                                        <input name="drugs_opt" id="drugsOptionsRadios1"
+                                               value="1" type="radio"> Já fez</label>
                                 </div>
                                 <div class="radio-inline">
                                     <label>
-                                        <input name="drugsOptionsRadios" id="drugsOptionsRadios2"
-                                               value="drugsOption2" type="radio"> Faz</label>
+                                        <input name="drugs_opt" id="drugsOptionsRadios2"
+                                               value="2" type="radio"> Faz</label>
                                 </div>
                                 <div class="radio-inline">
                                     <label>
-                                        <input name="drugsOptionsRadios" id="drugsOptionsRadios3"
-                                               value="drugsOption3" type="radio"> Nunca fez</label>
+                                        <input name="drugs_opt" id="drugsOptionsRadios3"
+                                               value="3" type="radio"> Nunca fez</label>
                                 </div>
                             </div>
                         </div>
