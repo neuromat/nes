@@ -141,7 +141,7 @@
                 <div class="input-group input-group-sm">
                     <!-- verificar qual icone vai aparecer pra RG-->
                     <span class="input-group-addon"><span class="glyphicon glyphicon-user"></span></span>
-                    <input class="form-control" name="rg_id" placeholder="Entrar RG" id="rg_id" type="text">
+                    <input class="form-control" name="rg_id" placeholder="Entrar RG" id="rg_id" type="text" value="{{ rg }}">
                 </div>
             </div>
         </div>
@@ -153,7 +153,7 @@
 
                 <div class="input-group input-group-sm">
                     <span class="input-group-addon"> <span class="glyphicon glyphicon-flag"></span></span>
-                    <input class="form-control" name="natural_of_txt" placeholder="Entrar Naturalidade" id="naturalOf" type="text">
+                    <input class="form-control" name="natural_of_txt" placeholder="Entrar Naturalidade" id="naturalOf" type="text" value="{{ place_of_birth }}">
                 </div>
             </div>
         </div>
@@ -164,7 +164,7 @@
                 <div class="input-group input-group-sm">
                     <span class="input-group-addon"> <span class="glyphicon glyphicon-flag"></span></span>
 
-                    <div class="bfh-selectbox bfh-countries" data-name="citizenship_txt" data-country="BR" id="id_chosen_country" data-flags="true"></div>
+                    <div class="bfh-selectbox bfh-countries" data-name="citizenship_txt" data-country="BR" id="id_chosen_country" data-flags="true" value="{{ citizenship }}"></div>
                 </div>
             </div>
         </div>
@@ -176,7 +176,7 @@
 
                 <div class="input-group  input-group-sm ">
                     <span class="input-group-addon"> <span class="glyphicon glyphicon-home"></span></span>
-                    <input name="street_txt" class="form-control" placeholder="Rua - Complemento " id="street_txt" type="text">
+                    <input name="street_txt" class="form-control" placeholder="Rua - Complemento " id="street_txt" type="text" value="{{ street }}">
                 </div>
             </div>
         </div>
@@ -186,7 +186,7 @@
 
                 <div class="input-group  input-group-sm">
                     <span class="input-group-addon"> <span class="glyphicon glyphicon-home"></span></span>
-                    <input name="zipcode_number" class="form-control" placeholder="Entrar CEP" id="zipcode" type="text">
+                    <input name="zipcode_number" class="form-control" placeholder="Entrar CEP" id="zipcode" type="text" value="{{ zipcode }}">
                 </div>
             </div>
         </div>
@@ -198,7 +198,8 @@
 
                 <div class="input-group  input-group-sm">
                     <span class="input-group-addon"> <span class="glyphicon glyphicon-home"></span></span>
-                    <div class="bfh-selectbox bfh-countries" data-name="country_txt" data-country="BR" data-flags="true" id="id_country_state_address"></div>
+
+                    <div class="bfh-selectbox bfh-countries" data-name="country_txt" data-country="BR" data-flags="true" id="id_country_state_address" value="{{ country }}"></div>
                 </div>
             </div>
         </div>
@@ -209,7 +210,7 @@
                 <div class="input-group  input-group-sm">
                     <span class="input-group-addon"> <span class="glyphicon glyphicon-home"></span></span>
 
-                    <div class="bfh-selectbox bfh-states" data-name="state_txt" data-country="id_country_state_address" id="id_chosen_state"></div>
+                    <div class="bfh-selectbox bfh-states" data-name="state_txt" data-country="id_country_state_address" id="id_chosen_state" value=""></div>
                 </div>
             </div>
         </div>
@@ -221,7 +222,7 @@
 
                 <div class="input-group  input-group-sm ">
                     <span class="input-group-addon"> <span class="glyphicon glyphicon-home"></span></span>
-                    <input class="form-control" name="city_txt" placeholder="Entrar cidade" id="city" type="text">
+                    <input class="form-control" name="city_txt" placeholder="Entrar cidade" id="city" type="text" value="{{ city }}">
                 </div>
             </div>
         </div>
@@ -231,7 +232,7 @@
 
                 <div class="input-group  input-group-sm">
                     <span class="input-group-addon"> <span class="glyphicon glyphicon-earphone"></span></span>
-                    <input class="form-control" name="phone_number" placeholder="Entrar telefone para contato" id="phone" type="text">
+                    <input class="form-control" name="phone_number" placeholder="Entrar telefone para contato" id="phone" type="text" value="{{ phone }}">
                 </div>
             </div>
         </div>
@@ -243,7 +244,7 @@
 
                 <div class="input-group input-group-sm">
                     <span class="input-group-addon"> <span class="glyphicon glyphicon-earphone"></span></span>
-                    <input class="form-control" name="cellphone_number" placeholder="Entrar celular" id="cellphone" type="text">
+                    <input class="form-control" name="cellphone_number" placeholder="Entrar celular" id="cellphone" type="text" value="{{ cellphone }}">
                 </div>
             </div>
         </div>
@@ -253,7 +254,7 @@
 
                 <div class="input-group input-group-sm">
                     <span class="input-group-addon"> <span class="glyphicon glyphicon-envelope"></span></span>
-                    <input class="form-control" name="email_txt" placeholder="Entrar e-mail" id="email" type="email">
+                    <input class="form-control" name="email_txt" placeholder="Entrar e-mail" id="email" type="email" value="{{ email }}">
                 </div>
             </div>
         </div>
@@ -265,7 +266,7 @@
 
                 <div class="input-group input-group-sm">
                     <span class="input-group-addon"> <span class="glyphicon glyphicon-list-alt"></span></span>
-                    <input class="form-control" name="medical_record_number" placeholder="Entrar número do prontuário" id="records_number" type="text">
+                    <input class="form-control" name="medical_record_number" placeholder="Entrar número do prontuário" id="records_number" type="text" value="{{ medical_record }}">
                 </div>
             </div>
         </div>
@@ -423,42 +424,13 @@
     </div>
 
 </div>
-<!--
-<div class="row">
-    <div class="col-xs-6 col-sm-6">
-        <div class="form-group">
-            <label for="scolarity">Escolaridade - Critério Brasil 2008</label>
-
-            <div class="input-group  input-group-sm">
-                <select class="form-control" id="scolarity">
-                    {% for schooling in schooling_options %}
-                    <option>{{schooling.schooling_txt}}</option>
-                    {% endfor %}
-                </select>
-            </div>
-        </div>
-    </div>
-    <div class="col-xs-6 col-sm-6">
-        <div class="form-group">
-            <div class="form-group">
-                <label>Tempo de estudo (anos)</label>
-
-                <div class="input-group  input-group-sm ">
-                    <span class="input-group-addon"> <span class="glyphicon glyphicon-book"></span></span>
-                    <input class="form-control" name="years_studying_int" placeholder="Entrar tempo de estudo " id="total_studying" type="text">
-                </div>
-            </div>
-        </div>
-    </div>
-</div>
--->
 <div class="row">
     <div class="col-xs-6 col-sm-12">
         <div class="form-group">
             <label>Grau de instrução do chefe de família - Critério Brasil 2013</label>
 
             <div class="input-group input-group-sm">
-                <select name="schooling_opt" class="form-control" id="schooling_opt">
+                <select name="schooling_opt" class="form-control" id="scolarity">
                     {% for schooling in schooling_options %}
                     <option>{{schooling.schooling_txt}}</option>
                     {% endfor %}
@@ -773,9 +745,9 @@
                             <label>Cigarros/Dia</label>
 
                             <div class="input-group  input-group-sm">
-                                <select name="amount_cigarettes_opt" class="form-control" id="id_amount_cigarrets">
+                                <select name="amount_cigarettes_opt" class="form-control" id="id_amount_cigarettes">
                                     <option id="amountCigOptionsRadios1" value="1">menos de 1 maço</option>
-                                    <option id="amountCigOptionsRadios2" value="2"> 1-2 maços</option>
+                                    <option id="amountCigOptionsRadios2" value="2">1-2 maços</option>
                                     <option id="amountCigOptionsRadios3" value="3">mais de 3 maços</option>
                                 </select>
                             </div>
@@ -1519,23 +1491,6 @@
                     </div>
                 </div>
             </div>
-            <!--
-            <div class="row">
-                <div class="col-xs-6 col-sm-12">
-                    <div class="form-group">
-                        <label>História prévia de lesão</label>
-
-                        <div class="input-group  input-group-sm">
-                            <select class="form-control" id="id_snc_snp">
-                                <option id="snc_snpOptionsRadios1">SNC</option>
-                                <option id="snc_snpOptionsRadios2">SNP</option>
-                                <option id="snc_snpOptionsRadios3">Ambos</option>
-                            </select>
-                        </div>
-                    </div>
-                </div>
-            </div>
-            -->
             <div class="row">
                 <div class="col-xs-6 col-sm-12">
                     <div class="form-group">
@@ -1619,91 +1574,6 @@
     <div class="col-md-1"></div>
     <div class="col-md-10">
         <div class="container span6 offset3 well ">
-            <!--
-            <div class="row">
-                <div class="col-xs-6 col-sm-12">
-                    <div class="form-group">
-                        <label>Tipo de trauma</label>
-
-                        <div class="form-group">
-                            <div class="input-group input-group-sm">
-                                <div class="checkbox">
-                                    <input type="checkbox" id="traumaTypeCheckbox1" value="option1"> Acidentes
-                                    automobilísticos
-                                </div>
-                                <div class="checkbox">
-                                    <input type="checkbox" id="traumaTypeCheckbox2" value="option2"> Acidentes
-                                    motociclísticos
-                                </div>
-                                <div class="checkbox">
-                                    <input type="checkbox" id="traumaTypeCheckbox3" value="option3"> Acidentes
-                                    ocupacionais
-                                </div>
-                                <div class="checkbox">
-                                    <input type="checkbox" id="traumaTypeCheckbox4" value="option5"> Lesão por arma
-                                    de fogo
-                                </div>
-                                <div class="checkbox">
-                                    <input type="checkbox" id="traumaTypeCheckbox5" value="option5"> Lesão por
-                                    objeto perfuro-cortante
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-            <div class="row">
-                <div class="col-xs-6 col-sm-12">
-                    <div class="form-group">
-                        <label>Quais os medicamentos utilizados e respectivas doses?</label>
-
-                        <div class="form-group">
-                            <div class="input-group input-group-sm">
-                                <div class="checkbox">
-                                    <input type="checkbox" id="drugTypeCheckbox1" value="option1"> Opióides
-                                </div>
-                                <div class="checkbox">
-                                    <input type="checkbox" id="drugTypeCheckbox2" value="option2"> Antidepressivos
-                                </div>
-                                <div class="checkbox">
-                                    <input type="checkbox" id="drugTypeCheckbox3" value="option3">
-                                    Anticonvulsivantes
-                                </div>
-                                <div class="checkbox">
-                                    <input type="checkbox" id="drugTypeCheckbox4" value="option5"> Neurolépticos
-                                </div>
-                                <div class="checkbox">
-                                    <input type="checkbox" id="drugTypeCheckbox5" value="option5"> AINH
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-            <div class="row">
-                <div class="col-xs-6 col-sm-12">
-                    <div class="form-group">
-                        <label> TCE associado?
-                        </label>
-
-                        <div class="input-group  input-group-sm">
-                            <div class="input-group  input-group-sm">
-                                <div class="radio-inline">
-                                    <label>
-                                        <input name="relatedTCEOptionsRadios" id="relatedTCEOptionsRadios1"
-                                               value="relatedTCEOption1" type="radio">Sim</label>
-                                </div>
-                                <div class="radio-inline">
-                                    <label>
-                                        <input name="relatedTCEOptionsRadios" id="relatedTCEOptionsRadios2"
-                                               value="relatedTCEOption2" type="radio">Não</label>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-            -->
             <div class="row">
                 <div class="col-xs-6 col-sm-3">
                     <div class="form-group">
@@ -1753,487 +1623,7 @@
     </div>
     <div class="col-md-1"></div>
 </div>
-<!--
-<div class="row">
-<div class="col-md-1"></div>
-<div class="col-md-10">
-<div class="container span6 offset3 well ">
-<div class="row">
-    <div class="col-xs-6 col-sm-12">
-        <div class="form-group">
-            <label>
-                <h4>Fratura associada?</h4>
-            </label>
 
-            <div class="input-group  input-group-sm">
-                <div class="input-group  input-group-sm">
-                    <div class="radio-inline">
-                        <label>
-                            <input name="relatedFractOptionsRadios" id="relatedFractOptionsRadios1"
-                                   value="relatedFractOption1" type="radio">Sim</label>
-                    </div>
-                    <div class="radio-inline">
-                        <label>
-                            <input name="relatedFractOptionsRadios" id="relatedFractOptionsRadios2"
-                                   value="relatedFractOption2" type="radio">Não</label>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div>
-</div>
-<fieldset id="id_fieldRelatedFractHistory">
-<div class="row">
-    <div class="col-xs-6 col-sm-4">
-        <div class="form-group">
-            <label>Fratura de escápula</label>
-
-            <div class="input-group  input-group-sm">
-                <select class="form-control" id="id_scap_fract_rel">
-                    <option id="scapFractRelatedOptionsRadios1">Direita</option>
-                    <option id="scapFractRelatedOptionsRadios2">Esquerda</option>
-                    <option id="scapFractRelatedOptionsRadios3">Ambos</option>
-                </select>
-            </div>
-        </div>
-    </div>
-    <div class="col-xs-6 col-sm-4">
-        <div class="form-group">
-            <label>Fratura de clavícula</label>
-
-            <div class="input-group  input-group-sm">
-                <select class="form-control" id="id_scap_fract">
-                    <option id="clavFractRelatedOptionsRadios1">Direita</option>
-                    <option id="clavFractRelatedOptionsRadios2">Esquerda</option>
-                    <option id="clavFractRelatedOptionsRadios3">Ambos</option>
-                </select>
-            </div>
-        </div>
-    </div>
-    <div class="col-xs-6 col-sm-4">
-        <div class="form-group">
-            <label>Fratura de costela</label>
-
-            <div class="input-group  input-group-sm">
-                <div class="radio-inline">
-                    <label>
-                        <input name="ribFractRelatedOptionsRadios" id="ribFractRelatedOptionsRadios1"
-                               value="ribFractRelatedOption1" type="radio">Sim</label>
-                </div>
-                <div class="radio-inline">
-                    <label>
-                        <input name="ribFractRelatedOptionsRadios" id="ribFractRelatedOptionsRadios2"
-                               value="ribFractRelatedOption2" type="radio">Não</label>
-                </div>
-            </div>
-        </div>
-    </div>
-</div>
-<div class="row">
-    <div class="col-xs-6 col-sm-12">
-        <div class="form-group">
-            <label>Fratura Vertebral Cervical</label>
-
-            <div class="input-group  input-group-sm">
-                <div class="radio-inline">
-                    <label>
-                        <input name="verCerFractRelatedOptionsRadios" id="verCerFractRelatedOptionsRadios1"
-                               value="verCerFractRelatedOption1" type="radio">Sim</label>
-                </div>
-                <div class="radio-inline">
-                    <label>
-                        <input name="verCerFractRelatedOptionsRadios" id="verCerFractRelatedOptionsRadios2"
-                               value="verCerFractRelatedOption2" type="radio">Não</label>
-                </div>
-            </div>
-        </div>
-    </div>
-</div>
-<div class="row">
-    <div class="col-xs-6 col-sm-12">
-        <div class="form-group">
-            <div class="input-group  input-group-sm">
-                <fieldset id="id_fieldSetClavFractRelated">
-                    <label class="checkbox-inline">
-                        <input type="checkbox" id="clavFractRelatedCheckbox1" value="option1"> C1
-                    </label>
-                    <label class="checkbox-inline">
-                        <input type="checkbox" id="clavFractRelatedCheckbox2" value="option2"> C2
-                    </label>
-                    <label class="checkbox-inline">
-                        <input type="checkbox" id="clavFractRelatedCheckbox3" value="option3"> C3
-                    </label>
-                    <label class="checkbox-inline">
-                        <input type="checkbox" id="clavFractRelatedCheckbox4" value="option1"> C4
-                    </label>
-                    <label class="checkbox-inline">
-                        <input type="checkbox" id="clavFractRelatedCheckbox5" value="option2"> C5
-                    </label>
-                    <label class="checkbox-inline">
-                        <input type="checkbox" id="clavFractRelatedCheckbox6" value="option3"> C6
-                    </label>
-                    <label class="checkbox-inline">
-                        <input type="checkbox" id="clavFractRelatedCheckbox7" value="option3"> C7
-                    </label>
-                </fieldset>
-            </div>
-        </div>
-    </div>
-</div>
-<div class="row">
-    <div class="col-xs-6 col-sm-12">
-        <div class="form-group">
-            <label>Fratura Vertebral Torácica</label>
-
-            <div class="input-group  input-group-sm">
-                <div class="radio-inline">
-                    <label>
-                        <input name="verTorFractRelatedOptionsRadios" id="verTorFractRelatedOptionsRadios1"
-                               value="verTorFractRelatedOption1" type="radio">Sim</label>
-                </div>
-                <div class="radio-inline">
-                    <label>
-                        <input name="verTorFractRelatedOptionsRadios" id="verTorFractRelatedOptionsRadios2"
-                               value="verTorFractRelatedOption2" type="radio">Não</label>
-                </div>
-            </div>
-        </div>
-    </div>
-</div>
-<div class="row">
-    <div class="col-xs-6 col-sm-12">
-        <div class="form-group">
-            <div class="input-group  input-group-sm">
-                <fieldset disabled id="id_fieldSetVerTorFractRelated">
-                    <label class="checkbox-inline">
-                        <input type="checkbox" id="verTorFractRelatedCheckbox1" value="option1"> T1
-                    </label>
-                    <label class="checkbox-inline">
-                        <input type="checkbox" id="verTorFractRelatedCheckbox2" value="option2"> T2
-                    </label>
-                    <label class="checkbox-inline">
-                        <input type="checkbox" id="verTorFractRelatedCheckbox3" value="option3"> T3
-                    </label>
-                    <label class="checkbox-inline">
-                        <input type="checkbox" id="verTorFractRelatedCheckbox4" value="option5"> T4
-                    </label>
-                    <label class="checkbox-inline">
-                        <input type="checkbox" id="verTorFractRelatedCheckbox5" value="option5"> T5
-                    </label>
-                    <label class="checkbox-inline">
-                        <input type="checkbox" id="verTorFractRelatedCheckbox6" value="option6"> T6
-                    </label>
-                    <label class="checkbox-inline">
-                        <input type="checkbox" id="verTorFractRelatedCheckbox7" value="option7"> T7
-                    </label>
-                    <label class="checkbox-inline">
-                        <input type="checkbox" id="verTorFractRelatedCheckbox8" value="option8"> T8
-                    </label>
-                    <label class="checkbox-inline">
-                        <input type="checkbox" id="verTorFractRelatedCheckbox9" value="option9"> T9
-                    </label>
-                    <label class="checkbox-inline">
-                        <input type="checkbox" id="verTorFractRelatedCheckbox10" value="option10"> T10
-                    </label>
-                    <label class="checkbox-inline">
-                        <input type="checkbox" id="verTorFractRelatedCheckbox11" value="option11"> T11
-                    </label>
-                    <label class="checkbox-inline">
-                        <input type="checkbox" id="verTorFractRelatedCheckbox12" value="option12"> T12
-                    </label>
-                </fieldset>
-            </div>
-        </div>
-    </div>
-</div>
-<div class="row">
-    <div class="col-xs-6 col-sm-12">
-        <div class="form-group">
-            <label>Fratura Vertebral Lombo-Sacral</label>
-
-            <div class="input-group  input-group-sm">
-                <div class="radio-inline">
-                    <label>
-                        <input name="verLomSacRelatedOptionsRadios" id="verLomSacRelatedOptionsRadios1"
-                               value="verLomSacRelatedOption1" type="radio">Sim</label>
-                </div>
-                <div class="radio-inline">
-                    <label>
-                        <input name="verLomSacRelatedOptionsRadios" id="verLomSacRelatedOptionsRadios2"
-                               value="verLomSacRelatedOption2" type="radio">Não</label>
-                </div>
-            </div>
-        </div>
-    </div>
-</div>
-<div class="row">
-    <div class="col-xs-6 col-sm-12">
-        <div class="form-group">
-            <div class="input-group  input-group-sm">
-                <fieldset disabled id="id_fieldVerLomSacRelated">
-                    <label class="checkbox-inline">
-                        <input type="checkbox" id="verLomSacFractRelatedCheckbox1" value="option1"> L1
-                    </label>
-                    <label class="checkbox-inline">
-                        <input type="checkbox" id="verLomSacFractRelatedCheckbox2" value="option2"> L2
-                    </label>
-                    <label class="checkbox-inline">
-                        <input type="checkbox" id="verLomSacFractRelatedCheckbox3" value="option3"> L3
-                    </label>
-                    <label class="checkbox-inline">
-                        <input type="checkbox" id="verLomSacFractRelatedCheckbox4" value="option5"> L4
-                    </label>
-                    <label class="checkbox-inline">
-                        <input type="checkbox" id="verLomSacFractRelatedCheckbox5" value="option5"> L5
-                    </label>
-                    <label class="checkbox-inline">
-                        <input type="checkbox" id="verLomSacFractRelatedCheckbox6" value="option6"> S1
-                    </label>
-                    <label class="checkbox-inline">
-                        <input type="checkbox" id="verLomSacFractRelatedCheckbox7" value="option7"> S2
-                    </label>
-                    <label class="checkbox-inline">
-                        <input type="checkbox" id="verLomSacFractRelatedCheckbox8" value="option8"> S3
-                    </label>
-                </fieldset>
-            </div>
-        </div>
-    </div>
-</div>
-<div class="row">
-    <div class="col-xs-6 col-sm-4">
-        <div class="form-group">
-            <label>Fratura de Membros Superiores</label>
-
-            <div class="input-group  input-group-sm">
-                <select class="form-control" id="id_upperLimbFract">
-                    <option id="upperLimbRelatedOptionsRadios1">Direita</option>
-                    <option id="upperLimbRelatedOptionsRadios2">Esquerda</option>
-                    <option id="upperLimbRelatedOptionsRadios3">Ambos</option>
-                </select>
-            </div>
-        </div>
-    </div>
-    <div class="col-xs-6 col-sm-4">
-        <div class="form-group">
-            <label>Fratura de Membros Inferiores</label>
-
-            <div class="input-group  input-group-sm">
-                <select class="form-control" id="id_lowerLimbFract">
-                    <option id="pelvisFractRelatedOptionsRadios1">Direita</option>
-                    <option id="pelvisFractRelatedOptionsRadios2">Esquerda</option>
-                    <option id="pelvisFractRelatedOptionsRadios3">Ambos</option>
-                </select>
-            </div>
-        </div>
-    </div>
-    <div class="col-xs-6 col-sm-4">
-        <div class="form-group">
-            <label>Fratura de Pelve</label>
-
-            <div class="input-group  input-group-sm">
-                <select class="form-control" id="id_pelvisFract">
-                    <option id="lowerLimbFractRelatedOptionsRadios1">Direita</option>
-                    <option id="lowerLimbFractRelatedOptionsRadios2">Esquerda</option>
-                    <option id="lowerLimbFractRelatedOptionsRadios3">Ambos</option>
-                </select>
-            </div>
-        </div>
-    </div>
-</div>
-</fieldset>
-</div>
-
-<div class="row">
-    <div class="col-md-12">
-        <div class="container span6 offset3 well ">
-            <div class="row">
-                <div class="col-xs-6 col-sm-12">
-                    <div class="form-group">
-                        <label> Dreno de tórax
-                        </label>
-
-                        <div class="input-group  input-group-sm">
-                            <div class="input-group  input-group-sm">
-                                <div class="radio-inline">
-                                    <label>
-                                        <input name="chestTubOptionsRadios" id="chestTubOptionsRadios1"
-                                               value="chestTubOption1" type="radio">Sim</label>
-                                </div>
-                                <div class="radio-inline">
-                                    <label>
-                                        <input name="chestTubOptionsRadios" id="chestTubOptionsRadios2"
-                                               value="chestTubOption2" type="radio">Não</label>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-            <div class="row">
-                <div class="col-xs-6 col-sm-12">
-                    <div class="form-group">
-                        <label>Lesões vasculares associadas</label>
-
-                        <div class="input-group  input-group-sm">
-                            <div class="radio-inline">
-                                <label>
-                                    <input name="vascularLesionsOptionsRadios" id="vascularLesionsOptionsRadios1"
-                                           value="vascularLesionsOption1" type="radio">Sim</label>
-                            </div>
-                            <div class="radio-inline">
-                                <label>
-                                    <input name="vascularLesionsOptionsRadios" id="vascularLesionsOptionsRadios2"
-                                           value="vascularLesionsOption2" type="radio">Não</label>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-            <div class="row">
-                <div class="col-xs-6 col-sm-12">
-                    <div class="form-group">
-                        <div class="input-group  input-group-sm">
-                            <fieldset id="id_fieldSetvascularLesions">
-                                <label class="checkbox-inline">
-                                    <input type="checkbox" id="vascularLesionsCheckbox1" value="option1"> A
-                                    subclávia
-                                </label>
-                                <label class="checkbox-inline">
-                                    <input type="checkbox" id="vascularLesionsCheckbox2" value="option2"> V
-                                    subclávia
-                                </label>
-                                <label class="checkbox-inline">
-                                    <input type="checkbox" id="vascularLesionsCheckbox3" value="option3"> A axilar
-                                </label>
-                                <label class="checkbox-inline">
-                                    <input type="checkbox" id="vascularLesionsCheckbox4" value="option5"> V axilar
-                                </label>
-                                <label class="checkbox-inline">
-                                    <input type="checkbox" id="vascularLesionsCheckbox5" value="option5"> A braquial
-                                </label>
-                            </fieldset>
-                        </div>
-                    </div>
-                </div>
-            </div>
-            <div class="row">
-                <div class="col-xs-6 col-sm-12">
-                    <div class="form-group">
-                        <label>Localização da lesão ao exame clínico</label>
-
-                        <div class="input-group  input-group-sm">
-                            <select class="form-control" id="id_lesionSite">
-                                <option id="lesionSiteOptionsRadios1">Tronco superior</option>
-                                <option id="lesionSiteOptionsRadios2">Tronco superior estendido (C5-C7)</option>
-                                <option id="lesionSiteOptionsRadios3">Tronco inferior</option>
-                                <option id="lesionSiteOptionsRadios4">C5-T1</option>
-                            </select>
-                        </div>
-                    </div>
-                </div>
-            </div>
-            <div class="row">
-                <div class="col-xs-6 col-sm-12">
-                    <div class="form-group">
-                        <label>Sente dor regularmente?</label>
-
-                        <div class="input-group  input-group-sm">
-                            <div class="radio-inline">
-                                <label>
-                                    <input name="regularPainOptionsRadios" id="regularPainOptionsRadios1"
-                                           value="regularPainOption1" type="radio">Sim</label>
-                            </div>
-                            <div class="radio-inline">
-                                <label>
-                                    <input name="regularPainOptionsRadios" id="regularPainOptionsRadios2"
-                                           value="regularPainOption2" type="radio">Não</label>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-            <div class="row">
-                <div class="col-xs-6 col-sm-12">
-                    <div class="form-group">
-                        <label>Realiza fisioterapira/terapia ocupacional GERAL?</label>
-
-                        <div class="input-group  input-group-sm">
-                            <div class="radio-inline">
-                                <label>
-                                    <input name="physiotherapyOptionsRadios" id="physiotherapyOptionsRadios1"
-                                           value="physiotherapyOption1" type="radio">Sim</label>
-                            </div>
-                            <div class="radio-inline">
-                                <label>
-                                    <input name="physiotherapyOptionsRadios" id="physiotherapyOptionsRadios2"
-                                           value="physiotherapyOption2" type="radio">Não</label>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-            <div class="row">
-                <div class="col-xs-6 col-sm-12">
-                    <div class="form-group">
-                        <label>Faz uso de dispositivo auxiliar?</label>
-
-                        <div class="form-group">
-                            <div class="input-group input-group-sm">
-                                <div class="checkbox">
-                                    <input type="checkbox" id="auxiliaryArtefactCheckbox1" value="option1"> Nenhum
-                                </div>
-                                <div class="checkbox">
-                                    <input type="checkbox" id="auxiliaryArtefactCheckbox2" value="option2"> Tipóia
-                                </div>
-                                <div class="checkbox">
-                                    <input type="checkbox" id="auxiliaryArtefactCheckbox3" value="option3"> Suporte
-                                    de ombro
-                                </div>
-                                <div class="checkbox">
-                                    <input type="checkbox" id="auxiliaryArtefactCheckbox4" value="option5"> Órtese
-                                    de posicionamento de punho e dedos
-                                </div>
-                                <div class="checkbox">
-                                    <input type="checkbox" id="auxiliaryArtefactCheckbox5" value="option5"> Órtese
-                                    de posicionamento de dedos
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-            <div class="row">
-                <div class="col-xs-6 col-sm-12">
-                    <h4>Exames Complementares</h4>
-                </div>
-            </div>
-            <div class="row">
-                <div class="col-xs-6 col-sm-6">
-                    <div class="form-group">
-                        <label>ENMG</label>
-
-                        <div class="input-group  input-group-sm">
-                            <div class="bfh-datepicker"></div>
-                        </div>
-                    </div>
-                </div>
-                <div class="col-xs-6 col-sm-6">
-                    <div class="form-group">
-                        <label>RNM</label>
-
-                        <div class="input-group  input-group-sm">
-                            <div class="bfh-datepicker"></div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div>
-</div>
-</div>
-</div>
--->
 </div>
 </div>
 <div class="row">
@@ -2327,9 +1717,6 @@
 <div class="row">
     <div class="col-md-12">
         <p class="text-center">(c) 2013
-
-
-
             <br>
         </p>
     </div>
@@ -2357,7 +1744,6 @@ $(document).ready(function(){
     });
 });
 
-
 $(document).ready(function(){
     $("#verCerFractOptionsRadios1").click(function(){
         $("#id_fieldSetClavFract").prop('disabled', false);
@@ -2378,17 +1764,13 @@ $(document).ready(function(){
     });
 });
 
-
 //cirurgia de nervo
-
 
 $(document).ready(function(){
     $("#nerveSurgOptionsRadios1").click(function(){
         $("#id_nerveSurgery").prop('disabled', false);
     });
 });
-
-
 
 $(document).ready(function(){
     $("#nerveSurgOptionsRadios2").click(function(){
@@ -2398,14 +1780,11 @@ $(document).ready(function(){
 
 //vertebral lombo sacral
 
-
 $(document).ready(function(){
     $("#verLomSacOptionsRadios1").click(function(){
         $("#id_fieldVerLomSac").prop('disabled', false);
     });
 });
-
-
 
 $(document).ready(function(){
     $("#verLomSacOptionsRadios2").click(function(){
@@ -2413,9 +1792,7 @@ $(document).ready(function(){
     });
 });
 
-
 //vertebral lombo sacral relacionada
-
 
 $(document).ready(function(){
     $("#verLomSacRelatedOptionsRadios1").click(function(){
@@ -2423,14 +1800,11 @@ $(document).ready(function(){
     });
 });
 
-
-
 $(document).ready(function(){
     $("#verLomSacRelatedOptionsRadios2").click(function(){
         $("#id_fieldVerLomSacRelated").prop('disabled', true);
     });
 });
-
 
 //historia da fratura
 $(document).ready(function(){
@@ -2445,7 +1819,6 @@ $(document).ready(function(){
     });
 });
 
-
 //historia da fratura relacionada
 $(document).ready(function(){
     $("#relatedFractOptionsRadios1").click(function(){
@@ -2458,8 +1831,6 @@ $(document).ready(function(){
         $("#id_fieldRelatedFractHistory").prop('disabled', true);
     });
 });
-
-
 
 //historia cirurgia ortopedica
 
@@ -2474,8 +1845,6 @@ $(document).ready(function(){
         $("#id_fieldSetOrtSurg").prop('disabled', true);
     });
 });
-
-
 
 $(document).ready(function(){
     $("#verCerFractOptionsRadios2").click(function(){
@@ -2511,7 +1880,6 @@ $(document).ready(function(){
     });
 });
 
-
 //lesoes vasculares
 $(document).ready(function(){
     $("#vascularLesionsOptionsRadios1").click(function(){
@@ -2524,8 +1892,6 @@ $(document).ready(function(){
         $("#id_fieldSetvascularLesions").prop('disabled', true);
     });
 });
-
-
 
 //fratura vertebral cervical relacionada
 $(document).ready(function(){
@@ -2540,57 +1906,32 @@ $(document).ready(function(){
     });
 });
 
-
-
-
 $(document).ready(function(){
     $("#smokingOptionsRadios2").click(function(){
-
-
-
         $("#id_amount_cigarrets").prop('disabled', true);
-
-
-
-
     });
 });
 
-
 $(document).ready(function(){
     $("#alcoholismOptionsRadios1").click(function(){
-
-
-
         $("#id_freqSmok").prop('disabled', false);
         $("#id_peridoSmok").prop('disabled', false);
-
-
-
-
     });
 });
 
 $(document).ready(function(){
     $("#alcoholismOptionsRadios2").click(function(){
-
-
-
         $("#id_freqSmok").prop('disabled', true);
         $("#id_peridoSmok").prop('disabled', true);
-
-
-
-
     });
 });
 
 $(document).ready(function(){
-    $("#id").mask("999.999.999-99");
+    $("#cpf_id").mask("999.999.999-99");
 });
 
 $(document).ready(function(){
-    $("#zipcode").mask("99999-99");
+    $("#zipcode").mask("99999-999");
 });
 
 $(document).ready(function(){
@@ -2602,7 +1943,6 @@ $(document).ready(function(){
             $("#phone").mask("(99) 9999-9999");
     });
 });
-
 
 var $tabs = $('.tabbable li');
 
@@ -2623,9 +1963,9 @@ $("#savetab").on('click', function(){
     var value=$.trim($("#cpf_id").val());
     if(value.length==0)
     {
-        var r = confirm("Press a button!");
+        var r = confirm("CPF não preenchido. Deseja salvar?");
         if (r == true) {
-	$("#tab1form").submit();
+	        $("#tab1form").submit();
         } else {
             txt = "CPF não preenchido, deseja salvar?";
         }
