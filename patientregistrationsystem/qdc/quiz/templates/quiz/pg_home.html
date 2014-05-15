@@ -122,7 +122,7 @@
                 <label>CPF</label>
                 <div class="input-group input-group-sm">
                     <span class="input-group-addon"> <span class="glyphicon glyphicon-asterisk"></span></span>
-                    <input class="form-control" name="cpf_id" placeholder="Entrar CPF" id="id" type="text" value="{{ cpf }}">
+                    <input class="form-control" name="cpf_id" placeholder="Entrar CPF" id="cpf_id" type="text" value="{{ cpf }}">
                 </div>
             </div>
         </div>
@@ -133,7 +133,7 @@
                 <div class="input-group input-group-sm">
                     <!-- verificar qual icone vai aparecer pra RG-->
                     <span class="input-group-addon"><span class="glyphicon glyphicon-user"></span></span>
-                    <input class="form-control" name="rg_id" placeholder="Entrar RG" id="rg_id" type="text">
+                    <input class="form-control" name="rg_id" placeholder="Entrar RG" id="rg_id" type="text" value="{{ rg }}">
                 </div>
             </div>
         </div>
@@ -145,7 +145,7 @@
 
                 <div class="input-group input-group-sm">
                     <span class="input-group-addon"> <span class="glyphicon glyphicon-flag"></span></span>
-                    <input class="form-control" name="natural_of_txt" placeholder="Entrar Naturalidade" id="naturalOf" type="text">
+                    <input class="form-control" name="natural_of_txt" placeholder="Entrar Naturalidade" id="naturalOf" type="text" value="{{ place_of_birth }}">
                 </div>
             </div>
         </div>
@@ -156,7 +156,7 @@
                 <div class="input-group input-group-sm">
                     <span class="input-group-addon"> <span class="glyphicon glyphicon-flag"></span></span>
 
-                    <div class="bfh-selectbox bfh-countries" data-name="citizenship_txt" data-country="BR" id="id_chosen_country" data-flags="true"></div>
+                    <div class="bfh-selectbox bfh-countries" data-name="citizenship_txt" data-country="BR" id="id_chosen_country" data-flags="true" value="{{ citizenship }}"></div>
                 </div>
             </div>
         </div>
@@ -168,7 +168,7 @@
 
                 <div class="input-group  input-group-sm ">
                     <span class="input-group-addon"> <span class="glyphicon glyphicon-home"></span></span>
-                    <input name="street_txt" class="form-control" placeholder="Rua - Complemento " id="street_txt" type="text">
+                    <input name="street_txt" class="form-control" placeholder="Rua - Complemento " id="street_txt" type="text" value="{{ street }}">
                 </div>
             </div>
         </div>
@@ -178,7 +178,7 @@
 
                 <div class="input-group  input-group-sm">
                     <span class="input-group-addon"> <span class="glyphicon glyphicon-home"></span></span>
-                    <input name="zipcode_number" class="form-control" placeholder="Entrar CEP" id="zipcode" type="text">
+                    <input name="zipcode_number" class="form-control" placeholder="Entrar CEP" id="zipcode" type="text" value="{{ zipcode }}">
                 </div>
             </div>
         </div>
@@ -191,7 +191,7 @@
                 <div class="input-group  input-group-sm">
                     <span class="input-group-addon"> <span class="glyphicon glyphicon-home"></span></span>
 
-                    <div class="bfh-selectbox bfh-countries" data-name="country_txt" data-country="BR" data-flags="true" id="id_country_state_address"></div>
+                    <div class="bfh-selectbox bfh-countries" data-name="country_txt" data-country="BR" data-flags="true" id="id_country_state_address" value="{{ country }}"></div>
                 </div>
             </div>
         </div>
@@ -202,7 +202,7 @@
                 <div class="input-group  input-group-sm">
                     <span class="input-group-addon"> <span class="glyphicon glyphicon-home"></span></span>
 
-                    <div class="bfh-selectbox bfh-states" data-name="state_txt" data-country="id_country_state_address" id="id_chosen_state"></div>
+                    <div class="bfh-selectbox bfh-states" data-name="state_txt" data-country="id_country_state_address" id="id_chosen_state" value=""></div>
                 </div>
             </div>
         </div>
@@ -214,7 +214,7 @@
 
                 <div class="input-group  input-group-sm ">
                     <span class="input-group-addon"> <span class="glyphicon glyphicon-home"></span></span>
-                    <input class="form-control" name="city_txt" placeholder="Entrar cidade" id="city" type="text">
+                    <input class="form-control" name="city_txt" placeholder="Entrar cidade" id="city" type="text" value="{{ city }}">
                 </div>
             </div>
         </div>
@@ -224,7 +224,7 @@
 
                 <div class="input-group  input-group-sm">
                     <span class="input-group-addon"> <span class="glyphicon glyphicon-earphone"></span></span>
-                    <input class="form-control" name="phone_number" placeholder="Entrar telefone para contato" id="phone" type="text">
+                    <input class="form-control" name="phone_number" placeholder="Entrar telefone para contato" id="phone" type="text" value="{{ phone }}">
                 </div>
             </div>
         </div>
@@ -236,7 +236,7 @@
 
                 <div class="input-group input-group-sm">
                     <span class="input-group-addon"> <span class="glyphicon glyphicon-earphone"></span></span>
-                    <input class="form-control" name="cellphone_number" placeholder="Entrar celular" id="cellphone" type="text">
+                    <input class="form-control" name="cellphone_number" placeholder="Entrar celular" id="cellphone" type="text" value="{{ cellphone }}">
                 </div>
             </div>
         </div>
@@ -246,7 +246,7 @@
 
                 <div class="input-group input-group-sm">
                     <span class="input-group-addon"> <span class="glyphicon glyphicon-envelope"></span></span>
-                    <input class="form-control" name="email_txt" placeholder="Entrar e-mail" id="email" type="email">
+                    <input class="form-control" name="email_txt" placeholder="Entrar e-mail" id="email" type="email" value="{{ email }}">
                 </div>
             </div>
         </div>
@@ -258,7 +258,7 @@
 
                 <div class="input-group input-group-sm">
                     <span class="input-group-addon"> <span class="glyphicon glyphicon-list-alt"></span></span>
-                    <input class="form-control" name="medical_record_number" placeholder="Entrar número do prontuário" id="records_number" type="text">
+                    <input class="form-control" name="medical_record_number" placeholder="Entrar número do prontuário" id="records_number" type="text" value="{{ medical_record }}">
                 </div>
             </div>
         </div>
@@ -466,7 +466,7 @@
 <div class="row">
 <div class="col-xs-6 col-sm-12">
 <div class="form-group">
-<label>Quantidade de iItens de conforto familiar - Critério Brasil 2008</label>
+<label>Quantidade de iItens de conforto familiar - Critério Brasil 2013</label>
 
 <div class="form-group">
     <label class="col-sm-5 control-label">Televisores em cores</label>
@@ -655,7 +655,7 @@
         </div>
         <div class="radio-inline">
             <label>
-                <input name="wash_machine_opt" id="WMsoptionsRadios4" value="4" type="radio">4 ou +</label>
+                <input name="wash_machine_opt" id="wash_machine_opt4" value="4" type="radio">4 ou +</label>
         </div>
     </div>
 </div>
@@ -767,9 +767,9 @@
 
                             <div class="input-group  input-group-sm">
                                 <select name="amount_cigarettes_opt" class="form-control" id="id_amount_cigarrets">
-                                    <option id="amountCigOptionsRadios1">menos de 1 maço</option>
-                                    <option id="amountCigOptionsRadios2">1-2 maços</option>
-                                    <option id="amountCigOptionsRadios3">mais de 3 maços</option>
+                                    <option id="amountCigOptionsRadios1" value="1">menos de 1 maço</option>
+                                    <option id="amountCigOptionsRadios2" value="2">1-2 maços</option>
+                                    <option id="amountCigOptionsRadios3" value="3">mais de 3 maços</option>
                                 </select>
                             </div>
                         </div>
@@ -2579,7 +2579,7 @@ $(document).ready(function(){
 });
 
 $(document).ready(function(){
-    $("#id").mask("999.999.999-99");
+    $("#cpf_id").mask("999.999.999-99");
 });
 
 $(document).ready(function(){

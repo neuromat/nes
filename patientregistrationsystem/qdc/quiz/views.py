@@ -49,10 +49,10 @@ def pg_home(request):
                 new_social_history_data.save()
                 new_social_history_data = None
     context = {'gender_options': gender_options, 'new_social_history_data': new_social_history_data,
-               'new_social_demographic_data':new_social_demographic_data,'flesh_tone_options': flesh_tone_options,
-               'marital_status_options':marital_status_options,'schooling_options':schooling_options,
-               'payment_options':payment_options,'religion_options':religion_options,'new_patient':new_patient,
-               'new_personal_data':new_personal_data}
+               'new_social_demographic_data': new_social_demographic_data,'flesh_tone_options': flesh_tone_options,
+               'marital_status_options': marital_status_options, 'schooling_options': schooling_options,
+               'payment_options': payment_options, 'religion_options': religion_options, 'new_patient': new_patient,
+               'new_personal_data': new_personal_data}
     return render(request, 'quiz/pg_home.html', context)
 
 
@@ -78,7 +78,11 @@ def patients(request):
 
 def patient(request, patient_id):
     p = Patient.objects.get(nr_record=patient_id)
-    context = {'name': p.name_txt, 'cpf': p.cpf_id}
+    context = {'name': p.name_txt, 'cpf': p.cpf_id, 'rg': p.rg_id, 'place_of_birth': p.natural_of_txt,
+               'citizenship': p.citizenship_txt, 'street': p.street_txt, 'zipcode': p.zipcode_number,
+               'country': p.country_txt, 'state': p.state_txt, 'city': p.city_txt, 'phone': p.phone_number,
+               'cellphone': p.cellphone_number, 'email': p.email_txt, 'medical_record': p.medical_record_number,
+               }
     return render(request, 'quiz/pg_home.html', context)
 
 
