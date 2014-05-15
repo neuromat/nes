@@ -35,6 +35,8 @@ def pg_home(request):
             new_patient = patient_form.save(commit=False)
             new_patient.gender_opt = GenderOption.objects.filter(gender_txt=request.POST['gender_opt'])[0]
             new_patient.marital_status_opt = MaritalStatusOption.objects.filter(marital_status_txt=request.POST['marital_status_opt'])[0]
+            if not new_patient.cpf_id:
+                new_patient.cpf_id = None
             new_patient.save()
             if social_demographic_form.is_valid():
                 new_social_demographic_data = social_demographic_form.save(commit=False)
