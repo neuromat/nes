@@ -12,7 +12,6 @@ from django.shortcuts import render_to_response
 from models import Patient, FleshToneOption, MaritalStatusOption, SchoolingOption, PaymentOption, ReligionOption, GenderOption
 from forms import PatientForm, SocialDemographicDataForm, SocialHistoryDataForm
 
-
 @login_required
 def pg_home(request):
     flesh_tone_options = FleshToneOption.objects.all()
