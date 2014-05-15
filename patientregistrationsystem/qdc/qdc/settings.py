@@ -62,7 +62,7 @@ DATABASES = {
         'NAME': 'qdcdb',
         'USER': 'qdc',
         'PASSWORD': 'DEVqdc1716',
-        'HOST' : 'localhost',
+        'HOST': '200.144.254.136',
     }
 }
 
