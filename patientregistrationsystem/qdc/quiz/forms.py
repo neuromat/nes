@@ -43,12 +43,7 @@ class SocialHistoryDataForm(ModelForm):
     smoker = models.CharField(choices=(('True', 1), ('False', 0)))
     ex_smoker = models.CharField(choices=(('True', 1), ('False', 0)))
     alcoholic = models.CharField(choices=(('True', 1), ('False', 0)))
-    #amount_cigarettes_opt = models.CharField(choices=(('1', 'cigOptions1'), ('2', 'cigOptions2'), ('3', 'cigOptions3')))
-    #alcohol_frequency = models.CharField(choices=(('1', 'freqAlcohol1'), ('2', 'freqAlcohol2'), ('3', 'freqAlcohol3')))
-    #alcohol_period_opt = models.CharField(choices=(('1', 'periodAlcohol1'), ('2', 'periodAlcohol2'),\
-    #  ('3', 'periodAlcohol3'), ('4', 'periodAlcohol4')))
     #drugs_opt = models.CharField(choices=(('1', 'drugsOption1'), ('2', 'drugsOption2'), ('3', 'drugsOption3')))
     class Meta:
         model = SocialHistoryData
-        fields = ['smoker', 'amount_cigarettes_opt', 'ex_smoker', 'alcoholic', 'alcohol_frequency',
-                  'alcohol_period_opt', 'drugs_opt']
+        fields = ['smoker', 'ex_smoker', 'alcoholic', 'drugs_opt']
