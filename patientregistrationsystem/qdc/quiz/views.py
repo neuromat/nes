@@ -9,7 +9,7 @@ from django import forms
 from django.core.context_processors import csrf
 from django.shortcuts import render_to_response
 
-from models import Patient, FleshToneOption, MaritalStatusOption, SchoolingOption, PaymentOption, ReligionOption, GenderOption
+from models import Patient, FleshToneOption, MaritalStatusOption, SchoolingOption, PaymentOption, ReligionOption, GenderOption, AmountCigarettesOption, AlcoholFrequencyOption, AlcoholPeriodOption
 from forms import PatientForm, SocialDemographicDataForm, SocialHistoryDataForm
 
 @login_required
@@ -20,6 +20,9 @@ def pg_home(request):
     schooling_options = SchoolingOption.objects.all()
     payment_options = PaymentOption.objects.all()
     religion_options = ReligionOption.objects.all()
+    amount_cigarettes = AmountCigarettesOption.objects.all()
+    alcohol_frequency = AlcoholFrequencyOption.objects.all()
+    alcohol_period = AlcoholPeriodOption.objects.all()
     new_patient = None
     new_personal_data = None
     new_social_demographic_data = None
@@ -44,18 +47,28 @@ def pg_home(request):
                 new_social_demographic_data.schooling_opt = SchoolingOption.objects.filter(schooling_txt=request.POST['schooling_opt'])[0]
                 new_social_demographic_data.save()
                 new_social_demographic_data = None
-            if social_history_form.is_valid() and False:
+            if social_history_form.is_valid():
                 new_social_history_data = social_history_form.save(commit=False)
                 new_social_history_data.id_patient = new_patient
+                if new_social_history_data.smoker == '1':
+                    new_social_history_data.amount_cigarettes_opt = AmountCigarettesOption.objects.filter(amount_cigarettes_txt=request.POST['amount_cigarettes_opt'])[0]
+                else:
+                    new_social_history_data.amount_cigarettes_opt = None
+                if new_social_history_data.alcoholic == '1':
+                    new_social_history_data.alcohol_frequency_opt = AlcoholFrequencyOption.objects.filter(alcohol_frequency_txt=request.POST['alcohol_frequency_opt'])[0]
+                    new_social_history_data.alcohol_period_opt = AlcoholPeriodOption.objects.filter(alcohol_period_txt=request.POST['alcohol_period_opt'])[0]
+                else:
+                    new_social_history_data.alcohol_frequency_opt = None
+                    new_social_history_data.alcohol_period_opt = None
                 new_social_history_data.save()
                 new_social_history_data = None
     context = {'gender_options': gender_options, 'new_social_history_data': new_social_history_data,
                'new_social_demographic_data': new_social_demographic_data,'flesh_tone_options': flesh_tone_options,
                'marital_status_options': marital_status_options, 'schooling_options': schooling_options,
                'payment_options': payment_options, 'religion_options': religion_options, 'new_patient': new_patient,
-               'new_personal_data': new_personal_data}
+               'new_personal_data': new_personal_data, 'amount_cigarettes': amount_cigarettes,
+               'alcohol_frequency': alcohol_frequency, 'alcohol_period': alcohol_period}
     return render(request, 'quiz/pg_home.html', context)
-
 
 def patients(request):
     language = 'en-us'

@@ -50,6 +50,26 @@ class SchoolingOption(models.Model):
         return self.schooling_txt
 
 
+class AmountCigarettesOption(models.Model):
+    amount_cigarettes_txt = models.CharField(max_length=50)
+
+    def __unicode__(self):
+        return self.amount_cigarettes_txt
+
+
+class AlcoholFrequencyOption(models.Model):
+    alcohol_frequency_txt = models.CharField(max_length=100)
+
+    def __unicode__(self):
+        return self.alcohol_frequency_txt
+
+
+class AlcoholPeriodOption(models.Model):
+    alcohol_period_txt = models.CharField(max_length=50)
+
+    def __unicode__(self):
+        return self.alcohol_period_txt
+
 #class SocialClass(models.Model):
 #    social_class_txt = models.CharField(max_length=50)
 #    points = models.IntegerField
@@ -139,14 +159,14 @@ class SocialDemographicData(models.Model):
 class SocialHistoryData(models.Model):
     id_patient = models.ForeignKey(Patient)
     smoker = models.CharField(max_length=10, null=True, blank=True)
-    amount_cigarettes_opt = models.CharField(max_length=25, null=True, blank=True)
+    amount_cigarettes_opt = models.ForeignKey(AmountCigarettesOption, null=True, blank=True, default=0)
     ex_smoker = models.CharField(max_length=10, null=True, blank=True)
     alcoholic = models.CharField(max_length=10, null=True, blank=True)
-    alcohol_frequency = models.CharField(max_length=25, null=True, blank=True)
-    alcohol_period_opt = models.CharField(max_length=25, null=True, blank=True)
+    alcohol_frequency_opt = models.ForeignKey(AlcoholFrequencyOption, null=True, blank=True, default=0)
+    alcohol_period_opt = models.ForeignKey(AlcoholPeriodOption, null=True, blank=True, default=0)
     drugs_opt = models.CharField(max_length=25, null=True, blank=True)
 
     def __unicode__(self):
         return \
             self.id_patient, bool(self.smoker), self.amount_cigarettes_opt, bool(self.ex_smoker), bool(self.alcoholic),\
-            self.alcohol_frequency, self.alcohol_period_opt, self.drugs_opt
+            self.alcohol_frequency_opt, self.alcohol_period_opt, self.drugs_opt
