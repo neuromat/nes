@@ -103,13 +103,21 @@
 <div class="col-md-1"></div>
 <div class="col-md-10">
 <div class="container span6 offset3 well ">
+
     {% if messages %}
-        <div class="alert alert-success">
-            {{ messages }}
-            {% for message in messages %}
-                <li{% if message.tags %} class="{{ message.tags }}"{% endif %}>{{ message }}</li>
-            {% endfor %}
-        </div>
+        <ul class="messages">
+            <div class="alert alert-success">
+                {% for message in messages %}
+                    <li{% if message.tags %} class="{{ message.tags }}"{% endif %}>{{ message }}</li>
+                {% endfor %}
+            </div>
+        </ul>
+    {% endif %}
+
+    {% if form.errors %}
+        <p style="color: red;">
+            Please correct the error{{ form.errors|pluralize }} below.
+        </p>
     {% endif %}
 
 
@@ -1966,10 +1974,7 @@ $("#savetab").on('click', function(){
         var r = confirm("CPF não preenchido. Deseja salvar?");
         if (r == true) {
 	        $("#tab1form").submit();
-        } else {
-            txt = "CPF não preenchido, deseja salvar?";
         }
-        document.getElementById("demo").innerHTML = txt;
     }
     else{
         $("#tab1form").submit();
