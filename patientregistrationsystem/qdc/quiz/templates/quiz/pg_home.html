@@ -92,9 +92,10 @@
 <div class="tabbable" id="myTabs">
 <ul class="nav nav-tabs nav-justified" id="idTabs">
     <li class="active"><a href="#tab1" data-toggle="tab">Dados Pessoais</a></li>
-    <li><a href="#tab2" data-toggle="tab">História Social</a></li>
-    <li><a href="#tab3" data-toggle="tab">Doenças Pregressas</a></li>
-    <li><a href="#tab4" data-toggle="tab">Doenças Atuais</a></li>
+    <li><a href="#tab2" data-toggle="tab">Dados Sociodemográficos</a></li>
+    <li><a href="#tab3" data-toggle="tab">História Social</a></li>
+    <li><a href="#tab4" data-toggle="tab">Doenças Pregressas</a></li>
+    <li><a href="#tab5" data-toggle="tab">Doenças Atuais</a></li>
 </ul>
 <div id="fix-for-tab-content-spacing" style="height: 22px;">&nbsp;</div>
 <div class="tab-content">
@@ -119,7 +120,6 @@
             Please correct the error{{ form.errors|pluralize }} below.
         </p>
     {% endif %}
-
 
     <div class="row">
         <div class="col-md-12">
@@ -281,12 +281,6 @@
     </div>
     <div class="col-md-1"></div>
 </div>
-<div class="container span6 offset3 well ">
-<div class="row">
-    <div class="col-md-12">
-        <h4>Responder na opção indicada pelo entrevistado:</h4>
-    </div>
-</div>
 <div class="row">
     <div class="col-md-12">
         <br>
@@ -323,23 +317,6 @@
 <div class="row">
     <div class="col-xs-6 col-sm-6">
         <div class="form-group">
-            <label>Religião</label>
-
-            <div class="input-group  input-group-sm">
-                {% if religion_options %}
-                <select class="form-control" name="religion_opt" id="religion_id">
-                    {% for religion in religion_options%}
-                    <option>{{religion.religion_txt}}</option>
-                    {% endfor %}
-                </select>
-                {% else %}
-                <p>No religion available.</p>
-                {% endif %}
-            </div>
-        </div>
-    </div>
-    <div class="col-xs-6 col-sm-6">
-        <div class="form-group">
             <label>Estado Civil</label>
 
             <div class="input-group  input-group-sm">
@@ -356,373 +333,397 @@
         </div>
     </div>
 </div>
-<div class="row">
-    <div class="col-xs-6 col-sm-6">
-        <div class="form-group">
-            <label>Profissão</label>
-
-            <div class="input-group  input-group-sm ">
-                <span class="input-group-addon"> <span class="glyphicon"></span></span>
-                <input class="form-control" name="profession_txt" placeholder="Entrar profissão " id="profession" type="text">
-            </div>
-        </div>
-    </div>
-    <div class="col-xs-6 col-sm-6">
-        <div class="form-group">
-            <label for="occupation"> Ocupação</label>
-
-            <div class="input-group  input-group-sm">
-                <span class="input-group-addon"> <span class="glyphicon"></span></span>
-                <input class="form-control" name="occupation_txt" placeholder="Entrar ocupação" id="occupation" type="text">
-            </div>
-        </div>
-    </div>
-</div>
-<div class="row">
-    <div class="col-xs-6 col-sm-12">
-        <div class="form-group">
-            <label>Recebe algum benefício de escala municipal, estadual ou federal de governo?</label>
-
-            <div class="input-group  input-group-sm">
-                <div class="radio-inline" id="id_benefit">
-                    <label>
-                        <input name="benefit_gov_bool" id="optionsRadios1" value="1" checked="" type="radio">Sim</label>
-                </div>
-                <div class="radio-inline">
-                    <label>
-                        <input name="benefit_gov_bool" id="optionsRadios2" value="0" type="radio">Não</label>
-                </div>
-            </div>
-        </div>
-    </div>
-</div>
-<div class="row">
-    <div class="col-xs-6 col-sm-12">
-        <div class="form-group">
-            <label>Qual a forma de pagamento do tratamento realizado?</label>
-
-            <div class="input-group  input-group-sm">
-				{% if payment_options%}
-                <select class="form-control" name="payment_opt" id="payment_id">
-                    {% for payment in payment_options %}
-                    <option>{{payment.payment_txt}}</option>
-                    {% endfor %}
-                </select>
-				{% else %}
-				<p>No payment option available.</p>
-				{% endif %}
-            </div>
-        </div>
-    </div>
-</div>
-<div class="row">
-    <div class="col-xs-6 col-sm-12">
-        <div class="form-group">
-            <label for="skin_color">Cor da pele-IBGE</label>
-
-            <div class="input-group  input-group-sm">
-
-                <select class="form-control" name="flesh_tone_opt" id="skin_color">
-                    {% for fleshtone in flesh_tone_options %}
-                    <option>{{fleshtone.flesh_tone_txt}}</option>
-                    {% endfor %}
-                </select>
-            </div>
-        </div>
-    </div>
-
-</div>
-<div class="row">
-    <div class="col-xs-6 col-sm-12">
-        <div class="form-group">
-            <label>Grau de instrução do chefe de família - Critério Brasil 2013</label>
-
-            <div class="input-group input-group-sm">
-                <select name="schooling_opt" class="form-control" id="scolarity">
-                    {% for schooling in schooling_options %}
-                    <option>{{schooling.schooling_txt}}</option>
-                    {% endfor %}
-                </select>
-            </div>
-        </div>
-    </div>
-</div>
-<div class="row">
-    <div class="col-xs-6 col-sm-12"><br></div>
-</div>
-<div class="row">
-<div class="col-xs-6 col-sm-12">
-<div class="form-group">
-<label>Quantidade de iItens de conforto familiar - Critério Brasil 2013</label>
-
-<div class="form-group">
-    <label class="col-sm-5 control-label">Televisores em cores</label>
-
-    <div class="col-sm-7">
-        <div class="radio-inline">
-            <label>
-                <input name="tv_opt" id="tv_opt0" value="0" type="radio">0</label>
-        </div>
-        <div class="radio-inline">
-            <label>
-                <input name="tv_opt" id="tv_opt1" value="1" type="radio">1</label>
-        </div>
-        <div class="radio-inline">
-            <label>
-                <input name="tv_opt" id="tv_opt2" value="2" type="radio">2</label>
-        </div>
-        <div class="radio-inline">
-            <label>
-                <input name="tv_opt" id="tv_opt3" value="3" type="radio">3</label>
-        </div>
-        <div class="radio-inline">
-            <label>
-                <input name="tv_opt" id="tv_opt4" value="4" type="radio">4 ou +</label>
-        </div>
-    </div>
-</div>
-<div class="form-group">
-<label class="col-sm-5 control-label">Videocassete/DVD</label>
-
-<div class="col-sm-7">
-    <div class="radio-inline">
-        <label>
-            <input name="dvd_opt" id="dvd_opt0" value="0" type="radio">0</label>
-    </div>
-    <div class="radio-inline">
-        <label>
-            <input name="dvd_opt" id="dvd_opt1" value="1" type="radio">1</label>
-    </div>
-    <div class="radio-inline">
-        <label>
-            <input name="dvd_opt" id="dvd_opt2" value="2" type="radio">2</label>
-    </div>
-    <div class="radio-inline">
-        <label>
-            <input name="dvd_opt" id="dvd_opt3" value="3" type="radio">3</label>
-    </div>
-    <div class="radio-inline">
-        <label>
-            <input name="dvd_opt" id="dvd_opt4" value="4" type="radio">4 ou +</label>
-    </div>
-</div>
-<div class="form-group">
-    <label class="col-sm-5 control-label">Rádios</label>
-
-    <div class="col-sm-7">
-        <div class="radio-inline">
-            <label>
-                <input name="radio_opt" id="radio_opt0" value="0" type="radio">0</label>
-        </div>
-        <div class="radio-inline">
-            <label>
-                <input name="radio_opt" id="radio_opt1" value="1" type="radio">1</label>
-        </div>
-        <div class="radio-inline">
-            <label>
-                <input name="radio_opt" id="radio_opt2" value="2" type="radio">2</label>
-        </div>
-        <div class="radio-inline">
-            <label>
-                <input name="radio_opt" id="radio_opt3" value="3" type="radio">3</label>
-        </div>
-        <div class="radio-inline">
-            <label>
-                <input name="radio_opt" id="radio_opt4" value="4" type="radio">4 ou +</label>
-        </div>
-    </div>
-</div>
-<div class="form-group">
-    <label class="col-sm-5 control-label">Banheiros</label>
-
-    <div class="col-sm-7">
-        <div class="radio-inline">
-            <label>
-                <input name="bath_opt" id="bath_opt0" value="0"
-                       type="radio">0</label>
-        </div>
-        <div class="radio-inline">
-            <label>
-                <input name="bath_opt" id="bath_opt1" value="1"
-                       type="radio">1</label>
-        </div>
-        <div class="radio-inline">
-            <label>
-                <input name="bath_opt" id="bath_opt2" value="2"
-                       type="radio">2</label>
-        </div>
-        <div class="radio-inline">
-            <label>
-                <input name="bath_opt" id="bath_opt3" value="3"
-                       type="radio">3</label>
-        </div>
-        <div class="radio-inline">
-            <label>
-                <input name="bath_opt" id="bath_opt4" value="4"
-                       type="radio">4 ou +</label>
-        </div>
-    </div>
-</div>
-<div class="form-group">
-    <label class="col-sm-5 control-label">Automóveis</label>
-
-    <div class="col-sm-7">
-        <div class="radio-inline">
-            <label>
-                <input name="automobile_opt" id="automobile_opt0" value="0" type="radio">0</label>
-        </div>
-        <div class="radio-inline">
-            <label>
-                <input name="automobile_opt" id="automobile_opt1" value="1" type="radio">1</label>
-        </div>
-        <div class="radio-inline">
-            <label>
-                <input name="automobile_opt" id="automobile_opt2" value="2" type="radio">2</label>
-        </div>
-        <div class="radio-inline">
-            <label>
-                <input name="automobile_opt" id="automobile_opt3" value="3" type="radio">3</label>
-        </div>
-        <div class="radio-inline">
-            <label>
-                <input name="automobile_opt" id="automobile_opt4" value="4" type="radio">4 ou +</label>
-        </div>
-    </div>
-</div>
-<div class="form-group">
-    <label class="col-sm-5 control-label">Empregadas mensalistas</label>
-
-    <div class="col-sm-7">
-        <div class="radio-inline">
-            <label>
-                <input name="house_maid_opt" id="house_maid_opt0" value="0"
-                       type="radio">0</label>
-        </div>
-        <div class="radio-inline">
-            <label>
-                <input name="house_maid_opt" id="house_maid_opt1" value="1"
-                       type="radio">1</label>
-        </div>
-        <div class="radio-inline">
-            <label>
-                <input name="house_maid_opt" id="house_maid_opt2" value="2"
-                       type="radio">2</label>
-        </div>
-        <div class="radio-inline">
-            <label>
-                <input name="house_maid_opt" id="house_maid_opt3" value="3"
-                       type="radio">3</label>
-        </div>
-        <div class="radio-inline">
-            <label>
-                <input name="house_maid_opt" id="house_maid_opt4" value="4"
-                       type="radio">4 ou +</label>
-        </div>
-    </div>
-</div>
-<div class="form-group">
-    <label class="col-sm-5 control-label">Máquinas de lavar</label>
-
-    <div class="col-sm-7">
-        <div class="radio-inline">
-            <label>
-                <input name="wash_machine_opt" id="wash_machine_opt0" value="0" type="radio">0</label>
-        </div>
-        <div class="radio-inline">
-            <label>
-                <input name="wash_machine_opt" id="wash_machine_opt1" value="1" type="radio">1</label>
-        </div>
-        <div class="radio-inline">
-            <label>
-                <input name="wash_machine_opt" id="wash_machine_opt2" value="2" type="radio">2</label>
-        </div>
-        <div class="radio-inline">
-            <label>
-                <input name="wash_machine_opt" id="wash_machine_opt3" value="3" type="radio">3</label>
-        </div>
-        <div class="radio-inline">
-            <label>
-                <input name="wash_machine_opt" id="wash_machine_opt4" value="4" type="radio">4 ou +</label>
-        </div>
-    </div>
-</div>
-<div class="form-group">
-    <label class="col-sm-5 control-label">Geladeiras</label>
-
-    <div class="col-sm-7">
-        <div class="radio-inline">
-            <label>
-                <input name="refrigerator_opt" id="refrigerator_opt0" value="0"
-                       type="radio">0</label>
-        </div>
-        <div class="radio-inline">
-            <label>
-                <input name="refrigerator_opt" id="refrigerator_opt1" value="1"
-                       type="radio">1</label>
-        </div>
-        <div class="radio-inline">
-            <label>
-                <input name="refrigerator_opt" id="refrigerator_opt2" value="2"
-                       type="radio">2</label>
-        </div>
-        <div class="radio-inline">
-            <label>
-                <input name="refrigerator_opt" id="refrigerator_opt3" value="3"
-                       type="radio">3</label>
-        </div>
-        <div class="radio-inline">
-            <label>
-                <input name="refrigerator_opt" id="refrigerator_opt4" value="4"
-                       type="radio">4 ou +</label>
-        </div>
-    </div>
-</div>
-<div class="form-group">
-    <label class="col-sm-5 control-label">Freezer*</label>
-
-    <div class="col-sm-7">
-        <div class="radio-inline">
-            <label>
-                <input name="freezer_opt" id="freezer_opt0" value="0"
-                       type="radio">0</label>
-        </div>
-        <div class="radio-inline">
-            <label>
-                <input name="freezer_opt" id="freezer_opt1" value="1"
-                       type="radio">1</label>
-        </div>
-        <div class="radio-inline">
-            <label>
-                <input name="freezer_opt" id="freezer_opt2" value="2"
-                       type="radio">2</label>
-        </div>
-        <div class="radio-inline">
-            <label>
-                <input name="freezer_opt" id="freezer_opt3" value="3"
-                       type="radio">3</label>
-        </div>
-        <div class="radio-inline">
-            <label>
-                <input name="freezer_opt" id="freezer_opt4" value="4"
-                       type="radio">4 ou +</label>
-        </div>
-    </div>
-</div>
-</div>
-</div>
-</div>
-</div>
-<div class="row">
-    <div class="col-sm-12">
-        <h6>*Aparelho independente ou parte da geladeira duplex.</h6>
-    </div>
-</div>
 <div class="col-md-1"></div>
 </div>
 </div>
 </div>
-</div>
 <div class="tab-pane" id="tab2">
+    <div class="row">
+        <div class="col-md-1"></div>
+        <div class="col-md-10">
+            <div class="container span6 offset3 well ">
+                <div class="row">
+                    <div class="col-xs-6 col-sm-6">
+                        <div class="form-group">
+                            <label>Religião</label>
+
+                            <div class="input-group  input-group-sm">
+                                {% if religion_options %}
+                                <select class="form-control" name="religion_opt" id="religion_id">
+                                    {% for religion in religion_options%}
+                                    <option>{{religion.religion_txt}}</option>
+                                    {% endfor %}
+                                </select>
+                                {% else %}
+                                <p>No religion available.</p>
+                                {% endif %}
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-xs-6 col-sm-6">
+                        <div class="form-group">
+                            <label>Profissão</label>
+
+                            <div class="input-group  input-group-sm ">
+                                <span class="input-group-addon"> <span class="glyphicon"></span></span>
+                                <input class="form-control" name="profession_txt" placeholder="Entrar profissão " id="profession" type="text">
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-xs-6 col-sm-6">
+                        <div class="form-group">
+                            <label for="occupation"> Ocupação</label>
+
+                            <div class="input-group  input-group-sm">
+                                <span class="input-group-addon"> <span class="glyphicon"></span></span>
+                                <input class="form-control" name="occupation_txt" placeholder="Entrar ocupação" id="occupation" type="text">
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-xs-6 col-sm-12">
+                        <div class="form-group">
+                            <label>Recebe algum benefício de escala municipal, estadual ou federal de governo?</label>
+
+                            <div class="input-group  input-group-sm">
+                                <div class="radio-inline" id="id_benefit">
+                                    <label>
+                                        <input name="benefit_gov_bool" id="optionsRadios1" value="1" checked="" type="radio">Sim</label>
+                                </div>
+                                <div class="radio-inline">
+                                    <label>
+                                        <input name="benefit_gov_bool" id="optionsRadios2" value="0" type="radio">Não</label>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-xs-6 col-sm-12">
+                        <div class="form-group">
+                            <label>Qual a forma de pagamento do tratamento realizado?</label>
+
+                            <div class="input-group  input-group-sm">
+                                {% if payment_options%}
+                                <select class="form-control" name="payment_opt" id="payment_id">
+                                    {% for payment in payment_options %}
+                                    <option>{{payment.payment_txt}}</option>
+                                    {% endfor %}
+                                </select>
+                                {% else %}
+                                <p>No payment option available.</p>
+                                {% endif %}
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-xs-6 col-sm-12">
+                        <div class="form-group">
+                            <label for="skin_color">Cor da pele-IBGE</label>
+
+                            <div class="input-group  input-group-sm">
+
+                                <select class="form-control" name="flesh_tone_opt" id="skin_color">
+                                    {% for fleshtone in flesh_tone_options %}
+                                    <option>{{fleshtone.flesh_tone_txt}}</option>
+                                    {% endfor %}
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-xs-6 col-sm-12">
+                        <div class="form-group">
+                            <label>Grau de instrução do chefe de família - Critério Brasil 2013</label>
+
+                            <div class="input-group input-group-sm">
+                                <select name="schooling_opt" class="form-control" id="scolarity">
+                                    {% for schooling in schooling_options %}
+                                    <option>{{schooling.schooling_txt}}</option>
+                                    {% endfor %}
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-xs-6 col-sm-12">
+                    <div class="form-group">
+                    <label>Quantidade de iItens de conforto familiar - Critério Brasil 2013</label>
+
+                    <div class="form-group">
+                        <label class="col-sm-5 control-label">Televisores em cores</label>
+
+                        <div class="col-sm-7">
+                            <div class="radio-inline">
+                                <label>
+                                    <input name="tv_opt" id="tv_opt0" value="0" type="radio">0</label>
+                            </div>
+                            <div class="radio-inline">
+                                <label>
+                                    <input name="tv_opt" id="tv_opt1" value="1" type="radio">1</label>
+                            </div>
+                            <div class="radio-inline">
+                                <label>
+                                    <input name="tv_opt" id="tv_opt2" value="2" type="radio">2</label>
+                            </div>
+                            <div class="radio-inline">
+                                <label>
+                                    <input name="tv_opt" id="tv_opt3" value="3" type="radio">3</label>
+                            </div>
+                            <div class="radio-inline">
+                                <label>
+                                    <input name="tv_opt" id="tv_opt4" value="4" type="radio">4 ou +</label>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                    <label class="col-sm-5 control-label">Videocassete/DVD</label>
+
+                    <div class="col-sm-7">
+                        <div class="radio-inline">
+                            <label>
+                                <input name="dvd_opt" id="dvd_opt0" value="0" type="radio">0</label>
+                        </div>
+                        <div class="radio-inline">
+                            <label>
+                                <input name="dvd_opt" id="dvd_opt1" value="1" type="radio">1</label>
+                        </div>
+                        <div class="radio-inline">
+                            <label>
+                                <input name="dvd_opt" id="dvd_opt2" value="2" type="radio">2</label>
+                        </div>
+                        <div class="radio-inline">
+                            <label>
+                                <input name="dvd_opt" id="dvd_opt3" value="3" type="radio">3</label>
+                        </div>
+                        <div class="radio-inline">
+                            <label>
+                                <input name="dvd_opt" id="dvd_opt4" value="4" type="radio">4 ou +</label>
+                        </div>
+                    </div>
+                    </div>
+                    <div class="form-group">
+                        <label class="col-sm-5 control-label">Rádios</label>
+
+                        <div class="col-sm-7">
+                            <div class="radio-inline">
+                                <label>
+                                    <input name="radio_opt" id="radio_opt0" value="0" type="radio">0</label>
+                            </div>
+                            <div class="radio-inline">
+                                <label>
+                                    <input name="radio_opt" id="radio_opt1" value="1" type="radio">1</label>
+                            </div>
+                            <div class="radio-inline">
+                                <label>
+                                    <input name="radio_opt" id="radio_opt2" value="2" type="radio">2</label>
+                            </div>
+                            <div class="radio-inline">
+                                <label>
+                                    <input name="radio_opt" id="radio_opt3" value="3" type="radio">3</label>
+                            </div>
+                            <div class="radio-inline">
+                                <label>
+                                    <input name="radio_opt" id="radio_opt4" value="4" type="radio">4 ou +</label>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label class="col-sm-5 control-label">Banheiros</label>
+
+                        <div class="col-sm-7">
+                            <div class="radio-inline">
+                                <label>
+                                    <input name="bath_opt" id="bath_opt0" value="0"
+                                           type="radio">0</label>
+                            </div>
+                            <div class="radio-inline">
+                                <label>
+                                    <input name="bath_opt" id="bath_opt1" value="1"
+                                           type="radio">1</label>
+                            </div>
+                            <div class="radio-inline">
+                                <label>
+                                    <input name="bath_opt" id="bath_opt2" value="2"
+                                           type="radio">2</label>
+                            </div>
+                            <div class="radio-inline">
+                                <label>
+                                    <input name="bath_opt" id="bath_opt3" value="3"
+                                           type="radio">3</label>
+                            </div>
+                            <div class="radio-inline">
+                                <label>
+                                    <input name="bath_opt" id="bath_opt4" value="4"
+                                           type="radio">4 ou +</label>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label class="col-sm-5 control-label">Automóveis</label>
+
+                        <div class="col-sm-7">
+                            <div class="radio-inline">
+                                <label>
+                                    <input name="automobile_opt" id="automobile_opt0" value="0" type="radio">0</label>
+                            </div>
+                            <div class="radio-inline">
+                                <label>
+                                    <input name="automobile_opt" id="automobile_opt1" value="1" type="radio">1</label>
+                            </div>
+                            <div class="radio-inline">
+                                <label>
+                                    <input name="automobile_opt" id="automobile_opt2" value="2" type="radio">2</label>
+                            </div>
+                            <div class="radio-inline">
+                                <label>
+                                    <input name="automobile_opt" id="automobile_opt3" value="3" type="radio">3</label>
+                            </div>
+                            <div class="radio-inline">
+                                <label>
+                                    <input name="automobile_opt" id="automobile_opt4" value="4" type="radio">4 ou +</label>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label class="col-sm-5 control-label">Empregadas mensalistas</label>
+
+                        <div class="col-sm-7">
+                            <div class="radio-inline">
+                                <label>
+                                    <input name="house_maid_opt" id="house_maid_opt0" value="0"
+                                           type="radio">0</label>
+                            </div>
+                            <div class="radio-inline">
+                                <label>
+                                    <input name="house_maid_opt" id="house_maid_opt1" value="1"
+                                           type="radio">1</label>
+                            </div>
+                            <div class="radio-inline">
+                                <label>
+                                    <input name="house_maid_opt" id="house_maid_opt2" value="2"
+                                           type="radio">2</label>
+                            </div>
+                            <div class="radio-inline">
+                                <label>
+                                    <input name="house_maid_opt" id="house_maid_opt3" value="3"
+                                           type="radio">3</label>
+                            </div>
+                            <div class="radio-inline">
+                                <label>
+                                    <input name="house_maid_opt" id="house_maid_opt4" value="4"
+                                           type="radio">4 ou +</label>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label class="col-sm-5 control-label">Máquinas de lavar</label>
+
+                        <div class="col-sm-7">
+                            <div class="radio-inline">
+                                <label>
+                                    <input name="wash_machine_opt" id="wash_machine_opt0" value="0" type="radio">0</label>
+                            </div>
+                            <div class="radio-inline">
+                                <label>
+                                    <input name="wash_machine_opt" id="wash_machine_opt1" value="1" type="radio">1</label>
+                            </div>
+                            <div class="radio-inline">
+                                <label>
+                                    <input name="wash_machine_opt" id="wash_machine_opt2" value="2" type="radio">2</label>
+                            </div>
+                            <div class="radio-inline">
+                                <label>
+                                    <input name="wash_machine_opt" id="wash_machine_opt3" value="3" type="radio">3</label>
+                            </div>
+                            <div class="radio-inline">
+                                <label>
+                                    <input name="wash_machine_opt" id="wash_machine_opt4" value="4" type="radio">4 ou +</label>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label class="col-sm-5 control-label">Geladeiras</label>
+
+                        <div class="col-sm-7">
+                            <div class="radio-inline">
+                                <label>
+                                    <input name="refrigerator_opt" id="refrigerator_opt0" value="0"
+                                           type="radio">0</label>
+                            </div>
+                            <div class="radio-inline">
+                                <label>
+                                    <input name="refrigerator_opt" id="refrigerator_opt1" value="1"
+                                           type="radio">1</label>
+                            </div>
+                            <div class="radio-inline">
+                                <label>
+                                    <input name="refrigerator_opt" id="refrigerator_opt2" value="2"
+                                           type="radio">2</label>
+                            </div>
+                            <div class="radio-inline">
+                                <label>
+                                    <input name="refrigerator_opt" id="refrigerator_opt3" value="3"
+                                           type="radio">3</label>
+                            </div>
+                            <div class="radio-inline">
+                                <label>
+                                    <input name="refrigerator_opt" id="refrigerator_opt4" value="4"
+                                           type="radio">4 ou +</label>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label class="col-sm-5 control-label">Freezer*</label>
+
+                        <div class="col-sm-7">
+                            <div class="radio-inline">
+                                <label>
+                                    <input name="freezer_opt" id="freezer_opt0" value="0"
+                                           type="radio">0</label>
+                            </div>
+                            <div class="radio-inline">
+                                <label>
+                                    <input name="freezer_opt" id="freezer_opt1" value="1"
+                                           type="radio">1</label>
+                            </div>
+                            <div class="radio-inline">
+                                <label>
+                                    <input name="freezer_opt" id="freezer_opt2" value="2"
+                                           type="radio">2</label>
+                            </div>
+                            <div class="radio-inline">
+                                <label>
+                                    <input name="freezer_opt" id="freezer_opt3" value="3"
+                                           type="radio">3</label>
+                            </div>
+                            <div class="radio-inline">
+                                <label>
+                                    <input name="freezer_opt" id="freezer_opt4" value="4"
+                                           type="radio">4 ou +</label>
+                            </div>
+                        </div>
+                    </div>
+                    </div>
+                    </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-sm-12">
+                            <h6>*Aparelho independente ou parte da geladeira duplex.</h6>
+                        </div>
+                    </div>
+                <div class="col-md-1"></div>
+            </div>
+        </div>
+    </div>
+</div>
+<div class="tab-pane" id="tab3">
     <div class="row">
         <div class="col-md-1"></div>
         <div class="col-md-10">
@@ -754,9 +755,9 @@
 
                             <div class="input-group  input-group-sm">
                                 <select name="amount_cigarettes_opt" class="form-control" id="id_amount_cigarettes">
-                                    <option id="amountCigOptionsRadios1" value="1">menos de 1 maço</option>
-                                    <option id="amountCigOptionsRadios2" value="2">1-2 maços</option>
-                                    <option id="amountCigOptionsRadios3" value="3">mais de 3 maços</option>
+                                    {% for amount_cigar in amount_cigarettes %}
+                                    <option>{{amount_cigar.amount_cigarettes_txt}}</option>
+                                    {% endfor %}
                                 </select>
                             </div>
                         </div>
@@ -806,10 +807,10 @@
                             <label>Frequência</label>
 
                             <div class="input-group  input-group-sm">
-                                <select name="alcohol_frequency" class="form-control" id="id_freqSmok">
-                                    <option id="freqSmokOptionsRadios1" value="1">esporadicamente</option>
-                                    <option id="freqSmokOptionsRadios2" value="2"> todos os finais de semana</option>
-                                    <option id="freqSmokOptionsRadios3" value="3">todos os dias</option>
+                                <select name="alcohol_frequency_opt" class="form-control" id="id_freqSmok">
+                                    {% for alcohol_freq in alcohol_frequency %}
+                                    <option>{{alcohol_freq.alcohol_frequency_txt}}</option>
+                                    {% endfor %}
                                 </select>
                             </div>
                         </div>
@@ -819,11 +820,10 @@
                             <label>Tempo</label>
 
                             <div class="input-group  input-group-sm">
-                                <select name="alcohol_period_opt" class="form-control" id="id_peridoSmok">
-                                    <option id="peridoSmokOptionsRadios1" value="1">meses</option>
-                                    <option id="peridoSmokOptionsRadios2" value="2"> 1-5 anos</option>
-                                    <option id="peridoSmokOptionsRadios3" value="3">5-10 anos</option>
-                                    <option id="peridoSmokOptionsRadios10" value="4">mais de 10 anos</option>
+                                <select name="alcohol_period_opt" class="form-control" id="id_periodSmok">
+                                    {% for alc_period in alcohol_period %}
+                                    <option>{{alc_period.alcohol_period_txt}}</option>
+                                    {% endfor %}
                                 </select>
                             </div>
                         </div>
@@ -838,17 +838,17 @@
                                 <div class="radio-inline">
                                     <label>
                                         <input name="drugs_opt" id="drugsOptionsRadios1"
-                                               value="1" type="radio"> Já fez</label>
+                                               value="ja_fez" type="radio"> Já fez</label>
                                 </div>
                                 <div class="radio-inline">
                                     <label>
                                         <input name="drugs_opt" id="drugsOptionsRadios2"
-                                               value="2" type="radio"> Faz</label>
+                                               value="faz" type="radio"> Faz</label>
                                 </div>
                                 <div class="radio-inline">
                                     <label>
                                         <input name="drugs_opt" id="drugsOptionsRadios3"
-                                               value="3" type="radio"> Nunca fez</label>
+                                               value="nunca_fez" type="radio"> Nunca fez</label>
                                 </div>
                             </div>
                         </div>
@@ -859,7 +859,7 @@
         </div>
     </div>
 </div>
-<div class="tab-pane" id="tab3">
+<div class="tab-pane" id="tab4">
 <div class="row">
     <div class="col-md-1"></div>
     <div class="col-md-10">
@@ -1577,7 +1577,7 @@
 </div>
 </div>
 </div>
-<div class="tab-pane" id="tab4">
+<div class="tab-pane" id="tab5">
 <div class="row">
     <div class="col-md-1"></div>
     <div class="col-md-10">
@@ -1747,12 +1747,6 @@ $(document).ready(function(){
 });
 
 $(document).ready(function(){
-    $("#smokingOptionsRadios1").click(function(){
-        $("#id_amount_cigarrets").prop('disabled', false);
-    });
-});
-
-$(document).ready(function(){
     $("#verCerFractOptionsRadios1").click(function(){
         $("#id_fieldSetClavFract").prop('disabled', false);
     });
@@ -1914,23 +1908,31 @@ $(document).ready(function(){
     });
 });
 
+//fumante
 $(document).ready(function(){
-    $("#smokingOptionsRadios2").click(function(){
-        $("#id_amount_cigarrets").prop('disabled', true);
+    $("#smokingOptionsRadios1").click(function(){
+        $("#id_amount_cigarettes").prop('disabled', false);
     });
 });
 
 $(document).ready(function(){
+    $("#smokingOptionsRadios2").click(function(){
+        $("#id_amount_cigarettes").prop('disabled', true);
+    });
+});
+
+//alcolismo
+$(document).ready(function(){
     $("#alcoholismOptionsRadios1").click(function(){
         $("#id_freqSmok").prop('disabled', false);
-        $("#id_peridoSmok").prop('disabled', false);
+        $("#id_periodSmok").prop('disabled', false);
     });
 });
 
 $(document).ready(function(){
     $("#alcoholismOptionsRadios2").click(function(){
         $("#id_freqSmok").prop('disabled', true);
-        $("#id_peridoSmok").prop('disabled', true);
+        $("#id_periodSmok").prop('disabled', true);
     });
 });
 
