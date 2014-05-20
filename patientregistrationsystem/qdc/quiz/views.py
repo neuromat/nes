@@ -12,6 +12,8 @@ from django.shortcuts import render_to_response
 from models import Patient, FleshToneOption, MaritalStatusOption, SchoolingOption, PaymentOption, ReligionOption, GenderOption, AmountCigarettesOption, AlcoholFrequencyOption, AlcoholPeriodOption
 from forms import PatientForm, SocialDemographicDataForm, SocialHistoryDataForm
 
+from django.contrib import messages
+
 @login_required
 def pg_home(request):
     flesh_tone_options = FleshToneOption.objects.all()
@@ -62,6 +64,14 @@ def pg_home(request):
                     new_social_history_data.alcohol_period_opt = None
                 new_social_history_data.save()
                 new_social_history_data = None
+            messages.add_message(request, messages.INFO, 'Paciente gravado com sucesso.')
+        else:
+
+            if not request.POST['name_txt']:
+                messages.add_message(request, messages.ERROR, 'Nome não preenchido.')
+
+
+
     context = {'gender_options': gender_options, 'new_social_history_data': new_social_history_data,
                'new_social_demographic_data': new_social_demographic_data,'flesh_tone_options': flesh_tone_options,
                'marital_status_options': marital_status_options, 'schooling_options': schooling_options,
