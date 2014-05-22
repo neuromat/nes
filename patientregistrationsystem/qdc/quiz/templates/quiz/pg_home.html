@@ -105,181 +105,218 @@
 <div class="col-md-10">
 <div class="container span6 offset3 well ">
 
-    {% if messages %}
-        <ul class="messages">
-            <div class="alert alert-success">
-                {% for message in messages %}
-                    <li{% if message.tags %} class="{{ message.tags }}"{% endif %}>{{ message }}</li>
-                {% endfor %}
-            </div>
-        </ul>
-    {% endif %}
-
-    {% if form.errors %}
-        <p style="color: red;">
-            Please correct the error{{ form.errors|pluralize }} below.
-        </p>
-    {% endif %}
-
-    <div class="row">
-        <div class="col-md-12">
-            <div class="form-group">
-                <label>Nome Completo</label>
-                <div class="input-group  input-group-sm">
-                    <span class="input-group-addon"> <span class="glyphicon glyphicon-user"></span></span>
-                    <input class="form-control" placeholder="Entrar nome completo" id="full_name" name="name_txt" type="text" value="{{ name }}">
+{% if messages %}
+    <ul class="messages">
+        {% for message in messages %}
+            {% if message.tags == "success" %}
+                <div class="alert alert-success">
+                    <li class="{{ message.tags }}">{{ message }}</li>
                 </div>
+            {% endif %}
+        {% endfor %}
+    </ul>
+{% endif %}
+
+{% if form.errors %}
+    <p style="color: red;">
+        Please correct the error{{ form.errors|pluralize }} below.
+    </p>
+{% endif %}
+
+<div class="row">
+    <div class="col-md-12">
+        <div class="form-group">
+            <label>Nome Completo</label>
+
+            <!-- Button trigger modal -->
+{#            <button class="btn btn-primary btn-lg" data-toggle="modal" data-target="#myModal">#}
+{#                Launch demo modal#}
+{#            </button>#}
+            <!-- Modal -->
+            <div class="modal fade" id="myModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+                <div class="modal-dialog">
+                    <div class="modal-content">
+{#                        <div class="modal-header">#}
+{#                            <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>#}
+{#                            <h4 class="modal-title" id="myModalLabel">Modal title</h4>#}
+{#                        </div>#}
+                        <div class="modal-body">
+                            CPF não preenchido. Deseja salvar?
+                        </div>
+                        <div class="modal-footer">
+                            <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+                            <button type="button" class="btn btn-primary" id="savetab2">Save changes</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            {% if messages %}
+                <ul class="messages">
+                    {% for message in messages %}
+                        {% if message.tags == 'error' %}
+                            <div class="alert alert-danger">
+                                <li{% if message.tags %} class="{{ message.tags }}"{% endif %}>{{ message }}</li>
+                            </div>
+                        {% endif %}
+                    {% endfor %}
+                </ul>
+            {% endif %}
+            <div class="input-group  input-group-sm">
+                <span class="input-group-addon"> <span class="glyphicon glyphicon-user"></span></span>
+                <input class="form-control" placeholder="Entrar nome completo" id="full_name" name="name_txt" type="text" value="{{ name }}">
             </div>
         </div>
     </div>
-    <div class="row">
-        <div class="col-xs-6 col-sm-6">
-            <div class="form-group">
-                <label>CPF</label>
-                <div class="input-group input-group-sm">
-                    <span class="input-group-addon"> <span class="glyphicon glyphicon-asterisk"></span></span>
-                    <input class="form-control" name="cpf_id" placeholder="Entrar CPF" id="cpf_id" type="text" value="{{ cpf }}">
-                </div>
-            </div>
-        </div>
-        <div class="col-xs-6 col-sm-6">
-            <div class="form-group">
-                <label>RG</label>
-
-                <div class="input-group input-group-sm">
-                    <!-- verificar qual icone vai aparecer pra RG-->
-                    <span class="input-group-addon"><span class="glyphicon glyphicon-user"></span></span>
-                    <input class="form-control" name="rg_id" placeholder="Entrar RG" id="rg_id" type="text" value="{{ rg }}">
-                </div>
+</div>
+<div class="row">
+    <div class="col-xs-6 col-sm-6">
+        <div class="form-group">
+            <label>CPF</label>
+            <div class="input-group input-group-sm">
+                <span class="input-group-addon"> <span class="glyphicon glyphicon-asterisk"></span></span>
+                <input class="form-control" name="cpf_id" placeholder="Entrar CPF" id="cpf_id" type="text" value="{{ cpf }}">
             </div>
         </div>
     </div>
-    <div class="row">
-        <div class="col-xs-6 col-sm-6">
-            <div class="form-group">
-                <label>Naturalidade</label>
+    <div class="col-xs-6 col-sm-6">
+        <div class="form-group">
+            <label>RG</label>
 
-                <div class="input-group input-group-sm">
-                    <span class="input-group-addon"> <span class="glyphicon glyphicon-flag"></span></span>
-                    <input class="form-control" name="natural_of_txt" placeholder="Entrar Naturalidade" id="naturalOf" type="text" value="{{ place_of_birth }}">
-                </div>
-            </div>
-        </div>
-        <div class="col-xs-6 col-sm-6">
-            <div class="form-group">
-                <label>Nacionalidade</label>
-
-                <div class="input-group input-group-sm">
-                    <span class="input-group-addon"> <span class="glyphicon glyphicon-flag"></span></span>
-
-                    <div class="bfh-selectbox bfh-countries" data-name="citizenship_txt" data-country="BR" id="id_chosen_country" data-flags="true" value="{{ citizenship }}"></div>
-                </div>
+            <div class="input-group input-group-sm">
+                <!-- verificar qual icone vai aparecer pra RG-->
+                <span class="input-group-addon"><span class="glyphicon glyphicon-user"></span></span>
+                <input class="form-control" name="rg_id" placeholder="Entrar RG" id="rg_id" type="text" value="{{ rg }}">
             </div>
         </div>
     </div>
-    <div class="row">
-        <div class="col-xs-6 col-sm-6">
-            <div class="form-group">
-                <label>Endereço</label>
+</div>
+<div class="row">
+    <div class="col-xs-6 col-sm-6">
+        <div class="form-group">
+            <label>Naturalidade</label>
 
-                <div class="input-group  input-group-sm ">
-                    <span class="input-group-addon"> <span class="glyphicon glyphicon-home"></span></span>
-                    <input name="street_txt" class="form-control" placeholder="Rua - Complemento " id="street_txt" type="text" value="{{ street }}">
-                </div>
-            </div>
-        </div>
-        <div class="col-xs-6 col-sm-6">
-            <div class="form-group">
-                <label> CEP</label>
-
-                <div class="input-group  input-group-sm">
-                    <span class="input-group-addon"> <span class="glyphicon glyphicon-home"></span></span>
-                    <input name="zipcode_number" class="form-control" placeholder="Entrar CEP" id="zipcode" type="text" value="{{ zipcode }}">
-                </div>
+            <div class="input-group input-group-sm">
+                <span class="input-group-addon"> <span class="glyphicon glyphicon-flag"></span></span>
+                <input class="form-control" name="natural_of_txt" placeholder="Entrar Naturalidade" id="naturalOf" type="text" value="{{ place_of_birth }}">
             </div>
         </div>
     </div>
-    <div class="row">
-        <div class="col-xs-6 col-sm-6">
-            <div class="form-group">
-                <label>País</label>
+    <div class="col-xs-6 col-sm-6">
+        <div class="form-group">
+            <label>Nacionalidade</label>
 
-                <div class="input-group  input-group-sm">
-                    <span class="input-group-addon"> <span class="glyphicon glyphicon-home"></span></span>
+            <div class="input-group input-group-sm">
+                <span class="input-group-addon"> <span class="glyphicon glyphicon-flag"></span></span>
 
-                    <div class="bfh-selectbox bfh-countries" data-name="country_txt" data-country="BR" data-flags="true" id="id_country_state_address" value="{{ country }}"></div>
-                </div>
-            </div>
-        </div>
-        <div class="col-xs-6 col-sm-6">
-            <div class="form-group">
-                <label> Estado</label>
-
-                <div class="input-group  input-group-sm">
-                    <span class="input-group-addon"> <span class="glyphicon glyphicon-home"></span></span>
-
-                    <div class="bfh-selectbox bfh-states" data-name="state_txt" data-country="id_country_state_address" id="id_chosen_state" value=""></div>
-                </div>
+                <div class="bfh-selectbox bfh-countries" data-name="citizenship_txt" data-country="BR" id="id_chosen_country" data-flags="true" value="{{ citizenship }}"></div>
             </div>
         </div>
     </div>
-    <div class="row">
-        <div class="col-xs-6 col-sm-6">
-            <div class="form-group">
-                <label>Cidade</label>
+</div>
+<div class="row">
+    <div class="col-xs-6 col-sm-6">
+        <div class="form-group">
+            <label>Endereço</label>
 
-                <div class="input-group  input-group-sm ">
-                    <span class="input-group-addon"> <span class="glyphicon glyphicon-home"></span></span>
-                    <input class="form-control" name="city_txt" placeholder="Entrar cidade" id="city" type="text" value="{{ city }}">
-                </div>
-            </div>
-        </div>
-        <div class="col-xs-6 col-sm-6">
-            <div class="form-group">
-                <label> Telefone fixo</label>
-
-                <div class="input-group  input-group-sm">
-                    <span class="input-group-addon"> <span class="glyphicon glyphicon-earphone"></span></span>
-                    <input class="form-control" name="phone_number" placeholder="Entrar telefone para contato" id="phone" type="text" value="{{ phone }}">
-                </div>
+            <div class="input-group  input-group-sm ">
+                <span class="input-group-addon"> <span class="glyphicon glyphicon-home"></span></span>
+                <input name="street_txt" class="form-control" placeholder="Rua - Complemento " id="street_txt" type="text" value="{{ street }}">
             </div>
         </div>
     </div>
-    <div class="row">
-        <div class="col-xs-6 col-sm-6">
-            <div class="form-group">
-                <label> Telefone celular</label>
+    <div class="col-xs-6 col-sm-6">
+        <div class="form-group">
+            <label> CEP</label>
 
-                <div class="input-group input-group-sm">
-                    <span class="input-group-addon"> <span class="glyphicon glyphicon-earphone"></span></span>
-                    <input class="form-control" name="cellphone_number" placeholder="Entrar celular" id="cellphone" type="text" value="{{ cellphone }}">
-                </div>
-            </div>
-        </div>
-        <div class="col-xs-6 col-sm-6">
-            <div class="form-group">
-                <label>E-mail</label>
-
-                <div class="input-group input-group-sm">
-                    <span class="input-group-addon"> <span class="glyphicon glyphicon-envelope"></span></span>
-                    <input class="form-control" name="email_txt" placeholder="Entrar e-mail" id="email" type="email" value="{{ email }}">
-                </div>
+            <div class="input-group  input-group-sm">
+                <span class="input-group-addon"> <span class="glyphicon glyphicon-home"></span></span>
+                <input name="zipcode_number" class="form-control" placeholder="Entrar CEP" id="zipcode" type="text" value="{{ zipcode }}">
             </div>
         </div>
     </div>
-    <div class="row">
-        <div class="col-xs-6 col-sm-6">
-            <div class="form-group">
-                <label>Número do prontuário</label>
+</div>
+<div class="row">
+    <div class="col-xs-6 col-sm-6">
+        <div class="form-group">
+            <label>País</label>
 
-                <div class="input-group input-group-sm">
-                    <span class="input-group-addon"> <span class="glyphicon glyphicon-list-alt"></span></span>
-                    <input class="form-control" name="medical_record_number" placeholder="Entrar número do prontuário" id="records_number" type="text" value="{{ medical_record }}">
-                </div>
+            <div class="input-group  input-group-sm">
+                <span class="input-group-addon"> <span class="glyphicon glyphicon-home"></span></span>
+
+                <div class="bfh-selectbox bfh-countries" data-name="country_txt" data-country="BR" data-flags="true" id="id_country_state_address" value="{{ country }}"></div>
             </div>
         </div>
     </div>
-    <div class="col-md-1"></div>
+    <div class="col-xs-6 col-sm-6">
+        <div class="form-group">
+            <label> Estado</label>
+
+            <div class="input-group  input-group-sm">
+                <span class="input-group-addon"> <span class="glyphicon glyphicon-home"></span></span>
+
+                <div class="bfh-selectbox bfh-states" data-name="state_txt" data-country="id_country_state_address" id="id_chosen_state" value=""></div>
+            </div>
+        </div>
+    </div>
+</div>
+<div class="row">
+    <div class="col-xs-6 col-sm-6">
+        <div class="form-group">
+            <label>Cidade</label>
+
+            <div class="input-group  input-group-sm ">
+                <span class="input-group-addon"> <span class="glyphicon glyphicon-home"></span></span>
+                <input class="form-control" name="city_txt" placeholder="Entrar cidade" id="city" type="text" value="{{ city }}">
+            </div>
+        </div>
+    </div>
+    <div class="col-xs-6 col-sm-6">
+        <div class="form-group">
+            <label> Telefone fixo</label>
+
+            <div class="input-group  input-group-sm">
+                <span class="input-group-addon"> <span class="glyphicon glyphicon-earphone"></span></span>
+                <input class="form-control" name="phone_number" placeholder="Entrar telefone para contato" id="phone" type="text" value="{{ phone }}">
+            </div>
+        </div>
+    </div>
+</div>
+<div class="row">
+    <div class="col-xs-6 col-sm-6">
+        <div class="form-group">
+            <label> Telefone celular</label>
+
+            <div class="input-group input-group-sm">
+                <span class="input-group-addon"> <span class="glyphicon glyphicon-earphone"></span></span>
+                <input class="form-control" name="cellphone_number" placeholder="Entrar celular" id="cellphone" type="text" value="{{ cellphone }}">
+            </div>
+        </div>
+    </div>
+    <div class="col-xs-6 col-sm-6">
+        <div class="form-group">
+            <label>E-mail</label>
+
+            <div class="input-group input-group-sm">
+                <span class="input-group-addon"> <span class="glyphicon glyphicon-envelope"></span></span>
+                <input class="form-control" name="email_txt" placeholder="Entrar e-mail" id="email" type="email" value="{{ email }}">
+            </div>
+        </div>
+    </div>
+</div>
+<div class="row">
+    <div class="col-xs-6 col-sm-6">
+        <div class="form-group">
+            <label>Número do prontuário</label>
+
+            <div class="input-group input-group-sm">
+                <span class="input-group-addon"> <span class="glyphicon glyphicon-list-alt"></span></span>
+                <input class="form-control" name="medical_record_number" placeholder="Entrar número do prontuário" id="records_number" type="text" value="{{ medical_record }}">
+            </div>
+        </div>
+    </div>
+</div>
+<div class="col-md-1"></div>
 </div>
 <div class="row">
     <div class="col-md-12">
@@ -302,13 +339,13 @@
             <label>Sexo</label>
             <div class="input-group input-group-sm">
                 {% if gender_options%}
-                <select name="gender_opt" class="form-control" id="gender_id">
-                    {% for gender in gender_options%}
-                    <option>{{gender.gender_txt}}</option>
-                    {% endfor %}
-                </select>
+                    <select name="gender_opt" class="form-control" id="gender_id">
+                        {% for gender in gender_options%}
+                            <option>{{gender.gender_txt}}</option>
+                        {% endfor %}
+                    </select>
                 {% else %}
-                <p>No gender available.</p>
+                    <p>No gender available.</p>
                 {% endif %}
             </div>
         </div>
@@ -321,13 +358,13 @@
 
             <div class="input-group  input-group-sm">
                 {% if marital_status_options%}
-                <select class="form-control" name="marital_status_opt"  id="marital_status">
-                    {% for marital_status in marital_status_options%}
-                    <option>{{marital_status.marital_status_txt}}</option>
-                    {% endfor %}
-                </select>
+                    <select class="form-control" name="marital_status_opt"  id="marital_status">
+                        {% for marital_status in marital_status_options%}
+                            <option>{{marital_status.marital_status_txt}}</option>
+                        {% endfor %}
+                    </select>
                 {% else %}
-                <p>No marital status available.</p>
+                    <p>No marital status available.</p>
                 {% endif %}
             </div>
         </div>
@@ -338,390 +375,390 @@
 </div>
 </div>
 <div class="tab-pane" id="tab2">
-    <div class="row">
-        <div class="col-md-1"></div>
-        <div class="col-md-10">
-            <div class="container span6 offset3 well ">
-                <div class="row">
-                    <div class="col-xs-6 col-sm-6">
-                        <div class="form-group">
-                            <label>Religião</label>
+<div class="row">
+<div class="col-md-1"></div>
+<div class="col-md-10">
+<div class="container span6 offset3 well ">
+<div class="row">
+    <div class="col-xs-6 col-sm-6">
+        <div class="form-group">
+            <label>Religião</label>
 
-                            <div class="input-group  input-group-sm">
-                                {% if religion_options %}
-                                <select class="form-control" name="religion_opt" id="religion_id">
-                                    {% for religion in religion_options%}
-                                    <option>{{religion.religion_txt}}</option>
-                                    {% endfor %}
-                                </select>
-                                {% else %}
-                                <p>No religion available.</p>
-                                {% endif %}
-                            </div>
-                        </div>
-                    </div>
-                </div>
-                <div class="row">
-                    <div class="col-xs-6 col-sm-6">
-                        <div class="form-group">
-                            <label>Profissão</label>
-
-                            <div class="input-group  input-group-sm ">
-                                <span class="input-group-addon"> <span class="glyphicon"></span></span>
-                                <input class="form-control" name="profession_txt" placeholder="Entrar profissão " id="profession" type="text">
-                            </div>
-                        </div>
-                    </div>
-                    <div class="col-xs-6 col-sm-6">
-                        <div class="form-group">
-                            <label for="occupation"> Ocupação</label>
-
-                            <div class="input-group  input-group-sm">
-                                <span class="input-group-addon"> <span class="glyphicon"></span></span>
-                                <input class="form-control" name="occupation_txt" placeholder="Entrar ocupação" id="occupation" type="text">
-                            </div>
-                        </div>
-                    </div>
-                </div>
-                <div class="row">
-                    <div class="col-xs-6 col-sm-12">
-                        <div class="form-group">
-                            <label>Recebe algum benefício de escala municipal, estadual ou federal de governo?</label>
-
-                            <div class="input-group  input-group-sm">
-                                <div class="radio-inline" id="id_benefit">
-                                    <label>
-                                        <input name="benefit_gov_bool" id="optionsRadios1" value="1" checked="" type="radio">Sim</label>
-                                </div>
-                                <div class="radio-inline">
-                                    <label>
-                                        <input name="benefit_gov_bool" id="optionsRadios2" value="0" type="radio">Não</label>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-                <div class="row">
-                    <div class="col-xs-6 col-sm-12">
-                        <div class="form-group">
-                            <label>Qual a forma de pagamento do tratamento realizado?</label>
-
-                            <div class="input-group  input-group-sm">
-                                {% if payment_options%}
-                                <select class="form-control" name="payment_opt" id="payment_id">
-                                    {% for payment in payment_options %}
-                                    <option>{{payment.payment_txt}}</option>
-                                    {% endfor %}
-                                </select>
-                                {% else %}
-                                <p>No payment option available.</p>
-                                {% endif %}
-                            </div>
-                        </div>
-                    </div>
-                </div>
-                <div class="row">
-                    <div class="col-xs-6 col-sm-12">
-                        <div class="form-group">
-                            <label for="skin_color">Cor da pele-IBGE</label>
-
-                            <div class="input-group  input-group-sm">
-
-                                <select class="form-control" name="flesh_tone_opt" id="skin_color">
-                                    {% for fleshtone in flesh_tone_options %}
-                                    <option>{{fleshtone.flesh_tone_txt}}</option>
-                                    {% endfor %}
-                                </select>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-                <div class="row">
-                    <div class="col-xs-6 col-sm-12">
-                        <div class="form-group">
-                            <label>Grau de instrução do chefe de família - Critério Brasil 2013</label>
-
-                            <div class="input-group input-group-sm">
-                                <select name="schooling_opt" class="form-control" id="scolarity">
-                                    {% for schooling in schooling_options %}
-                                    <option>{{schooling.schooling_txt}}</option>
-                                    {% endfor %}
-                                </select>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-                <div class="row">
-                    <div class="col-xs-6 col-sm-12">
-                    <div class="form-group">
-                    <label>Quantidade de iItens de conforto familiar - Critério Brasil 2013</label>
-
-                    <div class="form-group">
-                        <label class="col-sm-5 control-label">Televisores em cores</label>
-
-                        <div class="col-sm-7">
-                            <div class="radio-inline">
-                                <label>
-                                    <input name="tv_opt" id="tv_opt0" value="0" type="radio">0</label>
-                            </div>
-                            <div class="radio-inline">
-                                <label>
-                                    <input name="tv_opt" id="tv_opt1" value="1" type="radio">1</label>
-                            </div>
-                            <div class="radio-inline">
-                                <label>
-                                    <input name="tv_opt" id="tv_opt2" value="2" type="radio">2</label>
-                            </div>
-                            <div class="radio-inline">
-                                <label>
-                                    <input name="tv_opt" id="tv_opt3" value="3" type="radio">3</label>
-                            </div>
-                            <div class="radio-inline">
-                                <label>
-                                    <input name="tv_opt" id="tv_opt4" value="4" type="radio">4 ou +</label>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="form-group">
-                    <label class="col-sm-5 control-label">Videocassete/DVD</label>
-
-                    <div class="col-sm-7">
-                        <div class="radio-inline">
-                            <label>
-                                <input name="dvd_opt" id="dvd_opt0" value="0" type="radio">0</label>
-                        </div>
-                        <div class="radio-inline">
-                            <label>
-                                <input name="dvd_opt" id="dvd_opt1" value="1" type="radio">1</label>
-                        </div>
-                        <div class="radio-inline">
-                            <label>
-                                <input name="dvd_opt" id="dvd_opt2" value="2" type="radio">2</label>
-                        </div>
-                        <div class="radio-inline">
-                            <label>
-                                <input name="dvd_opt" id="dvd_opt3" value="3" type="radio">3</label>
-                        </div>
-                        <div class="radio-inline">
-                            <label>
-                                <input name="dvd_opt" id="dvd_opt4" value="4" type="radio">4 ou +</label>
-                        </div>
-                    </div>
-                    </div>
-                    <div class="form-group">
-                        <label class="col-sm-5 control-label">Rádios</label>
-
-                        <div class="col-sm-7">
-                            <div class="radio-inline">
-                                <label>
-                                    <input name="radio_opt" id="radio_opt0" value="0" type="radio">0</label>
-                            </div>
-                            <div class="radio-inline">
-                                <label>
-                                    <input name="radio_opt" id="radio_opt1" value="1" type="radio">1</label>
-                            </div>
-                            <div class="radio-inline">
-                                <label>
-                                    <input name="radio_opt" id="radio_opt2" value="2" type="radio">2</label>
-                            </div>
-                            <div class="radio-inline">
-                                <label>
-                                    <input name="radio_opt" id="radio_opt3" value="3" type="radio">3</label>
-                            </div>
-                            <div class="radio-inline">
-                                <label>
-                                    <input name="radio_opt" id="radio_opt4" value="4" type="radio">4 ou +</label>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="form-group">
-                        <label class="col-sm-5 control-label">Banheiros</label>
-
-                        <div class="col-sm-7">
-                            <div class="radio-inline">
-                                <label>
-                                    <input name="bath_opt" id="bath_opt0" value="0"
-                                           type="radio">0</label>
-                            </div>
-                            <div class="radio-inline">
-                                <label>
-                                    <input name="bath_opt" id="bath_opt1" value="1"
-                                           type="radio">1</label>
-                            </div>
-                            <div class="radio-inline">
-                                <label>
-                                    <input name="bath_opt" id="bath_opt2" value="2"
-                                           type="radio">2</label>
-                            </div>
-                            <div class="radio-inline">
-                                <label>
-                                    <input name="bath_opt" id="bath_opt3" value="3"
-                                           type="radio">3</label>
-                            </div>
-                            <div class="radio-inline">
-                                <label>
-                                    <input name="bath_opt" id="bath_opt4" value="4"
-                                           type="radio">4 ou +</label>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="form-group">
-                        <label class="col-sm-5 control-label">Automóveis</label>
-
-                        <div class="col-sm-7">
-                            <div class="radio-inline">
-                                <label>
-                                    <input name="automobile_opt" id="automobile_opt0" value="0" type="radio">0</label>
-                            </div>
-                            <div class="radio-inline">
-                                <label>
-                                    <input name="automobile_opt" id="automobile_opt1" value="1" type="radio">1</label>
-                            </div>
-                            <div class="radio-inline">
-                                <label>
-                                    <input name="automobile_opt" id="automobile_opt2" value="2" type="radio">2</label>
-                            </div>
-                            <div class="radio-inline">
-                                <label>
-                                    <input name="automobile_opt" id="automobile_opt3" value="3" type="radio">3</label>
-                            </div>
-                            <div class="radio-inline">
-                                <label>
-                                    <input name="automobile_opt" id="automobile_opt4" value="4" type="radio">4 ou +</label>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="form-group">
-                        <label class="col-sm-5 control-label">Empregadas mensalistas</label>
-
-                        <div class="col-sm-7">
-                            <div class="radio-inline">
-                                <label>
-                                    <input name="house_maid_opt" id="house_maid_opt0" value="0"
-                                           type="radio">0</label>
-                            </div>
-                            <div class="radio-inline">
-                                <label>
-                                    <input name="house_maid_opt" id="house_maid_opt1" value="1"
-                                           type="radio">1</label>
-                            </div>
-                            <div class="radio-inline">
-                                <label>
-                                    <input name="house_maid_opt" id="house_maid_opt2" value="2"
-                                           type="radio">2</label>
-                            </div>
-                            <div class="radio-inline">
-                                <label>
-                                    <input name="house_maid_opt" id="house_maid_opt3" value="3"
-                                           type="radio">3</label>
-                            </div>
-                            <div class="radio-inline">
-                                <label>
-                                    <input name="house_maid_opt" id="house_maid_opt4" value="4"
-                                           type="radio">4 ou +</label>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="form-group">
-                        <label class="col-sm-5 control-label">Máquinas de lavar</label>
-
-                        <div class="col-sm-7">
-                            <div class="radio-inline">
-                                <label>
-                                    <input name="wash_machine_opt" id="wash_machine_opt0" value="0" type="radio">0</label>
-                            </div>
-                            <div class="radio-inline">
-                                <label>
-                                    <input name="wash_machine_opt" id="wash_machine_opt1" value="1" type="radio">1</label>
-                            </div>
-                            <div class="radio-inline">
-                                <label>
-                                    <input name="wash_machine_opt" id="wash_machine_opt2" value="2" type="radio">2</label>
-                            </div>
-                            <div class="radio-inline">
-                                <label>
-                                    <input name="wash_machine_opt" id="wash_machine_opt3" value="3" type="radio">3</label>
-                            </div>
-                            <div class="radio-inline">
-                                <label>
-                                    <input name="wash_machine_opt" id="wash_machine_opt4" value="4" type="radio">4 ou +</label>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="form-group">
-                        <label class="col-sm-5 control-label">Geladeiras</label>
-
-                        <div class="col-sm-7">
-                            <div class="radio-inline">
-                                <label>
-                                    <input name="refrigerator_opt" id="refrigerator_opt0" value="0"
-                                           type="radio">0</label>
-                            </div>
-                            <div class="radio-inline">
-                                <label>
-                                    <input name="refrigerator_opt" id="refrigerator_opt1" value="1"
-                                           type="radio">1</label>
-                            </div>
-                            <div class="radio-inline">
-                                <label>
-                                    <input name="refrigerator_opt" id="refrigerator_opt2" value="2"
-                                           type="radio">2</label>
-                            </div>
-                            <div class="radio-inline">
-                                <label>
-                                    <input name="refrigerator_opt" id="refrigerator_opt3" value="3"
-                                           type="radio">3</label>
-                            </div>
-                            <div class="radio-inline">
-                                <label>
-                                    <input name="refrigerator_opt" id="refrigerator_opt4" value="4"
-                                           type="radio">4 ou +</label>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="form-group">
-                        <label class="col-sm-5 control-label">Freezer*</label>
-
-                        <div class="col-sm-7">
-                            <div class="radio-inline">
-                                <label>
-                                    <input name="freezer_opt" id="freezer_opt0" value="0"
-                                           type="radio">0</label>
-                            </div>
-                            <div class="radio-inline">
-                                <label>
-                                    <input name="freezer_opt" id="freezer_opt1" value="1"
-                                           type="radio">1</label>
-                            </div>
-                            <div class="radio-inline">
-                                <label>
-                                    <input name="freezer_opt" id="freezer_opt2" value="2"
-                                           type="radio">2</label>
-                            </div>
-                            <div class="radio-inline">
-                                <label>
-                                    <input name="freezer_opt" id="freezer_opt3" value="3"
-                                           type="radio">3</label>
-                            </div>
-                            <div class="radio-inline">
-                                <label>
-                                    <input name="freezer_opt" id="freezer_opt4" value="4"
-                                           type="radio">4 ou +</label>
-                            </div>
-                        </div>
-                    </div>
-                    </div>
-                    </div>
-                    </div>
-                    <div class="row">
-                        <div class="col-sm-12">
-                            <h6>*Aparelho independente ou parte da geladeira duplex.</h6>
-                        </div>
-                    </div>
-                <div class="col-md-1"></div>
+            <div class="input-group  input-group-sm">
+                {% if religion_options %}
+                    <select class="form-control" name="religion_opt" id="religion_id">
+                        {% for religion in religion_options%}
+                            <option>{{religion.religion_txt}}</option>
+                        {% endfor %}
+                    </select>
+                {% else %}
+                    <p>No religion available.</p>
+                {% endif %}
             </div>
         </div>
     </div>
+</div>
+<div class="row">
+    <div class="col-xs-6 col-sm-6">
+        <div class="form-group">
+            <label>Profissão</label>
+
+            <div class="input-group  input-group-sm ">
+                <span class="input-group-addon"> <span class="glyphicon"></span></span>
+                <input class="form-control" name="profession_txt" placeholder="Entrar profissão " id="profession" type="text">
+            </div>
+        </div>
+    </div>
+    <div class="col-xs-6 col-sm-6">
+        <div class="form-group">
+            <label for="occupation"> Ocupação</label>
+
+            <div class="input-group  input-group-sm">
+                <span class="input-group-addon"> <span class="glyphicon"></span></span>
+                <input class="form-control" name="occupation_txt" placeholder="Entrar ocupação" id="occupation" type="text">
+            </div>
+        </div>
+    </div>
+</div>
+<div class="row">
+    <div class="col-xs-6 col-sm-12">
+        <div class="form-group">
+            <label>Recebe algum benefício de escala municipal, estadual ou federal de governo?</label>
+
+            <div class="input-group  input-group-sm">
+                <div class="radio-inline" id="id_benefit">
+                    <label>
+                        <input name="benefit_gov_bool" id="optionsRadios1" value="1" checked="" type="radio">Sim</label>
+                </div>
+                <div class="radio-inline">
+                    <label>
+                        <input name="benefit_gov_bool" id="optionsRadios2" value="0" type="radio">Não</label>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<div class="row">
+    <div class="col-xs-6 col-sm-12">
+        <div class="form-group">
+            <label>Qual a forma de pagamento do tratamento realizado?</label>
+
+            <div class="input-group  input-group-sm">
+                {% if payment_options%}
+                    <select class="form-control" name="payment_opt" id="payment_id">
+                        {% for payment in payment_options %}
+                            <option>{{payment.payment_txt}}</option>
+                        {% endfor %}
+                    </select>
+                {% else %}
+                    <p>No payment option available.</p>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+</div>
+<div class="row">
+    <div class="col-xs-6 col-sm-12">
+        <div class="form-group">
+            <label for="skin_color">Cor da pele-IBGE</label>
+
+            <div class="input-group  input-group-sm">
+
+                <select class="form-control" name="flesh_tone_opt" id="skin_color">
+                    {% for fleshtone in flesh_tone_options %}
+                        <option>{{fleshtone.flesh_tone_txt}}</option>
+                    {% endfor %}
+                </select>
+            </div>
+        </div>
+    </div>
+</div>
+<div class="row">
+    <div class="col-xs-6 col-sm-12">
+        <div class="form-group">
+            <label>Grau de instrução do chefe de família - Critério Brasil 2013</label>
+
+            <div class="input-group input-group-sm">
+                <select name="schooling_opt" class="form-control" id="scolarity">
+                    {% for schooling in schooling_options %}
+                        <option>{{schooling.schooling_txt}}</option>
+                    {% endfor %}
+                </select>
+            </div>
+        </div>
+    </div>
+</div>
+<div class="row">
+<div class="col-xs-6 col-sm-12">
+<div class="form-group">
+<label>Quantidade de iItens de conforto familiar - Critério Brasil 2013</label>
+
+<div class="form-group">
+    <label class="col-sm-5 control-label">Televisores em cores</label>
+
+    <div class="col-sm-7">
+        <div class="radio-inline">
+            <label>
+                <input name="tv_opt" id="tv_opt0" value="0" type="radio">0</label>
+        </div>
+        <div class="radio-inline">
+            <label>
+                <input name="tv_opt" id="tv_opt1" value="1" type="radio">1</label>
+        </div>
+        <div class="radio-inline">
+            <label>
+                <input name="tv_opt" id="tv_opt2" value="2" type="radio">2</label>
+        </div>
+        <div class="radio-inline">
+            <label>
+                <input name="tv_opt" id="tv_opt3" value="3" type="radio">3</label>
+        </div>
+        <div class="radio-inline">
+            <label>
+                <input name="tv_opt" id="tv_opt4" value="4" type="radio">4 ou +</label>
+        </div>
+    </div>
+</div>
+<div class="form-group">
+    <label class="col-sm-5 control-label">Videocassete/DVD</label>
+
+    <div class="col-sm-7">
+        <div class="radio-inline">
+            <label>
+                <input name="dvd_opt" id="dvd_opt0" value="0" type="radio">0</label>
+        </div>
+        <div class="radio-inline">
+            <label>
+                <input name="dvd_opt" id="dvd_opt1" value="1" type="radio">1</label>
+        </div>
+        <div class="radio-inline">
+            <label>
+                <input name="dvd_opt" id="dvd_opt2" value="2" type="radio">2</label>
+        </div>
+        <div class="radio-inline">
+            <label>
+                <input name="dvd_opt" id="dvd_opt3" value="3" type="radio">3</label>
+        </div>
+        <div class="radio-inline">
+            <label>
+                <input name="dvd_opt" id="dvd_opt4" value="4" type="radio">4 ou +</label>
+        </div>
+    </div>
+</div>
+<div class="form-group">
+    <label class="col-sm-5 control-label">Rádios</label>
+
+    <div class="col-sm-7">
+        <div class="radio-inline">
+            <label>
+                <input name="radio_opt" id="radio_opt0" value="0" type="radio">0</label>
+        </div>
+        <div class="radio-inline">
+            <label>
+                <input name="radio_opt" id="radio_opt1" value="1" type="radio">1</label>
+        </div>
+        <div class="radio-inline">
+            <label>
+                <input name="radio_opt" id="radio_opt2" value="2" type="radio">2</label>
+        </div>
+        <div class="radio-inline">
+            <label>
+                <input name="radio_opt" id="radio_opt3" value="3" type="radio">3</label>
+        </div>
+        <div class="radio-inline">
+            <label>
+                <input name="radio_opt" id="radio_opt4" value="4" type="radio">4 ou +</label>
+        </div>
+    </div>
+</div>
+<div class="form-group">
+    <label class="col-sm-5 control-label">Banheiros</label>
+
+    <div class="col-sm-7">
+        <div class="radio-inline">
+            <label>
+                <input name="bath_opt" id="bath_opt0" value="0"
+                       type="radio">0</label>
+        </div>
+        <div class="radio-inline">
+            <label>
+                <input name="bath_opt" id="bath_opt1" value="1"
+                       type="radio">1</label>
+        </div>
+        <div class="radio-inline">
+            <label>
+                <input name="bath_opt" id="bath_opt2" value="2"
+                       type="radio">2</label>
+        </div>
+        <div class="radio-inline">
+            <label>
+                <input name="bath_opt" id="bath_opt3" value="3"
+                       type="radio">3</label>
+        </div>
+        <div class="radio-inline">
+            <label>
+                <input name="bath_opt" id="bath_opt4" value="4"
+                       type="radio">4 ou +</label>
+        </div>
+    </div>
+</div>
+<div class="form-group">
+    <label class="col-sm-5 control-label">Automóveis</label>
+
+    <div class="col-sm-7">
+        <div class="radio-inline">
+            <label>
+                <input name="automobile_opt" id="automobile_opt0" value="0" type="radio">0</label>
+        </div>
+        <div class="radio-inline">
+            <label>
+                <input name="automobile_opt" id="automobile_opt1" value="1" type="radio">1</label>
+        </div>
+        <div class="radio-inline">
+            <label>
+                <input name="automobile_opt" id="automobile_opt2" value="2" type="radio">2</label>
+        </div>
+        <div class="radio-inline">
+            <label>
+                <input name="automobile_opt" id="automobile_opt3" value="3" type="radio">3</label>
+        </div>
+        <div class="radio-inline">
+            <label>
+                <input name="automobile_opt" id="automobile_opt4" value="4" type="radio">4 ou +</label>
+        </div>
+    </div>
+</div>
+<div class="form-group">
+    <label class="col-sm-5 control-label">Empregadas mensalistas</label>
+
+    <div class="col-sm-7">
+        <div class="radio-inline">
+            <label>
+                <input name="house_maid_opt" id="house_maid_opt0" value="0"
+                       type="radio">0</label>
+        </div>
+        <div class="radio-inline">
+            <label>
+                <input name="house_maid_opt" id="house_maid_opt1" value="1"
+                       type="radio">1</label>
+        </div>
+        <div class="radio-inline">
+            <label>
+                <input name="house_maid_opt" id="house_maid_opt2" value="2"
+                       type="radio">2</label>
+        </div>
+        <div class="radio-inline">
+            <label>
+                <input name="house_maid_opt" id="house_maid_opt3" value="3"
+                       type="radio">3</label>
+        </div>
+        <div class="radio-inline">
+            <label>
+                <input name="house_maid_opt" id="house_maid_opt4" value="4"
+                       type="radio">4 ou +</label>
+        </div>
+    </div>
+</div>
+<div class="form-group">
+    <label class="col-sm-5 control-label">Máquinas de lavar</label>
+
+    <div class="col-sm-7">
+        <div class="radio-inline">
+            <label>
+                <input name="wash_machine_opt" id="wash_machine_opt0" value="0" type="radio">0</label>
+        </div>
+        <div class="radio-inline">
+            <label>
+                <input name="wash_machine_opt" id="wash_machine_opt1" value="1" type="radio">1</label>
+        </div>
+        <div class="radio-inline">
+            <label>
+                <input name="wash_machine_opt" id="wash_machine_opt2" value="2" type="radio">2</label>
+        </div>
+        <div class="radio-inline">
+            <label>
+                <input name="wash_machine_opt" id="wash_machine_opt3" value="3" type="radio">3</label>
+        </div>
+        <div class="radio-inline">
+            <label>
+                <input name="wash_machine_opt" id="wash_machine_opt4" value="4" type="radio">4 ou +</label>
+        </div>
+    </div>
+</div>
+<div class="form-group">
+    <label class="col-sm-5 control-label">Geladeiras</label>
+
+    <div class="col-sm-7">
+        <div class="radio-inline">
+            <label>
+                <input name="refrigerator_opt" id="refrigerator_opt0" value="0"
+                       type="radio">0</label>
+        </div>
+        <div class="radio-inline">
+            <label>
+                <input name="refrigerator_opt" id="refrigerator_opt1" value="1"
+                       type="radio">1</label>
+        </div>
+        <div class="radio-inline">
+            <label>
+                <input name="refrigerator_opt" id="refrigerator_opt2" value="2"
+                       type="radio">2</label>
+        </div>
+        <div class="radio-inline">
+            <label>
+                <input name="refrigerator_opt" id="refrigerator_opt3" value="3"
+                       type="radio">3</label>
+        </div>
+        <div class="radio-inline">
+            <label>
+                <input name="refrigerator_opt" id="refrigerator_opt4" value="4"
+                       type="radio">4 ou +</label>
+        </div>
+    </div>
+</div>
+<div class="form-group">
+    <label class="col-sm-5 control-label">Freezer*</label>
+
+    <div class="col-sm-7">
+        <div class="radio-inline">
+            <label>
+                <input name="freezer_opt" id="freezer_opt0" value="0"
+                       type="radio">0</label>
+        </div>
+        <div class="radio-inline">
+            <label>
+                <input name="freezer_opt" id="freezer_opt1" value="1"
+                       type="radio">1</label>
+        </div>
+        <div class="radio-inline">
+            <label>
+                <input name="freezer_opt" id="freezer_opt2" value="2"
+                       type="radio">2</label>
+        </div>
+        <div class="radio-inline">
+            <label>
+                <input name="freezer_opt" id="freezer_opt3" value="3"
+                       type="radio">3</label>
+        </div>
+        <div class="radio-inline">
+            <label>
+                <input name="freezer_opt" id="freezer_opt4" value="4"
+                       type="radio">4 ou +</label>
+        </div>
+    </div>
+</div>
+</div>
+</div>
+</div>
+<div class="row">
+    <div class="col-sm-12">
+        <h6>*Aparelho independente ou parte da geladeira duplex.</h6>
+    </div>
+</div>
+<div class="col-md-1"></div>
+</div>
+</div>
+</div>
 </div>
 <div class="tab-pane" id="tab3">
     <div class="row">
@@ -756,7 +793,7 @@
                             <div class="input-group  input-group-sm">
                                 <select name="amount_cigarettes_opt" class="form-control" id="id_amount_cigarettes">
                                     {% for amount_cigar in amount_cigarettes %}
-                                    <option>{{amount_cigar.amount_cigarettes_txt}}</option>
+                                        <option>{{amount_cigar.amount_cigarettes_txt}}</option>
                                     {% endfor %}
                                 </select>
                             </div>
@@ -809,7 +846,7 @@
                             <div class="input-group  input-group-sm">
                                 <select name="alcohol_frequency_opt" class="form-control" id="id_freqSmok">
                                     {% for alcohol_freq in alcohol_frequency %}
-                                    <option>{{alcohol_freq.alcohol_frequency_txt}}</option>
+                                        <option>{{alcohol_freq.alcohol_frequency_txt}}</option>
                                     {% endfor %}
                                 </select>
                             </div>
@@ -822,7 +859,7 @@
                             <div class="input-group  input-group-sm">
                                 <select name="alcohol_period_opt" class="form-control" id="id_periodSmok">
                                     {% for alc_period in alcohol_period %}
-                                    <option>{{alc_period.alcohol_period_txt}}</option>
+                                        <option>{{alc_period.alcohol_period_txt}}</option>
                                     {% endfor %}
                                 </select>
                             </div>
@@ -1578,59 +1615,59 @@
 </div>
 </div>
 <div class="tab-pane" id="tab5">
-<div class="row">
-    <div class="col-md-1"></div>
-    <div class="col-md-10">
-        <div class="container span6 offset3 well ">
-            <div class="row">
-                <div class="col-xs-6 col-sm-3">
-                    <div class="form-group">
-                        <label> Exame Complementar </label>
+    <div class="row">
+        <div class="col-md-1"></div>
+        <div class="col-md-10">
+            <div class="container span6 offset3 well ">
+                <div class="row">
+                    <div class="col-xs-6 col-sm-3">
+                        <div class="form-group">
+                            <label> Exame Complementar </label>
 
-                        <div class="input-group  input-group-sm">
                             <div class="input-group  input-group-sm">
-                                <div class="radio-inline">
-                                    <label>
-                                        <input name="complementaryExameOptionsRadios"
-                                               id="complementaryExameOptionsRadios1"
-                                               value="complementaryExameOption1" type="radio">Sim</label>
-                                </div>
-                                <div class="radio-inline">
-                                    <label>
-                                        <input name="complementaryExameOptionsRadios"
-                                               id="complementaryExameOptionsRadios2"
-                                               value="complementaryExameOption2" type="radio">Não</label>
+                                <div class="input-group  input-group-sm">
+                                    <div class="radio-inline">
+                                        <label>
+                                            <input name="complementaryExameOptionsRadios"
+                                                   id="complementaryExameOptionsRadios1"
+                                                   value="complementaryExameOption1" type="radio">Sim</label>
+                                    </div>
+                                    <div class="radio-inline">
+                                        <label>
+                                            <input name="complementaryExameOptionsRadios"
+                                                   id="complementaryExameOptionsRadios2"
+                                                   value="complementaryExameOption2" type="radio">Não</label>
+                                    </div>
                                 </div>
                             </div>
                         </div>
                     </div>
-                </div>
-                <div class="col-xs-6 col-sm-9">
-                    <div class="form-group">
-                        <label>Qual?</label>
+                    <div class="col-xs-6 col-sm-9">
+                        <div class="form-group">
+                            <label>Qual?</label>
 
-                        <div class="input-group  input-group-sm ">
-                            <span class="input-group-addon"> <span class="glyphicon glyphicon-edit"></span></span>
-                            <input class="form-control" placeholder="Especificar o exame complementar"
-                                   id="id_whichComplementaryExame" type="text">
+                            <div class="input-group  input-group-sm ">
+                                <span class="input-group-addon"> <span class="glyphicon glyphicon-edit"></span></span>
+                                <input class="form-control" placeholder="Especificar o exame complementar"
+                                       id="id_whichComplementaryExame" type="text">
+                            </div>
                         </div>
                     </div>
-                </div>
-                <div class="col-xs-6 col-sm-9">
-                    <div class="form-group">
-                        <label>Data:</label>
+                    <div class="col-xs-6 col-sm-9">
+                        <div class="form-group">
+                            <label>Data:</label>
 
-                        <div class="input-group input-group-sm ">
-                            <span class="input-group-addon"> <span class="glyphicon glyphicon-edit"></span></span>
-                            <input class="form-control" placeholder="Data" id="dateOfComplementaryExame" type="date">
+                            <div class="input-group input-group-sm ">
+                                <span class="input-group-addon"> <span class="glyphicon glyphicon-edit"></span></span>
+                                <input class="form-control" placeholder="Data" id="dateOfComplementaryExame" type="date">
+                            </div>
                         </div>
                     </div>
                 </div>
             </div>
         </div>
+        <div class="col-md-1"></div>
     </div>
-    <div class="col-md-1"></div>
-</div>
 
 </div>
 </div>
@@ -1969,18 +2006,23 @@ $("#nexttab").on('click', function() {
 });
 
 $("#savetab").on('click', function(){
-<!-- $("#tabform").filter(".active").submit(); -->
+    <!-- $("#tabform").filter(".active").submit(); -->
     var value=$.trim($("#cpf_id").val());
     if(value.length==0)
     {
-        var r = confirm("CPF não preenchido. Deseja salvar?");
-        if (r == true) {
-	        $("#tab1form").submit();
-        }
+        $("#myModal").modal('show');
+{#        var r = confirm("CPF não preenchido. Deseja salvar?");#}
+{#        if (r == true) {#}
+{#            $("#tab1form").submit();#}
+{#        }#}
     }
     else{
         $("#tab1form").submit();
     }
+});
+
+$("#savetab2").on('click', function(){
+        $("#tab1form").submit();
 });
 
 

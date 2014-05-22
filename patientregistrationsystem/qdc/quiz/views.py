@@ -64,11 +64,11 @@ def pg_home(request):
                     new_social_history_data.alcohol_period_opt = None
                 new_social_history_data.save()
                 new_social_history_data = None
-            messages.add_message(request, messages.INFO, 'Paciente gravado com sucesso.')
+                messages.success(request, 'Paciente gravado com sucesso.')
         else:
 
             if not request.POST['name_txt']:
-                messages.add_message(request, messages.ERROR, 'Nome não preenchido.')
+                messages.error(request, 'Nome não preenchido.')
 
 
 
