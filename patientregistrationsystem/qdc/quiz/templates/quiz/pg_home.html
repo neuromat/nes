@@ -156,7 +156,14 @@
                 <div class="input-group input-group-sm">
                     <span class="input-group-addon"> <span class="glyphicon glyphicon-flag"></span></span>
 
-                    <div class="bfh-selectbox bfh-countries" data-name="citizenship_txt" data-country="BR" id="id_chosen_country" data-flags="true" value="{{ citizenship }}"></div>
+                    <div class="bfh-selectbox bfh-countries" data-name="citizenship_txt" data-country=
+                            {% if citizenship %}
+                                "{{ citizenship }}"
+                            {% else %}
+                                "BR"
+                            {% endif %}
+                    id="id_chosen_country" data-flags="true">
+                    </div>
                 </div>
             </div>
         </div>
@@ -174,7 +181,7 @@
         </div>
         <div class="col-xs-6 col-sm-6">
             <div class="form-group">
-                <label> CEP</label>
+                <label>CEP</label>
 
                 <div class="input-group  input-group-sm">
                     <span class="input-group-addon"> <span class="glyphicon glyphicon-home"></span></span>
@@ -187,22 +194,34 @@
         <div class="col-xs-6 col-sm-6">
             <div class="form-group">
                 <label>País</label>
-
                 <div class="input-group  input-group-sm">
                     <span class="input-group-addon"> <span class="glyphicon glyphicon-home"></span></span>
-
-                    <div class="bfh-selectbox bfh-countries" data-name="country_txt" data-country="BR" data-flags="true" id="id_country_state_address" value="{{ country }}"></div>
+                    <div class="bfh-selectbox bfh-countries" data-name="country_txt"
+                         data-country=
+                            {% if country %}
+                                "{{ country }}"
+                            {% else %}
+                                "BR"
+                            {% endif %}
+                         data-flags="true" id="id_country_state_address">
+                    </div>
                 </div>
             </div>
         </div>
         <div class="col-xs-6 col-sm-6">
             <div class="form-group">
-                <label> Estado</label>
-
+                <label>Estado</label>
                 <div class="input-group  input-group-sm">
                     <span class="input-group-addon"> <span class="glyphicon glyphicon-home"></span></span>
-
-                    <div class="bfh-selectbox bfh-states" data-name="state_txt" data-country="id_country_state_address" id="id_chosen_state" value=""></div>
+                    <div class="bfh-selectbox bfh-states" data-name="state_txt" data-country="id_country_state_address"
+                         data-state=
+                            {% if state %}
+                                "{{ state }}"
+                            {% else %}
+                                "RJ"
+                            {% endif %}
+                         id="id_chosen_state">
+                    </div>
                 </div>
             </div>
         </div>
@@ -280,10 +299,9 @@
     <div class="col-xs-6 col-sm-6">
         <div class="form-group">
             <label for="birthday">Data de Nascimento</label>
-
             <div class="input-group input-group-sm">
                 <span class="input-group-addon"> <span class="glyphicon glyphicon-calendar"></span></span>
-                <input class="form-control" name="dt_birth_txt" placeholder="dia/mês/ano" id="birthday" type="text">
+                <input class="form-control" name="dt_birth_txt" placeholder="dia/mês/ano" id="birthday" type="text" value="{{ dt_birth }}">
             </div>
         </div>
     </div>
@@ -291,10 +309,10 @@
         <div class="form-group">
             <label>Sexo</label>
             <div class="input-group input-group-sm">
-                {% if gender_options%}
+                {% if gender_options %}
                 <select name="gender_opt" class="form-control" id="gender_id">
-                    {% for gender in gender_options%}
-                    <option>{{gender.gender_txt}}</option>
+                    {% for gender in gender_options %}
+                    <option {% if gender_searched == gender.id %} selected {% endif %}>{{ gender.gender_txt }}</option>
                     {% endfor %}
                 </select>
                 {% else %}
@@ -308,7 +326,6 @@
     <div class="col-xs-6 col-sm-6">
         <div class="form-group">
             <label>Religião</label>
-
             <div class="input-group  input-group-sm">
                 {% if religion_options %}
                 <select class="form-control" name="religion_opt" id="religion_id">
@@ -325,12 +342,11 @@
     <div class="col-xs-6 col-sm-6">
         <div class="form-group">
             <label>Estado Civil</label>
-
             <div class="input-group  input-group-sm">
                 {% if marital_status_options%}
                 <select class="form-control" name="marital_status_opt"  id="marital_status">
                     {% for marital_status in marital_status_options%}
-                    <option>{{marital_status.marital_status_txt}}</option>
+                    <option {% if marital_status_searched == marital_status.id %} selected {% endif %}>{{ marital_status.marital_status_txt }}</option>
                     {% endfor %}
                 </select>
                 {% else %}
