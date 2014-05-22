@@ -105,218 +105,194 @@
 <div class="col-md-10">
 <div class="container span6 offset3 well ">
 
-{% if messages %}
-    <ul class="messages">
-        {% for message in messages %}
-            {% if message.tags == "success" %}
-                <div class="alert alert-success">
-                    <li class="{{ message.tags }}">{{ message }}</li>
-                </div>
-            {% endif %}
-        {% endfor %}
-    </ul>
-{% endif %}
-
-{% if form.errors %}
-    <p style="color: red;">
-        Please correct the error{{ form.errors|pluralize }} below.
-    </p>
-{% endif %}
-
-<div class="row">
-    <div class="col-md-12">
-        <div class="form-group">
-            <label>Nome Completo</label>
-
-            <!-- Button trigger modal -->
-{#            <button class="btn btn-primary btn-lg" data-toggle="modal" data-target="#myModal">#}
-{#                Launch demo modal#}
-{#            </button>#}
-            <!-- Modal -->
-            <div class="modal fade" id="myModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
-                <div class="modal-dialog">
-                    <div class="modal-content">
-{#                        <div class="modal-header">#}
-{#                            <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>#}
-{#                            <h4 class="modal-title" id="myModalLabel">Modal title</h4>#}
-{#                        </div>#}
-                        <div class="modal-body">
-                            CPF não preenchido. Deseja salvar?
-                        </div>
-                        <div class="modal-footer">
-                            <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
-                            <button type="button" class="btn btn-primary" id="savetab2">Save changes</button>
-                        </div>
+    {% if messages %}
+        <ul class="messages">
+            {% for message in messages %}
+                {% if message.tags == "success" %}
+                    <div class="alert alert-success">
+                        <li class="{{ message.tags }}">{{ message }}</li>
                     </div>
+                {% endif %}
+            {% endfor %}
+        </ul>
+    {% endif %}
+
+    {% if form.errors %}
+        <p style="color: red;">
+            Please correct the error{{ form.errors|pluralize }} below.
+        </p>
+    {% endif %}
+
+    <div class="row">
+        <div class="col-md-12">
+            <div class="form-group">
+                <label>Nome Completo</label>
+                {% if messages %}
+                    <ul class="messages">
+                        {% for message in messages %}
+                            {% if message.tags == 'error' %}
+                                <div class="alert alert-danger">
+                                    <li{% if message.tags %} class="{{ message.tags }}"{% endif %}>{{ message }}</li>
+                                </div>
+                            {% endif %}
+                        {% endfor %}
+                    </ul>
+                {% endif %}
+                <div class="input-group  input-group-sm">
+                    <span class="input-group-addon"> <span class="glyphicon glyphicon-user"></span></span>
+                    <input class="form-control" placeholder="Entrar nome completo" id="full_name" name="name_txt" type="text" value="{{ name }}">
                 </div>
             </div>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-xs-6 col-sm-6">
+            <div class="form-group">
+                <label>CPF</label>
+                <div class="input-group input-group-sm">
+                    <span class="input-group-addon"> <span class="glyphicon glyphicon-asterisk"></span></span>
+                    <input class="form-control" name="cpf_id" placeholder="Entrar CPF" id="cpf_id" type="text" value="{{ cpf }}">
+                </div>
+            </div>
+        </div>
+        <div class="col-xs-6 col-sm-6">
+            <div class="form-group">
+                <label>RG</label>
 
-            {% if messages %}
-                <ul class="messages">
-                    {% for message in messages %}
-                        {% if message.tags == 'error' %}
-                            <div class="alert alert-danger">
-                                <li{% if message.tags %} class="{{ message.tags }}"{% endif %}>{{ message }}</li>
-                            </div>
-                        {% endif %}
-                    {% endfor %}
-                </ul>
-            {% endif %}
-            <div class="input-group  input-group-sm">
-                <span class="input-group-addon"> <span class="glyphicon glyphicon-user"></span></span>
-                <input class="form-control" placeholder="Entrar nome completo" id="full_name" name="name_txt" type="text" value="{{ name }}">
+                <div class="input-group input-group-sm">
+                    <!-- verificar qual icone vai aparecer pra RG-->
+                    <span class="input-group-addon"><span class="glyphicon glyphicon-user"></span></span>
+                    <input class="form-control" name="rg_id" placeholder="Entrar RG" id="rg_id" type="text" value="{{ rg }}">
+                </div>
             </div>
         </div>
     </div>
-</div>
-<div class="row">
-    <div class="col-xs-6 col-sm-6">
-        <div class="form-group">
-            <label>CPF</label>
-            <div class="input-group input-group-sm">
-                <span class="input-group-addon"> <span class="glyphicon glyphicon-asterisk"></span></span>
-                <input class="form-control" name="cpf_id" placeholder="Entrar CPF" id="cpf_id" type="text" value="{{ cpf }}">
+    <div class="row">
+        <div class="col-xs-6 col-sm-6">
+            <div class="form-group">
+                <label>Naturalidade</label>
+
+                <div class="input-group input-group-sm">
+                    <span class="input-group-addon"> <span class="glyphicon glyphicon-flag"></span></span>
+                    <input class="form-control" name="natural_of_txt" placeholder="Entrar Naturalidade" id="naturalOf" type="text" value="{{ place_of_birth }}">
+                </div>
+            </div>
+        </div>
+        <div class="col-xs-6 col-sm-6">
+            <div class="form-group">
+                <label>Nacionalidade</label>
+
+                <div class="input-group input-group-sm">
+                    <span class="input-group-addon"> <span class="glyphicon glyphicon-flag"></span></span>
+
+                    <div class="bfh-selectbox bfh-countries" data-name="citizenship_txt" data-country="BR" id="id_chosen_country" data-flags="true" value="{{ citizenship }}"></div>
+                </div>
             </div>
         </div>
     </div>
-    <div class="col-xs-6 col-sm-6">
-        <div class="form-group">
-            <label>RG</label>
+    <div class="row">
+        <div class="col-xs-6 col-sm-6">
+            <div class="form-group">
+                <label>Endereço</label>
 
-            <div class="input-group input-group-sm">
-                <!-- verificar qual icone vai aparecer pra RG-->
-                <span class="input-group-addon"><span class="glyphicon glyphicon-user"></span></span>
-                <input class="form-control" name="rg_id" placeholder="Entrar RG" id="rg_id" type="text" value="{{ rg }}">
+                <div class="input-group  input-group-sm ">
+                    <span class="input-group-addon"> <span class="glyphicon glyphicon-home"></span></span>
+                    <input name="street_txt" class="form-control" placeholder="Rua - Complemento " id="street_txt" type="text" value="{{ street }}">
+                </div>
+            </div>
+        </div>
+        <div class="col-xs-6 col-sm-6">
+            <div class="form-group">
+                <label> CEP</label>
+
+                <div class="input-group  input-group-sm">
+                    <span class="input-group-addon"> <span class="glyphicon glyphicon-home"></span></span>
+                    <input name="zipcode_number" class="form-control" placeholder="Entrar CEP" id="zipcode" type="text" value="{{ zipcode }}">
+                </div>
             </div>
         </div>
     </div>
-</div>
-<div class="row">
-    <div class="col-xs-6 col-sm-6">
-        <div class="form-group">
-            <label>Naturalidade</label>
+    <div class="row">
+        <div class="col-xs-6 col-sm-6">
+            <div class="form-group">
+                <label>País</label>
 
-            <div class="input-group input-group-sm">
-                <span class="input-group-addon"> <span class="glyphicon glyphicon-flag"></span></span>
-                <input class="form-control" name="natural_of_txt" placeholder="Entrar Naturalidade" id="naturalOf" type="text" value="{{ place_of_birth }}">
+                <div class="input-group  input-group-sm">
+                    <span class="input-group-addon"> <span class="glyphicon glyphicon-home"></span></span>
+
+                    <div class="bfh-selectbox bfh-countries" data-name="country_txt" data-country="BR" data-flags="true" id="id_country_state_address" value="{{ country }}"></div>
+                </div>
+            </div>
+        </div>
+        <div class="col-xs-6 col-sm-6">
+            <div class="form-group">
+                <label> Estado</label>
+
+                <div class="input-group  input-group-sm">
+                    <span class="input-group-addon"> <span class="glyphicon glyphicon-home"></span></span>
+
+                    <div class="bfh-selectbox bfh-states" data-name="state_txt" data-country="id_country_state_address" id="id_chosen_state" value=""></div>
+                </div>
             </div>
         </div>
     </div>
-    <div class="col-xs-6 col-sm-6">
-        <div class="form-group">
-            <label>Nacionalidade</label>
+    <div class="row">
+        <div class="col-xs-6 col-sm-6">
+            <div class="form-group">
+                <label>Cidade</label>
 
-            <div class="input-group input-group-sm">
-                <span class="input-group-addon"> <span class="glyphicon glyphicon-flag"></span></span>
+                <div class="input-group  input-group-sm ">
+                    <span class="input-group-addon"> <span class="glyphicon glyphicon-home"></span></span>
+                    <input class="form-control" name="city_txt" placeholder="Entrar cidade" id="city" type="text" value="{{ city }}">
+                </div>
+            </div>
+        </div>
+        <div class="col-xs-6 col-sm-6">
+            <div class="form-group">
+                <label> Telefone fixo</label>
 
-                <div class="bfh-selectbox bfh-countries" data-name="citizenship_txt" data-country="BR" id="id_chosen_country" data-flags="true" value="{{ citizenship }}"></div>
+                <div class="input-group  input-group-sm">
+                    <span class="input-group-addon"> <span class="glyphicon glyphicon-earphone"></span></span>
+                    <input class="form-control" name="phone_number" placeholder="Entrar telefone para contato" id="phone" type="text" value="{{ phone }}">
+                </div>
             </div>
         </div>
     </div>
-</div>
-<div class="row">
-    <div class="col-xs-6 col-sm-6">
-        <div class="form-group">
-            <label>Endereço</label>
+    <div class="row">
+        <div class="col-xs-6 col-sm-6">
+            <div class="form-group">
+                <label> Telefone celular</label>
 
-            <div class="input-group  input-group-sm ">
-                <span class="input-group-addon"> <span class="glyphicon glyphicon-home"></span></span>
-                <input name="street_txt" class="form-control" placeholder="Rua - Complemento " id="street_txt" type="text" value="{{ street }}">
+                <div class="input-group input-group-sm">
+                    <span class="input-group-addon"> <span class="glyphicon glyphicon-earphone"></span></span>
+                    <input class="form-control" name="cellphone_number" placeholder="Entrar celular" id="cellphone" type="text" value="{{ cellphone }}">
+                </div>
+            </div>
+        </div>
+        <div class="col-xs-6 col-sm-6">
+            <div class="form-group">
+                <label>E-mail</label>
+
+                <div class="input-group input-group-sm">
+                    <span class="input-group-addon"> <span class="glyphicon glyphicon-envelope"></span></span>
+                    <input class="form-control" name="email_txt" placeholder="Entrar e-mail" id="email" type="email" value="{{ email }}">
+                </div>
             </div>
         </div>
     </div>
-    <div class="col-xs-6 col-sm-6">
-        <div class="form-group">
-            <label> CEP</label>
+    <div class="row">
+        <div class="col-xs-6 col-sm-6">
+            <div class="form-group">
+                <label>Número do prontuário</label>
 
-            <div class="input-group  input-group-sm">
-                <span class="input-group-addon"> <span class="glyphicon glyphicon-home"></span></span>
-                <input name="zipcode_number" class="form-control" placeholder="Entrar CEP" id="zipcode" type="text" value="{{ zipcode }}">
+                <div class="input-group input-group-sm">
+                    <span class="input-group-addon"> <span class="glyphicon glyphicon-list-alt"></span></span>
+                    <input class="form-control" name="medical_record_number" placeholder="Entrar número do prontuário" id="records_number" type="text" value="{{ medical_record }}">
+                </div>
             </div>
         </div>
     </div>
-</div>
-<div class="row">
-    <div class="col-xs-6 col-sm-6">
-        <div class="form-group">
-            <label>País</label>
-
-            <div class="input-group  input-group-sm">
-                <span class="input-group-addon"> <span class="glyphicon glyphicon-home"></span></span>
-
-                <div class="bfh-selectbox bfh-countries" data-name="country_txt" data-country="BR" data-flags="true" id="id_country_state_address" value="{{ country }}"></div>
-            </div>
-        </div>
-    </div>
-    <div class="col-xs-6 col-sm-6">
-        <div class="form-group">
-            <label> Estado</label>
-
-            <div class="input-group  input-group-sm">
-                <span class="input-group-addon"> <span class="glyphicon glyphicon-home"></span></span>
-
-                <div class="bfh-selectbox bfh-states" data-name="state_txt" data-country="id_country_state_address" id="id_chosen_state" value=""></div>
-            </div>
-        </div>
-    </div>
-</div>
-<div class="row">
-    <div class="col-xs-6 col-sm-6">
-        <div class="form-group">
-            <label>Cidade</label>
-
-            <div class="input-group  input-group-sm ">
-                <span class="input-group-addon"> <span class="glyphicon glyphicon-home"></span></span>
-                <input class="form-control" name="city_txt" placeholder="Entrar cidade" id="city" type="text" value="{{ city }}">
-            </div>
-        </div>
-    </div>
-    <div class="col-xs-6 col-sm-6">
-        <div class="form-group">
-            <label> Telefone fixo</label>
-
-            <div class="input-group  input-group-sm">
-                <span class="input-group-addon"> <span class="glyphicon glyphicon-earphone"></span></span>
-                <input class="form-control" name="phone_number" placeholder="Entrar telefone para contato" id="phone" type="text" value="{{ phone }}">
-            </div>
-        </div>
-    </div>
-</div>
-<div class="row">
-    <div class="col-xs-6 col-sm-6">
-        <div class="form-group">
-            <label> Telefone celular</label>
-
-            <div class="input-group input-group-sm">
-                <span class="input-group-addon"> <span class="glyphicon glyphicon-earphone"></span></span>
-                <input class="form-control" name="cellphone_number" placeholder="Entrar celular" id="cellphone" type="text" value="{{ cellphone }}">
-            </div>
-        </div>
-    </div>
-    <div class="col-xs-6 col-sm-6">
-        <div class="form-group">
-            <label>E-mail</label>
-
-            <div class="input-group input-group-sm">
-                <span class="input-group-addon"> <span class="glyphicon glyphicon-envelope"></span></span>
-                <input class="form-control" name="email_txt" placeholder="Entrar e-mail" id="email" type="email" value="{{ email }}">
-            </div>
-        </div>
-    </div>
-</div>
-<div class="row">
-    <div class="col-xs-6 col-sm-6">
-        <div class="form-group">
-            <label>Número do prontuário</label>
-
-            <div class="input-group input-group-sm">
-                <span class="input-group-addon"> <span class="glyphicon glyphicon-list-alt"></span></span>
-                <input class="form-control" name="medical_record_number" placeholder="Entrar número do prontuário" id="records_number" type="text" value="{{ medical_record }}">
-            </div>
-        </div>
-    </div>
-</div>
-<div class="col-md-1"></div>
+    <div class="col-md-1"></div>
 </div>
 <div class="row">
     <div class="col-md-12">
@@ -1671,6 +1647,21 @@
 
 </div>
 </div>
+
+<div class="modal fade" id="myModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-body">
+                CPF não preenchido. Deseja salvar?
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+                <button type="button" class="btn btn-primary" id="savetab2">Save changes</button>
+            </div>
+        </div>
+    </div>
+</div>
+
 <div class="row">
     <div class="col-md-1">
     </div>
@@ -2011,10 +2002,10 @@ $("#savetab").on('click', function(){
     if(value.length==0)
     {
         $("#myModal").modal('show');
-{#        var r = confirm("CPF não preenchido. Deseja salvar?");#}
-{#        if (r == true) {#}
-{#            $("#tab1form").submit();#}
-{#        }#}
+        {#        var r = confirm("CPF não preenchido. Deseja salvar?");#}
+        {#        if (r == true) {#}
+        {#            $("#tab1form").submit();#}
+        {#        }#}
     }
     else{
         $("#tab1form").submit();
@@ -2022,7 +2013,7 @@ $("#savetab").on('click', function(){
 });
 
 $("#savetab2").on('click', function(){
-        $("#tab1form").submit();
+    $("#tab1form").submit();
 });
 
 
