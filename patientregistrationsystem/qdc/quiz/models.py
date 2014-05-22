@@ -70,30 +70,6 @@ class AlcoholPeriodOption(models.Model):
     def __unicode__(self):
         return self.alcohol_period_txt
 
-#class SocialClass(models.Model):
-#    social_class_txt = models.CharField(max_length=50)
-#    points = models.IntegerField
-
-#    def __unicode__(self):
-#        return self.social_class_txt
-
-#    def calculateSocialClass(**keywords):
-#        for kw in keywords.keys():
-#            print kw, "-", keywords[kw]
-#        #para cada item adicionar um valor na pontuacao
-
-#   dicTV = {'TVoption0':'0', 'TVoption1' : '1', 'TVoption2' : '2', 'TVoption3' : '3' , 'TVoption4' : '4'}
-#   dicDVD = {'DVDoption0':'0', 'DVDoption1' : '2', 'DVDoption2' : '2', 'DVDoption3' : '2' , 'DVDoption4' : '2'}
-#   dicRadio = {'RADIOoption0':'0', 'RADIOoption1' : '1', 'RADIOoption2' : '2', 'RADIOoption3' : '3' , 'RADIOoption4' : '4'}
-#   dicBath = {'Bathsoption0':'0', 'Bathsoption1' : '4', 'Bathsoption2' : '5', 'Bathsoption3' : '6' , 'Bathsoption4' : '7'}
-#   dicAuto = {'Autooption0':'0', 'Autooption1' : '4', 'Autooption2' : '7', 'Autooption3' : '9' , 'Autooption4' : '9'}
-#   dicHousemaid = {'Employoption0':'0', 'Employoption1' : '3', 'Employoption2' : '4', 'Employoption3' : '4' , 'Employoption4' : '4'}
-#   dicWashMachine = {'WMoption0':'0', 'WMoption1' : '2', 'WMoption2' : '2', 'WMoption3' : '2' , 'WMoption4' : '2'}
-#   dicRefrigerator = {'Refrigoption0':'0', 'Refrigoption1' : '4', 'Refrigoption2' : '4', 'Refrigoption3' : '4' , 'Refrigoption4' : '4'}
-#   dicFreezer = {'Freezoption0':'0', 'Freezoption1' : '2', 'Freezoption2' : '2', 'Freezoption3' : '2' , 'Freezoption4' : '2'}
-
-#chamada:
-#calculateSocialClass(tvs='1', dvds='2', banheiros='3', ...)
 
 class Patient(models.Model):
     cpf_id = models.CharField(null=True, blank=True, max_length=15, unique=True)
@@ -146,14 +122,58 @@ class SocialDemographicData(models.Model):
     refrigerator_opt = models.IntegerField(null=True, blank=True, )
     freezer_opt = models.IntegerField(null=True, blank=True, )
     house_maid_opt = models.IntegerField(null=True, blank=True, )
-    # social_class_opt = models.ForeignKey(SocialClass)
+    social_class_opt = models.CharField(null=True, blank=True, max_length=10)
 
     def __unicode__(self):
         return \
             self.id_patient, self.religion_opt, self.profession_txt, self.occupation_txt, bool(self.benefit_gov_bool), \
             self.payment_opt, self.flesh_tone_opt, self.schooling_opt, self.tv_opt, self.dvd_opt, self.radio_opt, \
             self.bath_opt, self.automobile_opt, self.wash_machine_opt, self.refrigerator_opt, self.freezer_opt, \
-            self.house_maid_opt
+            self.house_maid_opt, self.social_class_opt
+
+    def calculateSocialClass(self, **keywords):
+        dictDvd = {'0': 0, '1': 2, '2': 2, '3': 2, '4': 2}
+        dictBath = {'0': 0, '1': 4, '2': 5, '3': 6, '4': 7}
+        dictAuto = {'0': 0, '1': 4, '2': 7, '3': 9, '4': 9}
+        dictHousemaid = {'0':0, '1': 3, '2': 4, '3': 4, '4': 4}
+        dictRefrigerator = {'0': 0, '1': 4, '2': 4, '3': 4, '4': 4}
+        dicScolarity = {'Analfabeto/ até 3ª Série Fundamental': 0, '4ª Fundamental': 1, 'Fundamental Completo': 2, 'Médio Completo': 4, 'Superior Completo': 8}
+        points = 0
+
+        for kw in keywords.keys():
+            if kw == 'tv' or kw == 'radio':
+                points += int(keywords[kw])
+            elif kw == 'banheiro':
+                points += dictBath[keywords[kw]]
+            elif kw == 'automovel':
+                points += dictAuto[keywords[kw]]
+            elif kw == 'empregada':
+                points += dictHousemaid[keywords[kw]]
+            elif kw == 'dvd' or kw == 'maquina' or kw == 'freezer':
+                points += dictDvd[keywords[kw]]
+            elif kw == 'geladeira':
+                points += dictRefrigerator[keywords[kw]]
+            elif kw == 'escolaridade':
+                points += dicScolarity[keywords[kw]]
+
+        if points >= 0 and points <= 7:
+            return 'E'
+        elif points >= 8 and points <= 13:
+            return 'D'
+        elif points >= 14 and points <= 17:
+            return 'C2'
+        elif points >= 18 and points <= 22:
+            return 'C1'
+        elif points >= 23 and points <= 28:
+            return 'B2'
+        elif points >= 29 and points <= 34:
+            return 'B1'
+        elif points >= 35 and points <= 41:
+            return 'A2'
+        elif points >= 42 and points <= 46:
+            return 'A1'
+        else:
+            return ''
 
 
 class SocialHistoryData(models.Model):

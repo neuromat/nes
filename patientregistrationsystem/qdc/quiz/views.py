@@ -9,7 +9,7 @@ from django import forms
 from django.core.context_processors import csrf
 from django.shortcuts import render_to_response
 
-from models import Patient, FleshToneOption, MaritalStatusOption, SchoolingOption, PaymentOption, ReligionOption, GenderOption, AmountCigarettesOption, AlcoholFrequencyOption, AlcoholPeriodOption
+from models import Patient, FleshToneOption, MaritalStatusOption, SchoolingOption, PaymentOption, ReligionOption, GenderOption, AmountCigarettesOption, AlcoholFrequencyOption, AlcoholPeriodOption, SocialDemographicData
 from forms import PatientForm, SocialDemographicDataForm, SocialHistoryDataForm
 
 from django.contrib import messages
@@ -47,6 +47,12 @@ def pg_home(request):
                 new_social_demographic_data.payment_opt = PaymentOption.objects.filter(payment_txt=request.POST['payment_opt'])[0]
                 new_social_demographic_data.flesh_tone_opt = FleshToneOption.objects.filter(flesh_tone_txt=request.POST['flesh_tone_opt'])[0]
                 new_social_demographic_data.schooling_opt = SchoolingOption.objects.filter(schooling_txt=request.POST['schooling_opt'])[0]
+                new_social_demographic_data.social_class_opt = new_social_demographic_data.calculateSocialClass(tv=request.POST['tv_opt'], radio=request.POST['radio_opt'],
+                                                                                                                           banheiro=request.POST['bath_opt'], automovel=request.POST['automobile_opt'],
+                                                                                                                           empregada=request.POST['house_maid_opt'], maquina=request.POST['wash_machine_opt'],
+                                                                                                                           dvd=request.POST['dvd_opt'], geladeira=request.POST['refrigerator_opt'],
+                                                                                                                           freezer=request.POST['freezer_opt'], escolaridade=request.POST['schooling_opt'])
+
                 new_social_demographic_data.save()
                 new_social_demographic_data = None
             if social_history_form.is_valid():
