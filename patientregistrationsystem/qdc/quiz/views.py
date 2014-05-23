@@ -90,24 +90,32 @@ def patient(request, patient_id):
         dt_birth = str(p.dt_birth_txt.day) + "/" + str(p.dt_birth_txt.month) + "/" + str(p.dt_birth_txt.year)
     else:
         dt_birth = ""
-    if p.marital_status_opt_id:
-        marital_status_searched = p.marital_status_opt_id
-    else:
-        marital_status_searched = ""
-    if p.gender_opt_id:
-        gender_searched = p.gender_opt_id
-    else:
-        gender_searched = ""
+    marital_status_searched = p.marital_status_opt_id
+    gender_searched = p.gender_opt_id
 
     try:
         p_social_demo = SocialDemographicData.objects.get(id_patient_id=patient_id)
     except SocialDemographicData.DoesNotExist:
         p_social_demo = ""
     if p_social_demo:
-        if p_social_demo.religion_opt_id:
-            religion_searched = p_social_demo.religion_opt_id
-        else:
-            religion_searched = ""
+        occupation_searched = p_social_demo.occupation_txt
+        profession_searched = p_social_demo.profession_txt
+        religion_searched = p_social_demo.religion_opt_id
+        benefit_gov_searched = p_social_demo.benefit_gov_bool
+        payment_opt_searched = p_social_demo.payment_opt_id
+        flesh_tone_opt_searched = p_social_demo.flesh_tone_opt_id
+        schooling_opt_searched = p_social_demo.schooling_opt_id
+        tv_opt_searched = p_social_demo.tv_opt
+        dvd_opt_searched = p_social_demo.dvd_opt
+        radio_opt_searched = p_social_demo.radio_opt
+        bath_opt_searched = p_social_demo.bath_opt
+        automobile_opt_searched = p_social_demo.automobile_opt
+        wash_machine_opt_searched = p_social_demo.wash_machine_opt
+        refrigerator_opt_searched = p_social_demo.refrigerator_opt
+        freezer_opt_searched = p_social_demo.freezer_opt
+        house_maid_opt_searched = p_social_demo.house_maid_opt
+        social_class_opt_searched = p_social_demo.social_class_opt
+
 
     context = {'name': p.name_txt, 'cpf': p.cpf_id, 'rg': p.rg_id, 'place_of_birth': p.natural_of_txt,
                'citizenship': p.citizenship_txt, 'street': p.street_txt, 'zipcode': p.zipcode_number,
@@ -118,7 +126,15 @@ def patient(request, patient_id):
                'gender_options': gender_options, 'schooling_options': schooling_options,
                'payment_options': payment_options, 'religion_options': religion_options,
                'gender_searched': gender_searched, 'marital_status_searched': marital_status_searched,
-               'religion_opt': religion_searched,
+               'religion_searched': religion_searched, 'profession_searched': profession_searched,
+               'occupation_searched': occupation_searched, 'benefit_gov_searched': benefit_gov_searched,
+               'payment_opt_searched': payment_opt_searched, 'flesh_tone_opt_searched': flesh_tone_opt_searched,
+               'schooling_opt_searched': schooling_opt_searched, 'tv_opt_searched': tv_opt_searched,
+               'dvd_opt_searched': dvd_opt_searched, 'radio_opt_searched': radio_opt_searched,
+               'bath_opt_searched': bath_opt_searched, 'automobile_opt_searched': automobile_opt_searched,
+               'wash_machine_opt_searched': wash_machine_opt_searched, 'refrigerator_opt_searched': refrigerator_opt_searched,
+               'freezer_opt_searched': freezer_opt_searched, 'house_maid_opt_searched': house_maid_opt_searched,
+               'social_class_opt_searched': social_class_opt_searched,
                }
     return render(request, 'quiz/pg_home.html', context)
 

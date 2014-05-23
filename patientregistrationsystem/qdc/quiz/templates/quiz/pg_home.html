@@ -421,7 +421,7 @@
                 {% if religion_options %}
                     <select class="form-control" name="religion_opt" id="religion_id">
                         {% for religion in religion_options%}
-                            <option>{{religion.religion_txt}}</option>
+                            <option {% if religion_searched == religion.id %} selected {% endif %}>{{religion.religion_txt}}</option>
                         {% endfor %}
                     </select>
                 {% else %}
@@ -438,17 +438,17 @@
 
             <div class="input-group  input-group-sm ">
                 <span class="input-group-addon"> <span class="glyphicon"></span></span>
-                <input class="form-control" name="profession_txt" placeholder="Entrar profissão " id="profession" type="text">
+                <input class="form-control" name="profession_txt" placeholder="Entrar profissão " id="profession" type="text" value="{{ profession_searched }}">
             </div>
         </div>
     </div>
     <div class="col-xs-6 col-sm-6">
         <div class="form-group">
-            <label for="occupation"> Ocupação</label>
+            <label for="occupation">Ocupação</label>
 
             <div class="input-group  input-group-sm">
                 <span class="input-group-addon"> <span class="glyphicon"></span></span>
-                <input class="form-control" name="occupation_txt" placeholder="Entrar ocupação" id="occupation" type="text">
+                <input class="form-control" name="occupation_txt" placeholder="Entrar ocupação" id="occupation" type="text" value="{{ occupation_searched }}">
             </div>
         </div>
     </div>
@@ -461,11 +461,11 @@
             <div class="input-group  input-group-sm">
                 <div class="radio-inline" id="id_benefit">
                     <label>
-                        <input name="benefit_gov_bool" id="optionsRadios1" value="1" checked="" type="radio">Sim</label>
+                        <input name="benefit_gov_bool" id="optionsRadios1" value="1" {% if benefit_gov_searched == "1" %} checked="" {% endif %} type="radio">Sim</label>
                 </div>
                 <div class="radio-inline">
                     <label>
-                        <input name="benefit_gov_bool" id="optionsRadios2" value="0" type="radio">Não</label>
+                        <input name="benefit_gov_bool" id="optionsRadios2" value="0" {% if benefit_gov_searched == "0" %} checked="" {% endif %} type="radio">Não</label>
                 </div>
             </div>
         </div>
@@ -480,7 +480,7 @@
                 {% if payment_options%}
                     <select class="form-control" name="payment_opt" id="payment_id">
                         {% for payment in payment_options %}
-                            <option>{{payment.payment_txt}}</option>
+                            <option {% if payment_opt_searched == payment.id %} selected {% endif %}>{{payment.payment_txt}}</option>
                         {% endfor %}
                     </select>
                 {% else %}
@@ -499,7 +499,7 @@
 
                 <select class="form-control" name="flesh_tone_opt" id="skin_color">
                     {% for fleshtone in flesh_tone_options %}
-                        <option>{{fleshtone.flesh_tone_txt}}</option>
+                        <option {% if flesh_tone_opt_searched == fleshtone.id %} selected {% endif %}>{{fleshtone.flesh_tone_txt}}</option>
                     {% endfor %}
                 </select>
             </div>
@@ -514,7 +514,7 @@
             <div class="input-group input-group-sm">
                 <select name="schooling_opt" class="form-control" id="scolarity">
                     {% for schooling in schooling_options %}
-                        <option>{{schooling.schooling_txt}}</option>
+                        <option {% if schooling_opt_searched == schooling.id %} selected {% endif %}>{{schooling.schooling_txt}}</option>
                     {% endfor %}
                 </select>
             </div>
@@ -532,23 +532,23 @@
     <div class="col-sm-7">
         <div class="radio-inline">
             <label>
-                <input name="tv_opt" id="tv_opt0" value="0" type="radio">0</label>
+                <input name="tv_opt" id="tv_opt0" value="0" {% if tv_opt_searched == 0 %} checked="" {% endif %} type="radio">0</label>
         </div>
         <div class="radio-inline">
             <label>
-                <input name="tv_opt" id="tv_opt1" value="1" type="radio">1</label>
+                <input name="tv_opt" id="tv_opt1" value="1" {% if tv_opt_searched == 1 %} checked="" {% endif %} type="radio">1</label>
         </div>
         <div class="radio-inline">
             <label>
-                <input name="tv_opt" id="tv_opt2" value="2" type="radio">2</label>
+                <input name="tv_opt" id="tv_opt2" value="2" {% if tv_opt_searched == 2 %} checked="" {% endif %} type="radio">2</label>
         </div>
         <div class="radio-inline">
             <label>
-                <input name="tv_opt" id="tv_opt3" value="3" type="radio">3</label>
+                <input name="tv_opt" id="tv_opt3" value="3" {% if tv_opt_searched == 3 %} checked="" {% endif %} type="radio">3</label>
         </div>
         <div class="radio-inline">
             <label>
-                <input name="tv_opt" id="tv_opt4" value="4" type="radio">4 ou +</label>
+                <input name="tv_opt" id="tv_opt4" value="4" {% if tv_opt_searched == 4 %} checked="" {% endif %} type="radio">4 ou +</label>
         </div>
     </div>
 </div>
