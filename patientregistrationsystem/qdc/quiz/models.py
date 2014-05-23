@@ -3,9 +3,15 @@
 
 from __future__ import unicode_literals
 from django.db import models
+from django.core.exceptions import ValidationError
+from validation import CPF
 
 
-# Create your models here.
+def validate_even(value):
+    valido = CPF(value)
+    if not valido.isValid():
+        raise ValidationError(u'CPF %s não é válido' % value)
+
 
 
 class PaymentOption(models.Model):
@@ -72,7 +78,7 @@ class AlcoholPeriodOption(models.Model):
 
 
 class Patient(models.Model):
-    cpf_id = models.CharField(null=True, blank=True, max_length=15, unique=True)
+    cpf_id = models.CharField(null=True, blank=True, max_length=15, unique=True, validators=[validate_even])
     rg_id = models.CharField(max_length=15, null=True, blank=True)
     name_txt = models.CharField(max_length=50)
     nr_record = models.AutoField(primary_key=True)

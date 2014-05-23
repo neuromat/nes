@@ -127,20 +127,11 @@
         <div class="col-md-12">
             <div class="form-group">
                 <label>Nome Completo</label>
-                {% if messages %}
-                    <ul class="messages">
-                        {% for message in messages %}
-                            {% if message.tags == 'error' %}
-                                <div class="alert alert-danger">
-                                    <li{% if message.tags %} class="{{ message.tags }}"{% endif %}>{{ message }}</li>
-                                </div>
-                            {% endif %}
-                        {% endfor %}
-                    </ul>
-                {% endif %}
-                <div class="input-group  input-group-sm">
+            {{ patient_form.errors.cpf_id }}
+                <div class="input-group  input-group-sm {% if patient_form.errors.name_txt %}has-error{% endif %}  ">
                     <span class="input-group-addon"> <span class="glyphicon glyphicon-user"></span></span>
-                    <input class="form-control" placeholder="Entrar nome completo" id="full_name" name="name_txt" type="text" value="{{ name }}">
+{#                    <input class="form-control" placeholder="Entrar nome completo" id="full_name" name="name_txt" type="text" value="{{ name }}">#}
+                    {{ patient_form.name_txt }}
                 </div>
             </div>
         </div>
