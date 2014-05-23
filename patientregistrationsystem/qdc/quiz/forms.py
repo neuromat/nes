@@ -1,4 +1,5 @@
-from django.forms import ModelForm
+# coding=utf-8
+from django.forms import ModelForm, TextInput
 from models import Patient, SocialDemographicData, SocialHistoryData
 from django.db import models
 
@@ -6,9 +7,20 @@ from django.db import models
 class PatientForm(ModelForm):
     class Meta:
         model = Patient
-        fields = ['cpf_id', 'name_txt', 'rg_id', 'medical_record_number','natural_of_txt', 'citizenship_txt',
-                  'street_txt', 'zipcode_number', 'country_txt', 'state_txt', 'city_txt', 'phone_number',
-                  'cellphone_number', 'email_txt', 'dt_birth_txt']
+        fields = [
+            'cpf_id', 'name_txt', 'rg_id', 'medical_record_number','natural_of_txt', 'citizenship_txt', 'street_txt',
+            'zipcode_number', 'country_txt', 'state_txt', 'city_txt', 'phone_number', 'cellphone_number', 'email_txt',
+            'dt_birth_txt'
+        ]
+        widgets = {
+            'name_txt': TextInput(attrs={'class': 'form-control', 'placeholder': 'Entrar nome completo',
+                                         'id': "full_name", 'autofocus': True}),
+        }
+        error_messages = {
+            'name_txt': {
+                'required': 'Nome não preenchido'
+            }
+        }
 
 
 class SocialDemographicDataForm(ModelForm):

@@ -10,8 +10,11 @@ from django.core.context_processors import csrf
 from django.shortcuts import render_to_response
 from datetime import date
 
-from models import Patient, SocialDemographicData, FleshToneOption, MaritalStatusOption, SchoolingOption, PaymentOption, ReligionOption, GenderOption
+from models import Patient, SocialDemographicData, FleshToneOption, MaritalStatusOption, SchoolingOption, PaymentOption, ReligionOption,\
+    GenderOption, AmountCigarettesOption, AlcoholFrequencyOption, AlcoholPeriodOption
+
 from forms import PatientForm, SocialDemographicDataForm, SocialHistoryDataForm
+from django.contrib import messages
 
 
 @login_required
@@ -22,38 +25,71 @@ def pg_home(request):
     schooling_options = SchoolingOption.objects.all()
     payment_options = PaymentOption.objects.all()
     religion_options = ReligionOption.objects.all()
-    new_patient = None
-    new_personal_data = None
-    new_social_demographic_data = None
-    new_social_history_data = None
+    amount_cigarettes = AmountCigarettesOption.objects.all()
+    alcohol_frequency = AlcoholFrequencyOption.objects.all()
+    alcohol_period = AlcoholPeriodOption.objects.all()
+    patient_form = PatientForm()
     if request.method == "POST":
         patient_form = PatientForm(request.POST)
         social_demographic_form = SocialDemographicDataForm(request.POST)
         social_history_form = SocialHistoryDataForm(request.POST)
         if patient_form.is_valid():
             new_patient = patient_form.save(commit=False)
+            # No futuro não precisará disso:
             new_patient.gender_opt = GenderOption.objects.filter(gender_txt=request.POST['gender_opt'])[0]
-            new_patient.marital_status_opt = MaritalStatusOption.objects.filter(marital_status_txt=request.POST['marital_status_opt'])[0]
+            # No futuro não precisará disso:
+            new_patient.marital_status_opt = MaritalStatusOption.objects.filter(
+                marital_status_txt=request.POST['marital_status_opt'])[0]
+            if not new_patient.cpf_id:
+                new_patient.cpf_id = None
             new_patient.save()
             if social_demographic_form.is_valid():
                 new_social_demographic_data = social_demographic_form.save(commit=False)
                 new_social_demographic_data.id_patient = new_patient
-                new_social_demographic_data.religion_opt = ReligionOption.objects.filter(religion_txt=request.POST['religion_opt'])[0]
-                new_social_demographic_data.payment_opt = PaymentOption.objects.filter(payment_txt=request.POST['payment_opt'])[0]
-                new_social_demographic_data.flesh_tone_opt = FleshToneOption.objects.filter(flesh_tone_txt=request.POST['flesh_tone_opt'])[0]
-                new_social_demographic_data.schooling_opt = SchoolingOption.objects.filter(schooling_txt=request.POST['schooling_opt'])[0]
+                # No futuro não precisará disso:
+                new_social_demographic_data.religion_opt = ReligionOption.objects.filter(
+                    religion_txt=request.POST['religion_opt'])[0]
+                # No futuro não precisará disso:
+                new_social_demographic_data.payment_opt = PaymentOption.objects.filter(
+                    payment_txt=request.POST['payment_opt'])[0]
+                # No futuro não precisará disso:
+                new_social_demographic_data.flesh_tone_opt = FleshToneOption.objects.filter(
+                    flesh_tone_txt=request.POST['flesh_tone_opt'])[0]
+                # No futuro não precisará disso:
+                new_social_demographic_data.schooling_opt = SchoolingOption.objects.filter(
+                    schooling_txt=request.POST['schooling_opt'])[0]
+                new_social_demographic_data.social_class_opt = new_social_demographic_data.calculateSocialClass(
+                    tv=request.POST['tv_opt'], radio=request.POST['radio_opt'],
+                    banheiro=request.POST['bath_opt'], automovel=request.POST['automobile_opt'],
+                    empregada=request.POST['house_maid_opt'], maquina=request.POST['wash_machine_opt'],
+                    dvd=request.POST['dvd_opt'], geladeira=request.POST['refrigerator_opt'],
+                    freezer=request.POST['freezer_opt'], escolaridade=request.POST['schooling_opt'])
+
                 new_social_demographic_data.save()
-                new_social_demographic_data = None
-            if social_history_form.is_valid() and False:
+            if social_history_form.is_valid():
                 new_social_history_data = social_history_form.save(commit=False)
                 new_social_history_data.id_patient = new_patient
+                if new_social_history_data.smoker == '1':
+                    new_social_history_data.amount_cigarettes_opt = AmountCigarettesOption.objects.filter(
+                        amount_cigarettes_txt=request.POST['amount_cigarettes_opt'])[0]
+                else:
+                    new_social_history_data.amount_cigarettes_opt = None
+                if new_social_history_data.alcoholic == '1':
+                    new_social_history_data.alcohol_frequency_opt = AlcoholFrequencyOption.objects.filter(
+                        alcohol_frequency_txt=request.POST['alcohol_frequency_opt'])[0]
+                    new_social_history_data.alcohol_period_opt = AlcoholPeriodOption.objects.filter(
+                        alcohol_period_txt=request.POST['alcohol_period_opt'])[0]
+                else:
+                    new_social_history_data.alcohol_frequency_opt = None
+                    new_social_history_data.alcohol_period_opt = None
                 new_social_history_data.save()
-                new_social_history_data = None
-    context = {'gender_options': gender_options, 'new_social_history_data': new_social_history_data,
-               'new_social_demographic_data': new_social_demographic_data, 'flesh_tone_options': flesh_tone_options,
+                messages.success(request, 'Paciente gravado com sucesso.')
+
+    context = {'gender_options': gender_options, 'flesh_tone_options': flesh_tone_options,
                'marital_status_options': marital_status_options, 'schooling_options': schooling_options,
-               'payment_options': payment_options, 'religion_options': religion_options, 'new_patient': new_patient,
-               'new_personal_data': new_personal_data}
+               'payment_options': payment_options, 'religion_options': religion_options,
+               'amount_cigarettes': amount_cigarettes, 'alcohol_frequency': alcohol_frequency,
+               'alcohol_period': alcohol_period, 'patient_form': patient_form}
     return render(request, 'quiz/pg_home.html', context)
 
 
@@ -84,8 +120,11 @@ def patient(request, patient_id):
     schooling_options = SchoolingOption.objects.all()
     payment_options = PaymentOption.objects.all()
     religion_options = ReligionOption.objects.all()
-
+    amount_cigarettes = AmountCigarettesOption.objects.all()
+    alcohol_frequency = AlcoholFrequencyOption.objects.all()
+    alcohol_period = AlcoholPeriodOption.objects.all()
     p = Patient.objects.get(nr_record=patient_id)
+    patient_form = PatientForm(instance=p)
     if p.dt_birth_txt:
         dt_birth = str(p.dt_birth_txt.day) + "/" + str(p.dt_birth_txt.month) + "/" + str(p.dt_birth_txt.year)
     else:
@@ -115,9 +154,27 @@ def patient(request, patient_id):
         freezer_opt_searched = p_social_demo.freezer_opt
         house_maid_opt_searched = p_social_demo.house_maid_opt
         social_class_opt_searched = p_social_demo.social_class_opt
+    else:
+        occupation_searched = None
+        profession_searched = None
+        religion_searched = None
+        benefit_gov_searched = None
+        payment_opt_searched = None
+        flesh_tone_opt_searched = None
+        schooling_opt_searched = None
+        tv_opt_searched = None
+        dvd_opt_searched = None
+        radio_opt_searched = None
+        bath_opt_searched = None
+        automobile_opt_searched = None
+        wash_machine_opt_searched = None
+        refrigerator_opt_searched = None
+        freezer_opt_searched = None
+        house_maid_opt_searched = None
+        social_class_opt_searched = None
 
-
-    context = {'name': p.name_txt, 'cpf': p.cpf_id, 'rg': p.rg_id, 'place_of_birth': p.natural_of_txt,
+    # No futuro context = {'patient_form': patient_form}
+    context = {'patient_form': patient_form, 'cpf': p.cpf_id, 'rg': p.rg_id, 'place_of_birth': p.natural_of_txt,
                'citizenship': p.citizenship_txt, 'street': p.street_txt, 'zipcode': p.zipcode_number,
                'country': p.country_txt, 'state': p.state_txt, 'city': p.city_txt, 'phone': p.phone_number,
                'cellphone': p.cellphone_number, 'email': p.email_txt, 'medical_record': p.medical_record_number,
