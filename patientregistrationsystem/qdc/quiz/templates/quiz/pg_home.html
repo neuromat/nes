@@ -223,13 +223,14 @@
             <div class="input-group input-group-sm">
                 <span class="input-group-addon"> <span class="glyphicon glyphicon-flag"></span></span>
 
-                <div class="bfh-selectbox bfh-countries" data-name="citizenship_txt" data-country="BR" id="id_chosen_country" data-flags="true">
-                    <!--        {% if citizenship %}
-                                "{{ citizenship }}"
-                            {% else %}
-                                "BR"
-                            {% endif %}
-                    id="id_chosen_country" data-flags="true">-->
+                <div class="bfh-selectbox bfh-countries" data-name="citizenship_txt"
+                     data-country=
+                     {% if citizenship %}
+                        "{{ citizenship }}"
+                     {% else %}
+                        "BR"
+                     {% endif %}
+                    id="id_chosen_country" data-flags="true">
                 </div>
             </div>
         </div>
@@ -263,14 +264,14 @@
             <label>País</label>
             <div class="input-group  input-group-sm">
                 <span class="input-group-addon"> <span class="glyphicon glyphicon-home"></span></span>
-                <div class="bfh-selectbox bfh-countries" data-name="country_txt" data-country="BR" id="id_country_state_address">
-                    <!--        data-country=
-                            {% if country %}
-                                "{{ country }}"
-                            {% else %}
-                                "BR"
-                            {% endif %}
-                         data-flags="true" id="id_country_state_address"> -->
+                <div class="bfh-selectbox bfh-countries" data-name="country_txt"
+                     data-country=
+                     {% if country %}
+                        "{{ country }}"
+                     {% else %}
+                        "BR"
+                     {% endif %}
+                     data-flags="true" id="id_country_state_address">
                 </div>
             </div>
         </div>
@@ -280,14 +281,14 @@
             <label>Estado</label>
             <div class="input-group  input-group-sm">
                 <span class="input-group-addon"> <span class="glyphicon glyphicon-home"></span></span>
-                <div class="bfh-selectbox bfh-states" data-name="state_txt" data-country="id_country_state_address" data-state="RJ" id="id_chosen_state">
-                    <!--     data-state=
-                            {% if state %}
-                                "{{ state }}"
-                            {% else %}
-                                "RJ"
-                            {% endif %}
-                         id="id_chosen_state"> -->
+                <div class="bfh-selectbox bfh-states" data-name="state_txt" data-country="id_country_state_address"
+                    data-state=
+                    {% if state %}
+                        "{{ state }}"
+                    {% else %}
+                        "RJ"
+                    {% endif %}
+                    id="id_chosen_state">
                 </div>
             </div>
         </div>
@@ -399,37 +400,6 @@
             </div>
         </div>
     </div>
-
-    <!--
-<div class="row">
-    <div class="col-xs-6 col-sm-6">
-        <div class="form-group">
-            <label for="scolarity">Escolaridade - Critério Brasil 2008</label>
-
-            <div class="input-group  input-group-sm">
-                <select class="form-control" id="scolarity">
-                    {% for schooling in schooling_options %}
-                    <option>{{schooling.schooling_txt}}</option>
-                    {% endfor %}
-                </select>
-            </div>
-        </div>
-    </div>
-    <div class="col-xs-6 col-sm-6">
-        <div class="form-group">
-            <div class="form-group">
-                <label>Tempo de estudo (anos)</label>
-
-                <div class="input-group  input-group-sm ">
-                    <span class="input-group-addon"> <span class="glyphicon glyphicon-book"></span></span>
-                    <input class="form-control" name="years_studying_int" placeholder="Entrar tempo de estudo " id="total_studying" type="text">
-                </div>
-            </div>
-        </div>
-    </div>
-</div>
--->
-
     <div class="col-md-1"></div>
 </div>
 </div>
@@ -962,7 +932,7 @@
     </div>
 </div> <!-- <div class="tab-pane" id="tab3"> -->
 
-<!-- Esta div define a quarta aba do formulário -->
+<!-- Esta div define a quarta aba do formulário, #tab4 -->
 <div class="tab-pane" id="tab4">
 <div class="row">
     <div class="col-md-1"></div>
@@ -1682,7 +1652,7 @@
 </div>
 </div> <!-- <div class="tab-pane" id="tab4"> -->
 
-<!-- Esta div define a quinta aba do formulário -->
+<!-- Esta div define a quinta aba do formulário. #tab5 -->
 <div class="tab-pane" id="tab5">
     <div class="row">
         <div class="col-md-1"></div>
