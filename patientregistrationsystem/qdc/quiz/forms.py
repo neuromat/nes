@@ -15,6 +15,8 @@ class PatientForm(ModelForm):
         widgets = {
             'name_txt': TextInput(attrs={'class': 'form-control', 'placeholder': 'Entrar nome completo',
                                          'id': "full_name", 'autofocus': True}),
+            'cpf_id': TextInput(attrs={'class': 'form-control', 'placeholder': 'Entrar CPF',
+                                         'id': "cpf_id", 'autofocus': True}),
         }
         error_messages = {
             'name_txt': {
