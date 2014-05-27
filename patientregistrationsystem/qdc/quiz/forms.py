@@ -17,6 +17,14 @@ class PatientForm(ModelForm):
                                          'id': "full_name", 'autofocus': True}),
             'cpf_id': TextInput(attrs={'class': 'form-control', 'placeholder': 'Entrar CPF',
                                          'id': "cpf_id", 'autofocus': True}),
+            'rg_id': TextInput(attrs={'class': 'form-control', 'placeholder': 'Entrar RG',
+                                         'id': "rg_id", 'autofocus': True}),
+            'natural_of_txt': TextInput(attrs={'class': 'form-control', 'placeholder': 'Entrar Naturalidade',
+                                         'id': "naturalOf", 'autofocus': True}),
+            'street_txt': TextInput(attrs={'class': 'form-control', 'placeholder': 'Rua - Complemento',
+                                         'id': "street_txt", 'autofocus': True}),
+            'zipcode_number': TextInput(attrs={'class': 'form-control', 'placeholder': 'Entrar CEP',
+                                         'id': "zipcode", 'autofocus': True}),
         }
         error_messages = {
             'name_txt': {

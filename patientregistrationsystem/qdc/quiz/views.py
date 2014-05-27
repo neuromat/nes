@@ -201,8 +201,7 @@ def patient(request, patient_id):
         drugs_opt_searched = None
 
     # No futuro context = {'patient_form': patient_form}
-    context = {'patient_form': patient_form, 'rg': p.rg_id, 'place_of_birth': p.natural_of_txt,
-               'citizenship': p.citizenship_txt, 'street': p.street_txt, 'zipcode': p.zipcode_number,
+    context = {'patient_form': patient_form, 'citizenship': p.citizenship_txt,
                'country': p.country_txt, 'state': p.state_txt, 'city': p.city_txt, 'phone': p.phone_number,
                'cellphone': p.cellphone_number, 'email': p.email_txt, 'medical_record': p.medical_record_number,
                'dt_birth': dt_birth,
