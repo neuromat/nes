@@ -3,7 +3,8 @@ from quiz import views
 
 
 urlpatterns = patterns('',
-    url(r'^$', 'quiz.views.pg_home', name='pg_home'),
-    url(r'^search/$', 'quiz.views.search_patients'),
+    url(r'^$', 'quiz.views.search_patient', name='search_patient'),
+    url(r'^register/$', 'quiz.views.register', name='register'),
+    url(r'^search/$', 'quiz.views.search_patients_ajax'),
     url(r'^patient/(?P<patient_id>\d+)/$', 'quiz.views.patient'),
 )

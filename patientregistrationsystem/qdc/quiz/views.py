@@ -19,7 +19,7 @@ from django.contrib import messages
 
 
 @login_required
-def pg_home(request):
+def register(request):
     flesh_tone_options = FleshToneOption.objects.all()
     marital_status_options = MaritalStatusOption.objects.all()
     gender_options = GenderOption.objects.all()
@@ -59,12 +59,12 @@ def pg_home(request):
                 # No futuro não precisará disso:
                 new_social_demographic_data.schooling_opt = SchoolingOption.objects.filter(
                     schooling_txt=request.POST['schooling_opt'])[0]
-                new_social_demographic_data.social_class_opt = new_social_demographic_data.calculateSocialClass(
-                    tv=request.POST['tv_opt'], radio=request.POST['radio_opt'],
-                    banheiro=request.POST['bath_opt'], automovel=request.POST['automobile_opt'],
-                    empregada=request.POST['house_maid_opt'], maquina=request.POST['wash_machine_opt'],
-                    dvd=request.POST['dvd_opt'], geladeira=request.POST['refrigerator_opt'],
-                    freezer=request.POST['freezer_opt'], escolaridade=request.POST['schooling_opt'])
+                #new_social_demographic_data.social_class_opt = new_social_demographic_data.calculateSocialClass(
+                #    tv=request.POST['tv_opt'], radio=request.POST['radio_opt'],
+                #    banheiro=request.POST['bath_opt'], automovel=request.POST['automobile_opt'],
+                #    empregada=request.POST['house_maid_opt'], maquina=request.POST['wash_machine_opt'],
+                #    dvd=request.POST['dvd_opt'], geladeira=request.POST['refrigerator_opt'],
+                #    freezer=request.POST['freezer_opt'], escolaridade=request.POST['schooling_opt'])
 
                 new_social_demographic_data.save()
             if social_history_form.is_valid():
@@ -91,7 +91,7 @@ def pg_home(request):
                'payment_options': payment_options, 'religion_options': religion_options,
                'amount_cigarettes': amount_cigarettes, 'alcohol_frequency': alcohol_frequency,
                'alcohol_period': alcohol_period, 'patient_form': patient_form}
-    return render(request, 'quiz/pg_home.html', context)
+    return render(request, 'quiz/register.html', context)
 
 
 def patients(request):
@@ -111,7 +111,7 @@ def patients(request):
     args['language'] = language
     args['session_language'] = session_language
 
-    return render_to_response('pg_home.html', args)
+    return render_to_response('/quiz/index.html', args)
 
 
 def patient(request, patient_id):
@@ -129,9 +129,11 @@ def patient(request, patient_id):
     p = Patient.objects.get(nr_record=patient_id)
     patient_form = PatientForm(instance=p)
     if p.dt_birth_txt:
-        dt_birth = str(p.dt_birth_txt.day) + "/" + str(p.dt_birth_txt.month) + "/" + str(p.dt_birth_txt.year)
+        dt_birth_formated = str(p.dt_birth_txt.day) + "/"\
+                            + str(p.dt_birth_txt.month)\
+                            + "/" + str(p.dt_birth_txt.year)
     else:
-        dt_birth = None
+        dt_birth_formated = None
     marital_status_searched = p.marital_status_opt_id
     gender_searched = p.gender_opt_id
 
@@ -200,11 +202,9 @@ def patient(request, patient_id):
         alcohol_period_opt_searched = None
         drugs_opt_searched = None
 
-    # No futuro context = {'patient_form': patient_form}
     context = {'patient_form': patient_form, 'citizenship': p.citizenship_txt,
-               'country': p.country_txt, 'state': p.state_txt, 'city': p.city_txt, 'phone': p.phone_number,
-               'cellphone': p.cellphone_number, 'email': p.email_txt, 'medical_record': p.medical_record_number,
-               'dt_birth': dt_birth,
+               'country': p.country_txt, 'state': p.state_txt,
+               'dt_birth_txt': dt_birth_formated,
                'flesh_tone_options': flesh_tone_options, 'marital_status_options': marital_status_options,
                'gender_options': gender_options, 'schooling_options': schooling_options,
                'payment_options': payment_options, 'religion_options': religion_options,
@@ -224,10 +224,12 @@ def patient(request, patient_id):
                'alcoholic_searched': alcoholic_searched, 'alcohol_frequency_opt_searched': alcohol_frequency_opt_searched,
                'alcohol_period_opt_searched': alcohol_period_opt_searched, 'drugs_opt_searched': drugs_opt_searched,
                }
-    return render(request, 'quiz/pg_home.html', context)
+    return render(request, 'quiz/register.html', context)
 
+def search_patient(request):
+    return render(request, 'quiz/index.html')
 
-def search_patients(request):
+def search_patients_ajax(request):
     if request.method == "POST":
         search_text = request.POST['search_text']
         if search_text:

@@ -25,6 +25,18 @@ class PatientForm(ModelForm):
                                          'id': "street_txt", 'autofocus': True}),
             'zipcode_number': TextInput(attrs={'class': 'form-control', 'placeholder': 'Entrar CEP',
                                          'id': "zipcode", 'autofocus': True}),
+            'city_txt': TextInput(attrs={'class': 'form-control', 'placeholder': 'Entrar cidade',
+                                         'id': "city", 'autofocus': True}),
+            'phone_number': TextInput(attrs={'class': 'form-control', 'placeholder': 'Entrar telefone para contato',
+                                         'id': "phone", 'autofocus': True}),
+            'cellphone_number': TextInput(attrs={'class': 'form-control', 'placeholder': 'Entrar celular',
+                                         'id': "cellphone", 'autofocus': True}),
+            'email_txt': TextInput(attrs={'class': 'form-control', 'placeholder': 'Entrar e-mail',
+                                         'id': "email", 'autofocus': True}),
+            'medical_record_number': TextInput(attrs={'class': 'form-control', 'placeholder': 'Entrar número do prontuário',
+                                         'id': "records_number", 'autofocus': True}),
+
+
         }
         error_messages = {
             'name_txt': {
@@ -58,7 +70,16 @@ class SocialDemographicDataForm(ModelForm):
     class Meta:
         model = SocialDemographicData
         fields = ['profession_txt', 'occupation_txt', 'tv_opt', 'dvd_opt', 'radio_opt', 'bath_opt', 'benefit_gov_bool',
-                  'automobile_opt', 'wash_machine_opt', 'refrigerator_opt', 'freezer_opt', 'house_maid_opt']
+                  'automobile_opt', 'wash_machine_opt', 'refrigerator_opt', 'freezer_opt', 'house_maid_opt'
+        ]
+        widgets = {
+            'profession_txt': TextInput(attrs={'class': 'form-control', 'placeholder': 'Entrar profissão',
+                                         'id': "profession", 'autofocus': True}),
+            'occupation_txt': TextInput(attrs={'class': 'form-control', 'placeholder': 'Entrar ocupação',
+                                         'id': "occupation", 'autofocus': True}),
+
+
+        }
 
 
 class SocialHistoryDataForm(ModelForm):
