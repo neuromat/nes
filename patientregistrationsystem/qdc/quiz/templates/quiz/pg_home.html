@@ -168,7 +168,6 @@
              {{ patient_form.errors.cpf_id }}
                 <div class="input-group  input-group-sm {% if patient_form.errors.name_txt %}has-error{% endif %}  ">
                     <span class="input-group-addon"> <span class="glyphicon glyphicon-user"></span></span>
-{#                    <input class="form-control" placeholder="Entrar nome completo" id="full_name" name="name_txt" type="text" value="{{ name }}">#}
                     {{ patient_form.name_txt }}
                 </div>
         </div>
@@ -180,7 +179,7 @@
             <label>CPF</label>
             <div class="input-group input-group-sm">
                 <span class="input-group-addon"> <span class="glyphicon glyphicon-asterisk"></span></span>
-                <input class="form-control" name="cpf_id" placeholder="Entrar CPF" id="cpf_id" type="text" value="{{ cpf }}">
+                {{ patient_form.cpf_id }}
             </div>
         </div>
     </div>
@@ -191,7 +190,7 @@
             <div class="input-group input-group-sm">
                 <!-- verificar qual icone vai aparecer pra RG-->
                 <span class="input-group-addon"><span class="glyphicon glyphicon-user"></span></span>
-                <input class="form-control" name="rg_id" placeholder="Entrar RG" id="rg_id" type="text" value="{{ rg }}">
+                {{ patient_form.rg_id }}
             </div>
         </div>
     </div>
@@ -200,20 +199,17 @@
     <div class="col-xs-6 col-sm-6">
         <div class="form-group">
             <label>Naturalidade</label>
-
             <div class="input-group input-group-sm">
                 <span class="input-group-addon"> <span class="glyphicon glyphicon-flag"></span></span>
-                <input class="form-control" name="natural_of_txt" placeholder="Entrar Naturalidade" id="naturalOf" type="text" value="{{ place_of_birth }}">
+                {{ patient_form.natural_of_txt }}
             </div>
         </div>
     </div>
     <div class="col-xs-6 col-sm-6">
         <div class="form-group">
             <label>Nacionalidade</label>
-
             <div class="input-group input-group-sm">
                 <span class="input-group-addon"> <span class="glyphicon glyphicon-flag"></span></span>
-
                 <div class="bfh-selectbox bfh-countries" data-name="citizenship_txt"
                      data-country=
                      {% if citizenship %}
@@ -231,20 +227,18 @@
     <div class="col-xs-6 col-sm-6">
         <div class="form-group">
             <label>Endereço</label>
-
             <div class="input-group  input-group-sm ">
                 <span class="input-group-addon"> <span class="glyphicon glyphicon-home"></span></span>
-                <input name="street_txt" class="form-control" placeholder="Rua - Complemento " id="street_txt" type="text" value="{{ street }}">
+                {{ patient_form.street_txt }}
             </div>
         </div>
     </div>
     <div class="col-xs-6 col-sm-6">
         <div class="form-group">
             <label>CEP</label>
-
             <div class="input-group  input-group-sm">
                 <span class="input-group-addon"> <span class="glyphicon glyphicon-home"></span></span>
-                <input name="zipcode_number" class="form-control" placeholder="Entrar CEP" id="zipcode" type="text" value="{{ zipcode }}">
+                {{ patient_form.zipcode_number }}
             </div>
         </div>
     </div>
@@ -549,23 +543,23 @@
     <div class="col-sm-7">
         <div class="radio-inline">
             <label>
-                <input name="dvd_opt" id="dvd_opt0" value="0" type="radio">0</label>
+                <input name="dvd_opt" id="dvd_opt0" value="0" {% if dvd_opt_searched == 0 %} checked="" {% endif %} type="radio">0</label>
         </div>
         <div class="radio-inline">
             <label>
-                <input name="dvd_opt" id="dvd_opt1" value="1" type="radio">1</label>
+                <input name="dvd_opt" id="dvd_opt1" value="1" {% if dvd_opt_searched == 1 %} checked="" {% endif %} type="radio">1</label>
         </div>
         <div class="radio-inline">
             <label>
-                <input name="dvd_opt" id="dvd_opt2" value="2" type="radio">2</label>
+                <input name="dvd_opt" id="dvd_opt2" value="2" {% if dvd_opt_searched == 2 %} checked="" {% endif %} type="radio">2</label>
         </div>
         <div class="radio-inline">
             <label>
-                <input name="dvd_opt" id="dvd_opt3" value="3" type="radio">3</label>
+                <input name="dvd_opt" id="dvd_opt3" value="3" {% if dvd_opt_searched == 3 %} checked="" {% endif %} type="radio">3</label>
         </div>
         <div class="radio-inline">
             <label>
-                <input name="dvd_opt" id="dvd_opt4" value="4" type="radio">4 ou +</label>
+                <input name="dvd_opt" id="dvd_opt4" value="4" {% if dvd_opt_searched == 4 %} checked="" {% endif %} type="radio">4 ou +</label>
         </div>
     </div>
 </div>
@@ -575,23 +569,23 @@
     <div class="col-sm-7">
         <div class="radio-inline">
             <label>
-                <input name="radio_opt" id="radio_opt0" value="0" type="radio">0</label>
+                <input name="radio_opt" id="radio_opt0" value="0" {% if radio_opt_searched == 0 %} checked="" {% endif %} type="radio">0</label>
         </div>
         <div class="radio-inline">
             <label>
-                <input name="radio_opt" id="radio_opt1" value="1" type="radio">1</label>
+                <input name="radio_opt" id="radio_opt1" value="1" {% if radio_opt_searched == 1 %} checked="" {% endif %} type="radio">1</label>
         </div>
         <div class="radio-inline">
             <label>
-                <input name="radio_opt" id="radio_opt2" value="2" type="radio">2</label>
+                <input name="radio_opt" id="radio_opt2" value="2" {% if radio_opt_searched == 2 %} checked="" {% endif %} type="radio">2</label>
         </div>
         <div class="radio-inline">
             <label>
-                <input name="radio_opt" id="radio_opt3" value="3" type="radio">3</label>
+                <input name="radio_opt" id="radio_opt3" value="3" {% if radio_opt_searched == 3 %} checked="" {% endif %} type="radio">3</label>
         </div>
         <div class="radio-inline">
             <label>
-                <input name="radio_opt" id="radio_opt4" value="4" type="radio">4 ou +</label>
+                <input name="radio_opt" id="radio_opt4" value="4" {% if radio_opt_searched == 4 %} checked="" {% endif %} type="radio">4 ou +</label>
         </div>
     </div>
 </div>
@@ -601,27 +595,27 @@
     <div class="col-sm-7">
         <div class="radio-inline">
             <label>
-                <input name="bath_opt" id="bath_opt0" value="0"
+                <input name="bath_opt" id="bath_opt0" value="0" {% if bath_opt_searched == 0 %} checked="" {% endif %}
                        type="radio">0</label>
         </div>
         <div class="radio-inline">
             <label>
-                <input name="bath_opt" id="bath_opt1" value="1"
+                <input name="bath_opt" id="bath_opt1" value="1" {% if bath_opt_searched == 1 %} checked="" {% endif %}
                        type="radio">1</label>
         </div>
         <div class="radio-inline">
             <label>
-                <input name="bath_opt" id="bath_opt2" value="2"
+                <input name="bath_opt" id="bath_opt2" value="2" {% if bath_opt_searched == 2 %} checked="" {% endif %}
                        type="radio">2</label>
         </div>
         <div class="radio-inline">
             <label>
-                <input name="bath_opt" id="bath_opt3" value="3"
+                <input name="bath_opt" id="bath_opt3" value="3" {% if bath_opt_searched == 3 %} checked="" {% endif %}
                        type="radio">3</label>
         </div>
         <div class="radio-inline">
             <label>
-                <input name="bath_opt" id="bath_opt4" value="4"
+                <input name="bath_opt" id="bath_opt4" value="4" {% if bath_opt_searched == 4 %} checked="" {% endif %}
                        type="radio">4 ou +</label>
         </div>
     </div>
@@ -632,23 +626,23 @@
     <div class="col-sm-7">
         <div class="radio-inline">
             <label>
-                <input name="automobile_opt" id="automobile_opt0" value="0" type="radio">0</label>
+                <input name="automobile_opt" id="automobile_opt0" value="0" {% if automobile_opt_searched == 0 %} checked="" {% endif %} type="radio">0</label>
         </div>
         <div class="radio-inline">
             <label>
-                <input name="automobile_opt" id="automobile_opt1" value="1" type="radio">1</label>
+                <input name="automobile_opt" id="automobile_opt1" value="1" {% if automobile_opt_searched == 1 %} checked="" {% endif %} type="radio">1</label>
         </div>
         <div class="radio-inline">
             <label>
-                <input name="automobile_opt" id="automobile_opt2" value="2" type="radio">2</label>
+                <input name="automobile_opt" id="automobile_opt2" value="2" {% if automobile_opt_searched == 2 %} checked="" {% endif %} type="radio">2</label>
         </div>
         <div class="radio-inline">
             <label>
-                <input name="automobile_opt" id="automobile_opt3" value="3" type="radio">3</label>
+                <input name="automobile_opt" id="automobile_opt3" value="3" {% if automobile_opt_searched == 3 %} checked="" {% endif %} type="radio">3</label>
         </div>
         <div class="radio-inline">
             <label>
-                <input name="automobile_opt" id="automobile_opt4" value="4" type="radio">4 ou +</label>
+                <input name="automobile_opt" id="automobile_opt4" value="4" {% if automobile_opt_searched == 4 %} checked="" {% endif %} type="radio">4 ou +</label>
         </div>
     </div>
 </div>
@@ -658,27 +652,27 @@
     <div class="col-sm-7">
         <div class="radio-inline">
             <label>
-                <input name="house_maid_opt" id="house_maid_opt0" value="0"
+                <input name="house_maid_opt" id="house_maid_opt0" value="0" {% if house_maid_opt_searched == 0 %} checked="" {% endif %}
                        type="radio">0</label>
         </div>
         <div class="radio-inline">
             <label>
-                <input name="house_maid_opt" id="house_maid_opt1" value="1"
+                <input name="house_maid_opt" id="house_maid_opt1" value="1" {% if house_maid_opt_searched == 1 %} checked="" {% endif %}
                        type="radio">1</label>
         </div>
         <div class="radio-inline">
             <label>
-                <input name="house_maid_opt" id="house_maid_opt2" value="2"
+                <input name="house_maid_opt" id="house_maid_opt2" value="2" {% if house_maid_opt_searched == 2 %} checked="" {% endif %}
                        type="radio">2</label>
         </div>
         <div class="radio-inline">
             <label>
-                <input name="house_maid_opt" id="house_maid_opt3" value="3"
+                <input name="house_maid_opt" id="house_maid_opt3" value="3" {% if house_maid_opt_searched == 3 %} checked="" {% endif %}
                        type="radio">3</label>
         </div>
         <div class="radio-inline">
             <label>
-                <input name="house_maid_opt" id="house_maid_opt4" value="4"
+                <input name="house_maid_opt" id="house_maid_opt4" value="4" {% if house_maid_opt_searched == 4 %} checked="" {% endif %}
                        type="radio">4 ou +</label>
         </div>
     </div>
@@ -689,23 +683,28 @@
     <div class="col-sm-7">
         <div class="radio-inline">
             <label>
-                <input name="wash_machine_opt" id="wash_machine_opt0" value="0" type="radio">0</label>
+                <input name="wash_machine_opt" id="wash_machine_opt0" value="0" {% if wash_machine_opt_searched == 0 %} checked="" {% endif %}
+                       type="radio">0</label>
         </div>
         <div class="radio-inline">
             <label>
-                <input name="wash_machine_opt" id="wash_machine_opt1" value="1" type="radio">1</label>
+                <input name="wash_machine_opt" id="wash_machine_opt1" value="1" {% if wash_machine_opt_searched == 1 %} checked="" {% endif %}
+                       type="radio">1</label>
         </div>
         <div class="radio-inline">
             <label>
-                <input name="wash_machine_opt" id="wash_machine_opt2" value="2" type="radio">2</label>
+                <input name="wash_machine_opt" id="wash_machine_opt2" value="2" {% if wash_machine_opt_searched == 2 %} checked="" {% endif %}
+                       type="radio">2</label>
         </div>
         <div class="radio-inline">
             <label>
-                <input name="wash_machine_opt" id="wash_machine_opt3" value="3" type="radio">3</label>
+                <input name="wash_machine_opt" id="wash_machine_opt3" value="3" {% if wash_machine_opt_searched == 3 %} checked="" {% endif %}
+                       type="radio">3</label>
         </div>
         <div class="radio-inline">
             <label>
-                <input name="wash_machine_opt" id="wash_machine_opt4" value="4" type="radio">4 ou +</label>
+                <input name="wash_machine_opt" id="wash_machine_opt4" value="4" {% if wash_machine_opt_searched == 4 %} checked="" {% endif %}
+                       type="radio">4 ou +</label>
         </div>
     </div>
 </div>
@@ -715,27 +714,27 @@
     <div class="col-sm-7">
         <div class="radio-inline">
             <label>
-                <input name="refrigerator_opt" id="refrigerator_opt0" value="0"
+                <input name="refrigerator_opt" id="refrigerator_opt0" value="0" {% if refrigerator_opt_searched == 0 %} checked="" {% endif %}
                        type="radio">0</label>
         </div>
         <div class="radio-inline">
             <label>
-                <input name="refrigerator_opt" id="refrigerator_opt1" value="1"
+                <input name="refrigerator_opt" id="refrigerator_opt1" value="1" {% if refrigerator_opt_searched == 1 %} checked="" {% endif %}
                        type="radio">1</label>
         </div>
         <div class="radio-inline">
             <label>
-                <input name="refrigerator_opt" id="refrigerator_opt2" value="2"
+                <input name="refrigerator_opt" id="refrigerator_opt2" value="2" {% if refrigerator_opt_searched == 2 %} checked="" {% endif %}
                        type="radio">2</label>
         </div>
         <div class="radio-inline">
             <label>
-                <input name="refrigerator_opt" id="refrigerator_opt3" value="3"
+                <input name="refrigerator_opt" id="refrigerator_opt3" value="3" {% if refrigerator_opt_searched == 3 %} checked="" {% endif %}
                        type="radio">3</label>
         </div>
         <div class="radio-inline">
             <label>
-                <input name="refrigerator_opt" id="refrigerator_opt4" value="4"
+                <input name="refrigerator_opt" id="refrigerator_opt4" value="4" {% if refrigerator_opt_searched == 4 %} checked="" {% endif %}
                        type="radio">4 ou +</label>
         </div>
     </div>
@@ -746,27 +745,27 @@
     <div class="col-sm-7">
         <div class="radio-inline">
             <label>
-                <input name="freezer_opt" id="freezer_opt0" value="0"
+                <input name="freezer_opt" id="freezer_opt0" value="0" {% if freezer_opt_searched == 0 %} checked="" {% endif %}
                        type="radio">0</label>
         </div>
         <div class="radio-inline">
             <label>
-                <input name="freezer_opt" id="freezer_opt1" value="1"
+                <input name="freezer_opt" id="freezer_opt1" value="1" {% if freezer_opt_searched == 1 %} checked="" {% endif %}
                        type="radio">1</label>
         </div>
         <div class="radio-inline">
             <label>
-                <input name="freezer_opt" id="freezer_opt2" value="2"
+                <input name="freezer_opt" id="freezer_opt2" value="2" {% if freezer_opt_searched == 2 %} checked="" {% endif %}
                        type="radio">2</label>
         </div>
         <div class="radio-inline">
             <label>
-                <input name="freezer_opt" id="freezer_opt3" value="3"
+                <input name="freezer_opt" id="freezer_opt3" value="3" {% if freezer_opt_searched == 3 %} checked="" {% endif %}
                        type="radio">3</label>
         </div>
         <div class="radio-inline">
             <label>
-                <input name="freezer_opt" id="freezer_opt4" value="4"
+                <input name="freezer_opt" id="freezer_opt4" value="4" {% if freezer_opt_searched == 4 %} checked="" {% endif %}
                        type="radio">4 ou +</label>
         </div>
     </div>
@@ -795,18 +794,17 @@
                     <div class="col-xs-6 col-sm-4">
                         <div class="form-group">
                             <label>Tabagismo</label>
-
                             <div class="input-group  input-group-sm">
                                 <div class="input-group  input-group-sm">
                                     <div class="radio-inline">
                                         <label>
-                                            <input name="smoker" id="smokingOptionsRadios1"
-                                                   value="1" type="radio">Sim</label>
+                                            <input name="smoker" id="smokingOptionsRadios1" value="1" {% if smoker_searched == "1" %} checked="" {% endif %}
+                                                   type="radio">Sim</label>
                                     </div>
                                     <div class="radio-inline">
                                         <label>
-                                            <input name="smoker" id="smokingOptionsRadios2"
-                                                   value="0" type="radio">Não</label>
+                                            <input name="smoker" id="smokingOptionsRadios2" value="0" {% if smoker_searched == "0" %} checked="" {% endif %}
+                                                   type="radio">Não</label>
                                     </div>
                                 </div>
                             </div>
@@ -815,11 +813,11 @@
                     <div class="col-xs-6 col-sm-4">
                         <div class="form-group">
                             <label>Cigarros/Dia</label>
-
                             <div class="input-group  input-group-sm">
                                 <select name="amount_cigarettes_opt" class="form-control" id="id_amount_cigarettes">
                                     {% for amount_cigar in amount_cigarettes %}
-                                        <option>{{amount_cigar.amount_cigarettes_txt}}</option>
+                                        <option {% if amount_cigarettes_opt_searched == amount_cigar.id %} selected {% endif %}>
+                                            {{amount_cigar.amount_cigarettes_txt}}</option>
                                     {% endfor %}
                                 </select>
                             </div>
@@ -828,18 +826,17 @@
                     <div class="col-xs-6 col-sm-4">
                         <div class="form-group">
                             <label>Ex-tabagista</label>
-
                             <div class="input-group  input-group-sm">
                                 <div class="input-group  input-group-sm">
                                     <div class="radio-inline">
                                         <label>
-                                            <input name="ex_smoker" id="exSmokerOptionsRadios1"
-                                                   value="1" type="radio">Sim</label>
+                                            <input name="ex_smoker" id="exSmokerOptionsRadios1" value="1" {% if ex_smoker_searched == "1" %} checked="" {% endif %}
+                                                   type="radio">Sim</label>
                                     </div>
                                     <div class="radio-inline">
                                         <label>
-                                            <input name="ex_smoker" id="exSmokerOptionsRadios2"
-                                                   value="0" type="radio">Não</label>
+                                            <input name="ex_smoker" id="exSmokerOptionsRadios2" value="0" {% if ex_smoker_searched == "0" %} checked="" {% endif %}
+                                                   type="radio">Não</label>
                                     </div>
                                 </div>
                             </div>
@@ -850,17 +847,16 @@
                     <div class="col-xs-6 col-sm-4">
                         <div class="form-group">
                             <label>Etilismo</label>
-
                             <div class="input-group  input-group-sm">
                                 <div class="radio-inline">
                                     <label>
-                                        <input name="alcoholic" id="alcoholismOptionsRadios1"
-                                               value="1" type="radio"> Sim</label>
+                                        <input name="alcoholic" id="alcoholismOptionsRadios1" value="1"
+                                                {% if alcoholic_searched == "1" %} checked="" {% endif %} type="radio">Sim</label>
                                 </div>
                                 <div class="radio-inline">
                                     <label>
-                                        <input name="alcoholic" id="alcoholismOptionsRadios2"
-                                               value="0" type="radio"> Não</label>
+                                        <input name="alcoholic" id="alcoholismOptionsRadios2" value="0"
+                                               {% if alcoholic_searched == "0" %} checked="" {% endif %}type="radio">Não</label>
                                 </div>
                             </div>
                         </div>
@@ -868,11 +864,11 @@
                     <div class="col-xs-6 col-sm-4">
                         <div class="form-group">
                             <label>Frequência</label>
-
                             <div class="input-group  input-group-sm">
                                 <select name="alcohol_frequency_opt" class="form-control" id="id_freqSmok">
                                     {% for alcohol_freq in alcohol_frequency %}
-                                        <option>{{alcohol_freq.alcohol_frequency_txt}}</option>
+                                        <option {% if alcohol_frequency_opt_searched == alcohol_freq.id %} selected {% endif %}>
+                                            {{alcohol_freq.alcohol_frequency_txt}}</option>
                                     {% endfor %}
                                 </select>
                             </div>
@@ -881,11 +877,11 @@
                     <div class="col-xs-6 col-sm-4">
                         <div class="form-group">
                             <label>Tempo</label>
-
                             <div class="input-group  input-group-sm">
                                 <select name="alcohol_period_opt" class="form-control" id="id_periodSmok">
                                     {% for alc_period in alcohol_period %}
-                                        <option>{{alc_period.alcohol_period_txt}}</option>
+                                        <option {% if alcohol_period_opt_searched == alc_period.id %} selected {% endif %}>
+                                            {{alc_period.alcohol_period_txt}}</option>
                                     {% endfor %}
                                 </select>
                             </div>
@@ -896,22 +892,21 @@
                     <div class="col-xs-6 col-sm-12">
                         <div class="form-group">
                             <label>Drogas ilícitas</label>
-
                             <div class="input-group  input-group-sm">
                                 <div class="radio-inline">
                                     <label>
-                                        <input name="drugs_opt" id="drugsOptionsRadios1"
-                                               value="ja_fez" type="radio"> Já fez</label>
+                                        <input name="drugs_opt" id="drugsOptionsRadios1" value="ja_fez"
+                                               {% if drugs_opt_searched == "ja_fez" %} checked="" {% endif %} type="radio">Já fez</label>
                                 </div>
                                 <div class="radio-inline">
                                     <label>
-                                        <input name="drugs_opt" id="drugsOptionsRadios2"
-                                               value="faz" type="radio"> Faz</label>
+                                        <input name="drugs_opt" id="drugsOptionsRadios2" value="faz"
+                                                {% if drugs_opt_searched == "faz" %} checked="" {% endif %} type="radio">Faz</label>
                                 </div>
                                 <div class="radio-inline">
                                     <label>
-                                        <input name="drugs_opt" id="drugsOptionsRadios3"
-                                               value="nunca_fez" type="radio"> Nunca fez</label>
+                                        <input name="drugs_opt" id="drugsOptionsRadios3" value="nunca_fez"
+                                               {% if drugs_opt_searched == "nunca_fez" %} checked="" {% endif %} type="radio">Nunca fez</label>
                                 </div>
                             </div>
                         </div>

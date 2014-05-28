@@ -10,7 +10,8 @@ from django.core.context_processors import csrf
 from django.shortcuts import render_to_response
 from datetime import date
 
-from models import Patient, SocialDemographicData, FleshToneOption, MaritalStatusOption, SchoolingOption, PaymentOption, ReligionOption,\
+from models import Patient, SocialDemographicData, SocialHistoryData,FleshToneOption,\
+    MaritalStatusOption, SchoolingOption, PaymentOption, ReligionOption,\
     GenderOption, AmountCigarettesOption, AlcoholFrequencyOption, AlcoholPeriodOption
 
 from forms import PatientForm, SocialDemographicDataForm, SocialHistoryDataForm
@@ -123,19 +124,22 @@ def patient(request, patient_id):
     amount_cigarettes = AmountCigarettesOption.objects.all()
     alcohol_frequency = AlcoholFrequencyOption.objects.all()
     alcohol_period = AlcoholPeriodOption.objects.all()
+
+    # Busca na classe models.Patient
     p = Patient.objects.get(nr_record=patient_id)
     patient_form = PatientForm(instance=p)
     if p.dt_birth_txt:
         dt_birth = str(p.dt_birth_txt.day) + "/" + str(p.dt_birth_txt.month) + "/" + str(p.dt_birth_txt.year)
     else:
-        dt_birth = ""
+        dt_birth = None
     marital_status_searched = p.marital_status_opt_id
     gender_searched = p.gender_opt_id
 
+    # Busca na classe models.SocialDemographicData
     try:
         p_social_demo = SocialDemographicData.objects.get(id_patient_id=patient_id)
     except SocialDemographicData.DoesNotExist:
-        p_social_demo = ""
+        p_social_demo = None
     if p_social_demo:
         occupation_searched = p_social_demo.occupation_txt
         profession_searched = p_social_demo.profession_txt
@@ -173,9 +177,31 @@ def patient(request, patient_id):
         house_maid_opt_searched = None
         social_class_opt_searched = None
 
+    # Busca na classe models.SocialDemographicData
+    try:
+        p_social_hist = SocialHistoryData.objects.get(id_patient_id=patient_id)
+    except SocialHistoryData.DoesNotExist:
+        p_social_hist = None
+
+    if p_social_hist:
+        smoker_searched = p_social_hist.smoker
+        amount_cigarettes_opt_searched = p_social_hist.amount_cigarettes_opt_id
+        ex_smoker_searched = p_social_hist.ex_smoker
+        alcoholic_searched = p_social_hist.alcoholic
+        alcohol_frequency_opt_searched = p_social_hist.alcohol_frequency_opt_id
+        alcohol_period_opt_searched = p_social_hist.alcohol_period_opt_id
+        drugs_opt_searched = p_social_hist.drugs_opt
+    else:
+        smoker_searched = None
+        amount_cigarettes_opt_searched = None
+        ex_smoker_searched = None
+        alcoholic_searched = None
+        alcohol_frequency_opt_searched = None
+        alcohol_period_opt_searched = None
+        drugs_opt_searched = None
+
     # No futuro context = {'patient_form': patient_form}
-    context = {'patient_form': patient_form, 'cpf': p.cpf_id, 'rg': p.rg_id, 'place_of_birth': p.natural_of_txt,
-               'citizenship': p.citizenship_txt, 'street': p.street_txt, 'zipcode': p.zipcode_number,
+    context = {'patient_form': patient_form, 'citizenship': p.citizenship_txt,
                'country': p.country_txt, 'state': p.state_txt, 'city': p.city_txt, 'phone': p.phone_number,
                'cellphone': p.cellphone_number, 'email': p.email_txt, 'medical_record': p.medical_record_number,
                'dt_birth': dt_birth,
@@ -192,6 +218,11 @@ def patient(request, patient_id):
                'wash_machine_opt_searched': wash_machine_opt_searched, 'refrigerator_opt_searched': refrigerator_opt_searched,
                'freezer_opt_searched': freezer_opt_searched, 'house_maid_opt_searched': house_maid_opt_searched,
                'social_class_opt_searched': social_class_opt_searched,
+               'amount_cigarettes': amount_cigarettes, 'alcohol_frequency': alcohol_frequency,
+               'alcohol_period': alcohol_period, 'smoker_searched': smoker_searched,
+               'amount_cigarettes_opt_searched': amount_cigarettes_opt_searched, 'ex_smoker_searched': ex_smoker_searched,
+               'alcoholic_searched': alcoholic_searched, 'alcohol_frequency_opt_searched': alcohol_frequency_opt_searched,
+               'alcohol_period_opt_searched': alcohol_period_opt_searched, 'drugs_opt_searched': drugs_opt_searched,
                }
     return render(request, 'quiz/pg_home.html', context)
 
