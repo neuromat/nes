@@ -72,12 +72,38 @@ def register(request):
                 # No futuro não precisará disso:
                 new_social_demographic_data.schooling_opt = SchoolingOption.objects.filter(
                     schooling_txt=request.POST['schooling_opt'])[0]
-                #new_social_demographic_data.social_class_opt = new_social_demographic_data.calculateSocialClass(
-                #    tv=request.POST['tv_opt'], radio=request.POST['radio_opt'],
-                #    banheiro=request.POST['bath_opt'], automovel=request.POST['automobile_opt'],
-                #    empregada=request.POST['house_maid_opt'], maquina=request.POST['wash_machine_opt'],
-                #    dvd=request.POST['dvd_opt'], geladeira=request.POST['refrigerator_opt'],
-                #    freezer=request.POST['freezer_opt'], escolaridade=request.POST['schooling_opt'])
+
+                if (new_social_demographic_data.tv_opt is not None and
+                    new_social_demographic_data.radio_opt is not None and
+                    new_social_demographic_data.bath_opt is not None and
+                    new_social_demographic_data.automobile_opt is not None and
+                    new_social_demographic_data.house_maid_opt is not None and
+                    new_social_demographic_data.wash_machine_opt is not None and
+                    new_social_demographic_data.dvd_opt is not None and
+                    new_social_demographic_data.refrigerator_opt is not None and
+                    new_social_demographic_data.freezer_opt is not None):
+
+                    new_social_demographic_data.social_class_opt = new_social_demographic_data.calculateSocialClass(
+                       tv=request.POST['tv_opt'], radio=request.POST['radio_opt'],
+                       banheiro=request.POST['bath_opt'], automovel=request.POST['automobile_opt'],
+                       empregada=request.POST['house_maid_opt'], maquina=request.POST['wash_machine_opt'],
+                       dvd=request.POST['dvd_opt'], geladeira=request.POST['refrigerator_opt'],
+                       freezer=request.POST['freezer_opt'], escolaridade=request.POST['schooling_opt'])
+                else:
+
+                    new_social_demographic_data.social_class_opt = None
+
+                    if (new_social_demographic_data.tv_opt is not None or
+                        new_social_demographic_data.radio_opt is not None or
+                        new_social_demographic_data.bath_opt is not None or
+                        new_social_demographic_data.automobile_opt is not None or
+                        new_social_demographic_data.house_maid_opt is not None or
+                        new_social_demographic_data.wash_machine_opt is not None or
+                        new_social_demographic_data.dvd_opt is not None or
+                        new_social_demographic_data.refrigerator_opt is not None or
+                        new_social_demographic_data.freezer_opt is not None):
+
+                        messages.warning(request, 'Classe Social não calculada, pois os campos necessários para o cálculo não foram preenchidos.')
 
                 new_social_demographic_data.save()
             if social_history_form.is_valid():

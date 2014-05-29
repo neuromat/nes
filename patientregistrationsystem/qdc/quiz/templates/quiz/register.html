@@ -153,6 +153,13 @@
                     <li class="{{ message.tags }}">{{ message }}</li>
                 </div>
             {% endif %}
+
+            {% if message.tags == "warning" %}
+                <div class="alert alert-warning">
+                    <li class="{{ message.tags }}">{{ message }}</li>
+                </div>
+            {% endif %}
+
         {% endfor %}
     </ul>
 {% endif %}
