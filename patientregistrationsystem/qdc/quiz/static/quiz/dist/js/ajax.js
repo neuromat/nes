@@ -1,18 +1,18 @@
 $(function(){
 
     $('#nameKey').keyup(function() {
-    
+
         $.ajax({
             type: "POST",
             url: "/quiz/search/",
-            data: { 
+            data: {
                 'search_text' : $('#nameKey').val(),
                 'csrfmiddlewaretoken' : $("input[name=csrfmiddlewaretoken]").val()
             },
             success: searchSuccess,
             dataType: 'html'
         });
-        
+
     });
 
 });

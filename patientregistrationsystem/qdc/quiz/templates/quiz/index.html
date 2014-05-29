@@ -66,21 +66,15 @@
     <ul id="myMenu" class="nav nav-pills nav-stacked">
 
         <li class="active">
-            {% if perms.quiz.add_patient %}
-                <a href="#mainMenuSearchTab" data-toggle="tab">
+            {% if perms.quiz.view_patient %}
+                <a href="#mainMenuSearchTab" data-toggle="tab">Paciente</a>
             {% else %}
-                <a>
+                <a>Paciente</a>
             {% endif %}
-            Paciente</a>
         </li>
 
         <li>
-            {% if perms.quiz.view_patient %}
-                <a href="#mainMenuAdvancedSearchTab" data-toggle="tab">
-            {% else %}
-                <a>
-            {% endif %}
-            Busca avançada</a>
+            <a href="#mainMenuAdvancedSearchTab" data-toggle="tab">Busca avançada</a>
         </li>
 
         <li><a href="#mainMenuContactTab" data-toggle="tab">
@@ -148,13 +142,16 @@
     </div>
 </div>
 
+<!--
 <div class="row">
     <div class="col-md-12">
-        <p class="text-center">(c) 2013
+        <p class="text-center">(c) 2014
             <br>
         </p>
     </div>
 </div>
+-->
+
 </div> <!-- Major container -->
 
 </body>
