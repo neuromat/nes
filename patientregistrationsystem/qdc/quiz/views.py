@@ -1,14 +1,9 @@
 # coding=utf-8
 from django.shortcuts import render
-from django.http import Http404
 from django.contrib.auth.decorators import login_required
 
-from django.http import HttpResponse
-from django.template import RequestContext, loader
-from django import forms
 from django.core.context_processors import csrf
 from django.shortcuts import render_to_response
-from datetime import date
 
 from models import Patient, SocialDemographicData, SocialHistoryData,FleshToneOption,\
     MaritalStatusOption, SchoolingOption, PaymentOption, ReligionOption,\
@@ -17,6 +12,8 @@ from models import Patient, SocialDemographicData, SocialHistoryData,FleshToneOp
 from forms import PatientForm, SocialDemographicDataForm, SocialHistoryDataForm
 from django.contrib import messages
 
+# Biblioteca para fazer expressões regulares. Utilizada na "def search_patients_ajax" para fazer busca por nome ou CPF
+import re
 
 @login_required
 def register(request):
@@ -94,6 +91,7 @@ def register(request):
     return render(request, 'quiz/register.html', context)
 
 
+@login_required
 def patients(request):
     language = 'en-us'
     session_language = 'en-us'
@@ -114,6 +112,7 @@ def patients(request):
     return render_to_response('/quiz/index.html', args)
 
 
+@login_required
 def patient(request, patient_id):
     flesh_tone_options = FleshToneOption.objects.all()
     marital_status_options = MaritalStatusOption.objects.all()
@@ -226,20 +225,22 @@ def patient(request, patient_id):
                }
     return render(request, 'quiz/register.html', context)
 
+@login_required
 def search_patient(request):
     return render(request, 'quiz/index.html')
 
+@login_required
 def search_patients_ajax(request):
     if request.method == "POST":
         search_text = request.POST['search_text']
         if search_text:
-            patients = Patient.objects.filter(name_txt__icontains=search_text)
+            if re.match('[a-zA-Z ]+', search_text):
+                patients = Patient.objects.filter(name_txt__icontains=search_text)
+            else:
+                patients = Patient.objects.filter(cpf_id__icontains=search_text)
         else:
-            #patients = False
             patients = ''
     else:
         search_text = ''
-
-    #patients = Patient.objects.filter(name_txt__contains=search_text)
 
     return render_to_response('quiz/ajax_search.html', {'patients': patients})
