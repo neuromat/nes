@@ -1,7 +1,8 @@
 # coding=utf-8
-from django.forms import ModelForm, TextInput
+from django.forms import ModelForm, TextInput, DateInput
 from models import Patient, SocialDemographicData, SocialHistoryData
 from django.db import models
+from quiz_widget import SelectBoxCountries, SelectBoxState
 
 
 # Create the form class.
@@ -36,6 +37,9 @@ class PatientForm(ModelForm):
                                          'id': "email"}),
             'medical_record_number': TextInput(attrs={'class': 'form-control', 'placeholder': 'Entrar número do prontuário',
                                          'id': "records_number"}),
+            'citizenship_txt': SelectBoxCountries(attrs={'id': 'id_chosen_country', 'data-flags': 'true'}),
+            'country_txt': SelectBoxCountries(attrs={'id': 'id_country_state_address', 'data-flags': 'true'}),
+            'state_txt': SelectBoxState(attrs={'data-country': 'id_country_state_address', 'id': 'id_chosen_state'})
         }
         error_messages = {
             'name_txt': {
