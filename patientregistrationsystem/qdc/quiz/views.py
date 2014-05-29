@@ -1,14 +1,9 @@
 # coding=utf-8
 from django.shortcuts import render
-from django.http import Http404
 from django.contrib.auth.decorators import login_required
 
-from django.http import HttpResponse
-from django.template import RequestContext, loader
-from django import forms
 from django.core.context_processors import csrf
 from django.shortcuts import render_to_response
-from datetime import date
 
 from models import Patient, SocialDemographicData, SocialHistoryData,FleshToneOption,\
     MaritalStatusOption, SchoolingOption, PaymentOption, ReligionOption,\

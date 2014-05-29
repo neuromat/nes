@@ -3,12 +3,13 @@ from django.forms import ModelForm, TextInput
 from models import Patient, SocialDemographicData, SocialHistoryData
 from django.db import models
 
+
 # Create the form class.
 class PatientForm(ModelForm):
     class Meta:
         model = Patient
         fields = [
-            'cpf_id', 'name_txt', 'rg_id', 'medical_record_number','natural_of_txt', 'citizenship_txt', 'street_txt',
+            'cpf_id', 'name_txt', 'rg_id', 'medical_record_number', 'natural_of_txt', 'citizenship_txt', 'street_txt',
             'zipcode_number', 'country_txt', 'state_txt', 'city_txt', 'phone_number', 'cellphone_number', 'email_txt',
             'dt_birth_txt'
         ]
@@ -16,15 +17,15 @@ class PatientForm(ModelForm):
             'name_txt': TextInput(attrs={'class': 'form-control', 'placeholder': 'Entrar nome completo',
                                          'id': "full_name", 'autofocus': True}),
             'cpf_id': TextInput(attrs={'class': 'form-control', 'placeholder': 'Entrar CPF',
-                                         'id': "cpf_id", 'autofocus': True}),
+                                       'id': "cpf_id", 'autofocus': True}),
             'rg_id': TextInput(attrs={'class': 'form-control', 'placeholder': 'Entrar RG',
-                                         'id': "rg_id", 'autofocus': True}),
+                                      'id': "rg_id", 'autofocus': True}),
             'natural_of_txt': TextInput(attrs={'class': 'form-control', 'placeholder': 'Entrar Naturalidade',
-                                         'id': "naturalOf", 'autofocus': True}),
+                                               'id': "naturalOf", 'autofocus': True}),
             'street_txt': TextInput(attrs={'class': 'form-control', 'placeholder': 'Rua - Complemento',
-                                         'id': "street_txt", 'autofocus': True}),
+                                           'id': "street_txt", 'autofocus': True}),
             'zipcode_number': TextInput(attrs={'class': 'form-control', 'placeholder': 'Entrar CEP',
-                                         'id': "zipcode", 'autofocus': True}),
+                                               'id': "zipcode", 'autofocus': True}),
         }
         error_messages = {
             'name_txt': {
@@ -55,6 +56,7 @@ class SocialDemographicDataForm(ModelForm):
     #sum_opt = tv_opt +
     #social_class_opt = models.CharField(choices=(('A1', 42-46))))
     benefit_gov_bool = models.CharField(choices=(('False', 0), ('True', 1)))
+
     class Meta:
         model = SocialDemographicData
         fields = ['profession_txt', 'occupation_txt', 'tv_opt', 'dvd_opt', 'radio_opt', 'bath_opt', 'benefit_gov_bool',
@@ -66,6 +68,7 @@ class SocialHistoryDataForm(ModelForm):
     ex_smoker = models.CharField(choices=(('True', 1), ('False', 0)))
     alcoholic = models.CharField(choices=(('True', 1), ('False', 0)))
     #drugs_opt = models.CharField(choices=(('1', 'drugsOption1'), ('2', 'drugsOption2'), ('3', 'drugsOption3')))
+
     class Meta:
         model = SocialHistoryData
         fields = ['smoker', 'ex_smoker', 'alcoholic', 'drugs_opt']
