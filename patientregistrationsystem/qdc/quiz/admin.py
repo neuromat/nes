@@ -13,4 +13,3 @@ admin.site.register(GenderOption)
 admin.site.register(AmountCigarettesOption)
 admin.site.register(AlcoholFrequencyOption)
 admin.site.register(AlcoholPeriodOption)
-

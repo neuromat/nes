@@ -105,46 +105,18 @@
 <div class="tab-pane fade in active" id="mainMenuSearchTab">
     <div class="col-md-10">
         <div class="container span6 offset3 well ">
-            <div class="row">
-                <div class="col-md-12">
-                    <h5>Especificar nome OU CPF para a busca.</h5>
+            <div class="form-group">
+                <label>Buscar Paciente</label>
+                <div class="input-group input-group-sm">
+                    <span class="input-group-addon"> <span class="glyphicon glyphicon-search"></span></span>
+                    <input class="form-control" placeholder="Digite o nome ou o CPF para buscar um paciente" id="nameKey" type="text">
                 </div>
+                {% csrf_token %}
+                <ul id="search-results" style="list-style: none;">
+                </ul>
             </div>
-            <div class="row">
-                <div class="col-md-12">
-                    <div class="row">
-                        <div class="col-xs-6 col-sm-6">
-                            <div class="form-group">
-                                <label>Nome</label>
-                                <div class="input-group input-group-sm">
-                                    <span class="input-group-addon"> <span class="glyphicon glyphicon-user"></span></span>
-                                    <input class="form-control" placeholder="Entrar nome para buscar" id="nameKey" type="text">
-                                </div>
-                                {% csrf_token %}
-                                <ul id="search-results">
-                                </ul>
-                            </div>
-                        </div>
-                        <div class="col-xs-6 col-sm-6">
-                            <div class="form-group">
-                                <label>CPF</label>
-                                <div class="input-group input-group-sm">
-                                    <span class="input-group-addon"> <span class="glyphicon glyphicon-asterisk"></span></span>
-                                    <input class="form-control" placeholder="Entrar CPF para buscar" id="cpfKey" type="text">
-                                </div>
-                            </div>
-                        </div>
-                        <div class="row">
-                            <div class="col-md-1">
-                            </div>
-                            <div class="col-md-10">
-                                <div class="btn-group pull-right">
-                                    <a href="/quiz/register/" class="btn btn-primary">Cadastrar</a>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
+            <div class="btn-group pull-left">
+                <a href="/quiz/register/" class="btn btn-primary">Inserir novo paciente</a>
             </div>
         </div>
     </div>

@@ -17,6 +17,8 @@ from models import Patient, SocialDemographicData, SocialHistoryData,FleshToneOp
 from forms import PatientForm, SocialDemographicDataForm, SocialHistoryDataForm
 from django.contrib import messages
 
+# Biblioteca para fazer expressões regulares. Utilizada na "def search_patients_ajax" para fazer busca por nome ou CPF
+import re
 
 @login_required
 def register(request):
@@ -233,13 +235,13 @@ def search_patients_ajax(request):
     if request.method == "POST":
         search_text = request.POST['search_text']
         if search_text:
-            patients = Patient.objects.filter(name_txt__icontains=search_text)
+            if re.match('[a-zA-Z ]+', search_text):
+                patients = Patient.objects.filter(name_txt__icontains=search_text)
+            else:
+                patients = Patient.objects.filter(cpf_id__icontains=search_text)
         else:
-            #patients = False
             patients = ''
     else:
         search_text = ''
-
-    #patients = Patient.objects.filter(name_txt__contains=search_text)
 
     return render_to_response('quiz/ajax_search.html', {'patients': patients})
