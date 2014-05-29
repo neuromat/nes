@@ -1,99 +1,189 @@
 <!DOCTYPE html>
-<html lang="en">
-   <head>
-      <meta charset="utf-8">
-      <title>Instituto de Neurologia Deofino Couto - Cadastro de Dados </title>
-      <meta name="viewport" content="width=device-width, initial-scale=1.0">
-      <meta name="description" content="">
-      <meta name="author" content="">
-      <link href="http://netdna.bootstrapcdn.com/bootstrap/3.0.0/css/bootstrap.min.css" rel="stylesheet">
-      <meta name="author" content="">
-      <script src="http://cdnjs.cloudflare.com/ajax/libs/jquery/1.9.1/jquery.min.js"></script>
-      <script src="http://netdna.bootstrapcdn.com/bootstrap/3.0.0/js/bootstrap.min.js"></script>
-      <!--[if lt IE 9]>
-      <script src="http://cdnjs.cloudflare.com/ajax/libs/html5shiv/3.6.1/html5shiv.js"></script>
-      <![endif]-->
-      <!--[if lt IE 9]>
-      <script src="http://cdnjs.cloudflare.com/ajax/libs/html5shiv/3.6.1/html5shiv.js"></script>
-      <![endif]-->
-      <!--[if lt IE 9]>
-      <script src="http://cdnjs.cloudflare.com/ajax/libs/html5shiv/3.6.1/html5shiv.js"></script>
-      <![endif]-->
-      <!--[if lt IE 9]>
-      <script src="http://cdnjs.cloudflare.com/ajax/libs/html5shiv/3.6.1/html5shiv.js"></script>
-      <![endif]-->
-      <!--[if lt IE 9]>
-      <script src="http://cdnjs.cloudflare.com/ajax/libs/html5shiv/3.6.1/html5shiv.js"></script>
-      <![endif]-->
-   </head>
-   <body class="">
-      <div class="container">
-         <nav class="navbar navbar-default navbar-fixed-top  navbar-inverse" role="navigation">
-            <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-ex1-collapse">
+<html>
+<head>
+    {% load static %}
+    <meta charset="utf-8">
+    <title>Busca de pacientes</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="">
+    <meta name="author" content="">
+
+    <script src="{% static 'quiz/dist/js/jquery-2.0.0.min.js' %}"></script>
+    <script src="{% static 'quiz/dist/js/ajax.js' %}"></script>
+
+    <link href="http://netdna.bootstrapcdn.com/bootstrap/3.0.0/css/bootstrap.min.css" rel="stylesheet">
+    <link href="{% static 'quiz/BootstrapFormHelpers-master/dist/css/bootstrap-formhelpers.min.css' %}"
+          rel="stylesheet">
+
+    <script src="{% static 'quiz/dist/js/bootstrap.min.js' %}"></script>
+
+    <script src="{% static 'quiz/masked_input/jquery.maskedinput.min.js' %}"></script>
+    <script src="{% static 'quiz/BootstrapFormHelpers-master/dist/js/bootstrap-formhelpers.min.js' %}"></script>
+</head>
+
+<body>
+
+<!-- Cabeçalho da página -->
+<div class="container">
+    <nav class="navbar navbar-default navbar-fixed-top  navbar-inverse" role="navigation">
+        <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-ex1-collapse">
             <span class="sr-only">Toggle navigation</span>
             <span class="icon-bar"></span>
             <span class="icon-bar"></span>
             <span class="icon-bar"></span>
-            </button>
-            <a class="navbar-brand" href="index.html">Instituto de Neurologia Deolindo Couto</a>
-            <div class="navbar-header">
+        </button>
+        <a class="navbar-brand" href="#">Dados Sociodemográficos e Clínicos</a>
+
+        <div class="navbar-header">
+        </div>
+        <div class="collapse navbar-collapse navbar-ex1-collapse">
+            <ol class="nav navbar-nav navbar-right">
+                <li><a> User: {% if user.first_name %} {{ user.first_name }} {% else %} {{ user.username }} {% endif %}</a></li>
+                <li><a href="/logout">Sair</a></li>
+            </ol>
+        </div>
+    </nav>
+    <div id="fix-for-navbar-fixed-top-spacing" style="height: 62px;">&nbsp;</div>
+</div> <!-- Cabeçalho da página -->
+
+<!-- Major container
+  -- ---------------
+  -- Neste "container" estão os formulários da página
+  -- e o rodapé. Ele vai até o fim do documento. Antes
+  -- do código java script.
+  -->
+<div class="container">
+
+<div class="row">
+    <div class="col-md-12">
+    </div>
+</div>
+
+<div class="row">
+
+<!-- Esta div define o Menu principal -->
+<div class="col-md-2">
+    <ul id="myMenu" class="nav nav-pills nav-stacked">
+
+        <li class="active">
+            {% if perms.quiz.add_patient %}
+                <a href="#mainMenuSearchTab" data-toggle="tab">
+            {% else %}
+                <a>
+            {% endif %}
+            Paciente</a>
+        </li>
+
+        <li>
+            {% if perms.quiz.view_patient %}
+                <a href="#mainMenuAdvancedSearchTab" data-toggle="tab">
+            {% else %}
+                <a>
+            {% endif %}
+            Busca avançada</a>
+        </li>
+
+        <li><a href="#mainMenuContactTab" data-toggle="tab">
+            Contato</a>
+        </li>
+
+        {% if user.is_superuser %}
+            <li><a href="/admin">Acesso Administração</a>
+            </li>
+        {% endif %}
+
+    </ul>
+</div> <!-- Esta div define o Menu principal -->
+
+<!-- Esta div abrange a maior parte do documento,
+  -- Ela define as sub-páginas associadas a
+  -- cada item do Menu principal
+  -->
+<div id="myMenuContent" class="tab-content">
+
+<!-- Esta div está associada ao item Busca do Menu principal -->
+<div class="tab-pane fade in active" id="mainMenuSearchTab">
+    <div class="col-md-10">
+        <div class="container span6 offset3 well ">
+            <div class="row">
+                <div class="col-md-12">
+                    <h5>Especificar nome OU CPF para a busca.</h5>
+                </div>
             </div>
-            <div class="collapse navbar-collapse navbar-ex1-collapse">
-               <form class="nav navbar-form navbar-right">
-                  <input class="span2" placeholder="Email" type="text">
-                  <input class="span2" placeholder="Password" type="password">
-                  <!--<button type="submit" class="btn" href="www.google.com">Sign in</button>-->
-                  <a href="pg_home_bu_cmpl.html" class="btn btn-default"  role="button">Entrar</a>
-               </form>
+            <div class="row">
+                <div class="col-md-12">
+                    <div class="row">
+                        <div class="col-xs-6 col-sm-6">
+                            <div class="form-group">
+                                <label>Nome</label>
+                                <div class="input-group input-group-sm">
+                                    <span class="input-group-addon"> <span class="glyphicon glyphicon-user"></span></span>
+                                    <input class="form-control" placeholder="Entrar nome para buscar" id="nameKey" type="text">
+                                </div>
+                                {% csrf_token %}
+                                <ul id="search-results">
+                                </ul>
+                            </div>
+                        </div>
+                        <div class="col-xs-6 col-sm-6">
+                            <div class="form-group">
+                                <label>CPF</label>
+                                <div class="input-group input-group-sm">
+                                    <span class="input-group-addon"> <span class="glyphicon glyphicon-asterisk"></span></span>
+                                    <input class="form-control" placeholder="Entrar CPF para buscar" id="cpfKey" type="text">
+                                </div>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-md-1">
+                            </div>
+                            <div class="col-md-10">
+                                <div class="btn-group pull-right">
+                                    <a href="/quiz/register/" class="btn btn-primary">Cadastrar</a>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
             </div>
-         </nav>
-         <div id="fix-for-navbar-fixed-top-spacing" style="height: 62px;">&nbsp;</div>
-      </div>
-      <div class="container">
-         <div class="row">
-            <div class="col-md-1">
-            </div>
-            <div class="col-md-10">
-               <div class="row">
-                  <div class="col-md-12">
-                     <img src="imgs/img_neuroscience.jpg" class="img-thumbnail">
-                  </div>
-               </div>
-               <div class="row">
-                  <div class="col-md-6">
-                     <h2>Dados Sociodemográficos e Clínicos<br></h2>
-                     <p>Donec id elit non mi porta gravida at eget metus. Fusce dapibus, tellus
-                        ac cursus commodo, tortor mauris condimentum nibh, ut fermentum massa justo
-                        sit amet risus. Etiam porta sem malesuada magna mollis euismod. Donec sed
-                        odio dui.
-                     </p>
-                     <br>
-                     <img src="imgs/img_quest.png" class="img-thumbnail">
-                     <br>
-                     <br>
-                  </div>
-                  <div class="col-md-6">
-                     <h2>Instituto de Neurologia Deolindo Couto - INDC<br></h2>
-                     <p><span style="color: rgb(102, 102, 102); font-family: Arial, Geneva, sans-serif; font-size: 13px; font-style: normal; font-variant: normal; font-weight: normal; letter-spacing: normal; line-height: normal; orphans: auto; text-align: justify; text-indent: 0px; text-transform: none; white-space: normal; widows: auto; word-spacing: 0px; -webkit-text-stroke-width: 0px; background-color: rgb(255, 255, 255); display: inline !important; float: none;">O Instituto de Neurologia é um hospital universitário, situado no Campus da Praia Vermelha, e desempenha funções de assistência e ensino de Neurologia e Neurocirurgia.<span class="Apple-converted-space">&nbsp;</span></span><br style="margin: 0px; padding: 0px; font-family: Arial, Geneva, sans-serif; font-size: 13px; color: rgb(102, 102, 102); font-style: normal; font-variant: normal; font-weight: normal; letter-spacing: normal; line-height: normal; orphans: auto; text-align: justify; text-indent: 0px; text-transform: none; white-space: normal; widows: auto; word-spacing: 0px; -webkit-text-stroke-width: 0px; background-color: rgb(255, 255, 255);"><span style="color: rgb(102, 102, 102); font-family: Arial, Geneva, sans-serif; font-size: 13px; font-style: normal; font-variant: normal; font-weight: normal; letter-spacing: normal; line-height: normal; orphans: auto; text-align: justify; text-indent: 0px; text-transform: none; white-space: normal; widows: auto; word-spacing: 0px; -webkit-text-stroke-width: 0px; background-color: rgb(255, 255, 255); display: inline !important; float: none;">O Centro de Investigação e Tratamento das Miopatias do instituto existe desde 1978 e atende a pacientes com doenças musculares primárias. Os pacientes são submetidos a exames complementares, conforme a orientação do especialista. Nesses estudos, incluem-se a consulta do neurologista, do cardiologista, do psicólogo, do fisioterapeuta e do fonoaudiólogo.</span></p>
-                     <br>
-                     <img src="imgs/img_indc.jpg" class="img-thumbnail">
-                     <br>
-                  </div>
-               </div>
-            </div>
-         </div>
-         <div class="row">
-            <div class="col-md-12">
-               <hr>
-            </div>
-         </div>
-         <div class="row">
-            <div class="col-md-12">
-               <p class="text-center">(c) 2013
-                  <br>
-               </p>
-            </div>
-         </div>
-      </div>
-   </body>
+        </div>
+    </div>
+</div> <!-- <div class="tab-pane fade" id="mainMenuSearchTab"> -->
+
+<!-- Esta div está associada ao item Contato do Menu princial -->
+<div class="tab-pane fade" id="mainMenuContactTab">
+    <div class="col-md-1">
+    </div>
+    <div class="col-md-10">
+        <h3>Instituto de Neurologia Deolindo Couto</h3>
+
+        <h5>Sistema de Cadastro e Consulta de Dados Sociodemográficos e Clínicos</h5>
+        <!-- <h5>Av. Venceslau Brás, 95 - Botafogo - Campus da Praia Vermelha.</h5>-->
+        <h5>Dúvidas e Sugestões: claudiadvargas at gmail dot com </h5>
+    </div>
+</div> <!-- <div class="tab-pane fade" id="mainMenuContactTab"> -->
+
+<div class="col-md-1">
+</div>
+
+</div> <!-- <div id="myMenuContent" class="tab-content"> -->
+</div>
+<!-- End Formulário -->
+
+<div class="row">
+    <div class="col-md-12">
+        <hr>
+    </div>
+</div>
+
+<div class="row">
+    <div class="col-md-12">
+        <p class="text-center">(c) 2013
+            <br>
+        </p>
+    </div>
+</div>
+</div> <!-- Major container -->
+
+</body>
 </html>

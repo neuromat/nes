@@ -47,7 +47,7 @@
         </div>
     </nav>
     <div id="fix-for-navbar-fixed-top-spacing" style="height: 62px;">&nbsp;</div>
-</div>
+</div> <!-- Cabeçalho da página -->
 
 <!-- Major container
   -- ---------------
@@ -71,7 +71,7 @@
 <div class="row">
 
 <!-- A tag form abrange o formulário divido por abas contextuais -->
-<form id="form_id" role="form" method="post" action="/quiz/">
+<form id="form_id" role="form" method="post" action="/quiz/register/">
 {% csrf_token %}
 
 <!-- Esta div define o Menu principal -->
@@ -80,23 +80,24 @@
 
         <li class="active">
             {% if perms.quiz.add_patient %}
-                <a href="#mainMenuAddTab" data-toggle="tab">
+                <a href="/quiz">
             {% else %}
                 <a>
             {% endif %}
-            Cadastro</a>
+            Paciente</a>
         </li>
 
         <li>
             {% if perms.quiz.view_patient %}
-                <a href="#mainMenuSearchTab" data-toggle="tab">
+                <a href="#mainMenuAdvancedSearchTab" data-toggle="tab">
             {% else %}
                 <a>
             {% endif %}
-            Busca</a>
+            Busca avançada</a>
         </li>
 
-        <li><a href="#mainMenuContactTab" data-toggle="tab">Contato</a>
+        <li><a href="#mainMenuContactTab" data-toggle="tab">
+            Contato</a>
         </li>
 
         {% if user.is_superuser %}
@@ -105,7 +106,7 @@
         {% endif %}
 
     </ul>
-</div>
+</div> <!-- Esta div define o Menu principal -->
 
 <!-- Esta div abrange a maior parte do documento,
   -- Ela define as sub-páginas associadas a
@@ -115,6 +116,7 @@
 
 <!-- Esta div está associada ao item Cadastro do Menu princial.
   -- Ela define o conjunto de abas contextuais para o formulário
+  -- de cadastro de pacientes
   -->
 <div class="tab-pane fade in active" id="mainMenuAddTab">
 
@@ -283,20 +285,18 @@
     <div class="col-xs-6 col-sm-6">
         <div class="form-group">
             <label>Cidade</label>
-
             <div class="input-group  input-group-sm ">
                 <span class="input-group-addon"> <span class="glyphicon glyphicon-home"></span></span>
-                <input class="form-control" name="city_txt" placeholder="Entrar cidade" id="city" type="text" value="{{ city }}">
+                {{ patient_form.city_txt }}
             </div>
         </div>
     </div>
     <div class="col-xs-6 col-sm-6">
         <div class="form-group">
-            <label> Telefone fixo</label>
-
+            <label>Telefone fixo</label>
             <div class="input-group  input-group-sm">
                 <span class="input-group-addon"> <span class="glyphicon glyphicon-earphone"></span></span>
-                <input class="form-control" name="phone_number" placeholder="Entrar telefone para contato" id="phone" type="text" value="{{ phone }}">
+                {{ patient_form.phone_number }}
             </div>
         </div>
     </div>
@@ -304,21 +304,19 @@
 <div class="row">
     <div class="col-xs-6 col-sm-6">
         <div class="form-group">
-            <label> Telefone celular</label>
-
+            <label>Telefone celular</label>
             <div class="input-group input-group-sm">
                 <span class="input-group-addon"> <span class="glyphicon glyphicon-earphone"></span></span>
-                <input class="form-control" name="cellphone_number" placeholder="Entrar celular" id="cellphone" type="text" value="{{ cellphone }}">
+                {{ patient_form.cellphone_number }}
             </div>
         </div>
     </div>
     <div class="col-xs-6 col-sm-6">
         <div class="form-group">
             <label>E-mail</label>
-
             <div class="input-group input-group-sm">
                 <span class="input-group-addon"> <span class="glyphicon glyphicon-envelope"></span></span>
-                <input class="form-control" name="email_txt" placeholder="Entrar e-mail" id="email" type="email" value="{{ email }}">
+                {{ patient_form.email_txt }}
             </div>
         </div>
     </div>
@@ -327,10 +325,9 @@
     <div class="col-xs-6 col-sm-6">
         <div class="form-group">
             <label>Número do prontuário</label>
-
             <div class="input-group input-group-sm">
                 <span class="input-group-addon"> <span class="glyphicon glyphicon-list-alt"></span></span>
-                <input class="form-control" name="medical_record_number" placeholder="Entrar número do prontuário" id="records_number" type="text" value="{{ medical_record }}">
+                {{ patient_form.medical_record_number }}
             </div>
         </div>
     </div>
@@ -423,7 +420,7 @@
 
             <div class="input-group  input-group-sm ">
                 <span class="input-group-addon"> <span class="glyphicon"></span></span>
-                <input class="form-control" name="profession_txt" placeholder="Entrar profissão " id="profession" type="text" value="{{ profession_searched }}">
+                <input class="form-control" name="profession_txt" placeholder="Entrar profissão" id="profession" type="text" value="{{ profession_searched }}">
             </div>
         </div>
     </div>
@@ -1731,55 +1728,6 @@
 </div>
 </div> <!-- <div class="tab-pane fade in active" id="mainMenuAddTab"> -->
 
-<!-- Esta div está associada ao item Busca do Menu princial -->
-<div class="tab-pane fade" id="mainMenuSearchTab">
-    <div class="col-md-10">
-        <div class="container span6 offset3 well ">
-            <div class="row">
-                <div class="col-md-12">
-                    <h5>Especificar nome OU CPF para a busca.</h5>
-                </div>
-            </div>
-            <div class="row">
-                <div class="col-md-12">
-                    <div class="row">
-                        <div class="col-xs-6 col-sm-6">
-                            <div class="form-group">
-                                <label>Nome</label>
-                                <div class="input-group input-group-sm">
-                                    <span class="input-group-addon"> <span class="glyphicon glyphicon-user"></span></span>
-                                    <input class="form-control" placeholder="Entrar nome para buscar" id="nameKey" type="text">
-                                </div>
-                                {% csrf_token %}
-                                <ul id="search-results">
-                                </ul>
-                            </div>
-                        </div>
-                        <div class="col-xs-6 col-sm-6">
-                            <div class="form-group">
-                                <label>CPF</label>
-                                <div class="input-group input-group-sm">
-                                    <span class="input-group-addon"> <span class="glyphicon glyphicon-asterisk"></span></span>
-                                    <input class="form-control" placeholder="Entrar CPF para buscar" id="cpfKey" type="text">
-                                </div>
-                            </div>
-                        </div>
-                        <div class="row">
-                            <div class="col-md-1">
-                            </div>
-                            <div class="col-md-10">
-                                <div class="btn-group pull-right">
-                                    <button type="button" class="btn btn-primary">Buscar</button>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div>
-</div> <!-- <div class="tab-pane fade" id="mainMenuSearchTab"> -->
-
 <!-- Esta div está associada ao item Contato do Menu princial -->
 <div class="tab-pane fade" id="mainMenuContactTab">
     <div class="col-md-1">
@@ -1814,8 +1762,7 @@
         </p>
     </div>
 </div>
-</div>
-<!-- End Major container -->
+</div> <!-- Major container -->
 
 <!--[if lt IE 9]>
 
