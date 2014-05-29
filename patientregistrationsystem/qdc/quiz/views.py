@@ -89,6 +89,7 @@ def register(request):
     return render(request, 'quiz/register.html', context)
 
 
+@login_required
 def patients(request):
     language = 'en-us'
     session_language = 'en-us'
@@ -109,6 +110,7 @@ def patients(request):
     return render_to_response('/quiz/index.html', args)
 
 
+@login_required
 def patient(request, patient_id):
     flesh_tone_options = FleshToneOption.objects.all()
     marital_status_options = MaritalStatusOption.objects.all()
@@ -221,9 +223,11 @@ def patient(request, patient_id):
                }
     return render(request, 'quiz/register.html', context)
 
+@login_required
 def search_patient(request):
     return render(request, 'quiz/index.html')
 
+@login_required
 def search_patients_ajax(request):
     if request.method == "POST":
         search_text = request.POST['search_text']
