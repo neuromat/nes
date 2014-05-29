@@ -26,9 +26,25 @@ def register(request):
     amount_cigarettes = AmountCigarettesOption.objects.all()
     alcohol_frequency = AlcoholFrequencyOption.objects.all()
     alcohol_period = AlcoholPeriodOption.objects.all()
+
     patient_form = PatientForm()
+
     if request.method == "POST":
+
+        #obter o nr_record (de algum lugar)
+        #patient_id = 95
+
+        #if (patient_id):
+
+            #salvar um paciente jah existente
+            #p = Patient.objects.get(nr_record=patient_id)
+            #patient_form = PatientForm(request.POST, instance=p)
+
+        #else:
+
+            #salvar um novo paciente
         patient_form = PatientForm(request.POST)
+
         social_demographic_form = SocialDemographicDataForm(request.POST)
         social_history_form = SocialHistoryDataForm(request.POST)
         if patient_form.is_valid():

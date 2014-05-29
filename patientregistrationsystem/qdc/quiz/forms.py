@@ -15,29 +15,27 @@ class PatientForm(ModelForm):
         ]
         widgets = {
             'name_txt': TextInput(attrs={'class': 'form-control', 'placeholder': 'Entrar nome completo',
-                                         'id': "full_name", 'autofocus': True}),
+                                         'id': "full_name", 'autofocus': "true"}),
             'cpf_id': TextInput(attrs={'class': 'form-control', 'placeholder': 'Entrar CPF',
-                                       'id': "cpf_id", 'autofocus': True}),
+                                       'id': "cpf_id"}),
             'rg_id': TextInput(attrs={'class': 'form-control', 'placeholder': 'Entrar RG',
-                                      'id': "rg_id", 'autofocus': True}),
+                                      'id': "rg_id"}),
             'natural_of_txt': TextInput(attrs={'class': 'form-control', 'placeholder': 'Entrar Naturalidade',
-                                               'id': "naturalOf", 'autofocus': True}),
+                                               'id': "naturalOf"}),
             'street_txt': TextInput(attrs={'class': 'form-control', 'placeholder': 'Rua - Complemento',
-                                           'id': "street_txt", 'autofocus': True}),
+                                           'id': "street_txt"}),
             'zipcode_number': TextInput(attrs={'class': 'form-control', 'placeholder': 'Entrar CEP',
-                                         'id': "zipcode", 'autofocus': True}),
+                                         'id': "zipcode"}),
             'city_txt': TextInput(attrs={'class': 'form-control', 'placeholder': 'Entrar cidade',
-                                         'id': "city", 'autofocus': True}),
+                                         'id': "city"}),
             'phone_number': TextInput(attrs={'class': 'form-control', 'placeholder': 'Entrar telefone para contato',
-                                         'id': "phone", 'autofocus': True}),
+                                         'id': "phone"}),
             'cellphone_number': TextInput(attrs={'class': 'form-control', 'placeholder': 'Entrar celular',
-                                         'id': "cellphone", 'autofocus': True}),
+                                         'id': "cellphone"}),
             'email_txt': TextInput(attrs={'class': 'form-control', 'placeholder': 'Entrar e-mail',
-                                         'id': "email", 'autofocus': True}),
+                                         'id': "email"}),
             'medical_record_number': TextInput(attrs={'class': 'form-control', 'placeholder': 'Entrar número do prontuário',
-                                         'id': "records_number", 'autofocus': True}),
-
-
+                                         'id': "records_number"}),
         }
         error_messages = {
             'name_txt': {
@@ -68,26 +66,6 @@ class PatientForm(ModelForm):
 
 
 class SocialDemographicDataForm(ModelForm):
-    #int sum_opt
-    #tv_opt = models.IntegerField(choices=((0, 'TVoption0'), (1, 'TVoption1'), (2, 'TVoption2'), (3, 'TVoption3'),\
-    # (4, 'TVoption4')))
-    #dvd_opt = models.IntegerField(choices=((0, 'DVDoption0'), (1, 'DVDoption1'), (2, 'DVDoption2'), (3, 'DVDoption3'),\
-    # (4, 'DVDoption4')))
-    #radio_opt = choices=((0, 'RADIOoption0'), (1, 'RADIOoption1'), (2, 'RADIOoption2'), (3, 'RADIOoption3'),\
-    # (4, 'RADIOoption4'))
-    #bath_opt = choices=((0, 'Bathsoption0'), (1, 'Bathsoption1'), (2, 'Bathsoption2'), (3, 'Bathsoption3'),\
-    #  (4, 'Bathsoption4'))
-    #auto_opt = choices=((0, 'Autooption0'), (1, 'Autooption1'), (2, 'Autooption2'), (3, 'Autooption3'),\
-    #  (4, 'Autooption4'))
-    #wm_opt = choices=((0, 'WMoption0'), (1, 'WMoption1'), (2, 'WMoption2'), (3, 'WMoption3'), (4, 'WMoption4'))
-    #refrigerator_opt = choices=((0, 'Refrigoption0'), (1, 'Refrigoption1'), (2, 'Refrigoption2'),\
-    #  (3, 'Refrigoption3'), (4, 'Refrigoption4'))
-    #freezer_opt = (0, 'Freezoption0'), (1, 'Freezoption1'), (2, 'Freezoption2'), (3, 'Freezoption3'),\
-    #  (4, 'Freezoption4'))
-    #house_maid_opt = choices=((0, 'Employoption0'), (1, 'Employoption1'), (2, 'Employoption2'), (3, 'Employoption3'),\
-    #  (4, 'Employoption4'))
-    #sum_opt = tv_opt +
-    #social_class_opt = models.CharField(choices=(('A1', 42-46))))
     benefit_gov_bool = models.CharField(choices=(('False', 0), ('True', 1)))
 
     class Meta:
@@ -100,8 +78,6 @@ class SocialDemographicDataForm(ModelForm):
                                          'id': "profession", 'autofocus': True}),
             'occupation_txt': TextInput(attrs={'class': 'form-control', 'placeholder': 'Entrar ocupação',
                                          'id': "occupation", 'autofocus': True}),
-
-
         }
 
 
