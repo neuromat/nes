@@ -129,11 +129,11 @@ def patient(request, patient_id):
     p = Patient.objects.get(nr_record=patient_id)
     patient_form = PatientForm(instance=p)
     if p.dt_birth_txt:
-        dt_birth_formated = str(p.dt_birth_txt.day) + "/"\
+        dt_birth_formatted = str(p.dt_birth_txt.day) + "/"\
                             + str(p.dt_birth_txt.month)\
                             + "/" + str(p.dt_birth_txt.year)
     else:
-        dt_birth_formated = None
+        dt_birth_formatted = None
     marital_status_searched = p.marital_status_opt_id
     gender_searched = p.gender_opt_id
 
@@ -204,7 +204,7 @@ def patient(request, patient_id):
 
     context = {'patient_form': patient_form, 'citizenship': p.citizenship_txt,
                'country': p.country_txt, 'state': p.state_txt,
-               'dt_birth_txt': dt_birth_formated,
+               'dt_birth_searched': dt_birth_formatted,
                'flesh_tone_options': flesh_tone_options, 'marital_status_options': marital_status_options,
                'gender_options': gender_options, 'schooling_options': schooling_options,
                'payment_options': payment_options, 'religion_options': religion_options,

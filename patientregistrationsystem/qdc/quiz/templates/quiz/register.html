@@ -190,7 +190,7 @@
             <label>RG</label>
 
             <div class="input-group input-group-sm">
-                <!-- verificar qual icone vai aparecer pra RG-->
+                {# verificar qual icone vai aparecer pra RG #}
                 <span class="input-group-addon"><span class="glyphicon glyphicon-user"></span></span>
                 {{ patient_form.rg_id }}
             </div>
@@ -221,6 +221,15 @@
                      {% endif %}
                     id="id_chosen_country" data-flags="true">
                 </div>
+                     {# {% if citizenship %} #}
+                     <!--<span class="form-control bfh-countries" data-name="citizenship_txt" data-country= "{{ citizenship }}"
+                        id="id_chosen_country" data-flags="true" readonly>
+                     </span> -->
+                     {# {% else %} #}
+                     <!--<div class="bfh-selectbox bfh-countries" data-name="citizenship_txt" data-country= "BR"
+                        id="id_chosen_country" data-flags="true" >
+                     </div> -->
+                     {# {% endif %} #}
             </div>
         </div>
     </div>
@@ -260,6 +269,15 @@
                      {% endif %}
                      data-flags="true" id="id_country_state_address">
                 </div>
+                     {# {% if country %} #}
+                     <!--   <span class="form-control bfh-countries" data-name="country_txt" data-country="{{ country }}"
+                            data-flags="true" id="id_country_state_address" readonly>
+                        </span> -->
+                     {# {% else %} #}
+                     <!--   <div class="bfh-selectbox bfh-countries" data-name="country_txt" data-country="BR"
+                            data-flags="true" id="id_country_state_address">
+                        </div> -->
+                     {# {% endif %} #}
             </div>
         </div>
     </div>
@@ -277,6 +295,13 @@
                     {% endif %}
                     id="id_chosen_state">
                 </div>
+                    {# {% if state %} #}
+                    <!--    <input class="form-control" name="state_txt" type="text" value="{{ state }}" readonly> -->
+                    {# {% else %} #}
+                    <!--    <div class="bfh-selectbox bfh-states" data-name="state_txt" data-country="id_country_state_address"
+                             data-state="RJ" id="id_chosen_state">
+                        </div> -->
+                    {# {% endif %} #}
             </div>
         </div>
     </div>
@@ -343,7 +368,8 @@
                 <label for="birthday">Data de Nascimento</label>
                 <div class="input-group input-group-sm">
                     <span class="input-group-addon"> <span class="glyphicon glyphicon-calendar"></span></span>
-                    <input class="form-control" name="dt_birth_txt" placeholder="dia/mês/ano" id="birthday" type="text" value="{{ dt_birth }}">
+                    <input class="form-control" name="dt_birth_txt" placeholder="dia/mês/ano" id="birthday" type="text"
+                           value="{{ dt_birth_searched }}">
                 </div>
             </div>
         </div>
