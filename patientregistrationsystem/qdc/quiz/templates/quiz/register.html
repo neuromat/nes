@@ -212,15 +212,7 @@
             <label>Nacionalidade</label>
             <div class="input-group input-group-sm">
                 <span class="input-group-addon"> <span class="glyphicon glyphicon-flag"></span></span>
-                <div class="bfh-selectbox bfh-countries" data-name="citizenship_txt"
-                     data-country=
-                     {% if citizenship %}
-                        "{{ citizenship }}"
-                     {% else %}
-                        "BR"
-                     {% endif %}
-                    id="id_chosen_country" data-flags="true">
-                </div>
+                {{ patient_form.citizenship_txt }}
             </div>
         </div>
     </div>
@@ -251,15 +243,7 @@
             <label>País</label>
             <div class="input-group  input-group-sm">
                 <span class="input-group-addon"> <span class="glyphicon glyphicon-home"></span></span>
-                <div class="bfh-selectbox bfh-countries" data-name="country_txt"
-                     data-country=
-                     {% if country %}
-                        "{{ country }}"
-                     {% else %}
-                        "BR"
-                     {% endif %}
-                     data-flags="true" id="id_country_state_address">
-                </div>
+                {{ patient_form.country_txt }}
             </div>
         </div>
     </div>
@@ -268,15 +252,7 @@
             <label>Estado</label>
             <div class="input-group  input-group-sm">
                 <span class="input-group-addon"> <span class="glyphicon glyphicon-home"></span></span>
-                <div class="bfh-selectbox bfh-states" data-name="state_txt" data-country="id_country_state_address"
-                    data-state=
-                    {% if state %}
-                        "{{ state }}"
-                    {% else %}
-                        "RJ"
-                    {% endif %}
-                    id="id_chosen_state">
-                </div>
+                {{ patient_form.state_txt }}
             </div>
         </div>
     </div>

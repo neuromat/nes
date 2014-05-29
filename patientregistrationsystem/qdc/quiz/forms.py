@@ -1,14 +1,15 @@
 # coding=utf-8
-from django.forms import ModelForm, TextInput
+from django.forms import ModelForm, TextInput, DateInput
 from models import Patient, SocialDemographicData, SocialHistoryData
 from django.db import models
+from quiz_widget import SelectBoxCountries, SelectBoxState
 
 # Create the form class.
 class PatientForm(ModelForm):
     class Meta:
         model = Patient
         fields = [
-            'cpf_id', 'name_txt', 'rg_id', 'medical_record_number','natural_of_txt', 'citizenship_txt', 'street_txt',
+            'cpf_id', 'rg_id', 'name_txt', 'medical_record_number', 'natural_of_txt', 'citizenship_txt', 'street_txt',
             'zipcode_number', 'country_txt', 'state_txt', 'city_txt', 'phone_number', 'cellphone_number', 'email_txt',
             'dt_birth_txt'
         ]
@@ -16,27 +17,29 @@ class PatientForm(ModelForm):
             'name_txt': TextInput(attrs={'class': 'form-control', 'placeholder': 'Entrar nome completo',
                                          'id': "full_name", 'autofocus': True}),
             'cpf_id': TextInput(attrs={'class': 'form-control', 'placeholder': 'Entrar CPF',
-                                         'id': "cpf_id", 'autofocus': True}),
+                                       'id': "cpf_id", 'autofocus': True}),
             'rg_id': TextInput(attrs={'class': 'form-control', 'placeholder': 'Entrar RG',
-                                         'id': "rg_id", 'autofocus': True}),
+                                      'id': "rg_id", 'autofocus': True}),
             'natural_of_txt': TextInput(attrs={'class': 'form-control', 'placeholder': 'Entrar Naturalidade',
-                                         'id': "naturalOf", 'autofocus': True}),
+                                               'id': "naturalOf", 'autofocus': True}),
             'street_txt': TextInput(attrs={'class': 'form-control', 'placeholder': 'Rua - Complemento',
-                                         'id': "street_txt", 'autofocus': True}),
+                                           'id': "street_txt", 'autofocus': True}),
             'zipcode_number': TextInput(attrs={'class': 'form-control', 'placeholder': 'Entrar CEP',
-                                         'id': "zipcode", 'autofocus': True}),
+                                               'id': "zipcode", 'autofocus': True}),
             'city_txt': TextInput(attrs={'class': 'form-control', 'placeholder': 'Entrar cidade',
                                          'id': "city", 'autofocus': True}),
             'phone_number': TextInput(attrs={'class': 'form-control', 'placeholder': 'Entrar telefone para contato',
-                                         'id': "phone", 'autofocus': True}),
+                                             'id': "phone", 'autofocus': True}),
             'cellphone_number': TextInput(attrs={'class': 'form-control', 'placeholder': 'Entrar celular',
-                                         'id': "cellphone", 'autofocus': True}),
+                                                 'id': "cellphone", 'autofocus': True}),
             'email_txt': TextInput(attrs={'class': 'form-control', 'placeholder': 'Entrar e-mail',
-                                         'id': "email", 'autofocus': True}),
-            'medical_record_number': TextInput(attrs={'class': 'form-control', 'placeholder': 'Entrar número do prontuário',
-                                         'id': "records_number", 'autofocus': True}),
-
-
+                                          'id': "email", 'autofocus': True}),
+            'medical_record_number': TextInput(attrs={'class': 'form-control',
+                                                      'placeholder': 'Entrar número do prontuário',
+                                                      'id': "records_number", 'autofocus': True}),
+            'citizenship_txt': SelectBoxCountries(attrs={'id': 'id_chosen_country', 'data-flags': 'true'}),
+            'country_txt': SelectBoxCountries(attrs={'id': 'id_country_state_address', 'data-flags': 'true'}),
+            'state_txt': SelectBoxState(attrs={'data-country': 'id_country_state_address', 'id': 'id_chosen_state'})
         }
         error_messages = {
             'name_txt': {
