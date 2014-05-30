@@ -47,26 +47,13 @@ class PatientForm(ModelForm):
             }
         }
 
-    ## Este código traz os campos em modo readonly ao retornar a busca.
-    ##
-    # If in search mode set widget attribute 'readonly'
-    # def __init__(self, *args, **kwargs):
-    #     super(PatientForm, self).__init__(*args, **kwargs)
-    #     instance = getattr(self, 'instance', None)
-    #     if instance and instance.pk:
-    #         self.fields['name_txt'].widget.attrs['readonly'] = True
-    #         self.fields['cpf_id'].widget.attrs['readonly'] = True
-    #         self.fields['rg_id'].widget.attrs['readonly'] = True
-    #         self.fields['natural_of_txt'].widget.attrs['readonly'] = True
-    #         self.fields['street_txt'].widget.attrs['readonly'] = True
-    #         self.fields['zipcode_number'].widget.attrs['readonly'] = True
-    #         self.fields['city_txt'].widget.attrs['readonly'] = True
-    #         self.fields['phone_number'].widget.attrs['readonly'] = True
-    #         self.fields['cellphone_number'].widget.attrs['readonly'] = True
-    #         self.fields['email_txt'].widget.attrs['readonly'] = True
-    #         self.fields['medical_record_number'].widget.attrs['readonly'] = True
-    #         self.fields['dt_birth_txt'].widget.attrs['readonly'] = True
-    ##
+    # Traz os campos em modo readonly ao retornar a busca.
+    def __init__(self, *args, **kwargs):
+        super(PatientForm, self).__init__(*args, **kwargs)
+        instance = getattr(self, 'instance', None)
+        if instance and instance.pk:
+            for field in self.fields:
+                self.fields[field]. widget.attrs['readonly'] = True
 
 
 class SocialDemographicDataForm(ModelForm):
