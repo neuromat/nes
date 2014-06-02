@@ -14,7 +14,7 @@ class SelectBoxCountries(Widget):
 
     def render(self, name, value, attrs=None):
         if value is None:
-            value = ''
+            value = 'BR'
         final_attrs = self.build_attrs(attrs)
         if value != '':
             final_attrs['value'] = force_text(self._format_value(value))
@@ -31,7 +31,7 @@ class SelectBoxState(Widget):
 
     def render(self, name, value, attrs=None):
         if value is None:
-            value = ''
+            value = 'RJ'
         final_attrs = self.build_attrs(attrs)
         if value != '':
             final_attrs['value'] = force_text(self._format_value(value))

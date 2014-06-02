@@ -140,9 +140,9 @@ class SocialDemographicData(models.Model):
         dictDvd = {'0': 0, '1': 2, '2': 2, '3': 2, '4': 2}
         dictBath = {'0': 0, '1': 4, '2': 5, '3': 6, '4': 7}
         dictAuto = {'0': 0, '1': 4, '2': 7, '3': 9, '4': 9}
-        dictHousemaid = {'0':0, '1': 3, '2': 4, '3': 4, '4': 4}
+        dictHousemaid = {'0': 0, '1': 3, '2': 4, '3': 4, '4': 4}
         dictRefrigerator = {'0': 0, '1': 4, '2': 4, '3': 4, '4': 4}
-        dicScolarity = {'Analfabeto/ até 3ª Série Fundamental': 0, '4ª Fundamental': 1, 'Fundamental Completo': 2, 'Médio Completo': 4, 'Superior Completo': 8}
+        dicScolarity = {'1': 0, '2': 1, '3': 2, '4': 4, '5': 8}
         points = 0
 
         for kw in keywords.keys():
