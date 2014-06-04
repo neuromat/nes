@@ -31,7 +31,6 @@
     </style>
 </head>
 
-
 <body class="">
 
 <!-- Cabeçalho da página -->
@@ -337,8 +336,9 @@
                 <label for="birthday">Data de Nascimento</label>
                 <div class="input-group input-group-sm">
                     <span class="input-group-addon"> <span class="glyphicon glyphicon-calendar"></span></span>
+                    {# Mudar input para modo padrão: precisa corrigir retorno da data em views.py #}
                     <input class="form-control" name="dt_birth_txt" placeholder="dia/mês/ano" id="birthday" type="text"
-                           value="{{ dt_birth_searched }}">
+                           value="{{ dt_birth_searched }}" {% if dt_birth_searched %}disabled{% endif %}>
                 </div>
             </div>
         </div>
