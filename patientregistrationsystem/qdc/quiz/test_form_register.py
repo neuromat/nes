@@ -5,6 +5,7 @@ from django.contrib.auth.models import *
 class FormValidation(TestCase):
 
     def test_invalid_cpf(self):
+        '''testa inclusao de paciente com cpf invalido'''
 
         user = User.objects.create_user(username = 'myadmin', email ='test@dummy.com', password = 'mypwd')
         uid = user.id

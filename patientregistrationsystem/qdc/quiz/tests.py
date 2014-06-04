@@ -5,9 +5,6 @@ from django.test import TestCase
 
 class ABCSearchEngineTest(TestCase):
 
-    def test_nothing(self):
-        pass
-
     """
     def test_findAllQuestionnaires_method_returns_correct_result(self):
         server = pyjsonrpc.HttpClient("http://noel.ime.usp.br/index.php/admin/remotecontrol")
