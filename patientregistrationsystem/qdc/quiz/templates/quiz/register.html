@@ -23,10 +23,13 @@
     <script src="{% static 'quiz/BootstrapFormHelpers-master/dist/js/bootstrap-formhelpers.min.js' %}"></script>
     <style>
         div.alert-overflow {
-{#			display: none; /* O alerta deve iniciar oculto */#}
+			display: none; /* O alerta deve iniciar oculto */
 			overflow: hidden;
 			position: fixed;
 			z-index: 999999;
+        }
+        div.top-buffer {
+            margin-top:20px;
         }
     </style>
 </head>
@@ -62,6 +65,19 @@
   -- e o rodapé. Ele vai até o fim do documento. Antes
   -- do código java script.
   -->
+<div class="container">
+    <div class="row">
+        <div class="alert alert-overflow col-md-offset-8" id="alert">
+
+        </div>
+    </div>
+    <div class="row">
+        <div class="alert alert-overflow col-md-offset-8" id="alert1">
+
+        </div>
+    </div>
+</div>
+
 <div class="container">
 
 <div class="row">
@@ -177,7 +193,6 @@
     </p>
 {% endif %}
 
-{#    <div class="alert alert-success alert-overflow col-md-offset-5" id="alert"> Paciente gravado com sucesso </div>#}
 
 <div class="row">
     <div class="col-md-12">
@@ -1753,8 +1768,8 @@ $("#savetab").on('click', function(){
     }
 
     {# Aqui o código não está fazendo o fadeIn e fadeOut #}
-    $('#alert').attr('class','').addClass('alert-' + "success").html.fadeIn();
-	setTimeout("$('#alert').fadeOut();", 6000);
+{#    $('#alert').attr('class','').addClass('alert-' + "success").html.fadeIn();#}
+{#	setTimeout("$('#alert').fadeOut();", 6000);#}
 
 });
 
@@ -1769,14 +1784,27 @@ $("#savetab2").on('click', function(){
 {#			});#}
 {#		});#}
 {##}
-{#		function showAlert(type,message) {#}
-{#			$('#alert').attr('class','').addClass('alert-' + type).html( message ).fadeIn();#}
-{#			setTimeout("closeAlert()", 6000);#}
-{#		}#}
-{##}
-{#		function closeAlert() {#}
-{#			$('#alert').fadeOut();#}
-{#		}#}
+		function showAlert(type,message) {
+			$('#alert').addClass('alert-' + type).html( message ).fadeIn();
+			setTimeout("closeAlert()", 3000);
+		}
+
+		function closeAlert() {
+			$('#alert').fadeOut();
+		}
+
+showAlert('success', 'success');
+
+function showAlert1(type,message) {
+			$('#alert1').addClass('alert-' + type).html( message ).fadeIn();
+			setTimeout("closeAlert1()", 3000);
+		}
+
+		function closeAlert1() {
+			$('#alert1').fadeOut();
+		}
+
+showAlert1('danger', 'danger');
 
 
 </script>
