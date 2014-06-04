@@ -153,10 +153,10 @@
 
 <!-- Mensagens de erro -->
 {% if messages %}
-    <ul class="messages">
+    <ul class="messages" style="list-style: none;">
         {% for message in messages %}
             {% if message.tags == "success" %}
-                <div class="alert alert-success">
+                <div class="alert alert-success alert-overflow col-md-offset-5" id="alert">
                     <li class="{{ message.tags }}">{{ message }}</li>
                 </div>
             {% endif %}
@@ -177,7 +177,7 @@
     </p>
 {% endif %}
 
-    <div class="alert alert-success alert-overflow col-md-offset-5"> Paciente gravado com sucesso </div>
+{#    <div class="alert alert-success alert-overflow col-md-offset-5" id="alert"> Paciente gravado com sucesso </div>#}
 
 <div class="row">
     <div class="col-md-12">
@@ -1751,11 +1751,32 @@ $("#savetab").on('click', function(){
     else{
         $("#form_id").submit();
     }
+
+    {# Aqui o código não está fazendo o fadeIn e fadeOut #}
+    $('#alert').attr('class','').addClass('alert-' + "success").html.fadeIn();
+	setTimeout("$('#alert').fadeOut();", 6000);
+
 });
 
 $("#savetab2").on('click', function(){
     $("#form_id").submit();
 });
+
+
+{#		$(function() {#}
+{#			$('#alert').click(function() {#}
+{#				closeAlert();#}
+{#			});#}
+{#		});#}
+{##}
+{#		function showAlert(type,message) {#}
+{#			$('#alert').attr('class','').addClass('alert-' + type).html( message ).fadeIn();#}
+{#			setTimeout("closeAlert()", 6000);#}
+{#		}#}
+{##}
+{#		function closeAlert() {#}
+{#			$('#alert').fadeOut();#}
+{#		}#}
 
 
 </script>
