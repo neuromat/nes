@@ -91,6 +91,7 @@ def register(request):
                         messages.warning(request, 'Classe Social não calculada, pois os campos necessários para o cálculo não foram preenchidos.')
 
                 new_social_demographic_data.save()
+
             if social_history_form.is_valid():
                 new_social_history_data = social_history_form.save(commit=False)
                 new_social_history_data.id_patient = new_patient

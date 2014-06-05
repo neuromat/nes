@@ -21,6 +21,12 @@
 
     <script src="{% static 'quiz/masked_input/jquery.maskedinput.min.js' %}"></script>
     <script src="{% static 'quiz/BootstrapFormHelpers-master/dist/js/bootstrap-formhelpers.min.js' %}"></script>
+
+    <link href="{% static 'quiz/toastr/toastr.css' %}" rel="stylesheet"/>
+    <script src="{% static 'quiz/toastr/toastr.js' %}"></script>
+
+    <script src="{% static 'quiz/js/quiz.js' %}"></script>
+
     <style>
         div.alert-overflow {
 			display: none; /* O alerta deve iniciar oculto */
@@ -167,25 +173,25 @@
 <div class="col-md-10">
 <div class="container span6 offset3 well ">
 
-<!-- Mensagens de erro -->
+<!-- Mensagens geradas na view register -->
 {% if messages %}
-    <ul class="messages" style="list-style: none;">
-        {% for message in messages %}
-            {% if message.tags == "success" %}
-                <div class="alert alert-success alert-overflow col-md-offset-5" id="alert">
-                    <li class="{{ message.tags }}">{{ message }}</li>
-                </div>
-            {% endif %}
+    {% for message in messages %}
 
-            {% if message.tags == "warning" %}
-                <div class="alert alert-warning">
-                    <li class="{{ message.tags }}">{{ message }}</li>
-                </div>
-            {% endif %}
+        {% if message.tags == "success" %}
+            <script>showSuccessMessage('{{ message }}')</script>
+        {% endif %}
 
-        {% endfor %}
-    </ul>
+        {% if message.tags == "warning" %}
+            <script>showWarningMessage('{{ message }}')</script>
+        {% endif %}
+
+        {% if message.tags == "error" %}
+            <script>showErrorMessage('{{ message }}')</script>
+        {% endif %}
+
+    {% endfor %}
 {% endif %}
+
 
 {% if form.errors %}
     <p style="color: red;">
@@ -200,7 +206,7 @@
 
             {{ patient_form.errors.cpf_id }}
 
-            <label>Nome Completo *</label>
+            <label>Nome Completo <b style="color: red;">*</b></label>
             <div class="input-group  input-group-sm {% if patient_form.errors.name_txt %}has-error{% endif %}  ">
                 <span class="input-group-addon"> <span class="glyphicon glyphicon-user"></span></span>
                 {{ patient_form.name_txt }}
@@ -1449,11 +1455,24 @@
     <div class="modal-dialog">
         <div class="modal-content">
             <div class="modal-body">
-                CPF não preenchido. Deseja salvar?
+                CPF não foi preenchido. Deseja salvar?
             </div>
             <div class="modal-footer">
                 <button type="button" class="btn btn-default" data-dismiss="modal">Cancelar</button>
                 <button type="button" class="btn btn-primary" id="savetab2">Salvar</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="modal fade" id="modalNameEmpty" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-body">
+                Nome deve ser preenchido.
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-default" data-dismiss="modal">Cancelar</button>
             </div>
         </div>
     </div>
@@ -1539,7 +1558,6 @@ $(document).ready(function(){
 });
 
 //exame complementar
-
 $(document).ready(function(){
     $("#complementaryExameOptionsRadios1").click(function(){
         $("#id_whichComplementaryExame").prop('disabled', false);
@@ -1553,7 +1571,6 @@ $(document).ready(function(){
 });
 
 //cirurgia de nervo
-
 $(document).ready(function(){
     $("#nerveSurgOptionsRadios1").click(function(){
         $("#id_nerveSurgery").prop('disabled', false);
@@ -1567,7 +1584,6 @@ $(document).ready(function(){
 });
 
 //vertebral lombo sacral
-
 $(document).ready(function(){
     $("#verLomSacOptionsRadios1").click(function(){
         $("#id_fieldVerLomSac").prop('disabled', false);
@@ -1581,7 +1597,6 @@ $(document).ready(function(){
 });
 
 //vertebral lombo sacral relacionada
-
 $(document).ready(function(){
     $("#verLomSacRelatedOptionsRadios1").click(function(){
         $("#id_fieldVerLomSacRelated").prop('disabled', false);
@@ -1640,7 +1655,6 @@ $(document).ready(function(){
     });
 });
 
-
 //fratura vertebral toracica relacionada
 $(document).ready(function(){
     $("#verTorFractRelatedOptionsRadios1").click(function(){
@@ -1653,7 +1667,6 @@ $(document).ready(function(){
         $("#id_fieldSetVerTorFractRelated").prop('disabled', true);
     });
 });
-
 
 //fratura vertebral toracica
 $(document).ready(function(){
@@ -1742,10 +1755,6 @@ $(document).ready(function(){
 
 var $tabs = $('.tabbable li');
 
-<!-- $("a[href$='prevtab']").on('click', function() { -->
-<!--       $tabs.filter('.active').prev('li').find('a[data-toggle="tab"]').tab('show'); -->
-<!-- }); -->
-
 $("#prevtab").on('click', function() {
     $tabs.filter('.active').prev('li').find('a[data-toggle="tab"]').tab('show');
 });
@@ -1754,60 +1763,22 @@ $("#nexttab").on('click', function() {
     $tabs.filter('.active').next('li').find('a[data-toggle="tab"]').tab('show');
 });
 
-$("#savetab").on('click', function(){
-    <!-- $("#tabform").filter(".active").submit(); -->
-    var value=$.trim($("#cpf_id").val());
-    if(value.length==0)
-    {
-        $("#myModal").modal('show');
-        {#        var r = confirm("CPF não preenchido. Deseja salvar?");#}
-        {#        if (r == true) {#}
-        {#            $("#form_id").submit();#}
-        {#        }#}
+$("#savetab").on('click', function() {
+
+    var name_value = $.trim($("#full_name").val());
+    var cpf_value  = $.trim($("#cpf_id").val());
+
+    if(name_value.length==0) {
+        $("#modalNameEmpty").modal('show');
+    } else {
+        if(cpf_value.length==0) {
+            $("#myModal").modal('show');
+        }
+        else {
+            $("#form_id").submit();
+        }
     }
-    else{
-        $("#form_id").submit();
-    }
-
-    {# Aqui o código não está fazendo o fadeIn e fadeOut #}
-{#    $('#alert').attr('class','').addClass('alert-' + "success").html.fadeIn();#}
-{#	setTimeout("$('#alert').fadeOut();", 6000);#}
-
 });
-
-$("#savetab2").on('click', function(){
-    $("#form_id").submit();
-});
-
-
-{#		$(function() {#}
-{#			$('#alert').click(function() {#}
-{#				closeAlert();#}
-{#			});#}
-{#		});#}
-{##}
-		function showAlert(type,message) {
-			$('#alert').addClass('alert-' + type).html( message ).fadeIn();
-			setTimeout("closeAlert()", 3000);
-		}
-
-		function closeAlert() {
-			$('#alert').fadeOut();
-		}
-
-showAlert('success', 'success');
-
-function showAlert1(type,message) {
-			$('#alert1').addClass('alert-' + type).html( message ).fadeIn();
-			setTimeout("closeAlert1()", 3000);
-		}
-
-		function closeAlert1() {
-			$('#alert1').fadeOut();
-		}
-
-showAlert1('danger', 'danger');
-
 
 </script>
 </body>
