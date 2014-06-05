@@ -25,6 +25,9 @@
     <link href="{% static 'quiz/toastr/toastr.css' %}" rel="stylesheet"/>
     <script src="{% static 'quiz/toastr/toastr.js' %}"></script>
 
+    <link href="{% static 'quiz/BootstrapValidator/dist/css/bootstrapValidator.min.css' %}" rel="stylesheet"/>
+    <script src="{% static 'quiz/BootstrapValidator/dist/js/bootstrapValidator.min.js' %}" type="text/javascript"></script>
+
     <script src="{% static 'quiz/js/quiz.js' %}"></script>
 
     <style>
@@ -1778,6 +1781,10 @@ $("#savetab").on('click', function() {
             $("#form_id").submit();
         }
     }
+});
+
+$("#savetab2").on('click', function(){
+    $("#form_id").submit();
 });
 
 </script>
