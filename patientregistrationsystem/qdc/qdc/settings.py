@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*-
 """
 Django settings for qdc project.
 
@@ -44,6 +45,7 @@ MIDDLEWARE_CLASSES = (
     'django.middleware.common.CommonMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
     'django.contrib.auth.middleware.AuthenticationMiddleware',
+    'django.middleware.locale.LocaleMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
 )
@@ -72,9 +74,16 @@ TEMPLATE_DIRS = [os.path.join(BASE_DIR, 'templates')]
 # Internationalization
 # https://docs.djangoproject.com/en/1.6/topics/i18n/
 
-LANGUAGE_CODE = 'en-us'
+LANGUAGE_CODE = 'pt-br'
 
-TIME_ZONE = 'UTC'
+LANGUAGES = (
+    ('en', u'English'),
+    ('pt-br', u'Português'),
+)
+
+LOCALE_PATHS = [os.path.join(BASE_DIR, 'locale')]
+
+TIME_ZONE = 'America/Sao_Paulo'
 
 USE_I18N = True
 
@@ -87,4 +96,5 @@ USE_TZ = True
 # https://docs.djangoproject.com/en/1.6/howto/static-files/
 
 STATIC_ROOT = '/home/crns/PycharmProjects/neuromat-cc-ribas/patientregistrationsystem/qdc/quiz/'
+#STATIC_ROOT = [os.path.join(BASE_DIR, 'static')]
 STATIC_URL = '/static/'

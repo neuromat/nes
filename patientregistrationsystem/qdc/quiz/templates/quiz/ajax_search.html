@@ -1,3 +1,4 @@
+{% load i18n %}
 {% if patients.count > 0 %}
 
     {% for patient in patients %}
@@ -6,6 +7,7 @@
 
 {% else %}
 
-    <li>None to show!</li>
+    {% comment %}Translators: This message appears on the search page only{% endcomment %}
+    <li>{% trans "Nenhum paciente encontrado!" %}</li>
 
 {% endif %}
