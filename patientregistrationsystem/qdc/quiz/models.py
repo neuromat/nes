@@ -4,6 +4,7 @@
 from __future__ import unicode_literals
 from django.db import models
 from django.core.exceptions import ValidationError
+from django.utils.translation import ugettext as _
 from validation import CPF
 
 # Create your models here.
@@ -11,7 +12,8 @@ from validation import CPF
 def validate_even(value):
     valido = CPF(value)
     if not valido.isValid():
-        raise ValidationError(u'CPF %s não é válido' % value)
+        #raise ValidationError(u'CPF %s não é válido' % value)
+        raise ValidationError(_('CPF %s não é válido') % value)
 
 class PaymentOption(models.Model):
     payment_txt = models.CharField(max_length=50)
