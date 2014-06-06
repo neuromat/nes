@@ -25,8 +25,7 @@
     <link href="{% static 'quiz/toastr/toastr.css' %}" rel="stylesheet"/>
     <script src="{% static 'quiz/toastr/toastr.js' %}"></script>
 
-    <link href="{% static 'quiz/BootstrapValidator/dist/css/bootstrapValidator.min.css' %}" rel="stylesheet"/>
-    <script src="{% static 'quiz/BootstrapValidator/dist/js/bootstrapValidator.min.js' %}" type="text/javascript"></script>
+    <script src="{% static 'quiz/Bootstrap-Validator-Master/dist/validator.min.js' %}" type="text/javascript"></script>
 
     <script src="{% static 'quiz/js/quiz.js' %}"></script>
 
@@ -103,7 +102,7 @@
 <div class="row">
 
 <!-- A tag form abrange o formulário divido por abas contextuais -->
-<form id="form_id" role="form" method="post" action="/quiz/register/">
+<form id="form_id" role="form" method="post" action="/quiz/register/" data-toggle="validator">
 {% csrf_token %}
 
 <!-- Esta div define o Menu principal -->
@@ -195,36 +194,67 @@
     {% endfor %}
 {% endif %}
 
+<!-- Mostra todas as mensagens do formulário -->
+{% if patient_form.errors %}
 
-{% if form.errors %}
-    <p style="color: red;">
-        Please correct the error{{ form.errors|pluralize }} below.
-    </p>
+    {% comment %}
+    <div class="text-danger">Please correct the error{{ patient_form.errors|pluralize }} below.
+        {{ patient_form.errors }}
+    </div>
+    {% endcomment %}
+
+    {% for field in patient_form %}
+        {% if field.errors %}
+            <script>showErrorMessage('{{ field.errors|striptags }}')</script>
+        {% endif %}
+    {% endfor %}
+
+    <script>showErrorMessage('Paciente não cadastrado. Por favor, corrija os campos em destaque.')</script>
+
 {% endif %}
+
+{% comment %}
+{% if patient_form.subject.errors %}
+    <span class="help-block">
+        {% for error in patient_form.subject.errors %}{{ error }}{% endfor %}
+    </span>
+{% endif %}
+{% endcomment %}
 
 
 <div class="row">
     <div class="col-md-12">
-        <div class="form-group">
-
-            {{ patient_form.errors.cpf_id }}
-
-            <label>Nome Completo <b style="color: red;">*</b></label>
-            <div class="input-group  input-group-sm {% if patient_form.errors.name_txt %}has-error{% endif %}  ">
+        <div class="form-group {% if patient_form.errors.name_txt %}has-error{% endif %}">
+            <label for="full_name" class="control-label">Nome Completo <b style="color: red;">*</b></label>
+            <div class="input-group input-group-sm">
                 <span class="input-group-addon"> <span class="glyphicon glyphicon-user"></span></span>
                 {{ patient_form.name_txt }}
             </div>
+            <div class="help-block with-errors"></div>
         </div>
     </div>
 </div>
+
 <div class="row">
     <div class="col-xs-6 col-sm-6">
-        <div class="form-group">
-            <label>CPF</label>
+        <div class="form-group {% if patient_form.errors.cpf_id %}has-error{% endif %}">
+            <label for="cpf_id" class="control-label">CPF</label>
             <div class="input-group input-group-sm">
                 <span class="input-group-addon"> <span class="glyphicon glyphicon-asterisk"></span></span>
                 {{ patient_form.cpf_id }}
             </div>
+
+            <div class="help-block with-errors">
+                {% comment %}
+                {{ patient_form.errors.cpf_id }}
+                {% endcomment %}
+                {% if patient_form.cpf_id.errors %}
+                    <span>
+                        {% for error in patient_form.cpf_id.errors %}{{ error }}{% endfor %}
+                    </span>
+                {% endif %}
+            </div>
+
         </div>
     </div>
     <div class="col-xs-6 col-sm-6">
@@ -331,11 +361,12 @@
     </div>
     <div class="col-xs-6 col-sm-6">
         <div class="form-group">
-            <label>E-mail</label>
+            <label for="email" class="control-label">E-mail</label>
             <div class="input-group input-group-sm">
                 <span class="input-group-addon"> <span class="glyphicon glyphicon-envelope"></span></span>
                 {{ patient_form.email_txt }}
             </div>
+            <div class="help-block with-errors"></div>
         </div>
     </div>
 </div>
@@ -357,14 +388,23 @@
 <div class="container span6 offset3 well ">
     <div class="row">
         <div class="col-xs-6 col-sm-6">
-            <div class="form-group">
-                <label for="birthday">Data de Nascimento</label>
+            <div class="form-group {% if patient_form.errors.dt_birth_txt %}has-error{% endif %}">
+                <label for="dt_birth_txt" class="control-label">Data de nascimento</label>
                 <div class="input-group input-group-sm">
-                    <span class="input-group-addon"> <span class="glyphicon glyphicon-calendar"></span></span>
+                    <span class="input-group-addon"> <span class="glyphicon glyphicon-th"></span></span>
                     {# Mudar input para modo padrão: precisa corrigir retorno da data em views.py #}
                     <input class="form-control" name="dt_birth_txt" placeholder="dia/mês/ano" id="birthday" type="text"
-                           value="{{ dt_birth_searched }}" {% if dt_birth_searched %}disabled{% endif %}>
+                           value="{{ dt_birth_txt }}" {% if dt_birth_txt %}disabled{% endif %}>
                 </div>
+
+                <div class="help-block with-errors">
+                    {% if patient_form.dt_birth_txt.errors %}
+                        <span>
+                            {% for error in patient_form.dt_birth_txt.errors %}{{ error }}{% endfor %}
+                        </span>
+                    {% endif %}
+                </div>
+
             </div>
         </div>
         <div class="col-xs-6 col-sm-6">

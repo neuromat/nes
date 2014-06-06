@@ -18,8 +18,10 @@ class PatientForm(ModelForm):
         ]
         widgets = {
             'name_txt': TextInput(attrs={'class': 'form-control', 'placeholder': 'Entrar nome completo',
-                                         'id': "full_name", 'autofocus': "true"}),
-            'cpf_id': TextInput(attrs={'class': 'form-control', 'placeholder': 'Entrar CPF', 'id': "cpf_id"}),
+                                         'id': "full_name", 'autofocus': "true", 'required': "",
+                                         'data-error': "Nome deve ser preenchido"}),
+            'cpf_id': TextInput(attrs={'class': 'form-control', 'placeholder': 'Entrar CPF',
+                                       'id': "cpf_id"}),
             'rg_id': TextInput(attrs={'class': 'form-control', 'placeholder': 'Entrar RG', 'id': "rg_id"}),
             'natural_of_txt': TextInput(attrs={'class': 'form-control', 'placeholder': 'Entrar Naturalidade',
                                                'id': "naturalOf"}),
@@ -31,7 +33,10 @@ class PatientForm(ModelForm):
                                              'id': "phone"}),
             'cellphone_number': TextInput(attrs={'class': 'form-control', 'placeholder': 'Entrar celular',
                                                  'id': "cellphone"}),
-            'email_txt': TextInput(attrs={'class': 'form-control', 'placeholder': 'Entrar e-mail', 'id': "email"}),
+            'email_txt': TextInput(attrs={'class': 'form-control', 'placeholder': 'Entrar e-mail', 'id': "email",
+                                          'type': 'email', 'data-error': "E-mail inválido",
+                                          'pattern': '^[_A-Za-z0-9-\+]+(\.[_A-Za-z0-9-]+)*@[A-Za-z0-9-]+(\.[A-Za-z0-9]+)*(\.[A-Za-z]{2,})$'
+                                }),
             'medical_record_number': TextInput(attrs={'class': 'form-control',
                                                       'placeholder': 'Entrar número do prontuário',
                                                       'id': "records_number"}),
