@@ -9,11 +9,13 @@ from validation import CPF
 
 # Create your models here.
 
-def validate_even(value):
-    valido = CPF(value)
-    if not valido.isValid():
+
+def validateCPF(value):
+    validation = CPF(value)
+    if not validation.isValid():
         #raise ValidationError(u'CPF %s não é válido' % value)
         raise ValidationError(_('CPF %s não é válido') % value)
+
 
 class PaymentOption(models.Model):
     payment_txt = models.CharField(max_length=50)
@@ -79,7 +81,7 @@ class AlcoholPeriodOption(models.Model):
 
 
 class Patient(models.Model):
-    cpf_id = models.CharField(null=True, blank=True, max_length=15, unique=True, validators=[validate_even])
+    cpf_id = models.CharField(null=True, blank=True, max_length=15, unique=True, validators=[validateCPF])
     rg_id = models.CharField(max_length=15, null=True, blank=True)
     name_txt = models.CharField(max_length=50)
     nr_record = models.AutoField(primary_key=True)
