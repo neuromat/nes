@@ -115,7 +115,7 @@
             {% else %}
                 <a>
             {% endif %}
-            Paciente</a>
+            Buscar Paciente</a>
         </li>
 
         <li>
@@ -225,7 +225,6 @@
 {% endif %}
 {% endcomment %}
 
-
 <div class="row">
     <div class="col-md-12">
         <div class="form-group {% if patient_form.errors.name_txt %}has-error{% endif %}">
@@ -238,7 +237,6 @@
         </div>
     </div>
 </div>
-
 <div class="row">
     <div class="col-xs-6 col-sm-6">
         <div class="form-group {% if patient_form.errors.cpf_id %}has-error{% endif %}">
@@ -1605,6 +1603,7 @@ $(document).ready(function(){
 });
 
 //exame complementar
+
 $(document).ready(function(){
     $("#complementaryExameOptionsRadios1").click(function(){
         $("#id_whichComplementaryExame").prop('disabled', false);
@@ -1618,6 +1617,7 @@ $(document).ready(function(){
 });
 
 //cirurgia de nervo
+
 $(document).ready(function(){
     $("#nerveSurgOptionsRadios1").click(function(){
         $("#id_nerveSurgery").prop('disabled', false);
@@ -1631,6 +1631,7 @@ $(document).ready(function(){
 });
 
 //vertebral lombo sacral
+
 $(document).ready(function(){
     $("#verLomSacOptionsRadios1").click(function(){
         $("#id_fieldVerLomSac").prop('disabled', false);
@@ -1644,6 +1645,7 @@ $(document).ready(function(){
 });
 
 //vertebral lombo sacral relacionada
+
 $(document).ready(function(){
     $("#verLomSacRelatedOptionsRadios1").click(function(){
         $("#id_fieldVerLomSacRelated").prop('disabled', false);
@@ -1830,6 +1832,36 @@ $("#savetab").on('click', function() {
 $("#savetab2").on('click', function(){
     $("#form_id").submit();
 });
+
+
+{#		$(function() {#}
+{#			$('#alert').click(function() {#}
+{#				closeAlert();#}
+{#			});#}
+{#		});#}
+{##}
+		function showAlert(type,message) {
+			$('#alert').addClass('alert-' + type).html( message ).fadeIn();
+			setTimeout("closeAlert()", 3000);
+		}
+
+		function closeAlert() {
+			$('#alert').fadeOut();
+		}
+
+showAlert('success', 'success');
+
+function showAlert1(type,message) {
+			$('#alert1').addClass('alert-' + type).html( message ).fadeIn();
+			setTimeout("closeAlert1()", 3000);
+		}
+
+		function closeAlert1() {
+			$('#alert1').fadeOut();
+		}
+
+showAlert1('danger', 'danger');
+
 
 </script>
 </body>
