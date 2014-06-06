@@ -140,7 +140,7 @@ class SocialDemographicData(models.Model):
             self.bath_opt, self.automobile_opt, self.wash_machine_opt, self.refrigerator_opt, self.freezer_opt, \
             self.house_maid_opt, self.social_class_opt
 
-    def calculateSocialClass(self, **keywords):
+    def calculate_social_class(self, **keywords):
         dictDvd = {'0': 0, '1': 2, '2': 2, '3': 2, '4': 2}
         dictBath = {'0': 0, '1': 4, '2': 5, '3': 6, '4': 7}
         dictAuto = {'0': 0, '1': 4, '2': 7, '3': 9, '4': 9}

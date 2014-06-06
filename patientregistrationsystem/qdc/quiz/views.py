@@ -79,7 +79,7 @@ def register(request):
                    new_social_demographic_data.refrigerator_opt is not None and
                    new_social_demographic_data.freezer_opt is not None):
 
-                    new_social_demographic_data.social_class_opt = new_social_demographic_data.calculateSocialClass(
+                    new_social_demographic_data.social_class_opt = new_social_demographic_data.calculate_social_class(
                         tv=request.POST['tv_opt'], radio=request.POST['radio_opt'],
                         banheiro=request.POST['bath_opt'], automovel=request.POST['automobile_opt'],
                         empregada=request.POST['house_maid_opt'], maquina=request.POST['wash_machine_opt'],
