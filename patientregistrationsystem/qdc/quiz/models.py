@@ -118,7 +118,7 @@ class SocialDemographicData(models.Model):
     religion_opt = models.ForeignKey(ReligionOption, null=True, blank=True)
     profession_txt = models.CharField(null=True, blank=True, max_length=50)
     occupation_txt = models.CharField(null=True, blank=True, max_length=50)
-    benefit_gov_bool = models.CharField(null=True, blank=True, max_length=10)
+    benefit_government_bool = models.CharField(null=True, blank=True, max_length=10)
     payment_opt = models.ForeignKey(PaymentOption, null=True, blank=True)
     flesh_tone_opt = models.ForeignKey(FleshToneOption, null=True, blank=True)
     schooling_opt = models.ForeignKey(SchoolingOption, null=True, blank=True)
@@ -135,7 +135,7 @@ class SocialDemographicData(models.Model):
 
     def __unicode__(self):
         return \
-            self.id_patient, self.religion_opt, self.profession_txt, self.occupation_txt, bool(self.benefit_gov_bool), \
+            self.id_patient, self.religion_opt, self.profession_txt, self.occupation_txt, bool(self.benefit_government_bool), \
             self.payment_opt, self.flesh_tone_opt, self.schooling_opt, self.tv_opt, self.dvd_opt, self.radio_opt, \
             self.bath_opt, self.automobile_opt, self.wash_machine_opt, self.refrigerator_opt, self.freezer_opt, \
             self.house_maid_opt, self.social_class_opt

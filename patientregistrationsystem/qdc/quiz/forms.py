@@ -66,10 +66,10 @@ class SocialDemographicDataForm(ModelForm):
         model = SocialDemographicData
         fields = ['profession_txt', 'occupation_txt', 'tv_opt', 'dvd_opt', 'radio_opt', 'bath_opt',
                   'automobile_opt', 'wash_machine_opt', 'refrigerator_opt', 'freezer_opt', 'house_maid_opt',
-                  'religion_opt', 'payment_opt', 'flesh_tone_opt', 'schooling_opt', 'benefit_gov_bool',
+                  'religion_opt', 'payment_opt', 'flesh_tone_opt', 'schooling_opt', 'benefit_government_bool',
         ]
         widgets = {
-            'benefit_gov_bool': RadioSelect(attrs={'id': 'id_benefit'}, choices=(('1', 'Sim'), ('0', 'Não'))),
+            'benefit_government_bool': RadioSelect(attrs={'id': 'id_benefit'}, choices=(('1', 'Sim'), ('0', 'Não'))),
             'schooling_opt': Select(attrs={'class': 'form-control', 'id': 'scolarity'}),
             'flesh_tone_opt': Select(attrs={'class': 'form-control', 'id': 'skin_color'}),
             'religion_opt': Select(attrs={'class': 'form-control', 'id': 'religion_id'}),
