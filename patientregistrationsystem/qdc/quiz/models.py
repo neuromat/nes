@@ -10,7 +10,7 @@ from validation import CPF
 # Create your models here.
 
 
-def validateCPF(value):
+def validate_cpf(value):
     validation = CPF(value)
     if not validation.isValid():
         #raise ValidationError(u'CPF %s não é válido' % value)
@@ -81,7 +81,7 @@ class AlcoholPeriodOption(models.Model):
 
 
 class Patient(models.Model):
-    cpf_id = models.CharField(null=True, blank=True, max_length=15, unique=True, validators=[validateCPF])
+    cpf_id = models.CharField(null=True, blank=True, max_length=15, unique=True, validators=[validate_cpf])
     rg_id = models.CharField(max_length=15, null=True, blank=True)
     name_txt = models.CharField(max_length=50)
     number_record = models.AutoField(primary_key=True)
