@@ -191,6 +191,10 @@
             <script>showErrorMessage('{{ message }}')</script>
         {% endif %}
 
+        {% if message.tags == "info" %}
+            <script>showInfoMessage('{{ message }}')</script>
+        {% endif %}
+
     {% endfor %}
 {% endif %}
 

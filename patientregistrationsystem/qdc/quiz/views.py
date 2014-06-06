@@ -51,11 +51,21 @@ def register(request):
         social_history_form = SocialHistoryDataForm(request.POST)
 
         if patient_form.is_valid():
+
             new_patient = patient_form.save(commit=False)
+
             if not new_patient.cpf_id:
                 new_patient.cpf_id = None
+
+            homonym_message = ""
+            homonym_list = Patient.objects.filter(name_txt=request.POST['name_txt'])
+            if homonym_list:
+                homonym_message = "Aviso: existe paciente como o mesmo nome."
+
             new_patient.save()
+
             if social_demographic_form.is_valid():
+
                 new_social_demographic_data = social_demographic_form.save(commit=False)
                 new_social_demographic_data.id_patient = new_patient
 
@@ -98,7 +108,12 @@ def register(request):
                 new_social_history_data = social_history_form.save(commit=False)
                 new_social_history_data.id_patient = new_patient
                 new_social_history_data.save()
+
                 messages.success(request, 'Paciente gravado com sucesso.')
+
+                if homonym_message:
+                    messages.info(request, homonym_message)
+
         else:
             if request.POST['cpf_id'] and Patient.objects.filter(cpf_id=request.POST['cpf_id']):
                 patient_form.errors['cpf_id'][0] = "Já existe paciente cadastrado com este CPF."
