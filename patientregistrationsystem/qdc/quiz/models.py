@@ -84,7 +84,7 @@ class Patient(models.Model):
     cpf_id = models.CharField(null=True, blank=True, max_length=15, unique=True, validators=[validateCPF])
     rg_id = models.CharField(max_length=15, null=True, blank=True)
     name_txt = models.CharField(max_length=50)
-    nr_record = models.AutoField(primary_key=True)
+    number_record = models.AutoField(primary_key=True)
     medical_record_number = models.CharField(max_length=25, null=True, blank=True)
     natural_of_txt = models.CharField(max_length=50, null=True, blank=True)
     citizenship_txt = models.CharField(max_length=50, null=True, blank=True)
@@ -96,7 +96,7 @@ class Patient(models.Model):
     phone_number = models.CharField(max_length=15, null=True, blank=True)
     cellphone_number = models.CharField(max_length=15, null=True, blank=True)
     email_txt = models.EmailField(null=True, blank=True)
-    dt_birth_txt = models.DateField(null=True, blank=True)
+    date_birth_txt = models.DateField(null=True, blank=True)
     gender_opt = models.ForeignKey(GenderOption, null=True, blank=True)
     marital_status_opt = models.ForeignKey(MaritalStatusOption, null=True, blank=True)
 
@@ -109,7 +109,7 @@ class Patient(models.Model):
         return \
             self.name_txt, self.cpf_id, self.rg_id, self.medical_record_number, self.natural_of_txt, \
             self.citizenship_txt, self.street_txt, self.zipcode_number, self.country_txt, self.state_txt, \
-            self.city_txt, self.phone_number, self.cellphone_number, self.email_txt, self.dt_birth_txt, \
+            self.city_txt, self.phone_number, self.cellphone_number, self.email_txt, self.date_birth_txt, \
             self.gender_opt, self.marital_status_opt
 
 

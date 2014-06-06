@@ -34,13 +34,13 @@ def register(request):
 
     if request.method == "POST":
 
-        #obter o nr_record (de algum lugar)
+        #obter o number_record (de algum lugar)
         #patient_id = 95
 
         #if (patient_id):
 
             #salvar um paciente jah existente
-            #p = Patient.objects.get(nr_record=patient_id)
+            #p = Patient.objects.get(number_record=patient_id)
             #patient_form = PatientForm(request.POST, instance=p)
 
         #else:
@@ -156,10 +156,10 @@ def patient(request, patient_id):
     # Search in models.Patient
     p = Patient.objects.get(nr_record=patient_id)
     patient_form = PatientForm(instance=p)
-    if p.dt_birth_txt:
-        dt_birth_formatted = "{0}/{1}/{2}".format(str(p.dt_birth_txt.day),
-                                                  str(p.dt_birth_txt.month),
-                                                  str(p.dt_birth_txt.year))
+    if p.date_birth_txt:
+        dt_birth_formatted = "{0}/{1}/{2}".format(str(p.date_birth_txt.day),
+                                                  str(p.date_birth_txt.month),
+                                                  str(p.date_birth_txt.year))
     else:
         dt_birth_formatted = None
 
@@ -183,7 +183,7 @@ def patient(request, patient_id):
 
     context = {'patient_form': patient_form, 'social_demographic_form': social_demographic_form,
                'social_history_form': social_history_form,
-               'dt_birth_txt': dt_birth_formatted,
+               'date_birth_txt': dt_birth_formatted,
                }
     return render(request, 'quiz/register.html', context)
 

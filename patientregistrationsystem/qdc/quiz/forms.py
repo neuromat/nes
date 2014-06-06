@@ -14,7 +14,7 @@ class PatientForm(ModelForm):
         fields = [
             'cpf_id', 'name_txt', 'rg_id', 'medical_record_number', 'natural_of_txt', 'citizenship_txt', 'street_txt',
             'zipcode_number', 'country_txt', 'state_txt', 'city_txt', 'phone_number', 'cellphone_number', 'email_txt',
-            'dt_birth_txt', 'gender_opt', 'marital_status_opt',
+            'date_birth_txt', 'gender_opt', 'marital_status_opt',
         ]
         widgets = {
             'name_txt': TextInput(attrs={'class': 'form-control', 'placeholder': 'Entrar nome completo',
