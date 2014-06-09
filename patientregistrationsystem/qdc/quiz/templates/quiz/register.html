@@ -396,7 +396,7 @@
                     <span class="input-group-addon"> <span class="glyphicon glyphicon-th"></span></span>
                     {# Mudar input para modo padrão: precisa corrigir retorno da data em views.py #}
                     <input class="form-control" name="dt_birth_txt" placeholder="dia/mês/ano" id="birthday" type="text"
-                           value="{{ dt_birth_txt }}" {% if dt_birth_txt %}disabled{% endif %}>
+                           value="{{ date_birth_txt }}" {% if date_birth_txt %}disabled{% endif %}>
                 </div>
 
                 <div class="help-block with-errors">
@@ -497,7 +497,7 @@
 <div class="row">
     <div class="col-xs-6 col-sm-12">
         <div class="form-group">
-            <label for="skin_color">Cor da pele - IBGE</label>
+            <label for="skin_color">Cor da pele-IBGE</label>
             <div class="input-group  input-group-sm">
                 {{ social_demographic_form.flesh_tone_opt }}
             </div>
