@@ -1510,19 +1510,6 @@
     </div>
 </div>
 
-<div class="modal fade" id="modalNameEmpty" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
-    <div class="modal-dialog">
-        <div class="modal-content">
-            <div class="modal-body">
-                Nome deve ser preenchido.
-            </div>
-            <div class="modal-footer">
-                <button type="button" class="btn btn-default" data-dismiss="modal">Cancelar</button>
-            </div>
-        </div>
-    </div>
-</div>
-
 <!-- Esta div define os botões de navegação no formulário -->
 <div class="row">
     <div class="col-md-1">
@@ -1818,7 +1805,8 @@ $("#savetab").on('click', function() {
     var cpf_value  = $.trim($("#cpf_id").val());
 
     if(name_value.length==0) {
-        $("#modalNameEmpty").modal('show');
+        showErrorMessage("Nome deve ser preenchido.");
+        document.getElementById('full_name').focus();
     } else {
         if(cpf_value.length==0) {
             $("#myModal").modal('show');
@@ -1832,36 +1820,6 @@ $("#savetab").on('click', function() {
 $("#savetab2").on('click', function(){
     $("#form_id").submit();
 });
-
-
-{#		$(function() {#}
-{#			$('#alert').click(function() {#}
-{#				closeAlert();#}
-{#			});#}
-{#		});#}
-{##}
-		function showAlert(type,message) {
-			$('#alert').addClass('alert-' + type).html( message ).fadeIn();
-			setTimeout("closeAlert()", 3000);
-		}
-
-		function closeAlert() {
-			$('#alert').fadeOut();
-		}
-
-showAlert('success', 'success');
-
-function showAlert1(type,message) {
-			$('#alert1').addClass('alert-' + type).html( message ).fadeIn();
-			setTimeout("closeAlert1()", 3000);
-		}
-
-		function closeAlert1() {
-			$('#alert1').fadeOut();
-		}
-
-showAlert1('danger', 'danger');
-
 
 </script>
 </body>
