@@ -154,7 +154,7 @@ def patients(request):
 def patient(request, patient_id):
 
     # Search in models.Patient
-    p = Patient.objects.get(nr_record=patient_id)
+    p = Patient.objects.get(number_record=patient_id)
     patient_form = PatientForm(instance=p)
     if p.date_birth_txt:
         dt_birth_formatted = "{0}/{1}/{2}".format(str(p.date_birth_txt.day),
