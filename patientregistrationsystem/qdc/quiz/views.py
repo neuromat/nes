@@ -157,9 +157,7 @@ def patient(request, patient_id):
     p = Patient.objects.get(number_record=patient_id)
     patient_form = PatientForm(instance=p)
     if p.date_birth_txt:
-        dt_birth_formatted = "{0}/{1}/{2}".format(str(p.date_birth_txt.day),
-                                                  str(p.date_birth_txt.month),
-                                                  str(p.date_birth_txt.year))
+        dt_birth_formatted = p.date_birth_txt.strftime("%d/%m/%Y")
     else:
         dt_birth_formatted = None
 

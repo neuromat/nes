@@ -13,13 +13,15 @@ class SelectBoxCountries(Widget):
         return value
 
     def render(self, name, value, attrs=None):
+        final_attrs = self.build_attrs(attrs)
         if value is None:
             value = 'BR'
-        final_attrs = self.build_attrs(attrs)
+            return format_html("""<div class="bfh-selectbox bfh-countries" data-name="{0}" data-country="{1}"\
+            "{2}"></div>""", force_text(name), force_text(value), flatatt(final_attrs))
         if value != '':
             final_attrs['value'] = force_text(self._format_value(value))
-        return format_html("""<div class="bfh-selectbox bfh-countries" data-name="{0}" data-country="{1}"\
-         "{2}"></div>""", force_text(name), force_text(value), flatatt(final_attrs))
+            return format_html("""<span class="form-control bfh-countries" data-name="{0}" data-country="{1}"\
+            "{2}"></span>""", force_text(name), force_text(value), flatatt(final_attrs))
 
 
 class SelectBoxState(Widget):
@@ -30,10 +32,12 @@ class SelectBoxState(Widget):
         return value
 
     def render(self, name, value, attrs=None):
+        final_attrs = self.build_attrs(attrs)
         if value is None:
             value = 'RJ'
-        final_attrs = self.build_attrs(attrs)
+            return format_html("""<div class="bfh-selectbox bfh-states" data-name="{0}" data-state="{1}"\
+            {2}></div>""", force_text(name), force_text(value), flatatt(final_attrs))
         if value != '':
             final_attrs['value'] = force_text(self._format_value(value))
-        return format_html("""<div class="bfh-selectbox bfh-states" data-name="{0}" data-state="{1}" {2}></div>""",
-                           force_text(name), force_text(value), flatatt(final_attrs))
+            return format_html("""<input class="form-control bfh-states" data-name="{0}" data-state="{1}"\
+            {2}></input>""", force_text(name), force_text(value), flatatt(final_attrs))
