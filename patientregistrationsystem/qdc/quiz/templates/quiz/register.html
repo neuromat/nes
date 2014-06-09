@@ -227,7 +227,7 @@
 
 <div class="row">
     <div class="col-md-12">
-        <div class="form-group {% if patient_form.errors %} {% if patient_form.errors.name_txt %}has-error{% endif %} {% endif %}">
+        <div class="form-group {% if patient_form.errors.name_txt %}has-error{% endif %}">
             <label for="full_name" class="control-label">Nome Completo <b style="color: red;">*</b></label>
             <div class="input-group input-group-sm">
                 <span class="input-group-addon"> <span class="glyphicon glyphicon-user"></span></span>
@@ -239,7 +239,7 @@
 </div>
 <div class="row">
     <div class="col-xs-6 col-sm-6">
-        <div class="form-group {% if patient_form.errors %} {% if patient_form.errors.cpf_id %}has-error{% endif %} {% endif %}">
+        <div class="form-group {% if patient_form.errors.cpf_id %}has-error{% endif %}">
             <label for="cpf_id" class="control-label">CPF</label>
             <div class="input-group input-group-sm">
                 <span class="input-group-addon"> <span class="glyphicon glyphicon-asterisk"></span></span>
@@ -390,7 +390,7 @@
 <div class="container span6 offset3 well ">
     <div class="row">
         <div class="col-xs-6 col-sm-6">
-            <div class="form-group {% if patient_form.errors %} {% if patient_form.errors.date_birth_txt %}has-error{% endif %} {% endif %}">
+            <div class="form-group {% if patient_form.errors.date_birth_txt %}has-error{% endif %}">
                 <label for="date_birth_txt" class="control-label">Data de nascimento</label>
                 <div class="input-group input-group-sm">
                     <span class="input-group-addon"> <span class="glyphicon glyphicon-th"></span></span>
@@ -498,7 +498,7 @@
 <div class="row">
     <div class="col-xs-6 col-sm-12">
         <div class="form-group">
-            <label for="skin_color">Cor da pele - IBGE</label>
+            <label for="skin_color">Cor da pele-IBGE</label>
             <div class="input-group  input-group-sm">
                 {{ social_demographic_form.flesh_tone_opt }}
             </div>
