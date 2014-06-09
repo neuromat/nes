@@ -154,14 +154,14 @@ def patients(request):
 def patient(request, patient_id):
 
     # Search in models.Patient
-    p = Patient.objects.get(nr_record=patient_id)
+    p = Patient.objects.get(number_record=patient_id)
     patient_form = PatientForm(instance=p)
-    if p.date_birth_txt:
-        dt_birth_formatted = "{0}/{1}/{2}".format(str(p.date_birth_txt.day),
-                                                  str(p.date_birth_txt.month),
-                                                  str(p.date_birth_txt.year))
-    else:
-        dt_birth_formatted = None
+    # if p.date_birth_txt:
+    #     dt_birth_formatted = "{0}/{1}/{2}".format(str(p.date_birth_txt.day),
+    #                                               str(p.date_birth_txt.month),
+    #                                               str(p.date_birth_txt.year))
+    # else:
+    #     dt_birth_formatted = None
 
     ## Search in models.SocialDemographicData
     ## --------------------------------------
@@ -182,9 +182,9 @@ def patient(request, patient_id):
     social_history_form = SocialHistoryDataForm(instance=p_social_hist)
 
     context = {'patient_form': patient_form, 'social_demographic_form': social_demographic_form,
-               'social_history_form': social_history_form,
-               'date_birth_txt': dt_birth_formatted,
-               }
+               'social_history_form': social_history_form}
+               # 'date_birth_txt': dt_birth_formatted,
+               # }
     return render(request, 'quiz/register.html', context)
 
 

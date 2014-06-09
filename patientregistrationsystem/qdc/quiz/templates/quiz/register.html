@@ -227,7 +227,7 @@
 
 <div class="row">
     <div class="col-md-12">
-        <div class="form-group {% if patient_form.errors.name_txt %}has-error{% endif %}">
+        <div class="form-group {% if patient_form.errors %} {% if patient_form.errors.name_txt %}has-error{% endif %} {% endif %}">
             <label for="full_name" class="control-label">Nome Completo <b style="color: red;">*</b></label>
             <div class="input-group input-group-sm">
                 <span class="input-group-addon"> <span class="glyphicon glyphicon-user"></span></span>
@@ -239,7 +239,7 @@
 </div>
 <div class="row">
     <div class="col-xs-6 col-sm-6">
-        <div class="form-group {% if patient_form.errors.cpf_id %}has-error{% endif %}">
+        <div class="form-group {% if patient_form.errors %} {% if patient_form.errors.cpf_id %}has-error{% endif %} {% endif %}">
             <label for="cpf_id" class="control-label">CPF</label>
             <div class="input-group input-group-sm">
                 <span class="input-group-addon"> <span class="glyphicon glyphicon-asterisk"></span></span>
@@ -390,19 +390,20 @@
 <div class="container span6 offset3 well ">
     <div class="row">
         <div class="col-xs-6 col-sm-6">
-            <div class="form-group {% if patient_form.errors.dt_birth_txt %}has-error{% endif %}">
-                <label for="dt_birth_txt" class="control-label">Data de nascimento</label>
+            <div class="form-group {% if patient_form.errors %} {% if patient_form.errors.date_birth_txt %}has-error{% endif %} {% endif %}">
+                <label for="date_birth_txt" class="control-label">Data de nascimento</label>
                 <div class="input-group input-group-sm">
                     <span class="input-group-addon"> <span class="glyphicon glyphicon-th"></span></span>
                     {# Mudar input para modo padrão: precisa corrigir retorno da data em views.py #}
-                    <input class="form-control" name="dt_birth_txt" placeholder="dia/mês/ano" id="birthday" type="text"
-                           value="{{ dt_birth_txt }}" {% if dt_birth_txt %}disabled{% endif %}>
+{#                    <input class="form-control" name="date_birth_txt" placeholder="dia/mês/ano" id="birthday" type="text"#}
+{#                           value="{{ date_birth_txt }}" {% if date_birth_txt %}disabled{% endif %}>#}
+                    {{ patient_form.date_birth_txt }}
                 </div>
 
                 <div class="help-block with-errors">
-                    {% if patient_form.dt_birth_txt.errors %}
+                    {% if patient_form.date_birth_txt.errors %}
                         <span>
-                            {% for error in patient_form.dt_birth_txt.errors %}{{ error }}{% endfor %}
+                            {% for error in patient_form.date_birth_txt.errors %}{{ error }}{% endfor %}
                         </span>
                     {% endif %}
                 </div>
@@ -475,7 +476,7 @@
         <div class="form-group">
             <label>Recebe algum benefício de escala municipal, estadual ou federal de governo?</label>
             <div class="input-group  input-group-sm">
-                {% for radio in social_demographic_form.benefit_gov_bool %}
+                {% for radio in social_demographic_form.benefit_government_bool %}
                 <div class="radio-inline">
                     {{ radio }}
                 </div>
@@ -1478,7 +1479,7 @@
                     </div>
                     <div class="col-xs-6 col-sm-9">
                         <div class="form-group">
-                            <label>Data:</label>
+                            <label for="dateOfComplementaryExame" class="control-label">Data:</label>
 
                             <div class="input-group input-group-sm ">
                                 <span class="input-group-addon"> <span class="glyphicon glyphicon-edit"></span></span>
@@ -1579,7 +1580,7 @@
  </script>-->
 <script>
 $(document).ready(function(){
-    $("#birthday").mask("99/99/9999");
+    $("#birthdayold").mask("99/99/9999");
 
 });
 
