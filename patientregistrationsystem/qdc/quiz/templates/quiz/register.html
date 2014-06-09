@@ -1805,7 +1805,8 @@ $("#savetab").on('click', function() {
     var cpf_value  = $.trim($("#cpf_id").val());
 
     if(name_value.length==0) {
-        showErrorMessage("Nome deve ser preenchido.");
+        showErrorMessageTemporary("Nome deve ser preenchido.");
+        jumpToElement('full_name');
         document.getElementById('full_name').focus();
     } else {
         if(cpf_value.length==0) {
