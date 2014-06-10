@@ -394,15 +394,12 @@
                 <label for="dt_birth_txt" class="control-label">Data de nascimento</label>
                 <div class="input-group input-group-sm">
                     <span class="input-group-addon"> <span class="glyphicon glyphicon-th"></span></span>
-                    {# Mudar input para modo padrão: precisa corrigir retorno da data em views.py #}
-                    <input class="form-control" name="dt_birth_txt" placeholder="dia/mês/ano" id="birthday" type="text"
-                           value="{{ date_birth_txt }}" {% if date_birth_txt %}disabled{% endif %}>
+                    {{ patient_form.date_birth_txt }}
                 </div>
-
                 <div class="help-block with-errors">
-                    {% if patient_form.dt_birth_txt.errors %}
+                    {% if patient_form.date_birth_txt.errors %}
                         <span>
-                            {% for error in patient_form.dt_birth_txt.errors %}{{ error }}{% endfor %}
+                            {% for error in patient_form.date_birth_txt.errors %}{{ error }}{% endfor %}
                         </span>
                     {% endif %}
                 </div>
@@ -1496,7 +1493,7 @@
 
 </div> <!-- <div class="tab-content"> -->
 
-<div class="modal fade" id="myModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+<div class="modal fade" id="myModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" ar  ia-hidden="true">
     <div class="modal-dialog">
         <div class="modal-content">
             <div class="modal-body">
