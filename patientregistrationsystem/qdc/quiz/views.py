@@ -172,9 +172,7 @@ def patient(request, patient_id):
         p_social_hist = SocialHistoryData.objects.get(id_patient_id=patient_id)
         social_history_form = SocialHistoryDataForm(instance=p_social_hist)
     except SocialHistoryData.DoesNotExist:
-        social_demographic_form = SocialDemographicDataForm()
-
-
+        social_history_form = SocialDemographicDataForm()
 
     context = {'patient_form': patient_form, 'social_demographic_form': social_demographic_form,
                'social_history_form': social_history_form,

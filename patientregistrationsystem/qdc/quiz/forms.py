@@ -42,18 +42,18 @@ class PatientForm(ModelForm):
                                                  'id': "cellphone"}),
             'email_txt': TextInput(attrs={'class': 'form-control', 'placeholder': 'Entrar e-mail', 'id': "email",
                                           'type': 'email', 'data-error': "E-mail inválido",
-                                          'pattern': '^[_A-Za-z0-9-\+]+(\.[_A-Za-z0-9-]+)*@[A-Za-z0-9-]+(\.[A-Za-z0-9]+)*(\.[A-Za-z]{2,})$'
-            }),
+                                          'pattern': '^[_A-Za-z0-9-\+]+(\.[_A-Za-z0-9-]+)*@[A-Za-z0-9-]+(\.[A-Za-z0-9]\
+                                          +)*(\.[A-Za-z]{2,})$'}),
             'medical_record_number': TextInput(attrs={'class': 'form-control',
                                                       'placeholder': 'Entrar número do prontuário',
                                                       'id': "records_number"}),
             'citizenship_txt': SelectBoxCountries(attrs={'id': 'id_chosen_country', 'data-flags': 'true'}),
             'country_txt': SelectBoxCountries(attrs={'id': 'id_country_state_address', 'data-flags': 'true'}),
             'state_txt': SelectBoxState(attrs={'data-country': 'id_country_state_address', 'id': 'id_chosen_state'}),
-            'date_birth_txt': DateInput(attrs={'class': 'form-control', 'placeholder': 'dia/mês/ano', 'id': 'birthday',
-                                               'input_formats': '%d/%m/%Y'}),
             'gender_opt': Select(attrs={'class': 'form-control', 'id': 'gender_id'}),
             'marital_status_opt': Select(attrs={'class': 'form-control', 'id': 'marital_status'}),
+            'date_birth_txt': DateInput(attrs={'class': 'form-control', 'placeholder': 'Data',
+                                               'id': "birthday", 'type': "date"}, format='%Y-%m-%d')
         }
         error_messages = {
             'name_txt': {
