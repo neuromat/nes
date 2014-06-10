@@ -153,35 +153,31 @@ def patients(request):
 @login_required
 def patient(request, patient_id):
 
-    # Search in models.Patient
+    ## Search in models.Patient
+    ## ------------------------
     p = Patient.objects.get(number_record=patient_id)
     patient_form = PatientForm(instance=p)
-    if p.date_birth_txt:
-        dt_birth_formatted = p.date_birth_txt.strftime("%d/%m/%Y")
-    else:
-        dt_birth_formatted = None
 
     ## Search in models.SocialDemographicData
     ## --------------------------------------
     try:
         p_social_demo = SocialDemographicData.objects.get(id_patient_id=patient_id)
+        social_demographic_form = SocialDemographicDataForm(instance=p_social_demo)
     except SocialDemographicData.DoesNotExist:
-        p_social_demo = None
-
-    social_demographic_form = SocialDemographicDataForm(instance=p_social_demo)
+        social_demographic_form = SocialDemographicDataForm()
 
     ## Search in models.SocialHistoryData
     ## --------------------------------------
     try:
         p_social_hist = SocialHistoryData.objects.get(id_patient_id=patient_id)
+        social_history_form = SocialHistoryDataForm(instance=p_social_hist)
     except SocialHistoryData.DoesNotExist:
-        p_social_hist = None
+        social_demographic_form = SocialDemographicDataForm()
 
-    social_history_form = SocialHistoryDataForm(instance=p_social_hist)
+
 
     context = {'patient_form': patient_form, 'social_demographic_form': social_demographic_form,
                'social_history_form': social_history_form,
-               'date_birth_txt': dt_birth_formatted,
                }
     return render(request, 'quiz/register.html', context)
 
