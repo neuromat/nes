@@ -96,8 +96,8 @@ class Patient(models.Model):
     phone_number = models.CharField(max_length=15, null=True, blank=True)
     cellphone_number = models.CharField(max_length=15, null=True, blank=True)
     email_txt = models.EmailField(null=True, blank=True)
-    date_birth_txt = models.DateField(null=True, blank=True)
-    gender_opt = models.ForeignKey(GenderOption, null=True, blank=True)
+    date_birth_txt = models.DateField(null=False, blank=True)
+    gender_opt = models.ForeignKey(GenderOption, null=False, blank=True)
     marital_status_opt = models.ForeignKey(MaritalStatusOption, null=True, blank=True)
 
     class Meta:

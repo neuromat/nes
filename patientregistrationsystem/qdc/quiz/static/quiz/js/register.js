@@ -197,13 +197,17 @@ $(document).ready(function(){
     $("#zipcode").mask("99999-999");
 });
 
+$(document).ready(function () {
+    $("#phone").mask("(99) 9999-9999");
+});
+
 $(document).ready(function(){
     $("#id_chosen_state").on("change.bfhselectbox",function(){
         var state = $(this).val();
         if(state == "SP")
-            $("#phone").mask("(99) 99999-9999");
+            $("#cellphone").mask("(99) 99999-9999");
         else
-            $("#phone").mask("(99) 9999-9999");
+            $("#cellphone").mask("(99) 9999-9999");
     });
 });
 
@@ -227,8 +231,10 @@ $(document).ready(function(){
         var cpf_value = $.trim($("#cpf_id").val());
 
         if (name_value.length == 0) {
-            showErrorMessageTemporary("Nome deve ser preenchido.");
+            showErrorMessageTemporary("Campos obrigatórios devem ser preenchidos.");
             jumpToElement('full_name');
+            document.getElementById('birthday').focus();
+            document.getElementById('gender_id').focus();
             document.getElementById('full_name').focus();
         } else {
             if (cpf_value.length == 0) {
