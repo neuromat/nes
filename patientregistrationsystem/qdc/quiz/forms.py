@@ -1,5 +1,5 @@
 # coding=utf-8
-# from django.utils.six import attr
+#from django.utils.six import attr
 from django.forms import ModelForm, TextInput, DateInput
 from models import Patient, SocialDemographicData, SocialHistoryData
 from django.db import models
@@ -7,7 +7,14 @@ from quiz_widget import SelectBoxCountries, SelectBoxState
 from django.forms.widgets import Select, RadioSelect
 
 
-# Create the form class.
+# Método usado em todas as classes forms
+def make_instance(a, b, c):
+    instance = getattr(a, b, c)
+    if instance and instance.pk:
+        for field in a.fields:
+            a.fields[field].widget.attrs['disabled'] = True
+
+
 class PatientForm(ModelForm):
     class Meta:
         model = Patient
@@ -32,21 +39,25 @@ class PatientForm(ModelForm):
                        'data-error': "CEP inválido", 'pattern': '\d{5}-?\d{3}'}),
             'city_txt': TextInput(attrs={'class': 'form-control', 'placeholder': 'Entrar cidade', 'id': "city"}),
             'phone_number': TextInput(attrs={'class': 'form-control', 'placeholder': 'Entrar telefone para contato',
-                                             'id': "phone"} ),
+                                             'id': "phone"}),
             'cellphone_number': TextInput(attrs={'class': 'form-control', 'placeholder': 'Entrar celular',
                                                  'id': "cellphone"}),
             'email_txt': TextInput(attrs={'class': 'form-control', 'placeholder': 'Entrar e-mail', 'id': "email",
                                           'type': 'email', 'data-error': "E-mail inválido",
                                           'pattern': '^[_A-Za-z0-9-\+]+(\.[_A-Za-z0-9-]+)*@[A-Za-z0-9-]+(\.[A-Za-z0-9]+)*(\.[A-Za-z]{2,})$'
-            }),
+                                }),
             'medical_record_number': TextInput(attrs={'class': 'form-control',
                                                       'placeholder': 'Entrar número do prontuário',
                                                       'id': "records_number"}),
             'citizenship_txt': SelectBoxCountries(attrs={'id': 'id_chosen_country', 'data-flags': 'true'}),
             'country_txt': SelectBoxCountries(attrs={'id': 'id_country_state_address', 'data-flags': 'true'}),
             'state_txt': SelectBoxState(attrs={'data-country': 'id_country_state_address', 'id': 'id_chosen_state'}),
-            'gender_opt': Select(attrs={'class': 'form-control', 'id': 'gender_id'}),
+            'gender_opt': Select(attrs={'class': 'form-control', 'id': 'gender_id', 'required': "",
+                                         'data-error': "Sexo deve ser preenchido"}),
             'marital_status_opt': Select(attrs={'class': 'form-control', 'id': 'marital_status'}),
+            'date_birth_txt': DateInput(attrs={'class': 'form-control', 'placeholder': 'Data',
+                                               'id': "birthday", 'type': "date", 'required': "",
+                                         'data-error': "Data de nascimento deve ser preenchida"}, format='%Y-%m-%d')
         }
         error_messages = {
             'name_txt': {
@@ -54,13 +65,10 @@ class PatientForm(ModelForm):
             }
         }
 
-    # Traz os campos em modo readonly ao retornar a busca.
+    # Traz os campos em modo disabled ao retornar a busca.
     def __init__(self, *args, **kwargs):
         super(PatientForm, self).__init__(*args, **kwargs)
-        instance = getattr(self, 'instance', None)
-        if instance and instance.pk:
-            for field in self.fields:
-                self.fields[field].widget.attrs['readonly'] = True
+        make_instance(self, 'instance', None)
 
 
 class SocialDemographicDataForm(ModelForm):
@@ -100,13 +108,10 @@ class SocialDemographicDataForm(ModelForm):
                                        choices=((0, '0'), (1, '1'), (2, '2'), (3, '3'), (4, '4 ou +'))),
         }
 
-    # Traz os campos em modo readonly ao retornar a busca.
+    # Traz os campos em modo disabled ao retornar a busca.
     def __init__(self, *args, **kwargs):
         super(SocialDemographicDataForm, self).__init__(*args, **kwargs)
-        instance = getattr(self, 'instance', None)
-        if instance and instance.pk:
-            for field in self.fields:
-                self.fields[field].widget.attrs['readonly'] = True
+        make_instance(self, 'instance', None)
 
 
 class SocialHistoryDataForm(ModelForm):
@@ -126,10 +131,7 @@ class SocialHistoryDataForm(ModelForm):
                                      choices=(('ja_fez', 'Já fez'), ('faz', 'Faz'), ('nunca_fez', 'Nunca fez'))),
         }
 
-    # Traz os campos em modo readonly ao retornar a busca.
+    # Traz os campos em modo disabled ao retornar a busca.
     def __init__(self, *args, **kwargs):
         super(SocialHistoryDataForm, self).__init__(*args, **kwargs)
-        instance = getattr(self, 'instance', None)
-        if instance and instance.pk:
-            for field in self.fields:
-                self.fields[field].widget.attrs['readonly'] = True
+        make_instance(self, 'instance', None)
