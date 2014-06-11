@@ -28,16 +28,18 @@
     <script src="{% static 'quiz/Bootstrap-Validator-Master/dist/validator.min.js' %}" type="text/javascript"></script>
 
     <script src="{% static 'quiz/js/quiz.js' %}"></script>
+    <script src="{% static 'quiz/js/register.js' %}"></script>
 
     <style>
         div.alert-overflow {
-			display: none; /* O alerta deve iniciar oculto */
-			overflow: hidden;
-			position: fixed;
-			z-index: 999999;
+            display: none; /* O alerta deve iniciar oculto */
+            overflow: hidden;
+            position: fixed;
+            z-index: 999999;
         }
+
         div.top-buffer {
-            margin-top:20px;
+            margin-top: 20px;
         }
     </style>
 </head>
@@ -59,13 +61,15 @@
         </div>
         <div class="collapse navbar-collapse navbar-ex1-collapse">
             <ol class="nav navbar-nav navbar-right">
-                <li><a> User: {% if user.first_name %} {{ user.first_name }} {% else %} {{ user.username }} {% endif %}</a></li>
+                <li><a> User: {% if user.first_name %} {{ user.first_name }} {% else %}
+                    {{ user.username }} {% endif %}</a></li>
                 <li><a href="/logout">Sair</a></li>
             </ol>
         </div>
     </nav>
     <div id="fix-for-navbar-fixed-top-spacing" style="height: 62px;">&nbsp;</div>
-</div> <!-- Cabeçalho da página -->
+</div>
+<!-- Cabeçalho da página -->
 
 <!-- Major container
   -- ---------------
@@ -137,7 +141,8 @@
         {% endif %}
 
     </ul>
-</div> <!-- Esta div define o Menu principal -->
+</div>
+<!-- Esta div define o Menu principal -->
 
 <!-- Esta div abrange a maior parte do documento,
   -- Ela define as sub-páginas associadas a
@@ -157,7 +162,7 @@
 <!-- Esta ul define os títulos das abas contextuais -->
 <ul class="nav nav-tabs nav-justified" id="idTabs">
     <li class="active"><a href="#tab1" data-toggle="tab">Dados Pessoais</a></li>
-    <li><a href="#tab2" data-toggle="tab">Dados Sociodemográficos</a> </li>
+    <li><a href="#tab2" data-toggle="tab">Dados Sociodemográficos</a></li>
     <li><a href="#tab3" data-toggle="tab">História Social</a></li>
     <li><a href="#tab4" data-toggle="tab">Doenças Pregressas</a></li>
     <li><a href="#tab5" data-toggle="tab">Doenças Atuais</a></li>
@@ -229,6 +234,7 @@
     <div class="col-md-12">
         <div class="form-group {% if patient_form.errors.name_txt %}has-error{% endif %}">
             <label for="full_name" class="control-label">Nome Completo <b style="color: red;">*</b></label>
+
             <div class="input-group input-group-sm">
                 <span class="input-group-addon"> <span class="glyphicon glyphicon-user"></span></span>
                 {{ patient_form.name_txt }}
@@ -241,6 +247,7 @@
     <div class="col-xs-6 col-sm-6">
         <div class="form-group {% if patient_form.errors.cpf_id %}has-error{% endif %}">
             <label for="cpf_id" class="control-label">CPF</label>
+
             <div class="input-group input-group-sm">
                 <span class="input-group-addon"> <span class="glyphicon glyphicon-asterisk"></span></span>
                 {{ patient_form.cpf_id }}
@@ -275,6 +282,7 @@
     <div class="col-xs-6 col-sm-6">
         <div class="form-group">
             <label>Naturalidade</label>
+
             <div class="input-group input-group-sm">
                 <span class="input-group-addon"> <span class="glyphicon glyphicon-flag"></span></span>
                 {{ patient_form.natural_of_txt }}
@@ -284,6 +292,7 @@
     <div class="col-xs-6 col-sm-6">
         <div class="form-group">
             <label>Nacionalidade</label>
+
             <div class="input-group input-group-sm">
                 <span class="input-group-addon"> <span class="glyphicon glyphicon-flag"></span></span>
                 {{ patient_form.citizenship_txt }}
@@ -295,6 +304,7 @@
     <div class="col-xs-6 col-sm-6">
         <div class="form-group">
             <label>Endereço</label>
+
             <div class="input-group  input-group-sm ">
                 <span class="input-group-addon"> <span class="glyphicon glyphicon-home"></span></span>
                 {{ patient_form.street_txt }}
@@ -304,10 +314,12 @@
     <div class="col-xs-6 col-sm-6">
         <div class="form-group">
             <label>CEP</label>
+
             <div class="input-group  input-group-sm">
                 <span class="input-group-addon"> <span class="glyphicon glyphicon-home"></span></span>
                 {{ patient_form.zipcode_number }}
             </div>
+            <div class="help-block with-errors"></div>
         </div>
     </div>
 </div>
@@ -315,6 +327,7 @@
     <div class="col-xs-6 col-sm-6">
         <div class="form-group">
             <label>País</label>
+
             <div class="input-group  input-group-sm">
                 <span class="input-group-addon"> <span class="glyphicon glyphicon-home"></span></span>
                 {{ patient_form.country_txt }}
@@ -324,6 +337,7 @@
     <div class="col-xs-6 col-sm-6">
         <div class="form-group">
             <label>Estado</label>
+
             <div class="input-group  input-group-sm">
                 <span class="input-group-addon"> <span class="glyphicon glyphicon-home"></span></span>
                 {{ patient_form.state_txt }}
@@ -335,6 +349,7 @@
     <div class="col-xs-6 col-sm-6">
         <div class="form-group">
             <label>Cidade</label>
+
             <div class="input-group  input-group-sm ">
                 <span class="input-group-addon"> <span class="glyphicon glyphicon-home"></span></span>
                 {{ patient_form.city_txt }}
@@ -344,10 +359,12 @@
     <div class="col-xs-6 col-sm-6">
         <div class="form-group">
             <label>Telefone fixo</label>
+
             <div class="input-group  input-group-sm">
                 <span class="input-group-addon"> <span class="glyphicon glyphicon-earphone"></span></span>
                 {{ patient_form.phone_number }}
             </div>
+            <div class="help-block with-errors"></div>
         </div>
     </div>
 </div>
@@ -355,6 +372,7 @@
     <div class="col-xs-6 col-sm-6">
         <div class="form-group">
             <label>Telefone celular</label>
+
             <div class="input-group input-group-sm">
                 <span class="input-group-addon"> <span class="glyphicon glyphicon-earphone"></span></span>
                 {{ patient_form.cellphone_number }}
@@ -364,6 +382,7 @@
     <div class="col-xs-6 col-sm-6">
         <div class="form-group">
             <label for="email" class="control-label">E-mail</label>
+
             <div class="input-group input-group-sm">
                 <span class="input-group-addon"> <span class="glyphicon glyphicon-envelope"></span></span>
                 {{ patient_form.email_txt }}
@@ -376,6 +395,7 @@
     <div class="col-xs-6 col-sm-6">
         <div class="form-group">
             <label>Número do prontuário</label>
+
             <div class="input-group input-group-sm">
                 <span class="input-group-addon"> <span class="glyphicon glyphicon-list-alt"></span></span>
                 {{ patient_form.medical_record_number }}
@@ -392,6 +412,7 @@
         <div class="col-xs-6 col-sm-6">
             <div class="form-group {% if patient_form.errors.dt_birth_txt %}has-error{% endif %}">
                 <label for="dt_birth_txt" class="control-label">Data de nascimento</label>
+
                 <div class="input-group input-group-sm">
                     <span class="input-group-addon"> <span class="glyphicon glyphicon-th"></span></span>
                     {# Mudar input para modo padrão: precisa corrigir retorno da data em views.py #}
@@ -412,6 +433,7 @@
         <div class="col-xs-6 col-sm-6">
             <div class="form-group">
                 <label>Sexo</label>
+
                 <div class="input-group input-group-sm">
                     {{ patient_form.gender_opt }}
                 </div>
@@ -422,6 +444,7 @@
         <div class="col-xs-6 col-sm-6">
             <div class="form-group">
                 <label>Estado civil</label>
+
                 <div class="input-group  input-group-sm">
                     {{ patient_form.marital_status_opt }}
                 </div>
@@ -432,195 +455,214 @@
 </div>
 </div>
 </div>
-</div> <!-- <div class="tab-pane active" id="tab1"> -->
+</div>
+<!-- <div class="tab-pane active" id="tab1"> -->
 
 <!-- Esta div define a segunda aba do formulário, #tab2 -->
 <div class="tab-pane" id="tab2">
-<div class="row">
-<div class="col-md-1"></div>
-<div class="col-md-10">
-<div class="container span6 offset3 well ">
-<div class="row">
-    <div class="col-xs-6 col-sm-6">
-        <div class="form-group">
-            <label>Religião - IBGE</label>
-            <div class="input-group  input-group-sm">
-                {{ social_demographic_form.religion_opt }}
-            </div>
-        </div>
-    </div>
-</div>
-<div class="row">
-    <div class="col-xs-6 col-sm-6">
-        <div class="form-group">
-            <label>Profissão</label>
-            <div class="input-group  input-group-sm ">
-                <span class="input-group-addon"> <span class="glyphicon"></span></span>
-                {{ social_demographic_form.profession_txt }}
-            </div>
-        </div>
-    </div>
-    <div class="col-xs-6 col-sm-6">
-        <div class="form-group">
-            <label for="occupation">Ocupação</label>
-            <div class="input-group  input-group-sm">
-                <span class="input-group-addon"> <span class="glyphicon"></span></span>
-                {{ social_demographic_form.occupation_txt }}
-            </div>
-        </div>
-    </div>
-</div>
-<div class="row">
-    <div class="col-xs-6 col-sm-12">
-        <div class="form-group">
-            <label>Recebe algum benefício de escala municipal, estadual ou federal de governo?</label>
-            <div class="input-group  input-group-sm">
-                {% for radio in social_demographic_form.benefit_gov_bool %}
-                <div class="radio-inline">
-                    {{ radio }}
+    <div class="row">
+        <div class="col-md-1"></div>
+        <div class="col-md-10">
+            <div class="container span6 offset3 well ">
+                <div class="row">
+                    <div class="col-xs-6 col-sm-6">
+                        <div class="form-group">
+                            <label>Religião - IBGE</label>
+
+                            <div class="input-group  input-group-sm">
+                                {{ social_demographic_form.religion_opt }}
+                            </div>
+                        </div>
+                    </div>
                 </div>
-                {% endfor %}
+                <div class="row">
+                    <div class="col-xs-6 col-sm-6">
+                        <div class="form-group">
+                            <label>Profissão</label>
+
+                            <div class="input-group  input-group-sm ">
+                                <span class="input-group-addon"> <span class="glyphicon"></span></span>
+                                {{ social_demographic_form.profession_txt }}
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-xs-6 col-sm-6">
+                        <div class="form-group">
+                            <label for="occupation">Ocupação</label>
+
+                            <div class="input-group  input-group-sm">
+                                <span class="input-group-addon"> <span class="glyphicon"></span></span>
+                                {{ social_demographic_form.occupation_txt }}
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-xs-6 col-sm-12">
+                        <div class="form-group">
+                            <label>Recebe algum benefício de escala municipal, estadual ou federal de governo?</label>
+
+                            <div class="input-group  input-group-sm">
+                                {% for radio in social_demographic_form.benefit_gov_bool %}
+                                    <div class="radio-inline">
+                                        {{ radio }}
+                                    </div>
+                                {% endfor %}
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-xs-6 col-sm-12">
+                        <div class="form-group">
+                            <label>Qual a forma de pagamento do tratamento realizado?</label>
+
+                            <div class="input-group  input-group-sm">
+                                {{ social_demographic_form.payment_opt }}
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-xs-6 col-sm-12">
+                        <div class="form-group">
+                            <label for="skin_color">Cor da pele-IBGE</label>
+
+                            <div class="input-group  input-group-sm">
+                                {{ social_demographic_form.flesh_tone_opt }}
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-xs-6 col-sm-12">
+                        <div class="form-group">
+                            <label>Grau de instrução do chefe de família - Critério Brasil 2013</label>
+
+                            <div class="input-group input-group-sm">
+                                {{ social_demographic_form.schooling_opt }}
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-xs-6 col-sm-12">
+                        <div class="form-group">
+                            <label>Quantidade de itens de conforto familiar - Critério Brasil 2013</label>
+
+                            <div class="form-group">
+                                <label class="col-sm-5 control-label">Televisores em cores</label>
+
+                                <div class="col-sm-7">
+                                    {% for radio in social_demographic_form.tv_opt %}
+                                        <div class="radio-inline">
+                                            {{ radio }}
+                                        </div>
+                                    {% endfor %}
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <label class="col-sm-5 control-label">Videocassete/DVD</label>
+
+                                <div class="col-sm-7">
+                                    {% for radio in social_demographic_form.dvd_opt %}
+                                        <div class="radio-inline">
+                                            {{ radio }}
+                                        </div>
+                                    {% endfor %}
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <label class="col-sm-5 control-label">Rádios</label>
+
+                                <div class="col-sm-7">
+                                    {% for radio in social_demographic_form.radio_opt %}
+                                        <div class="radio-inline">
+                                            {{ radio }}
+                                        </div>
+                                    {% endfor %}
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <label class="col-sm-5 control-label">Banheiros</label>
+
+                                <div class="col-sm-7">
+                                    {% for radio in social_demographic_form.bath_opt %}
+                                        <div class="radio-inline">
+                                            {{ radio }}
+                                        </div>
+                                    {% endfor %}
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <label class="col-sm-5 control-label">Automóveis</label>
+
+                                <div class="col-sm-7">
+                                    {% for radio in social_demographic_form.automobile_opt %}
+                                        <div class="radio-inline">
+                                            {{ radio }}
+                                        </div>
+                                    {% endfor %}
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <label class="col-sm-5 control-label">Empregadas mensalistas</label>
+
+                                <div class="col-sm-7">
+                                    {% for radio in social_demographic_form.house_maid_opt %}
+                                        <div class="radio-inline">
+                                            {{ radio }}
+                                        </div>
+                                    {% endfor %}
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <label class="col-sm-5 control-label">Máquinas de lavar</label>
+
+                                <div class="col-sm-7">
+                                    {% for radio in social_demographic_form.wash_machine_opt %}
+                                        <div class="radio-inline">
+                                            {{ radio }}
+                                        </div>
+                                    {% endfor %}
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <label class="col-sm-5 control-label">Geladeiras</label>
+
+                                <div class="col-sm-7">
+                                    {% for radio in social_demographic_form.refrigerator_opt %}
+                                        <div class="radio-inline">
+                                            {{ radio }}
+                                        </div>
+                                    {% endfor %}
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <label class="col-sm-5 control-label">Freezer*</label>
+
+                                <div class="col-sm-7">
+                                    {% for radio in social_demographic_form.freezer_opt %}
+                                        <div class="radio-inline">
+                                            {{ radio }}
+                                        </div>
+                                    {% endfor %}
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-sm-12">
+                        <h6>*Aparelho independente ou parte da geladeira duplex.</h6>
+                    </div>
+                </div>
+                <div class="col-md-1"></div>
             </div>
         </div>
     </div>
 </div>
-<div class="row">
-    <div class="col-xs-6 col-sm-12">
-        <div class="form-group">
-            <label>Qual a forma de pagamento do tratamento realizado?</label>
-            <div class="input-group  input-group-sm">
-                {{ social_demographic_form.payment_opt }}
-            </div>
-        </div>
-    </div>
-</div>
-<div class="row">
-    <div class="col-xs-6 col-sm-12">
-        <div class="form-group">
-            <label for="skin_color">Cor da pele-IBGE</label>
-            <div class="input-group  input-group-sm">
-                {{ social_demographic_form.flesh_tone_opt }}
-            </div>
-        </div>
-    </div>
-</div>
-<div class="row">
-    <div class="col-xs-6 col-sm-12">
-        <div class="form-group">
-            <label>Grau de instrução do chefe de família - Critério Brasil 2013</label>
-            <div class="input-group input-group-sm">
-                {{ social_demographic_form.schooling_opt }}
-            </div>
-        </div>
-    </div>
-</div>
-<div class="row">
-<div class="col-xs-6 col-sm-12">
-<div class="form-group">
-<label>Quantidade de itens de conforto familiar - Critério Brasil 2013</label>
-<div class="form-group">
-    <label class="col-sm-5 control-label">Televisores em cores</label>
-    <div class="col-sm-7">
-        {% for radio in social_demographic_form.tv_opt %}
-        <div class="radio-inline">
-            {{ radio }}
-        </div>
-        {% endfor %}
-    </div>
-</div>
-<div class="form-group">
-    <label class="col-sm-5 control-label">Videocassete/DVD</label>
-    <div class="col-sm-7">
-        {% for radio in social_demographic_form.dvd_opt %}
-        <div class="radio-inline">
-            {{ radio }}
-        </div>
-        {% endfor %}
-    </div>
-</div>
-<div class="form-group">
-    <label class="col-sm-5 control-label">Rádios</label>
-    <div class="col-sm-7">
-        {% for radio in social_demographic_form.radio_opt %}
-        <div class="radio-inline">
-            {{ radio }}
-        </div>
-        {% endfor %}
-    </div>
-</div>
-<div class="form-group">
-    <label class="col-sm-5 control-label">Banheiros</label>
-    <div class="col-sm-7">
-        {% for radio in social_demographic_form.bath_opt %}
-        <div class="radio-inline">
-            {{ radio }}
-        </div>
-        {% endfor %}
-    </div>
-</div>
-<div class="form-group">
-    <label class="col-sm-5 control-label">Automóveis</label>
-    <div class="col-sm-7">
-        {% for radio in social_demographic_form.automobile_opt %}
-        <div class="radio-inline">
-            {{ radio }}
-        </div>
-        {% endfor %}
-     </div>
-</div>
-<div class="form-group">
-    <label class="col-sm-5 control-label">Empregadas mensalistas</label>
-    <div class="col-sm-7">
-        {% for radio in social_demographic_form.house_maid_opt %}
-        <div class="radio-inline">
-            {{ radio }}
-        </div>
-        {% endfor %}
-    </div>
-</div>
-<div class="form-group">
-    <label class="col-sm-5 control-label">Máquinas de lavar</label>
-    <div class="col-sm-7">
-        {% for radio in social_demographic_form.wash_machine_opt %}
-        <div class="radio-inline">
-            {{ radio }}
-        </div>
-        {% endfor %}
-    </div>
-</div>
-<div class="form-group">
-    <label class="col-sm-5 control-label">Geladeiras</label>
-    <div class="col-sm-7">
-        {% for radio in social_demographic_form.refrigerator_opt %}
-        <div class="radio-inline">
-            {{ radio }}
-        </div>
-        {% endfor %}
-    </div>
-</div>
-<div class="form-group">
-    <label class="col-sm-5 control-label">Freezer*</label>
-    <div class="col-sm-7">
-        {% for radio in social_demographic_form.freezer_opt %}
-        <div class="radio-inline">
-            {{ radio }}
-        </div>
-        {% endfor %}
-    </div>
-</div>
-</div>
-</div>
-</div>
-<div class="row">
-    <div class="col-sm-12">
-        <h6>*Aparelho independente ou parte da geladeira duplex.</h6>
-    </div>
-</div>
-<div class="col-md-1"></div>
-</div>
-</div>
-</div>
-</div> <!-- <div class="tab-pane" id="tab2"> -->
+<!-- <div class="tab-pane" id="tab2"> -->
 
 <!-- Esta div define a terceira aba do formulário, #tab3 -->
 <div class="tab-pane" id="tab3">
@@ -632,12 +674,13 @@
                     <div class="col-xs-6 col-sm-4">
                         <div class="form-group">
                             <label>Tabagismo</label>
+
                             <div class="input-group  input-group-sm">
                                 <div class="input-group  input-group-sm">
                                     {% for radio in social_history_form.smoker %}
-                                    <div class="radio-inline">
-                                        {{ radio }}
-                                    </div>
+                                        <div class="radio-inline">
+                                            {{ radio }}
+                                        </div>
                                     {% endfor %}
                                 </div>
                             </div>
@@ -646,6 +689,7 @@
                     <div class="col-xs-6 col-sm-4">
                         <div class="form-group">
                             <label>Cigarros/Dia</label>
+
                             <div class="input-group  input-group-sm">
                                 {{ social_history_form.amount_cigarettes_opt }}
                             </div>
@@ -654,12 +698,13 @@
                     <div class="col-xs-6 col-sm-4">
                         <div class="form-group">
                             <label>Ex-tabagista</label>
+
                             <div class="input-group  input-group-sm">
                                 <div class="input-group  input-group-sm">
                                     {% for radio in social_history_form.ex_smoker %}
-                                    <div class="radio-inline">
-                                        {{ radio }}
-                                    </div>
+                                        <div class="radio-inline">
+                                            {{ radio }}
+                                        </div>
                                     {% endfor %}
                                 </div>
                             </div>
@@ -670,11 +715,12 @@
                     <div class="col-xs-6 col-sm-4">
                         <div class="form-group">
                             <label>Etilismo</label>
+
                             <div class="input-group  input-group-sm">
                                 {% for radio in social_history_form.alcoholic %}
-                                <div class="radio-inline">
-                                    {{ radio }}
-                                </div>
+                                    <div class="radio-inline">
+                                        {{ radio }}
+                                    </div>
                                 {% endfor %}
                             </div>
                         </div>
@@ -682,6 +728,7 @@
                     <div class="col-xs-6 col-sm-4">
                         <div class="form-group">
                             <label>Frequência</label>
+
                             <div class="input-group  input-group-sm">
                                 {{ social_history_form.alcohol_frequency_opt }}
                             </div>
@@ -690,6 +737,7 @@
                     <div class="col-xs-6 col-sm-4">
                         <div class="form-group">
                             <label>Tempo</label>
+
                             <div class="input-group  input-group-sm">
                                 {{ social_history_form.alcohol_period_opt }}
                             </div>
@@ -700,11 +748,12 @@
                     <div class="col-xs-6 col-sm-12">
                         <div class="form-group">
                             <label>Uso de drogas ilícitas</label>
+
                             <div class="input-group  input-group-sm">
                                 {% for radio in social_history_form.drugs_opt %}
-                                <div class="radio-inline">
-                                    {{ radio }}
-                                </div>
+                                    <div class="radio-inline">
+                                        {{ radio }}
+                                    </div>
                                 {% endfor %}
                             </div>
                         </div>
@@ -714,7 +763,8 @@
             </div>
         </div>
     </div>
-</div> <!-- <div class="tab-pane" id="tab3"> -->
+</div>
+<!-- <div class="tab-pane" id="tab3"> -->
 
 <!-- Esta div define a quarta aba do formulário, #tab4 -->
 <div class="tab-pane" id="tab4">
@@ -1434,7 +1484,8 @@
 </div>
 </div>
 </div>
-</div> <!-- <div class="tab-pane" id="tab4"> -->
+</div>
+<!-- <div class="tab-pane" id="tab4"> -->
 
 <!-- Esta div define a quinta aba do formulário. #tab5 -->
 <div class="tab-pane" id="tab5">
@@ -1482,7 +1533,8 @@
 
                             <div class="input-group input-group-sm ">
                                 <span class="input-group-addon"> <span class="glyphicon glyphicon-edit"></span></span>
-                                <input class="form-control" placeholder="Data" id="dateOfComplementaryExame" type="date">
+                                <input class="form-control" placeholder="Data" id="dateOfComplementaryExame"
+                                       type="date">
                             </div>
                         </div>
                     </div>
@@ -1492,9 +1544,11 @@
         <div class="col-md-1"></div>
     </div>
 
-</div> <!-- <div class="tab-pane" id="tab5"> -->
+</div>
+<!-- <div class="tab-pane" id="tab5"> -->
 
-</div> <!-- <div class="tab-content"> -->
+</div>
+<!-- <div class="tab-content"> -->
 
 <div class="modal fade" id="myModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
     <div class="modal-dialog">
@@ -1527,7 +1581,8 @@
 
 </div>
 </div>
-</div> <!-- <div class="tab-pane fade in active" id="mainMenuAddTab"> -->
+</div>
+<!-- <div class="tab-pane fade in active" id="mainMenuAddTab"> -->
 
 <!-- Esta div está associada ao item Contato do Menu princial -->
 <div class="tab-pane fade" id="mainMenuContactTab">
@@ -1540,12 +1595,14 @@
         <!-- <h5>Av. Venceslau Brás, 95 - Botafogo - Campus da Praia Vermelha.</h5>-->
         <h5>Dúvidas e Sugestões: claudiadvargas at gmail dot com </h5>
     </div>
-</div> <!-- <div class="tab-pane fade" id="mainMenuContactTab"> -->
+</div>
+<!-- <div class="tab-pane fade" id="mainMenuContactTab"> -->
 
 <div class="col-md-1">
 </div>
 
-</div> <!-- <div id="myMenuContent" class="tab-content"> -->
+</div>
+<!-- <div id="myMenuContent" class="tab-content"> -->
 </form>
 </div>
 <!-- End Formulário -->
@@ -1566,7 +1623,8 @@
 </div>
 -->
 
-</div> <!-- Major container -->
+</div>
+<!-- Major container -->
 
 <!--[if lt IE 9]>
 
@@ -1578,206 +1636,208 @@
  $('.nav-tabs').tabdrop();
  </script>-->
 <script>
-$(document).ready(function(){
+$(document).ready(function () {
     $("#birthday").mask("99/99/9999");
 
 });
 
-$(document).ready(function(){
-    $("#verCerFractOptionsRadios1").click(function(){
+$(document).ready(function () {
+    $("#verCerFractOptionsRadios1").click(function () {
         $("#id_fieldSetClavFract").prop('disabled', false);
     });
 });
 
 //exame complementar
 
-$(document).ready(function(){
-    $("#complementaryExameOptionsRadios1").click(function(){
+$(document).ready(function () {
+    $("#complementaryExameOptionsRadios1").click(function () {
         $("#id_whichComplementaryExame").prop('disabled', false);
     });
 });
 
-$(document).ready(function(){
-    $("#complementaryExameOptionsRadios2").click(function(){
+$(document).ready(function () {
+    $("#complementaryExameOptionsRadios2").click(function () {
         $("#id_whichComplementaryExame").prop('disabled', true);
     });
 });
 
 //cirurgia de nervo
 
-$(document).ready(function(){
-    $("#nerveSurgOptionsRadios1").click(function(){
+$(document).ready(function () {
+    $("#nerveSurgOptionsRadios1").click(function () {
         $("#id_nerveSurgery").prop('disabled', false);
     });
 });
 
-$(document).ready(function(){
-    $("#nerveSurgOptionsRadios2").click(function(){
+$(document).ready(function () {
+    $("#nerveSurgOptionsRadios2").click(function () {
         $("#id_nerveSurgery").prop('disabled', true);
     });
 });
 
 //vertebral lombo sacral
 
-$(document).ready(function(){
-    $("#verLomSacOptionsRadios1").click(function(){
+$(document).ready(function () {
+    $("#verLomSacOptionsRadios1").click(function () {
         $("#id_fieldVerLomSac").prop('disabled', false);
     });
 });
 
-$(document).ready(function(){
-    $("#verLomSacOptionsRadios2").click(function(){
+$(document).ready(function () {
+    $("#verLomSacOptionsRadios2").click(function () {
         $("#id_fieldVerLomSac").prop('disabled', true);
     });
 });
 
 //vertebral lombo sacral relacionada
 
-$(document).ready(function(){
-    $("#verLomSacRelatedOptionsRadios1").click(function(){
+$(document).ready(function () {
+    $("#verLomSacRelatedOptionsRadios1").click(function () {
         $("#id_fieldVerLomSacRelated").prop('disabled', false);
     });
 });
 
-$(document).ready(function(){
-    $("#verLomSacRelatedOptionsRadios2").click(function(){
+$(document).ready(function () {
+    $("#verLomSacRelatedOptionsRadios2").click(function () {
         $("#id_fieldVerLomSacRelated").prop('disabled', true);
     });
 });
 
 //historia da fratura
-$(document).ready(function(){
-    $("#fractHistOptionsRadios1").click(function(){
+$(document).ready(function () {
+    $("#fractHistOptionsRadios1").click(function () {
         $("#id_fieldFractHistory").prop('disabled', false);
     });
 });
 
-$(document).ready(function(){
-    $("#fractHistOptionsRadios2").click(function(){
+$(document).ready(function () {
+    $("#fractHistOptionsRadios2").click(function () {
         $("#id_fieldFractHistory").prop('disabled', true);
     });
 });
 
 //historia da fratura relacionada
-$(document).ready(function(){
-    $("#relatedFractOptionsRadios1").click(function(){
+$(document).ready(function () {
+    $("#relatedFractOptionsRadios1").click(function () {
         $("#id_fieldRelatedFractHistory").prop('disabled', false);
     });
 });
 
-$(document).ready(function(){
-    $("#relatedFractOptionsRadios2").click(function(){
+$(document).ready(function () {
+    $("#relatedFractOptionsRadios2").click(function () {
         $("#id_fieldRelatedFractHistory").prop('disabled', true);
     });
 });
 
 //historia cirurgia ortopedica
 
-$(document).ready(function(){
-    $("#orthSurgOptionsRadios1").click(function(){
+$(document).ready(function () {
+    $("#orthSurgOptionsRadios1").click(function () {
         $("#id_fieldSetOrtSurg").prop('disabled', false);
     });
 });
 
-$(document).ready(function(){
-    $("#orthSurgOptionsRadios2").click(function(){
+$(document).ready(function () {
+    $("#orthSurgOptionsRadios2").click(function () {
         $("#id_fieldSetOrtSurg").prop('disabled', true);
     });
 });
 
-$(document).ready(function(){
-    $("#verCerFractOptionsRadios2").click(function(){
+$(document).ready(function () {
+    $("#verCerFractOptionsRadios2").click(function () {
         $("#id_fieldSetClavFract").prop('disabled', true);
     });
 });
 
 //fratura vertebral toracica relacionada
-$(document).ready(function(){
-    $("#verTorFractRelatedOptionsRadios1").click(function(){
+$(document).ready(function () {
+    $("#verTorFractRelatedOptionsRadios1").click(function () {
         $("#id_fieldSetVerTorFractRelated").prop('disabled', false);
     });
 });
 
-$(document).ready(function(){
-    $("#verTorFractRelatedOptionsRadios2").click(function(){
+$(document).ready(function () {
+    $("#verTorFractRelatedOptionsRadios2").click(function () {
         $("#id_fieldSetVerTorFractRelated").prop('disabled', true);
     });
 });
 
 //fratura vertebral toracica
-$(document).ready(function(){
-    $("#verTorFractOptionsRadios1").click(function(){
+$(document).ready(function () {
+    $("#verTorFractOptionsRadios1").click(function () {
         $("#id_fieldSetVerTorFract").prop('disabled', false);
     });
 });
 
-$(document).ready(function(){
-    $("#verTorFractOptionsRadios2").click(function(){
+$(document).ready(function () {
+    $("#verTorFractOptionsRadios2").click(function () {
         $("#id_fieldSetVerTorFract").prop('disabled', true);
     });
 });
 
 //lesoes vasculares
-$(document).ready(function(){
-    $("#vascularLesionsOptionsRadios1").click(function(){
+$(document).ready(function () {
+    $("#vascularLesionsOptionsRadios1").click(function () {
         $("#id_fieldSetvascularLesions").prop('disabled', false);
     });
 });
 
-$(document).ready(function(){
-    $("#vascularLesionsOptionsRadios2").click(function(){
+$(document).ready(function () {
+    $("#vascularLesionsOptionsRadios2").click(function () {
         $("#id_fieldSetvascularLesions").prop('disabled', true);
     });
 });
 
 //fratura vertebral cervical relacionada
-$(document).ready(function(){
-    $("#verCerFractRelatedOptionsRadios1").click(function(){
+$(document).ready(function () {
+    $("#verCerFractRelatedOptionsRadios1").click(function () {
         $("#id_fieldSetClavFractRelated").prop('disabled', false);
     });
 });
 
-$(document).ready(function(){
-    $("#verCerFractRelatedOptionsRadios2").click(function(){
+$(document).ready(function () {
+    $("#verCerFractRelatedOptionsRadios2").click(function () {
         $("#id_fieldSetClavFractRelated").prop('disabled', true);
     });
 });
 
 //fumante
-$(document).ready(function(){
-    $("#id_smoker_0").click(function(){
+$(document).ready(function () {
+    $("#id_smoker_0").click(function () {
         $("#id_amount_cigarettes").prop('disabled', false);
     });
 });
 
-$(document).ready(function(){
-    $("#id_smoker_1").click(function(){
+$(document).ready(function () {
+    $("#id_smoker_1").click(function () {
         $("#id_amount_cigarettes").prop('disabled', true);
     });
 });
 
 //alcolismo
-$(document).ready(function(){
-    $("#id_alcoholic_0").click(function(){
+$(document).ready(function () {
+    $("#id_alcoholic_0").click(function () {
         $("#id_freqSmok").prop('disabled', false);
         $("#id_periodSmok").prop('disabled', false);
     });
 });
 
-$(document).ready(function(){
-    $("#id_alcoholic_1").click(function(){
+$(document).ready(function () {
+    $("#id_alcoholic_1").click(function () {
         $("#id_freqSmok").prop('disabled', true);
         $("#id_periodSmok").prop('disabled', true);
     });
 });
 
-$(document).ready(function(){
+$(document).ready(function () {
     $("#cpf_id").mask("999.999.999-99");
 });
 
-$(document).ready(function(){
+{% comment %}$(document).ready(function(){
     $("#zipcode").mask("99999-999");
-});
+});{% endcomment %}
+
+{% comment %}
 
 $(document).ready(function(){
     $("#id_chosen_state").on("change.bfhselectbox",function(){
@@ -1788,28 +1848,29 @@ $(document).ready(function(){
             $("#phone").mask("(99) 9999-9999");
     });
 });
+{% endcomment %}
 
 var $tabs = $('.tabbable li');
 
-$("#prevtab").on('click', function() {
+$("#prevtab").on('click', function () {
     $tabs.filter('.active').prev('li').find('a[data-toggle="tab"]').tab('show');
 });
 
-$("#nexttab").on('click', function() {
+$("#nexttab").on('click', function () {
     $tabs.filter('.active').next('li').find('a[data-toggle="tab"]').tab('show');
 });
 
-$("#savetab").on('click', function() {
+$("#savetab").on('click', function () {
 
     var name_value = $.trim($("#full_name").val());
-    var cpf_value  = $.trim($("#cpf_id").val());
+    var cpf_value = $.trim($("#cpf_id").val());
 
-    if(name_value.length==0) {
+    if (name_value.length == 0) {
         showErrorMessageTemporary("Nome deve ser preenchido.");
         jumpToElement('full_name');
         document.getElementById('full_name').focus();
     } else {
-        if(cpf_value.length==0) {
+        if (cpf_value.length == 0) {
             $("#myModal").modal('show');
         }
         else {
@@ -1818,7 +1879,7 @@ $("#savetab").on('click', function() {
     }
 });
 
-$("#savetab2").on('click', function(){
+$("#savetab2").on('click', function () {
     $("#form_id").submit();
 });
 

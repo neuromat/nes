@@ -1,5 +1,5 @@
 # coding=utf-8
-#from django.utils.six import attr
+# from django.utils.six import attr
 from django.forms import ModelForm, TextInput, DateInput
 from models import Patient, SocialDemographicData, SocialHistoryData
 from django.db import models
@@ -27,16 +27,18 @@ class PatientForm(ModelForm):
                                                'id': "naturalOf"}),
             'street_txt': TextInput(attrs={'class': 'form-control', 'placeholder': 'Rua - Complemento',
                                            'id': "street_txt"}),
-            'zipcode_number': TextInput(attrs={'class': 'form-control', 'placeholder': 'Entrar CEP', 'id': "zipcode"}),
+            'zipcode_number': TextInput(
+                attrs={'class': 'form-control', 'placeholder': 'Entrar CEP', 'id': "zipcode",
+                       'data-error': "CEP inválido", 'pattern': '\d{5}-?\d{3}'}),
             'city_txt': TextInput(attrs={'class': 'form-control', 'placeholder': 'Entrar cidade', 'id': "city"}),
             'phone_number': TextInput(attrs={'class': 'form-control', 'placeholder': 'Entrar telefone para contato',
-                                             'id': "phone"}),
+                                             'id': "phone"} ),
             'cellphone_number': TextInput(attrs={'class': 'form-control', 'placeholder': 'Entrar celular',
                                                  'id': "cellphone"}),
             'email_txt': TextInput(attrs={'class': 'form-control', 'placeholder': 'Entrar e-mail', 'id': "email",
                                           'type': 'email', 'data-error': "E-mail inválido",
                                           'pattern': '^[_A-Za-z0-9-\+]+(\.[_A-Za-z0-9-]+)*@[A-Za-z0-9-]+(\.[A-Za-z0-9]+)*(\.[A-Za-z]{2,})$'
-                                }),
+            }),
             'medical_record_number': TextInput(attrs={'class': 'form-control',
                                                       'placeholder': 'Entrar número do prontuário',
                                                       'id': "records_number"}),

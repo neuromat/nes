@@ -6,7 +6,6 @@ from django.utils.html import format_html
 
 
 class SelectBoxCountries(Widget):
-
     def _format_value(self, value):
         if self.is_localized:
             return formats.localize_input(value)
@@ -23,7 +22,6 @@ class SelectBoxCountries(Widget):
 
 
 class SelectBoxState(Widget):
-
     def _format_value(self, value):
         if self.is_localized:
             return formats.localize_input(value)
