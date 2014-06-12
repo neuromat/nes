@@ -103,7 +103,12 @@
 <div class="row">
 
 <!-- A tag form abrange o formulário divido por abas contextuais -->
+
+<!--
 <form id="form_id" role="form" method="post" action="/quiz/register/" data-toggle="validator">
+-->
+
+<form id="form_id" role="form" method="post" data-toggle="validator">
 {% csrf_token %}
 
 <!-- Esta div define o Menu principal -->
@@ -128,10 +133,12 @@
             Contato</a>
         </li>
 
+{% comment %}
         {% if user.is_superuser %}
             <li><a href="/admin">Acesso Administração</a>
             </li>
         {% endif %}
+{% endcomment %}
 
     </ul>
 </div> <!-- Esta div define o Menu principal -->
@@ -280,7 +287,7 @@
 <div class="row">
     <div class="col-xs-6 col-sm-4">
         <div class="form-group {% if patient_form.errors.date_birth_txt %}has-error{% endif %}">
-            <label for="date_birth_txt" class="control-label">Data de nascimento</label>
+            <label for="date_birth_txt" class="control-label">Data de nascimento <b style="color: red;">*</b></label>
             <div class="input-group input-group-sm">
                 <span class="input-group-addon"> <span class="glyphicon glyphicon-th"></span></span>
                 {{ patient_form.date_birth_txt }}
@@ -305,7 +312,7 @@
     </div>
     <div class="col-xs-6 col-sm-4">
         <div class="form-group">
-            <label for="gender_id" class="control-label">Sexo</label>
+            <label for="gender_id" class="control-label">Sexo <b style="color: red;">*</b></label>
             <div class="input-group input-group-sm">
                 {{ patient_form.gender_opt }}
             </div>
@@ -1505,7 +1512,11 @@
         <div class="btn-group pull-right">
             <button type="button" class="btn btn-default" id="prevtab">Anterior</button>
             <button type="button" class="btn btn-default" id="nexttab">Próximo</button>
-            <button type="button" class="btn btn-primary" id="savetab">Salvar</button>
+            {% if editing %}
+                <button type="button" class="btn btn-primary" id="savetab">Salvar</button>
+            {% else %}
+                <button type="button" class="btn btn-primary" id="savetab">Atualizar</button>
+            {% endif %}
         </div>
     </div>
     <div class="col-md-1">
@@ -1521,7 +1532,7 @@
     <div class="col-md-1">
     </div>
     <div class="col-md-10">
-        <h3>Em construção ...</h3>
+        <h3>Em construção...</h3>
     </div>
 </div> <!-- <div class="tab-pane fade" id="mainMenuAdvancedSearchTab"> -->
 

@@ -66,7 +66,7 @@ class PatientForm(ModelForm):
     # Traz os campos em modo disabled ao retornar a busca.
     def __init__(self, *args, **kwargs):
         super(PatientForm, self).__init__(*args, **kwargs)
-        make_instance(self, 'instance', None)
+        #make_instance(self, 'instance', None)
 
 
 class SocialDemographicDataForm(ModelForm):
@@ -109,7 +109,7 @@ class SocialDemographicDataForm(ModelForm):
     # Traz os campos em modo disabled ao retornar a busca.
     def __init__(self, *args, **kwargs):
         super(SocialDemographicDataForm, self).__init__(*args, **kwargs)
-        make_instance(self, 'instance', None)
+        #make_instance(self, 'instance', None)
 
 
 class SocialHistoryDataForm(ModelForm):
@@ -132,4 +132,4 @@ class SocialHistoryDataForm(ModelForm):
     # Traz os campos em modo disabled ao retornar a busca.
     def __init__(self, *args, **kwargs):
         super(SocialHistoryDataForm, self).__init__(*args, **kwargs)
-        make_instance(self, 'instance', None)
+        #make_instance(self, 'instance', None)
