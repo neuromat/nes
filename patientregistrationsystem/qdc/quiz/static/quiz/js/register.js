@@ -218,11 +218,19 @@ $(document).ready(function(){
 });
 
 $(document).ready(function(){
+    $("#savetab2").click(function(){
+        $("#form_id").submit();
+    });
+});
+
+$(document).ready(function(){
     $("#savetab").click(function() {
         var name_value = $.trim($("#full_name").val());
+        var date_birth_value = $.trim($("#birthday").val());
+        var gender_value = $.trim($("#gender_id").val());
         var cpf_value = $.trim($("#cpf_id").val());
 
-        if (name_value.length == 0) {
+        if (name_value.length == 0 || date_birth_value.length == 0 || gender_value.length == 0) {
             showErrorMessageTemporary("Campos obrigatórios devem ser preenchidos.");
             jumpToElement('full_name');
             document.getElementById('birthday').focus();
@@ -239,13 +247,4 @@ $(document).ready(function(){
     });
 });
 
-$(document).ready(function(){
-    $("#savetab2").click(function(){
-        $("#form_id").submit();
-    });
-});
 
-function testjs()
-{
-    alert('Estah funcionando...');
-}
