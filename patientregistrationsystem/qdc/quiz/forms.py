@@ -53,7 +53,7 @@ class PatientForm(ModelForm):
             'gender_opt': Select(attrs={'class': 'form-control', 'id': 'gender_id'}),
             'marital_status_opt': Select(attrs={'class': 'form-control', 'id': 'marital_status'}),
             'date_birth_txt': DateInput(attrs={'class': 'form-control', 'placeholder': 'Data',
-                                               'id': "birthday", 'type': "date"}, format='%Y-%m-%d')
+                                               'id': "birthday"}, format='%d-%m-%Y')
         }
         error_messages = {
             'name_txt': {
