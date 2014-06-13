@@ -158,32 +158,31 @@ $(document).ready(function(){
     $("#verCerFractRelatedOptionsRadios2").click(function(){
         $("#id_fieldSetClavFractRelated").prop('disabled', true);
     });
-
 });
 
 //fumante
 $(document).ready(function(){
-    $("#id_smoker_0").click(function(){
+    $("#smokingOptionsRadios1").click(function(){
         $("#id_amount_cigarettes").prop('disabled', false);
     });
 });
 
 $(document).ready(function(){
-    $("#id_smoker_1").click(function(){
+    $("#smokingOptionsRadios2").click(function(){
         $("#id_amount_cigarettes").prop('disabled', true);
     });
 });
 
 //alcolismo
 $(document).ready(function(){
-    $("#id_alcoholic_0").click(function(){
+    $("#alcoholismOptionsRadios1").click(function(){
         $("#id_freqSmok").prop('disabled', false);
         $("#id_periodSmok").prop('disabled', false);
     });
 });
 
 $(document).ready(function(){
-    $("#id_alcoholic_1").click(function(){
+    $("#alcoholismOptionsRadios2").click(function(){
         $("#id_freqSmok").prop('disabled', true);
         $("#id_periodSmok").prop('disabled', true);
     });
@@ -193,21 +192,14 @@ $(document).ready(function(){
     $("#cpf_id").mask("999.999.999-99");
 });
 
-$(document).ready(function(){
-    $("#zipcode").mask("99999-999");
-});
-
-$(document).ready(function () {
-    $("#phone").mask("(99) 9999-9999");
-});
 
 $(document).ready(function(){
     $("#id_chosen_state").on("change.bfhselectbox",function(){
         var state = $(this).val();
         if(state == "SP")
-            $("#cellphone").mask("(99) 99999-9999");
+            $("#phone").mask("(99) 99999-9999");
         else
-            $("#cellphone").mask("(99) 9999-9999");
+            $("#phone").mask("(99) 9999-9999");
     });
 });
 
