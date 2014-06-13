@@ -51,11 +51,12 @@ class PatientForm(ModelForm):
             'country_txt': SelectBoxCountries(attrs={'id': 'id_country_state_address', 'data-flags': 'true'}),
             'state_txt': SelectBoxState(attrs={'data-country': 'id_country_state_address', 'id': 'id_chosen_state'}),
             'gender_opt': Select(attrs={'class': 'form-control', 'id': 'gender_id', 'required': "",
-                                         'data-error': "Sexo deve ser preenchido"}),
+                                        'data-error': "Sexo deve ser preenchido"}),
             'marital_status_opt': Select(attrs={'class': 'form-control', 'id': 'marital_status'}),
             'date_birth_txt': DateInput(attrs={'class': 'form-control', 'placeholder': 'Data',
-                                               'id': "birthday", 'type': "date", 'required': "",
-                                         'data-error': "Data de nascimento deve ser preenchida"}, format='%Y-%m-%d')
+                                               'id': "birthday", 'required': "",
+                                               'data-error': "Data de nascimento deve ser preenchida"},
+                                        format='%Y-%m-%d')
         }
         error_messages = {
             'name_txt': {
