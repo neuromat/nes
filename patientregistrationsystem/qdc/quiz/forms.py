@@ -7,14 +7,6 @@ from quiz_widget import SelectBoxCountries, SelectBoxState
 from django.forms.widgets import Select, RadioSelect
 
 
-# Método usado em todas as classes forms
-def make_instance(a, b, c):
-    instance = getattr(a, b, c)
-    if instance and instance.pk:
-        for field in a.fields:
-            a.fields[field].widget.attrs['disabled'] = True
-
-
 class PatientForm(ModelForm):
     class Meta:
         model = Patient
@@ -34,7 +26,9 @@ class PatientForm(ModelForm):
                                                'id': "naturalOf"}),
             'street_txt': TextInput(attrs={'class': 'form-control', 'placeholder': 'Rua - Complemento',
                                            'id': "street_txt"}),
-            'zipcode_number': TextInput(attrs={'class': 'form-control', 'placeholder': 'Entrar CEP', 'id': "zipcode"}),
+            'zipcode_number': TextInput(
+                attrs={'class': 'form-control', 'placeholder': 'Entrar CEP', 'id': "zipcode",
+                       'data-error': "CEP inválido", 'pattern': '\d{5}-?\d{3}'}),
             'city_txt': TextInput(attrs={'class': 'form-control', 'placeholder': 'Entrar cidade', 'id': "city"}),
             'phone_number': TextInput(attrs={'class': 'form-control', 'placeholder': 'Entrar telefone para contato',
                                              'id': "phone"}),
@@ -42,8 +36,8 @@ class PatientForm(ModelForm):
                                                  'id': "cellphone"}),
             'email_txt': TextInput(attrs={'class': 'form-control', 'placeholder': 'Entrar e-mail', 'id': "email",
                                           'type': 'email', 'data-error': "E-mail inválido",
-                                          'pattern': '^[_A-Za-z0-9-\+]+(\.[_A-Za-z0-9-]+)*@[A-Za-z0-9-]+(\.[A-Za-z0-9]\
-                                          +)*(\.[A-Za-z]{2,})$'}),
+                                          'pattern': '^[_A-Za-z0-9-\+]+(\.[_A-Za-z0-9-]+)*@[A-Za-z0-9-]+(\.[A-Za-z0-9]+)*(\.[A-Za-z]{2,})$'
+                                }),
             'medical_record_number': TextInput(attrs={'class': 'form-control',
                                                       'placeholder': 'Entrar número do prontuário',
                                                       'id': "records_number"}),
@@ -64,11 +58,6 @@ class PatientForm(ModelForm):
             }
         }
 
-    # Traz os campos em modo disabled ao retornar a busca.
-    def __init__(self, *args, **kwargs):
-        super(PatientForm, self).__init__(*args, **kwargs)
-        #make_instance(self, 'instance', None)
-
 
 class SocialDemographicDataForm(ModelForm):
     class Meta:
@@ -76,7 +65,7 @@ class SocialDemographicDataForm(ModelForm):
         fields = ['profession_txt', 'occupation_txt', 'tv_opt', 'dvd_opt', 'radio_opt', 'bath_opt',
                   'automobile_opt', 'wash_machine_opt', 'refrigerator_opt', 'freezer_opt', 'house_maid_opt',
                   'religion_opt', 'payment_opt', 'flesh_tone_opt', 'schooling_opt', 'benefit_government_bool',
-        ]
+                  ]
         widgets = {
             'benefit_government_bool': RadioSelect(attrs={'id': 'id_benefit'}, choices=(('1', 'Sim'), ('0', 'Não'))),
             'schooling_opt': Select(attrs={'class': 'form-control', 'id': 'scolarity'}),
@@ -107,11 +96,6 @@ class SocialDemographicDataForm(ModelForm):
                                        choices=((0, '0'), (1, '1'), (2, '2'), (3, '3'), (4, '4 ou +'))),
         }
 
-    # Traz os campos em modo disabled ao retornar a busca.
-    def __init__(self, *args, **kwargs):
-        super(SocialDemographicDataForm, self).__init__(*args, **kwargs)
-        #make_instance(self, 'instance', None)
-
 
 class SocialHistoryDataForm(ModelForm):
     class Meta:
@@ -129,8 +113,3 @@ class SocialHistoryDataForm(ModelForm):
             'drugs_opt': RadioSelect(attrs={'id': 'id_drugs_opt'},
                                      choices=(('ja_fez', 'Já fez'), ('faz', 'Faz'), ('nunca_fez', 'Nunca fez'))),
         }
-
-    # Traz os campos em modo disabled ao retornar a busca.
-    def __init__(self, *args, **kwargs):
-        super(SocialHistoryDataForm, self).__init__(*args, **kwargs)
-        #make_instance(self, 'instance', None)
