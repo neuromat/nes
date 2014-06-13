@@ -1,0 +1,6 @@
+
+<form method="post">{% csrf_token %}
+    Tem certeza que deseja remover o paciente <b> {{ patient.name_txt }} </b> ?
+    <input type="submit" value="Sim">
+    <input type="button" value="Nao">
+</form>

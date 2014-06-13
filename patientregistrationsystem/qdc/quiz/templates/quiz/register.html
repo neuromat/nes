@@ -28,6 +28,7 @@
     <script src="{% static 'quiz/Bootstrap-Validator-Master/dist/validator.min.js' %}" type="text/javascript"></script>
 
     <script src="{% static 'quiz/js/quiz.js' %}"></script>
+    <script type="text/javascript" src="{% static 'quiz/js/register.js' %}"></script>
 
     <style>
         div.alert-overflow {
@@ -102,7 +103,12 @@
 <div class="row">
 
 <!-- A tag form abrange o formulário divido por abas contextuais -->
+
+<!--
 <form id="form_id" role="form" method="post" action="/quiz/register/" data-toggle="validator">
+-->
+
+<form id="form_id" role="form" method="post" data-toggle="validator">
 {% csrf_token %}
 
 <!-- Esta div define o Menu principal -->
@@ -119,11 +125,7 @@
         </li>
 
         <li>
-            {% if perms.quiz.view_patient %}
-                <a href="#mainMenuAdvancedSearchTab" data-toggle="tab">
-            {% else %}
-                <a>
-            {% endif %}
+            <a href="#mainMenuAdvancedSearchTab" data-toggle="tab">
             Busca avançada</a>
         </li>
 
@@ -131,10 +133,12 @@
             Contato</a>
         </li>
 
+{% comment %}
         {% if user.is_superuser %}
             <li><a href="/admin">Acesso Administração</a>
             </li>
         {% endif %}
+{% endcomment %}
 
     </ul>
 </div> <!-- Esta div define o Menu principal -->
@@ -226,14 +230,23 @@
 {% endcomment %}
 
 <div class="row">
-    <div class="col-md-12">
+    <div class="col-xs-6 col-sm-6">
         <div class="form-group {% if patient_form.errors.name_txt %}has-error{% endif %}">
-            <label for="full_name" class="control-label">Nome Completo <b style="color: red;">*</b></label>
+            <label for="full_name" class="control-label">Nome completo <b style="color: red;">*</b></label>
             <div class="input-group input-group-sm">
                 <span class="input-group-addon"> <span class="glyphicon glyphicon-user"></span></span>
                 {{ patient_form.name_txt }}
             </div>
             <div class="help-block with-errors"></div>
+        </div>
+    </div>
+    <div class="col-xs-6 col-sm-6">
+        <div class="form-group">
+            <label>Número do prontuário</label>
+            <div class="input-group input-group-sm">
+                <span class="input-group-addon"> <span class="glyphicon glyphicon-list-alt"></span></span>
+                {{ patient_form.medical_record_number }}
+            </div>
         </div>
     </div>
 </div>
@@ -272,41 +285,61 @@
     </div>
 </div>
 <div class="row">
-    <div class="col-xs-6 col-sm-6">
-        <div class="form-group">
-            <label>Naturalidade</label>
+    <div class="col-xs-6 col-sm-4">
+        <div class="form-group {% if patient_form.errors.date_birth_txt %}has-error{% endif %}">
+            <label for="date_birth_txt" class="control-label">Data de nascimento <b style="color: red;">*</b></label>
             <div class="input-group input-group-sm">
-                <span class="input-group-addon"> <span class="glyphicon glyphicon-flag"></span></span>
-                {{ patient_form.natural_of_txt }}
+                <span class="input-group-addon"> <span class="glyphicon glyphicon-th"></span></span>
+                {{ patient_form.date_birth_txt }}
+            </div>
+            <div class="help-block with-errors">
+                {% if patient_form.date_birth_txt.errors %}
+                    <span>
+                        {% for error in patient_form.date_birth_txt.errors %}{{ error }}{% endfor %}
+                    </span>
+                {% endif %}
+            </div>
+
+        </div>
+    </div>
+    <div class="col-xs-6 col-sm-4">
+        <div class="form-group">
+            <label>Estado civil</label>
+            <div class="input-group  input-group-sm">
+                {{ patient_form.marital_status_opt }}
             </div>
         </div>
     </div>
-    <div class="col-xs-6 col-sm-6">
+    <div class="col-xs-6 col-sm-4">
         <div class="form-group">
-            <label>Nacionalidade</label>
+            <label for="gender_id" class="control-label">Sexo <b style="color: red;">*</b></label>
             <div class="input-group input-group-sm">
-                <span class="input-group-addon"> <span class="glyphicon glyphicon-flag"></span></span>
-                {{ patient_form.citizenship_txt }}
+                {{ patient_form.gender_opt }}
             </div>
+            <div class="help-block with-errors"></div>
         </div>
     </div>
 </div>
+<div class="col-md-1"></div>
+</div>
+<!-- Esta div define o segundo bloco na tab1 -->
+<div class="container span6 offset3 well ">
 <div class="row">
-    <div class="col-xs-6 col-sm-6">
-        <div class="form-group">
-            <label>Endereço</label>
-            <div class="input-group  input-group-sm ">
-                <span class="input-group-addon"> <span class="glyphicon glyphicon-home"></span></span>
-                {{ patient_form.street_txt }}
-            </div>
-        </div>
-    </div>
     <div class="col-xs-6 col-sm-6">
         <div class="form-group">
             <label>CEP</label>
             <div class="input-group  input-group-sm">
                 <span class="input-group-addon"> <span class="glyphicon glyphicon-home"></span></span>
                 {{ patient_form.zipcode_number }}
+            </div>
+        </div>
+    </div>
+    <div class="col-xs-6 col-sm-6">
+        <div class="form-group">
+            <label>Endereço</label>
+            <div class="input-group  input-group-sm ">
+                <span class="input-group-addon"> <span class="glyphicon glyphicon-home"></span></span>
+                {{ patient_form.street_txt }}
             </div>
         </div>
     </div>
@@ -343,26 +376,6 @@
     </div>
     <div class="col-xs-6 col-sm-6">
         <div class="form-group">
-            <label>Telefone fixo</label>
-            <div class="input-group  input-group-sm">
-                <span class="input-group-addon"> <span class="glyphicon glyphicon-earphone"></span></span>
-                {{ patient_form.phone_number }}
-            </div>
-        </div>
-    </div>
-</div>
-<div class="row">
-    <div class="col-xs-6 col-sm-6">
-        <div class="form-group">
-            <label>Telefone celular</label>
-            <div class="input-group input-group-sm">
-                <span class="input-group-addon"> <span class="glyphicon glyphicon-earphone"></span></span>
-                {{ patient_form.cellphone_number }}
-            </div>
-        </div>
-    </div>
-    <div class="col-xs-6 col-sm-6">
-        <div class="form-group">
             <label for="email" class="control-label">E-mail</label>
             <div class="input-group input-group-sm">
                 <span class="input-group-addon"> <span class="glyphicon glyphicon-envelope"></span></span>
@@ -375,57 +388,24 @@
 <div class="row">
     <div class="col-xs-6 col-sm-6">
         <div class="form-group">
-            <label>Número do prontuário</label>
+            <label>Telefone fixo</label>
+            <div class="input-group  input-group-sm">
+                <span class="input-group-addon"> <span class="glyphicon glyphicon-earphone"></span></span>
+                {{ patient_form.phone_number }}
+            </div>
+        </div>
+    </div>
+    <div class="col-xs-6 col-sm-6">
+        <div class="form-group">
+            <label>Telefone celular</label>
             <div class="input-group input-group-sm">
-                <span class="input-group-addon"> <span class="glyphicon glyphicon-list-alt"></span></span>
-                {{ patient_form.medical_record_number }}
+                <span class="input-group-addon"> <span class="glyphicon glyphicon-earphone"></span></span>
+                {{ patient_form.cellphone_number }}
             </div>
         </div>
     </div>
 </div>
 <div class="col-md-1"></div>
-</div>
-
-<!-- Esta div define o segundo bloco na tab1 -->
-<div class="container span6 offset3 well ">
-    <div class="row">
-        <div class="col-xs-6 col-sm-6">
-            <div class="form-group {% if patient_form.errors.date_birth_txt %}has-error{% endif %}">
-                <label for="date_birth_txt" class="control-label">Data de nascimento</label>
-                <div class="input-group input-group-sm">
-                    <span class="input-group-addon"> <span class="glyphicon glyphicon-th"></span></span>
-                    {{ patient_form.date_birth_txt }}
-                </div>
-                <div class="help-block with-errors">
-                    {% if patient_form.date_birth_txt.errors %}
-                        <span>
-                            {% for error in patient_form.date_birth_txt.errors %}{{ error }}{% endfor %}
-                        </span>
-                    {% endif %}
-                </div>
-
-            </div>
-        </div>
-        <div class="col-xs-6 col-sm-6">
-            <div class="form-group">
-                <label>Sexo</label>
-                <div class="input-group input-group-sm">
-                    {{ patient_form.gender_opt }}
-                </div>
-            </div>
-        </div>
-    </div>
-    <div class="row">
-        <div class="col-xs-6 col-sm-6">
-            <div class="form-group">
-                <label>Estado civil</label>
-                <div class="input-group  input-group-sm">
-                    {{ patient_form.marital_status_opt }}
-                </div>
-            </div>
-        </div>
-    </div>
-    <div class="col-md-1"></div>
 </div>
 </div>
 </div>
@@ -440,9 +420,18 @@
 <div class="row">
     <div class="col-xs-6 col-sm-6">
         <div class="form-group">
-            <label>Religião - IBGE</label>
-            <div class="input-group  input-group-sm">
-                {{ social_demographic_form.religion_opt }}
+            <label>Natural de</label>
+            <div class="input-group input-group-sm">
+                <span class="input-group-addon"> <span class="glyphicon glyphicon-flag"></span></span>
+                {{ patient_form.natural_of_txt }}
+            </div>
+        </div>
+    </div>
+    <div class="col-xs-6 col-sm-6">
+        <div class="form-group">
+            <label>País de nascimento</label>
+            <div class="input-group input-group-sm">
+                {{ patient_form.citizenship_txt }}
             </div>
         </div>
     </div>
@@ -492,7 +481,15 @@
     </div>
 </div>
 <div class="row">
-    <div class="col-xs-6 col-sm-12">
+    <div class="col-xs-6 col-sm-6">
+        <div class="form-group">
+            <label>Religião - IBGE</label>
+            <div class="input-group  input-group-sm">
+                {{ social_demographic_form.religion_opt }}
+            </div>
+        </div>
+    </div>
+    <div class="col-xs-6 col-sm-6">
         <div class="form-group">
             <label for="skin_color">Cor da pele-IBGE</label>
             <div class="input-group  input-group-sm">
@@ -1515,7 +1512,11 @@
         <div class="btn-group pull-right">
             <button type="button" class="btn btn-default" id="prevtab">Anterior</button>
             <button type="button" class="btn btn-default" id="nexttab">Próximo</button>
-            <button type="button" class="btn btn-primary" id="savetab">Salvar</button>
+            {% if editing %}
+                <button type="button" class="btn btn-primary" id="savetab">Salvar</button>
+            {% else %}
+                <button type="button" class="btn btn-primary" onclick="$('#form_id').submit()">Editar</button>
+            {% endif %}
         </div>
     </div>
     <div class="col-md-1">
@@ -1526,13 +1527,21 @@
 </div>
 </div> <!-- <div class="tab-pane fade in active" id="mainMenuAddTab"> -->
 
+<!-- Esta div está associada ao item Busca Avancada do Menu principal -->
+<div class="tab-pane fade" id="mainMenuAdvancedSearchTab">
+    <div class="col-md-1">
+    </div>
+    <div class="col-md-10">
+        {% comment %}<h3>Em construção...</h3>{% endcomment %}
+    </div>
+</div> <!-- <div class="tab-pane fade" id="mainMenuAdvancedSearchTab"> -->
+
 <!-- Esta div está associada ao item Contato do Menu princial -->
 <div class="tab-pane fade" id="mainMenuContactTab">
     <div class="col-md-1">
     </div>
     <div class="col-md-10">
         <h3>Instituto de Neurologia Deolindo Couto</h3>
-
         <h5>Sistema de Cadastro e Consulta de Dados Sociodemográficos e Clínicos</h5>
         <!-- <h5>Av. Venceslau Brás, 95 - Botafogo - Campus da Praia Vermelha.</h5>-->
         <h5>Dúvidas e Sugestões: claudiadvargas at gmail dot com </h5>
@@ -1576,7 +1585,7 @@
  </script>-->
 <script>
 $(document).ready(function(){
-    $("#birthday").mask("99/99/9999");
+    $("#birthdayold").mask("99/99/9999");
 
 });
 

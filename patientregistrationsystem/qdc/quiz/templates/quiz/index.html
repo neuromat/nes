@@ -81,10 +81,12 @@
             Contato</a>
         </li>
 
+{% comment %}
         {% if user.is_superuser %}
             <li><a href="/admin">Acesso Administração</a>
             </li>
         {% endif %}
+{% endcomment %}
 
     </ul>
 </div> <!-- Esta div define o Menu principal -->
@@ -110,18 +112,28 @@
                 </ul>
             </div>
             <div class="btn-group pull-left">
-                <a href="/quiz/register/" class="btn btn-primary">Inserir novo paciente</a>
+                <!-- <a href="/quiz/register/" class="btn btn-primary">Inserir novo paciente</a> -->
+                <a href="/quiz/patient/new/" class="btn btn-primary">Inserir novo paciente</a>
             </div>
         </div>
     </div>
 </div> <!-- <div class="tab-pane fade" id="mainMenuSearchTab"> -->
+
+<!-- Esta div está associada ao item Busca Avancada do Menu principal -->
+<div class="tab-pane fade" id="mainMenuAdvancedSearchTab">
+    <div class="col-md-1">
+    </div>
+    <div class="col-md-10">
+        {% comment %}<h3>Em construção...</h3>{% endcomment %}
+    </div>
+</div> <!-- <div class="tab-pane fade" id="mainMenuAdvancedSearchTab"> -->
 
 <!-- Esta div está associada ao item Contato do Menu princial -->
 <div class="tab-pane fade" id="mainMenuContactTab">
     <div class="col-md-1">
     </div>
     <div class="col-md-10">
-        <h3>Instituto de Neurologia Deolindo Couto</h3>
+        <h3>Instituto de Neurologia Deolindo Coutoxxx</h3>
 
         <h5>Sistema de Cadastro e Consulta de Dados Sociodemográficos e Clínicos</h5>
         <!-- <h5>Av. Venceslau Brás, 95 - Botafogo - Campus da Praia Vermelha.</h5>-->

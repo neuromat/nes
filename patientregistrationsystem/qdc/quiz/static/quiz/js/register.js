@@ -1,9 +1,4 @@
 $(document).ready(function(){
-    $("#birthday").mask("99/99/9999");
-
-});
-
-$(document).ready(function(){
     $("#verCerFractOptionsRadios1").click(function(){
         $("#id_fieldSetClavFract").prop('disabled', false);
     });
@@ -163,31 +158,32 @@ $(document).ready(function(){
     $("#verCerFractRelatedOptionsRadios2").click(function(){
         $("#id_fieldSetClavFractRelated").prop('disabled', true);
     });
+
 });
 
 //fumante
 $(document).ready(function(){
-    $("#smokingOptionsRadios1").click(function(){
+    $("#id_smoker_0").click(function(){
         $("#id_amount_cigarettes").prop('disabled', false);
     });
 });
 
 $(document).ready(function(){
-    $("#smokingOptionsRadios2").click(function(){
+    $("#id_smoker_1").click(function(){
         $("#id_amount_cigarettes").prop('disabled', true);
     });
 });
 
 //alcolismo
 $(document).ready(function(){
-    $("#alcoholismOptionsRadios1").click(function(){
+    $("#id_alcoholic_0").click(function(){
         $("#id_freqSmok").prop('disabled', false);
         $("#id_periodSmok").prop('disabled', false);
     });
 });
 
 $(document).ready(function(){
-    $("#alcoholismOptionsRadios2").click(function(){
+    $("#id_alcoholic_1").click(function(){
         $("#id_freqSmok").prop('disabled', true);
         $("#id_periodSmok").prop('disabled', true);
     });
@@ -201,41 +197,62 @@ $(document).ready(function(){
     $("#zipcode").mask("99999-999");
 });
 
+$(document).ready(function () {
+    $("#phone").mask("(99) 9999-9999");
+});
+
 $(document).ready(function(){
     $("#id_chosen_state").on("change.bfhselectbox",function(){
         var state = $(this).val();
         if(state == "SP")
-            $("#phone").mask("(99) 99999-9999");
+            $("#cellphone").mask("(99) 99999-9999");
         else
-            $("#phone").mask("(99) 9999-9999");
+            $("#cellphone").mask("(99) 9999-9999");
     });
 });
 
-var $tabs = $('.tabbable li');
-
-<!-- $("a[href$='prevtab']").on('click', function() { -->
-<!--       $tabs.filter('.active').prev('li').find('a[data-toggle="tab"]').tab('show'); -->
-<!-- }); -->
-
-$("#prevtab").on('click', function() {
-    $tabs.filter('.active').prev('li').find('a[data-toggle="tab"]').tab('show');
+$(document).ready(function(){
+    $("#nexttab").click(function(){
+        var $tabs = $('.tabbable li');
+        $tabs.filter('.active').next('li').find('a[data-toggle="tab"]').tab('show');
+    });
 });
 
-$("#nexttab").on('click', function() {
-    $tabs.filter('.active').next('li').find('a[data-toggle="tab"]').tab('show');
+$(document).ready(function(){
+    $("#prevtab").click(function(){
+        var $tabs = $('.tabbable li');
+        $tabs.filter('.active').prev('li').find('a[data-toggle="tab"]').tab('show');
+    });
 });
 
-$("#savetab").on('click', function(){
-<!-- $("#tabform").filter(".active").submit(); -->
-    var value=$.trim($("#cpf_id").val());
-    if(value.length==0)
-    {
-        var r = confirm("CPF não preenchido. Deseja salvar?");
-        if (r == true) {
-	        $("#tab1form").submit();
+$(document).ready(function(){
+    $("#savetab2").click(function(){
+        $("#form_id").submit();
+    });
+});
+
+$(document).ready(function(){
+    $("#savetab").click(function() {
+        var name_value = $.trim($("#full_name").val());
+        var date_birth_value = $.trim($("#birthday").val());
+        var gender_value = $.trim($("#gender_id").val());
+        var cpf_value = $.trim($("#cpf_id").val());
+
+        if (name_value.length == 0 || date_birth_value.length == 0 || gender_value.length == 0) {
+            showErrorMessageTemporary("Campos obrigatórios devem ser preenchidos.");
+            jumpToElement('full_name');
+            document.getElementById('birthday').focus();
+            document.getElementById('gender_id').focus();
+            document.getElementById('full_name').focus();
+        } else {
+            if (cpf_value.length == 0) {
+                $("#myModal").modal('show');
+            }
+            else {
+                $("#form_id").submit();
+            }
         }
-    }
-    else{
-        $("#tab1form").submit();
-    }
+    });
 });
+
+
