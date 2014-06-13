@@ -7,14 +7,6 @@ from quiz_widget import SelectBoxCountries, SelectBoxState
 from django.forms.widgets import Select, RadioSelect
 
 
-# Método usado em todas as classes forms
-def make_instance(a, b, c):
-    instance = getattr(a, b, c)
-    if instance and instance.pk:
-        for field in a.fields:
-            a.fields[field].widget.attrs['disabled'] = True
-
-
 class PatientForm(ModelForm):
     class Meta:
         model = Patient
@@ -51,22 +43,18 @@ class PatientForm(ModelForm):
             'country_txt': SelectBoxCountries(attrs={'id': 'id_country_state_address', 'data-flags': 'true'}),
             'state_txt': SelectBoxState(attrs={'data-country': 'id_country_state_address', 'id': 'id_chosen_state'}),
             'gender_opt': Select(attrs={'class': 'form-control', 'id': 'gender_id', 'required': "",
-                                         'data-error': "Sexo deve ser preenchido"}),
+                                        'data-error': "Sexo deve ser preenchido"}),
             'marital_status_opt': Select(attrs={'class': 'form-control', 'id': 'marital_status'}),
             'date_birth_txt': DateInput(attrs={'class': 'form-control', 'placeholder': 'Data',
                                                'id': "birthday", 'type': "date", 'required': "",
-                                         'data-error': "Data de nascimento deve ser preenchida"}, format='%Y-%m-%d')
+                                               'data-error': "Data de nascimento deve ser preenchida"},
+                                        format='%Y-%m-%d')
         }
         error_messages = {
             'name_txt': {
                 'required': 'Nome não preenchido'
             }
         }
-
-    # Traz os campos em modo disabled ao retornar a busca.
-    def __init__(self, *args, **kwargs):
-        super(PatientForm, self).__init__(*args, **kwargs)
-        #make_instance(self, 'instance', None)
 
 
 class SocialDemographicDataForm(ModelForm):
@@ -75,7 +63,7 @@ class SocialDemographicDataForm(ModelForm):
         fields = ['profession_txt', 'occupation_txt', 'tv_opt', 'dvd_opt', 'radio_opt', 'bath_opt',
                   'automobile_opt', 'wash_machine_opt', 'refrigerator_opt', 'freezer_opt', 'house_maid_opt',
                   'religion_opt', 'payment_opt', 'flesh_tone_opt', 'schooling_opt', 'benefit_government_bool',
-        ]
+                  ]
         widgets = {
             'benefit_government_bool': RadioSelect(attrs={'id': 'id_benefit'}, choices=(('1', 'Sim'), ('0', 'Não'))),
             'schooling_opt': Select(attrs={'class': 'form-control', 'id': 'scolarity'}),
@@ -106,11 +94,6 @@ class SocialDemographicDataForm(ModelForm):
                                        choices=((0, '0'), (1, '1'), (2, '2'), (3, '3'), (4, '4 ou +'))),
         }
 
-    # Traz os campos em modo disabled ao retornar a busca.
-    def __init__(self, *args, **kwargs):
-        super(SocialDemographicDataForm, self).__init__(*args, **kwargs)
-        #make_instance(self, 'instance', None)
-
 
 class SocialHistoryDataForm(ModelForm):
     class Meta:
@@ -128,8 +111,3 @@ class SocialHistoryDataForm(ModelForm):
             'drugs_opt': RadioSelect(attrs={'id': 'id_drugs_opt'},
                                      choices=(('ja_fez', 'Já fez'), ('faz', 'Faz'), ('nunca_fez', 'Nunca fez'))),
         }
-
-    # Traz os campos em modo disabled ao retornar a busca.
-    def __init__(self, *args, **kwargs):
-        super(SocialHistoryDataForm, self).__init__(*args, **kwargs)
-        #make_instance(self, 'instance', None)
