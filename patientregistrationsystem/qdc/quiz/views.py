@@ -253,6 +253,42 @@ def patient_update(request, patient_id, template_name="quiz/register.html"):
 
 
 @login_required
+def patient_delete(request, patient_id, template_name="quiz/unregister.html"):
+
+    ## Search in models.Patient
+    ## ------------------------
+    p = Patient.objects.get(number_record=patient_id)
+    patient_form = PatientForm(request.POST or None, instance=p)
+
+    ## Search in models.SocialDemographicData
+    ## --------------------------------------
+    try:
+        p_social_demo = SocialDemographicData.objects.get(id_patient_id=patient_id)
+        social_demographic_form = SocialDemographicDataForm(request.POST or None, instance=p_social_demo)
+    except SocialDemographicData.DoesNotExist:
+        social_demographic_form = SocialDemographicDataForm()
+
+    ## Search in models.SocialHistoryData
+    ## --------------------------------------
+    try:
+        p_social_hist = SocialHistoryData.objects.get(id_patient_id=patient_id)
+        social_history_form = SocialHistoryDataForm(request.POST or None, instance=p_social_hist)
+    except SocialHistoryData.DoesNotExist:
+        social_history_form = SocialDemographicDataForm()
+
+    if request.method == "POST":
+
+        p_social_hist.delete()
+        p_social_demo.delete()
+        p.delete()
+
+        redirect_url = reverse("search_patient")
+        return HttpResponseRedirect(redirect_url)
+
+    return render(request, template_name, {'patient': p})
+
+
+@login_required
 def register(request):
     flesh_tone_options = FleshToneOption.objects.all()
     marital_status_options = MaritalStatusOption.objects.all()

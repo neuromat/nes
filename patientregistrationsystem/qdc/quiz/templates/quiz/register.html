@@ -1515,7 +1515,7 @@
             {% if editing %}
                 <button type="button" class="btn btn-primary" id="savetab">Salvar</button>
             {% else %}
-                <button type="button" class="btn btn-primary" id="savetab">Atualizar</button>
+                <button type="button" class="btn btn-primary" onclick="$('#form_id').submit()">Editar</button>
             {% endif %}
         </div>
     </div>
@@ -1532,7 +1532,7 @@
     <div class="col-md-1">
     </div>
     <div class="col-md-10">
-        <h3>Em construção...</h3>
+        {% comment %}<h3>Em construção...</h3>{% endcomment %}
     </div>
 </div> <!-- <div class="tab-pane fade" id="mainMenuAdvancedSearchTab"> -->
 
