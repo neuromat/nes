@@ -1,4 +1,9 @@
 $(document).ready(function(){
+    $("#birthday").mask("99/99/9999");
+
+});
+
+$(document).ready(function(){
     $("#verCerFractOptionsRadios1").click(function(){
         $("#id_fieldSetClavFract").prop('disabled', false);
     });
