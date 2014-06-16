@@ -11,7 +11,7 @@ from models import Patient, SocialDemographicData, SocialHistoryData, FleshToneO
     MaritalStatusOption, SchoolingOption, PaymentOption, ReligionOption,\
     GenderOption, AmountCigarettesOption, AlcoholFrequencyOption, AlcoholPeriodOption
 
-from forms import PatientForm, SocialDemographicDataForm, SocialHistoryDataForm, make_instance
+from forms import PatientForm, SocialDemographicDataForm, SocialHistoryDataForm
 from django.contrib import messages
 
 # Biblioteca para fazer expressões regulares. Utilizada na "def search_patients_ajax" para fazer busca por nome ou CPF
@@ -443,7 +443,7 @@ def patient(request, patient_id, template_name="quiz/register.html"):
         social_demographic_form = SocialDemographicDataForm()
 
     ## Search in models.SocialHistoryData
-    ## --------------------------------------
+    ## ----------------------------------
     try:
         p_social_hist = SocialHistoryData.objects.get(id_patient_id=patient_id)
         social_history_form = SocialHistoryDataForm(instance=p_social_hist)
@@ -456,9 +456,10 @@ def patient(request, patient_id, template_name="quiz/register.html"):
                }
 
     #deixa os campos como disabled
-    make_instance(patient_form, 'instance', None)
-    make_instance(social_demographic_form, 'instance', None)
-    make_instance(social_history_form, 'instance', None)
+    for form in {patient_form, social_demographic_form, social_history_form}:
+        for field in form.fields:
+            form.fields[field].widget.attrs['disabled'] = True
+
 
     return render(request, template_name, context)
 
