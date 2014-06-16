@@ -1,235 +1,195 @@
-$(document).ready(function(){
+$(document).ready(function () {
+
     $("#birthday").mask("99/99/9999");
 
-});
-
-$(document).ready(function(){
-    $("#verCerFractOptionsRadios1").click(function(){
+    $("#verCerFractOptionsRadios1").click(function () {
         $("#id_fieldSetClavFract").prop('disabled', false);
     });
-});
 
-//exame complementar
-
-$(document).ready(function(){
-    $("#complementaryExameOptionsRadios1").click(function(){
+    $("#complementaryExameOptionsRadios1").click(function () {
         $("#id_whichComplementaryExame").prop('disabled', false);
     });
-});
 
-$(document).ready(function(){
-    $("#complementaryExameOptionsRadios2").click(function(){
+    $("#complementaryExameOptionsRadios2").click(function () {
         $("#id_whichComplementaryExame").prop('disabled', true);
     });
-});
 
-//cirurgia de nervo
-
-$(document).ready(function(){
-    $("#nerveSurgOptionsRadios1").click(function(){
+    $("#nerveSurgOptionsRadios1").click(function () {
         $("#id_nerveSurgery").prop('disabled', false);
     });
-});
 
-$(document).ready(function(){
-    $("#nerveSurgOptionsRadios2").click(function(){
+    $("#nerveSurgOptionsRadios2").click(function () {
         $("#id_nerveSurgery").prop('disabled', true);
     });
-});
 
-//vertebral lombo sacral
-
-$(document).ready(function(){
-    $("#verLomSacOptionsRadios1").click(function(){
+    $("#verLomSacOptionsRadios1").click(function () {
         $("#id_fieldVerLomSac").prop('disabled', false);
     });
-});
 
-$(document).ready(function(){
-    $("#verLomSacOptionsRadios2").click(function(){
-        $("#id_fieldVerLomSac").prop('disabled', true);
-    });
-});
-
-//vertebral lombo sacral relacionada
-
-$(document).ready(function(){
-    $("#verLomSacRelatedOptionsRadios1").click(function(){
+    $("#verLomSacRelatedOptionsRadios1").click(function () {
         $("#id_fieldVerLomSacRelated").prop('disabled', false);
     });
-});
 
-$(document).ready(function(){
-    $("#verLomSacRelatedOptionsRadios2").click(function(){
+    $("#verLomSacRelatedOptionsRadios2").click(function () {
         $("#id_fieldVerLomSacRelated").prop('disabled', true);
     });
-});
 
-//historia da fratura
-$(document).ready(function(){
-    $("#fractHistOptionsRadios1").click(function(){
+    $("#verLomSacOptionsRadios2").click(function () {
+        $("#id_fieldVerLomSac").prop('disabled', true);
+    });
+
+    $("#fractHistOptionsRadios1").click(function () {
         $("#id_fieldFractHistory").prop('disabled', false);
     });
-});
 
-$(document).ready(function(){
-    $("#fractHistOptionsRadios2").click(function(){
+    $("#fractHistOptionsRadios2").click(function () {
         $("#id_fieldFractHistory").prop('disabled', true);
     });
-});
 
-//historia da fratura relacionada
-$(document).ready(function(){
-    $("#relatedFractOptionsRadios1").click(function(){
+    $("#relatedFractOptionsRadios1").click(function () {
         $("#id_fieldRelatedFractHistory").prop('disabled', false);
     });
-});
 
-$(document).ready(function(){
-    $("#relatedFractOptionsRadios2").click(function(){
+    $("#relatedFractOptionsRadios2").click(function () {
         $("#id_fieldRelatedFractHistory").prop('disabled', true);
     });
-});
 
-//historia cirurgia ortopedica
-
-$(document).ready(function(){
-    $("#orthSurgOptionsRadios1").click(function(){
+    $("#orthSurgOptionsRadios1").click(function () {
         $("#id_fieldSetOrtSurg").prop('disabled', false);
     });
-});
 
-$(document).ready(function(){
-    $("#orthSurgOptionsRadios2").click(function(){
+    $("#orthSurgOptionsRadios2").click(function () {
         $("#id_fieldSetOrtSurg").prop('disabled', true);
     });
-});
 
-$(document).ready(function(){
-    $("#verCerFractOptionsRadios2").click(function(){
+    $("#verCerFractOptionsRadios2").click(function () {
         $("#id_fieldSetClavFract").prop('disabled', true);
     });
-});
 
-
-//fratura vertebral toracica relacionada
-$(document).ready(function(){
-    $("#verTorFractRelatedOptionsRadios1").click(function(){
+    $("#verTorFractRelatedOptionsRadios1").click(function () {
         $("#id_fieldSetVerTorFractRelated").prop('disabled', false);
     });
-});
 
-$(document).ready(function(){
-    $("#verTorFractRelatedOptionsRadios2").click(function(){
+    $("#verTorFractRelatedOptionsRadios2").click(function () {
         $("#id_fieldSetVerTorFractRelated").prop('disabled', true);
     });
-});
 
-
-//fratura vertebral toracica
-$(document).ready(function(){
-    $("#verTorFractOptionsRadios1").click(function(){
+    $("#verTorFractOptionsRadios1").click(function () {
         $("#id_fieldSetVerTorFract").prop('disabled', false);
     });
-});
 
-$(document).ready(function(){
-    $("#verTorFractOptionsRadios2").click(function(){
+    $("#verTorFractOptionsRadios2").click(function () {
         $("#id_fieldSetVerTorFract").prop('disabled', true);
     });
-});
 
-//lesoes vasculares
-$(document).ready(function(){
-    $("#vascularLesionsOptionsRadios1").click(function(){
+    $("#vascularLesionsOptionsRadios1").click(function () {
         $("#id_fieldSetvascularLesions").prop('disabled', false);
     });
-});
 
-$(document).ready(function(){
-    $("#vascularLesionsOptionsRadios2").click(function(){
+    $("#vascularLesionsOptionsRadios2").click(function () {
         $("#id_fieldSetvascularLesions").prop('disabled', true);
     });
-});
 
-//fratura vertebral cervical relacionada
-$(document).ready(function(){
-    $("#verCerFractRelatedOptionsRadios1").click(function(){
+    $("#verCerFractRelatedOptionsRadios1").click(function () {
         $("#id_fieldSetClavFractRelated").prop('disabled', false);
     });
-});
 
-$(document).ready(function(){
-    $("#verCerFractRelatedOptionsRadios2").click(function(){
+    $("#verCerFractRelatedOptionsRadios2").click(function () {
         $("#id_fieldSetClavFractRelated").prop('disabled', true);
     });
-});
 
-//fumante
-$(document).ready(function(){
-    $("#smokingOptionsRadios1").click(function(){
+    $("#smokingOptionsRadios1").click(function () {
         $("#id_amount_cigarettes").prop('disabled', false);
     });
-});
 
-$(document).ready(function(){
-    $("#smokingOptionsRadios2").click(function(){
+    $("#smokingOptionsRadios2").click(function () {
         $("#id_amount_cigarettes").prop('disabled', true);
     });
-});
 
-//alcolismo
-$(document).ready(function(){
-    $("#alcoholismOptionsRadios1").click(function(){
+    $("#alcoholismOptionsRadios1").click(function () {
         $("#id_freqSmok").prop('disabled', false);
         $("#id_periodSmok").prop('disabled', false);
     });
-});
 
-$(document).ready(function(){
-    $("#alcoholismOptionsRadios2").click(function(){
+    $("#alcoholismOptionsRadios2").click(function () {
         $("#id_freqSmok").prop('disabled', true);
         $("#id_periodSmok").prop('disabled', true);
     });
-});
 
-$(document).ready(function(){
+
     $("#cpf_id").mask("999.999.999-99");
-});
 
-
-$(document).ready(function(){
-    $("#id_chosen_state").on("change.bfhselectbox",function(){
-        var state = $(this).val();
-        if(state == "SP")
-            $("#phone").mask("(99) 99999-9999");
-        else
-            $("#phone").mask("(99) 9999-9999");
-    });
-});
-
-$(document).ready(function(){
-    $("#nexttab").click(function(){
+    $("#nexttab").click(function () {
         var $tabs = $('.tabbable li');
         $tabs.filter('.active').next('li').find('a[data-toggle="tab"]').tab('show');
     });
-});
 
-$(document).ready(function(){
-    $("#prevtab").click(function(){
+
+    $('#cellphone').val('');
+    $('#cellphone').change(function () {
+        $('#cellphone').unmask();
+    });
+
+    $('#cellphone').focus(function () {
+        $('#cellphone').unmask();
+    });
+
+    $('#cellphone').blur(function () {
+        if ($("#cellphone").val().length == 11)
+            $("#cellphone").mask("(99) 99999-9999");
+        else if ($("#cellphone").val().length == 10)
+            $("#cellphone").mask("(99) 9999-9999");
+        else
+            $("#cellphone").mask("");
+    });
+
+    $('#phone').val('');
+    $('#phone').change(function () {
+        $('#phone').unmask();
+    });
+
+    $('#phone').focus(function () {
+        $('#phone').unmask();
+    });
+
+    $('#phone').blur(function () {
+        if ($("#phone").val().length == 11)
+            $("#phone").mask("(99) 99999-9999");
+        else if ($("#phone").val().length == 10)
+            $("#phone").mask("(99) 9999-9999");
+        else
+            $("#phone").mask("");
+    });
+
+    $('#zipcode').val('');
+    $('#zipcode').change(function () {
+        $('#zipcode').unmask();
+    });
+
+
+    $('#zipcode').focus(function () {
+        $('#zipcode').unmask();
+    });
+
+    $('#zipcode').blur(function () {
+        if (this.value.length == 8) {
+            $('#zipcode').mask('99999-999');
+        } else if (this.value.length > 8) {
+
+        }
+    });
+
+    $("#prevtab").click(function () {
         var $tabs = $('.tabbable li');
         $tabs.filter('.active').prev('li').find('a[data-toggle="tab"]').tab('show');
     });
-});
 
-$(document).ready(function(){
-    $("#savetab2").click(function(){
+    $("#savetab2").click(function () {
         $("#form_id").submit();
     });
-});
 
-$(document).ready(function(){
-    $("#savetab").click(function() {
+    $("#savetab").click(function () {
+
         var name_value = $.trim($("#full_name").val());
         var date_birth_value = $.trim($("#birthday").val());
         var gender_value = $.trim($("#gender_id").val());
@@ -246,10 +206,10 @@ $(document).ready(function(){
                 $("#myModal").modal('show');
             }
             else {
+
                 $("#form_id").submit();
             }
         }
     });
 });
-
 
