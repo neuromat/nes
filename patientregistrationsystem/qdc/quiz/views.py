@@ -37,6 +37,11 @@ def patient_create(request, template_name="quiz/register.html"):
     social_demographic_form = SocialDemographicDataForm()
     social_history_form = SocialHistoryDataForm()
 
+    if 'currentTab' in request.POST:
+        current_tab = request.POST['currentTab']
+    else:
+        current_tab = 0
+
     if request.method == "POST":
 
         patient_form = PatientForm(request.POST)
@@ -110,9 +115,7 @@ def patient_create(request, template_name="quiz/register.html"):
             new_patient_id = new_patient.number_record
 
             redirect_url = reverse("patient_edit", args=(new_patient_id,))
-            return HttpResponseRedirect(redirect_url)
-            ### para mim, isto deveria funcionar
-            ##return redirect("patient_edit", (new_patient_id,))
+            return HttpResponseRedirect(redirect_url + "?currentTab=" + current_tab)
 
         else:
             if request.POST['cpf_id'] and Patient.objects.filter(cpf_id=request.POST['cpf_id']):
@@ -126,6 +129,7 @@ def patient_create(request, template_name="quiz/register.html"):
                'amount_cigarettes': amount_cigarettes, 'alcohol_frequency': alcohol_frequency,
                'alcohol_period': alcohol_period,
                'editing': True,
+               'currentTab': current_tab
     }
 
     return render(request, template_name, context)
@@ -155,12 +159,23 @@ def patient_update(request, patient_id, template_name="quiz/register.html"):
     except SocialHistoryData.DoesNotExist:
         social_history_form = SocialDemographicDataForm()
 
+    if 'currentTab' in request.GET:
+        current_tab = request.GET['currentTab']
+    else:
+        current_tab = 0
+
     #TODO: retirar este controle de comentario
     ### teste: inicio
 
     #TODO: reaproveitar o codigo abaixo, pois eh praticamente igual ao do inserir
 
     if request.method == "POST":
+
+        if 'currentTab' in request.POST:
+            current_tab = request.POST['currentTab']
+        else:
+            current_tab = 0
+
 
         #patient_form = PatientForm(request.POST)
         #social_demographic_form = SocialDemographicDataForm(request.POST)
@@ -217,6 +232,7 @@ def patient_update(request, patient_id, template_name="quiz/register.html"):
 
                         messages.warning(request, 'Classe Social não calculada, pois os campos necessários '
                                                   'para o cálculo não foram preenchidos.')
+                        current_tab = "1"
 
                 new_social_demographic_data.save()
 
@@ -233,9 +249,7 @@ def patient_update(request, patient_id, template_name="quiz/register.html"):
             new_patient_id = new_patient.number_record
 
             redirect_url = reverse("patient_edit", args=(new_patient_id,))
-            return HttpResponseRedirect(redirect_url)
-            ### para mim, isto deveria funcionar
-            ##return redirect("patient_edit", (new_patient_id,))
+            return HttpResponseRedirect(redirect_url + "?currentTab=" + current_tab)
 
         else:
             if request.POST['cpf_id'] and Patient.objects.filter(cpf_id=request.POST['cpf_id']):
@@ -249,6 +263,7 @@ def patient_update(request, patient_id, template_name="quiz/register.html"):
         'social_demographic_form': social_demographic_form,
         'social_history_form': social_history_form,
         'editing': True,
+        'currentTab': current_tab
         }
     return render(request, template_name, context)
 

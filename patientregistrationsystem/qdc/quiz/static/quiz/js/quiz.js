@@ -1,4 +1,3 @@
-
 function showSuccessMessage(message) {
     toastr.options.closeButton = true;
     toastr.options.timeOut = 10000;
@@ -33,7 +32,6 @@ function jumpToElement(h) {
     var top = document.getElementById(h).offsetTop;
     window.scrollTo(0, top);
 }
-
 
 
 

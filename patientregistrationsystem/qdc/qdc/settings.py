@@ -77,9 +77,10 @@ TEMPLATE_DIRS = [os.path.join(BASE_DIR, 'templates')]
 LANGUAGE_CODE = 'pt-br'
 
 LANGUAGES = (
-    ('en', u'English'),
     ('pt-br', u'Português'),
+#    ('en', u'English'),
 )
+
 
 LOCALE_PATHS = [os.path.join(BASE_DIR, 'locale')]
 

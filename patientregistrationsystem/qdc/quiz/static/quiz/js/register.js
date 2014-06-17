@@ -203,10 +203,15 @@ $(document).ready(function () {
                 $("#myModal").modal('show');
             }
             else {
-
                 $("#form_id").submit();
             }
         }
     });
+
+    $('a[data-toggle="tab"]').on('shown.bs.tab', function (e) {
+        var activeTab = e.target.id;
+        document.getElementById('currentTab').value = activeTab;
+    });
+
 });
 

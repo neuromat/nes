@@ -36,7 +36,7 @@ class PatientForm(ModelForm):
             'email_txt': TextInput(attrs={'class': 'form-control', 'placeholder': 'Entrar e-mail', 'id': "email",
                                           'type': 'email', 'data-error': "E-mail inválido",
                                           'pattern': '^[_A-Za-z0-9-\+]+(\.[_A-Za-z0-9-]+)*@[A-Za-z0-9-]+(\.[A-Za-z0-9]+)*(\.[A-Za-z]{2,})$'
-                                }),
+                                          }),
             'medical_record_number': TextInput(attrs={'class': 'form-control',
                                                       'placeholder': 'Entrar número do prontuário',
                                                       'id': "records_number"}),
@@ -49,7 +49,7 @@ class PatientForm(ModelForm):
             'date_birth_txt': DateInput(attrs={'class': 'form-control', 'placeholder': 'Data',
                                                'id': "birthday", 'required': "",
                                                'data-error': "Data de nascimento deve ser preenchida"},
-                                        format='%Y-%m-%d')
+                                        )
         }
         error_messages = {
             'name_txt': {
