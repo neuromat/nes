@@ -1,10 +1,9 @@
 # coding=utf-8
 #from django.utils.six import attr
-from django.forms import ModelForm, TextInput, DateInput
+from django.forms import ModelForm, TextInput, DateInput, Select, RadioSelect
 from models import Patient, SocialDemographicData, SocialHistoryData
 from django.db import models
 from quiz_widget import SelectBoxCountries, SelectBoxState
-from django.forms.widgets import Select, RadioSelect
 
 
 class PatientForm(ModelForm):
