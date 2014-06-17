@@ -41,6 +41,12 @@
             margin-top:20px;
         }
     </style>
+
+    <script type="text/javascript">
+        $(document).ready(function(){
+            $("#idTabs li:eq( {{ currentTab }}) a").tab('show');
+        })
+    </script>
 </head>
 
 <body class="">
@@ -163,12 +169,14 @@
 
 <!-- Esta ul define os títulos das abas contextuais -->
 <ul class="nav nav-tabs nav-justified" id="idTabs">
-    <li class="active"><a href="#tab1" data-toggle="tab">Dados Pessoais</a></li>
-    <li><a href="#tab2" data-toggle="tab">Dados Sociodemográficos</a></li>
-    <li><a href="#tab3" data-toggle="tab">História Social</a></li>
-    <li><a href="#tab4" data-toggle="tab">Doenças Pregressas</a></li>
-    <li><a href="#tab5" data-toggle="tab">Doenças Atuais</a></li>
+    <li class="active"><a href="#tab1" data-toggle="tab" id="0">Dados Pessoais</a></li>
+    <li><a href="#tab2" data-toggle="tab" id="1">Dados Sociodemográficos</a></li>
+    <li><a href="#tab3" data-toggle="tab" id="2">História Social</a></li>
+    <li><a href="#tab4" data-toggle="tab" id="3">Doenças Pregressas</a></li>
+    <li><a href="#tab5" data-toggle="tab" id="4">Doenças Atuais</a></li>
 </ul>
+
+<input type="text" id="currentTab" name="currentTab" value="{{ currentTab }}"/>
 
 <div id="fix-for-tab-content-spacing" style="height: 22px;">&nbsp;</div>
 
