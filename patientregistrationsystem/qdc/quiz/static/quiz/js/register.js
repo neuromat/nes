@@ -185,7 +185,13 @@ $(document).ready(function () {
         $("#form_id").submit();
     });
 
+    $("#editPatient").click(function () {
+        document.getElementById('action').value = "edit";
+        $("#form_id").submit();
+    });
+
     $("#removePatient").click(function () {
+        document.getElementById('action').value = "remove";
         $("#form_id").submit();
     });
 

@@ -269,42 +269,6 @@ def patient_update(request, patient_id, template_name="quiz/register.html"):
 
 
 @login_required
-def patient_delete(request, patient_id, template_name="quiz/unregister.html"):
-
-    ## Search in models.Patient
-    ## ------------------------
-    p = Patient.objects.get(number_record=patient_id)
-    patient_form = PatientForm(request.POST or None, instance=p)
-
-    ## Search in models.SocialDemographicData
-    ## --------------------------------------
-    try:
-        p_social_demo = SocialDemographicData.objects.get(id_patient_id=patient_id)
-        social_demographic_form = SocialDemographicDataForm(request.POST or None, instance=p_social_demo)
-    except SocialDemographicData.DoesNotExist:
-        social_demographic_form = SocialDemographicDataForm()
-
-    ## Search in models.SocialHistoryData
-    ## --------------------------------------
-    try:
-        p_social_hist = SocialHistoryData.objects.get(id_patient_id=patient_id)
-        social_history_form = SocialHistoryDataForm(request.POST or None, instance=p_social_hist)
-    except SocialHistoryData.DoesNotExist:
-        social_history_form = SocialDemographicDataForm()
-
-    if request.method == "POST":
-
-        p_social_hist.delete()
-        p_social_demo.delete()
-        p.delete()
-
-        redirect_url = reverse("search_patient")
-        return HttpResponseRedirect(redirect_url)
-
-    return render(request, template_name, {'patient': p})
-
-
-@login_required
 def patients(request):
     language = 'en-us'
     session_language = 'en-us'
@@ -329,7 +293,20 @@ def patients(request):
 def patient(request, patient_id, template_name="quiz/register.html"):
 
     if request.method == "POST":
-        redirect_url = reverse("patient_edit", args=(patient_id,))
+
+        if 'action' in request.POST:
+
+            if request.POST['action'] == "remove":
+
+                patient_remove = Patient.objects.get(number_record=patient_id)
+                patient_remove.removed = True
+                patient_remove.save()
+
+                redirect_url = reverse("search_patient")
+
+            else:
+                redirect_url = reverse("patient_edit", args=(patient_id,))
+
         return HttpResponseRedirect(redirect_url)
 
     ## Search in models.Patient
@@ -383,9 +360,9 @@ def search_patients_ajax(request):
         search_text = request.POST['search_text']
         if search_text:
             if re.match('[a-zA-Z ]+', search_text):
-                patient_list = Patient.objects.filter(name_txt__icontains=search_text)
+                patient_list = Patient.objects.filter(name_txt__icontains=search_text).exclude(removed=True)
             else:
-                patient_list = Patient.objects.filter(cpf_id__icontains=search_text)
+                patient_list = Patient.objects.filter(cpf_id__icontains=search_text).exclude(removed=True)
         else:
             patient_list = ''
     else:
