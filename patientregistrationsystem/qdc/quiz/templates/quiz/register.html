@@ -114,10 +114,6 @@
 
 <!-- A tag form abrange o formulário divido por abas contextuais -->
 
-<!--
-<form id="form_id" role="form" method="post" action="/quiz/register/" data-toggle="validator">
--->
-
 <form id="form_id" role="form" method="post" data-toggle="validator">
 {% csrf_token %}
 
@@ -1574,6 +1570,20 @@
     </div>
 </div>
 
+<div class="modal fade" id="modalRemove" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-body">
+                Tem certeza que deseja excluir o paciente?
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-default" data-dismiss="modal">Cancelar</button>
+                <button type="button" class="btn btn-primary" id="removePatient">Excluir</button>
+            </div>
+        </div>
+    </div>
+</div>
+
 <!-- Esta div define os botões de navegação no formulário -->
 <div class="row">
     <div class="col-md-1">
@@ -1586,6 +1596,7 @@
                 <button type="button" class="btn btn-primary" id="savetab">Salvar</button>
             {% else %}
                 <button type="button" class="btn btn-primary" onclick="$('#form_id').submit()">Editar</button>
+                <button type="button" class="btn btn-secondary" style="background-color: indianred; color: #ffffff" onclick="$('#modalRemove').modal('show')">Excluir</button>
             {% endif %}
         </div>
     </div>

@@ -185,6 +185,10 @@ $(document).ready(function () {
         $("#form_id").submit();
     });
 
+    $("#removePatient").click(function () {
+        $("#form_id").submit();
+    });
+
     $("#savetab").click(function () {
 
         var name_value = $.trim($("#full_name").val());
