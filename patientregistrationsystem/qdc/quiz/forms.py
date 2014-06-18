@@ -10,11 +10,13 @@ from django.forms.widgets import Select, RadioSelect
 class PatientForm(ModelForm):
     class Meta:
         model = Patient
+
         fields = [
             'cpf_id', 'name_txt', 'rg_id', 'medical_record_number', 'natural_of_txt', 'citizenship_txt', 'street_txt',
             'zipcode_number', 'country_txt', 'state_txt', 'city_txt', 'phone_number', 'cellphone_number', 'email_txt',
             'date_birth_txt', 'gender_opt', 'marital_status_opt',
         ]
+
         widgets = {
             'name_txt': TextInput(attrs={'class': 'form-control', 'placeholder': 'Entrar nome completo',
                                          'id': "full_name", 'autofocus': "true", 'required': "",
@@ -35,7 +37,7 @@ class PatientForm(ModelForm):
             'cellphone_number': TextInput(attrs={'class': 'form-control', 'placeholder': 'Entrar celular',
                                                  'id': "cellphone"}),
             'email_txt': TextInput(attrs={'class': 'form-control', 'placeholder': 'Entrar e-mail', 'id': "email",
-                                          'type': 'email', 'data-error': "E-mail inválido",
+                                          'type': 'email', 'data-error': "E-mail inválido", 'required': "",
                                           'pattern': '^[_A-Za-z0-9-\+]+(\.[_A-Za-z0-9-]+)*@[A-Za-z0-9-]+(\.[A-Za-z0-9]+)*(\.[A-Za-z]{2,})$'
             }),
             'medical_record_number': TextInput(attrs={'class': 'form-control',
