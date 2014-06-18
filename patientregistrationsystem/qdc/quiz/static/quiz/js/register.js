@@ -203,7 +203,9 @@ $(document).ready(function () {
                 $("#myModal").modal('show');
             }
             else {
-                if (!validateEmail($('#email').val())) {
+                var email_value = $.trim($('#email').val());
+
+                if (!validateEmail(email_value) && email_value.length != 0 ) {
                     showErrorMessageTemporary("Preencha os campos corretamente. Campo de e-mail inválido");
                 } else {
                     $("#form_id").submit();

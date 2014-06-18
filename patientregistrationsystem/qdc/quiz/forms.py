@@ -37,7 +37,7 @@ class PatientForm(ModelForm):
             'cellphone_number': TextInput(attrs={'class': 'form-control', 'placeholder': 'Entrar celular',
                                                  'id': "cellphone"}),
             'email_txt': TextInput(attrs={'class': 'form-control', 'placeholder': 'Entrar e-mail', 'id': "email",
-                                          'type': 'email', 'data-error': "E-mail inválido", 'required': "",
+                                          'type': 'email', 'data-error': "E-mail inválido",
                                           'pattern': '^[_A-Za-z0-9-\+]+(\.[_A-Za-z0-9-]+)*@[A-Za-z0-9-]+(\.[A-Za-z0-9]+)*(\.[A-Za-z]{2,})$'
             }),
             'medical_record_number': TextInput(attrs={'class': 'form-control',
@@ -47,7 +47,7 @@ class PatientForm(ModelForm):
             'country_txt': SelectBoxCountries(attrs={'id': 'id_country_state_address', 'data-flags': 'true'}),
             'state_txt': SelectBoxState(attrs={'data-country': 'id_country_state_address', 'id': 'id_chosen_state'}),
             'gender_opt': Select(attrs={'class': 'form-control', 'id': 'gender_id', 'required': "",
-                                        'data-error': "Sexo deve ser preenchido"}),
+                                        'data-error': "Sexo deve ser preenchido"} ),
             'marital_status_opt': Select(attrs={'class': 'form-control', 'id': 'marital_status'}),
             'date_birth_txt': DateInput(attrs={'class': 'form-control', 'placeholder': 'Data',
                                                'id': "birthday", 'required': "",
