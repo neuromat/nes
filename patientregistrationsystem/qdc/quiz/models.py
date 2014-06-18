@@ -6,6 +6,7 @@ from django.db import models
 from django.core.exceptions import ValidationError
 from django.utils.translation import ugettext as _
 from validation import CPF
+import datetime
 
 # Create your models here.
 
@@ -111,6 +112,12 @@ class Patient(models.Model):
             self.citizenship_txt, self.street_txt, self.zipcode_number, self.country_txt, self.state_txt, \
             self.city_txt, self.phone_number, self.cellphone_number, self.email_txt, self.date_birth_txt, \
             self.gender_opt, self.marital_status_opt
+
+    def clean(self):
+        super(Patient, self).clean()
+        if self.date_birth_txt > datetime.date.today():
+            raise ValidationError('Data de nascimento não é maior que a data de hoje.')
+
 
 
 class SocialDemographicData(models.Model):
