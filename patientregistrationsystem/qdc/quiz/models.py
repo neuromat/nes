@@ -99,6 +99,7 @@ class Patient(models.Model):
     gender_opt = models.ForeignKey(GenderOption, null=False, blank=False,
                                    choices=(('1', 'Feminino'), ('0', 'Masculino')))
     marital_status_opt = models.ForeignKey(MaritalStatusOption, null=True, blank=True)
+    removed = models.BooleanField(null=False, default=False)
 
 
     class Meta:
@@ -111,7 +112,7 @@ class Patient(models.Model):
             self.name_txt, self.cpf_id, self.rg_id, self.medical_record_number, self.natural_of_txt, \
             self.citizenship_txt, self.street_txt, self.zipcode_number, self.country_txt, self.state_txt, \
             self.city_txt, self.phone_number, self.cellphone_number, self.email_txt, self.date_birth_txt, \
-            self.gender_opt, self.marital_status_opt
+            self.gender_opt, self.marital_status_opt, self.removed
 
 
 class SocialDemographicData(models.Model):

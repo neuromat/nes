@@ -1,10 +1,9 @@
 # coding=utf-8
-# from django.utils.six import attr
-from django.forms import ModelForm, TextInput, DateInput
+#from django.utils.six import attr
+from django.forms import ModelForm, TextInput, DateInput, Select, RadioSelect
 from models import Patient, SocialDemographicData, SocialHistoryData
 from django.db import models
 from quiz_widget import SelectBoxCountries, SelectBoxState
-from django.forms.widgets import Select, RadioSelect
 
 
 class PatientForm(ModelForm):
@@ -39,7 +38,7 @@ class PatientForm(ModelForm):
             'email_txt': TextInput(attrs={'class': 'form-control', 'placeholder': 'Entrar e-mail', 'id': "email",
                                           'type': 'email', 'data-error': "E-mail inválido",
                                           'pattern': '^[_A-Za-z0-9-\+]+(\.[_A-Za-z0-9-]+)*@[A-Za-z0-9-]+(\.[A-Za-z0-9]+)*(\.[A-Za-z]{2,})$'
-            }),
+                                          }),
             'medical_record_number': TextInput(attrs={'class': 'form-control',
                                                       'placeholder': 'Entrar número do prontuário',
                                                       'id': "records_number"}),
@@ -51,7 +50,8 @@ class PatientForm(ModelForm):
             'marital_status_opt': Select(attrs={'class': 'form-control', 'id': 'marital_status'}),
             'date_birth_txt': DateInput(attrs={'class': 'form-control', 'placeholder': 'Data',
                                                'id': "birthday", 'required': "",
-                                               'data-error': "Data de nascimento deve ser preenchida"})
+                                               'data-error': "Data de nascimento deve ser preenchida"},
+                                        )
         }
         error_messages = {
             'name_txt': {
@@ -66,7 +66,7 @@ class SocialDemographicDataForm(ModelForm):
         fields = ['profession_txt', 'occupation_txt', 'tv_opt', 'dvd_opt', 'radio_opt', 'bath_opt',
                   'automobile_opt', 'wash_machine_opt', 'refrigerator_opt', 'freezer_opt', 'house_maid_opt',
                   'religion_opt', 'payment_opt', 'flesh_tone_opt', 'schooling_opt', 'benefit_government_bool',
-        ]
+                  ]
         widgets = {
             'benefit_government_bool': RadioSelect(attrs={'id': 'id_benefit'}, choices=(('1', 'Sim'), ('0', 'Não'))),
             'schooling_opt': Select(attrs={'class': 'form-control', 'id': 'scolarity'}),

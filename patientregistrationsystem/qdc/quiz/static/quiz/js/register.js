@@ -185,6 +185,10 @@ $(document).ready(function () {
         $("#form_id").submit();
     });
 
+    $("#removePatient").click(function () {
+        $("#form_id").submit();
+    });
+
     $("#savetab").click(function () {
 
         var name_value = $.trim($("#full_name").val());
@@ -213,6 +217,12 @@ $(document).ready(function () {
             }
         }
     });
+
+    $('a[data-toggle="tab"]').on('shown.bs.tab', function (e) {
+        var activeTab = e.target.id;
+        document.getElementById('currentTab').value = activeTab;
+    });
+
 });
 
 
