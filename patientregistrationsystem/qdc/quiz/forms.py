@@ -9,11 +9,13 @@ from quiz_widget import SelectBoxCountries, SelectBoxState
 class PatientForm(ModelForm):
     class Meta:
         model = Patient
+
         fields = [
             'cpf_id', 'name_txt', 'rg_id', 'medical_record_number', 'natural_of_txt', 'citizenship_txt', 'street_txt',
             'zipcode_number', 'country_txt', 'state_txt', 'city_txt', 'phone_number', 'cellphone_number', 'email_txt',
             'date_birth_txt', 'gender_opt', 'marital_status_opt',
         ]
+
         widgets = {
             'name_txt': TextInput(attrs={'class': 'form-control', 'placeholder': 'Entrar nome completo',
                                          'id': "full_name", 'autofocus': "true", 'required': "",
@@ -44,7 +46,7 @@ class PatientForm(ModelForm):
             'country_txt': SelectBoxCountries(attrs={'id': 'id_country_state_address', 'data-flags': 'true'}),
             'state_txt': SelectBoxState(attrs={'data-country': 'id_country_state_address', 'id': 'id_chosen_state'}),
             'gender_opt': Select(attrs={'class': 'form-control', 'id': 'gender_id', 'required': "",
-                                        'data-error': "Sexo deve ser preenchido"}),
+                                        'data-error': "Sexo deve ser preenchido"} ),
             'marital_status_opt': Select(attrs={'class': 'form-control', 'id': 'marital_status'}),
             'date_birth_txt': DateInput(attrs={'class': 'form-control', 'placeholder': 'Data',
                                                'id': "birthday", 'required': "",

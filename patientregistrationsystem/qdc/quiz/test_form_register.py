@@ -60,7 +60,7 @@ class FormValidation(TestCase):
                 u'zipcode_number': [u''], u'state_txt': [u'RJ'], u'alcohol_frequency_opt': [u''],
                 u'schooling_opt': [u''], u'street_txt': [u''], u'flesh_tone_opt': [u''], u'occupation_txt': [u''],
                 u'medical_record_number': [u''],
-                u'phone_number': [u''], u'marital_status_opt': [u''], u'rg_id': [u''], u'alcohol_period_opt': [u''],
+                u'phone_number': [u'1'], u'marital_status_opt': [u''], u'rg_id': [u''], u'alcohol_period_opt': [u''],
                 u'gender_opt': [u'1'], u'citizenship_txt': [u'BR'], u'payment_opt': [u''],
                 u'name_txt': [u'Paciente de Teste'], u'email_txt': [u''], u'cellphone_number': [u''],
                 u'date_birth_txt': [u'15/01/2003'], u'natural_of_txt': [u''], u'country_txt': [u'BR'],

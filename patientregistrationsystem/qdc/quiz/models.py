@@ -1,4 +1,3 @@
-
 # -*- coding: UTF-8 -*-
 
 from __future__ import unicode_literals
@@ -13,7 +12,7 @@ from validation import CPF
 def validate_cpf(value):
     validation = CPF(value)
     if not validation.isValid():
-        #raise ValidationError(u'CPF %s não é válido' % value)
+        # raise ValidationError(u'CPF %s não é válido' % value)
         raise ValidationError(_('CPF %s não é válido') % value)
 
 
@@ -97,9 +96,11 @@ class Patient(models.Model):
     cellphone_number = models.CharField(max_length=15, null=True, blank=True)
     email_txt = models.EmailField(null=True, blank=True)
     date_birth_txt = models.DateField(null=False, blank=False)
-    gender_opt = models.ForeignKey(GenderOption, null=False, blank=False)
+    gender_opt = models.ForeignKey(GenderOption, null=False, blank=False,
+                                   choices=(('1', 'Feminino'), ('0', 'Masculino')))
     marital_status_opt = models.ForeignKey(MaritalStatusOption, null=True, blank=True)
     removed = models.BooleanField(null=False, default=False)
+
 
     class Meta:
         permissions = (
@@ -136,7 +137,8 @@ class SocialDemographicData(models.Model):
 
     def __unicode__(self):
         return \
-            self.id_patient, self.religion_opt, self.profession_txt, self.occupation_txt, bool(self.benefit_government_bool), \
+            self.id_patient, self.religion_opt, self.profession_txt, self.occupation_txt, bool(
+                self.benefit_government_bool), \
             self.payment_opt, self.flesh_tone_opt, self.schooling_opt, self.tv_opt, self.dvd_opt, self.radio_opt, \
             self.bath_opt, self.automobile_opt, self.wash_machine_opt, self.refrigerator_opt, self.freezer_opt, \
             self.house_maid_opt, self.social_class_opt
@@ -198,5 +200,5 @@ class SocialHistoryData(models.Model):
 
     def __unicode__(self):
         return \
-            self.id_patient, bool(self.smoker), self.amount_cigarettes_opt, bool(self.ex_smoker), bool(self.alcoholic),\
+            self.id_patient, bool(self.smoker), self.amount_cigarettes_opt, bool(self.ex_smoker), bool(self.alcoholic), \
             self.alcohol_frequency_opt, self.alcohol_period_opt, self.drugs_opt
