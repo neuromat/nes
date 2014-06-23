@@ -56,7 +56,7 @@ def patient_create(request, template_name="quiz/register.html"):
                 new_patient.cpf_id = None
 
             homonym_message = ""
-            homonym_list = Patient.objects.filter(name_txt=request.POST['name_txt'])
+            homonym_list = Patient.objects.filter(name_txt=request.POST['name_txt']).exclude(removed=True)
             if homonym_list:
                 homonym_message = "Aviso: existe paciente como o mesmo nome."
 
@@ -118,8 +118,16 @@ def patient_create(request, template_name="quiz/register.html"):
             return HttpResponseRedirect(redirect_url + "?currentTab=" + current_tab)
 
         else:
-            if request.POST['cpf_id'] and Patient.objects.filter(cpf_id=request.POST['cpf_id']):
-                patient_form.errors['cpf_id'][0] = "Já existe paciente cadastrado com este CPF."
+
+            if request.POST['cpf_id']:
+                patient_found = Patient.objects.filter(cpf_id=request.POST['cpf_id'])
+
+                if patient_found:
+
+                    if patient_found[0].removed:
+                        patient_form.errors['cpf_id'][0] = "Já existe paciente removido com este CPF."
+                    else:
+                        patient_form.errors['cpf_id'][0] = "Já existe paciente cadastrado com este CPF."
 
     context = {'patient_form': patient_form, 'social_demographic_form': social_demographic_form,
                'social_history_form': social_history_form,
@@ -141,167 +149,133 @@ def patient_update(request, patient_id, template_name="quiz/register.html"):
     ## Search in models.Patient
     ## ------------------------
     p = Patient.objects.get(number_record=patient_id)
-    patient_form = PatientForm(request.POST or None, instance=p)
 
-    ## Search in models.SocialDemographicData
-    ## --------------------------------------
-    try:
-        p_social_demo = SocialDemographicData.objects.get(id_patient_id=patient_id)
-        social_demographic_form = SocialDemographicDataForm(request.POST or None, instance=p_social_demo)
-    except SocialDemographicData.DoesNotExist:
-        social_demographic_form = SocialDemographicDataForm()
+    if p and not p.removed:
 
-    ## Search in models.SocialHistoryData
-    ## --------------------------------------
-    try:
-        p_social_hist = SocialHistoryData.objects.get(id_patient_id=patient_id)
-        social_history_form = SocialHistoryDataForm(request.POST or None, instance=p_social_hist)
-    except SocialHistoryData.DoesNotExist:
-        social_history_form = SocialDemographicDataForm()
+        patient_form = PatientForm(request.POST or None, instance=p)
 
-    if 'currentTab' in request.GET:
-        current_tab = request.GET['currentTab']
-    else:
-        current_tab = 0
+        ## Search in models.SocialDemographicData
+        ## --------------------------------------
+        try:
+            p_social_demo = SocialDemographicData.objects.get(id_patient_id=patient_id)
+            social_demographic_form = SocialDemographicDataForm(request.POST or None, instance=p_social_demo)
+        except SocialDemographicData.DoesNotExist:
+            social_demographic_form = SocialDemographicDataForm()
 
-    #TODO: retirar este controle de comentario
-    ### teste: inicio
+        ## Search in models.SocialHistoryData
+        ## --------------------------------------
+        try:
+            p_social_hist = SocialHistoryData.objects.get(id_patient_id=patient_id)
+            social_history_form = SocialHistoryDataForm(request.POST or None, instance=p_social_hist)
+        except SocialHistoryData.DoesNotExist:
+            social_history_form = SocialDemographicDataForm()
 
-    #TODO: reaproveitar o codigo abaixo, pois eh praticamente igual ao do inserir
-
-    if request.method == "POST":
-
-        if 'currentTab' in request.POST:
-            current_tab = request.POST['currentTab']
+        if 'currentTab' in request.GET:
+            current_tab = request.GET['currentTab']
         else:
             current_tab = 0
 
+        #TODO: retirar este controle de comentario
+        ### teste: inicio
 
-        #patient_form = PatientForm(request.POST)
-        #social_demographic_form = SocialDemographicDataForm(request.POST)
-        #social_history_form = SocialHistoryDataForm(request.POST)
+        #TODO: reaproveitar o codigo abaixo, pois eh praticamente igual ao do inserir
 
-        if patient_form.is_valid():
+        if request.method == "POST":
 
-            new_patient = patient_form.save(commit=False)
+            if 'currentTab' in request.POST:
+                current_tab = request.POST['currentTab']
+            else:
+                current_tab = 0
 
-            if not new_patient.cpf_id:
-                new_patient.cpf_id = None
+            #patient_form = PatientForm(request.POST)
+            #social_demographic_form = SocialDemographicDataForm(request.POST)
+            #social_history_form = SocialHistoryDataForm(request.POST)
 
-            #homonym_message = ""
-            #homonym_list = Patient.objects.filter(name_txt=request.POST['name_txt'])
-            #if homonym_list:
-            #    homonym_message = "Aviso: existe paciente como o mesmo nome."
+            if patient_form.is_valid():
 
-            new_patient.save()
+                new_patient = patient_form.save(commit=False)
 
-            if social_demographic_form.is_valid():
+                if not new_patient.cpf_id:
+                    new_patient.cpf_id = None
 
-                new_social_demographic_data = social_demographic_form.save(commit=False)
-                new_social_demographic_data.id_patient = new_patient
+                #homonym_message = ""
+                #homonym_list = Patient.objects.filter(name_txt=request.POST['name_txt'])
+                #if homonym_list:
+                #    homonym_message = "Aviso: existe paciente como o mesmo nome."
 
-                if(new_social_demographic_data.tv_opt is not None and
-                   new_social_demographic_data.radio_opt is not None and
-                   new_social_demographic_data.bath_opt is not None and
-                   new_social_demographic_data.automobile_opt is not None and
-                   new_social_demographic_data.house_maid_opt is not None and
-                   new_social_demographic_data.wash_machine_opt is not None and
-                   new_social_demographic_data.dvd_opt is not None and
-                   new_social_demographic_data.refrigerator_opt is not None and
-                   new_social_demographic_data.freezer_opt is not None):
+                new_patient.save()
 
-                    new_social_demographic_data.social_class_opt = new_social_demographic_data.calculate_social_class(
-                        tv=request.POST['tv_opt'], radio=request.POST['radio_opt'],
-                        banheiro=request.POST['bath_opt'], automovel=request.POST['automobile_opt'],
-                        empregada=request.POST['house_maid_opt'], maquina=request.POST['wash_machine_opt'],
-                        dvd=request.POST['dvd_opt'], geladeira=request.POST['refrigerator_opt'],
-                        freezer=request.POST['freezer_opt'], escolaridade=request.POST['schooling_opt'])
-                else:
+                if social_demographic_form.is_valid():
 
-                    new_social_demographic_data.social_class_opt = None
+                    new_social_demographic_data = social_demographic_form.save(commit=False)
+                    new_social_demographic_data.id_patient = new_patient
 
-                    if(new_social_demographic_data.tv_opt is not None or
-                       new_social_demographic_data.radio_opt is not None or
-                       new_social_demographic_data.bath_opt is not None or
-                       new_social_demographic_data.automobile_opt is not None or
-                       new_social_demographic_data.house_maid_opt is not None or
-                       new_social_demographic_data.wash_machine_opt is not None or
-                       new_social_demographic_data.dvd_opt is not None or
-                       new_social_demographic_data.refrigerator_opt is not None or
+                    if(new_social_demographic_data.tv_opt is not None and
+                       new_social_demographic_data.radio_opt is not None and
+                       new_social_demographic_data.bath_opt is not None and
+                       new_social_demographic_data.automobile_opt is not None and
+                       new_social_demographic_data.house_maid_opt is not None and
+                       new_social_demographic_data.wash_machine_opt is not None and
+                       new_social_demographic_data.dvd_opt is not None and
+                       new_social_demographic_data.refrigerator_opt is not None and
                        new_social_demographic_data.freezer_opt is not None):
 
-                        messages.warning(request, 'Classe Social não calculada, pois os campos necessários '
-                                                  'para o cálculo não foram preenchidos.')
-                        current_tab = "1"
+                        new_social_demographic_data.social_class_opt = new_social_demographic_data.calculate_social_class(
+                            tv=request.POST['tv_opt'], radio=request.POST['radio_opt'],
+                            banheiro=request.POST['bath_opt'], automovel=request.POST['automobile_opt'],
+                            empregada=request.POST['house_maid_opt'], maquina=request.POST['wash_machine_opt'],
+                            dvd=request.POST['dvd_opt'], geladeira=request.POST['refrigerator_opt'],
+                            freezer=request.POST['freezer_opt'], escolaridade=request.POST['schooling_opt'])
+                    else:
 
-                new_social_demographic_data.save()
+                        new_social_demographic_data.social_class_opt = None
 
-            if social_history_form.is_valid():
-                new_social_history_data = social_history_form.save(commit=False)
-                new_social_history_data.id_patient = new_patient
-                new_social_history_data.save()
+                        if(new_social_demographic_data.tv_opt is not None or
+                           new_social_demographic_data.radio_opt is not None or
+                           new_social_demographic_data.bath_opt is not None or
+                           new_social_demographic_data.automobile_opt is not None or
+                           new_social_demographic_data.house_maid_opt is not None or
+                           new_social_demographic_data.wash_machine_opt is not None or
+                           new_social_demographic_data.dvd_opt is not None or
+                           new_social_demographic_data.refrigerator_opt is not None or
+                           new_social_demographic_data.freezer_opt is not None):
 
-                messages.success(request, 'Paciente gravado com sucesso.')
+                            messages.warning(request, 'Classe Social não calculada, pois os campos necessários '
+                                                      'para o cálculo não foram preenchidos.')
+                            current_tab = "1"
 
-                #if homonym_message:
-                #    messages.info(request, homonym_message)
+                    new_social_demographic_data.save()
 
-            new_patient_id = new_patient.number_record
+                if social_history_form.is_valid():
+                    new_social_history_data = social_history_form.save(commit=False)
+                    new_social_history_data.id_patient = new_patient
+                    new_social_history_data.save()
 
-            redirect_url = reverse("patient_edit", args=(new_patient_id,))
-            return HttpResponseRedirect(redirect_url + "?currentTab=" + current_tab)
+                    messages.success(request, 'Paciente gravado com sucesso.')
 
-        else:
-            if request.POST['cpf_id'] and Patient.objects.filter(cpf_id=request.POST['cpf_id']):
-                patient_form.errors['cpf_id'][0] = "Já existe paciente cadastrado com este CPF."
+                    #if homonym_message:
+                    #    messages.info(request, homonym_message)
 
-    #TODO: retirar este controle de comentario
-    ### teste: fim
+                new_patient_id = new_patient.number_record
 
-    context = {
-        'patient_form': patient_form,
-        'social_demographic_form': social_demographic_form,
-        'social_history_form': social_history_form,
-        'editing': True,
-        'currentTab': current_tab
-        }
-    return render(request, template_name, context)
+                redirect_url = reverse("patient_edit", args=(new_patient_id,))
+                return HttpResponseRedirect(redirect_url + "?currentTab=" + current_tab)
 
+            else:
+                if request.POST['cpf_id'] and Patient.objects.filter(cpf_id=request.POST['cpf_id']):
+                    patient_form.errors['cpf_id'][0] = "Já existe paciente cadastrado com este CPF."
 
-@login_required
-def patient_delete(request, patient_id, template_name="quiz/unregister.html"):
+        #TODO: retirar este controle de comentario
+        ### teste: fim
 
-    ## Search in models.Patient
-    ## ------------------------
-    p = Patient.objects.get(number_record=patient_id)
-    patient_form = PatientForm(request.POST or None, instance=p)
-
-    ## Search in models.SocialDemographicData
-    ## --------------------------------------
-    try:
-        p_social_demo = SocialDemographicData.objects.get(id_patient_id=patient_id)
-        social_demographic_form = SocialDemographicDataForm(request.POST or None, instance=p_social_demo)
-    except SocialDemographicData.DoesNotExist:
-        social_demographic_form = SocialDemographicDataForm()
-
-    ## Search in models.SocialHistoryData
-    ## --------------------------------------
-    try:
-        p_social_hist = SocialHistoryData.objects.get(id_patient_id=patient_id)
-        social_history_form = SocialHistoryDataForm(request.POST or None, instance=p_social_hist)
-    except SocialHistoryData.DoesNotExist:
-        social_history_form = SocialDemographicDataForm()
-
-    if request.method == "POST":
-
-        p_social_hist.delete()
-        p_social_demo.delete()
-        p.delete()
-
-        redirect_url = reverse("search_patient")
-        return HttpResponseRedirect(redirect_url)
-
-    return render(request, template_name, {'patient': p})
+        context = {
+            'patient_form': patient_form,
+            'social_demographic_form': social_demographic_form,
+            'social_history_form': social_history_form,
+            'editing': True,
+            'currentTab': current_tab
+            }
+        return render(request, template_name, context)
 
 
 @login_required
@@ -329,47 +303,62 @@ def patients(request):
 def patient(request, patient_id, template_name="quiz/register.html"):
 
     if request.method == "POST":
-        redirect_url = reverse("patient_edit", args=(patient_id,))
+
+        if 'action' in request.POST:
+
+            if request.POST['action'] == "remove":
+
+                patient_remove = Patient.objects.get(number_record=patient_id)
+                patient_remove.removed = True
+                patient_remove.save()
+
+                redirect_url = reverse("search_patient")
+
+            else:
+                redirect_url = reverse("patient_edit", args=(patient_id,))
+
         return HttpResponseRedirect(redirect_url)
 
     ## Search in models.Patient
     ## ------------------------
     p = Patient.objects.get(number_record=patient_id)
-    patient_form = PatientForm(instance=p)
 
-    ## Search in models.SocialDemographicData
-    ## --------------------------------------
-    try:
-        p_social_demo = SocialDemographicData.objects.get(id_patient_id=patient_id)
-        social_demographic_form = SocialDemographicDataForm(instance=p_social_demo)
-    except SocialDemographicData.DoesNotExist:
-        social_demographic_form = SocialDemographicDataForm()
+    if p and not p.removed:
 
-    ## Search in models.SocialHistoryData
-    ## ----------------------------------
-    try:
-        p_social_hist = SocialHistoryData.objects.get(id_patient_id=patient_id)
-        social_history_form = SocialHistoryDataForm(instance=p_social_hist)
-    except SocialHistoryData.DoesNotExist:
-        social_history_form = SocialDemographicDataForm()
+        patient_form = PatientForm(instance=p)
 
+        ## Search in models.SocialDemographicData
+        ## --------------------------------------
+        try:
+            p_social_demo = SocialDemographicData.objects.get(id_patient_id=patient_id)
+            social_demographic_form = SocialDemographicDataForm(instance=p_social_demo)
+        except SocialDemographicData.DoesNotExist:
+            social_demographic_form = SocialDemographicDataForm()
 
-    #deixa os campos como disabled
-    for form in {patient_form, social_demographic_form, social_history_form}:
-        for field in form.fields:
-            form.fields[field].widget.attrs['disabled'] = True
+        ## Search in models.SocialHistoryData
+        ## ----------------------------------
+        try:
+            p_social_hist = SocialHistoryData.objects.get(id_patient_id=patient_id)
+            social_history_form = SocialHistoryDataForm(instance=p_social_hist)
+        except SocialHistoryData.DoesNotExist:
+            social_history_form = SocialDemographicDataForm()
 
-    #Sobrescreve campos Pais, Nacionalidade e Estado
-    patient_form.fields['country_txt'].widget = SelectBoxCountriesDisabled(attrs={'id': 'id_country_state_address', 'data-flags': 'true', 'disabled': 'true'})
-    patient_form.fields['state_txt'].widget = SelectBoxStateDisabled(attrs={'data-country': 'id_country_state_address', 'id': 'id_chosen_state', 'disabled': 'true'})
-    patient_form.fields['citizenship_txt'].widget = SelectBoxCountriesDisabled(attrs={'id': 'id_chosen_country', 'data-flags': 'true', 'disabled': 'true'})
+        #deixa os campos como disabled
+        for form in {patient_form, social_demographic_form, social_history_form}:
+            for field in form.fields:
+                form.fields[field].widget.attrs['disabled'] = True
 
-    context = {'patient_form': patient_form, 'social_demographic_form': social_demographic_form,
-               'social_history_form': social_history_form,
-               'editing': False,
-               }
+        #Sobrescreve campos Pais, Nacionalidade e Estado
+        patient_form.fields['country_txt'].widget = SelectBoxCountriesDisabled(attrs={'id': 'id_country_state_address', 'data-flags': 'true', 'disabled': 'true'})
+        patient_form.fields['state_txt'].widget = SelectBoxStateDisabled(attrs={'data-country': 'id_country_state_address', 'id': 'id_chosen_state', 'disabled': 'true'})
+        patient_form.fields['citizenship_txt'].widget = SelectBoxCountriesDisabled(attrs={'id': 'id_chosen_country', 'data-flags': 'true', 'disabled': 'true'})
 
-    return render(request, template_name, context)
+        context = {'patient_form': patient_form, 'social_demographic_form': social_demographic_form,
+                   'social_history_form': social_history_form,
+                   'editing': False,
+                   }
+
+        return render(request, template_name, context)
 
 
 @login_required
@@ -383,9 +372,9 @@ def search_patients_ajax(request):
         search_text = request.POST['search_text']
         if search_text:
             if re.match('[a-zA-Z ]+', search_text):
-                patient_list = Patient.objects.filter(name_txt__icontains=search_text)
+                patient_list = Patient.objects.filter(name_txt__icontains=search_text).exclude(removed=True)
             else:
-                patient_list = Patient.objects.filter(cpf_id__icontains=search_text)
+                patient_list = Patient.objects.filter(cpf_id__icontains=search_text).exclude(removed=True)
         else:
             patient_list = ''
     else:

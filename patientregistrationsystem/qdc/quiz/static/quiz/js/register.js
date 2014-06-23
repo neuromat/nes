@@ -140,7 +140,7 @@ $(document).ready(function () {
         else if ($("#cellphone").val().length == 10)
             $("#cellphone").mask("(99) 9999-9999");
         else
-            $("#cellphone").mask("");
+            $("#cellphone").unmask();
     });
 
     $('#phone').val('');
@@ -158,7 +158,7 @@ $(document).ready(function () {
         else if ($("#phone").val().length == 10)
             $("#phone").mask("(99) 9999-9999");
         else
-            $("#phone").mask("");
+            $("#phone").unmask();
     });
 
     $('#zipcode').val('');
@@ -167,7 +167,7 @@ $(document).ready(function () {
     });
 
     $('#zipcode').focus(function () {
-        $('#zipcode').mask("");
+        $('#zipcode').unmask();
     });
 
     $('#zipcode').blur(function () {
@@ -182,6 +182,16 @@ $(document).ready(function () {
     });
 
     $("#savetab2").click(function () {
+        $("#form_id").submit();
+    });
+
+    $("#editPatient").click(function () {
+        document.getElementById('action').value = "edit";
+        $("#form_id").submit();
+    });
+
+    $("#removePatient").click(function () {
+        document.getElementById('action').value = "remove";
         $("#form_id").submit();
     });
 
@@ -203,7 +213,13 @@ $(document).ready(function () {
                 $("#myModal").modal('show');
             }
             else {
-                $("#form_id").submit();
+                var email_value = $.trim($('#email').val());
+
+                if (!validateEmail(email_value) && email_value.length != 0 ) {
+                    showErrorMessageTemporary("Preencha os campos corretamente. Campo de e-mail inválido");
+                } else {
+                    $("#form_id").submit();
+                }
             }
         }
     });
@@ -215,3 +231,8 @@ $(document).ready(function () {
 
 });
 
+
+function validateEmail(email) {
+    var re = /^(([^<>()[\]\\.,;:\s@\"]+(\.[^<>()[\]\\.,;:\s@\"]+)*)|(\".+\"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
+    return re.test(email);
+}
