@@ -8,14 +8,18 @@ from django.utils.translation import ugettext as _
 from validation import CPF
 import datetime
 
-# Create your models here.
-
-
+#Valida CPF
 def validate_cpf(value):
     validation = CPF(value)
     if not validation.isValid():
         #raise ValidationError(u'CPF %s não é válido' % value)
         raise ValidationError(_('CPF %s não é válido') % value)
+
+#Valida data de nascimento:
+#data de nascimento maior que a data atual
+def validate_date_birth(value):
+    if value > datetime.date.today():
+        raise ValidationError('Data de nascimento não pode ser maior que a data de hoje.')
 
 
 class PaymentOption(models.Model):
@@ -97,9 +101,11 @@ class Patient(models.Model):
     phone_number = models.CharField(max_length=15, null=True, blank=True)
     cellphone_number = models.CharField(max_length=15, null=True, blank=True)
     email_txt = models.EmailField(null=True, blank=True)
-    date_birth_txt = models.DateField(null=False, blank=False)
+    date_birth_txt = models.DateField(null=False, blank=False, validators=[validate_date_birth])
     gender_opt = models.ForeignKey(GenderOption, null=False, blank=False)
     marital_status_opt = models.ForeignKey(MaritalStatusOption, null=True, blank=True)
+    removed = models.BooleanField(null=False, default=False)
+
 
     class Meta:
         permissions = (
@@ -111,13 +117,7 @@ class Patient(models.Model):
             self.name_txt, self.cpf_id, self.rg_id, self.medical_record_number, self.natural_of_txt, \
             self.citizenship_txt, self.street_txt, self.zipcode_number, self.country_txt, self.state_txt, \
             self.city_txt, self.phone_number, self.cellphone_number, self.email_txt, self.date_birth_txt, \
-            self.gender_opt, self.marital_status_opt
-
-    def clean(self):
-        super(Patient, self).clean()
-        if self.date_birth_txt > datetime.date.today():
-            raise ValidationError('Data de nascimento não é maior que a data de hoje.')
-
+            self.gender_opt, self.marital_status_opt, self.removed
 
 
 class SocialDemographicData(models.Model):
