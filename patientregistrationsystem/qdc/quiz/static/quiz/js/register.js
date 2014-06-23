@@ -209,15 +209,19 @@ $(document).ready(function () {
             document.getElementById('gender_id').focus();
             document.getElementById('full_name').focus();
         } else {
-            if (cpf_value.length == 0) {
-                $("#myModal").modal('show');
-            }
-            else {
-                var email_value = $.trim($('#email').val());
 
-                if (!validateEmail(email_value) && email_value.length != 0 ) {
-                    showErrorMessageTemporary("Preencha os campos corretamente. Campo de e-mail inválido");
-                } else {
+
+
+            var email_value = $.trim($('#email').val());
+
+            if (email_value.length != 0 && !validateEmail(email_value)) {
+                showErrorMessageTemporary("Preencha os campos corretamente. Campo de e-mail inválido");
+            } else {
+
+                if (cpf_value.length == 0) {
+                    $("#myModal").modal('show');
+                }
+                else {
                     $("#form_id").submit();
                 }
             }
