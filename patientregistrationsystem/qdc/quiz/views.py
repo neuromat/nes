@@ -296,7 +296,7 @@ def patients(request):
     args['language'] = language
     args['session_language'] = session_language
 
-    return render_to_response('/quiz/index.html', args)
+    return render_to_response('/quiz/busca.html', args)
 
 
 @login_required
@@ -363,8 +363,16 @@ def patient(request, patient_id, template_name="quiz/register.html"):
 
 @login_required
 def search_patient(request):
-    return render(request, 'quiz/index.html')
+    return render(request, 'quiz/busca.html')
 
+@login_required
+def advanced_search(request):
+    return render(request, 'quiz/busca_avancada.html')
+
+
+@login_required
+def contact(request):
+    return render(request, 'quiz/contato.html')
 
 @login_required
 def search_patients_ajax(request):

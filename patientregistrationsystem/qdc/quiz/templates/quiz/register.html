@@ -1,35 +1,6 @@
-<!DOCTYPE html>
+{% extends "quiz/template.html" %}
 
-<html lang="en">
-
-<head>
-    {% load static %}
-    {% load l10n %}
-    <meta charset="utf-8">
-    <title>Cadastro: Dados Sociodemográficos e Clínicos</title>
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta name="description" content="">
-    <meta name="author" content="">
-
-    <script src="{% static 'quiz/dist/js/jquery-2.0.0.min.js' %}"></script>
-    <script src="{% static 'quiz/dist/js/ajax.js' %}"></script>
-
-    <link href="http://netdna.bootstrapcdn.com/bootstrap/3.0.0/css/bootstrap.min.css" rel="stylesheet">
-    <link href="{% static 'quiz/BootstrapFormHelpers-master/dist/css/bootstrap-formhelpers.min.css' %}"
-          rel="stylesheet">
-
-    <script src="{% static 'quiz/dist/js/bootstrap.min.js' %}"></script>
-
-    <script src="{% static 'quiz/masked_input/jquery.maskedinput.min.js' %}"></script>
-    <script src="{% static 'quiz/BootstrapFormHelpers-master/dist/js/bootstrap-formhelpers.min.js' %}"></script>
-
-    <link href="{% static 'quiz/toastr/toastr.css' %}" rel="stylesheet"/>
-    <script src="{% static 'quiz/toastr/toastr.js' %}"></script>
-
-    <script src="{% static 'quiz/Bootstrap-Validator-Master/dist/validator.min.js' %}" type="text/javascript"></script>
-
-    <script src="{% static 'quiz/js/quiz.js' %}"></script>
-    <script type="text/javascript" src="{% static 'quiz/js/register.js' %}"></script>
+{% block header %}
 
     <style>
         div.alert-overflow {
@@ -46,64 +17,14 @@
 
     <script type="text/javascript">
         $(document).ready(function(){
-            $("#idTabs li:eq( {{ currentTab }}) a").tab('show');
+            $("#idTabs li:eq( {{ currentTab }} ) a").tab('show');
         })
     </script>
-</head>
+{% endblock %}
 
-<body class="">
+{% block activePatient %}class="active"{% endblock %}
 
-<!-- Cabeçalho da página -->
-<div class="container">
-    <nav class="navbar navbar-default navbar-fixed-top  navbar-inverse" role="navigation">
-        <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-ex1-collapse">
-            <span class="sr-only">Toggle navigation</span>
-            <span class="icon-bar"></span>
-            <span class="icon-bar"></span>
-            <span class="icon-bar"></span>
-        </button>
-        <a class="navbar-brand" href="#">Dados Sociodemográficos e Clínicos</a>
-
-        <div class="navbar-header">
-        </div>
-        <div class="collapse navbar-collapse navbar-ex1-collapse">
-            <ol class="nav navbar-nav navbar-right">
-                <li><a> User: {% if user.first_name %} {{ user.first_name }} {% else %}
-                    {{ user.username }} {% endif %}</a></li>
-                <li><a href="/logout">Sair</a></li>
-            </ol>
-        </div>
-    </nav>
-    <div id="fix-for-navbar-fixed-top-spacing" style="height: 62px;">&nbsp;</div>
-</div>
-<!-- Cabeçalho da página -->
-
-<!-- Major container
-  -- ---------------
-  -- Neste "container" estão os formulários da página
-  -- e o rodapé. Ele vai até o fim do documento. Antes
-  -- do código java script.
-  -->
-<div class="container">
-    <div class="row">
-        <div class="alert alert-overflow col-md-offset-8" id="alert">
-
-        </div>
-    </div>
-    <div class="row">
-        <div class="alert alert-overflow col-md-offset-8" id="alert1">
-
-        </div>
-    </div>
-</div>
-
-<div class="container">
-
-<div class="row">
-    <div class="col-md-12">
-    </div>
-</div>
-
+{% block form %}
 <!-- Formulário
   -- ----------
   -- Esta row abrange o formulário da página
@@ -117,44 +38,9 @@
 <form id="form_id" role="form" method="post" data-toggle="validator">
 {% csrf_token %}
 
-<!-- Esta div define o Menu principal -->
-<div class="col-md-2">
-    <ul id="myMenu" class="nav nav-pills nav-stacked">
+{% endblock %}
 
-        <li class="active">
-            {% if perms.quiz.add_patient %}
-                <a href="/quiz">
-            {% else %}
-                <a>
-            {% endif %}
-            Buscar Paciente</a>
-        </li>
-
-        <li>
-            <a href="#mainMenuAdvancedSearchTab" data-toggle="tab">
-                Busca avançada</a>
-        </li>
-
-        <li><a href="#mainMenuContactTab" data-toggle="tab">
-            Contato</a>
-        </li>
-
-        {% comment %}
-        {% if user.is_superuser %}
-            <li><a href="/admin">Acesso Administração</a>
-            </li>
-        {% endif %}
-{% endcomment %}
-
-    </ul>
-</div>
-<!-- Esta div define o Menu principal -->
-
-<!-- Esta div abrange a maior parte do documento,
-  -- Ela define as sub-páginas associadas a
-  -- cada item do Menu principal
-  -->
-<div id="myMenuContent" class="tab-content">
+{% block content %}
 
 <!-- Esta div está associada ao item Cadastro do Menu princial.
   -- Ela define o conjunto de abas contextuais para o formulário
@@ -1610,60 +1496,12 @@
 </div>
 <!-- <div class="tab-pane fade in active" id="mainMenuAddTab"> -->
 
-<!-- Esta div está associada ao item Busca Avancada do Menu principal -->
-<div class="tab-pane fade" id="mainMenuAdvancedSearchTab">
-    <div class="col-md-1">
-    </div>
-    <div class="col-md-10">
-        {% comment %}<h3>Em construção...</h3>{% endcomment %}
-    </div>
-</div>
-<!-- <div class="tab-pane fade" id="mainMenuAdvancedSearchTab"> -->
 
-<!-- Esta div está associada ao item Contato do Menu princial -->
-<div class="tab-pane fade" id="mainMenuContactTab">
-    <div class="col-md-1">
-    </div>
-    <div class="col-md-10">
-        <h3>Instituto de Neurologia Deolindo Couto</h3>
-        <h5>Sistema de Cadastro e Consulta de Dados Sociodemográficos e Clínicos</h5>
-        <!-- <h5>Av. Venceslau Brás, 95 - Botafogo - Campus da Praia Vermelha.</h5>-->
-        <h5>Dúvidas e Sugestões: claudiadvargas at gmail dot com </h5>
-    </div>
-</div>
-<!-- <div class="tab-pane fade" id="mainMenuContactTab"> -->
 
 <div class="col-md-1">
 </div>
-
-</div>
-<!-- <div id="myMenuContent" class="tab-content"> -->
+{% endblock %}
+{% block end_form %}
 </form>
 </div>
-<!-- End Formulário -->
-
-<div class="row">
-    <div class="col-md-12">
-        <hr>
-    </div>
-</div>
-
-<!--
-<div class="row">
-    <div class="col-md-12">
-        <p class="text-center">(c) 2014
-            <br>
-        </p>
-    </div>
-</div>
--->
-
-</div>
-<!-- Major container -->
-
-<!--[if lt IE 9]>
-
-<![endif]-->
-
-</body>
-</html>
+{% endblock %}
