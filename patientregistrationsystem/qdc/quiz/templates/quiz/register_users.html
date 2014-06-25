@@ -1,127 +1,55 @@
-<!DOCTYPE html>
-{% load static %}
+{% extends "quiz/template.html" %}
+{% block activeUser %}class="active"{% endblock %}
 
-<html lang="en">
-<head>
-    <meta charset="utf-8">
-    <title>Cadastro dos usuarios</title>
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta name="description" content="">
-    <meta name="author" content="">
+{% block content %}
+    <div class="tab-pane fade in active" id="mainMenuUserTab">
 
-    <link href="http://netdna.bootstrapcdn.com/bootstrap/3.0.0/css/bootstrap.min.css" rel="stylesheet">
-    <link href="{% static 'quiz/BootstrapFormHelpers-master/dist/css/bootstrap-formhelpers.min.css' %}"
-          rel="stylesheet">
+    <div class="col-md-10">
 
+    <form role="form" method="post" action="">
 
-    <script src="http://cdnjs.cloudflare.com/ajax/libs/jquery/1.9.1/jquery.min.js"></script>
-    <script src="{% static 'quiz/dist/js/bootstrap.min.js' %}"></script>
-
-
-    <script src="{% static 'quiz/masked_input/jquery.maskedinput.min.js' %}"></script>
-    <script src="{% static 'quiz/BootstrapFormHelpers-master/dist/js/bootstrap-formhelpers.min.js' %}"></script>
-
-
-</head>
-
-<body class="">
-<div class="container">
-    <nav class="navbar navbar-default navbar-fixed-top  navbar-inverse" role="navigation">
-        <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-ex1-collapse">
-            <span class="sr-only">Toggle navigation</span>
-            <span class="icon-bar"></span>
-            <span class="icon-bar"></span>
-            <span class="icon-bar"></span>
-        </button>
-        <a class="navbar-brand" href="#">Cadastro dos usuarios</a>
-
-        <div class="navbar-header">
-        </div>
-        <div class="collapse navbar-collapse navbar-ex1-collapse">
-            <ol class="nav navbar-nav navbar-right">
-                <li></li>
-                <li><a href="index.html">Sair</a></li>
-            </ol>
-        </div>
-    </nav>
-    <div id="fix-for-navbar-fixed-top-spacing" style="height: 62px;">&nbsp;</div>
-</div>
-<div class="container">
-<div class="row">
-    <div class="col-md-12">
-    </div>
-</div>
-<div class="row">
-<div class="col-md-2">
-
-    <ul id="myMenu" class="nav nav-pills nav-stacked">
-        <li class="active"><a href="#mainMenuAddTab" data-toggle="tab">Cadastros dos usuarios</a>
-        </li>
-        <li><a href="#mainMenuSearchTab" data-toggle="tab">Busca</a>
-        </li>
-        <li><a href="#mainMenuContactTab" data-toggle="tab">Contato</a>
-        </li>
-    </ul>
-</div>
-
-<div id="myMenuContent" class="tab-content">
-
-<div class="tab-pane fade in active" id="mainMenuAddTab">
-
-
-<div class="col-md-10">
-<div class="tabbable" id="myTabs">
-<div class="tab-content">
-<div class="tab-pane active" id="tab1">
-<div class="row">
-<div class="col-md-1"></div>
-<div class="col-md-10">
-<form role="form" method="post" action="">
-<div class="container span6 offset3 well ">
+    <div class="container span6 offset3 well ">
         <div class="row">
-            <div class="col-md-12">
-                <div class="form-group">
-                    <label>Nome Completo</label>
-                    <div class="input-group  input-group-sm">
-                        <span class="input-group-addon"> <span class="glyphicon glyphicon-user"></span></span>
-                        <input class="form-control" placeholder="Entrar nome completo" id="full_name" name="name_txt"  type="text">
-                    </div>
-                </div>
-            </div>
-        </div>
-	    <div class="row">
             <div class="col-xs-6 col-sm-6">
                 <div class="form-group">
-                    <label>Nome do usuario</label>
+                    <label>Nome</label>
                     <div class="input-group  input-group-sm">
                         <span class="input-group-addon"> <span class="glyphicon glyphicon-user"></span></span>
-			            <input class="form-control" placeholder="Entrar nome completo" id="user_name" name="name_txt"  type="text">
+                        <input class="form-control" placeholder="Entrar nome" id="first_name" name="first_name_txt"  type="text">
+                    </div>
+                </div>
+            </div>
+            <div class="col-xs-6 col-sm-6">
+                <div class="form-group">
+                    <label>Sobrenome</label>
+                    <div class="input-group  input-group-sm">
+                        <span class="input-group-addon"> <span class="glyphicon glyphicon-user"></span></span>
+                        <input class="form-control" placeholder="Entrar sobrenome" id="last_name" name="last_name_txt"  type="text">
                     </div>
                 </div>
             </div>
         </div>
         <div class="row">
-	        <div class="col-xs-6 col-sm-6">
+            <div class="col-xs-6 col-sm-6">
                 <div class="form-group">
-                    <label>Crie a senha</label>
-
+                    <label>Nome de usuário</label>
                     <div class="input-group  input-group-sm">
-                        <span class="input-group-addon"> <span class="glyphicon glyphicon-asterisk"></span></span>
-                        <input class="form-control" placeholder="Crie a senha" id="senha" type="text">
+                        <span class="input-group-addon"> <span class="glyphicon glyphicon-user"></span></span>
+                        <input class="form-control" placeholder="Entrar nome de usuário" id="user_name" name="name_txt"  type="text">
                     </div>
                 </div>
             </div>
-	        <div class="col-xs-6 col-sm-6">
+            <div class="col-xs-6 col-sm-6">
                 <div class="form-group">
-                    <label> Confirme a senha</label>
+                    <label>Digite a senha</label>
 
                     <div class="input-group  input-group-sm">
                         <span class="input-group-addon"> <span class="glyphicon glyphicon-asterisk"></span></span>
-                        <input class="form-control" placeholder="Confirme a senha" id="senha" type="text">
+                        <input class="form-control" placeholder="Crie a senha" id="senha" type="password">
                     </div>
                 </div>
             </div>
-	    </div>
+        </div>
         <div class="row">
             <div class="col-xs-6 col-sm-6">
                 <div class="form-group">
@@ -129,79 +57,51 @@
 
                     <div class="input-group  input-group-sm ">
                         <span class="input-group-addon"> <span class="glyphicon glyphicon-envelope"></span></span>
-                        <input class="form-control" placeholder="Email do usuario " id="email" type="text">
-                    </div>
-                </div>
-            </div>
-	
-            <div class="col-xs-6 col-sm-6">
-                <div class="form-group">
-                    <label> Telefone</label>
-
-                    <div class="input-group  input-group-sm">
-                        <span class="input-group-addon"> <span class="glyphicon glyphicon-earphone"></span></span>
-                        <input class="form-control" placeholder="Entrar o telefone" id="telefone" type="text">
+                        <input class="form-control" placeholder="Email do usuário " id="email" type="text">
                     </div>
                 </div>
             </div>
         </div>
-<div class="col-md-1"></div>
-</div>
-</div>
+        <div class="col-md-1"></div>
+    </div>
 
-<div class="container span6 offset3 well ">
-<div class="row">
-<div class="col-xs-6 col-sm-12">
-<div class="form-group">
-<label>Em quais desses perfis o usuario se indentifica.</label>
+    <div class="container span6 offset3 well ">
+        <div class="row">
+            <div class="col-xs-6 col-sm-12">
+                <div class="form-group">
+                    <label>Em quais desses perfis o usuário se indentifica?</label>
+                </div>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-xs-6 col-sm-12">
+                <div class="form-group">
+                    <div class="input-group  input-group-sm">
+                        <fieldset id="function">
+                            <label class="checkbox-inline">
+                                <input type="checkbox" id="function1" value="option1"> Administrador
+                            </label>
+                            <label class="checkbox-inline">
+                                <input type="checkbox" id="function2" value="option2"> Atendente
+                            </label>
+                            <label class="checkbox-inline">
+                                <input type="checkbox" id="function3" value="option3"> Assistente
+                            </label>
+                            <label class="checkbox-inline">
+                                <input type="checkbox" id="function4" value="option1"> Médico
+                            </label>
+                            <label class="checkbox-inline">
+                                <input type="checkbox" id="function5" value="option2"> Pesquisador
+                            </label>
+                        </fieldset>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
 
-<div class="form-group">
-
- <div class="form-group">
-    <div class="col-sm-offset-2 col-sm-10">
-      <div class="checkbox">
-        <label>
-          <input type="checkbox"> Administrador
-        </label>
-      </div>
+    </form>
+    <div class="col-md-1"></div>
     </div>
-    <div class="col-sm-offset-2 col-sm-10">
-      <div class="checkbox">
-        <label>
-          <input type="checkbox"> Atendente
-        </label>
-      </div>
     </div>
-    <div class="col-sm-offset-2 col-sm-10">
-      <div class="checkbox">
-        <label>
-          <input type="checkbox"> Assistente
-        </label>
-      </div>
-    </div>
-    <div class="col-sm-offset-2 col-sm-10">
-      <div class="checkbox">
-        <label>
-          <input type="checkbox"> Medico
-        </label>
-      </div>
-    </div>
-    <div class="col-sm-offset-2 col-sm-10">
-      <div class="checkbox">
-        <label>
-          <input type="checkbox"> Pesquisador
-        </label>
-      </div>
-    </div>
-  </div>
-
-</div>
-</form>
-<div class="col-md-1"></div>
-</div>
-</div>
-</div>
-</div>
-</div>
-</body>
-</html>
+{% endblock %}

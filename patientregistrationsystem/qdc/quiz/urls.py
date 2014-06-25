@@ -12,8 +12,9 @@ urlpatterns = patterns(
 
     url(r'^search/$', 'quiz.views.search_patients_ajax'),
     url(r'^patient/(?P<patient_id>\d+)/$', 'quiz.views.patient', name='patient_view'),
-    url(r'^contato/$', 'quiz.views.contact', name='contato'),
+    url(r'^contato/$', 'quiz.views.contact', name='contact'),
     url(r'^busca_avancada/$', 'quiz.views.advanced_search', name='advanced_search'),
+    url(r'^users/$', 'quiz.views.users', name="users"),
 )
 
 
