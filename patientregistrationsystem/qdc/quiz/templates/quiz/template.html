@@ -89,14 +89,14 @@
                     <a href="/quiz/busca_avancada/">Busca avançada</a>
                 </li>
 
-                {% if user.is_superuser %}
-                    <li {% block activeUser %}{% endblock %}><a href="/quiz/users/">Usuários</a>
-                    </li>
-                {% endif %}
-
                 <li {% block activeContact %}{% endblock %}><a href="/quiz/contato/">
                     Contato</a>
                 </li>
+
+                {% if user.is_superuser %}
+                    <li {% block activeUser %}{% endblock %}><a href="/quiz/user/search/">Usuários</a>
+                    </li>
+                {% endif %}
 
             </ul>
         </div><!-- Esta div define o Menu principal -->

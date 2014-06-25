@@ -1,0 +1,40 @@
+{% extends "quiz/template.html" %}
+
+{% block activeUser %}class="active"{% endblock %}
+
+{% block content %}
+
+    <div class="tab-pane fade in active" id="mainMenuUserTab">
+        <div class="col-md-10">
+            <div class="container span6 offset3 well ">
+                <div class="form-group">
+                    <h3 align="center">Usuários cadastrados</h3><br>
+                    <table class="table table-striped">
+                        <thead>
+                            <tr>
+                            <th>Nome</th>
+                            <th>Sobrenome</th>
+                            <th>Nome de usuário</th>
+                            <th>Email</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for user in object_list %}
+                            <tr>
+                                 <td>{{ user.first_name }}</td>
+                                 <td>{{ user.last_name }}</td>
+                                 <td>{{ user.username }}</td>
+                                 <td>{{ user.email }}</td>
+                              </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+                <div class="btn-group pull-right">
+                    <a href="/quiz/user/new/" class="btn btn-primary">Inserir novo usuário</a>
+                </div>
+            </div>
+        </div>
+    </div>
+
+{% endblock %}

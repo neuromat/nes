@@ -1,107 +1,108 @@
 {% extends "quiz/template.html" %}
 {% block activeUser %}class="active"{% endblock %}
 
+{% block form %}
+<div class="row">
+<form id="user_form" method="post">
+{% csrf_token %}
+{% endblock %}
+
 {% block content %}
-    <div class="tab-pane fade in active" id="mainMenuUserTab">
 
-    <div class="col-md-10">
-
-    <form role="form" method="post" action="">
-
-    <div class="container span6 offset3 well ">
-        <div class="row">
-            <div class="col-xs-6 col-sm-6">
-                <div class="form-group">
-                    <label>Nome</label>
-                    <div class="input-group  input-group-sm">
-                        <span class="input-group-addon"> <span class="glyphicon glyphicon-user"></span></span>
-                        <input class="form-control" placeholder="Entrar nome" id="first_name" name="first_name_txt"  type="text">
+    <div class="tab-pane fade in active" id="menuUserTab">
+        <div class="col-md-10">
+            <h3 align="center">Cadastro de usuários</h3><br>
+            <div class="container span6 offset3 well ">
+                <div class="row">
+                    <div class="col-xs-6 col-sm-6">
+                        <div class="form-group">
+                            <label>Nome</label>
+                            <div class="input-group input-group-sm">
+                                <span class="input-group-addon"> <span class="glyphicon glyphicon-user"></span></span>
+                                <input class="form-control" placeholder="Entrar primeiro nome" id="first_name" name="first_name" type="text">
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-xs-6 col-sm-6">
+                        <div class="form-group">
+                            <label>Sobrenome</label>
+                            <div class="input-group input-group-sm">
+                                <span class="input-group-addon"> <span class="glyphicon glyphicon-user"></span></span>
+                                <input class="form-control" placeholder="Entrar último nome" id="last_name" name="last_name" type="text">
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-xs-6 col-sm-6">
+                        <div class="form-group">
+                            <label>Nome de usuário</label>
+                            <div class="input-group input-group-sm">
+                                <span class="input-group-addon"> <span class="glyphicon glyphicon-user"></span></span>
+                                <input class="form-control" placeholder="Entrar primeiro nome" id="username" name="username" type="text">
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-xs-6 col-sm-6">
+                        <div class="form-group">
+                            <label>Senha</label>
+                            <div class="input-group input-group-sm">
+                                <span class="input-group-addon"> <span class="glyphicon glyphicon-asterisk"></span></span>
+                                <input class="form-control" placeholder="Entrar senha" id="password" name="password" type="password">
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-xs-6 col-sm-6">
+                        <div class="form-group">
+                            <label>Email</label>
+                            <div class="input-group input-group-sm">
+                                <span class="input-group-addon"> <span class="glyphicon glyphicon-envelope"></span></span>
+                                <input class="form-control" placeholder="Entrar email" id="email" name="email" type="text">
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-1"></div>
+            </div>
+ <!--           <div class="container span6 offset3 well ">
+                <div class="row">
+                    <div class="col-xs-6 col-sm-12">
+                        <div class="form-group">
+                            <label>Em quais desses perfis o usuário se indentifica?</label>
+                            <div class="input-group  input-group-sm">
+                                <fieldset id="perfil_id">
+                                    <label class="checkbox-inline">
+                                        <input type="checkbox" id="option1" value="option1"> Administrador
+                                    </label>
+                                    <label class="checkbox-inline">
+                                        <input type="checkbox" id="option2" value="option2"> Atendente
+                                    </label>
+                                    <label class="checkbox-inline">
+                                        <input type="checkbox" id="option3" value="option3"> Assistente
+                                    </label>
+                                    <label class="checkbox-inline">
+                                        <input type="checkbox" id="option4" value="option4"> Médico
+                                    </label>
+                                    <label class="checkbox-inline">
+                                        <input type="checkbox" id="option5" value="option5"> Pesquisador
+                                    </label>
+                                </fieldset>
+                            </div>
+                        </div>
                     </div>
                 </div>
             </div>
-            <div class="col-xs-6 col-sm-6">
-                <div class="form-group">
-                    <label>Sobrenome</label>
-                    <div class="input-group  input-group-sm">
-                        <span class="input-group-addon"> <span class="glyphicon glyphicon-user"></span></span>
-                        <input class="form-control" placeholder="Entrar sobrenome" id="last_name" name="last_name_txt"  type="text">
-                    </div>
-                </div>
-            </div>
-        </div>
-        <div class="row">
-            <div class="col-xs-6 col-sm-6">
-                <div class="form-group">
-                    <label>Nome de usuário</label>
-                    <div class="input-group  input-group-sm">
-                        <span class="input-group-addon"> <span class="glyphicon glyphicon-user"></span></span>
-                        <input class="form-control" placeholder="Entrar nome de usuário" id="user_name" name="name_txt"  type="text">
-                    </div>
-                </div>
-            </div>
-            <div class="col-xs-6 col-sm-6">
-                <div class="form-group">
-                    <label>Digite a senha</label>
-
-                    <div class="input-group  input-group-sm">
-                        <span class="input-group-addon"> <span class="glyphicon glyphicon-asterisk"></span></span>
-                        <input class="form-control" placeholder="Crie a senha" id="senha" type="password">
-                    </div>
-                </div>
-            </div>
-        </div>
-        <div class="row">
-            <div class="col-xs-6 col-sm-6">
-                <div class="form-group">
-                    <label>Email</label>
-
-                    <div class="input-group  input-group-sm ">
-                        <span class="input-group-addon"> <span class="glyphicon glyphicon-envelope"></span></span>
-                        <input class="form-control" placeholder="Email do usuário " id="email" type="text">
-                    </div>
-                </div>
-            </div>
-        </div>
-        <div class="col-md-1"></div>
-    </div>
-
-    <div class="container span6 offset3 well ">
-        <div class="row">
-            <div class="col-xs-6 col-sm-12">
-                <div class="form-group">
-                    <label>Em quais desses perfis o usuário se indentifica?</label>
-                </div>
-            </div>
-        </div>
-        <div class="row">
-            <div class="col-xs-6 col-sm-12">
-                <div class="form-group">
-                    <div class="input-group  input-group-sm">
-                        <fieldset id="function">
-                            <label class="checkbox-inline">
-                                <input type="checkbox" id="function1" value="option1"> Administrador
-                            </label>
-                            <label class="checkbox-inline">
-                                <input type="checkbox" id="function2" value="option2"> Atendente
-                            </label>
-                            <label class="checkbox-inline">
-                                <input type="checkbox" id="function3" value="option3"> Assistente
-                            </label>
-                            <label class="checkbox-inline">
-                                <input type="checkbox" id="function4" value="option1"> Médico
-                            </label>
-                            <label class="checkbox-inline">
-                                <input type="checkbox" id="function5" value="option2"> Pesquisador
-                            </label>
-                        </fieldset>
-                    </div>
-                </div>
+-->            <div class="btn-group pull-right">
+                <input type="submit" value="Salvar" class="btn btn-primary" />
             </div>
         </div>
     </div>
 
-    </form>
-    <div class="col-md-1"></div>
-    </div>
-    </div>
+{% endblock %}
+
+{% block end_form %}
+</form>
+</div>
 {% endblock %}
