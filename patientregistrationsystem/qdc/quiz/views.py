@@ -377,10 +377,6 @@ def contact(request):
     return render(request, 'quiz/contato.html')
 
 @login_required
-def users(request):
-    return render(request, 'quiz/register_users.html')
-
-@login_required
 def search_patients_ajax(request):
     if request.method == "POST":
         search_text = request.POST['search_text']
