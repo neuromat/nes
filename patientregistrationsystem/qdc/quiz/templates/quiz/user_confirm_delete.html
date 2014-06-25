@@ -1,4 +1,15 @@
-<form method="post">{% csrf_token %}
-    Are you sure you want to delete "{{ object }}" ?
-    <input type="submit" value="Submit" />
-</form>
+<div class="modal fade in active" id="modalRemove" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-body">
+                Tem certeza que deseja excluir o usuário?
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-default" data-dismiss="modal">Cancelar</button>
+                <form method="post">{% csrf_token %}
+                    <input class="btn btn-primary" style="background-color: indianred; color: #ffffff" type="submit" value="Excluir" />
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
