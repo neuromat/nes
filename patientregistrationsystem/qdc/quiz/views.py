@@ -404,11 +404,10 @@ def user_list(request, template_name='quiz/user_list.html'):
 @login_required
 def user_create(request, template_name='quiz/register_users.html'):
     form = UserForm(request.POST or None)
-    form.username = "teste"
     if form.is_valid():
-        user = User.objects.create_user(form.username, form.email, form.password)
-        user.first_name = form.first_name
-        user.last_name = form.last_name
+        user = User.objects.create_user(form.fields.username, form.fields.email, form.fields.password)
+        user.first_name = form.fields.first_name
+        user.last_name = form.fields.last_name
         user.save()
         return redirect('user_list')
     return render(request, template_name, {'form': form})
