@@ -15,7 +15,7 @@ from forms import PatientForm, SocialDemographicDataForm, SocialHistoryDataForm,
 from quiz_widget import SelectBoxCountriesDisabled, SelectBoxStateDisabled
 from django.contrib import messages
 
-from django.contrib.auth.models import User
+from django.contrib.auth.models import User, Group
 
 # Biblioteca para fazer expressões regulares. Utilizada na "def search_patients_ajax" para fazer busca por nome ou CPF
 import re
@@ -404,10 +404,12 @@ def user_list(request, template_name='quiz/user_list.html'):
 @login_required
 def user_create(request, template_name='quiz/register_users.html'):
     form = UserForm(request.POST or None)
+
     if form.is_valid():
         user = User.objects.create_user(request.POST['username'], request.POST['email'], request.POST['password'])
         user.first_name = request.POST['first_name']
         user.last_name = request.POST['last_name']
+        user.groups = request.POST.getlist('groups')
         user.save()
         return redirect('user_list')
     return render(request, template_name, {'form': form})
