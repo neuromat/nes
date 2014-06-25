@@ -30,6 +30,8 @@ ALLOWED_HOSTS = []
 
 # Application definition
 
+PROJECT_APPS = ['qdc']
+
 INSTALLED_APPS = (
     'django.contrib.admin',
     'django.contrib.auth',
