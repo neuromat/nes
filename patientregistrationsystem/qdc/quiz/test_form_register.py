@@ -68,6 +68,6 @@ class FormValidation(TestCase):
     #             u'profession_txt': [u''], u'city_txt': [u'']}
     #
     #     response = self.client.post('/quiz/patient/new/', data)
-    #     #self.assertEqual(response.status_code, 200)
+    #     #self.assertEqual(sresponse.status_code, 200)
     #     #self.assertContains(self, response, response.content, u'Paciente gravado com sucesso', html=True)
     #     self.assertContains(response, u'Paciente gravado com sucesso', html=True)
