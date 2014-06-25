@@ -5,6 +5,8 @@ from models import Patient, SocialDemographicData, SocialHistoryData
 from django.db import models
 from quiz_widget import SelectBoxCountries, SelectBoxState
 
+from django.contrib.auth.models import User
+
 
 class PatientForm(ModelForm):
     class Meta:
@@ -114,3 +116,8 @@ class SocialHistoryDataForm(ModelForm):
             'drugs_opt': RadioSelect(attrs={'id': 'id_drugs_opt'},
                                      choices=(('ja_fez', 'Já fez'), ('faz', 'Faz'), ('nunca_fez', 'Nunca fez'))),
         }
+
+
+class UserForm(ModelForm):
+    class Meta:
+        model = User

@@ -1,8 +1,8 @@
 # coding=utf-8
-from django.shortcuts import render, redirect
+from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib.auth.decorators import login_required
 from django.http import HttpResponseRedirect, HttpResponse
-
+from django.forms import ModelForm
 from django.core.context_processors import csrf
 from django.core.urlresolvers import reverse, reverse_lazy, resolve
 from django.shortcuts import render_to_response
@@ -11,9 +11,11 @@ from models import Patient, SocialDemographicData, SocialHistoryData, FleshToneO
     MaritalStatusOption, SchoolingOption, PaymentOption, ReligionOption,\
     GenderOption, AmountCigarettesOption, AlcoholFrequencyOption, AlcoholPeriodOption
 
-from forms import PatientForm, SocialDemographicDataForm, SocialHistoryDataForm
+from forms import PatientForm, SocialDemographicDataForm, SocialHistoryDataForm, UserForm
 from quiz_widget import SelectBoxCountriesDisabled, SelectBoxStateDisabled
 from django.contrib import messages
+
+from django.contrib.auth.models import User
 
 # Biblioteca para fazer expressões regulares. Utilizada na "def search_patients_ajax" para fazer busca por nome ou CPF
 import re
@@ -389,3 +391,43 @@ def search_patients_ajax(request):
         search_text = ''
 
     return render_to_response('quiz/ajax_search.html', {'patients': patient_list})
+
+
+@login_required
+def user_list(request, template_name='quiz/user_list.html'):
+    users = User.objects.all()
+    data = {}
+    data['object_list'] = users
+    return render(request, template_name, data)
+
+
+@login_required
+def user_create(request, template_name='quiz/register_users.html'):
+    form = UserForm(request.POST or None)
+    form.username = "teste"
+    if form.is_valid():
+        user = User.objects.create_user(form.username, form.email, form.password)
+        user.first_name = form.first_name
+        user.last_name = form.last_name
+        user.save()
+        return redirect('user_list')
+    return render(request, template_name, {'form': form})
+
+
+@login_required
+def user_update(request, pk, template_name='quiz/register_users.html'):
+    user = get_object_or_404(User, pk=pk)
+    form = UserForm(request.POST or None, instance=user)
+    if form.is_valid():
+        form.save()
+        return redirect('user_list')
+    return render(request, template_name, {'form':form})
+
+
+@login_required
+def user_delete(request, pk, template_name='quiz/user_confirm_delete.html'):
+    user = get_object_or_404(User, pk=pk)
+    if request.method == 'POST':
+        user.delete()
+        return redirect('user_list')
+    return render(request, template_name, {'object':user})
