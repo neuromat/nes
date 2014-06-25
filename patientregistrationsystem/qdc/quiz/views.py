@@ -405,9 +405,9 @@ def user_list(request, template_name='quiz/user_list.html'):
 def user_create(request, template_name='quiz/register_users.html'):
     form = UserForm(request.POST or None)
     if form.is_valid():
-        user = User.objects.create_user(form.fields.username, form.fields.email, form.fields.password)
-        user.first_name = form.fields.first_name
-        user.last_name = form.fields.last_name
+        user = User.objects.create_user(request.POST['username'], request.POST['email'], request.POST['password'])
+        user.first_name = request.POST['first_name']
+        user.last_name = request.POST['last_name']
         user.save()
         return redirect('user_list')
     return render(request, template_name, {'form': form})
