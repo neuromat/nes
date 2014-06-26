@@ -417,8 +417,8 @@ def user_create(request, template_name='quiz/register_users.html'):
 
 
 @login_required
-def user_update(request, pk, template_name='quiz/register_users.html'):
-    user = get_object_or_404(User, pk=pk)
+def user_update(request, user_id, template_name='quiz/register_users.html'):
+    user = get_object_or_404(User, id=user_id)
     form = UserForm(request.POST or None, instance=user)
     if form.is_valid():
         form.save()
@@ -427,14 +427,10 @@ def user_update(request, pk, template_name='quiz/register_users.html'):
 
 
 @login_required
-def user_delete(request, pk, template_name='quiz/user_list.html'):
-    user = get_object_or_404(User, pk=pk)
+def user_delete(request, user_id):
+    user = get_object_or_404(User, id=user_id)
     user.delete()
-    # if request.method == 'POST':
-    #     user.delete()
-    #     return redirect('user_list')
-    # return render(request, template_name, {'object':user})
-    return render(request, template_name)
+    return redirect('user_list')
 
 
 @login_required
@@ -457,6 +453,7 @@ def user(request, user_id, template_name="quiz/register.html"):
                 redirect_url = reverse("user_edit", args=(user_id,))
 
         return HttpResponseRedirect(redirect_url)
+    return render(request, template_name)
 
 
 @login_required
@@ -469,6 +466,7 @@ def user_update(request, user_id, template_name="quiz/register_users.html"):
     if request.method == "POST":
 
         if user_form.is_valid():
+            user_form.save()
 
             user = User.objects.create_user(request.POST['username'], request.POST['email'], request.POST['password'])
             user.first_name = request.POST['first_name']
@@ -481,9 +479,7 @@ def user_update(request, user_id, template_name="quiz/register_users.html"):
             # user_form.errors['username'][0] = "Este nome de usuário já existe."
 
     context = {
-        'patient_form': patient_form,
-        'social_demographic_form': social_demographic_form,
-        'social_history_form': social_history_form,
+        'form': user_form,
         'editing': True,
     }
     return render(request, template_name, context)
