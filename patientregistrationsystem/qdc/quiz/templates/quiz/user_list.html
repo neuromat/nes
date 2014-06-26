@@ -1,5 +1,12 @@
 {% extends "quiz/template.html" %}
 
+{% block header %}
+    $(document).on("click", ".open-AddBookDialog", function () {
+    var myBookId = $(this).data('id');
+    $(".modal-body #bookId").val( myBookId );
+    });
+{% endblock %}
+
 {% block activeUser %}class="active"{% endblock %}
 
 {% block content %}
@@ -8,30 +15,46 @@
         <div class="col-md-10">
             <div class="container span6 offset3 well ">
                 <div class="form-group">
-                    <h3 align="center">Usuários cadastrados</h3><br>
+                    {#                    <h3 align="center">Usuários cadastrados</h3><br>#}
+                    <label>Usuários cadastrados</label>
                     <table class="table table-striped">
                         <thead>
-                            <tr>
+                        <tr>
                             <th>Nome</th>
                             <th>Sobrenome</th>
                             <th>Nome de usuário</th>
                             <th>Email</th>
-                            </tr>
+                        </tr>
                         </thead>
                         <tbody>
-                            {% for user in object_list %}
+                        {% for user in object_list %}
                             <tr>
-                                 <td>{{ user.first_name }}</td>
-                                 <td>{{ user.last_name }}</td>
-                                 <td>{{ user.username }}</td>
-                                 <td>{{ user.email }}</td>
-                              </tr>
-                            {% endfor %}
+                                <td><a href="/quiz/user/edit/{{ user.id }}">{{ user.username }}</a></td>
+                                <td>{{ user.first_name }}</td>
+                                <td>{{ user.last_name }}</td>
+                                <td>{{ user.email }}</td>
+                                <td><a class="glyphicon glyphicon-remove" style="color: indianred" href="/quiz/user/{{ user.id }}"></a></td>
+                                <td><a data-toggle="modal" data-id="ISBN-001122" title="Add this item" class="open-AddBookDialog btn btn-primary" href="#addBookDialog">test</a></td>
+                            </tr>
+                        {% endfor %}
                         </tbody>
                     </table>
                 </div>
-                <div class="btn-group pull-right">
+                <div class="btn-group pull-left">
                     <a href="/quiz/user/new/" class="btn btn-primary">Inserir novo usuário</a>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="modal fade" id="modalRemove" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-body">
+                    Tem certeza que deseja excluir o usuário?
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-default" data-dismiss="modal">Cancelar</button>
+                    <a id="removeUser" class="btn btn-primary" style="background-color: indianred; color: #ffffff" >Excluir</a>
                 </div>
             </div>
         </div>

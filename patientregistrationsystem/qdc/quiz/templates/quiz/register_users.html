@@ -2,9 +2,9 @@
 {% block activeUser %}class="active"{% endblock %}
 
 {% block form %}
-<div class="row">
-<form id="user_form" method="post">
-{% csrf_token %}
+    <div class="row">
+    <form id="user_form" method="post">
+    {% csrf_token %}
 {% endblock %}
 
 {% block content %}
@@ -19,7 +19,7 @@
                             <label>Nome</label>
                             <div class="input-group input-group-sm">
                                 <span class="input-group-addon"> <span class="glyphicon glyphicon-user"></span></span>
-                                <input class="form-control" placeholder="Entrar primeiro nome" id="first_name" name="first_name" type="text">
+                                {{ form.first_name }}
                             </div>
                         </div>
                     </div>
@@ -28,7 +28,7 @@
                             <label>Sobrenome</label>
                             <div class="input-group input-group-sm">
                                 <span class="input-group-addon"> <span class="glyphicon glyphicon-user"></span></span>
-                                <input class="form-control" placeholder="Entrar último nome" id="last_name" name="last_name" type="text">
+                                {{ form.last_name }}
                             </div>
                         </div>
                     </div>
@@ -39,7 +39,7 @@
                             <label>Nome de usuário</label>
                             <div class="input-group input-group-sm">
                                 <span class="input-group-addon"> <span class="glyphicon glyphicon-user"></span></span>
-                                <input class="form-control" placeholder="Entrar primeiro nome" id="username" name="username" type="text">
+                                {{ form.username }}
                             </div>
                         </div>
                     </div>
@@ -48,7 +48,7 @@
                             <label>Senha</label>
                             <div class="input-group input-group-sm">
                                 <span class="input-group-addon"> <span class="glyphicon glyphicon-asterisk"></span></span>
-                                <input class="form-control" placeholder="Entrar senha" id="password" name="password" type="password">
+                                {{ form.password }}
                             </div>
                         </div>
                     </div>
@@ -59,42 +59,30 @@
                             <label>Email</label>
                             <div class="input-group input-group-sm">
                                 <span class="input-group-addon"> <span class="glyphicon glyphicon-envelope"></span></span>
-                                <input class="form-control" placeholder="Entrar email" id="email" name="email" type="text">
+                                {{ form.email }}
                             </div>
                         </div>
                     </div>
                 </div>
                 <div class="col-md-1"></div>
             </div>
- <!--           <div class="container span6 offset3 well ">
+            <div class="container span6 offset3 well ">
                 <div class="row">
                     <div class="col-xs-6 col-sm-12">
                         <div class="form-group">
                             <label>Em quais desses perfis o usuário se indentifica?</label>
                             <div class="input-group  input-group-sm">
-                                <fieldset id="perfil_id">
-                                    <label class="checkbox-inline">
-                                        <input type="checkbox" id="option1" value="option1"> Administrador
-                                    </label>
-                                    <label class="checkbox-inline">
-                                        <input type="checkbox" id="option2" value="option2"> Atendente
-                                    </label>
-                                    <label class="checkbox-inline">
-                                        <input type="checkbox" id="option3" value="option3"> Assistente
-                                    </label>
-                                    <label class="checkbox-inline">
-                                        <input type="checkbox" id="option4" value="option4"> Médico
-                                    </label>
-                                    <label class="checkbox-inline">
-                                        <input type="checkbox" id="option5" value="option5"> Pesquisador
-                                    </label>
-                                </fieldset>
+                                {% for name in form.groups %}
+                                    <div class="myradio">
+                                        {{ name }}
+                                    </div>
+                                {% endfor %}
                             </div>
                         </div>
                     </div>
                 </div>
             </div>
--->            <div class="btn-group pull-right">
+            <div class="btn-group pull-right">
                 <input type="submit" value="Salvar" class="btn btn-primary" />
             </div>
         </div>
@@ -103,6 +91,6 @@
 {% endblock %}
 
 {% block end_form %}
-</form>
-</div>
+    </form>
+    </div>
 {% endblock %}
