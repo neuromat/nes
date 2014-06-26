@@ -30,7 +30,7 @@ ALLOWED_HOSTS = []
 
 # Application definition
 
-PROJECT_APPS = ['quiz']
+PROJECT_APPS = ['qdc']
 
 INSTALLED_APPS = (
     'django.contrib.admin',
@@ -80,7 +80,7 @@ DATABASES = {
         'NAME': 'qdcdb',
         'USER': 'qdc',
         'PASSWORD': 'DEVqdc1716',
-        #'HOST': '200.144.254.136',
+        'HOST': '200.144.254.136',
     }
 }
 
