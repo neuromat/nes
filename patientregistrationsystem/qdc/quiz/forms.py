@@ -1,9 +1,11 @@
 # coding=utf-8
 #from django.utils.six import attr
-from django.forms import ModelForm, TextInput, DateInput, Select, RadioSelect
+from django.forms import ModelForm, TextInput, DateInput, Select, RadioSelect, PasswordInput, CheckboxSelectMultiple
 from models import Patient, SocialDemographicData, SocialHistoryData
 from django.db import models
 from quiz_widget import SelectBoxCountries, SelectBoxState
+
+from django.contrib.auth.models import User, Group
 
 
 class PatientForm(ModelForm):
@@ -113,4 +115,23 @@ class SocialHistoryDataForm(ModelForm):
             'alcohol_period_opt': Select(attrs={'class': 'form-control', 'id': 'id_periodSmok'}),
             'drugs_opt': RadioSelect(attrs={'id': 'id_drugs_opt'},
                                      choices=(('ja_fez', 'Já fez'), ('faz', 'Faz'), ('nunca_fez', 'Nunca fez'))),
+        }
+
+
+class UserForm(ModelForm):
+    groups = models.ManyToManyField(Group)
+
+    class Meta:
+        model = User
+        fields = ['first_name', 'last_name', 'username', 'password', 'email', 'groups']
+
+        widgets = {
+            'first_name': TextInput(attrs={'class': 'form-control', 'placeholder': 'Entrar primeiro nome'}),
+            'last_name': TextInput(attrs={'class': 'form-control', 'placeholder': 'Entrar último nome'}),
+            'username': TextInput(attrs={'class': 'form-control', 'placeholder': 'Entrar nome de usuário'}),
+            'password': PasswordInput(attrs={'class': 'form-control', 'placeholder': 'Entrar senha'}),
+            'email': TextInput(attrs={'class': 'form-control', 'placeholder': 'Entrar e-mail', 'id': "email",
+                                      'type': 'email', 'data-error': "E-mail inválido",
+                                      'pattern': '^[_A-Za-z0-9-\+]+(\.[_A-Za-z0-9-]+)*@[A-Za-z0-9-]+(\.[A-Za-z0-9]+)*(\.[A-Za-z]{2,})$'}),
+            'groups': CheckboxSelectMultiple()
         }
