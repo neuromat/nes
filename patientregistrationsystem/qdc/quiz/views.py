@@ -58,7 +58,7 @@ def patient_create(request, template_name="quiz/register.html"):
             homonym_message = ""
             homonym_list = Patient.objects.filter(name_txt=request.POST['name_txt']).exclude(removed=True)
             if homonym_list:
-                homonym_message = "Aviso: existe paciente como o mesmo nome."
+                homonym_message = "Aviso: existe paciente com o mesmo nome."
 
             new_patient.save()
 
