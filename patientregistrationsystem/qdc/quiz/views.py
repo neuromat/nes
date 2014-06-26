@@ -1,10 +1,9 @@
 # coding=utf-8
 from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib.auth.decorators import login_required, permission_required
-from django.http import HttpResponseRedirect, HttpResponse
-from django.forms import ModelForm
+from django.http import HttpResponseRedirect
 from django.core.context_processors import csrf
-from django.core.urlresolvers import reverse, reverse_lazy, resolve
+from django.core.urlresolvers import reverse
 from django.shortcuts import render_to_response
 
 from models import Patient, SocialDemographicData, SocialHistoryData, FleshToneOption,\
@@ -15,13 +14,14 @@ from forms import PatientForm, SocialDemographicDataForm, SocialHistoryDataForm,
 from quiz_widget import SelectBoxCountriesDisabled, SelectBoxStateDisabled
 from django.contrib import messages
 
-from django.contrib.auth.models import User, Group
+from django.contrib.auth.models import User
 
 # Biblioteca para fazer expressões regulares. Utilizada na "def search_patients_ajax" para fazer busca por nome ou CPF
 import re
 
 
 @login_required
+@permission_required('quiz.add_patient')
 def patient_create(request, template_name="quiz/register.html"):
 
     flesh_tone_options = FleshToneOption.objects.all()
@@ -146,6 +146,7 @@ def patient_create(request, template_name="quiz/register.html"):
 
 
 @login_required
+@permission_required('quiz.change_patient')
 def patient_update(request, patient_id, template_name="quiz/register.html"):
 
     ## Search in models.Patient
@@ -366,6 +367,7 @@ def patient(request, patient_id, template_name="quiz/register.html"):
 
 
 @login_required
+@permission_required('quiz.view_patient')
 def search_patient(request):
     return render(request, 'quiz/busca.html')
 
@@ -381,6 +383,7 @@ def contact(request):
 
 
 @login_required
+@permission_required('quiz.view_patient')
 def search_patients_ajax(request):
     if request.method == "POST":
         search_text = request.POST['search_text']
@@ -398,6 +401,8 @@ def search_patients_ajax(request):
 
 
 @login_required
+@permission_required('auth.add_user')
+@permission_required('auth.change_user')
 def user_list(request, template_name='quiz/user_list.html'):
     users = User.objects.all()
     data = {}
@@ -406,6 +411,7 @@ def user_list(request, template_name='quiz/user_list.html'):
 
 
 @login_required
+@permission_required('auth.add_user')
 def user_create(request, template_name='quiz/register_users.html'):
     form = UserForm(request.POST or None)
 
@@ -420,16 +426,7 @@ def user_create(request, template_name='quiz/register_users.html'):
 
 
 @login_required
-def user_update(request, user_id, template_name='quiz/register_users.html'):
-    user = get_object_or_404(User, id=user_id)
-    form = UserForm(request.POST or None, instance=user)
-    if form.is_valid():
-        form.save()
-        return redirect('user_list')
-    return render(request, template_name, {'form': form})
-
-
-@login_required
+@permission_required('auth.delete_user')
 def user_delete(request, user_id):
     user = get_object_or_404(User, id=user_id)
     user.delete()
@@ -460,6 +457,7 @@ def user(request, user_id, template_name="quiz/register.html"):
 
 
 @login_required
+@permission_required('auth.change_user')
 def user_update(request, user_id, template_name="quiz/register_users.html"):
 
     p = User.objects.get(id=user_id)
