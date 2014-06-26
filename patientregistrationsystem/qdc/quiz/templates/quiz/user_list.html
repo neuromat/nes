@@ -33,7 +33,7 @@
                                 <td>{{ user.first_name }}</td>
                                 <td>{{ user.last_name }}</td>
                                 <td>{{ user.email }}</td>
-                                <td><a class="glyphicon glyphicon-remove" style="color: indianred" onclick="$('#modalRemove').modal('show')"></a></td>
+                                <td><a class="glyphicon glyphicon-remove" style="color: indianred" href="/quiz/user/{{ user.id }}"></a></td>
                                 <td><a data-toggle="modal" data-id="ISBN-001122" title="Add this item" class="open-AddBookDialog btn btn-primary" href="#addBookDialog">test</a></td>
                             </tr>
                         {% endfor %}
@@ -54,7 +54,7 @@
                 </div>
                 <div class="modal-footer">
                     <button type="button" class="btn btn-default" data-dismiss="modal">Cancelar</button>
-                    <a href="/quiz/user/delete/" class="btn btn-primary" style="background-color: indianred; color: #ffffff" >Excluir</a>
+                    <a id="removeUser" class="btn btn-primary" style="background-color: indianred; color: #ffffff" >Excluir</a>
                 </div>
             </div>
         </div>

@@ -15,5 +15,5 @@ urlpatterns = patterns(
     url(r'^user/search/$', 'quiz.views.user_list', name='user_list'),
     url(r'^user/new/$', 'quiz.views.user_create', name='user_new'),
     url(r'^user/edit/(?P<pk>\d+)/$', 'quiz.views.user_update', name='user_edit'),
-    url(r'^user/delete/(?P<pk>\d+)/$', 'quiz.views.user_delete', name='user_delete'),
+    url(r'^user/(?P<pk>\d+)/$', 'quiz.views.user', name='user_delete'),
 )
