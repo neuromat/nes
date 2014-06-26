@@ -20,6 +20,13 @@
             $("#idTabs li:eq( {{ currentTab }} ) a").tab('show');
         })
     </script>
+
+    <script>
+        $(function(){
+            $("[data-toggle=tooltip]").tooltip();
+        });
+    </script>
+
 {% endblock %}
 
 {% block activePatient %}class="active"{% endblock %}
@@ -1269,7 +1276,7 @@
             <div class="container span6 offset3 well ">
                 <div class="col-xs-6 col-sm-4">
                     <div class="form-group">
-                        <label title="Hipertensão arterial sistêmica">HAS</label>
+                        <label data-toggle="tooltip" title="Hipertensão arterial sistêmica">HAS</label>
 
                         <div class="input-group  input-group-sm">
                             <div class="input-group  input-group-sm">

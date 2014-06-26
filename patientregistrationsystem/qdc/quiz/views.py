@@ -281,7 +281,7 @@ def patient_update(request, patient_id, template_name="quiz/register.html"):
 
 
 @login_required
-@permission_required('quiz.can_view')
+@permission_required('quiz.view_patient')
 def patients(request):
     language = 'en-us'
     session_language = 'en-us'
@@ -303,6 +303,7 @@ def patients(request):
 
 
 @login_required
+@permission_required('quiz.view_patient')
 def patient(request, patient_id, template_name="quiz/register.html"):
 
     if request.method == "POST":
@@ -368,6 +369,7 @@ def patient(request, patient_id, template_name="quiz/register.html"):
 def search_patient(request):
     return render(request, 'quiz/busca.html')
 
+
 @login_required
 def advanced_search(request):
     return render(request, 'quiz/busca_avancada.html')
@@ -376,6 +378,7 @@ def advanced_search(request):
 @login_required
 def contact(request):
     return render(request, 'quiz/contato.html')
+
 
 @login_required
 def search_patients_ajax(request):

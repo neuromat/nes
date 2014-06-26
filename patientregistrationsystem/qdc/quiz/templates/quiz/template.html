@@ -89,7 +89,7 @@
                     <a href="/quiz/busca_avancada/">Busca avançada</a>
                 </li>
 
-                {% if user.is_superuser %}
+                {% if perms.auth.add_user or perms.auth.change_user %}
                     <li {% block activeUser %}{% endblock %}><a href="/quiz/user/search/">Usuários</a>
                     </li>
                 {% endif %}
