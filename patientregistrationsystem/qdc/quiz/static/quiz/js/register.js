@@ -195,10 +195,10 @@ $(document).ready(function () {
         $("#form_id").submit();
     });
 
-    $("#removeUser").click(function () {
-        document.getElementById('action').value = "remove";
-        $("#form_id").submit();
-    });
+//    $("#removeUser").click(function () {
+//        document.getElementById('action').value = "remove";
+//        $("#user_form").submit();
+//    });
 
     $("#savetab").click(function () {
 

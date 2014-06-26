@@ -1,16 +1,22 @@
 {% extends "quiz/template.html" %}
 
 {% block header %}
-    $(document).on("click", ".open-AddBookDialog", function () {
-    var myBookId = $(this).data('id');
-    $(".modal-body #bookId").val( myBookId );
-    });
+    <script>
+        function show_modal_remove (user_id){
+            var  modal_remove = document.getElementById('removeUser');
+            modal_remove.setAttribute( "href", '/quiz/user/delete/' + user_id);
+            $('#modalRemove').modal('show');
+        }
+        $(function(){
+            $("[data-toggle=tooltip]").tooltip();
+        });
+    </script>
 {% endblock %}
 
 {% block activeUser %}class="active"{% endblock %}
 
 {% block content %}
-
+    <input type="text" id="action" name="action" style="visibility: hidden"/>
     <div class="tab-pane fade in active" id="mainMenuUserTab">
         <div class="col-md-10">
             <div class="container span6 offset3 well ">
@@ -20,21 +26,20 @@
                     <table class="table table-striped">
                         <thead>
                         <tr>
+                            <th>Nome de usuário</th>
                             <th>Nome</th>
                             <th>Sobrenome</th>
-                            <th>Nome de usuário</th>
                             <th>Email</th>
                         </tr>
                         </thead>
                         <tbody>
                         {% for user in object_list %}
                             <tr>
-                                <td><a href="/quiz/user/edit/{{ user.id }}">{{ user.username }}</a></td>
+                                <td><a data-toggle="tooltip" data-placement="left" title="Editar" href="/quiz/user/edit/{{ user.id }}">{{ user.username }}</a></td>
                                 <td>{{ user.first_name }}</td>
                                 <td>{{ user.last_name }}</td>
                                 <td>{{ user.email }}</td>
-                                <td><a class="glyphicon glyphicon-remove" style="color: indianred" href="/quiz/user/{{ user.id }}"></a></td>
-                                <td><a data-toggle="modal" data-id="ISBN-001122" title="Add this item" class="open-AddBookDialog btn btn-primary" href="#addBookDialog">test</a></td>
+                                <td><a class="glyphicon glyphicon-remove" data-toggle="tooltip" data-placement="right" title="Remover" style="color: indianred" onclick="show_modal_remove({{ user.id }})"></a></td>
                             </tr>
                         {% endfor %}
                         </tbody>
@@ -54,7 +59,7 @@
                 </div>
                 <div class="modal-footer">
                     <button type="button" class="btn btn-default" data-dismiss="modal">Cancelar</button>
-                    <a id="removeUser" class="btn btn-primary" style="background-color: indianred; color: #ffffff" >Excluir</a>
+                    <a id="removeUser" class="btn btn-primary" style="background-color: indianred; color: #ffffff" href="" >Excluir</a>
                 </div>
             </div>
         </div>
