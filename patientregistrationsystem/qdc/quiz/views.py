@@ -1,6 +1,6 @@
 # coding=utf-8
 from django.shortcuts import render, redirect, get_object_or_404
-from django.contrib.auth.decorators import login_required
+from django.contrib.auth.decorators import login_required, permission_required
 from django.http import HttpResponseRedirect, HttpResponse
 from django.forms import ModelForm
 from django.core.context_processors import csrf
@@ -281,6 +281,7 @@ def patient_update(request, patient_id, template_name="quiz/register.html"):
 
 
 @login_required
+@permission_required('quiz.can_view')
 def patients(request):
     language = 'en-us'
     session_language = 'en-us'

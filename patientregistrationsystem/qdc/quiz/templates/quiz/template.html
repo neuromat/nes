@@ -78,10 +78,10 @@
             <ul id="myMenu" class="nav nav-pills nav-stacked">
 
                 <li {% block activePatient %}{% endblock %} >
-                    {% if perms.quiz.add_patient %}
-                        <a href="/quiz/busca/">Buscar Paciente</a>
+                    {% if perms.quiz.view_patient %}
+                        <a href="/quiz/busca/">Paciente</a>
                     {% else %}
-                        <a>Buscar Paciente</a>
+                        <a>Paciente</a>
                     {% endif %}
                 </li>
 

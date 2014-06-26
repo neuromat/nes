@@ -100,7 +100,6 @@ class Patient(models.Model):
     marital_status_opt = models.ForeignKey(MaritalStatusOption, null=True, blank=True)
     removed = models.BooleanField(null=False, default=False)
 
-
     class Meta:
         permissions = (
             ("view_patient", "Can view patient"),
