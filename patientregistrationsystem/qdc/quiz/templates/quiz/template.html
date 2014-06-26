@@ -89,14 +89,14 @@
                     <a href="/quiz/busca_avancada/">Busca avançada</a>
                 </li>
 
-                <li {% block activeContact %}{% endblock %}><a href="/quiz/contato/">
-                    Contato</a>
-                </li>
-
                 {% if user.is_superuser %}
                     <li {% block activeUser %}{% endblock %}><a href="/quiz/user/search/">Usuários</a>
                     </li>
                 {% endif %}
+
+                <li {% block activeContact %}{% endblock %}><a href="/quiz/contato/">
+                    Contato</a>
+                </li>
 
             </ul>
         </div><!-- Esta div define o Menu principal -->
@@ -117,6 +117,7 @@
     {% endblock %}
 
     <!-- footer -->
+{% comment %}
     <div class="row">
         <div class="col-md-12">
             <hr>
@@ -124,13 +125,12 @@
     </div>
     <div class="row">
         <div class="col-md-12">
-            {% comment %}
             <p class="text-center">(c) 2014
                 <br>
             </p>
-            {% endcomment %}
         </div>
     </div>
+{% endcomment %}
 
 </div>
 
