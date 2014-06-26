@@ -16,7 +16,7 @@
     </style>
 
     <script type="text/javascript">
-        $(document).ready(function(){
+        $(document).ready(function () {
             $("#idTabs li:eq( {{ currentTab }} ) a").tab('show');
         })
     </script>
@@ -25,100 +25,98 @@
 {% block activePatient %}class="active"{% endblock %}
 
 {% block form %}
-<!-- Formulário
-  -- ----------
-  -- Esta row abrange o formulário da página
-  -- divido em abas contextuais.
-  -- Acima está o cabeçalho e abaixo o rodapé.
-  -->
-<div class="row">
+    <!-- Formulário
+      -- ----------
+      -- Esta row abrange o formulário da página
+      -- divido em abas contextuais.
+      -- Acima está o cabeçalho e abaixo o rodapé.
+      -->
+    <div class="row">
 
-<!-- A tag form abrange o formulário divido por abas contextuais -->
+    <!-- A tag form abrange o formulário divido por abas contextuais -->
 
-<form id="form_id" role="form" method="post" data-toggle="validator">
-{% csrf_token %}
+    <form id="form_id" role="form" method="post" data-toggle="validator">
+    {% csrf_token %}
 
 {% endblock %}
 
 {% block content %}
 
-<!-- Esta div está associada ao item Cadastro do Menu princial.
-  -- Ela define o conjunto de abas contextuais para o formulário
-  -- de cadastro de pacientes
-  -->
-<div class="tab-pane fade in active" id="mainMenuAddTab">
+    <!-- Esta div está associada ao item Cadastro do Menu princial.
+      -- Ela define o conjunto de abas contextuais para o formulário
+      -- de cadastro de pacientes
+      -->
+    <div class="tab-pane fade in active" id="mainMenuAddTab">
 
-<div class="col-md-10">
-<div class="tabbable" id="myTabs">
+    <div class="col-md-10">
+    <div class="tabbable" id="myTabs">
 
-<!-- Esta ul define os títulos das abas contextuais -->
-<ul class="nav nav-tabs nav-justified" id="idTabs">
-    <li class="active"><a href="#tab1" data-toggle="tab" id="0">Dados Pessoais</a></li>
-    <li><a href="#tab2" data-toggle="tab" id="1">Dados Sociodemográficos</a></li>
-    <li><a href="#tab3" data-toggle="tab" id="2">História Social</a></li>
-    <li><a href="#tab4" data-toggle="tab" id="3">Avaliações Médicas</a></li>
-    <li><a href="#tab5" data-toggle="tab" id="4">Doenças Pregressas</a></li>
-    <li><a href="#tab6" data-toggle="tab" id="5">Histórico de Saúde</a></li>
-</ul>
+    <!-- Esta ul define os títulos das abas contextuais -->
+    <ul class="nav nav-tabs nav-justified" id="idTabs">
+        <li class="active"><a href="#tab1" data-toggle="tab" id="0">Dados Pessoais</a></li>
+        <li><a href="#tab2" data-toggle="tab" id="1">Dados Sociodemográficos</a></li>
+        <li><a href="#tab3" data-toggle="tab" id="2">História Social</a></li>
+        <li><a href="#tab4" data-toggle="tab" id="3">Avaliações Médicas</a></li>
+    </ul>
 
-<input type="text" id="currentTab" name="currentTab" value="{{ currentTab }}" style="visibility: hidden"/>
-<input type="text" id="action" name="action" style="visibility: hidden"/>
+    <input type="text" id="currentTab" name="currentTab" value="{{ currentTab }}" style="visibility: hidden"/>
+    <input type="text" id="action" name="action" style="visibility: hidden"/>
 
-<div id="fix-for-tab-content-spacing" style="height: 22px;">&nbsp;</div>
+    <div id="fix-for-tab-content-spacing" style="height: 22px;">&nbsp;</div>
 
-<!-- Esta div define o conteúdo das abas contextuais -->
-<div class="tab-content">
+    <!-- Esta div define o conteúdo das abas contextuais -->
+    <div class="tab-content">
 
-<!-- Esta div define a primeira aba do formulário, #tab1 -->
-<div class="tab-pane active" id="tab1">
-<div class="row">
-<div class="col-md-1"></div>
-<div class="col-md-10">
-<div class="container span6 offset3 well ">
+    <!-- Esta div define a primeira aba do formulário, #tab1 -->
+    <div class="tab-pane active" id="tab1">
+    <div class="row">
+    <div class="col-md-1"></div>
+    <div class="col-md-10">
+    <div class="container span6 offset3 well ">
 
-    <!-- Mensagens geradas na view register -->
-    {% if messages %}
-        {% for message in messages %}
+        <!-- Mensagens geradas na view register -->
+        {% if messages %}
+            {% for message in messages %}
 
-            {% if message.tags == "success" %}
-                <script>showSuccessMessage('{{ message }}')</script>
-            {% endif %}
+                {% if message.tags == "success" %}
+                    <script>showSuccessMessage('{{ message }}')</script>
+                {% endif %}
 
-            {% if message.tags == "warning" %}
-                <script>showWarningMessage('{{ message }}')</script>
-            {% endif %}
+                {% if message.tags == "warning" %}
+                    <script>showWarningMessage('{{ message }}')</script>
+                {% endif %}
 
-            {% if message.tags == "error" %}
-                <script>showErrorMessage('{{ message }}')</script>
-            {% endif %}
+                {% if message.tags == "error" %}
+                    <script>showErrorMessage('{{ message }}')</script>
+                {% endif %}
 
-            {% if message.tags == "info" %}
-                <script>showInfoMessage('{{ message }}')</script>
-            {% endif %}
+                {% if message.tags == "info" %}
+                    <script>showInfoMessage('{{ message }}')</script>
+                {% endif %}
 
-        {% endfor %}
-    {% endif %}
+            {% endfor %}
+        {% endif %}
 
-    <!-- Mostra todas as mensagens do formulário -->
-    {% if patient_form.errors %}
+        <!-- Mostra todas as mensagens do formulário -->
+        {% if patient_form.errors %}
 
-        {% comment %}
+            {% comment %}
     <div class="text-danger">Please correct the error{{ patient_form.errors|pluralize }} below.
         {{ patient_form.errors }}
     </div>
     {% endcomment %}
 
-        {% for field in patient_form %}
-            {% if field.errors %}
-                <script>showErrorMessage('{{ field.errors|striptags }}')</script>
-            {% endif %}
-        {% endfor %}
+            {% for field in patient_form %}
+                {% if field.errors %}
+                    <script>showErrorMessage('{{ field.errors|striptags }}')</script>
+                {% endif %}
+            {% endfor %}
 
-        <script>showErrorMessage('Paciente não cadastrado. Por favor, corrija os campos em destaque.')</script>
+            <script>showErrorMessage('Paciente não cadastrado. Por favor, corrija os campos em destaque.')</script>
 
-    {% endif %}
+        {% endif %}
 
-    {% comment %}
+        {% comment %}
 {% if patient_form.subject.errors %}
     <span class="help-block">
         {% for error in patient_form.subject.errors %}{{ error }}{% endfor %}
@@ -126,273 +124,758 @@
 {% endif %}
 {% endcomment %}
 
-    <div class="row">
-        <div class="col-xs-6 col-sm-6">
-            <div class="form-group {% if patient_form.errors.name_txt %}has-error{% endif %}">
-                <label for="full_name" class="control-label">Nome completo <b style="color: red;">*</b></label>
+        <div class="row">
+            <div class="col-xs-6 col-sm-6">
+                <div class="form-group {% if patient_form.errors.name_txt %}has-error{% endif %}">
+                    <label for="full_name" class="control-label">Nome completo <b style="color: red;">*</b></label>
 
-                <div class="input-group input-group-sm">
-                    <span class="input-group-addon"> <span class="glyphicon glyphicon-user"></span></span>
-                    {{ patient_form.name_txt }}
-                </div>
-                <div class="help-block with-errors"></div>
-            </div>
-        </div>
-        <div class="col-xs-6 col-sm-6">
-            <div class="form-group">
-                <label>Número do prontuário</label>
-
-                <div class="input-group input-group-sm">
-                    <span class="input-group-addon"> <span class="glyphicon glyphicon-list-alt"></span></span>
-                    {{ patient_form.medical_record_number }}
+                    <div class="input-group input-group-sm">
+                        <span class="input-group-addon"> <span class="glyphicon glyphicon-user"></span></span>
+                        {{ patient_form.name_txt }}
+                    </div>
+                    <div class="help-block with-errors"></div>
                 </div>
             </div>
-        </div>
-    </div>
-    <div class="row">
-        <div class="col-xs-6 col-sm-6">
-            <div class="form-group {% if patient_form.errors.cpf_id %}has-error{% endif %}">
-                <label for="cpf_id" class="control-label">CPF</label>
+            <div class="col-xs-6 col-sm-6">
+                <div class="form-group">
+                    <label>Número do prontuário</label>
 
-                <div class="input-group input-group-sm">
-                    <span class="input-group-addon"> <span class="glyphicon glyphicon-asterisk"></span></span>
-                    {{ patient_form.cpf_id }}
+                    <div class="input-group input-group-sm">
+                        <span class="input-group-addon"> <span class="glyphicon glyphicon-list-alt"></span></span>
+                        {{ patient_form.medical_record_number }}
+                    </div>
                 </div>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-xs-6 col-sm-6">
+                <div class="form-group {% if patient_form.errors.cpf_id %}has-error{% endif %}">
+                    <label for="cpf_id" class="control-label">CPF</label>
 
-                <div class="help-block with-errors">
-                    {% comment %}
+                    <div class="input-group input-group-sm">
+                        <span class="input-group-addon"> <span class="glyphicon glyphicon-asterisk"></span></span>
+                        {{ patient_form.cpf_id }}
+                    </div>
+
+                    <div class="help-block with-errors">
+                        {% comment %}
                 {{ patient_form.errors.cpf_id }}
                 {% endcomment %}
-                    {% if patient_form.cpf_id.errors %}
-                        <span>
+                        {% if patient_form.cpf_id.errors %}
+                            <span>
                         {% for error in patient_form.cpf_id.errors %}{{ error }}{% endfor %}
                     </span>
-                    {% endif %}
-                </div>
+                        {% endif %}
+                    </div>
 
-            </div>
-        </div>
-        <div class="col-xs-6 col-sm-6">
-            <div class="form-group">
-                <label>RG</label>
-
-                <div class="input-group input-group-sm">
-                    {# verificar qual icone vai aparecer pra RG #}
-                    <span class="input-group-addon"><span class="glyphicon glyphicon-user"></span></span>
-                    {{ patient_form.rg_id }}
                 </div>
             </div>
-        </div>
-    </div>
-    <div class="row">
-        <div class="col-xs-6 col-sm-6">
-            <div class="form-group {% if patient_form.errors.date_birth_txt %}has-error{% endif %}">
-                <label for="date_birth_txt" class="control-label">Data de nascimento <b
-                        style="color: red;">*</b></label>
+            <div class="col-xs-6 col-sm-6">
+                <div class="form-group">
+                    <label>RG</label>
 
-                <div class="input-group input-group-sm">
-                    <span class="input-group-addon"> <span class="glyphicon glyphicon-th"></span></span>
-                    {{ patient_form.date_birth_txt }}
+                    <div class="input-group input-group-sm">
+                        {# verificar qual icone vai aparecer pra RG #}
+                        <span class="input-group-addon"><span class="glyphicon glyphicon-user"></span></span>
+                        {{ patient_form.rg_id }}
+                    </div>
                 </div>
-                <div class="help-block with-errors">
-                    {% if patient_form.date_birth_txt.errors %}
-                        <span>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-xs-6 col-sm-6">
+                <div class="form-group {% if patient_form.errors.date_birth_txt %}has-error{% endif %}">
+                    <label for="date_birth_txt" class="control-label">Data de nascimento <b
+                            style="color: red;">*</b></label>
+
+                    <div class="input-group input-group-sm">
+                        <span class="input-group-addon"> <span class="glyphicon glyphicon-th"></span></span>
+                        {{ patient_form.date_birth_txt }}
+                    </div>
+                    <div class="help-block with-errors">
+                        {% if patient_form.date_birth_txt.errors %}
+                            <span>
                             {% for error in patient_form.date_birth_txt.errors %}{{ error }}{% endfor %}
                         </span>
-                    {% endif %}
-                </div>
+                        {% endif %}
+                    </div>
 
+                </div>
+            </div>
+            <div class="col-xs-6 col-sm-6">
+                <div class="form-group">
+                    <label for="gender_id" class="control-label">Sexo <b style="color: red;">*</b></label>
+
+                    <div class="input-group input-group-sm">
+                        <span class="input-group-addon"> <span class="glyphicon"></span></span>
+                        {{ patient_form.gender_opt }}
+                    </div>
+                    <div class="help-block with-errors"></div>
+                </div>
             </div>
         </div>
-        <div class="col-xs-6 col-sm-6">
-            <div class="form-group">
-                <label for="gender_id" class="control-label">Sexo <b style="color: red;">*</b></label>
+        <div class="row">
+            <div class="col-xs-6 col-sm-6">
+                <div class="form-group">
+                    <label>Estado civil</label>
 
-                <div class="input-group input-group-sm">
-                    <span class="input-group-addon"> <span class="glyphicon"></span></span>
-                    {{ patient_form.gender_opt }}
+                    <div class="input-group  input-group-sm">
+                        <span class="input-group-addon"> <span class="glyphicon"></span></span>
+                        {{ patient_form.marital_status_opt }}
+                    </div>
                 </div>
-                <div class="help-block with-errors"></div>
             </div>
         </div>
+        <div class="col-md-1"></div>
     </div>
+    <!-- Esta div define o segundo bloco na tab1 -->
+    <div class="container span6 offset3 well ">
+        <div class="row">
+            <div class="col-xs-6 col-sm-6">
+                <div class="form-group">
+                    <label>CEP</label>
+
+                    <div class="input-group  input-group-sm">
+                        <span class="input-group-addon"> <span class="glyphicon glyphicon-home"></span></span>
+                        {{ patient_form.zipcode_number }}
+                    </div>
+                    <div class="help-block with-errors"></div>
+                </div>
+            </div>
+            <div class="col-xs-6 col-sm-6">
+                <div class="form-group">
+                    <label>Endereço</label>
+
+                    <div class="input-group  input-group-sm ">
+                        <span class="input-group-addon"> <span class="glyphicon glyphicon-home"></span></span>
+                        {{ patient_form.street_txt }}
+                    </div>
+
+                </div>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-xs-6 col-sm-6">
+                <div class="form-group">
+                    <label>País</label>
+
+                    <div class="input-group  input-group-sm">
+                        <span class="input-group-addon"> <span class="glyphicon glyphicon-home"></span></span>
+                        {{ patient_form.country_txt }}
+                    </div>
+                </div>
+            </div>
+            <div class="col-xs-6 col-sm-6">
+                <div class="form-group">
+                    <label>Estado</label>
+
+                    <div class="input-group  input-group-sm">
+                        <span class="input-group-addon"> <span class="glyphicon glyphicon-home"></span></span>
+                        {{ patient_form.state_txt }}
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-xs-6 col-sm-6">
+                <div class="form-group">
+                    <label>Cidade</label>
+
+                    <div class="input-group  input-group-sm ">
+                        <span class="input-group-addon"> <span class="glyphicon glyphicon-home"></span></span>
+                        {{ patient_form.city_txt }}
+                    </div>
+                </div>
+            </div>
+            <div class="col-xs-6 col-sm-6">
+                <div class="form-group">
+                    <label for="email" class="control-label">E-mail</label>
+
+                    <div class="input-group input-group-sm">
+                        <span class="input-group-addon"> <span class="glyphicon glyphicon-envelope"></span></span>
+                        {{ patient_form.email_txt }}
+                    </div>
+                    <div class="help-block with-errors"></div>
+                </div>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-xs-6 col-sm-6">
+                <div class="form-group">
+                    <label>Telefone fixo</label>
+
+                    <div class="input-group  input-group-sm">
+                        <span class="input-group-addon"> <span class="glyphicon glyphicon-earphone"></span></span>
+                        {{ patient_form.phone_number }}
+                    </div>
+                    <div class="help-block with-errors"></div>
+                </div>
+            </div>
+            <div class="col-xs-6 col-sm-6">
+                <div class="form-group">
+                    <label>Telefone celular</label>
+
+                    <div class="input-group input-group-sm">
+                        <span class="input-group-addon"> <span class="glyphicon glyphicon-earphone"></span></span>
+                        {{ patient_form.cellphone_number }}
+                    </div>
+                    <div class="help-block with-errors"></div>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-1"></div>
+    </div>
+    </div>
+    </div>
+    </div>
+    <!-- <div class="tab-pane active" id="tab1"> -->
+
+    <!-- Esta div define a segunda aba do formulário, #tab2 -->
+    <div class="tab-pane" id="tab2">
     <div class="row">
-        <div class="col-xs-6 col-sm-6">
-            <div class="form-group">
-                <label>Estado civil</label>
-
-                <div class="input-group  input-group-sm">
-                    <span class="input-group-addon"> <span class="glyphicon"></span></span>
-                    {{ patient_form.marital_status_opt }}
-                </div>
-            </div>
-        </div>
-    </div>
     <div class="col-md-1"></div>
-</div>
-<!-- Esta div define o segundo bloco na tab1 -->
-<div class="container span6 offset3 well ">
-    <div class="row">
-        <div class="col-xs-6 col-sm-6">
-            <div class="form-group">
-                <label>CEP</label>
+    <div class="col-md-10">
+    <div class="container span6 offset3 well ">
+        <div class="row">
+            <div class="col-xs-6 col-sm-6">
+                <div class="form-group">
+                    <label>Natural de</label>
 
-                <div class="input-group  input-group-sm">
-                    <span class="input-group-addon"> <span class="glyphicon glyphicon-home"></span></span>
-                    {{ patient_form.zipcode_number }}
+                    <div class="input-group input-group-sm">
+                        <span class="input-group-addon"> <span class="glyphicon glyphicon-flag"></span></span>
+                        {{ patient_form.natural_of_txt }}
+                    </div>
                 </div>
-                <div class="help-block with-errors"></div>
             </div>
-        </div>
-        <div class="col-xs-6 col-sm-6">
-            <div class="form-group">
-                <label>Endereço</label>
+            <div class="col-xs-6 col-sm-6">
+                <div class="form-group">
+                    <label>País de nascimento</label>
 
-                <div class="input-group  input-group-sm ">
-                    <span class="input-group-addon"> <span class="glyphicon glyphicon-home"></span></span>
-                    {{ patient_form.street_txt }}
-                </div>
-
-            </div>
-        </div>
-    </div>
-    <div class="row">
-        <div class="col-xs-6 col-sm-6">
-            <div class="form-group">
-                <label>País</label>
-
-                <div class="input-group  input-group-sm">
-                    <span class="input-group-addon"> <span class="glyphicon glyphicon-home"></span></span>
-                    {{ patient_form.country_txt }}
+                    <div class="input-group input-group-sm">
+                        <span class="input-group-addon"> <span class="glyphicon glyphicon-home"></span></span>
+                        {{ patient_form.citizenship_txt }}
+                    </div>
                 </div>
             </div>
         </div>
-        <div class="col-xs-6 col-sm-6">
-            <div class="form-group">
-                <label>Estado</label>
+        <div class="row">
+            <div class="col-xs-6 col-sm-6">
+                <div class="form-group">
+                    <label>Profissão</label>
 
-                <div class="input-group  input-group-sm">
-                    <span class="input-group-addon"> <span class="glyphicon glyphicon-home"></span></span>
-                    {{ patient_form.state_txt }}
+                    <div class="input-group  input-group-sm ">
+                        <span class="input-group-addon"> <span class="glyphicon"></span></span>
+                        {{ social_demographic_form.profession_txt }}
+                    </div>
+                </div>
+            </div>
+            <div class="col-xs-6 col-sm-6">
+                <div class="form-group">
+                    <label for="occupation">Ocupação</label>
+
+                    <div class="input-group  input-group-sm">
+                        <span class="input-group-addon"> <span class="glyphicon"></span></span>
+                        {{ social_demographic_form.occupation_txt }}
+                    </div>
                 </div>
             </div>
         </div>
-    </div>
-    <div class="row">
-        <div class="col-xs-6 col-sm-6">
-            <div class="form-group">
-                <label>Cidade</label>
+        <div class="row">
+            <div class="col-xs-6 col-sm-12">
+                <div class="form-group">
+                    <label>Recebe algum benefício de escala municipal, estadual ou federal de governo?</label>
 
-                <div class="input-group  input-group-sm ">
-                    <span class="input-group-addon"> <span class="glyphicon glyphicon-home"></span></span>
-                    {{ patient_form.city_txt }}
+                    <div class="input-group  input-group-sm">
+                        {% for radio in social_demographic_form.benefit_government_bool %}
+                            <div class="radio-inline">
+                                {{ radio }}
+                            </div>
+                        {% endfor %}
+                    </div>
                 </div>
             </div>
         </div>
-        <div class="col-xs-6 col-sm-6">
-            <div class="form-group">
-                <label for="email" class="control-label">E-mail</label>
+        <div class="row">
+            <div class="col-xs-6 col-sm-12">
+                <div class="form-group">
+                    <label>Qual a forma de pagamento do tratamento realizado?</label>
 
-                <div class="input-group input-group-sm">
-                    <span class="input-group-addon"> <span class="glyphicon glyphicon-envelope"></span></span>
-                    {{ patient_form.email_txt }}
+                    <div class="input-group  input-group-sm">
+                        {{ social_demographic_form.payment_opt }}
+                    </div>
                 </div>
-                <div class="help-block with-errors"></div>
             </div>
         </div>
-    </div>
-    <div class="row">
-        <div class="col-xs-6 col-sm-6">
-            <div class="form-group">
-                <label>Telefone fixo</label>
+        <div class="row">
+            <div class="col-xs-6 col-sm-6">
+                <div class="form-group">
+                    <label>Religião (IBGE)</label>
 
-                <div class="input-group  input-group-sm">
-                    <span class="input-group-addon"> <span class="glyphicon glyphicon-earphone"></span></span>
-                    {{ patient_form.phone_number }}
+                    <div class="input-group  input-group-sm">
+                        {{ social_demographic_form.religion_opt }}
+                    </div>
                 </div>
-                <div class="help-block with-errors"></div>
             </div>
-        </div>
-        <div class="col-xs-6 col-sm-6">
-            <div class="form-group">
-                <label>Telefone celular</label>
+            <div class="col-xs-6 col-sm-6">
+                <div class="form-group">
+                    <label for="skin_color">Cor da pele (IBGE)</label>
 
-                <div class="input-group input-group-sm">
-                    <span class="input-group-addon"> <span class="glyphicon glyphicon-earphone"></span></span>
-                    {{ patient_form.cellphone_number }}
+                    <div class="input-group  input-group-sm">
+                        {{ social_demographic_form.flesh_tone_opt }}
+                    </div>
                 </div>
-                <div class="help-block with-errors"></div>
             </div>
         </div>
     </div>
+    <div class="container span6 offset3 well ">
+        <div class="row">
+            <div class="col-xs-6 col-sm-12">
+                <label>
+                    <h4>Classe social</h4>
+                    <br/>
+                </label>
+
+                <div class="form-group">
+                    <label>Grau de instrução do chefe de família - Critério Brasil 2013</label>
+
+                    <div class="input-group input-group-sm">
+                        {{ social_demographic_form.schooling_opt }}
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-xs-6 col-sm-12">
+                <div class="form-group">
+                    <label>Quantidade de itens de conforto familiar - Critério Brasil 2013</label>
+
+                    <div class="form-group">
+                        <label class="col-sm-5 control-label">Televisores em cores</label>
+
+                        <div class="col-sm-7">
+                            {% for radio in social_demographic_form.tv_opt %}
+                                <div class="radio-inline">
+                                    {{ radio }}
+                                </div>
+                            {% endfor %}
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label class="col-sm-5 control-label">Videocassete/DVD</label>
+
+                        <div class="col-sm-7">
+                            {% for radio in social_demographic_form.dvd_opt %}
+                                <div class="radio-inline">
+                                    {{ radio }}
+                                </div>
+                            {% endfor %}
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label class="col-sm-5 control-label">Rádios</label>
+
+                        <div class="col-sm-7">
+                            {% for radio in social_demographic_form.radio_opt %}
+                                <div class="radio-inline">
+                                    {{ radio }}
+                                </div>
+                            {% endfor %}
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label class="col-sm-5 control-label">Banheiros</label>
+
+                        <div class="col-sm-7">
+                            {% for radio in social_demographic_form.bath_opt %}
+                                <div class="radio-inline">
+                                    {{ radio }}
+                                </div>
+                            {% endfor %}
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label class="col-sm-5 control-label">Automóveis</label>
+
+                        <div class="col-sm-7">
+                            {% for radio in social_demographic_form.automobile_opt %}
+                                <div class="radio-inline">
+                                    {{ radio }}
+                                </div>
+                            {% endfor %}
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label class="col-sm-5 control-label">Empregadas mensalistas</label>
+
+                        <div class="col-sm-7">
+                            {% for radio in social_demographic_form.house_maid_opt %}
+                                <div class="radio-inline">
+                                    {{ radio }}
+                                </div>
+                            {% endfor %}
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label class="col-sm-5 control-label">Máquinas de lavar</label>
+
+                        <div class="col-sm-7">
+                            {% for radio in social_demographic_form.wash_machine_opt %}
+                                <div class="radio-inline">
+                                    {{ radio }}
+                                </div>
+                            {% endfor %}
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label class="col-sm-5 control-label">Geladeiras</label>
+
+                        <div class="col-sm-7">
+                            {% for radio in social_demographic_form.refrigerator_opt %}
+                                <div class="radio-inline">
+                                    {{ radio }}
+                                </div>
+                            {% endfor %}
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label class="col-sm-5 control-label">Freezer*</label>
+
+                        <div class="col-sm-7">
+                            {% for radio in social_demographic_form.freezer_opt %}
+                                <div class="radio-inline">
+                                    {{ radio }}
+                                </div>
+                            {% endfor %}
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-sm-12">
+                <h6>*Aparelho independente ou parte da geladeira duplex.</h6>
+            </div>
+        </div>
+        <div class="col-md-1"></div>
+    </div>
+    </div>
+    </div>
+    </div>
+    <!-- <div class="tab-pane" id="tab2"> -->
+
+    <!-- Esta div define a terceira aba do formulário, #tab3 -->
+    <div class="tab-pane" id="tab3">
+        <div class="row">
+            <div class="col-md-1"></div>
+            <div class="col-md-10">
+                <div class="container span6 offset3 well ">
+                    <div class="row">
+                        <div class="col-xs-6 col-sm-4">
+                            <div class="form-group">
+                                <label>Tabagismo</label>
+
+                                <div class="input-group  input-group-sm">
+                                    <div class="input-group  input-group-sm">
+                                        {% for radio in social_history_form.smoker %}
+                                            <div class="radio-inline">
+                                                {{ radio }}
+                                            </div>
+                                        {% endfor %}
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-xs-6 col-sm-4">
+                            <div class="form-group">
+                                <label>Cigarros/Dia</label>
+
+                                <div class="input-group  input-group-sm">
+                                    {{ social_history_form.amount_cigarettes_opt }}
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-xs-6 col-sm-4">
+                            <div class="form-group">
+                                <label>Ex-tabagista</label>
+
+                                <div class="input-group  input-group-sm">
+                                    <div class="input-group  input-group-sm">
+                                        {% for radio in social_history_form.ex_smoker %}
+                                            <div class="radio-inline">
+                                                {{ radio }}
+                                            </div>
+                                        {% endfor %}
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-xs-6 col-sm-4">
+                            <div class="form-group">
+                                <label>Etilismo</label>
+
+                                <div class="input-group  input-group-sm">
+                                    {% for radio in social_history_form.alcoholic %}
+                                        <div class="radio-inline">
+                                            {{ radio }}
+                                        </div>
+                                    {% endfor %}
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-xs-6 col-sm-4">
+                            <div class="form-group">
+                                <label>Frequência</label>
+
+                                <div class="input-group  input-group-sm">
+                                    {{ social_history_form.alcohol_frequency_opt }}
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-xs-6 col-sm-4">
+                            <div class="form-group">
+                                <label>Tempo</label>
+
+                                <div class="input-group  input-group-sm">
+                                    {{ social_history_form.alcohol_period_opt }}
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-xs-6 col-sm-12">
+                            <div class="form-group">
+                                <label>Uso de drogas ilícitas</label>
+
+                                <div class="input-group  input-group-sm">
+                                    {% for radio in social_history_form.drugs_opt %}
+                                        <div class="radio-inline">
+                                            {{ radio }}
+                                        </div>
+                                    {% endfor %}
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-1"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <!-- <div class="tab-pane" id="tab3"> -->
+
+    <!-- Esta div define a quarta aba do formulário, #tab4 -->
+    <div class="tab-pane" id="tab4">
+        <div class="tab-pane fade in active" id="mainMenuUserTab">
+            <div class="col-md-15">
+                <div class="container span6 offset3 well ">
+                    <div class="form-group">
+                        <table class="table table-striped">
+                            <thead>
+                            <tr>
+                                <th></th>
+                                <th>Data</th>
+                                <th>Responsável</th>
+                                <th>Cargo</th>
+                                <th></th>
+                            </tr>
+                            </thead>
+                            <tbody>
+
+                            <tr>
+                                <td><a href="/quiz/evaluate/edit/1" class="glyphicon glyphicon-file"
+                                       style="color: black"></td>
+                                <td><a href="/quiz/evaluate/edit/1">15/07/2014 14:30:22</a></td>
+                                <td>Osvaldo Cruz</td>
+                                <td>Médico</td>
+
+                                <td><a data-toggle="modal" data-id="ISBN-001122" title="Add this item"
+                                       class="open-AddBookDialog btn btn-primary glyphicon glyphicon-folder-open"
+                                       href="#evaluateModal"> Ver</a>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td><a href="/quiz/evaluate/edit/1" class="glyphicon glyphicon-file"
+                                       style="color: black"></a></td>
+                                <td><a href="/quiz/evaluate/edit/1">02/05/2013 14:30:22</a></td>
+                                <td>Fulana da Silva</td>
+                                <td>Enfermeira</td>
+
+                                <td><a data-toggle="modal" data-id="ISBN-001122" title="Add this item"
+                                       class="open-AddBookDialog btn btn-primary glyphicon glyphicon-folder-open"
+                                       href="#evaluateModal"> Ver</a>
+                                </td>
+                            </tr>
+
+                            <tr>
+                                <td><a href="/quiz/evaluate/edit/1" class="glyphicon glyphicon-file"
+                                       style="color: black"></td>
+                                <td><a href="/quiz/evaluate/edit/1">10/03/2012 14:30:22</a></td>
+                                <td>Bertrana de Souza</td>
+                                <td>Médica</td>
+
+                                <td><a data-toggle="modal" data-id="ISBN-001122" title="Add this item"
+                                       class="open-AddBookDialog btn btn-primary glyphicon glyphicon-folder-open"
+                                       href="#evaluateModal"> Ver</a>
+                                </td>
+                            </tr>
+
+                            <tr>
+                                <td><a href="/quiz/evaluate/edit/1" class="glyphicon glyphicon-file"
+                                       style="color: black"></td>
+                                <td><a href="/quiz/evaluate/edit/1">11/09/2011 14:30:22</a></td>
+                                <td>Ciclana dos Santos</td>
+                                <td>Enfermeira</td>
+
+                                <td><a data-toggle="modal" data-id="ISBN-001122" title="Add this item"
+                                       class="open-AddBookDialog btn btn-primary glyphicon glyphicon-folder-open"
+                                       href="#evaluateModal"> Ver</a>
+                                </td>
+                            </tr>
+
+                            </tbody>
+                        </table>
+                    </div>
+
+                    <div class="btn-group pull-left">
+                        <a href="/quiz/evaluate/new/" class="btn btn-primary">Inserir avaliação médica</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+
+    <div class="modal fade bs-example-modal-lg" id="evaluateModal" tabindex="-1" role="dialog"
+         aria-labelledby="evaluateModalLabel"
+         aria-hidden="true">
+    <div class="modal-dialog modal-lg" style="width: 80%">
+    <div class="modal-content">
+    <div class="modal-header">
+        <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+        <h4 class="modal-title" id="myModalLabel"><b>Detalhes da avaliação médica</b></h4>
+    </div>
+    <div class="modal-body">
+    <div class="col-md-12">
+
+        <div class="container span6 offset1 well ">
+            <div class="row">
+                <div class="col-xs-4 col-sm-4">
+                    <div class="form-group">
+                        <label>Data avaliação</label>
+
+                        <div class="input-group input-group-sm">
+                            15/07/2014 14:30:22
+                        </div>
+                    </div>
+                </div>
+                <div class="col-xs-4 col-sm-4">
+                    <div class="form-group">
+                        <label>Responsável</label>
+
+                        <div class="input-group input-group-sm">
+                            Osvaldo Cruz
+                        </div>
+                    </div>
+                </div>
+                <div class="col-xs-4 col-sm-4">
+                    <div class="form-group">
+                        <label>Cargo</label>
+
+                        <div class="input-group input-group-sm">
+                            Médico
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+    </div>
+
+
+    <ul class="nav nav-tabs nav-justified" id="idTabsEvaluate">
+        <li><a href="#tab5" data-toggle="tab" id="5">Doenças Pregressas</a></li>
+        <li><a href="#tab6" data-toggle="tab" id="6">Histórico de Saúde</a></li>
+    </ul>
+
+
+    <!-- Esta div define a quarta aba do formulário, #tab5 -->
+    <div class="tab-content">
+    <div class="tab-pane active" id="tab5">
+    <div class="row">
     <div class="col-md-1"></div>
-</div>
-</div>
-</div>
-</div>
-<!-- <div class="tab-pane active" id="tab1"> -->
-
-<!-- Esta div define a segunda aba do formulário, #tab2 -->
-<div class="tab-pane" id="tab2">
-<div class="row">
-<div class="col-md-1"></div>
-<div class="col-md-10">
-<div class="container span6 offset3 well ">
-    <div class="row">
-        <div class="col-xs-6 col-sm-6">
-            <div class="form-group">
-                <label>Natural de</label>
-
-                <div class="input-group input-group-sm">
-                    <span class="input-group-addon"> <span class="glyphicon glyphicon-flag"></span></span>
-                    {{ patient_form.natural_of_txt }}
-                </div>
-            </div>
-        </div>
-        <div class="col-xs-6 col-sm-6">
-            <div class="form-group">
-                <label>País de nascimento</label>
-
-                <div class="input-group input-group-sm">
-                    <span class="input-group-addon"> <span class="glyphicon glyphicon-home"></span></span>
-                    {{ patient_form.citizenship_txt }}
-                </div>
-            </div>
-        </div>
-    </div>
-    <div class="row">
-        <div class="col-xs-6 col-sm-6">
-            <div class="form-group">
-                <label>Profissão</label>
-
-                <div class="input-group  input-group-sm ">
-                    <span class="input-group-addon"> <span class="glyphicon"></span></span>
-                    {{ social_demographic_form.profession_txt }}
-                </div>
-            </div>
-        </div>
-        <div class="col-xs-6 col-sm-6">
-            <div class="form-group">
-                <label for="occupation">Ocupação</label>
-
-                <div class="input-group  input-group-sm">
-                    <span class="input-group-addon"> <span class="glyphicon"></span></span>
-                    {{ social_demographic_form.occupation_txt }}
-                </div>
-            </div>
-        </div>
-    </div>
+    <div class="col-md-10">
+    <div class="container span6 offset3 well ">
     <div class="row">
         <div class="col-xs-6 col-sm-12">
             <div class="form-group">
-                <label>Recebe algum benefício de escala municipal, estadual ou federal de governo?</label>
+                <label>
+                    <h4>História de Fratura</h4>
+                </label>
 
                 <div class="input-group  input-group-sm">
-                    {% for radio in social_demographic_form.benefit_government_bool %}
+                    <div class="input-group  input-group-sm">
                         <div class="radio-inline">
-                            {{ radio }}
+                            <label>
+                                <input name="fractHistOptionsRadios" id="fractHistOptionsRadios1"
+                                       value="fractHistOption1"
+                                       type="radio">Sim</label>
                         </div>
-                    {% endfor %}
+                        <div class="radio-inline">
+                            <label>
+                                <input name="fractHistOptionsRadios" id="fractHistOptionsRadios2"
+                                       value="fractHistOption2"
+                                       type="radio">Não</label>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <fieldset id="id_fieldFractHistory">
+    <div class="row">
+        <div class="col-xs-6 col-sm-4">
+            <div class="form-group">
+                <label>Fratura de escápula</label>
+
+                <div class="input-group  input-group-sm">
+                    <select class="form-control" id="id_scap_fract_">
+                        <option id="scapFractOptionsRadios1">Direita</option>
+                        <option id="scapFractOptionsRadios2">Esquerda</option>
+                        <option id="scapFractOptionsRadios3">Ambos</option>
+                    </select>
+                </div>
+            </div>
+        </div>
+        <div class="col-xs-6 col-sm-4">
+            <div class="form-group">
+                <label>Fratura de clavícula</label>
+
+                <div class="input-group  input-group-sm">
+                    <select class="form-control" id="id_clav_fract">
+                        <option id="clavFractOptionsRadios1">Direita</option>
+                        <option id="clavFractOptionsRadios2">Esquerda</option>
+                        <option id="clavFractOptionsRadios3">Ambos</option>
+                    </select>
+                </div>
+            </div>
+        </div>
+        <div class="col-xs-6 col-sm-4">
+            <div class="form-group">
+                <label>Fratura de costela</label>
+
+                <div class="input-group  input-group-sm">
+                    <div class="radio-inline">
+                        <label>
+                            <input name="ribFractOptionsRadios" id="ribFractOptionsRadios1" value="ribFractOption1"
+                                   type="radio">Sim</label>
+                    </div>
+                    <div class="radio-inline">
+                        <label>
+                            <input name="ribFractOptionsRadios" id="ribFractOptionsRadios2" value="ribFractOption2"
+                                   type="radio">Não</label>
+                    </div>
                 </div>
             </div>
         </div>
@@ -400,48 +883,21 @@
     <div class="row">
         <div class="col-xs-6 col-sm-12">
             <div class="form-group">
-                <label>Qual a forma de pagamento do tratamento realizado?</label>
+                <label>Fratura Vertebral Cervical</label>
 
                 <div class="input-group  input-group-sm">
-                    {{ social_demographic_form.payment_opt }}
-                </div>
-            </div>
-        </div>
-    </div>
-    <div class="row">
-        <div class="col-xs-6 col-sm-6">
-            <div class="form-group">
-                <label>Religião (IBGE)</label>
-
-                <div class="input-group  input-group-sm">
-                    {{ social_demographic_form.religion_opt }}
-                </div>
-            </div>
-        </div>
-        <div class="col-xs-6 col-sm-6">
-            <div class="form-group">
-                <label for="skin_color">Cor da pele (IBGE)</label>
-
-                <div class="input-group  input-group-sm">
-                    {{ social_demographic_form.flesh_tone_opt }}
-                </div>
-            </div>
-        </div>
-    </div>
-</div>
-<div class="container span6 offset3 well ">
-    <div class="row">
-        <div class="col-xs-6 col-sm-12">
-            <label>
-                <h4>Classe social</h4>
-                <br/>
-            </label>
-
-            <div class="form-group">
-                <label>Grau de instrução do chefe de família - Critério Brasil 2013</label>
-
-                <div class="input-group input-group-sm">
-                    {{ social_demographic_form.schooling_opt }}
+                    <div class="radio-inline">
+                        <label>
+                            <input name="verCerFractOptionsRadios" id="verCerFractOptionsRadios1"
+                                   value="verCerFractOption1"
+                                   type="radio">Sim</label>
+                    </div>
+                    <div class="radio-inline">
+                        <label>
+                            <input name="verCerFractOptionsRadios" id="verCerFractOptionsRadios2"
+                                   value="verCerFractOption2"
+                                   type="radio">Não</label>
+                    </div>
                 </div>
             </div>
         </div>
@@ -449,299 +905,267 @@
     <div class="row">
         <div class="col-xs-6 col-sm-12">
             <div class="form-group">
-                <label>Quantidade de itens de conforto familiar - Critério Brasil 2013</label>
-
-                <div class="form-group">
-                    <label class="col-sm-5 control-label">Televisores em cores</label>
-
-                    <div class="col-sm-7">
-                        {% for radio in social_demographic_form.tv_opt %}
-                            <div class="radio-inline">
-                                {{ radio }}
-                            </div>
-                        {% endfor %}
-                    </div>
+                <div class="input-group  input-group-sm">
+                    <fieldset disabled id="id_fieldSetClavFract">
+                        <label class="checkbox-inline">
+                            <input type="checkbox" id="clavFractCheckbox1" value="option1"> C1
+                        </label>
+                        <label class="checkbox-inline">
+                            <input type="checkbox" id="clavFractCheckbox2" value="option2"> C2
+                        </label>
+                        <label class="checkbox-inline">
+                            <input type="checkbox" id="clavFractCheckbox3" value="option3"> C3
+                        </label>
+                        <label class="checkbox-inline">
+                            <input type="checkbox" id="clavFractCheckbox4" value="option1"> C4
+                        </label>
+                        <label class="checkbox-inline">
+                            <input type="checkbox" id="clavFractCheckbox5" value="option2"> C5
+                        </label>
+                        <label class="checkbox-inline">
+                            <input type="checkbox" id="clavFractCheckbox6" value="option3"> C6
+                        </label>
+                        <label class="checkbox-inline">
+                            <input type="checkbox" id="clavFractCheckbox7" value="option3"> C7
+                        </label>
+                    </fieldset>
                 </div>
-                <div class="form-group">
-                    <label class="col-sm-5 control-label">Videocassete/DVD</label>
+            </div>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-xs-6 col-sm-12">
+            <div class="form-group">
+                <label>Fratura Vertebral Torácica</label>
 
-                    <div class="col-sm-7">
-                        {% for radio in social_demographic_form.dvd_opt %}
-                            <div class="radio-inline">
-                                {{ radio }}
-                            </div>
-                        {% endfor %}
+                <div class="input-group  input-group-sm">
+                    <div class="radio-inline">
+                        <label>
+                            <input name="verTorFractOptionsRadios" id="verTorFractOptionsRadiosA1"
+                                   value="verTorFractOption1" type="radio">Sim</label>
                     </div>
-                </div>
-                <div class="form-group">
-                    <label class="col-sm-5 control-label">Rádios</label>
-
-                    <div class="col-sm-7">
-                        {% for radio in social_demographic_form.radio_opt %}
-                            <div class="radio-inline">
-                                {{ radio }}
-                            </div>
-                        {% endfor %}
-                    </div>
-                </div>
-                <div class="form-group">
-                    <label class="col-sm-5 control-label">Banheiros</label>
-
-                    <div class="col-sm-7">
-                        {% for radio in social_demographic_form.bath_opt %}
-                            <div class="radio-inline">
-                                {{ radio }}
-                            </div>
-                        {% endfor %}
-                    </div>
-                </div>
-                <div class="form-group">
-                    <label class="col-sm-5 control-label">Automóveis</label>
-
-                    <div class="col-sm-7">
-                        {% for radio in social_demographic_form.automobile_opt %}
-                            <div class="radio-inline">
-                                {{ radio }}
-                            </div>
-                        {% endfor %}
-                    </div>
-                </div>
-                <div class="form-group">
-                    <label class="col-sm-5 control-label">Empregadas mensalistas</label>
-
-                    <div class="col-sm-7">
-                        {% for radio in social_demographic_form.house_maid_opt %}
-                            <div class="radio-inline">
-                                {{ radio }}
-                            </div>
-                        {% endfor %}
-                    </div>
-                </div>
-                <div class="form-group">
-                    <label class="col-sm-5 control-label">Máquinas de lavar</label>
-
-                    <div class="col-sm-7">
-                        {% for radio in social_demographic_form.wash_machine_opt %}
-                            <div class="radio-inline">
-                                {{ radio }}
-                            </div>
-                        {% endfor %}
-                    </div>
-                </div>
-                <div class="form-group">
-                    <label class="col-sm-5 control-label">Geladeiras</label>
-
-                    <div class="col-sm-7">
-                        {% for radio in social_demographic_form.refrigerator_opt %}
-                            <div class="radio-inline">
-                                {{ radio }}
-                            </div>
-                        {% endfor %}
-                    </div>
-                </div>
-                <div class="form-group">
-                    <label class="col-sm-5 control-label">Freezer*</label>
-
-                    <div class="col-sm-7">
-                        {% for radio in social_demographic_form.freezer_opt %}
-                            <div class="radio-inline">
-                                {{ radio }}
-                            </div>
-                        {% endfor %}
+                    <div class="radio-inline">
+                        <label>
+                            <input name="verTorFractOptionsRadios" id="verTorFractOptionsRadiosA2"
+                                   value="verTorFractOption2" type="radio">Não</label>
                     </div>
                 </div>
             </div>
         </div>
     </div>
     <div class="row">
-        <div class="col-sm-12">
-            <h6>*Aparelho independente ou parte da geladeira duplex.</h6>
-        </div>
-    </div>
-    <div class="col-md-1"></div>
-</div>
-</div>
-</div>
-</div>
-<!-- <div class="tab-pane" id="tab2"> -->
-
-<!-- Esta div define a terceira aba do formulário, #tab3 -->
-<div class="tab-pane" id="tab3">
-    <div class="row">
-        <div class="col-md-1"></div>
-        <div class="col-md-10">
-            <div class="container span6 offset3 well ">
-                <div class="row">
-                    <div class="col-xs-6 col-sm-4">
-                        <div class="form-group">
-                            <label>Tabagismo</label>
-
-                            <div class="input-group  input-group-sm">
-                                <div class="input-group  input-group-sm">
-                                    {% for radio in social_history_form.smoker %}
-                                        <div class="radio-inline">
-                                            {{ radio }}
-                                        </div>
-                                    {% endfor %}
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="col-xs-6 col-sm-4">
-                        <div class="form-group">
-                            <label>Cigarros/Dia</label>
-
-                            <div class="input-group  input-group-sm">
-                                {{ social_history_form.amount_cigarettes_opt }}
-                            </div>
-                        </div>
-                    </div>
-                    <div class="col-xs-6 col-sm-4">
-                        <div class="form-group">
-                            <label>Ex-tabagista</label>
-
-                            <div class="input-group  input-group-sm">
-                                <div class="input-group  input-group-sm">
-                                    {% for radio in social_history_form.ex_smoker %}
-                                        <div class="radio-inline">
-                                            {{ radio }}
-                                        </div>
-                                    {% endfor %}
-                                </div>
-                            </div>
-                        </div>
-                    </div>
+        <div class="col-xs-6 col-sm-12">
+            <div class="form-group">
+                <div class="input-group  input-group-sm">
+                    <fieldset disabled id="id_fieldSetVerTorFract">
+                        <label class="checkbox-inline">
+                            <input type="checkbox" id="verTorFractCheckbox1" value="option1"> T1
+                        </label>
+                        <label class="checkbox-inline">
+                            <input type="checkbox" id="verTorFractCheckbox2" value="option2"> T2
+                        </label>
+                        <label class="checkbox-inline">
+                            <input type="checkbox" id="verTorFractCheckbox3" value="option3"> T3
+                        </label>
+                        <label class="checkbox-inline">
+                            <input type="checkbox" id="verTorFractCheckbox4" value="option5"> T4
+                        </label>
+                        <label class="checkbox-inline">
+                            <input type="checkbox" id="verTorFractCheckbox5" value="option5"> T5
+                        </label>
+                        <label class="checkbox-inline">
+                            <input type="checkbox" id="verTorFractCheckbox6" value="option6"> T6
+                        </label>
+                        <label class="checkbox-inline">
+                            <input type="checkbox" id="verTorFractCheckbox7" value="option7"> T7
+                        </label>
+                        <label class="checkbox-inline">
+                            <input type="checkbox" id="verTorFractCheckbox8" value="option8"> T8
+                        </label>
+                        <label class="checkbox-inline">
+                            <input type="checkbox" id="verTorFractCheckbox9" value="option9"> T9
+                        </label>
+                        <label class="checkbox-inline">
+                            <input type="checkbox" id="verTorFractCheckbox10" value="option10"> T10
+                        </label>
+                        <label class="checkbox-inline">
+                            <input type="checkbox" id="verTorFractCheckbox11" value="option11"> T11
+                        </label>
+                        <label class="checkbox-inline">
+                            <input type="checkbox" id="verTorFractCheckbox12" value="option12"> T12
+                        </label>
+                    </fieldset>
                 </div>
-                <div class="row">
-                    <div class="col-xs-6 col-sm-4">
-                        <div class="form-group">
-                            <label>Etilismo</label>
-
-                            <div class="input-group  input-group-sm">
-                                {% for radio in social_history_form.alcoholic %}
-                                    <div class="radio-inline">
-                                        {{ radio }}
-                                    </div>
-                                {% endfor %}
-                            </div>
-                        </div>
-                    </div>
-                    <div class="col-xs-6 col-sm-4">
-                        <div class="form-group">
-                            <label>Frequência</label>
-
-                            <div class="input-group  input-group-sm">
-                                {{ social_history_form.alcohol_frequency_opt }}
-                            </div>
-                        </div>
-                    </div>
-                    <div class="col-xs-6 col-sm-4">
-                        <div class="form-group">
-                            <label>Tempo</label>
-
-                            <div class="input-group  input-group-sm">
-                                {{ social_history_form.alcohol_period_opt }}
-                            </div>
-                        </div>
-                    </div>
-                </div>
-                <div class="row">
-                    <div class="col-xs-6 col-sm-12">
-                        <div class="form-group">
-                            <label>Uso de drogas ilícitas</label>
-
-                            <div class="input-group  input-group-sm">
-                                {% for radio in social_history_form.drugs_opt %}
-                                    <div class="radio-inline">
-                                        {{ radio }}
-                                    </div>
-                                {% endfor %}
-                            </div>
-                        </div>
-                    </div>
-                </div>
-                <div class="col-md-1"></div>
             </div>
         </div>
     </div>
-</div>
-<!-- <div class="tab-pane" id="tab3"> -->
-
-<!-- Esta div define a quarta aba do formulário, #tab4 -->
-<div class="tab-pane" id="tab4">
-</div>
-<!-- <div class="tab-pane" id="tab4"> -->
-
-<!-- Esta div define a quarta aba do formulário, #tab5 -->
-<div class="tab-pane" id="tab5">
     <div class="row">
-        <div class="col-md-1"></div>
-        <div class="col-md-10">
+        <div class="col-xs-6 col-sm-12">
+            <div class="form-group">
+                <label>Fratura Vertebral Lombo-Sacral</label>
+
+                <div class="input-group  input-group-sm">
+                    <div class="radio-inline">
+                        <label>
+                            <input name="verLomSacOptionsRadios" id="verLomSacOptionsRadios1" value="verLomSacOption1"
+                                   type="radio">Sim</label>
+                    </div>
+                    <div class="radio-inline">
+                        <label>
+                            <input name="verLomSacOptionsRadios" id="verLomSacOptionsRadios2" value="verLomSacption2"
+                                   type="radio">Não</label>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-xs-6 col-sm-12">
+            <div class="form-group">
+                <div class="input-group  input-group-sm">
+                    <fieldset disabled id="id_fieldVerLomSac">
+                        <label class="checkbox-inline">
+                            <input type="checkbox" id="verLomSacFractCheckbox1" value="option1"> L1
+                        </label>
+                        <label class="checkbox-inline">
+                            <input type="checkbox" id="verLomSacFractCheckbox2" value="option2"> L2
+                        </label>
+                        <label class="checkbox-inline">
+                            <input type="checkbox" id="verLomSacFractCheckbox3" value="option3"> L3
+                        </label>
+                        <label class="checkbox-inline">
+                            <input type="checkbox" id="verLomSacFractCheckbox4" value="option5"> L4
+                        </label>
+                        <label class="checkbox-inline">
+                            <input type="checkbox" id="verLomSacFractCheckbox5" value="option5"> L5
+                        </label>
+                        <label class="checkbox-inline">
+                            <input type="checkbox" id="verLomSacFractCheckbox6" value="option6"> S1
+                        </label>
+                        <label class="checkbox-inline">
+                            <input type="checkbox" id="verLomSacFractCheckbox7" value="option7"> S2
+                        </label>
+                        <label class="checkbox-inline">
+                            <input type="checkbox" id="verLomSacFractCheckbox8" value="option8"> S3
+                        </label>
+                    </fieldset>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-xs-6 col-sm-4">
+            <div class="form-group">
+                <label>Fratura de Membros Superiores</label>
+
+                <div class="input-group  input-group-sm">
+                    <select class="form-control" id="id_upperLimbFractA">
+                        <option id="upperLimbOptionsRadios1">Direita</option>
+                        <option id="upperLimbOptionsRadios2">Esquerda</option>
+                        <option id="upperLimbOptionsRadios3">Ambos</option>
+                    </select>
+                </div>
+            </div>
+        </div>
+        <div class="col-xs-6 col-sm-4">
+            <div class="form-group">
+                <label>Fratura de Membros Inferiores</label>
+
+                <div class="input-group  input-group-sm">
+                    <select class="form-control" id="id_lowerLimbFractB">
+                        <option id="pelvisFractOptionsRadios1">Direita</option>
+                        <option id="pelvisFractOptionsRadios2">Esquerda</option>
+                        <option id="pelvisFractOptionsRadios3">Ambos</option>
+                    </select>
+                </div>
+            </div>
+        </div>
+        <div class="col-xs-6 col-sm-4">
+            <div class="form-group">
+                <label>Fratura de Pelve</label>
+
+                <div class="input-group  input-group-sm">
+                    <select class="form-control" id="id_LowerLimb">
+                        <option id="lowerLimbFractOptionsRadios1">Direita</option>
+                        <option id="lowerLimbFractOptionsRadios2">Esquerda</option>
+                        <option id="lowerLimbFractOptionsRadios3">Ambos</option>
+                    </select>
+                </div>
+            </div>
+        </div>
+    </div>
+    </fieldset>
+    </div>
+    <div class="row">
+        <div class="col-md-12">
             <div class="container span6 offset3 well ">
                 <div class="row">
                     <div class="col-xs-6 col-sm-12">
                         <div class="form-group">
                             <label>
-                                <h4>História de Fratura</h4>
+                                <h4>Cirurgia Ortopédica</h4>
                             </label>
+
                             <div class="input-group  input-group-sm">
                                 <div class="input-group  input-group-sm">
                                     <div class="radio-inline">
                                         <label>
-                                            <input name="fractHistOptionsRadios" id="fractHistOptionsRadios1" value="fractHistOption1"
-                                                   type="radio">Sim</label>
+                                            <input name="orthSurgOptionsRadios" id="orthSurgOptionsRadios1"
+                                                   value="orthSurgOption1" type="radio">Sim</label>
                                     </div>
                                     <div class="radio-inline">
                                         <label>
-                                            <input name="fractHistOptionsRadios" id="fractHistOptionsRadios2" value="fractHistOption2"
-                                                   type="radio">Não</label>
+                                            <input name="orthSurgOptionsRadios" id="orthSurgOptionsRadios2"
+                                                   value="orthSurgOption2" type="radio">Não</label>
                                     </div>
                                 </div>
                             </div>
                         </div>
                     </div>
                 </div>
-                <fieldset id="id_fieldFractHistory">
+                <fieldset id="id_fieldSetOrtSurg">
+
                     <div class="row">
                         <div class="col-xs-6 col-sm-4">
                             <div class="form-group">
-                                <label>Fratura de escápula</label>
+                                <label>Escápula</label>
+
                                 <div class="input-group  input-group-sm">
-                                    <select class="form-control" id="id_scap_fract_">
-                                        <option id="scapFractOptionsRadios1">Direita</option>
-                                        <option id="scapFractOptionsRadios2">Esquerda</option>
-                                        <option id="scapFractOptionsRadios3">Ambos</option>
+                                    <select class="form-control" id="id_scapSurg">
+                                        <option id="scapSurgOptionsRadios1">Direita</option>
+                                        <option id="scapSurgOptionsRadios2">Esquerda</option>
+                                        <option id="scapSurgOptionsRadios3">Ambos</option>
                                     </select>
                                 </div>
                             </div>
                         </div>
                         <div class="col-xs-6 col-sm-4">
                             <div class="form-group">
-                                <label>Fratura de clavícula</label>
+                                <label>Clavícula</label>
 
                                 <div class="input-group  input-group-sm">
-                                    <select class="form-control" id="id_clav_fract">
-                                        <option id="clavFractOptionsRadios1">Direita</option>
-                                        <option id="clavFractOptionsRadios2">Esquerda</option>
-                                        <option id="clavFractOptionsRadios3">Ambos</option>
+                                    <select class="form-control" id="id_clavSurg">
+                                        <option id="clavSurgOptionsRadios1">Direita</option>
+                                        <option id="clavSurgOptionsRadios2">Esquerda</option>
+                                        <option id="clavSurgOptionsRadios3">Ambos</option>
                                     </select>
                                 </div>
                             </div>
                         </div>
                         <div class="col-xs-6 col-sm-4">
                             <div class="form-group">
-                                <label>Fratura de costela</label>
+                                <label>Costela</label>
 
                                 <div class="input-group  input-group-sm">
                                     <div class="radio-inline">
                                         <label>
-                                            <input name="ribFractOptionsRadios" id="ribFractOptionsRadios1" value="ribFractOption1"
-                                                   type="radio">Sim</label>
+                                            <input name="ribSurgOptionsRadios" id="ribSurgOptionsRadios1"
+                                                   value="ribSurgOption1" type="radio">Sim</label>
                                     </div>
                                     <div class="radio-inline">
                                         <label>
-                                            <input name="ribFractOptionsRadios" id="ribFractOptionsRadios2" value="ribFractOption2"
-                                                   type="radio">Não</label>
+                                            <input name="ribSurgOptionsRadios" id="ribSurgOptionsRadios2"
+                                                   value="ribSurgOption2" type="radio">Não</label>
                                     </div>
                                 </div>
                             </div>
@@ -750,18 +1174,18 @@
                     <div class="row">
                         <div class="col-xs-6 col-sm-12">
                             <div class="form-group">
-                                <label>Fratura Vertebral Cervical</label>
+                                <label>Coluna Vertebral Cervical</label>
 
                                 <div class="input-group  input-group-sm">
                                     <div class="radio-inline">
                                         <label>
-                                            <input name="verCerFractOptionsRadios" id="verCerFractOptionsRadios1" value="verCerFractOption1"
-                                                   type="radio">Sim</label>
+                                            <input name="verCerSurgtOptionsRadios" id="verCerSurgOptionsRadios1"
+                                                   value="verCerSurgOption1" type="radio">Sim</label>
                                     </div>
                                     <div class="radio-inline">
                                         <label>
-                                            <input name="verCerFractOptionsRadios" id="verCerFractOptionsRadios2" value="verCerFractOption2"
-                                                   type="radio">Não</label>
+                                            <input name="verCerSurgOptionsRadios" id="verCerSurgOptionsRadios2"
+                                                   value="verCerSurgOption2" type="radio">Não</label>
                                     </div>
                                 </div>
                             </div>
@@ -770,48 +1194,17 @@
                     <div class="row">
                         <div class="col-xs-6 col-sm-12">
                             <div class="form-group">
-                                <div class="input-group  input-group-sm">
-                                    <fieldset disabled id="id_fieldSetClavFract">
-                                        <label class="checkbox-inline">
-                                            <input type="checkbox" id="clavFractCheckbox1" value="option1"> C1
-                                        </label>
-                                        <label class="checkbox-inline">
-                                            <input type="checkbox" id="clavFractCheckbox2" value="option2"> C2
-                                        </label>
-                                        <label class="checkbox-inline">
-                                            <input type="checkbox" id="clavFractCheckbox3" value="option3"> C3
-                                        </label>
-                                        <label class="checkbox-inline">
-                                            <input type="checkbox" id="clavFractCheckbox4" value="option1"> C4
-                                        </label>
-                                        <label class="checkbox-inline">
-                                            <input type="checkbox" id="clavFractCheckbox5" value="option2"> C5
-                                        </label>
-                                        <label class="checkbox-inline">
-                                            <input type="checkbox" id="clavFractCheckbox6" value="option3"> C6
-                                        </label>
-                                        <label class="checkbox-inline">
-                                            <input type="checkbox" id="clavFractCheckbox7" value="option3"> C7
-                                        </label>
-                                    </fieldset>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="row">
-                        <div class="col-xs-6 col-sm-12">
-                            <div class="form-group">
-                                <label>Fratura Vertebral Torácica</label>
+                                <label>Coluna Vertebral Torácica</label>
 
                                 <div class="input-group  input-group-sm">
                                     <div class="radio-inline">
                                         <label>
-                                            <input name="verTorFractOptionsRadios" id="verTorFractOptionsRadiosA1"
+                                            <input name="verTorFractOptionsRadios" id="verTorFractOptionsRadios1"
                                                    value="verTorFractOption1" type="radio">Sim</label>
                                     </div>
                                     <div class="radio-inline">
                                         <label>
-                                            <input name="verTorFractOptionsRadios" id="verTorFractOptionsRadiosA2"
+                                            <input name="verTorFractOptionsRadios" id="verTorFractOptionsRadios2"
                                                    value="verTorFractOption2" type="radio">Não</label>
                                     </div>
                                 </div>
@@ -821,139 +1214,58 @@
                     <div class="row">
                         <div class="col-xs-6 col-sm-12">
                             <div class="form-group">
-                                <div class="input-group  input-group-sm">
-                                    <fieldset disabled id="id_fieldSetVerTorFract">
-                                        <label class="checkbox-inline">
-                                            <input type="checkbox" id="verTorFractCheckbox1" value="option1"> T1
-                                        </label>
-                                        <label class="checkbox-inline">
-                                            <input type="checkbox" id="verTorFractCheckbox2" value="option2"> T2
-                                        </label>
-                                        <label class="checkbox-inline">
-                                            <input type="checkbox" id="verTorFractCheckbox3" value="option3"> T3
-                                        </label>
-                                        <label class="checkbox-inline">
-                                            <input type="checkbox" id="verTorFractCheckbox4" value="option5"> T4
-                                        </label>
-                                        <label class="checkbox-inline">
-                                            <input type="checkbox" id="verTorFractCheckbox5" value="option5"> T5
-                                        </label>
-                                        <label class="checkbox-inline">
-                                            <input type="checkbox" id="verTorFractCheckbox6" value="option6"> T6
-                                        </label>
-                                        <label class="checkbox-inline">
-                                            <input type="checkbox" id="verTorFractCheckbox7" value="option7"> T7
-                                        </label>
-                                        <label class="checkbox-inline">
-                                            <input type="checkbox" id="verTorFractCheckbox8" value="option8"> T8
-                                        </label>
-                                        <label class="checkbox-inline">
-                                            <input type="checkbox" id="verTorFractCheckbox9" value="option9"> T9
-                                        </label>
-                                        <label class="checkbox-inline">
-                                            <input type="checkbox" id="verTorFractCheckbox10" value="option10"> T10
-                                        </label>
-                                        <label class="checkbox-inline">
-                                            <input type="checkbox" id="verTorFractCheckbox11" value="option11"> T11
-                                        </label>
-                                        <label class="checkbox-inline">
-                                            <input type="checkbox" id="verTorFractCheckbox12" value="option12"> T12
-                                        </label>
-                                    </fieldset>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="row">
-                        <div class="col-xs-6 col-sm-12">
-                            <div class="form-group">
-                                <label>Fratura Vertebral Lombo-Sacral</label>
+                                <label>Coluna Vertebral Lombo-Sacral</label>
 
                                 <div class="input-group  input-group-sm">
                                     <div class="radio-inline">
                                         <label>
-                                            <input name="verLomSacOptionsRadios" id="verLomSacOptionsRadios1" value="verLomSacOption1"
-                                                   type="radio">Sim</label>
+                                            <input name="verLomSacSurgOptionsRadios" id="verLomSacSurgOptionsRadios1"
+                                                   value="verLomSacSurgOption1" type="radio">Sim</label>
                                     </div>
                                     <div class="radio-inline">
                                         <label>
-                                            <input name="verLomSacOptionsRadios" id="verLomSacOptionsRadios2" value="verLomSacption2"
-                                                   type="radio">Não</label>
+                                            <input name="verLomSacSurgOptionsRadios" id="verLomSacSurgOptionsRadios2"
+                                                   value="verLomSacSurgOption2" type="radio">Não</label>
                                     </div>
                                 </div>
                             </div>
                         </div>
                     </div>
                     <div class="row">
-                        <div class="col-xs-6 col-sm-12">
-                            <div class="form-group">
-                                <div class="input-group  input-group-sm">
-                                    <fieldset disabled id="id_fieldVerLomSac">
-                                        <label class="checkbox-inline">
-                                            <input type="checkbox" id="verLomSacFractCheckbox1" value="option1"> L1
-                                        </label>
-                                        <label class="checkbox-inline">
-                                            <input type="checkbox" id="verLomSacFractCheckbox2" value="option2"> L2
-                                        </label>
-                                        <label class="checkbox-inline">
-                                            <input type="checkbox" id="verLomSacFractCheckbox3" value="option3"> L3
-                                        </label>
-                                        <label class="checkbox-inline">
-                                            <input type="checkbox" id="verLomSacFractCheckbox4" value="option5"> L4
-                                        </label>
-                                        <label class="checkbox-inline">
-                                            <input type="checkbox" id="verLomSacFractCheckbox5" value="option5"> L5
-                                        </label>
-                                        <label class="checkbox-inline">
-                                            <input type="checkbox" id="verLomSacFractCheckbox6" value="option6"> S1
-                                        </label>
-                                        <label class="checkbox-inline">
-                                            <input type="checkbox" id="verLomSacFractCheckbox7" value="option7"> S2
-                                        </label>
-                                        <label class="checkbox-inline">
-                                            <input type="checkbox" id="verLomSacFractCheckbox8" value="option8"> S3
-                                        </label>
-                                    </fieldset>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="row">
                         <div class="col-xs-6 col-sm-4">
                             <div class="form-group">
-                                <label>Fratura de Membros Superiores</label>
+                                <label>Membros Superiores</label>
 
                                 <div class="input-group  input-group-sm">
-                                    <select class="form-control" id="id_upperLimbFractA">
-                                        <option id="upperLimbOptionsRadios1">Direita</option>
-                                        <option id="upperLimbOptionsRadios2">Esquerda</option>
-                                        <option id="upperLimbOptionsRadios3">Ambos</option>
+                                    <select class="form-control" id="id_upperLimbSurg">
+                                        <option id="upperLimbSurgOptionsRadios1">Direita</option>
+                                        <option id="upperLimbSurgOptionsRadios2">Esquerda</option>
+                                        <option id="upperLimbSurgOptionsRadios3">Ambos</option>
                                     </select>
                                 </div>
                             </div>
                         </div>
                         <div class="col-xs-6 col-sm-4">
                             <div class="form-group">
-                                <label>Fratura de Membros Inferiores</label>
+                                <label>Membros Inferiores</label>
 
                                 <div class="input-group  input-group-sm">
-                                    <select class="form-control" id="id_lowerLimbFractB">
-                                        <option id="pelvisFractOptionsRadios1">Direita</option>
-                                        <option id="pelvisFractOptionsRadios2">Esquerda</option>
-                                        <option id="pelvisFractOptionsRadios3">Ambos</option>
+                                    <select class="form-control" id="id_lowerLimbSurg">
+                                        <option id="pelvisSurgOptionsRadios1">Direita</option>
+                                        <option id="pelvisSurgOptionsRadios2">Esquerda</option>
+                                        <option id="pelvisSurgOptionsRadios3">Ambos</option>
                                     </select>
                                 </div>
                             </div>
                         </div>
                         <div class="col-xs-6 col-sm-4">
                             <div class="form-group">
-                                <label>Fratura de Pelve</label>
+                                <label>Pelve</label>
 
                                 <div class="input-group  input-group-sm">
-                                    <select class="form-control" id="id_LowerLimb">
-                                        <option id="lowerLimbFractOptionsRadios1">Direita</option>
-                                        <option id="lowerLimbFractOptionsRadios2">Esquerda</option>
-                                        <option id="lowerLimbFractOptionsRadios3">Ambos</option>
+                                    <select class="form-control" id="id_LowerLimbSurgA">
+                                        <option id="lowerLimbSurgOptionsRadios1">Direita</option>
+                                        <option id="lowerLimbSurgOptionsRadios2">Esquerda</option>
                                     </select>
                                 </div>
                             </div>
@@ -961,395 +1273,29 @@
                     </div>
                 </fieldset>
             </div>
-            <div class="row">
-                <div class="col-md-12">
-                    <div class="container span6 offset3 well ">
-                        <div class="row">
-                            <div class="col-xs-6 col-sm-12">
-                                <div class="form-group">
-                                    <label>
-                                        <h4>Cirurgia Ortopédica</h4>
-                                    </label>
-
-                                    <div class="input-group  input-group-sm">
-                                        <div class="input-group  input-group-sm">
-                                            <div class="radio-inline">
-                                                <label>
-                                                    <input name="orthSurgOptionsRadios" id="orthSurgOptionsRadios1"
-                                                           value="orthSurgOption1" type="radio">Sim</label>
-                                            </div>
-                                            <div class="radio-inline">
-                                                <label>
-                                                    <input name="orthSurgOptionsRadios" id="orthSurgOptionsRadios2"
-                                                           value="orthSurgOption2" type="radio">Não</label>
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                        <fieldset id="id_fieldSetOrtSurg">
-
-                            <div class="row">
-                                <div class="col-xs-6 col-sm-4">
-                                    <div class="form-group">
-                                        <label>Escápula</label>
-
-                                        <div class="input-group  input-group-sm">
-                                            <select class="form-control" id="id_scapSurg">
-                                                <option id="scapSurgOptionsRadios1">Direita</option>
-                                                <option id="scapSurgOptionsRadios2">Esquerda</option>
-                                                <option id="scapSurgOptionsRadios3">Ambos</option>
-                                            </select>
-                                        </div>
-                                    </div>
-                                </div>
-                                <div class="col-xs-6 col-sm-4">
-                                    <div class="form-group">
-                                        <label>Clavícula</label>
-
-                                        <div class="input-group  input-group-sm">
-                                            <select class="form-control" id="id_clavSurg">
-                                                <option id="clavSurgOptionsRadios1">Direita</option>
-                                                <option id="clavSurgOptionsRadios2">Esquerda</option>
-                                                <option id="clavSurgOptionsRadios3">Ambos</option>
-                                            </select>
-                                        </div>
-                                    </div>
-                                </div>
-                                <div class="col-xs-6 col-sm-4">
-                                    <div class="form-group">
-                                        <label>Costela</label>
-
-                                        <div class="input-group  input-group-sm">
-                                            <div class="radio-inline">
-                                                <label>
-                                                    <input name="ribSurgOptionsRadios" id="ribSurgOptionsRadios1"
-                                                           value="ribSurgOption1" type="radio">Sim</label>
-                                            </div>
-                                            <div class="radio-inline">
-                                                <label>
-                                                    <input name="ribSurgOptionsRadios" id="ribSurgOptionsRadios2"
-                                                           value="ribSurgOption2" type="radio">Não</label>
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                            <div class="row">
-                                <div class="col-xs-6 col-sm-12">
-                                    <div class="form-group">
-                                        <label>Coluna Vertebral Cervical</label>
-
-                                        <div class="input-group  input-group-sm">
-                                            <div class="radio-inline">
-                                                <label>
-                                                    <input name="verCerSurgtOptionsRadios" id="verCerSurgOptionsRadios1"
-                                                           value="verCerSurgOption1" type="radio">Sim</label>
-                                            </div>
-                                            <div class="radio-inline">
-                                                <label>
-                                                    <input name="verCerSurgOptionsRadios" id="verCerSurgOptionsRadios2"
-                                                           value="verCerSurgOption2" type="radio">Não</label>
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                            <div class="row">
-                                <div class="col-xs-6 col-sm-12">
-                                    <div class="form-group">
-                                        <label>Coluna Vertebral Torácica</label>
-
-                                        <div class="input-group  input-group-sm">
-                                            <div class="radio-inline">
-                                                <label>
-                                                    <input name="verTorFractOptionsRadios" id="verTorFractOptionsRadios1"
-                                                           value="verTorFractOption1" type="radio">Sim</label>
-                                            </div>
-                                            <div class="radio-inline">
-                                                <label>
-                                                    <input name="verTorFractOptionsRadios" id="verTorFractOptionsRadios2"
-                                                           value="verTorFractOption2" type="radio">Não</label>
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                            <div class="row">
-                                <div class="col-xs-6 col-sm-12">
-                                    <div class="form-group">
-                                        <label>Coluna Vertebral Lombo-Sacral</label>
-
-                                        <div class="input-group  input-group-sm">
-                                            <div class="radio-inline">
-                                                <label>
-                                                    <input name="verLomSacSurgOptionsRadios" id="verLomSacSurgOptionsRadios1"
-                                                           value="verLomSacSurgOption1" type="radio">Sim</label>
-                                            </div>
-                                            <div class="radio-inline">
-                                                <label>
-                                                    <input name="verLomSacSurgOptionsRadios" id="verLomSacSurgOptionsRadios2"
-                                                           value="verLomSacSurgOption2" type="radio">Não</label>
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                            <div class="row">
-                                <div class="col-xs-6 col-sm-4">
-                                    <div class="form-group">
-                                        <label>Membros Superiores</label>
-
-                                        <div class="input-group  input-group-sm">
-                                            <select class="form-control" id="id_upperLimbSurg">
-                                                <option id="upperLimbSurgOptionsRadios1">Direita</option>
-                                                <option id="upperLimbSurgOptionsRadios2">Esquerda</option>
-                                                <option id="upperLimbSurgOptionsRadios3">Ambos</option>
-                                            </select>
-                                        </div>
-                                    </div>
-                                </div>
-                                <div class="col-xs-6 col-sm-4">
-                                    <div class="form-group">
-                                        <label>Membros Inferiores</label>
-
-                                        <div class="input-group  input-group-sm">
-                                            <select class="form-control" id="id_lowerLimbSurg">
-                                                <option id="pelvisSurgOptionsRadios1">Direita</option>
-                                                <option id="pelvisSurgOptionsRadios2">Esquerda</option>
-                                                <option id="pelvisSurgOptionsRadios3">Ambos</option>
-                                            </select>
-                                        </div>
-                                    </div>
-                                </div>
-                                <div class="col-xs-6 col-sm-4">
-                                    <div class="form-group">
-                                        <label>Pelve</label>
-
-                                        <div class="input-group  input-group-sm">
-                                            <select class="form-control" id="id_LowerLimbSurgA">
-                                                <option id="lowerLimbSurgOptionsRadios1">Direita</option>
-                                                <option id="lowerLimbSurgOptionsRadios2">Esquerda</option>
-                                            </select>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                        </fieldset>
-                    </div>
-                </div>
-            </div>
-            <div class="row">
-                <div class="col-md-12">
-                    <div class="container span6 offset3 well ">
-                        <div class="row">
-                            <div class="col-xs-6 col-sm-3">
-                                <div class="form-group">
-                                    <label>
-                                        Cirurgia de Nervo
-                                    </label>
-
-                                    <div class="input-group  input-group-sm">
-                                        <div class="input-group  input-group-sm">
-                                            <div class="radio-inline">
-                                                <label>
-                                                    <input name="nerveSurgOptionsRadios" id="nerveSurgOptionsRadios1"
-                                                           value="nerveSurgOption1" type="radio">Sim</label>
-                                            </div>
-                                            <div class="radio-inline">
-                                                <label>
-                                                    <input name="nerveSurgOptionsRadios" id="nerveSurgOptionsRadios2"
-                                                           value="nerveSurgOption2" type="radio">Não</label>
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                            <div class="col-xs-6 col-sm-9">
-                                <div class="form-group">
-                                    <label>Qual?</label>
-
-                                    <div class="input-group  input-group-sm ">
-                                        <span class="input-group-addon"> <span class="glyphicon glyphicon-edit"></span></span>
-                                        <input class="form-control" placeholder="Especificar a cirurgia" id="id_nerveSurgery"
-                                               type="text">
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                        <div class="row">
-                            <div class="col-xs-6 col-sm-12">
-                                <div class="form-group">
-                                    <label>História de vertigem ou tontura</label>
-
-                                    <div class="input-group  input-group-sm">
-                                        <div class="input-group  input-group-sm">
-                                            <div class="radio-inline">
-                                                <label>
-                                                    <input name="vertigoDiseaseOptionsRadios" id="vertigoDiseaseOptionsRadios1"
-                                                           value="vertigoDiseaseOption1" type="radio">Sim</label>
-                                            </div>
-                                            <div class="radio-inline">
-                                                <label>
-                                                    <input name="vertigoDiseaseOptionsRadios" id="vertigoDiseaseOptionsRadios2"
-                                                           value="vertigotDiseaseOption2" type="radio">Não</label>
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                        <div class="row">
-                            <div class="col-xs-6 col-sm-12">
-                                <div class="form-group">
-                                    <label>História prévia de dor</label>
-
-                                    <div class="form-group">
-                                        <div class="input-group-justified  input-group-sm">
-                                            <div class="checkbox ">
-                                                <input type="checkbox" id="historyOfPainCheckbox1" value="option1"> Coluna
-                                                cervical
-                                            </div>
-                                            <div class="checkbox">
-                                                <input type="checkbox" id="historyOfPaintCheckbox2" value="option2"> Coluna
-                                                torácica
-                                            </div>
-                                            <div class="checkbox">
-                                                <input type="checkbox" id="historyOfPainCheckbox3" value="option3"> Coluna
-                                                lombar e sacral
-                                            </div>
-                                            <div class="checkbox">
-                                                <input type="checkbox" id="historyOfPainCheckbox4" value="option5"> Membro
-                                                superior
-                                            </div>
-                                            <div class="checkbox">
-                                                <input type="checkbox" id="historyOfPainCheckbox5" value="option5"> Membro
-                                                inferior
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                        <div class="row">
-                            <div class="col-xs-6 col-sm-12">
-                                <div class="form-group">
-                                    <label>Cefaléia</label>
-
-                                    <div class="input-group  input-group-sm">
-                                        <div class="radio-inline">
-                                            <label>
-                                                <input name="cephaleaPaingOptionsRadios" id="cephaleaPainOptionsRadios1"
-                                                       value="cephaleaPainOption1" type="radio">Sim</label>
-                                        </div>
-                                        <div class="radio-inline">
-                                            <label>
-                                                <input name="cephaleaPainOptionsRadios" id="cephaleaPainOptionsRadios2"
-                                                       value="cephaleaPainOption2" type="radio">Não</label>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
         </div>
     </div>
-</div>
-<!-- <div class="tab-pane" id="tab5"> -->
-
-<!-- Esta div define a quinta aba do formulário. #tab6 -->
-<div class="tab-pane" id="tab6">
-
     <div class="row">
-        <div class="col-md-1"></div>
-        <div class="col-md-10">
-            <div class="container span6 offset3 well ">
-                <div class="col-xs-6 col-sm-4">
-                    <div class="form-group">
-                        <label title="Hipertensão arterial sistêmica">HAS</label>
-
-                        <div class="input-group  input-group-sm">
-                            <div class="input-group  input-group-sm">
-                                <div class="radio-inline">
-                                    <label>
-                                        <input name="HASOptionsRadios" id="HASOptionsRadios1" value="HASOption1"
-                                               type="radio">Sim</label>
-                                </div>
-                                <div class="radio-inline">
-                                    <label>
-                                        <input name="HASOptionsRadios" id="HASOptionsRadios2" value="HASOption2"
-                                               type="radio">Não</label>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-                <div class="col-xs-6 col-sm-4">
-                    <div class="form-group">
-                        <label>Diabetes</label>
-
-                        <div class="input-group  input-group-sm">
-                            <div class="radio-inline">
-                                <label>
-                                    <input name="diabeteOptionsRadios" id="diabeteOptionsRadios1" value="diabeteOption1"
-                                           type="radio"> Sim</label>
-                            </div>
-                            <div class="radio-inline">
-                                <label>
-                                    <input name="diabeteOptionsRadios" id="diabeteOptionsRadios2" value="diabeteOption2"
-                                           type="radio"> Não</label>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-                <div class="col-xs-6 col-sm-4">
-                    <div class="form-group">
-                        <label>Disfunção Hormonal</label>
-
-                        <div class="input-group  input-group-sm">
-                            <div class="radio-inline">
-                                <label>
-                                    <input name="hormDysfOptionsRadios" id="hormDysfOptionsRadios1"
-                                           value="hormDysfOption1" type="radio"> Sim</label>
-                            </div>
-                            <div class="radio-inline">
-                                <label>
-                                    <input name="hormDysfOptionsRadios" id="hormDysfOptionsRadios2"
-                                           value="hormDysfOption2" type="radio"> Não</label>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-        <div class="col-md-1"></div>
-    </div>
-
-    <div class="row">
-        <div class="col-md-1"></div>
-        <div class="col-md-10">
+        <div class="col-md-12">
             <div class="container span6 offset3 well ">
                 <div class="row">
                     <div class="col-xs-6 col-sm-3">
                         <div class="form-group">
-                            <label> Exame Complementar </label>
+                            <label>
+                                Cirurgia de Nervo
+                            </label>
 
                             <div class="input-group  input-group-sm">
                                 <div class="input-group  input-group-sm">
                                     <div class="radio-inline">
                                         <label>
-                                            <input name="complementaryExameOptionsRadios"
-                                                   id="complementaryExameOptionsRadios1"
-                                                   value="complementaryExameOption1" type="radio">Sim</label>
+                                            <input name="nerveSurgOptionsRadios" id="nerveSurgOptionsRadios1"
+                                                   value="nerveSurgOption1" type="radio">Sim</label>
                                     </div>
                                     <div class="radio-inline">
                                         <label>
-                                            <input name="complementaryExameOptionsRadios"
-                                                   id="complementaryExameOptionsRadios2"
-                                                   value="complementaryExameOption2" type="radio">Não</label>
+                                            <input name="nerveSurgOptionsRadios" id="nerveSurgOptionsRadios2"
+                                                   value="nerveSurgOption2" type="radio">Não</label>
                                     </div>
                                 </div>
                             </div>
@@ -1361,94 +1307,299 @@
 
                             <div class="input-group  input-group-sm ">
                                 <span class="input-group-addon"> <span class="glyphicon glyphicon-edit"></span></span>
-                                <input class="form-control" placeholder="Especificar o exame complementar"
-                                       id="id_whichComplementaryExame" type="text">
-                            </div>
-                        </div>
-                    </div>
-                    <div class="col-xs-6 col-sm-9">
-                        <div class="form-group">
-                            <label for="dateOfComplementaryExame" class="control-label">Data:</label>
-
-                            <div class="input-group input-group-sm ">
-                                <span class="input-group-addon"> <span class="glyphicon glyphicon-edit"></span></span>
-                                <input class="form-control" placeholder="Data" id="dateOfComplementaryExame"
-                                       type="date">
+                                <input class="form-control" placeholder="Especificar a cirurgia" id="id_nerveSurgery"
+                                       type="text">
                             </div>
                         </div>
                     </div>
                 </div>
+                <div class="row">
+                    <div class="col-xs-6 col-sm-12">
+                        <div class="form-group">
+                            <label>História de vertigem ou tontura</label>
 
+                            <div class="input-group  input-group-sm">
+                                <div class="input-group  input-group-sm">
+                                    <div class="radio-inline">
+                                        <label>
+                                            <input name="vertigoDiseaseOptionsRadios" id="vertigoDiseaseOptionsRadios1"
+                                                   value="vertigoDiseaseOption1" type="radio">Sim</label>
+                                    </div>
+                                    <div class="radio-inline">
+                                        <label>
+                                            <input name="vertigoDiseaseOptionsRadios" id="vertigoDiseaseOptionsRadios2"
+                                                   value="vertigotDiseaseOption2" type="radio">Não</label>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-xs-6 col-sm-12">
+                        <div class="form-group">
+                            <label>História prévia de dor</label>
+
+                            <div class="form-group">
+                                <div class="input-group-justified  input-group-sm">
+                                    <div class="checkbox ">
+                                        <input type="checkbox" id="historyOfPainCheckbox1" value="option1"> Coluna
+                                        cervical
+                                    </div>
+                                    <div class="checkbox">
+                                        <input type="checkbox" id="historyOfPaintCheckbox2" value="option2"> Coluna
+                                        torácica
+                                    </div>
+                                    <div class="checkbox">
+                                        <input type="checkbox" id="historyOfPainCheckbox3" value="option3"> Coluna
+                                        lombar e sacral
+                                    </div>
+                                    <div class="checkbox">
+                                        <input type="checkbox" id="historyOfPainCheckbox4" value="option5"> Membro
+                                        superior
+                                    </div>
+                                    <div class="checkbox">
+                                        <input type="checkbox" id="historyOfPainCheckbox5" value="option5"> Membro
+                                        inferior
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-xs-6 col-sm-12">
+                        <div class="form-group">
+                            <label>Cefaléia</label>
+
+                            <div class="input-group  input-group-sm">
+                                <div class="radio-inline">
+                                    <label>
+                                        <input name="cephaleaPaingOptionsRadios" id="cephaleaPainOptionsRadios1"
+                                               value="cephaleaPainOption1" type="radio">Sim</label>
+                                </div>
+                                <div class="radio-inline">
+                                    <label>
+                                        <input name="cephaleaPainOptionsRadios" id="cephaleaPainOptionsRadios2"
+                                               value="cephaleaPainOption2" type="radio">Não</label>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
             </div>
         </div>
-        <div class="col-md-1"></div>
+    </div>
+    </div>
+    </div>
+    </div>
+    <!-- <div class="tab-pane" id="tab5"> -->
+
+    <!-- Esta div define a quinta aba do formulário. #tab6 -->
+    <div class="tab-pane" id="tab6">
+
+        <div class="row">
+            <div class="col-md-1"></div>
+            <div class="col-md-10">
+                <div class="container span6 offset3 well ">
+                    <div class="col-xs-6 col-sm-4">
+                        <div class="form-group">
+                            <label title="Hipertensão arterial sistêmica">HAS</label>
+
+                            <div class="input-group  input-group-sm">
+                                <div class="input-group  input-group-sm">
+                                    <div class="radio-inline">
+                                        <label>
+                                            <input name="HASOptionsRadios" id="HASOptionsRadios1" value="HASOption1"
+                                                   type="radio">Sim</label>
+                                    </div>
+                                    <div class="radio-inline">
+                                        <label>
+                                            <input name="HASOptionsRadios" id="HASOptionsRadios2" value="HASOption2"
+                                                   type="radio">Não</label>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-xs-6 col-sm-4">
+                        <div class="form-group">
+                            <label>Diabetes</label>
+
+                            <div class="input-group  input-group-sm">
+                                <div class="radio-inline">
+                                    <label>
+                                        <input name="diabeteOptionsRadios" id="diabeteOptionsRadios1"
+                                               value="diabeteOption1"
+                                               type="radio"> Sim</label>
+                                </div>
+                                <div class="radio-inline">
+                                    <label>
+                                        <input name="diabeteOptionsRadios" id="diabeteOptionsRadios2"
+                                               value="diabeteOption2"
+                                               type="radio"> Não</label>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-xs-6 col-sm-4">
+                        <div class="form-group">
+                            <label>Disfunção Hormonal</label>
+
+                            <div class="input-group  input-group-sm">
+                                <div class="radio-inline">
+                                    <label>
+                                        <input name="hormDysfOptionsRadios" id="hormDysfOptionsRadios1"
+                                               value="hormDysfOption1" type="radio"> Sim</label>
+                                </div>
+                                <div class="radio-inline">
+                                    <label>
+                                        <input name="hormDysfOptionsRadios" id="hormDysfOptionsRadios2"
+                                               value="hormDysfOption2" type="radio"> Não</label>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-1"></div>
+        </div>
+
+        <div class="row">
+            <div class="col-md-1"></div>
+            <div class="col-md-10">
+                <div class="container span6 offset3 well ">
+                    <div class="row">
+                        <div class="col-xs-6 col-sm-3">
+                            <div class="form-group">
+                                <label> Exame Complementar </label>
+
+                                <div class="input-group  input-group-sm">
+                                    <div class="input-group  input-group-sm">
+                                        <div class="radio-inline">
+                                            <label>
+                                                <input name="complementaryExameOptionsRadios"
+                                                       id="complementaryExameOptionsRadios1"
+                                                       value="complementaryExameOption1" type="radio">Sim</label>
+                                        </div>
+                                        <div class="radio-inline">
+                                            <label>
+                                                <input name="complementaryExameOptionsRadios"
+                                                       id="complementaryExameOptionsRadios2"
+                                                       value="complementaryExameOption2" type="radio">Não</label>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-xs-6 col-sm-9">
+                            <div class="form-group">
+                                <label>Qual?</label>
+
+                                <div class="input-group  input-group-sm ">
+                                    <span class="input-group-addon"> <span
+                                            class="glyphicon glyphicon-edit"></span></span>
+                                    <input class="form-control" placeholder="Especificar o exame complementar"
+                                           id="id_whichComplementaryExame" type="text">
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-xs-6 col-sm-9">
+                            <div class="form-group">
+                                <label for="dateOfComplementaryExame" class="control-label">Data:</label>
+
+                                <div class="input-group input-group-sm ">
+                                    <span class="input-group-addon"> <span
+                                            class="glyphicon glyphicon-edit"></span></span>
+                                    <input class="form-control" placeholder="Data" id="dateOfComplementaryExame"
+                                           type="date">
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                </div>
+            </div>
+            <div class="col-md-1"></div>
+        </div>
+
     </div>
 
-</div>
-<!-- <div class="tab-pane" id="tab6"> -->
 
-</div>
-<!-- <div class="tab-content"> -->
+    </div>
+    </div>
+    </div>
+    </div>
 
-<div class="modal fade" id="myModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
-    <div class="modal-dialog">
-        <div class="modal-content">
-            <div class="modal-body">
-                CPF não foi preenchido. Deseja salvar?
-            </div>
-            <div class="modal-footer">
-                <button type="button" class="btn btn-default" data-dismiss="modal">Cancelar</button>
-                <button type="button" class="btn btn-primary" id="savetab2">Salvar</button>
+    </div>
+    <!-- <div class="tab-content"> referente as tabs internas a modal de avaliacoes medicas -->
+    </div>
+    <!-- <div class="tab-content"> referente a tabs da tela principal -->
+
+    <div class="modal fade" id="myModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-body">
+                    CPF não foi preenchido. Deseja salvar?
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-default" data-dismiss="modal">Cancelar</button>
+                    <button type="button" class="btn btn-primary" id="savetab2">Salvar</button>
+                </div>
             </div>
         </div>
     </div>
-</div>
 
-<div class="modal fade" id="modalRemove" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
-    <div class="modal-dialog">
-        <div class="modal-content">
-            <div class="modal-body">
-                Tem certeza que deseja excluir o paciente?
-            </div>
-            <div class="modal-footer">
-                <button type="button" class="btn btn-default" data-dismiss="modal">Cancelar</button>
-                <button type="button" class="btn btn-primary" id="removePatient" style="background-color: indianred; color: #ffffff">Excluir</button>
+    <div class="modal fade" id="modalRemove" tabindex="-1" role="dialog" aria-labelledby="myModalLabel"
+         aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-body">
+                    Tem certeza que deseja excluir o paciente?
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-default" data-dismiss="modal">Cancelar</button>
+                    <button type="button" class="btn btn-primary" id="removePatient"
+                            style="background-color: indianred; color: #ffffff">Excluir
+                    </button>
+                </div>
             </div>
         </div>
     </div>
-</div>
 
-<!-- Esta div define os botões de navegação no formulário -->
-<div class="row">
+    <!-- Esta div define os botões de navegação no formulário -->
+    <div class="row">
+        <div class="col-md-1">
+        </div>
+        <div class="col-md-10">
+            <div class="btn-group pull-right">
+                <button type="button" class="btn btn-default" id="prevtab">Anterior</button>
+                <button type="button" class="btn btn-default" id="nexttab">Próximo</button>
+                {% if editing %}
+                    <button type="button" class="btn btn-primary" id="savetab">Salvar</button>
+                {% else %}
+                    <button type="button" class="btn btn-primary" id="editPatient">Editar</button>
+                    <button type="button" class="btn btn-secondary" style="background-color: indianred; color: #ffffff"
+                            onclick="$('#modalRemove').modal('show')">Excluir
+                    </button>
+                {% endif %}
+            </div>
+        </div>
+        <div class="col-md-1">
+        </div>
+    </div>
+
+    </div>
+    </div>
+    </div>
+    <!-- <div class="tab-pane fade in active" id="mainMenuAddTab"> -->
+
+
+
     <div class="col-md-1">
     </div>
-    <div class="col-md-10">
-        <div class="btn-group pull-right">
-            <button type="button" class="btn btn-default" id="prevtab">Anterior</button>
-            <button type="button" class="btn btn-default" id="nexttab">Próximo</button>
-            {% if editing %}
-                <button type="button" class="btn btn-primary" id="savetab">Salvar</button>
-            {% else %}
-                <button type="button" class="btn btn-primary" id="editPatient">Editar</button>
-                <button type="button" class="btn btn-secondary" style="background-color: indianred; color: #ffffff" onclick="$('#modalRemove').modal('show')">Excluir</button>
-            {% endif %}
-        </div>
-    </div>
-    <div class="col-md-1">
-    </div>
-</div>
-
-</div>
-</div>
-</div>
-<!-- <div class="tab-pane fade in active" id="mainMenuAddTab"> -->
-
-
-
-<div class="col-md-1">
-</div>
 {% endblock %}
 {% block end_form %}
-</form>
-</div>
+    </form>
+    </div>
 {% endblock %}
