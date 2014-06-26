@@ -101,8 +101,8 @@ class Patient(models.Model):
     phone_number = models.CharField(max_length=15, null=True, blank=True)
     cellphone_number = models.CharField(max_length=15, null=True, blank=True)
     email_txt = models.EmailField(null=True, blank=True)
-    date_birth_txt = models.DateField(null=False, blank=False)
-    gender_opt = models.ForeignKey(GenderOption, null=False, blank=False, validators=[validate_date_birth])
+    date_birth_txt = models.DateField(null=False, blank=False, validators=[validate_date_birth])
+    gender_opt = models.ForeignKey(GenderOption, null=False, blank=False)
     marital_status_opt = models.ForeignKey(MaritalStatusOption, null=True, blank=True)
     removed = models.BooleanField(null=False, default=False)
 

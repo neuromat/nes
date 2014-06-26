@@ -125,7 +125,7 @@ $(document).ready(function () {
     });
 
 
-    $('#cellphone').val('');
+    $('#cellphone').val();
     $('#cellphone').change(function () {
         $('#cellphone').unmask();
     });
@@ -143,7 +143,7 @@ $(document).ready(function () {
             $("#cellphone").unmask();
     });
 
-    $('#phone').val('');
+    $('#phone').val();
     $('#phone').change(function () {
         $('#phone').unmask();
     });
@@ -161,7 +161,7 @@ $(document).ready(function () {
             $("#phone").unmask();
     });
 
-    $('#zipcode').val('');
+    $('#zipcode').val();
     $('#zipcode').change(function () {
         $('#zipcode').unmask();
     });
@@ -175,6 +175,7 @@ $(document).ready(function () {
             $('#zipcode').mask('99999-999');
         }
     });
+
 
     $("#prevtab").click(function () {
         var $tabs = $('.tabbable li');
