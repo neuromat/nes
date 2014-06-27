@@ -416,12 +416,12 @@ def user_list(request, template_name='quiz/user_list.html'):
 @permission_required('auth.add_user')
 def user_create(request, template_name='quiz/register_users.html'):
     form = UserForm(request.POST or None)
-
     if form.is_valid():
         form.save()
         return redirect('user_list')
     else:
-        form.errors['username'][0] = "Este nome de usuário já existe."
+        if form.errors:
+            form.errors['username'][0] = "Este nome de usuário já existe."
     return render(request, template_name, {'form': form})
 
 
@@ -433,47 +433,19 @@ def user_delete(request, user_id):
     return redirect('user_list')
 
 
-# @login_required
-# def user(request, user_id, template_name="quiz/register.html"):
-#
-#     if request.method == "POST":
-#
-#         if 'action' in request.POST:
-#
-#             if request.POST['action'] == "remove":
-#
-#                 user_remove = User.objects.get(id=user_id)
-#                 # user_remove.removed = True
-#                 # user_remove.save()
-#                 user_remove.delete()
-#
-#                 redirect_url = reverse("user_list")
-#
-#             else:
-#                 redirect_url = reverse("user_edit", args=(user_id,))
-#
-#         return HttpResponseRedirect(redirect_url)
-#     return render(request, template_name)
-
-
 @login_required
 @permission_required('auth.change_user')
 def user_update(request, user_id, template_name="quiz/register_users.html"):
-
-    p = User.objects.get(id=user_id)
-
-    user_form = UserFormUpdate(request.POST or None, instance=p)
-
+    form = UserFormUpdate(request.POST or None, instance=User.objects.get(id=user_id))
     if request.method == "POST":
-
-        if user_form.is_valid():
-            user_form.save()
+        if form.is_valid():
+            form.save()
             return redirect('user_list')
         else:
-            user_form.errors['username'][0] = "Este nome de usuário já existe."
+            form.errors['username'][0] = "Este nome de usuário já existe."
 
     context = {
-        'form': user_form,
+        'form': form,
         'editing': True,
     }
     return render(request, template_name, context)
