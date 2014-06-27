@@ -1,11 +1,12 @@
 # coding=utf-8
 #from django.utils.six import attr
-from django.forms import ModelForm, TextInput, DateInput, Select, RadioSelect, PasswordInput, CheckboxSelectMultiple
+from django.forms import ModelForm, TextInput, DateInput, Select, RadioSelect, PasswordInput, CheckboxSelectMultiple, \
+    CharField
 from models import Patient, SocialDemographicData, SocialHistoryData
-from django.db import models
+from django.contrib.auth.hashers import make_password
 from quiz_widget import SelectBoxCountries, SelectBoxState
 
-from django.contrib.auth.models import User, Group
+from django.contrib.auth.models import User
 
 
 class PatientForm(ModelForm):
@@ -119,8 +120,6 @@ class SocialHistoryDataForm(ModelForm):
 
 
 class UserForm(ModelForm):
-    groups = models.ManyToManyField(Group)
-
     class Meta:
         model = User
         fields = ['first_name', 'last_name', 'username', 'password', 'email', 'groups']
@@ -132,6 +131,21 @@ class UserForm(ModelForm):
             'password': PasswordInput(attrs={'class': 'form-control', 'placeholder': 'Entrar senha'}),
             'email': TextInput(attrs={'class': 'form-control', 'placeholder': 'Entrar e-mail', 'id': "email",
                                       'type': 'email', 'data-error': "E-mail inválido",
-                                      'pattern': '^[_A-Za-z0-9-\+]+(\.[_A-Za-z0-9-]+)*@[A-Za-z0-9-]+(\.[A-Za-z0-9]+)*(\.[A-Za-z]{2,})$'}),
+                                      'pattern': '^[_A-Za-z0-9-\+]+(\.[_A-Za-z0-9-]+)*@[A-Za-z0-9-]' +
+                                                 '+(\.[A-Za-z0-9]+)*(\.[A-Za-z]{2,})$'}),
             'groups': CheckboxSelectMultiple()
         }
+
+    def clean_password(self):
+        return make_password(self.cleaned_data['password'])
+
+
+class UserFormUpdate(UserForm):
+    password = CharField(required=False,
+                         widget=PasswordInput(attrs={'class': 'form-control', 'placeholder': 'Entrar senha'}))
+
+    def clean_password(self):
+        if self.cleaned_data['password']:
+            return make_password(self.cleaned_data['password'])
+        else:
+            return self.instance.password

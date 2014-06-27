@@ -9,6 +9,48 @@
 
 {% block content %}
 
+    {% if messages %}
+        {% for message in messages %}
+
+            {% if message.tags == "success" %}
+                <script>showSuccessMessage('{{ message }}')</script>
+            {% endif %}
+
+            {% if message.tags == "warning" %}
+                <script>showWarningMessage('{{ message }}')</script>
+            {% endif %}
+
+            {% if message.tags == "error" %}
+                <script>showErrorMessage('{{ message }}')</script>
+            {% endif %}
+
+            {% if message.tags == "info" %}
+                <script>showInfoMessage('{{ message }}')</script>
+            {% endif %}
+
+        {% endfor %}
+    {% endif %}
+
+    <!-- Mostra todas as mensagens do formulário -->
+    {% if form.errors %}
+
+        {% comment %}
+    <div class="text-danger">Please correct the error{{ patient_form.errors|pluralize }} below.
+        {{ patient_form.errors }}
+    </div>
+    {% endcomment %}
+
+        {% for field in form %}
+            {% if field.errors %}
+                <script>showErrorMessage('{{ field.errors|striptags }}')</script>
+                <script>console.log('{{ field.errors|striptags }}')</script>
+            {% endif %}
+        {% endfor %}
+
+        <script>showErrorMessage('Paciente não cadastrado. Por favor, corrija os campos em destaque.')</script>
+
+    {% endif %}
+
     <div class="tab-pane fade in active" id="menuUserTab">
         <div class="col-md-10">
             <h3 align="center">Cadastro de usuários</h3><br>
@@ -36,20 +78,25 @@
                 <div class="row">
                     <div class="col-xs-6 col-sm-6">
                         <div class="form-group">
-                            <label>Nome de usuário</label>
-                            <div class="input-group input-group-sm">
-                                <span class="input-group-addon"> <span class="glyphicon glyphicon-user"></span></span>
-                                {{ form.username }}
+                            <div class="form-group {% if form.errors.username %}has-error{% endif %}">
+                                <label for="full_name" class="control-label">Nome de usuário<b style="color: red;">*</b></label>
+
+                                <div class="input-group input-group-sm">
+                                    <span class="input-group-addon"> <span class="glyphicon glyphicon-user"></span></span>
+                                    {{ form.username }}
+                                </div>
+                                <div class="help-block with-errors"></div>
                             </div>
                         </div>
                     </div>
                     <div class="col-xs-6 col-sm-6">
-                        <div class="form-group">
-                            <label>Senha</label>
+                        <div class="form-group {% if form.errors.password %}has-error{% endif %}">
+                            <label for="full_name" class="control-label">Senha<b style="color: red;">*</b></label>
                             <div class="input-group input-group-sm">
-                                <span class="input-group-addon"> <span class="glyphicon glyphicon-asterisk"></span></span>
+                                <span class="input-group-addon"> <span class="glyphicon glyphicon-user"></span></span>
                                 {{ form.password }}
                             </div>
+                            <div class="help-block with-errors"></div>
                         </div>
                     </div>
                 </div>
