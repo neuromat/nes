@@ -420,6 +420,8 @@ def user_create(request, template_name='quiz/register_users.html'):
     if form.is_valid():
         form.save()
         return redirect('user_list')
+    else:
+        form.errors['username'][0] = "Este nome de usuário já existe."
     return render(request, template_name, {'form': form})
 
 
@@ -466,16 +468,9 @@ def user_update(request, user_id, template_name="quiz/register_users.html"):
 
         if user_form.is_valid():
             user_form.save()
-
-            # user = User.objects.create_user(request.POST['username'], request.POST['email'], request.POST['password'])
-            # user.first_name = request.POST['first_name']
-            # user.last_name = request.POST['last_name']
-            # user.groups = request.POST.getlist('groups')
-            # user.save()
-
             return redirect('user_list')
-        # else:
-            # user_form.errors['username'][0] = "Este nome de usuário já existe."
+        else:
+            user_form.errors['username'][0] = "Este nome de usuário já existe."
 
     context = {
         'form': user_form,
