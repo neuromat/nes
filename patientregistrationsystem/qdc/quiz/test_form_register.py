@@ -4,11 +4,11 @@ from django.contrib.auth.models import *
 from django.http import QueryDict
 
 class FormValidation(TestCase):
-    def test_invalid_cpf(self):
-        """testa inclusao de paciente com cpf invalido"""
-
+    def setUp(self):
+        print "Setting User for start tests to", self._testMethodName
         username_dummy = 'myadmin'
         password_dummy = 'mypassword'
+
 
         user = User.objects.create_user(username=username_dummy, email='test@dummy.com', password=password_dummy)
         user.is_staff = True
@@ -16,6 +16,20 @@ class FormValidation(TestCase):
 
         logged = self.client.login(username=username_dummy, password=password_dummy)
         self.assertEqual(logged, True)
+
+
+    def test_invalid_cpf(self):
+        """testa inclusao de paciente com cpf invalido"""
+
+        # username_dummy = 'myadmin'
+        # password_dummy = 'mypassword'
+        #
+        # user = User.objects.create_user(username=username_dummy, email='test@dummy.com', password=password_dummy)
+        # user.is_staff = True
+        # user.save()
+        #
+        # logged = self.client.login(username=username_dummy, password=password_dummy)
+        # self.assertEqual(logged, True)
 
         data = {'name_txt': 'Novo paciente',
                 'cpf_id': '100.913.651-81',
@@ -27,15 +41,15 @@ class FormValidation(TestCase):
     def test_invalid(self):
         """testa inclusao de paciente com cpf invalido"""
 
-        username_dummy = 'myadmin'
-        password_dummy = 'mypassword'
-
-        user = User.objects.create_user(username=username_dummy, email='test@dummy.com', password=password_dummy)
-        user.is_staff = True
-        user.save()
-
-        logged = self.client.login(username=username_dummy, password=password_dummy)
-        self.assertEqual(logged, True)
+        # username_dummy = 'myadmin'
+        # password_dummy = 'mypassword'
+        #
+        # user = User.objects.create_user(username=username_dummy, email='test@dummy.com', password=password_dummy)
+        # user.is_staff = True
+        # user.save()
+        #
+        # logged = self.client.login(username=username_dummy, password=password_dummy)
+        # self.assertEqual(logged, True)
 
         data = {'name_txt': 'Novo paciente bom', 'cpf_id': '288.666.827-30', 'date_birth_txt': '01/01/2002',
                 'gender_opt': '1'}
@@ -76,15 +90,15 @@ class FormValidation(TestCase):
     def test_valid_email(self):
         """Teste de email invalido"""
 
-        username_dummy = 'myadmin'
-        password_dummy = 'mypassword'
-
-        user = User.objects.create_user(username=username_dummy, email='test@dummy.com', password=password_dummy)
-        user.is_staff = True
-        user.save()
-
-        logged = self.client.login(username=username_dummy, password=password_dummy)
-        self.assertEqual(logged, True)
+        # username_dummy = 'myadmin'
+        # password_dummy = 'mypassword'
+        #
+        # user = User.objects.create_user(username=username_dummy, email='test@dummy.com', password=password_dummy)
+        # user.is_staff = True
+        # user.save()
+        #
+        # logged = self.client.login(username=username_dummy, password=password_dummy)
+        # self.assertEqual(logged, True)
 
         data = "name_txt=Paciente&cpf_id=374.276.738-08&email_txt=mail@invalid.&date_birth_txt=01/01/2000"
 
@@ -102,15 +116,15 @@ class FormValidation(TestCase):
     def test_valid_name(self):
         """Teste de validacao do campo nome completo  - obrigatorio"""
 
-        username_dummy = 'myadmin'
-        password_dummy = 'mypassword'
-
-        user = User.objects.create_user(username=username_dummy, email='test@dummy.com', password=password_dummy)
-        user.is_staff = True
-        user.save()
-
-        logged = self.client.login(username=username_dummy, password=password_dummy)
-        self.assertEqual(logged, True)
+        # username_dummy = 'myadmin'
+        # password_dummy = 'mypassword'
+        #
+        # user = User.objects.create_user(username=username_dummy, email='test@dummy.com', password=password_dummy)
+        # user.is_staff = True
+        # user.save()
+        #
+        # logged = self.client.login(username=username_dummy, password=password_dummy)
+        # self.assertEqual(logged, True)
 
         data = "name_txt=&cpf_id=374.276.738-08&date_birth_txt=01/01/2000"
 
