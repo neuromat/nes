@@ -10,11 +10,13 @@ from models import Patient, SocialDemographicData, SocialHistoryData, FleshToneO
     MaritalStatusOption, SchoolingOption, PaymentOption, ReligionOption,\
     GenderOption, AmountCigarettesOption, AlcoholFrequencyOption, AlcoholPeriodOption
 
-from forms import PatientForm, SocialDemographicDataForm, SocialHistoryDataForm, UserForm
+from forms import PatientForm, SocialDemographicDataForm, SocialHistoryDataForm, UserForm, UserFormUpdate
 from quiz_widget import SelectBoxCountriesDisabled, SelectBoxStateDisabled
 from django.contrib import messages
 
 from django.contrib.auth.models import User
+
+from django.contrib.auth.hashers import make_password
 
 # Biblioteca para fazer expressões regulares. Utilizada na "def search_patients_ajax" para fazer busca por nome ou CPF
 import re
@@ -416,11 +418,7 @@ def user_create(request, template_name='quiz/register_users.html'):
     form = UserForm(request.POST or None)
 
     if form.is_valid():
-        user = User.objects.create_user(request.POST['username'], request.POST['email'], request.POST['password'])
-        user.first_name = request.POST['first_name']
-        user.last_name = request.POST['last_name']
-        user.groups = request.POST.getlist('groups')
-        user.save()
+        form.save()
         return redirect('user_list')
     return render(request, template_name, {'form': form})
 
@@ -433,27 +431,27 @@ def user_delete(request, user_id):
     return redirect('user_list')
 
 
-@login_required
-def user(request, user_id, template_name="quiz/register.html"):
-
-    if request.method == "POST":
-
-        if 'action' in request.POST:
-
-            if request.POST['action'] == "remove":
-
-                user_remove = User.objects.get(id=user_id)
-                # user_remove.removed = True
-                # user_remove.save()
-                user_remove.delete()
-
-                redirect_url = reverse("user_list")
-
-            else:
-                redirect_url = reverse("user_edit", args=(user_id,))
-
-        return HttpResponseRedirect(redirect_url)
-    return render(request, template_name)
+# @login_required
+# def user(request, user_id, template_name="quiz/register.html"):
+#
+#     if request.method == "POST":
+#
+#         if 'action' in request.POST:
+#
+#             if request.POST['action'] == "remove":
+#
+#                 user_remove = User.objects.get(id=user_id)
+#                 # user_remove.removed = True
+#                 # user_remove.save()
+#                 user_remove.delete()
+#
+#                 redirect_url = reverse("user_list")
+#
+#             else:
+#                 redirect_url = reverse("user_edit", args=(user_id,))
+#
+#         return HttpResponseRedirect(redirect_url)
+#     return render(request, template_name)
 
 
 @login_required
@@ -462,18 +460,18 @@ def user_update(request, user_id, template_name="quiz/register_users.html"):
 
     p = User.objects.get(id=user_id)
 
-    user_form = UserForm(request.POST or None, instance=p)
+    user_form = UserFormUpdate(request.POST or None, instance=p)
 
     if request.method == "POST":
 
         if user_form.is_valid():
             user_form.save()
 
-            user = User.objects.create_user(request.POST['username'], request.POST['email'], request.POST['password'])
-            user.first_name = request.POST['first_name']
-            user.last_name = request.POST['last_name']
-            user.groups = request.POST.getlist('groups')
-            user.save()
+            # user = User.objects.create_user(request.POST['username'], request.POST['email'], request.POST['password'])
+            # user.first_name = request.POST['first_name']
+            # user.last_name = request.POST['last_name']
+            # user.groups = request.POST.getlist('groups')
+            # user.save()
 
             return redirect('user_list')
         # else:
