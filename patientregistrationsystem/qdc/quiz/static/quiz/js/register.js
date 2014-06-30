@@ -98,20 +98,20 @@ $(document).ready(function () {
         $("#id_fieldSetClavFractRelated").prop('disabled', true);
     });
 
-    $("#smokingOptionsRadios1").click(function () {
+    $("#id_smoker_0").click(function () {
         $("#id_amount_cigarettes").prop('disabled', false);
     });
 
-    $("#smokingOptionsRadios2").click(function () {
+    $("#id_smoker_1").click(function () {
         $("#id_amount_cigarettes").prop('disabled', true);
     });
 
-    $("#alcoholismOptionsRadios1").click(function () {
+    $("#id_alcoholic_0").click(function () {
         $("#id_freqSmok").prop('disabled', false);
         $("#id_periodSmok").prop('disabled', false);
     });
 
-    $("#alcoholismOptionsRadios2").click(function () {
+    $("#id_alcoholic_1").click(function () {
         $("#id_freqSmok").prop('disabled', true);
         $("#id_periodSmok").prop('disabled', true);
     });
