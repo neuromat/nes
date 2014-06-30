@@ -70,7 +70,7 @@ class SocialDemographicDataForm(ModelForm):
         fields = ['profession_txt', 'occupation_txt', 'tv_opt', 'dvd_opt', 'radio_opt', 'bath_opt',
                   'automobile_opt', 'wash_machine_opt', 'refrigerator_opt', 'freezer_opt', 'house_maid_opt',
                   'religion_opt', 'payment_opt', 'flesh_tone_opt', 'schooling_opt', 'benefit_government_bool',
-                  ]
+                  'social_class_opt',]
         widgets = {
             'benefit_government_bool': RadioSelect(attrs={'id': 'id_benefit'}, choices=(('1', 'Sim'), ('0', 'Não'))),
             'schooling_opt': Select(attrs={'class': 'form-control', 'id': 'scolarity'}),
@@ -99,6 +99,7 @@ class SocialDemographicDataForm(ModelForm):
                                             choices=((0, '0'), (1, '1'), (2, '2'), (3, '3'), (4, '4 ou +'))),
             'freezer_opt': RadioSelect(attrs={'id': 'id_freezer_opt'},
                                        choices=((0, '0'), (1, '1'), (2, '2'), (3, '3'), (4, '4 ou +'))),
+            'social_class_opt': TextInput(attrs={'class': 'form-control', 'id': "social_class_opt", 'disabled': "True"})
         }
 
 

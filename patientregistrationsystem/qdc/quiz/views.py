@@ -322,7 +322,9 @@ def patient(request, patient_id, template_name="quiz/register.html"):
                 redirect_url = reverse("search_patient")
 
             else:
+                current_tab = request.POST['currentTab']
                 redirect_url = reverse("patient_edit", args=(patient_id,))
+                return HttpResponseRedirect(redirect_url + "?currentTab=" + str(current_tab))
 
         return HttpResponseRedirect(redirect_url)
 
