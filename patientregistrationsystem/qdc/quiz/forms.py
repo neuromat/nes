@@ -1,10 +1,11 @@
 # coding=utf-8
 #from django.utils.six import attr
 from django.forms import ModelForm, TextInput, DateInput, Select, RadioSelect, PasswordInput, CheckboxSelectMultiple, \
-    CharField
+    CharField, ValidationError
 from models import Patient, SocialDemographicData, SocialHistoryData
 from django.contrib.auth.hashers import make_password
 from quiz_widget import SelectBoxCountries, SelectBoxState
+from django.utils.translation import ugettext_lazy as _
 
 from django.contrib.auth.models import User
 
@@ -137,8 +138,17 @@ class UserForm(ModelForm):
             'groups': CheckboxSelectMultiple()
         }
 
+        # TODO: Tratar mensagem de erro username
+
     def clean_password(self):
         return make_password(self.cleaned_data['password'])
+
+    def clean_email(self):
+        email = self.cleaned_data.get('email')
+        username = self.cleaned_data.get('username')
+        if email and User.objects.filter(email=email, is_active=True).exclude(username=username).count():
+            raise ValidationError(u'Este email já existe.')
+        return email
 
 
 class UserFormUpdate(UserForm):
