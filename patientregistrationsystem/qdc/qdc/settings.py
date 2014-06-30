@@ -30,7 +30,7 @@ ALLOWED_HOSTS = []
 
 # Application definition
 
-PROJECT_APPS = ['quiz', 'qdc']
+PROJECT_APPS = ['quiz']
 
 INSTALLED_APPS = (
     'django.contrib.admin',
