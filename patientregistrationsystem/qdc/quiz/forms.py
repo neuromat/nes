@@ -138,6 +138,8 @@ class UserForm(ModelForm):
             'groups': CheckboxSelectMultiple()
         }
 
+        # TODO: Tratar mensagem de erro username
+
     def clean_password(self):
         return make_password(self.cleaned_data['password'])
 
