@@ -1,6 +1,47 @@
 {% extends "quiz/template.html" %}
 {% block activeUser %}class="active"{% endblock %}
 
+{% block header %}
+
+    <script type="text/javascript">
+        function checkPass()
+        {
+            //Store the password field objects into variables ...
+            var pass1 = document.getElementById('id_password');
+            var pass2 = document.getElementById('id_password2');
+            //Store the Confimation Message Object ...
+            var message = document.getElementById('confirmMessage');
+            //Set the colors we will be using ...
+{#            var goodColor = "#66cc66";#}
+{#            var badColor = "#ff6666";#}
+            //Compare the values in the password field
+            //and the confirmation field
+            if(pass1.value == pass2.value){
+                //The passwords match.
+                //Set the color to the good color and inform
+                //the user that they have entered the correct password
+                $('#confirmation').attr('class', 'has-success');
+                $("#message").text("");
+                $("#message").text("");
+                $('#submit').prop( "disabled", false );
+{#                pass2.style.backgroundColor = goodColor;#}
+{#                message.style.color = goodColor;#}
+{#                message.innerHTML = "Senhas ok!"#}
+            }else{
+                //The passwords do not match.
+                //Set the color to the bad color and
+                //notify the user.
+                $('#confirmation').attr('class', 'has-error');
+                $("#message").text("Senhas não combinam");
+                $('#submit').prop( "disabled", true );
+{#                pass2.style.backgroundColor = badColor;#}
+{#                message.style.color = badColor;#}
+{#                message.innerHTML = "Passwords Do Not Match!"#}
+            }
+        }
+    </script>
+{% endblock %}
+
 {% block form %}
     <div class="row">
     <form id="user_form" method="post">
@@ -91,12 +132,20 @@
                     </div>
                     <div class="col-xs-6 col-sm-6">
                         <div class="form-group {% if form.errors.password %}has-error{% endif %}">
-                            <label for="full_name" class="control-label">Senha<b style="color: red;">*</b></label>
+                            <label for="id_password" class="control-label">Senha<b style="color: red;">*</b></label>
                             <div class="input-group input-group-sm">
                                 <span class="input-group-addon"> <span class="glyphicon glyphicon-user"></span></span>
                                 {{ form.password }}
                             </div>
-                            <div class="help-block with-errors"></div>
+                            {#                            <div class="help-block with-errors"></div>#}
+                        </div>
+                        <div class="form-group {% if form.errors.password %}has-error{% endif %}" id="confirmation">
+                            <label for="full_name" class="control-label">Confirmar Senha<b style="color: red;">*</b></label>
+                            <div class="input-group input-group-sm has-feedback">
+                                <span class="input-group-addon"> <span class="glyphicon glyphicon-user"></span></span>
+                                <input class="form-control" id="id_password2" maxlength="128" name="password2" placeholder="Entrar senha" type="password" onkeyup="checkPass(); return false;">
+                            </div>
+                            <div class="help-block with-errors" id="message"></div>
                         </div>
                     </div>
                 </div>
@@ -130,7 +179,7 @@
                 </div>
             </div>
             <div class="btn-group pull-right">
-                <input type="submit" value="Salvar" class="btn btn-primary" />
+                <input type="submit" value="Salvar" class="btn btn-primary" id="submit"/>
             </div>
         </div>
     </div>
