@@ -19,15 +19,6 @@ class FormUserValidation(TestCase):
         logged = self.client.login(username=username_dummy, password=password_dummy)
         self.assertEqual(logged, True)
 
-    def test_multiply(self, a, b):
-        """
-        >>> multiply(4, 3)
-        12
-        >>> multiply(2, 3)
-        6
-        """
-        return a * b
-
     def test_password_pattern(self):
         """Testa o pattern definido """
         # Detalhamento do pattern
