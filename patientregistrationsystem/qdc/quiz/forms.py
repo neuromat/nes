@@ -1,10 +1,11 @@
 # coding=utf-8
 #from django.utils.six import attr
 from django.forms import ModelForm, TextInput, DateInput, Select, RadioSelect, PasswordInput, CheckboxSelectMultiple, \
-    CharField
+    CharField, ValidationError
 from models import Patient, SocialDemographicData, SocialHistoryData
 from django.contrib.auth.hashers import make_password
 from quiz_widget import SelectBoxCountries, SelectBoxState
+from django.utils.translation import ugettext_lazy as _
 
 from django.contrib.auth.models import User
 
@@ -69,7 +70,7 @@ class SocialDemographicDataForm(ModelForm):
         fields = ['profession_txt', 'occupation_txt', 'tv_opt', 'dvd_opt', 'radio_opt', 'bath_opt',
                   'automobile_opt', 'wash_machine_opt', 'refrigerator_opt', 'freezer_opt', 'house_maid_opt',
                   'religion_opt', 'payment_opt', 'flesh_tone_opt', 'schooling_opt', 'benefit_government_bool',
-                  ]
+                  'social_class_opt',]
         widgets = {
             'benefit_government_bool': RadioSelect(attrs={'id': 'id_benefit'}, choices=(('1', 'Sim'), ('0', 'Não'))),
             'schooling_opt': Select(attrs={'class': 'form-control', 'id': 'scolarity'}),
@@ -98,6 +99,7 @@ class SocialDemographicDataForm(ModelForm):
                                             choices=((0, '0'), (1, '1'), (2, '2'), (3, '3'), (4, '4 ou +'))),
             'freezer_opt': RadioSelect(attrs={'id': 'id_freezer_opt'},
                                        choices=((0, '0'), (1, '1'), (2, '2'), (3, '3'), (4, '4 ou +'))),
+            'social_class_opt': TextInput(attrs={'class': 'form-control', 'id': "social_class_opt", 'disabled': "True"})
         }
 
 
@@ -136,8 +138,17 @@ class UserForm(ModelForm):
             'groups': CheckboxSelectMultiple()
         }
 
+        # TODO: Tratar mensagem de erro username
+
     def clean_password(self):
         return make_password(self.cleaned_data['password'])
+
+    def clean_email(self):
+        email = self.cleaned_data.get('email')
+        username = self.cleaned_data.get('username')
+        if email and User.objects.filter(email=email, is_active=True).exclude(username=username).count():
+            raise ValidationError(u'Este email já existe.')
+        return email
 
 
 class UserFormUpdate(UserForm):

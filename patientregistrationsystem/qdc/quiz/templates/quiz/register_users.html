@@ -4,39 +4,17 @@
 {% block header %}
 
     <script type="text/javascript">
-        function checkPass()
-        {
-            //Store the password field objects into variables ...
+        function checkPass(){
             var pass1 = document.getElementById('id_password');
             var pass2 = document.getElementById('id_password2');
-            //Store the Confimation Message Object ...
             var message = document.getElementById('confirmMessage');
-            //Set the colors we will be using ...
-{#            var goodColor = "#66cc66";#}
-{#            var badColor = "#ff6666";#}
-            //Compare the values in the password field
-            //and the confirmation field
             if(pass1.value == pass2.value){
-                //The passwords match.
-                //Set the color to the good color and inform
-                //the user that they have entered the correct password
                 $('#confirmation').attr('class', 'has-success');
-                $("#message").text("");
-                $("#message").text("");
                 $('#submit').prop( "disabled", false );
-{#                pass2.style.backgroundColor = goodColor;#}
-{#                message.style.color = goodColor;#}
-{#                message.innerHTML = "Senhas ok!"#}
             }else{
-                //The passwords do not match.
-                //Set the color to the bad color and
-                //notify the user.
                 $('#confirmation').attr('class', 'has-error');
                 $("#message").text("Senhas não combinam");
                 $('#submit').prop( "disabled", true );
-{#                pass2.style.backgroundColor = badColor;#}
-{#                message.style.color = badColor;#}
-{#                message.innerHTML = "Passwords Do Not Match!"#}
             }
         }
     </script>
@@ -74,22 +52,13 @@
 
     <!-- Mostra todas as mensagens do formulário -->
     {% if form.errors %}
-
-        {% comment %}
-    <div class="text-danger">Please correct the error{{ patient_form.errors|pluralize }} below.
-        {{ patient_form.errors }}
-    </div>
-    {% endcomment %}
-
         {% for field in form %}
             {% if field.errors %}
                 <script>showErrorMessage('{{ field.errors|striptags }}')</script>
                 <script>console.log('{{ field.errors|striptags }}')</script>
             {% endif %}
         {% endfor %}
-
-        <script>showErrorMessage('Paciente não cadastrado. Por favor, corrija os campos em destaque.')</script>
-
+        <script>showErrorMessage('Por favor, corrija os campos em destaque.')</script>
     {% endif %}
 
     <div class="tab-pane fade in active" id="menuUserTab">
@@ -151,12 +120,14 @@
                 </div>
                 <div class="row">
                     <div class="col-xs-6 col-sm-6">
-                        <div class="form-group">
-                            <label>Email</label>
+                        <div class="form-group {% if form.errors.email %}has-error{% endif %}">
+                            <label for="full_name" class="control-label">Email</label>
+
                             <div class="input-group input-group-sm">
-                                <span class="input-group-addon"> <span class="glyphicon glyphicon-envelope"></span></span>
+                                <span class="input-group-addon"> <span class="glyphicon glyphicon-user"></span></span>
                                 {{ form.email }}
                             </div>
+                            <div class="help-block with-errors"></div>
                         </div>
                     </div>
                 </div>

@@ -85,6 +85,14 @@ class AlcoholPeriodOption(models.Model):
         return self.alcohol_period_txt
 
 
+class ComplementaryExam(models.Model):
+    exam_type = models.CharField(max_length=50)
+    exam_date = models.DateField()
+
+    def __unicode__(self):
+        return self.exam_date, self.exam_type
+
+
 class Patient(models.Model):
     cpf_id = models.CharField(null=True, blank=True, max_length=15, unique=True, validators=[validate_cpf])
     rg_id = models.CharField(max_length=15, null=True, blank=True)
@@ -206,3 +214,49 @@ class SocialHistoryData(models.Model):
         return \
             self.id_patient, bool(self.smoker), self.amount_cigarettes_opt, bool(self.ex_smoker), bool(self.alcoholic), \
             self.alcohol_frequency_opt, self.alcohol_period_opt, self.drugs_opt
+
+
+class MedicalRecordData(models.Model):
+    id_patient = models.ForeignKey(Patient)
+    record_date = models.DateField()
+    record_responsible = models.CharField(max_length=50, null=True, blank=True)
+
+    fracture_history = models.CharField(max_length=10, null=True, blank=True)
+    scapula_fracture = models.CharField(max_length=10, null=True, blank=True)
+    clavicle_fracture = models.CharField(max_length=10, null=True, blank=True)
+    rib_fracture = models.CharField(max_length=10, null=True, blank=True)
+    cervical_vertebrae_fracture = models.CharField(max_length=10, null=True, blank=True)
+    thoracic_vertebrae_fracture = models.CharField(max_length=10, null=True, blank=True)
+    lumbar_vertebrae_fracture = models.CharField(max_length=10, null=True, blank=True)
+    cervical_vertebrae_fracture_type = models.CharField(max_length=10, null=True, blank=True)
+    thoracic_vertebrae_fracture_type = models.CharField(max_length=10, null=True, blank=True)
+    lumbar_vertebrae_fracture_type = models.CharField(max_length=10, null=True, blank=True)
+    superior_members_fracture = models.CharField(max_length=10, null=True, blank=True)
+    inferior_members_fracture = models.CharField(max_length=10, null=True, blank=True)
+    pelvis_fracture = models.CharField(max_length=10, null=True, blank=True)
+
+    orthopedic_surgery = models.CharField(max_length=10, null=True, blank=True)
+    scapula_surgery = models.CharField(max_length=10, null=True, blank=True)
+    clavicle_surgery = models.CharField(max_length=10, null=True, blank=True)
+    rib_surgery = models.CharField(max_length=10, null=True, blank=True)
+    cervical_vertebrae_surgery = models.CharField(max_length=10, null=True, blank=True)
+    thoracic_vertebrae_surgery = models.CharField(max_length=10, null=True, blank=True)
+    lumbar_vertebrae_surgery = models.CharField(max_length=10, null=True, blank=True)
+    superior_members_surgery = models.CharField(max_length=10, null=True, blank=True)
+    inferior_members_surgery = models.CharField(max_length=10, null=True, blank=True)
+    pelvis_surgery = models.CharField(max_length=10, null=True, blank=True)
+    nerve_surgery = models.CharField(max_length=10, null=True, blank=True)
+    nerve_surgery_type = models.CharField(max_length=30, null=True, blank=True)
+
+    vertigo_history = models.CharField(max_length=10, null=True, blank=True)
+    pain_history = models.CharField(max_length=10, null=True, blank=True)
+    pain_history_type = models.CharField(max_length=20, null=True, blank=True)
+    headache = models.CharField(max_length=10, null=True, blank=True)
+    has = models.CharField(max_length=10, null=True, blank=True)
+    diabetes = models.CharField(max_length=10, null=True, blank=True)
+    hormonal_dysfunction = models.CharField(max_length=10, null=True, blank=True)
+
+    complementary_exams = models.OneToOneField(ComplementaryExam)
+
+    def __unicode__(self):
+        return self.id_patient

@@ -322,7 +322,9 @@ def patient(request, patient_id, template_name="quiz/register.html"):
                 redirect_url = reverse("search_patient")
 
             else:
+                current_tab = request.POST['currentTab']
                 redirect_url = reverse("patient_edit", args=(patient_id,))
+                return HttpResponseRedirect(redirect_url + "?currentTab=" + str(current_tab))
 
         return HttpResponseRedirect(redirect_url)
 
@@ -406,7 +408,7 @@ def search_patients_ajax(request):
 @permission_required('auth.add_user')
 @permission_required('auth.change_user')
 def user_list(request, template_name='quiz/user_list.html'):
-    users = User.objects.all()
+    users = User.objects.filter(is_active=True)
     data = {}
     data['object_list'] = users
     return render(request, template_name, data)
@@ -419,9 +421,9 @@ def user_create(request, template_name='quiz/register_users.html'):
     if form.is_valid():
         form.save()
         return redirect('user_list')
-    else:
-        if form.errors:
-            form.errors['username'][0] = "Este nome de usuário já existe."
+    # else:
+    #     if form.errors:
+    #         form.errors['username'][0] = "Este nome de usuário já existe."
     return render(request, template_name, {'form': form})
 
 
@@ -429,7 +431,8 @@ def user_create(request, template_name='quiz/register_users.html'):
 @permission_required('auth.delete_user')
 def user_delete(request, user_id):
     user = get_object_or_404(User, id=user_id)
-    user.delete()
+    user.is_active = False
+    user.save()
     return redirect('user_list')
 
 
@@ -441,8 +444,8 @@ def user_update(request, user_id, template_name="quiz/register_users.html"):
         if form.is_valid():
             form.save()
             return redirect('user_list')
-        else:
-            form.errors['username'][0] = "Este nome de usuário já existe."
+        # else:
+        #     form.errors['username'][0] = "Este nome de usuário já existe."
 
     context = {
         'form': form,
