@@ -5,16 +5,72 @@
 
     <script type="text/javascript">
         function checkPass(){
-            var pass1 = document.getElementById('id_password');
-            var pass2 = document.getElementById('id_password2');
-            var message = document.getElementById('confirmMessage');
-            if(pass1.value == pass2.value){
-                $('#confirmation').attr('class', 'has-success');
-                $('#submit').prop( "disabled", false );
+            var password1 = $('#id_password').val();
+            var password2 = $('#id_password2').val();
+            var confirmation = $('#confirmation');
+            if(password1){
+                if(password1 == password2){
+                    confirmation.attr('class', 'has-success');
+                    $('#div_password').removeClass('has-error');
+                    return false;
+                }else{
+                    confirmation.attr('class', 'has-error');
+                    $("#message").text("Senhas não combinam");
+                    return true;
+                }
+            }
+        }
+        $(function(){
+            $( "form" ).submit(function( event ) {
+                if(checkPass())
+                    event.preventDefault();
+                if(password_strong() < 60)
+                    event.preventDefault();
+            })
+        });
+        function password_strong(){
+            var password = document.getElementById("id_password").value;
+            var force = 0;
+            if((password.length >= 4) && (password.length <= 7)){
+                force += 10;
+            }else if(password.length>7){
+                force += 25;
+            }
+            if(password.match(/[a-z]+/)){
+                force += 10;
+            }
+            if(password.match(/[A-Z]+/)){
+                force += 20;
+            }
+            if(password.match(/d+/)){
+                force += 20;
+            }
+            if(password.match(/[!@#$%ˆ*()]+/)){
+                force += 25;
+            }
+            show_res(force);
+            return force;
+        }
+        function show_res(force){
+            var show = $("#show");
+            if(force < 30){
+                show.text("Fraca");
+                show.removeClass(function() {
+                    return $(this).attr("class");
+                });
+                show.addClass("text-danger");
+            }else if((force >= 30) && (force < 60)){
+                show.text("Justa");
+                show.removeClass("text-danger");
+                show.addClass("text-warning");
+            }else if((force >= 60) && (force < 85)){
+                show.text("Forte");
+                show.removeClass("text-warning");
+                show.addClass("text-success");
             }else{
-                $('#confirmation').attr('class', 'has-error');
-                $("#message").text("Senhas não combinam");
-                $('#submit').prop( "disabled", true );
+                show.text("Excelente");
+                show.removeClass("text-success");
+                show.addClass("text-primary");
             }
         }
     </script>
@@ -100,19 +156,19 @@
                         </div>
                     </div>
                     <div class="col-xs-6 col-sm-6">
-                        <div class="form-group {% if form.errors.password %}has-error{% endif %}">
+                        <div class="form-group {% if form.errors.password %}has-error{% endif %}" id="div_password">
                             <label for="id_password" class="control-label">Senha<b style="color: red;">*</b></label>
                             <div class="input-group input-group-sm">
                                 <span class="input-group-addon"> <span class="glyphicon glyphicon-user"></span></span>
                                 {{ form.password }}
                             </div>
-                            {#                            <div class="help-block with-errors"></div>#}
+                            <div id="show"></div>
                         </div>
                         <div class="form-group {% if form.errors.password %}has-error{% endif %}" id="confirmation">
                             <label for="full_name" class="control-label">Confirmar Senha<b style="color: red;">*</b></label>
                             <div class="input-group input-group-sm has-feedback">
                                 <span class="input-group-addon"> <span class="glyphicon glyphicon-user"></span></span>
-                                <input class="form-control" id="id_password2" maxlength="128" name="password2" placeholder="Entrar senha" type="password" onkeyup="checkPass(); return false;">
+                                <input class="form-control" id="id_password2" maxlength="128" name="password2" placeholder="Entrar senha" type="password" onkeyup="checkPass();">
                             </div>
                             <div class="help-block with-errors" id="message"></div>
                         </div>

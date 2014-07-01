@@ -192,13 +192,20 @@ class UserForm(ModelForm):
             'first_name': TextInput(attrs={'class': 'form-control', 'placeholder': 'Entrar primeiro nome'}),
             'last_name': TextInput(attrs={'class': 'form-control', 'placeholder': 'Entrar último nome'}),
             'username': TextInput(attrs={'class': 'form-control', 'placeholder': 'Entrar nome de usuário'}),
-            'password': PasswordInput(attrs={'class': 'form-control', 'placeholder': 'Entrar senha'}),
+            'password': PasswordInput(attrs={'class': 'form-control', 'placeholder': 'Entrar senha',
+                                             'onkeyup': "password_strong();"}),
             'email': TextInput(attrs={'class': 'form-control', 'placeholder': 'Entrar e-mail', 'id': "email",
                                       'type': 'email', 'data-error': "E-mail inválido",
                                       'pattern': '^[_A-Za-z0-9-\+]+(\.[_A-Za-z0-9-]+)*@[A-Za-z0-9-]' +
                                                  '+(\.[A-Za-z0-9]+)*(\.[A-Za-z]{2,})$'}),
             'groups': CheckboxSelectMultiple()
         }
+
+    def clean_username(self):
+        username = self.cleaned_data['username']
+        if not self.instance.pk and User.objects.filter(username=username):
+            raise ValidationError(u'Este nome de usuário já existe.')
+        return username
 
     def clean_password(self):
         return make_password(self.cleaned_data['password'])
