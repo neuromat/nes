@@ -5,6 +5,7 @@ from __future__ import unicode_literals
 from django.db import models
 from django.core.exceptions import ValidationError
 from django.utils.translation import ugettext as _
+from django.contrib.auth.models import User
 from validation import CPF
 import datetime
 
@@ -83,14 +84,6 @@ class AlcoholPeriodOption(models.Model):
 
     def __unicode__(self):
         return self.alcohol_period_txt
-
-
-class ComplementaryExam(models.Model):
-    exam_type = models.CharField(max_length=50)
-    exam_date = models.DateField()
-
-    def __unicode__(self):
-        return self.exam_date, self.exam_type
 
 
 class Patient(models.Model):
@@ -216,47 +209,99 @@ class SocialHistoryData(models.Model):
             self.alcohol_frequency_opt, self.alcohol_period_opt, self.drugs_opt
 
 
+class Side(models.Model):
+    description = models.CharField(max_length=10, null=False)
+
+
+class CervicalVertebrae(models.Model):
+    code = models.CharField(max_length=2, null=False)
+
+
+class ThoracicVertebrae(models.Model):
+    code = models.CharField(max_length=2, null=False)
+
+
+class LumbosacralVertebrae(models.Model):
+    code = models.CharField(max_length=2, null=False)
+
+
+class PainLocalization(models.Model):
+    description = models.CharField(max_length=50, null=False)
+
+
 class MedicalRecordData(models.Model):
     id_patient = models.ForeignKey(Patient)
     record_date = models.DateField()
-    record_responsible = models.CharField(max_length=50, null=True, blank=True)
+    record_responsible = models.ForeignKey(User, null=False)
 
     fracture_history = models.CharField(max_length=10, null=True, blank=True)
-    scapula_fracture = models.CharField(max_length=10, null=True, blank=True)
-    clavicle_fracture = models.CharField(max_length=10, null=True, blank=True)
+    scapula_fracture_side_id = models.ForeignKey(Side, related_name='side_scapula_fracture', null=True, blank=True)
+    clavicle_fracture_side_id = models.ForeignKey(Side, related_name='side_clavicle_fracture', null=True, blank=True)
     rib_fracture = models.CharField(max_length=10, null=True, blank=True)
-    cervical_vertebrae_fracture = models.CharField(max_length=10, null=True, blank=True)
-    thoracic_vertebrae_fracture = models.CharField(max_length=10, null=True, blank=True)
-    lumbar_vertebrae_fracture = models.CharField(max_length=10, null=True, blank=True)
-    cervical_vertebrae_fracture_type = models.CharField(max_length=10, null=True, blank=True)
-    thoracic_vertebrae_fracture_type = models.CharField(max_length=10, null=True, blank=True)
-    lumbar_vertebrae_fracture_type = models.CharField(max_length=10, null=True, blank=True)
-    superior_members_fracture = models.CharField(max_length=10, null=True, blank=True)
-    inferior_members_fracture = models.CharField(max_length=10, null=True, blank=True)
-    pelvis_fracture = models.CharField(max_length=10, null=True, blank=True)
+    cervical_vertebrae_fracture = models.ManyToManyField(CervicalVertebrae)
+    thoracic_vertebrae_fracture = models.ManyToManyField(ThoracicVertebrae)
+    lumbosacral_vertebrae_fracture = models.ManyToManyField(LumbosacralVertebrae)
+    superior_members_fracture_side_id = models.ForeignKey(Side, related_name='side_superior_members_fracture', null=True, blank=True)
+    inferior_members_fracture_side_id = models.ForeignKey(Side, related_name='side_inferior_members_fracture', null=True, blank=True)
+    pelvis_fracture_side_id = models.ForeignKey(Side, related_name='side_pelvis_fracture', null=True, blank=True)
 
     orthopedic_surgery = models.CharField(max_length=10, null=True, blank=True)
-    scapula_surgery = models.CharField(max_length=10, null=True, blank=True)
-    clavicle_surgery = models.CharField(max_length=10, null=True, blank=True)
+    scapula_surgery_side_id = models.ForeignKey(Side, related_name='side_scapula_surgery', null=True, blank=True)
+    clavicle_surgery_side_id = models.ForeignKey(Side, related_name='side_clavicle_surgery', null=True, blank=True)
     rib_surgery = models.CharField(max_length=10, null=True, blank=True)
     cervical_vertebrae_surgery = models.CharField(max_length=10, null=True, blank=True)
     thoracic_vertebrae_surgery = models.CharField(max_length=10, null=True, blank=True)
-    lumbar_vertebrae_surgery = models.CharField(max_length=10, null=True, blank=True)
-    superior_members_surgery = models.CharField(max_length=10, null=True, blank=True)
-    inferior_members_surgery = models.CharField(max_length=10, null=True, blank=True)
-    pelvis_surgery = models.CharField(max_length=10, null=True, blank=True)
+    lumbosacral_vertebrae_surgery = models.CharField(max_length=10, null=True, blank=True)
+    superior_members_surgery_side_id = models.ForeignKey(Side, related_name='side_superior_members_surgery', null=True, blank=True)
+    inferior_members_surgery_side_id = models.ForeignKey(Side, related_name='side_inferior_members_surgery', null=True, blank=True)
+    pelvis_surgery_side_id = models.ForeignKey(Side, related_name='side_pelvis_surgery', null=True, blank=True)
+
     nerve_surgery = models.CharField(max_length=10, null=True, blank=True)
-    nerve_surgery_type = models.CharField(max_length=30, null=True, blank=True)
+    nerve_surgery_type = models.CharField(max_length=50, null=True, blank=True)
 
     vertigo_history = models.CharField(max_length=10, null=True, blank=True)
-    pain_history = models.CharField(max_length=10, null=True, blank=True)
-    pain_history_type = models.CharField(max_length=20, null=True, blank=True)
+    pain_history = models.ManyToManyField(PainLocalization)
     headache = models.CharField(max_length=10, null=True, blank=True)
-    has = models.CharField(max_length=10, null=True, blank=True)
+    hypertension = models.CharField(max_length=10, null=True, blank=True)
     diabetes = models.CharField(max_length=10, null=True, blank=True)
     hormonal_dysfunction = models.CharField(max_length=10, null=True, blank=True)
 
-    complementary_exams = models.OneToOneField(ComplementaryExam)
-
     def __unicode__(self):
         return self.id_patient
+
+
+class InternationalClassificationOfDiseases(models.Model):
+    code = models.CharField(max_length=10, null=False)
+    description = models.CharField(max_length=300, null=False)
+
+    def __unicode__(self):
+        return self.code, self.description
+
+
+class Diagnosis(models.Model):
+    medical_record_data_id = models.ForeignKey(MedicalRecordData, null=False)
+    international_classification_of_diseases_id = models.ForeignKey(InternationalClassificationOfDiseases, null=False)
+
+    def __unicode__(self):
+        return self.medical_record_data_id, self.international_classification_of_diseases_id
+
+
+class ComplementaryExam(models.Model):
+    diagnosis_id = models.ForeignKey(Diagnosis, null=False, blank=False)
+    date = models.DateField(null=False, blank=False)
+    description = models.CharField(max_length=50, null=False, blank=False)
+    doctor = models.CharField(max_length=50, null=False, blank=False)
+    doctor_register = models.CharField(max_length=10, null=False, blank=False)
+    exam_site = models.CharField(max_length=100, null=False, blank=False)
+
+    def __unicode__(self):
+        return self.date, self.description
+
+
+class ExamFile (models.Model):
+    exam_id = models.ForeignKey(ComplementaryExam, null=False)
+    name = models.CharField(max_length=100, null=False, blank=False)
+    content = models.BinaryField(null=False, blank=False)
+
+    def __unicode__(self):
+        return self.name
