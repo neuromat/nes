@@ -1,8 +1,8 @@
 # coding=utf-8
 #from django.utils.six import attr
 from django.forms import ModelForm, TextInput, DateInput, Select, RadioSelect, PasswordInput, CheckboxSelectMultiple, \
-    CharField, ValidationError
-from models import Patient, SocialDemographicData, SocialHistoryData
+    CharField
+from models import Patient, SocialDemographicData, SocialHistoryData, MedicalRecordData
 from django.contrib.auth.hashers import make_password
 from quiz_widget import SelectBoxCountries, SelectBoxState
 from django.utils.translation import ugettext_lazy as _
@@ -119,6 +119,70 @@ class SocialHistoryDataForm(ModelForm):
             'drugs_opt': RadioSelect(attrs={'id': 'id_drugs_opt'},
                                      choices=(('ja_fez', 'Já fez'), ('faz', 'Faz'), ('nunca_fez', 'Nunca fez'))),
         }
+
+
+class MedicalRecordForm(ModelForm):
+    class Meta:
+        model = MedicalRecordData
+        fields = [
+            'record_date', 'record_responsible', 'fracture_history', 'scapula_fracture_side_id', 'clavicle_fracture_side_id',
+            'rib_fracture', 'cervical_vertebrae_fracture', 'cervical_vertebrae_fracture_type', 'thoracic_vertebrae_fracture',
+            'thoracic_vertebrae_fracture_type', 'lumbosacral_vertebrae_fracture', 'lumbosacral_vertebrae_fracture_type',
+            'superior_members_fracture_side_id', 'inferior_members_fracture_side_id', 'pelvis_fracture_side_id',
+            'orthopedic_surgery', 'scapula_surgery_side_id', 'clavicle_surgery_side_id', 'rib_surgery', 'cervical_vertebrae_surgery',
+            'thoracic_vertebrae_surgery', 'lumbosacral_vertebrae_surgery', 'superior_members_surgery_side_id',
+            'inferior_members_surgery_side_id', 'pelvis_surgery_side_id', 'nerve_surgery', 'nerve_surgery_type', 'vertigo_history',
+            'pain_history', 'headache', 'hypertension', 'diabetes', 'hormonal_dysfunction',
+        ]
+
+        widgets = {
+            'record_date': DateInput(attrs={'class': 'form-control', 'placeholder': 'Data','id': "record_date"}),
+            'record_responsible': TextInput(attrs={'class': 'form-control', 'placeholder': 'Entrar responsável',
+                                               'id': "record_responsible"}),
+            'fracture_history': RadioSelect(attrs={'id': 'fracture_history'}, choices=(('1', 'Sim'), ('0', 'Não'))),
+            'scapula_fracture_side_id': Select(attrs={'class': 'form-control', 'id': 'scapula_fracture_side_id'}),
+            'clavicle_fracture_side_id': Select(attrs={'class': 'form-control', 'id': 'clavicle_fracture_side_id'}),
+            'rib_fracture': RadioSelect(attrs={'id': 'rib_fracture'}, choices=(('1', 'Sim'), ('0', 'Não'))),
+            'cervical_vertebrae_fracture': RadioSelect(attrs={'id': 'cervical_vertebrae_fracture'},
+                                                       choices=(('1', 'Sim'), ('0', 'Não'))),
+            'cervical_vertebrae_fracture_type': CheckboxSelectMultiple(),
+            'thoracic_vertebrae_fracture': RadioSelect(attrs={'id': 'thoracic_vertebrae_fracture'},
+                                                       choices=(('1', 'Sim'), ('0', 'Não'))),
+            'thoracic_vertebrae_fracture_type': CheckboxSelectMultiple(),
+            'lumbosacral_vertebrae_fracture': RadioSelect(attrs={'id': 'lumbosacral_vertebrae_fracture'},
+                                                          choices=(('1', 'Sim'), ('0', 'Não'))),
+            'lumbosacral_vertebrae_fracture_type': CheckboxSelectMultiple(),
+            'superior_members_fracture_side_id': Select(attrs={'class': 'form-control',
+                                                               'id': 'superior_members_fracture_side_id'}),
+            'inferior_members_fracture_side_id': Select(attrs={'class': 'form-control',
+                                                               'id': 'inferior_members_fracture_side_id'}),
+            'pelvis_fracture_side_id': Select(attrs={'class': 'form-control', 'id': 'pelvis_fracture_side_id'}),
+            'orthopedic_surgery': RadioSelect(attrs={'id': 'orthopedic_surgery'}, choices=(('1', 'Sim'), ('0', 'Não'))),
+            'scapula_surgery_side_id': Select(attrs={'class': 'form-control', 'id': 'scapula_surgery_side_id'}),
+            'clavicle_surgery_side_id': Select(attrs={'class': 'form-control', 'id': 'clavicle_surgery_side_id'}),
+            'rib_surgery': RadioSelect(attrs={'id': 'rib_surgery'}, choices=(('1', 'Sim'), ('0', 'Não'))),
+            'cervical_vertebrae_surgery': RadioSelect(attrs={'id': 'cervical_vertebrae_surgery'},
+                                                      choices=(('1', 'Sim'), ('0', 'Não'))),
+            'thoracic_vertebrae_surgery': RadioSelect(attrs={'id': 'thoracic_vertebrae_surgery'},
+                                                      choices=(('1', 'Sim'), ('0', 'Não'))),
+            'lumbosacral_vertebrae_surgery': RadioSelect(attrs={'id': 'lumbosacral_vertebrae_surgery'},
+                                                         choices=(('1', 'Sim'), ('0', 'Não'))),
+            'superior_members_surgery_side_id': Select(attrs={'class': 'form-control',
+                                                              'id': 'superior_members_surgery_side_id'}),
+            'inferior_members_surgery_side_id': Select(attrs={'class': 'form-control',
+                                                              'id': 'inferior_members_surgery_side_id'}),
+            'pelvis_surgery_side_id': Select(attrs={'class': 'form-control', 'id': 'pelvis_surgery_side_id'}),
+            'nerve_surgery': RadioSelect(attrs={'id': 'nerve_surgery'}, choices=(('1', 'Sim'), ('0', 'Não'))),
+            'nerve_surgery_type': Select(attrs={'class': 'form-control', 'id': 'nerve_surgery_type'}),
+            'vertigo_history': RadioSelect(attrs={'id': 'vertigo_history'}, choices=(('1', 'Sim'), ('0', 'Não'))),
+            'pain_history': CheckboxSelectMultiple(),
+            'headache': RadioSelect(attrs={'id': 'headache'}, choices=(('1', 'Sim'), ('0', 'Não'))),
+            'hypertension': RadioSelect(attrs={'id': 'hypertension'}, choices=(('1', 'Sim'), ('0', 'Não'))),
+            'diabetes': RadioSelect(attrs={'id': 'diabetes'}, choices=(('1', 'Sim'), ('0', 'Não'))),
+            'hormonal_dysfunction': RadioSelect(attrs={'id': 'hormonal_dysfunction'},
+                                                choices=(('1', 'Sim'), ('0', 'Não'))),
+        }
+
 
 
 class UserForm(ModelForm):
