@@ -9,12 +9,14 @@ from django.contrib.auth.models import User
 from validation import CPF
 import datetime
 
+
 #Valida CPF
 def validate_cpf(value):
     validation = CPF(value)
     if not validation.isValid():
         # raise ValidationError(u'CPF %s não é válido' % value)
         raise ValidationError(_('CPF %s não é válido') % value)
+
 
 #Valida data de nascimento:
 #data de nascimento maior que a data atual
@@ -148,46 +150,47 @@ class SocialDemographicData(models.Model):
             self.bath_opt, self.automobile_opt, self.wash_machine_opt, self.refrigerator_opt, self.freezer_opt, \
             self.house_maid_opt, self.social_class_opt
 
-    def calculate_social_class(self, **keywords):
-        dictDvd = {'0': 0, '1': 2, '2': 2, '3': 2, '4': 2}
-        dictBath = {'0': 0, '1': 4, '2': 5, '3': 6, '4': 7}
-        dictAuto = {'0': 0, '1': 4, '2': 7, '3': 9, '4': 9}
-        dictHousemaid = {'0': 0, '1': 3, '2': 4, '3': 4, '4': 4}
-        dictRefrigerator = {'0': 0, '1': 4, '2': 4, '3': 4, '4': 4}
-        dicScolarity = {'1': 0, '2': 1, '3': 2, '4': 4, '5': 8}
+    @staticmethod
+    def calculate_social_class(**keywords):
+        dict_dvd = {'0': 0, '1': 2, '2': 2, '3': 2, '4': 2}
+        dict_bath = {'0': 0, '1': 4, '2': 5, '3': 6, '4': 7}
+        dict_auto = {'0': 0, '1': 4, '2': 7, '3': 9, '4': 9}
+        dict_housemaid = {'0': 0, '1': 3, '2': 4, '3': 4, '4': 4}
+        dict_refrigerator = {'0': 0, '1': 4, '2': 4, '3': 4, '4': 4}
+        dict_scholarity = {'1': 0, '2': 1, '3': 2, '4': 4, '5': 8}
         points = 0
 
         for kw in keywords.keys():
             if kw == 'tv' or kw == 'radio':
                 points += int(keywords[kw])
             elif kw == 'banheiro':
-                points += dictBath[keywords[kw]]
+                points += dict_bath[keywords[kw]]
             elif kw == 'automovel':
-                points += dictAuto[keywords[kw]]
+                points += dict_auto[keywords[kw]]
             elif kw == 'empregada':
-                points += dictHousemaid[keywords[kw]]
+                points += dict_housemaid[keywords[kw]]
             elif kw == 'dvd' or kw == 'maquina' or kw == 'freezer':
-                points += dictDvd[keywords[kw]]
+                points += dict_dvd[keywords[kw]]
             elif kw == 'geladeira':
-                points += dictRefrigerator[keywords[kw]]
+                points += dict_refrigerator[keywords[kw]]
             elif kw == 'escolaridade':
-                points += dicScolarity[keywords[kw]]
+                points += dict_scholarity[keywords[kw]]
 
-        if points >= 0 and points <= 7:
+        if 0 <= points <= 7:
             return 'E'
-        elif points >= 8 and points <= 13:
+        elif 8 <= points <= 13:
             return 'D'
-        elif points >= 14 and points <= 17:
+        elif 14 <= points <= 17:
             return 'C2'
-        elif points >= 18 and points <= 22:
+        elif 18 <= points <= 22:
             return 'C1'
-        elif points >= 23 and points <= 28:
+        elif 23 <= points <= 28:
             return 'B2'
-        elif points >= 29 and points <= 34:
+        elif 29 <= points <= 34:
             return 'B1'
-        elif points >= 35 and points <= 41:
+        elif 35 <= points <= 41:
             return 'A2'
-        elif points >= 42 and points <= 46:
+        elif 42 <= points <= 46:
             return 'A1'
         else:
             return ''
@@ -205,7 +208,7 @@ class SocialHistoryData(models.Model):
 
     def __unicode__(self):
         return \
-            self.id_patient, bool(self.smoker), self.amount_cigarettes_opt, bool(self.ex_smoker), bool(self.alcoholic), \
+            self.id_patient, bool(self.smoker), self.amount_cigarettes_opt, bool(self.ex_smoker), bool(self.alcoholic),\
             self.alcohol_frequency_opt, self.alcohol_period_opt, self.drugs_opt
 
 
@@ -241,9 +244,12 @@ class MedicalRecordData(models.Model):
     cervical_vertebrae_fracture = models.ManyToManyField(CervicalVertebrae)
     thoracic_vertebrae_fracture = models.ManyToManyField(ThoracicVertebrae)
     lumbosacral_vertebrae_fracture = models.ManyToManyField(LumbosacralVertebrae)
-    superior_members_fracture_side_id = models.ForeignKey(Side, related_name='side_superior_members_fracture', null=True, blank=True)
-    inferior_members_fracture_side_id = models.ForeignKey(Side, related_name='side_inferior_members_fracture', null=True, blank=True)
-    pelvis_fracture_side_id = models.ForeignKey(Side, related_name='side_pelvis_fracture', null=True, blank=True)
+    superior_members_fracture_side_id = \
+        models.ForeignKey(Side, related_name='side_superior_members_fracture', null=True, blank=True)
+    inferior_members_fracture_side_id = \
+        models.ForeignKey(Side, related_name='side_inferior_members_fracture', null=True, blank=True)
+    pelvis_fracture_side_id = \
+        models.ForeignKey(Side, related_name='side_pelvis_fracture', null=True, blank=True)
 
     orthopedic_surgery = models.CharField(max_length=10, null=True, blank=True)
     scapula_surgery_side_id = models.ForeignKey(Side, related_name='side_scapula_surgery', null=True, blank=True)
@@ -252,9 +258,12 @@ class MedicalRecordData(models.Model):
     cervical_vertebrae_surgery = models.CharField(max_length=10, null=True, blank=True)
     thoracic_vertebrae_surgery = models.CharField(max_length=10, null=True, blank=True)
     lumbosacral_vertebrae_surgery = models.CharField(max_length=10, null=True, blank=True)
-    superior_members_surgery_side_id = models.ForeignKey(Side, related_name='side_superior_members_surgery', null=True, blank=True)
-    inferior_members_surgery_side_id = models.ForeignKey(Side, related_name='side_inferior_members_surgery', null=True, blank=True)
-    pelvis_surgery_side_id = models.ForeignKey(Side, related_name='side_pelvis_surgery', null=True, blank=True)
+    superior_members_surgery_side_id = \
+        models.ForeignKey(Side, related_name='side_superior_members_surgery', null=True, blank=True)
+    inferior_members_surgery_side_id = \
+        models.ForeignKey(Side, related_name='side_inferior_members_surgery', null=True, blank=True)
+    pelvis_surgery_side_id = \
+        models.ForeignKey(Side, related_name='side_pelvis_surgery', null=True, blank=True)
 
     nerve_surgery = models.CharField(max_length=10, null=True, blank=True)
     nerve_surgery_type = models.CharField(max_length=50, null=True, blank=True)
@@ -270,7 +279,7 @@ class MedicalRecordData(models.Model):
         return self.id_patient
 
 
-class InternationalClassificationOfDiseases(models.Model):
+class ClassificationOfDiseases(models.Model):
     code = models.CharField(max_length=10, null=False)
     description = models.CharField(max_length=300, null=False)
 
@@ -280,10 +289,10 @@ class InternationalClassificationOfDiseases(models.Model):
 
 class Diagnosis(models.Model):
     medical_record_data_id = models.ForeignKey(MedicalRecordData, null=False)
-    international_classification_of_diseases_id = models.ForeignKey(InternationalClassificationOfDiseases, null=False)
+    classification_of_diseases_id = models.ForeignKey(ClassificationOfDiseases, null=False)
 
     def __unicode__(self):
-        return self.medical_record_data_id, self.international_classification_of_diseases_id
+        return self.medical_record_data_id, self.classification_of_diseases_id
 
 
 class ComplementaryExam(models.Model):
@@ -302,6 +311,3 @@ class ExamFile (models.Model):
     exam_id = models.ForeignKey(ComplementaryExam, null=False)
     name = models.CharField(max_length=100, null=False, blank=False)
     content = models.BinaryField(null=False, blank=False)
-
-    def __unicode__(self):
-        return self.name

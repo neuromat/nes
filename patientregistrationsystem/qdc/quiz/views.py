@@ -16,8 +16,6 @@ from django.contrib import messages
 
 from django.contrib.auth.models import User
 
-from django.contrib.auth.hashers import make_password
-
 # Biblioteca para fazer expressões regulares. Utilizada na "def search_patients_ajax" para fazer busca por nome ou CPF
 import re
 
@@ -133,16 +131,16 @@ def patient_create(request, template_name="quiz/register.html"):
                     else:
                         patient_form.errors['cpf_id'][0] = "Já existe paciente cadastrado com este CPF."
 
-    context = {'patient_form': patient_form, 'social_demographic_form': social_demographic_form,
-               'social_history_form': social_history_form,
-               'gender_options': gender_options, 'flesh_tone_options': flesh_tone_options,
-               'marital_status_options': marital_status_options, 'schooling_options': schooling_options,
-               'payment_options': payment_options, 'religion_options': religion_options,
-               'amount_cigarettes': amount_cigarettes, 'alcohol_frequency': alcohol_frequency,
-               'alcohol_period': alcohol_period,
-               'editing': True,
-               'currentTab': current_tab
-    }
+    context = {
+        'patient_form': patient_form, 'social_demographic_form': social_demographic_form,
+        'social_history_form': social_history_form,
+        'gender_options': gender_options, 'flesh_tone_options': flesh_tone_options,
+        'marital_status_options': marital_status_options, 'schooling_options': schooling_options,
+        'payment_options': payment_options, 'religion_options': religion_options,
+        'amount_cigarettes': amount_cigarettes, 'alcohol_frequency': alcohol_frequency,
+        'alcohol_period': alcohol_period,
+        'editing': True,
+        'currentTab': current_tab}
 
     return render(request, template_name, context)
 
@@ -225,12 +223,13 @@ def patient_update(request, patient_id, template_name="quiz/register.html"):
                        new_social_demographic_data.refrigerator_opt is not None and
                        new_social_demographic_data.freezer_opt is not None):
 
-                        new_social_demographic_data.social_class_opt = new_social_demographic_data.calculate_social_class(
-                            tv=request.POST['tv_opt'], radio=request.POST['radio_opt'],
-                            banheiro=request.POST['bath_opt'], automovel=request.POST['automobile_opt'],
-                            empregada=request.POST['house_maid_opt'], maquina=request.POST['wash_machine_opt'],
-                            dvd=request.POST['dvd_opt'], geladeira=request.POST['refrigerator_opt'],
-                            freezer=request.POST['freezer_opt'], escolaridade=request.POST['schooling_opt'])
+                        new_social_demographic_data.social_class_opt = \
+                            new_social_demographic_data.calculate_social_class(
+                                tv=request.POST['tv_opt'], radio=request.POST['radio_opt'],
+                                banheiro=request.POST['bath_opt'], automovel=request.POST['automobile_opt'],
+                                empregada=request.POST['house_maid_opt'], maquina=request.POST['wash_machine_opt'],
+                                dvd=request.POST['dvd_opt'], geladeira=request.POST['refrigerator_opt'],
+                                freezer=request.POST['freezer_opt'], escolaridade=request.POST['schooling_opt'])
                     else:
 
                         new_social_demographic_data.social_class_opt = None
@@ -278,8 +277,7 @@ def patient_update(request, patient_id, template_name="quiz/register.html"):
             'social_demographic_form': social_demographic_form,
             'social_history_form': social_history_form,
             'editing': True,
-            'currentTab': current_tab
-            }
+            'currentTab': current_tab}
         return render(request, template_name, context)
 
 
@@ -452,4 +450,3 @@ def user_update(request, user_id, template_name="quiz/register_users.html"):
         'editing': True,
     }
     return render(request, template_name, context)
-
