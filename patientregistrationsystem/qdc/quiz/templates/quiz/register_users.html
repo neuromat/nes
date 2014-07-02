@@ -2,6 +2,20 @@
 {% block activeUser %}class="active"{% endblock %}
 
 {% block header %}
+    <style>
+        .right-inner-addon {
+            position: relative;
+        }
+        .right-inner-addon input {
+            padding-right: 30px;
+        }
+        .right-inner-addon div {
+            position: absolute;
+            right: 0px;
+            padding: 5px 10px;
+            pointer-events: none;
+        }
+    </style>
 
     <script type="text/javascript">
         function checkPass(){
@@ -24,31 +38,33 @@
             $( "form" ).submit(function( event ) {
                 if(checkPass())
                     event.preventDefault();
-                if(password_strong() < 60)
+                if(password_strong() < 60 && $('#id_password').val())
                     event.preventDefault();
             })
         });
         function password_strong(){
             var password = document.getElementById("id_password").value;
             var force = 0;
-            if((password.length >= 4) && (password.length <= 7)){
-                force += 10;
-            }else if(password.length>7){
-                force += 25;
+            if(password){
+                if((password.length >= 4) && (password.length <= 7)){
+                    force += 10;
+                }else if(password.length>7){
+                    force += 25;
+                }
+                if(password.match(/[a-z]+/)){
+                    force += 10;
+                }
+                if(password.match(/[A-Z]+/)){
+                    force += 20;
+                }
+                if(password.match(/d+/)){
+                    force += 20;
+                }
+                if(password.match(/[!@#$%ˆ*()]+/)){
+                    force += 25;
+                }
+                show_res(force);
             }
-            if(password.match(/[a-z]+/)){
-                force += 10;
-            }
-            if(password.match(/[A-Z]+/)){
-                force += 20;
-            }
-            if(password.match(/d+/)){
-                force += 20;
-            }
-            if(password.match(/[!@#$%ˆ*()]+/)){
-                force += 25;
-            }
-            show_res(force);
             return force;
         }
         function show_res(force){
@@ -61,15 +77,21 @@
                 show.addClass("text-danger");
             }else if((force >= 30) && (force < 60)){
                 show.text("Justa");
-                show.removeClass("text-danger");
+                show.removeClass(function() {
+                    return $(this).attr("class");
+                });
                 show.addClass("text-warning");
             }else if((force >= 60) && (force < 85)){
                 show.text("Forte");
-                show.removeClass("text-warning");
+                show.removeClass(function() {
+                    return $(this).attr("class");
+                });
                 show.addClass("text-success");
             }else{
                 show.text("Excelente");
-                show.removeClass("text-success");
+                show.removeClass(function() {
+                    return $(this).attr("class");
+                });
                 show.addClass("text-primary");
             }
         }
@@ -108,12 +130,12 @@
 
     <!-- Mostra todas as mensagens do formulário -->
     {% if form.errors %}
-        {% for field in form %}
-            {% if field.errors %}
-                <script>showErrorMessage('{{ field.errors|striptags }}')</script>
-                <script>console.log('{{ field.errors|striptags }}')</script>
-            {% endif %}
-        {% endfor %}
+        {#        {% for field in form %}#}
+        {#            {% if field.errors %}#}
+        {#                <script>showErrorMessage('{{ field.errors|striptags }}')</script>#}
+        {#                <script>console.log('{{ field.errors|striptags }}')</script>#}
+        {#            {% endif %}#}
+        {#        {% endfor %}#}
         <script>showErrorMessage('Por favor, corrija os campos em destaque.')</script>
     {% endif %}
 
@@ -151,26 +173,27 @@
                                     <span class="input-group-addon"> <span class="glyphicon glyphicon-user"></span></span>
                                     {{ form.username }}
                                 </div>
-                                <div class="help-block with-errors"></div>
+                                <div class="help-block with-errors">
+                                    {% for error in form.errors.username %}
+                                        <div>{{ error }}</div>
+                                    {% endfor %}
+                                </div>
                             </div>
                         </div>
                     </div>
                     <div class="col-xs-6 col-sm-6">
                         <div class="form-group {% if form.errors.password %}has-error{% endif %}" id="div_password">
                             <label for="id_password" class="control-label">Senha<b style="color: red;">*</b></label>
-                            <div class="input-group input-group-sm">
+                            <div class="input-group input-group-sm right-inner-addon">
                                 <span class="input-group-addon"> <span class="glyphicon glyphicon-user"></span></span>
+                                <div id="show"></div>
                                 {{ form.password }}
                             </div>
-                            <div id="show"></div>
-                        </div>
-                        <div class="form-group {% if form.errors.password %}has-error{% endif %}" id="confirmation">
-                            <label for="full_name" class="control-label">Confirmar Senha<b style="color: red;">*</b></label>
-                            <div class="input-group input-group-sm has-feedback">
-                                <span class="input-group-addon"> <span class="glyphicon glyphicon-user"></span></span>
-                                <input class="form-control" id="id_password2" maxlength="128" name="password2" placeholder="Entrar senha" type="password" onkeyup="checkPass();">
+                            <div class="help-block with-errors">
+                                {% for error in form.errors.password %}
+                                    <div>{{ error }}</div>
+                                {% endfor %}
                             </div>
-                            <div class="help-block with-errors" id="message"></div>
                         </div>
                     </div>
                 </div>
@@ -184,6 +207,21 @@
                                 {{ form.email }}
                             </div>
                             <div class="help-block with-errors"></div>
+                        </div>
+                    </div>
+                    <div class="col-xs-6 col-sm-6">
+                        <div class="form-group {% if form.errors.password %}has-error{% endif %}" id="confirmation">
+                            <label for="full_name" class="control-label">Confirmar Senha<b style="color: red;">*</b></label>
+                            <div class="input-group input-group-sm has-feedback">
+                                <span class="input-group-addon"> <span class="glyphicon glyphicon-user"></span></span>
+                                <input class="form-control" id="id_password2" maxlength="128" name="password2" placeholder="Entrar senha" type="password" onkeyup="checkPass();">
+                            </div>
+                            <div class="help-block with-errors">
+                                {% for error in form.errors.password %}
+                                    <div>{{ error }}</div>
+                                {% endfor %}
+                                <div id="message"></div>
+                            </div>
                         </div>
                     </div>
                 </div>

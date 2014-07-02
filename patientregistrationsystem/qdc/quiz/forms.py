@@ -220,7 +220,8 @@ class UserForm(ModelForm):
 
 class UserFormUpdate(UserForm):
     password = CharField(required=False,
-                         widget=PasswordInput(attrs={'class': 'form-control', 'placeholder': 'Entrar senha'}))
+                         widget=PasswordInput(attrs={'class': 'form-control', 'placeholder': 'Entrar senha',
+                                                     'onkeyup': "password_strong();"}))
 
     def clean_password(self):
         if self.cleaned_data['password']:
