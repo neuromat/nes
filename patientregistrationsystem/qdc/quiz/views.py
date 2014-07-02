@@ -1,5 +1,5 @@
 # coding=utf-8
-from django.shortcuts import render, redirect
+from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib.auth.decorators import login_required
 from django.http import HttpResponseRedirect, HttpResponse
 
@@ -321,7 +321,8 @@ def patient(request, patient_id, template_name="quiz/register.html"):
 
     ## Search in models.Patient
     ## ------------------------
-    p = Patient.objects.get(number_record=patient_id)
+    #p = Patient.objects.get(number_record=patient_id)
+    p = get_object_or_404(Patient, pk=patient_id)
 
     if p and not p.removed:
 
