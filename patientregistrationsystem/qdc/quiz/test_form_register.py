@@ -158,6 +158,7 @@ class FormValidation(TestCase):
         client = Client()
         self.assertEqual(client.get('/response').status_code, 404)
         self.assertEqual(client.get('/notfound').status_code, 404)
+        self.assertEqual(client.get('/quiz/patient/999999/').status_code, 302)
         self.assertEqual(client.get('/error').status_code, 404)
         self.assertEqual(client.get('/redirect_response').status_code, 404)
         self.assertEqual(client.get('/redirect_notfound').status_code, 404)
