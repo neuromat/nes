@@ -115,7 +115,7 @@ def patient_create(request, template_name="quiz/register.html"):
             new_patient_id = new_patient.number_record
 
             redirect_url = reverse("patient_edit", args=(new_patient_id,))
-            return HttpResponseRedirect(redirect_url + "?currentTab=" + current_tab)
+            return HttpResponseRedirect(redirect_url + "?currentTab=" + str(current_tab))
 
         else:
 
