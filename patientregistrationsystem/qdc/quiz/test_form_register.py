@@ -48,13 +48,17 @@ class FormValidation(TestCase):
     def test_patient_add_ok(self):
         """testa inclusao de paciente com sucesso"""
 
+        # create GenderOption
+        gender_opt = GenderOption.objects.create(gender_txt='Masculino')
+
+
         # data = {u'name_txt': u'Paciente de Teste', u'cpf_id': u'374.276.738-08', u'gender_opt': u'2', u'date_birth_txt': u'01/01/2000'}
         data = {u'cpf_id': [u'248.215.628-98'], u'religion_opt': [u''], u'amount_cigarettes_opt': [u''],
                 u'zipcode_number': [u''], u'state_txt': [u'RJ'], u'alcohol_frequency_opt': [u''],
                 u'schooling_opt': [u''], u'street_txt': [u''], u'flesh_tone_opt': [u''], u'occupation_txt': [u''],
                 u'medical_record_number': [u''],
                 u'phone_number': [u'1'], u'marital_status_opt': [u''], u'rg_id': [u''], u'alcohol_period_opt': [u''],
-                u'gender_opt_id': [u'1'], u'gender_opt': [u'Feminino'], u'citizenship_txt': [u'BR'], u'payment_opt': [u''],
+                u'gender_opt': [str(gender_opt.id)], u'gender_opt': [u'Feminino'], u'citizenship_txt': [u'BR'], u'payment_opt': [u''],
                 u'name_txt': [u'Paciente de Teste'], u'email_txt': [u''], u'cellphone_number': [u''],
                 u'date_birth_txt': [u'15/01/2003'], u'natural_of_txt': [u''], u'country_txt': [u'BR'],
                 u'profession_txt': [u''], u'city_txt': [u'']}
