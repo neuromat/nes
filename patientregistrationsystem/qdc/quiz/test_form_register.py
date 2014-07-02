@@ -3,7 +3,6 @@ from django.test import TestCase, Client
 from django.contrib.auth.models import *
 from django.http import QueryDict, Http404
 from django.test.client import RequestFactory
-from dns.resolver import Answer
 from views import *
 
 
