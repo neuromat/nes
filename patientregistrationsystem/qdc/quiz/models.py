@@ -106,6 +106,9 @@ class Patient(models.Model):
             ("view_patient", "Can view patient"),
         )
 
+    def get_absolute_url(self):
+        return "/quiz/patient/%i/" % self.pk
+
     def __unicode__(self):  # Python 3: def __str__(self):
         return \
             self.name_txt, self.cpf_id, self.rg_id, self.medical_record_number, self.natural_of_txt, \
