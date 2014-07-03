@@ -3,6 +3,7 @@ from django.test import TestCase, Client
 from django.contrib.auth.models import *
 from django.http import QueryDict, Http404
 from django.test.client import RequestFactory
+from datetime import date
 from views import *
 
 
@@ -18,6 +19,9 @@ class FormValidation(TestCase):
         self.user.is_staff = True
         self.user.save()
 
+        self.gender_opt = GenderOption.objects.create(gender_txt='Masculino')
+        self.gender_opt.save()
+
         self.factory = RequestFactory()
 
         logged = self.client.login(username=username_dummy, password=password_dummy)
@@ -29,7 +33,8 @@ class FormValidation(TestCase):
 
         data = {'name_txt': 'Novo paciente',
                 'cpf_id': '100.913.651-81',
-                'gender_opt': '1'}
+                'gender_opt': [str(self.gender_opt.id)]}
+
         response = self.client.post('/quiz/patient/new/', data)
         self.assertEqual(response.status_code, 200)
         self.assertFormError(response, "patient_form", "cpf_id", u'CPF 100.913.651-81 n\xe3o \xe9 v\xe1lido')
@@ -37,109 +42,92 @@ class FormValidation(TestCase):
     def test_invalid(self):
         """testa inclusao de paciente com cpf invalido"""
 
+        data = "name_txt=Paciente&cpf_id=374.276.738-08&date_birth_txt=15/14/2001&gender_opt=1"
 
-        data = {'name_txt': 'Novo paciente bom', 'cpf_id': '288.666.827-30', 'date_birth_txt': '01/01/2002',
-                'gender_opt': '1'}
-        response = self.client.post('/quiz/patient/new/', data)
-        self.assertEqual(response.status_code, 200)
-        # self.assertFormError(response, "patient_form", "cpf_id", u'CPF 100.913.651-81 n\xe3o \xe9 v\xe1lido')
+        response = self.client.post('/quiz/patient/new/', QueryDict(data))
 
+        self.assertContains(response, 'Informe uma data válida.')
+
+    def test_future_date_birth(self):
+        """Testa inclusao de paciente com data de nascimento futura"""
+
+        data = "name_txt=test_future_date_birth&cpf_id=374.276.738-08&date_birth_txt=15/05/2201&gender_opt=" + str(
+            self.gender_opt.id) + "&currentTab=0"
+
+        response = self.client.post('/quiz/patient/new/', QueryDict(data))
+
+        self.assertEqual(Patient.objects.filter(name_txt='test_future_date_birth').count(), 0)
+
+    def test_date_birth_now(self):
+        """Testa inclusao de paciente com data de nascimento futura """
+
+        d = date.today()
+        d.isoformat()
+        date_birth = d.strftime("%d/%m/%Y")
+        data = "name_txt=test_date_birth_now&cpf_id=374.276.738-08&date_birth_txt=" + date_birth + "&gender_opt=1&currentTab=0"
+
+        response = self.client.post('/quiz/patient/new/', QueryDict(data))
+        cookies = str(self.client.cookies).find('Paciente gravado com sucesso')
+        self.assertEqual(Patient.objects.filter(name_txt='test_date_birth_now').count(), 0)
+
+
+    def test_patient_added(self):
+        """Testa inclusao de paciente com campos obrigatorios"""
+
+        data = "name_txt=test_patient_added&date_birth_txt=15/11/1995&gender_opt=" + str(self.gender_opt.id)
+
+        try:
+            response = self.client.post('/quiz/patient/new/', QueryDict(data), follow=True)
+            # self.assertRedirects(response, '/quiz/patient/edit/1/?currentTab=0')
+            self.assertEqual(Patient.objects.filter(name_txt='test_patient_added').count(), 1)
+        except Http404:
+            pass
 
     def test_patient_add_ok(self):
-        """testa inclusao de paciente com sucesso"""
+        """Testa inclusao de paciente com sucesso"""
 
-        # create GenderOption
-        gender_opt = GenderOption.objects.create(gender_txt='Masculino')
-
-
-        # data = {u'name_txt': u'Paciente de Teste', u'cpf_id': u'374.276.738-08', u'gender_opt': u'2', u'date_birth_txt': u'01/01/2000'}
         data = {u'cpf_id': [u'248.215.628-98'], u'religion_opt': [u''], u'amount_cigarettes_opt': [u''],
-                u'zipcode_number': [u''], u'state_txt': [u'RJ'], u'alcohol_frequency_opt': [u''],
+                u'zipcode_number': [u'37704206'], u'state_txt': [u'RJ'], u'alcohol_frequency_opt': [u''],
                 u'schooling_opt': [u''], u'street_txt': [u''], u'flesh_tone_opt': [u''], u'occupation_txt': [u''],
                 u'medical_record_number': [u''],
                 u'phone_number': [u'1'], u'marital_status_opt': [u''], u'rg_id': [u''], u'alcohol_period_opt': [u''],
-                u'gender_opt': [str(gender_opt.id)], u'gender_opt': [u'Feminino'], u'citizenship_txt': [u'BR'], u'payment_opt': [u''],
+                u'gender_opt': [str(self.gender_opt.id)], u'citizenship_txt': [u'BR'], u'payment_opt': [u''],
                 u'name_txt': [u'Paciente de Teste'], u'email_txt': [u''], u'cellphone_number': [u''],
                 u'date_birth_txt': [u'15/01/2003'], u'natural_of_txt': [u''], u'country_txt': [u'BR'],
                 u'profession_txt': [u''], u'city_txt': [u'']}
 
         response = self.client.post('/quiz/patient/new/', data)
-        self.assertEqual(response.status_code, 200)
-        # self.assertContains(self, response, response.content, u'Paciente gravado com sucesso', html=True)
-        # self.assertContains(response, u'Paciente gravado com sucesso', html=True)
-        #errors = response.context['patient_form'].errors
-        #self.assertEqual(0, len(errors), msg='Erros encontrados durante as validacoes: %s' % errors)
-        #messages = response.context['messages']
-        #print messages
-
+        #self.assertRedirects(response, '/quiz/patient/edit/1/?currentTab=0')
+        self.assertEqual(Patient.objects.filter(cpf_id='248.215.628-98').count(), 1)
 
     def test_valid_email(self):
         """Teste de email invalido"""
-
-        # username_dummy = 'myadmin'
-        # password_dummy = 'mypassword'
-        #
-        # user = User.objects.create_user(username=username_dummy, email='test@dummy.com', password=password_dummy)
-        # user.is_staff = True
-        # user.save()
-        #
-        # logged = self.client.login(username=username_dummy, password=password_dummy)
-        # self.assertEqual(logged, True)
 
         data = "name_txt=Paciente&cpf_id=374.276.738-08&email_txt=mail@invalid.&date_birth_txt=01/01/2000"
 
         response = self.client.post('/quiz/patient/new/', QueryDict(data))
 
-        errors = response.context['patient_form'].errors
-
-        # self.assertEqual(0, len(errors), msg='Erros encontrados durante as validacoes: %s' % errors)
-
-        # messages = response.context['messages']
-        # print messages
         self.assertContains(response, 'Informe um endereço de email válido')
 
 
     def test_valid_name(self):
         """Teste de validacao do campo nome completo  - obrigatorio"""
 
-        # username_dummy = 'myadmin'
-        # password_dummy = 'mypassword'
-        #
-        # user = User.objects.create_user(username=username_dummy, email='test@dummy.com', password=password_dummy)
-        # user.is_staff = True
-        # user.save()
-        #
-        # logged = self.client.login(username=username_dummy, password=password_dummy)
-        # self.assertEqual(logged, True)
-
         data = "name_txt=&cpf_id=374.276.738-08&date_birth_txt=01/01/2000"
 
         response = self.client.post('/quiz/patient/new/', QueryDict(data))
 
-        errors = response.context['patient_form'].errors
-
         self.assertContains(response, 'Nome não preenchido')
-        # self.assertEqual(0, len(errors), msg='Erros encontrados durante as validacoes: %s' % errors)
 
-        # messages = response.context['messages']
-        # print messages
+    def test_view_patient(self):
+        """Teste de visualizacao de paciente apos cadastro na base de dados """
 
-    def test_update_patient_not_exist(self):
-        """Teste de paciente nao existente na base de dados """
-
-        # request = self.factory.get(self, '/quiz/patient/18')
-        #
-        # request.user = self.user
-        # response = views.patient(request)
-        #
-        # self.assertEqual(response.status_code, 404)
         p = Patient()
 
         p.name_txt = 'Paciente de teste'
         p.date_birth_txt = '2001-01-15'
-        p.gender_opt_id = 1 #GenderOption.objects.get(gender_txt='Feminino')
+        p.gender_opt_id = self.gender_opt.id
         p.save()
-
 
         # Create an instance of a GET request.
         self.client.login(username='myadmin', password='mypassword')
@@ -153,9 +141,26 @@ class FormValidation(TestCase):
         except Http404:
             pass
 
+    def test_update_patient(self):
+        """Teste de paciente nao existente na base de dados """
 
+        p = Patient()
 
+        p.name_txt = 'Paciente de teste UPDATE'
+        p.date_birth_txt = '2001-01-15'
+        p.gender_opt_id = self.gender_opt.id
+        p.save()
 
+        # Create an instance of a GET request.
+        self.client.login(username='myadmin', password='mypassword')
+        request = self.factory.get('/quiz/patient/' + str(p.pk))
+        request.user = self.user
+
+        try:
+            response = patient_update(request, patient_id=p.pk)
+            self.assertEqual(response.status_code, 200)
+        except Http404:
+            pass
 
     def test_views(self):
         client = Client()
