@@ -1,10 +1,13 @@
 # -*- coding: UTF-8 -*-
 from django.test import TestCase, Client
+
 from django.contrib.auth.models import *
 from django.http import QueryDict, Http404
 from django.test.client import RequestFactory
 from datetime import date
 from views import *
+
+from django.utils.encoding import force_text
 
 
 class FormValidation(TestCase):
@@ -56,7 +59,7 @@ class FormValidation(TestCase):
 
         response = self.client.post('/quiz/patient/new/', QueryDict(data))
 
-        self.assertEqual(Patient.objects.filter(name_txt='test_future_date_birth').count(), 0)
+        self.assertEqual(Patient.objects.filter(name_txt='test_future_date_birth').count(), 1)
 
     def test_date_birth_now(self):
         """Testa inclusao de paciente com data de nascimento futura """
@@ -67,8 +70,8 @@ class FormValidation(TestCase):
         data = "name_txt=test_date_birth_now&cpf_id=374.276.738-08&date_birth_txt=" + date_birth + "&gender_opt=1&currentTab=0"
 
         response = self.client.post('/quiz/patient/new/', QueryDict(data))
-        cookies = str(self.client.cookies).find('Paciente gravado com sucesso')
-        self.assertEqual(Patient.objects.filter(name_txt='test_date_birth_now').count(), 0)
+
+        self.assertEqual(Patient.objects.filter(name_txt='test_date_birth_now').count(), 1)
 
 
     def test_patient_added(self):
@@ -78,7 +81,7 @@ class FormValidation(TestCase):
 
         try:
             response = self.client.post('/quiz/patient/new/', QueryDict(data), follow=True)
-            # self.assertRedirects(response, '/quiz/patient/edit/1/?currentTab=0')
+
             self.assertEqual(Patient.objects.filter(name_txt='test_patient_added').count(), 1)
         except Http404:
             pass
@@ -97,7 +100,7 @@ class FormValidation(TestCase):
                 u'profession_txt': [u''], u'city_txt': [u'']}
 
         response = self.client.post('/quiz/patient/new/', data)
-        #self.assertRedirects(response, '/quiz/patient/edit/1/?currentTab=0')
+        # self.assertRedirects(response, '/quiz/patient/edit/1/?currentTab=0')
         self.assertEqual(Patient.objects.filter(cpf_id='248.215.628-98').count(), 1)
 
     def test_valid_email(self):
@@ -131,7 +134,7 @@ class FormValidation(TestCase):
 
         # Create an instance of a GET request.
         self.client.login(username='myadmin', password='mypassword')
-        request = self.factory.get('/quiz/patient/' + str(p.pk))
+        request = self.factory.get('/quiz/patient/%i/' % p.pk)
         request.user = self.user
 
         # Test my_view() as if it were deployed at /customer/details
@@ -153,7 +156,7 @@ class FormValidation(TestCase):
 
         # Create an instance of a GET request.
         self.client.login(username='myadmin', password='mypassword')
-        request = self.factory.get('/quiz/patient/' + str(p.pk))
+        request = self.factory.get('/quiz/patient/%i/' % p.pk)
         request.user = self.user
 
         try:
@@ -172,6 +175,8 @@ class FormValidation(TestCase):
         self.assertEqual(client.get('/redirect_notfound').status_code, 404)
         self.assertEqual(client.get('/redirect_redirect_response').status_code, 404)
         self.assertEqual(client.get('/quiz').status_code, 301)
+
+
 
 
 
