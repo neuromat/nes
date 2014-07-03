@@ -2,7 +2,7 @@
 from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib.auth.decorators import login_required
 from django.http import HttpResponseRedirect, HttpResponse
-
+from django.forms import ModelForm
 from django.core.context_processors import csrf
 from django.core.urlresolvers import reverse, reverse_lazy, resolve
 from django.shortcuts import render_to_response
@@ -11,9 +11,11 @@ from models import Patient, SocialDemographicData, SocialHistoryData, FleshToneO
     MaritalStatusOption, SchoolingOption, PaymentOption, ReligionOption,\
     GenderOption, AmountCigarettesOption, AlcoholFrequencyOption, AlcoholPeriodOption
 
-from forms import PatientForm, SocialDemographicDataForm, SocialHistoryDataForm
+from forms import PatientForm, SocialDemographicDataForm, SocialHistoryDataForm, UserForm
 from quiz_widget import SelectBoxCountriesDisabled, SelectBoxStateDisabled
 from django.contrib import messages
+
+from django.contrib.auth.models import User, Group
 
 # Biblioteca para fazer expressões regulares. Utilizada na "def search_patients_ajax" para fazer busca por nome ou CPF
 import re
@@ -390,3 +392,95 @@ def search_patients_ajax(request):
         search_text = ''
 
     return render_to_response('quiz/ajax_search.html', {'patients': patient_list})
+
+
+@login_required
+def user_list(request, template_name='quiz/user_list.html'):
+    users = User.objects.all()
+    data = {}
+    data['object_list'] = users
+    return render(request, template_name, data)
+
+
+@login_required
+def user_create(request, template_name='quiz/register_users.html'):
+    form = UserForm(request.POST or None)
+
+    if form.is_valid():
+        user = User.objects.create_user(request.POST['username'], request.POST['email'], request.POST['password'])
+        user.first_name = request.POST['first_name']
+        user.last_name = request.POST['last_name']
+        user.groups = request.POST.getlist('groups')
+        user.save()
+        return redirect('user_list')
+    return render(request, template_name, {'form': form})
+
+
+@login_required
+def user_update(request, user_id, template_name='quiz/register_users.html'):
+    user = get_object_or_404(User, id=user_id)
+    form = UserForm(request.POST or None, instance=user)
+    if form.is_valid():
+        form.save()
+        return redirect('user_list')
+    return render(request, template_name, {'form': form})
+
+
+@login_required
+def user_delete(request, user_id):
+    user = get_object_or_404(User, id=user_id)
+    user.delete()
+    return redirect('user_list')
+
+
+@login_required
+def user(request, user_id, template_name="quiz/register.html"):
+
+    if request.method == "POST":
+
+        if 'action' in request.POST:
+
+            if request.POST['action'] == "remove":
+
+                user_remove = User.objects.get(id=user_id)
+                # user_remove.removed = True
+                # user_remove.save()
+                user_remove.delete()
+
+                redirect_url = reverse("user_list")
+
+            else:
+                redirect_url = reverse("user_edit", args=(user_id,))
+
+        return HttpResponseRedirect(redirect_url)
+    return render(request, template_name)
+
+
+@login_required
+def user_update(request, user_id, template_name="quiz/register_users.html"):
+
+    p = User.objects.get(id=user_id)
+
+    user_form = UserForm(request.POST or None, instance=p)
+
+    if request.method == "POST":
+
+        if user_form.is_valid():
+            user_form.save()
+
+            user = User.objects.create_user(request.POST['username'], request.POST['email'], request.POST['password'])
+            user.first_name = request.POST['first_name']
+            user.last_name = request.POST['last_name']
+            user.groups = request.POST.getlist('groups')
+            user.save()
+
+            return redirect('user_list')
+        # else:
+            # user_form.errors['username'][0] = "Este nome de usuário já existe."
+
+    context = {
+        'form': user_form,
+        'editing': True,
+    }
+    return render(request, template_name, context)
+
