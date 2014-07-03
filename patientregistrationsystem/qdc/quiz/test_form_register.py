@@ -59,7 +59,7 @@ class FormValidation(TestCase):
 
         response = self.client.post('/quiz/patient/new/', QueryDict(data))
 
-        self.assertEqual(Patient.objects.filter(name_txt='test_future_date_birth').count(), 1)
+        self.assertEqual(Patient.objects.filter(name_txt='test_future_date_birth').count(), 0)
 
     def test_date_birth_now(self):
         """Testa inclusao de paciente com data de nascimento futura """
@@ -71,7 +71,7 @@ class FormValidation(TestCase):
 
         response = self.client.post('/quiz/patient/new/', QueryDict(data))
 
-        self.assertEqual(Patient.objects.filter(name_txt='test_date_birth_now').count(), 1)
+        self.assertEqual(Patient.objects.filter(name_txt='test_date_birth_now').count(), 0)
 
 
     def test_patient_added(self):
