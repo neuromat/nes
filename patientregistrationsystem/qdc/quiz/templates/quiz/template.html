@@ -50,6 +50,7 @@
         <div class="collapse navbar-collapse navbar-ex1-collapse">
             <ol class="nav navbar-nav navbar-right">
                 <li><a> Usuário: {% if user.first_name %} {{ user.first_name }} {% else %} {{ user.username }} {% endif %}</a></li>
+                <li><a href="/password_change">Alterar senha</a></li>
                 <li><a href="/logout">Sair</a></li>
             </ol>
         </div>
