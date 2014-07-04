@@ -38,8 +38,10 @@
             $( "form" ).submit(function( event ) {
                 if(checkPass())
                     event.preventDefault();
-                if(password_strong() < 60 && $('#id_password').val())
+                if(password_strong() < 60 && $('#id_password').val()){
+                    showErrorMessageTemporary("Senha deve ser no mínimo forte.");
                     event.preventDefault();
+                }
             })
         });
         function password_strong(){
