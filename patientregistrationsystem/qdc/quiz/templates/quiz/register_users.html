@@ -38,8 +38,10 @@
             $( "form" ).submit(function( event ) {
                 if(checkPass())
                     event.preventDefault();
-                if(password_strong() < 60 && $('#id_password').val())
+                if(password_strong() < 60 && $('#id_password').val()){
+                    showErrorMessageTemporary("Senha deve ser no mínimo forte.");
                     event.preventDefault();
+                }
             })
         });
         function password_strong(){
@@ -182,6 +184,19 @@
                         </div>
                     </div>
                     <div class="col-xs-6 col-sm-6">
+                        <div class="form-group {% if form.errors.email %}has-error{% endif %}">
+                            <label for="full_name" class="control-label">Email</label>
+
+                            <div class="input-group input-group-sm">
+                                <span class="input-group-addon"> <span class="glyphicon glyphicon-user"></span></span>
+                                {{ form.email }}
+                            </div>
+                            <div class="help-block with-errors"></div>
+                        </div>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-xs-6 col-sm-6">
                         <div class="form-group {% if form.errors.password %}has-error{% endif %}" id="div_password">
                             <label for="id_password" class="control-label">Senha<b style="color: red;">*</b></label>
                             <div class="input-group input-group-sm right-inner-addon">
@@ -194,19 +209,6 @@
                                     <div>{{ error }}</div>
                                 {% endfor %}
                             </div>
-                        </div>
-                    </div>
-                </div>
-                <div class="row">
-                    <div class="col-xs-6 col-sm-6">
-                        <div class="form-group {% if form.errors.email %}has-error{% endif %}">
-                            <label for="full_name" class="control-label">Email</label>
-
-                            <div class="input-group input-group-sm">
-                                <span class="input-group-addon"> <span class="glyphicon glyphicon-user"></span></span>
-                                {{ form.email }}
-                            </div>
-                            <div class="help-block with-errors"></div>
                         </div>
                     </div>
                     <div class="col-xs-6 col-sm-6">
