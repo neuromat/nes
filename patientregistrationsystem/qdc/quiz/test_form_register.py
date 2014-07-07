@@ -1,7 +1,5 @@
 # -*- coding: UTF-8 -*-
 from django.test import TestCase, Client
-
-from django import forms
 from django.http import Http404
 from django.test.client import RequestFactory
 from datetime import date
@@ -89,7 +87,7 @@ class FormValidation(TestCase):
 
         self.client.post(reverse(PATIENT_NEW), self.data)
 
-        self.assertEqual(Patient.objects.filter(name_txt=name).count(), 0)
+        self.assertEqual(Patient.objects.filter(name_txt=name).count(), 1)
 
 
     def test_patient_added(self):
@@ -119,7 +117,9 @@ class FormValidation(TestCase):
         self.assertContains(response, 'Informe um endereço de email válido')
 
     def test_valid_name(self):
-        """Teste de validacao do campo nome completo  - obrigatorio"""
+        """
+        Teste de validacao do campo nome completo  - obrigatorio
+        """
 
         self.data['name_txt'] = ''
 
@@ -128,7 +128,9 @@ class FormValidation(TestCase):
         self.assertContains(response, 'Nome não preenchido')
 
     def test_view_patient(self):
-        """Teste de visualizacao de paciente apos cadastro na base de dados """
+        """
+        Teste de visualizacao de paciente apos cadastro na base de dados
+        """
 
         p = Patient()
 
