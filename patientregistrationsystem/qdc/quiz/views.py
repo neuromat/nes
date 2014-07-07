@@ -407,8 +407,7 @@ def search_patients_ajax(request):
 @permission_required('auth.change_user')
 def user_list(request, template_name='quiz/user_list.html'):
     users = User.objects.filter(is_active=True)
-    data = {}
-    data['object_list'] = users
+    data = {'object_list': users, 'current_user_id': request.user.id}
     return render(request, template_name, data)
 
 
@@ -416,12 +415,13 @@ def user_list(request, template_name='quiz/user_list.html'):
 @permission_required('auth.add_user')
 def user_create(request, template_name='quiz/register_users.html'):
     form = UserForm(request.POST or None)
-    if form.is_valid():
-        form.save()
-        return redirect('user_list')
-    # else:
-    #     if form.errors:
-    #         form.errors['username'][0] = "Este nome de usuário já existe."
+    if request.method == "POST":
+        if form.is_valid():
+            form.save()
+            messages.success(request, 'Usuário criado com sucesso.')
+            return redirect('user_list')
+        else:
+            messages.error(request, 'Não foi possível criar usuário.')
     return render(request, template_name, {'form': form})
 
 
@@ -431,6 +431,7 @@ def user_delete(request, user_id):
     user = get_object_or_404(User, id=user_id)
     user.is_active = False
     user.save()
+    messages.success(request, 'Usuário removido com sucesso.')
     return redirect('user_list')
 
 
@@ -441,9 +442,8 @@ def user_update(request, user_id, template_name="quiz/register_users.html"):
     if request.method == "POST":
         if form.is_valid():
             form.save()
+            messages.success(request, 'Usuário atualizado com sucesso.')
             return redirect('user_list')
-        # else:
-        #     form.errors['username'][0] = "Este nome de usuário já existe."
 
     context = {
         'form': form,
