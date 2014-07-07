@@ -98,20 +98,20 @@ $(document).ready(function () {
         $("#id_fieldSetClavFractRelated").prop('disabled', true);
     });
 
-    $("#smokingOptionsRadios1").click(function () {
+    $("#id_smoker_0").click(function () {
         $("#id_amount_cigarettes").prop('disabled', false);
     });
 
-    $("#smokingOptionsRadios2").click(function () {
+    $("#id_smoker_1").click(function () {
         $("#id_amount_cigarettes").prop('disabled', true);
     });
 
-    $("#alcoholismOptionsRadios1").click(function () {
+    $("#id_alcoholic_0").click(function () {
         $("#id_freqSmok").prop('disabled', false);
         $("#id_periodSmok").prop('disabled', false);
     });
 
-    $("#alcoholismOptionsRadios2").click(function () {
+    $("#id_alcoholic_1").click(function () {
         $("#id_freqSmok").prop('disabled', true);
         $("#id_periodSmok").prop('disabled', true);
     });
@@ -125,7 +125,7 @@ $(document).ready(function () {
     });
 
 
-    $('#cellphone').val('');
+    $('#cellphone').val();
     $('#cellphone').change(function () {
         $('#cellphone').unmask();
     });
@@ -143,7 +143,7 @@ $(document).ready(function () {
             $("#cellphone").unmask();
     });
 
-    $('#phone').val('');
+    $('#phone').val();
     $('#phone').change(function () {
         $('#phone').unmask();
     });
@@ -161,7 +161,7 @@ $(document).ready(function () {
             $("#phone").unmask();
     });
 
-    $('#zipcode').val('');
+    $('#zipcode').val();
     $('#zipcode').change(function () {
         $('#zipcode').unmask();
     });
@@ -175,6 +175,7 @@ $(document).ready(function () {
             $('#zipcode').mask('99999-999');
         }
     });
+
 
     $("#prevtab").click(function () {
         var $tabs = $('.tabbable li');

@@ -19,7 +19,10 @@
                     </ul>
                 </div>
                 <div class="btn-group pull-left">
-                    <a href="/quiz/patient/new/" class="btn btn-primary">Inserir novo paciente</a>
+
+                    {% if perms.quiz.add_patient %}
+                        <a href="/quiz/patient/new/" class="btn btn-primary">Inserir novo paciente</a>
+                    {% endif %}
                 </div>
             </div>
         </div>

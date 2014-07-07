@@ -1,124 +1,129 @@
 # -*- coding: UTF-8 -*-
 from django.test import TestCase, Client
 
-from django.contrib.auth.models import *
-from django.http import QueryDict, Http404
+from django import forms
+from django.http import Http404
 from django.test.client import RequestFactory
 from datetime import date
 from views import *
 
-from django.utils.encoding import force_text
+PATIENT_NEW = 'patient_new'
 
 
 class FormValidation(TestCase):
     user = ''
+    data = {}
 
     def setUp(self):
+        """
+        Configura autenticacao e variaveis para iniciar cada teste
+
+        """
         print "Setting User for start tests to", self._testMethodName
         username_dummy = 'myadmin'
         password_dummy = 'mypassword'
 
         self.user = User.objects.create_user(username=username_dummy, email='test@dummy.com', password=password_dummy)
         self.user.is_staff = True
+        self.user.is_superuser = True
         self.user.save()
-
-        self.gender_opt = GenderOption.objects.create(gender_txt='Masculino')
-        self.gender_opt.save()
 
         self.factory = RequestFactory()
 
         logged = self.client.login(username=username_dummy, password=password_dummy)
         self.assertEqual(logged, True)
 
+        self.gender_opt = GenderOption.objects.create(gender_txt='Masculino')
+        self.gender_opt.save()
+
+        self.data = {'name_txt': 'Patient for test',
+                     'cpf_id': '374.276.738-08',
+                     'gender_opt': str(self.gender_opt.id),
+                     'date_birth_txt': '01/02/1995',
+                     'email_txt': 'email@email.com',
+                     'currentTab': '0'}
 
     def test_invalid_cpf(self):
-        """testa inclusao de paciente com cpf invalido"""
+        """
+        Testa inclusao de paciente com cpf invalido
+        """
 
-        data = {'name_txt': 'Novo paciente',
-                'cpf_id': '100.913.651-81',
-                'gender_opt': [str(self.gender_opt.id)]}
+        # CPF invalido
+        cpf = '100.913.651-81'
+        self.data['cpf_id'] = cpf
 
-        response = self.client.post('/quiz/patient/new/', data)
+        response = self.client.post(reverse(PATIENT_NEW), self.data)
         self.assertEqual(response.status_code, 200)
-        self.assertFormError(response, "patient_form", "cpf_id", u'CPF 100.913.651-81 n\xe3o \xe9 v\xe1lido')
-
-    def test_invalid(self):
-        """testa inclusao de paciente com cpf invalido"""
-
-        data = "name_txt=Paciente&cpf_id=374.276.738-08&date_birth_txt=15/14/2001&gender_opt=1"
-
-        response = self.client.post('/quiz/patient/new/', QueryDict(data))
-
-        self.assertContains(response, 'Informe uma data válida.')
+        self.assertFormError(response, "patient_form", "cpf_id", u'CPF ' + cpf + u' n\xe3o \xe9 v\xe1lido')
 
     def test_future_date_birth(self):
-        """Testa inclusao de paciente com data de nascimento futura"""
+        """
+        Testa inclusao de paciente com data de nascimento futura
+        """
+        name = 'test_future_date_birth'
+        self.data['name_txt'] = name
+        self.data['date_birth_txt'] = '15/05/2201'
 
-        data = "name_txt=test_future_date_birth&cpf_id=374.276.738-08&date_birth_txt=15/05/2201&gender_opt=" + str(
-            self.gender_opt.id) + "&currentTab=0"
+        response = self.client.post(reverse(PATIENT_NEW), self.data)
 
-        response = self.client.post('/quiz/patient/new/', QueryDict(data))
+        self.assertEqual(Patient.objects.filter(name_txt=name).count(), 0)
 
-        self.assertEqual(Patient.objects.filter(name_txt='test_future_date_birth').count(), 0)
-
-    def test_date_birth_now(self):
-        """Testa inclusao de paciente com data de nascimento futura """
-
+    def get_current_date(self):
+        """
+        Obtem a data atual no formato dd/mm/yyyy
+        """
         d = date.today()
         d.isoformat()
         date_birth = d.strftime("%d/%m/%Y")
-        data = "name_txt=test_date_birth_now&cpf_id=374.276.738-08&date_birth_txt=" + date_birth + "&gender_opt=1&currentTab=0"
+        return date_birth
 
-        response = self.client.post('/quiz/patient/new/', QueryDict(data))
+    def test_date_birth_now(self):
+        """
+        Testa inclusao de paciente com data de nascimento futura
+        """
 
-        self.assertEqual(Patient.objects.filter(name_txt='test_date_birth_now').count(), 0)
+        date_birth = self.get_current_date()
+        name = 'test_date_birth_now'
+        self.data['date_birth_txt'] = date_birth
+        self.data['name_txt'] = name
+
+        self.client.post(reverse(PATIENT_NEW), self.data)
+
+        self.assertEqual(Patient.objects.filter(name_txt=name).count(), 0)
 
 
     def test_patient_added(self):
-        """Testa inclusao de paciente com campos obrigatorios"""
-
-        data = "name_txt=test_patient_added&date_birth_txt=15/11/1995&gender_opt=" + str(self.gender_opt.id)
+        """
+        Testa inclusao de paciente com campos obrigatorios
+        """
+        name = 'test_patient_added'
+        self.data['name_txt'] = name
 
         try:
-            response = self.client.post('/quiz/patient/new/', QueryDict(data), follow=True)
+            response = self.client.post(reverse(PATIENT_NEW), self.data, follow=True)
 
-            self.assertEqual(Patient.objects.filter(name_txt='test_patient_added').count(), 1)
+            self.assertEqual(Patient.objects.filter(name_txt=name).count(), 1)
         except Http404:
             pass
 
-    def test_patient_add_ok(self):
-        """Testa inclusao de paciente com sucesso"""
-
-        data = {u'cpf_id': [u'248.215.628-98'], u'religion_opt': [u''], u'amount_cigarettes_opt': [u''],
-                u'zipcode_number': [u'37704206'], u'state_txt': [u'RJ'], u'alcohol_frequency_opt': [u''],
-                u'schooling_opt': [u''], u'street_txt': [u''], u'flesh_tone_opt': [u''], u'occupation_txt': [u''],
-                u'medical_record_number': [u''],
-                u'phone_number': [u'1'], u'marital_status_opt': [u''], u'rg_id': [u''], u'alcohol_period_opt': [u''],
-                u'gender_opt': [str(self.gender_opt.id)], u'citizenship_txt': [u'BR'], u'payment_opt': [u''],
-                u'name_txt': [u'Paciente de Teste'], u'email_txt': [u''], u'cellphone_number': [u''],
-                u'date_birth_txt': [u'15/01/2003'], u'natural_of_txt': [u''], u'country_txt': [u'BR'],
-                u'profession_txt': [u''], u'city_txt': [u'']}
-
-        response = self.client.post('/quiz/patient/new/', data)
-        # self.assertRedirects(response, '/quiz/patient/edit/1/?currentTab=0')
-        self.assertEqual(Patient.objects.filter(cpf_id='248.215.628-98').count(), 1)
 
     def test_valid_email(self):
-        """Teste de email invalido"""
+        """
+        Teste de email invalido
+        """
 
-        data = "name_txt=Paciente&cpf_id=374.276.738-08&email_txt=mail@invalid.&date_birth_txt=01/01/2000"
+        self.data['email_txt'] = 'mail@invalid.'
 
-        response = self.client.post('/quiz/patient/new/', QueryDict(data))
+        response = self.client.post(reverse(PATIENT_NEW), self.data)
 
         self.assertContains(response, 'Informe um endereço de email válido')
-
 
     def test_valid_name(self):
         """Teste de validacao do campo nome completo  - obrigatorio"""
 
-        data = "name_txt=&cpf_id=374.276.738-08&date_birth_txt=01/01/2000"
+        self.data['name_txt'] = ''
 
-        response = self.client.post('/quiz/patient/new/', QueryDict(data))
+        response = self.client.post(reverse(PATIENT_NEW), self.data)
 
         self.assertContains(response, 'Nome não preenchido')
 
@@ -137,7 +142,7 @@ class FormValidation(TestCase):
         request = self.factory.get('/quiz/patient/%i/' % p.pk)
         request.user = self.user
 
-        # Test my_view() as if it were deployed at /customer/details
+        # Test view() as if it were deployed at /quiz/patient/%id
         try:
             response = patient(request, patient_id=p.pk)
             self.assertEqual(response.status_code, 200)

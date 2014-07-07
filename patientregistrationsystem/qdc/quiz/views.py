@@ -1,27 +1,27 @@
 # coding=utf-8
 from django.shortcuts import render, redirect, get_object_or_404
-from django.contrib.auth.decorators import login_required
-from django.http import HttpResponseRedirect, HttpResponse
-from django.forms import ModelForm
+from django.contrib.auth.decorators import login_required, permission_required
+from django.http import HttpResponseRedirect
 from django.core.context_processors import csrf
-from django.core.urlresolvers import reverse, reverse_lazy, resolve
+from django.core.urlresolvers import reverse
 from django.shortcuts import render_to_response
 
 from models import Patient, SocialDemographicData, SocialHistoryData, FleshToneOption,\
     MaritalStatusOption, SchoolingOption, PaymentOption, ReligionOption,\
     GenderOption, AmountCigarettesOption, AlcoholFrequencyOption, AlcoholPeriodOption
 
-from forms import PatientForm, SocialDemographicDataForm, SocialHistoryDataForm, UserForm
+from forms import PatientForm, SocialDemographicDataForm, SocialHistoryDataForm, UserForm, UserFormUpdate
 from quiz_widget import SelectBoxCountriesDisabled, SelectBoxStateDisabled
 from django.contrib import messages
 
-from django.contrib.auth.models import User, Group
+from django.contrib.auth.models import User
 
 # Biblioteca para fazer expressões regulares. Utilizada na "def search_patients_ajax" para fazer busca por nome ou CPF
 import re
 
 
 @login_required
+@permission_required('quiz.add_patient')
 def patient_create(request, template_name="quiz/register.html"):
 
     flesh_tone_options = FleshToneOption.objects.all()
@@ -60,7 +60,7 @@ def patient_create(request, template_name="quiz/register.html"):
             homonym_message = ""
             homonym_list = Patient.objects.filter(name_txt=request.POST['name_txt']).exclude(removed=True)
             if homonym_list:
-                homonym_message = "Aviso: existe paciente como o mesmo nome."
+                homonym_message = "Aviso: existe paciente com o mesmo nome."
 
             new_patient.save()
 
@@ -131,21 +131,22 @@ def patient_create(request, template_name="quiz/register.html"):
                     else:
                         patient_form.errors['cpf_id'][0] = "Já existe paciente cadastrado com este CPF."
 
-    context = {'patient_form': patient_form, 'social_demographic_form': social_demographic_form,
-               'social_history_form': social_history_form,
-               'gender_options': gender_options, 'flesh_tone_options': flesh_tone_options,
-               'marital_status_options': marital_status_options, 'schooling_options': schooling_options,
-               'payment_options': payment_options, 'religion_options': religion_options,
-               'amount_cigarettes': amount_cigarettes, 'alcohol_frequency': alcohol_frequency,
-               'alcohol_period': alcohol_period,
-               'editing': True,
-               'currentTab': current_tab
-    }
+    context = {
+        'patient_form': patient_form, 'social_demographic_form': social_demographic_form,
+        'social_history_form': social_history_form,
+        'gender_options': gender_options, 'flesh_tone_options': flesh_tone_options,
+        'marital_status_options': marital_status_options, 'schooling_options': schooling_options,
+        'payment_options': payment_options, 'religion_options': religion_options,
+        'amount_cigarettes': amount_cigarettes, 'alcohol_frequency': alcohol_frequency,
+        'alcohol_period': alcohol_period,
+        'editing': True,
+        'currentTab': current_tab}
 
     return render(request, template_name, context)
 
 
 @login_required
+@permission_required('quiz.change_patient')
 def patient_update(request, patient_id, template_name="quiz/register.html"):
 
     ## Search in models.Patient
@@ -222,12 +223,13 @@ def patient_update(request, patient_id, template_name="quiz/register.html"):
                        new_social_demographic_data.refrigerator_opt is not None and
                        new_social_demographic_data.freezer_opt is not None):
 
-                        new_social_demographic_data.social_class_opt = new_social_demographic_data.calculate_social_class(
-                            tv=request.POST['tv_opt'], radio=request.POST['radio_opt'],
-                            banheiro=request.POST['bath_opt'], automovel=request.POST['automobile_opt'],
-                            empregada=request.POST['house_maid_opt'], maquina=request.POST['wash_machine_opt'],
-                            dvd=request.POST['dvd_opt'], geladeira=request.POST['refrigerator_opt'],
-                            freezer=request.POST['freezer_opt'], escolaridade=request.POST['schooling_opt'])
+                        new_social_demographic_data.social_class_opt = \
+                            new_social_demographic_data.calculate_social_class(
+                                tv=request.POST['tv_opt'], radio=request.POST['radio_opt'],
+                                banheiro=request.POST['bath_opt'], automovel=request.POST['automobile_opt'],
+                                empregada=request.POST['house_maid_opt'], maquina=request.POST['wash_machine_opt'],
+                                dvd=request.POST['dvd_opt'], geladeira=request.POST['refrigerator_opt'],
+                                freezer=request.POST['freezer_opt'], escolaridade=request.POST['schooling_opt'])
                     else:
 
                         new_social_demographic_data.social_class_opt = None
@@ -275,12 +277,12 @@ def patient_update(request, patient_id, template_name="quiz/register.html"):
             'social_demographic_form': social_demographic_form,
             'social_history_form': social_history_form,
             'editing': True,
-            'currentTab': current_tab
-            }
+            'currentTab': current_tab}
         return render(request, template_name, context)
 
 
 @login_required
+@permission_required('quiz.view_patient')
 def patients(request):
     language = 'en-us'
     session_language = 'en-us'
@@ -302,6 +304,7 @@ def patients(request):
 
 
 @login_required
+@permission_required('quiz.view_patient')
 def patient(request, patient_id, template_name="quiz/register.html"):
 
     if request.method == "POST":
@@ -317,7 +320,9 @@ def patient(request, patient_id, template_name="quiz/register.html"):
                 redirect_url = reverse("search_patient")
 
             else:
+                current_tab = request.POST['currentTab']
                 redirect_url = reverse("patient_edit", args=(patient_id,))
+                return HttpResponseRedirect(redirect_url + "?currentTab=" + str(current_tab))
 
         return HttpResponseRedirect(redirect_url)
 
@@ -365,8 +370,10 @@ def patient(request, patient_id, template_name="quiz/register.html"):
 
 
 @login_required
+@permission_required('quiz.view_patient')
 def search_patient(request):
     return render(request, 'quiz/busca.html')
+
 
 @login_required
 def advanced_search(request):
@@ -377,7 +384,9 @@ def advanced_search(request):
 def contact(request):
     return render(request, 'quiz/contato.html')
 
+
 @login_required
+@permission_required('quiz.view_patient')
 def search_patients_ajax(request):
     if request.method == "POST":
         search_text = request.POST['search_text']
@@ -395,92 +404,50 @@ def search_patients_ajax(request):
 
 
 @login_required
+@permission_required('auth.add_user')
+@permission_required('auth.change_user')
 def user_list(request, template_name='quiz/user_list.html'):
-    users = User.objects.all()
-    data = {}
-    data['object_list'] = users
+    users = User.objects.filter(is_active=True)
+    data = {'object_list': users, 'current_user_id': request.user.id}
     return render(request, template_name, data)
 
 
 @login_required
+@permission_required('auth.add_user')
 def user_create(request, template_name='quiz/register_users.html'):
     form = UserForm(request.POST or None)
-
-    if form.is_valid():
-        user = User.objects.create_user(request.POST['username'], request.POST['email'], request.POST['password'])
-        user.first_name = request.POST['first_name']
-        user.last_name = request.POST['last_name']
-        user.groups = request.POST.getlist('groups')
-        user.save()
-        return redirect('user_list')
+    if request.method == "POST":
+        if form.is_valid():
+            form.save()
+            messages.success(request, 'Usuário criado com sucesso.')
+            return redirect('user_list')
+        else:
+            messages.error(request, 'Não foi possível criar usuário.')
     return render(request, template_name, {'form': form})
 
 
 @login_required
-def user_update(request, user_id, template_name='quiz/register_users.html'):
-    user = get_object_or_404(User, id=user_id)
-    form = UserForm(request.POST or None, instance=user)
-    if form.is_valid():
-        form.save()
-        return redirect('user_list')
-    return render(request, template_name, {'form': form})
-
-
-@login_required
+@permission_required('auth.delete_user')
 def user_delete(request, user_id):
     user = get_object_or_404(User, id=user_id)
-    user.delete()
+    user.is_active = False
+    user.save()
+    messages.success(request, 'Usuário removido com sucesso.')
     return redirect('user_list')
 
 
 @login_required
-def user(request, user_id, template_name="quiz/register.html"):
-
-    if request.method == "POST":
-
-        if 'action' in request.POST:
-
-            if request.POST['action'] == "remove":
-
-                user_remove = User.objects.get(id=user_id)
-                # user_remove.removed = True
-                # user_remove.save()
-                user_remove.delete()
-
-                redirect_url = reverse("user_list")
-
-            else:
-                redirect_url = reverse("user_edit", args=(user_id,))
-
-        return HttpResponseRedirect(redirect_url)
-    return render(request, template_name)
-
-
-@login_required
+@permission_required('auth.change_user')
 def user_update(request, user_id, template_name="quiz/register_users.html"):
-
-    p = User.objects.get(id=user_id)
-
-    user_form = UserForm(request.POST or None, instance=p)
-
+    form = UserFormUpdate(request.POST or None, instance=User.objects.get(id=user_id))
     if request.method == "POST":
-
-        if user_form.is_valid():
-            user_form.save()
-
-            user = User.objects.create_user(request.POST['username'], request.POST['email'], request.POST['password'])
-            user.first_name = request.POST['first_name']
-            user.last_name = request.POST['last_name']
-            user.groups = request.POST.getlist('groups')
-            user.save()
-
+        if form.is_valid():
+            form.save()
+            messages.success(request, 'Usuário atualizado com sucesso.')
             return redirect('user_list')
-        # else:
-            # user_form.errors['username'][0] = "Este nome de usuário já existe."
 
     context = {
-        'form': user_form,
+        'form': form,
         'editing': True,
     }
     return render(request, template_name, context)
-

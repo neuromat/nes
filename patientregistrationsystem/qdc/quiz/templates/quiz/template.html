@@ -50,6 +50,7 @@
         <div class="collapse navbar-collapse navbar-ex1-collapse">
             <ol class="nav navbar-nav navbar-right">
                 <li><a> Usuário: {% if user.first_name %} {{ user.first_name }} {% else %} {{ user.username }} {% endif %}</a></li>
+                <li><a href="/password_change">Alterar senha</a></li>
                 <li><a href="/logout">Sair</a></li>
             </ol>
         </div>
@@ -78,10 +79,8 @@
             <ul id="myMenu" class="nav nav-pills nav-stacked">
 
                 <li {% block activePatient %}{% endblock %} >
-                    {% if perms.quiz.add_patient %}
-                        <a href="/quiz/busca/">Buscar Paciente</a>
-                    {% else %}
-                        <a>Buscar Paciente</a>
+                    {% if perms.quiz.view_patient %}
+                        <a href="/quiz/busca/">Paciente</a>
                     {% endif %}
                 </li>
 
@@ -89,7 +88,7 @@
                     <a href="/quiz/busca_avancada/">Busca avançada</a>
                 </li>
 
-                {% if user.is_superuser %}
+                {% if perms.auth.add_user and perms.auth.change_user %}
                     <li {% block activeUser %}{% endblock %}><a href="/quiz/user/search/">Usuários</a>
                     </li>
                 {% endif %}
