@@ -120,7 +120,7 @@ class FormUserValidation(TestCase):
 
     def test_user_passwords_doesnt_match(self):
         """
-        Testa inclusao de usuario com sucesso
+        Testa senhas não conferem
         """
         user_pwd = 'test_pwd'
         self.data['username'] = user_pwd
@@ -130,18 +130,22 @@ class FormUserValidation(TestCase):
         try:
             response = self.client.post(reverse(USER_NEW), self.data, follow=True)
 
-            self.assertEqual(User.objects.filter(username=user_pwd).count(), 1)
+            self.assertEqual(User.objects.filter(username=user_pwd).count(), 0)
 
         except Http404:
             pass
 
-    def test_user_password_check_pattern(self):
+    def test_user_password_check_valid_pattern(self):
         """
-        Testa inclusao de usuario com sucesso
+        Testa padrao valido de senha definido para o usuario
         """
         user_pwd = 'test_pwd_1'
+        pattern = '((?=.*\d)(?=.*[a-z])(?=.*[A-Z])(?=.*[@#$%]).{6,20})'
+        password = 'Abc$123'
+        self.assertTrue(self.confirm_password(pattern=pattern, password=password), True)
+
         self.data['username'] = user_pwd
-        self.data['password'] = 'abc123'
+        self.data['password'] = password
 
         try:
             response = self.client.post(reverse(USER_NEW), self.data, follow=True)
@@ -151,6 +155,37 @@ class FormUserValidation(TestCase):
         except Http404:
             pass
 
+    def test_user_password_check_invalid_pattern(self):
+        """
+        Testa padrao invalido de senha definido para o usuario
+        """
+        user_pwd = 'test_pwd_1'
+        self.data['username'] = user_pwd
+        self.data['password'] = 'abc'
+
+        try:
+            response = self.client.post(reverse(USER_NEW), self.data, follow=True)
+
+            self.assertEqual(User.objects.filter(username=user_pwd).count(), 0)
+
+        except Http404:
+            pass
+
+    def test_user_empty_password(self):
+        """
+        Testa senha em branco
+        """
+        user_pwd = 'test_pwd_2'
+        self.data['username'] = user_pwd
+        self.data['password'] = ''
+
+        try:
+            response = self.client.post(reverse(USER_NEW), self.data, follow=True)
+            self.assertFormError(response, "form", "password", u'Este campo é obrigatório.')
+            self.assertEqual(User.objects.filter(username=user_pwd).count(), 0)
+
+        except Http404:
+            pass
 
 
     def test_new_user(self):
