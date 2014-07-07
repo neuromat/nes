@@ -233,36 +233,36 @@ class PainLocalization(models.Model):
 
 
 class MedicalRecordData(models.Model):
-    id_patient = models.ForeignKey(Patient)
-    record_date = models.DateField()
+    patient = models.ForeignKey(Patient, null=False)
+    record_date = models.DateField(null=False)
     record_responsible = models.ForeignKey(User, null=False)
 
     fracture_history = models.CharField(max_length=10, null=True, blank=True)
-    scapula_fracture_side_id = models.ForeignKey(Side, related_name='side_scapula_fracture', null=True, blank=True)
-    clavicle_fracture_side_id = models.ForeignKey(Side, related_name='side_clavicle_fracture', null=True, blank=True)
+    scapula_fracture_side = models.ForeignKey(Side, related_name='side_scapula_fracture', null=True, blank=True)
+    clavicle_fracture_side = models.ForeignKey(Side, related_name='side_clavicle_fracture', null=True, blank=True)
     rib_fracture = models.CharField(max_length=10, null=True, blank=True)
     cervical_vertebrae_fracture = models.ManyToManyField(CervicalVertebrae)
     thoracic_vertebrae_fracture = models.ManyToManyField(ThoracicVertebrae)
     lumbosacral_vertebrae_fracture = models.ManyToManyField(LumbosacralVertebrae)
-    superior_members_fracture_side_id = \
+    superior_members_fracture_side = \
         models.ForeignKey(Side, related_name='side_superior_members_fracture', null=True, blank=True)
-    inferior_members_fracture_side_id = \
+    inferior_members_fracture_side = \
         models.ForeignKey(Side, related_name='side_inferior_members_fracture', null=True, blank=True)
-    pelvis_fracture_side_id = \
+    pelvis_fracture_side = \
         models.ForeignKey(Side, related_name='side_pelvis_fracture', null=True, blank=True)
 
     orthopedic_surgery = models.CharField(max_length=10, null=True, blank=True)
-    scapula_surgery_side_id = models.ForeignKey(Side, related_name='side_scapula_surgery', null=True, blank=True)
-    clavicle_surgery_side_id = models.ForeignKey(Side, related_name='side_clavicle_surgery', null=True, blank=True)
+    scapula_surgery_side = models.ForeignKey(Side, related_name='side_scapula_surgery', null=True, blank=True)
+    clavicle_surgery_side = models.ForeignKey(Side, related_name='side_clavicle_surgery', null=True, blank=True)
     rib_surgery = models.CharField(max_length=10, null=True, blank=True)
     cervical_vertebrae_surgery = models.CharField(max_length=10, null=True, blank=True)
     thoracic_vertebrae_surgery = models.CharField(max_length=10, null=True, blank=True)
     lumbosacral_vertebrae_surgery = models.CharField(max_length=10, null=True, blank=True)
-    superior_members_surgery_side_id = \
+    superior_members_surgery_side = \
         models.ForeignKey(Side, related_name='side_superior_members_surgery', null=True, blank=True)
-    inferior_members_surgery_side_id = \
+    inferior_members_surgery_side = \
         models.ForeignKey(Side, related_name='side_inferior_members_surgery', null=True, blank=True)
-    pelvis_surgery_side_id = \
+    pelvis_surgery_side = \
         models.ForeignKey(Side, related_name='side_pelvis_surgery', null=True, blank=True)
 
     nerve_surgery = models.CharField(max_length=10, null=True, blank=True)
@@ -276,27 +276,28 @@ class MedicalRecordData(models.Model):
     hormonal_dysfunction = models.CharField(max_length=10, null=True, blank=True)
 
     def __unicode__(self):
-        return self.id_patient
+        return self.patient
 
 
 class ClassificationOfDiseases(models.Model):
     code = models.CharField(max_length=10, null=False)
     description = models.CharField(max_length=300, null=False)
+    parent = models.ForeignKey('self', null=True, related_name='children')
 
     def __unicode__(self):
         return self.code, self.description
 
 
 class Diagnosis(models.Model):
-    medical_record_data_id = models.ForeignKey(MedicalRecordData, null=False)
-    classification_of_diseases_id = models.ForeignKey(ClassificationOfDiseases, null=False)
+    medical_record_data = models.ForeignKey(MedicalRecordData, null=False)
+    classification_of_diseases = models.ForeignKey(ClassificationOfDiseases, null=False)
 
     def __unicode__(self):
-        return self.medical_record_data_id, self.classification_of_diseases_id
+        return self.medical_record_data, self.classification_of_diseases
 
 
 class ComplementaryExam(models.Model):
-    diagnosis_id = models.ForeignKey(Diagnosis, null=False, blank=False)
+    diagnosis = models.ForeignKey(Diagnosis, null=False, blank=False)
     date = models.DateField(null=False, blank=False)
     description = models.CharField(max_length=50, null=False, blank=False)
     doctor = models.CharField(max_length=50, null=False, blank=False)
@@ -308,6 +309,7 @@ class ComplementaryExam(models.Model):
 
 
 class ExamFile (models.Model):
-    exam_id = models.ForeignKey(ComplementaryExam, null=False)
+    exam = models.ForeignKey(ComplementaryExam, null=False)
     name = models.CharField(max_length=100, null=False, blank=False)
     content = models.BinaryField(null=False, blank=False)
+
