@@ -10,7 +10,8 @@ from models import Patient, SocialDemographicData, SocialHistoryData, FleshToneO
     MaritalStatusOption, SchoolingOption, PaymentOption, ReligionOption,\
     GenderOption, AmountCigarettesOption, AlcoholFrequencyOption, AlcoholPeriodOption
 
-from forms import PatientForm, SocialDemographicDataForm, SocialHistoryDataForm, UserForm, UserFormUpdate
+from forms import PatientForm, SocialDemographicDataForm, SocialHistoryDataForm, UserForm, UserFormUpdate, \
+    MedicalRecordForm
 from quiz_widget import SelectBoxCountriesDisabled, SelectBoxStateDisabled
 from django.contrib import messages
 
@@ -363,6 +364,7 @@ def patient(request, patient_id, template_name="quiz/register.html"):
         context = {'patient_form': patient_form, 'social_demographic_form': social_demographic_form,
                    'social_history_form': social_history_form,
                    'editing': False,
+                   'patient_id': patient_id
                    }
 
         return render(request, template_name, context)
@@ -450,3 +452,17 @@ def user_update(request, user_id, template_name="quiz/register_users.html"):
         'editing': True,
     }
     return render(request, template_name, context)
+
+
+@login_required
+@permission_required('auth.add_user')
+def medical_record_create(request, patient_id, template_name='quiz/medical_record.html'):
+    form = MedicalRecordForm(request.POST or None)
+    # if request.method == "POST":
+    #     if form.is_valid():
+    #         form.save()
+    #         messages.success(request, 'Usuário criado com sucesso.')
+    #         return redirect('user_list')
+    #     else:
+    #         messages.error(request, 'Não foi possível criar usuário.')
+    return render(request, template_name, {'medical_record_form': form, 'patient_id': patient_id})

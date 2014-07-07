@@ -215,21 +215,33 @@ class SocialHistoryData(models.Model):
 class Side(models.Model):
     description = models.CharField(max_length=10, null=False)
 
+    def __unicode__(self):
+        return self.description
+
 
 class CervicalVertebrae(models.Model):
     code = models.CharField(max_length=2, null=False)
 
+    def __unicode__(self):
+        return self.code
 
 class ThoracicVertebrae(models.Model):
-    code = models.CharField(max_length=2, null=False)
+    code = models.CharField(max_length=3, null=False)
 
+    def __unicode__(self):
+        return self.code
 
 class LumbosacralVertebrae(models.Model):
     code = models.CharField(max_length=2, null=False)
 
+    def __unicode__(self):
+        return self.code
 
 class PainLocalization(models.Model):
     description = models.CharField(max_length=50, null=False)
+
+    def __unicode__(self):
+        return self.description
 
 
 class MedicalRecordData(models.Model):

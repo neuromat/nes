@@ -13,9 +13,9 @@ class PatientForm(ModelForm):
         model = Patient
 
         fields = [
-            'cpf_id', 'name_txt', 'rg_id', 'medical_record_number', 'natural_of_txt', 'citizenship_txt', 'street_txt',
-            'zipcode_number', 'country_txt', 'state_txt', 'city_txt', 'phone_number', 'cellphone_number', 'email_txt',
-            'date_birth_txt', 'gender_opt', 'marital_status_opt',
+            'cpf_id', 'name_txt', 'number_record', 'rg_id', 'medical_record_number', 'natural_of_txt',
+            'citizenship_txt', 'street_txt', 'zipcode_number', 'country_txt', 'state_txt', 'city_txt', 'phone_number',
+            'cellphone_number', 'email_txt', 'date_birth_txt', 'gender_opt', 'marital_status_opt',
         ]
 
         widgets = {
