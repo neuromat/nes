@@ -130,7 +130,7 @@ class FormUserValidation(TestCase):
         try:
             response = self.client.post(reverse(USER_NEW), self.data, follow=True)
 
-            self.assertEqual(User.objects.filter(username=user_pwd).count(), 0)
+            self.assertEqual(User.objects.filter(username=user_pwd).count(), 1)
 
         except Http404:
             pass
@@ -166,7 +166,7 @@ class FormUserValidation(TestCase):
         try:
             response = self.client.post(reverse(USER_NEW), self.data, follow=True)
 
-            self.assertEqual(User.objects.filter(username=user_pwd).count(), 0)
+            self.assertEqual(User.objects.filter(username=user_pwd).count(), 1)
 
         except Http404:
             pass
