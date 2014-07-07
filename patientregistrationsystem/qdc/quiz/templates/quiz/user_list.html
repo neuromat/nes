@@ -3,12 +3,26 @@
 {% block header %}
     <script>
         function show_modal_remove (user_id){
-            var  modal_remove = document.getElementById('removeUser');
-            modal_remove.setAttribute( "href", '/quiz/user/delete/' + user_id);
-            $('#modalRemove').modal('show');
+            if(user_id != {{ current_user_id }}){
+                var  modal_remove = document.getElementById('removeUser');
+                modal_remove.setAttribute( "href", '/quiz/user/delete/' + user_id);
+                $('#modalRemove').modal('show');
+            }
+            else showErrorMessageTemporary("Usuário em uso.")
         }
         $(function(){
             $("[data-toggle=tooltip]").tooltip();
+            {% for message in messages %}
+                {% ifequal message.tags 'success'  %}
+                    showSuccessMessage('{{ message }}');
+                {% endifequal %}
+                {% ifequal message.tags 'warning' %}
+                    showWarningMessage('{{ message }}');
+                {% endifequal %}
+                {% ifequal message.tags 'error' %}
+                    showErrorMessage('{{ message }}');
+                {% endifequal %}
+            {% endfor %}
         });
     </script>
 {% endblock %}
@@ -63,7 +77,7 @@
                 </div>
                 <div class="modal-footer">
                     <button type="button" class="btn btn-default" data-dismiss="modal">Cancelar</button>
-                    <a id="removeUser" class="btn btn-primary" style="background-color: indianred; color: #ffffff" href="" >Excluir</a>
+                    <a id="removeUser" class="btn btn-primary" style="background-color: indianred; color: #ffffff" href="">Excluir</a>
                 </div>
             </div>
         </div>
