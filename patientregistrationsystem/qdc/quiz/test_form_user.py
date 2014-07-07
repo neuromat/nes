@@ -151,7 +151,7 @@ class FormUserValidation(TestCase):
             response = self.client.post(reverse(USER_NEW), self.data, follow=True)
 
             self.assertEqual(User.objects.filter(username=user_pwd).count(), 1)
-
+ 
         except Http404:
             pass
 
