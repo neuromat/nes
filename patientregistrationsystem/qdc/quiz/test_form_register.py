@@ -1,72 +1,188 @@
-from django.test import TestCase
-from django.contrib.auth.models import *
+# -*- coding: UTF-8 -*-
+from django.test import TestCase, Client
+
+from django import forms
+from django.http import Http404
+from django.test.client import RequestFactory
+from datetime import date
+from views import *
+
+PATIENT_NEW = 'patient_new'
 
 
 class FormValidation(TestCase):
+    user = ''
+    data = {}
+
+    def setUp(self):
+        """
+        Configura autenticacao e variaveis para iniciar cada teste
+
+        """
+        print "Setting User for start tests to", self._testMethodName
+        username_dummy = 'myadmin'
+        password_dummy = 'mypassword'
+
+        self.user = User.objects.create_user(username=username_dummy, email='test@dummy.com', password=password_dummy)
+        self.user.is_staff = True
+        self.user.is_superuser = True
+        self.user.save()
+
+        self.factory = RequestFactory()
+
+        logged = self.client.login(username=username_dummy, password=password_dummy)
+        self.assertEqual(logged, True)
+
+        self.gender_opt = GenderOption.objects.create(gender_txt='Masculino')
+        self.gender_opt.save()
+
+        self.data = {'name_txt': 'Patient for test',
+                     'cpf_id': '374.276.738-08',
+                     'gender_opt': str(self.gender_opt.id),
+                     'date_birth_txt': '01/02/1995',
+                     'email_txt': 'email@email.com',
+                     'currentTab': '0'}
+
     def test_invalid_cpf(self):
-        """testa inclusao de paciente com cpf invalido"""
+        """
+        Testa inclusao de paciente com cpf invalido
+        """
 
-        username_dummy = 'myadmin'
-        password_dummy = 'mypassword'
+        # CPF invalido
+        cpf = '100.913.651-81'
+        self.data['cpf_id'] = cpf
 
-        user = User.objects.create_user(username=username_dummy, email='test@dummy.com', password=password_dummy)
-        user.is_staff = True
-        user.save()
-
-        logged = self.client.login(username=username_dummy, password=password_dummy)
-        self.assertEqual(logged, True)
-
-        data = {'name_txt': 'Novo paciente',
-                'cpf_id': '100.913.651-81',
-                'gender_opt': '1'}
-        response = self.client.post('/quiz/patient/new/', data)
+        response = self.client.post(reverse(PATIENT_NEW), self.data)
         self.assertEqual(response.status_code, 200)
-        self.assertFormError(response, "patient_form", "cpf_id", u'CPF 100.913.651-81 n\xe3o \xe9 v\xe1lido')
+        self.assertFormError(response, "patient_form", "cpf_id", u'CPF ' + cpf + u' n\xe3o \xe9 v\xe1lido')
 
-    def test_invalid(self):
-        """testa inclusao de paciente com cpf invalido"""
+    def test_future_date_birth(self):
+        """
+        Testa inclusao de paciente com data de nascimento futura
+        """
+        name = 'test_future_date_birth'
+        self.data['name_txt'] = name
+        self.data['date_birth_txt'] = '15/05/2201'
 
-        username_dummy = 'myadmin'
-        password_dummy = 'mypassword'
+        response = self.client.post(reverse(PATIENT_NEW), self.data)
 
-        user = User.objects.create_user(username=username_dummy, email='test@dummy.com', password=password_dummy)
-        user.is_staff = True
-        user.save()
+        self.assertEqual(Patient.objects.filter(name_txt=name).count(), 0)
 
-        logged = self.client.login(username=username_dummy, password=password_dummy)
-        self.assertEqual(logged, True)
+    def get_current_date(self):
+        """
+        Obtem a data atual no formato dd/mm/yyyy
+        """
+        d = date.today()
+        d.isoformat()
+        date_birth = d.strftime("%d/%m/%Y")
+        return date_birth
 
-        data = {'name_txt': 'Novo paciente bom', 'cpf_id': '288.666.827-30', 'date_birth_txt': '01/01/2002',
-                'gender_opt': '1'}
-        response = self.client.post('/quiz/patient/new/', data)
-        self.assertEqual(response.status_code, 200)
-        # self.assertFormError(response, "patient_form", "cpf_id", u'CPF 100.913.651-81 n\xe3o \xe9 v\xe1lido')
+    def test_date_birth_now(self):
+        """
+        Testa inclusao de paciente com data de nascimento futura
+        """
 
-    def test_patient_add_ok(self):
-        """testa inclusao de paciente com sucesso"""
+        date_birth = self.get_current_date()
+        name = 'test_date_birth_now'
+        self.data['date_birth_txt'] = date_birth
+        self.data['name_txt'] = name
 
-        username_dummy = 'myadmin'
-        password_dummy = 'mypassword'
+        self.client.post(reverse(PATIENT_NEW), self.data)
 
-        user = User.objects.create_user(username=username_dummy, email='test@dummy.com', password=password_dummy)
-        user.is_staff = True
-        user.save()
+        self.assertEqual(Patient.objects.filter(name_txt=name).count(), 0)
 
-        logged = self.client.login(username=username_dummy, password=password_dummy)
-        self.assertEqual(logged, True)
 
-        # data = {u'name_txt': u'Paciente de Teste', u'cpf_id': u'374.276.738-08', u'gender_opt': u'2', u'date_birth_txt': u'01/01/2000'}
-        data = {u'cpf_id': [u'248.215.628-98'], u'religion_opt': [u''], u'amount_cigarettes_opt': [u''],
-                u'zipcode_number': [u''], u'state_txt': [u'RJ'], u'alcohol_frequency_opt': [u''],
-                u'schooling_opt': [u''], u'street_txt': [u''], u'flesh_tone_opt': [u''], u'occupation_txt': [u''],
-                u'medical_record_number': [u''],
-                u'phone_number': [u'1'], u'marital_status_opt': [u''], u'rg_id': [u''], u'alcohol_period_opt': [u''],
-                u'gender_opt': [u'1'], u'citizenship_txt': [u'BR'], u'payment_opt': [u''],
-                u'name_txt': [u'Paciente de Teste'], u'email_txt': [u''], u'cellphone_number': [u''],
-                u'date_birth_txt': [u'15/01/2003'], u'natural_of_txt': [u''], u'country_txt': [u'BR'],
-                u'profession_txt': [u''], u'city_txt': [u'']}
+    def test_patient_added(self):
+        """
+        Testa inclusao de paciente com campos obrigatorios
+        """
+        name = 'test_patient_added'
+        self.data['name_txt'] = name
 
-        response = self.client.post('/quiz/patient/new/', data)
-        #self.assertEqual(response.status_code, 200)
-        #self.assertContains(self, response, response.content, u'Paciente gravado com sucesso', html=True)
-        self.assertContains(response, u'Paciente gravado com sucesso', html=True)
+        try:
+            response = self.client.post(reverse(PATIENT_NEW), self.data, follow=True)
+
+            self.assertEqual(Patient.objects.filter(name_txt=name).count(), 1)
+        except Http404:
+            pass
+
+
+    def test_valid_email(self):
+        """
+        Teste de email invalido
+        """
+
+        self.data['email_txt'] = 'mail@invalid.'
+
+        response = self.client.post(reverse(PATIENT_NEW), self.data)
+
+        self.assertContains(response, 'Informe um endereço de email válido')
+
+    def test_valid_name(self):
+        """Teste de validacao do campo nome completo  - obrigatorio"""
+
+        self.data['name_txt'] = ''
+
+        response = self.client.post(reverse(PATIENT_NEW), self.data)
+
+        self.assertContains(response, 'Nome não preenchido')
+
+    def test_view_patient(self):
+        """Teste de visualizacao de paciente apos cadastro na base de dados """
+
+        p = Patient()
+
+        p.name_txt = 'Paciente de teste'
+        p.date_birth_txt = '2001-01-15'
+        p.gender_opt_id = self.gender_opt.id
+        p.save()
+
+        # Create an instance of a GET request.
+        self.client.login(username='myadmin', password='mypassword')
+        request = self.factory.get('/quiz/patient/%i/' % p.pk)
+        request.user = self.user
+
+        # Test view() as if it were deployed at /quiz/patient/%id
+        try:
+            response = patient(request, patient_id=p.pk)
+            self.assertEqual(response.status_code, 200)
+        except Http404:
+            pass
+
+    def test_update_patient(self):
+        """Teste de paciente nao existente na base de dados """
+
+        p = Patient()
+
+        p.name_txt = 'Paciente de teste UPDATE'
+        p.date_birth_txt = '2001-01-15'
+        p.gender_opt_id = self.gender_opt.id
+        p.save()
+
+        # Create an instance of a GET request.
+        self.client.login(username='myadmin', password='mypassword')
+        request = self.factory.get('/quiz/patient/%i/' % p.pk)
+        request.user = self.user
+
+        try:
+            response = patient_update(request, patient_id=p.pk)
+            self.assertEqual(response.status_code, 200)
+        except Http404:
+            pass
+
+    def test_views(self):
+        client = Client()
+        self.assertEqual(client.get('/response').status_code, 404)
+        self.assertEqual(client.get('/notfound').status_code, 404)
+        self.assertEqual(client.get('/quiz/patient/999999/').status_code, 302)
+        self.assertEqual(client.get('/error').status_code, 404)
+        self.assertEqual(client.get('/redirect_response').status_code, 404)
+        self.assertEqual(client.get('/redirect_notfound').status_code, 404)
+        self.assertEqual(client.get('/redirect_redirect_response').status_code, 404)
+        self.assertEqual(client.get('/quiz').status_code, 301)
+
+
+
+
+
+
