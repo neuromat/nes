@@ -4,28 +4,30 @@
 {% block content %}
 
     <!-- Esta div está associada ao item Contato do Menu princial -->
-<div class="tab-pane fade in active" id="mainMenuContactTab">
+    <div class="tab-pane fade in active" id="medicalRecordTab">
 
     <div class="col-md-1">
     </div>
 
     <div class="col-md-10">
 
-        <ol class="breadcrumb">
-            <li><a href="#">Pacientes</a></li>
-            <li><a href="#">{{ patient_id }}</a></li>
-            <li class="active">Avaliação médica</li>
-        </ol>
+    <ol class="breadcrumb">
+        <li><a href="#">Pacientes</a></li>
+        <li><a href="#">{{ patient_id }}</a></li>
+        <li class="active">Avaliação médica</li>
+    </ol>
 
+    <ul class="nav nav-tabs nav-justified" id="idTabsEvaluate">
+        <li class="active"><a href="#tab1" data-toggle="tab" id="1">História de Saúde</a></li>
+        <li><a href="#tab2" data-toggle="tab" id="2">História de Fratura</a></li>
+        <li><a href="#tab3" data-toggle="tab" id="3">Cirurgia Ortopédica</a></li>
+        <li><a href="#tab4" data-toggle="tab" id="4">Exames</a></li>
+    </ul>
 
-        <ul class="nav nav-tabs nav-justified" id="idTabsEvaluate">
-            <li class="active"><a href="#tab1" data-toggle="tab" id="1">História de Saúde</a></li>
-            <li><a href="#tab2" data-toggle="tab" id="2">História de Fratura</a></li>
-            <li><a href="#tab3" data-toggle="tab" id="3">Cirurgia Ortopédica</a></li>
-            <li><a href="#tab4" data-toggle="tab" id="4">Exames</a></li>
-        </ul>
+    <div id="fix-for-tab-content-spacing" style="height: 22px;">&nbsp;</div>
 
     <div class="tab-content">
+
     <div class="tab-pane active" id="tab1">
         <div class="row">
             <div class="col-md-1"></div>
@@ -524,8 +526,8 @@
                             <div class="form-group">
                                 <label>Qual?</label>
                                 <div class="input-group  input-group-sm ">
-                                                        <span class="input-group-addon"> <span
-                                                                class="glyphicon glyphicon-edit"></span></span>
+                                                            <span class="input-group-addon"> <span
+                                                                    class="glyphicon glyphicon-edit"></span></span>
                                     <input class="form-control" placeholder="Especificar o exame complementar"
                                            id="id_whichComplementaryExame" type="text">
                                 </div>
@@ -536,8 +538,8 @@
                                 <label for="dateOfComplementaryExame" class="control-label">Data:</label>
 
                                 <div class="input-group input-group-sm ">
-                                                        <span class="input-group-addon"> <span
-                                                                class="glyphicon glyphicon-edit"></span></span>
+                                                            <span class="input-group-addon"> <span
+                                                                    class="glyphicon glyphicon-edit"></span></span>
                                     <input class="form-control" placeholder="Data" id="dateOfComplementaryExame"
                                            type="date">
                                 </div>
@@ -551,10 +553,10 @@
     </div>
     </div> <!-- tab-content -->
 
-    </div> <!-- <div class="tab-pane fade" id="mainMenuContactTab"> -->
+    </div>
 
     <div class="col-md-1">
     </div>
 
-</div>
+    </div>
 {% endblock %}

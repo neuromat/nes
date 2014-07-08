@@ -278,7 +278,8 @@ def patient_update(request, patient_id, template_name="quiz/register.html"):
             'social_demographic_form': social_demographic_form,
             'social_history_form': social_history_form,
             'editing': True,
-            'currentTab': current_tab}
+            'currentTab': current_tab,
+            'patient_id': patient_id}
         return render(request, template_name, context)
 
 

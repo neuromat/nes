@@ -70,8 +70,7 @@
     <!-- Esta div define a primeira aba do formulário, #tab1 -->
     <div class="tab-pane active" id="tab1">
     <div class="row">
-    <div class="col-md-1"></div>
-    <div class="col-md-10">
+    <div class="col-md-12">
     <div class="container span6 offset3 well ">
 
         <!-- Mensagens geradas na view register -->
@@ -323,7 +322,6 @@
                 </div>
             </div>
         </div>
-        <div class="col-md-1"></div>
     </div>
     </div>
     </div>
@@ -333,8 +331,7 @@
     <!-- Esta div define a segunda aba do formulário, #tab2 -->
     <div class="tab-pane" id="tab2">
     <div class="row">
-    <div class="col-md-1"></div>
-    <div class="col-md-10">
+    <div class="col-md-12">
     <div class="container span6 offset3 well ">
         <div class="row">
             <div class="col-xs-6 col-sm-6">
@@ -567,7 +564,6 @@
                 </div>
             </div>
         </div>
-        <div class="col-md-1"></div>
     </div>
     </div>
     </div>
@@ -577,8 +573,7 @@
     <!-- Esta div define a terceira aba do formulário, #tab3 -->
     <div class="tab-pane" id="tab3">
         <div class="row">
-            <div class="col-md-1"></div>
-            <div class="col-md-10">
+            <div class="col-md-12">
                 <div class="container span6 offset3 well ">
                     <div class="row">
                         <div class="col-xs-6 col-sm-4">
@@ -679,8 +674,7 @@
     <!-- Esta div define a quarta aba do formulário, #tab4 -->
     <div class="tab-pane" id="tab4">
         <div class="row">
-            <div class="col-md-1"></div>
-            <div class="col-md-10">
+            <div class="col-md-12">
                 <div class="container span6 offset3 well ">
                     <div class="form-group">
                         <table class="table table-striped">
@@ -699,9 +693,11 @@
                             </tbody>
                         </table>
                     </div>
-                    <div class="btn-group pull-left">
-                        <a href="/quiz/patient/{{ patient_id }}/medical_record/new/" class="btn btn-primary">Inserir avaliação médica</a>
-                    </div>
+                    {% if editing %}
+                        <div class="btn-group pull-left">
+                            <a href="/quiz/patient/{{ patient_id }}/medical_record/new/" class="btn btn-primary">Inserir avaliação médica</a>
+                        </div>
+                    {% endif %}
                 </div>
             </div>
         </div>
@@ -1283,9 +1279,7 @@
 
     <!-- Esta div define os botões de navegação no formulário -->
     <div class="row">
-        <div class="col-md-1">
-        </div>
-        <div class="col-md-10">
+        <div class="col-md-12">
             <div class="btn-group pull-right">
                 <button type="button" class="btn btn-default" id="prevtab">Anterior</button>
                 <button type="button" class="btn btn-default" id="nexttab">Próximo</button>
@@ -1306,13 +1300,8 @@
                 {% endif %}
             </div>
         </div>
-        <div class="col-md-1">
-        </div>
     </div>
 
-
-    <div class="col-md-1">
-    </div>
 {% endblock %}
 {% block end_form %}
     </form>
