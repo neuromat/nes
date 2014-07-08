@@ -3,7 +3,7 @@ from django.contrib.messages.storage.fallback import FallbackStorage
 from django.test import TestCase, Client
 from django.http import Http404
 from django.test.client import RequestFactory
-from django.contrib.auth.models import *
+from django.contrib.auth.models import Group
 
 from views import *
 
@@ -148,10 +148,10 @@ class FormUserValidation(TestCase):
         self.data['password'] = password
 
         try:
-            response = self.client.post(reverse(USER_NEW), self.data, follow=True)
+            self.client.post(reverse(USER_NEW), self.data, follow=True)
 
             self.assertEqual(User.objects.filter(username=user_pwd).count(), 1)
- 
+
         except Http404:
             pass
 
