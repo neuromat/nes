@@ -135,9 +135,10 @@ class MedicalRecordForm(ModelForm):
         ]
 
         widgets = {
-            'record_date': DateInput(attrs={'class': 'form-control', 'placeholder': 'Data', 'id': "record_date"}),
+            'record_date': DateInput(attrs={'class': 'form-control', 'placeholder': 'Data',
+                                            'id': "record_date", "disabled": ""}),
             'record_responsible': TextInput(attrs={'class': 'form-control', 'placeholder': 'Entrar responsável',
-                                                   'id': "record_responsible"}),
+                                                   'id': "record_responsible", "disabled": ""}),
             'fracture_history': RadioSelect(attrs={'id': 'fracture_history'}, choices=(('1', 'Sim'), ('0', 'Não'))),
             'scapula_fracture_side': Select(attrs={'class': 'form-control', 'id': 'scapula_fracture_side'}),
             'clavicle_fracture_side': Select(attrs={'class': 'form-control', 'id': 'clavicle_fracture_side'}),

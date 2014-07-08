@@ -1,6 +1,15 @@
 {% extends "quiz/template.html" %}
 {% block activePatient %}class="active"{% endblock %}
 
+{% block form %}
+    <div class="row">
+
+    <form id="form_medical_record" role="form" method="post" data-toggle="validator">
+    {% csrf_token %}
+
+{% endblock %}
+
+
 {% block content %}
 
     <!-- Esta div está associada ao item Contato do Menu princial -->
@@ -16,6 +25,29 @@
         <li><a href="#">{{ patient_id }}</a></li>
         <li class="active">Avaliação médica</li>
     </ol>
+
+    <div class="row">
+        <div class="col-md-1">
+        </div>
+        <div class="col-md-10">
+
+            <div class="form-group">
+                <label>Data da avaliação médica:</label>
+                <div class="input-group  input-group-sm ">
+                    {{ medical_record_form.record_date }}
+                </div>
+
+                <label>Responsável:</label>
+                <div class="input-group  input-group-sm ">
+                    {{ medical_record_form.record_responsible }}
+                </div>
+            </div>
+
+        </div>
+        <div class="col-md-1">
+        </div>
+    </div>
+
 
     <ul class="nav nav-tabs nav-justified" id="idTabsEvaluate">
         <li class="active"><a href="#tab1" data-toggle="tab" id="1">História de Saúde</a></li>
@@ -519,5 +551,29 @@
     <div class="col-md-1">
     </div>
 
+    </div>
+
+    <!-- Esta div define os botões de navegação no formulário -->
+    <div class="row">
+        <div class="col-md-1">
+        </div>
+        <div class="col-md-10">
+            <div class="btn-group pull-right">
+                <button type="button" class="btn btn-default" id="prevtab">Anterior</button>
+                <button type="button" class="btn btn-default" id="nexttab">Próximo</button>
+                {% if creating %}
+                    <button type="submit" class="btn btn-primary">Salvar</button>
+                {% endif %}
+            </div>
+        </div>
+        <div class="col-md-1">
+        </div>
+
+    </div>
+
+{% endblock %}
+
+{% block end_form %}
+    </form>
     </div>
 {% endblock %}

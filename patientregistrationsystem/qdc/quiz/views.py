@@ -459,11 +459,14 @@ def user_update(request, user_id, template_name="quiz/register_users.html"):
 @permission_required('auth.add_user')
 def medical_record_create(request, patient_id, template_name='quiz/medical_record.html'):
     form = MedicalRecordForm(request.POST or None)
-    # if request.method == "POST":
-    #     if form.is_valid():
-    #         form.save()
-    #         messages.success(request, 'Usuário criado com sucesso.')
-    #         return redirect('user_list')
-    #     else:
-    #         messages.error(request, 'Não foi possível criar usuário.')
-    return render(request, template_name, {'medical_record_form': form, 'patient_id': patient_id})
+
+    if request.method == "POST":
+        if form.is_valid():
+            form.save()
+            messages.success(request, 'Avaliação médica salva com sucesso.')
+            return redirect('patient_edit')
+        else:
+            messages.error(request, 'Não foi possível criar avaliação médica.')
+    return render(request, template_name, {'medical_record_form': form, 'patient_id': patient_id, 'creating': True})
+
+
