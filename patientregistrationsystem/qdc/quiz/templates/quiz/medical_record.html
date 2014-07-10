@@ -21,7 +21,7 @@
     <div class="col-md-10">
 
     <ol class="breadcrumb">
-        <li><a href="#">Pacientes</a></li>
+        <li>Pacientes</li>
         {% if editing %}
             <li><a href="/quiz/patient/edit/{{ patient_id }}/?currentTab=3">{{ name_patient }}</a></li>
         {% else %}
@@ -517,7 +517,6 @@
                         <div class="col-xs-6 col-sm-3">
                             <div class="form-group">
                                 <label> Exame Complementar </label>
-
                                 <div class="input-group  input-group-sm">
                                     <div class="input-group  input-group-sm">
                                         <div class="radio-inline">
@@ -582,8 +581,6 @@
         </div>
         <div class="col-md-10">
             <div class="btn-group pull-right">
-                <button type="button" class="btn btn-default" id="prevtab">Anterior</button>
-                <button type="button" class="btn btn-default" id="nexttab">Próximo</button>
                 {% if creating %}
                     <button type="submit" class="btn btn-primary">Salvar</button>
                 {% endif %}
