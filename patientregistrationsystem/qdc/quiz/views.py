@@ -6,8 +6,8 @@ from django.core.context_processors import csrf
 from django.core.urlresolvers import reverse
 from django.shortcuts import render_to_response
 
-from models import Patient, SocialDemographicData, SocialHistoryData, FleshToneOption,\
-    MaritalStatusOption, SchoolingOption, PaymentOption, ReligionOption,\
+from models import Patient, SocialDemographicData, SocialHistoryData, FleshToneOption, \
+    MaritalStatusOption, SchoolingOption, PaymentOption, ReligionOption, \
     GenderOption, AmountCigarettesOption, AlcoholFrequencyOption, AlcoholPeriodOption
 
 from forms import PatientForm, SocialDemographicDataForm, SocialHistoryDataForm, UserForm, UserFormUpdate, \
@@ -24,7 +24,6 @@ import re
 @login_required
 @permission_required('quiz.add_patient')
 def patient_create(request, template_name="quiz/register.html"):
-
     flesh_tone_options = FleshToneOption.objects.all()
     marital_status_options = MaritalStatusOption.objects.all()
     gender_options = GenderOption.objects.all()
@@ -35,7 +34,7 @@ def patient_create(request, template_name="quiz/register.html"):
     alcohol_frequency = AlcoholFrequencyOption.objects.all()
     alcohol_period = AlcoholPeriodOption.objects.all()
 
-    #formularios a salvar
+    # formularios a salvar
     patient_form = PatientForm()
     social_demographic_form = SocialDemographicDataForm()
     social_history_form = SocialHistoryDataForm()
@@ -70,15 +69,15 @@ def patient_create(request, template_name="quiz/register.html"):
                 new_social_demographic_data = social_demographic_form.save(commit=False)
                 new_social_demographic_data.id_patient = new_patient
 
-                if(new_social_demographic_data.tv_opt is not None and
-                   new_social_demographic_data.radio_opt is not None and
-                   new_social_demographic_data.bath_opt is not None and
-                   new_social_demographic_data.automobile_opt is not None and
-                   new_social_demographic_data.house_maid_opt is not None and
-                   new_social_demographic_data.wash_machine_opt is not None and
-                   new_social_demographic_data.dvd_opt is not None and
-                   new_social_demographic_data.refrigerator_opt is not None and
-                   new_social_demographic_data.freezer_opt is not None):
+                if (new_social_demographic_data.tv_opt is not None and
+                            new_social_demographic_data.radio_opt is not None and
+                            new_social_demographic_data.bath_opt is not None and
+                            new_social_demographic_data.automobile_opt is not None and
+                            new_social_demographic_data.house_maid_opt is not None and
+                            new_social_demographic_data.wash_machine_opt is not None and
+                            new_social_demographic_data.dvd_opt is not None and
+                            new_social_demographic_data.refrigerator_opt is not None and
+                            new_social_demographic_data.freezer_opt is not None):
 
                     new_social_demographic_data.social_class_opt = new_social_demographic_data.calculate_social_class(
                         tv=request.POST['tv_opt'], radio=request.POST['radio_opt'],
@@ -90,16 +89,15 @@ def patient_create(request, template_name="quiz/register.html"):
 
                     new_social_demographic_data.social_class_opt = None
 
-                    if(new_social_demographic_data.tv_opt is not None or
-                       new_social_demographic_data.radio_opt is not None or
-                       new_social_demographic_data.bath_opt is not None or
-                       new_social_demographic_data.automobile_opt is not None or
-                       new_social_demographic_data.house_maid_opt is not None or
-                       new_social_demographic_data.wash_machine_opt is not None or
-                       new_social_demographic_data.dvd_opt is not None or
-                       new_social_demographic_data.refrigerator_opt is not None or
-                       new_social_demographic_data.freezer_opt is not None):
-
+                    if (new_social_demographic_data.tv_opt is not None or
+                                new_social_demographic_data.radio_opt is not None or
+                                new_social_demographic_data.bath_opt is not None or
+                                new_social_demographic_data.automobile_opt is not None or
+                                new_social_demographic_data.house_maid_opt is not None or
+                                new_social_demographic_data.wash_machine_opt is not None or
+                                new_social_demographic_data.dvd_opt is not None or
+                                new_social_demographic_data.refrigerator_opt is not None or
+                                new_social_demographic_data.freezer_opt is not None):
                         messages.warning(request, 'Classe Social não calculada, pois os campos necessários '
                                                   'para o cálculo não foram preenchidos.')
 
@@ -149,8 +147,7 @@ def patient_create(request, template_name="quiz/register.html"):
 @login_required
 @permission_required('quiz.change_patient')
 def patient_update(request, patient_id, template_name="quiz/register.html"):
-
-    ## Search in models.Patient
+    # # Search in models.Patient
     ## ------------------------
     p = Patient.objects.get(number_record=patient_id)
 
@@ -214,15 +211,15 @@ def patient_update(request, patient_id, template_name="quiz/register.html"):
                     new_social_demographic_data = social_demographic_form.save(commit=False)
                     new_social_demographic_data.id_patient = new_patient
 
-                    if(new_social_demographic_data.tv_opt is not None and
-                       new_social_demographic_data.radio_opt is not None and
-                       new_social_demographic_data.bath_opt is not None and
-                       new_social_demographic_data.automobile_opt is not None and
-                       new_social_demographic_data.house_maid_opt is not None and
-                       new_social_demographic_data.wash_machine_opt is not None and
-                       new_social_demographic_data.dvd_opt is not None and
-                       new_social_demographic_data.refrigerator_opt is not None and
-                       new_social_demographic_data.freezer_opt is not None):
+                    if (new_social_demographic_data.tv_opt is not None and
+                                new_social_demographic_data.radio_opt is not None and
+                                new_social_demographic_data.bath_opt is not None and
+                                new_social_demographic_data.automobile_opt is not None and
+                                new_social_demographic_data.house_maid_opt is not None and
+                                new_social_demographic_data.wash_machine_opt is not None and
+                                new_social_demographic_data.dvd_opt is not None and
+                                new_social_demographic_data.refrigerator_opt is not None and
+                                new_social_demographic_data.freezer_opt is not None):
 
                         new_social_demographic_data.social_class_opt = \
                             new_social_demographic_data.calculate_social_class(
@@ -235,16 +232,15 @@ def patient_update(request, patient_id, template_name="quiz/register.html"):
 
                         new_social_demographic_data.social_class_opt = None
 
-                        if(new_social_demographic_data.tv_opt is not None or
-                           new_social_demographic_data.radio_opt is not None or
-                           new_social_demographic_data.bath_opt is not None or
-                           new_social_demographic_data.automobile_opt is not None or
-                           new_social_demographic_data.house_maid_opt is not None or
-                           new_social_demographic_data.wash_machine_opt is not None or
-                           new_social_demographic_data.dvd_opt is not None or
-                           new_social_demographic_data.refrigerator_opt is not None or
-                           new_social_demographic_data.freezer_opt is not None):
-
+                        if (new_social_demographic_data.tv_opt is not None or
+                                    new_social_demographic_data.radio_opt is not None or
+                                    new_social_demographic_data.bath_opt is not None or
+                                    new_social_demographic_data.automobile_opt is not None or
+                                    new_social_demographic_data.house_maid_opt is not None or
+                                    new_social_demographic_data.wash_machine_opt is not None or
+                                    new_social_demographic_data.dvd_opt is not None or
+                                    new_social_demographic_data.refrigerator_opt is not None or
+                                    new_social_demographic_data.freezer_opt is not None):
                             messages.warning(request, 'Classe Social não calculada, pois os campos necessários '
                                                       'para o cálculo não foram preenchidos.')
                             current_tab = "1"
@@ -308,7 +304,6 @@ def patients(request):
 @login_required
 @permission_required('quiz.view_patient')
 def patient(request, patient_id, template_name="quiz/register.html"):
-
     if request.method == "POST":
 
         if 'action' in request.POST:
@@ -328,7 +323,7 @@ def patient(request, patient_id, template_name="quiz/register.html"):
 
         return HttpResponseRedirect(redirect_url)
 
-    ## Search in models.Patient
+    # # Search in models.Patient
     ## ------------------------
     p = Patient.objects.get(number_record=patient_id)
 
@@ -358,15 +353,18 @@ def patient(request, patient_id, template_name="quiz/register.html"):
                 form.fields[field].widget.attrs['disabled'] = True
 
         #Sobrescreve campos Pais, Nacionalidade e Estado
-        patient_form.fields['country_txt'].widget = SelectBoxCountriesDisabled(attrs={'id': 'id_country_state_address', 'data-flags': 'true', 'disabled': 'true'})
-        patient_form.fields['state_txt'].widget = SelectBoxStateDisabled(attrs={'data-country': 'id_country_state_address', 'id': 'id_chosen_state', 'disabled': 'true'})
-        patient_form.fields['citizenship_txt'].widget = SelectBoxCountriesDisabled(attrs={'id': 'id_chosen_country', 'data-flags': 'true', 'disabled': 'true'})
+        patient_form.fields['country_txt'].widget = SelectBoxCountriesDisabled(
+            attrs={'id': 'id_country_state_address', 'data-flags': 'true', 'disabled': 'true'})
+        patient_form.fields['state_txt'].widget = SelectBoxStateDisabled(
+            attrs={'data-country': 'id_country_state_address', 'id': 'id_chosen_state', 'disabled': 'true'})
+        patient_form.fields['citizenship_txt'].widget = SelectBoxCountriesDisabled(
+            attrs={'id': 'id_chosen_country', 'data-flags': 'true', 'disabled': 'true'})
 
         context = {'patient_form': patient_form, 'social_demographic_form': social_demographic_form,
                    'social_history_form': social_history_form,
                    'editing': False,
                    'patient_id': patient_id
-                   }
+        }
 
         return render(request, template_name, context)
 
@@ -460,6 +458,7 @@ def user_update(request, user_id, template_name="quiz/register_users.html"):
 def medical_record_create(request, patient_id, template_name='quiz/medical_record.html'):
     form = MedicalRecordForm(request.POST or None)
 
+    name_patient = Patient.objects.get(pk=patient_id).name_txt
 
     p = Patient.objects.get(number_record=patient_id)
 
@@ -476,8 +475,8 @@ def medical_record_create(request, patient_id, template_name='quiz/medical_recor
 
         else:
             messages.error(request, 'Não foi possível criar avaliação médica.')
-
-    return render(request, template_name, {'medical_record_form': form, 'patient_id': patient_id, 'creating': True})
-
+    return render(request, template_name,
+                  {'medical_record_form': form, 'patient_id': patient_id, 'name_patient': name_patient,
+                   'creating': True})
 
 

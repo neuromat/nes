@@ -3,7 +3,7 @@ from django.conf.urls import patterns, url
 urlpatterns = patterns(
     '',
     #url(r'^$', 'quiz.views.search_patient', name='search_patient'),
-    url(r'^$', 'quiz.views.contact', name='search_patient'),
+    url(r'^$', 'quiz.views.contact', name='contact'),
     url(r'^busca/$', 'quiz.views.search_patient', name='search_patient'),
     url(r'^contato/$', 'quiz.views.contact', name='contato'),
     url(r'^busca_avancada/$', 'quiz.views.advanced_search', name='advanced_search'),
