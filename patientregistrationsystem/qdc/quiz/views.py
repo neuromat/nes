@@ -7,7 +7,7 @@ from django.core.urlresolvers import reverse
 from django.shortcuts import render_to_response
 
 from models import Patient, SocialDemographicData, SocialHistoryData, FleshToneOption, \
-    MaritalStatusOption, SchoolingOption, PaymentOption, ReligionOption, \
+    MaritalStatusOption, SchoolingOption, PaymentOption, ReligionOption, MedicalRecordData, \
     GenderOption, AmountCigarettesOption, AlcoholFrequencyOption, AlcoholPeriodOption
 
 from forms import PatientForm, SocialDemographicDataForm, SocialHistoryDataForm, UserForm, UserFormUpdate, \
@@ -89,16 +89,15 @@ def patient_create(request, template_name="quiz/register.html"):
 
                     new_social_demographic_data.social_class_opt = None
 
-                    if(new_social_demographic_data.tv_opt is not None or
-                       new_social_demographic_data.radio_opt is not None or
-                       new_social_demographic_data.bath_opt is not None or
-                       new_social_demographic_data.automobile_opt is not None or
-                       new_social_demographic_data.house_maid_opt is not None or
-                       new_social_demographic_data.wash_machine_opt is not None or
-                       new_social_demographic_data.dvd_opt is not None or
-                       new_social_demographic_data.refrigerator_opt is not None or
-                       new_social_demographic_data.freezer_opt is not None):
-
+                    if (new_social_demographic_data.tv_opt is not None or
+                                new_social_demographic_data.radio_opt is not None or
+                                new_social_demographic_data.bath_opt is not None or
+                                new_social_demographic_data.automobile_opt is not None or
+                                new_social_demographic_data.house_maid_opt is not None or
+                                new_social_demographic_data.wash_machine_opt is not None or
+                                new_social_demographic_data.dvd_opt is not None or
+                                new_social_demographic_data.refrigerator_opt is not None or
+                                new_social_demographic_data.freezer_opt is not None):
                         messages.warning(request, 'Classe Social não calculada, pois os campos necessários '
                                                   'para o cálculo não foram preenchidos.')
 
@@ -140,6 +139,7 @@ def patient_create(request, template_name="quiz/register.html"):
         'amount_cigarettes': amount_cigarettes, 'alcohol_frequency': alcohol_frequency,
         'alcohol_period': alcohol_period,
         'editing': True,
+        'inserting': True,
         'currentTab': current_tab}
 
     return render(request, template_name, context)
@@ -270,13 +270,16 @@ def patient_update(request, patient_id, template_name="quiz/register.html"):
         #TODO: retirar este controle de comentario
         ### teste: fim
 
+        medical_data = MedicalRecordData.objects.filter(patient_id=patient_id).order_by('record_date')
+
         context = {
             'patient_form': patient_form,
             'social_demographic_form': social_demographic_form,
             'social_history_form': social_history_form,
             'editing': True,
             'currentTab': current_tab,
-            'patient_id': patient_id}
+            'patient_id': patient_id,
+            'object_list': medical_data}
         return render(request, template_name, context)
 
 
@@ -348,7 +351,9 @@ def patient(request, patient_id, template_name="quiz/register.html"):
         except SocialHistoryData.DoesNotExist:
             social_history_form = SocialDemographicDataForm()
 
-        ## Make fields disabled
+        medical_data = MedicalRecordData.objects.filter(patient_id=patient_id).order_by('record_date')
+
+        #deixa os campos como disabled
         for form in {patient_form, social_demographic_form, social_history_form}:
             for field in form.fields:
                 form.fields[field].widget.attrs['disabled'] = True
@@ -364,7 +369,8 @@ def patient(request, patient_id, template_name="quiz/register.html"):
         context = {'patient_form': patient_form, 'social_demographic_form': social_demographic_form,
                    'social_history_form': social_history_form,
                    'editing': False,
-                   'patient_id': patient_id
+                   'patient_id': patient_id,
+                   'object_list': medical_data
         }
 
         return render(request, template_name, context)
@@ -506,6 +512,25 @@ def medical_record_create(request, patient_id, template_name='quiz/medical_recor
             messages.error(request, 'Não foi possível criar avaliação médica.')
     return render(request, template_name,
                   {'medical_record_form': form, 'patient_id': patient_id, 'name_patient': p.name_txt,
-                   'creating': True})
+                   'creating': True, 'editing': True})
 
 
+def medical_record_view(request, patient_id, record_id, template_name="quiz/medical_record.html"):
+    # # Search in models.Patient
+    # # ------------------------
+    is_editing = (request.GET['status'] == 'edit')
+
+    p = Patient.objects.get(number_record=patient_id)
+    m = MedicalRecordData.objects.get(pk=record_id)
+
+    if m:
+        medical_record_form = MedicalRecordForm(instance=m)
+
+        #deixa os campos como disabled
+        for form in {medical_record_form}:
+            for field in form.fields:
+                form.fields[field].widget.attrs['disabled'] = True
+
+        return render(request, template_name,
+                      {'medical_record_form': medical_record_form, 'name_patient': p.name_txt, 'patient_id': patient_id,
+                       'record_date': m.record_date, 'record_responsible': m.record_responsible, 'editing': is_editing})
