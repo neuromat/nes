@@ -409,7 +409,7 @@ def search_patients_ajax(request):
 @permission_required('auth.add_user')
 @permission_required('auth.change_user')
 def user_list(request, template_name='quiz/user_list.html'):
-    users = User.objects.filter(is_active=True)
+    users = User.objects.filter(is_active=True).order_by('username')
     data = {'object_list': users, 'current_user_id': request.user.id}
     return render(request, template_name, data)
 
