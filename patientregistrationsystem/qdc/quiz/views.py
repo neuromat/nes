@@ -308,6 +308,7 @@ def patients(request):
 @login_required
 @permission_required('quiz.view_patient')
 def patient(request, patient_id, template_name="quiz/register.html"):
+
     if request.method == "POST":
 
         if 'action' in request.POST:
@@ -326,6 +327,11 @@ def patient(request, patient_id, template_name="quiz/register.html"):
                 return HttpResponseRedirect(redirect_url + "?currentTab=" + str(current_tab))
 
         return HttpResponseRedirect(redirect_url)
+
+    if 'currentTab' in request.GET:
+        current_tab = request.GET['currentTab']
+    else:
+        current_tab = 0
 
     # # Search in models.Patient
     ## ------------------------
@@ -369,6 +375,7 @@ def patient(request, patient_id, template_name="quiz/register.html"):
         context = {'patient_form': patient_form, 'social_demographic_form': social_demographic_form,
                    'social_history_form': social_history_form,
                    'editing': False,
+                   'currentTab': current_tab,
                    'patient_id': patient_id,
                    'object_list': medical_data
         }

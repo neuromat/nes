@@ -53,10 +53,10 @@
 
     <!-- Esta ul define os títulos das abas contextuais -->
     <ul class="nav nav-tabs nav-justified" id="idTabs">
-        <li class="active"><a href="#tab1" data-toggle="tab" id="0">Dados Pessoais</a></li>
-        <li><a href="#tab2" data-toggle="tab" id="1">Dados Sociodemográficos</a></li>
-        <li><a href="#tab3" data-toggle="tab" id="2">História Social</a></li>
-        <li><a href="#tab4" data-toggle="tab" id="3">Avaliações Médicas</a></li>
+        <li class="active"><a href="#tab1" data-toggle="tab" id="0">Dados pessoais</a></li>
+        <li><a href="#tab2" data-toggle="tab" id="1">Dados sociodemográficos</a></li>
+        <li><a href="#tab3" data-toggle="tab" id="2">História social</a></li>
+        <li><a href="#tab4" data-toggle="tab" id="3">Avaliações médicas</a></li>
     </ul>
 
     <input type="text" id="currentTab" name="currentTab" value="{{ currentTab }}" style="visibility: hidden"/>
@@ -557,8 +557,8 @@
         <div class="row">
             <div class="col-xs-6 col-sm-12">
                 <div class="form-group">
-                    <label>Classe Social Calculada</label>
-
+                    <br/>
+                    <label>Classe social calculada</label>
                     <div class="input-group input-group-sm">
                         {{ social_demographic_form.social_class_opt }}
                     </div>
