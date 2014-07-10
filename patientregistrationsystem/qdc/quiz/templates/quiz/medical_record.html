@@ -22,7 +22,7 @@
 
     <ol class="breadcrumb">
         <li><a href="#">Pacientes</a></li>
-        <li><a href="#">{{ patient_id }}</a></li>
+        <li><a href="/quiz/patient/edit/{{ patient_id }}/">{{ name_patient }}</a></li>
         <li class="active">Avaliação médica</li>
     </ol>
 
@@ -33,10 +33,10 @@
 
             <div class="form-group">
                 <label>Data:</label>
-                    {{ medical_record_form.record_date }}
+                {{ medical_record_form.record_date }}
 
                 <label>Responsável:</label>
-                    {{ medical_record_form.record_responsible }}
+                {{ medical_record_form.record_responsible }}
             </div>
 
             <div class="input-group  input-group-sm ">
@@ -65,132 +65,137 @@
             <div class="col-md-10">
                 <div class="container span6 offset3 well ">
                     <div class="row">
-                        <div class="col-md-12">
-                            <div class="container span6 offset3 well ">
-                                <div class="row">
-                                    <div class="col-xs-6 col-sm-3">
-                                        <div class="form-group">
-                                            <label>Cirurgia de Nervo</label>
-                                            <div class="input-group  input-group-sm">
-                                                <div class="input-group  input-group-sm">
-                                                    {% for radio in medical_record_form.nerve_surgery %}
-                                                        <div class="radio-inline">
-                                                            {{ radio }}
-                                                        </div>
-                                                    {% endfor %}
-                                                </div>
+                        <div class="col-xs-6 col-sm-3">
+                            <div class="form-group">
+                                <label>Cirurgia de Nervo</label>
+
+                                <div class="input-group  input-group-sm">
+                                    <div class="input-group  input-group-sm">
+                                        {% for radio in medical_record_form.nerve_surgery %}
+                                            <div class="radio-inline">
+                                                {{ radio }}
                                             </div>
-                                        </div>
-                                    </div>
-                                    <div class="col-xs-6 col-sm-9">
-                                        <div class="form-group">
-                                            <label>Qual?</label>
-                                            <div class="input-group  input-group-sm ">
-                                                <span class="input-group-addon"> <span class="glyphicon glyphicon-edit"></span></span>
-                                                {{ medical_record_form.nerve_surgery_type }}
-                                            </div>
-                                        </div>
+                                        {% endfor %}
                                     </div>
                                 </div>
-                                <div class="row">
-                                    <div class="col-xs-6 col-sm-12">
-                                        <div class="form-group">
-                                            <label>História de vertigem ou tontura</label>
-                                            <div class="input-group  input-group-sm">
-                                                <div class="input-group  input-group-sm">
-                                                    {% for radio in medical_record_form.vertigo_history %}
-                                                        <div class="radio-inline">
-                                                            {{ radio }}
-                                                        </div>
-                                                    {% endfor %}
-                                                </div>
-                                            </div>
-                                        </div>
-                                    </div>
+                            </div>
+                        </div>
+                        <div class="col-xs-6 col-sm-9">
+                            <div class="form-group">
+                                <label>Qual?</label>
+
+                                <div class="input-group  input-group-sm ">
+                                            <span class="input-group-addon"> <span
+                                                    class="glyphicon glyphicon-edit"></span></span>
+                                    {{ medical_record_form.nerve_surgery_type }}
                                 </div>
-                                <div class="row">
-                                    <div class="col-xs-6 col-sm-12">
-                                        <div class="form-group">
-                                            <label>História prévia de dor</label>
-                                            <div class="form-group">
-                                                <div class="input-group  input-group-sm">
-                                                    {% for radio in medical_record_form.pain_localizations %}
-                                                        <div class="myradio">
-                                                            {{ radio }}
-                                                        </div>
-                                                    {% endfor %}
-                                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-xs-6 col-sm-12">
+                            <div class="form-group">
+                                <label>História de vertigem ou tontura</label>
+
+                                <div class="input-group  input-group-sm">
+                                    <div class="input-group  input-group-sm">
+                                        {% for radio in medical_record_form.vertigo_history %}
+                                            <div class="radio-inline">
+                                                {{ radio }}
                                             </div>
-                                        </div>
-                                    </div>
-                                </div>
-                                <div class="row">
-                                    <div class="col-xs-6 col-sm-12">
-                                        <div class="form-group">
-                                            <label>Cefaléia</label>
-                                            <div class="input-group  input-group-sm">
-                                                {% for radio in medical_record_form.headache %}
-                                                    <div class="radio-inline">
-                                                        {{ radio }}
-                                                    </div>
-                                                {% endfor %}
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>
-                                <div class="row">
-                                    <div class="col-xs-6 col-sm-4">
-                                        <div class="form-group">
-                                            <label title="Hipertensão arterial sistêmica">HAS</label>
-                                            <div class="input-group  input-group-sm">
-                                                <div class="input-group  input-group-sm">
-                                                    {% for radio in medical_record_form.hypertension %}
-                                                        <div class="radio-inline">
-                                                            {{ radio }}
-                                                        </div>
-                                                    {% endfor %}
-                                                </div>
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>
-                                <div class="row">
-                                    <div class="col-xs-6 col-sm-4">
-                                        <div class="form-group">
-                                            <label>Diabetes</label>
-                                            <div class="input-group  input-group-sm">
-                                                {% for radio in medical_record_form.diabetes %}
-                                                    <div class="radio-inline">
-                                                        {{ radio }}
-                                                    </div>
-                                                {% endfor %}
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>
-                                <div class="row">
-                                    <div class="col-xs-6 col-sm-4">
-                                        <div class="form-group">
-                                            <label>Disfunção Hormonal</label>
-                                            <div class="input-group  input-group-sm">
-                                                {% for radio in medical_record_form.hormonal_dysfunction %}
-                                                    <div class="radio-inline">
-                                                        {{ radio }}
-                                                    </div>
-                                                {% endfor %}
-                                            </div>
-                                        </div>
+                                        {% endfor %}
                                     </div>
                                 </div>
                             </div>
                         </div>
                     </div>
+                    <div class="row">
+                        <div class="col-xs-6 col-sm-12">
+                            <div class="form-group">
+                                <label>História prévia de dor</label>
+
+                                <div class="form-group">
+                                    <div class="input-group  input-group-sm">
+                                        {% for radio in medical_record_form.pain_localizations %}
+                                            <div class="myradio">
+                                                {{ radio }}
+                                            </div>
+                                        {% endfor %}
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-xs-6 col-sm-12">
+                            <div class="form-group">
+                                <label>Cefaléia</label>
+
+                                <div class="input-group  input-group-sm">
+                                    {% for radio in medical_record_form.headache %}
+                                        <div class="radio-inline">
+                                            {{ radio }}
+                                        </div>
+                                    {% endfor %}
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-xs-6 col-sm-4">
+                            <div class="form-group">
+                                <label title="Hipertensão arterial sistêmica">HAS</label>
+
+                                <div class="input-group  input-group-sm">
+                                    <div class="input-group  input-group-sm">
+                                        {% for radio in medical_record_form.hypertension %}
+                                            <div class="radio-inline">
+                                                {{ radio }}
+                                            </div>
+                                        {% endfor %}
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-xs-6 col-sm-4">
+                            <div class="form-group">
+                                <label>Diabetes</label>
+
+                                <div class="input-group  input-group-sm">
+                                    {% for radio in medical_record_form.diabetes %}
+                                        <div class="radio-inline">
+                                            {{ radio }}
+                                        </div>
+                                    {% endfor %}
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-xs-6 col-sm-4">
+                            <div class="form-group">
+                                <label>Disfunção Hormonal</label>
+
+                                <div class="input-group  input-group-sm">
+                                    {% for radio in medical_record_form.hormonal_dysfunction %}
+                                        <div class="radio-inline">
+                                            {{ radio }}
+                                        </div>
+                                    {% endfor %}
+                                </div>
+                            </div>
+                        </div>
+                    </div>
                 </div>
+
             </div>
             <div class="col-md-1"></div>
         </div>
     </div>
-    <div class="tab-pane active" id="tab2">
+
+    <div class="tab-pane" id="tab2">
         <div class="row">
             <div class="col-md-1"></div>
             <div class="col-md-10">
@@ -199,6 +204,7 @@
                         <div class="col-xs-6 col-sm-12">
                             <div class="form-group">
                                 <label>História de Fratura</label>
+
                                 <div class="input-group  input-group-sm">
                                     <div class="input-group  input-group-sm">
                                         {% for radio in medical_record_form.fracture_history %}
@@ -216,6 +222,7 @@
                             <div class="col-xs-6 col-sm-4">
                                 <div class="form-group">
                                     <label>Fratura de escápula</label>
+
                                     <div class="input-group  input-group-sm">
                                         {% for radio in medical_record_form.scapula_fracture_side %}
                                             <div class="myradio">
@@ -228,6 +235,7 @@
                             <div class="col-xs-6 col-sm-4">
                                 <div class="form-group">
                                     <label>Fratura de clavícula</label>
+
                                     <div class="input-group  input-group-sm">
                                         {% for radio in medical_record_form.clavicle_fracture_side %}
                                             <div class="myradio">
@@ -240,6 +248,7 @@
                             <div class="col-xs-6 col-sm-4">
                                 <div class="form-group">
                                     <label>Fratura de costela</label>
+
                                     <div class="input-group  input-group-sm">
                                         {% for radio in medical_record_form.rib_fracture %}
                                             <div class="radio-inline">
@@ -254,6 +263,7 @@
                             <div class="col-xs-6 col-sm-12">
                                 <div class="form-group">
                                     <label>Fratura Vertebral Cervical</label>
+
                                     <div class="input-group  input-group-sm">
                                         {% for radio in medical_record_form.cervical_vertebrae_fracture %}
                                             <div class="checkbox-inline">
@@ -268,6 +278,7 @@
                             <div class="col-xs-6 col-sm-12">
                                 <div class="form-group">
                                     <label>Fratura Vertebral Torácica</label>
+
                                     <div class="input-group  input-group-sm">
                                         {% for radio in medical_record_form.thoracic_vertebrae_fracture %}
                                             <div class="checkbox-inline">
@@ -297,6 +308,7 @@
                             <div class="col-xs-6 col-sm-4">
                                 <div class="form-group">
                                     <label>Fratura de Membros Superiores</label>
+
                                     <div class="input-group  input-group-sm">
                                         {% for radio in medical_record_form.superior_members_fracture_side %}
                                             <div class="myradio">
@@ -309,6 +321,7 @@
                             <div class="col-xs-6 col-sm-4">
                                 <div class="form-group">
                                     <label>Fratura de Membros Inferiores</label>
+
                                     <div class="input-group  input-group-sm">
                                         {% for radio in medical_record_form.inferior_members_fracture_side %}
                                             <div class="myradio">
@@ -321,6 +334,7 @@
                             <div class="col-xs-6 col-sm-4">
                                 <div class="form-group">
                                     <label>Fratura de Pelve</label>
+
                                     <div class="input-group  input-group-sm">
                                         {% for radio in medical_record_form.pelvis_fracture_side %}
                                             <div class="myradio">
@@ -337,36 +351,34 @@
             <div class="col-md-1"></div>
         </div>
     </div>
-    <div class="tab-pane active" id="tab3">
+    <div class="tab-pane" id="tab3">
         <div class="row">
             <div class="col-md-1"></div>
             <div class="col-md-10">
                 <div class="container span6 offset3 well ">
                     <div class="row">
-                        <div class="col-md-12">
-                            <div class="container span6 offset3 well ">
-                                <div class="row">
-                                    <div class="col-xs-6 col-sm-12">
-                                        <div class="form-group">
-                                            <label>Cirurgia Ortopédica</label>
-                                            <div class="input-group  input-group-sm">
-                                                {% for radio in medical_record_form.orthopedic_surgery %}
-                                                    <div class="radio-inline">
-                                                        {{ radio }}
-                                                    </div>
-                                                {% endfor %}
-                                            </div>
+
+                        <div class="col-xs-6 col-sm-12">
+                            <div class="form-group">
+                                <label>Cirurgia Ortopédica</label>
+
+                                <div class="input-group  input-group-sm">
+                                    {% for radio in medical_record_form.orthopedic_surgery %}
+                                        <div class="radio-inline">
+                                            {{ radio }}
                                         </div>
-                                    </div>
+                                    {% endfor %}
                                 </div>
                             </div>
                         </div>
+
                     </div>
                     <fieldset id="id_fieldSetOrtSurg">
                         <div class="row">
                             <div class="col-xs-6 col-sm-4">
                                 <div class="form-group">
                                     <label>Escápula</label>
+
                                     <div class="input-group  input-group-sm">
                                         {% for radio in medical_record_form.scapula_surgery_side %}
                                             <div class="myradio">
@@ -379,6 +391,7 @@
                             <div class="col-xs-6 col-sm-4">
                                 <div class="form-group">
                                     <label>Clavícula</label>
+
                                     <div class="input-group  input-group-sm">
                                         {% for radio in medical_record_form.clavicle_surgery_side %}
                                             <div class="myradio">
@@ -391,6 +404,7 @@
                             <div class="col-xs-6 col-sm-4">
                                 <div class="form-group">
                                     <label>Costela</label>
+
                                     <div class="input-group  input-group-sm">
                                         {% for radio in medical_record_form.rib_surgery %}
                                             <div class="radio-inline">
@@ -405,6 +419,7 @@
                             <div class="col-xs-6 col-sm-12">
                                 <div class="form-group">
                                     <label>Coluna Vertebral Cervical</label>
+
                                     <div class="input-group  input-group-sm">
                                         {% for radio in medical_record_form.cervical_vertebrae_surgery %}
                                             <div class="radio-inline">
@@ -419,6 +434,7 @@
                             <div class="col-xs-6 col-sm-12">
                                 <div class="form-group">
                                     <label>Coluna Vertebral Torácica</label>
+
                                     <div class="input-group  input-group-sm">
                                         {% for radio in medical_record_form.thoracic_vertebrae_surgery %}
                                             <div class="radio-inline">
@@ -433,6 +449,7 @@
                             <div class="col-xs-6 col-sm-12">
                                 <div class="form-group">
                                     <label>Coluna Vertebral Lombo-Sacral</label>
+
                                     <div class="input-group  input-group-sm">
                                         {% for radio in medical_record_form.lumbosacral_vertebrae_surgery %}
                                             <div class="radio-inline">
@@ -447,6 +464,7 @@
                             <div class="col-xs-6 col-sm-4">
                                 <div class="form-group">
                                     <label>Membros Superiores</label>
+
                                     <div class="input-group  input-group-sm">
                                         {% for radio in medical_record_form.superior_members_surgery_side %}
                                             <div class="myradio">
@@ -459,6 +477,7 @@
                             <div class="col-xs-6 col-sm-4">
                                 <div class="form-group">
                                     <label>Membros Inferiores</label>
+
                                     <div class="input-group  input-group-sm">
                                         {% for radio in medical_record_form.inferior_members_surgery_side %}
                                             <div class="myradio">
@@ -471,6 +490,7 @@
                             <div class="col-xs-6 col-sm-4">
                                 <div class="form-group">
                                     <label>Pelve</label>
+
                                     <div class="input-group  input-group-sm">
                                         {% for radio in medical_record_form.pelvis_surgery_side %}
                                             <div class="myradio">
@@ -487,7 +507,7 @@
             <div class="col-md-1"></div>
         </div>
     </div>
-    <div class="tab-pane active" id="tab4">
+    <div class="tab-pane" id="tab4">
         <div class="row">
             <div class="col-md-1"></div>
             <div class="col-md-10">
@@ -496,6 +516,7 @@
                         <div class="col-xs-6 col-sm-3">
                             <div class="form-group">
                                 <label> Exame Complementar </label>
+
                                 <div class="input-group  input-group-sm">
                                     <div class="input-group  input-group-sm">
                                         <div class="radio-inline">
@@ -517,6 +538,7 @@
                         <div class="col-xs-6 col-sm-9">
                             <div class="form-group">
                                 <label>Qual?</label>
+
                                 <div class="input-group  input-group-sm ">
                                                             <span class="input-group-addon"> <span
                                                                     class="glyphicon glyphicon-edit"></span></span>
@@ -543,7 +565,8 @@
             <div class="col-md-1"></div>
         </div>
     </div>
-    </div> <!-- tab-content -->
+    </div>
+    <!-- tab-content -->
 
     </div>
 
