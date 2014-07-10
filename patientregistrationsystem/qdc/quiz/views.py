@@ -458,8 +458,6 @@ def user_update(request, user_id, template_name="quiz/register_users.html"):
 def medical_record_create(request, patient_id, template_name='quiz/medical_record.html'):
     form = MedicalRecordForm(request.POST or None)
 
-    name_patient = Patient.objects.get(pk=patient_id).name_txt
-
     p = Patient.objects.get(number_record=patient_id)
 
     if request.method == "POST":
@@ -476,7 +474,7 @@ def medical_record_create(request, patient_id, template_name='quiz/medical_recor
         else:
             messages.error(request, 'Não foi possível criar avaliação médica.')
     return render(request, template_name,
-                  {'medical_record_form': form, 'patient_id': patient_id, 'name_patient': name_patient,
+                  {'medical_record_form': form, 'patient_id': patient_id, 'name_patient': p.name_txt,
                    'creating': True})
 
 
