@@ -176,6 +176,23 @@ $(document).ready(function () {
         }
     });
 
+    //Ajax part to show modal if patient with same name exists in database
+    $('#full_name').blur(function() {
+        var myElem = document.getElementById('patient_homonym');
+        if (myElem != null) $('#modalHomonym').modal('show');
+
+        var myElemExcluded = document.getElementById('patient_homonym_excluded');
+        if (myElemExcluded != null) $('#modalHomonymExcluded').modal('show');
+    });
+
+    //Ajax part to show modal if patient with same cpf exists in database
+    $('#cpf_id').blur(function() {
+        var myElem = document.getElementById('patient_homonym');
+        if (myElem != null) $('#modalHomonym').modal('show');
+
+        var myElemExcluded = document.getElementById('patient_homonym_excluded');
+        if (myElemExcluded != null) $('#modalHomonymExcluded').modal('show');
+    });
 
     $("#prevtab").click(function () {
         var $tabs = $('.tabbable li');
@@ -187,6 +204,8 @@ $(document).ready(function () {
     });
 
     $("#editPatient").click(function () {
+        //disable blur if patient has homonym
+        $("#full_name").unbind("blur");
         document.getElementById('action').value = "edit";
         $("#form_id").submit();
     });
@@ -201,8 +220,9 @@ $(document).ready(function () {
 //        $("#user_form").submit();
 //    });
 
-
     $("#savetab").click(function () {
+        //disable blur if patient has homonym
+        $("#full_name").unbind("blur");
 
         var name_value = $.trim($("#full_name").val());
         var date_birth_value = $.trim($("#birthday").val());
@@ -216,7 +236,6 @@ $(document).ready(function () {
             document.getElementById('gender_id').focus();
             document.getElementById('full_name').focus();
         } else {
-
 
             var email_value = $.trim($('#email').val());
 
