@@ -253,9 +253,9 @@ class MedicalRecordData(models.Model):
     scapula_fracture_side = models.ForeignKey(Side, related_name='side_scapula_fracture', null=True, blank=True)
     clavicle_fracture_side = models.ForeignKey(Side, related_name='side_clavicle_fracture', null=True, blank=True)
     rib_fracture = models.CharField(max_length=10, null=True, blank=True)
-    cervical_vertebrae_fracture = models.ManyToManyField(CervicalVertebrae)
-    thoracic_vertebrae_fracture = models.ManyToManyField(ThoracicVertebrae)
-    lumbosacral_vertebrae_fracture = models.ManyToManyField(LumbosacralVertebrae)
+    cervical_vertebrae_fracture = models.ManyToManyField(CervicalVertebrae, blank=True, null=True)
+    thoracic_vertebrae_fracture = models.ManyToManyField(ThoracicVertebrae, blank=True, null=True)
+    lumbosacral_vertebrae_fracture = models.ManyToManyField(LumbosacralVertebrae, blank=True, null=True)
     superior_members_fracture_side = \
         models.ForeignKey(Side, related_name='side_superior_members_fracture', null=True, blank=True)
     inferior_members_fracture_side = \
@@ -281,7 +281,7 @@ class MedicalRecordData(models.Model):
     nerve_surgery_type = models.CharField(max_length=50, null=True, blank=True)
 
     vertigo_history = models.CharField(max_length=10, null=True, blank=True)
-    pain_history = models.ManyToManyField(PainLocalization)
+    pain_history = models.ManyToManyField(PainLocalization, blank=True, null=True)
     headache = models.CharField(max_length=10, null=True, blank=True)
     hypertension = models.CharField(max_length=10, null=True, blank=True)
     diabetes = models.CharField(max_length=10, null=True, blank=True)
