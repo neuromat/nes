@@ -201,6 +201,7 @@ $(document).ready(function () {
 //        $("#user_form").submit();
 //    });
 
+
     $("#savetab").click(function () {
 
         var name_value = $.trim($("#full_name").val());
@@ -215,7 +216,6 @@ $(document).ready(function () {
             document.getElementById('gender_id').focus();
             document.getElementById('full_name').focus();
         } else {
-
 
 
             var email_value = $.trim($('#email').val());
@@ -236,7 +236,9 @@ $(document).ready(function () {
 
     $('a[data-toggle="tab"]').on('shown.bs.tab', function (e) {
         var activeTab = e.target.id;
-        document.getElementById('currentTab').value = activeTab;
+
+        if (document.getElementById('currentTab') != undefined)
+            document.getElementById('currentTab').value = activeTab;
     });
 
 });

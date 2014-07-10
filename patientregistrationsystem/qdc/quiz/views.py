@@ -456,17 +456,28 @@ def user_update(request, user_id, template_name="quiz/register_users.html"):
 
 
 @login_required
-@permission_required('auth.add_user')
+# @permission_required('auth.add_user')
 def medical_record_create(request, patient_id, template_name='quiz/medical_record.html'):
     form = MedicalRecordForm(request.POST or None)
 
+
+    p = Patient.objects.get(number_record=patient_id)
+
     if request.method == "POST":
         if form.is_valid():
-            form.save()
+            new_medical_record = form.save(commit=False)
+            new_medical_record.patient = p
+            new_medical_record.record_responsible = request.user
+            new_medical_record.save()
+            form.save_m2m()
             messages.success(request, 'Avaliação médica salva com sucesso.')
-            return redirect('patient_edit')
+            redirect_url = reverse("patient_edit", args=(p.number_record,))
+            return HttpResponseRedirect(redirect_url + "?currentTab=3")
+
         else:
             messages.error(request, 'Não foi possível criar avaliação médica.')
+
     return render(request, template_name, {'medical_record_form': form, 'patient_id': patient_id, 'creating': True})
+
 
 

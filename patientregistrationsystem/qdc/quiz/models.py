@@ -231,22 +231,24 @@ class ThoracicVertebrae(models.Model):
     def __unicode__(self):
         return self.code
 
+
 class LumbosacralVertebrae(models.Model):
     code = models.CharField(max_length=2, null=False)
 
     def __unicode__(self):
         return self.code
 
+
 class PainLocalization(models.Model):
-    description = models.CharField(max_length=50, null=False)
+    pain_localization = models.CharField(max_length=50, null=False)
 
     def __unicode__(self):
-        return self.description
+        return self.pain_localization
 
 
 class MedicalRecordData(models.Model):
     patient = models.ForeignKey(Patient, null=False)
-    record_date = models.DateField(null=False)
+    record_date = models.DateField(null=False, auto_now_add=True)
     record_responsible = models.ForeignKey(User, null=False)
 
     fracture_history = models.CharField(max_length=10, null=True, blank=True)
@@ -281,14 +283,22 @@ class MedicalRecordData(models.Model):
     nerve_surgery_type = models.CharField(max_length=50, null=True, blank=True)
 
     vertigo_history = models.CharField(max_length=10, null=True, blank=True)
-    pain_history = models.ManyToManyField(PainLocalization, blank=True, null=True)
+    pain_localizations = models.ManyToManyField(PainLocalization, related_name="medical_records")
     headache = models.CharField(max_length=10, null=True, blank=True)
     hypertension = models.CharField(max_length=10, null=True, blank=True)
     diabetes = models.CharField(max_length=10, null=True, blank=True)
     hormonal_dysfunction = models.CharField(max_length=10, null=True, blank=True)
 
     def __unicode__(self):
-        return self.patient
+        return \
+            self.patient, self.record_date, self.record_responsible, self.fracture_history, self.scapula_fracture_side,\
+            self.clavicle_fracture_side, self.rib_fracture, self.cervical_vertebrae_fracture, self.thoracic_vertebrae_fracture,\
+            self.lumbosacral_vertebrae_fracture, self.superior_members_fracture_side, self.inferior_members_fracture_side,\
+            self.pelvis_fracture_side, self.orthopedic_surgery, self.scapula_surgery_side, self.clavicle_surgery_side,\
+            self.rib_surgery, self.cervical_vertebrae_surgery, self.thoracic_vertebrae_surgery, self.lumbosacral_vertebrae_surgery,\
+            self.superior_members_surgery_side, self.inferior_members_surgery_side, self.pelvis_surgery_side,\
+            self.nerve_surgery, self.nerve_surgery_type, self.vertigo_history, self.pain_localizations,\
+            self.headache, self.hypertension, self.hormonal_dysfunction, self.diabetes
 
 
 class ClassificationOfDiseases(models.Model):

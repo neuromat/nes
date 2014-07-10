@@ -129,7 +129,7 @@ class MedicalRecordForm(ModelForm):
             'orthopedic_surgery', 'scapula_surgery_side', 'clavicle_surgery_side', 'rib_surgery',
             'cervical_vertebrae_surgery', 'thoracic_vertebrae_surgery', 'lumbosacral_vertebrae_surgery',
             'superior_members_surgery_side', 'inferior_members_surgery_side', 'pelvis_surgery_side',
-            'nerve_surgery', 'nerve_surgery_type', 'vertigo_history', 'pain_history', 'headache',
+            'nerve_surgery', 'nerve_surgery_type', 'vertigo_history', 'pain_localizations', 'headache',
             'hypertension', 'diabetes', 'hormonal_dysfunction',
         ]
 
@@ -169,7 +169,7 @@ class MedicalRecordForm(ModelForm):
             'nerve_surgery_type': TextInput(attrs={'class': 'form-control',
                                                    'placeholder': 'Entrar tipo de cirurgia de nervo'}),
             'vertigo_history': RadioSelect(attrs={'id': 'vertigo_history'}, choices=(('1', 'Sim'), ('0', 'Não'))),
-            'pain_history': CheckboxSelectMultiple(),
+            'pain_localizations': CheckboxSelectMultiple(),
             'headache': RadioSelect(attrs={'id': 'headache'}, choices=(('1', 'Sim'), ('0', 'Não'))),
             'hypertension': RadioSelect(attrs={'id': 'hypertension'}, choices=(('1', 'Sim'), ('0', 'Não'))),
             'diabetes': RadioSelect(attrs={'id': 'diabetes'}, choices=(('1', 'Sim'), ('0', 'Não'))),
