@@ -158,6 +158,7 @@
                     </div>
 
                     <div class="help-block with-errors">
+
                         {% comment %}
                 {{ patient_form.errors.cpf_id }}
                 {% endcomment %}
@@ -1573,6 +1574,42 @@
                     <button type="button" class="btn btn-primary" id="removePatient"
                             style="background-color: indianred; color: #ffffff">Excluir
                     </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    {# Modal para paciente homônimo #}
+    <div class="modal fade" id="modalHomonym" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-body">
+{#                    {% csrf_token %}  #}
+                    Paciente já cadastrado.
+                    Clique para visualizar registro ou "Cancelar" para voltar ao formulário.
+                </div>
+                {% csrf_token %}
+                <ul id="search-results" style="list-style: none;"></ul>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-default" data-dismiss="modal">Cancelar</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    {# Modal para paciente homônimo excluido #}
+    <div class="modal fade" id="modalHomonymExcluded" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-body">
+{#                    {% csrf_token %}  #}
+                    Paciente já foi excluído anteriormente. Clique para restaurar cadastro ou "Cancelar" para cadastrar
+                    com mesmo nome.
+                </div>
+                {% csrf_token %}
+                <ul id="search-results1" style="list-style: none;"></ul>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-default" data-dismiss="modal">Cancelar</button>
                 </div>
             </div>
         </div>

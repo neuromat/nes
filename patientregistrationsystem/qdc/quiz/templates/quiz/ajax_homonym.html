@@ -1,0 +1,18 @@
+{% load i18n %}
+{% if patient_homonym %}
+    {% for patient in patient_homonym %}
+        <li><a href="/quiz/patient/{{ patient.number_record }}">
+            {% if patient.cpf_id %} {{ patient.cpf_id }} - {% endif %}{{ patient.name_txt }}</a></li>
+    {% endfor %}
+
+    <div id="patient_homonym"></div>
+{% endif %}
+
+{% if patient_homonym_excluded %}
+    {% for patient in patient_homonym_excluded %}
+        <li><a href="/quiz/restore/patient/{{ patient.number_record }}">
+            {% if patient.cpf_id %} {{ patient.cpf_id }} - {% endif %}{{ patient.name_txt }}</a></li>
+    {% endfor %}
+
+    <div id="patient_homonym_excluded"></div>
+{% endif %}

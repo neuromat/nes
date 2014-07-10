@@ -352,15 +352,21 @@ def patient(request, patient_id, template_name="quiz/register.html"):
         except SocialHistoryData.DoesNotExist:
             social_history_form = SocialDemographicDataForm()
 
-        #deixa os campos como disabled
+        ## Make fields disabled
         for form in {patient_form, social_demographic_form, social_history_form}:
             for field in form.fields:
                 form.fields[field].widget.attrs['disabled'] = True
 
         #Sobrescreve campos Pais, Nacionalidade e Estado
-        patient_form.fields['country_txt'].widget = SelectBoxCountriesDisabled(attrs={'id': 'id_country_state_address', 'data-flags': 'true', 'disabled': 'true'})
-        patient_form.fields['state_txt'].widget = SelectBoxStateDisabled(attrs={'data-country': 'id_country_state_address', 'id': 'id_chosen_state', 'disabled': 'true'})
-        patient_form.fields['citizenship_txt'].widget = SelectBoxCountriesDisabled(attrs={'id': 'id_chosen_country', 'data-flags': 'true', 'disabled': 'true'})
+        patient_form.fields['country_txt'].widget = \
+            SelectBoxCountriesDisabled(
+                attrs={'id': 'id_country_state_address', 'data-flags': 'true', 'disabled': 'true'})
+        patient_form.fields['state_txt'].widget = \
+            SelectBoxStateDisabled(
+                attrs={'data-country': 'id_country_state_address', 'id': 'id_chosen_state', 'disabled': 'true'})
+        patient_form.fields['citizenship_txt'].widget = \
+            SelectBoxCountriesDisabled(
+                attrs={'id': 'id_chosen_country', 'data-flags': 'true', 'disabled': 'true'})
 
         context = {'patient_form': patient_form, 'social_demographic_form': social_demographic_form,
                    'social_history_form': social_history_form,
@@ -385,6 +391,15 @@ def advanced_search(request):
 def contact(request):
     return render(request, 'quiz/contato.html')
 
+@login_required
+def restore_patient(request, patient_id):
+    patient_restored = Patient.objects.get(number_record=patient_id)
+    patient_restored.removed = False
+    patient_restored.save()
+
+    redirect_url = reverse("patient_view", args=(patient_id,))
+    return HttpResponseRedirect(redirect_url)
+
 
 @login_required
 @permission_required('quiz.view_patient')
@@ -402,6 +417,27 @@ def search_patients_ajax(request):
         search_text = ''
 
     return render_to_response('quiz/ajax_search.html', {'patients': patient_list})
+
+@login_required
+@permission_required('quiz.view_patient')
+def patients_verify_homonym(request):
+    if request.method == "POST":
+        search_text = request.POST['search_text']
+        if search_text:
+            if re.match('[a-zA-Z ]+', search_text):
+                patient_homonym = Patient.objects.filter(name_txt=search_text).exclude(removed=True)
+                patient_homonym_excluded = Patient.objects.filter(name_txt=search_text, removed=True)
+            else:
+                patient_homonym = Patient.objects.filter(cpf_id=search_text).exclude(removed=True)
+                patient_homonym_excluded = Patient.objects.filter(cpf_id=search_text, removed=True)
+        else:
+            patient_homonym = ''
+            patient_homonym_excluded = ''
+    else:
+        search_text = ''
+
+    return render_to_response('quiz/ajax_homonym.html', {'patient_homonym': patient_homonym,
+                                                         'patient_homonym_excluded': patient_homonym_excluded})
 
 
 @login_required
