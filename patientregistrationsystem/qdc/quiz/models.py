@@ -248,7 +248,7 @@ class PainLocalization(models.Model):
 
 class MedicalRecordData(models.Model):
     patient = models.ForeignKey(Patient, null=False)
-    record_date = models.DateField(null=False, auto_now_add=True)
+    record_date = models.DateTimeField(null=False, auto_now_add=True)
     record_responsible = models.ForeignKey(User, null=False)
 
     fracture_history = models.CharField(max_length=10, null=True, blank=True)
