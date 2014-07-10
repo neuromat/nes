@@ -255,7 +255,9 @@ $(document).ready(function () {
 
     $('a[data-toggle="tab"]').on('shown.bs.tab', function (e) {
         var activeTab = e.target.id;
-        document.getElementById('currentTab').value = activeTab;
+
+        if (document.getElementById('currentTab') != undefined)
+            document.getElementById('currentTab').value = activeTab;
     });
 
 });

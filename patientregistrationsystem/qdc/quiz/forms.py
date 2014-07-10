@@ -1,11 +1,9 @@
 # coding=utf-8
-#from django.utils.six import attr
 from django.forms import ModelForm, TextInput, DateInput, Select, RadioSelect, PasswordInput, CheckboxSelectMultiple, \
     CharField, ValidationError
-from models import Patient, SocialDemographicData, SocialHistoryData
+from models import Patient, SocialDemographicData, SocialHistoryData, MedicalRecordData
 from django.contrib.auth.hashers import make_password
 from quiz_widget import SelectBoxCountries, SelectBoxState
-from django.utils.translation import ugettext_lazy as _
 
 from django.contrib.auth.models import User
 
@@ -15,9 +13,9 @@ class PatientForm(ModelForm):
         model = Patient
 
         fields = [
-            'cpf_id', 'name_txt', 'rg_id', 'medical_record_number', 'natural_of_txt', 'citizenship_txt', 'street_txt',
-            'zipcode_number', 'country_txt', 'state_txt', 'city_txt', 'phone_number', 'cellphone_number', 'email_txt',
-            'date_birth_txt', 'gender_opt', 'marital_status_opt',
+            'cpf_id', 'name_txt', 'number_record', 'rg_id', 'medical_record_number', 'natural_of_txt',
+            'citizenship_txt', 'street_txt', 'zipcode_number', 'country_txt', 'state_txt', 'city_txt', 'phone_number',
+            'cellphone_number', 'email_txt', 'date_birth_txt', 'gender_opt', 'marital_status_opt',
         ]
 
         widgets = {
@@ -39,10 +37,10 @@ class PatientForm(ModelForm):
                                              'id': "phone"}),
             'cellphone_number': TextInput(attrs={'class': 'form-control', 'placeholder': 'Entrar celular',
                                                  'id': "cellphone"}),
-            'email_txt': TextInput(attrs={'class': 'form-control', 'placeholder': 'Entrar e-mail', 'id': "email",
-                                          'type': 'email', 'data-error': "E-mail inválido",
-                                          'pattern': '^[_A-Za-z0-9-\+]+(\.[_A-Za-z0-9-]+)*@[A-Za-z0-9-]+(\.[A-Za-z0-9]+)*(\.[A-Za-z]{2,})$'
-                                          }),
+            'email_txt': TextInput(attrs={
+                'class': 'form-control', 'placeholder': 'Entrar e-mail', 'id': "email",
+                'type': 'email', 'data-error': "E-mail inválido",
+                'pattern': '^[_A-Za-z0-9-\+]+(\.[_A-Za-z0-9-]+)*@[A-Za-z0-9-]+(\.[A-Za-z0-9]+)*(\.[A-Za-z]{2,})$'}),
             'medical_record_number': TextInput(attrs={'class': 'form-control',
                                                       'placeholder': 'Entrar número do prontuário',
                                                       'id': "records_number"}),
@@ -50,7 +48,7 @@ class PatientForm(ModelForm):
             'country_txt': SelectBoxCountries(attrs={'id': 'id_country_state_address', 'data-flags': 'true'}),
             'state_txt': SelectBoxState(attrs={'data-country': 'id_country_state_address', 'id': 'id_chosen_state'}),
             'gender_opt': Select(attrs={'class': 'form-control', 'id': 'gender_id', 'required': "",
-                                        'data-error': "Sexo deve ser preenchido"} ),
+                                        'data-error': "Sexo deve ser preenchido"}),
             'marital_status_opt': Select(attrs={'class': 'form-control', 'id': 'marital_status'}),
             'date_birth_txt': DateInput(attrs={'class': 'form-control', 'placeholder': 'Data',
                                                'id': "birthday", 'required': "",
@@ -70,7 +68,7 @@ class SocialDemographicDataForm(ModelForm):
         fields = ['profession_txt', 'occupation_txt', 'tv_opt', 'dvd_opt', 'radio_opt', 'bath_opt',
                   'automobile_opt', 'wash_machine_opt', 'refrigerator_opt', 'freezer_opt', 'house_maid_opt',
                   'religion_opt', 'payment_opt', 'flesh_tone_opt', 'schooling_opt', 'benefit_government_bool',
-                  'social_class_opt',]
+                  'social_class_opt']
         widgets = {
             'benefit_government_bool': RadioSelect(attrs={'id': 'id_benefit'}, choices=(('1', 'Sim'), ('0', 'Não'))),
             'schooling_opt': Select(attrs={'class': 'form-control', 'id': 'scolarity'}),
@@ -121,6 +119,65 @@ class SocialHistoryDataForm(ModelForm):
         }
 
 
+class MedicalRecordForm(ModelForm):
+    class Meta:
+        model = MedicalRecordData
+        fields = [
+            'fracture_history', 'scapula_fracture_side', 'clavicle_fracture_side', 'rib_fracture',
+            'cervical_vertebrae_fracture', 'thoracic_vertebrae_fracture', 'lumbosacral_vertebrae_fracture',
+            'superior_members_fracture_side', 'inferior_members_fracture_side', 'pelvis_fracture_side',
+            'orthopedic_surgery', 'scapula_surgery_side', 'clavicle_surgery_side', 'rib_surgery',
+            'cervical_vertebrae_surgery', 'thoracic_vertebrae_surgery', 'lumbosacral_vertebrae_surgery',
+            'superior_members_surgery_side', 'inferior_members_surgery_side', 'pelvis_surgery_side',
+            'nerve_surgery', 'nerve_surgery_type', 'vertigo_history', 'pain_localizations', 'headache',
+            'hypertension', 'diabetes', 'hormonal_dysfunction',
+        ]
+
+        widgets = {
+            # 'record_date': DateInput(attrs={'class': 'form-control', 'placeholder': 'Data',
+            #                                 'id': "record_date", "disabled": ""}),
+            # 'record_responsible': TextInput(attrs={'class': 'form-control', 'placeholder': 'Entrar responsável',
+            #                                        'id': "record_responsible", "disabled": ""}),
+            'fracture_history': RadioSelect(attrs={'id': 'fracture_history'}, choices=(('1', 'Sim'), ('0', 'Não'))),
+            'scapula_fracture_side': Select(attrs={'class': 'form-control', 'id': 'scapula_fracture_side'}),
+            'clavicle_fracture_side': Select(attrs={'class': 'form-control', 'id': 'clavicle_fracture_side'}),
+            'rib_fracture': RadioSelect(attrs={'id': 'rib_fracture'}, choices=(('1', 'Sim'), ('0', 'Não'))),
+            'cervical_vertebrae_fracture': CheckboxSelectMultiple(),
+            'thoracic_vertebrae_fracture': CheckboxSelectMultiple(),
+            'lumbosacral_vertebrae_fracture': CheckboxSelectMultiple(),
+            'superior_members_fracture_side': Select(attrs={'class': 'form-control',
+                                                               'id': 'superior_members_fracture_side'}),
+            'inferior_members_fracture_side': Select(attrs={'class': 'form-control',
+                                                               'id': 'inferior_members_fracture_side'}),
+            'pelvis_fracture_side': Select(attrs={'class': 'form-control', 'id': 'pelvis_fracture_side'}),
+            'orthopedic_surgery': RadioSelect(attrs={'id': 'orthopedic_surgery'}, choices=(('1', 'Sim'), ('0', 'Não'))),
+            'scapula_surgery_side': Select(attrs={'class': 'form-control', 'id': 'scapula_surgery_side'}),
+            'clavicle_surgery_side': Select(attrs={'class': 'form-control', 'id': 'clavicle_surgery_side'}),
+            'rib_surgery': RadioSelect(attrs={'id': 'rib_surgery'}, choices=(('1', 'Sim'), ('0', 'Não'))),
+            'cervical_vertebrae_surgery': RadioSelect(attrs={'id': 'cervical_vertebrae_surgery'},
+                                                      choices=(('1', 'Sim'), ('0', 'Não'))),
+            'thoracic_vertebrae_surgery': RadioSelect(attrs={'id': 'thoracic_vertebrae_surgery'},
+                                                      choices=(('1', 'Sim'), ('0', 'Não'))),
+            'lumbosacral_vertebrae_surgery': RadioSelect(attrs={'id': 'lumbosacral_vertebrae_surgery'},
+                                                         choices=(('1', 'Sim'), ('0', 'Não'))),
+            'superior_members_surgery_side': Select(attrs={'class': 'form-control',
+                                                              'id': 'superior_members_surgery_side'}),
+            'inferior_members_surgery_side': Select(attrs={'class': 'form-control',
+                                                              'id': 'inferior_members_surgery_side'}),
+            'pelvis_surgery_side': Select(attrs={'class': 'form-control', 'id': 'pelvis_surgery_side'}),
+            'nerve_surgery': RadioSelect(attrs={'id': 'nerve_surgery'}, choices=(('1', 'Sim'), ('0', 'Não'))),
+            'nerve_surgery_type': TextInput(attrs={'class': 'form-control',
+                                                   'placeholder': 'Entrar tipo de cirurgia de nervo'}),
+            'vertigo_history': RadioSelect(attrs={'id': 'vertigo_history'}, choices=(('1', 'Sim'), ('0', 'Não'))),
+            'pain_localizations': CheckboxSelectMultiple(),
+            'headache': RadioSelect(attrs={'id': 'headache'}, choices=(('1', 'Sim'), ('0', 'Não'))),
+            'hypertension': RadioSelect(attrs={'id': 'hypertension'}, choices=(('1', 'Sim'), ('0', 'Não'))),
+            'diabetes': RadioSelect(attrs={'id': 'diabetes'}, choices=(('1', 'Sim'), ('0', 'Não'))),
+            'hormonal_dysfunction': RadioSelect(attrs={'id': 'hormonal_dysfunction'},
+                                                choices=(('1', 'Sim'), ('0', 'Não'))),
+        }
+
+
 class UserForm(ModelForm):
     class Meta:
         model = User
@@ -130,7 +187,8 @@ class UserForm(ModelForm):
             'first_name': TextInput(attrs={'class': 'form-control', 'placeholder': 'Entrar primeiro nome'}),
             'last_name': TextInput(attrs={'class': 'form-control', 'placeholder': 'Entrar último nome'}),
             'username': TextInput(attrs={'class': 'form-control', 'placeholder': 'Entrar nome de usuário'}),
-            'password': PasswordInput(attrs={'class': 'form-control', 'placeholder': 'Entrar senha'}),
+            'password': PasswordInput(attrs={'class': 'form-control', 'placeholder': 'Entrar senha',
+                                             'onkeyup': "password_strong(); if(beginCheckPassword1)checkPass();"}),
             'email': TextInput(attrs={'class': 'form-control', 'placeholder': 'Entrar e-mail', 'id': "email",
                                       'type': 'email', 'data-error': "E-mail inválido",
                                       'pattern': '^[_A-Za-z0-9-\+]+(\.[_A-Za-z0-9-]+)*@[A-Za-z0-9-]' +
@@ -138,7 +196,11 @@ class UserForm(ModelForm):
             'groups': CheckboxSelectMultiple()
         }
 
-        # TODO: Tratar mensagem de erro username
+    def clean_username(self):
+        username = self.cleaned_data['username']
+        if not self.instance.pk and User.objects.filter(username=username):
+            raise ValidationError(u'Este nome de usuário já existe.')
+        return username
 
     def clean_password(self):
         return make_password(self.cleaned_data['password'])
@@ -153,7 +215,9 @@ class UserForm(ModelForm):
 
 class UserFormUpdate(UserForm):
     password = CharField(required=False,
-                         widget=PasswordInput(attrs={'class': 'form-control', 'placeholder': 'Entrar senha'}))
+                         widget=PasswordInput(attrs={'class': 'form-control', 'placeholder': 'Entrar senha',
+                                                     'onkeyup': "password_strong();"
+                                                                "if(beginCheckPassword1)checkPass();"}))
 
     def clean_password(self):
         if self.cleaned_data['password']:
