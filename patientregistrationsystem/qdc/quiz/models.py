@@ -304,6 +304,7 @@ class MedicalRecordData(models.Model):
 class ClassificationOfDiseases(models.Model):
     code = models.CharField(max_length=10, null=False)
     description = models.CharField(max_length=300, null=False)
+    abbreviated_description = models.CharField(max_length=100, null=False)
     parent = models.ForeignKey('self', null=True, related_name='children')
 
     def __unicode__(self):

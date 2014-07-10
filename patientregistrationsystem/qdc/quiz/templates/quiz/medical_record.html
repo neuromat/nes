@@ -1,6 +1,14 @@
 {% extends "quiz/template.html" %}
 {% block activePatient %}class="active"{% endblock %}
 
+{% block header %}
+    <script>
+        $(function(){
+            $("[data-toggle=tooltip]").tooltip();
+        });
+    </script>
+{% endblock %}
+
 {% block form %}
     <div class="row">
 
@@ -50,10 +58,10 @@
 
 
     <ul class="nav nav-tabs nav-justified" id="idTabsEvaluate">
-        <li class="active"><a href="#tab1" data-toggle="tab" id="1">História de Saúde</a></li>
-        <li><a href="#tab2" data-toggle="tab" id="2">História de Fratura</a></li>
-        <li><a href="#tab3" data-toggle="tab" id="3">Cirurgia Ortopédica</a></li>
-        <li><a href="#tab4" data-toggle="tab" id="4">Exames</a></li>
+        <li class="active"><a href="#tab1" data-toggle="tab" id="1">História de saúde</a></li>
+        <li><a href="#tab2" data-toggle="tab" id="2">História de fratura</a></li>
+        <li><a href="#tab3" data-toggle="tab" id="3">Cirurgia ortopédica</a></li>
+        <li><a href="#tab4" data-toggle="tab" id="4">Diagnósticos e exames</a></li>
     </ul>
 
     <div id="fix-for-tab-content-spacing" style="height: 22px;">&nbsp;</div>
@@ -68,7 +76,7 @@
                     <div class="row">
                         <div class="col-xs-6 col-sm-3">
                             <div class="form-group">
-                                <label>Cirurgia de Nervo</label>
+                                <label>Cirurgia de nervo</label>
 
                                 <div class="input-group  input-group-sm">
                                     <div class="input-group  input-group-sm">
@@ -177,7 +185,7 @@
                     <div class="row">
                         <div class="col-xs-6 col-sm-4">
                             <div class="form-group">
-                                <label>Disfunção Hormonal</label>
+                                <label>Disfunção hormonal</label>
 
                                 <div class="input-group  input-group-sm">
                                     {% for radio in medical_record_form.hormonal_dysfunction %}
@@ -361,7 +369,7 @@
 
                         <div class="col-xs-6 col-sm-12">
                             <div class="form-group">
-                                <label>Cirurgia Ortopédica</label>
+                                <label>Cirurgia ortopédica</label>
 
                                 <div class="input-group  input-group-sm">
                                     {% for radio in medical_record_form.orthopedic_surgery %}
@@ -514,48 +522,22 @@
             <div class="col-md-10">
                 <div class="container span6 offset3 well ">
                     <div class="row">
-                        <div class="col-xs-6 col-sm-3">
-                            <div class="form-group">
-                                <label> Exame Complementar </label>
-                                <div class="input-group  input-group-sm">
-                                    <div class="input-group  input-group-sm">
-                                        <div class="radio-inline">
-                                            <label>
-                                                <input name="complementaryExameOptionsRadios"
-                                                       id="complementaryExameOptionsRadios1"
-                                                       value="complementaryExameOption1" type="radio">Sim</label>
-                                        </div>
-                                        <div class="radio-inline">
-                                            <label>
-                                                <input name="complementaryExameOptionsRadios"
-                                                       id="complementaryExameOptionsRadios2"
-                                                       value="complementaryExameOption2" type="radio">Não</label>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
                         <div class="col-xs-6 col-sm-9">
                             <div class="form-group">
-                                <label>Qual?</label>
-
                                 <div class="input-group  input-group-sm ">
                                                             <span class="input-group-addon"> <span
                                                                     class="glyphicon glyphicon-edit"></span></span>
-                                    <input class="form-control" placeholder="Especificar o exame complementar"
+                                    <input class="form-control" placeholder="Especificar o diagnóstico da doença ou o código da doença (CID-10)"
                                            id="id_whichComplementaryExame" type="text">
+
+
                                 </div>
                             </div>
                         </div>
-                        <div class="col-xs-6 col-sm-9">
+                        <div class="col-xs-6 col-sm-3">
                             <div class="form-group">
-                                <label for="dateOfComplementaryExame" class="control-label">Data:</label>
-
-                                <div class="input-group input-group-sm ">
-                                                            <span class="input-group-addon"> <span
-                                                                    class="glyphicon glyphicon-edit"></span></span>
-                                    <input class="form-control" placeholder="Data" id="dateOfComplementaryExame"
-                                           type="date">
+                                <div class="btn-group pull-right">
+                                    <a data-toggle="tooltip" data-placement="bottom" title="Incluir este item" class="btn btn-primary glyphicon glyphicon-plus" href="#evaluateModal"> Incluir</a>
                                 </div>
                             </div>
                         </div>
@@ -582,7 +564,7 @@
         <div class="col-md-10">
             <div class="btn-group pull-right">
                 {% if creating %}
-                    <button type="submit" class="btn btn-primary">Salvar</button>
+                    <button type="submit" class="btn btn-primary">Salvar avaliação</button>
                 {% endif %}
             </div>
         </div>
