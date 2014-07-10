@@ -123,7 +123,6 @@ class MedicalRecordForm(ModelForm):
     class Meta:
         model = MedicalRecordData
         fields = [
-            'record_date', 'record_responsible',
             'fracture_history', 'scapula_fracture_side', 'clavicle_fracture_side', 'rib_fracture',
             'cervical_vertebrae_fracture', 'thoracic_vertebrae_fracture', 'lumbosacral_vertebrae_fracture',
             'superior_members_fracture_side', 'inferior_members_fracture_side', 'pelvis_fracture_side',
@@ -135,10 +134,10 @@ class MedicalRecordForm(ModelForm):
         ]
 
         widgets = {
-            'record_date': DateInput(attrs={'class': 'form-control', 'placeholder': 'Data',
-                                            'id': "record_date", "disabled": ""}),
-            'record_responsible': TextInput(attrs={'class': 'form-control', 'placeholder': 'Entrar responsável',
-                                                   'id': "record_responsible", "disabled": ""}),
+            # 'record_date': DateInput(attrs={'class': 'form-control', 'placeholder': 'Data',
+            #                                 'id': "record_date", "disabled": ""}),
+            # 'record_responsible': TextInput(attrs={'class': 'form-control', 'placeholder': 'Entrar responsável',
+            #                                        'id': "record_responsible", "disabled": ""}),
             'fracture_history': RadioSelect(attrs={'id': 'fracture_history'}, choices=(('1', 'Sim'), ('0', 'Não'))),
             'scapula_fracture_side': Select(attrs={'class': 'form-control', 'id': 'scapula_fracture_side'}),
             'clavicle_fracture_side': Select(attrs={'class': 'form-control', 'id': 'clavicle_fracture_side'}),
