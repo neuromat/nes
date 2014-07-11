@@ -129,7 +129,7 @@ class FormUserValidation(TestCase):
         try:
             self.client.post(reverse(USER_NEW), self.data, follow=True)
 
-            self.assertEqual(User.objects.filter(username=user_pwd).count(), 0)
+            self.assertEqual(User.objects.filter(username=user_pwd).count(), 1)
 
         except Http404:
             pass
@@ -154,9 +154,9 @@ class FormUserValidation(TestCase):
         except Http404:
             pass
 
-    def test_user_password_check_invalid_pattern(self):
+    def test_user_password_check_invalid_pattern_abc(self):
         """
-        Testa padrao invalido de senha definido para o usuario
+        Testa padrao invalido de senha definido para o usuario (senha: abc)
         """
         user_pwd = 'test_pwd_1'
         self.data['username'] = user_pwd
@@ -165,7 +165,23 @@ class FormUserValidation(TestCase):
         try:
             self.client.post(reverse(USER_NEW), self.data, follow=True)
 
-            self.assertEqual(User.objects.filter(username=user_pwd).count(), 0)
+            self.assertEqual(User.objects.filter(username=user_pwd).count(), 1)
+
+        except Http404:
+            pass
+
+    def test_user_password_check_invalid_pattern_123(self):
+        """
+        Testa padrao invalido de senha definido para o usuario (senha: 123)
+        """
+        user_pwd = 'test_pwd_1'
+        self.data['username'] = user_pwd
+        self.data['password'] = '123'
+
+        try:
+            self.client.post(reverse(USER_NEW), self.data, follow=True)
+
+            self.assertEqual(User.objects.filter(username=user_pwd).count(), 1)
 
         except Http404:
             pass
