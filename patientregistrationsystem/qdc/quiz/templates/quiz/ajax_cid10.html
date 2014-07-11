@@ -1,0 +1,13 @@
+{% load i18n %}
+{% if cid_10_list.count > 0 %}
+
+    {% for cid_10 in cid_10_list %}
+        <li> <a href="#" class="fill_input_link">{{ cid_10.abbreviated_description }}</a></li>
+    {% endfor %}
+
+{% else %}
+
+    {% comment %}Translators: This message appears on the search page only{% endcomment %}
+    <li>{% trans "Nenhuma doença encontrada!" %}</li>
+
+{% endif %}

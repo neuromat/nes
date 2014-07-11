@@ -8,7 +8,8 @@ from django.shortcuts import render_to_response
 
 from models import Patient, SocialDemographicData, SocialHistoryData, FleshToneOption, \
     MaritalStatusOption, SchoolingOption, PaymentOption, ReligionOption, MedicalRecordData, \
-    GenderOption, AmountCigarettesOption, AlcoholFrequencyOption, AlcoholPeriodOption
+    GenderOption, AmountCigarettesOption, AlcoholFrequencyOption, AlcoholPeriodOption, \
+    ClassificationOfDiseases
 
 from forms import PatientForm, SocialDemographicDataForm, SocialHistoryDataForm, UserForm, UserFormUpdate, \
     MedicalRecordForm
@@ -445,6 +446,19 @@ def patients_verify_homonym(request):
 
     return render_to_response('quiz/ajax_homonym.html', {'patient_homonym': patient_homonym,
                                                          'patient_homonym_excluded': patient_homonym_excluded})
+
+@login_required
+def search_cid10_ajax(request):
+    if request.method == "POST":
+        search_text = request.POST['search_text']
+        if search_text:
+            cid_10_list = ClassificationOfDiseases.objects.filter(abbreviated_description__icontains=search_text)
+        else:
+            cid_10_list = ''
+    else:
+        search_text = ''
+
+    return render_to_response('quiz/ajax_cid10.html', {'cid_10_list': cid_10_list})
 
 
 @login_required

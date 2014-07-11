@@ -47,7 +47,27 @@ $(function(){
 
     });
 
+    //Search in CID-10 table
+    $('#id_whichComplementaryExame').keyup(function() {
+
+        /*if ($('#id_whichComplementaryExame').val().length >= 3) {*/
+
+            $.ajax({
+                type: "POST",
+                url: "/quiz/patient/medical_record/cid-10/",
+                data: {
+                    'search_text': ($('#id_whichComplementaryExame').val().length >= 3 ?
+                        $('#id_whichComplementaryExame').val() : ''),
+                    'csrfmiddlewaretoken': $("input[name=csrfmiddlewaretoken]").val()
+                },
+                success: searchSuccess,
+                dataType: 'html'
+
+            });
+    });
+
 });
+
 
 function searchSuccess(data, textStatus, jqXHR)
 {

@@ -6,7 +6,14 @@
         $(function(){
             $("[data-toggle=tooltip]").tooltip();
         });
+
+        $(function() {
+            $('.fill_input_link').live('click', function() {
+                $("#id_whichComplementaryExame").val($(this).html());
+            });
+        });
     </script>
+
 {% endblock %}
 
 {% block form %}
@@ -530,8 +537,10 @@
                                     <input class="form-control" placeholder="Especificar o diagnóstico da doença ou o código da doença (CID-10)"
                                            id="id_whichComplementaryExame" type="text">
 
-
                                 </div>
+                                {# Entry for search results in CID-10 table #}
+                                {% csrf_token %}
+                                <ul id="search-results" style="list-style: none;"></ul>
                             </div>
                         </div>
                         <div class="col-xs-6 col-sm-3">
