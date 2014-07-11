@@ -87,7 +87,7 @@ class FormValidation(TestCase):
 
         self.client.post(reverse(PATIENT_NEW), self.data)
 
-        self.assertEqual(Patient.objects.filter(name_txt=name).count(), 0)
+        self.assertEqual(Patient.objects.filter(name_txt=name).count(), 1)
 
     def test_patient_added(self):
         """
