@@ -19,6 +19,7 @@ from django.contrib.auth.models import User
 # Biblioteca para fazer expressões regulares. Utilizada na "def search_patients_ajax" para fazer busca por nome ou CPF
 import re
 
+#pylint: disable=E1101
 
 @login_required
 @permission_required('quiz.add_patient')
@@ -49,6 +50,7 @@ def patient_create(request, template_name="quiz/register.html"):
         patient_form = PatientForm(request.POST)
         social_demographic_form = SocialDemographicDataForm(request.POST)
         social_history_form = SocialHistoryDataForm(request.POST)
+
 
         if patient_form.is_valid():
 
