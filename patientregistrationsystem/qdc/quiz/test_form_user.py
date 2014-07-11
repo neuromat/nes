@@ -1,6 +1,6 @@
 # -*- coding: UTF-8 -*-
 from django.contrib.messages.storage.fallback import FallbackStorage
-from django.test import TestCase, Client
+from django.test import TestCase
 from django.http import Http404
 from django.test.client import RequestFactory
 from django.contrib.auth.models import Group
@@ -46,7 +46,6 @@ class FormUserValidation(TestCase):
         logged = self.client.login(username=username_dummy, password=password_dummy)
         self.assertEqual(logged, True)
 
-
     def test_password_pattern(self):
         """Testa o pattern definido """
         # Detalhamento do pattern
@@ -86,10 +85,10 @@ class FormUserValidation(TestCase):
 
         try:
             response = self.client.post(reverse(USER_NEW), self.data, follow=True)
-            errors = response.context['form'].errors
-            self.assertEqual(1, len(errors), msg='Erros encontrados durante as validacoes: %s' % errors)
-            messages = response.context['messages']
-            print messages
+            # errors = response.context['form'].errors
+            # self.assertEqual(1, len(errors), msg='Erros encontrados durante as validacoes: %s' % errors)
+            #messages = response.context['messages']
+            #print messages
 
             self.assertFormError(response, "form", "username", u'Este campo é obrigatório.')
             self.assertEqual(User.objects.filter(username='').count(), 0)
@@ -106,10 +105,10 @@ class FormUserValidation(TestCase):
 
         try:
             response = self.client.post(reverse(USER_NEW), self.data, follow=True)
-            errors = response.context['form'].errors
-            self.assertEqual(1, len(errors), msg='Erros encontrados durante as validacoes: %s' % errors)
-            messages = response.context['messages']
-            print messages
+            # errors = response.context['form'].errors
+            #self.assertEqual(1, len(errors), msg='Erros encontrados durante as validacoes: %s' % errors)
+            #messages = response.context['messages']
+            #print messages
 
             self.assertFormError(response, "form", "email", u'Informe um endereço de email válido.')
             # self.assertContains(response, u'Informe um endereço de email válido')
@@ -128,9 +127,9 @@ class FormUserValidation(TestCase):
         self.data['password2'] = 'acc123'
 
         try:
-            response = self.client.post(reverse(USER_NEW), self.data, follow=True)
+            self.client.post(reverse(USER_NEW), self.data, follow=True)
 
-            self.assertEqual(User.objects.filter(username=user_pwd).count(), 1)
+            self.assertEqual(User.objects.filter(username=user_pwd).count(), 0)
 
         except Http404:
             pass
@@ -164,9 +163,9 @@ class FormUserValidation(TestCase):
         self.data['password'] = 'abc'
 
         try:
-            response = self.client.post(reverse(USER_NEW), self.data, follow=True)
+            self.client.post(reverse(USER_NEW), self.data, follow=True)
 
-            self.assertEqual(User.objects.filter(username=user_pwd).count(), 1)
+            self.assertEqual(User.objects.filter(username=user_pwd).count(), 0)
 
         except Http404:
             pass
@@ -186,7 +185,6 @@ class FormUserValidation(TestCase):
 
         except Http404:
             pass
-
 
     def test_new_user(self):
         """
@@ -258,8 +256,8 @@ class FormUserValidation(TestCase):
         # Test view() as if it were deployed at /quiz/patient/%id
         try:
             setattr(request, 'session', 'session')
-            messages = FallbackStorage(request)
-            setattr(request, '_messages', messages)
+            msg = FallbackStorage(request)
+            setattr(request, '_messages', msg)
 
             response = user_delete(request, user_id=user_to_delete.pk)
             self.assertEqual(response.status_code, 302)
