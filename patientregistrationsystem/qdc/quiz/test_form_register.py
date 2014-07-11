@@ -150,7 +150,7 @@ class FormValidation(TestCase):
             pass
 
     def test_update_patient(self):
-        """Teste de paciente nao existente na base de dados """
+        """Teste de paciente existente na base de dados """
 
         p = Patient()
 
@@ -167,6 +167,29 @@ class FormValidation(TestCase):
         try:
             response = patient_update(request, patient_id=p.pk)
             self.assertEqual(response.status_code, 200)
+        except Http404:
+            pass
+
+    def test_update_patient_not_exist(self):
+        """Teste de paciente nao existente na base de dados """
+
+        # p = Patient()
+        #
+        # p.name_txt = 'Paciente de teste UPDATE'
+        # p.date_birth_txt = '2001-01-15'
+        # p.gender_opt_id = self.gender_opt.id
+        # p.save()
+        id = 99999
+
+        # Create an instance of a GET request.
+        self.client.login(username='myadmin', password='mypassword')
+        request = self.factory.get('/quiz/patient/%i/' % id)
+        request.user = self.user
+
+        try:
+            response = patient_update(request, patient_id=id)
+            #self.assertRaises(response, 'DoesNotExist')
+            self.assertEqual(response.status_code, 404)
         except Http404:
             pass
 
