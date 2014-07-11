@@ -3,7 +3,7 @@ from django.test import TestCase, Client
 from django.http import Http404
 from django.test.client import RequestFactory
 from datetime import date
-from views import *
+from views import User, GenderOption, reverse, Patient, patient_update, patient
 
 PATIENT_NEW = 'patient_new'
 
@@ -62,7 +62,7 @@ class FormValidation(TestCase):
         self.data['name_txt'] = name
         self.data['date_birth_txt'] = '15/05/2201'
 
-        response = self.client.post(reverse(PATIENT_NEW), self.data)
+        self.client.post(reverse(PATIENT_NEW), self.data)
 
         self.assertEqual(Patient.objects.filter(name_txt=name).count(), 0)
 
@@ -89,7 +89,6 @@ class FormValidation(TestCase):
 
         self.assertEqual(Patient.objects.filter(name_txt=name).count(), 0)
 
-
     def test_patient_added(self):
         """
         Testa inclusao de paciente com campos obrigatorios
@@ -98,12 +97,11 @@ class FormValidation(TestCase):
         self.data['name_txt'] = name
 
         try:
-            response = self.client.post(reverse(PATIENT_NEW), self.data, follow=True)
+            self.client.post(reverse(PATIENT_NEW), self.data, follow=True)
 
             self.assertEqual(Patient.objects.filter(name_txt=name).count(), 1)
         except Http404:
             pass
-
 
     def test_valid_email(self):
         """
@@ -182,9 +180,3 @@ class FormValidation(TestCase):
         self.assertEqual(client.get('/redirect_notfound').status_code, 404)
         self.assertEqual(client.get('/redirect_redirect_response').status_code, 404)
         self.assertEqual(client.get('/quiz').status_code, 301)
-
-
-
-
-
-
