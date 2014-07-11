@@ -5,7 +5,7 @@ from django.http import Http404
 from django.test.client import RequestFactory
 from django.contrib.auth.models import Group
 
-from views import *
+from views import User, reverse, user_update, user_delete
 
 import re
 
