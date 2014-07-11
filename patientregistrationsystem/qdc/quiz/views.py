@@ -171,7 +171,8 @@ def patient_create(request, template_name="quiz/register.html"):
 def patient_update(request, patient_id, template_name="quiz/register.html"):
     # # Search in models.Patient
     # # ------------------------
-    p = Patient.objects.get(number_record=patient_id)
+    #p = Patient.objects.get(number_record=patient_id)
+    p = get_object_or_404(Patient, pk=patient_id)
 
     if p and not p.removed:
 
