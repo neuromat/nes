@@ -1,7 +1,8 @@
 # coding=utf-8
 from django.forms import ModelForm, TextInput, DateInput, Select, RadioSelect, PasswordInput, CheckboxSelectMultiple, \
     CharField, ValidationError
-from models import Patient, SocialDemographicData, SocialHistoryData, MedicalRecordData
+from django.forms.widgets import Textarea
+from models import Patient, SocialDemographicData, SocialHistoryData, MedicalRecordData, ComplementaryExam
 from django.contrib.auth.hashers import make_password
 from quiz_widget import SelectBoxCountries, SelectBoxState
 
@@ -224,3 +225,20 @@ class UserFormUpdate(UserForm):
             return make_password(self.cleaned_data['password'])
         else:
             return self.instance.password
+
+
+class ComplementaryExamForm(ModelForm):
+    class Meta:
+        model = ComplementaryExam
+        fields = ['date', 'description', 'doctor', 'doctor_register', 'exam_site']
+
+        widgets = {
+            'date': DateInput(attrs={'class': 'form-control', 'placeholder': 'Data',
+                                               'id': "exam_date", 'required': "",
+                                               'data-error': "Data deve ser preenchida"},
+                                        ),
+            'description': Textarea(attrs={'class': 'form-control', 'placeholder': 'Descrição', 'cols': '100'}),
+            'doctor': TextInput(attrs={'class': 'form-control', 'placeholder': 'Médico'}),
+            'doctor_register': TextInput(attrs={'class': 'form-control', 'placeholder': 'CRM'}),
+            'exam_site': TextInput(attrs={'class': 'form-control', 'placeholder': 'Local de realização'}),
+        }

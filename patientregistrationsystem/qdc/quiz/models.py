@@ -333,6 +333,5 @@ class ComplementaryExam(models.Model):
 
 class ExamFile (models.Model):
     exam = models.ForeignKey(ComplementaryExam, null=False)
-    name = models.CharField(max_length=100, null=False, blank=False)
-    content = models.BinaryField(null=False, blank=False)
+    content = models.FileField(upload_to='documents/%Y/%m/%d')
 
