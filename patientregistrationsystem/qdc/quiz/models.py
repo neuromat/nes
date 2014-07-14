@@ -316,22 +316,25 @@ class Diagnosis(models.Model):
     classification_of_diseases = models.ForeignKey(ClassificationOfDiseases, null=False)
 
     def __unicode__(self):
-        return self.medical_record_data, self.classification_of_diseases
+        return unicode(self.medical_record_data)
 
 
 class ComplementaryExam(models.Model):
     diagnosis = models.ForeignKey(Diagnosis, null=False, blank=False)
-    date = models.DateField(null=False, blank=False)
+    date = models.DateField(null=False, blank=False, validators=[validate_date_birth])
     description = models.CharField(max_length=50, null=False, blank=False)
     doctor = models.CharField(max_length=50, null=False, blank=False)
     doctor_register = models.CharField(max_length=10, null=False, blank=False)
     exam_site = models.CharField(max_length=100, null=False, blank=False)
 
     def __unicode__(self):
-        return self.date, self.description
+        return unicode(self.date)
 
 
 class ExamFile (models.Model):
     exam = models.ForeignKey(ComplementaryExam, null=False)
     content = models.FileField(upload_to='documents/%Y/%m/%d')
 
+
+class TesteFile (models.Model):
+    file = models.FileField(upload_to='documents')
