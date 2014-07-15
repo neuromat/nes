@@ -12,7 +12,8 @@ from models import Patient, SocialDemographicData, SocialHistoryData, FleshToneO
     ClassificationOfDiseases, Diagnosis
 
 from forms import PatientForm, SocialDemographicDataForm, SocialHistoryDataForm, UserForm, UserFormUpdate, \
-    MedicalRecordForm
+    MedicalRecordForm, ComplementaryExamForm
+
 from quiz_widget import SelectBoxCountriesDisabled, SelectBoxStateDisabled
 from django.contrib import messages
 
@@ -426,7 +427,6 @@ def search_patients_ajax(request):
 
     return render_to_response('quiz/ajax_search.html', {'patients': patient_list})
 
-
 @login_required
 @permission_required('quiz.view_patient')
 def patients_verify_homonym(request):
@@ -592,4 +592,28 @@ def diagnosis_create(request, patient_id, medical_record_id, cid10_id, template_
     #               {'medical_record_form': medical_record_form, 'name_patient': p.name_txt, 'patient_id': patient_id,
     #                'diagnosis_list': diagnosis,
     #                'record_date': m.record_date, 'record_responsible': m.record_responsible,
-    #                })
+    #                })                  
+
+
+def exam_create(request, patient_id, record_id, template_name="quiz/exams.html"):
+
+    form = ComplementaryExamForm(request.POST or None)
+
+    d = Diagnosis.objects.get(medical_record_data=record_id)
+    p = Patient.objects.get(number_record=patient_id)
+
+    if request.method == "POST":
+        if form.is_valid():
+            new_complementary_exam = form.save(commit=False)
+            new_complementary_exam.diagnosis = d
+            new_complementary_exam.save()
+            messages.success(request, 'Exame salvo com sucesso.')
+            redirect_url = reverse("medical_record_new", args=(p.number_record,))
+            return HttpResponseRedirect(redirect_url + "?currentTab=3")
+
+        else:
+            messages.error(request, 'Não foi possível criar exame.')
+
+    return render(request, template_name,
+                  {'complementary_exam_form': form, 'patient_id': patient_id, 'name_patient': p.name_txt,
+                   'record_id': record_id})

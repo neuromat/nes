@@ -27,5 +27,7 @@ urlpatterns = patterns(
     url(r'^patient/medical_record/cid-10/$', 'quiz.views.search_cid10_ajax', name='cid10_search'),
     url(r'^patient/(?P<patient_id>\d+)/medical_record/(?P<medical_record_id>\d+)/diagnosis/(?P<cid10_id>\d+)/$',
         'quiz.views.diagnosis_create'),
+    url(r'^patient/(?P<patient_id>\d+)/medical_record/(?P<record_id>\d+)/exams/$', 'quiz.views.exam_create',
+        name='exam_create'),
 
 )
