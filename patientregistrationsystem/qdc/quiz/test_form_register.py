@@ -100,7 +100,6 @@ class FormValidation(TestCase):
         name = 'test_date_birth_now'
         self.data['date_birth_txt'] = date_birth
         self.data['name_txt'] = name
-        self.data['currentTab'] = 1
 
         self.client.post(reverse(PATIENT_NEW), self.data)
 
@@ -115,7 +114,10 @@ class FormValidation(TestCase):
 
         try:
             self.client.post(reverse(PATIENT_NEW), self.data, follow=True)
+            self.assertEqual(Patient.objects.filter(name_txt=name).count(), 1)
 
+            self.data['currentTab'] = 0
+            self.client.post(reverse(PATIENT_NEW), self.data, follow=True)
             self.assertEqual(Patient.objects.filter(name_txt=name).count(), 1)
         except Http404:
             pass
