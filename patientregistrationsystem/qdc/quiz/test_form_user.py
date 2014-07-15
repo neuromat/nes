@@ -5,7 +5,6 @@ from django.http import Http404
 from django.test.client import RequestFactory
 from django.contrib.auth.models import Group
 
-
 from views import User, reverse, user_update, user_delete
 
 import re
@@ -88,8 +87,8 @@ class FormUserValidation(TestCase):
             response = self.client.post(reverse(USER_NEW), self.data, follow=True)
             # errors = response.context['form'].errors
             # self.assertEqual(1, len(errors), msg='Erros encontrados durante as validacoes: %s' % errors)
-            #messages = response.context['messages']
-            #print messages
+            # messages = response.context['messages']
+            # print messages
 
             self.assertFormError(response, "form", "username", u'Este campo é obrigatório.')
             self.assertEqual(User.objects.filter(username='').count(), 0)
@@ -107,9 +106,9 @@ class FormUserValidation(TestCase):
         try:
             response = self.client.post(reverse(USER_NEW), self.data, follow=True)
             # errors = response.context['form'].errors
-            #self.assertEqual(1, len(errors), msg='Erros encontrados durante as validacoes: %s' % errors)
-            #messages = response.context['messages']
-            #print messages
+            # self.assertEqual(1, len(errors), msg='Erros encontrados durante as validacoes: %s' % errors)
+            # messages = response.context['messages']
+            # print messages
 
             self.assertFormError(response, "form", "email", u'Informe um endereço de email válido.')
             # self.assertContains(response, u'Informe um endereço de email válido')
@@ -214,7 +213,13 @@ class FormUserValidation(TestCase):
             self.client.post(reverse(USER_NEW), self.data, follow=True)
 
             self.assertEqual(User.objects.filter(username=username).count(), 1)
-
+            # user = User.objects.filter(pk=self.user.pk).first()
+            # self.data['user_id'] = user.id
+            # self.data['password'] = ''
+            # self.data['password2'] = ''
+            #
+            # response = self.client.post(reverse('user_edit', args=[user.pk]), self.data)
+            # self.assertContains(response, u'Usuário atualizado com sucesso.')
         except Http404:
             pass
 
@@ -232,6 +237,8 @@ class FormUserValidation(TestCase):
         try:
             response = user_update(request, user_id=self.user.pk)
             self.assertEqual(response.status_code, 200)
+            response = self.client.post(reverse('user_edit', args=[self.user.pk]), self.data)
+            self.assertEqual(response.status_code, 302)
         except Http404:
             pass
 
@@ -259,7 +266,7 @@ class FormUserValidation(TestCase):
 
         username = 'testeusername'
         self.data['username'] = username
-        #id_user = User.objects.get(pk=1)
+        # id_user = User.objects.get(pk=1)
 
         try:
             self.client.post('quiz/user/edit/%d' % self.user.pk, self.data, follow=True)
