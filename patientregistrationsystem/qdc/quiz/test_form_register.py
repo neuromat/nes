@@ -39,8 +39,8 @@ class FormValidation(TestCase):
                      'cpf_id': '374.276.738-08',
                      'gender_opt': str(self.gender_opt.id),
                      'date_birth_txt': '01/02/1995',
-                     'email_txt': 'email@email.com',
-                     'currentTab': '0'}
+                     'email_txt': 'email@email.com'
+        }
 
     def test_invalid_cpf(self):
         """
@@ -182,7 +182,7 @@ class FormValidation(TestCase):
             self.data['search_text'] = ''
             response = self.client.post(reverse('patient_search'), self.data)
             self.assertEqual(response.status_code, 200)
-            self.assertEqual(response.context['patients'],'')
+            self.assertEqual(response.context['patients'], '')
 
 
         except Http404:
@@ -207,7 +207,7 @@ class FormValidation(TestCase):
         except Http404:
             pass
 
-    def test_update_patient(self):
+    def test_update_and_remove_patient(self):
         """Teste de paciente existente na base de dados """
 
         p = Patient()
@@ -225,6 +225,18 @@ class FormValidation(TestCase):
         try:
             response = patient_update(request, patient_id=p.pk)
             self.assertEqual(response.status_code, 200)
+            response = self.client.post(reverse('patient_edit', args=[p.pk]), self.data)
+            self.assertEqual(response.status_code, 302)
+
+            self.data['currentTab'] = 0
+            response = self.client.post(reverse('patient_edit', args=[p.pk]), self.data)
+            self.assertEqual(response.status_code, 302)
+
+            self.data['cpf_id'] = ''
+            response = self.client.post(reverse('patient_edit', args=[p.pk]), self.data)
+            self.assertEqual(response.status_code, 302)
+
+            self.data['cpf_id'] = '374.276.738-08'
             response = self.client.post(reverse('patient_edit', args=[p.pk]), self.data)
             self.assertEqual(response.status_code, 302)
 
@@ -246,6 +258,8 @@ class FormValidation(TestCase):
             response = self.client.post(reverse('patient_search'), self.data)
             self.assertEqual(response.status_code, 200)
             self.assertNotContains(response, '374.276.738')
+
+
 
         except Http404:
             pass
@@ -299,7 +313,6 @@ class FormValidation(TestCase):
         self.assertEqual(response.status_code, 200)
         self.assertContains(response, 'tifoide')
 
-
         self.data['search_text'] = '01'
         response = self.client.post(reverse('cid10_search'), self.data)
         self.assertEqual(response.status_code, 200)
@@ -325,17 +338,17 @@ class FormValidation(TestCase):
         self.data['search_text'] = 'P'
         response = self.client.post(reverse('patients_verify_homonym'), self.data)
         self.assertEqual(response.status_code, 200)
-        #self.assertContains(response, 'Patient')
+        # self.assertContains(response, 'Patient')
 
         self.data['search_text'] = 374
         response = self.client.post(reverse('patients_verify_homonym'), self.data)
         self.assertEqual(response.status_code, 200)
-        #self.assertContains(response, '374.276.738-08')
+        # self.assertContains(response, '374.276.738-08')
 
         self.data['search_text'] = ''
         response = self.client.post(reverse('patients_verify_homonym'), self.data)
         self.assertEqual(response.status_code, 200)
-        #self.assertEqual(response.context['patient_homonym'].count(), 0)
+        # self.assertEqual(response.context['patient_homonym'].count(), 0)
 
         # Busca invalida
         self.data['search_text'] = '!@#'
