@@ -192,6 +192,11 @@ class FormValidation(TestCase):
             self.assertEqual(response.status_code, 200)
             response = self.client.post(reverse('patient_edit', args=[p.pk]), self.data)
             self.assertEqual(response.status_code, 302)
+
+            self.data['remove'] = p.pk
+            response = self.client.post(reverse('patient_edit', args=[p.pk]), self.data)
+            self.assertEqual(response.status_code, 302)
+
         except Http404:
             pass
 
