@@ -143,7 +143,7 @@ class FormValidation(TestCase):
 
 
 
-    def test_view_patient(self):
+    def test_view_and_search_patient(self):
         """
         Teste de visualizacao de paciente apos cadastro na base de dados
         """
@@ -190,6 +190,8 @@ class FormValidation(TestCase):
         try:
             response = patient_update(request, patient_id=p.pk)
             self.assertEqual(response.status_code, 200)
+            response = self.client.post(reverse('patient_edit', args=[p.pk]), self.data)
+            self.assertEqual(response.status_code, 302)
         except Http404:
             pass
 
