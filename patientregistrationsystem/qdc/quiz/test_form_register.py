@@ -142,7 +142,6 @@ class FormValidation(TestCase):
         self.assertContains(response, 'Nome não preenchido')
 
 
-
     def test_view_and_search_patient(self):
         """
         Teste de visualizacao de paciente apos cadastro na base de dados
@@ -185,7 +184,6 @@ class FormValidation(TestCase):
         p.gender_opt_id = self.gender_opt.id
         p.save()
 
-
         self.client.login(username='myadmin', password='mypassword')
         request = self.factory.get('/quiz/patient/%d' % p.pk)
         request.user = self.user
@@ -218,9 +216,22 @@ class FormValidation(TestCase):
             response = self.client.post(reverse('patient_edit', args=[p.pk]), self.data)
             self.assertEqual(response.status_code, 302)
 
-            self.data['remove'] = p.pk
-            response = self.client.post(reverse('patient_edit', args=[p.pk]), self.data)
+            self.data['search_text'] = 374
+            response = self.client.post(reverse('patient_search'), self.data)
+            self.assertEqual(response.status_code, 200)
+            self.assertContains(response, '374.276.738')
+
+            self.data['action'] = 'remove'
+            response = self.client.post(reverse('patient_view', args=[p.pk]), self.data)
             self.assertEqual(response.status_code, 302)
+
+            patient_removed = Patient.objects.get(pk=p.pk)
+            self.assertEqual(patient_removed.removed, True)
+
+            self.data['search_text'] = 374
+            response = self.client.post(reverse('patient_search'), self.data)
+            self.assertEqual(response.status_code, 200)
+            self.assertNotContains(response, '374.276.738')
 
         except Http404:
             pass
@@ -243,7 +254,7 @@ class FormValidation(TestCase):
 
         try:
             response = patient_update(request, patient_id=id)
-            #self.assertRaises(response, 'DoesNotExist')
+            # self.assertRaises(response, 'DoesNotExist')
             self.assertEqual(response.status_code, 404)
         except Http404:
             pass
