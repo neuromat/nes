@@ -528,7 +528,7 @@
             <div class="col-md-1"></div>
             <div class="col-md-10">
                 <div class="container span6 offset3 well ">
-                {% if creating %}
+                {% if editing %}
                     <div class="row">
                         <div class="col-xs-6 col-sm-9" >
                             <div class="form-group">
@@ -563,11 +563,14 @@
                                         {% if not object_list %}
                                             <tr>
                                                 <td>(sem diagnósticos)</td>
+                                                <td></td>
+                                                <td></td>
                                             </tr>
                                         {% else %}
                                             {% for results in object_list %}
                                                 <tr>
                                                     <td>{{ results.classification_of_diseases }}</td>
+                                                    <td></td>
                                                     <td>{{ results.exams }}</td>
                                                 </tr>
                                             {% endfor %}
