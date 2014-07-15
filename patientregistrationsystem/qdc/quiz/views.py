@@ -41,10 +41,7 @@ def patient_create(request, template_name="quiz/register.html"):
     social_demographic_form = SocialDemographicDataForm()
     social_history_form = SocialHistoryDataForm()
 
-    if 'currentTab' in request.POST:
-        current_tab = request.POST['currentTab']
-    else:
-        current_tab = 0
+    current_tab = get_current_tab(request)
 
     if request.method == "POST":
 
@@ -147,18 +144,29 @@ def patient_create(request, template_name="quiz/register.html"):
     return render(request, template_name, context)
 
 
+def get_current_tab(request):
+    if 'currentTab' in request.GET:
+        current_tab = request.GET['currentTab']
+    elif 'currentTab' in request.POST:
+        current_tab = request.POST['currentTab']
+    else:
+        current_tab = 0
+
+    return current_tab
+
+
 @login_required
 @permission_required('quiz.change_patient')
 def patient_update(request, patient_id, template_name="quiz/register.html"):
     # # Search in models.Patient
-    ## ------------------------
+    # # ------------------------
     p = Patient.objects.get(number_record=patient_id)
 
     if p and not p.removed:
 
         patient_form = PatientForm(request.POST or None, instance=p)
 
-        ## Search in models.SocialDemographicData
+        # # Search in models.SocialDemographicData
         ## --------------------------------------
         try:
             p_social_demo = SocialDemographicData.objects.get(id_patient_id=patient_id)
@@ -174,22 +182,13 @@ def patient_update(request, patient_id, template_name="quiz/register.html"):
         except SocialHistoryData.DoesNotExist:
             social_history_form = SocialDemographicDataForm()
 
-        if 'currentTab' in request.GET:
-            current_tab = request.GET['currentTab']
-        else:
-            current_tab = 0
-
+        current_tab = get_current_tab(request)
         #TODO: retirar este controle de comentario
         ### teste: inicio
 
         #TODO: reaproveitar o codigo abaixo, pois eh praticamente igual ao do inserir
 
         if request.method == "POST":
-
-            if 'currentTab' in request.POST:
-                current_tab = request.POST['currentTab']
-            else:
-                current_tab = 0
 
             #patient_form = PatientForm(request.POST)
             #social_demographic_form = SocialDemographicDataForm(request.POST)
@@ -310,7 +309,6 @@ def patients(request):
 @login_required
 @permission_required('quiz.view_patient')
 def patient(request, patient_id, template_name="quiz/register.html"):
-
     if request.method == "POST":
 
         if 'action' in request.POST:
@@ -330,20 +328,17 @@ def patient(request, patient_id, template_name="quiz/register.html"):
 
         return HttpResponseRedirect(redirect_url)
 
-    if 'currentTab' in request.GET:
-        current_tab = request.GET['currentTab']
-    else:
-        current_tab = 0
+    current_tab = get_current_tab(request)
 
     # # Search in models.Patient
-    ## ------------------------
+    # # ------------------------
     p = Patient.objects.get(number_record=patient_id)
 
     if p and not p.removed:
 
         patient_form = PatientForm(instance=p)
 
-        ## Search in models.SocialDemographicData
+        # # Search in models.SocialDemographicData
         ## --------------------------------------
         try:
             p_social_demo = SocialDemographicData.objects.get(id_patient_id=patient_id)
@@ -400,6 +395,7 @@ def advanced_search(request):
 def contact(request):
     return render(request, 'quiz/contato.html')
 
+
 @login_required
 def restore_patient(request, patient_id):
     patient_restored = Patient.objects.get(number_record=patient_id)
@@ -427,6 +423,7 @@ def search_patients_ajax(request):
 
     return render_to_response('quiz/ajax_search.html', {'patients': patient_list})
 
+
 @login_required
 @permission_required('quiz.view_patient')
 def patients_verify_homonym(request):
@@ -447,6 +444,7 @@ def patients_verify_homonym(request):
 
     return render_to_response('quiz/ajax_homonym.html', {'patient_homonym': patient_homonym,
                                                          'patient_homonym_excluded': patient_homonym_excluded})
+
 
 @login_required
 def search_cid10_ajax(request):
@@ -555,7 +553,7 @@ def medical_record_view(request, patient_id, record_id, template_name="quiz/medi
         diagnosis_list = Diagnosis.objects.filter(medical_record_data=record_id)
         # data = {'object_list': diagnosis_list}
 
-        #deixa os campos como disabled
+        # deixa os campos como disabled
         for form in {medical_record_form}:
             for field in form.fields:
                 form.fields[field].widget.attrs['disabled'] = True
@@ -588,14 +586,13 @@ def diagnosis_create(request, patient_id, medical_record_id, cid10_id, template_
     # medical_record_form = MedicalRecordForm(instance=m)
     #
     # return render(request, template_name,
-    #               {'medical_record_form': medical_record_form, 'name_patient': p.name_txt, 'patient_id': patient_id,
-    #                'diagnosis_list': diagnosis,
+    # {'medical_record_form': medical_record_form, 'name_patient': p.name_txt, 'patient_id': patient_id,
+    # 'diagnosis_list': diagnosis,
     #                'record_date': m.record_date, 'record_responsible': m.record_responsible,
     #                })                  
 
 
 def exam_create(request, patient_id, record_id, template_name="quiz/exams.html"):
-
     form = ComplementaryExamForm(request.POST or None)
 
     d = Diagnosis.objects.get(pk=record_id)
@@ -610,7 +607,6 @@ def exam_create(request, patient_id, record_id, template_name="quiz/exams.html")
             new_complementary_exam.save()
 
             if file_form.is_valid():
-
                 new_file_data = file_form.save(commit=False)
                 new_file_data.exam = new_complementary_exam
                 new_file_data.save()
@@ -618,7 +614,6 @@ def exam_create(request, patient_id, record_id, template_name="quiz/exams.html")
                 # new_document = ExamFile(content=request.FILES['content'])
                 # new_document.exam = new_complementary_exam
                 # new_document.save()
-
 
             messages.success(request, 'Exame salvo com sucesso.')
             redirect_url = reverse("medical_record_new", args=(p.number_record,))
