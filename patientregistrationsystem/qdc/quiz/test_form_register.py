@@ -3,7 +3,8 @@ from django.test import TestCase, Client
 from django.http import Http404
 from django.test.client import RequestFactory
 from datetime import date
-from views import User, GenderOption, reverse, Patient, patient_update, patient, patients
+from models import ClassificationOfDiseases
+from views import User, GenderOption, reverse, Patient, patient_update, patient
 
 PATIENT_NEW = 'patient_new'
 
@@ -141,7 +142,6 @@ class FormValidation(TestCase):
 
         self.assertContains(response, 'Nome não preenchido')
 
-
     def test_view_and_search_patient(self):
         """
         Teste de visualizacao de paciente apos cadastro na base de dados
@@ -151,6 +151,7 @@ class FormValidation(TestCase):
 
         p.name_txt = 'Paciente de teste'
         p.date_birth_txt = '2001-01-15'
+        p.cpf_id = '366.483.170-51'
         p.gender_opt_id = self.gender_opt.id
         p.save()
 
@@ -167,10 +168,19 @@ class FormValidation(TestCase):
             self.data['search_text'] = 'Paciente'
             response = self.client.post(reverse('patient_search'), self.data)
             self.assertEqual(response.status_code, 200)
+            self.assertContains(response, 'Paciente de teste')
+            self.assertEqual(response.context['patients'].count(), 1)
 
-            self.data['search_text'] = '012'
+            self.data['search_text'] = 366
             response = self.client.post(reverse('patient_search'), self.data)
             self.assertEqual(response.status_code, 200)
+            self.assertEqual(response.context['patients'].count(), 1)
+            self.assertContains(response, '366.483.170-51')
+
+            self.data['search_text'] = ''
+            response = self.client.post(reverse('patient_search'), self.data)
+            self.assertEqual(response.status_code, 200)
+            self.assertEqual(response.context['patients'],'')
 
 
         except Http404:
@@ -216,6 +226,7 @@ class FormValidation(TestCase):
             response = self.client.post(reverse('patient_edit', args=[p.pk]), self.data)
             self.assertEqual(response.status_code, 302)
 
+            # Inicio do CPF inserido no self.data para retorno positivo na busca
             self.data['search_text'] = 374
             response = self.client.post(reverse('patient_search'), self.data)
             self.assertEqual(response.status_code, 200)
@@ -228,6 +239,7 @@ class FormValidation(TestCase):
             patient_removed = Patient.objects.get(pk=p.pk)
             self.assertEqual(patient_removed.removed, True)
 
+            # Inicio do CPF inserido no self.data - nao eh pra haver retorno para este inicio de CPF
             self.data['search_text'] = 374
             response = self.client.post(reverse('patient_search'), self.data)
             self.assertEqual(response.status_code, 200)
@@ -239,22 +251,16 @@ class FormValidation(TestCase):
     def test_update_patient_not_exist(self):
         """Teste de paciente nao existente na base de dados """
 
-        # p = Patient()
-        #
-        # p.name_txt = 'Paciente de teste UPDATE'
-        # p.date_birth_txt = '2001-01-15'
-        # p.gender_opt_id = self.gender_opt.id
-        # p.save()
-        id = 99999
+        # ID de paciente nao existente na base
+        id_patient = 99999
 
         # Create an instance of a GET request.
         self.client.login(username='myadmin', password='mypassword')
-        request = self.factory.get('/quiz/patient/%i/' % id)
+        request = self.factory.get('/quiz/patient/%i/' % id_patient)
         request.user = self.user
 
         try:
-            response = patient_update(request, patient_id=id)
-            # self.assertRaises(response, 'DoesNotExist')
+            response = patient_update(request, patient_id=id_patient)
             self.assertEqual(response.status_code, 404)
         except Http404:
             pass
@@ -269,3 +275,75 @@ class FormValidation(TestCase):
         self.assertEqual(client.get('/redirect_notfound').status_code, 404)
         self.assertEqual(client.get('/redirect_redirect_response').status_code, 404)
         self.assertEqual(client.get('/quiz').status_code, 301)
+
+    def test_cid_search(self):
+        cid10 = ClassificationOfDiseases.objects.create(code='A01', description='Febres paratifoide',
+                                                        abbreviated_description='A01 Febres paratifoide')
+        cid10.save()
+        cid10 = ClassificationOfDiseases.objects.create(code='B01', description='Febres tifoide ',
+                                                        abbreviated_description='B01 Febres tifoide ')
+        cid10.save()
+
+        # Busca valida
+        self.data['medical_record'] = ''
+        self.data['patient_id'] = ''
+        self.data['search_text'] = 'A'
+        response = self.client.post(reverse('cid10_search'), self.data)
+        self.assertEqual(response.status_code, 200)
+        self.assertContains(response, 'paratifoide')
+
+        self.data['search_text'] = 'B'
+        response = self.client.post(reverse('cid10_search'), self.data)
+        self.assertEqual(response.status_code, 200)
+        self.assertContains(response, 'tifoide')
+
+
+        self.data['search_text'] = '01'
+        response = self.client.post(reverse('cid10_search'), self.data)
+        self.assertEqual(response.status_code, 200)
+        self.assertContains(response, 'Febres')
+        self.assertEqual(response.context['cid_10_list'].count(), 2)
+
+        # Busca invalida
+        self.data['search_text'] = 'ZZZA1'
+        response = self.client.post(reverse('cid10_search'), self.data)
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(response.context['cid_10_list'].count(), 0)
+
+    def test_patient_verify_homonym(self):
+        p = Patient()
+        p.name_txt = 'Patient'
+        p.date_birth_txt = '2001-01-15'
+        p.cpf_id = '374.276.738-08'
+        p.gender_opt_id = self.gender_opt.id
+        p.removed = False
+        p.save()
+
+        # Busca valida
+        self.data['search_text'] = 'P'
+        response = self.client.post(reverse('patients_verify_homonym'), self.data)
+        self.assertEqual(response.status_code, 200)
+        self.assertContains(response, 'Patient')
+
+        self.data['search_text'] = 374
+        response = self.client.post(reverse('patients_verify_homonym'), self.data)
+        self.assertEqual(response.status_code, 200)
+        self.assertContains(response, '374.276.738-08')
+
+        self.data['search_text'] = ''
+        response = self.client.post(reverse('patients_verify_homonym'), self.data)
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(response.context['patient_homonym'].count(), 0)
+
+        # Busca invalida
+        self.data['search_text'] = '!@#'
+        response = self.client.post(reverse('patients_verify_homonym'), self.data)
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(response.context['patient_homonym'].count(), 0)
+
+        p.removed = True
+
+        self.data['search_text'] = 'P'
+        response = self.client.post(reverse('patients_verify_homonym'), self.data)
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(response.context['patient_homonym_excluded'].count(), 1)
