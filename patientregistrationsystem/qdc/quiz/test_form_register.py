@@ -125,6 +125,8 @@ class FormValidation(TestCase):
 
         self.assertContains(response, 'Nome não preenchido')
 
+
+
     def test_view_patient(self):
         """
         Teste de visualizacao de paciente apos cadastro na base de dados
@@ -146,6 +148,11 @@ class FormValidation(TestCase):
         try:
             response = patient(request, patient_id=p.pk)
             self.assertEqual(response.status_code, 200)
+            self.data['search_text'] = 'Paciente'
+
+            response = self.client.post(reverse('patient_search'), self.data)
+            self.assertEqual(response.status_code, 200)
+
         except Http404:
             pass
 
