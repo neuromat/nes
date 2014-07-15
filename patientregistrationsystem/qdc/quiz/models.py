@@ -333,5 +333,6 @@ class ComplementaryExam(models.Model):
 
 class ExamFile (models.Model):
     exam = models.ForeignKey(ComplementaryExam, null=False)
-    content = models.FileField(upload_to='documents/%Y/%m/%d')
+    content = models.FileField(upload_to="documents")
+                               # "/Network/Servers/macserver.numec.prp.usp.br/Users/larissamoraes/Documents")
 

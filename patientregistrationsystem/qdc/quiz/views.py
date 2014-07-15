@@ -9,10 +9,10 @@ from django.shortcuts import render_to_response
 from models import Patient, SocialDemographicData, SocialHistoryData, FleshToneOption, \
     MaritalStatusOption, SchoolingOption, PaymentOption, ReligionOption, MedicalRecordData, \
     GenderOption, AmountCigarettesOption, AlcoholFrequencyOption, AlcoholPeriodOption, \
-    ClassificationOfDiseases, Diagnosis
+    ClassificationOfDiseases, Diagnosis, ExamFile
 
 from forms import PatientForm, SocialDemographicDataForm, SocialHistoryDataForm, UserForm, UserFormUpdate, \
-    MedicalRecordForm, ComplementaryExamForm
+    MedicalRecordForm, ComplementaryExamForm, ExamFileForm
 from quiz_widget import SelectBoxCountriesDisabled, SelectBoxStateDisabled
 from django.contrib import messages
 
@@ -561,21 +561,37 @@ def exam_create(request, patient_id, record_id, template_name="quiz/exams.html")
 
     form = ComplementaryExamForm(request.POST or None)
 
-    d = Diagnosis.objects.get(medical_record_data=record_id)
+    d = Diagnosis.objects.get(pk=record_id)
     p = Patient.objects.get(number_record=patient_id)
 
     if request.method == "POST":
+        file_form = ExamFileForm(request.POST, request.FILES)
+
         if form.is_valid():
             new_complementary_exam = form.save(commit=False)
             new_complementary_exam.diagnosis = d
             new_complementary_exam.save()
+
+            if file_form.is_valid():
+
+                # new_file_data = file_form.save(commit=False)
+                # new_file_data.exam = new_complementary_exam
+                # new_file_data.save()
+
+                new_document = ExamFile(content=request.FILES['content'])
+                new_document.exam = new_complementary_exam
+                new_document.save()
+
+
             messages.success(request, 'Exame salvo com sucesso.')
             redirect_url = reverse("medical_record_new", args=(p.number_record,))
             return HttpResponseRedirect(redirect_url + "?currentTab=3")
 
         else:
             messages.error(request, 'Não foi possível criar exame.')
+    else:
+        file_form = ExamFileForm(request.POST)
 
     return render(request, template_name,
                   {'complementary_exam_form': form, 'patient_id': patient_id, 'name_patient': p.name_txt,
-                   'record_id': record_id})
+                   'record_id': record_id, 'file_form': file_form})
