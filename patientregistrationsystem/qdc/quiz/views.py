@@ -13,6 +13,8 @@ from models import Patient, SocialDemographicData, SocialHistoryData, FleshToneO
 
 from forms import PatientForm, SocialDemographicDataForm, SocialHistoryDataForm, UserForm, UserFormUpdate, \
     MedicalRecordForm, ComplementaryExamForm, ExamFileForm
+    MedicalRecordForm, ComplementaryExamForm
+
 from quiz_widget import SelectBoxCountriesDisabled, SelectBoxStateDisabled
 from django.contrib import messages
 
@@ -451,6 +453,9 @@ def patients_verify_homonym(request):
 def search_cid10_ajax(request):
     if request.method == "POST":
         search_text = request.POST['search_text']
+        medical_record = request.POST['medical_record']
+        patient_id = request.POST['patient_id']
+
         if search_text:
             cid_10_list = ClassificationOfDiseases.objects.filter(abbreviated_description__icontains=search_text)
         else:
@@ -458,7 +463,8 @@ def search_cid10_ajax(request):
     else:
         search_text = ''
 
-    return render_to_response('quiz/ajax_cid10.html', {'cid_10_list': cid_10_list})
+    return render_to_response('quiz/ajax_cid10.html', {'cid_10_list': cid_10_list, 'medical_record': medical_record,
+                                                       'patient_id': patient_id})
 
 
 @login_required
@@ -547,6 +553,9 @@ def medical_record_view(request, patient_id, record_id, template_name="quiz/medi
     if m:
         medical_record_form = MedicalRecordForm(instance=m)
 
+        diagnosis_list = Diagnosis.objects.filter(medical_record_data=record_id)
+        # data = {'object_list': diagnosis_list}
+
         #deixa os campos como disabled
         for form in {medical_record_form}:
             for field in form.fields:
@@ -554,7 +563,36 @@ def medical_record_view(request, patient_id, record_id, template_name="quiz/medi
 
         return render(request, template_name,
                       {'medical_record_form': medical_record_form, 'name_patient': p.name_txt, 'patient_id': patient_id,
-                       'record_date': m.record_date, 'record_responsible': m.record_responsible, 'editing': is_editing})
+                       'record_id': m.id, 'object_list': diagnosis_list,
+                       'record_date': m.record_date, 'record_responsible': m.record_responsible,
+                       'editing': is_editing})
+
+
+def diagnosis_create(request, patient_id, medical_record_id, cid10_id, template_name="quiz/medical_record.html"):
+    # # Search in models.Patient
+    # # ------------------------
+
+    # is_editing = (request.GET['status'] == 'edit')
+
+    p = Patient.objects.get(number_record=patient_id)
+    m = MedicalRecordData.objects.get(pk=medical_record_id)
+    cid10 = ClassificationOfDiseases.objects.get(pk=cid10_id)
+
+    diagnosis = Diagnosis(medical_record_data=m, classification_of_diseases=cid10)
+    diagnosis.save()
+
+    redirect_url = reverse("medical_record_view", args=(patient_id, medical_record_id,))
+    return HttpResponseRedirect(redirect_url + "?status=edit")
+
+    # diag
+    #
+    # medical_record_form = MedicalRecordForm(instance=m)
+    #
+    # return render(request, template_name,
+    #               {'medical_record_form': medical_record_form, 'name_patient': p.name_txt, 'patient_id': patient_id,
+    #                'diagnosis_list': diagnosis,
+    #                'record_date': m.record_date, 'record_responsible': m.record_responsible,
+    #                })                  
 
 
 def exam_create(request, patient_id, record_id, template_name="quiz/exams.html"):

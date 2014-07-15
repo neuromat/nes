@@ -2,7 +2,8 @@
 {% if cid_10_list.count > 0 %}
 
     {% for cid_10 in cid_10_list %}
-        <li> <a href="#" class="fill_input_link">{{ cid_10.abbreviated_description }}</a></li>
+        <li> <a href="/quiz/patient/{{ patient_id }}/medical_record/{{ medical_record }}/diagnosis/{{ cid_10.id }}">
+            {{ cid_10.abbreviated_description }}</a></li>
     {% endfor %}
 
 {% else %}
