@@ -193,7 +193,7 @@ def patient_update(request, patient_id, template_name="quiz/register.html"):
             if 'currentTab' in request.POST:
                 current_tab = request.POST['currentTab']
             else:
-                current_tab = 0
+                current_tab = '0'
 
             #patient_form = PatientForm(request.POST)
             #social_demographic_form = SocialDemographicDataForm(request.POST)
