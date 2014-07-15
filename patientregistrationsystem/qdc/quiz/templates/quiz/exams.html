@@ -1,0 +1,126 @@
+{% extends "quiz/template.html" %}
+{% block activePatient %}class="active"{% endblock %}
+
+{% block form %}
+    <div class="row">
+
+    <form id="form_exam" role="form" method="post" data-toggle="validator">
+    {% csrf_token %}
+
+{% endblock %}
+
+
+{% block content %}
+
+    <div class="tab-pane fade in active" id="examTab">
+
+    <div class="col-md-1">
+    </div>
+
+    <div class="col-md-10">
+
+    <ol class="breadcrumb">
+        <li>Pacientes</li>
+        {% if editing %}
+            <li><a href="/quiz/patient/edit/{{ patient_id }}/?currentTab=3">{{ name_patient }}</a></li>
+        {% else %}
+            <li><a href="/quiz/patient/{{ patient_id }}/?currentTab=3">{{ name_patient }}</a></li>
+        {% endif %}
+        <li>Avaliação médica</li>
+        <li>Diagnóstico e Exames</li>
+        <li class="active">Novo Exame</li>
+    </ol>
+
+    <div class="tab-content">
+        <div class="row">
+            <div class="col-md-1"></div>
+            <div class="col-md-10">
+                <div class="container span6 offset3 well ">
+                    <div class="row">
+                        <div class="col-xs-6 col-sm-6">
+                            <div class="form-group">
+                                <label>Data</label>
+                                <div class="input-group  input-group-sm">
+                                    {{ complementary_exam_form.date }}
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-xs-6 col-sm-6">
+                            <div class="form-group">
+                                <label>Realizado em</label>
+                                <div class="input-group  input-group-sm">
+                                    {{ complementary_exam_form.exam_site }}
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-xs-12 col-sm-12">
+                            <div class="form-group">
+                                <label>Descrição</label>
+                                <div class="input-group  input-group-sm ">
+                                    {{ complementary_exam_form.description }}
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-xs-6 col-sm-6">
+                            <div class="form-group">
+                                <label>CRM</label>
+                                <div class="input-group  input-group-sm">
+                                    {{ complementary_exam_form.doctor_register }}
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-xs-6 col-sm-6">
+                            <div class="form-group">
+                                <label>Nome do médico</label>
+                                <div class="input-group  input-group-sm">
+                                    {{ complementary_exam_form.doctor }}
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-xs-6 col-sm-4">
+                            <div class="form-group">
+                                <label>Anexos</label>
+                                <div class="input-group  input-group-sm">
+
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-1"></div>
+        </div>
+    </div>
+
+
+    </div>
+    </div>
+    <div class="col-md-1">
+    </div>
+
+    <!-- Esta div define os botões de navegação no formulário -->
+    <div class="row">
+        <div class="col-md-1">
+        </div>
+        <div class="col-md-10">
+            <div class="btn-group pull-right">
+                <button type="submit" class="btn btn-secondary">Excluir</button>
+                <button type="submit" class="btn btn-primary">Salvar</button>
+            </div>
+        </div>
+        <div class="col-md-1">
+        </div>
+    </div>
+
+{% endblock %}
+
+{% block end_form %}
+    </form>
+    </div>
+{% endblock %}

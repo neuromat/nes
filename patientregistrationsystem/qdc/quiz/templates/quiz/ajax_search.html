@@ -2,7 +2,8 @@
 {% if patients.count > 0 %}
 
     {% for patient in patients %}
-        <li><a href="/quiz/patient/{{ patient.number_record }}">{% if patient.cpf_id %} {{ patient.cpf_id }} - {% endif %} {{ patient.name_txt }}</a></li>
+        <li><a href="/quiz/patient/{{ patient.number_record }}">
+            {% if patient.cpf_id %} {{ patient.cpf_id }} - {% endif %} {{ patient.name_txt }}</a></li>
     {% endfor %}
 
 {% else %}

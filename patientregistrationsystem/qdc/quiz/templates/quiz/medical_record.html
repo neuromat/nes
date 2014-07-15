@@ -1,0 +1,616 @@
+{% extends "quiz/template.html" %}
+{% block activePatient %}class="active"{% endblock %}
+
+{% block header %}
+    <script>
+        $(function(){
+            $("[data-toggle=tooltip]").tooltip();
+        });
+
+        $(function() {
+            $('.fill_input_link').live('click', function() {
+                $("#id_whichComplementaryExame").val($(this).html());
+            });
+        });
+    </script>
+
+{% endblock %}
+
+{% block form %}
+    <div class="row">
+
+    <form id="form_medical_record" role="form" method="post" data-toggle="validator">
+    {% csrf_token %}
+
+{% endblock %}
+
+
+{% block content %}
+
+    <!-- Esta div está associada ao item Contato do Menu princial -->
+    <div class="tab-pane fade in active" id="medicalRecordTab">
+
+    <div class="col-md-1">
+    </div>
+
+    <div class="col-md-10">
+
+    <ol class="breadcrumb">
+        <li>Pacientes</li>
+        {% if editing %}
+            <li><a href="/quiz/patient/edit/{{ patient_id }}/?currentTab=3">{{ name_patient }}</a></li>
+        {% else %}
+            <li><a href="/quiz/patient/{{ patient_id }}/?currentTab=3">{{ name_patient }}</a></li>
+        {% endif %}
+        <li class="active">Avaliação médica</li>
+    </ol>
+
+    {% if not creating %}
+    <div class="row">
+        <div class="col-md-1">
+        </div>
+        <div class="col-md-10">
+            <div class="form-group">
+                <label>Data:</label> {{ record_date }}
+                <label>Responsável:</label> {{ record_responsible }}
+            </div>
+            <div class="input-group  input-group-sm ">
+            </div>
+
+        </div>
+        <div class="col-md-1">
+        </div>
+    </div>
+    {% endif %}
+
+
+    <ul class="nav nav-tabs nav-justified" id="idTabsEvaluate">
+        <li class="active"><a href="#tab1" data-toggle="tab" id="1">História de saúde</a></li>
+        <li><a href="#tab2" data-toggle="tab" id="2">História de fratura</a></li>
+        <li><a href="#tab3" data-toggle="tab" id="3">Cirurgia ortopédica</a></li>
+        <li><a href="#tab4" data-toggle="tab" id="4">Diagnósticos e exames</a></li>
+    </ul>
+
+    <div id="fix-for-tab-content-spacing" style="height: 22px;">&nbsp;</div>
+
+    <div class="tab-content">
+
+    <div class="tab-pane active" id="tab1">
+        <div class="row">
+            <div class="col-md-1"></div>
+            <div class="col-md-10">
+                <div class="container span6 offset3 well ">
+                    <div class="row">
+                        <div class="col-xs-6 col-sm-3">
+                            <div class="form-group">
+                                <label>Cirurgia de nervo</label>
+
+                                <div class="input-group  input-group-sm">
+                                    <div class="input-group  input-group-sm">
+                                        {% for radio in medical_record_form.nerve_surgery %}
+                                            <div class="radio-inline">
+                                                {{ radio }}
+                                            </div>
+                                        {% endfor %}
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-xs-6 col-sm-9">
+                            <div class="form-group">
+                                <label>Qual?</label>
+
+                                <div class="input-group  input-group-sm ">
+                                            <span class="input-group-addon"> <span
+                                                    class="glyphicon glyphicon-edit"></span></span>
+                                    {{ medical_record_form.nerve_surgery_type }}
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-xs-6 col-sm-12">
+                            <div class="form-group">
+                                <label>História de vertigem ou tontura</label>
+
+                                <div class="input-group  input-group-sm">
+                                    <div class="input-group  input-group-sm">
+                                        {% for radio in medical_record_form.vertigo_history %}
+                                            <div class="radio-inline">
+                                                {{ radio }}
+                                            </div>
+                                        {% endfor %}
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-xs-6 col-sm-12">
+                            <div class="form-group">
+                                <label>História prévia de dor</label>
+
+                                <div class="form-group">
+                                    <div class="input-group  input-group-sm">
+                                        {% for radio in medical_record_form.pain_localizations %}
+                                            <div class="myradio">
+                                                {{ radio }}
+                                            </div>
+                                        {% endfor %}
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-xs-6 col-sm-12">
+                            <div class="form-group">
+                                <label>Cefaléia</label>
+
+                                <div class="input-group  input-group-sm">
+                                    {% for radio in medical_record_form.headache %}
+                                        <div class="radio-inline">
+                                            {{ radio }}
+                                        </div>
+                                    {% endfor %}
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-xs-6 col-sm-4">
+                            <div class="form-group">
+                                <label title="Hipertensão arterial sistêmica">HAS</label>
+
+                                <div class="input-group  input-group-sm">
+                                    <div class="input-group  input-group-sm">
+                                        {% for radio in medical_record_form.hypertension %}
+                                            <div class="radio-inline">
+                                                {{ radio }}
+                                            </div>
+                                        {% endfor %}
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-xs-6 col-sm-4">
+                            <div class="form-group">
+                                <label>Diabetes</label>
+
+                                <div class="input-group  input-group-sm">
+                                    {% for radio in medical_record_form.diabetes %}
+                                        <div class="radio-inline">
+                                            {{ radio }}
+                                        </div>
+                                    {% endfor %}
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-xs-6 col-sm-4">
+                            <div class="form-group">
+                                <label>Disfunção hormonal</label>
+
+                                <div class="input-group  input-group-sm">
+                                    {% for radio in medical_record_form.hormonal_dysfunction %}
+                                        <div class="radio-inline">
+                                            {{ radio }}
+                                        </div>
+                                    {% endfor %}
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+           <div class="col-md-1"></div>
+        </div>
+    </div>
+
+    <div class="tab-pane" id="tab2">
+        <div class="row">
+            <div class="col-md-1"></div>
+            <div class="col-md-10">
+                <div class="container span6 offset3 well ">
+                    <div class="row">
+                        <div class="col-xs-6 col-sm-12">
+                            <div class="form-group">
+                                <label>História de fratura</label>
+
+                                <div class="input-group  input-group-sm">
+                                    <div class="input-group  input-group-sm">
+                                        {% for radio in medical_record_form.fracture_history %}
+                                            <div class="radio-inline">
+                                                {{ radio }}
+                                            </div>
+                                        {% endfor %}
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <fieldset id="id_fieldFractHistory">
+                        <div class="row">
+                            <div class="col-xs-6 col-sm-4">
+                                <div class="form-group">
+                                    <label>Fratura de escápula</label>
+
+                                    <div class="input-group  input-group-sm">
+                                        {% for radio in medical_record_form.scapula_fracture_side %}
+                                            <div class="myradio">
+                                                {{ radio }}
+                                            </div>
+                                        {% endfor %}
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-xs-6 col-sm-4">
+                                <div class="form-group">
+                                    <label>Fratura de clavícula</label>
+
+                                    <div class="input-group  input-group-sm">
+                                        {% for radio in medical_record_form.clavicle_fracture_side %}
+                                            <div class="myradio">
+                                                {{ radio }}
+                                            </div>
+                                        {% endfor %}
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-xs-6 col-sm-4">
+                                <div class="form-group">
+                                    <label>Fratura de costela</label>
+
+                                    <div class="input-group  input-group-sm">
+                                        {% for radio in medical_record_form.rib_fracture %}
+                                            <div class="radio-inline">
+                                                {{ radio }}
+                                            </div>
+                                        {% endfor %}
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-xs-6 col-sm-12">
+                                <div class="form-group">
+                                    <label>Fratura vertebral cervical</label>
+
+                                    <div class="input-group  input-group-sm">
+                                        {% for radio in medical_record_form.cervical_vertebrae_fracture %}
+                                            <div class="checkbox-inline">
+                                                {{ radio }}
+                                            </div>
+                                        {% endfor %}
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-xs-6 col-sm-12">
+                                <div class="form-group">
+                                    <label>Fratura vertebral torácica</label>
+
+                                    <div class="input-group  input-group-sm">
+                                        {% for radio in medical_record_form.thoracic_vertebrae_fracture %}
+                                            <div class="checkbox-inline">
+                                                {{ radio }}
+                                            </div>
+                                        {% endfor %}
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-xs-6 col-sm-12">
+                                <div class="form-group">
+                                    <label>Fratura vertebral Lombo-sacral</label>
+
+                                    <div class="input-group  input-group-sm">
+                                        {% for radio in medical_record_form.lumbosacral_vertebrae_fracture %}
+                                            <div class="checkbox-inline">
+                                                {{ radio }}
+                                            </div>
+                                        {% endfor %}
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-xs-6 col-sm-4">
+                                <div class="form-group">
+                                    <label>Fratura de membros superiores</label>
+
+                                    <div class="input-group  input-group-sm">
+                                        {% for radio in medical_record_form.superior_members_fracture_side %}
+                                            <div class="myradio">
+                                                {{ radio }}
+                                            </div>
+                                        {% endfor %}
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-xs-6 col-sm-4">
+                                <div class="form-group">
+                                    <label>Fratura de membros inferiores</label>
+
+                                    <div class="input-group  input-group-sm">
+                                        {% for radio in medical_record_form.inferior_members_fracture_side %}
+                                            <div class="myradio">
+                                                {{ radio }}
+                                            </div>
+                                        {% endfor %}
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-xs-6 col-sm-4">
+                                <div class="form-group">
+                                    <label>Fratura de pelve</label>
+
+                                    <div class="input-group  input-group-sm">
+                                        {% for radio in medical_record_form.pelvis_fracture_side %}
+                                            <div class="myradio">
+                                                {{ radio }}
+                                            </div>
+                                        {% endfor %}
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </fieldset>
+                </div>
+            </div>
+            <div class="col-md-1"></div>
+        </div>
+    </div>
+    <div class="tab-pane" id="tab3">
+        <div class="row">
+            <div class="col-md-1"></div>
+            <div class="col-md-10">
+                <div class="container span6 offset3 well ">
+                    <div class="row">
+
+                        <div class="col-xs-6 col-sm-12">
+                            <div class="form-group">
+                                <label>Cirurgia ortopédica</label>
+
+                                <div class="input-group  input-group-sm">
+                                    {% for radio in medical_record_form.orthopedic_surgery %}
+                                        <div class="radio-inline">
+                                            {{ radio }}
+                                        </div>
+                                    {% endfor %}
+                                </div>
+                            </div>
+                        </div>
+
+                    </div>
+                    <fieldset id="id_fieldSetOrtSurg">
+                        <div class="row">
+                            <div class="col-xs-6 col-sm-4">
+                                <div class="form-group">
+                                    <label>Escápula</label>
+
+                                    <div class="input-group  input-group-sm">
+                                        {% for radio in medical_record_form.scapula_surgery_side %}
+                                            <div class="myradio">
+                                                {{ radio }}
+                                            </div>
+                                        {% endfor %}
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-xs-6 col-sm-4">
+                                <div class="form-group">
+                                    <label>Clavícula</label>
+
+                                    <div class="input-group  input-group-sm">
+                                        {% for radio in medical_record_form.clavicle_surgery_side %}
+                                            <div class="myradio">
+                                                {{ radio }}
+                                            </div>
+                                        {% endfor %}
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-xs-6 col-sm-4">
+                                <div class="form-group">
+                                    <label>Costela</label>
+
+                                    <div class="input-group  input-group-sm">
+                                        {% for radio in medical_record_form.rib_surgery %}
+                                            <div class="radio-inline">
+                                                {{ radio }}
+                                            </div>
+                                        {% endfor %}
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-xs-6 col-sm-12">
+                                <div class="form-group">
+                                    <label>Coluna vertebral cervical</label>
+
+                                    <div class="input-group  input-group-sm">
+                                        {% for radio in medical_record_form.cervical_vertebrae_surgery %}
+                                            <div class="radio-inline">
+                                                {{ radio }}
+                                            </div>
+                                        {% endfor %}
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-xs-6 col-sm-12">
+                                <div class="form-group">
+                                    <label>Coluna vertebral torácica</label>
+
+                                    <div class="input-group  input-group-sm">
+                                        {% for radio in medical_record_form.thoracic_vertebrae_surgery %}
+                                            <div class="radio-inline">
+                                                {{ radio }}
+                                            </div>
+                                        {% endfor %}
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-xs-6 col-sm-12">
+                                <div class="form-group">
+                                    <label>Coluna vertebral lombo-sacral</label>
+
+                                    <div class="input-group  input-group-sm">
+                                        {% for radio in medical_record_form.lumbosacral_vertebrae_surgery %}
+                                            <div class="radio-inline">
+                                                {{ radio }}
+                                            </div>
+                                        {% endfor %}
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-xs-6 col-sm-4">
+                                <div class="form-group">
+                                    <label>Membros superiores</label>
+
+                                    <div class="input-group  input-group-sm">
+                                        {% for radio in medical_record_form.superior_members_surgery_side %}
+                                            <div class="myradio">
+                                                {{ radio }}
+                                            </div>
+                                        {% endfor %}
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-xs-6 col-sm-4">
+                                <div class="form-group">
+                                    <label>Membros inferiores</label>
+
+                                    <div class="input-group  input-group-sm">
+                                        {% for radio in medical_record_form.inferior_members_surgery_side %}
+                                            <div class="myradio">
+                                                {{ radio }}
+                                            </div>
+                                        {% endfor %}
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-xs-6 col-sm-4">
+                                <div class="form-group">
+                                    <label>Pelve</label>
+
+                                    <div class="input-group  input-group-sm">
+                                        {% for radio in medical_record_form.pelvis_surgery_side %}
+                                            <div class="myradio">
+                                                {{ radio }}
+                                            </div>
+                                        {% endfor %}
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </fieldset>
+                </div>
+            </div>
+            <div class="col-md-1"></div>
+        </div>
+    </div>
+    <div class="tab-pane" id="tab4">
+        <div class="row">
+            <div class="col-md-1"></div>
+            <div class="col-md-10">
+                <div class="container span6 offset3 well ">
+                {% if creating %}
+                    <div class="row">
+                        <div class="col-xs-6 col-sm-9" >
+                            <div class="form-group">
+                                <input id="patient_id" value="{{ patient_id }}" style="display: none;">
+                                <input id="medical_record_id" value="{{ record_id }}" style="display: none;">
+                                <div class="input-group  input-group-sm ">
+                                                            <span class="input-group-addon"> <span
+                                                                    class="glyphicon glyphicon-edit"></span></span>
+                                    <input class="form-control" placeholder="Especificar o diagnóstico da doença ou o código da doença (CID-10)"
+                                           id="id_whichComplementaryExame" type="text">
+
+                                </div>
+                                {# Entry for search results in CID-10 table #}
+                                {% csrf_token %}
+                                <ul id="search-results" style="list-style: none;"></ul>
+                            </div>
+                        </div>
+                    </div>
+                {% endif %}
+                    <div class="row">
+                        <div class="col-xs-6 col-sm-9">
+                            <div class="form-group">
+                                <table class="table table-striped">
+                                    <thead>
+                                    <tr>
+                                        <th>Diagnóstico</th>
+                                        <th></th> {# cabeçalho vazio para coluna de exclusão #}
+                                        <th>Exames</th>
+                                    </tr>
+                                    </thead>
+                                    <tbody>
+                                        {% if not object_list %}
+                                            <tr>
+                                                <td>(sem diagnósticos)</td>
+                                            </tr>
+                                        {% else %}
+                                            {% for results in object_list %}
+                                                <tr>
+                                                    <td>{{ results.classification_of_diseases }}</td>
+                                                    <td>{{ results.exams }}</td>
+                                                </tr>
+                                            {% endfor %}
+                                        {% endif %}
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-1"></div>
+        </div>
+    </div>
+    </div>
+    <!-- tab-content -->
+
+    </div>
+
+    <div class="col-md-1">
+    </div>
+
+    </div>
+
+    <!-- Esta div define os botões de navegação no formulário -->
+    <div class="row">
+        <div class="col-md-1">
+        </div>
+        <div class="col-md-10">
+            <div class="btn-group pull-right">
+                {% if creating %}
+                    <button type="submit" class="btn btn-primary">Salvar avaliação</button>
+                {% endif %}
+            </div>
+        </div>
+        <div class="col-md-1">
+        </div>
+
+    </div>
+
+{% endblock %}
+
+{% block end_form %}
+    </form>
+    </div>
+{% endblock %}

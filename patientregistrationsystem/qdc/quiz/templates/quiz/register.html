@@ -53,10 +53,10 @@
 
     <!-- Esta ul define os títulos das abas contextuais -->
     <ul class="nav nav-tabs nav-justified" id="idTabs">
-        <li class="active"><a href="#tab1" data-toggle="tab" id="0">Dados Pessoais</a></li>
-        <li><a href="#tab2" data-toggle="tab" id="1">Dados Sociodemográficos</a></li>
-        <li><a href="#tab3" data-toggle="tab" id="2">História Social</a></li>
-        <li><a href="#tab4" data-toggle="tab" id="3">Avaliações Médicas</a></li>
+        <li class="active"><a href="#tab1" data-toggle="tab" id="0">Dados pessoais</a></li>
+        <li><a href="#tab2" data-toggle="tab" id="1">Dados sociodemográficos</a></li>
+        <li><a href="#tab3" data-toggle="tab" id="2">História social</a></li>
+        <li><a href="#tab4" data-toggle="tab" id="3">Avaliações médicas</a></li>
     </ul>
 
     <input type="text" id="currentTab" name="currentTab" value="{{ currentTab }}" style="visibility: hidden"/>
@@ -70,8 +70,7 @@
     <!-- Esta div define a primeira aba do formulário, #tab1 -->
     <div class="tab-pane active" id="tab1">
     <div class="row">
-    <div class="col-md-1"></div>
-    <div class="col-md-10">
+    <div class="col-md-12">
     <div class="container span6 offset3 well ">
 
         <!-- Mensagens geradas na view register -->
@@ -158,6 +157,7 @@
                     </div>
 
                     <div class="help-block with-errors">
+
                         {% comment %}
                 {{ patient_form.errors.cpf_id }}
                 {% endcomment %}
@@ -323,7 +323,6 @@
                 </div>
             </div>
         </div>
-        <div class="col-md-1"></div>
     </div>
     </div>
     </div>
@@ -333,8 +332,7 @@
     <!-- Esta div define a segunda aba do formulário, #tab2 -->
     <div class="tab-pane" id="tab2">
     <div class="row">
-    <div class="col-md-1"></div>
-    <div class="col-md-10">
+    <div class="col-md-12">
     <div class="container span6 offset3 well ">
         <div class="row">
             <div class="col-xs-6 col-sm-6">
@@ -559,15 +557,14 @@
         <div class="row">
             <div class="col-xs-6 col-sm-12">
                 <div class="form-group">
-                    <label>Classe Social Calculada</label>
-
+                    <br/>
+                    <label>Classe social calculada</label>
                     <div class="input-group input-group-sm">
                         {{ social_demographic_form.social_class_opt }}
                     </div>
                 </div>
             </div>
         </div>
-        <div class="col-md-1"></div>
     </div>
     </div>
     </div>
@@ -577,8 +574,7 @@
     <!-- Esta div define a terceira aba do formulário, #tab3 -->
     <div class="tab-pane" id="tab3">
         <div class="row">
-            <div class="col-md-1"></div>
-            <div class="col-md-10">
+            <div class="col-md-12">
                 <div class="container span6 offset3 well ">
                     <div class="row">
                         <div class="col-xs-6 col-sm-4">
@@ -679,29 +675,41 @@
     <!-- Esta div define a quarta aba do formulário, #tab4 -->
     <div class="tab-pane" id="tab4">
         <div class="row">
-            <div class="col-md-1"></div>
-            <div class="col-md-10">
+            <div class="col-md-12">
                 <div class="container span6 offset3 well ">
                     <div class="form-group">
                         <table class="table table-striped">
                             <thead>
-                                <tr>
-                                    <th>Data</th>
-                                    <th>Responsável</th>
-                                </tr>
+                            <tr>
+                                <th>Data</th>
+                                <th>Responsável</th>
+                            </tr>
                             </thead>
                             <tbody>
+                            {% for record in object_list %}
                                 <tr>
-                                    <td>15/07/2014</td>
-                                    <td>Osvaldo Cruz</td>
-                                    <td><a class="glyphicon glyphicon-search" data-toggle="modal" onclick="$('#modalMedical').modal('show')"></a></td>
+                                    <td>{{ record.record_date }}</td>
+                                    <td>{{ record.record_responsible }}</td>
+                                    {% if editing %}
+                                        <td><a class="glyphicon glyphicon-search"
+                                               href="/quiz/patient/{{ patient_id }}/medical_record/{{ record.pk }}/?status=edit"></a>
+                                        </td>
+                                    {% else %}
+                                        <td><a class="glyphicon glyphicon-search"
+                                               href="/quiz/patient/{{ patient_id }}/medical_record/{{ record.pk }}/?status=view"></a>
+                                        </td>
+                                    {% endif %}
                                 </tr>
+                            {% endfor %}
                             </tbody>
                         </table>
                     </div>
-                    <div class="btn-group pull-left">
-                        <a href="/quiz/evaluate/new/" class="btn btn-primary">Inserir avaliação médica</a>
-                    </div>
+                    {% if not inserting and editing %}
+                        <div class="btn-group pull-left">
+                            <a href="/quiz/patient/{{ patient_id }}/medical_record/new/" class="btn btn-primary">Inserir
+                                avaliação médica</a>
+                        </div>
+                    {% endif %}
                 </div>
             </div>
         </div>
@@ -711,543 +719,6 @@
     </div>
     </div>
     </div>
-    </div>
-
-    <div class="modal fade" id="modalMedical" tabindex="-1" role="dialog" aria-hidden="true">
-        <div class="modal-dialog" style="width: 80%">
-            <div class="modal-content">
-                <div class="modal-header">
-                    <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
-                    <h4 class="modal-title" id="myModalLabel"><b>Detalhes da avaliação médica</b><br><small>Osvaldo Cruz - 15/07/2014</small></h4>
-                </div>
-                <div class="modal-body">
-                    <ul class="nav nav-tabs nav-justified" id="idTabsEvaluate">
-                        <li><a href="#tab1" data-toggle="tab" id="1">História de Saúde</a></li>
-                        <li><a href="#tab2" data-toggle="tab" id="2">História de Fratura</a></li>
-                        <li><a href="#tab3" data-toggle="tab" id="3">Cirurgia Ortopédica</a></li>
-                        <li><a href="#tab4" data-toggle="tab" id="4">Exames</a></li>
-                    </ul>
-
-                    <div class="tab-content">
-                        <div class="tab-pane active" id="tab1">
-                            <div class="row">
-                                <div class="col-md-1"></div>
-                                <div class="col-md-10">
-                                    <div class="container span6 offset3 well ">
-                                        <div class="row">
-                                            <div class="col-md-12">
-                                                <div class="container span6 offset3 well ">
-                                                    <div class="row">
-                                                        <div class="col-xs-6 col-sm-3">
-                                                            <div class="form-group">
-                                                                <label>Cirurgia de Nervo</label>
-                                                                <div class="input-group  input-group-sm">
-                                                                    <div class="input-group  input-group-sm">
-                                                                        {% for radio in medical_record_form.nerve_surgery %}
-                                                                            <div class="radio-inline">
-                                                                                {{ radio }}
-                                                                            </div>
-                                                                        {% endfor %}
-                                                                    </div>
-                                                                </div>
-                                                            </div>
-                                                        </div>
-                                                        <div class="col-xs-6 col-sm-9">
-                                                            <div class="form-group">
-                                                                <label>Qual?</label>
-                                                                <div class="input-group  input-group-sm ">
-                                                                    <span class="input-group-addon"> <span class="glyphicon glyphicon-edit"></span></span>
-                                                                    {{ medical_record_form.nerve_surgery_type }}
-                                                                </div>
-                                                            </div>
-                                                        </div>
-                                                    </div>
-                                                    <div class="row">
-                                                        <div class="col-xs-6 col-sm-12">
-                                                            <div class="form-group">
-                                                                <label>História de vertigem ou tontura</label>
-                                                                <div class="input-group  input-group-sm">
-                                                                    <div class="input-group  input-group-sm">
-                                                                        {% for radio in medical_record_form.vertigo_history %}
-                                                                            <div class="radio-inline">
-                                                                                {{ radio }}
-                                                                            </div>
-                                                                        {% endfor %}
-                                                                    </div>
-                                                                </div>
-                                                            </div>
-                                                        </div>
-                                                    </div>
-                                                    <div class="row">
-                                                        <div class="col-xs-6 col-sm-12">
-                                                            <div class="form-group">
-                                                                <label>História prévia de dor</label>
-                                                                <div class="form-group">
-                                                                    <div class="input-group  input-group-sm">
-                                                                        {% for radio in medical_record_form.pain_history %}
-                                                                            <div class="myradio">
-                                                                                {{ radio }}
-                                                                            </div>
-                                                                        {% endfor %}
-                                                                    </div>
-                                                                </div>
-                                                            </div>
-                                                        </div>
-                                                    </div>
-                                                    <div class="row">
-                                                        <div class="col-xs-6 col-sm-12">
-                                                            <div class="form-group">
-                                                                <label>Cefaléia</label>
-                                                                <div class="input-group  input-group-sm">
-                                                                    {% for radio in medical_record_form.headache %}
-                                                                        <div class="radio-inline">
-                                                                            {{ radio }}
-                                                                        </div>
-                                                                    {% endfor %}
-                                                                </div>
-                                                            </div>
-                                                        </div>
-                                                    </div>
-                                                    <div class="row">
-                                                        <div class="col-xs-6 col-sm-4">
-                                                            <div class="form-group">
-                                                                <label title="Hipertensão arterial sistêmica">HAS</label>
-                                                                <div class="input-group  input-group-sm">
-                                                                    <div class="input-group  input-group-sm">
-                                                                        {% for radio in medical_record_form.hypertension %}
-                                                                        <div class="radio-inline">
-                                                                            {{ radio }}
-                                                                        </div>
-                                                                    {% endfor %}
-                                                                    </div>
-                                                                </div>
-                                                            </div>
-                                                        </div>
-                                                    </div>
-                                                    <div class="row">
-                                                        <div class="col-xs-6 col-sm-4">
-                                                            <div class="form-group">
-                                                                <label>Diabetes</label>
-                                                                <div class="input-group  input-group-sm">
-                                                                    {% for radio in medical_record_form.diabetes %}
-                                                                        <div class="radio-inline">
-                                                                            {{ radio }}
-                                                                        </div>
-                                                                    {% endfor %}
-                                                                </div>
-                                                            </div>
-                                                        </div>
-                                                    </div>
-                                                    <div class="row">
-                                                        <div class="col-xs-6 col-sm-4">
-                                                            <div class="form-group">
-                                                                <label>Disfunção Hormonal</label>
-                                                                <div class="input-group  input-group-sm">
-                                                                    {% for radio in medical_record_form.hormonal_dysfunction %}
-                                                                        <div class="radio-inline">
-                                                                            {{ radio }}
-                                                                        </div>
-                                                                    {% endfor %}
-                                                                </div>
-                                                            </div>
-                                                        </div>
-                                                    </div>
-                                                </div>
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>
-                                <div class="col-md-1"></div>
-                            </div>
-                        </div>
-                        <div class="tab-pane active" id="tab2">
-                            <div class="row">
-                                <div class="col-md-1"></div>
-                                <div class="col-md-10">
-                                    <div class="container span6 offset3 well ">
-                                        <div class="row">
-                                            <div class="col-xs-6 col-sm-12">
-                                                <div class="form-group">
-                                                    <label>História de Fratura</label>
-                                                    <div class="input-group  input-group-sm">
-                                                        <div class="input-group  input-group-sm">
-                                                            {% for radio in medical_record_form.fracture_history %}
-                                                                <div class="radio-inline">
-                                                                    {{ radio }}
-                                                                </div>
-                                                            {% endfor %}
-                                                        </div>
-                                                    </div>
-                                                </div>
-                                            </div>
-                                        </div>
-                                        <fieldset id="id_fieldFractHistory">
-                                            <div class="row">
-                                                <div class="col-xs-6 col-sm-4">
-                                                    <div class="form-group">
-                                                        <label>Fratura de escápula</label>
-                                                        <div class="input-group  input-group-sm">
-                                                            {{ scapula_fracture_side_id }}
-                                                        </div>
-                                                    </div>
-                                                </div>
-                                                <div class="col-xs-6 col-sm-4">
-                                                    <div class="form-group">
-                                                        <label>Fratura de clavícula</label>
-                                                        <div class="input-group  input-group-sm">
-                                                            {{ clavicle_fracture_side_id }}
-                                                        </div>
-                                                    </div>
-                                                </div>
-                                                <div class="col-xs-6 col-sm-4">
-                                                    <div class="form-group">
-                                                        <label>Fratura de costela</label>
-                                                        <div class="input-group  input-group-sm">
-                                                            {% for radio in medical_record_form.rib_fracture %}
-                                                                <div class="radio-inline">
-                                                                    {{ radio }}
-                                                                </div>
-                                                            {% endfor %}
-                                                        </div>
-                                                    </div>
-                                                </div>
-                                            </div>
-                                            <div class="row">
-                                                <div class="col-xs-6 col-sm-12">
-                                                    <div class="form-group">
-                                                        <label>Fratura Vertebral Cervical</label>
-                                                        <div class="input-group  input-group-sm">
-                                                            {% for radio in medical_record_form.cervical_vertebrae_fracture %}
-                                                                <div class="radio-inline">
-                                                                    {{ radio }}
-                                                                </div>
-                                                            {% endfor %}
-                                                        </div>
-                                                    </div>
-                                                </div>
-                                            </div>
-                                            <div class="row">
-                                                <div class="col-xs-6 col-sm-12">
-                                                    <div class="form-group">
-                                                        <div class="input-group  input-group-sm">
-                                                            {% for radio in medical_record_form.cervical_vertebrae_fracture_type %}
-                                                                <div class="myradio">
-                                                                    {{ radio }}
-                                                                </div>
-                                                            {% endfor %}
-                                                        </div>
-                                                    </div>
-                                                </div>
-                                            </div>
-                                            <div class="row">
-                                                <div class="col-xs-6 col-sm-12">
-                                                    <div class="form-group">
-                                                        <label>Fratura Vertebral Torácica</label>
-                                                        <div class="input-group  input-group-sm">
-                                                            {% for radio in medical_record_form.thoracic_vertebrae_fracture %}
-                                                                <div class="radio-inline">
-                                                                    {{ radio }}
-                                                                </div>
-                                                            {% endfor %}
-                                                        </div>
-                                                    </div>
-                                                </div>
-                                            </div>
-                                            <div class="row">
-                                                <div class="col-xs-6 col-sm-12">
-                                                    <div class="form-group">
-                                                        <div class="input-group  input-group-sm">
-                                                            {% for radio in medical_record_form.thoracic_vertebrae_fracture_type %}
-                                                                <div class="myradio">
-                                                                    {{ radio }}
-                                                                </div>
-                                                            {% endfor %}
-                                                        </div>
-                                                    </div>
-                                                </div>
-                                            </div>
-                                            <div class="row">
-                                                <div class="col-xs-6 col-sm-12">
-                                                    <div class="form-group">
-                                                        <label>Fratura Vertebral Lombo-Sacral</label>
-
-                                                        <div class="input-group  input-group-sm">
-                                                            {% for radio in medical_record_form.lumbosacral_vertebrae_fracture %}
-                                                                <div class="radio-inline">
-                                                                    {{ radio }}
-                                                                </div>
-                                                            {% endfor %}
-                                                        </div>
-                                                    </div>
-                                                </div>
-                                            </div>
-                                            <div class="row">
-                                                <div class="col-xs-6 col-sm-12">
-                                                    <div class="form-group">
-                                                        <div class="input-group  input-group-sm">
-                                                            {% for radio in medical_record_form.lumbosacral_vertebrae_fracture_type %}
-                                                                <div class="myradio">
-                                                                    {{ radio }}
-                                                                </div>
-                                                            {% endfor %}
-                                                        </div>
-                                                    </div>
-                                                </div>
-                                            </div>
-                                            <div class="row">
-                                                <div class="col-xs-6 col-sm-4">
-                                                    <div class="form-group">
-                                                        <label>Fratura de Membros Superiores</label>
-                                                        <div class="input-group  input-group-sm">
-                                                            {% for radio in medical_record_form.superior_members_fracture_side_id %}
-                                                                <div class="myradio">
-                                                                    {{ radio }}
-                                                                </div>
-                                                            {% endfor %}
-                                                        </div>
-                                                    </div>
-                                                </div>
-                                                <div class="col-xs-6 col-sm-4">
-                                                    <div class="form-group">
-                                                        <label>Fratura de Membros Inferiores</label>
-                                                        <div class="input-group  input-group-sm">
-                                                            {% for radio in medical_record_form.inferior_members_fracture_side_id %}
-                                                                <div class="myradio">
-                                                                    {{ radio }}
-                                                                </div>
-                                                            {% endfor %}
-                                                        </div>
-                                                    </div>
-                                                </div>
-                                                <div class="col-xs-6 col-sm-4">
-                                                    <div class="form-group">
-                                                        <label>Fratura de Pelve</label>
-                                                        <div class="input-group  input-group-sm">
-                                                            {% for radio in medical_record_form.pelvis_fracture_side_id %}
-                                                                <div class="myradio">
-                                                                    {{ radio }}
-                                                                </div>
-                                                            {% endfor %}
-                                                        </div>
-                                                    </div>
-                                                </div>
-                                            </div>
-                                        </fieldset>
-                                    </div>
-                                </div>
-                                <div class="col-md-1"></div>
-                            </div>
-                        </div>
-                        <div class="tab-pane active" id="tab3">
-                            <div class="row">
-                                <div class="col-md-1"></div>
-                                <div class="col-md-10">
-                                    <div class="container span6 offset3 well ">
-                                        <div class="row">
-                                            <div class="col-md-12">
-                                                <div class="container span6 offset3 well ">
-                                                    <div class="row">
-                                                        <div class="col-xs-6 col-sm-12">
-                                                            <div class="form-group">
-                                                                <label>Cirurgia Ortopédica</label>
-                                                                <div class="input-group  input-group-sm">
-                                                                    {% for radio in medical_record_form.orthopedic_surgery %}
-                                                                        <div class="radio-inline">
-                                                                            {{ radio }}
-                                                                        </div>
-                                                                    {% endfor %}
-                                                                </div>
-                                                            </div>
-                                                        </div>
-                                                    </div>
-                                                </div>
-                                            </div>
-                                        </div>
-                                        <fieldset id="id_fieldSetOrtSurg">
-                                            <div class="row">
-                                                <div class="col-xs-6 col-sm-4">
-                                                    <div class="form-group">
-                                                        <label>Escápula</label>
-                                                        <div class="input-group  input-group-sm">
-                                                            {% for radio in medical_record_form.scapula_surgery_side_id %}
-                                                                <div class="myradio">
-                                                                    {{ radio }}
-                                                                </div>
-                                                            {% endfor %}
-                                                        </div>
-                                                    </div>
-                                                </div>
-                                                <div class="col-xs-6 col-sm-4">
-                                                    <div class="form-group">
-                                                        <label>Clavícula</label>
-                                                        <div class="input-group  input-group-sm">
-                                                            {% for radio in medical_record_form.clavicle_surgery_side_id %}
-                                                                <div class="myradio">
-                                                                    {{ radio }}
-                                                                </div>
-                                                            {% endfor %}
-                                                        </div>
-                                                    </div>
-                                                </div>
-                                                <div class="col-xs-6 col-sm-4">
-                                                    <div class="form-group">
-                                                        <label>Costela</label>
-                                                        <div class="input-group  input-group-sm">
-                                                            {% for radio in medical_record_form.rib_surgery %}
-                                                                <div class="radio-inline">
-                                                                    {{ radio }}
-                                                                </div>
-                                                            {% endfor %}
-                                                        </div>
-                                                    </div>
-                                                </div>
-                                            </div>
-                                            <div class="row">
-                                                <div class="col-xs-6 col-sm-12">
-                                                    <div class="form-group">
-                                                        <label>Coluna Vertebral Cervical</label>
-                                                        <div class="input-group  input-group-sm">
-                                                            {% for radio in medical_record_form.cervical_vertebrae_surgery %}
-                                                                <div class="radio-inline">
-                                                                    {{ radio }}
-                                                                </div>
-                                                            {% endfor %}
-                                                        </div>
-                                                    </div>
-                                                </div>
-                                            </div>
-                                            <div class="row">
-                                                <div class="col-xs-6 col-sm-12">
-                                                    <div class="form-group">
-                                                        <label>Coluna Vertebral Torácica</label>
-                                                        <div class="input-group  input-group-sm">
-                                                            {% for radio in medical_record_form.thoracic_vertebrae_surgery %}
-                                                                <div class="radio-inline">
-                                                                    {{ radio }}
-                                                                </div>
-                                                            {% endfor %}
-                                                        </div>
-                                                    </div>
-                                                </div>
-                                            </div>
-                                            <div class="row">
-                                                <div class="col-xs-6 col-sm-12">
-                                                    <div class="form-group">
-                                                        <label>Coluna Vertebral Lombo-Sacral</label>
-                                                        <div class="input-group  input-group-sm">
-                                                            {% for radio in medical_record_form.lumbosacral_vertebrae_surgery %}
-                                                                <div class="radio-inline">
-                                                                    {{ radio }}
-                                                                </div>
-                                                            {% endfor %}
-                                                        </div>
-                                                    </div>
-                                                </div>
-                                            </div>
-                                            <div class="row">
-                                                <div class="col-xs-6 col-sm-4">
-                                                    <div class="form-group">
-                                                        <label>Membros Superiores</label>
-                                                        <div class="input-group  input-group-sm">
-                                                            {% for radio in medical_record_form.superior_members_surgery_side_id %}
-                                                                <div class="myradio">
-                                                                    {{ radio }}
-                                                                </div>
-                                                            {% endfor %}
-                                                        </div>
-                                                    </div>
-                                                </div>
-                                                <div class="col-xs-6 col-sm-4">
-                                                    <div class="form-group">
-                                                        <label>Membros Inferiores</label>
-                                                        <div class="input-group  input-group-sm">
-                                                            {% for radio in medical_record_form.inferior_members_surgery_side_id %}
-                                                                <div class="myradio">
-                                                                    {{ radio }}
-                                                                </div>
-                                                            {% endfor %}
-                                                        </div>
-                                                    </div>
-                                                </div>
-                                                <div class="col-xs-6 col-sm-4">
-                                                    <div class="form-group">
-                                                        <label>Pelve</label>
-                                                        <div class="input-group  input-group-sm">
-                                                            {% for radio in medical_record_form.pelvis_surgery_side_id %}
-                                                                <div class="myradio">
-                                                                    {{ radio }}
-                                                                </div>
-                                                            {% endfor %}
-                                                        </div>
-                                                    </div>
-                                                </div>
-                                            </div>
-                                        </fieldset>
-                                    </div>
-                                </div>
-                                <div class="col-md-1"></div>
-                            </div>
-                        </div>
-                        <div class="tab-pane active" id="tab4">
-                            <div class="row">
-                                <div class="col-md-1"></div>
-                                <div class="col-md-10">
-                                    <div class="container span6 offset3 well ">
-                                        <div class="row">
-                                            <div class="col-xs-6 col-sm-3">
-                                                <div class="form-group">
-                                                    <label> Exame Complementar </label>
-                                                    <div class="input-group  input-group-sm">
-                                                        <div class="input-group  input-group-sm">
-                                                            <div class="radio-inline">
-                                                                <label>
-                                                                    <input name="complementaryExameOptionsRadios"
-                                                                           id="complementaryExameOptionsRadios1"
-                                                                           value="complementaryExameOption1" type="radio">Sim</label>
-                                                            </div>
-                                                            <div class="radio-inline">
-                                                                <label>
-                                                                    <input name="complementaryExameOptionsRadios"
-                                                                           id="complementaryExameOptionsRadios2"
-                                                                           value="complementaryExameOption2" type="radio">Não</label>
-                                                            </div>
-                                                        </div>
-                                                    </div>
-                                                </div>
-                                            </div>
-                                            <div class="col-xs-6 col-sm-9">
-                                                <div class="form-group">
-                                                    <label>Qual?</label>
-                                                    <div class="input-group  input-group-sm ">
-                                                        <span class="input-group-addon"> <span
-                                                                class="glyphicon glyphicon-edit"></span></span>
-                                                        <input class="form-control" placeholder="Especificar o exame complementar"
-                                                               id="id_whichComplementaryExame" type="text">
-                                                    </div>
-                                                </div>
-                                            </div>
-                                            <div class="col-xs-6 col-sm-9">
-                                                <div class="form-group">
-                                                    <label for="dateOfComplementaryExame" class="control-label">Data:</label>
-
-                                                    <div class="input-group input-group-sm ">
-                                                        <span class="input-group-addon"> <span
-                                                                class="glyphicon glyphicon-edit"></span></span>
-                                                        <input class="form-control" placeholder="Data" id="dateOfComplementaryExame"
-                                                               type="date">
-                                                    </div>
-                                                </div>
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>
-                                <div class="col-md-1"></div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
     </div>
 
     <div class="modal fade" id="myModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
@@ -1281,24 +752,58 @@
         </div>
     </div>
 
+    {# Modal para paciente homônimo #}
+    <div class="modal fade" id="modalHomonym" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-body">
+{#                    {% csrf_token %}  #}
+                    Paciente já cadastrado.
+                    Clique para visualizar registro ou "Cancelar" para voltar ao formulário.
+                </div>
+                {% csrf_token %}
+                <ul id="search-results" style="list-style: none;"></ul>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-default" data-dismiss="modal">Cancelar</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    {# Modal para paciente homônimo excluido #}
+    <div class="modal fade" id="modalHomonymExcluded" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-body">
+{#                    {% csrf_token %}  #}
+                    Paciente já foi excluído anteriormente. Clique para restaurar cadastro ou "Cancelar" para cadastrar
+                    com mesmo nome.
+                </div>
+                {% csrf_token %}
+                <ul id="search-results1" style="list-style: none;"></ul>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-default" data-dismiss="modal">Cancelar</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
     <!-- Esta div define os botões de navegação no formulário -->
     <div class="row">
-        <div class="col-md-1">
-        </div>
-        <div class="col-md-10">
+        <div class="col-md-12">
             <div class="btn-group pull-right">
                 <button type="button" class="btn btn-default" id="prevtab">Anterior</button>
                 <button type="button" class="btn btn-default" id="nexttab">Próximo</button>
                 {% if editing %}
                     <button type="button" class="btn btn-primary" id="savetab">Salvar</button>
                 {% else %}
-
                     {% if perms.quiz.change_patient %}
                         <button type="button" class="btn btn-primary" id="editPatient">Editar</button>
                     {% endif %}
 
                     {% if perms.quiz.delete_patient %}
-                        <button type="button" class="btn btn-secondary" style="background-color: indianred; color: #ffffff"
+                        <button type="button" class="btn btn-secondary"
+                                style="background-color: indianred; color: #ffffff"
                                 onclick="$('#modalRemove').modal('show')">Excluir
                         </button>
                     {% endif %}
@@ -1306,13 +811,8 @@
                 {% endif %}
             </div>
         </div>
-        <div class="col-md-1">
-        </div>
     </div>
 
-
-    <div class="col-md-1">
-    </div>
 {% endblock %}
 {% block end_form %}
     </form>

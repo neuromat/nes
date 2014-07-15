@@ -35,15 +35,13 @@
         <div class="col-md-10">
             <div class="container span6 offset3 well ">
                 <div class="form-group">
-                    {#                    <h3 align="center">Usuários cadastrados</h3><br>#}
-                    <label>Usuários cadastrados</label>
                     <table class="table table-striped">
                         <thead>
                         <tr>
                             <th>Nome de usuário</th>
                             <th>Nome</th>
                             <th>Sobrenome</th>
-                            <th>Email</th>
+                            <th>E-mail</th>
                         </tr>
                         </thead>
                         <tbody>
@@ -54,7 +52,7 @@
                                 <td>{{ user.last_name }}</td>
                                 <td>{{ user.email }}</td>
                                 <td>
-                                    {% if perms.auth.delete_user %}
+                                    {% if perms.auth.delete_user and current_user_id != user.id %}
                                         <a class="glyphicon glyphicon-remove" data-toggle="tooltip" data-placement="right" title="Remover" style="color: indianred" onclick="show_modal_remove({{ user.id }})"></a>
                                     {% endif %}
                                 </td>

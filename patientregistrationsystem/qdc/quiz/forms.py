@@ -1,7 +1,8 @@
 # coding=utf-8
 from django.forms import ModelForm, TextInput, DateInput, Select, RadioSelect, PasswordInput, CheckboxSelectMultiple, \
     CharField, ValidationError
-from models import Patient, SocialDemographicData, SocialHistoryData, MedicalRecordData
+from django.forms.widgets import Textarea
+from models import Patient, SocialDemographicData, SocialHistoryData, MedicalRecordData, ComplementaryExam
 from django.contrib.auth.hashers import make_password
 from quiz_widget import SelectBoxCountries, SelectBoxState
 
@@ -13,9 +14,9 @@ class PatientForm(ModelForm):
         model = Patient
 
         fields = [
-            'cpf_id', 'name_txt', 'rg_id', 'medical_record_number', 'natural_of_txt', 'citizenship_txt', 'street_txt',
-            'zipcode_number', 'country_txt', 'state_txt', 'city_txt', 'phone_number', 'cellphone_number', 'email_txt',
-            'date_birth_txt', 'gender_opt', 'marital_status_opt',
+            'cpf_id', 'name_txt', 'number_record', 'rg_id', 'medical_record_number', 'natural_of_txt',
+            'citizenship_txt', 'street_txt', 'zipcode_number', 'country_txt', 'state_txt', 'city_txt', 'phone_number',
+            'cellphone_number', 'email_txt', 'date_birth_txt', 'gender_opt', 'marital_status_opt',
         ]
 
         widgets = {
@@ -123,42 +124,36 @@ class MedicalRecordForm(ModelForm):
     class Meta:
         model = MedicalRecordData
         fields = [
-            'record_date', 'record_responsible',
-            'fracture_history', 'scapula_fracture_side_id', 'clavicle_fracture_side_id', 'rib_fracture',
+            'fracture_history', 'scapula_fracture_side', 'clavicle_fracture_side', 'rib_fracture',
             'cervical_vertebrae_fracture', 'thoracic_vertebrae_fracture', 'lumbosacral_vertebrae_fracture',
-            'superior_members_fracture_side_id', 'inferior_members_fracture_side_id', 'pelvis_fracture_side_id',
-            'orthopedic_surgery', 'scapula_surgery_side_id', 'clavicle_surgery_side_id', 'rib_surgery',
+            'superior_members_fracture_side', 'inferior_members_fracture_side', 'pelvis_fracture_side',
+            'orthopedic_surgery', 'scapula_surgery_side', 'clavicle_surgery_side', 'rib_surgery',
             'cervical_vertebrae_surgery', 'thoracic_vertebrae_surgery', 'lumbosacral_vertebrae_surgery',
-            'superior_members_surgery_side_id', 'inferior_members_surgery_side_id', 'pelvis_surgery_side_id',
-            'nerve_surgery', 'nerve_surgery_type', 'vertigo_history', 'pain_history', 'headache',
+            'superior_members_surgery_side', 'inferior_members_surgery_side', 'pelvis_surgery_side',
+            'nerve_surgery', 'nerve_surgery_type', 'vertigo_history', 'pain_localizations', 'headache',
             'hypertension', 'diabetes', 'hormonal_dysfunction',
         ]
 
         widgets = {
-            'record_date': DateInput(attrs={'class': 'form-control', 'placeholder': 'Data', 'id': "record_date"}),
-            'record_responsible': TextInput(attrs={'class': 'form-control', 'placeholder': 'Entrar responsável',
-                                                   'id': "record_responsible"}),
+            # 'record_date': DateInput(attrs={'class': 'form-control', 'placeholder': 'Data',
+            #                                 'id': "record_date", "disabled": ""}),
+            # 'record_responsible': TextInput(attrs={'class': 'form-control', 'placeholder': 'Entrar responsável',
+            #                                        'id': "record_responsible", "disabled": ""}),
             'fracture_history': RadioSelect(attrs={'id': 'fracture_history'}, choices=(('1', 'Sim'), ('0', 'Não'))),
-            'scapula_fracture_side_id': Select(attrs={'class': 'form-control', 'id': 'scapula_fracture_side_id'}),
-            'clavicle_fracture_side_id': Select(attrs={'class': 'form-control', 'id': 'clavicle_fracture_side_id'}),
+            'scapula_fracture_side': Select(attrs={'class': 'form-control', 'id': 'scapula_fracture_side'}),
+            'clavicle_fracture_side': Select(attrs={'class': 'form-control', 'id': 'clavicle_fracture_side'}),
             'rib_fracture': RadioSelect(attrs={'id': 'rib_fracture'}, choices=(('1', 'Sim'), ('0', 'Não'))),
-            'cervical_vertebrae_fracture': RadioSelect(attrs={'id': 'cervical_vertebrae_fracture'},
-                                                       choices=(('1', 'Sim'), ('0', 'Não'))),
-            'cervical_vertebrae_fracture_type': CheckboxSelectMultiple(),
-            'thoracic_vertebrae_fracture': RadioSelect(attrs={'id': 'thoracic_vertebrae_fracture'},
-                                                       choices=(('1', 'Sim'), ('0', 'Não'))),
-            'thoracic_vertebrae_fracture_type': CheckboxSelectMultiple(),
-            'lumbosacral_vertebrae_fracture': RadioSelect(attrs={'id': 'lumbosacral_vertebrae_fracture'},
-                                                          choices=(('1', 'Sim'), ('0', 'Não'))),
-            'lumbosacral_vertebrae_fracture_type': CheckboxSelectMultiple(),
-            'superior_members_fracture_side_id': Select(attrs={'class': 'form-control',
-                                                               'id': 'superior_members_fracture_side_id'}),
-            'inferior_members_fracture_side_id': Select(attrs={'class': 'form-control',
-                                                               'id': 'inferior_members_fracture_side_id'}),
-            'pelvis_fracture_side_id': Select(attrs={'class': 'form-control', 'id': 'pelvis_fracture_side_id'}),
+            'cervical_vertebrae_fracture': CheckboxSelectMultiple(),
+            'thoracic_vertebrae_fracture': CheckboxSelectMultiple(),
+            'lumbosacral_vertebrae_fracture': CheckboxSelectMultiple(),
+            'superior_members_fracture_side': Select(attrs={'class': 'form-control',
+                                                               'id': 'superior_members_fracture_side'}),
+            'inferior_members_fracture_side': Select(attrs={'class': 'form-control',
+                                                               'id': 'inferior_members_fracture_side'}),
+            'pelvis_fracture_side': Select(attrs={'class': 'form-control', 'id': 'pelvis_fracture_side'}),
             'orthopedic_surgery': RadioSelect(attrs={'id': 'orthopedic_surgery'}, choices=(('1', 'Sim'), ('0', 'Não'))),
-            'scapula_surgery_side_id': Select(attrs={'class': 'form-control', 'id': 'scapula_surgery_side_id'}),
-            'clavicle_surgery_side_id': Select(attrs={'class': 'form-control', 'id': 'clavicle_surgery_side_id'}),
+            'scapula_surgery_side': Select(attrs={'class': 'form-control', 'id': 'scapula_surgery_side'}),
+            'clavicle_surgery_side': Select(attrs={'class': 'form-control', 'id': 'clavicle_surgery_side'}),
             'rib_surgery': RadioSelect(attrs={'id': 'rib_surgery'}, choices=(('1', 'Sim'), ('0', 'Não'))),
             'cervical_vertebrae_surgery': RadioSelect(attrs={'id': 'cervical_vertebrae_surgery'},
                                                       choices=(('1', 'Sim'), ('0', 'Não'))),
@@ -166,15 +161,16 @@ class MedicalRecordForm(ModelForm):
                                                       choices=(('1', 'Sim'), ('0', 'Não'))),
             'lumbosacral_vertebrae_surgery': RadioSelect(attrs={'id': 'lumbosacral_vertebrae_surgery'},
                                                          choices=(('1', 'Sim'), ('0', 'Não'))),
-            'superior_members_surgery_side_id': Select(attrs={'class': 'form-control',
-                                                              'id': 'superior_members_surgery_side_id'}),
-            'inferior_members_surgery_side_id': Select(attrs={'class': 'form-control',
-                                                              'id': 'inferior_members_surgery_side_id'}),
-            'pelvis_surgery_side_id': Select(attrs={'class': 'form-control', 'id': 'pelvis_surgery_side_id'}),
+            'superior_members_surgery_side': Select(attrs={'class': 'form-control',
+                                                              'id': 'superior_members_surgery_side'}),
+            'inferior_members_surgery_side': Select(attrs={'class': 'form-control',
+                                                              'id': 'inferior_members_surgery_side'}),
+            'pelvis_surgery_side': Select(attrs={'class': 'form-control', 'id': 'pelvis_surgery_side'}),
             'nerve_surgery': RadioSelect(attrs={'id': 'nerve_surgery'}, choices=(('1', 'Sim'), ('0', 'Não'))),
-            'nerve_surgery_type': Select(attrs={'class': 'form-control', 'id': 'nerve_surgery_type'}),
+            'nerve_surgery_type': TextInput(attrs={'class': 'form-control',
+                                                   'placeholder': 'Entrar tipo de cirurgia de nervo'}),
             'vertigo_history': RadioSelect(attrs={'id': 'vertigo_history'}, choices=(('1', 'Sim'), ('0', 'Não'))),
-            'pain_history': CheckboxSelectMultiple(),
+            'pain_localizations': CheckboxSelectMultiple(),
             'headache': RadioSelect(attrs={'id': 'headache'}, choices=(('1', 'Sim'), ('0', 'Não'))),
             'hypertension': RadioSelect(attrs={'id': 'hypertension'}, choices=(('1', 'Sim'), ('0', 'Não'))),
             'diabetes': RadioSelect(attrs={'id': 'diabetes'}, choices=(('1', 'Sim'), ('0', 'Não'))),
@@ -193,7 +189,7 @@ class UserForm(ModelForm):
             'last_name': TextInput(attrs={'class': 'form-control', 'placeholder': 'Entrar último nome'}),
             'username': TextInput(attrs={'class': 'form-control', 'placeholder': 'Entrar nome de usuário'}),
             'password': PasswordInput(attrs={'class': 'form-control', 'placeholder': 'Entrar senha',
-                                             'onkeyup': "password_strong();"}),
+                                             'onkeyup': "password_strong(); if(beginCheckPassword1)checkPass();"}),
             'email': TextInput(attrs={'class': 'form-control', 'placeholder': 'Entrar e-mail', 'id': "email",
                                       'type': 'email', 'data-error': "E-mail inválido",
                                       'pattern': '^[_A-Za-z0-9-\+]+(\.[_A-Za-z0-9-]+)*@[A-Za-z0-9-]' +
@@ -221,10 +217,28 @@ class UserForm(ModelForm):
 class UserFormUpdate(UserForm):
     password = CharField(required=False,
                          widget=PasswordInput(attrs={'class': 'form-control', 'placeholder': 'Entrar senha',
-                                                     'onkeyup': "password_strong();"}))
+                                                     'onkeyup': "password_strong();"
+                                                                "if(beginCheckPassword1)checkPass();"}))
 
     def clean_password(self):
         if self.cleaned_data['password']:
             return make_password(self.cleaned_data['password'])
         else:
             return self.instance.password
+
+
+class ComplementaryExamForm(ModelForm):
+    class Meta:
+        model = ComplementaryExam
+        fields = ['date', 'description', 'doctor', 'doctor_register', 'exam_site']
+
+        widgets = {
+            'date': DateInput(attrs={'class': 'form-control', 'placeholder': 'Data',
+                                               'id': "exam_date", 'required': "",
+                                               'data-error': "Data deve ser preenchida"},
+                                        ),
+            'description': Textarea(attrs={'class': 'form-control', 'placeholder': 'Descrição', 'cols': '100'}),
+            'doctor': TextInput(attrs={'class': 'form-control', 'placeholder': 'Médico'}),
+            'doctor_register': TextInput(attrs={'class': 'form-control', 'placeholder': 'CRM'}),
+            'exam_site': TextInput(attrs={'class': 'form-control', 'placeholder': 'Local de realização'}),
+        }
