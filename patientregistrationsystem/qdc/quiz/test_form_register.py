@@ -3,7 +3,7 @@ from django.test import TestCase, Client
 from django.http import Http404
 from django.test.client import RequestFactory
 from datetime import date
-from views import User, GenderOption, reverse, Patient, patient_update, patient
+from views import User, GenderOption, reverse, Patient, patient_update, patient, patients
 
 PATIENT_NEW = 'patient_new'
 
@@ -164,9 +164,34 @@ class FormValidation(TestCase):
         try:
             response = patient(request, patient_id=p.pk)
             self.assertEqual(response.status_code, 200)
-            self.data['search_text'] = 'Paciente'
 
+            self.data['search_text'] = 'Paciente'
             response = self.client.post(reverse('patient_search'), self.data)
+            self.assertEqual(response.status_code, 200)
+
+            self.data['search_text'] = '012'
+            response = self.client.post(reverse('patient_search'), self.data)
+            self.assertEqual(response.status_code, 200)
+
+
+        except Http404:
+            pass
+
+    def test_patient_list(self):
+        p = Patient()
+
+        p.name_txt = 'Paciente de teste'
+        p.date_birth_txt = '2001-01-15'
+        p.gender_opt_id = self.gender_opt.id
+        p.save()
+
+
+        self.client.login(username='myadmin', password='mypassword')
+        request = self.factory.get('/quiz/patient/%d' % p.pk)
+        request.user = self.user
+
+        try:
+            response = patient(request, p.pk)
             self.assertEqual(response.status_code, 200)
 
         except Http404:
