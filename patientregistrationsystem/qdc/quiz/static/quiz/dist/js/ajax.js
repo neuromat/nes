@@ -50,15 +50,15 @@ $(function(){
     //Search in CID-10 table
     $('#id_whichComplementaryExame').keyup(function() {
 
-        /*if ($('#id_whichComplementaryExame').val().length >= 3) {*/
-
             $.ajax({
                 type: "POST",
                 url: "/quiz/patient/medical_record/cid-10/",
                 data: {
                     'search_text': ($('#id_whichComplementaryExame').val().length >= 3 ?
                         $('#id_whichComplementaryExame').val() : ''),
-                    'csrfmiddlewaretoken': $("input[name=csrfmiddlewaretoken]").val()
+                    'csrfmiddlewaretoken': $("input[name=csrfmiddlewaretoken]").val(),
+                    'patient_id': $('#patient_id').val(),
+                    'medical_record': $('#medical_record_id').val()
                 },
                 success: searchSuccess,
                 dataType: 'html'
@@ -69,8 +69,7 @@ $(function(){
 });
 
 
-function searchSuccess(data, textStatus, jqXHR)
-{
+function searchSuccess(data, textStatus, jqXHR) {
     $('#search-results').html(data);
     $('#search-results1').html(data); //workaround to handle modal for patient excluded
                                       //see id="search-results1" in register.html

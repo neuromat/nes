@@ -22,7 +22,10 @@ urlpatterns = patterns(
 
     url(r'^patient/(?P<patient_id>\d+)/medical_record/new/$', 'quiz.views.medical_record_create',
         name='medical_record_new'),
-    url(r'^patient/(?P<patient_id>\d+)/medical_record/(?P<record_id>\d+)/$', 'quiz.views.medical_record_view'),
-    url(r'^patient/medical_record/cid-10/$', 'quiz.views.search_cid10_ajax', name='cid10_search')
+    url(r'^patient/(?P<patient_id>\d+)/medical_record/(?P<record_id>\d+)/$', 'quiz.views.medical_record_view',
+        name='medical_record_view'),
+    url(r'^patient/medical_record/cid-10/$', 'quiz.views.search_cid10_ajax', name='cid10_search'),
+    url(r'^patient/(?P<patient_id>\d+)/medical_record/(?P<medical_record_id>\d+)/diagnosis/(?P<cid10_id>\d+)/$',
+        'quiz.views.diagnosis_create'),
 
 )

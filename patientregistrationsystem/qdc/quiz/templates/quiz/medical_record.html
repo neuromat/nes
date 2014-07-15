@@ -528,9 +528,12 @@
             <div class="col-md-1"></div>
             <div class="col-md-10">
                 <div class="container span6 offset3 well ">
+                {% if creating %}
                     <div class="row">
-                        <div class="col-xs-6 col-sm-9">
+                        <div class="col-xs-6 col-sm-9" >
                             <div class="form-group">
+                                <input id="patient_id" value="{{ patient_id }}" style="display: none;">
+                                <input id="medical_record_id" value="{{ record_id }}" style="display: none;">
                                 <div class="input-group  input-group-sm ">
                                                             <span class="input-group-addon"> <span
                                                                     class="glyphicon glyphicon-edit"></span></span>
@@ -543,11 +546,34 @@
                                 <ul id="search-results" style="list-style: none;"></ul>
                             </div>
                         </div>
-                        <div class="col-xs-6 col-sm-3">
+                    </div>
+                {% endif %}
+                    <div class="row">
+                        <div class="col-xs-6 col-sm-9">
                             <div class="form-group">
-                                <div class="btn-group pull-right">
-                                    <a data-toggle="tooltip" data-placement="bottom" title="Incluir este item" class="btn btn-primary glyphicon glyphicon-plus" href="#evaluateModal"> Incluir</a>
-                                </div>
+                                <table class="table table-striped">
+                                    <thead>
+                                    <tr>
+                                        <th>Diagnóstico</th>
+                                        <th></th> {# cabeçalho vazio para coluna de exclusão #}
+                                        <th>Exames</th>
+                                    </tr>
+                                    </thead>
+                                    <tbody>
+                                        {% if not object_list %}
+                                            <tr>
+                                                <td>(sem diagnósticos)</td>
+                                            </tr>
+                                        {% else %}
+                                            {% for results in object_list %}
+                                                <tr>
+                                                    <td>{{ results.classification_of_diseases }}</td>
+                                                    <td>{{ results.exams }}</td>
+                                                </tr>
+                                            {% endfor %}
+                                        {% endif %}
+                                    </tbody>
+                                </table>
                             </div>
                         </div>
                     </div>

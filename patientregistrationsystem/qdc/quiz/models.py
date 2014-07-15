@@ -116,10 +116,7 @@ class Patient(models.Model):
 
     def __unicode__(self):  # Python 3: def __str__(self):
         return \
-            self.name_txt, self.cpf_id, self.rg_id, self.medical_record_number, self.natural_of_txt, \
-            self.citizenship_txt, self.street_txt, self.zipcode_number, self.country_txt, self.state_txt, \
-            self.city_txt, self.phone_number, self.cellphone_number, self.email_txt, self.date_birth_txt, \
-            self.gender_opt, self.marital_status_opt, self.removed
+            self.name_txt
 
 
 class SocialDemographicData(models.Model):
@@ -308,7 +305,7 @@ class ClassificationOfDiseases(models.Model):
     parent = models.ForeignKey('self', null=True, related_name='children')
 
     def __unicode__(self):
-        return self.code, self.description
+        return self.abbreviated_description
 
 
 class Diagnosis(models.Model):
@@ -316,7 +313,7 @@ class Diagnosis(models.Model):
     classification_of_diseases = models.ForeignKey(ClassificationOfDiseases, null=False)
 
     def __unicode__(self):
-        return self.medical_record_data, self.classification_of_diseases
+        return self.classification_of_diseases
 
 
 class ComplementaryExam(models.Model):
@@ -333,6 +330,4 @@ class ComplementaryExam(models.Model):
 
 class ExamFile (models.Model):
     exam = models.ForeignKey(ComplementaryExam, null=False)
-    name = models.CharField(max_length=100, null=False, blank=False)
-    content = models.BinaryField(null=False, blank=False)
-
+    content = models.FileField(upload_to='documents/%Y/%m/%d')
