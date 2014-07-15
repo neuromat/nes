@@ -5,6 +5,7 @@ from django.http import Http404
 from django.test.client import RequestFactory
 from django.contrib.auth.models import Group
 
+
 from views import User, reverse, user_update, user_delete
 
 import re
@@ -234,7 +235,7 @@ class FormUserValidation(TestCase):
         except Http404:
             pass
 
-    def test_update_user(self):
+    def test_update_user_get(self):
         """
         Testa atualizar usuario
         """
@@ -248,6 +249,23 @@ class FormUserValidation(TestCase):
         try:
             response = user_update(request, user_id=self.user.pk)
             self.assertEqual(response.status_code, 200)
+        except Http404:
+            pass
+
+    def test_update_user_post(self):
+        """
+        Testa atualizar usuario
+        """
+
+        username = 'testeusername'
+        self.data['username'] = username
+        #id_user = User.objects.get(pk=1)
+
+        try:
+            self.client.post('quiz/user/edit/%d' % self.user.pk, self.data, follow=True)
+
+            self.assertEqual(User.objects.filter(username=username).count(), 0)
+
         except Http404:
             pass
 
