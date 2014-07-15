@@ -13,7 +13,6 @@ from models import Patient, SocialDemographicData, SocialHistoryData, FleshToneO
 
 from forms import PatientForm, SocialDemographicDataForm, SocialHistoryDataForm, UserForm, UserFormUpdate, \
     MedicalRecordForm, ComplementaryExamForm, ExamFileForm
-    MedicalRecordForm, ComplementaryExamForm
 
 from quiz_widget import SelectBoxCountriesDisabled, SelectBoxStateDisabled
 from django.contrib import messages
@@ -612,13 +611,13 @@ def exam_create(request, patient_id, record_id, template_name="quiz/exams.html")
 
             if file_form.is_valid():
 
-                # new_file_data = file_form.save(commit=False)
-                # new_file_data.exam = new_complementary_exam
-                # new_file_data.save()
+                new_file_data = file_form.save(commit=False)
+                new_file_data.exam = new_complementary_exam
+                new_file_data.save()
 
-                new_document = ExamFile(content=request.FILES['content'])
-                new_document.exam = new_complementary_exam
-                new_document.save()
+                # new_document = ExamFile(content=request.FILES['content'])
+                # new_document.exam = new_complementary_exam
+                # new_document.save()
 
 
             messages.success(request, 'Exame salvo com sucesso.')
