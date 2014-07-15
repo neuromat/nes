@@ -312,6 +312,9 @@ class Diagnosis(models.Model):
     medical_record_data = models.ForeignKey(MedicalRecordData, null=False)
     classification_of_diseases = models.ForeignKey(ClassificationOfDiseases, null=False)
 
+    class Meta:
+        unique_together = ('medical_record_data', 'classification_of_diseases',)
+
     def __unicode__(self):
         return self.classification_of_diseases
 
