@@ -8,6 +8,8 @@ from django.utils.translation import ugettext as _
 from django.contrib.auth.models import User
 from validation import CPF
 import datetime
+from django.core.files.storage import FileSystemStorage
+import patched_locks
 
 
 #Valida CPF
@@ -316,7 +318,7 @@ class Diagnosis(models.Model):
     classification_of_diseases = models.ForeignKey(ClassificationOfDiseases, null=False)
 
     def __unicode__(self):
-        return self.classification_of_diseases
+        return unicode(self.classification_of_diseases)
 
 
 class ComplementaryExam(models.Model):
@@ -328,10 +330,9 @@ class ComplementaryExam(models.Model):
     exam_site = models.CharField(max_length=100, null=False, blank=False)
 
     def __unicode__(self):
-        return self.date, self.description
+        return unicode(self.description)
 
 
 class ExamFile (models.Model):
     exam = models.ForeignKey(ComplementaryExam, null=False)
-    content = models.FileField(upload_to='documents/%Y/%m/%d')
-
+    content = models.FileField(upload_to="documents")

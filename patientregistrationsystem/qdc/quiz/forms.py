@@ -2,7 +2,7 @@
 from django.forms import ModelForm, TextInput, DateInput, Select, RadioSelect, PasswordInput, CheckboxSelectMultiple, \
     CharField, ValidationError
 from django.forms.widgets import Textarea
-from models import Patient, SocialDemographicData, SocialHistoryData, MedicalRecordData, ComplementaryExam
+from models import Patient, SocialDemographicData, SocialHistoryData, MedicalRecordData, ComplementaryExam, ExamFile
 from django.contrib.auth.hashers import make_password
 from quiz_widget import SelectBoxCountries, SelectBoxState
 
@@ -242,3 +242,9 @@ class ComplementaryExamForm(ModelForm):
             'doctor_register': TextInput(attrs={'class': 'form-control', 'placeholder': 'CRM'}),
             'exam_site': TextInput(attrs={'class': 'form-control', 'placeholder': 'Local de realização'}),
         }
+
+
+class ExamFileForm(ModelForm):
+    class Meta:
+        model = ExamFile
+        fields = ['content']

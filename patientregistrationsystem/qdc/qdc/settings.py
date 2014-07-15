@@ -80,7 +80,7 @@ DATABASES = {
         'NAME': 'qdcdb',
         'USER': 'qdc',
         'PASSWORD': 'DEVqdc1716',
-        #'HOST': '200.144.254.136',
+        'HOST': '200.144.254.136',
         'TEST_NAME': 'romulo_tests',
     }
 }
@@ -116,3 +116,6 @@ USE_TZ = True
 STATIC_ROOT = '/home/crns/PycharmProjects/neuromat-cc-ribas/patientregistrationsystem/qdc/quiz/'
 #STATIC_ROOT = [os.path.join(BASE_DIR, 'static')]
 STATIC_URL = '/static/'
+
+MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
+MEDIA_ROOT_URL = '/media/'
