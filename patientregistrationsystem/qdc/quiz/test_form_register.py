@@ -54,6 +54,21 @@ class FormValidation(TestCase):
         self.assertEqual(response.status_code, 200)
         self.assertFormError(response, "patient_form", "cpf_id", u'CPF ' + cpf + u' n\xe3o \xe9 v\xe1lido')
 
+    def test_empty_cpf(self):
+        """
+        Testa inclusao de paciente com cpf invalido
+        """
+
+        # CPF vazio
+        name = 'Patient-CPF-Vazio'
+        self.data['name_txt'] = name
+        self.data['cpf_id'] = ''
+
+        response = self.client.post(reverse(PATIENT_NEW), self.data)
+        self.assertEqual(response.status_code, 302)
+        self.assertEqual(Patient.objects.filter(name_txt=name).count(), 1)
+
+
     def test_future_date_birth(self):
         """
         Testa inclusao de paciente com data de nascimento futura
@@ -84,6 +99,7 @@ class FormValidation(TestCase):
         name = 'test_date_birth_now'
         self.data['date_birth_txt'] = date_birth
         self.data['name_txt'] = name
+        self.data['currentTab'] = 1
 
         self.client.post(reverse(PATIENT_NEW), self.data)
 
