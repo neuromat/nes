@@ -266,16 +266,18 @@ class FormValidation(TestCase):
         request.user = self.user
 
         try:
-            self.fill_social_demographic_data()
+
             response = patient_update(request, patient_id=p.pk)
             self.assertEqual(response.status_code, 200)
+            self.fill_social_demographic_data()
             response = self.client.post(reverse('patient_edit', args=[p.pk]), self.data)
             self.assertEqual(response.status_code, 302)
 
-            self.fill_social_demographic_data()
-            self.data.pop('wash_machine_opt')
+
             response = patient_update(request, patient_id=p.pk)
             self.assertEqual(response.status_code, 200)
+            self.fill_social_demographic_data()
+            self.data.pop('wash_machine_opt')
             response = self.client.post(reverse('patient_edit', args=[p.pk]), self.data)
             self.assertEqual(response.status_code, 302)
 
