@@ -3,8 +3,9 @@ from django.test import TestCase, Client
 from django.http import Http404
 from django.test.client import RequestFactory
 from datetime import date
+from coverage import exclude
 from models import ClassificationOfDiseases
-from views import User, GenderOption, reverse, Patient, patient_update, patient
+from views import User, GenderOption, reverse, Patient, patient_update, patient, restore_patient
 
 PATIENT_NEW = 'patient_new'
 
@@ -262,8 +263,6 @@ class FormValidation(TestCase):
             self.assertEqual(response.status_code, 200)
             self.assertNotContains(response, '374.276.738')
 
-
-
         except Http404:
             pass
 
@@ -281,6 +280,41 @@ class FormValidation(TestCase):
         try:
             response = patient_update(request, patient_id=id_patient)
             self.assertEqual(response.status_code, 404)
+        except Http404:
+            pass
+
+    def test_patient_restore(self):
+        """Teste de paciente recuperar paciente removido """
+
+        # Cria um paciente ja removido no BD
+        p = Patient()
+        p.name_txt = 'Patient'
+        p.date_birth_txt = '2001-01-15'
+        p.cpf_id = '374.276.738-08'
+        p.gender_opt_id = self.gender_opt.id
+        p.removed = True
+        p.save()
+
+        # Create an instance of a GET request.
+        self.client.login(username='myadmin', password='mypassword')
+        request = self.factory.get('/quiz/patient/%i/' % p.pk)
+        request.user = self.user
+
+        try:
+            self.data['search_text'] = 374
+            response = self.client.post(reverse('patient_search'), self.data)
+            self.assertEqual(response.status_code, 200)
+            self.assertNotContains(response, '374.276.738')
+
+            response = restore_patient(request, patient_id=p.pk)
+            self.assertEqual(response.status_code, 302)
+            self.assertEqual(Patient.objects.filter(name_txt=p.name_txt).exclude(removed=True).count(), 1)
+
+            self.data['search_text'] = 374
+            response = self.client.post(reverse('patient_search'), self.data)
+            self.assertEqual(response.status_code, 200)
+            self.assertContains(response, '374.276.738')
+
         except Http404:
             pass
 
@@ -364,12 +398,6 @@ class FormValidation(TestCase):
         p.removed = True
         p.save()
 
-        self.data['search_text'] = 'Patient'
-        response = self.client.post(reverse('patients_verify_homonym'), self.data)
-        self.assertEqual(response.status_code, 200)
-        self.assertEqual(response.context['patient_homonym_excluded'].count(), 1)
-
-        # Busca valida
         self.data['search_text'] = 'Patient'
         response = self.client.post(reverse('patients_verify_homonym'), self.data)
         self.assertEqual(response.status_code, 200)
