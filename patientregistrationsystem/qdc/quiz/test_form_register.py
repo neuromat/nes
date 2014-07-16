@@ -132,6 +132,7 @@ class FormValidation(TestCase):
         self.data['religion_opt'] = '',
         self.data['amount_cigarettes_opt'] = ''
         self.data['dvd_opt'] = '1'
+        self.data['wash_machine_opt'] = '1'
         self.data['refrigerator_opt'] = '1'
         self.data['alcohol_frequency_opt'] = ''
         self.data['schooling_opt'] = school_opt.pk
@@ -152,12 +153,15 @@ class FormValidation(TestCase):
         try:
             response = self.client.post(reverse(PATIENT_NEW), self.data, follow=True)
             self.assertEqual(Patient.objects.filter(name_txt=name).count(), 1)
-            self.assertContains(response, u'Classe Social não calculada')
+            self.assertNotContains(response, u'Classe Social não calculada')
 
-            self.data['wash_machine_opt'] = '1'
+            self.data.pop('wash_machine_opt')
+            name = 'test_patient_social_demographic_data_1'
+            self.data['name_txt'] = name
+            self.data['cpf_id'] = ''
             response = self.client.post(reverse(PATIENT_NEW), self.data, follow=True)
             self.assertEqual(Patient.objects.filter(name_txt=name).count(), 1)
-            self.assertNotContains(response, u'Classe Social não calculada')
+            self.assertContains(response, u'Classe Social não calculada')
 
         except Http404:
             pass
@@ -269,7 +273,6 @@ class FormValidation(TestCase):
             self.assertEqual(response.status_code, 302)
 
             self.fill_social_demographic_data()
-            self.data['wash_machine_opt'] = '1'
             response = patient_update(request, patient_id=p.pk)
             self.assertEqual(response.status_code, 200)
             response = self.client.post(reverse('patient_edit', args=[p.pk]), self.data)
