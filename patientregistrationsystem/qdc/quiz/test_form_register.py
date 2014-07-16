@@ -4,9 +4,11 @@ from django.http import Http404
 from django.test.client import RequestFactory
 from datetime import date
 from models import ClassificationOfDiseases, MedicalRecordData, PainLocalization
-from views import User, GenderOption, SchoolingOption, reverse, Patient, patient_update, patient, restore_patient
+from views import User, GenderOption, SchoolingOption, reverse, Patient, patient_update, patient, restore_patient, \
+    medical_record_view
 
 PATIENT_NEW = 'patient_new'
+
 
 class FormValidation(TestCase):
     user = ''
@@ -133,7 +135,16 @@ class FormValidation(TestCase):
             response = self.client.post(url, self.data, follow=True)
             self.assertEqual(response.status_code, 200)
             self.assertEqual(MedicalRecordData.objects.filter(patient=patient_mock).count(), 1)
+            medical_record = MedicalRecordData.objects.filter(patient=patient_mock).first()
 
+            # Create an instance of a GET request.
+            self.client.login(username='myadmin', password='mypassword')
+            url = reverse("medical_record_view", args=(patient_mock.pk, medical_record.pk,))
+            request = self.factory.get(url + "?status=edit")
+            request.user = self.user
+
+            response = medical_record_view(request, patient_id=patient_mock.pk, record_id=medical_record.pk)
+            self.assertEqual(response.status_code, 200)
         except Http404:
             pass
 
