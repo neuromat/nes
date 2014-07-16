@@ -278,15 +278,15 @@ class MedicalRecordData(models.Model):
     pelvis_surgery_side = \
         models.ForeignKey(Side, related_name='side_pelvis_surgery', null=True, blank=True)
 
-    nerve_surgery = models.CharField(max_length=10, null=True, blank=True)
+    nerve_surgery = models.CharField(max_length=10, null=True, blank=False)
     nerve_surgery_type = models.CharField(max_length=50, null=True, blank=True)
 
-    vertigo_history = models.CharField(max_length=10, null=True, blank=True)
-    pain_localizations = models.ManyToManyField(PainLocalization, related_name="medical_records")
-    headache = models.CharField(max_length=10, null=True, blank=True)
-    hypertension = models.CharField(max_length=10, null=True, blank=True)
-    diabetes = models.CharField(max_length=10, null=True, blank=True)
-    hormonal_dysfunction = models.CharField(max_length=10, null=True, blank=True)
+    vertigo_history = models.CharField(max_length=10, null=True, blank=False)
+    pain_localizations = models.ManyToManyField(PainLocalization, related_name="medical_records", blank=True, null=True)
+    headache = models.CharField(max_length=10, null=True, blank=False)
+    hypertension = models.CharField(max_length=10, null=True, blank=False)
+    diabetes = models.CharField(max_length=10, null=True, blank=False)
+    hormonal_dysfunction = models.CharField(max_length=10, null=True, blank=False)
 
     def __unicode__(self):
         return \
