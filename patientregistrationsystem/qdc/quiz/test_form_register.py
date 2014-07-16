@@ -3,11 +3,10 @@ from django.test import TestCase, Client
 from django.http import Http404
 from django.test.client import RequestFactory
 from datetime import date
-from models import ClassificationOfDiseases
+from models import ClassificationOfDiseases, MedicalRecordData, PainLocalization
 from views import User, GenderOption, SchoolingOption, reverse, Patient, patient_update, patient, restore_patient
 
 PATIENT_NEW = 'patient_new'
-
 
 class FormValidation(TestCase):
     user = ''
@@ -61,7 +60,7 @@ class FormValidation(TestCase):
         """
 
         # CPF vazio
-        name = 'Patient-CPF-Vazio'
+        name = 'Patient-CPF-Empty'
         self.data['name_txt'] = name
         self.data['cpf_id'] = ''
 
@@ -105,11 +104,11 @@ class FormValidation(TestCase):
 
         self.assertEqual(Patient.objects.filter(name_txt=name).count(), 1)
 
-    def test_patient_added(self):
+    def test_patient_create(self):
         """
         Testa inclusao de paciente com campos obrigatorios
         """
-        name = 'test_patient_added'
+        name = 'test_patient_create'
         self.data['name_txt'] = name
 
         try:
@@ -122,8 +121,47 @@ class FormValidation(TestCase):
         except Http404:
             pass
 
-    def fill_social_demographic_data(self):
+    def test_patient_with_medical_record(self):
+        """
+        Testa inclusao de paciente com campos obrigatorios
+        """
+        patient_mock = self.create_patient_mock(name='test_patient_with_medical_record')
 
+        try:
+            self.fill_medical_record()
+            url = reverse("medical_record_new", args=(patient_mock.pk,))
+            response = self.client.post(url, self.data, follow=True)
+            self.assertEqual(response.status_code, 200)
+            self.assertEqual(MedicalRecordData.objects.filter(patient=patient_mock).count(), 1)
+
+        except Http404:
+            pass
+
+    def fill_medical_record(self):
+        pain_localization = PainLocalization.objects.create(pain_localization='pain')
+        pain_localization.save()
+
+        self.data['inferior_members_fracture_side'] = ''
+        self.data['hormonal_dysfunction'] = '0'
+        self.data['pelvis_fracture_side'] = ''
+        self.data['scapula_fracture_side'] = ''
+        self.data['pain_localizations'] = pain_localization.pk
+        self.data['clavicle_fracture_side'] = ''
+        self.data['fracture_history'] = '0'
+        self.data['clavicle_surgery_side'] = ''
+        self.data['inferior_members_surgery_side'] = ''
+        self.data['pelvis_surgery_side'] = ''
+        self.data['superior_members_surgery_side'] = ''
+        self.data['hypertension'] = '0'
+        self.data['scapula_surgery_side'] = ''
+        self.data['vertigo_history'] = '0'
+        self.data['nerve_surgery_type'] = ''
+        self.data['nerve_surgery'] = '0'
+        self.data['diabetes'] = '0'
+        self.data['superior_members_fracture_side'] = ''
+        self.data['headache'] = '1'
+
+    def fill_social_demographic_data(self):
         # Criar uma opcao de Schooling
         school_opt = SchoolingOption.objects.create(schooling_txt='Fundamental Completo')
         school_opt.save()
@@ -152,6 +190,13 @@ class FormValidation(TestCase):
 
         try:
             response = self.client.post(reverse(PATIENT_NEW), self.data, follow=True)
+            self.assertEqual(Patient.objects.filter(name_txt=name).count(), 1)
+            self.assertNotContains(response, u'Classe Social não calculada')
+
+            patient_to_update = Patient.objects.filter(name_txt=name).first()
+
+            response = self.client.post(
+                reverse('patient_edit', args=(patient_to_update.pk,)), self.data, follow=True)
             self.assertEqual(Patient.objects.filter(name_txt=name).count(), 1)
             self.assertNotContains(response, u'Classe Social não calculada')
 
@@ -188,40 +233,43 @@ class FormValidation(TestCase):
 
         self.assertContains(response, 'Nome não preenchido')
 
+    def create_patient_mock(self, name='Pacient Test'):
+        p_mock = Patient()
+        p_mock.name_txt = name
+        p_mock.date_birth_txt = '2001-01-15'
+        p_mock.cpf_id = '374.276.738-08'
+        p_mock.gender_opt_id = self.gender_opt.id
+        p_mock.save()
+        return p_mock
+
     def test_view_and_search_patient(self):
         """
         Teste de visualizacao de paciente apos cadastro na base de dados
         """
 
-        p = Patient()
-
-        p.name_txt = 'Paciente de teste'
-        p.date_birth_txt = '2001-01-15'
-        p.cpf_id = '366.483.170-51'
-        p.gender_opt_id = self.gender_opt.id
-        p.save()
+        patient_mock = self.create_patient_mock()
 
         # Create an instance of a GET request.
         self.client.login(username='myadmin', password='mypassword')
-        request = self.factory.get('/quiz/patient/%i/' % p.pk)
+        request = self.factory.get('/quiz/patient/%i/' % patient_mock.pk)
         request.user = self.user
 
         # Test view() as if it were deployed at /quiz/patient/%id
         try:
-            response = patient(request, patient_id=p.pk)
+            response = patient(request, patient_id=patient_mock.pk)
             self.assertEqual(response.status_code, 200)
 
-            self.data['search_text'] = 'Paciente'
+            self.data['search_text'] = 'Pacient'
             response = self.client.post(reverse('patient_search'), self.data)
             self.assertEqual(response.status_code, 200)
-            self.assertContains(response, 'Paciente de teste')
+            self.assertContains(response, 'Pacient Test')
             self.assertEqual(response.context['patients'].count(), 1)
 
-            self.data['search_text'] = 366
+            self.data['search_text'] = 374
             response = self.client.post(reverse('patient_search'), self.data)
             self.assertEqual(response.status_code, 200)
             self.assertEqual(response.context['patients'].count(), 1)
-            self.assertContains(response, '366.483.170-51')
+            self.assertContains(response, '374.276.738-08')
 
             self.data['search_text'] = ''
             response = self.client.post(reverse('patient_search'), self.data)
@@ -232,19 +280,14 @@ class FormValidation(TestCase):
             pass
 
     def test_patient_list(self):
-        p = Patient()
-
-        p.name_txt = 'Paciente de teste'
-        p.date_birth_txt = '2001-01-15'
-        p.gender_opt_id = self.gender_opt.id
-        p.save()
+        patient_mock = self.create_patient_mock()
 
         self.client.login(username='myadmin', password='mypassword')
-        request = self.factory.get('/quiz/patient/%d' % p.pk)
+        request = self.factory.get('/quiz/patient/%d' % patient_mock.pk)
         request.user = self.user
 
         try:
-            response = patient(request, p.pk)
+            response = patient(request, patient_mock.pk)
             self.assertEqual(response.status_code, 200)
 
         except Http404:
@@ -253,44 +296,30 @@ class FormValidation(TestCase):
     def test_update_and_remove_patient(self):
         """Teste de paciente existente na base de dados """
 
-        p = Patient()
-
-        p.name_txt = 'Paciente de teste UPDATE'
-        p.date_birth_txt = '2001-01-15'
-        p.gender_opt_id = self.gender_opt.id
-        p.save()
+        patient_mock = self.create_patient_mock(name='Pacient Test Update')
 
         # Create an instance of a GET request.
         self.client.login(username='myadmin', password='mypassword')
-        request = self.factory.get('/quiz/patient/%i/' % p.pk)
+        request = self.factory.get('/quiz/patient/%i/' % patient_mock.pk)
         request.user = self.user
 
         try:
 
-            response = patient_update(request, patient_id=p.pk)
+            response = patient_update(request, patient_id=patient_mock.pk)
             self.assertEqual(response.status_code, 200)
-            self.fill_social_demographic_data()
-            response = self.client.post(reverse('patient_edit', args=[p.pk]), self.data)
-            self.assertEqual(response.status_code, 302)
-
-
-            response = patient_update(request, patient_id=p.pk)
-            self.assertEqual(response.status_code, 200)
-            self.fill_social_demographic_data()
-            self.data.pop('wash_machine_opt')
-            response = self.client.post(reverse('patient_edit', args=[p.pk]), self.data)
+            response = self.client.post(reverse('patient_edit', args=[patient_mock.pk]), self.data)
             self.assertEqual(response.status_code, 302)
 
             self.data['currentTab'] = 0
-            response = self.client.post(reverse('patient_edit', args=[p.pk]), self.data)
+            response = self.client.post(reverse('patient_edit', args=[patient_mock.pk]), self.data)
             self.assertEqual(response.status_code, 302)
 
             self.data['cpf_id'] = ''
-            response = self.client.post(reverse('patient_edit', args=[p.pk]), self.data)
+            response = self.client.post(reverse('patient_edit', args=[patient_mock.pk]), self.data)
             self.assertEqual(response.status_code, 302)
 
             self.data['cpf_id'] = '374.276.738-08'
-            response = self.client.post(reverse('patient_edit', args=[p.pk]), self.data)
+            response = self.client.post(reverse('patient_edit', args=[patient_mock.pk]), self.data)
             self.assertEqual(response.status_code, 302)
 
             # Inicio do CPF inserido no self.data para retorno positivo na busca
@@ -300,14 +329,14 @@ class FormValidation(TestCase):
             self.assertContains(response, '374.276.738')
 
             self.data['action'] = 'remove'
-            response = self.client.post(reverse('patient_view', args=[p.pk]), self.data)
+            response = self.client.post(reverse('patient_view', args=[patient_mock.pk]), self.data)
             self.assertEqual(response.status_code, 302)
 
             self.data['action'] = 'not'
-            response = self.client.post(reverse('patient_view', args=[p.pk]), self.data)
+            response = self.client.post(reverse('patient_view', args=[patient_mock.pk]), self.data)
             self.assertEqual(response.status_code, 302)
 
-            patient_removed = Patient.objects.get(pk=p.pk)
+            patient_removed = Patient.objects.get(pk=patient_mock.pk)
             self.assertEqual(patient_removed.removed, True)
 
             # Inicio do CPF inserido no self.data - nao eh pra haver retorno para este inicio de CPF
@@ -340,17 +369,13 @@ class FormValidation(TestCase):
         """Teste de paciente recuperar paciente removido """
 
         # Cria um paciente ja removido no BD
-        p = Patient()
-        p.name_txt = 'Patient'
-        p.date_birth_txt = '2001-01-15'
-        p.cpf_id = '374.276.738-08'
-        p.gender_opt_id = self.gender_opt.id
-        p.removed = True
-        p.save()
+        patient_mock = self.create_patient_mock()
+        patient_mock.removed = True
+        patient_mock.save()
 
         # Create an instance of a GET request.
         self.client.login(username='myadmin', password='mypassword')
-        request = self.factory.get('/quiz/patient/%i/' % p.pk)
+        request = self.factory.get('/quiz/patient/%i/' % patient_mock.pk)
         request.user = self.user
 
         try:
@@ -359,9 +384,9 @@ class FormValidation(TestCase):
             self.assertEqual(response.status_code, 200)
             self.assertNotContains(response, '374.276.738')
 
-            response = restore_patient(request, patient_id=p.pk)
+            response = restore_patient(request, patient_id=patient_mock.pk)
             self.assertEqual(response.status_code, 302)
-            self.assertEqual(Patient.objects.filter(name_txt=p.name_txt).exclude(removed=True).count(), 1)
+            self.assertEqual(Patient.objects.filter(name_txt=patient_mock.name_txt).exclude(removed=True).count(), 1)
 
             self.data['search_text'] = 374
             response = self.client.post(reverse('patient_search'), self.data)
@@ -420,24 +445,17 @@ class FormValidation(TestCase):
         self.assertEqual(response.status_code, 200)
         self.assertEqual(response.context['cid_10_list'], '')
 
-
     def test_patient_verify_homonym(self):
-        p = Patient()
-        p.name_txt = 'Patient'
-        p.date_birth_txt = '2001-01-15'
-        p.cpf_id = '374.276.738-08'
-        p.gender_opt_id = self.gender_opt.id
-        p.removed = False
-        p.save()
+        patient_mock = self.create_patient_mock()
 
         # Busca valida
-        self.data['search_text'] = 'Patient'
+        self.data['search_text'] = patient_mock.name_txt
         response = self.client.post(reverse('patients_verify_homonym'), self.data)
         self.assertEqual(response.status_code, 200)
         self.assertEqual(response.context['patient_homonym_excluded'].count(), 0)
         self.assertEqual(response.context['patient_homonym'].count(), 1)
 
-        self.data['search_text'] = '374.276.738-08'
+        self.data['search_text'] = patient_mock.cpf_id
         response = self.client.post(reverse('patients_verify_homonym'), self.data)
         self.assertEqual(response.status_code, 200)
         self.assertEqual(response.context['patient_homonym_excluded'].count(), 0)
@@ -454,16 +472,17 @@ class FormValidation(TestCase):
         self.assertEqual(response.status_code, 200)
         self.assertEqual(response.context['patient_homonym'].count(), 0)
 
-        p.removed = True
-        p.save()
+        patient_mock.removed = True
+        patient_mock.save()
 
-        self.data['search_text'] = 'Patient'
+        self.data['search_text'] = patient_mock.name_txt
+
         response = self.client.post(reverse('patients_verify_homonym'), self.data)
         self.assertEqual(response.status_code, 200)
         self.assertEqual(response.context['patient_homonym_excluded'].count(), 1)
         self.assertEqual(response.context['patient_homonym'].count(), 0)
 
-        self.data['search_text'] = '374.276.738-08'
+        self.data['search_text'] = patient_mock.cpf_id
         response = self.client.post(reverse('patients_verify_homonym'), self.data)
         self.assertEqual(response.status_code, 200)
         self.assertEqual(response.context['patient_homonym_excluded'].count(), 1)
