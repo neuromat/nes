@@ -152,7 +152,7 @@ def get_current_tab(request):
     elif 'currentTab' in request.POST:
         current_tab = request.POST['currentTab']
     else:
-        current_tab = 0
+        current_tab = '0'
 
     return current_tab
 
@@ -285,29 +285,6 @@ def patient_update(request, patient_id, template_name="quiz/register.html"):
             'patient_id': patient_id,
             'object_list': medical_data}
         return render(request, template_name, context)
-
-
-@login_required
-@permission_required('quiz.view_patient')
-def patients(request):
-    language = 'en-us'
-    session_language = 'en-us'
-
-    if 'lang' in request.COOKIES:
-        language = request.COOKIES['lang']
-
-    if 'lang' in request.session:
-        session_language = request.session['lang']
-
-    args = {}
-    args.update(csrf(request))
-
-    args['patients'] = Patient.objects.all()
-    args['language'] = language
-    args['session_language'] = session_language
-
-    return render_to_response('/quiz/busca.html', args)
-
 
 @login_required
 @permission_required('quiz.view_patient')
