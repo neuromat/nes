@@ -87,10 +87,13 @@
                             <div class="form-group">
                                 <label>Anexos</label>
                                 <div class="input-group  input-group-sm">
-                                    {% for exam_file in exam_file_list %}
-                                        {{ exam_file.content }}
-                                    {% endfor %}
-{#                                    {{ file_form.content }}#}
+                                    {% if editing %}
+                                        {% for exam_file in exam_file_list %}
+                                            {{ exam_file.content }}
+                                        {% endfor %}
+                                    {% else %}
+                                        {{ file_form.content }}
+                                    {% endif %}
                                 </div>
                             </div>
                         </div>
