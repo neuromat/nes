@@ -27,7 +27,6 @@
 
 {% block content %}
 
-    <!-- Esta div está associada ao item Contato do Menu princial -->
     <div class="tab-pane fade in active" id="medicalRecordTab">
 
     <div class="col-md-1">
@@ -46,23 +45,62 @@
     </ol>
 
     {% if not creating %}
-    <div class="row">
-        <div class="col-md-1">
-        </div>
-        <div class="col-md-10">
-            <div class="form-group">
-                <label>Data:</label> {{ record_date }}
-                <label>Responsável:</label> {{ record_responsible }}
+        <div class="row">
+            <div class="col-md-1">
             </div>
-            <div class="input-group  input-group-sm ">
-            </div>
+            <div class="col-md-10">
+                <div class="form-group">
+                    <label>Data:</label> {{ record_date }}
+                    <label>Responsável:</label> {{ record_responsible }}
+                </div>
+                <div class="input-group  input-group-sm ">
+                </div>
 
+            </div>
+            <div class="col-md-1">
+            </div>
         </div>
-        <div class="col-md-1">
-        </div>
-    </div>
     {% endif %}
 
+<!-- Inicio ESR -->
+
+    <!-- Mensagens geradas na view -->
+    {% if messages %}
+        {% for message in messages %}
+
+            {% if message.tags == "success" %}
+                <script>showSuccessMessage('{{ message }}')</script>
+            {% endif %}
+
+            {% if message.tags == "warning" %}
+                <script>showWarningMessage('{{ message }}')</script>
+            {% endif %}
+
+            {% if message.tags == "error" %}
+                <script>showErrorMessage('{{ message }}')</script>
+            {% endif %}
+
+            {% if message.tags == "info" %}
+                <script>showInfoMessage('{{ message }}')</script>
+            {% endif %}
+
+        {% endfor %}
+    {% endif %}
+
+    <!-- Mostra todas as mensagens do formulário -->
+    {% if medical_record_form.errors %}
+
+        {% for field in medical_record_form %}
+            {% if field.errors %}
+                <script>showErrorMessage('{{ field.errors|striptags }}')</script>
+            {% endif %}
+        {% endfor %}
+
+        <script>showErrorMessage('Avaliação médica não salva. Por favor, corrija os campos em destaque.')</script>
+
+    {% endif %}
+
+<!-- Fim ESR -->
 
     <ul class="nav nav-tabs nav-justified" id="idTabsEvaluate">
         <li class="active"><a href="#tab1" data-toggle="tab" id="1">História de saúde</a></li>
@@ -83,7 +121,7 @@
                     <div class="row">
                         <div class="col-xs-6 col-sm-3">
                             <div class="form-group">
-                                <label>Cirurgia de nervo</label>
+                                <label>Cirurgia de nervo <b style="color: red;">*</b></label>
 
                                 <div class="input-group  input-group-sm">
                                     <div class="input-group  input-group-sm">
@@ -111,7 +149,7 @@
                     <div class="row">
                         <div class="col-xs-6 col-sm-12">
                             <div class="form-group">
-                                <label>História de vertigem ou tontura</label>
+                                <label>História de vertigem ou tontura <b style="color: red;">*</b></label>
 
                                 <div class="input-group  input-group-sm">
                                     <div class="input-group  input-group-sm">
@@ -145,7 +183,7 @@
                     <div class="row">
                         <div class="col-xs-6 col-sm-12">
                             <div class="form-group">
-                                <label>Cefaléia</label>
+                                <label>Cefaléia <b style="color: red;">*</b></label>
 
                                 <div class="input-group  input-group-sm">
                                     {% for radio in medical_record_form.headache %}
@@ -160,7 +198,7 @@
                     <div class="row">
                         <div class="col-xs-6 col-sm-4">
                             <div class="form-group">
-                                <label title="Hipertensão arterial sistêmica">HAS</label>
+                                <label data-toggle="tooltip" data-placement="left" title="Hipertensão arterial sistêmica">HAS <b style="color: red;">*</b></label>
 
                                 <div class="input-group  input-group-sm">
                                     <div class="input-group  input-group-sm">
@@ -177,7 +215,7 @@
                     <div class="row">
                         <div class="col-xs-6 col-sm-4">
                             <div class="form-group">
-                                <label>Diabetes</label>
+                                <label>Diabetes <b style="color: red;">*</b></label>
 
                                 <div class="input-group  input-group-sm">
                                     {% for radio in medical_record_form.diabetes %}
@@ -192,7 +230,7 @@
                     <div class="row">
                         <div class="col-xs-6 col-sm-4">
                             <div class="form-group">
-                                <label>Disfunção hormonal</label>
+                                <label>Disfunção hormonal <b style="color: red;">*</b></label>
 
                                 <div class="input-group  input-group-sm">
                                     {% for radio in medical_record_form.hormonal_dysfunction %}
