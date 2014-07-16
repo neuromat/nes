@@ -9,7 +9,7 @@ from django.shortcuts import render_to_response
 from models import Patient, SocialDemographicData, SocialHistoryData, FleshToneOption, \
     MaritalStatusOption, SchoolingOption, PaymentOption, ReligionOption, MedicalRecordData, \
     GenderOption, AmountCigarettesOption, AlcoholFrequencyOption, AlcoholPeriodOption, \
-    ClassificationOfDiseases, Diagnosis, ExamFile
+    ClassificationOfDiseases, Diagnosis, ExamFile, ComplementaryExam
 
 from forms import PatientForm, SocialDemographicDataForm, SocialHistoryDataForm, UserForm, UserFormUpdate, \
     MedicalRecordForm, ComplementaryExamForm, ExamFileForm
@@ -540,8 +540,7 @@ def medical_record_create(request, patient_id, template_name='quiz/medical_recor
 
 
 def medical_record_view(request, patient_id, record_id, template_name="quiz/medical_record.html"):
-    # # Search in models.Patient
-    # # ------------------------
+
     is_editing = (request.GET['status'] == 'edit')
 
     p = Patient.objects.get(number_record=patient_id)
@@ -551,7 +550,11 @@ def medical_record_view(request, patient_id, record_id, template_name="quiz/medi
         medical_record_form = MedicalRecordForm(instance=m)
 
         diagnosis_list = Diagnosis.objects.filter(medical_record_data=record_id)
-        # data = {'object_list': diagnosis_list}
+        complementary_exams_list = []
+        for diagnosis in diagnosis_list:
+            complementary_exams_list.append(ComplementaryExam.objects.filter(diagnosis=diagnosis.pk))
+
+        lists_diagnosis_exams = zip(diagnosis_list, complementary_exams_list)
 
         # deixa os campos como disabled
         for form in {medical_record_form}:
@@ -560,7 +563,8 @@ def medical_record_view(request, patient_id, record_id, template_name="quiz/medi
 
         return render(request, template_name,
                       {'medical_record_form': medical_record_form, 'name_patient': p.name_txt, 'patient_id': patient_id,
-                       'record_id': m.id, 'object_list': diagnosis_list,
+                       'record_id': m.id, 'object_list': diagnosis_list, 'lists_diagnosis_exams': lists_diagnosis_exams,
+                       'complementary_exams_list': complementary_exams_list,
                        'record_date': m.record_date, 'record_responsible': m.record_responsible,
                        'editing': is_editing})
 
@@ -581,21 +585,11 @@ def diagnosis_create(request, patient_id, medical_record_id, cid10_id, template_
     redirect_url = reverse("medical_record_view", args=(patient_id, medical_record_id,))
     return HttpResponseRedirect(redirect_url + "?status=edit")
 
-    # diag
-    #
-    # medical_record_form = MedicalRecordForm(instance=m)
-    #
-    # return render(request, template_name,
-    # {'medical_record_form': medical_record_form, 'name_patient': p.name_txt, 'patient_id': patient_id,
-    # 'diagnosis_list': diagnosis,
-    #                'record_date': m.record_date, 'record_responsible': m.record_responsible,
-    #                })                  
 
-
-def exam_create(request, patient_id, record_id, template_name="quiz/exams.html"):
+def exam_create(request, patient_id, record_id, diagnosis_id, template_name="quiz/exams.html"):
     form = ComplementaryExamForm(request.POST or None)
 
-    d = Diagnosis.objects.get(pk=record_id)
+    d = Diagnosis.objects.get(pk=diagnosis_id)
     p = Patient.objects.get(number_record=patient_id)
 
     if request.method == "POST":
@@ -627,3 +621,21 @@ def exam_create(request, patient_id, record_id, template_name="quiz/exams.html")
     return render(request, template_name,
                   {'complementary_exam_form': form, 'patient_id': patient_id, 'name_patient': p.name_txt,
                    'record_id': record_id, 'file_form': file_form})
+
+
+def exam_view(request, patient_id, record_id, diagnosis_id, exam_id, template_name="quiz/exams.html"):
+
+    is_editing = (request.GET['status'] == 'edit')
+    exam = ComplementaryExam.objects.get(pk=exam_id)
+    exam_form = ComplementaryExamForm(instance=exam)
+
+    try:
+        exam_file_list = ExamFile.objects.filter(exam=exam_id)
+    except ExamFile.DoesNotExist:
+        exam_file_list = None
+
+    for field in exam_form.fields:
+        exam_form.fields[field].widget.attrs['disabled'] = True
+
+    return render(request, template_name,
+                  {'complementary_exam_form': exam_form, 'exam_file_list': exam_file_list})

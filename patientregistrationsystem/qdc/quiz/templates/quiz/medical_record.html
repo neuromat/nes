@@ -553,28 +553,44 @@
                             <div class="form-group">
                                 <table class="table table-striped">
                                     <thead>
-                                    <tr>
-                                        <th>Diagnóstico</th>
-                                        <th></th> {# cabeçalho vazio para coluna de exclusão #}
-                                        <th>Exames</th>
-                                    </tr>
+                                        <tr>
+                                            <th>Diagnóstico</th>
+                                            <th></th> {# cabeçalho vazio para coluna de exclusão #}
+                                            <th>Exames</th>
+                                        </tr>
                                     </thead>
                                     <tbody>
-                                        {% if not object_list %}
+                                    {% if not object_list %}
+                                        <tr>
+                                            <td>(sem diagnósticos)</td>
+                                            <td></td>
+                                            <td></td>
+                                        </tr>
+                                    {% else %}
+                                        {% for diagnosis, diagnosis_exams in lists_diagnosis_exams %}
                                             <tr>
-                                                <td>(sem diagnósticos)</td>
-                                                <td></td>
-                                                <td></td>
+                                                <td>{{ diagnosis.classification_of_diseases }}</td>
+                                                <td><a class="glyphicon glyphicon-remove" data-toggle="tooltip"
+                                                       data-placement="right" title="Remover" style="color: indianred"
+                                                       onclick="show_modal_remove({{ user.id }})"></a></td>
+                                                {% for exams in diagnosis_exams %}
+                                                    {% if editing %}
+                                                        <td>
+                                                            <a href="diagnosis/{{  diagnosis.id }}/exam/{{ exams.id }}/?status=edit">{{ exams.description }}</a>
+                                                        </td>
+                                                    {% else %}
+                                                         <td>
+                                                            <a href="diagnosis/{{  diagnosis.id }}/exam/{{ exams.id }}/?status=view">{{ exams.description }}</a>
+                                                        </td>
+                                                    {% endif %}
+                                                    <tr style="border: 0;"></tr>
+                                                    <td style="border: 0;"></td>
+                                                    <td style="border: 0;"></td>
+                                                {% endfor %}
+                                                <td><a href="diagnosis/{{ diagnosis.id }}/exam/new/">[+ exames]</a></td>
                                             </tr>
-                                        {% else %}
-                                            {% for results in object_list %}
-                                                <tr>
-                                                    <td>{{ results.classification_of_diseases }}</td>
-                                                    <td></td>
-                                                    <td>{{ results.exams }}</td>
-                                                </tr>
-                                            {% endfor %}
-                                        {% endif %}
+                                        {% endfor %}
+                                    {% endif %}
                                     </tbody>
                                 </table>
                             </div>

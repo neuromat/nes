@@ -333,6 +333,6 @@ class ComplementaryExam(models.Model):
         return unicode(self.description)
 
 
-class ExamFile (models.Model):
+class ExamFile(models.Model):
     exam = models.ForeignKey(ComplementaryExam, null=False)
     content = models.FileField(upload_to="documents")
