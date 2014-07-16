@@ -131,10 +131,18 @@ class FormValidation(TestCase):
 
         try:
             self.fill_medical_record()
+            self.data.pop('diabetes')
+            url = reverse("medical_record_new", args=(patient_mock.pk,))
+            response = self.client.post(url, self.data, follow=True)
+            self.assertEqual(response.status_code, 200)
+            self.assertEqual(MedicalRecordData.objects.filter(patient=patient_mock).count(), 0)
+
+            self.fill_medical_record()
             url = reverse("medical_record_new", args=(patient_mock.pk,))
             response = self.client.post(url, self.data, follow=True)
             self.assertEqual(response.status_code, 200)
             self.assertEqual(MedicalRecordData.objects.filter(patient=patient_mock).count(), 1)
+
             medical_record = MedicalRecordData.objects.filter(patient=patient_mock).first()
 
             # Create an instance of a GET request.
