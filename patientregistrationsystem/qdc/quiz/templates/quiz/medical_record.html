@@ -90,13 +90,15 @@
     <!-- Mostra todas as mensagens do formulário -->
     {% if medical_record_form.errors %}
 
+{% comment %}
         {% for field in medical_record_form %}
             {% if field.errors %}
                 <script>showErrorMessage('{{ field.errors|striptags }}')</script>
             {% endif %}
         {% endfor %}
+{% endcomment %}
 
-        <script>showErrorMessage('Avaliação médica não salva. Por favor, corrija os campos em destaque.')</script>
+        <script>showErrorMessage('Avaliação médica não salva. Os campos marcados com (*) são obrigatórios')</script>
 
     {% endif %}
 

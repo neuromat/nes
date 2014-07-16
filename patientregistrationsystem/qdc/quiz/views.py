@@ -528,7 +528,11 @@ def medical_record_create(request, patient_id, template_name='quiz/medical_recor
             form.save_m2m()
 
             messages.success(request, 'Avaliação médica salva com sucesso.')
-            redirect_url = reverse("patient_edit", args=(patient_new.number_record,))
+
+            # redirect_url = reverse("patient_edit", args=(patient_new.number_record,))
+            # return HttpResponseRedirect(redirect_url + "?currentTab=3")
+
+            redirect_url = reverse("medical_record_edit", args=(patient_id, new_medical_record.id))
             return HttpResponseRedirect(redirect_url + "?currentTab=3")
 
         else:
@@ -544,11 +548,11 @@ def medical_record_view(request, patient_id, record_id, template_name="quiz/medi
     # # ------------------------
     is_editing = (request.GET['status'] == 'edit')
 
-    p = Patient.objects.get(number_record=patient_id)
-    m = MedicalRecordData.objects.get(pk=record_id)
+    patient = Patient.objects.get(number_record=patient_id)
+    medical_record = MedicalRecordData.objects.get(pk=record_id)
 
-    if m:
-        medical_record_form = MedicalRecordForm(instance=m)
+    if medical_record:
+        medical_record_form = MedicalRecordForm(instance=medical_record)
 
         diagnosis_list = Diagnosis.objects.filter(medical_record_data=record_id)
         # data = {'object_list': diagnosis_list}
@@ -559,9 +563,34 @@ def medical_record_view(request, patient_id, record_id, template_name="quiz/medi
                 form.fields[field].widget.attrs['disabled'] = True
 
         return render(request, template_name,
-                      {'medical_record_form': medical_record_form, 'name_patient': p.name_txt, 'patient_id': patient_id,
-                       'record_id': m.id, 'object_list': diagnosis_list,
-                       'record_date': m.record_date, 'record_responsible': m.record_responsible,
+                      {'medical_record_form': medical_record_form, 'name_patient': patient.name_txt, 'patient_id': patient_id,
+                       'record_id': medical_record.id, 'object_list': diagnosis_list,
+                       'record_date': medical_record.record_date, 'record_responsible': medical_record.record_responsible,
+                       'editing': is_editing})
+
+
+def medical_record_update(request, patient_id, record_id, template_name="quiz/medical_record.html"):
+    # # Search in models.Patient
+    # # ------------------------
+    is_editing = (request.GET['status'] == 'edit')
+
+    patient = Patient.objects.get(number_record=patient_id)
+    medical_record = MedicalRecordData.objects.get(pk=record_id)
+
+    if medical_record:
+
+        medical_record_form = MedicalRecordForm(request.POST or None, instance=medical_record)
+        diagnosis_list = Diagnosis.objects.filter(medical_record_data=record_id)
+
+        # if request.method == "POST":
+        #
+        #     if medical_record_form.is_valid():
+
+
+        return render(request, template_name,
+                      {'medical_record_form': medical_record_form, 'name_patient': patient.name_txt, 'patient_id': patient_id,
+                       'record_id': medical_record.id, 'object_list': diagnosis_list,
+                       'record_date': medical_record.record_date, 'record_responsible': medical_record.record_responsible,
                        'editing': is_editing})
 
 
