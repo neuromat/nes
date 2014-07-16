@@ -184,7 +184,6 @@ class FormValidation(TestCase):
             self.assertEqual(response.status_code, 200)
             self.assertEqual(response.context['patients'], '')
 
-
         except Http404:
             pass
 
@@ -247,6 +246,10 @@ class FormValidation(TestCase):
             self.assertContains(response, '374.276.738')
 
             self.data['action'] = 'remove'
+            response = self.client.post(reverse('patient_view', args=[p.pk]), self.data)
+            self.assertEqual(response.status_code, 302)
+
+            self.data['action'] = 'not'
             response = self.client.post(reverse('patient_view', args=[p.pk]), self.data)
             self.assertEqual(response.status_code, 302)
 
@@ -335,30 +338,46 @@ class FormValidation(TestCase):
         p.save()
 
         # Busca valida
-        self.data['search_text'] = 'P'
+        self.data['search_text'] = 'Patient'
         response = self.client.post(reverse('patients_verify_homonym'), self.data)
         self.assertEqual(response.status_code, 200)
-        # self.assertContains(response, 'Patient')
+        self.assertEqual(response.context['patient_homonym_excluded'].count(), 0)
+        self.assertEqual(response.context['patient_homonym'].count(), 1)
 
-        self.data['search_text'] = 374
+        self.data['search_text'] = '374.276.738-08'
         response = self.client.post(reverse('patients_verify_homonym'), self.data)
         self.assertEqual(response.status_code, 200)
-        # self.assertContains(response, '374.276.738-08')
+        self.assertEqual(response.context['patient_homonym_excluded'].count(), 0)
+        self.assertEqual(response.context['patient_homonym'].count(), 1)
 
         self.data['search_text'] = ''
         response = self.client.post(reverse('patients_verify_homonym'), self.data)
         self.assertEqual(response.status_code, 200)
-        # self.assertEqual(response.context['patient_homonym'].count(), 0)
+        self.assertEqual(response.context['patient_homonym'], '')
 
         # Busca invalida
         self.data['search_text'] = '!@#'
         response = self.client.post(reverse('patients_verify_homonym'), self.data)
         self.assertEqual(response.status_code, 200)
-        #self.assertEqual(response.context['patient_homonym'].count(), 0)
+        self.assertEqual(response.context['patient_homonym'].count(), 0)
 
         p.removed = True
+        p.save()
 
-        self.data['search_text'] = 'P'
+        self.data['search_text'] = 'Patient'
         response = self.client.post(reverse('patients_verify_homonym'), self.data)
         self.assertEqual(response.status_code, 200)
-        #self.assertEqual(response.context['patient_homonym_excluded'].count(), 1)
+        self.assertEqual(response.context['patient_homonym_excluded'].count(), 1)
+
+        # Busca valida
+        self.data['search_text'] = 'Patient'
+        response = self.client.post(reverse('patients_verify_homonym'), self.data)
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(response.context['patient_homonym_excluded'].count(), 1)
+        self.assertEqual(response.context['patient_homonym'].count(), 0)
+
+        self.data['search_text'] = '374.276.738-08'
+        response = self.client.post(reverse('patients_verify_homonym'), self.data)
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(response.context['patient_homonym_excluded'].count(), 1)
+        self.assertEqual(response.context['patient_homonym'].count(), 0)
