@@ -273,6 +273,7 @@ class FormValidation(TestCase):
             self.assertEqual(response.status_code, 302)
 
             self.fill_social_demographic_data()
+            self.data.pop('wash_machine_opt')
             response = patient_update(request, patient_id=p.pk)
             self.assertEqual(response.status_code, 200)
             response = self.client.post(reverse('patient_edit', args=[p.pk]), self.data)
