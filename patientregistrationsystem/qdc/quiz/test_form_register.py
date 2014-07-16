@@ -3,9 +3,8 @@ from django.test import TestCase, Client
 from django.http import Http404
 from django.test.client import RequestFactory
 from datetime import date
-from coverage import exclude
 from models import ClassificationOfDiseases
-from views import User, GenderOption, reverse, Patient, patient_update, patient, restore_patient
+from views import User, GenderOption, SchoolingOption, reverse, Patient, patient_update, patient, restore_patient
 
 PATIENT_NEW = 'patient_new'
 
@@ -130,27 +129,34 @@ class FormValidation(TestCase):
         name = 'test_patient_social_demographic_data'
         self.data['name_txt'] = name
 
+        # Criar uma opcao de Schooling
+        school_opt = SchoolingOption.objects.create(schooling_txt='Fundamental Completo')
+        school_opt.save()
+
         self.data['house_maid_opt'] = '0'
         self.data['religion_opt'] = '',
         self.data['amount_cigarettes_opt'] = ''
         self.data['dvd_opt'] = '1'
         self.data['refrigerator_opt'] = '1'
         self.data['alcohol_frequency_opt'] = ''
-        self.data['schooling_opt'] = '4'
+        self.data['schooling_opt'] = school_opt.pk
         self.data['freezer_opt'] = '0'
         self.data['tv_opt'] = '1'
         self.data['bath_opt'] = '1'
-        self.data['wash_machine_opt'] = '1'
+
         self.data['radio_opt'] = '1'
         self.data['automobile_opt'] = '1'
 
         try:
-            self.client.post(reverse(PATIENT_NEW), self.data, follow=True)
+            response = self.client.post(reverse(PATIENT_NEW), self.data, follow=True)
             self.assertEqual(Patient.objects.filter(name_txt=name).count(), 1)
+            self.assertContains(response, u'Classe Social não calculada')
 
-            self.data['currentTab'] = 0
-            self.client.post(reverse(PATIENT_NEW), self.data, follow=True)
+            self.data['wash_machine_opt'] = '1'
+            response = self.client.post(reverse(PATIENT_NEW), self.data, follow=True)
             self.assertEqual(Patient.objects.filter(name_txt=name).count(), 1)
+            self.assertNotContains(response, u'Classe Social não calculada')
+
         except Http404:
             pass
 
