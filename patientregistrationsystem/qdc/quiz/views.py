@@ -586,9 +586,13 @@ def medical_record_update(request, patient_id, record_id, template_name="quiz/me
         medical_record_form = MedicalRecordForm(request.POST or None, instance=medical_record)
         diagnosis_list = Diagnosis.objects.filter(medical_record_data=record_id)
 
-        # if request.method == "POST":
-        #
-        #     if medical_record_form.is_valid():
+        if request.method == "POST":
+
+            if medical_record_form.is_valid():
+
+                new_medical_record = medical_record_form.save(commit=False)
+
+                new_medical_record.save()
 
 
         return render(request, template_name,
