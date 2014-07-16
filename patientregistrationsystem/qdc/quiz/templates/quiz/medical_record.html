@@ -611,21 +611,31 @@
                                                 <td><a class="glyphicon glyphicon-remove" data-toggle="tooltip"
                                                        data-placement="right" title="Remover" style="color: indianred"
                                                        onclick="show_modal_remove({{ user.id }})"></a></td>
-                                                {% for exams in diagnosis_exams %}
-                                                    {% if editing %}
-                                                        <td>
-                                                            <a href="diagnosis/{{  diagnosis.id }}/exam/{{ exams.id }}/?status=edit">{{ exams.description }}</a>
-                                                        </td>
-                                                    {% else %}
-                                                         <td>
-                                                            <a href="diagnosis/{{  diagnosis.id }}/exam/{{ exams.id }}/?status=view">{{ exams.description }}</a>
-                                                        </td>
+                                                {% if diagnosis_exams %}
+                                                    {% for exams in diagnosis_exams %}
+                                                        {% if editing %}
+                                                            <td>
+                                                                <a href="diagnosis/{{  diagnosis.id }}/exam/{{ exams.id }}/?status=edit">{{ exams.description }}</a>
+                                                            </td>
+                                                        {% else %}
+                                                             <td>
+                                                                <a href="diagnosis/{{  diagnosis.id }}/exam/{{ exams.id }}/?status=view">{{ exams.description }}</a>
+                                                            </td>
+                                                        {% endif %}
+                                                        <tr></tr>
+                                                        <td style="border: 0;"></td>
+                                                        <td style="border: 0;"></td>
+                                                    {% endfor %}
+                                                {% else %}
+                                                    {% if not editing %}
+                                                        <td></td>
                                                     {% endif %}
-                                                    <tr style="border: 0;"></tr>
+                                                {% endif %}
+                                                {% if editing %}
+                                                    <td><a href="diagnosis/{{ diagnosis.id }}/exam/new/" class="btn btn-primary">Inserir exame</a></td>
+                                                {% else %}
                                                     <td style="border: 0;"></td>
-                                                    <td style="border: 0;"></td>
-                                                {% endfor %}
-                                                <td><a href="diagnosis/{{ diagnosis.id }}/exam/new/">[+ exames]</a></td>
+                                                {% endif %}
                                             </tr>
                                         {% endfor %}
                                     {% endif %}
