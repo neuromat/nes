@@ -123,6 +123,37 @@ class FormValidation(TestCase):
         except Http404:
             pass
 
+    def test_patient_social_demographic_data(self):
+        """
+        Testa a inclusao de paciente com campos obrigatorios e dados sociais preenchidos
+        """
+        name = 'test_patient_social_demographic_data'
+        self.data['name_txt'] = name
+
+        self.data['house_maid_opt'] = '0'
+        self.data['religion_opt'] = '',
+        self.data['amount_cigarettes_opt'] = ''
+        self.data['dvd_opt'] = '1'
+        self.data['refrigerator_opt'] = '1'
+        self.data['alcohol_frequency_opt'] = ''
+        self.data['schooling_opt'] = '4'
+        self.data['freezer_opt'] = '0'
+        self.data['tv_opt'] = '1'
+        self.data['bath_opt'] = '1'
+        self.data['wash_machine_opt'] = '1'
+        self.data['radio_opt'] = '1'
+        self.data['automobile_opt'] = '1'
+
+        try:
+            self.client.post(reverse(PATIENT_NEW), self.data, follow=True)
+            self.assertEqual(Patient.objects.filter(name_txt=name).count(), 1)
+
+            self.data['currentTab'] = 0
+            self.client.post(reverse(PATIENT_NEW), self.data, follow=True)
+            self.assertEqual(Patient.objects.filter(name_txt=name).count(), 1)
+        except Http404:
+            pass
+
     def test_valid_email(self):
         """
         Teste de email invalido
