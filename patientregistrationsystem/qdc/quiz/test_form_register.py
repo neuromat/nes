@@ -362,6 +362,12 @@ class FormValidation(TestCase):
         self.assertEqual(response.status_code, 200)
         self.assertEqual(response.context['cid_10_list'].count(), 0)
 
+        self.data['search_text'] = ''
+        response = self.client.post(reverse('cid10_search'), self.data)
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(response.context['cid_10_list'], '')
+
+
     def test_patient_verify_homonym(self):
         p = Patient()
         p.name_txt = 'Patient'
