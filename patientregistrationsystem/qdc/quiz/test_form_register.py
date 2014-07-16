@@ -122,12 +122,7 @@ class FormValidation(TestCase):
         except Http404:
             pass
 
-    def test_patient_social_demographic_data(self):
-        """
-        Testa a inclusao de paciente com campos obrigatorios e dados sociais preenchidos
-        """
-        name = 'test_patient_social_demographic_data'
-        self.data['name_txt'] = name
+    def fill_social_demographic_data(self):
 
         # Criar uma opcao de Schooling
         school_opt = SchoolingOption.objects.create(schooling_txt='Fundamental Completo')
@@ -143,9 +138,16 @@ class FormValidation(TestCase):
         self.data['freezer_opt'] = '0'
         self.data['tv_opt'] = '1'
         self.data['bath_opt'] = '1'
-
         self.data['radio_opt'] = '1'
         self.data['automobile_opt'] = '1'
+
+    def test_patient_social_demographic_data(self):
+        """
+        Testa a inclusao de paciente com campos obrigatorios e dados sociais preenchidos
+        """
+        name = 'test_patient_social_demographic_data'
+        self.data['name_txt'] = name
+        self.fill_social_demographic_data()
 
         try:
             response = self.client.post(reverse(PATIENT_NEW), self.data, follow=True)
@@ -260,6 +262,13 @@ class FormValidation(TestCase):
         request.user = self.user
 
         try:
+            self.fill_social_demographic_data()
+            response = patient_update(request, patient_id=p.pk)
+            self.assertEqual(response.status_code, 200)
+            response = self.client.post(reverse('patient_edit', args=[p.pk]), self.data)
+            self.assertEqual(response.status_code, 302)
+
+            self.data['wash_machine_opt'] = '1'
             response = patient_update(request, patient_id=p.pk)
             self.assertEqual(response.status_code, 200)
             response = self.client.post(reverse('patient_edit', args=[p.pk]), self.data)
