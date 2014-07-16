@@ -30,8 +30,8 @@ urlpatterns = patterns(
 
     url(r'^patient/(?P<patient_id>\d+)/medical_record/(?P<medical_record_id>\d+)/diagnosis/(?P<cid10_id>\d+)/$',
         'quiz.views.diagnosis_create'),
-    url(r'^patient/(?P<patient_id>\d+)/medical_record/(?P<record_id>\d+)/exams/$', 'quiz.views.exam_create',
-        name='exam_create'),
+    url(r'^patient/(?P<patient_id>\d+)/medical_record/(?P<record_id>\d+)/diagnosis/(?P<diagnosis_id>\d+)/exam/new/$',
+        'quiz.views.exam_create', name='exam_create'),
 
     url(r'^patient/(?P<patient_id>\d+)/medical_record/(?P<record_id>\d+)/diagnosis/(?P<diagnosis_id>\d+)/exam/(?P<exam_id>\d+)/$',
         'quiz.views.exam_view', name='exam_view')

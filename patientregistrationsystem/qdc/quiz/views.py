@@ -533,7 +533,7 @@ def medical_record_create(request, patient_id, template_name='quiz/medical_recor
             # return HttpResponseRedirect(redirect_url + "?currentTab=3")
 
             redirect_url = reverse("medical_record_edit", args=(patient_id, new_medical_record.id))
-            return HttpResponseRedirect(redirect_url + "?currentTab=3")
+            return HttpResponseRedirect(redirect_url + "?status=edit")
 
         else:
             messages.error(request, 'Não foi possível criar avaliação médica.')
@@ -587,13 +587,9 @@ def medical_record_update(request, patient_id, record_id, template_name="quiz/me
         diagnosis_list = Diagnosis.objects.filter(medical_record_data=record_id)
 
         if request.method == "POST":
-
             if medical_record_form.is_valid():
-
-                new_medical_record = medical_record_form.save(commit=False)
-
-                new_medical_record.save()
-
+                medical_record_form.save()
+                messages.success(request, 'Avaliação médica salva com sucesso.')
 
         return render(request, template_name,
                       {'medical_record_form': medical_record_form, 'name_patient': patient.name_txt, 'patient_id': patient_id,
@@ -643,8 +639,8 @@ def exam_create(request, patient_id, record_id, diagnosis_id, template_name="qui
                 # new_document.save()
 
             messages.success(request, 'Exame salvo com sucesso.')
-            redirect_url = reverse("medical_record_new", args=(p.number_record,))
-            return HttpResponseRedirect(redirect_url + "?currentTab=3")
+            redirect_url = reverse("medical_record_edit", args=(patient_id, p.number_record,))
+            return HttpResponseRedirect(redirect_url + "?status=edit")
 
         else:
             messages.error(request, 'Não foi possível criar exame.')
@@ -653,7 +649,7 @@ def exam_create(request, patient_id, record_id, diagnosis_id, template_name="qui
 
     return render(request, template_name,
                   {'complementary_exam_form': form, 'patient_id': patient_id, 'name_patient': p.name_txt,
-                   'record_id': record_id, 'file_form': file_form})
+                   'record_id': record_id, 'file_form': file_form, 'viewing': False},)
 
 
 def exam_view(request, patient_id, record_id, diagnosis_id, exam_id, template_name="quiz/exams.html"):
@@ -671,4 +667,4 @@ def exam_view(request, patient_id, record_id, diagnosis_id, exam_id, template_na
         exam_form.fields[field].widget.attrs['disabled'] = True
 
     return render(request, template_name,
-                  {'complementary_exam_form': exam_form, 'exam_file_list': exam_file_list})
+                  {'complementary_exam_form': exam_form, 'exam_file_list': exam_file_list, 'viewing': True})
