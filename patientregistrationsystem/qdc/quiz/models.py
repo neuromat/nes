@@ -317,6 +317,9 @@ class Diagnosis(models.Model):
     medical_record_data = models.ForeignKey(MedicalRecordData, null=False)
     classification_of_diseases = models.ForeignKey(ClassificationOfDiseases, null=False)
 
+    class Meta:
+        unique_together = ('medical_record_data', 'classification_of_diseases',)
+
     def __unicode__(self):
         return unicode(self.classification_of_diseases)
 
@@ -333,6 +336,6 @@ class ComplementaryExam(models.Model):
         return unicode(self.description)
 
 
-class ExamFile (models.Model):
+class ExamFile(models.Model):
     exam = models.ForeignKey(ComplementaryExam, null=False)
     content = models.FileField(upload_to="documents")

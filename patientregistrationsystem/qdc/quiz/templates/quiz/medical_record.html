@@ -90,13 +90,15 @@
     <!-- Mostra todas as mensagens do formulário -->
     {% if medical_record_form.errors %}
 
+{% comment %}
         {% for field in medical_record_form %}
             {% if field.errors %}
                 <script>showErrorMessage('{{ field.errors|striptags }}')</script>
             {% endif %}
         {% endfor %}
+{% endcomment %}
 
-        <script>showErrorMessage('Avaliação médica não salva. Por favor, corrija os campos em destaque.')</script>
+        <script>showErrorMessage('Avaliação médica não salva. Os campos marcados com (*) são obrigatórios')</script>
 
     {% endif %}
 
@@ -566,7 +568,7 @@
             <div class="col-md-1"></div>
             <div class="col-md-10">
                 <div class="container span6 offset3 well ">
-                {% if creating %}
+                {% if editing %}
                     <div class="row">
                         <div class="col-xs-6 col-sm-9" >
                             <div class="form-group">
@@ -591,25 +593,54 @@
                             <div class="form-group">
                                 <table class="table table-striped">
                                     <thead>
-                                    <tr>
-                                        <th>Diagnóstico</th>
-                                        <th></th> {# cabeçalho vazio para coluna de exclusão #}
-                                        <th>Exames</th>
-                                    </tr>
+                                        <tr>
+                                            <th>Diagnóstico</th>
+                                            <th></th> {# cabeçalho vazio para coluna de exclusão #}
+                                            <th>Exames</th>
+                                        </tr>
                                     </thead>
                                     <tbody>
-                                        {% if not object_list %}
+                                    {% if not object_list %}
+                                        <tr>
+                                            <td>(sem diagnósticos)</td>
+                                            <td></td>
+                                            <td></td>
+                                        </tr>
+                                    {% else %}
+                                        {% for diagnosis, diagnosis_exams in lists_diagnosis_exams %}
                                             <tr>
-                                                <td>(sem diagnósticos)</td>
+                                                <td>{{ diagnosis.classification_of_diseases }}</td>
+                                                <td><a class="glyphicon glyphicon-remove" data-toggle="tooltip"
+                                                       data-placement="right" title="Remover" style="color: indianred"
+                                                       onclick="show_modal_remove({{ user.id }})"></a></td>
+                                                {% if diagnosis_exams %}
+                                                    {% for exams in diagnosis_exams %}
+                                                        {% if editing %}
+                                                            <td>
+                                                                <a href="diagnosis/{{  diagnosis.id }}/exam/{{ exams.id }}/?status=edit">{{ exams.description }}</a>
+                                                            </td>
+                                                        {% else %}
+                                                             <td>
+                                                                <a href="diagnosis/{{  diagnosis.id }}/exam/{{ exams.id }}/?status=view">{{ exams.description }}</a>
+                                                            </td>
+                                                        {% endif %}
+                                                        <tr></tr>
+                                                        <td style="border: 0;"></td>
+                                                        <td style="border: 0;"></td>
+                                                    {% endfor %}
+                                                {% else %}
+                                                    {% if not editing %}
+                                                        <td></td>
+                                                    {% endif %}
+                                                {% endif %}
+                                                {% if editing %}
+                                                    <td><a href="diagnosis/{{ diagnosis.id }}/exam/new/" class="btn btn-primary">Inserir exame</a></td>
+                                                {% else %}
+                                                    <td style="border: 0;"></td>
+                                                {% endif %}
                                             </tr>
-                                        {% else %}
-                                            {% for results in object_list %}
-                                                <tr>
-                                                    <td>{{ results.classification_of_diseases }}</td>
-                                                    <td>{{ results.exams }}</td>
-                                                </tr>
-                                            {% endfor %}
-                                        {% endif %}
+                                        {% endfor %}
+                                    {% endif %}
                                     </tbody>
                                 </table>
                             </div>
@@ -636,7 +667,7 @@
         </div>
         <div class="col-md-10">
             <div class="btn-group pull-right">
-                {% if creating %}
+                {% if creating or editing %}
                     <button type="submit" class="btn btn-primary">Salvar avaliação</button>
                 {% endif %}
             </div>
