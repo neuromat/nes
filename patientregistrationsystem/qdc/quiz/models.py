@@ -1,4 +1,3 @@
-
 # -*- coding: UTF-8 -*-
 
 from __future__ import unicode_literals
@@ -8,11 +7,9 @@ from django.utils.translation import ugettext as _
 from django.contrib.auth.models import User
 from validation import CPF
 import datetime
-from django.core.files.storage import FileSystemStorage
-import patched_locks
 
 
-#Valida CPF
+# Valida CPF
 def validate_cpf(value):
     validation = CPF(value)
     if not validation.isValid():
@@ -210,7 +207,7 @@ class SocialHistoryData(models.Model):
 
     def __unicode__(self):
         return \
-            self.id_patient, bool(self.smoker), self.amount_cigarettes_opt, bool(self.ex_smoker), bool(self.alcoholic),\
+            self.id_patient, bool(self.smoker), self.amount_cigarettes_opt, bool(self.ex_smoker), bool(self.alcoholic), \
             self.alcohol_frequency_opt, self.alcohol_period_opt, self.drugs_opt
 
 
@@ -226,6 +223,7 @@ class CervicalVertebrae(models.Model):
 
     def __unicode__(self):
         return self.code
+
 
 class ThoracicVertebrae(models.Model):
     code = models.CharField(max_length=3, null=False)
@@ -293,13 +291,13 @@ class MedicalRecordData(models.Model):
 
     def __unicode__(self):
         return \
-            self.patient, self.record_date, self.record_responsible, self.fracture_history, self.scapula_fracture_side,\
-            self.clavicle_fracture_side, self.rib_fracture, self.cervical_vertebrae_fracture, self.thoracic_vertebrae_fracture,\
-            self.lumbosacral_vertebrae_fracture, self.superior_members_fracture_side, self.inferior_members_fracture_side,\
-            self.pelvis_fracture_side, self.orthopedic_surgery, self.scapula_surgery_side, self.clavicle_surgery_side,\
-            self.rib_surgery, self.cervical_vertebrae_surgery, self.thoracic_vertebrae_surgery, self.lumbosacral_vertebrae_surgery,\
-            self.superior_members_surgery_side, self.inferior_members_surgery_side, self.pelvis_surgery_side,\
-            self.nerve_surgery, self.nerve_surgery_type, self.vertigo_history, self.pain_localizations,\
+            self.patient, self.record_date, self.record_responsible, self.fracture_history, self.scapula_fracture_side, \
+            self.clavicle_fracture_side, self.rib_fracture, self.cervical_vertebrae_fracture, self.thoracic_vertebrae_fracture, \
+            self.lumbosacral_vertebrae_fracture, self.superior_members_fracture_side, self.inferior_members_fracture_side, \
+            self.pelvis_fracture_side, self.orthopedic_surgery, self.scapula_surgery_side, self.clavicle_surgery_side, \
+            self.rib_surgery, self.cervical_vertebrae_surgery, self.thoracic_vertebrae_surgery, self.lumbosacral_vertebrae_surgery, \
+            self.superior_members_surgery_side, self.inferior_members_surgery_side, self.pelvis_surgery_side, \
+            self.nerve_surgery, self.nerve_surgery_type, self.vertigo_history, self.pain_localizations, \
             self.headache, self.hypertension, self.hormonal_dysfunction, self.diabetes
 
 
