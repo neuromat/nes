@@ -639,7 +639,7 @@ def exam_create(request, patient_id, record_id, diagnosis_id, template_name="qui
                 # new_document.save()
 
             messages.success(request, 'Exame salvo com sucesso.')
-            redirect_url = reverse("medical_record_edit", args=(patient_id, record_id,))
+            redirect_url = reverse("medical_record_view", args=(patient_id, record_id,))
             return HttpResponseRedirect(redirect_url + "?status=edit")
 
         else:
