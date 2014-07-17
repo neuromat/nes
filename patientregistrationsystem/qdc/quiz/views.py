@@ -585,6 +585,12 @@ def medical_record_update(request, patient_id, record_id, template_name="quiz/me
 
         medical_record_form = MedicalRecordForm(request.POST or None, instance=medical_record)
         diagnosis_list = Diagnosis.objects.filter(medical_record_data=record_id)
+        complementary_exams_list = []
+        for diagnosis in diagnosis_list:
+            complementary_exams_list.append(ComplementaryExam.objects.filter(diagnosis=diagnosis.pk))
+
+        lists_diagnosis_exams = zip(diagnosis_list, complementary_exams_list)
+
 
         if request.method == "POST":
             if medical_record_form.is_valid():
@@ -593,7 +599,8 @@ def medical_record_update(request, patient_id, record_id, template_name="quiz/me
 
         return render(request, template_name,
                       {'medical_record_form': medical_record_form, 'name_patient': patient.name_txt, 'patient_id': patient_id,
-                       'record_id': medical_record.id, 'object_list': diagnosis_list,
+                       'record_id': medical_record.id, 'object_list': diagnosis_list, 'lists_diagnosis_exams': lists_diagnosis_exams,
+                       'complementary_exams_list': complementary_exams_list,
                        'record_date': medical_record.record_date, 'record_responsible': medical_record.record_responsible,
                        'editing': is_editing})
 
