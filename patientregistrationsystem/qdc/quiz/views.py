@@ -520,7 +520,6 @@ def medical_record_create(request, patient_id, template_name='quiz/medical_recor
         if form.is_valid():
 
             # verificar se algo foi preenchido
-
             new_medical_record = form.save(commit=False)
             new_medical_record.patient = patient_new
             new_medical_record.record_responsible = request.user
@@ -619,6 +618,21 @@ def diagnosis_create(request, patient_id, medical_record_id, cid10_id, template_
     diagnosis.save()
 
     redirect_url = reverse("medical_record_view", args=(patient_id, medical_record_id,))
+    return HttpResponseRedirect(redirect_url + "?status=edit")
+
+
+def diagnosis_delete(request, patient_id, diagnosis_id):
+    exams = ComplementaryExam.objects.filter(diagnosis=diagnosis_id)
+    if exams:
+        messages.error(request, 'Diagnóstico não pode ser removido. Remova os exames antes.')
+        diagnosis = get_object_or_404(Diagnosis, pk=diagnosis_id)
+    else:
+        diagnosis = get_object_or_404(Diagnosis, pk=diagnosis_id)
+        diagnosis.delete()
+        messages.success(request, 'Diagnóstico removido com sucesso.')
+
+    medical_record_id = diagnosis.medical_record_data_id
+    redirect_url = reverse("medical_record_edit", args=(patient_id, medical_record_id, ))
     return HttpResponseRedirect(redirect_url + "?status=edit")
 
 

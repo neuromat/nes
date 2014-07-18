@@ -40,4 +40,6 @@ urlpatterns = patterns(
     url(r'^patient/(?P<patient_id>\d+)/medical_record/edit/(?P<record_id>\d+)/diagnosis/(?P<diagnosis_id>\d+)/exam/(?P<exam_id>\d+)/$',
         'quiz.views.exam_view', name='exam_view'),
 
+    url(r'^diagnosis/delete/(?P<patient_id>\d+)/(?P<diagnosis_id>\d+)/$', 'quiz.views.diagnosis_delete', name='diagnosis_delete'),
+
 )

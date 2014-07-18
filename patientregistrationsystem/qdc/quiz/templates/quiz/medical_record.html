@@ -6,7 +6,11 @@
         $(function(){
             $("[data-toggle=tooltip]").tooltip();
         });
-
+        function show_modal_remove (patient_id, diagnosis_id){
+            var  modal_remove = document.getElementById('removeDiagnosis');
+            modal_remove.setAttribute( "href", '/quiz/diagnosis/delete/' + patient_id + '/' + diagnosis_id);
+            $('#modalRemove').modal('show');
+        }
         $(function() {
             $('.fill_input_link').live('click', function() {
                 $("#id_whichComplementaryExame").val($(this).html());
@@ -610,9 +614,8 @@
                                         {% for diagnosis, diagnosis_exams in lists_diagnosis_exams %}
                                             <tr>
                                                 <td>{{ diagnosis.classification_of_diseases }}</td>
-                                                <td><a class="glyphicon glyphicon-remove" data-toggle="tooltip"
-                                                       data-placement="right" title="Remover" style="color: indianred"
-                                                       onclick="show_modal_remove({{ user.id }})"></a></td>
+                                                <td><a class="glyphicon glyphicon-remove" data-toggle="tooltip" data-placement="right" title="Remover" style="color: indianred"
+                                                       onclick="show_modal_remove({{ patient_id }}, {{ diagnosis.id }})"></a></td>
                                                 {% if diagnosis_exams %}
                                                     {% for exams in diagnosis_exams %}
                                                         {% if editing %}
@@ -675,6 +678,21 @@
         <div class="col-md-1">
         </div>
 
+    </div>
+
+    <div class="modal fade" id="modalRemove" tabindex="-1" role="dialog" aria-labelledby="myModalLabel"
+         aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-body">
+                    Tem certeza que deseja excluir o diagnóstico?
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-default" data-dismiss="modal">Cancelar</button>
+                    <a type="button" class="btn btn-primary" id="removeDiagnosis" style="background-color: indianred; color: #ffffff" href="">Excluir</a>
+                </div>
+            </div>
+        </div>
     </div>
 
 {% endblock %}
