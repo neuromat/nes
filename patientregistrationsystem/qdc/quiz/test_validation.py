@@ -37,6 +37,19 @@ class CpfValidationTest(TestCase):
         '77432143111',
     )
 
+    invalid_values = (
+        '00000000000',
+        '11111111111',
+        '22222222222',
+        '33333333333',
+        '44444444444',
+        '55555555555',
+        '66666666666',
+        '77777777777',
+        '88888888888',
+        '99999999999'
+    )
+
     def test_good_values(self):
         """testa os valores validos"""
         for cpf in self.good_values:
@@ -82,3 +95,9 @@ class CpfValidationTest(TestCase):
             '1234567890123456789012345678901234567890123456789012\
             34567890123456789012345678901234567890123456789012345678901234567890').isValid()
         self.assertEqual(result, False)
+
+    def test_invalid_values(self):
+        """testa os valores invalidos por conter somente digitos repetidos"""
+        for cpf in self.invalid_values:
+            result = CPF(cpf).isValid()
+            self.assertEqual(result, False)

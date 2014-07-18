@@ -32,9 +32,12 @@ urlpatterns = patterns(
         'quiz.views.diagnosis_create'),
     url(r'^patient/(?P<patient_id>\d+)/medical_record/(?P<record_id>\d+)/diagnosis/(?P<diagnosis_id>\d+)/exam/new/$',
         'quiz.views.exam_create', name='exam_create'),
+    url(r'^patient/(?P<patient_id>\d+)/medical_record/edit/(?P<record_id>\d+)/diagnosis/(?P<diagnosis_id>\d+)/exam/new/$',
+        'quiz.views.exam_create', name='exam_create'),
 
     url(r'^patient/(?P<patient_id>\d+)/medical_record/(?P<record_id>\d+)/diagnosis/(?P<diagnosis_id>\d+)/exam/(?P<exam_id>\d+)/$',
-        'quiz.views.exam_view', name='exam_view')
-
+        'quiz.views.exam_view', name='exam_view'),
+    url(r'^patient/(?P<patient_id>\d+)/medical_record/edit/(?P<record_id>\d+)/diagnosis/(?P<diagnosis_id>\d+)/exam/(?P<exam_id>\d+)/$',
+        'quiz.views.exam_view', name='exam_view'),
 
 )
