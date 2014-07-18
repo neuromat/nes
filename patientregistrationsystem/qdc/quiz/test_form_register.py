@@ -19,7 +19,7 @@ class FormValidation(TestCase):
         Configura autenticacao e variaveis para iniciar cada teste
 
         """
-        print "Setting User for start tests to", self._testMethodName
+        print self._testMethodDoc
         username_dummy = 'myadmin'
         password_dummy = 'mypassword'
 

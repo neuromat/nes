@@ -17,11 +17,10 @@ class FormUserValidation(TestCase):
     user = ''
 
     def setUp(self):
-        """
-        Configura autenticacao e variaveis para iniciar cada teste
+        """ Configura autenticacao e variaveis para iniciar cada teste """
 
-        """
-        print "Setting User for start tests to", self._testMethodName
+        print 'Set up for', self._testMethod
+
         username_dummy = 'myadmin'
         password_dummy = 'mypassword'
 
@@ -62,24 +61,12 @@ class FormUserValidation(TestCase):
 
         self.assertTrue(self.confirm_password(pattern, password), True)
 
-    #
-    # def test_password_confirmation(self):
-    # """Testa a senha e confirmacao de senha """
-    # pattern = '((?=.*\d)(?=.*[a-z])(?=.*[A-Z])(?=.*[@#$%]).{6,20})'
-    # password = "abcC1@!$"
-    # confirm_password = "abcC0@!$"
-    # a = re.compile(pattern)
-    # self.assertTrue(a.match(password), True)
-    # self.assertEqual(password,confirm_password)
-
     def confirm_password(self, pattern, password):
         a = re.compile(pattern)
         return a.match(password)
 
     def test_user_invalid_username(self):
-        """
-        Testa inclusao de usuario com sucesso
-        """
+        """ Teste de inclusao de usuario com nome de usuario invalido"""
 
         self.data['username'] = ''
 
