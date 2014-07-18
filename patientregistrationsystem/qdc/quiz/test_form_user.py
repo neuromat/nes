@@ -9,7 +9,10 @@ from views import User, reverse, user_update, user_delete
 
 import re
 
+USER_EDIT = 'user_edit'
 
+USER_USERNAME = 'myadmin'
+USER_PWD = 'mypassword'
 USER_NEW = 'user_new'
 
 
@@ -20,31 +23,28 @@ class FormUserValidation(TestCase):
         """ Configura autenticacao e variaveis para iniciar cada teste """
         print 'Set up for', self._testMethodName
 
-        username_dummy = 'myadmin'
-        password_dummy = 'mypassword'
-
-        self.user = User.objects.create_user(username=username_dummy, email='test@dummy.com', password=password_dummy)
+        self.user = User.objects.create_user(username=USER_USERNAME, email='test@dummy.com', password=USER_PWD)
         self.user.is_staff = True
         self.user.is_superuser = True
         self.user.save()
 
-        self.group = Group.objects.create(name='grupo1')
+        self.group = Group.objects.create(name='group')
         self.group.save()
 
         self.factory = RequestFactory()
 
         self.data = {'username': ['username'],
-                     'first_name': ['Romulo'],
-                     'last_name': ['Franco'],
+                     'first_name': ['General'],
+                     'last_name': ['Test'],
                      'password': ['Adm!123'],
                      'password2': ['Adm!123'],
                      'groups': [self.group.id],
-                     'email': ['romulojosefranco@gmail.com']}
+                     'email': ['email@test.com']}
 
-        logged = self.client.login(username=username_dummy, password=password_dummy)
+        logged = self.client.login(username=USER_USERNAME, password=USER_PWD)
         self.assertEqual(logged, True)
 
-    def test_password_pattern(self):
+    def test_user_password_pattern(self):
         """Testa o pattern definido """
         # Detalhamento do pattern
         # (			# Start of group
@@ -69,18 +69,10 @@ class FormUserValidation(TestCase):
 
         self.data['username'] = ''
 
-        try:
-            response = self.client.post(reverse(USER_NEW), self.data, follow=True)
-            # errors = response.context['form'].errors
-            # self.assertEqual(1, len(errors), msg='Erros encontrados durante as validacoes: %s' % errors)
-            # messages = response.context['messages']
-            # print messages
+        response = self.client.post(reverse(USER_NEW), self.data, follow=True)
 
-            self.assertFormError(response, "form", "username", u'Este campo é obrigatório.')
-            self.assertEqual(User.objects.filter(username='').count(), 0)
-
-        except Http404:
-            pass
+        self.assertFormError(response, "form", "username", u'Este campo é obrigatório.')
+        self.assertEqual(User.objects.filter(username='').count(), 0)
 
     def test_user_invalid_email(self):
         """
@@ -89,13 +81,9 @@ class FormUserValidation(TestCase):
 
         self.data['email'] = 'email@invalid.'
 
-        try:
-            response = self.client.post(reverse(USER_NEW), self.data, follow=True)
-            self.assertFormError(response, "form", "email", u'Informe um endereço de email válido.')
-            self.assertEqual(User.objects.filter(username='').count(), 0)
-
-        except Http404:
-            pass
+        response = self.client.post(reverse(USER_NEW), self.data, follow=True)
+        self.assertFormError(response, "form", "email", u'Informe um endereço de email válido.')
+        self.assertEqual(User.objects.filter(username='').count(), 0)
 
     def test_user_passwords_doesnt_match(self):
         """
@@ -106,13 +94,8 @@ class FormUserValidation(TestCase):
         self.data['password'] = 'abc123'
         self.data['password2'] = 'acc123'
 
-        try:
-            self.client.post(reverse(USER_NEW), self.data, follow=True)
-
-            self.assertEqual(User.objects.filter(username=user_pwd).count(), 1)
-
-        except Http404:
-            pass
+        self.client.post(reverse(USER_NEW), self.data, follow=True)
+        self.assertEqual(User.objects.filter(username=user_pwd).count(), 1)
 
     def test_user_password_check_valid_pattern(self):
         """
@@ -159,87 +142,71 @@ class FormUserValidation(TestCase):
         self.data['username'] = user_pwd
         self.data['password'] = ''
 
-        try:
-            response = self.client.post(reverse(USER_NEW), self.data, follow=True)
-            self.assertFormError(response, "form", "password", u'Este campo é obrigatório.')
-            self.assertEqual(User.objects.filter(username=user_pwd).count(), 0)
+        response = self.client.post(reverse(USER_NEW), self.data, follow=True)
+        self.assertEqual(response.status_code, 200)
+        self.assertFormError(response, "form", "password", u'Este campo é obrigatório.')
+        self.assertEqual(User.objects.filter(username=user_pwd).count(), 0)
 
-        except Http404:
-            pass
-
-    def test_new_user(self):
+    def test_user_create(self):
         """
         Testa inclusao de usuario com sucesso
         """
         username = 'test_username'
         self.data['username'] = username
 
-        try:
-            self.client.post(reverse(USER_NEW), self.data, follow=True)
+        self.client.post(reverse(USER_NEW), self.data, follow=True)
+        self.assertEqual(User.objects.filter(username=username).count(), 1)
 
-            self.assertEqual(User.objects.filter(username=username).count(), 1)
-
-        except Http404:
-            pass
-
-    def test_read_user(self):
+    def test_user_read(self):
         """
         Testa visualizar usuario
         """
 
         # Create an instance of a GET request.
-        self.client.login(username='myadmin', password='mypassword')
-        request = self.factory.get('/quiz/user/%i/' % self.user.pk)
+        request = self.factory.get(reverse('user_edit', args=[self.user.pk]))
         request.user = self.user
 
         # Test view() as if it were deployed at /quiz/patient/%id
-        try:
-            response = user_update(request, user_id=self.user.pk)
-            self.assertEqual(response.status_code, 200)
-            response = self.client.post(reverse('user_edit', args=[self.user.pk]), self.data)
-            self.assertEqual(response.status_code, 302)
-        except Http404:
-            pass
+        response = user_update(request, user_id=self.user.pk)
+        self.assertEqual(response.status_code, 200)
+        response = self.client.post(reverse('user_edit', args=[self.user.pk]), self.data)
+        self.assertEqual(response.status_code, 302)
 
     def test_update_user_get(self):
         """
-        Testa atualizar usuario
+        Testa atualizar usuario - Metodo GET
         """
 
         # Create an instance of a GET request.
-        self.client.login(username='myadmin', password='mypassword')
-        request = self.factory.get('/quiz/user/edit/%i/' % self.user.pk)
+        request = self.factory.get(reverse(USER_EDIT, args=[self.user.pk]))
         request.user = self.user
 
         # Test view() as if it were deployed at /quiz/patient/%id
-        try:
-            response = user_update(request, user_id=self.user.pk)
-            self.assertEqual(response.status_code, 200)
-        except Http404:
-            pass
+        response = user_update(request, user_id=self.user.pk)
+        self.assertEqual(response.status_code, 200)
+
 
     def test_update_user_post(self):
         """
-        Testa atualizar usuario
+        Testa atualizar usuario - Metodo POST
         """
 
-        username = 'testeusername'
-        self.data['username'] = username
-        # id_user = User.objects.get(pk=1)
+        first_name = 'test_username'
+        self.data['first_name'] = first_name
 
-        try:
-            self.client.post('quiz/user/edit/%d' % self.user.pk, self.data, follow=True)
+        response = self.client.post(reverse(USER_EDIT, args=(self.user.pk,)), self.data, follow=True)
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(User.objects.filter(id=self.user.pk).count(), 1)
 
-            self.assertEqual(User.objects.filter(username=username).count(), 0)
+        user_first_name = User.objects.filter(id=self.user.pk).first()
 
-        except Http404:
-            pass
+        self.assertEqual(user_first_name.first_name, first_name)
 
-    def test_delete_user(self):
+    def test_user_remove(self):
         """
         Testa deletar usuario
         """
-        user_str = 'userdelete'
+        user_str = 'user_remove'
         user_to_delete = User.objects.create_user(username=user_str, email='test@delete.com',
                                                   password='Del!123')
         user_to_delete.is_staff = True
@@ -247,20 +214,17 @@ class FormUserValidation(TestCase):
         user_to_delete.save()
 
         # Create an instance of a GET request.
-        self.client.login(username='myadmin', password='mypassword')
-        request = self.factory.get('/quiz/user/delete/%i/' % user_to_delete.pk)
+        request = self.factory.get(reverse('user_delete', args=(user_to_delete.pk,)))
         request.user = self.user
 
         self.assertEqual(User.objects.filter(username=user_str).count(), 1)
 
         # Test view() as if it were deployed at /quiz/patient/%id
-        try:
-            setattr(request, 'session', 'session')
-            msg = FallbackStorage(request)
-            setattr(request, '_messages', msg)
 
-            response = user_delete(request, user_id=user_to_delete.pk)
-            self.assertEqual(response.status_code, 302)
-            self.assertEqual(User.objects.filter(username=user_str, is_active=False).count(), 1)
-        except Http404:
-            pass
+        setattr(request, 'session', 'session')
+        msg = FallbackStorage(request)
+        setattr(request, '_messages', msg)
+
+        response = user_delete(request, user_id=user_to_delete.pk)
+        self.assertEqual(response.status_code, 302)
+        self.assertEqual(User.objects.filter(username=user_str, is_active=False).count(), 1)
