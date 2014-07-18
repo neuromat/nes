@@ -22,6 +22,8 @@ from django.contrib.auth.models import User
 # Biblioteca para fazer expressões regulares. Utilizada na "def search_patients_ajax" para fazer busca por nome ou CPF
 import re
 
+# pylint: disable=E1101
+# pylint: disable=E1103
 
 @login_required
 @permission_required('quiz.add_patient')
@@ -150,7 +152,7 @@ def get_current_tab(request):
     elif 'currentTab' in request.POST:
         current_tab = request.POST['currentTab']
     else:
-        current_tab = 0
+        current_tab = '0'
 
     return current_tab
 
@@ -158,9 +160,10 @@ def get_current_tab(request):
 @login_required
 @permission_required('quiz.change_patient')
 def patient_update(request, patient_id, template_name="quiz/register.html"):
+    
     # # Search in models.Patient
-    # # ------------------------
-    p = Patient.objects.get(number_record=patient_id)
+    # # ------------------------    
+    p = get_object_or_404(Patient, pk=patient_id)
 
     if p and not p.removed:
 
@@ -283,29 +286,6 @@ def patient_update(request, patient_id, template_name="quiz/register.html"):
             'object_list': medical_data}
         return render(request, template_name, context)
 
-
-@login_required
-@permission_required('quiz.view_patient')
-def patients(request):
-    language = 'en-us'
-    session_language = 'en-us'
-
-    if 'lang' in request.COOKIES:
-        language = request.COOKIES['lang']
-
-    if 'lang' in request.session:
-        session_language = request.session['lang']
-
-    args = {}
-    args.update(csrf(request))
-
-    args['patients'] = Patient.objects.all()
-    args['language'] = language
-    args['session_language'] = session_language
-
-    return render_to_response('/quiz/busca.html', args)
-
-
 @login_required
 @permission_required('quiz.view_patient')
 def patient(request, patient_id, template_name="quiz/register.html"):
@@ -330,9 +310,8 @@ def patient(request, patient_id, template_name="quiz/register.html"):
 
     current_tab = get_current_tab(request)
 
-    # # Search in models.Patient
-    # # ------------------------
-    p = Patient.objects.get(number_record=patient_id)
+    # p = Patient.objects.get(number_record=patient_id)
+    p = get_object_or_404(Patient, pk=patient_id)
 
     if p and not p.removed:
 
