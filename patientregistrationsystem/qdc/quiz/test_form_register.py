@@ -5,9 +5,7 @@ from django.test.client import RequestFactory
 from datetime import date
 from models import ClassificationOfDiseases, MedicalRecordData, PainLocalization
 from views import User, GenderOption, SchoolingOption, reverse, Patient, patient_update, patient, restore_patient, \
-    medical_record_view
-
-MEDICAL_RECORD_NEW = "medical_record_new"
+    medical_record_view, medical_record_update
 
 ACTION = 'action'
 CPF_ID = 'cpf_id'
@@ -16,6 +14,8 @@ PATIENT_SEARCH = 'patient_search'
 PATIENT_VIEW = 'patient_view'
 PATIENT_NEW = 'patient_new'
 PATIENT_EDIT = 'patient_edit'
+
+MEDICAL_RECORD_NEW = "medical_record_new"
 
 USER_USERNAME = 'myadmin'
 USER_PWD = 'mypassword'
@@ -155,6 +155,13 @@ class FormValidation(TestCase):
         request.user = self.user
 
         response = medical_record_view(request, patient_id=patient_mock.pk, record_id=medical_record.pk)
+        self.assertEqual(response.status_code, 200)
+
+        response = medical_record_update(request, patient_id=patient_mock.pk, record_id=medical_record.pk)
+        self.assertEqual(response.status_code, 200)
+
+        url = reverse('medical_record_edit', args=(patient_mock.pk, medical_record.pk,))
+        response = self.client.post(url + "?status=edit")
         self.assertEqual(response.status_code, 200)
 
     def fill_medical_record(self):

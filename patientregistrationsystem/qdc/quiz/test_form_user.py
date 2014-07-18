@@ -172,7 +172,7 @@ class FormUserValidation(TestCase):
         response = self.client.post(reverse('user_edit', args=[self.user.pk]), self.data)
         self.assertEqual(response.status_code, 302)
 
-    def test_update_user_get(self):
+    def test_user_update_get(self):
         """
         Testa atualizar usuario - Metodo GET
         """
@@ -185,8 +185,7 @@ class FormUserValidation(TestCase):
         response = user_update(request, user_id=self.user.pk)
         self.assertEqual(response.status_code, 200)
 
-
-    def test_update_user_post(self):
+    def test_user_update_post(self):
         """
         Testa atualizar usuario - Metodo POST
         """
