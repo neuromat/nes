@@ -18,8 +18,7 @@ class FormUserValidation(TestCase):
 
     def setUp(self):
         """ Configura autenticacao e variaveis para iniciar cada teste """
-
-        print 'Set up for', self._testMethod
+        print 'Set up for', self._testMethodName
 
         username_dummy = 'myadmin'
         password_dummy = 'mypassword'
@@ -60,6 +59,16 @@ class FormUserValidation(TestCase):
         password = "abcC2@!$"
 
         self.assertTrue(self.confirm_password(pattern, password), True)
+
+    #
+    # def test_password_confirmation(self):
+    # """Testa a senha e confirmacao de senha """
+    # pattern = '((?=.*\d)(?=.*[a-z])(?=.*[A-Z])(?=.*[@#$%]).{6,20})'
+    # password = "abcC1@!$"
+    # confirm_password = "abcC0@!$"
+    # a = re.compile(pattern)
+    # self.assertTrue(a.match(password), True)
+    # self.assertEqual(password,confirm_password)
 
     def confirm_password(self, pattern, password):
         a = re.compile(pattern)
