@@ -160,9 +160,14 @@ class FormValidation(TestCase):
         response = medical_record_update(request, patient_id=patient_mock.pk, record_id=medical_record.pk)
         self.assertEqual(response.status_code, 200)
 
+        self.data['headache'] = '0'
         url = reverse('medical_record_edit', args=(patient_mock.pk, medical_record.pk,))
-        response = self.client.post(url + "?status=edit")
+        response = self.client.post(url + "?status=edit", self.data)
         self.assertEqual(response.status_code, 200)
+
+        medical_record = MedicalRecordData.objects.filter(patient=patient_mock).first()
+        self.assertEqual(medical_record.headache, '0')
+
 
     def fill_medical_record(self):
         """ Preenche os campos necessarios para criar uma avaliacao medica """
