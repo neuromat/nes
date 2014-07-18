@@ -523,7 +523,7 @@ def medical_record_create(request, patient_id, template_name='quiz/medical_recor
 
 def medical_record_view(request, patient_id, record_id, template_name="quiz/medical_record.html"):
 
-    is_editing = (request.GET['status'] == 'edit')
+    status_mode = request.GET['status']
 
     patient = Patient.objects.get(number_record=patient_id)
     medical_record = MedicalRecordData.objects.get(pk=record_id)
@@ -548,13 +548,12 @@ def medical_record_view(request, patient_id, record_id, template_name="quiz/medi
                        'record_id': medical_record.id, 'object_list': diagnosis_list, 'lists_diagnosis_exams': lists_diagnosis_exams,
                        'complementary_exams_list': complementary_exams_list,
                        'record_date': medical_record.record_date, 'record_responsible': medical_record.record_responsible,
-                       'editing': is_editing})
+                       'editing': False, 'status_mode': status_mode})
 
 
 def medical_record_update(request, patient_id, record_id, template_name="quiz/medical_record.html"):
-    # # Search in models.Patient
-    # # ------------------------
-    is_editing = (request.GET['status'] == 'edit')
+
+    status_mode = request.GET['status']
 
     patient = Patient.objects.get(number_record=patient_id)
     medical_record = MedicalRecordData.objects.get(pk=record_id)
@@ -580,7 +579,7 @@ def medical_record_update(request, patient_id, record_id, template_name="quiz/me
                        'record_id': medical_record.id, 'object_list': diagnosis_list, 'lists_diagnosis_exams': lists_diagnosis_exams,
                        'complementary_exams_list': complementary_exams_list,
                        'record_date': medical_record.record_date, 'record_responsible': medical_record.record_responsible,
-                       'editing': is_editing})
+                       'editing': True, 'status_mode': status_mode})
 
 
 def diagnosis_create(request, patient_id, medical_record_id, cid10_id, template_name="quiz/medical_record.html"):
