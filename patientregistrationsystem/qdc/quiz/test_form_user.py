@@ -60,16 +60,6 @@ class FormUserValidation(TestCase):
 
         self.assertTrue(self.confirm_password(pattern, password), True)
 
-    #
-    # def test_password_confirmation(self):
-    # """Testa a senha e confirmacao de senha """
-    # pattern = '((?=.*\d)(?=.*[a-z])(?=.*[A-Z])(?=.*[@#$%]).{6,20})'
-    # password = "abcC1@!$"
-    # confirm_password = "abcC0@!$"
-    # a = re.compile(pattern)
-    # self.assertTrue(a.match(password), True)
-    # self.assertEqual(password,confirm_password)
-
     def confirm_password(self, pattern, password):
         a = re.compile(pattern)
         return a.match(password)
@@ -101,13 +91,7 @@ class FormUserValidation(TestCase):
 
         try:
             response = self.client.post(reverse(USER_NEW), self.data, follow=True)
-            # errors = response.context['form'].errors
-            # self.assertEqual(1, len(errors), msg='Erros encontrados durante as validacoes: %s' % errors)
-            # messages = response.context['messages']
-            # print messages
-
             self.assertFormError(response, "form", "email", u'Informe um endereço de email válido.')
-            # self.assertContains(response, u'Informe um endereço de email válido')
             self.assertEqual(User.objects.filter(username='').count(), 0)
 
         except Http404:
@@ -142,13 +126,8 @@ class FormUserValidation(TestCase):
         self.data['username'] = user_pwd
         self.data['password'] = password
 
-        try:
-            self.client.post(reverse(USER_NEW), self.data, follow=True)
-
-            self.assertEqual(User.objects.filter(username=user_pwd).count(), 1)
-
-        except Http404:
-            pass
+        self.client.post(reverse(USER_NEW), self.data, follow=True)
+        self.assertEqual(User.objects.filter(username=user_pwd).count(), 1)
 
     def test_user_password_check_invalid_pattern_abc(self):
         """
@@ -158,13 +137,8 @@ class FormUserValidation(TestCase):
         self.data['username'] = user_pwd
         self.data['password'] = 'abc'
 
-        try:
-            self.client.post(reverse(USER_NEW), self.data, follow=True)
-
-            self.assertEqual(User.objects.filter(username=user_pwd).count(), 1)
-
-        except Http404:
-            pass
+        self.client.post(reverse(USER_NEW), self.data, follow=True)
+        self.assertEqual(User.objects.filter(username=user_pwd).count(), 1)
 
     def test_user_password_check_invalid_pattern_123(self):
         """
@@ -174,13 +148,8 @@ class FormUserValidation(TestCase):
         self.data['username'] = user_pwd
         self.data['password'] = '123'
 
-        try:
-            self.client.post(reverse(USER_NEW), self.data, follow=True)
-
-            self.assertEqual(User.objects.filter(username=user_pwd).count(), 1)
-
-        except Http404:
-            pass
+        self.client.post(reverse(USER_NEW), self.data, follow=True)
+        self.assertEqual(User.objects.filter(username=user_pwd).count(), 1)
 
     def test_user_empty_password(self):
         """
@@ -202,20 +171,14 @@ class FormUserValidation(TestCase):
         """
         Testa inclusao de usuario com sucesso
         """
-        username = 'testeusername'
+        username = 'test_username'
         self.data['username'] = username
 
         try:
             self.client.post(reverse(USER_NEW), self.data, follow=True)
 
             self.assertEqual(User.objects.filter(username=username).count(), 1)
-            # user = User.objects.filter(pk=self.user.pk).first()
-            # self.data['user_id'] = user.id
-            # self.data['password'] = ''
-            # self.data['password2'] = ''
-            #
-            # response = self.client.post(reverse('user_edit', args=[user.pk]), self.data)
-            # self.assertContains(response, u'Usuário atualizado com sucesso.')
+
         except Http404:
             pass
 
