@@ -31,6 +31,28 @@
         {% endif %}
     </ol>
 
+    <!-- Mensagens geradas na view -->
+    {% if messages %}
+        {% for message in messages %}
+            {% if message.tags == "success" %}
+                <script>showSuccessMessage('{{ message }}')</script>
+            {% endif %}
+            {% if message.tags == "warning" %}
+                <script>showWarningMessage('{{ message }}')</script>
+            {% endif %}
+            {% if message.tags == "error" %}
+                <script>showErrorMessage('{{ message }}')</script>
+            {% endif %}
+            {% if message.tags == "info" %}
+                <script>showInfoMessage('{{ message }}')</script>
+            {% endif %}
+        {% endfor %}
+    {% endif %}
+
+    {% if medical_record_form.errors %}
+        <script>showErrorMessage('Exame não salvo. Os campos marcados com (*) são obrigatórios')</script>
+    {% endif %}
+
     <div class="tab-content">
         <div class="row">
             <div class="col-md-1"></div>
@@ -86,40 +108,47 @@
                         <div class="col-xs-6 col-sm-6">
                             <div class="form-group">
                                 <label>Anexos</label>
-                                {% if viewing %}
-                                    <table class="table table-bordered">
-                                        <thead>
-                                            <tr>
-                                                <th>Arquivos</th>
-                                                {% if not viewing %}
-                                                <th></th>
-                                                {% endif %}
-                                            </tr>
-                                        </thead>
-                                        <tbody>
-                                        {% if not exam_file_list %}
-                                            <tr>
-                                                <td>(sem anexos)</td>
-                                                {% if not viewing %}
-                                                <td></td>
-                                                {% endif %}
-                                            </tr>
-                                        {% else %}
-                                            {% for exam_file in exam_file_list %}
-                                            <tr>
-                                                <td>{{ exam_file.content }}</td>
-                                                {% if not viewing %}
-                                                <td><a class="glyphicon glyphicon-remove" data-toggle="tooltip" data-placement="right" title="Remover" style="color: indianred"></a></td>
-                                                {% endif %}
-                                            </tr>
-                                            {% endfor %}
-                                        {% endif %}
-                                        </tbody>
-                                    </table>
-                                    {{ file_form.content }}
-                                {% else %}
-                                    {{ file_form.content }}
-                                {% endif %}
+                                <table class="table table-bordered">
+                                    <thead>
+                                        <tr>
+                                            <th>Arquivos</th>
+                                            {% if not viewing %}
+                                            <th></th>
+                                            {% endif %}
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                    {% if not exam_file_list %}
+                                        <tr>
+                                            <td>(sem anexos)</td>
+                                            {% if not viewing %}
+                                            <td></td>
+                                            {% endif %}
+                                        </tr>
+                                    {% else %}
+                                        {% for exam_file in exam_file_list %}
+                                        <tr>
+                                            <td>{{ exam_file.content }}</td>
+                                            {% if not viewing %}
+                                            <td><a class="glyphicon glyphicon-remove" data-toggle="tooltip" data-placement="right" title="Remover" style="color: indianred"></a></td>
+                                            {% endif %}
+                                        </tr>
+                                        {% endfor %}
+                                    {% endif %}
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-xs-6 col-sm-6">
+                            <div class="form-group">
+                                {{ file_form.content }}
+                            </div>
+                        </div>
+                        <div class="col-xs-6 col-sm-6">
+                            <div class="form-group">
+                                <button name="action" value="upload" type="submit" class="btn-primary">Upload</button>
                             </div>
                         </div>
                     </div>
@@ -140,8 +169,8 @@
         </div>
         <div class="col-md-10">
             <div class="btn-group pull-right">
-                <button type="submit" class="btn btn-secondary">Excluir</button>
-                <button type="submit" class="btn btn-primary">Salvar</button>
+                <button name="action" value="remove" type="submit" class="btn btn-secondary">Excluir</button>
+                <button name="action" value="save" type="submit" class="btn btn-primary">Salvar</button>
             </div>
         </div>
         <div class="col-md-1">
