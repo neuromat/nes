@@ -645,10 +645,10 @@ def exam_create(request, patient_id, record_id, diagnosis_id, template_name="qui
 
             messages.success(request, 'Exame salvo com sucesso.')
 
-            if request.GET['action'] == "upload":
+            if request.POST['action'] == "upload":
                 redirect_url = reverse("exam_edit", args=(patient_id, record_id, diagnosis_id,
                                                           new_complementary_exam.pk))
-            elif request.GET['action'] == "save":
+            elif request.POST['action'] == "save":
                 redirect_url = reverse("medical_record_edit", args=(patient_id, record_id, ))
             else:
                 redirect_url = reverse("medical_record_edit", args=(patient_id, record_id, ))
@@ -687,7 +687,7 @@ def exam_edit(request, patient_id, record_id, diagnosis_id, exam_id, template_na
 
                 messages.success(request, 'Exame salvo com sucesso.')
 
-                if request.GET['action'] == "save":
+                if request.POST['action'] == "save":
                     redirect_url = reverse("medical_record_edit", args=(patient_id, record_id, ))
                     return HttpResponseRedirect(redirect_url + "?status=edit")
 
