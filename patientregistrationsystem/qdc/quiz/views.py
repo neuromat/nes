@@ -562,6 +562,7 @@ def medical_record_view(request, patient_id, record_id, template_name="quiz/medi
 def medical_record_update(request, patient_id, record_id, template_name="quiz/medical_record.html"):
 
     status_mode = request.GET['status']
+    current_tab = get_current_tab(request)
 
     current_patient = Patient.objects.get(number_record=patient_id)
     medical_record = MedicalRecordData.objects.get(pk=record_id)
@@ -591,7 +592,9 @@ def medical_record_update(request, patient_id, record_id, template_name="quiz/me
                        'complementary_exams_list': complementary_exams_list,
                        'record_date': medical_record.record_date,
                        'record_responsible': medical_record.record_responsible,
-                       'editing': True, 'status_mode': status_mode})
+                       'editing': True,
+                       'status_mode': status_mode,
+                       'current_tab': current_tab})
 
 
 def diagnosis_create(request, patient_id, medical_record_id, cid10_id):
