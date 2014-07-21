@@ -662,12 +662,11 @@ def exam_create(request, patient_id, record_id, diagnosis_id, template_name="qui
 
 def exam_edit(request, patient_id, record_id, diagnosis_id, exam_id, template_name="quiz/exams.html"):
 
-    d = Diagnosis.objects.get(pk=diagnosis_id)
     p = Patient.objects.get(number_record=patient_id)
     complementary_exam = ComplementaryExam.objects.get(pk=exam_id)
 
     if complementary_exam:
-        complementary_exam_form = ComplementaryExamForm(instance=complementary_exam)
+        complementary_exam_form = ComplementaryExamForm(request.POST or None, instance=complementary_exam)
         exam_file_list = ExamFile.objects.filter(exam=exam_id)
 
         if request.method == "POST":
@@ -681,10 +680,16 @@ def exam_edit(request, patient_id, record_id, diagnosis_id, exam_id, template_na
 
                 messages.success(request, 'Exame salvo com sucesso.')
 
+            else:
+                messages.error(request, 'Não foi possível salvar exame.')
+
+        else:
+            file_form = ExamFileForm(request.POST)
+
         return render(request, template_name,
                       {'viewing': True, 'complementary_exam_form': complementary_exam_form,
                        'exam_file_list': exam_file_list, 'patient_id': patient_id,
-                       'record_id': record_id, 'name_patient': p.name_txt})
+                       'record_id': record_id, 'name_patient': p.name_txt, 'file_form': file_form})
 
 
 def exam_view(request, patient_id, record_id, diagnosis_id, exam_id, template_name="quiz/exams.html"):
