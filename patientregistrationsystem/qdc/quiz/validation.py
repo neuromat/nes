@@ -4,17 +4,28 @@ import re
 # traduz 123.456.789-10 para 12345678910
 _translate = lambda cpf: ''.join(re.findall("\d", cpf))
 
+
 def _exceptions(cpf):
     """Se o número de CPF estiver dentro das exceções é inválido
 
     """
-    if len(cpf)!=11:
+    if len(cpf) != 11:
         return True
     else:
-        s=''.join(str(x) for x in cpf)
-        if s=='00000000000' or s=='11111111111' or s=='22222222222' or s=='33333333333' or s=='44444444444' or s=='55555555555' or s=='66666666666' or s=='77777777777' or s=='88888888888' or s=='99999999999':
+        s = ''.join(str(x) for x in cpf)
+        if s == '00000000000' or \
+                        s == '11111111111' or \
+                        s == '22222222222' or \
+                        s == '33333333333' or \
+                        s == '44444444444' or \
+                        s == '55555555555' or \
+                        s == '66666666666' or \
+                        s == '77777777777' or \
+                        s == '88888888888' or \
+                        s == '99999999999':
             return True
     return False
+
 
 def _gen(cpf):
     """Gera o próximo dígito do número de CPF
@@ -34,7 +45,6 @@ def _gen(cpf):
 
 
 class CPF(object):
-
     _gen = staticmethod(_gen)
     _translate = staticmethod(_translate)
 
@@ -52,7 +62,7 @@ class CPF(object):
 
         if isinstance(cpf, basestring):
             if not cpf.isdigit():
-               cpf = self._translate(cpf)
+                cpf = self._translate(cpf)
 
         self.cpf = [int(x) for x in cpf]
 

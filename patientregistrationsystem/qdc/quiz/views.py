@@ -160,7 +160,7 @@ def get_current_tab(request):
 @login_required
 @permission_required('quiz.change_patient')
 def patient_update(request, patient_id, template_name="quiz/register.html"):
-    
+
     # # Search in models.Patient
     # # ------------------------    
     p = get_object_or_404(Patient, pk=patient_id)
