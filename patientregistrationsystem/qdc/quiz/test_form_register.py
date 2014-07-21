@@ -71,7 +71,7 @@ class FormValidation(TestCase):
         """
 
         # CPF vazio
-        name = 'Patient-CPF-Empty'
+        name = self._testMethodName
         self.data['name_txt'] = name
         self.data[CPF_ID] = ''
 
@@ -83,7 +83,7 @@ class FormValidation(TestCase):
         """
         Testa inclusao de paciente com data de nascimento futura
         """
-        name = 'test_future_date_birth'
+        name = self._testMethodName
         self.data['name_txt'] = name
         self.data['date_birth_txt'] = '15/05/2201'
 
@@ -106,7 +106,7 @@ class FormValidation(TestCase):
         """
 
         date_birth = self.get_current_date()
-        name = 'test_date_birth_now'
+        name = self._testMethodName
         self.data['date_birth_txt'] = date_birth
         self.data['name_txt'] = name
 
@@ -118,7 +118,7 @@ class FormValidation(TestCase):
         """
         Testa inclusao de paciente com campos obrigatorios
         """
-        name = 'test_patient_create'
+        name = self._testMethodName
         self.data['name_txt'] = name
 
         self.client.post(reverse(PATIENT_NEW), self.data, follow=True)
@@ -132,7 +132,7 @@ class FormValidation(TestCase):
         """
         Testa inclusao de paciente com campos obrigatorios
         """
-        patient_mock = self.create_patient_mock(name='test_patient_with_medical_record')
+        patient_mock = self.create_patient_mock(name=self._testMethodName)
 
         self.fill_medical_record()
         self.data.pop('diabetes')
@@ -218,7 +218,7 @@ class FormValidation(TestCase):
         """
         Testa a inclusao de paciente com campos obrigatorios e dados sociais preenchidos
         """
-        name = 'test_patient_social_demographic_data'
+        name = self._testMethodName
         self.data['name_txt'] = name
         self.fill_social_demographic_data()
 
@@ -265,7 +265,7 @@ class FormValidation(TestCase):
         self.assertContains(response, 'Nome não preenchido')
 
     def create_patient_mock(self, name='Pacient Test'):
-        """ Cria um paciente ficticio utilizado durante os testes """
+        """ Cria um paciente para ser utilizado durante os testes """
         p_mock = Patient()
         p_mock.name_txt = name
         p_mock.date_birth_txt = '2001-01-15'

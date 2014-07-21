@@ -163,13 +163,13 @@ class FormUserValidation(TestCase):
         """
 
         # Create an instance of a GET request.
-        request = self.factory.get(reverse('user_edit', args=[self.user.pk]))
+        request = self.factory.get(reverse(USER_EDIT, args=[self.user.pk]))
         request.user = self.user
 
         # Test view() as if it were deployed at /quiz/patient/%id
         response = user_update(request, user_id=self.user.pk)
         self.assertEqual(response.status_code, 200)
-        response = self.client.post(reverse('user_edit', args=[self.user.pk]), self.data)
+        response = self.client.post(reverse(USER_EDIT, args=[self.user.pk]), self.data)
         self.assertEqual(response.status_code, 302)
 
     def test_user_update_get(self):
