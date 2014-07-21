@@ -676,7 +676,9 @@ def exam_edit(request, patient_id, record_id, diagnosis_id, exam_id, template_na
                 complementary_exam_form.save()
 
                 if file_form.is_valid():
-                    file_form.save()
+                    new_file_data = file_form.save(commit=False)
+                    new_file_data.exam = complementary_exam
+                    new_file_data.save()
 
                 messages.success(request, 'Exame salvo com sucesso.')
 
