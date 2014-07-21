@@ -644,6 +644,7 @@ def exam_create(request, patient_id, record_id, diagnosis_id, template_name="qui
                 new_file_data.save()
 
             messages.success(request, 'Exame salvo com sucesso.')
+
             redirect_url = reverse("exam_edit", args=(patient_id, record_id, diagnosis_id,
                                                       new_complementary_exam.pk))
             return HttpResponseRedirect(redirect_url + "?status=edit")
@@ -660,7 +661,30 @@ def exam_create(request, patient_id, record_id, diagnosis_id, template_name="qui
 
 
 def exam_edit(request, patient_id, record_id, diagnosis_id, exam_id, template_name="quiz/exams.html"):
-    return render(request, template_name, {'viewing': False})
+
+    d = Diagnosis.objects.get(pk=diagnosis_id)
+    p = Patient.objects.get(number_record=patient_id)
+    complementary_exam = ComplementaryExam.objects.get(pk=exam_id)
+
+    if complementary_exam:
+        complementary_exam_form = ComplementaryExamForm(instance=complementary_exam)
+        exam_file_list = ExamFile.objects.filter(exam=exam_id)
+
+        if request.method == "POST":
+            file_form = ExamFileForm(request.POST, request.FILES)
+
+            if complementary_exam_form.is_valid():
+                complementary_exam_form.save()
+
+                if file_form.is_valid():
+                    file_form.save()
+
+                messages.success(request, 'Exame salvo com sucesso.')
+
+        return render(request, template_name,
+                      {'viewing': True, 'complementary_exam_form': complementary_exam_form,
+                       'exam_file_list': exam_file_list, 'patient_id': patient_id,
+                       'record_id': record_id, 'name_patient': p.name_txt})
 
 
 def exam_view(request, patient_id, record_id, diagnosis_id, exam_id, template_name="quiz/exams.html"):
