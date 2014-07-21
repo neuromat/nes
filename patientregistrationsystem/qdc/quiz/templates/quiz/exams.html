@@ -21,14 +21,14 @@
 
     <ol class="breadcrumb">
         <li>Pacientes</li>
-        {% if editing %}
-            <li><a href="/quiz/patient/edit/{{ patient_id }}/?currentTab=3">{{ name_patient }}</a></li>
-        {% else %}
-            <li><a href="/quiz/patient/{{ patient_id }}/?currentTab=3">{{ name_patient }}</a></li>
-        {% endif %}
+        <li><a href="/quiz/patient/{{ patient_id }}/?currentTab=3">{{ name_patient }}</a></li>
         <li>Avaliação médica</li>
-        <li>Diagnóstico e Exames</li>
-        <li class="active">Novo Exame</li>
+        <li><a href="/quiz/patient/{{ patient_id }}/medical_record/{{ record_id }}/?status=view#tab4">Diagnóstico e Exames</a></li>
+        {% if viewing %}
+            <li class="active">Exame</li>
+        {% else %}
+            <li class="active">Novo Exame</li>
+        {% endif %}
     </ol>
 
     <div class="tab-content">
@@ -91,22 +91,28 @@
                                         <thead>
                                             <tr>
                                                 <th>Arquivos</th>
+                                                {% if not viewing %}
                                                 <th></th>
+                                                {% endif %}
                                             </tr>
                                         </thead>
                                         <tbody>
-                                        {% if not object_list %}
+                                        {% if not exam_file_list %}
                                             <tr>
                                                 <td>(sem anexos)</td>
+                                                {% if not viewing %}
                                                 <td></td>
+                                                {% endif %}
                                             </tr>
                                         {% else %}
-                                            <tr>
                                             {% for exam_file in exam_file_list %}
+                                            <tr>
                                                 <td>{{ exam_file.content }}</td>
+                                                {% if not viewing %}
                                                 <td><a class="glyphicon glyphicon-remove" data-toggle="tooltip" data-placement="right" title="Remover" style="color: indianred"></a></td>
-                                            {% endfor %}
+                                                {% endif %}
                                             </tr>
+                                            {% endfor %}
                                         {% endif %}
                                         </tbody>
                                     </table>
@@ -128,7 +134,6 @@
     <div class="col-md-1">
     </div>
 
-    <!-- Esta div define os botões de navegação no formulário -->
     <div class="row">
         <div class="col-md-1">
         </div>

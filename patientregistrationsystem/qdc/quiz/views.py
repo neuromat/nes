@@ -644,7 +644,8 @@ def exam_create(request, patient_id, record_id, diagnosis_id, template_name="qui
                 new_file_data.save()
 
             messages.success(request, 'Exame salvo com sucesso.')
-            redirect_url = reverse("medical_record_view", args=(patient_id, record_id,))
+            redirect_url = reverse("exam_edit", args=(patient_id, record_id, diagnosis_id,
+                                                      new_complementary_exam.pk))
             return HttpResponseRedirect(redirect_url + "?status=edit")
 
         else:
@@ -653,23 +654,31 @@ def exam_create(request, patient_id, record_id, diagnosis_id, template_name="qui
         file_form = ExamFileForm(request.POST)
 
     return render(request, template_name,
-                  {'complementary_exam_form': form, 'patient_id': patient_id, 'name_patient': p.name_txt,
-                   'record_id': record_id, 'file_form': file_form, 'viewing': False},)
+                  {'complementary_exam_form': form, 'patient_id': patient_id,
+                   'name_patient': p.name_txt, 'record_id': record_id,
+                   'file_form': file_form, 'viewing': False},)
+
+
+def exam_edit(request, patient_id, record_id, diagnosis_id, template_name="quiz/exams.html"):
+    return render(request, template_name, {'viewing': False})
 
 
 def exam_view(request, patient_id, record_id, diagnosis_id, exam_id, template_name="quiz/exams.html"):
 
+    p = Patient.objects.get(number_record=patient_id)
     #is_editing = (request.GET['status'] == 'edit')
-    exam = ComplementaryExam.objects.get(pk=exam_id)
-    exam_form = ComplementaryExamForm(instance=exam)
+    complementary_exam = ComplementaryExam.objects.get(pk=exam_id)
+    complementary_exam_form = ComplementaryExamForm(instance=complementary_exam)
+
+    for field in complementary_exam_form.fields:
+        complementary_exam_form.fields[field].widget.attrs['disabled'] = True
 
     try:
         exam_file_list = ExamFile.objects.filter(exam=exam_id)
     except ExamFile.DoesNotExist:
         exam_file_list = None
 
-    for field in exam_form.fields:
-        exam_form.fields[field].widget.attrs['disabled'] = True
-
     return render(request, template_name,
-                  {'complementary_exam_form': exam_form, 'exam_file_list': exam_file_list, 'viewing': True})
+                  {'complementary_exam_form': complementary_exam_form,
+                   'exam_file_list': exam_file_list, 'viewing': True, 'patient_id': patient_id,
+                   'record_id': record_id, 'name_patient': p.name_txt})
