@@ -614,19 +614,17 @@
                                         {% for diagnosis, diagnosis_exams in lists_diagnosis_exams %}
                                             <tr>
                                                 <td>{{ diagnosis.classification_of_diseases }}</td>
-                                                <td><a class="glyphicon glyphicon-remove" data-toggle="tooltip" data-placement="right" title="Remover" style="color: indianred"
-                                                       onclick="show_modal_remove({{ patient_id }}, {{ diagnosis.id }})"></a></td>
+                                                <td>
+                                                    {% if editing %}
+                                                        <a class="glyphicon glyphicon-remove" data-toggle="tooltip" data-placement="right" title="Remover" style="color: indianred"
+                                                           onclick="show_modal_remove({{ patient_id }}, {{ diagnosis.id }})"></a>
+                                                    {% endif %}
+                                                </td>
                                                 {% if diagnosis_exams %}
                                                     {% for exams in diagnosis_exams %}
-                                                        {% if editing %}
-                                                            <td>
-                                                                <a href="diagnosis/{{  diagnosis.id }}/exam/{{ exams.id }}/?status=edit">{{ exams.description }}</a>
-                                                            </td>
-                                                        {% else %}
-                                                             <td>
-                                                                <a href="diagnosis/{{  diagnosis.id }}/exam/{{ exams.id }}/?status=view">{{ exams.description }}</a>
-                                                            </td>
-                                                        {% endif %}
+                                                        <td>
+                                                            <a href="diagnosis/{{  diagnosis.id }}/exam/{{ exams.id }}/?status={{ status_mode }}">{{ exams.description }}</a>
+                                                        </td>
                                                         <tr></tr>
                                                         <td style="border: 0;"></td>
                                                         <td style="border: 0;"></td>
