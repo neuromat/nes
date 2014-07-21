@@ -552,10 +552,7 @@ def medical_record_view(request, patient_id, record_id, template_name="quiz/medi
 
 
 def medical_record_update(request, patient_id, record_id, template_name="quiz/medical_record.html"):
-    # # Search in models.Patient
-    # # ------------------------
     is_editing = (request.GET['status'] == 'edit')
-
     patient = Patient.objects.get(number_record=patient_id)
     medical_record = MedicalRecordData.objects.get(pk=record_id)
 
@@ -568,7 +565,6 @@ def medical_record_update(request, patient_id, record_id, template_name="quiz/me
             complementary_exams_list.append(ComplementaryExam.objects.filter(diagnosis=diagnosis.pk))
 
         lists_diagnosis_exams = zip(diagnosis_list, complementary_exams_list)
-
 
         if request.method == "POST":
             if medical_record_form.is_valid():
@@ -584,12 +580,8 @@ def medical_record_update(request, patient_id, record_id, template_name="quiz/me
 
 
 def diagnosis_create(request, patient_id, medical_record_id, cid10_id, template_name="quiz/medical_record.html"):
-    # # Search in models.Patient
-    # # ------------------------
-
     # is_editing = (request.GET['status'] == 'edit')
-
-    p = Patient.objects.get(number_record=patient_id)
+    #p = Patient.objects.get(number_record=patient_id)
     m = MedicalRecordData.objects.get(pk=medical_record_id)
     cid10 = ClassificationOfDiseases.objects.get(pk=cid10_id)
 
@@ -634,10 +626,6 @@ def exam_create(request, patient_id, record_id, diagnosis_id, template_name="qui
                 new_file_data.exam = new_complementary_exam
                 new_file_data.save()
 
-                # new_document = ExamFile(content=request.FILES['content'])
-                # new_document.exam = new_complementary_exam
-                # new_document.save()
-
             messages.success(request, 'Exame salvo com sucesso.')
             redirect_url = reverse("medical_record_view", args=(patient_id, record_id,))
             return HttpResponseRedirect(redirect_url + "?status=edit")
@@ -667,4 +655,5 @@ def exam_view(request, patient_id, record_id, diagnosis_id, exam_id, template_na
         exam_form.fields[field].widget.attrs['disabled'] = True
 
     return render(request, template_name,
-                  {'complementary_exam_form': exam_form, 'exam_file_list': exam_file_list, 'viewing': True})
+                  {'complementary_exam_form': exam_form, 'exam_file_list': exam_file_list, 'viewing': True,
+                   'is_editing': is_editing})

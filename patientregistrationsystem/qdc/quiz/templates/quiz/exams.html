@@ -83,18 +83,36 @@
                         </div>
                     </div>
                     <div class="row">
-                        <div class="col-xs-6 col-sm-4">
+                        <div class="col-xs-6 col-sm-6">
                             <div class="form-group">
                                 <label>Anexos</label>
-                                <div class="input-group  input-group-sm">
-                                    {% if viewing %}
-                                        {% for exam_file in exam_file_list %}
-                                            {{ exam_file.content }}
-                                        {% endfor %}
-                                    {% else %}
-                                        {{ file_form.content }}
-                                    {% endif %}
-                                </div>
+                                {% if viewing %}
+                                    <table class="table table-bordered">
+                                        <thead>
+                                            <tr>
+                                                <th>Arquivos</th>
+                                                <th></th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                        {% if not object_list %}
+                                            <tr>
+                                                <td>(sem anexos)</td>
+                                                <td></td>
+                                            </tr>
+                                        {% else %}
+                                            <tr>
+                                            {% for exam_file in exam_file_list %}
+                                                <td>{{ exam_file.content }}</td>
+                                                <td><a class="glyphicon glyphicon-remove" data-toggle="tooltip" data-placement="right" title="Remover" style="color: indianred"></a></td>
+                                            {% endfor %}
+                                            </tr>
+                                        {% endif %}
+                                        </tbody>
+                                    </table>
+                                {% else %}
+                                    {{ file_form.content }}
+                                {% endif %}
                             </div>
                         </div>
                     </div>
