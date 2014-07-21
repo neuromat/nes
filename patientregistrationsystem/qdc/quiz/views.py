@@ -659,7 +659,7 @@ def exam_create(request, patient_id, record_id, diagnosis_id, template_name="qui
                    'file_form': file_form, 'viewing': False},)
 
 
-def exam_edit(request, patient_id, record_id, diagnosis_id, template_name="quiz/exams.html"):
+def exam_edit(request, patient_id, record_id, diagnosis_id, exam_id, template_name="quiz/exams.html"):
     return render(request, template_name, {'viewing': False})
 
 
