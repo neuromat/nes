@@ -31,9 +31,13 @@
 
     <ol class="breadcrumb">
         <li>Pacientes</li>
-        <li><a href="/quiz/patient/{{ patient_id }}/?currentTab=3">{{ name_patient }}</a></li>
+        {% if editing %}
+            <li><a href="/quiz/patient/edit/{{ patient_id }}/?currentTab=3">{{ name_patient }}</a></li>
+        {% else %}
+            <li><a href="/quiz/patient/{{ patient_id }}/?currentTab=3">{{ name_patient }}</a></li>
+        {% endif %}
         <li>Avaliação médica</li>
-        <li><a href="/quiz/patient/{{ patient_id }}/medical_record/{{ record_id }}/?status=view#tab4">Diagnóstico e Exames</a></li>
+        <li><a href="/quiz/patient/{{ patient_id }}/medical_record/{{ record_id }}/?status=view&currentTab=3">Diagnóstico e Exames</a></li>
         {% if viewing %}
             <li class="active">Exame</li>
         {% else %}
@@ -176,20 +180,20 @@
     <div class="col-md-1">
     </div>
 
+    {% if not viewing %}
     <div class="row">
         <div class="col-md-1">
         </div>
         <div class="col-md-10">
             <div class="btn-group pull-right">
-                {% if not viewing %}
                 <button name="action" value="remove" type="submit" class="btn btn-secondary">Excluir</button>
-                {% endif %}
                 <button name="action" value="save" type="submit" class="btn btn-primary">Salvar</button>
             </div>
         </div>
         <div class="col-md-1">
         </div>
     </div>
+    {% endif %}
 
     <div class="modal fade" id="modalRemove" tabindex="-1" role="dialog" aria-labelledby="myModalLabel"
          aria-hidden="true">

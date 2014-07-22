@@ -623,7 +623,11 @@
                                                 {% if diagnosis_exams %}
                                                     {% for exams in diagnosis_exams %}
                                                         <td>
+                                                            {% if editing %}
+                                                            <a href="diagnosis/{{  diagnosis.id }}/exam/edit/{{ exams.id }}/?status={{ status_mode }}">{{ exams.description }}</a>
+                                                            {% else %}
                                                             <a href="diagnosis/{{  diagnosis.id }}/exam/{{ exams.id }}/?status={{ status_mode }}">{{ exams.description }}</a>
+                                                            {% endif %}
                                                         </td>
                                                         <tr></tr>
                                                         <td style="border: 0;"></td>

@@ -708,7 +708,6 @@ def exam_edit(request, patient_id, record_id, diagnosis_id, exam_id, template_na
 def exam_view(request, patient_id, record_id, diagnosis_id, exam_id, template_name="quiz/exams.html"):
 
     p = Patient.objects.get(number_record=patient_id)
-    #is_editing = (request.GET['status'] == 'edit')
     complementary_exam = ComplementaryExam.objects.get(pk=exam_id)
     complementary_exam_form = ComplementaryExamForm(instance=complementary_exam)
 
