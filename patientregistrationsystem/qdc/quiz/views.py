@@ -2,7 +2,6 @@
 from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib.auth.decorators import login_required, permission_required
 from django.http import HttpResponseRedirect
-from django.core.context_processors import csrf
 from django.core.urlresolvers import reverse
 from django.shortcuts import render_to_response
 
@@ -24,6 +23,7 @@ import re
 
 # pylint: disable=E1101
 # pylint: disable=E1103
+
 
 @login_required
 @permission_required('quiz.add_patient')
@@ -147,12 +147,15 @@ def patient_create(request, template_name="quiz/register.html"):
 
 
 def get_current_tab(request):
-    if 'currentTab' in request.GET:
-        current_tab = request.GET['currentTab']
-    elif 'currentTab' in request.POST:
-        current_tab = request.POST['currentTab']
+
+    current_tab = '0'
+
+    if request.method == "POST":
+        if 'currentTab' in request.POST:
+            current_tab = request.POST['currentTab']
     else:
-        current_tab = '0'
+        if 'currentTab' in request.GET:
+            current_tab = request.GET['currentTab']
 
     return current_tab
 
@@ -255,12 +258,10 @@ def patient_update(request, patient_id, template_name="quiz/register.html"):
                 if social_history_form.is_valid():
                     new_social_history_data = social_history_form.save(commit=False)
                     new_social_history_data.id_patient = new_patient
+
                     new_social_history_data.save()
 
                     messages.success(request, 'Paciente gravado com sucesso.')
-
-                    #if homonym_message:
-                    #    messages.info(request, homonym_message)
 
                 new_patient_id = new_patient.number_record
 
@@ -312,7 +313,6 @@ def patient(request, patient_id, template_name="quiz/register.html"):
 
     current_tab = get_current_tab(request)
 
-    # p = Patient.objects.get(number_record=patient_id)
     p = get_object_or_404(Patient, pk=patient_id)
 
     if p and not p.removed:
@@ -389,6 +389,7 @@ def restore_patient(request, patient_id):
 @login_required
 @permission_required('quiz.view_patient')
 def search_patients_ajax(request):
+    patient_list = ''
     if request.method == "POST":
         search_text = request.POST['search_text']
         if search_text:
@@ -396,8 +397,6 @@ def search_patients_ajax(request):
                 patient_list = Patient.objects.filter(name_txt__icontains=search_text).exclude(removed=True)
             else:
                 patient_list = Patient.objects.filter(cpf_id__icontains=search_text).exclude(removed=True)
-        else:
-            patient_list = ''
 
     return render_to_response('quiz/ajax_search.html', {'patients': patient_list})
 
@@ -572,15 +571,21 @@ def medical_record_update(request, patient_id, record_id, template_name="quiz/me
         medical_record_form = MedicalRecordForm(request.POST or None, instance=medical_record)
         diagnosis_list = Diagnosis.objects.filter(medical_record_data=record_id)
         complementary_exams_list = []
+
         for diagnosis in diagnosis_list:
             complementary_exams_list.append(ComplementaryExam.objects.filter(diagnosis=diagnosis.pk))
 
         lists_diagnosis_exams = zip(diagnosis_list, complementary_exams_list)
 
         if request.method == "POST":
+
             if medical_record_form.is_valid():
+
                 medical_record_form.save()
                 messages.success(request, 'Avaliação médica salva com sucesso.')
+
+                redirect_url = reverse("medical_record_edit", args=(patient_id, record_id, ))
+                return HttpResponseRedirect(redirect_url + "?status=edit&currentTab=" + current_tab)
 
         return render(request, template_name,
                       {'medical_record_form': medical_record_form,
@@ -594,7 +599,7 @@ def medical_record_update(request, patient_id, record_id, template_name="quiz/me
                        'record_responsible': medical_record.record_responsible,
                        'editing': True,
                        'status_mode': status_mode,
-                       'current_tab': current_tab})
+                       'currentTab': current_tab})
 
 
 def diagnosis_create(request, patient_id, medical_record_id, cid10_id):
@@ -606,7 +611,7 @@ def diagnosis_create(request, patient_id, medical_record_id, cid10_id):
     diagnosis.save()
 
     redirect_url = reverse("medical_record_edit", args=(patient_id, medical_record_id,))
-    return HttpResponseRedirect(redirect_url + "?status=edit")
+    return HttpResponseRedirect(redirect_url + "?status=edit&currentTab=3")
 
 
 def diagnosis_delete(request, patient_id, diagnosis_id):
@@ -621,7 +626,7 @@ def diagnosis_delete(request, patient_id, diagnosis_id):
 
     medical_record_id = diagnosis.medical_record_data_id
     redirect_url = reverse("medical_record_edit", args=(patient_id, medical_record_id, ))
-    return HttpResponseRedirect(redirect_url + "?status=edit")
+    return HttpResponseRedirect(redirect_url + "?status=edit&currentTab=3")
 
 
 def exam_create(request, patient_id, record_id, diagnosis_id, template_name="quiz/exams.html"):
