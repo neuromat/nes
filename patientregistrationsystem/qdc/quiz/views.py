@@ -650,8 +650,6 @@ def exam_create(request, patient_id, record_id, diagnosis_id, template_name="qui
                                                           new_complementary_exam.pk))
             elif request.POST['action'] == "save":
                 redirect_url = reverse("medical_record_edit", args=(patient_id, record_id, ))
-            else:
-                redirect_url = reverse("medical_record_edit", args=(patient_id, record_id, ))
             return HttpResponseRedirect(redirect_url + "?status=edit")
 
         else:
@@ -675,6 +673,7 @@ def exam_edit(request, patient_id, record_id, diagnosis_id, exam_id, template_na
         exam_file_list = ExamFile.objects.filter(exam=exam_id)
 
         if request.method == "POST":
+
             file_form = ExamFileForm(request.POST, request.FILES)
 
             if complementary_exam_form.is_valid():
@@ -722,3 +721,13 @@ def exam_view(request, patient_id, record_id, diagnosis_id, exam_id, template_na
                   {'complementary_exam_form': complementary_exam_form,
                    'exam_file_list': exam_file_list, 'viewing': True, 'patient_id': patient_id,
                    'record_id': record_id, 'name_patient': p.name_txt})
+
+
+def exam_delete(request, patient_id, exam_file_id):
+    exam_file = get_object_or_404(ExamFile, pk=exam_file_id)
+    exam_file.delete()
+    messages.success(request, 'Exame removido com sucesso.')
+
+    record_id = exam_file.exam_id
+    redirect_url = reverse("medical_record_edit", args=(patient_id, record_id, ))
+    return HttpResponseRedirect(redirect_url + "?status=edit")

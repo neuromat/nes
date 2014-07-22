@@ -1,6 +1,16 @@
 {% extends "quiz/template.html" %}
 {% block activePatient %}class="active"{% endblock %}
 
+{% block header %}
+    <script>
+        function show_modal_remove (patient_id, exam_file_id){
+            var  modal_remove = document.getElementById('removeExam');
+            modal_remove.setAttribute( "href", '/quiz/exam/delete/' + patient_id + '/' + exam_file_id);
+            $('#modalRemove').modal('show');
+        }
+    </script>
+{% endblock %}
+
 {% block form %}
     <div class="row">
 
@@ -129,8 +139,8 @@
                                         {% for exam_file in exam_file_list %}
                                         <tr>
                                             <td>{{ exam_file.content }}</td>
-                                            {% if not viewing %}
-                                            <td><a class="glyphicon glyphicon-remove" data-toggle="tooltip" data-placement="right" title="Remover" style="color: indianred"></a></td>
+                                            {% if viewing %}
+                                            <td><a class="glyphicon glyphicon-remove" data-toggle="tooltip" data-placement="right" title="Remover" style="color: indianred" onclick="show_modal_remove({{ patient_id }}, {{ exam_file.pk }})"></a></td>
                                             {% endif %}
                                         </tr>
                                         {% endfor %}
@@ -171,7 +181,9 @@
         </div>
         <div class="col-md-10">
             <div class="btn-group pull-right">
+                {% if viewing %}
                 <button name="action" value="remove" type="submit" class="btn btn-secondary">Excluir</button>
+                {% endif %}
                 <button name="action" value="save" type="submit" class="btn btn-primary">Salvar</button>
             </div>
         </div>
