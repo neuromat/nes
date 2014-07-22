@@ -142,6 +142,7 @@ class FormValidation(TestCase):
         self.assertEqual(MedicalRecordData.objects.filter(patient=patient_mock).count(), 0)
 
         self.fill_medical_record()
+        self.data['action'] = 'save'
         url = reverse(MEDICAL_RECORD_NEW, args=(patient_mock.pk,))
         response = self.client.post(url, self.data, follow=True)
         self.assertEqual(response.status_code, 200)
