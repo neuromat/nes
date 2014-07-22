@@ -1,4 +1,3 @@
-
 # -*- coding: UTF-8 -*-
 
 from __future__ import unicode_literals
@@ -10,7 +9,7 @@ from validation import CPF
 import datetime
 
 
-#Valida CPF
+# Valida CPF
 def validate_cpf(value):
     validation = CPF(value)
     if not validation.isValid():
@@ -114,12 +113,12 @@ class Patient(models.Model):
             ("view_patient", "Can view patient"),
         )
 
+    def get_absolute_url(self):
+        return "/quiz/patient/%i/" % self.pk
+
     def __unicode__(self):  # Python 3: def __str__(self):
         return \
-            self.name_txt, self.cpf_id, self.rg_id, self.medical_record_number, self.natural_of_txt, \
-            self.citizenship_txt, self.street_txt, self.zipcode_number, self.country_txt, self.state_txt, \
-            self.city_txt, self.phone_number, self.cellphone_number, self.email_txt, self.date_birth_txt, \
-            self.gender_opt, self.marital_status_opt, self.removed
+            self.name_txt
 
 
 class SocialDemographicData(models.Model):
@@ -208,7 +207,7 @@ class SocialHistoryData(models.Model):
 
     def __unicode__(self):
         return \
-            self.id_patient, bool(self.smoker), self.amount_cigarettes_opt, bool(self.ex_smoker), bool(self.alcoholic),\
+            self.id_patient, bool(self.smoker), self.amount_cigarettes_opt, bool(self.ex_smoker), bool(self.alcoholic), \
             self.alcohol_frequency_opt, self.alcohol_period_opt, self.drugs_opt
 
 
@@ -224,6 +223,7 @@ class CervicalVertebrae(models.Model):
 
     def __unicode__(self):
         return self.code
+
 
 class ThoracicVertebrae(models.Model):
     code = models.CharField(max_length=3, null=False)
@@ -279,25 +279,25 @@ class MedicalRecordData(models.Model):
     pelvis_surgery_side = \
         models.ForeignKey(Side, related_name='side_pelvis_surgery', null=True, blank=True)
 
-    nerve_surgery = models.CharField(max_length=10, null=True, blank=True)
+    nerve_surgery = models.CharField(max_length=10, null=True, blank=False)
     nerve_surgery_type = models.CharField(max_length=50, null=True, blank=True)
 
-    vertigo_history = models.CharField(max_length=10, null=True, blank=True)
-    pain_localizations = models.ManyToManyField(PainLocalization, related_name="medical_records")
-    headache = models.CharField(max_length=10, null=True, blank=True)
-    hypertension = models.CharField(max_length=10, null=True, blank=True)
-    diabetes = models.CharField(max_length=10, null=True, blank=True)
-    hormonal_dysfunction = models.CharField(max_length=10, null=True, blank=True)
+    vertigo_history = models.CharField(max_length=10, null=True, blank=False)
+    pain_localizations = models.ManyToManyField(PainLocalization, related_name="medical_records", blank=True, null=True)
+    headache = models.CharField(max_length=10, null=True, blank=False)
+    hypertension = models.CharField(max_length=10, null=True, blank=False)
+    diabetes = models.CharField(max_length=10, null=True, blank=False)
+    hormonal_dysfunction = models.CharField(max_length=10, null=True, blank=False)
 
     def __unicode__(self):
         return \
-            self.patient, self.record_date, self.record_responsible, self.fracture_history, self.scapula_fracture_side,\
-            self.clavicle_fracture_side, self.rib_fracture, self.cervical_vertebrae_fracture, self.thoracic_vertebrae_fracture,\
-            self.lumbosacral_vertebrae_fracture, self.superior_members_fracture_side, self.inferior_members_fracture_side,\
-            self.pelvis_fracture_side, self.orthopedic_surgery, self.scapula_surgery_side, self.clavicle_surgery_side,\
-            self.rib_surgery, self.cervical_vertebrae_surgery, self.thoracic_vertebrae_surgery, self.lumbosacral_vertebrae_surgery,\
-            self.superior_members_surgery_side, self.inferior_members_surgery_side, self.pelvis_surgery_side,\
-            self.nerve_surgery, self.nerve_surgery_type, self.vertigo_history, self.pain_localizations,\
+            self.patient, self.record_date, self.record_responsible, self.fracture_history, self.scapula_fracture_side, \
+            self.clavicle_fracture_side, self.rib_fracture, self.cervical_vertebrae_fracture, self.thoracic_vertebrae_fracture, \
+            self.lumbosacral_vertebrae_fracture, self.superior_members_fracture_side, self.inferior_members_fracture_side, \
+            self.pelvis_fracture_side, self.orthopedic_surgery, self.scapula_surgery_side, self.clavicle_surgery_side, \
+            self.rib_surgery, self.cervical_vertebrae_surgery, self.thoracic_vertebrae_surgery, self.lumbosacral_vertebrae_surgery, \
+            self.superior_members_surgery_side, self.inferior_members_surgery_side, self.pelvis_surgery_side, \
+            self.nerve_surgery, self.nerve_surgery_type, self.vertigo_history, self.pain_localizations, \
             self.headache, self.hypertension, self.hormonal_dysfunction, self.diabetes
 
 
@@ -308,33 +308,32 @@ class ClassificationOfDiseases(models.Model):
     parent = models.ForeignKey('self', null=True, related_name='children')
 
     def __unicode__(self):
-        return self.code, self.description
+        return self.abbreviated_description
 
 
 class Diagnosis(models.Model):
     medical_record_data = models.ForeignKey(MedicalRecordData, null=False)
     classification_of_diseases = models.ForeignKey(ClassificationOfDiseases, null=False)
 
+    class Meta:
+        unique_together = ('medical_record_data', 'classification_of_diseases',)
+
     def __unicode__(self):
-        return unicode(self.medical_record_data)
+        return unicode(self.classification_of_diseases)
 
 
 class ComplementaryExam(models.Model):
     diagnosis = models.ForeignKey(Diagnosis, null=False, blank=False)
-    date = models.DateField(null=False, blank=False, validators=[validate_date_birth])
+    date = models.DateField(null=False, blank=False)
     description = models.CharField(max_length=50, null=False, blank=False)
     doctor = models.CharField(max_length=50, null=False, blank=False)
     doctor_register = models.CharField(max_length=10, null=False, blank=False)
     exam_site = models.CharField(max_length=100, null=False, blank=False)
 
     def __unicode__(self):
-        return unicode(self.date)
+        return unicode(self.description)
 
 
-class ExamFile (models.Model):
+class ExamFile(models.Model):
     exam = models.ForeignKey(ComplementaryExam, null=False)
-    content = models.FileField(upload_to='documents/%Y/%m/%d')
-
-
-class TesteFile (models.Model):
-    file = models.FileField(upload_to='documents')
+    content = models.FileField(upload_to="documents")

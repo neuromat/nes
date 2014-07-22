@@ -3,18 +3,17 @@ from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib.auth.decorators import login_required, permission_required
 from django.http import HttpResponseRedirect
 from django.core.context_processors import csrf
-from  django.core.files import uploadedfile
 from django.core.urlresolvers import reverse
 from django.shortcuts import render_to_response
-from django.forms.models import modelform_factory
 
 from models import Patient, SocialDemographicData, SocialHistoryData, FleshToneOption, \
     MaritalStatusOption, SchoolingOption, PaymentOption, ReligionOption, MedicalRecordData, \
     GenderOption, AmountCigarettesOption, AlcoholFrequencyOption, AlcoholPeriodOption, \
-    ClassificationOfDiseases, Diagnosis, TesteFile
+    ClassificationOfDiseases, Diagnosis, ExamFile, ComplementaryExam
 
 from forms import PatientForm, SocialDemographicDataForm, SocialHistoryDataForm, UserForm, UserFormUpdate, \
     MedicalRecordForm, ComplementaryExamForm, ExamFileForm
+
 from quiz_widget import SelectBoxCountriesDisabled, SelectBoxStateDisabled
 from django.contrib import messages
 
@@ -23,6 +22,8 @@ from django.contrib.auth.models import User
 # Biblioteca para fazer expressões regulares. Utilizada na "def search_patients_ajax" para fazer busca por nome ou CPF
 import re
 
+# pylint: disable=E1101
+# pylint: disable=E1103
 
 @login_required
 @permission_required('quiz.add_patient')
@@ -42,10 +43,7 @@ def patient_create(request, template_name="quiz/register.html"):
     social_demographic_form = SocialDemographicDataForm()
     social_history_form = SocialHistoryDataForm()
 
-    if 'currentTab' in request.POST:
-        current_tab = request.POST['currentTab']
-    else:
-        current_tab = 0
+    current_tab = get_current_tab(request)
 
     if request.method == "POST":
 
@@ -73,14 +71,14 @@ def patient_create(request, template_name="quiz/register.html"):
                 new_social_demographic_data.id_patient = new_patient
 
                 if (new_social_demographic_data.tv_opt is not None and
-                            new_social_demographic_data.radio_opt is not None and
-                            new_social_demographic_data.bath_opt is not None and
-                            new_social_demographic_data.automobile_opt is not None and
-                            new_social_demographic_data.house_maid_opt is not None and
-                            new_social_demographic_data.wash_machine_opt is not None and
-                            new_social_demographic_data.dvd_opt is not None and
-                            new_social_demographic_data.refrigerator_opt is not None and
-                            new_social_demographic_data.freezer_opt is not None):
+                        new_social_demographic_data.radio_opt is not None and
+                        new_social_demographic_data.bath_opt is not None and
+                        new_social_demographic_data.automobile_opt is not None and
+                        new_social_demographic_data.house_maid_opt is not None and
+                        new_social_demographic_data.wash_machine_opt is not None and
+                        new_social_demographic_data.dvd_opt is not None and
+                        new_social_demographic_data.refrigerator_opt is not None and
+                        new_social_demographic_data.freezer_opt is not None):
 
                     new_social_demographic_data.social_class_opt = new_social_demographic_data.calculate_social_class(
                         tv=request.POST['tv_opt'], radio=request.POST['radio_opt'],
@@ -93,14 +91,14 @@ def patient_create(request, template_name="quiz/register.html"):
                     new_social_demographic_data.social_class_opt = None
 
                     if (new_social_demographic_data.tv_opt is not None or
-                                new_social_demographic_data.radio_opt is not None or
-                                new_social_demographic_data.bath_opt is not None or
-                                new_social_demographic_data.automobile_opt is not None or
-                                new_social_demographic_data.house_maid_opt is not None or
-                                new_social_demographic_data.wash_machine_opt is not None or
-                                new_social_demographic_data.dvd_opt is not None or
-                                new_social_demographic_data.refrigerator_opt is not None or
-                                new_social_demographic_data.freezer_opt is not None):
+                            new_social_demographic_data.radio_opt is not None or
+                            new_social_demographic_data.bath_opt is not None or
+                            new_social_demographic_data.automobile_opt is not None or
+                            new_social_demographic_data.house_maid_opt is not None or
+                            new_social_demographic_data.wash_machine_opt is not None or
+                            new_social_demographic_data.dvd_opt is not None or
+                            new_social_demographic_data.refrigerator_opt is not None or
+                            new_social_demographic_data.freezer_opt is not None):
                         messages.warning(request, 'Classe Social não calculada, pois os campos necessários '
                                                   'para o cálculo não foram preenchidos.')
 
@@ -148,18 +146,30 @@ def patient_create(request, template_name="quiz/register.html"):
     return render(request, template_name, context)
 
 
+def get_current_tab(request):
+    if 'currentTab' in request.GET:
+        current_tab = request.GET['currentTab']
+    elif 'currentTab' in request.POST:
+        current_tab = request.POST['currentTab']
+    else:
+        current_tab = '0'
+
+    return current_tab
+
+
 @login_required
 @permission_required('quiz.change_patient')
 def patient_update(request, patient_id, template_name="quiz/register.html"):
+
     # # Search in models.Patient
-    ## ------------------------
-    p = Patient.objects.get(number_record=patient_id)
+    # # ------------------------    
+    p = get_object_or_404(Patient, pk=patient_id)
 
     if p and not p.removed:
 
         patient_form = PatientForm(request.POST or None, instance=p)
 
-        ## Search in models.SocialDemographicData
+        # # Search in models.SocialDemographicData
         ## --------------------------------------
         try:
             p_social_demo = SocialDemographicData.objects.get(id_patient_id=patient_id)
@@ -175,22 +185,13 @@ def patient_update(request, patient_id, template_name="quiz/register.html"):
         except SocialHistoryData.DoesNotExist:
             social_history_form = SocialDemographicDataForm()
 
-        if 'currentTab' in request.GET:
-            current_tab = request.GET['currentTab']
-        else:
-            current_tab = 0
-
+        current_tab = get_current_tab(request)
         #TODO: retirar este controle de comentario
         ### teste: inicio
 
         #TODO: reaproveitar o codigo abaixo, pois eh praticamente igual ao do inserir
 
         if request.method == "POST":
-
-            if 'currentTab' in request.POST:
-                current_tab = request.POST['currentTab']
-            else:
-                current_tab = 0
 
             #patient_form = PatientForm(request.POST)
             #social_demographic_form = SocialDemographicDataForm(request.POST)
@@ -216,14 +217,14 @@ def patient_update(request, patient_id, template_name="quiz/register.html"):
                     new_social_demographic_data.id_patient = new_patient
 
                     if (new_social_demographic_data.tv_opt is not None and
-                                new_social_demographic_data.radio_opt is not None and
-                                new_social_demographic_data.bath_opt is not None and
-                                new_social_demographic_data.automobile_opt is not None and
-                                new_social_demographic_data.house_maid_opt is not None and
-                                new_social_demographic_data.wash_machine_opt is not None and
-                                new_social_demographic_data.dvd_opt is not None and
-                                new_social_demographic_data.refrigerator_opt is not None and
-                                new_social_demographic_data.freezer_opt is not None):
+                            new_social_demographic_data.radio_opt is not None and
+                            new_social_demographic_data.bath_opt is not None and
+                            new_social_demographic_data.automobile_opt is not None and
+                            new_social_demographic_data.house_maid_opt is not None and
+                            new_social_demographic_data.wash_machine_opt is not None and
+                            new_social_demographic_data.dvd_opt is not None and
+                            new_social_demographic_data.refrigerator_opt is not None and
+                            new_social_demographic_data.freezer_opt is not None):
 
                         new_social_demographic_data.social_class_opt = \
                             new_social_demographic_data.calculate_social_class(
@@ -237,14 +238,14 @@ def patient_update(request, patient_id, template_name="quiz/register.html"):
                         new_social_demographic_data.social_class_opt = None
 
                         if (new_social_demographic_data.tv_opt is not None or
-                                    new_social_demographic_data.radio_opt is not None or
-                                    new_social_demographic_data.bath_opt is not None or
-                                    new_social_demographic_data.automobile_opt is not None or
-                                    new_social_demographic_data.house_maid_opt is not None or
-                                    new_social_demographic_data.wash_machine_opt is not None or
-                                    new_social_demographic_data.dvd_opt is not None or
-                                    new_social_demographic_data.refrigerator_opt is not None or
-                                    new_social_demographic_data.freezer_opt is not None):
+                                new_social_demographic_data.radio_opt is not None or
+                                new_social_demographic_data.bath_opt is not None or
+                                new_social_demographic_data.automobile_opt is not None or
+                                new_social_demographic_data.house_maid_opt is not None or
+                                new_social_demographic_data.wash_machine_opt is not None or
+                                new_social_demographic_data.dvd_opt is not None or
+                                new_social_demographic_data.refrigerator_opt is not None or
+                                new_social_demographic_data.freezer_opt is not None):
                             messages.warning(request, 'Classe Social não calculada, pois os campos necessários '
                                                       'para o cálculo não foram preenchidos.')
                             current_tab = "1"
@@ -288,31 +289,11 @@ def patient_update(request, patient_id, template_name="quiz/register.html"):
 
 @login_required
 @permission_required('quiz.view_patient')
-def patients(request):
-    language = 'en-us'
-    session_language = 'en-us'
-
-    if 'lang' in request.COOKIES:
-        language = request.COOKIES['lang']
-
-    if 'lang' in request.session:
-        session_language = request.session['lang']
-
-    args = {}
-    args.update(csrf(request))
-
-    args['patients'] = Patient.objects.all()
-    args['language'] = language
-    args['session_language'] = session_language
-
-    return render_to_response('/quiz/busca.html', args)
-
-
-@login_required
-@permission_required('quiz.view_patient')
 def patient(request, patient_id, template_name="quiz/register.html"):
 
     if request.method == "POST":
+
+        redirect_url = reverse("search_patient")
 
         if 'action' in request.POST:
 
@@ -322,8 +303,6 @@ def patient(request, patient_id, template_name="quiz/register.html"):
                 patient_remove.removed = True
                 patient_remove.save()
 
-                redirect_url = reverse("search_patient")
-
             else:
                 current_tab = request.POST['currentTab']
                 redirect_url = reverse("patient_edit", args=(patient_id,))
@@ -331,20 +310,16 @@ def patient(request, patient_id, template_name="quiz/register.html"):
 
         return HttpResponseRedirect(redirect_url)
 
-    if 'currentTab' in request.GET:
-        current_tab = request.GET['currentTab']
-    else:
-        current_tab = 0
+    current_tab = get_current_tab(request)
 
-    # # Search in models.Patient
-    ## ------------------------
-    p = Patient.objects.get(number_record=patient_id)
+    # p = Patient.objects.get(number_record=patient_id)
+    p = get_object_or_404(Patient, pk=patient_id)
 
     if p and not p.removed:
 
         patient_form = PatientForm(instance=p)
 
-        ## Search in models.SocialDemographicData
+        # # Search in models.SocialDemographicData
         ## --------------------------------------
         try:
             p_social_demo = SocialDemographicData.objects.get(id_patient_id=patient_id)
@@ -380,8 +355,7 @@ def patient(request, patient_id, template_name="quiz/register.html"):
                    'editing': False,
                    'currentTab': current_tab,
                    'patient_id': patient_id,
-                   'object_list': medical_data
-        }
+                   'object_list': medical_data}
 
         return render(request, template_name, context)
 
@@ -400,6 +374,7 @@ def advanced_search(request):
 @login_required
 def contact(request):
     return render(request, 'quiz/contato.html')
+
 
 @login_required
 def restore_patient(request, patient_id):
@@ -423,10 +398,9 @@ def search_patients_ajax(request):
                 patient_list = Patient.objects.filter(cpf_id__icontains=search_text).exclude(removed=True)
         else:
             patient_list = ''
-    else:
-        search_text = ''
 
     return render_to_response('quiz/ajax_search.html', {'patients': patient_list})
+
 
 @login_required
 @permission_required('quiz.view_patient')
@@ -443,24 +417,26 @@ def patients_verify_homonym(request):
         else:
             patient_homonym = ''
             patient_homonym_excluded = ''
-    else:
-        search_text = ''
 
     return render_to_response('quiz/ajax_homonym.html', {'patient_homonym': patient_homonym,
                                                          'patient_homonym_excluded': patient_homonym_excluded})
 
+
 @login_required
 def search_cid10_ajax(request):
+
+    cid_10_list = ''
+
     if request.method == "POST":
         search_text = request.POST['search_text']
+        medical_record = request.POST['medical_record']
+        patient_id = request.POST['patient_id']
+
         if search_text:
             cid_10_list = ClassificationOfDiseases.objects.filter(abbreviated_description__icontains=search_text)
-        else:
-            cid_10_list = ''
-    else:
-        search_text = ''
 
-    return render_to_response('quiz/ajax_cid10.html', {'cid_10_list': cid_10_list})
+    return render_to_response('quiz/ajax_cid10.html', {'cid_10_list': cid_10_list, 'medical_record': medical_record,
+                                                       'patient_id': patient_id})
 
 
 @login_required
@@ -518,81 +494,231 @@ def user_update(request, user_id, template_name="quiz/register_users.html"):
 def medical_record_create(request, patient_id, template_name='quiz/medical_record.html'):
     form = MedicalRecordForm(request.POST or None)
 
-    p = Patient.objects.get(number_record=patient_id)
+    patient_new = Patient.objects.get(number_record=patient_id)
 
     if request.method == "POST":
+
         if form.is_valid():
+
+            # verificar se algo foi preenchido
             new_medical_record = form.save(commit=False)
-            new_medical_record.patient = p
+            new_medical_record.patient = patient_new
             new_medical_record.record_responsible = request.user
             new_medical_record.save()
             form.save_m2m()
+
             messages.success(request, 'Avaliação médica salva com sucesso.')
-            redirect_url = reverse("patient_edit", args=(p.number_record,))
-            return HttpResponseRedirect(redirect_url + "?currentTab=3")
+
+            # redirect_url = reverse("patient_edit", args=(patient_new.number_record,))
+            # return HttpResponseRedirect(redirect_url + "?currentTab=3")
+
+            redirect_url = reverse("medical_record_edit", args=(patient_id, new_medical_record.id))
+            return HttpResponseRedirect(redirect_url + "?status=edit")
 
         else:
             messages.error(request, 'Não foi possível criar avaliação médica.')
+
     return render(request, template_name,
-                  {'medical_record_form': form, 'patient_id': patient_id, 'name_patient': p.name_txt,
+                  {'medical_record_form': form, 'patient_id': patient_id, 'name_patient': patient_new.name_txt,
                    'creating': True, 'editing': True})
 
 
 def medical_record_view(request, patient_id, record_id, template_name="quiz/medical_record.html"):
-    # # Search in models.Patient
-    # # ------------------------
-    is_editing = (request.GET['status'] == 'edit')
 
-    p = Patient.objects.get(number_record=patient_id)
-    m = MedicalRecordData.objects.get(pk=record_id)
+    status_mode = request.GET['status']
 
-    if m:
-        medical_record_form = MedicalRecordForm(instance=m)
+    current_patient = Patient.objects.get(number_record=patient_id)
+    medical_record = MedicalRecordData.objects.get(pk=record_id)
 
-        #deixa os campos como disabled
+    if medical_record:
+        medical_record_form = MedicalRecordForm(instance=medical_record)
+
+        diagnosis_list = Diagnosis.objects.filter(medical_record_data=record_id)
+        complementary_exams_list = []
+        for diagnosis in diagnosis_list:
+            complementary_exams_list.append(ComplementaryExam.objects.filter(diagnosis=diagnosis.pk))
+
+        lists_diagnosis_exams = zip(diagnosis_list, complementary_exams_list)
+
+        # deixa os campos como disabled
         for form in {medical_record_form}:
             for field in form.fields:
                 form.fields[field].widget.attrs['disabled'] = True
 
         return render(request, template_name,
-                      {'medical_record_form': medical_record_form, 'name_patient': p.name_txt, 'patient_id': patient_id,
-                       'record_date': m.record_date, 'record_responsible': m.record_responsible, 'editing': is_editing})
+                      {'medical_record_form': medical_record_form,
+                       'name_patient': current_patient.name_txt,
+                       'patient_id': patient_id,
+                       'record_id': medical_record.id,
+                       'object_list': diagnosis_list,
+                       'lists_diagnosis_exams': lists_diagnosis_exams,
+                       'complementary_exams_list': complementary_exams_list,
+                       'record_date': medical_record.record_date,
+                       'record_responsible': medical_record.record_responsible,
+                       'editing': False,
+                       'status_mode': status_mode})
 
 
-def exam_create(request, patient_id, record_id, template_name="quiz/exams.html"):
+def medical_record_update(request, patient_id, record_id, template_name="quiz/medical_record.html"):
 
+    status_mode = request.GET['status']
+    current_tab = get_current_tab(request)
+
+    current_patient = Patient.objects.get(number_record=patient_id)
+    medical_record = MedicalRecordData.objects.get(pk=record_id)
+
+    if medical_record:
+
+        medical_record_form = MedicalRecordForm(request.POST or None, instance=medical_record)
+        diagnosis_list = Diagnosis.objects.filter(medical_record_data=record_id)
+        complementary_exams_list = []
+        for diagnosis in diagnosis_list:
+            complementary_exams_list.append(ComplementaryExam.objects.filter(diagnosis=diagnosis.pk))
+
+        lists_diagnosis_exams = zip(diagnosis_list, complementary_exams_list)
+
+        if request.method == "POST":
+            if medical_record_form.is_valid():
+                medical_record_form.save()
+                messages.success(request, 'Avaliação médica salva com sucesso.')
+
+        return render(request, template_name,
+                      {'medical_record_form': medical_record_form,
+                       'name_patient': current_patient.name_txt,
+                       'patient_id': patient_id,
+                       'record_id': medical_record.id,
+                       'object_list': diagnosis_list,
+                       'lists_diagnosis_exams': lists_diagnosis_exams,
+                       'complementary_exams_list': complementary_exams_list,
+                       'record_date': medical_record.record_date,
+                       'record_responsible': medical_record.record_responsible,
+                       'editing': True,
+                       'status_mode': status_mode,
+                       'current_tab': current_tab})
+
+
+def diagnosis_create(request, patient_id, medical_record_id, cid10_id):
+
+    m = MedicalRecordData.objects.get(pk=medical_record_id)
+    cid10 = ClassificationOfDiseases.objects.get(pk=cid10_id)
+
+    diagnosis = Diagnosis(medical_record_data=m, classification_of_diseases=cid10)
+    diagnosis.save()
+
+    redirect_url = reverse("medical_record_edit", args=(patient_id, medical_record_id,))
+    return HttpResponseRedirect(redirect_url + "?status=edit")
+
+
+def diagnosis_delete(request, patient_id, diagnosis_id):
+    exams = ComplementaryExam.objects.filter(diagnosis=diagnosis_id)
+    if exams:
+        messages.error(request, 'Diagnóstico não pode ser removido. Remova os exames antes.')
+        diagnosis = get_object_or_404(Diagnosis, pk=diagnosis_id)
+    else:
+        diagnosis = get_object_or_404(Diagnosis, pk=diagnosis_id)
+        diagnosis.delete()
+        messages.success(request, 'Diagnóstico removido com sucesso.')
+
+    medical_record_id = diagnosis.medical_record_data_id
+    redirect_url = reverse("medical_record_edit", args=(patient_id, medical_record_id, ))
+    return HttpResponseRedirect(redirect_url + "?status=edit")
+
+
+def exam_create(request, patient_id, record_id, diagnosis_id, template_name="quiz/exams.html"):
     form = ComplementaryExamForm(request.POST or None)
-    d = Diagnosis.objects.get(medical_record_data=record_id)
+
+    d = Diagnosis.objects.get(pk=diagnosis_id)
     p = Patient.objects.get(number_record=patient_id)
 
     if request.method == "POST":
         file_form = ExamFileForm(request.POST, request.FILES)
-        if form.is_valid() and file_form.is_valid():
+
+        if form.is_valid():
             new_complementary_exam = form.save(commit=False)
             new_complementary_exam.diagnosis = d
             new_complementary_exam.save()
-            file_form.save()
-            # new_file.exam = new_complementary_exam
-            # new_file.save()
+
+            if file_form.is_valid():
+                new_file_data = file_form.save(commit=False)
+                new_file_data.exam = new_complementary_exam
+                new_file_data.save()
+
             messages.success(request, 'Exame salvo com sucesso.')
-            redirect_url = reverse("medical_record_new", args=(p.number_record,))
-            return HttpResponseRedirect(redirect_url + "?currentTab=3")
+
+            if request.POST['action'] == "upload":
+                redirect_url = reverse("exam_edit", args=(patient_id, record_id, diagnosis_id,
+                                                          new_complementary_exam.pk))
+            elif request.POST['action'] == "save":
+                redirect_url = reverse("medical_record_edit", args=(patient_id, record_id, ))
+            else:
+                redirect_url = reverse("medical_record_edit", args=(patient_id, record_id, ))
+            return HttpResponseRedirect(redirect_url + "?status=edit")
 
         else:
             messages.error(request, 'Não foi possível criar exame.')
     else:
-        file_form = ExamFileForm()
-
+        file_form = ExamFileForm(request.POST)
 
     return render(request, template_name,
-                  {'complementary_exam_form': form, 'patient_id': patient_id, 'name_patient': p.name_txt, 'file_form': file_form})
+                  {'complementary_exam_form': form, 'patient_id': patient_id,
+                   'name_patient': p.name_txt, 'record_id': record_id,
+                   'file_form': file_form, 'viewing': False},)
 
 
-def upload(request):
-    File = modelform_factory(TesteFile)
-    if request.method == "POST":
-        file_form = File(request.POST, request.FILES)
-        if file_form.is_valid():
-    else:
-        file_form = File
-    return render(request, 'quiz/teste_upload.html', {'file_form': file_form})
+def exam_edit(request, patient_id, record_id, diagnosis_id, exam_id, template_name="quiz/exams.html"):
+
+    p = Patient.objects.get(number_record=patient_id)
+    complementary_exam = ComplementaryExam.objects.get(pk=exam_id)
+
+    if complementary_exam:
+        complementary_exam_form = ComplementaryExamForm(request.POST or None, instance=complementary_exam)
+        exam_file_list = ExamFile.objects.filter(exam=exam_id)
+
+        if request.method == "POST":
+            file_form = ExamFileForm(request.POST, request.FILES)
+
+            if complementary_exam_form.is_valid():
+                complementary_exam_form.save()
+
+                if file_form.is_valid():
+                    new_file_data = file_form.save(commit=False)
+                    new_file_data.exam = complementary_exam
+                    new_file_data.save()
+
+                messages.success(request, 'Exame salvo com sucesso.')
+
+                if request.POST['action'] == "save":
+                    redirect_url = reverse("medical_record_edit", args=(patient_id, record_id, ))
+                    return HttpResponseRedirect(redirect_url + "?status=edit")
+
+            else:
+                messages.error(request, 'Não foi possível salvar exame.')
+
+        else:
+            file_form = ExamFileForm(request.POST)
+
+        return render(request, template_name,
+                      {'viewing': True, 'complementary_exam_form': complementary_exam_form,
+                       'exam_file_list': exam_file_list, 'patient_id': patient_id,
+                       'record_id': record_id, 'name_patient': p.name_txt, 'file_form': file_form})
+
+
+def exam_view(request, patient_id, record_id, diagnosis_id, exam_id, template_name="quiz/exams.html"):
+
+    p = Patient.objects.get(number_record=patient_id)
+    #is_editing = (request.GET['status'] == 'edit')
+    complementary_exam = ComplementaryExam.objects.get(pk=exam_id)
+    complementary_exam_form = ComplementaryExamForm(instance=complementary_exam)
+
+    for field in complementary_exam_form.fields:
+        complementary_exam_form.fields[field].widget.attrs['disabled'] = True
+
+    try:
+        exam_file_list = ExamFile.objects.filter(exam=exam_id)
+    except ExamFile.DoesNotExist:
+        exam_file_list = None
+
+    return render(request, template_name,
+                  {'complementary_exam_form': complementary_exam_form,
+                   'exam_file_list': exam_file_list, 'viewing': True, 'patient_id': patient_id,
+                   'record_id': record_id, 'name_patient': p.name_txt})

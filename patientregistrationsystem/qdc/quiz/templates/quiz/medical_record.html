@@ -6,7 +6,11 @@
         $(function(){
             $("[data-toggle=tooltip]").tooltip();
         });
-
+        function show_modal_remove (patient_id, diagnosis_id){
+            var  modal_remove = document.getElementById('removeDiagnosis');
+            modal_remove.setAttribute( "href", '/quiz/diagnosis/delete/' + patient_id + '/' + diagnosis_id);
+            $('#modalRemove').modal('show');
+        }
         $(function() {
             $('.fill_input_link').live('click', function() {
                 $("#id_whichComplementaryExame").val($(this).html());
@@ -27,7 +31,6 @@
 
 {% block content %}
 
-    <!-- Esta div está associada ao item Contato do Menu princial -->
     <div class="tab-pane fade in active" id="medicalRecordTab">
 
     <div class="col-md-1">
@@ -46,23 +49,64 @@
     </ol>
 
     {% if not creating %}
-    <div class="row">
-        <div class="col-md-1">
-        </div>
-        <div class="col-md-10">
-            <div class="form-group">
-                <label>Data:</label> {{ record_date }}
-                <label>Responsável:</label> {{ record_responsible }}
+        <div class="row">
+            <div class="col-md-1">
             </div>
-            <div class="input-group  input-group-sm ">
-            </div>
+            <div class="col-md-10">
+                <div class="form-group">
+                    <label>Data:</label> {{ record_date }}
+                    <label>Responsável:</label> {{ record_responsible }}
+                </div>
+                <div class="input-group  input-group-sm ">
+                </div>
 
+            </div>
+            <div class="col-md-1">
+            </div>
         </div>
-        <div class="col-md-1">
-        </div>
-    </div>
     {% endif %}
 
+<!-- Inicio ESR -->
+
+    <!-- Mensagens geradas na view -->
+    {% if messages %}
+        {% for message in messages %}
+
+            {% if message.tags == "success" %}
+                <script>showSuccessMessage('{{ message }}')</script>
+            {% endif %}
+
+            {% if message.tags == "warning" %}
+                <script>showWarningMessage('{{ message }}')</script>
+            {% endif %}
+
+            {% if message.tags == "error" %}
+                <script>showErrorMessage('{{ message }}')</script>
+            {% endif %}
+
+            {% if message.tags == "info" %}
+                <script>showInfoMessage('{{ message }}')</script>
+            {% endif %}
+
+        {% endfor %}
+    {% endif %}
+
+    <!-- Mostra todas as mensagens do formulário -->
+    {% if medical_record_form.errors %}
+
+{% comment %}
+        {% for field in medical_record_form %}
+            {% if field.errors %}
+                <script>showErrorMessage('{{ field.errors|striptags }}')</script>
+            {% endif %}
+        {% endfor %}
+{% endcomment %}
+
+        <script>showErrorMessage('Avaliação médica não salva. Os campos marcados com (*) são obrigatórios')</script>
+
+    {% endif %}
+
+<!-- Fim ESR -->
 
     <ul class="nav nav-tabs nav-justified" id="idTabsEvaluate">
         <li class="active"><a href="#tab1" data-toggle="tab" id="1">História de saúde</a></li>
@@ -83,7 +127,7 @@
                     <div class="row">
                         <div class="col-xs-6 col-sm-3">
                             <div class="form-group">
-                                <label>Cirurgia de nervo</label>
+                                <label>Cirurgia de nervo <b style="color: red;">*</b></label>
 
                                 <div class="input-group  input-group-sm">
                                     <div class="input-group  input-group-sm">
@@ -111,7 +155,7 @@
                     <div class="row">
                         <div class="col-xs-6 col-sm-12">
                             <div class="form-group">
-                                <label>História de vertigem ou tontura</label>
+                                <label>História de vertigem ou tontura <b style="color: red;">*</b></label>
 
                                 <div class="input-group  input-group-sm">
                                     <div class="input-group  input-group-sm">
@@ -145,7 +189,7 @@
                     <div class="row">
                         <div class="col-xs-6 col-sm-12">
                             <div class="form-group">
-                                <label>Cefaléia</label>
+                                <label>Cefaléia <b style="color: red;">*</b></label>
 
                                 <div class="input-group  input-group-sm">
                                     {% for radio in medical_record_form.headache %}
@@ -160,7 +204,7 @@
                     <div class="row">
                         <div class="col-xs-6 col-sm-4">
                             <div class="form-group">
-                                <label title="Hipertensão arterial sistêmica">HAS</label>
+                                <label data-toggle="tooltip" data-placement="left" title="Hipertensão arterial sistêmica">HAS <b style="color: red;">*</b></label>
 
                                 <div class="input-group  input-group-sm">
                                     <div class="input-group  input-group-sm">
@@ -177,7 +221,7 @@
                     <div class="row">
                         <div class="col-xs-6 col-sm-4">
                             <div class="form-group">
-                                <label>Diabetes</label>
+                                <label>Diabetes <b style="color: red;">*</b></label>
 
                                 <div class="input-group  input-group-sm">
                                     {% for radio in medical_record_form.diabetes %}
@@ -192,7 +236,7 @@
                     <div class="row">
                         <div class="col-xs-6 col-sm-4">
                             <div class="form-group">
-                                <label>Disfunção hormonal</label>
+                                <label>Disfunção hormonal <b style="color: red;">*</b></label>
 
                                 <div class="input-group  input-group-sm">
                                     {% for radio in medical_record_form.hormonal_dysfunction %}
@@ -528,9 +572,12 @@
             <div class="col-md-1"></div>
             <div class="col-md-10">
                 <div class="container span6 offset3 well ">
+                {% if editing %}
                     <div class="row">
-                        <div class="col-xs-6 col-sm-9">
+                        <div class="col-xs-6 col-sm-9" >
                             <div class="form-group">
+                                <input id="patient_id" value="{{ patient_id }}" style="display: none;">
+                                <input id="medical_record_id" value="{{ record_id }}" style="display: none;">
                                 <div class="input-group  input-group-sm ">
                                                             <span class="input-group-addon"> <span
                                                                     class="glyphicon glyphicon-edit"></span></span>
@@ -543,11 +590,60 @@
                                 <ul id="search-results" style="list-style: none;"></ul>
                             </div>
                         </div>
-                        <div class="col-xs-6 col-sm-3">
+                    </div>
+                {% endif %}
+                    <div class="row">
+                        <div class="col-xs-6 col-sm-9">
                             <div class="form-group">
-                                <div class="btn-group pull-right">
-                                    <a data-toggle="tooltip" data-placement="bottom" title="Incluir este item" class="btn btn-primary glyphicon glyphicon-plus" href="#evaluateModal"> Incluir</a>
-                                </div>
+                                <table class="table table-striped">
+                                    <thead>
+                                        <tr>
+                                            <th>Diagnóstico</th>
+                                            <th></th> {# cabeçalho vazio para coluna de exclusão #}
+                                            <th>Exames</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                    {% if not object_list %}
+                                        <tr>
+                                            <td>(sem diagnósticos)</td>
+                                            <td></td>
+                                            <td></td>
+                                        </tr>
+                                    {% else %}
+                                        {% for diagnosis, diagnosis_exams in lists_diagnosis_exams %}
+                                            <tr>
+                                                <td>{{ diagnosis.classification_of_diseases }}</td>
+                                                <td>
+                                                    {% if editing %}
+                                                        <a class="glyphicon glyphicon-remove" data-toggle="tooltip" data-placement="right" title="Remover" style="color: indianred"
+                                                           onclick="show_modal_remove({{ patient_id }}, {{ diagnosis.id }})"></a>
+                                                    {% endif %}
+                                                </td>
+                                                {% if diagnosis_exams %}
+                                                    {% for exams in diagnosis_exams %}
+                                                        <td>
+                                                            <a href="diagnosis/{{  diagnosis.id }}/exam/{{ exams.id }}/?status={{ status_mode }}">{{ exams.description }}</a>
+                                                        </td>
+                                                        <tr></tr>
+                                                        <td style="border: 0;"></td>
+                                                        <td style="border: 0;"></td>
+                                                    {% endfor %}
+                                                {% else %}
+                                                    {% if not editing %}
+                                                        <td></td>
+                                                    {% endif %}
+                                                {% endif %}
+                                                {% if editing %}
+                                                    <td><a href="diagnosis/{{ diagnosis.id }}/exam/new/" class="btn btn-primary">Inserir exame</a></td>
+                                                {% else %}
+                                                    <td style="border: 0;"></td>
+                                                {% endif %}
+                                            </tr>
+                                        {% endfor %}
+                                    {% endif %}
+                                    </tbody>
+                                </table>
                             </div>
                         </div>
                     </div>
@@ -572,7 +668,7 @@
         </div>
         <div class="col-md-10">
             <div class="btn-group pull-right">
-                {% if creating %}
+                {% if creating or editing %}
                     <button type="submit" class="btn btn-primary">Salvar avaliação</button>
                 {% endif %}
             </div>
@@ -580,6 +676,21 @@
         <div class="col-md-1">
         </div>
 
+    </div>
+
+    <div class="modal fade" id="modalRemove" tabindex="-1" role="dialog" aria-labelledby="myModalLabel"
+         aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-body">
+                    Tem certeza que deseja excluir o diagnóstico?
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-default" data-dismiss="modal">Cancelar</button>
+                    <a type="button" class="btn btn-primary" id="removeDiagnosis" style="background-color: indianred; color: #ffffff" href="">Excluir</a>
+                </div>
+            </div>
+        </div>
     </div>
 
 {% endblock %}
