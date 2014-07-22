@@ -650,6 +650,9 @@ def exam_create(request, patient_id, record_id, diagnosis_id, template_name="qui
                                                           new_complementary_exam.pk))
             elif request.POST['action'] == "save":
                 redirect_url = reverse("medical_record_edit", args=(patient_id, record_id, ))
+            else:
+                redirect_url = reverse("medical_record_edit", args=(patient_id, record_id, ))
+
             return HttpResponseRedirect(redirect_url + "?status=edit")
 
         else:
@@ -728,6 +731,9 @@ def exam_delete(request, patient_id, exam_file_id):
     exam_file.delete()
     messages.success(request, 'Exame removido com sucesso.')
 
-    record_id = exam_file.exam_id
-    redirect_url = reverse("medical_record_edit", args=(patient_id, record_id, ))
+    complementary_exam = ComplementaryExam.objects.get(pk=exam_file.exam_id)
+    diagnosis = Diagnosis.objects.get(pk=complementary_exam.diagnosis_id)
+
+    redirect_url = reverse("exam_edit", args=(patient_id, diagnosis.medical_record_data_id, diagnosis.pk,
+                                              complementary_exam.pk))
     return HttpResponseRedirect(redirect_url + "?status=edit")
