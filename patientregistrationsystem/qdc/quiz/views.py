@@ -509,11 +509,12 @@ def medical_record_create(request, patient_id, template_name='quiz/medical_recor
 
             messages.success(request, 'Avaliação médica salva com sucesso.')
 
-            # redirect_url = reverse("patient_edit", args=(patient_new.number_record,))
-            # return HttpResponseRedirect(redirect_url + "?currentTab=3")
-
-            redirect_url = reverse("medical_record_edit", args=(patient_id, new_medical_record.id))
-            return HttpResponseRedirect(redirect_url + "?status=edit")
+            if request.POST['action'] == "save":
+                redirect_url = reverse("medical_record_edit", args=(patient_id, new_medical_record.id))
+                return HttpResponseRedirect(redirect_url + "?status=edit")
+            else:
+                redirect_url = reverse("patient_edit", args=(patient_id, ))
+                return HttpResponseRedirect(redirect_url + "?currentTab=3")
 
         else:
             messages.error(request, 'Não foi possível criar avaliação médica.')
@@ -581,6 +582,10 @@ def medical_record_update(request, patient_id, record_id, template_name="quiz/me
             if medical_record_form.is_valid():
                 medical_record_form.save()
                 messages.success(request, 'Avaliação médica salva com sucesso.')
+
+            if request.POST['action'] == "finish":
+                redirect_url = reverse("patient_edit", args=(patient_id, ))
+                return HttpResponseRedirect(redirect_url + "?currentTab=3")
 
         return render(request, template_name,
                       {'medical_record_form': medical_record_form,
@@ -652,6 +657,7 @@ def exam_create(request, patient_id, record_id, diagnosis_id, template_name="qui
                 redirect_url = reverse("medical_record_edit", args=(patient_id, record_id, ))
             else:
                 redirect_url = reverse("medical_record_edit", args=(patient_id, record_id, ))
+
             return HttpResponseRedirect(redirect_url + "?status=edit")
 
         else:
@@ -675,6 +681,7 @@ def exam_edit(request, patient_id, record_id, diagnosis_id, exam_id, template_na
         exam_file_list = ExamFile.objects.filter(exam=exam_id)
 
         if request.method == "POST":
+
             file_form = ExamFileForm(request.POST, request.FILES)
 
             if complementary_exam_form.is_valid():
@@ -698,7 +705,7 @@ def exam_edit(request, patient_id, record_id, diagnosis_id, exam_id, template_na
             file_form = ExamFileForm(request.POST)
 
         return render(request, template_name,
-                      {'viewing': True, 'complementary_exam_form': complementary_exam_form,
+                      {'viewing': False, 'complementary_exam_form': complementary_exam_form,
                        'exam_file_list': exam_file_list, 'patient_id': patient_id,
                        'record_id': record_id, 'name_patient': p.name_txt, 'file_form': file_form})
 
@@ -706,7 +713,6 @@ def exam_edit(request, patient_id, record_id, diagnosis_id, exam_id, template_na
 def exam_view(request, patient_id, record_id, diagnosis_id, exam_id, template_name="quiz/exams.html"):
 
     p = Patient.objects.get(number_record=patient_id)
-    #is_editing = (request.GET['status'] == 'edit')
     complementary_exam = ComplementaryExam.objects.get(pk=exam_id)
     complementary_exam_form = ComplementaryExamForm(instance=complementary_exam)
 
@@ -722,3 +728,16 @@ def exam_view(request, patient_id, record_id, diagnosis_id, exam_id, template_na
                   {'complementary_exam_form': complementary_exam_form,
                    'exam_file_list': exam_file_list, 'viewing': True, 'patient_id': patient_id,
                    'record_id': record_id, 'name_patient': p.name_txt})
+
+
+def exam_delete(request, patient_id, exam_file_id):
+    exam_file = get_object_or_404(ExamFile, pk=exam_file_id)
+    exam_file.delete()
+    messages.success(request, 'Exame removido com sucesso.')
+
+    complementary_exam = ComplementaryExam.objects.get(pk=exam_file.exam_id)
+    diagnosis = Diagnosis.objects.get(pk=complementary_exam.diagnosis_id)
+
+    redirect_url = reverse("exam_edit", args=(patient_id, diagnosis.medical_record_data_id, diagnosis.pk,
+                                              complementary_exam.pk))
+    return HttpResponseRedirect(redirect_url + "?status=edit")
