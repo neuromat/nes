@@ -122,7 +122,7 @@
     <div class="tab-pane active" id="tab1">
         <div class="row">
             <div class="col-md-1"></div>
-            <div class="col-md-10">
+            <div class="col-md-12">
                 <div class="container span6 offset3 well ">
                     <div class="row">
                         <div class="col-xs-6 col-sm-3">
@@ -258,7 +258,7 @@
     <div class="tab-pane" id="tab2">
         <div class="row">
             <div class="col-md-1"></div>
-            <div class="col-md-10">
+            <div class="col-md-12">
                 <div class="container span6 offset3 well ">
                     <div class="row">
                         <div class="col-xs-6 col-sm-12">
@@ -414,7 +414,7 @@
     <div class="tab-pane" id="tab3">
         <div class="row">
             <div class="col-md-1"></div>
-            <div class="col-md-10">
+            <div class="col-md-12">
                 <div class="container span6 offset3 well ">
                     <div class="row">
 
@@ -570,7 +570,7 @@
     <div class="tab-pane" id="tab4">
         <div class="row">
             <div class="col-md-1"></div>
-            <div class="col-md-10">
+            <div class="col-md-12">
                 <div class="container span6 offset3 well ">
                 {% if editing %}
                     <div class="row">
@@ -670,10 +670,11 @@
     <div class="row">
         <div class="col-md-1">
         </div>
-        <div class="col-md-10">
+        <div class="col-md-12">
             <div class="btn-group pull-right">
                 {% if creating or editing %}
-                    <button type="submit" class="btn btn-primary">Salvar avaliação</button>
+                    <button type="submit" name="action" value="save" class="btn btn-primary">Salvar avaliação</button>
+                    <button type="submit" name="action" value="finish" class="btn btn-default">Finalizar avaliação</button>
                 {% endif %}
             </div>
         </div>

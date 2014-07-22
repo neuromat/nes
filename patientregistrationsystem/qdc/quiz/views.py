@@ -509,11 +509,12 @@ def medical_record_create(request, patient_id, template_name='quiz/medical_recor
 
             messages.success(request, 'Avaliação médica salva com sucesso.')
 
-            # redirect_url = reverse("patient_edit", args=(patient_new.number_record,))
-            # return HttpResponseRedirect(redirect_url + "?currentTab=3")
-
-            redirect_url = reverse("medical_record_edit", args=(patient_id, new_medical_record.id))
-            return HttpResponseRedirect(redirect_url + "?status=edit")
+            if request.POST['action'] == "save":
+                redirect_url = reverse("medical_record_edit", args=(patient_id, new_medical_record.id))
+                return HttpResponseRedirect(redirect_url + "?status=edit")
+            else:
+                redirect_url = reverse("patient_edit", args=(patient_id, ))
+                return HttpResponseRedirect(redirect_url + "?currentTab=3")
 
         else:
             messages.error(request, 'Não foi possível criar avaliação médica.')
@@ -581,6 +582,10 @@ def medical_record_update(request, patient_id, record_id, template_name="quiz/me
             if medical_record_form.is_valid():
                 medical_record_form.save()
                 messages.success(request, 'Avaliação médica salva com sucesso.')
+
+            if request.POST['action'] == "finish":
+                redirect_url = reverse("patient_edit", args=(patient_id, ))
+                return HttpResponseRedirect(redirect_url + "?currentTab=3")
 
         return render(request, template_name,
                       {'medical_record_form': medical_record_form,
