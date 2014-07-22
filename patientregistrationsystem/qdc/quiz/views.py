@@ -700,7 +700,7 @@ def exam_edit(request, patient_id, record_id, diagnosis_id, exam_id, template_na
             file_form = ExamFileForm(request.POST)
 
         return render(request, template_name,
-                      {'viewing': True, 'complementary_exam_form': complementary_exam_form,
+                      {'viewing': False, 'complementary_exam_form': complementary_exam_form,
                        'exam_file_list': exam_file_list, 'patient_id': patient_id,
                        'record_id': record_id, 'name_patient': p.name_txt, 'file_form': file_form})
 
