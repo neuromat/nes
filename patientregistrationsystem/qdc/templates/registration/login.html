@@ -1,4 +1,3 @@
-{% extends "admin/base.html" %}
 {% load static %}
 {% block extrahead %}
     <script src="http://code.jquery.com/jquery-1.9.1.min.js"></script>
@@ -64,41 +63,38 @@
 {% block content %}
 
 
-    <form method="post" class="form-signin" action="{% url 'django.contrib.auth.views.login' %}">
-        {% csrf_token %}
-
-        <div class="row">
-            <div class="col-sm-3 col-md-3 col-md-offset-1">
-
-                <label for="username" class="control-label"><b>{{ form.username.label_tag }}</b></label>
-
-                <div class="input-group input-group-xs">
-                    <span class="input-group-addon"> <span class="glyphicon glyphicon-user"></span></span>
-                    {{ form.username }}
-                </div>
-                <div class="help-block with-errors"></div>
 
 
-                <div class="form-group">
-                    <label for="password" class="control-label"><b>{{ form.password.label_tag }}</b></label>
+    <div class="container">
+        <form method="post" class="form-signin" action="{% url 'django.contrib.auth.views.login' %}">
+            {% csrf_token %}
 
-                    <div class="input-group input-group-xs">
-                        <span class="input-group-addon"> <span class="glyphicon glyphicon-asterisk"></span></span>
-                        {{ form.password }}
-                    </div>
-                    <div class="help-block with-errors"></div>
-                </div>
+
+            <h2 class="form-signin-heading">Login</h2>
+            <input id="id_username" type="text" class="form-control" placeholder="Usuario" name="username" required=""
+                   autofocus="">
+            <br/>
+
+            <input type="password" class="form-control" name="password" placeholder="Senha" required="">
+
+
+            <button class="btn btn-lg btn-primary btn-block" type="submit" value="login">Confirmar</button>
+            <input type="hidden" name="next" value="{{ next }}"/>
+
+            <div class="checkbox">
+                <label>
+                    <a href="/user/password/reset">Esqueci minha senha</a>
+                </label>
             </div>
-        </div>
+        </form>
 
-        <button class="btn btn-lg btn-primary btn-block" type="submit" value="login">Confirmar</button>
-        <input type="hidden" name="next" value="{{ next }}"/>
+    </div>
 
-    </form>
+
 
 
     {% if form.errors %}
-        <script>showWarningMessage('Usuario ou senha invalidos.')</script>
+        <script>showErrorMessageTemporary('Usuario ou senha invalidos.')</script>
     {% endif %}
 
 

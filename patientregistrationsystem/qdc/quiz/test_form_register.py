@@ -3,9 +3,9 @@ from django.test import TestCase, Client
 from django.http import Http404
 from django.test.client import RequestFactory
 from datetime import date
-from models import ClassificationOfDiseases, MedicalRecordData, PainLocalization
+from models import ClassificationOfDiseases, MedicalRecordData, Diagnosis
 from views import User, GenderOption, SchoolingOption, reverse, Patient, patient_update, patient, restore_patient, \
-    medical_record_view, medical_record_update
+    medical_record_view, medical_record_update, diagnosis_create, diagnosis_delete
 
 ACTION = 'action'
 CPF_ID = 'cpf_id'
@@ -169,17 +169,19 @@ class FormValidation(TestCase):
         medical_record = MedicalRecordData.objects.filter(patient=patient_mock).first()
         self.assertEqual(medical_record.headache, '0')
 
+        self.diagnosis_create(patient_mock, medical_record)
+
 
     def fill_medical_record(self):
         """ Preenche os campos necessarios para criar uma avaliacao medica """
-        pain_localization = PainLocalization.objects.create(pain_localization='pain')
-        pain_localization.save()
+        # pain_localization = PainLocalization.objects.create(pain_localization='pain')
+        #pain_localization.save()
 
         self.data['inferior_members_fracture_side'] = ''
         self.data['hormonal_dysfunction'] = '0'
         self.data['pelvis_fracture_side'] = ''
         self.data['scapula_fracture_side'] = ''
-        self.data['pain_localizations'] = pain_localization.pk
+        self.data['pain_localizations'] = ''
         self.data['clavicle_fracture_side'] = ''
         self.data['fracture_history'] = '0'
         self.data['clavicle_surgery_side'] = ''
@@ -421,13 +423,23 @@ class FormValidation(TestCase):
         self.assertEqual(client.get('/redirect_redirect_response').status_code, 404)
         self.assertEqual(client.get('/quiz').status_code, 301)
 
-    def test_cid_search(self):
+    def create_cid10_to_search(self):
         cid10 = ClassificationOfDiseases.objects.create(code='A01', description='Febres paratifoide',
                                                         abbreviated_description='A01 Febres paratifoide')
         cid10.save()
         cid10 = ClassificationOfDiseases.objects.create(code='B01', description='Febres tifoide ',
                                                         abbreviated_description='B01 Febres tifoide ')
         cid10.save()
+
+    def create_cid10_mock(self):
+        cid10 = ClassificationOfDiseases.objects.create(code='A01', description='Febres paratifoide',
+                                                        abbreviated_description='A01 Febres paratifoide')
+        cid10.save()
+
+        return cid10
+
+    def test_cid_search(self):
+        self.create_cid10_to_search()
 
         # Busca valida
         self.data['medical_record'] = ''
@@ -502,3 +514,16 @@ class FormValidation(TestCase):
         self.assertEqual(response.status_code, 200)
         self.assertEqual(response.context['patient_homonym_excluded'].count(), 1)
         self.assertEqual(response.context['patient_homonym'].count(), 0)
+
+    def diagnosis_create(self, patient_mock, medical_record):
+        cid10_mock = self.create_cid10_mock()
+
+        # Create an instance of a GET request.
+        request = self.factory.get(reverse(PATIENT_VIEW, args=[patient_mock.pk, ]))
+        request.user = self.user
+
+        response = diagnosis_create(request, patient_id=patient_mock.pk, medical_record_id=medical_record.id,
+                                    cid10_id=cid10_mock.pk)
+        self.assertEqual(response.status_code, 302)
+
+        self.assertEqual(Diagnosis.objects.filter().count(), 1)

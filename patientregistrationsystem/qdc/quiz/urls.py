@@ -51,6 +51,7 @@ urlpatterns = patterns(
     url(r'^patient/(?P<patient_id>\d+)/medical_record/edit/(?P<record_id>\d+)/diagnosis/(?P<diagnosis_id>\d+)/exam/edit/(?P<exam_id>\d+)/$',
         'quiz.views.exam_edit', name='exam_edit'),
 
+    url(r'^diagnosis/delete/(?P<patient_id>\d+)/(?P<diagnosis_id>\d+)/$', 'quiz.views.diagnosis_delete', name='diagnosis_delete'),
     url(r'^exam/delete/(?P<patient_id>\d+)/(?P<exam_file_id>\d+)/$', 'quiz.views.exam_delete', name='exam_delete'),
 
     url(r'^diagnosis/update/(?P<diagnosis_id>\d+)/$', 'quiz.views.diagnosis_update', name='diagnosis_update'),

@@ -422,6 +422,23 @@ def patients_verify_homonym(request):
 
 
 @login_required
+def search_cid10_ajax(request):
+
+    cid_10_list = ''
+
+    if request.method == "POST":
+        search_text = request.POST['search_text']
+        medical_record = request.POST['medical_record']
+        patient_id = request.POST['patient_id']
+
+        if search_text:
+            cid_10_list = ClassificationOfDiseases.objects.filter(abbreviated_description__icontains=search_text)
+
+    return render_to_response('quiz/ajax_cid10.html', {'cid_10_list': cid_10_list, 'medical_record': medical_record,
+                                                       'patient_id': patient_id})
+
+
+@login_required
 @permission_required('auth.add_user')
 @permission_required('auth.change_user')
 def user_list(request, template_name='quiz/user_list.html'):
