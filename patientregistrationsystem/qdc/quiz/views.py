@@ -608,6 +608,19 @@ def diagnosis_delete(request, patient_id, diagnosis_id):
     return HttpResponseRedirect(redirect_url + "?status=edit&currentTab=3")
 
 
+def diagnosis_update(request, diagnosis_id):
+    diagnosis = get_object_or_404(Diagnosis, pk=diagnosis_id)
+    diagnosis_form = DiagnosisForm(request.POST)
+    if diagnosis_form.is_valid():
+        diagnosis_form.save()
+        messages.success(request, 'Diagnóstico editado com sucesso.')
+
+    medical_record = MedicalRecordData.objects.get(pk=diagnosis.medical_record_data)
+
+    redirect_url = reverse("medical_record_update", args=(medical_record.patient_id, diagnosis.medical_record_data_id))
+    return HttpResponseRedirect(redirect_url + "?status=edit")
+
+
 def exam_create(request, patient_id, record_id, diagnosis_id, template_name="quiz/exams.html"):
     form = ComplementaryExamForm(request.POST or None)
 

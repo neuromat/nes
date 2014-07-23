@@ -4,6 +4,8 @@ $(document).ready(function () {
 
     $("#exam_date").mask("99/99/9999");
 
+    $("#date").mask("99/99/9999");
+
     $("#id_smoker_0").click(function () {
         $("#id_amount_cigarettes").prop('disabled', false);
     });
@@ -167,6 +169,29 @@ $(document).ready(function () {
 
 });
 
+
+function showDetails(diagnosis_id)
+{
+    $("#description-label-"+diagnosis_id).show();
+    $("#date-label-"+diagnosis_id).show();
+    $("#description-"+diagnosis_id).show();
+    $("#date-"+diagnosis_id).show();
+    $("#details-"+diagnosis_id).hide();
+    $("#confirm-"+diagnosis_id).show();
+
+}
+
+function hideDetails(diagnosis_id)
+{
+    $("#description-label-"+diagnosis_id).hide();
+    $("#date-label-"+diagnosis_id).hide();
+    $("#description-"+diagnosis_id).hide();
+    $("#date-"+diagnosis_id).hide();
+    $("#details-"+diagnosis_id).show();
+    $("#confirm-"+diagnosis_id).hide();
+//    $("#form_medical_record").submit();
+
+}
 
 function validateEmail(email) {
     var re = /^(([^<>()[\]\\.,;:\s@\"]+(\.[^<>()[\]\\.,;:\s@\"]+)*)|(\".+\"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
