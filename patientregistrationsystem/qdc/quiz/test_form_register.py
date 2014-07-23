@@ -164,7 +164,7 @@ class FormValidation(TestCase):
         self.data['headache'] = '0'
         url = reverse('medical_record_edit', args=(patient_mock.pk, medical_record.pk,))
         response = self.client.post(url + "?status=edit", self.data)
-        self.assertEqual(response.status_code, 200)
+        self.assertEqual(response.status_code, 302)
 
         medical_record = MedicalRecordData.objects.filter(patient=patient_mock).first()
         self.assertEqual(medical_record.headache, '0')
