@@ -119,7 +119,7 @@
                         </div>
                     </div>
                     <div class="row">
-                        <div class="col-xs-6 col-sm-6">
+                        <div class="col-xs-6 col-sm-8">
                             <div class="form-group">
                                 <label>Anexos</label>
                                 <table class="table table-bordered">
@@ -127,6 +127,7 @@
                                         <tr>
                                             <th>Arquivos</th>
                                             {% if not viewing %}
+                                            <th></th>
                                             <th></th>
                                             {% endif %}
                                         </tr>
@@ -137,6 +138,7 @@
                                             <td>(sem anexos)</td>
                                             {% if not viewing %}
                                             <td></td>
+                                            <td></td>
                                             {% endif %}
                                         </tr>
                                     {% else %}
@@ -145,6 +147,7 @@
                                             <td>{{ exam_file.content }}</td>
                                             {% if not viewing %}
                                             <td><a class="glyphicon glyphicon-remove" data-toggle="tooltip" data-placement="right" title="Remover" style="color: indianred" onclick="show_modal_remove({{ patient_id }}, {{ exam_file.id }})"></a></td>
+                                            <td><a class="glyphicon glyphicon-download-alt" data-toggle="tooltip" data-placement="right" title="Download"></a></td>
                                             {% endif %}
                                         </tr>
                                         {% endfor %}
