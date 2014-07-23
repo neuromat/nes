@@ -211,94 +211,14 @@ class SocialHistoryData(models.Model):
             self.alcohol_frequency_opt, self.alcohol_period_opt, self.drugs_opt
 
 
-class Side(models.Model):
-    description = models.CharField(max_length=10, null=False)
-
-    def __unicode__(self):
-        return self.description
-
-
-class CervicalVertebrae(models.Model):
-    code = models.CharField(max_length=2, null=False)
-
-    def __unicode__(self):
-        return self.code
-
-
-class ThoracicVertebrae(models.Model):
-    code = models.CharField(max_length=3, null=False)
-
-    def __unicode__(self):
-        return self.code
-
-
-class LumbosacralVertebrae(models.Model):
-    code = models.CharField(max_length=2, null=False)
-
-    def __unicode__(self):
-        return self.code
-
-
-class PainLocalization(models.Model):
-    pain_localization = models.CharField(max_length=50, null=False)
-
-    def __unicode__(self):
-        return self.pain_localization
-
-
 class MedicalRecordData(models.Model):
     patient = models.ForeignKey(Patient, null=False)
     record_date = models.DateTimeField(null=False, auto_now_add=True)
     record_responsible = models.ForeignKey(User, null=False)
 
-    fracture_history = models.CharField(max_length=10, null=True, blank=True)
-    scapula_fracture_side = models.ForeignKey(Side, related_name='side_scapula_fracture', null=True, blank=True)
-    clavicle_fracture_side = models.ForeignKey(Side, related_name='side_clavicle_fracture', null=True, blank=True)
-    rib_fracture = models.CharField(max_length=10, null=True, blank=True)
-    cervical_vertebrae_fracture = models.ManyToManyField(CervicalVertebrae, blank=True, null=True)
-    thoracic_vertebrae_fracture = models.ManyToManyField(ThoracicVertebrae, blank=True, null=True)
-    lumbosacral_vertebrae_fracture = models.ManyToManyField(LumbosacralVertebrae, blank=True, null=True)
-    superior_members_fracture_side = \
-        models.ForeignKey(Side, related_name='side_superior_members_fracture', null=True, blank=True)
-    inferior_members_fracture_side = \
-        models.ForeignKey(Side, related_name='side_inferior_members_fracture', null=True, blank=True)
-    pelvis_fracture_side = \
-        models.ForeignKey(Side, related_name='side_pelvis_fracture', null=True, blank=True)
-
-    orthopedic_surgery = models.CharField(max_length=10, null=True, blank=True)
-    scapula_surgery_side = models.ForeignKey(Side, related_name='side_scapula_surgery', null=True, blank=True)
-    clavicle_surgery_side = models.ForeignKey(Side, related_name='side_clavicle_surgery', null=True, blank=True)
-    rib_surgery = models.CharField(max_length=10, null=True, blank=True)
-    cervical_vertebrae_surgery = models.CharField(max_length=10, null=True, blank=True)
-    thoracic_vertebrae_surgery = models.CharField(max_length=10, null=True, blank=True)
-    lumbosacral_vertebrae_surgery = models.CharField(max_length=10, null=True, blank=True)
-    superior_members_surgery_side = \
-        models.ForeignKey(Side, related_name='side_superior_members_surgery', null=True, blank=True)
-    inferior_members_surgery_side = \
-        models.ForeignKey(Side, related_name='side_inferior_members_surgery', null=True, blank=True)
-    pelvis_surgery_side = \
-        models.ForeignKey(Side, related_name='side_pelvis_surgery', null=True, blank=True)
-
-    nerve_surgery = models.CharField(max_length=10, null=True, blank=False)
-    nerve_surgery_type = models.CharField(max_length=50, null=True, blank=True)
-
-    vertigo_history = models.CharField(max_length=10, null=True, blank=False)
-    pain_localizations = models.ManyToManyField(PainLocalization, related_name="medical_records", blank=True, null=True)
-    headache = models.CharField(max_length=10, null=True, blank=False)
-    hypertension = models.CharField(max_length=10, null=True, blank=False)
-    diabetes = models.CharField(max_length=10, null=True, blank=False)
-    hormonal_dysfunction = models.CharField(max_length=10, null=True, blank=False)
-
     def __unicode__(self):
         return \
-            self.patient, self.record_date, self.record_responsible, self.fracture_history, self.scapula_fracture_side, \
-            self.clavicle_fracture_side, self.rib_fracture, self.cervical_vertebrae_fracture, self.thoracic_vertebrae_fracture, \
-            self.lumbosacral_vertebrae_fracture, self.superior_members_fracture_side, self.inferior_members_fracture_side, \
-            self.pelvis_fracture_side, self.orthopedic_surgery, self.scapula_surgery_side, self.clavicle_surgery_side, \
-            self.rib_surgery, self.cervical_vertebrae_surgery, self.thoracic_vertebrae_surgery, self.lumbosacral_vertebrae_surgery, \
-            self.superior_members_surgery_side, self.inferior_members_surgery_side, self.pelvis_surgery_side, \
-            self.nerve_surgery, self.nerve_surgery_type, self.vertigo_history, self.pain_localizations, \
-            self.headache, self.hypertension, self.hormonal_dysfunction, self.diabetes
+            self.patient, self.record_date, self.record_responsible
 
 
 class ClassificationOfDiseases(models.Model):
@@ -314,6 +234,8 @@ class ClassificationOfDiseases(models.Model):
 class Diagnosis(models.Model):
     medical_record_data = models.ForeignKey(MedicalRecordData, null=False)
     classification_of_diseases = models.ForeignKey(ClassificationOfDiseases, null=False)
+    date = models.DateTimeField(null=True)
+    description = models.CharField(max_length=300, null=True)
 
     class Meta:
         unique_together = ('medical_record_data', 'classification_of_diseases',)
