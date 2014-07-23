@@ -77,7 +77,7 @@ WSGI_APPLICATION = 'qdc.wsgi.application'
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.postgresql_psycopg2',
-        'NAME': 'qdcdb',
+        'NAME': 'qdcdb_dev',
         'USER': 'qdc',
         'PASSWORD': 'DEVqdc1716',
         #'HOST': '200.144.254.136',
