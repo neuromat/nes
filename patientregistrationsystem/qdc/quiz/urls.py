@@ -32,18 +32,25 @@ urlpatterns = patterns(
         'quiz.views.diagnosis_create'),
     url(r'^patient/(?P<patient_id>\d+)/medical_record/(?P<record_id>\d+)/diagnosis/(?P<diagnosis_id>\d+)/exam/new/$',
         'quiz.views.exam_create', name='exam_create'),
-    url(r'^patient/(?P<patient_id>\d+)/medical_record/edit/(?P<record_id>\d+)/diagnosis/(?P<diagnosis_id>\d+)/exam/new/$',
+    url(
+        r'^patient/(?P<patient_id>\d+)/medical_record/edit/(?P<record_id>\d+)/diagnosis/(?P<diagnosis_id>\d+)/exam/new/$',
         'quiz.views.exam_create', name='exam_create'),
 
-    url(r'^patient/(?P<patient_id>\d+)/medical_record/(?P<record_id>\d+)/diagnosis/(?P<diagnosis_id>\d+)/exam/(?P<exam_id>\d+)/$',
+    url(
+        r'^patient/(?P<patient_id>\d+)/medical_record/(?P<record_id>\d+)/diagnosis/(?P<diagnosis_id>\d+)/exam/(?P<exam_id>\d+)/$',
         'quiz.views.exam_view', name='exam_view'),
-    url(r'^patient/(?P<patient_id>\d+)/medical_record/edit/(?P<record_id>\d+)/diagnosis/(?P<diagnosis_id>\d+)/exam/(?P<exam_id>\d+)/$',
+    url(
+        r'^patient/(?P<patient_id>\d+)/medical_record/edit/(?P<record_id>\d+)/diagnosis/(?P<diagnosis_id>\d+)/exam/(?P<exam_id>\d+)/$',
         'quiz.views.exam_view', name='exam_view'),
 
-    url(r'^patient/(?P<patient_id>\d+)/medical_record/edit/(?P<record_id>\d+)/diagnosis/(?P<diagnosis_id>\d+)/exam/edit/(?P<exam_id>\d+)/$',
+    url(
+        r'^patient/(?P<patient_id>\d+)/medical_record/edit/(?P<record_id>\d+)/diagnosis/(?P<diagnosis_id>\d+)/exam/edit/(?P<exam_id>\d+)/$',
         'quiz.views.exam_edit', name='exam_edit'),
 
-    url(r'^diagnosis/delete/(?P<patient_id>\d+)/(?P<diagnosis_id>\d+)/$', 'quiz.views.diagnosis_delete', name='diagnosis_delete'),
+    url(r'^diagnosis/delete/(?P<patient_id>\d+)/(?P<diagnosis_id>\d+)/$', 'quiz.views.diagnosis_delete',
+        name='diagnosis_delete'),
     url(r'^exam/delete/(?P<patient_id>\d+)/(?P<exam_file_id>\d+)/$', 'quiz.views.exam_delete', name='exam_delete'),
 
 )
+# + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
+# urlpatterns += staticfiles_urlpatterns()

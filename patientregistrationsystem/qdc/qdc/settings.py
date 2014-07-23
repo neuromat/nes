@@ -11,6 +11,7 @@ https://docs.djangoproject.com/en/1.6/ref/settings/
 
 # Build paths inside the project like this: os.path.join(BASE_DIR, ...)
 import os
+
 BASE_DIR = os.path.dirname(os.path.dirname(__file__))
 
 
@@ -45,14 +46,14 @@ INSTALLED_APPS = (
 
 JENKINS_TASKS = (
     'django_jenkins.tasks.with_coverage',
-    #'django_jenkins.tasks.django_tests',   # select one django or
-    #'django_jenkins.tasks.dir_tests'      # directory tests discovery
+    # 'django_jenkins.tasks.django_tests',   # select one django or
+    # 'django_jenkins.tasks.dir_tests'      # directory tests discovery
     'django_jenkins.tasks.run_pep8',
     'django_jenkins.tasks.run_pyflakes',
-    #'django_jenkins.tasks.run_jslint',
-    #'django_jenkins.tasks.run_csslint',
+    # 'django_jenkins.tasks.run_jslint',
+    # 'django_jenkins.tasks.run_csslint',
     'django_jenkins.tasks.run_sloccount',
-    #'django_jenkins.tasks.lettuce_tests',
+    # 'django_jenkins.tasks.lettuce_tests',
     'django_jenkins.tasks.run_pylint',
 )
 
@@ -71,6 +72,7 @@ ROOT_URLCONF = 'qdc.urls'
 WSGI_APPLICATION = 'qdc.wsgi.application'
 
 
+
 # Database
 # https://docs.djangoproject.com/en/1.6/ref/settings/#databases
 
@@ -80,7 +82,8 @@ DATABASES = {
         'NAME': 'qdcdb',
         'USER': 'qdc',
         'PASSWORD': 'DEVqdc1716',
-        #'HOST': '200.144.254.136',
+        # 'HOST': '200.144.254.136',
+
     }
 }
 
@@ -94,9 +97,8 @@ LANGUAGE_CODE = 'pt-br'
 
 LANGUAGES = (
     ('pt-br', u'Português'),
-#    ('en', u'English'),
+    # ('en', u'English'),
 )
-
 
 LOCALE_PATHS = [os.path.join(BASE_DIR, 'locale')]
 
@@ -108,12 +110,28 @@ USE_L10N = True
 
 USE_TZ = True
 
+# Settings to send emails
+EMAIL_USE_TLS = True
+EMAIL_HOST = 'smtp.gmail.com'
+EMAIL_PORT = 587
+EMAIL_HOST_USER = 'jenkins.neuromat@gmail.com'
+EMAIL_HOST_PASSWORD = 'numecusp'
+DEFAULT_FROM_EMAIL = 'jenkins.neuromat@gmail.com'
+SERVER_EMAIL = EMAIL_HOST_USER
+
+# if DEBUG:
+# EMAIL_HOST = 'localhost'
+# EMAIL_PORT = 1025
+#     EMAIL_HOST_USER = ''
+#     EMAIL_HOST_PASSWORD = ''
+#     EMAIL_USE_TLS = False
+#     DEFAULT_FROM_EMAIL = 'testing@example.com'
 
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/1.6/howto/static-files/
 
 STATIC_ROOT = '/home/crns/PycharmProjects/neuromat-cc-ribas/patientregistrationsystem/qdc/quiz/'
-#STATIC_ROOT = [os.path.join(BASE_DIR, 'static')]
+# STATIC_ROOT = [os.path.join(BASE_DIR, 'static')]
 STATIC_URL = '/static/'
 
 MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
