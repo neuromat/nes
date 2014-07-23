@@ -2,7 +2,29 @@
 {% block activePatient %}class="active"{% endblock %}
 
 {% block header %}
-    <script>
+
+    <script type="text/javascript">
+
+        $(document).ready(function () {
+            $("#idTabs li:eq( {{ currentTab }} ) a").tab('show');
+        });
+
+        $(document).ready(function () {
+
+            $('a[data-toggle="tab"]').on('shown.bs.tab', function (e) {
+
+                //-- condicionar para o edit
+
+                //-- salvar ao trocar de aba
+                $("#form_medical_record").submit();
+
+
+{#                alert("ola 'html'");#}
+{#                alert(e.relatedTarget);#}
+{#                alert(e.target);#}
+            });
+        });
+
         $(function(){
             $("[data-toggle=tooltip]").tooltip();
         });
@@ -16,6 +38,7 @@
                 $("#id_whichComplementaryExame").val($(this).html());
             });
         });
+
     </script>
 
 {% endblock %}
@@ -108,12 +131,14 @@
 
 <!-- Fim ESR -->
 
-    <ul class="nav nav-tabs nav-justified" id="idTabsEvaluate">
-        <li class="active"><a href="#tab1" data-toggle="tab" id="1">História de saúde</a></li>
-        <li><a href="#tab2" data-toggle="tab" id="2">História de fratura</a></li>
-        <li><a href="#tab3" data-toggle="tab" id="3">Cirurgia ortopédica</a></li>
-        <li><a href="#tab4" data-toggle="tab" id="4">Diagnósticos e exames</a></li>
+    <ul class="nav nav-tabs nav-justified" id="idTabs">
+        <li class="active"><a href="#tab1" data-toggle="tab" id="0">História de saúde</a></li>
+        <li><a href="#tab2" data-toggle="tab" id="1">História de fratura</a></li>
+        <li><a href="#tab3" data-toggle="tab" id="2">Cirurgia ortopédica</a></li>
+        <li><a href="#tab4" data-toggle="tab" id="3">Diagnósticos e exames</a></li>
     </ul>
+
+    <input type="text" id="currentTab" name="currentTab" value="{{ currentTab }}" style="visibility: hidden"/>
 
     <div id="fix-for-tab-content-spacing" style="height: 22px;">&nbsp;</div>
 
