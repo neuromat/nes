@@ -4,120 +4,6 @@ $(document).ready(function () {
 
     $("#exam_date").mask("99/99/9999");
 
-    $("#nerve_surgery_0").click(function () {
-        $("#id_nerve_surgery_type").prop('disabled', false);
-    });
-
-    $("#nerve_surgery_1").click(function () {
-        $("#id_nerve_surgery_type").prop('disabled', true);
-    });
-
-    $("#fracture_history_0").click(function () {
-        $("#scapula_fracture_side").prop('disabled', false);
-        $("#clavicle_fracture_side").prop('disabled', false);
-        $("#rib_fracture_0").prop('disabled', false);
-        $("#rib_fracture_1").prop('disabled', false);
-        $("#cervical_vertebrae_fracture_0").prop('disabled', false);
-        $("#cervical_vertebrae_fracture_1").prop('disabled', false);
-        $("#cervical_vertebrae_fracture_2").prop('disabled', false);
-        $("#cervical_vertebrae_fracture_3").prop('disabled', false);
-        $("#cervical_vertebrae_fracture_4").prop('disabled', false);
-        $("#cervical_vertebrae_fracture_5").prop('disabled', false);
-        $("#cervical_vertebrae_fracture_6").prop('disabled', false);
-        $("#thoracic_vertebrae_fracture_0").prop('disabled', false);
-        $("#thoracic_vertebrae_fracture_1").prop('disabled', false);
-        $("#thoracic_vertebrae_fracture_2").prop('disabled', false);
-        $("#thoracic_vertebrae_fracture_3").prop('disabled', false);
-        $("#thoracic_vertebrae_fracture_4").prop('disabled', false);
-        $("#thoracic_vertebrae_fracture_5").prop('disabled', false);
-        $("#thoracic_vertebrae_fracture_6").prop('disabled', false);
-        $("#thoracic_vertebrae_fracture_7").prop('disabled', false);
-        $("#thoracic_vertebrae_fracture_8").prop('disabled', false);
-        $("#thoracic_vertebrae_fracture_9").prop('disabled', false);
-        $("#thoracic_vertebrae_fracture_10").prop('disabled', false);
-        $("#thoracic_vertebrae_fracture_11").prop('disabled', false);
-        $("#lumbosacral_vertebrae_fracture_0").prop('disabled', false);
-        $("#lumbosacral_vertebrae_fracture_1").prop('disabled', false);
-        $("#lumbosacral_vertebrae_fracture_2").prop('disabled', false);
-        $("#lumbosacral_vertebrae_fracture_3").prop('disabled', false);
-        $("#lumbosacral_vertebrae_fracture_4").prop('disabled', false);
-        $("#lumbosacral_vertebrae_fracture_5").prop('disabled', false);
-        $("#lumbosacral_vertebrae_fracture_6").prop('disabled', false);
-        $("#lumbosacral_vertebrae_fracture_7").prop('disabled', false);
-        $("#superior_members_fracture_side").prop('disabled', false);
-        $("#inferior_members_fracture_side").prop('disabled', false);
-        $("#pelvis_fracture_side").prop('disabled', false);
-    });
-
-    $("#fracture_history_1").click(function () {
-        $("#scapula_fracture_side").prop('disabled', true);
-        $("#clavicle_fracture_side").prop('disabled', true);
-        $("#rib_fracture_0").prop('disabled', true);
-        $("#rib_fracture_1").prop('disabled', true);
-        $("#cervical_vertebrae_fracture_0").prop('disabled', true);
-        $("#cervical_vertebrae_fracture_1").prop('disabled', true);
-        $("#cervical_vertebrae_fracture_2").prop('disabled', true);
-        $("#cervical_vertebrae_fracture_3").prop('disabled', true);
-        $("#cervical_vertebrae_fracture_4").prop('disabled', true);
-        $("#cervical_vertebrae_fracture_5").prop('disabled', true);
-        $("#cervical_vertebrae_fracture_6").prop('disabled', true);
-        $("#thoracic_vertebrae_fracture_0").prop('disabled', true);
-        $("#thoracic_vertebrae_fracture_1").prop('disabled', true);
-        $("#thoracic_vertebrae_fracture_2").prop('disabled', true);
-        $("#thoracic_vertebrae_fracture_3").prop('disabled', true);
-        $("#thoracic_vertebrae_fracture_4").prop('disabled', true);
-        $("#thoracic_vertebrae_fracture_5").prop('disabled', true);
-        $("#thoracic_vertebrae_fracture_6").prop('disabled', true);
-        $("#thoracic_vertebrae_fracture_7").prop('disabled', true);
-        $("#thoracic_vertebrae_fracture_8").prop('disabled', true);
-        $("#thoracic_vertebrae_fracture_9").prop('disabled', true);
-        $("#thoracic_vertebrae_fracture_10").prop('disabled', true);
-        $("#thoracic_vertebrae_fracture_11").prop('disabled', true);
-        $("#lumbosacral_vertebrae_fracture_0").prop('disabled', true);
-        $("#lumbosacral_vertebrae_fracture_1").prop('disabled', true);
-        $("#lumbosacral_vertebrae_fracture_2").prop('disabled', true);
-        $("#lumbosacral_vertebrae_fracture_3").prop('disabled', true);
-        $("#lumbosacral_vertebrae_fracture_4").prop('disabled', true);
-        $("#lumbosacral_vertebrae_fracture_5").prop('disabled', true);
-        $("#lumbosacral_vertebrae_fracture_6").prop('disabled', true);
-        $("#lumbosacral_vertebrae_fracture_7").prop('disabled', true);
-        $("#superior_members_fracture_side").prop('disabled', true);
-        $("#inferior_members_fracture_side").prop('disabled', true);
-        $("#pelvis_fracture_side").prop('disabled', true);
-    });
-
-    $("#orthopedic_surgery_0").click(function () {
-        $("#scapula_surgery_side").prop('disabled', false);
-        $("#clavicle_surgery_side").prop('disabled', false);
-        $("#rib_surgery_0").prop('disabled', false);
-        $("#rib_surgery_1").prop('disabled', false);
-        $("#cervical_vertebrae_surgery_0").prop('disabled', false);
-        $("#cervical_vertebrae_surgery_1").prop('disabled', false);
-        $("#thoracic_vertebrae_surgery_0").prop('disabled', false);
-        $("#thoracic_vertebrae_surgery_1").prop('disabled', false);
-        $("#lumbosacral_vertebrae_surgery_0").prop('disabled', false);
-        $("#lumbosacral_vertebrae_surgery_1").prop('disabled', false);
-        $("#superior_members_surgery_side").prop('disabled', false);
-        $("#inferior_members_surgery_side").prop('disabled', false);
-        $("#pelvis_surgery_side").prop('disabled', false);
-    });
-
-    $("#orthopedic_surgery_1").click(function () {
-        $("#scapula_surgery_side").prop('disabled', true);
-        $("#clavicle_surgery_side").prop('disabled', true);
-        $("#rib_surgery_0").prop('disabled', true);
-        $("#rib_surgery_1").prop('disabled', true);
-        $("#cervical_vertebrae_surgery_0").prop('disabled', true);
-        $("#cervical_vertebrae_surgery_1").prop('disabled', true);
-        $("#thoracic_vertebrae_surgery_0").prop('disabled', true);
-        $("#thoracic_vertebrae_surgery_1").prop('disabled', true);
-        $("#lumbosacral_vertebrae_surgery_0").prop('disabled', true);
-        $("#lumbosacral_vertebrae_surgery_1").prop('disabled', true);
-        $("#superior_members_surgery_side").prop('disabled', true);
-        $("#inferior_members_surgery_side").prop('disabled', true);
-        $("#pelvis_surgery_side").prop('disabled', true);
-    });
-
     $("#id_smoker_0").click(function () {
         $("#id_amount_cigarettes").prop('disabled', false);
     });
@@ -135,7 +21,6 @@ $(document).ready(function () {
         $("#id_freqSmok").prop('disabled', true);
         $("#id_periodSmok").prop('disabled', true);
     });
-
 
     $("#cpf_id").mask("999.999.999-99");
 
