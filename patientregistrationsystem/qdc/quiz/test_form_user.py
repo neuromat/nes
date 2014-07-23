@@ -1,7 +1,6 @@
 # -*- coding: UTF-8 -*-
 from django.contrib.messages.storage.fallback import FallbackStorage
 from django.test import TestCase
-from django.http import Http404
 from django.test.client import RequestFactory
 from django.contrib.auth.models import Group
 

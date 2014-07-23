@@ -3,7 +3,7 @@ from django.test import TestCase, Client
 from django.http import Http404
 from django.test.client import RequestFactory
 from datetime import date
-from models import ClassificationOfDiseases, MedicalRecordData, PainLocalization, Diagnosis
+from models import ClassificationOfDiseases, MedicalRecordData, Diagnosis
 from views import User, GenderOption, SchoolingOption, reverse, Patient, patient_update, patient, restore_patient, \
     medical_record_view, medical_record_update, diagnosis_create, diagnosis_delete
 
@@ -174,14 +174,14 @@ class FormValidation(TestCase):
 
     def fill_medical_record(self):
         """ Preenche os campos necessarios para criar uma avaliacao medica """
-        pain_localization = PainLocalization.objects.create(pain_localization='pain')
-        pain_localization.save()
+        # pain_localization = PainLocalization.objects.create(pain_localization='pain')
+        #pain_localization.save()
 
         self.data['inferior_members_fracture_side'] = ''
         self.data['hormonal_dysfunction'] = '0'
         self.data['pelvis_fracture_side'] = ''
         self.data['scapula_fracture_side'] = ''
-        self.data['pain_localizations'] = pain_localization.pk
+        self.data['pain_localizations'] = ''
         self.data['clavicle_fracture_side'] = ''
         self.data['fracture_history'] = '0'
         self.data['clavicle_surgery_side'] = ''

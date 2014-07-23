@@ -24,6 +24,7 @@ import re
 # pylint: disable=E1101
 # pylint: disable=E1103
 
+
 @login_required
 @permission_required('quiz.add_patient')
 def patient_create(request, template_name="quiz/register.html"):
