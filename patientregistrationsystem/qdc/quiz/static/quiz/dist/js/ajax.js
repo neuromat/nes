@@ -48,14 +48,14 @@ $(function(){
     });
 
     //Search in CID-10 table
-    $('#id_whichComplementaryExame').keyup(function() {
+    $('#id_whichComplementaryExam').keyup(function() {
 
             $.ajax({
                 type: "POST",
                 url: "/quiz/patient/medical_record/cid-10/",
                 data: {
-                    'search_text': ($('#id_whichComplementaryExame').val().length >= 3 ?
-                        $('#id_whichComplementaryExame').val() : ''),
+                    'search_text': ($('#id_whichComplementaryExam').val().length >= 3 ?
+                        $('#id_whichComplementaryExam').val() : ''),
                     'csrfmiddlewaretoken': $("input[name=csrfmiddlewaretoken]").val(),
                     'patient_id': $('#patient_id').val(),
                     'medical_record': $('#medical_record_id').val()
