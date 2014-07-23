@@ -11,7 +11,7 @@ from models import Patient, SocialDemographicData, SocialHistoryData, FleshToneO
     ClassificationOfDiseases, Diagnosis, ExamFile, ComplementaryExam
 
 from forms import PatientForm, SocialDemographicDataForm, SocialHistoryDataForm, UserForm, UserFormUpdate, \
-    MedicalRecordForm, ComplementaryExamForm, ExamFileForm
+    ComplementaryExamForm, ExamFileForm, DiagnosisForm
 
 from quiz_widget import SelectBoxCountriesDisabled, SelectBoxStateDisabled
 from django.contrib import messages
@@ -422,23 +422,6 @@ def patients_verify_homonym(request):
 
 
 @login_required
-def search_cid10_ajax(request):
-
-    cid_10_list = ''
-
-    if request.method == "POST":
-        search_text = request.POST['search_text']
-        medical_record = request.POST['medical_record']
-        patient_id = request.POST['patient_id']
-
-        if search_text:
-            cid_10_list = ClassificationOfDiseases.objects.filter(abbreviated_description__icontains=search_text)
-
-    return render_to_response('quiz/ajax_cid10.html', {'cid_10_list': cid_10_list, 'medical_record': medical_record,
-                                                       'patient_id': patient_id})
-
-
-@login_required
 @permission_required('auth.add_user')
 @permission_required('auth.change_user')
 def user_list(request, template_name='quiz/user_list.html'):
@@ -489,38 +472,32 @@ def user_update(request, user_id, template_name="quiz/register_users.html"):
 
 
 @login_required
+def search_cid10_ajax(request):
+
+    cid_10_list = ''
+
+    if request.method == "POST":
+        search_text = request.POST['search_text']
+        medical_record = request.POST['medical_record']
+        patient_id = request.POST['patient_id']
+
+        if search_text:
+            cid_10_list = ClassificationOfDiseases.objects.filter(abbreviated_description__icontains=search_text)
+
+        return render_to_response('quiz/ajax_cid10.html', {'cid_10_list': cid_10_list, 'medical_record': medical_record,
+                                                           'patient_id': patient_id})
+
+
+@login_required
 # @permission_required('auth.add_user')
 def medical_record_create(request, patient_id, template_name='quiz/medical_record.html'):
-    form = MedicalRecordForm(request.POST or None)
+    form = DiagnosisForm(request.POST or None)
 
     patient_new = Patient.objects.get(number_record=patient_id)
 
-    if request.method == "POST":
-
-        if form.is_valid():
-
-            # verificar se algo foi preenchido
-            new_medical_record = form.save(commit=False)
-            new_medical_record.patient = patient_new
-            new_medical_record.record_responsible = request.user
-            new_medical_record.save()
-            form.save_m2m()
-
-            messages.success(request, 'Avaliação médica salva com sucesso.')
-
-            if request.POST['action'] == "save":
-                redirect_url = reverse("medical_record_edit", args=(patient_id, new_medical_record.id))
-                return HttpResponseRedirect(redirect_url + "?status=edit")
-            else:
-                redirect_url = reverse("patient_edit", args=(patient_id, ))
-                return HttpResponseRedirect(redirect_url + "?currentTab=3")
-
-        else:
-            messages.error(request, 'Não foi possível criar avaliação médica.')
-
     return render(request, template_name,
-                  {'medical_record_form': form, 'patient_id': patient_id, 'name_patient': patient_new.name_txt,
-                   'creating': True, 'editing': True})
+                  {'patient_id': patient_id, 'name_patient': patient_new.name_txt,
+                   'diagnosis_form': form, 'creating': True, 'editing': True})
 
 
 def medical_record_view(request, patient_id, record_id, template_name="quiz/medical_record.html"):
@@ -531,7 +508,6 @@ def medical_record_view(request, patient_id, record_id, template_name="quiz/medi
     medical_record = MedicalRecordData.objects.get(pk=record_id)
 
     if medical_record:
-        medical_record_form = MedicalRecordForm(instance=medical_record)
 
         diagnosis_list = Diagnosis.objects.filter(medical_record_data=record_id)
         complementary_exams_list = []
@@ -540,14 +516,8 @@ def medical_record_view(request, patient_id, record_id, template_name="quiz/medi
 
         lists_diagnosis_exams = zip(diagnosis_list, complementary_exams_list)
 
-        # deixa os campos como disabled
-        for form in {medical_record_form}:
-            for field in form.fields:
-                form.fields[field].widget.attrs['disabled'] = True
-
         return render(request, template_name,
-                      {'medical_record_form': medical_record_form,
-                       'name_patient': current_patient.name_txt,
+                      {'name_patient': current_patient.name_txt,
                        'patient_id': patient_id,
                        'record_id': medical_record.id,
                        'object_list': diagnosis_list,
@@ -568,8 +538,6 @@ def medical_record_update(request, patient_id, record_id, template_name="quiz/me
     medical_record = MedicalRecordData.objects.get(pk=record_id)
 
     if medical_record:
-
-        medical_record_form = MedicalRecordForm(request.POST or None, instance=medical_record)
         diagnosis_list = Diagnosis.objects.filter(medical_record_data=record_id)
         complementary_exams_list = []
 
@@ -579,22 +547,11 @@ def medical_record_update(request, patient_id, record_id, template_name="quiz/me
         lists_diagnosis_exams = zip(diagnosis_list, complementary_exams_list)
 
         if request.method == "POST":
-
-            if medical_record_form.is_valid():
-
-                medical_record_form.save()
-                messages.success(request, 'Avaliação médica salva com sucesso.')
-
-            if request.POST['action'] == "finish":
-                redirect_url = reverse("patient_edit", args=(patient_id, ))
-                return HttpResponseRedirect(redirect_url + "?currentTab=3")
-            else:
-                redirect_url = reverse("medical_record_edit", args=(patient_id, record_id, ))
-                return HttpResponseRedirect(redirect_url + "?status=edit&currentTab=" + current_tab)
+            redirect_url = reverse("patient_edit", args=(patient_id, ))
+            return HttpResponseRedirect(redirect_url + "?currentTab=3")
 
         return render(request, template_name,
-                      {'medical_record_form': medical_record_form,
-                       'name_patient': current_patient.name_txt,
+                      {'name_patient': current_patient.name_txt,
                        'patient_id': patient_id,
                        'record_id': medical_record.id,
                        'object_list': diagnosis_list,
@@ -616,6 +573,23 @@ def diagnosis_create(request, patient_id, medical_record_id, cid10_id):
     diagnosis.save()
 
     redirect_url = reverse("medical_record_edit", args=(patient_id, medical_record_id,))
+    return HttpResponseRedirect(redirect_url + "?status=edit&currentTab=3")
+
+
+def medical_record_create_diagnosis_create(request, patient_id, cid10_id):
+    patient_new = Patient.objects.get(number_record=patient_id)
+
+    new_medical_record = MedicalRecordData()
+    new_medical_record.patient = patient_new
+    new_medical_record.record_responsible = request.user
+    new_medical_record.save()
+
+    cid10 = ClassificationOfDiseases.objects.get(pk=cid10_id)
+
+    diagnosis = Diagnosis(medical_record_data=new_medical_record, classification_of_diseases=cid10)
+    diagnosis.save()
+
+    redirect_url = reverse("medical_record_edit", args=(patient_id, new_medical_record.id,))
     return HttpResponseRedirect(redirect_url + "?status=edit&currentTab=3")
 
 
