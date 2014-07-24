@@ -54,4 +54,6 @@ urlpatterns = patterns(
     url(r'^diagnosis/delete/(?P<patient_id>\d+)/(?P<diagnosis_id>\d+)/$', 'quiz.views.diagnosis_delete', name='diagnosis_delete'),
     url(r'^exam/delete/(?P<patient_id>\d+)/(?P<exam_file_id>\d+)/$', 'quiz.views.exam_delete', name='exam_delete'),
 
+    url(r'^diagnosis/update/(?P<diagnosis_id>\d+)/$', 'quiz.views.diagnosis_update', name='diagnosis_update'),
+
 )
