@@ -1,6 +1,6 @@
 {% extends "quiz/template.html" %}
 {% block activeContact %}class="active"{% endblock %}
-
+{% load static %}
 {% block content %}
     <!-- Esta div está associada ao item Contato do Menu princial -->
     <div class="tab-pane fade in active" id="mainMenuContactTab">
@@ -12,6 +12,51 @@
             <h5>Sistema de Cadastro e Consulta de Dados Sociodemográficos e Clínicos</h5>
             <!-- <h5>Av. Venceslau Brás, 95 - Botafogo - Campus da Praia Vermelha.</h5>-->
             <h5>Dúvidas e Sugestões: claudiadvargas at gmail dot com </h5>
+            <br/>
+
+
+            <div class="col-lg-3 col-md-4 col-xs-6 thumb">
+                <a class="thumbnail" href="http://ccsl.ime.usp.br/">
+                    <img class="img-responsive" src="{% static 'quiz/imgs/logo-ccsl.jpg' %}" alt="">
+                </a>
+            </div>
+            <div class="col-lg-3 col-md-4 col-xs-6 thumb" >
+                <a class="thumbnail" href="http://www.ime.usp.br">
+                    <img class="img-responsive" src="{% static 'quiz/imgs/logo-ime.jpg' %}" alt="">
+                </a>
+            </div>
+            <div class="col-lg-3 col-md-4 col-xs-6 thumb">
+                <a class="thumbnail" href="#">
+                    <img class="img-responsive" src="{% static 'quiz/imgs/logo-usp.jpg' %}" alt="">
+                </a>
+            </div>
+            <div class="col-lg-3 col-md-4 col-xs-6 thumb">
+                <a class="thumbnail"  href="#">
+                    <img class="img-responsive" src="{% static 'quiz/imgs/logo-ufrj.jpg' %}" alt="">
+                </a>
+            </div>
+            <div class="col-lg-3 col-md-4 col-xs-6 thumb">
+                <a class="thumbnail" href="#">
+                    <img class="img-responsive" src="{% static 'quiz/imgs/logo-numec.jpg' %}" alt="">
+                </a>
+            </div>
+            <div class="col-lg-3 col-md-4 col-xs-6 thumb">
+                <a class="thumbnail" href="#">
+                    <img class="img-responsive" src="{% static 'quiz/imgs/logo-neuromat.jpg' %}" alt="">
+                </a>
+            </div>
+            <div class="col-lg-3 col-md-4 col-xs-6 thumb">
+                <a class="thumbnail" href="#">
+                    <img class="img-responsive" src="{% static 'quiz/imgs/logo-fapesp.jpg' %}" alt="">
+                </a>
+            </div>
+            <div class="col-lg-3 col-md-4 col-xs-6 thumb">
+                <a class="thumbnail" href="#">
+                    <img class="img-responsive" src="{% static 'quiz/imgs/logo-indc.jpg' %}" alt="">
+                </a>
+            </div>
+
         </div>
-    </div> <!-- <div class="tab-pane fade" id="mainMenuContactTab"> -->
+
+        <!-- <div class="tab-pane fade" id="mainMenuContactTab"> -->
 {% endblock %}
