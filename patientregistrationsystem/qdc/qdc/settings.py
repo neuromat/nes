@@ -79,8 +79,8 @@ DATABASES = {
         'NAME': 'qdcdb_dev',
         'USER': 'qdc',
         'PASSWORD': 'DEVqdc1716',
-        'HOST': '200.144.254.136',
-        'TESTS_NAME': 'romulo_tests'
+        #'HOST': '200.144.254.136',
+
     }
 }
 
