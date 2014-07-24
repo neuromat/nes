@@ -71,19 +71,16 @@ ROOT_URLCONF = 'qdc.urls'
 
 WSGI_APPLICATION = 'qdc.wsgi.application'
 
-
-
 # Database
 # https://docs.djangoproject.com/en/1.6/ref/settings/#databases
-
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.postgresql_psycopg2',
         'NAME': 'qdcdb_dev',
         'USER': 'qdc',
         'PASSWORD': 'DEVqdc1716',
-        # 'HOST': '200.144.254.136',
-
+        'HOST': '200.144.254.136',
+        'TESTS_NAME': 'romulo_tests'
     }
 }
 
@@ -121,7 +118,7 @@ SERVER_EMAIL = EMAIL_HOST_USER
 
 # if DEBUG:
 # EMAIL_HOST = 'localhost'
-# EMAIL_PORT = 1025
+#     EMAIL_PORT = 1025
 #     EMAIL_HOST_USER = ''
 #     EMAIL_HOST_PASSWORD = ''
 #     EMAIL_USE_TLS = False

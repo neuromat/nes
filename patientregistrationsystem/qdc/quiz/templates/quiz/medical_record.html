@@ -13,7 +13,12 @@
             modal_remove.setAttribute( "href", '/quiz/diagnosis/delete/' + patient_id + '/' + diagnosis_id);
             $('#modalRemove').modal('show');
         }
-
+        function make_elements_visible (){
+            var x = document.getElementById("diagnosis_date");
+            x.type = "text";
+            var y = document.getElementById("diagnosis_description");
+            y.type = "text";
+        }
     </script>
 
 {% endblock %}
@@ -133,7 +138,36 @@
                                     {% else %}
                                         {% for diagnosis, diagnosis_exams in lists_diagnosis_exams %}
                                             <tr>
-                                                <td>{{ diagnosis.classification_of_diseases }}</td>
+                                                <td>{{ diagnosis.classification_of_diseases }}<br>
+                                                    <a id="details-{{ diagnosis.id }}" onclick="showDetails({{ diagnosis.id }})">+ Detalhes</a>
+                                                    <div class="row">
+                                                        <div class="col-xs-6 col-sm-6">
+                                                            <div class="form-group">
+                                                                <label style="display: none" id="description-label-{{ diagnosis.id }}">Observações</label>
+                                                                <div class="input-group  input-group-sm">
+{#                                                                    {{ diagnosis_form.description }}#}
+                                                                    <textarea class="form-control" cols="100" id="description-{{ diagnosis.id }}" name="description" placeholder="Observação" rows="10" style="display: none"></textarea>
+                                                                </div>
+                                                            </div>
+                                                        </div>
+                                                        <div class="col-xs-6 col-sm-4">
+                                                            <div class="form-group">
+                                                                <label style="display: none" id="date-label-{{ diagnosis.id }}">Data</label>
+                                                                <div class="input-group  input-group-sm">
+{#                                                                    {{ diagnosis_form.date }}#}
+                                                                    <input class="form-control" id="date-{{ diagnosis.id }}" name="date" placeholder="Data" style="display: none" type="text">
+                                                                </div>
+                                                            </div>
+                                                        </div>
+                                                        <div class="col-xs-6 col-sm-2">
+                                                            <div class="form-group">
+                                                                </br>
+                                                                <a class="glyphicon glyphicon-ok" style="display: none" id="confirm-{{ diagnosis.id }}" href="/quiz/diagnosis/update/{{ diagnosis.id }}"></a>
+{#                                                                <button class="glyphicon glyphicon-ok" style="display: none" id="confirm-{{ diagnosis.id }}" type="submit" name="action" value="{{ diagnosis.id }}" onclick="hideDetails({{ diagnosis.id }})"></button>#}
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                </td>
                                                 <td>
                                                     {% if editing %}
                                                         <a class="glyphicon glyphicon-remove" data-toggle="tooltip" data-placement="right" title="Remover" style="color: indianred"
