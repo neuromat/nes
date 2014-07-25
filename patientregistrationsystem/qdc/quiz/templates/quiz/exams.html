@@ -152,7 +152,7 @@
                                             {% else %}
                                                 {% for exam_file in exam_file_list %}
                                                     <tr>
-                                                        <td>{{ exam_file.content }}</td>
+                                                        <td><a href="{{ exam_file.content.url }}">{{ exam_file.content.name }}</a></td>
                                                         {% if not viewing %}
                                                             <td><a class="glyphicon glyphicon-remove" data-toggle="tooltip" data-placement="right" title="Remover" style="color: indianred" onclick="show_modal_remove({{ patient_id }}, {{ exam_file.id }})"></a></td>
                                                         {% endif %}

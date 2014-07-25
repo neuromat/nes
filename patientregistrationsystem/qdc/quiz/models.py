@@ -258,7 +258,7 @@ class ComplementaryExam(models.Model):
 
 def get_user_dir(instance, filename):
     # return 'images/%s/%s' % (instance.user.user.username, filename)
-    return "test/%s" % filename
+    return "documents/%s/%s/%s" % (instance.exam.diagnosis.medical_record_data.patient.pk, instance.exam.pk, filename)
 
 
 class ExamFile(models.Model):
