@@ -3,6 +3,7 @@ from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib.auth.decorators import login_required, permission_required
 from django.http import HttpResponseRedirect
 from django.core.urlresolvers import reverse
+from django.core.files.storage import FileSystemStorage
 from django.shortcuts import render_to_response
 
 from models import Patient, SocialDemographicData, SocialHistoryData, FleshToneOption, \
@@ -71,14 +72,14 @@ def patient_create(request, template_name="quiz/register.html"):
                 new_social_demographic_data.id_patient = new_patient
 
                 if (new_social_demographic_data.tv_opt is not None and
-                        new_social_demographic_data.radio_opt is not None and
-                        new_social_demographic_data.bath_opt is not None and
-                        new_social_demographic_data.automobile_opt is not None and
-                        new_social_demographic_data.house_maid_opt is not None and
-                        new_social_demographic_data.wash_machine_opt is not None and
-                        new_social_demographic_data.dvd_opt is not None and
-                        new_social_demographic_data.refrigerator_opt is not None and
-                        new_social_demographic_data.freezer_opt is not None):
+                            new_social_demographic_data.radio_opt is not None and
+                            new_social_demographic_data.bath_opt is not None and
+                            new_social_demographic_data.automobile_opt is not None and
+                            new_social_demographic_data.house_maid_opt is not None and
+                            new_social_demographic_data.wash_machine_opt is not None and
+                            new_social_demographic_data.dvd_opt is not None and
+                            new_social_demographic_data.refrigerator_opt is not None and
+                            new_social_demographic_data.freezer_opt is not None):
 
                     new_social_demographic_data.social_class_opt = new_social_demographic_data.calculate_social_class(
                         tv=request.POST['tv_opt'], radio=request.POST['radio_opt'],
@@ -91,14 +92,14 @@ def patient_create(request, template_name="quiz/register.html"):
                     new_social_demographic_data.social_class_opt = None
 
                     if (new_social_demographic_data.tv_opt is not None or
-                            new_social_demographic_data.radio_opt is not None or
-                            new_social_demographic_data.bath_opt is not None or
-                            new_social_demographic_data.automobile_opt is not None or
-                            new_social_demographic_data.house_maid_opt is not None or
-                            new_social_demographic_data.wash_machine_opt is not None or
-                            new_social_demographic_data.dvd_opt is not None or
-                            new_social_demographic_data.refrigerator_opt is not None or
-                            new_social_demographic_data.freezer_opt is not None):
+                                new_social_demographic_data.radio_opt is not None or
+                                new_social_demographic_data.bath_opt is not None or
+                                new_social_demographic_data.automobile_opt is not None or
+                                new_social_demographic_data.house_maid_opt is not None or
+                                new_social_demographic_data.wash_machine_opt is not None or
+                                new_social_demographic_data.dvd_opt is not None or
+                                new_social_demographic_data.refrigerator_opt is not None or
+                                new_social_demographic_data.freezer_opt is not None):
                         messages.warning(request, 'Classe Social não calculada, pois os campos necessários '
                                                   'para o cálculo não foram preenchidos.')
 
@@ -147,7 +148,6 @@ def patient_create(request, template_name="quiz/register.html"):
 
 
 def get_current_tab(request):
-
     current_tab = '0'
 
     if request.method == "POST":
@@ -163,7 +163,6 @@ def get_current_tab(request):
 @login_required
 @permission_required('quiz.change_patient')
 def patient_update(request, patient_id, template_name="quiz/register.html"):
-
     # # Search in models.Patient
     # # ------------------------    
     p = get_object_or_404(Patient, pk=patient_id)
@@ -173,15 +172,15 @@ def patient_update(request, patient_id, template_name="quiz/register.html"):
         patient_form = PatientForm(request.POST or None, instance=p)
 
         # # Search in models.SocialDemographicData
-        ## --------------------------------------
+        # # --------------------------------------
         try:
             p_social_demo = SocialDemographicData.objects.get(id_patient_id=patient_id)
             social_demographic_form = SocialDemographicDataForm(request.POST or None, instance=p_social_demo)
         except SocialDemographicData.DoesNotExist:
             social_demographic_form = SocialDemographicDataForm()
 
-        ## Search in models.SocialHistoryData
-        ## --------------------------------------
+        # # Search in models.SocialHistoryData
+        # # --------------------------------------
         try:
             p_social_hist = SocialHistoryData.objects.get(id_patient_id=patient_id)
             social_history_form = SocialHistoryDataForm(request.POST or None, instance=p_social_hist)
@@ -189,8 +188,8 @@ def patient_update(request, patient_id, template_name="quiz/register.html"):
             social_history_form = SocialDemographicDataForm()
 
         current_tab = get_current_tab(request)
-        #TODO: retirar este controle de comentario
-        ### teste: inicio
+        # TODO: retirar este controle de comentario
+        # ## teste: inicio
 
         #TODO: reaproveitar o codigo abaixo, pois eh praticamente igual ao do inserir
 
@@ -213,6 +212,8 @@ def patient_update(request, patient_id, template_name="quiz/register.html"):
                 #    homonym_message = "Aviso: existe paciente como o mesmo nome."
 
                 new_patient.save()
+                #TODO: Este trecho abaixo pode ser refatorado, pois esta repetido em um metodo acima. Ass:@romulo
+
 
                 if social_demographic_form.is_valid():
 
@@ -220,14 +221,14 @@ def patient_update(request, patient_id, template_name="quiz/register.html"):
                     new_social_demographic_data.id_patient = new_patient
 
                     if (new_social_demographic_data.tv_opt is not None and
-                            new_social_demographic_data.radio_opt is not None and
-                            new_social_demographic_data.bath_opt is not None and
-                            new_social_demographic_data.automobile_opt is not None and
-                            new_social_demographic_data.house_maid_opt is not None and
-                            new_social_demographic_data.wash_machine_opt is not None and
-                            new_social_demographic_data.dvd_opt is not None and
-                            new_social_demographic_data.refrigerator_opt is not None and
-                            new_social_demographic_data.freezer_opt is not None):
+                                new_social_demographic_data.radio_opt is not None and
+                                new_social_demographic_data.bath_opt is not None and
+                                new_social_demographic_data.automobile_opt is not None and
+                                new_social_demographic_data.house_maid_opt is not None and
+                                new_social_demographic_data.wash_machine_opt is not None and
+                                new_social_demographic_data.dvd_opt is not None and
+                                new_social_demographic_data.refrigerator_opt is not None and
+                                new_social_demographic_data.freezer_opt is not None):
 
                         new_social_demographic_data.social_class_opt = \
                             new_social_demographic_data.calculate_social_class(
@@ -241,14 +242,14 @@ def patient_update(request, patient_id, template_name="quiz/register.html"):
                         new_social_demographic_data.social_class_opt = None
 
                         if (new_social_demographic_data.tv_opt is not None or
-                                new_social_demographic_data.radio_opt is not None or
-                                new_social_demographic_data.bath_opt is not None or
-                                new_social_demographic_data.automobile_opt is not None or
-                                new_social_demographic_data.house_maid_opt is not None or
-                                new_social_demographic_data.wash_machine_opt is not None or
-                                new_social_demographic_data.dvd_opt is not None or
-                                new_social_demographic_data.refrigerator_opt is not None or
-                                new_social_demographic_data.freezer_opt is not None):
+                                    new_social_demographic_data.radio_opt is not None or
+                                    new_social_demographic_data.bath_opt is not None or
+                                    new_social_demographic_data.automobile_opt is not None or
+                                    new_social_demographic_data.house_maid_opt is not None or
+                                    new_social_demographic_data.wash_machine_opt is not None or
+                                    new_social_demographic_data.dvd_opt is not None or
+                                    new_social_demographic_data.refrigerator_opt is not None or
+                                    new_social_demographic_data.freezer_opt is not None):
                             messages.warning(request, 'Classe Social não calculada, pois os campos necessários '
                                                       'para o cálculo não foram preenchidos.')
                             current_tab = "1"
@@ -291,7 +292,6 @@ def patient_update(request, patient_id, template_name="quiz/register.html"):
 @login_required
 @permission_required('quiz.view_patient')
 def patient(request, patient_id, template_name="quiz/register.html"):
-
     if request.method == "POST":
 
         redirect_url = reverse("search_patient")
@@ -320,15 +320,15 @@ def patient(request, patient_id, template_name="quiz/register.html"):
         patient_form = PatientForm(instance=p)
 
         # # Search in models.SocialDemographicData
-        ## --------------------------------------
+        # # --------------------------------------
         try:
             p_social_demo = SocialDemographicData.objects.get(id_patient_id=patient_id)
             social_demographic_form = SocialDemographicDataForm(instance=p_social_demo)
         except SocialDemographicData.DoesNotExist:
             social_demographic_form = SocialDemographicDataForm()
 
-        ## Search in models.SocialHistoryData
-        ## ----------------------------------
+        # # Search in models.SocialHistoryData
+        # # ----------------------------------
         try:
             p_social_hist = SocialHistoryData.objects.get(id_patient_id=patient_id)
             social_history_form = SocialHistoryDataForm(instance=p_social_hist)
@@ -337,12 +337,12 @@ def patient(request, patient_id, template_name="quiz/register.html"):
 
         medical_data = MedicalRecordData.objects.filter(patient_id=patient_id).order_by('record_date')
 
-        #deixa os campos como disabled
+        # deixa os campos como disabled
         for form in {patient_form, social_demographic_form, social_history_form}:
             for field in form.fields:
                 form.fields[field].widget.attrs['disabled'] = True
 
-        #Sobrescreve campos Pais, Nacionalidade e Estado
+        # Sobrescreve campos Pais, Nacionalidade e Estado
         patient_form.fields['country_txt'].widget = SelectBoxCountriesDisabled(
             attrs={'id': 'id_country_state_address', 'data-flags': 'true', 'disabled': 'true'})
         patient_form.fields['state_txt'].widget = SelectBoxStateDisabled(
@@ -423,7 +423,6 @@ def patients_verify_homonym(request):
 
 @login_required
 def search_cid10_ajax(request):
-
     cid_10_list = ''
 
     if request.method == "POST":
@@ -490,7 +489,6 @@ def user_update(request, user_id, template_name="quiz/register_users.html"):
 
 @login_required
 def search_cid10_ajax(request):
-
     cid_10_list = ''
 
     if request.method == "POST":
@@ -518,11 +516,10 @@ def medical_record_create(request, patient_id, template_name='quiz/medical_recor
 
 
 def medical_record_view(request, patient_id, record_id, template_name="quiz/medical_record.html"):
-
     status_mode = request.GET['status']
 
-    current_patient = Patient.objects.get(number_record=patient_id)
-    medical_record = MedicalRecordData.objects.get(pk=record_id)
+    current_patient = get_object_or_404(Patient, pk=patient_id)
+    medical_record = get_object_or_404(MedicalRecordData, pk=record_id)
 
     if medical_record:
 
@@ -547,12 +544,11 @@ def medical_record_view(request, patient_id, record_id, template_name="quiz/medi
 
 
 def medical_record_update(request, patient_id, record_id, template_name="quiz/medical_record.html"):
-
     status_mode = request.GET['status']
     current_tab = get_current_tab(request)
 
-    current_patient = Patient.objects.get(number_record=patient_id)
-    medical_record = MedicalRecordData.objects.get(pk=record_id)
+    current_patient = get_object_or_404(Patient, pk=patient_id)
+    medical_record = get_object_or_404(MedicalRecordData, pk=record_id)
 
     if medical_record:
         diagnosis_list = Diagnosis.objects.filter(medical_record_data=record_id)
@@ -582,7 +578,6 @@ def medical_record_update(request, patient_id, record_id, template_name="quiz/me
 
 
 def diagnosis_create(request, patient_id, medical_record_id, cid10_id):
-
     m = MedicalRecordData.objects.get(pk=medical_record_id)
     cid10 = ClassificationOfDiseases.objects.get(pk=cid10_id)
 
@@ -655,6 +650,8 @@ def exam_create(request, patient_id, record_id, diagnosis_id, template_name="qui
             if file_form.is_valid():
                 new_file_data = file_form.save(commit=False)
                 new_file_data.exam = new_complementary_exam
+                # new_file_data.content.storage = FileSystemStorage(location='/media/photos')
+                # new_file_data.content.upload_to = "test"
                 new_file_data.save()
 
             messages.success(request, 'Exame salvo com sucesso.')
@@ -677,11 +674,10 @@ def exam_create(request, patient_id, record_id, diagnosis_id, template_name="qui
     return render(request, template_name,
                   {'complementary_exam_form': form, 'patient_id': patient_id,
                    'name_patient': p.name_txt, 'record_id': record_id,
-                   'file_form': file_form, 'viewing': False},)
+                   'file_form': file_form, 'viewing': False}, )
 
 
 def exam_edit(request, patient_id, record_id, diagnosis_id, exam_id, template_name="quiz/exams.html"):
-
     p = Patient.objects.get(number_record=patient_id)
     complementary_exam = ComplementaryExam.objects.get(pk=exam_id)
 
@@ -701,9 +697,8 @@ def exam_edit(request, patient_id, record_id, diagnosis_id, exam_id, template_na
                     new_file_data.exam = complementary_exam
                     new_file_data.save()
 
-                messages.success(request, 'Exame salvo com sucesso.')
-
                 if request.POST['action'] == "save":
+                    messages.success(request, 'Exame salvo com sucesso.')
                     redirect_url = reverse("medical_record_edit", args=(patient_id, record_id, ))
                     return HttpResponseRedirect(redirect_url + "?status=edit")
 
@@ -720,7 +715,6 @@ def exam_edit(request, patient_id, record_id, diagnosis_id, exam_id, template_na
 
 
 def exam_view(request, patient_id, record_id, diagnosis_id, exam_id, template_name="quiz/exams.html"):
-
     p = Patient.objects.get(number_record=patient_id)
     complementary_exam = ComplementaryExam.objects.get(pk=exam_id)
     complementary_exam_form = ComplementaryExamForm(instance=complementary_exam)
@@ -739,7 +733,15 @@ def exam_view(request, patient_id, record_id, diagnosis_id, exam_id, template_na
                    'record_id': record_id, 'name_patient': p.name_txt})
 
 
-def exam_delete(request, patient_id, exam_file_id):
+def exam_delete(request, patient_id, record_id, exam_id):
+    complementary_exam = ComplementaryExam.objects.get(pk=exam_id)
+    complementary_exam.delete()
+    messages.success(request, 'Exame removido com sucesso.')
+    redirect_url = reverse("medical_record_edit", args=(patient_id, record_id))
+    return HttpResponseRedirect(redirect_url + "?status=edit#tab4")
+
+
+def exam_file_delete(request, patient_id, exam_file_id):
     exam_file = get_object_or_404(ExamFile, pk=exam_file_id)
     exam_file.delete()
     messages.success(request, 'Exame removido com sucesso.')

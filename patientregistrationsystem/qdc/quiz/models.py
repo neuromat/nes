@@ -256,6 +256,15 @@ class ComplementaryExam(models.Model):
         return unicode(self.description)
 
 
+def get_user_dir(instance, filename):
+    # return 'images/%s/%s' % (instance.user.user.username, filename)
+    return "test/%s" % filename
+
+
 class ExamFile(models.Model):
     exam = models.ForeignKey(ComplementaryExam, null=False)
-    content = models.FileField(upload_to="documents")
+    content = models.FileField(upload_to=get_user_dir)
+
+    def delete(self, *args, **kwargs):
+        self.content.delete()
+        super(ExamFile, self).delete(*args, **kwargs)

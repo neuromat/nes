@@ -31,9 +31,9 @@ urlpatterns = patterns(
     url(r'^patient/medical_record/cid-10/$', 'quiz.views.search_cid10_ajax', name='cid10_search'),
 
     url(r'^patient/(?P<patient_id>\d+)/medical_record/(?P<medical_record_id>\d+)/diagnosis/(?P<cid10_id>\d+)/$',
-        'quiz.views.diagnosis_create'),
+        'quiz.views.diagnosis_create', name='diagnosis_create'),
     url(r'^patient/(?P<patient_id>\d+)/medical_record/new/diagnosis/(?P<cid10_id>\d+)/$',
-        'quiz.views.medical_record_create_diagnosis_create'),
+        'quiz.views.medical_record_create_diagnosis_create', name='medical_record_diagnosis_create'),
 
     url(r'^diagnosis/delete/(?P<patient_id>\d+)/(?P<diagnosis_id>\d+)/$', 'quiz.views.diagnosis_delete',
         name='diagnosis_delete'),

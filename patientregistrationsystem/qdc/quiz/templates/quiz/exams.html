@@ -8,6 +8,16 @@
             modal_remove.setAttribute( "href", '/quiz/exam/delete/' + patient_id + '/' + exam_file_id);
             $('#modalRemove').modal('show');
         }
+        function show_modal_remove_for_complementary_exam (){
+            var part
+{#            console.log(document.URL);#}
+{#            console.log(typeof document.URL);#}
+            part = document.URL.split("exam/edit")
+{#            console.log(part[0]+'exam/remove'+part[1]);#}
+            var  modal_remove = document.getElementById('removeExam');
+            modal_remove.setAttribute( "href", part[0]+'exam/remove'+part[1]);
+            $('#modalRemove').modal('show');
+        }
     </script>
 {% endblock %}
 
@@ -24,178 +34,175 @@
 
     <div class="tab-pane fade in active" id="examTab">
 
-    <div class="col-md-1">
-    </div>
+        <div class="col-md-1">
+        </div>
 
-    <div class="col-md-10">
+        <div class="col-md-10">
 
-    <ol class="breadcrumb">
-        <li>Pacientes</li>
-        {% if editing %}
-            <li><a href="/quiz/patient/edit/{{ patient_id }}/?currentTab=3">{{ name_patient }}</a></li>
-        {% else %}
-            <li><a href="/quiz/patient/{{ patient_id }}/?currentTab=3">{{ name_patient }}</a></li>
-        {% endif %}
-        <li>Avaliação médica</li>
-        <li><a href="/quiz/patient/{{ patient_id }}/medical_record/{{ record_id }}/?status=view&currentTab=3">Diagnóstico e Exames</a></li>
-        {% if viewing %}
-            <li class="active">Exame</li>
-        {% else %}
-            <li class="active">Novo Exame</li>
-        {% endif %}
-    </ol>
+            <ol class="breadcrumb">
+                <li>Pacientes</li>
+                {% if editing %}
+                    <li><a href="/quiz/patient/edit/{{ patient_id }}/?currentTab=3">{{ name_patient }}</a></li>
+                {% else %}
+                    <li><a href="/quiz/patient/{{ patient_id }}/?currentTab=3">{{ name_patient }}</a></li>
+                {% endif %}
+                <li>Avaliação médica</li>
+                <li><a href="/quiz/patient/{{ patient_id }}/medical_record/{{ record_id }}/?status=view&currentTab=3">Diagnóstico e Exames</a></li>
+                {% if viewing %}
+                    <li class="active">Exame</li>
+                {% else %}
+                    <li class="active">Novo Exame</li>
+                {% endif %}
+            </ol>
 
-    <!-- Mensagens geradas na view -->
-    {% if messages %}
-        {% for message in messages %}
-            {% if message.tags == "success" %}
-                <script>showSuccessMessage('{{ message }}')</script>
-            {% endif %}
-            {% if message.tags == "warning" %}
-                <script>showWarningMessage('{{ message }}')</script>
-            {% endif %}
-            {% if message.tags == "error" %}
-                <script>showErrorMessage('{{ message }}')</script>
-            {% endif %}
-            {% if message.tags == "info" %}
-                <script>showInfoMessage('{{ message }}')</script>
-            {% endif %}
-        {% endfor %}
-    {% endif %}
-
-    {% if medical_record_form.errors %}
-        <script>showErrorMessage('Exame não salvo. Os campos marcados com (*) são obrigatórios')</script>
-    {% endif %}
-
-    <div class="tab-content">
-        <div class="row">
-            <div class="col-md-1"></div>
-            <div class="col-md-10">
-                <div class="container span6 offset3 well ">
-                    <div class="row">
-                        <div class="col-xs-6 col-sm-6">
-                            <div class="form-group">
-                                <label>Data</label>
-                                <div class="input-group  input-group-sm">
-                                    {{ complementary_exam_form.date }}
-                                </div>
-                            </div>
-                        </div>
-                        <div class="col-xs-6 col-sm-6">
-                            <div class="form-group">
-                                <label>Realizado em</label>
-                                <div class="input-group  input-group-sm">
-                                    {{ complementary_exam_form.exam_site }}
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="row">
-                        <div class="col-xs-12 col-sm-12">
-                            <div class="form-group">
-                                <label>Descrição</label>
-                                <div class="input-group  input-group-sm ">
-                                    {{ complementary_exam_form.description }}
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="row">
-                        <div class="col-xs-6 col-sm-6">
-                            <div class="form-group">
-                                <label>CRM</label>
-                                <div class="input-group  input-group-sm">
-                                    {{ complementary_exam_form.doctor_register }}
-                                </div>
-                            </div>
-                        </div>
-                        <div class="col-xs-6 col-sm-6">
-                            <div class="form-group">
-                                <label>Nome do médico</label>
-                                <div class="input-group  input-group-sm">
-                                    {{ complementary_exam_form.doctor }}
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="row">
-                        <div class="col-xs-6 col-sm-8">
-                            <div class="form-group">
-                                <label>Anexos</label>
-                                <table class="table table-bordered">
-                                    <thead>
-                                        <tr>
-                                            <th>Arquivos</th>
-                                            {% if not viewing %}
-                                            <th></th>
-                                            <th></th>
-                                            {% endif %}
-                                        </tr>
-                                    </thead>
-                                    <tbody>
-                                    {% if not exam_file_list %}
-                                        <tr>
-                                            <td>(sem anexos)</td>
-                                            {% if not viewing %}
-                                            <td></td>
-                                            <td></td>
-                                            {% endif %}
-                                        </tr>
-                                    {% else %}
-                                        {% for exam_file in exam_file_list %}
-                                        <tr>
-                                            <td>{{ exam_file.content }}</td>
-                                            {% if not viewing %}
-                                            <td><a class="glyphicon glyphicon-remove" data-toggle="tooltip" data-placement="right" title="Remover" style="color: indianred" onclick="show_modal_remove({{ patient_id }}, {{ exam_file.id }})"></a></td>
-                                            <td><a class="glyphicon glyphicon-download-alt" data-toggle="tooltip" data-placement="right" title="Download"></a></td>
-                                            {% endif %}
-                                        </tr>
-                                        {% endfor %}
-                                    {% endif %}
-                                    </tbody>
-                                </table>
-                            </div>
-                        </div>
-                    </div>
-                    {% if not viewing %}
-                    <div class="row">
-                        <div class="col-xs-6 col-sm-6">
-                            <div class="form-group">
-                                {{ file_form.content }}
-                            </div>
-                        </div>
-                        <div class="col-xs-6 col-sm-6">
-                            <div class="form-group">
-                                <button name="action" value="upload" type="submit" class="btn-primary">Upload</button>
-                            </div>
-                        </div>
-                    </div>
+            <!-- Mensagens geradas na view -->
+            {% if messages %}
+                {% for message in messages %}
+                    {% if message.tags == "success" %}
+                        <script>showSuccessMessage('{{ message }}')</script>
                     {% endif %}
+                    {% if message.tags == "warning" %}
+                        <script>showWarningMessage('{{ message }}')</script>
+                    {% endif %}
+                    {% if message.tags == "error" %}
+                        <script>showErrorMessage('{{ message }}')</script>
+                    {% endif %}
+                    {% if message.tags == "info" %}
+                        <script>showInfoMessage('{{ message }}')</script>
+                    {% endif %}
+                {% endfor %}
+            {% endif %}
+
+            {% if medical_record_form.errors %}
+                <script>showErrorMessage('Exame não salvo. Os campos marcados com (*) são obrigatórios')</script>
+            {% endif %}
+
+            <div class="tab-content">
+                <div class="row">
+                    <div class="col-md-1"></div>
+                    <div class="col-md-10">
+                        <div class="container span6 offset3 well ">
+                            <div class="row">
+                                <div class="col-xs-6 col-sm-6">
+                                    <div class="form-group">
+                                        <label>Data</label>
+                                        <div class="input-group  input-group-sm">
+                                            {{ complementary_exam_form.date }}
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="col-xs-6 col-sm-6">
+                                    <div class="form-group">
+                                        <label>Realizado em</label>
+                                        <div class="input-group  input-group-sm">
+                                            {{ complementary_exam_form.exam_site }}
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="col-xs-12 col-sm-12">
+                                    <div class="form-group">
+                                        <label>Descrição</label>
+                                        <div class="input-group  input-group-sm ">
+                                            {{ complementary_exam_form.description }}
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="col-xs-6 col-sm-6">
+                                    <div class="form-group">
+                                        <label>CRM</label>
+                                        <div class="input-group  input-group-sm">
+                                            {{ complementary_exam_form.doctor_register }}
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="col-xs-6 col-sm-6">
+                                    <div class="form-group">
+                                        <label>Nome do médico</label>
+                                        <div class="input-group  input-group-sm">
+                                            {{ complementary_exam_form.doctor }}
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="col-xs-6 col-sm-6">
+                                    <div class="form-group">
+                                        <label>Anexos</label>
+                                        <table class="table table-bordered">
+                                            <thead>
+                                            <tr>
+                                                <th>Arquivos</th>
+                                                {% if not viewing %}
+                                                    <th></th>
+                                                {% endif %}
+                                            </tr>
+                                            </thead>
+                                            <tbody>
+                                            {% if not exam_file_list %}
+                                                <tr>
+                                                    <td>(sem anexos)</td>
+                                                    {% if not viewing %}
+                                                        <td></td>
+                                                    {% endif %}
+                                                </tr>
+                                            {% else %}
+                                                {% for exam_file in exam_file_list %}
+                                                    <tr>
+                                                        <td>{{ exam_file.content }}</td>
+                                                        {% if not viewing %}
+                                                            <td><a class="glyphicon glyphicon-remove" data-toggle="tooltip" data-placement="right" title="Remover" style="color: indianred" onclick="show_modal_remove({{ patient_id }}, {{ exam_file.id }})"></a></td>
+                                                        {% endif %}
+                                                    </tr>
+                                                {% endfor %}
+                                            {% endif %}
+                                            </tbody>
+                                        </table>
+                                    </div>
+                                </div>
+                            </div>
+                            {% if not viewing %}
+                                <div class="row">
+                                    <div class="col-xs-6 col-sm-6">
+                                        <div class="form-group">
+                                            {{ file_form.content }}
+                                        </div>
+                                    </div>
+                                    <div class="col-xs-6 col-sm-6">
+                                        <div class="form-group">
+                                            <button name="action" value="upload" type="submit" class="btn-primary">Upload</button>
+                                        </div>
+                                    </div>
+                                </div>
+                            {% endif %}
+                        </div>
+                    </div>
+                    <div class="col-md-1"></div>
                 </div>
             </div>
-            <div class="col-md-1"></div>
+
+
         </div>
-    </div>
-
-
-    </div>
     </div>
     <div class="col-md-1">
     </div>
 
     {% if not viewing %}
-    <div class="row">
-        <div class="col-md-1">
-        </div>
-        <div class="col-md-10">
-            <div class="btn-group pull-right">
-                <button name="action" value="remove" type="submit" class="btn btn-secondary">Excluir</button>
-                <button name="action" value="save" type="submit" class="btn btn-primary">Salvar</button>
+        <div class="row">
+            <div class="col-md-1">
+            </div>
+            <div class="col-md-10">
+                <div class="btn-group pull-right">
+                    <button name="action" value="remove" type="button" class="btn btn-secondary" onclick="show_modal_remove_for_complementary_exam()">Excluir</button>
+                    <button name="action" value="save" type="submit" class="btn btn-primary">Salvar</button>
+                </div>
+            </div>
+            <div class="col-md-1">
             </div>
         </div>
-        <div class="col-md-1">
-        </div>
-    </div>
     {% endif %}
 
     <div class="modal fade" id="modalRemove" tabindex="-1" role="dialog" aria-labelledby="myModalLabel"
