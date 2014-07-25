@@ -31,27 +31,32 @@ urlpatterns = patterns(
     url(r'^patient/medical_record/cid-10/$', 'quiz.views.search_cid10_ajax', name='cid10_search'),
 
     url(r'^patient/(?P<patient_id>\d+)/medical_record/(?P<medical_record_id>\d+)/diagnosis/(?P<cid10_id>\d+)/$',
-        'quiz.views.diagnosis_create'),
+        'quiz.views.diagnosis_create', name='diagnosis_create'),
     url(r'^patient/(?P<patient_id>\d+)/medical_record/new/diagnosis/(?P<cid10_id>\d+)/$',
-        'quiz.views.medical_record_create_diagnosis_create'),
+        'quiz.views.medical_record_create_diagnosis_create', name='medical_record_diagnosis_create'),
 
     url(r'^diagnosis/delete/(?P<patient_id>\d+)/(?P<diagnosis_id>\d+)/$', 'quiz.views.diagnosis_delete',
         name='diagnosis_delete'),
 
     url(r'^patient/(?P<patient_id>\d+)/medical_record/(?P<record_id>\d+)/diagnosis/(?P<diagnosis_id>\d+)/exam/new/$',
         'quiz.views.exam_create', name='exam_create'),
-    url(r'^patient/(?P<patient_id>\d+)/medical_record/edit/(?P<record_id>\d+)/diagnosis/(?P<diagnosis_id>\d+)/exam/new/$',
+    url(
+        r'^patient/(?P<patient_id>\d+)/medical_record/edit/(?P<record_id>\d+)/diagnosis/(?P<diagnosis_id>\d+)/exam/new/$',
         'quiz.views.exam_create', name='exam_create'),
 
-    url(r'^patient/(?P<patient_id>\d+)/medical_record/(?P<record_id>\d+)/diagnosis/(?P<diagnosis_id>\d+)/exam/(?P<exam_id>\d+)/$',
+    url(
+        r'^patient/(?P<patient_id>\d+)/medical_record/(?P<record_id>\d+)/diagnosis/(?P<diagnosis_id>\d+)/exam/(?P<exam_id>\d+)/$',
         'quiz.views.exam_view', name='exam_view'),
-    url(r'^patient/(?P<patient_id>\d+)/medical_record/edit/(?P<record_id>\d+)/diagnosis/(?P<diagnosis_id>\d+)/exam/(?P<exam_id>\d+)/$',
+    url(
+        r'^patient/(?P<patient_id>\d+)/medical_record/edit/(?P<record_id>\d+)/diagnosis/(?P<diagnosis_id>\d+)/exam/(?P<exam_id>\d+)/$',
         'quiz.views.exam_view', name='exam_view'),
 
-    url(r'^patient/(?P<patient_id>\d+)/medical_record/edit/(?P<record_id>\d+)/diagnosis/(?P<diagnosis_id>\d+)/exam/edit/(?P<exam_id>\d+)/$',
+    url(
+        r'^patient/(?P<patient_id>\d+)/medical_record/edit/(?P<record_id>\d+)/diagnosis/(?P<diagnosis_id>\d+)/exam/edit/(?P<exam_id>\d+)/$',
         'quiz.views.exam_edit', name='exam_edit'),
 
-    url(r'^diagnosis/delete/(?P<patient_id>\d+)/(?P<diagnosis_id>\d+)/$', 'quiz.views.diagnosis_delete', name='diagnosis_delete'),
+    url(r'^diagnosis/delete/(?P<patient_id>\d+)/(?P<diagnosis_id>\d+)/$', 'quiz.views.diagnosis_delete',
+        name='diagnosis_delete'),
     url(r'^exam/delete/(?P<patient_id>\d+)/(?P<exam_file_id>\d+)/$', 'quiz.views.exam_delete', name='exam_delete'),
 
     url(r'^diagnosis/update/(?P<diagnosis_id>\d+)/$', 'quiz.views.diagnosis_update', name='diagnosis_update'),

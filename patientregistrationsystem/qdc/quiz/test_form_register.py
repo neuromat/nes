@@ -5,7 +5,8 @@ from django.test.client import RequestFactory
 from datetime import date
 from models import ClassificationOfDiseases, MedicalRecordData, Diagnosis
 from views import User, GenderOption, SchoolingOption, reverse, Patient, patient_update, patient, restore_patient, \
-    medical_record_view, medical_record_update, diagnosis_create, diagnosis_delete
+    medical_record_view, medical_record_update, diagnosis_create, diagnosis_delete, \
+    medical_record_create_diagnosis_create
 
 ACTION = 'action'
 CPF_ID = 'cpf_id'
@@ -376,7 +377,7 @@ class FormValidation(TestCase):
         id_patient = 99999
 
         # Create an instance of a GET request.
-        request = self.factory.get(reverse(PATIENT_VIEW, args=[1]))
+        request = self.factory.get(reverse(PATIENT_VIEW, args=[id_patient, ]))
         request.user = self.user
 
         try:
@@ -412,6 +413,9 @@ class FormValidation(TestCase):
         self.assertContains(response, patient_mock.cpf_id)
 
     def test_views(self):
+        """
+        Tests aleatorios de views para checar robustez
+        """
         client = Client()
         self.assertEqual(client.get('/response').status_code, 404)
         self.assertEqual(client.get('/notfound').status_code, 404)
@@ -436,6 +440,72 @@ class FormValidation(TestCase):
         cid10.save()
 
         return cid10
+
+    def test_medical_record_create_diagnosis_create(self):
+        patient_mock = self.create_patient_mock()
+        cid10_mock = self.create_cid10_mock()
+
+        # Create an instance of a GET request.
+        request = self.factory.get(reverse('medical_record_diagnosis_create', args=[patient_mock.pk, cid10_mock.pk, ]))
+        request.user = self.user
+
+        response = medical_record_create_diagnosis_create(request, patient_id=patient_mock.pk, cid10_id=cid10_mock.pk)
+        self.assertEqual(response.status_code, 302)
+
+        self.assertEqual(Diagnosis.objects.filter(medical_record_data=MedicalRecordData.objects.filter(
+            patient_id=Patient.objects.get(pk=patient_mock.pk)).first()).count(), 1)
+
+        medical_record_data = MedicalRecordData.objects.filter(
+            patient_id=Patient.objects.get(pk=patient_mock.pk)).first()
+
+        url = reverse('medical_record_view', args=[patient_mock.pk, medical_record_data.pk, ])
+        request = self.factory.get(url + "?status=edit")
+        request.user = self.user
+
+        response = medical_record_view(request, patient_mock.pk, medical_record_data.pk)
+        self.assertEqual(response.status_code, 200)
+        # self.assertContains(response, 'status_mode')
+
+        try:
+            url = reverse('medical_record_view', args=[patient_mock.pk, 9999, ])
+            request = self.factory.get(url + "?status=edit")
+            self.assertRaises(medical_record_view(request, patient_mock.pk, 9999))
+
+        except Http404:
+            pass
+
+        url = reverse("medical_record_edit", args=[patient_mock.pk, medical_record_data.pk, ])
+        request = self.factory.get(url + "?status=edit")
+        request.user = self.user
+
+        response = medical_record_update(request, patient_id=patient_mock.pk, record_id=medical_record_data.pk)
+        self.assertEqual(response.status_code, 200)
+
+        try:
+            url = reverse("medical_record_edit", args=[patient_mock.pk, 9999, ])
+            request = self.factory.get(url + "?status=edit")
+            request.user = self.user
+            response = medical_record_update(request, patient_id=patient_mock.pk, record_id=9999)
+            self.assertEqual(response.status_code, 200)
+        except Http404:
+            pass
+
+        url = reverse('medical_record_edit', args=(patient_mock.pk, medical_record_data.pk,))
+        response = self.client.post(url + "?status=edit", self.data)
+        self.assertEqual(response.status_code, 302)
+
+        self.create_cid10_to_search()
+        cid10_mock = ClassificationOfDiseases.objects.filter(code='B01').first()
+
+        request = self.factory.get(
+            reverse('diagnosis_create', args=[patient_mock.pk, medical_record_data.pk, cid10_mock.id, ]))
+        request.user = self.user
+
+        response = diagnosis_create(request, patient_id=patient_mock.pk, medical_record_id=medical_record_data.pk,
+                                    cid10_id=cid10_mock.pk)
+        self.assertEqual(response.status_code, 302)
+        self.assertEqual(Diagnosis.objects.filter(medical_record_data=MedicalRecordData.objects.filter(
+            patient_id=Patient.objects.get(pk=patient_mock.pk)).first()).count(), 2)
 
     def test_cid_search(self):
         self.create_cid10_to_search()
