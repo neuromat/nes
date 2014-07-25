@@ -241,7 +241,7 @@ class Diagnosis(models.Model):
         unique_together = ('medical_record_data', 'classification_of_diseases',)
 
     def __unicode__(self):
-        return unicode(self.classification_of_diseases)
+        return unicode(self.classification_of_diseases), self.date, self.description
 
 
 class ComplementaryExam(models.Model):

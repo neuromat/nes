@@ -56,8 +56,7 @@ class PatientForm(ModelForm):
             'marital_status_opt': Select(attrs={'class': 'form-control', 'id': 'marital_status'}),
             'date_birth_txt': DateInput(attrs={'class': 'form-control', 'placeholder': 'Data',
                                                'id': "birthday", 'required': "",
-                                               'data-error': "Data de nascimento deve ser preenchida"},
-            )
+                                               'data-error': "Data de nascimento deve ser preenchida"}, )
         }
         error_messages = {
             'name_txt': {
@@ -174,11 +173,13 @@ class UserFormUpdate(UserForm):
 class DiagnosisForm(ModelForm):
     class Meta:
         model = Diagnosis
-        fields = ['date', 'description']
-        widgets = {
-            'date': DateInput(attrs={'class': 'form-control', 'placeholder': 'Data', 'id': 'diagnosis_date'}),
-            'description': Textarea(attrs={'class': 'form-control', 'placeholder': 'Observação', 'cols': '100'}),
-        }
+        # fields = ['date', 'description']
+        # widgets = {
+        #     'date': DateInput(attrs={'class': 'form-control', 'placeholder': 'Data', 'id': 'date',
+        #                              'style': 'display: none'}),
+        #     'description': Textarea(attrs={'class': 'form-control', 'placeholder': 'Observação', 'cols': '100',
+        #                                    'id': 'description', 'style': 'display: none'}),
+        # }
 
 
 class ComplementaryExamForm(ModelForm):

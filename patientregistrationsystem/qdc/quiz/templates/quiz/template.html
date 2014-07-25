@@ -28,6 +28,36 @@
 
     <script src="{% static 'quiz/js/quiz.js' %}"></script>
     <script type="text/javascript" src="{% static 'quiz/js/register.js' %}"></script>
+    <style type="text/css">
+
+        /* Sticky footer styles
+        -------------------------------------------------- */
+        body {
+            overflow-x: hidden;
+        }
+
+        {##}
+        .footer /*rodapé do sistema */
+                                          {
+            background-color: transparent;
+            height: 30px;
+            text-align: left;
+            border: transparent;
+            font-size: 8pt;
+            font-family: Verdana;
+            font-weight: bold;
+            width: 30%;
+            color: Black;
+            position: fixed;
+            bottom: 0px;
+            left: 0px;
+        }
+
+        .thumbnail {
+            border: 0 none;
+            box-shadow: none;
+        }
+    </style>
 
     {% block header %}
     {% endblock %}
@@ -47,16 +77,27 @@
 
         <div class="navbar-header">
         </div>
+
         <div class="collapse navbar-collapse navbar-ex1-collapse">
             <ol class="nav navbar-nav navbar-right">
-                <li><a> Usuário: {% if user.first_name %} {{ user.first_name }} {% else %} {{ user.username }} {% endif %}</a></li>
-                <li><a href="/password_change">Alterar senha</a></li>
-                <li><a href="/logout">Sair</a></li>
+                <li>
+                    <a class="btn-default dropdown-toggle navbar-inverse"
+                       data-toggle="dropdown" href="#">
+                        <span style="font-size: 0.85em;" class="glyphicon glyphicon-user"></span> {{ user.username }}
+                        <span class="caret"></span>
+                    </a>
+                    <ul class="dropdown dropdown-user dropdown-menu" role="menu">
+                        <li><a href="/password_change">Alterar senha</a></li>
+                        <li><a href="/logout">Sair</a></li>
+                    </ul>
+
+                </li>
             </ol>
         </div>
     </nav>
     <div id="fix-for-navbar-fixed-top-spacing" style="height: 62px;">&nbsp;</div>
-</div> <!-- Cabeçalho da página -->
+</div>
+<!-- Cabeçalho da página -->
 
 {% block form %}{% endblock %}
 
@@ -98,7 +139,8 @@
                 </li>
 
             </ul>
-        </div><!-- Esta div define o Menu principal -->
+        </div>
+        <!-- Esta div define o Menu principal -->
 
         <!-- Esta div abrange a maior parte do documento,
         -- Ela define as sub-páginas associadas a
@@ -117,7 +159,21 @@
 {% block end_form %}
 {% endblock %}
 
-    <!-- footer -->
+<!-- footer -->
+{#<div id="google-footer-bar">#}
+{#    <div id="footer content clearfix">#}
+{#        <p>Example courtesy <a href="http://martinbean.co.uk">Martin Bean</a> and <a#}
+{#                href="http://ryanfait.com/sticky-footer/">Ryan Fait</a>.</p>#}
+{##}
+{#    </div>#}
+{#</div>#}
+
+
+<div class="footer" style="display: inherit">
+    <p><a href="http://ccsl.ime.usp.br"><img src="{% static 'quiz/imgs/logo-ccsl-sm.png' %}" alt="" height="34px"
+                                             width="96px"></a></p>
+</div>
+
 {% comment %}
     <div class="row">
         <div class="col-md-12">
