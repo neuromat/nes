@@ -80,6 +80,7 @@ DATABASES = {
         'USER': 'qdc',
         'PASSWORD': 'DEVqdc1716',
         #'HOST': '200.144.254.136',
+        #'TEST_NAME': 'test_evandro',
     }
 }
 

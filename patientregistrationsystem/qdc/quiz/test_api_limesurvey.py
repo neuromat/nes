@@ -50,30 +50,30 @@ class ABCSearchEngineTest(TestCase):
         surveys = Questionnaires()
         list_active_surveys = surveys.find_all_active_questionnaires()
 
-        if list_active_surveys:
+        self.assertNotEqual(list_active_surveys, None)
 
-            survey = list_active_surveys[0]
-            sid = int(survey['sid'])
+        survey = list_active_surveys[0]
+        sid = int(survey['sid'])
 
-            list_participants = self.server.list_participants(self.session_key, sid)
+        list_participants = self.server.list_participants(self.session_key, sid)
 
-            participant_data = {'email': 'evandro2001@hotmail.com', 'lastname': 'rocha', 'firstname': 'evandro'}
-            participant_data_result = surveys.add_participant(sid, [participant_data])
+        participant_data = {'email': 'evandro2001@hotmail.com', 'lastname': 'rocha', 'firstname': 'evandro'}
+        participant_data_result = surveys.add_participant(sid, [participant_data])
 
-            # verificar se info retornada eh a mesma
-            self.assertEqual(participant_data_result[0]['email'], participant_data['email'])
-            self.assertEqual(participant_data_result[0]['lastname'], participant_data['lastname'])
-            self.assertEqual(participant_data_result[0]['firstname'], participant_data['firstname'])
+        # verificar se info retornada eh a mesma
+        self.assertEqual(participant_data_result[0]['email'], participant_data['email'])
+        self.assertEqual(participant_data_result[0]['lastname'], participant_data['lastname'])
+        self.assertEqual(participant_data_result[0]['firstname'], participant_data['firstname'])
 
-            list_participants_new = self.server.list_participants(self.session_key, sid)
+        list_participants_new = self.server.list_participants(self.session_key, sid)
 
-            self.assertEqual(len(list_participants_new), len(list_participants) + 1)
+        self.assertEqual(len(list_participants_new), len(list_participants) + 1)
 
-            token_id = participant_data_result[0]['tid']
-            tokens_to_delete = []
-            tokens_to_delete.append(token_id)
+        token_id = participant_data_result[0]['tid']
+        tokens_to_delete = []
+        tokens_to_delete.append(token_id)
 
-            # remover participante do questionario
-            result = self.server.delete_participants(self.session_key, sid, [token_id])
+        # remover participante do questionario
+        result = self.server.delete_participants(self.session_key, sid, [token_id])
 
-            self.assertEqual(result[str(token_id)], 'Deleted')
+        self.assertEqual(result[str(token_id)], 'Deleted')

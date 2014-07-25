@@ -508,7 +508,7 @@ def search_cid10_ajax(request):
 def medical_record_create(request, patient_id, template_name='quiz/medical_record.html'):
     form = DiagnosisForm(request.POST or None)
 
-    patient_new = Patient.objects.get(number_record=patient_id)
+    patient_new = get_object_or_404(Patient, pk=patient_id)
 
     return render(request, template_name,
                   {'patient_id': patient_id, 'name_patient': patient_new.name_txt,
