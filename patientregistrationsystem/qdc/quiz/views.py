@@ -3,6 +3,7 @@ from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib.auth.decorators import login_required, permission_required
 from django.http import HttpResponseRedirect
 from django.core.urlresolvers import reverse
+from django.core.files.storage import FileSystemStorage
 from django.shortcuts import render_to_response
 
 from models import Patient, SocialDemographicData, SocialHistoryData, FleshToneOption, \
@@ -655,6 +656,8 @@ def exam_create(request, patient_id, record_id, diagnosis_id, template_name="qui
             if file_form.is_valid():
                 new_file_data = file_form.save(commit=False)
                 new_file_data.exam = new_complementary_exam
+                # new_file_data.content.storage = FileSystemStorage(location='/media/photos')
+                # new_file_data.content.upload_to = "test"
                 new_file_data.save()
 
             messages.success(request, 'Exame salvo com sucesso.')
