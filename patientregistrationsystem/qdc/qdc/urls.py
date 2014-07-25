@@ -1,4 +1,6 @@
+from django.conf import settings
 from django.conf.urls import patterns, include, url
+from django.conf.urls.static import static
 from forms import PasswordChangeFormCustomized
 from django.contrib import admin
 
@@ -34,4 +36,4 @@ urlpatterns = patterns(
     (r'^user/password/done/$',
      'django.contrib.auth.views.password_reset_complete'),
 
-)
+) + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
