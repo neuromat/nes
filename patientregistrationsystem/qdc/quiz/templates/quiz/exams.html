@@ -137,18 +137,12 @@
                                             <thead>
                                             <tr>
                                                 <th>Arquivos</th>
-                                                {% if not viewing %}
-                                                    <th></th>
-                                                {% endif %}
                                             </tr>
                                             </thead>
                                             <tbody>
                                             {% if not exam_file_list %}
                                                 <tr>
                                                     <td>(sem anexos)</td>
-                                                    {% if not viewing %}
-                                                        <td></td>
-                                                    {% endif %}
                                                 </tr>
                                             {% else %}
                                                 {% for exam_file in exam_file_list %}
