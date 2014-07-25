@@ -10,14 +10,15 @@
         }
         function show_modal_remove_for_complementary_exam (){
             var part
-{#            console.log(document.URL);#}
-{#            console.log(typeof document.URL);#}
+            {#            console.log(document.URL);#}
+            {#            console.log(typeof document.URL);#}
             part = document.URL.split("exam/edit")
-{#            console.log(part[0]+'exam/remove'+part[1]);#}
+            {#            console.log(part[0]+'exam/remove'+part[1]);#}
             var  modal_remove = document.getElementById('removeExam');
             modal_remove.setAttribute( "href", part[0]+'exam/remove'+part[1]);
             $('#modalRemove').modal('show');
         }
+        $(function(){$("[data-toggle=tooltip]").tooltip();})
     </script>
 {% endblock %}
 
@@ -152,10 +153,13 @@
                                             {% else %}
                                                 {% for exam_file in exam_file_list %}
                                                     <tr>
-                                                        <td><a href="{{ exam_file.content.url }}">{{ exam_file.content.name }}</a></td>
-                                                        {% if not viewing %}
-                                                            <td><a class="glyphicon glyphicon-remove" data-toggle="tooltip" data-placement="right" title="Remover" style="color: indianred" onclick="show_modal_remove({{ patient_id }}, {{ exam_file.id }})"></a></td>
-                                                        {% endif %}
+                                                        <td>
+                                                            {{ exam_file.content.name }}
+                                                            {% if not viewing %}
+                                                                <a class="glyphicon glyphicon-remove pull-right" data-toggle="tooltip" data-placement="right" title="Remover" style="color: indianred" onclick="show_modal_remove({{ patient_id }}, {{ exam_file.id }})"></a>
+                                                            {% endif %}
+                                                            <a class="glyphicon glyphicon-download-alt pull-right" data-toggle="tooltip" data-placement="bottom" title="download"  href="{{ exam_file.content.url }}"></a>
+                                                        </td>
                                                     </tr>
                                                 {% endfor %}
                                             {% endif %}
