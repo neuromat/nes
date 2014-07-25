@@ -560,8 +560,33 @@ def medical_record_update(request, patient_id, record_id, template_name="quiz/me
         lists_diagnosis_exams = zip(diagnosis_list, complementary_exams_list)
 
         if request.method == "POST":
-            redirect_url = reverse("patient_edit", args=(patient_id, ))
-            return HttpResponseRedirect(redirect_url + "?currentTab=3")
+
+            # ESR
+
+            if request.POST['action'] == "finish":
+
+                redirect_url = reverse("patient_edit", args=(patient_id, ))
+                return HttpResponseRedirect(redirect_url + "?currentTab=3")
+
+            elif request.POST['action'][0:7] == "detail-":
+
+                diagnosis_id = int(request.POST['action'][7:])
+                diagnosis = get_object_or_404(Diagnosis, pk=diagnosis_id)
+
+                ## parei aqui
+
+                # diagnosis_form = DiagnosisForm({})
+                #
+                # if diagnosis_form.is_valid():
+                #     diagnosis_form.save()
+                #     messages.success(request, 'Diagnóstico editado com sucesso.')
+                #
+                # medical_record = MedicalRecordData.objects.get(pk=diagnosis.medical_record_data)
+
+                redirect_url = reverse("medical_record_edit", args=(patient_id, record_id))
+                return HttpResponseRedirect(redirect_url + "?status=edit")
+
+            # ESR
 
         return render(request, template_name,
                       {'name_patient': current_patient.name_txt,
