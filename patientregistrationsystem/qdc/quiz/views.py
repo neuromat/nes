@@ -3,6 +3,7 @@ from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib.auth.decorators import login_required, permission_required
 from django.http import HttpResponseRedirect
 from django.core.urlresolvers import reverse
+from django.core.files.storage import FileSystemStorage
 from django.shortcuts import render_to_response
 
 from models import Patient, SocialDemographicData, SocialHistoryData, FleshToneOption, \
@@ -649,6 +650,8 @@ def exam_create(request, patient_id, record_id, diagnosis_id, template_name="qui
             if file_form.is_valid():
                 new_file_data = file_form.save(commit=False)
                 new_file_data.exam = new_complementary_exam
+                # new_file_data.content.storage = FileSystemStorage(location='/media/photos')
+                # new_file_data.content.upload_to = "test"
                 new_file_data.save()
 
             messages.success(request, 'Exame salvo com sucesso.')
@@ -694,9 +697,8 @@ def exam_edit(request, patient_id, record_id, diagnosis_id, exam_id, template_na
                     new_file_data.exam = complementary_exam
                     new_file_data.save()
 
-                messages.success(request, 'Exame salvo com sucesso.')
-
                 if request.POST['action'] == "save":
+                    messages.success(request, 'Exame salvo com sucesso.')
                     redirect_url = reverse("medical_record_edit", args=(patient_id, record_id, ))
                     return HttpResponseRedirect(redirect_url + "?status=edit")
 
@@ -731,7 +733,15 @@ def exam_view(request, patient_id, record_id, diagnosis_id, exam_id, template_na
                    'record_id': record_id, 'name_patient': p.name_txt})
 
 
-def exam_delete(request, patient_id, exam_file_id):
+def exam_delete(request, patient_id, record_id, exam_id):
+    complementary_exam = ComplementaryExam.objects.get(pk=exam_id)
+    complementary_exam.delete()
+    messages.success(request, 'Exame removido com sucesso.')
+    redirect_url = reverse("medical_record_edit", args=(patient_id, record_id))
+    return HttpResponseRedirect(redirect_url + "?status=edit#tab4")
+
+
+def exam_file_delete(request, patient_id, exam_file_id):
     exam_file = get_object_or_404(ExamFile, pk=exam_file_id)
     exam_file.delete()
     messages.success(request, 'Exame removido com sucesso.')
