@@ -1,4 +1,5 @@
 # coding=utf-8
+import datetime
 from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib.auth.decorators import login_required, permission_required
 from django.http import HttpResponseRedirect
@@ -544,6 +545,7 @@ def medical_record_view(request, patient_id, record_id, template_name="quiz/medi
 
 
 def medical_record_update(request, patient_id, record_id, template_name="quiz/medical_record.html"):
+
     status_mode = request.GET['status']
     current_tab = get_current_tab(request)
 
@@ -561,8 +563,6 @@ def medical_record_update(request, patient_id, record_id, template_name="quiz/me
 
         if request.method == "POST":
 
-            # ESR
-
             if request.POST['action'] == "finish":
 
                 redirect_url = reverse("patient_edit", args=(patient_id, ))
@@ -573,20 +573,13 @@ def medical_record_update(request, patient_id, record_id, template_name="quiz/me
                 diagnosis_id = int(request.POST['action'][7:])
                 diagnosis = get_object_or_404(Diagnosis, pk=diagnosis_id)
 
-                ## parei aqui
+                diagnosis.description = request.POST['description-' + str(diagnosis_id)]
 
-                # diagnosis_form = DiagnosisForm({})
-                #
-                # if diagnosis_form.is_valid():
-                #     diagnosis_form.save()
-                #     messages.success(request, 'Diagnóstico editado com sucesso.')
-                #
-                # medical_record = MedicalRecordData.objects.get(pk=diagnosis.medical_record_data)
+                diagnosis.date = datetime.datetime.strptime(request.POST['date-' + str(diagnosis_id)], '%d/%m/%Y')
+                diagnosis.save()
 
                 redirect_url = reverse("medical_record_edit", args=(patient_id, record_id))
                 return HttpResponseRedirect(redirect_url + "?status=edit")
-
-            # ESR
 
         return render(request, template_name,
                       {'name_patient': current_patient.name_txt,

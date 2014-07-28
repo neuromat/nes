@@ -136,9 +136,12 @@
                                             <td></td>
                                         </tr>
                                     {% else %}
+
                                         {% for diagnosis, diagnosis_exams in lists_diagnosis_exams %}
+
                                             <tr>
-                                                <td>{{ diagnosis.classification_of_diseases }}<br>
+                                                <td>
+                                                    {{ diagnosis.classification_of_diseases }}<br/>
                                                     {% if editing %}
                                                         <a id="details-{{ diagnosis.id }}" onclick="showDetails({{ diagnosis.id }})">+ Detalhes</a>
                                                         <div class="row">
@@ -146,8 +149,7 @@
                                                                 <div class="form-group">
                                                                     <label style="display: none" id="description-label-{{ diagnosis.id }}">Observações</label>
                                                                     <div class="input-group  input-group-sm">
-    {#                                                                    {{ diagnosis_form.description }}#}
-                                                                        <textarea class="form-control" cols="100" id="description-{{ diagnosis.id }}" name="description-{{ diagnosis.id }}" placeholder="Observação" rows="10" style="display: none"></textarea>
+                                                                        <textarea class="form-control" cols="100" id="description-{{ diagnosis.id }}" name="description-{{ diagnosis.id }}" placeholder="Observação" rows="10" style="display: none">{{ diagnosis.description }}</textarea>
                                                                     </div>
                                                                 </div>
                                                             </div>
@@ -155,15 +157,13 @@
                                                                 <div class="form-group">
                                                                     <label style="display: none" id="date-label-{{ diagnosis.id }}">Data</label>
                                                                     <div class="input-group  input-group-sm">
-    {#                                                                    {{ diagnosis_form.date }}#}
-                                                                        <input class="form-control" id="date-{{ diagnosis.id }}" name="date-{{ diagnosis.id }}" placeholder="Data" style="display: none" type="text">
+                                                                        <input value="{{ diagnosis.date }}" class="form-control" id="date-{{ diagnosis.id }}" name="date-{{ diagnosis.id }}" placeholder="Data" style="display: none" type="text">
                                                                     </div>
                                                                 </div>
                                                             </div>
                                                             <div class="col-xs-6 col-sm-2">
                                                                 <div class="form-group">
                                                                     </br>
-    {#                                                                <a class="glyphicon glyphicon-ok" style="display: none" id="confirm-{{ diagnosis.id }}" href="/quiz/diagnosis/update/{{ diagnosis.id }}"></a>#}
                                                                     <button class="glyphicon glyphicon-ok" style="display: none" id="confirm-{{ diagnosis.id }}" type="submit" name="action" value="detail-{{ diagnosis.id }}" onclick="hideDetails({{ diagnosis.id }});"></button>
                                                                 </div>
                                                             </div>
@@ -176,29 +176,33 @@
                                                            onclick="show_modal_remove({{ patient_id }}, {{ diagnosis.id }})"></a>
                                                     {% endif %}
                                                 </td>
-                                                {% if diagnosis_exams %}
-                                                    {% for exams in diagnosis_exams %}
-                                                        <td>
-                                                            {% if editing %}
-                                                            <a href="diagnosis/{{  diagnosis.id }}/exam/edit/{{ exams.id }}/?status={{ status_mode }}">{{ exams.description }}</a>
-                                                            {% else %}
-                                                            <a href="diagnosis/{{  diagnosis.id }}/exam/{{ exams.id }}/?status={{ status_mode }}">{{ exams.description }}</a>
-                                                            {% endif %}
-                                                        </td>
-                                                        <tr></tr>
-                                                        <td style="border: 0;"></td>
-                                                        <td style="border: 0;"></td>
-                                                    {% endfor %}
-                                                {% else %}
-                                                    {% if not editing %}
-                                                        <td></td>
-                                                    {% endif %}
-                                                {% endif %}
-                                                {% if editing %}
-                                                    <td><a href="diagnosis/{{ diagnosis.id }}/exam/new/" class="btn btn-primary">Inserir exame</a></td>
-                                                {% else %}
-                                                    <td style="border: 0;"></td>
-                                                {% endif %}
+
+                                                <td>
+                                                    <table>
+
+                                                        {% if diagnosis_exams %}
+                                                            {% for exams in diagnosis_exams %}
+                                                                <tr>
+                                                                    <td>
+                                                                        {% if editing %}
+                                                                            <a href="diagnosis/{{  diagnosis.id }}/exam/edit/{{ exams.id }}/?status={{ status_mode }}">{{ exams.description }}</a>
+                                                                        {% else %}
+                                                                            <a href="diagnosis/{{  diagnosis.id }}/exam/{{ exams.id }}/?status={{ status_mode }}">{{ exams.description }}</a>
+                                                                        {% endif %}
+                                                                    </td>
+                                                                </tr>
+                                                            {% endfor %}
+                                                        {% endif %}
+
+                                                        {% if editing %}
+                                                            <tr><td><a href="diagnosis/{{ diagnosis.id }}/exam/new/" class="btn btn-primary">Inserir exame</a></td></tr>
+                                                        {% else %}
+                                                            <tr style="border: 0;"><td></td></tr>
+                                                        {% endif %}
+
+                                                    </table>
+                                                </td>
+
                                             </tr>
                                         {% endfor %}
                                     {% endif %}
