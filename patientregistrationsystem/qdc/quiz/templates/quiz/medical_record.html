@@ -43,7 +43,7 @@
 
     <ol class="breadcrumb">
         <li>Pacientes</li>
-        {% if editing %}
+        {% if status_mode %}
             <li><a href="/quiz/patient/edit/{{ patient_id }}/?currentTab=3">{{ name_patient }}</a></li>
         {% else %}
             <li><a href="/quiz/patient/{{ patient_id }}/?currentTab=3">{{ name_patient }}</a></li>
@@ -185,9 +185,9 @@
                                                                 <tr>
                                                                     <td>
                                                                         {% if editing %}
-                                                                            <a href="diagnosis/{{  diagnosis.id }}/exam/edit/{{ exams.id }}/?status={{ status_mode }}">{{ exams.description }}</a>
+                                                                            <a href="exam/edit/{{ exams.id }}/?status={{ status_mode }}">{{ exams.description }}</a>
                                                                         {% else %}
-                                                                            <a href="diagnosis/{{  diagnosis.id }}/exam/{{ exams.id }}/?status={{ status_mode }}">{{ exams.description }}</a>
+                                                                            <a href="exam/{{ exams.id }}/?status={{ status_mode }}">{{ exams.description }}</a>
                                                                         {% endif %}
                                                                     </td>
                                                                 </tr>

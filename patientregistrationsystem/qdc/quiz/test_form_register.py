@@ -477,6 +477,7 @@ class FormValidation(TestCase):
         try:
             url = reverse('medical_record_view', args=[patient_mock.pk, 9999, ])
             request = self.factory.get(url + "?status=edit")
+            request.user = self.user
             self.assertRaises(medical_record_view(request, patient_mock.pk, 9999))
 
         except Http404:
