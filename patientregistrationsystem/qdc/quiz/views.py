@@ -191,7 +191,7 @@ def patient_update(request, patient_id, template_name="quiz/register.html"):
         # TODO: retirar este controle de comentario
         # ## teste: inicio
 
-        #TODO: reaproveitar o codigo abaixo, pois eh praticamente igual ao do inserir
+        # TODO: reaproveitar o codigo abaixo, pois eh praticamente igual ao do inserir
 
         if request.method == "POST":
 
@@ -203,7 +203,7 @@ def patient_update(request, patient_id, template_name="quiz/register.html"):
                     new_patient.cpf_id = None
 
                 new_patient.save()
-                #TODO: Este trecho abaixo pode ser refatorado, pois esta repetido em um metodo acima. Ass:@romulo
+                # TODO: Este trecho abaixo pode ser refatorado, pois esta repetido em um metodo acima. Ass:@romulo
 
                 if social_demographic_form.is_valid():
 
@@ -263,8 +263,8 @@ def patient_update(request, patient_id, template_name="quiz/register.html"):
                 if request.POST['cpf_id'] and Patient.objects.filter(cpf_id=request.POST['cpf_id']):
                     patient_form.errors['cpf_id'][0] = "Já existe paciente cadastrado com este CPF."
 
-        #TODO: retirar este controle de comentario
-        ### teste: fim
+        # TODO: retirar este controle de comentario
+        # ## teste: fim
 
         medical_data = MedicalRecordData.objects.filter(patient_id=patient_id).order_by('record_date')
 
@@ -519,7 +519,6 @@ def medical_record_view(request, patient_id, record_id, template_name="quiz/medi
 
 @login_required
 def medical_record_update(request, patient_id, record_id, template_name="quiz/medical_record.html"):
-
     status_mode = request.GET['status']
     current_tab = get_current_tab(request)
 
@@ -619,8 +618,8 @@ def diagnosis_delete(request, patient_id, diagnosis_id):
 def exam_create(request, patient_id, record_id, diagnosis_id, template_name="quiz/exams.html"):
     form = ComplementaryExamForm(request.POST or None)
 
-    diagnosis = Diagnosis.objects.get(pk=diagnosis_id)
-    current_patient = Patient.objects.get(number_record=patient_id)
+    diagnosis = get_object_or_404(Diagnosis, pk=diagnosis_id)
+    current_patient = get_object_or_404(Patient, pk=patient_id)
 
     if request.method == "POST":
         file_form = ExamFileForm(request.POST, request.FILES)
@@ -664,7 +663,6 @@ def exam_create(request, patient_id, record_id, diagnosis_id, template_name="qui
 
 @login_required
 def exam_edit(request, patient_id, record_id, exam_id, template_name="quiz/exams.html"):
-
     current_patient = Patient.objects.get(number_record=patient_id)
     complementary_exam = ComplementaryExam.objects.get(pk=exam_id)
 
@@ -709,7 +707,6 @@ def exam_edit(request, patient_id, record_id, exam_id, template_name="quiz/exams
 
 @login_required
 def exam_view(request, patient_id, record_id, exam_id, template_name="quiz/exams.html"):
-
     status_mode = request.GET['status']
 
     current_patient = Patient.objects.get(number_record=patient_id)
@@ -735,11 +732,14 @@ def exam_view(request, patient_id, record_id, exam_id, template_name="quiz/exams
                    'status_mode': status_mode})
 
 
-@login_required
+# @login_required
 def exam_delete(request, patient_id, record_id, exam_id):
-    complementary_exam = ComplementaryExam.objects.get(pk=exam_id)
-    complementary_exam.delete()
-    messages.success(request, 'Exame removido com sucesso.')
+    complementary_exam = get_object_or_404(ComplementaryExam, pk=exam_id)
+
+    if complementary_exam:
+        complementary_exam.delete()
+        messages.success(request, 'Exame removido com sucesso.')
+
     redirect_url = reverse("medical_record_edit", args=(patient_id, record_id))
     return HttpResponseRedirect(redirect_url + "?status=edit#tab4")
 

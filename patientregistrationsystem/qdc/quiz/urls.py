@@ -45,7 +45,7 @@ urlpatterns = patterns(
         'quiz.views.exam_view', name='exam_view'),
     url(r'^patient/(?P<patient_id>\d+)/medical_record/edit/(?P<record_id>\d+)/exam/edit/(?P<exam_id>\d+)/$',
         'quiz.views.exam_edit', name='exam_edit'),
-    url(r'^patient/(?P<patient_id>\d+)/medical_record/edit/(?P<record_id>\d+)/diagnosis/(\d+)/exam/remove/(?P<exam_id>\d+)/$',
+    url(r'^patient/(?P<patient_id>\d+)/medical_record/edit/(?P<record_id>\d+)/exam/remove/(?P<exam_id>\d+)/$',
         'quiz.views.exam_delete', name='exam_delete'),
 
     # exam file (delete)

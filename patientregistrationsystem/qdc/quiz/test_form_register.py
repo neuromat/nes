@@ -1,30 +1,28 @@
 # -*- coding: UTF-8 -*-
 from django.test import TestCase, Client
 from django.http import Http404
+from util_test import UtilTests
 from django.test.client import RequestFactory
 from datetime import date
-from models import ClassificationOfDiseases, MedicalRecordData, Diagnosis
-from views import User, GenderOption, SchoolingOption, reverse, Patient, patient_update, patient, restore_patient, \
-    medical_record_view, medical_record_update, diagnosis_create, diagnosis_delete, \
-    medical_record_create_diagnosis_create, exam_create, exam_edit, exam_delete, exam_view
+from views import User, GenderOption, SchoolingOption, reverse, Patient, patient_update, patient, restore_patient
 
 ACTION = 'action'
 CPF_ID = 'cpf_id'
 SEARCH_TEXT = 'search_text'
+
 PATIENT_SEARCH = 'patient_search'
 PATIENT_VIEW = 'patient_view'
 PATIENT_NEW = 'patient_new'
 PATIENT_EDIT = 'patient_edit'
 
-MEDICAL_RECORD_NEW = "medical_record_new"
-
 USER_USERNAME = 'myadmin'
 USER_PWD = 'mypassword'
 
 
-class FormValidation(TestCase):
+class PatientFormValidation(TestCase):
     user = ''
     data = {}
+    util = UtilTests()
 
     def setUp(self):
         """
@@ -129,74 +127,6 @@ class FormValidation(TestCase):
         self.client.post(reverse(PATIENT_NEW), self.data, follow=True)
         self.assertEqual(Patient.objects.filter(name_txt=name).count(), 1)
 
-    def invalid_patient_with_medical_record(self):
-        """
-        Testa inclusao de avaliacao medica
-        """
-        patient_mock = self.create_patient_mock(name=self._testMethodName)
-
-        self.fill_medical_record()
-        url = reverse(MEDICAL_RECORD_NEW, args=(patient_mock.pk,))
-        response = self.client.post(url, self.data, follow=True)
-        self.assertEqual(response.status_code, 200)
-        self.assertEqual(MedicalRecordData.objects.filter(patient=patient_mock).count(), 0)
-
-        self.fill_medical_record()
-        url = reverse(MEDICAL_RECORD_NEW, args=(patient_mock.pk,))
-        response = self.client.post(url, self.data, follow=True)
-        self.assertEqual(response.status_code, 200)
-        # TODO: Revisar este teste porque ele eh invalido
-        self.assertEqual(MedicalRecordData.objects.filter(patient=patient_mock).count(), 1)
-
-        medical_record = MedicalRecordData.objects.filter(patient=patient_mock).first()
-
-        # Create an instance of a GET request.
-        url = reverse("medical_record_view", args=(patient_mock.pk, medical_record.pk,))
-        request = self.factory.get(url + "?status=edit")
-        request.user = self.user
-
-        response = medical_record_view(request, patient_id=patient_mock.pk, record_id=medical_record.pk)
-        self.assertEqual(response.status_code, 200)
-
-        response = medical_record_update(request, patient_id=patient_mock.pk, record_id=medical_record.pk)
-        self.assertEqual(response.status_code, 200)
-
-        self.data['headache'] = '0'
-        url = reverse('medical_record_edit', args=(patient_mock.pk, medical_record.pk,))
-        response = self.client.post(url + "?status=edit", self.data)
-        self.assertEqual(response.status_code, 302)
-
-        medical_record = MedicalRecordData.objects.filter(patient=patient_mock).first()
-        self.assertEqual(medical_record.headache, '0')
-
-        self.diagnosis_create(patient_mock, medical_record)
-
-
-    def fill_medical_record(self):
-        """ Preenche os campos necessarios para criar uma avaliacao medica """
-        # pain_localization = PainLocalization.objects.create(pain_localization='pain')
-        # pain_localization.save()
-
-        self.data['inferior_members_fracture_side'] = ''
-        self.data['hormonal_dysfunction'] = '0'
-        self.data['pelvis_fracture_side'] = ''
-        self.data['scapula_fracture_side'] = ''
-        self.data['pain_localizations'] = ''
-        self.data['clavicle_fracture_side'] = ''
-        self.data['fracture_history'] = '0'
-        self.data['clavicle_surgery_side'] = ''
-        self.data['inferior_members_surgery_side'] = ''
-        self.data['pelvis_surgery_side'] = ''
-        self.data['superior_members_surgery_side'] = ''
-        self.data['hypertension'] = '0'
-        self.data['scapula_surgery_side'] = ''
-        self.data['vertigo_history'] = '0'
-        self.data['nerve_surgery_type'] = ''
-        self.data['nerve_surgery'] = '0'
-        self.data['diabetes'] = '0'
-        self.data['superior_members_fracture_side'] = ''
-        self.data['headache'] = '1'
-
     def fill_social_demographic_data(self):
         """ Criar uma opcao de Schooling """
 
@@ -244,7 +174,6 @@ class FormValidation(TestCase):
         self.assertEqual(Patient.objects.filter(name_txt=name).count(), 1)
         self.assertContains(response, u'Classe Social não calculada')
 
-
     def test_patient_valid_email(self):
         """
         Teste de email invalido
@@ -267,22 +196,12 @@ class FormValidation(TestCase):
 
         self.assertContains(response, 'Nome não preenchido')
 
-    def create_patient_mock(self, name='Pacient Test'):
-        """ Cria um paciente para ser utilizado durante os testes """
-        p_mock = Patient()
-        p_mock.name_txt = name
-        p_mock.date_birth_txt = '2001-01-15'
-        p_mock.cpf_id = '374.276.738-08'
-        p_mock.gender_opt_id = self.gender_opt.id
-        p_mock.save()
-        return p_mock
-
     def test_patient_view_and_search(self):
         """
         Teste de visualizacao de paciente apos cadastro na base de dados
         """
 
-        patient_mock = self.create_patient_mock()
+        patient_mock = self.util.create_patient_mock()
 
         # Create an instance of a GET request.
         request = self.factory.get(reverse('patient_view', args=[patient_mock.pk]))
@@ -313,7 +232,7 @@ class FormValidation(TestCase):
         """
         Teste a visualizacao de paciente
         """
-        patient_mock = self.create_patient_mock()
+        patient_mock = self.util.create_patient_mock()
 
         request = self.factory.get(reverse(PATIENT_VIEW, args=[patient_mock.pk]))
         request.user = self.user
@@ -324,7 +243,7 @@ class FormValidation(TestCase):
     def test_patient_update_and_remove(self):
         """Teste de paciente existente na base de dados """
 
-        patient_mock = self.create_patient_mock(name='Pacient Test Update')
+        patient_mock = self.util.create_patient_mock(name='Pacient Test Update')
 
         # Create an instance of a GET request.
         request = self.factory.get(reverse(PATIENT_VIEW, args=[patient_mock.pk]))
@@ -390,7 +309,7 @@ class FormValidation(TestCase):
         """Testa a recuperaracao de paciente removido """
 
         # Cria um paciente ja removido no BD
-        patient_mock = self.create_patient_mock()
+        patient_mock = self.util.create_patient_mock()
         patient_mock.removed = True
         patient_mock.save()
 
@@ -426,169 +345,9 @@ class FormValidation(TestCase):
         self.assertEqual(client.get('/redirect_redirect_response').status_code, 404)
         self.assertEqual(client.get('/quiz').status_code, 301)
 
-    def create_cid10_to_search(self):
-        cid10 = ClassificationOfDiseases.objects.create(code='A01', description='Febres paratifoide',
-                                                        abbreviated_description='A01 Febres paratifoide')
-        cid10.save()
-        cid10 = ClassificationOfDiseases.objects.create(code='B01', description='Febres tifoide ',
-                                                        abbreviated_description='B01 Febres tifoide ')
-        cid10.save()
-
-    def create_cid10_mock(self):
-        cid10 = ClassificationOfDiseases.objects.create(code='A01', description='Febres paratifoide',
-                                                        abbreviated_description='A01 Febres paratifoide')
-        cid10.save()
-
-        return cid10
-
-    def fill_exam_record(self):
-        self.data['description'] = 'Hemograma'
-        self.data['doctor'] = 'Dr Medico'
-        self.data['exam_site'] = 'Hospital'
-        self.data['doctor_register'] = '1111'
-        self.data['action'] = 'upload'
-        self.data['date'] = '10/05/2005'
-
-    def test_medical_record_create_diagnosis_create(self):
-        patient_mock = self.create_patient_mock()
-        cid10_mock = self.create_cid10_mock()
-
-        # Create an instance of a GET request.
-        request = self.factory.get(reverse('medical_record_diagnosis_create', args=[patient_mock.pk, cid10_mock.pk, ]))
-        request.user = self.user
-
-        response = medical_record_create_diagnosis_create(request, patient_id=patient_mock.pk, cid10_id=cid10_mock.pk)
-        self.assertEqual(response.status_code, 302)
-
-        self.assertEqual(Diagnosis.objects.filter(medical_record_data=MedicalRecordData.objects.filter(
-            patient_id=Patient.objects.get(pk=patient_mock.pk)).first()).count(), 1)
-
-        medical_record_data = MedicalRecordData.objects.filter(
-            patient_id=Patient.objects.get(pk=patient_mock.pk)).first()
-
-        url = reverse('medical_record_view', args=[patient_mock.pk, medical_record_data.pk, ])
-        request = self.factory.get(url + "?status=edit")
-        request.user = self.user
-
-        response = medical_record_view(request, patient_mock.pk, medical_record_data.pk)
-        self.assertEqual(response.status_code, 200)
-        # self.assertContains(response, 'status_mode')
-
-        try:
-            url = reverse('medical_record_view', args=[patient_mock.pk, 9999, ])
-            request = self.factory.get(url + "?status=edit")
-            request.user = self.user
-            self.assertRaises(medical_record_view(request, patient_mock.pk, 9999))
-
-        except Http404:
-            pass
-
-        url = reverse("medical_record_edit", args=[patient_mock.pk, medical_record_data.pk, ])
-        request = self.factory.get(url + "?status=edit")
-        request.user = self.user
-
-        response = medical_record_update(request, patient_id=patient_mock.pk, record_id=medical_record_data.pk)
-        self.assertEqual(response.status_code, 200)
-
-        try:
-            url = reverse("medical_record_edit", args=[patient_mock.pk, 9999, ])
-            request = self.factory.get(url + "?status=edit")
-            request.user = self.user
-            response = medical_record_update(request, patient_id=patient_mock.pk, record_id=9999)
-            self.assertEqual(response.status_code, 200)
-        except Http404:
-            pass
-
-        self.data['action'] = ''
-        url = reverse('medical_record_edit', args=(patient_mock.pk, medical_record_data.pk,))
-        response = self.client.post(url + "?status=edit", self.data)
-        self.assertEqual(response.status_code, 200)
-
-        self.data['action'] = 'finish'
-        url = reverse('medical_record_edit', args=(patient_mock.pk, medical_record_data.pk,))
-        response = self.client.post(url + "?status=edit", self.data)
-        self.assertEqual(response.status_code, 302)
-
-        self.create_cid10_to_search()
-        cid10_mock = ClassificationOfDiseases.objects.filter(code='B01').first()
-
-        request = self.factory.get(
-            reverse('diagnosis_create', args=[patient_mock.pk, medical_record_data.pk, cid10_mock.id, ]))
-        request.user = self.user
-
-        response = diagnosis_create(request, patient_id=patient_mock.pk, medical_record_id=medical_record_data.pk,
-                                    cid10_id=cid10_mock.pk)
-        self.assertEqual(response.status_code, 302)
-        self.assertEqual(Diagnosis.objects.filter(medical_record_data=MedicalRecordData.objects.filter(
-            patient_id=Patient.objects.get(pk=patient_mock.pk)).first()).count(), 2)
-
-        diagnosis_mock = Diagnosis.objects.filter(medical_record_data=MedicalRecordData.objects.filter(
-            patient_id=Patient.objects.get(pk=patient_mock.pk)).first()).first()
-
-        request = self.factory.get(
-            reverse('exam_create', args=[patient_mock.pk, medical_record_data.pk, diagnosis_mock.pk, ]))
-        request.user = self.user
-
-        response = exam_create(request, patient_id=patient_mock.pk, record_id=medical_record_data.pk,
-                               diagnosis_id=diagnosis_mock.pk)
-        self.assertEqual(response.status_code, 200)
-
-        self.fill_exam_record()
-
-        response = self.client.post(
-            reverse('exam_create', args=(patient_mock.pk, medical_record_data.pk, diagnosis_mock.pk,)), self.data)
-        self.assertEqual(response.status_code, 302)
-
-        self.data['action'] = 'save'
-        response = self.client.post(
-            reverse('exam_create', args=(patient_mock.pk, medical_record_data.pk, diagnosis_mock.pk,)), self.data)
-        self.assertEqual(response.status_code, 302)
-
-        self.data['action'] = ''
-        response = self.client.post(
-            reverse('exam_create', args=(patient_mock.pk, medical_record_data.pk, diagnosis_mock.pk,)), self.data)
-        self.assertEqual(response.status_code, 302)
-
-        response = self.client.post(
-            reverse('exam_create', args=(patient_mock.pk, medical_record_data.pk, diagnosis_mock.pk,)), self.data)
-        self.assertEqual(response.status_code, 302)
-
-    def test_cid_search(self):
-        self.create_cid10_to_search()
-
-        # Busca valida
-        self.data['medical_record'] = ''
-        self.data['patient_id'] = ''
-        self.data[SEARCH_TEXT] = 'A'
-        response = self.client.post(reverse('cid10_search'), self.data)
-        self.assertEqual(response.status_code, 200)
-        self.assertContains(response, 'paratifoide')
-
-        self.data[SEARCH_TEXT] = 'B'
-        response = self.client.post(reverse('cid10_search'), self.data)
-        self.assertEqual(response.status_code, 200)
-        self.assertContains(response, 'tifoide')
-
-        self.data[SEARCH_TEXT] = '01'
-        response = self.client.post(reverse('cid10_search'), self.data)
-        self.assertEqual(response.status_code, 200)
-        self.assertContains(response, 'Febres')
-        self.assertEqual(response.context['cid_10_list'].count(), 2)
-
-        # Busca invalida
-        self.data[SEARCH_TEXT] = 'ZZZA1'
-        response = self.client.post(reverse('cid10_search'), self.data)
-        self.assertEqual(response.status_code, 200)
-        self.assertEqual(response.context['cid_10_list'].count(), 0)
-
-        self.data[SEARCH_TEXT] = ''
-        response = self.client.post(reverse('cid10_search'), self.data)
-        self.assertEqual(response.status_code, 200)
-        self.assertEqual(response.context['cid_10_list'], '')
-
     def test_patient_verify_homonym(self):
         """  Testar a busca por homonimo """
-        patient_mock = self.create_patient_mock()
+        patient_mock = self.util.create_patient_mock()
 
         # Busca valida
         self.data[SEARCH_TEXT] = patient_mock.name_txt
@@ -630,15 +389,3 @@ class FormValidation(TestCase):
         self.assertEqual(response.context['patient_homonym_excluded'].count(), 1)
         self.assertEqual(response.context['patient_homonym'].count(), 0)
 
-    def diagnosis_create(self, patient_mock, medical_record):
-        cid10_mock = self.create_cid10_mock()
-
-        # Create an instance of a GET request.
-        request = self.factory.get(reverse(PATIENT_VIEW, args=[patient_mock.pk, ]))
-        request.user = self.user
-
-        response = diagnosis_create(request, patient_id=patient_mock.pk, medical_record_id=medical_record.id,
-                                    cid10_id=cid10_mock.pk)
-        self.assertEqual(response.status_code, 302)
-
-        self.assertEqual(Diagnosis.objects.filter().count(), 1)
