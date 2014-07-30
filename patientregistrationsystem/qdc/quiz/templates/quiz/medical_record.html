@@ -13,6 +13,9 @@
             modal_remove.setAttribute( "href", '/quiz/diagnosis/delete/' + patient_id + '/' + diagnosis_id);
             $('#modalRemove').modal('show');
         }
+        function show_modal_detail(diagnosis_id){
+            $('#modalDetail' + diagnosis_id).modal('show');
+        }
         function make_elements_visible (){
             var x = document.getElementById("diagnosis_date");
             x.type = "text";
@@ -124,7 +127,6 @@
                                     <thead>
                                         <tr>
                                             <th>Diagnóstico</th>
-                                            <th></th>
                                             <th>Exames</th>
                                         </tr>
                                     </thead>
@@ -133,50 +135,68 @@
                                         <tr>
                                             <td>(sem diagnósticos)</td>
                                             <td></td>
-                                            <td></td>
                                         </tr>
                                     {% else %}
-
                                         {% for diagnosis, diagnosis_exams in lists_diagnosis_exams %}
-
                                             <tr>
                                                 <td>
-                                                    {{ diagnosis.classification_of_diseases }}<br/>
-                                                    {% if editing %}
-                                                        <a id="details-{{ diagnosis.id }}" onclick="showDetails({{ diagnosis.id }})">+ Detalhes</a>
-                                                        <div class="row">
-                                                            <div class="col-xs-6 col-sm-6">
-                                                                <div class="form-group">
-                                                                    <label style="display: none" id="description-label-{{ diagnosis.id }}">Observações</label>
-                                                                    <div class="input-group  input-group-sm">
-                                                                        <textarea class="form-control" cols="100" id="description-{{ diagnosis.id }}" name="description-{{ diagnosis.id }}" placeholder="Observação" rows="10" style="display: none">{{ diagnosis.description }}</textarea>
-                                                                    </div>
-                                                                </div>
-                                                            </div>
-                                                            <div class="col-xs-6 col-sm-4">
-                                                                <div class="form-group">
-                                                                    <label style="display: none" id="date-label-{{ diagnosis.id }}">Data</label>
-                                                                    <div class="input-group  input-group-sm">
-                                                                        <input value="{{ diagnosis.date }}" class="form-control" id="date-{{ diagnosis.id }}" name="date-{{ diagnosis.id }}" placeholder="Data" style="display: none" type="text">
-                                                                    </div>
-                                                                </div>
-                                                            </div>
-                                                            <div class="col-xs-6 col-sm-2">
-                                                                <div class="form-group">
-                                                                    </br>
-                                                                    <button class="glyphicon glyphicon-ok" style="display: none" id="confirm-{{ diagnosis.id }}" type="submit" name="action" value="detail-{{ diagnosis.id }}" onclick="hideDetails({{ diagnosis.id }});"></button>
-                                                                </div>
-                                                            </div>
-                                                        </div>
-                                                    {% endif %}
-                                                </td>
-                                                <td>
+                                                    <b>{{ diagnosis.classification_of_diseases }}</b>
                                                     {% if editing %}
                                                         <a class="glyphicon glyphicon-remove" data-toggle="tooltip" data-placement="right" title="Remover" style="color: indianred"
                                                            onclick="show_modal_remove({{ patient_id }}, {{ diagnosis.id }})"></a>
                                                     {% endif %}
-                                                </td>
+                                                    <br/>
+                                                    <blockquote>
+                                                        <i><h6>
+                                                        {% if diagnosis.date %}{{ diagnosis.date }}<br/>{% endif %}
+                                                        {% if diagnosis.description %}{{ diagnosis.description }}<br/>{% endif %}
+                                                        </h6></i>
 
+                                                        {% if editing %}
+                                                            <i><h6>
+                                                            <a data-toggle="tooltip" data-placement="left" title="Editar detalhes"
+                                                               onclick="show_modal_detail({{ diagnosis.id }})">Detalhes
+                                                            </a>
+                                                            </h6></i>
+
+                                                            <div class="modal fade" id="modalDetail{{ diagnosis.id }}" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+                                                                <div class="modal-dialog">
+                                                                    <div class="modal-content">
+                                                                        <div class="modal-header">
+                                                                            <h4>
+                                                                            {{ diagnosis.classification_of_diseases }}
+                                                                            </h4>
+                                                                        </div>
+                                                                        <div class="modal-body">
+                                                                            <div class="row">
+                                                                                <div class="form-group">
+                                                                                    <label id="description-label-{{ diagnosis.id }}">Observações</label>
+                                                                                        <textarea class="form-control" cols="100" rows="3" id="description-{{ diagnosis.id }}" name="description-{{ diagnosis.id }}" placeholder="Observação">{{ diagnosis.description }}</textarea>
+                                                                                </div>
+                                                                            </div>
+                                                                            <div class="row">
+                                                                                <div class="form-group">
+                                                                                    <label id="date-label-{{ diagnosis.id }}">Data</label>
+
+                                                                                    <div class="input-group  input-group-sm">
+                                                                                        <input value="{{ diagnosis.date }}" class="form-control" id="date-{{ diagnosis.id }}" name="date-{{ diagnosis.id }}" placeholder="Data" type="text">
+                                                                                    </div>
+
+                                                                                    <div class="bfh-datepicker" data-format="d/m/y" data-date="today" data-max="today">
+                                                                                    </div>
+                                                                                </div>
+                                                                            </div>
+                                                                        </div>
+                                                                        <div class="modal-footer">
+                                                                            <button type="button" class="btn btn-default" data-dismiss="modal">Cancelar</button>
+                                                                            <button class="btn btn-primary" style="background-color: blue; color: #ffffff" id="confirm-{{ diagnosis.id }}" type="submit" name="action" value="detail-{{ diagnosis.id }}">Salvar</button>
+                                                                        </div>
+                                                                    </div>
+                                                                </div>
+                                                            </div>
+                                                        </blockquote>
+                                                    {% endif %}
+                                                </td>
                                                 <td>
                                                     <table>
 
@@ -195,9 +215,11 @@
                                                         {% endif %}
 
                                                         {% if editing %}
-                                                            <tr><td><a href="diagnosis/{{ diagnosis.id }}/exam/new/" class="btn btn-primary">Inserir exame</a></td></tr>
-                                                        {% else %}
-                                                            <tr style="border: 0;"><td></td></tr>
+                                                            <tr><td>
+                                                                <a href="diagnosis/{{ diagnosis.id }}/exam/new/" class="btn btn-primary">Inserir exame</a>
+                                                            </td></tr>
+{#                                                        {% else %}#}
+{#                                                            <tr style="border: 0;"><td></td></tr>#}
                                                         {% endif %}
 
                                                     </table>

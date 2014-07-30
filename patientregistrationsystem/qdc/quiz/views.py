@@ -485,6 +485,7 @@ def medical_record_update(request, patient_id, record_id, template_name="quiz/me
 
                 diagnosis.date = datetime.datetime.strptime(request.POST['date-' + str(diagnosis_id)], '%d/%m/%Y')
                 diagnosis.save()
+                messages.success(request, 'Detalhes do diagnóstico alterados com sucesso.')
 
                 redirect_url = reverse("medical_record_edit", args=(patient_id, record_id))
                 return HttpResponseRedirect(redirect_url + "?status=edit")

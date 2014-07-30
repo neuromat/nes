@@ -207,8 +207,8 @@ class SocialHistoryData(models.Model):
 
     def __unicode__(self):
         return \
-            self.id_patient, bool(self.smoker), self.amount_cigarettes_opt, bool(self.ex_smoker), bool(self.alcoholic), \
-            self.alcohol_frequency_opt, self.alcohol_period_opt, self.drugs_opt
+            self.id_patient, bool(self.smoker), self.amount_cigarettes_opt, bool(self.ex_smoker), \
+            bool(self.alcoholic), self.alcohol_frequency_opt, self.alcohol_period_opt, self.drugs_opt
 
 
 class MedicalRecordData(models.Model):
