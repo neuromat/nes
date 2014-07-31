@@ -133,14 +133,7 @@
         {% endfor %}
     {% endif %}
 
-    <!-- Mostra todas as mensagens do formulário -->
     {% if form.errors %}
-        {#        {% for field in form %}#}
-        {#            {% if field.errors %}#}
-        {#                <script>showErrorMessage('{{ field.errors|striptags }}')</script>#}
-        {#                <script>console.log('{{ field.errors|striptags }}')</script>#}
-        {#            {% endif %}#}
-        {#        {% endfor %}#}
         <script>showErrorMessage('Por favor, corrija os campos em destaque.')</script>
     {% endif %}
 

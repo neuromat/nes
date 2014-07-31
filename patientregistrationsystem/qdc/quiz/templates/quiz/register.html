@@ -26,15 +26,7 @@
 {% block activePatient %}class="active"{% endblock %}
 
 {% block form %}
-    <!-- Formulário
-      -- ----------
-      -- Esta row abrange o formulário da página
-      -- divido em abas contextuais.
-      -- Acima está o cabeçalho e abaixo o rodapé.
-      -->
     <div class="row">
-
-    <!-- A tag form abrange o formulário divido por abas contextuais -->
 
     <form id="form_id" role="form" method="post" data-toggle="validator">
     {% csrf_token %}
@@ -43,16 +35,11 @@
 
 {% block content %}
 
-    <!-- Esta div está associada ao item Cadastro do Menu princial.
-      -- Ela define o conjunto de abas contextuais para o formulário
-      -- de cadastro de pacientes
-      -->
     <div class="tab-pane fade in active" id="mainMenuAddTab">
 
     <div class="col-md-10">
     <div class="tabbable" id="myTabs">
 
-    <!-- Esta ul define os títulos das abas contextuais -->
     <ul class="nav nav-tabs nav-justified" id="idTabs">
         <li class="active"><a href="#tab1" data-toggle="tab" id="0">Dados pessoais</a></li>
         <li><a href="#tab2" data-toggle="tab" id="1">Dados sociodemográficos</a></li>
@@ -65,16 +52,13 @@
 
     <div id="fix-for-tab-content-spacing" style="height: 22px;">&nbsp;</div>
 
-    <!-- Esta div define o conteúdo das abas contextuais -->
     <div class="tab-content">
 
-    <!-- Esta div define a primeira aba do formulário, #tab1 -->
     <div class="tab-pane active" id="tab1">
     <div class="row">
     <div class="col-md-12">
     <div class="container span6 offset3 well ">
 
-        <!-- Mensagens geradas na view register -->
         {% if messages %}
             {% for message in messages %}
 
@@ -97,15 +81,7 @@
             {% endfor %}
         {% endif %}
 
-        <!-- Mostra todas as mensagens do formulário -->
         {% if patient_form.errors %}
-
-            {% comment %}
-    <div class="text-danger">Please correct the error{{ patient_form.errors|pluralize }} below.
-        {{ patient_form.errors }}
-    </div>
-    {% endcomment %}
-
             {% for field in patient_form %}
                 {% if field.errors %}
                     <script>showErrorMessage('{{ field.errors|striptags }}')</script>
@@ -115,14 +91,6 @@
             <script>showErrorMessage('Paciente não salvo. Por favor, corrija os campos em destaque.')</script>
 
         {% endif %}
-
-        {% comment %}
-{% if patient_form.subject.errors %}
-    <span class="help-block">
-        {% for error in patient_form.subject.errors %}{{ error }}{% endfor %}
-    </span>
-{% endif %}
-{% endcomment %}
 
         <div class="row">
             <div class="col-xs-6 col-sm-6">
@@ -159,9 +127,6 @@
 
                     <div class="help-block with-errors">
 
-                        {% comment %}
-                {{ patient_form.errors.cpf_id }}
-                {% endcomment %}
                         {% if patient_form.cpf_id.errors %}
                             <span>
                         {% for error in patient_form.cpf_id.errors %}{{ error }}{% endfor %}
@@ -229,7 +194,6 @@
         </div>
         <div class="col-md-1"></div>
     </div>
-    <!-- Esta div define o segundo bloco na tab1 -->
     <div class="container span6 offset3 well ">
         <div class="row">
             <div class="col-xs-6 col-sm-6">
@@ -328,9 +292,6 @@
     </div>
     </div>
     </div>
-    <!-- <div class="tab-pane active" id="tab1"> -->
-
-    <!-- Esta div define a segunda aba do formulário, #tab2 -->
     <div class="tab-pane" id="tab2">
     <div class="row">
     <div class="col-md-12">
@@ -570,9 +531,6 @@
     </div>
     </div>
     </div>
-    <!-- <div class="tab-pane" id="tab2"> -->
-
-    <!-- Esta div define a terceira aba do formulário, #tab3 -->
     <div class="tab-pane" id="tab3">
         <div class="row">
             <div class="col-md-12">
@@ -671,9 +629,6 @@
             </div>
         </div>
     </div>
-    <!-- <div class="tab-pane" id="tab3"> -->
-
-    <!-- Esta div define a quarta aba do formulário, #tab4 -->
     <div class="tab-pane" id="tab4">
         <div class="row">
             <div class="col-md-12">
@@ -759,7 +714,6 @@
         <div class="modal-dialog">
             <div class="modal-content">
                 <div class="modal-body">
-{#                    {% csrf_token %}  #}
                     Paciente já cadastrado.
                     Clique para visualizar registro ou "Cancelar" para voltar ao formulário.
                 </div>
@@ -790,7 +744,6 @@
         </div>
     </div>
 
-    <!-- Esta div define os botões de navegação no formulário -->
     <div class="row">
         <div class="col-md-12">
             <div class="btn-group pull-right">
