@@ -16,9 +16,22 @@
     </style>
 
     <script type="text/javascript">
+
         $(document).ready(function () {
             $("#idTabs li:eq( {{ currentTab }} ) a").tab('show');
-        })
+        });
+
+        {% if editing or inserting %}
+            $(document).ready(function () {
+                $('a[data-toggle="tab"]').on('shown.bs.tab', function (e) {
+                    if ($(e.relatedTarget).attr('href') == '#tab1') {
+                        $("#savetab").click();
+                    } else {
+                        $("#form_id").submit();
+                    }
+                });
+            });
+        {% endif %}
     </script>
 
 {% endblock %}
