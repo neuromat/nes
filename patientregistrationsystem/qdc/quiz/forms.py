@@ -173,13 +173,13 @@ class UserFormUpdate(UserForm):
 class DiagnosisForm(ModelForm):
     class Meta:
         model = Diagnosis
-        # fields = ['date', 'description']
-        # widgets = {
-        #     'date': DateInput(attrs={'class': 'form-control', 'placeholder': 'Data', 'id': 'date',
-        #                              'style': 'display: none'}),
-        #     'description': Textarea(attrs={'class': 'form-control', 'placeholder': 'Observação', 'cols': '100',
-        #                                    'id': 'description', 'style': 'display: none'}),
-        # }
+        fields = ['date', 'description']
+        widgets = {
+            'date': DateInput(attrs={'class': 'form-control', 'placeholder': 'Data',
+                                     'id': "diagnosis_date"}),
+            'description': Textarea(attrs={'class': 'form-control', 'placeholder': 'Observação',
+                                           'cols': '100', 'rows': '3', 'id': 'diagnosis_description'}),
+        }
 
 
 class ComplementaryExamForm(ModelForm):

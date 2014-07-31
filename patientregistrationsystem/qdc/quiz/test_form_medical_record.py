@@ -221,7 +221,6 @@ class MedicalRecordFormValidation(TestCase):
         self.assertEqual(response.status_code, 302)
         self.assertEqual(ComplementaryExam.objects.all().count(), count_exams + 4)
 
-
     def test_cid_search(self):
         self.util.create_cid10_to_search()
 

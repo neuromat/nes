@@ -19,12 +19,10 @@ from django.contrib import messages
 
 from django.contrib.auth.models import User
 
-# Biblioteca para fazer expressões regulares. Utilizada na "def search_patients_ajax" para fazer busca por nome ou CPF
 import re
 
 # pylint: disable=E1101
 # pylint: disable=E1103
-
 
 @login_required
 @permission_required('quiz.add_patient')
@@ -39,7 +37,6 @@ def patient_create(request, template_name="quiz/register.html"):
     alcohol_frequency = AlcoholFrequencyOption.objects.all()
     alcohol_period = AlcoholPeriodOption.objects.all()
 
-    # formularios a salvar
     patient_form = PatientForm()
     social_demographic_form = SocialDemographicDataForm()
     social_history_form = SocialHistoryDataForm()
@@ -54,10 +51,8 @@ def patient_create(request, template_name="quiz/register.html"):
 
         if patient_form.is_valid():
 
-            # new_patient_id = save_patient2(patient_form, request, social_demographic_form, social_history_form)
             current_tab, new_patient_id = save_patient(current_tab, patient_form, request, social_demographic_form,
                                                        social_history_form)
-
 
             redirect_url = reverse("patient_edit", args=(new_patient_id,))
             return HttpResponseRedirect(redirect_url + "?currentTab=" + str(current_tab))
@@ -161,24 +156,18 @@ def save_patient(current_tab, patient_form, request, social_demographic_form, so
 @login_required
 @permission_required('quiz.change_patient')
 def patient_update(request, patient_id, template_name="quiz/register.html"):
-    ## Search in models.Patient
-    ## ------------------------
     current_patient = get_object_or_404(Patient, pk=patient_id)
 
     if current_patient and not current_patient.removed:
 
         patient_form = PatientForm(request.POST or None, instance=current_patient)
 
-        ## Search in models.SocialDemographicData
-        ## --------------------------------------
         try:
             p_social_demo = SocialDemographicData.objects.get(id_patient_id=patient_id)
             social_demographic_form = SocialDemographicDataForm(request.POST or None, instance=p_social_demo)
         except SocialDemographicData.DoesNotExist:
             social_demographic_form = SocialDemographicDataForm()
 
-        ## Search in models.SocialHistoryData
-        ## --------------------------------------
         try:
             p_social_hist = SocialHistoryData.objects.get(id_patient_id=patient_id)
             social_history_form = SocialHistoryDataForm(request.POST or None, instance=p_social_hist)
@@ -244,16 +233,12 @@ def patient(request, patient_id, template_name="quiz/register.html"):
 
         patient_form = PatientForm(instance=current_patient)
 
-        # # Search in models.SocialDemographicData
-        # # --------------------------------------
         try:
             p_social_demo = SocialDemographicData.objects.get(id_patient_id=patient_id)
             social_demographic_form = SocialDemographicDataForm(instance=p_social_demo)
         except SocialDemographicData.DoesNotExist:
             social_demographic_form = SocialDemographicDataForm()
 
-        # # Search in models.SocialHistoryData
-        # # ----------------------------------
         try:
             p_social_hist = SocialHistoryData.objects.get(id_patient_id=patient_id)
             social_history_form = SocialHistoryDataForm(instance=p_social_hist)
@@ -262,12 +247,10 @@ def patient(request, patient_id, template_name="quiz/register.html"):
 
         medical_data = MedicalRecordData.objects.filter(patient_id=patient_id).order_by('record_date')
 
-        # deixa os campos como disabled
         for form in {patient_form, social_demographic_form, social_history_form}:
             for field in form.fields:
                 form.fields[field].widget.attrs['disabled'] = True
 
-        # Sobrescreve campos Pais, Nacionalidade e Estado
         patient_form.fields['country_txt'].widget = SelectBoxCountriesDisabled(
             attrs={'id': 'id_country_state_address', 'data-flags': 'true', 'disabled': 'true'})
         patient_form.fields['state_txt'].widget = SelectBoxStateDisabled(
@@ -414,13 +397,14 @@ def search_cid10_ajax(request):
 
 @login_required
 def medical_record_create(request, patient_id, template_name='quiz/medical_record.html'):
-    form = DiagnosisForm(request.POST or None)
 
     current_patient = get_object_or_404(Patient, pk=patient_id)
 
     return render(request, template_name,
-                  {'patient_id': patient_id, 'name_patient': current_patient.name_txt,
-                   'diagnosis_form': form, 'creating': True, 'editing': True})
+                  {'name_patient': current_patient.name_txt,
+                   'patient_id': patient_id,
+                   'creating': True,
+                   'editing': True})
 
 
 @login_required
@@ -432,7 +416,7 @@ def medical_record_view(request, patient_id, record_id, template_name="quiz/medi
 
     if medical_record:
 
-        diagnosis_list = Diagnosis.objects.filter(medical_record_data=record_id)
+        diagnosis_list = Diagnosis.objects.filter(medical_record_data=record_id).order_by('classification_of_diseases')
         complementary_exams_list = []
         for diagnosis in diagnosis_list:
             complementary_exams_list.append(ComplementaryExam.objects.filter(diagnosis=diagnosis.pk))
@@ -454,6 +438,9 @@ def medical_record_view(request, patient_id, record_id, template_name="quiz/medi
 
 @login_required
 def medical_record_update(request, patient_id, record_id, template_name="quiz/medical_record.html"):
+
+    form = DiagnosisForm(request.POST or None)
+
     status_mode = request.GET['status']
     current_tab = get_current_tab(request)
 
@@ -461,7 +448,7 @@ def medical_record_update(request, patient_id, record_id, template_name="quiz/me
     medical_record = get_object_or_404(MedicalRecordData, pk=record_id)
 
     if medical_record:
-        diagnosis_list = Diagnosis.objects.filter(medical_record_data=record_id)
+        diagnosis_list = Diagnosis.objects.filter(medical_record_data=record_id).order_by('classification_of_diseases')
         complementary_exams_list = []
 
         for diagnosis in diagnosis_list:
@@ -483,17 +470,24 @@ def medical_record_update(request, patient_id, record_id, template_name="quiz/me
 
                 diagnosis.description = request.POST['description-' + str(diagnosis_id)]
 
-                diagnosis.date = datetime.datetime.strptime(request.POST['date-' + str(diagnosis_id)], '%d/%m/%Y')
-                diagnosis.save()
-                messages.success(request, 'Detalhes do diagnóstico alterados com sucesso.')
+                date_text = request.POST['date-' + str(diagnosis_id)]
+                try:
+                    diagnosis.date = datetime.datetime.strptime(date_text, '%d/%m/%Y')
 
-                redirect_url = reverse("medical_record_edit", args=(patient_id, record_id))
-                return HttpResponseRedirect(redirect_url + "?status=edit")
+                    diagnosis.save()
+                    messages.success(request, 'Detalhes do diagnóstico alterados com sucesso.')
+
+                    redirect_url = reverse("medical_record_edit", args=(patient_id, record_id))
+                    return HttpResponseRedirect(redirect_url + "?status=edit")
+
+                except ValueError:
+                    messages.error(request, "Data incorreta. Utilize o formato dd/mm/yyyy.")
 
         return render(request, template_name,
                       {'name_patient': current_patient.name_txt,
                        'patient_id': patient_id,
                        'record_id': medical_record.id,
+                       'diagnosis_form': form,
                        'object_list': diagnosis_list,
                        'lists_diagnosis_exams': lists_diagnosis_exams,
                        'complementary_exams_list': complementary_exams_list,

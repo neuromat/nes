@@ -234,7 +234,7 @@ class ClassificationOfDiseases(models.Model):
 class Diagnosis(models.Model):
     medical_record_data = models.ForeignKey(MedicalRecordData, null=False)
     classification_of_diseases = models.ForeignKey(ClassificationOfDiseases, null=False)
-    date = models.DateTimeField(null=True)
+    date = models.DateField(null=True)
     description = models.CharField(max_length=300, null=True)
 
     class Meta:
