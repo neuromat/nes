@@ -1,6 +1,8 @@
 from django.test import TestCase
+
 from views import Patient, GenderOption
-from models import ClassificationOfDiseases
+from models import ClassificationOfDiseases, MedicalRecordData, Diagnosis
+
 
 class UtilTests():
     def create_patient_mock(self, name='Pacient Test'):
@@ -30,3 +32,17 @@ class UtilTests():
         cid10.save()
 
         return cid10
+
+    def create_medical_record_mock(self, user, patient):
+        medical_record = MedicalRecordData()
+        medical_record.patient = patient
+        medical_record.record_responsible = user
+        medical_record.save()
+        return medical_record
+
+    def create_diagnosis_mock(self, medical_record):
+        cid10_mock = self.create_cid10_mock()
+        diagnosis = Diagnosis(medical_record_data=medical_record, classification_of_diseases=cid10_mock)
+        diagnosis.save()
+
+        return diagnosis

@@ -96,12 +96,12 @@ class CPF(object):
 
         """
 
-        d = iter("..-")
-        s = map(str, self.cpf)
-        for i in xrange(3, 12, 4):
-            s.insert(i, d.next())
-        r = ''.join(s)
-        return r
+        # d = iter("..-")
+        # s = map(str, self.cpf)
+        # for i in xrange(3, 12, 4):
+        #     s.insert(i, d.next())
+        # r = ''.join(s)
+        # return r
 
     def isValid(self):
         """Valida o número de cpf
