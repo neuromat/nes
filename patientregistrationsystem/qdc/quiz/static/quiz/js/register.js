@@ -142,6 +142,8 @@ $(document).ready(function () {
             document.getElementById('birthday').focus();
             document.getElementById('gender_id').focus();
             document.getElementById('full_name').focus();
+            $("#idTabs li:eq( 0 ) a").tab('show');
+
         } else {
 
             var email_value = $.trim($('#email').val());

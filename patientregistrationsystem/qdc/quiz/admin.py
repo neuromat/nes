@@ -1,6 +1,7 @@
 from django.contrib import admin
 from models import SchoolingOption, PaymentOption, ReligionOption, FleshToneOption, MaritalStatusOption, \
     GenderOption, AmountCigarettesOption, AlcoholFrequencyOption, AlcoholPeriodOption
+from models import Patient
 
 # Register your models here.
 search_fields = ['cpf_id']
@@ -15,3 +16,4 @@ admin.site.register(AmountCigarettesOption)
 admin.site.register(AlcoholFrequencyOption)
 admin.site.register(AlcoholPeriodOption)
 
+admin.site.register(Patient)
