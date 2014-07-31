@@ -26,6 +26,8 @@ import re
 
 @login_required
 @permission_required('quiz.add_patient')
+@permission_required('quiz.add_socialdemographicdata')
+@permission_required('quiz.add_socialhistorydata')
 def patient_create(request, template_name="quiz/register.html"):
     flesh_tone_options = FleshToneOption.objects.all()
     marital_status_options = MaritalStatusOption.objects.all()
@@ -155,6 +157,8 @@ def save_patient(current_tab, patient_form, request, social_demographic_form, so
 
 @login_required
 @permission_required('quiz.change_patient')
+@permission_required('quiz.change_socialdemographicdata')
+@permission_required('quiz.change_socialhistorydata')
 def patient_update(request, patient_id, template_name="quiz/register.html"):
     current_patient = get_object_or_404(Patient, pk=patient_id)
 
@@ -205,6 +209,8 @@ def patient_update(request, patient_id, template_name="quiz/register.html"):
 
 @login_required
 @permission_required('quiz.view_patient')
+@permission_required('quiz.view_socialhistorydata')
+@permission_required('quiz.view_socialdemographicdata')
 def patient(request, patient_id, template_name="quiz/register.html"):
     if request.method == "POST":
 
@@ -270,6 +276,8 @@ def patient(request, patient_id, template_name="quiz/register.html"):
 
 @login_required
 @permission_required('quiz.view_patient')
+@permission_required('quiz.view_socialhistorydata')
+@permission_required('quiz.view_socialdemographicdata')
 def search_patient(request):
     return render(request, 'quiz/busca.html')
 
@@ -296,6 +304,8 @@ def restore_patient(request, patient_id):
 
 @login_required
 @permission_required('quiz.view_patient')
+@permission_required('quiz.view_socialhistorydata')
+@permission_required('quiz.view_socialdemographicdata')
 def search_patients_ajax(request):
     patient_list = ''
     if request.method == "POST":
@@ -311,6 +321,8 @@ def search_patients_ajax(request):
 
 @login_required
 @permission_required('quiz.view_patient')
+@permission_required('quiz.view_socialhistorydata')
+@permission_required('quiz.view_socialdemographicdata')
 def patients_verify_homonym(request):
     if request.method == "POST":
         search_text = request.POST['search_text']
@@ -331,7 +343,6 @@ def patients_verify_homonym(request):
 
 @login_required
 @permission_required('auth.add_user')
-@permission_required('auth.change_user')
 def user_list(request, template_name='quiz/user_list.html'):
     users = User.objects.filter(is_active=True).order_by('username')
     data = {'object_list': users, 'current_user_id': request.user.id}
@@ -380,6 +391,7 @@ def user_update(request, user_id, template_name="quiz/register_users.html"):
 
 
 @login_required
+@permission_required('quiz.add_medicalrecorddata')
 def search_cid10_ajax(request):
     cid_10_list = ''
 
@@ -396,6 +408,7 @@ def search_cid10_ajax(request):
 
 
 @login_required
+@permission_required('quiz.add_medicalrecorddata')
 def medical_record_create(request, patient_id, template_name='quiz/medical_record.html'):
 
     current_patient = get_object_or_404(Patient, pk=patient_id)
@@ -408,6 +421,7 @@ def medical_record_create(request, patient_id, template_name='quiz/medical_recor
 
 
 @login_required
+@permission_required('quiz.view_medicalrecorddata')
 def medical_record_view(request, patient_id, record_id, template_name="quiz/medical_record.html"):
     status_mode = request.GET['status']
 
@@ -437,6 +451,7 @@ def medical_record_view(request, patient_id, record_id, template_name="quiz/medi
 
 
 @login_required
+@permission_required('quiz.change_medicalrecorddata')
 def medical_record_update(request, patient_id, record_id, template_name="quiz/medical_record.html"):
 
     form = DiagnosisForm(request.POST or None)
@@ -499,6 +514,7 @@ def medical_record_update(request, patient_id, record_id, template_name="quiz/me
 
 
 @login_required
+@permission_required('quiz.add_medicalrecorddata')
 def diagnosis_create(request, patient_id, medical_record_id, cid10_id):
     medical_record = MedicalRecordData.objects.get(pk=medical_record_id)
     cid10 = ClassificationOfDiseases.objects.get(pk=cid10_id)
@@ -511,6 +527,7 @@ def diagnosis_create(request, patient_id, medical_record_id, cid10_id):
 
 
 @login_required
+@permission_required('quiz.add_medicalrecorddata')
 def medical_record_create_diagnosis_create(request, patient_id, cid10_id):
     current_patient = Patient.objects.get(number_record=patient_id)
 
@@ -529,6 +546,7 @@ def medical_record_create_diagnosis_create(request, patient_id, cid10_id):
 
 
 @login_required
+@permission_required('quiz.add_medicalrecorddata')
 def diagnosis_delete(request, patient_id, diagnosis_id):
     exams = ComplementaryExam.objects.filter(diagnosis=diagnosis_id)
     if exams:
@@ -545,6 +563,7 @@ def diagnosis_delete(request, patient_id, diagnosis_id):
 
 
 @login_required
+@permission_required('quiz.add_medicalrecorddata')
 def exam_create(request, patient_id, record_id, diagnosis_id, template_name="quiz/exams.html"):
     form = ComplementaryExamForm(request.POST or None)
 
@@ -592,6 +611,7 @@ def exam_create(request, patient_id, record_id, diagnosis_id, template_name="qui
 
 
 @login_required
+@permission_required('quiz.add_medicalrecorddata')
 def exam_edit(request, patient_id, record_id, exam_id, template_name="quiz/exams.html"):
     current_patient = Patient.objects.get(number_record=patient_id)
     complementary_exam = ComplementaryExam.objects.get(pk=exam_id)
@@ -636,6 +656,7 @@ def exam_edit(request, patient_id, record_id, exam_id, template_name="quiz/exams
 
 
 @login_required
+@permission_required('quiz.add_medicalrecorddata')
 def exam_view(request, patient_id, record_id, exam_id, template_name="quiz/exams.html"):
     status_mode = request.GET['status']
 
@@ -663,6 +684,7 @@ def exam_view(request, patient_id, record_id, exam_id, template_name="quiz/exams
 
 
 @login_required
+@permission_required('quiz.add_medicalrecorddata')
 def exam_delete(request, patient_id, record_id, exam_id):
     complementary_exam = get_object_or_404(ComplementaryExam, pk=exam_id)
 
@@ -675,6 +697,7 @@ def exam_delete(request, patient_id, record_id, exam_id):
 
 
 @login_required
+@permission_required('quiz.add_medicalrecorddata')
 def exam_file_delete(request, exam_file_id):
     exam_file = get_object_or_404(ExamFile, pk=exam_file_id)
     exam_file.delete()

@@ -216,6 +216,11 @@ class MedicalRecordData(models.Model):
     record_date = models.DateTimeField(null=False, auto_now_add=True)
     record_responsible = models.ForeignKey(User, null=False)
 
+    class Meta:
+        permissions = (
+            ("view_medicalrecorddata", "Can view medical record"),
+        )
+
     def __unicode__(self):
         return \
             self.patient, self.record_date, self.record_responsible
