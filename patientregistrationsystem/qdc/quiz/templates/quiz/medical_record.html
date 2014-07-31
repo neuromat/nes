@@ -17,22 +17,6 @@
             $("#diagnosis_date-" + diagnosis_id).mask("99/99/9999");
             $('#modalDetail' + diagnosis_id).modal('show');
         }
-{#        function show_modal_detail(diagnosis_id, diagnosis_classification_of_diseases,#}
-{#                                   diagnosis_date, diagnosis_description){#}
-{#            var elemento = document.getElementById("classification_of_diseases-label");#}
-{#            elemento.value = diagnosis_classification_of_diseases;#}
-{#            var elemento = document.getElementById("diagnosis_date");#}
-{#            elemento.value = diagnosis_date;#}
-{#            var elemento = document.getElementById("diagnosis_description");#}
-{#            elemento.value = diagnosis_description;#}
-{#            $('#modalDetail').modal('show');#}
-{#        }#}
-{#        function make_elements_visible (){#}
-{#            var x = document.getElementById("diagnosis_date");#}
-{#            x.type = "text";#}
-{#            var y = document.getElementById("diagnosis_description");#}
-{#            y.type = "text";#}
-{#        }#}
     </script>
 
 {% endblock %}
@@ -285,40 +269,6 @@
             </div>
         </div>
     </div>
-
-    <div class="modal fade" id="modalDetail" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
-        <div class="modal-dialog">
-            <div class="modal-content">
-                <div class="modal-header">
-                    <h4>
-                        <label id="classification_of_diseases-label">
-                        </label>
-                    </h4>
-                </div>
-                <div class="modal-body">
-                    <div class="row">
-                        <div class="form-group">
-                            <label id="date-label">Data do diagnóstico</label>
-                            <div class="input-group  input-group-sm">
-                                {{ diagnosis_form.date }}
-                            </div>
-                        </div>
-                    </div>
-                    <div class="row">
-                        <div class="form-group">
-                            <label id="description-label">Observação</label>
-                            {{ diagnosis_form.description }}
-                        </div>
-                    </div>
-                </div>
-                <div class="modal-footer">
-                    <button type="button" class="btn btn-default" data-dismiss="modal">Cancelar</button>
-                    <button class="btn btn-primary" style="background-color: blue; color: #ffffff" id="confirm-{{ diagnosis.id }}" type="submit" name="action" value="detail-{{ diagnosis.id }}">Salvar</button>
-                </div>
-            </div>
-        </div>
-    </div>
-
 
 {% endblock %}
 

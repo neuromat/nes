@@ -66,7 +66,6 @@
 
 </head>
 <body>
-<!-- Cabeçalho da página -->
 <div class="container">
     <nav class="navbar navbar-default navbar-fixed-top  navbar-inverse" role="navigation">
         <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-ex1-collapse">
@@ -99,25 +98,15 @@
     </nav>
     <div id="fix-for-navbar-fixed-top-spacing" style="height: 62px;">&nbsp;</div>
 </div>
-<!-- Cabeçalho da página -->
 
 {% block form %}{% endblock %}
 
-<!-- Major container
--- ---------------
--- Neste "container" estão os formulários da página
--- e o rodapé. Ele vai até o fim do documento. Antes
--- do código java script.
--->
-
 <div class="container">
-    <!-- Menu -->
     <div class="row">
         <div class="col-md-12">
         </div>
     </div>
     <div class="row">
-        <!-- Esta div define o Menu principal -->
         <div class="col-md-2">
             <ul id="myMenu" class="nav nav-pills nav-stacked">
 
@@ -142,13 +131,6 @@
 
             </ul>
         </div>
-        <!-- Esta div define o Menu principal -->
-
-        <!-- Esta div abrange a maior parte do documento,
-        -- Ela define as sub-páginas associadas a
-        -- cada item do Menu principal
-        -->
-        <!-- content -->
         <div id="myMenuContent" class="tab-content">
             {% block content %}
             {% endblock %}
@@ -161,35 +143,10 @@
 {% block end_form %}
 {% endblock %}
 
-<!-- footer -->
-{#<div id="google-footer-bar">#}
-{#    <div id="footer content clearfix">#}
-{#        <p>Example courtesy <a href="http://martinbean.co.uk">Martin Bean</a> and <a#}
-{#                href="http://ryanfait.com/sticky-footer/">Ryan Fait</a>.</p>#}
-{##}
-{#    </div>#}
-{#</div>#}
-
-
 <div class="footer" style="display: inherit">
     <p><a href="http://ccsl.ime.usp.br"><img src="{% static 'quiz/imgs/logo-ccsl-sm.png' %}" alt="" height="34px"
                                              width="96px"></a></p>
 </div>
-
-{% comment %}
-    <div class="row">
-        <div class="col-md-12">
-            <hr>
-        </div>
-    </div>
-    <div class="row">
-        <div class="col-md-12">
-            <p class="text-center">(c) 2014
-                <br>
-            </p>
-        </div>
-    </div>
-{% endcomment %}
 
 </body>
 </html>
