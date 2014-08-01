@@ -61,9 +61,11 @@
                         </tbody>
                     </table>
                 </div>
+                {% if perms.quiz.add_user %}
                 <div class="btn-group pull-left">
                     <a href="/quiz/user/new/" class="btn btn-primary">Inserir novo usuário</a>
                 </div>
+                {% endif %}
             </div>
         </div>
     </div>
