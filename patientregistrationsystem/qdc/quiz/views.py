@@ -439,7 +439,7 @@ def medical_record_view(request, patient_id, record_id, template_name="quiz/medi
 
 
 @login_required
-@permission_required('quiz.change_medicalrecorddata')
+@permission_required('quiz.add_medicalrecorddata')
 def medical_record_update(request, patient_id, record_id, template_name="quiz/medical_record.html"):
 
     form = DiagnosisForm(request.POST or None)
@@ -644,7 +644,7 @@ def exam_edit(request, patient_id, record_id, exam_id, template_name="quiz/exams
 
 
 @login_required
-@permission_required('quiz.add_medicalrecorddata')
+@permission_required('quiz.view_medicalrecorddata')
 def exam_view(request, patient_id, record_id, exam_id, template_name="quiz/exams.html"):
     status_mode = request.GET['status']
 
