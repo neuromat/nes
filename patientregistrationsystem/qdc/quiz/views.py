@@ -26,8 +26,6 @@ import re
 
 @login_required
 @permission_required('quiz.add_patient')
-@permission_required('quiz.add_socialdemographicdata')
-@permission_required('quiz.add_socialhistorydata')
 def patient_create(request, template_name="quiz/register.html"):
     flesh_tone_options = FleshToneOption.objects.all()
     marital_status_options = MaritalStatusOption.objects.all()
@@ -157,8 +155,6 @@ def save_patient(current_tab, patient_form, request, social_demographic_form, so
 
 @login_required
 @permission_required('quiz.change_patient')
-@permission_required('quiz.change_socialdemographicdata')
-@permission_required('quiz.change_socialhistorydata')
 def patient_update(request, patient_id, template_name="quiz/register.html"):
     current_patient = get_object_or_404(Patient, pk=patient_id)
 
@@ -209,8 +205,6 @@ def patient_update(request, patient_id, template_name="quiz/register.html"):
 
 @login_required
 @permission_required('quiz.view_patient')
-@permission_required('quiz.view_socialhistorydata')
-@permission_required('quiz.view_socialdemographicdata')
 def patient(request, patient_id, template_name="quiz/register.html"):
     if request.method == "POST":
 
@@ -276,8 +270,6 @@ def patient(request, patient_id, template_name="quiz/register.html"):
 
 @login_required
 @permission_required('quiz.view_patient')
-@permission_required('quiz.view_socialhistorydata')
-@permission_required('quiz.view_socialdemographicdata')
 def search_patient(request):
     return render(request, 'quiz/busca.html')
 
@@ -304,8 +296,6 @@ def restore_patient(request, patient_id):
 
 @login_required
 @permission_required('quiz.view_patient')
-@permission_required('quiz.view_socialhistorydata')
-@permission_required('quiz.view_socialdemographicdata')
 def search_patients_ajax(request):
     patient_list = ''
     if request.method == "POST":
@@ -321,8 +311,6 @@ def search_patients_ajax(request):
 
 @login_required
 @permission_required('quiz.view_patient')
-@permission_required('quiz.view_socialhistorydata')
-@permission_required('quiz.view_socialdemographicdata')
 def patients_verify_homonym(request):
     if request.method == "POST":
         search_text = request.POST['search_text']
