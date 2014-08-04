@@ -170,16 +170,16 @@ class UserFormUpdate(UserForm):
             return self.instance.password
 
 
-class DiagnosisForm(ModelForm):
-    class Meta:
-        model = Diagnosis
-        fields = ['date', 'description']
-        widgets = {
-            'date': DateInput(attrs={'class': 'form-control', 'placeholder': 'Data',
-                                     'id': "diagnosis_date"}),
-            'description': Textarea(attrs={'class': 'form-control', 'placeholder': 'Observação',
-                                           'cols': '100', 'rows': '3', 'id': 'diagnosis_description'}),
-        }
+# class DiagnosisForm(ModelForm):
+#     class Meta:
+#         model = Diagnosis
+#         fields = ['date', 'description']
+#         widgets = {
+#             'date': DateInput(attrs={'class': 'form-control', 'placeholder': 'Data',
+#                                      'id': "diagnosis_date"}),
+#             'description': Textarea(attrs={'class': 'form-control', 'placeholder': 'Observação',
+#                                            'cols': '100', 'rows': '3', 'id': 'diagnosis_description'}),
+#         }
 
 
 class ComplementaryExamForm(ModelForm):
