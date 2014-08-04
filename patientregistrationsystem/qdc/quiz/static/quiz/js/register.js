@@ -162,6 +162,25 @@ $(document).ready(function () {
         }
     });
 
+    $("#save_exam").click(function () {
+
+        var date_value = $.trim($("#exam_date").val());
+        var description_value = $.trim($("#exam_description").val());
+
+        if (date_value.length == 0 || description_value.length == 0) {
+            showErrorMessageTemporary("Campos obrigatórios devem ser preenchidos.");
+            jumpToElement('exam_date');
+            document.getElementById('exam_date').focus();
+            document.getElementById('exam_description').focus();
+        } else{
+            $("#form_exam").submit();
+        }
+    });
+
+    $("#save_exam2").click(function () {
+        $("#form_exam").submit();
+    });
+
     $('a[data-toggle="tab"]').on('shown.bs.tab', function (e) {
         var activeTab = e.target.id;
 

@@ -79,65 +79,67 @@
                 {% endfor %}
             {% endif %}
 
-            {% if medical_record_form.errors %}
-                <script>showErrorMessage('Exame não salvo. Os campos marcados com (*) são obrigatórios')</script>
+            {% if complementary_exam_form.errors %}
+                {% for field in complementary_exam_form %}
+                    {% if field.errors %}
+                        <script>showErrorMessage('{{ field.errors|striptags }}')</script>
+                    {% endif %}
+                {% endfor %}
+                <script>showErrorMessage('Exame não salvo. Por favor, corrija os campos em destaque')</script>
             {% endif %}
 
             <div class="tab-content">
                 <div class="row">
-                    <div class="col-md-1"></div>
                     <div class="col-md-10">
                         <div class="container span6 offset3 well ">
                             <div class="row">
-                                <div class="col-xs-6 col-sm-6">
-                                    <div class="form-group">
-                                        <label>Data</label>
-                                        <div class="input-group  input-group-sm">
-                                            {{ complementary_exam_form.date }}
+                                <div class="col-xs-6 col-sm-4">
+                                    <div class="form-group {% if complementary_exam_form.errors.date %}has-error{% endif %}">
+                                        <label>Data <b style="color: red;">*</b></label>
+                                        {{ complementary_exam_form.date }}
+                                        <div class="help-block with-errors">
+                                            {% if complementary_exam_form.date.errors %}
+                                                <span>
+                                                {% for error in complementary_exam_form.date_.errors %}{{ error }}{% endfor %}
+                                            </span>
+                                            {% endif %}
                                         </div>
                                     </div>
                                 </div>
-                                <div class="col-xs-6 col-sm-6">
+                                <div class="col-xs-6 col-sm-8">
                                     <div class="form-group">
                                         <label>Realizado em</label>
-                                        <div class="input-group  input-group-sm">
-                                            {{ complementary_exam_form.exam_site }}
-                                        </div>
+                                        {{ complementary_exam_form.exam_site }}
                                     </div>
                                 </div>
                             </div>
                             <div class="row">
-                                <div class="col-xs-12 col-sm-12">
+                                <div class="col-xs-6 col-sm-12">
                                     <div class="form-group">
-                                        <label>Descrição</label>
-                                        <div class="input-group  input-group-sm ">
-                                            {{ complementary_exam_form.description }}
-                                        </div>
+                                        <label>Descrição <b style="color: red;">*</b></label>
+                                        {{ complementary_exam_form.description }}
+                                        <div class="help-block with-errors"></div>
                                     </div>
                                 </div>
                             </div>
                             <div class="row">
-                                <div class="col-xs-6 col-sm-6">
+                                <div class="col-xs-6 col-sm-4">
                                     <div class="form-group">
                                         <label>CRM</label>
-                                        <div class="input-group  input-group-sm">
-                                            {{ complementary_exam_form.doctor_register }}
-                                        </div>
+                                        {{ complementary_exam_form.doctor_register }}
                                     </div>
                                 </div>
-                                <div class="col-xs-6 col-sm-6">
+                                <div class="col-xs-6 col-sm-8">
                                     <div class="form-group">
                                         <label>Nome do médico</label>
-                                        <div class="input-group  input-group-sm">
-                                            {{ complementary_exam_form.doctor }}
-                                        </div>
+                                        {{ complementary_exam_form.doctor }}
                                     </div>
                                 </div>
                             </div>
                             <div class="row">
                                 <div class="col-xs-6 col-sm-6">
                                     <div class="form-group">
-                                        <label>Anexos</label>
+                                        <label>Anexos <b style="color: red;">*</b></label>
                                         <table class="table table-bordered">
                                             <thead>
                                             <tr>
@@ -176,39 +178,43 @@
                                     </div>
                                     <div class="col-xs-6 col-sm-6">
                                         <div class="form-group">
-                                            <button name="action" value="upload" type="submit" class="btn-primary">Upload</button>
+                                            <button id="save_exam2" name="action" value="upload" type="submit" class="btn btn-primary">Upload</button>
                                         </div>
                                     </div>
                                 </div>
                             {% endif %}
                         </div>
                     </div>
-                    <div class="col-md-1"></div>
                 </div>
             </div>
-
-
         </div>
     </div>
     <div class="col-md-1">
     </div>
 
-    {% if not viewing %}
         <div class="row">
             <div class="col-md-1">
             </div>
             <div class="col-md-10">
                 <div class="btn-group pull-right">
-                    {% if not creating %}
+                    {% if not creating and not viewing %}
                         <button name="action" value="remove" type="button" class="btn btn-secondary" style="background-color: indianred; color: #ffffff" onclick="show_modal_remove_for_complementary_exam()">Excluir</button>
                     {% endif %}
-                    <button name="action" value="save" type="submit" class="btn btn-primary">Salvar</button>
+                    {% if viewing %}
+                        <a type="button" class="btn btn-secondary" style="background-color: #808080; color: #ffffff"
+                       href="/quiz/patient/{{ patient_id }}/medical_record/{{ record_id }}/?status=view&currentTab=3">Voltar</a>
+                    {% else %}
+                        <a type="button" class="btn btn-secondary" style="background-color: #808080; color: #ffffff"
+                       href="/quiz/patient/{{ patient_id }}/medical_record/edit/{{ record_id }}/?status=view&currentTab=3">Voltar</a>
+                    {% endif %}
+                    {% if not viewing %}
+                    <button id="save_exam" name="action" value="save" type="submit" class="btn btn-primary">Salvar</button>
+                    {% endif %}
                 </div>
             </div>
             <div class="col-md-1">
             </div>
         </div>
-    {% endif %}
 
     <div class="modal fade" id="modalRemove" tabindex="-1" role="dialog" aria-labelledby="myModalLabel"
          aria-hidden="true">

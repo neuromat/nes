@@ -5,6 +5,7 @@ from django.forms.widgets import Textarea
 from models import Patient, SocialDemographicData, SocialHistoryData, Diagnosis, ComplementaryExam, ExamFile
 from django.contrib.auth.hashers import make_password
 from quiz_widget import SelectBoxCountries, SelectBoxState
+from django import forms
 
 from django.contrib.auth.models import User
 
@@ -189,9 +190,11 @@ class ComplementaryExamForm(ModelForm):
 
         widgets = {
             'date': DateInput(attrs={'class': 'form-control', 'placeholder': 'Data',
-                                     'id': "exam_date", 'required': "",
+                                     'id': 'exam_date', 'required': "",
                                      'data-error': "Data deve ser preenchida"}),
-            'description': Textarea(attrs={'class': 'form-control', 'placeholder': 'Descrição', 'cols': '100'}),
+            'description': Textarea(attrs={'class': 'form-control', 'placeholder': 'Descrição',
+                                           'rows': '4', 'id': 'exam_description', 'required': "",
+                                           'data-error': "Descrição deve ser preenchida"}),
             'doctor': TextInput(attrs={'class': 'form-control', 'placeholder': 'Médico'}),
             'doctor_register': TextInput(attrs={'class': 'form-control', 'placeholder': 'CRM'}),
             'exam_site': TextInput(attrs={'class': 'form-control', 'placeholder': 'Local de realização'}),
