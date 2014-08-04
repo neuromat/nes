@@ -252,10 +252,10 @@ class Diagnosis(models.Model):
 class ComplementaryExam(models.Model):
     diagnosis = models.ForeignKey(Diagnosis, null=False, blank=False)
     date = models.DateField(null=False, blank=False)
-    description = models.CharField(max_length=50, null=False, blank=False)
-    doctor = models.CharField(max_length=50, null=False, blank=False)
-    doctor_register = models.CharField(max_length=10, null=False, blank=False)
-    exam_site = models.CharField(max_length=100, null=False, blank=False)
+    description = models.CharField(max_length=500, null=False, blank=False)
+    doctor = models.CharField(max_length=50, null=True, blank=True)
+    doctor_register = models.CharField(max_length=10, null=True, blank=True)
+    exam_site = models.CharField(max_length=100, null=True, blank=True)
 
     def __unicode__(self):
         return unicode(self.description)
@@ -268,7 +268,7 @@ def get_user_dir(instance, filename):
 
 class ExamFile(models.Model):
     exam = models.ForeignKey(ComplementaryExam, null=False)
-    content = models.FileField(upload_to=get_user_dir)
+    content = models.FileField(upload_to=get_user_dir, null=False)
 
     def delete(self, *args, **kwargs):
         self.content.delete()

@@ -132,29 +132,23 @@
             <div class="col-xs-6 col-sm-6">
                 <div class="form-group {% if patient_form.errors.cpf_id %}has-error{% endif %}">
                     <label for="cpf_id" class="control-label">CPF</label>
-
                     <div class="input-group input-group-sm">
                         <span class="input-group-addon"> <span class="glyphicon glyphicon-asterisk"></span></span>
                         {{ patient_form.cpf_id }}
                     </div>
-
                     <div class="help-block with-errors">
-
                         {% if patient_form.cpf_id.errors %}
                             <span>
                         {% for error in patient_form.cpf_id.errors %}{{ error }}{% endfor %}
                     </span>
                         {% endif %}
                     </div>
-
                 </div>
             </div>
             <div class="col-xs-6 col-sm-6">
                 <div class="form-group">
                     <label>RG</label>
-
                     <div class="input-group input-group-sm">
-                        {# verificar qual icone vai aparecer pra RG #}
                         <span class="input-group-addon"><span class="glyphicon glyphicon-user"></span></span>
                         {{ patient_form.rg_id }}
                     </div>
@@ -178,7 +172,6 @@
                         </span>
                         {% endif %}
                     </div>
-
                 </div>
             </div>
             <div class="col-xs-6 col-sm-6">

@@ -561,29 +561,29 @@ def exam_create(request, patient_id, record_id, diagnosis_id, template_name="qui
     if request.method == "POST":
         file_form = ExamFileForm(request.POST, request.FILES)
 
-        if form.is_valid():
-            new_complementary_exam = form.save(commit=False)
-            new_complementary_exam.diagnosis = diagnosis
-            new_complementary_exam.save()
+        if 'content' in request.FILES:
+            if form.is_valid():
+                new_complementary_exam = form.save(commit=False)
+                new_complementary_exam.diagnosis = diagnosis
+                new_complementary_exam.save()
 
-            if file_form.is_valid():
-                new_file_data = file_form.save(commit=False)
-                new_file_data.exam = new_complementary_exam
-                new_file_data.save()
+                if file_form.is_valid():
+                    new_file_data = file_form.save(commit=False)
+                    new_file_data.exam = new_complementary_exam
+                    new_file_data.save()
+                    messages.success(request, 'Exame salvo com sucesso.')
 
-            messages.success(request, 'Exame salvo com sucesso.')
+                if request.POST['action'] == "upload":
+                    redirect_url = reverse("exam_edit", args=(patient_id, record_id, new_complementary_exam.pk))
+                elif request.POST['action'] == "save":
+                    redirect_url = reverse("medical_record_edit", args=(patient_id, record_id, ))
+                else:
+                    redirect_url = reverse("medical_record_edit", args=(patient_id, record_id, ))
 
-            if request.POST['action'] == "upload":
-                redirect_url = reverse("exam_edit", args=(patient_id, record_id, new_complementary_exam.pk))
-            elif request.POST['action'] == "save":
-                redirect_url = reverse("medical_record_edit", args=(patient_id, record_id, ))
-            else:
-                redirect_url = reverse("medical_record_edit", args=(patient_id, record_id, ))
-
-            return HttpResponseRedirect(redirect_url + "?status=edit")
-
+                return HttpResponseRedirect(redirect_url + "?status=edit")
         else:
-            messages.error(request, 'Não foi possível criar exame.')
+            messages.error(request, 'Não é possível salvar exame sem arquivos.')
+
     else:
         file_form = ExamFileForm(request.POST)
 
@@ -612,21 +612,21 @@ def exam_edit(request, patient_id, record_id, exam_id, template_name="quiz/exams
 
             file_form = ExamFileForm(request.POST, request.FILES)
 
-            if complementary_exam_form.is_valid():
-                complementary_exam_form.save()
+            if 'content' in request.FILES:
+                if complementary_exam_form.is_valid():
+                    complementary_exam_form.save()
 
-                if file_form.is_valid():
-                    new_file_data = file_form.save(commit=False)
-                    new_file_data.exam = complementary_exam
-                    new_file_data.save()
+                    if file_form.is_valid():
+                        new_file_data = file_form.save(commit=False)
+                        new_file_data.exam = complementary_exam
+                        new_file_data.save()
 
-                if request.POST['action'] == "save":
-                    messages.success(request, 'Exame salvo com sucesso.')
-                    redirect_url = reverse("medical_record_edit", args=(patient_id, record_id, ))
-                    return HttpResponseRedirect(redirect_url + "?status=edit")
-
+                    if request.POST['action'] == "save":
+                        messages.success(request, 'Exame salvo com sucesso.')
+                        redirect_url = reverse("medical_record_edit", args=(patient_id, record_id, ))
+                        return HttpResponseRedirect(redirect_url + "?status=edit")
             else:
-                messages.error(request, 'Não foi possível salvar exame.')
+                messages.error(request, 'Não é possível salvar exame sem arquivos.')
 
         else:
             file_form = ExamFileForm(request.POST)
