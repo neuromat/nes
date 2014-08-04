@@ -18,6 +18,7 @@ from quiz_widget import SelectBoxCountriesDisabled, SelectBoxStateDisabled
 from django.contrib import messages
 
 from django.contrib.auth.models import User
+from django.db.models import Q
 
 import re
 
@@ -389,7 +390,8 @@ def search_cid10_ajax(request):
         patient_id = request.POST['patient_id']
 
         if search_text:
-            cid_10_list = ClassificationOfDiseases.objects.filter(abbreviated_description__icontains=search_text)
+            cid_10_list = ClassificationOfDiseases.objects.filter(Q(abbreviated_description__icontains=search_text) |
+                                                                  Q(description__icontains=search_text))
 
         return render_to_response('quiz/ajax_cid10.html', {'cid_10_list': cid_10_list, 'medical_record': medical_record,
                                                            'patient_id': patient_id})
