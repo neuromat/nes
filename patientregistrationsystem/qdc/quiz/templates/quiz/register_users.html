@@ -186,7 +186,11 @@
                                 <span class="input-group-addon"> <span class="glyphicon glyphicon-user"></span></span>
                                 {{ form.email }}
                             </div>
-                            <div class="help-block with-errors"></div>
+                            <div class="help-block with-errors">
+                                    {% for error in form.errors.email %}
+                                        <div>{{ error }}</div>
+                                    {% endfor %}
+                            </div>
                         </div>
                     </div>
                 </div>
