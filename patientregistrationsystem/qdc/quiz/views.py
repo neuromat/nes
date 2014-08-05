@@ -12,7 +12,7 @@ from models import Patient, SocialDemographicData, SocialHistoryData, FleshToneO
     ClassificationOfDiseases, Diagnosis, ExamFile, ComplementaryExam
 
 from forms import PatientForm, SocialDemographicDataForm, SocialHistoryDataForm, UserForm, UserFormUpdate, \
-    ComplementaryExamForm, ExamFileForm, DiagnosisForm
+    ComplementaryExamForm, ExamFileForm
 
 from quiz_widget import SelectBoxCountriesDisabled, SelectBoxStateDisabled
 from django.contrib import messages
@@ -24,6 +24,7 @@ import re
 
 # pylint: disable=E1101
 # pylint: disable=E1103
+
 
 @login_required
 @permission_required('quiz.add_patient')
@@ -444,8 +445,6 @@ def medical_record_view(request, patient_id, record_id, template_name="quiz/medi
 @permission_required('quiz.add_medicalrecorddata')
 def medical_record_update(request, patient_id, record_id, template_name="quiz/medical_record.html"):
 
-    form = DiagnosisForm(request.POST or None)
-
     status_mode = request.GET['status']
     current_tab = get_current_tab(request)
 
@@ -474,10 +473,13 @@ def medical_record_update(request, patient_id, record_id, template_name="quiz/me
                 diagnosis = get_object_or_404(Diagnosis, pk=diagnosis_id)
 
                 diagnosis.description = request.POST['description-' + str(diagnosis_id)]
-
                 date_text = request.POST['date-' + str(diagnosis_id)]
+
                 try:
-                    diagnosis.date = datetime.datetime.strptime(date_text, '%d/%m/%Y')
+                    if date_text:
+                        diagnosis.date = datetime.datetime.strptime(date_text, '%d/%m/%Y')
+                    else:
+                        diagnosis.date = None
 
                     diagnosis.save()
                     messages.success(request, 'Detalhes do diagnóstico alterados com sucesso.')
@@ -492,7 +494,6 @@ def medical_record_update(request, patient_id, record_id, template_name="quiz/me
                       {'name_patient': current_patient.name_txt,
                        'patient_id': patient_id,
                        'record_id': medical_record.id,
-                       'diagnosis_form': form,
                        'object_list': diagnosis_list,
                        'lists_diagnosis_exams': lists_diagnosis_exams,
                        'complementary_exams_list': complementary_exams_list,
@@ -509,8 +510,11 @@ def diagnosis_create(request, patient_id, medical_record_id, cid10_id):
     medical_record = MedicalRecordData.objects.get(pk=medical_record_id)
     cid10 = ClassificationOfDiseases.objects.get(pk=cid10_id)
 
-    diagnosis = Diagnosis(medical_record_data=medical_record, classification_of_diseases=cid10)
-    diagnosis.save()
+    if Diagnosis.objects.filter(medical_record_data=medical_record).filter(classification_of_diseases=cid10):
+        messages.warning(request, 'Diagnóstico já existente nesta avaliação médica.')
+    else:
+        diagnosis = Diagnosis(medical_record_data=medical_record, classification_of_diseases=cid10)
+        diagnosis.save()
 
     redirect_url = reverse("medical_record_edit", args=(patient_id, medical_record_id,))
     return HttpResponseRedirect(redirect_url + "?status=edit&currentTab=3")
