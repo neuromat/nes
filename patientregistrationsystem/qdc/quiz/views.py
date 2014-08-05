@@ -619,7 +619,7 @@ def exam_edit(request, patient_id, record_id, exam_id, template_name="quiz/exams
 
             file_form = ExamFileForm(request.POST, request.FILES)
 
-            if 'content' in request.FILES:
+            if 'content' in request.FILES or length > 0:
                 if complementary_exam_form.is_valid():
                     complementary_exam_form.save()
 
