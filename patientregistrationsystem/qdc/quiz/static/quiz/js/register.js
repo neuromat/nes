@@ -11,6 +11,8 @@ $(document).ready(function () {
     });
 
     $("#id_smoker_1").click(function () {
+        var x = document.getElementById("id_amount_cigarettes");
+        x.value = "";
         $("#id_amount_cigarettes").prop('disabled', true);
     });
 
@@ -20,6 +22,10 @@ $(document).ready(function () {
     });
 
     $("#id_alcoholic_1").click(function () {
+        var x = document.getElementById("id_freqSmok");
+        var y = document.getElementById("id_periodSmok");
+        x.value = "";
+        y.value = "";
         $("#id_freqSmok").prop('disabled', true);
         $("#id_periodSmok").prop('disabled', true);
     });
