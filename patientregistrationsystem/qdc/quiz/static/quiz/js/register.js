@@ -111,7 +111,6 @@ $(document).ready(function () {
     });
 
     $("#editPatient").click(function () {
-        //disable blur if patient has homonym
         $("#full_name").unbind("blur");
         document.getElementById('action').value = "edit";
         $("#form_id").submit();
@@ -121,11 +120,6 @@ $(document).ready(function () {
         document.getElementById('action').value = "remove";
         $("#form_id").submit();
     });
-
-//    $("#removeUser").click(function () {
-//        document.getElementById('action').value = "remove";
-//        $("#user_form").submit();
-//    });
 
     $("#savetab").click(function () {
         //disable blur if patient has homonym

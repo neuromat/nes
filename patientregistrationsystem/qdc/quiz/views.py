@@ -609,12 +609,15 @@ def exam_edit(request, patient_id, record_id, exam_id, template_name="quiz/exams
     if complementary_exam:
         complementary_exam_form = ComplementaryExamForm(request.POST or None, instance=complementary_exam)
         exam_file_list = ExamFile.objects.filter(exam=exam_id)
+        length = exam_file_list.__len__()
 
         if request.method == "POST":
 
             file_form = ExamFileForm(request.POST, request.FILES)
 
-            if 'content' in request.FILES:
+            if length == 0:
+                messages.error(request, 'Não é possível salvar exame sem arquivos.')
+            else:
                 if complementary_exam_form.is_valid():
                     complementary_exam_form.save()
 
@@ -627,8 +630,6 @@ def exam_edit(request, patient_id, record_id, exam_id, template_name="quiz/exams
                         messages.success(request, 'Exame salvo com sucesso.')
                         redirect_url = reverse("medical_record_edit", args=(patient_id, record_id, ))
                         return HttpResponseRedirect(redirect_url + "?status=edit")
-            else:
-                messages.error(request, 'Não é possível salvar exame sem arquivos.')
 
         else:
             file_form = ExamFileForm(request.POST)
@@ -638,6 +639,7 @@ def exam_edit(request, patient_id, record_id, exam_id, template_name="quiz/exams
                        'creating': False,
                        'complementary_exam_form': complementary_exam_form,
                        'exam_file_list': exam_file_list,
+                       'length': length,
                        'patient_id': patient_id,
                        'record_id': record_id,
                        'name_patient': current_patient.name_txt,
@@ -691,7 +693,7 @@ def exam_delete(request, patient_id, record_id, exam_id):
 def exam_file_delete(request, exam_file_id):
     exam_file = get_object_or_404(ExamFile, pk=exam_file_id)
     exam_file.delete()
-    messages.success(request, 'Exame removido com sucesso.')
+    messages.success(request, 'Anexo removido com sucesso.')
 
     complementary_exam = get_object_or_404(ComplementaryExam, pk=exam_file.exam_id)
     diagnosis = get_object_or_404(Diagnosis, pk=complementary_exam.diagnosis_id)
