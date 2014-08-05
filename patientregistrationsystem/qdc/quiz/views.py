@@ -632,6 +632,10 @@ def exam_edit(request, patient_id, record_id, exam_id, template_name="quiz/exams
                         messages.success(request, 'Exame salvo com sucesso.')
                         redirect_url = reverse("medical_record_edit", args=(patient_id, record_id, ))
                         return HttpResponseRedirect(redirect_url + "?status=edit")
+                    else:
+                        if request.POST['action'] == 'upload':
+                            exam_file_list = ExamFile.objects.filter(exam=exam_id)
+                            length = exam_file_list.__len__()
             else:
                 messages.error(request, 'Não é possível salvar exame sem arquivos.')
 
