@@ -619,9 +619,7 @@ def exam_edit(request, patient_id, record_id, exam_id, template_name="quiz/exams
 
             file_form = ExamFileForm(request.POST, request.FILES)
 
-            if length == 0:
-                messages.error(request, 'Não é possível salvar exame sem arquivos.')
-            else:
+            if 'content' in request.FILES:
                 if complementary_exam_form.is_valid():
                     complementary_exam_form.save()
 
@@ -634,6 +632,8 @@ def exam_edit(request, patient_id, record_id, exam_id, template_name="quiz/exams
                         messages.success(request, 'Exame salvo com sucesso.')
                         redirect_url = reverse("medical_record_edit", args=(patient_id, record_id, ))
                         return HttpResponseRedirect(redirect_url + "?status=edit")
+            else:
+                messages.error(request, 'Não é possível salvar exame sem arquivos.')
 
         else:
             file_form = ExamFileForm(request.POST)

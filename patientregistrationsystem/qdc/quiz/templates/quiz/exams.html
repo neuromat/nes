@@ -148,9 +148,8 @@
                                 </div>
                             </div>
                             <div class="row">
-                                <div class="col-xs-6 col-sm-12">
+                                <div class="col-xs-6 col-sm-8">
                                     <div class="form-group">
-{#                                        <label>Anexos <b style="color: red;">*</b></label>#}
                                         <table class="table table-bordered">
                                             <thead>
                                             <tr>
@@ -158,7 +157,6 @@
                                             </tr>
                                             </thead>
                                             <tbody>
-                                            <input type="text" id="file_list_length" value="{{ length }}"/>
                                             {% if not exam_file_list %}
                                                 <tr>
                                                     <td>(sem anexos)</td>
@@ -253,7 +251,7 @@
         <div class="modal-dialog">
             <div class="modal-content">
                 <div class="modal-body">
-                    O exame será excluído totalmente. Confirma exclusão?
+                    Como não existem anexos, o exame será excluído totalmente. Confirma exclusão?
                 </div>
                 <div class="modal-footer">
                     <button type="button" class="btn btn-default" data-dismiss="modal">Cancelar</button>
