@@ -2,10 +2,9 @@
 from django.forms import ModelForm, TextInput, DateInput, Select, RadioSelect, PasswordInput, CheckboxSelectMultiple, \
     CharField, ValidationError
 from django.forms.widgets import Textarea
-from models import Patient, SocialDemographicData, SocialHistoryData, Diagnosis, ComplementaryExam, ExamFile
+from models import Patient, SocialDemographicData, SocialHistoryData, ComplementaryExam, ExamFile
 from django.contrib.auth.hashers import make_password
 from quiz_widget import SelectBoxCountries, SelectBoxState
-from django import forms
 
 from django.contrib.auth.models import User
 
@@ -138,7 +137,7 @@ class UserForm(ModelForm):
                                       'type': 'email', 'data-error': "E-mail inválido",
                                       'pattern': '^[_A-Za-z0-9-\+]+(\.[_A-Za-z0-9-]+)*@[A-Za-z0-9-]' +
                                                  '+(\.[A-Za-z0-9]+)*(\.[A-Za-z]{2,})$'}),
-            'groups': CheckboxSelectMultiple()
+            'groups': CheckboxSelectMultiple(choices=(('blue', 'Blue'), ('green', 'Green'))),
         }
 
     def clean_username(self):
@@ -169,18 +168,6 @@ class UserFormUpdate(UserForm):
             return make_password(self.cleaned_data['password'])
         else:
             return self.instance.password
-
-
-# class DiagnosisForm(ModelForm):
-#     class Meta:
-#         model = Diagnosis
-#         fields = ['date', 'description']
-#         widgets = {
-#             'date': DateInput(attrs={'class': 'form-control', 'placeholder': 'Data',
-#                                      'id': "diagnosis_date"}),
-#             'description': Textarea(attrs={'class': 'form-control', 'placeholder': 'Observação',
-#                                            'cols': '100', 'rows': '3', 'id': 'diagnosis_description'}),
-#         }
 
 
 class ComplementaryExamForm(ModelForm):
