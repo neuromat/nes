@@ -100,7 +100,7 @@ class SocialDemographicDataForm(ModelForm):
                                             choices=((0, '0'), (1, '1'), (2, '2'), (3, '3'), (4, '4 ou +'))),
             'freezer_opt': RadioSelect(attrs={'id': 'id_freezer_opt'},
                                        choices=((0, '0'), (1, '1'), (2, '2'), (3, '3'), (4, '4 ou +'))),
-            'social_class_opt': TextInput(attrs={'class': 'form-control', 'id': "social_class_opt", 'disabled': "True"})
+            'social_class_opt': TextInput(attrs={'class': 'form-control', 'id': "social_class_opt", 'readonly': ""})
         }
 
 

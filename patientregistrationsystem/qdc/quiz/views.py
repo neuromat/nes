@@ -54,7 +54,7 @@ def patient_create(request, template_name="quiz/register.html"):
         if patient_form.is_valid():
 
             current_tab, new_patient_id = save_patient(current_tab, patient_form, request, social_demographic_form,
-                                                       social_history_form)
+                                                       social_history_form, insert_new=True)
 
             redirect_url = reverse("patient_edit", args=(new_patient_id,))
             return HttpResponseRedirect(redirect_url + "?currentTab=" + str(current_tab))
@@ -99,58 +99,75 @@ def get_current_tab(request):
     return current_tab
 
 
-def save_patient(current_tab, patient_form, request, social_demographic_form, social_history_form):
+def save_patient(current_tab, patient_form, request, social_demographic_form, social_history_form, insert_new=False):
     new_patient = patient_form.save(commit=False)
     if not new_patient.cpf_id:
         new_patient.cpf_id = None
-    new_patient.save()
+
+    if not patient_form.has_changed() \
+            and not social_demographic_form.has_changed() \
+            and not social_history_form.has_changed():
+        return current_tab, new_patient.number_record
+
+    if patient_form.has_changed():
+        new_patient.changed_by = request.user
+        new_patient.save()
+
     if social_demographic_form.is_valid():
 
         new_social_demographic_data = social_demographic_form.save(commit=False)
         new_social_demographic_data.id_patient = new_patient
 
-        if (new_social_demographic_data.tv_opt is not None and
-                new_social_demographic_data.radio_opt is not None and
-                new_social_demographic_data.bath_opt is not None and
-                new_social_demographic_data.automobile_opt is not None and
-                new_social_demographic_data.house_maid_opt is not None and
-                new_social_demographic_data.wash_machine_opt is not None and
-                new_social_demographic_data.dvd_opt is not None and
-                new_social_demographic_data.refrigerator_opt is not None and
-                new_social_demographic_data.freezer_opt is not None):
+        if insert_new or social_demographic_form.has_changed():
 
-            new_social_demographic_data.social_class_opt = \
-                new_social_demographic_data.calculate_social_class(
+            if (new_social_demographic_data.tv_opt is not None and
+                    new_social_demographic_data.radio_opt is not None and
+                    new_social_demographic_data.bath_opt is not None and
+                    new_social_demographic_data.automobile_opt is not None and
+                    new_social_demographic_data.house_maid_opt is not None and
+                    new_social_demographic_data.wash_machine_opt is not None and
+                    new_social_demographic_data.dvd_opt is not None and
+                    new_social_demographic_data.refrigerator_opt is not None and
+                    new_social_demographic_data.freezer_opt is not None):
+
+                new_social_demographic_data.social_class_opt = new_social_demographic_data.calculate_social_class(
                     tv=request.POST['tv_opt'], radio=request.POST['radio_opt'],
                     banheiro=request.POST['bath_opt'], automovel=request.POST['automobile_opt'],
                     empregada=request.POST['house_maid_opt'], maquina=request.POST['wash_machine_opt'],
                     dvd=request.POST['dvd_opt'], geladeira=request.POST['refrigerator_opt'],
                     freezer=request.POST['freezer_opt'], escolaridade=request.POST['schooling_opt'])
-        else:
 
-            new_social_demographic_data.social_class_opt = None
+            else:
 
-            if (new_social_demographic_data.tv_opt is not None or
-                    new_social_demographic_data.radio_opt is not None or
-                    new_social_demographic_data.bath_opt is not None or
-                    new_social_demographic_data.automobile_opt is not None or
-                    new_social_demographic_data.house_maid_opt is not None or
-                    new_social_demographic_data.wash_machine_opt is not None or
-                    new_social_demographic_data.dvd_opt is not None or
-                    new_social_demographic_data.refrigerator_opt is not None or
-                    new_social_demographic_data.freezer_opt is not None):
-                messages.warning(request, 'Classe Social não calculada, pois os campos necessários '
-                                          'para o cálculo não foram preenchidos.')
-                current_tab = "1"
+                new_social_demographic_data.social_class_opt = None
 
-        new_social_demographic_data.save()
-    if social_history_form.is_valid():
+                if (new_social_demographic_data.tv_opt is not None or
+                            new_social_demographic_data.radio_opt is not None or
+                            new_social_demographic_data.bath_opt is not None or
+                            new_social_demographic_data.automobile_opt is not None or
+                            new_social_demographic_data.house_maid_opt is not None or
+                            new_social_demographic_data.wash_machine_opt is not None or
+                            new_social_demographic_data.dvd_opt is not None or
+                            new_social_demographic_data.refrigerator_opt is not None or
+                            new_social_demographic_data.freezer_opt is not None):
+                    messages.warning(request, 'Classe Social não calculada, pois os campos necessários '
+                                              'para o cálculo não foram preenchidos.')
+                    current_tab = "1"
+
+            new_social_demographic_data.changed_by = request.user
+            new_social_demographic_data.save()
+
+    if insert_new or (social_history_form.is_valid() and social_history_form.has_changed()):
         new_social_history_data = social_history_form.save(commit=False)
         new_social_history_data.id_patient = new_patient
-
+        new_social_history_data.changed_by = request.user
         new_social_history_data.save()
 
+    if patient_form.has_changed() \
+            or social_demographic_form.has_changed() \
+            or social_history_form.has_changed():
         messages.success(request, 'Paciente gravado com sucesso.')
+
     new_patient_id = new_patient.number_record
     return current_tab, new_patient_id
 
@@ -169,6 +186,7 @@ def patient_update(request, patient_id, template_name="quiz/register.html"):
             social_demographic_form = SocialDemographicDataForm(request.POST or None, instance=p_social_demo)
         except SocialDemographicData.DoesNotExist:
             social_demographic_form = SocialDemographicDataForm()
+
 
         try:
             p_social_hist = SocialHistoryData.objects.get(id_patient_id=patient_id)
@@ -401,7 +419,6 @@ def search_cid10_ajax(request):
 @login_required
 @permission_required('quiz.add_medicalrecorddata')
 def medical_record_create(request, patient_id, template_name='quiz/medical_record.html'):
-
     current_patient = get_object_or_404(Patient, pk=patient_id)
 
     return render(request, template_name,

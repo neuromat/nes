@@ -42,6 +42,7 @@ INSTALLED_APPS = (
     'django.contrib.staticfiles',
     'quiz',
     'django_jenkins',
+    'simple_history',
 )
 
 JENKINS_TASKS = (
@@ -79,8 +80,8 @@ DATABASES = {
         'NAME': 'qdcdb_dev',
         'USER': 'qdc',
         'PASSWORD': 'DEVqdc1716',
-        # 'HOST': '200.144.254.136',
-        # 'test_name': 'test_local',
+        #'HOST': '200.144.254.136',
+        #'TEST_NAME': 'test_romulo',
     }
 }
 
@@ -118,8 +119,8 @@ SERVER_EMAIL = EMAIL_HOST_USER
 
 # if DEBUG:
 # EMAIL_HOST = 'localhost'
-#     EMAIL_PORT = 1025
-#     EMAIL_HOST_USER = ''
+# EMAIL_PORT = 1025
+# EMAIL_HOST_USER = ''
 #     EMAIL_HOST_PASSWORD = ''
 #     EMAIL_USE_TLS = False
 #     DEFAULT_FROM_EMAIL = 'testing@example.com'

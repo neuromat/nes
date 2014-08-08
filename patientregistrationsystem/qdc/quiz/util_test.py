@@ -1,11 +1,11 @@
 from django.test import TestCase
 
-from views import Patient, GenderOption
+from views import Patient, GenderOption, User
 from models import ClassificationOfDiseases, MedicalRecordData, Diagnosis
 
 
 class UtilTests():
-    def create_patient_mock(self, name='Pacient Test'):
+    def create_patient_mock(self, name='Pacient Test', user=None):
         """ Cria um paciente para ser utilizado durante os testes """
         gender_opt = GenderOption.objects.create(gender_txt='Masculino')
         gender_opt.save()
@@ -15,6 +15,7 @@ class UtilTests():
         p_mock.date_birth_txt = '2001-01-15'
         p_mock.cpf_id = '374.276.738-08'
         p_mock.gender_opt_id = gender_opt.id
+        p_mock.changed_by = user
         p_mock.save()
         return p_mock
 
