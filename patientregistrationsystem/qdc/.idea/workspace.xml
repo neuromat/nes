@@ -2,15 +2,6 @@
 <project version="4">
   <component name="ChangeListManager">
     <list default="true" id="c92a5e25-ddf8-455e-8d06-92314ea6eb81" name="Default" comment="">
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/experiment/templates/experiment/experiment_list.html" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/experiment/urls.py" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/experiment/models.py" afterPath="$PROJECT_DIR$/experiment/models.py" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/.idea/qdc.iml" afterPath="$PROJECT_DIR$/.idea/qdc.iml" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/qdc/settings.py" afterPath="$PROJECT_DIR$/qdc/settings.py" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/quiz/templates/quiz/template.html" afterPath="$PROJECT_DIR$/quiz/templates/quiz/template.html" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/qdc/urls.py" afterPath="$PROJECT_DIR$/qdc/urls.py" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/.idea/vcs.xml" afterPath="$PROJECT_DIR$/.idea/vcs.xml" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/experiment/views.py" afterPath="$PROJECT_DIR$/experiment/views.py" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/.idea/workspace.xml" afterPath="$PROJECT_DIR$/.idea/workspace.xml" />
     </list>
     <ignored path="qdc.iws" />
@@ -38,11 +29,21 @@
   </component>
   <component name="FileEditorManager">
     <leaf>
-      <file leaf-file-name="settings.py" pinned="false" current="true" current-in-tab="true">
+      <file leaf-file-name="settings.py" pinned="false" current="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/qdc/settings.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state vertical-scroll-proportion="0.4620253" vertical-offset="996" max-vertical-offset="2145">
+            <state vertical-scroll-proportion="0.0" vertical-offset="996" max-vertical-offset="2145">
               <caret line="81" column="0" selection-start-line="81" selection-start-column="0" selection-end-line="81" selection-end-column="0" />
+              <folding />
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file leaf-file-name="workspace.xml" pinned="false" current="true" current-in-tab="true">
+        <entry file="file://$PROJECT_DIR$/.idea/workspace.xml">
+          <provider selected="true" editor-type-id="text-editor">
+            <state vertical-scroll-proportion="0.0" vertical-offset="0" max-vertical-offset="12075">
+              <caret line="0" column="0" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
               <folding />
             </state>
           </provider>
@@ -517,6 +518,11 @@
       <created>1386791610490</created>
       <updated>1386791610490</updated>
     </task>
+    <task id="LOCAL-00001" summary="Experiments: updating models.py and configuring urls.py">
+      <created>1407536112339</created>
+      <updated>1407536112339</updated>
+    </task>
+    <option name="localTasksCounter" value="2" />
     <servers />
   </component>
   <component name="TodoView" selected-index="0">
@@ -543,7 +549,8 @@
     <frame x="0" y="22" width="1920" height="985" extended-state="6" />
     <editor active="false" />
     <layout>
-      <window_info id="Changes" active="true" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" weight="0.4223245" sideWeight="0.5" order="7" side_tool="false" content_ui="tabs" />
+      <window_info id="Messages" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="-1" side_tool="false" content_ui="tabs" />
+      <window_info id="Changes" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" weight="0.42329872" sideWeight="0.5" order="7" side_tool="false" content_ui="tabs" />
       <window_info id="Terminal" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.3290938" sideWeight="0.5" order="7" side_tool="false" content_ui="tabs" />
       <window_info id="TODO" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.32963988" sideWeight="0.5" order="6" side_tool="false" content_ui="tabs" />
       <window_info id="Database" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="0" side_tool="false" content_ui="tabs" />
@@ -597,6 +604,8 @@
     <option name="myTodoPanelSettings">
       <TodoPanelSettings />
     </option>
+    <MESSAGE value="Experiments: updating models.py and configuring urls.py" />
+    <option name="LAST_COMMIT_MESSAGE" value="Experiments: updating models.py and configuring urls.py" />
   </component>
   <component name="XDebuggerManager">
     <breakpoint-manager>
@@ -788,8 +797,16 @@
     </entry>
     <entry file="file://$PROJECT_DIR$/qdc/settings.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="0.4620253" vertical-offset="996" max-vertical-offset="2145">
+        <state vertical-scroll-proportion="0.0" vertical-offset="996" max-vertical-offset="2145">
           <caret line="81" column="0" selection-start-line="81" selection-start-column="0" selection-end-line="81" selection-end-column="0" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/.idea/workspace.xml">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="0.0" vertical-offset="0" max-vertical-offset="12075">
+          <caret line="0" column="0" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
           <folding />
         </state>
       </provider>
