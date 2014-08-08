@@ -127,6 +127,10 @@
                     </li>
                 {% endif %}
 
+                <li {% block activeAdvancedExperiment %}{% endblock %}>
+                    <a href="/experiment/list/">Experimentos</a>
+                </li>
+
                 <li {% block activeContact %}{% endblock %}><a href="/quiz/contato/">
                     Contato</a>
                 </li>

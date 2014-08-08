@@ -31,7 +31,7 @@ ALLOWED_HOSTS = []
 
 # Application definition
 
-PROJECT_APPS = ['quiz']
+PROJECT_APPS = ['quiz', 'experiment']
 
 INSTALLED_APPS = (
     'django.contrib.admin',
@@ -41,6 +41,7 @@ INSTALLED_APPS = (
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'quiz',
+    'experiment',
     'django_jenkins',
     'simple_history',
 )
@@ -80,8 +81,8 @@ DATABASES = {
         'NAME': 'qdcdb_dev',
         'USER': 'qdc',
         'PASSWORD': 'DEVqdc1716',
-        #'HOST': '200.144.254.136',
-        #'TEST_NAME': 'test_romulo',
+        # 'HOST': '200.144.254.136',
+        # 'TEST_NAME': 'test_romulo',
     }
 }
 

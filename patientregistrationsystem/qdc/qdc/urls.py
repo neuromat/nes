@@ -14,6 +14,7 @@ urlpatterns = patterns(
 
     url(r'^admin/', include(admin.site.urls)),
     url(r'^quiz/', include('quiz.urls')),
+    url(r'^experiment/', include('experiment.urls')),
     url(r'^accounts/login/$', 'django.contrib.auth.views.login'),
     url(r'^account/', include('django.contrib.auth.urls')),
     url(r'^logout/$', 'django.contrib.auth.views.logout_then_login', {'login_url': '/quiz'}),
