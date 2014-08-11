@@ -1,14 +1,13 @@
 from django.shortcuts import render
-from django.contrib.auth.decorators import login_required, permission_required
+from django.contrib.auth.decorators import login_required
 
-# Create your views here.
+from experiment.models import Experiment
 
 
 @login_required
-@permission_required('quiz.add_patient')
 def experiment_list(request, template_name="experiment/experiment_list.html"):
 
-    valor = []
+    experiments = Experiment.objects.order_by('title')
 
-    context = {"experiments": valor}
+    context = {"experiments": experiments}
     return render(request, template_name, context)
