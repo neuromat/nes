@@ -25,4 +25,4 @@ class QuestionnaireResponse(models.Model):
     subject = models.ForeignKey(Subject, null=False)
     experiment = models.ForeignKey(Experiment, null=False)
     questionnaire = models.ForeignKey(Questionnaire, null=False)
-    number_of_responses = models.IntegerField(null=False)
+    # number_of_responses = models.IntegerField(null=False)

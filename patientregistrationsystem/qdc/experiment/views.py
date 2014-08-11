@@ -7,5 +7,8 @@ from django.contrib.auth.decorators import login_required, permission_required
 @login_required
 @permission_required('quiz.add_patient')
 def experiment_list(request, template_name="experiment/experiment_list.html"):
-    context = {}
+
+    valor = []
+
+    context = {"experiments": valor}
     return render(request, template_name, context)
