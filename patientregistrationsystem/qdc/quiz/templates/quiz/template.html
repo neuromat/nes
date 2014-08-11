@@ -9,16 +9,18 @@
     <meta name="description" content="">
     <meta name="author" content="">
 
-    <script src="{% static 'quiz/dist/js/jquery-2.0.0.min.js' %}"></script>
-    <script src="{% static 'quiz/dist/js/ajax.js' %}"></script>
+    <script src="{% static 'quiz/jquery/jquery-2.0.0.min.js' %}"></script>
+    <script src="{% static 'quiz/js/ajax.js' %}"></script>
 
+    <link href="{% static 'quiz/bootstrap-3.0.0-dist/css/bootstrap.min.css' %}" rel="stylesheet">
 {#    <link href="{% static 'quiz/dist/css/bootstrap.min.css' %}" rel="stylesheet">#}
-    <link href="http://netdna.bootstrapcdn.com/bootstrap/3.0.0/css/bootstrap.min.css" rel="stylesheet">
+{#    <link href="http://netdna.bootstrapcdn.com/bootstrap/3.0.0/css/bootstrap.min.css" rel="stylesheet">#}
 
     <link href="{% static 'quiz/BootstrapFormHelpers-master/dist/css/bootstrap-formhelpers.min.css' %}"
           rel="stylesheet">
 
-    <script src="{% static 'quiz/dist/js/bootstrap.min.js' %}"></script>
+{#    <script src="{% static 'quiz/dist/js/bootstrap.min.js' %}"></script>#}
+    <script src="{% static 'quiz/bootstrap-3.0.0-dist/js/bootstrap.min.js' %}"></script>
 
     <script src="{% static 'quiz/masked_input/jquery.maskedinput.min.js' %}"></script>
     <script src="{% static 'quiz/BootstrapFormHelpers-master/dist/js/bootstrap-formhelpers.min.js' %}"></script>
@@ -124,6 +126,10 @@
                     <li {% block activeUser %}{% endblock %}><a href="/quiz/user/search/">Usuários</a>
                     </li>
                 {% endif %}
+
+                <li {% block activeAdvancedExperiment %}{% endblock %}>
+                    <a href="/experiment/list/">Experimentos</a>
+                </li>
 
                 <li {% block activeContact %}{% endblock %}><a href="/quiz/contato/">
                     Contato</a>

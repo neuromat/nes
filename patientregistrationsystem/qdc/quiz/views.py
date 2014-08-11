@@ -6,19 +6,29 @@ from django.http import HttpResponseRedirect
 from django.core.urlresolvers import reverse
 from django.shortcuts import render_to_response
 
-from models import Patient, SocialDemographicData, SocialHistoryData, FleshToneOption, \
+from quiz.models import Patient, SocialDemographicData, SocialHistoryData, FleshToneOption, \
     MaritalStatusOption, SchoolingOption, PaymentOption, ReligionOption, MedicalRecordData, \
     GenderOption, AmountCigarettesOption, AlcoholFrequencyOption, AlcoholPeriodOption, \
     ClassificationOfDiseases, Diagnosis, ExamFile, ComplementaryExam
 
-from forms import PatientForm, SocialDemographicDataForm, SocialHistoryDataForm, UserForm, UserFormUpdate, \
+from quiz.forms import PatientForm, SocialDemographicDataForm, SocialHistoryDataForm, UserForm, UserFormUpdate, \
     ComplementaryExamForm, ExamFileForm
 
-from quiz_widget import SelectBoxCountriesDisabled, SelectBoxStateDisabled
+from quiz.quiz_widget import SelectBoxCountriesDisabled, SelectBoxStateDisabled
 from django.contrib import messages
 
 from django.contrib.auth.models import User
 from django.db.models import Q
+
+from django.core.mail import send_mail
+from django.template.context import Context
+from django.contrib.auth.tokens import default_token_generator
+from django.contrib.sites.models import get_current_site
+from django.template import loader
+from django.utils.http import urlsafe_base64_encode
+from django.utils.encoding import force_bytes
+
+from django.utils.translation import ugettext_lazy as _
 
 import re
 
@@ -54,7 +64,7 @@ def patient_create(request, template_name="quiz/register.html"):
         if patient_form.is_valid():
 
             current_tab, new_patient_id = save_patient(current_tab, patient_form, request, social_demographic_form,
-                                                       social_history_form)
+                                                       social_history_form, insert_new=True)
 
             redirect_url = reverse("patient_edit", args=(new_patient_id,))
             return HttpResponseRedirect(redirect_url + "?currentTab=" + str(current_tab))
@@ -99,58 +109,75 @@ def get_current_tab(request):
     return current_tab
 
 
-def save_patient(current_tab, patient_form, request, social_demographic_form, social_history_form):
+def save_patient(current_tab, patient_form, request, social_demographic_form, social_history_form, insert_new=False):
     new_patient = patient_form.save(commit=False)
     if not new_patient.cpf_id:
         new_patient.cpf_id = None
-    new_patient.save()
+
+    if not patient_form.has_changed() \
+            and not social_demographic_form.has_changed() \
+            and not social_history_form.has_changed():
+        return current_tab, new_patient.number_record
+
+    if patient_form.has_changed():
+        new_patient.changed_by = request.user
+        new_patient.save()
+
     if social_demographic_form.is_valid():
 
         new_social_demographic_data = social_demographic_form.save(commit=False)
         new_social_demographic_data.id_patient = new_patient
 
-        if (new_social_demographic_data.tv_opt is not None and
-                new_social_demographic_data.radio_opt is not None and
-                new_social_demographic_data.bath_opt is not None and
-                new_social_demographic_data.automobile_opt is not None and
-                new_social_demographic_data.house_maid_opt is not None and
-                new_social_demographic_data.wash_machine_opt is not None and
-                new_social_demographic_data.dvd_opt is not None and
-                new_social_demographic_data.refrigerator_opt is not None and
-                new_social_demographic_data.freezer_opt is not None):
+        if insert_new or social_demographic_form.has_changed():
 
-            new_social_demographic_data.social_class_opt = \
-                new_social_demographic_data.calculate_social_class(
+            if (new_social_demographic_data.tv_opt is not None and
+                    new_social_demographic_data.radio_opt is not None and
+                    new_social_demographic_data.bath_opt is not None and
+                    new_social_demographic_data.automobile_opt is not None and
+                    new_social_demographic_data.house_maid_opt is not None and
+                    new_social_demographic_data.wash_machine_opt is not None and
+                    new_social_demographic_data.dvd_opt is not None and
+                    new_social_demographic_data.refrigerator_opt is not None and
+                    new_social_demographic_data.freezer_opt is not None):
+
+                new_social_demographic_data.social_class_opt = new_social_demographic_data.calculate_social_class(
                     tv=request.POST['tv_opt'], radio=request.POST['radio_opt'],
                     banheiro=request.POST['bath_opt'], automovel=request.POST['automobile_opt'],
                     empregada=request.POST['house_maid_opt'], maquina=request.POST['wash_machine_opt'],
                     dvd=request.POST['dvd_opt'], geladeira=request.POST['refrigerator_opt'],
                     freezer=request.POST['freezer_opt'], escolaridade=request.POST['schooling_opt'])
-        else:
 
-            new_social_demographic_data.social_class_opt = None
+            else:
 
-            if (new_social_demographic_data.tv_opt is not None or
-                    new_social_demographic_data.radio_opt is not None or
-                    new_social_demographic_data.bath_opt is not None or
-                    new_social_demographic_data.automobile_opt is not None or
-                    new_social_demographic_data.house_maid_opt is not None or
-                    new_social_demographic_data.wash_machine_opt is not None or
-                    new_social_demographic_data.dvd_opt is not None or
-                    new_social_demographic_data.refrigerator_opt is not None or
-                    new_social_demographic_data.freezer_opt is not None):
-                messages.warning(request, 'Classe Social não calculada, pois os campos necessários '
-                                          'para o cálculo não foram preenchidos.')
-                current_tab = "1"
+                new_social_demographic_data.social_class_opt = None
 
-        new_social_demographic_data.save()
-    if social_history_form.is_valid():
+                if (new_social_demographic_data.tv_opt is not None or
+                        new_social_demographic_data.radio_opt is not None or
+                        new_social_demographic_data.bath_opt is not None or
+                        new_social_demographic_data.automobile_opt is not None or
+                        new_social_demographic_data.house_maid_opt is not None or
+                        new_social_demographic_data.wash_machine_opt is not None or
+                        new_social_demographic_data.dvd_opt is not None or
+                        new_social_demographic_data.refrigerator_opt is not None or
+                        new_social_demographic_data.freezer_opt is not None):
+                    messages.warning(request, 'Classe Social não calculada, pois os campos necessários '
+                                              'para o cálculo não foram preenchidos.')
+                    current_tab = "1"
+
+            new_social_demographic_data.changed_by = request.user
+            new_social_demographic_data.save()
+
+    if insert_new or (social_history_form.is_valid() and social_history_form.has_changed()):
         new_social_history_data = social_history_form.save(commit=False)
         new_social_history_data.id_patient = new_patient
-
+        new_social_history_data.changed_by = request.user
         new_social_history_data.save()
 
+    if patient_form.has_changed() \
+            or social_demographic_form.has_changed() \
+            or social_history_form.has_changed():
         messages.success(request, 'Paciente gravado com sucesso.')
+
     new_patient_id = new_patient.number_record
     return current_tab, new_patient_id
 
@@ -345,7 +372,8 @@ def user_create(request, template_name='quiz/register_users.html'):
     form = UserForm(request.POST or None)
     if request.method == "POST":
         if form.is_valid():
-            form.save()
+            user_added = form.save()
+            send_email_user(user_added, request)
             messages.success(request, 'Usuário criado com sucesso.')
             return redirect('user_list')
         else:
@@ -380,6 +408,45 @@ def user_update(request, user_id, template_name="quiz/register_users.html"):
     return render(request, template_name, context)
 
 
+def send_email_user(user_added=None, request=None, domain_override=None,
+                    email_template_name='registration/password_define_email.html',
+                    use_https=False, token_generator=default_token_generator):
+    """Reset users password"""
+    if not user_added.email:
+        raise ValueError('Email address is required to send an email')
+
+    if not domain_override:
+        current_site = get_current_site(request)
+        site_name = current_site.name
+        domain = current_site.domain
+    else:
+        site_name = domain = domain_override
+    t = loader.get_template(email_template_name)
+    c = {
+        'email': user_added.email,
+        'domain': domain,
+        'site_name': site_name,
+        'uid': urlsafe_base64_encode(force_bytes(user_added.pk)), #int_to_base36(user_added.id),
+        'user': user_added,
+        'token': token_generator.make_token(user_added),
+        'protocol': use_https and 'https' or 'http',
+    }
+    send_mail(_("Definir senha"), t.render(Context(c)), None, [user_added.email])
+    # #send_mail(_("Your account for %s") % site_name, t.render(Context(c)), None, [user_added.email])
+    # subject_template_name = 'registration/password_reset_subject.txt'
+    # subject = loader.render_to_string(subject_template_name, c)
+    # # Email subject *must not* contain newlines
+    # subject = ''.join(subject.splitlines())
+    # # CHANGES START HERE!
+    # plain_text_content = loader.render_to_string(email_template_name.replace('with_html', 'plaintext'), c)
+    # html_content = loader.render_to_string(email_template_name, c)
+    #
+    # from django.core.mail import EmailMultiAlternatives
+    # msg = EmailMultiAlternatives(subject, plain_text_content, 'jenkins.neuromat@gmail.com', [user_added.email])
+    # msg.attach_alternative(html_content, "text/html")
+    # msg.send()
+
+
 @login_required
 @permission_required('quiz.add_medicalrecorddata')
 def search_cid10_ajax(request):
@@ -401,7 +468,6 @@ def search_cid10_ajax(request):
 @login_required
 @permission_required('quiz.add_medicalrecorddata')
 def medical_record_create(request, patient_id, template_name='quiz/medical_record.html'):
-
     current_patient = get_object_or_404(Patient, pk=patient_id)
 
     return render(request, template_name,

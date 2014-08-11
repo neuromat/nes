@@ -4,6 +4,13 @@ from django.test import TestCase
 from django.test.client import RequestFactory
 from django.contrib.auth.models import Group
 
+from django.contrib.auth.tokens import default_token_generator
+from django.contrib.sites.models import Site, get_current_site
+from django.core.mail import send_mail
+from django.template import loader
+from django.template.context import Context
+from django.utils.http import int_to_base36
+from django.utils.translation import ugettext_lazy as _
 from views import User, reverse, user_update, user_delete
 
 import re
@@ -22,7 +29,7 @@ class FormUserValidation(TestCase):
         """ Configura autenticacao e variaveis para iniciar cada teste """
         print 'Set up for', self._testMethodName
 
-        self.user = User.objects.create_user(username=USER_USERNAME, email='test@dummy.com', password=USER_PWD)
+        self.user = User.objects.create_user(username=USER_USERNAME, email='jenkins.neuromat@gmail.com', password=USER_PWD)
         self.user.is_staff = True
         self.user.is_superuser = True
         self.user.save()
@@ -42,6 +49,43 @@ class FormUserValidation(TestCase):
 
         logged = self.client.login(username=USER_USERNAME, password=USER_PWD)
         self.assertEqual(logged, True)
+
+    def reset(self, user_added=None, request=None, domain_override=None, email_template_name='registration/password_reset_email.html',
+             use_https=False, token_generator=default_token_generator):
+        """Reset users password"""
+        if not user_added.email:
+            raise ValueError('Email address is required to send an email')
+
+        if not domain_override:
+            current_site = get_current_site(request)
+            site_name = current_site.name
+            domain = current_site.domain
+        else:
+            site_name = domain = domain_override
+        t = loader.get_template(email_template_name)
+        c = {
+            'email': user_added.email,
+            'domain': domain,
+            'site_name': site_name,
+            'uid': int_to_base36(user_added.id),
+            'user': user_added,
+            'token': token_generator.make_token(user_added),
+            'protocol': use_https and 'https' or 'http',
+        }
+        #send_mail(_("Your account for %s") % site_name, t.render(Context(c)), None, [user_added.email])
+        subject_template_name = 'registration/password_reset_subject.txt'
+        subject = loader.render_to_string(subject_template_name, c)
+        # Email subject *must not* contain newlines
+        subject = ''.join(subject.splitlines())
+        # CHANGES START HERE!
+        plain_text_content = loader.render_to_string(email_template_name.replace('with_html', 'plaintext'), c)
+        html_content = loader.render_to_string(email_template_name, c)
+
+        from django.core.mail import EmailMultiAlternatives
+        msg = EmailMultiAlternatives(subject, plain_text_content, 'jenkins.neuromat@gmail.com', [user_added.email])
+        msg.attach_alternative(html_content, "text/html")
+        msg.send()
+
 
     def test_user_password_pattern(self):
         """Testa o pattern definido """
@@ -155,6 +199,25 @@ class FormUserValidation(TestCase):
 
         self.client.post(reverse(USER_NEW), self.data, follow=True)
         self.assertEqual(User.objects.filter(username=username).count(), 1)
+
+    def test_user_create_mail_password_define(self):
+        """
+        Testa inclusao de usuario com sucesso
+        """
+        username = 'test_username'
+        self.data['email'] = 'romulojosefranco@gmail.com'
+        self.data['username'] = username
+
+        # Create an instance of a GET request.
+        request = self.factory.get(reverse(USER_EDIT, args=[self.user.pk]))
+        request.user = self.user
+
+        response = self.client.post(reverse(USER_NEW), self.data, follow=True)
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(User.objects.filter(username=username).count(), 1)
+
+        user_added = User.objects.filter(username=username).first()
+        self.reset(user_added, request)
 
     def test_user_read(self):
         """

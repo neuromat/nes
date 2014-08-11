@@ -201,7 +201,7 @@ class PatientFormValidation(TestCase):
         Teste de visualizacao de paciente apos cadastro na base de dados
         """
 
-        patient_mock = self.util.create_patient_mock()
+        patient_mock = self.util.create_patient_mock(user=self.user)
 
         # Create an instance of a GET request.
         request = self.factory.get(reverse('patient_view', args=[patient_mock.pk]))
@@ -232,7 +232,7 @@ class PatientFormValidation(TestCase):
         """
         Teste a visualizacao de paciente
         """
-        patient_mock = self.util.create_patient_mock()
+        patient_mock = self.util.create_patient_mock(user=self.user)
 
         request = self.factory.get(reverse(PATIENT_VIEW, args=[patient_mock.pk]))
         request.user = self.user
@@ -243,7 +243,7 @@ class PatientFormValidation(TestCase):
     def test_patient_update_and_remove(self):
         """Teste de paciente existente na base de dados """
 
-        patient_mock = self.util.create_patient_mock(name='Pacient Test Update')
+        patient_mock = self.util.create_patient_mock(name='Pacient Test Update', user=self.user)
 
         # Create an instance of a GET request.
         request = self.factory.get(reverse(PATIENT_VIEW, args=[patient_mock.pk]))
@@ -309,7 +309,7 @@ class PatientFormValidation(TestCase):
         """Testa a recuperaracao de paciente removido """
 
         # Cria um paciente ja removido no BD
-        patient_mock = self.util.create_patient_mock()
+        patient_mock = self.util.create_patient_mock(user=self.user)
         patient_mock.removed = True
         patient_mock.save()
 
@@ -347,7 +347,7 @@ class PatientFormValidation(TestCase):
 
     def test_patient_verify_homonym(self):
         """  Testar a busca por homonimo """
-        patient_mock = self.util.create_patient_mock()
+        patient_mock = self.util.create_patient_mock(user=self.user)
 
         # Busca valida
         self.data[SEARCH_TEXT] = patient_mock.name_txt

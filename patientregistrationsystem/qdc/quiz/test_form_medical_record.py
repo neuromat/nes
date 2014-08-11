@@ -56,7 +56,7 @@ class MedicalRecordFormValidation(TestCase):
         # Create mock objects to tests
         self.util.create_cid10_to_search()
         cid10_mock = ClassificationOfDiseases.objects.filter(code='B01').first()
-        patient_mock = self.util.create_patient_mock()
+        patient_mock = self.util.create_patient_mock(user=self.user)
         medical_record_mock = self.util.create_medical_record_mock(self.user, patient_mock)
 
         request = self.factory.get(
@@ -82,7 +82,7 @@ class MedicalRecordFormValidation(TestCase):
         """
         Testar a criação, leitura, atualização e exclusão do Avaliação Medica (MedicalRecord)
         """
-        patient_mock = self.util.create_patient_mock()
+        patient_mock = self.util.create_patient_mock(user=self.user)
         cid10_mock = self.util.create_cid10_mock()
 
         # Create a new Medical Record and check if it created with successfully
@@ -125,7 +125,7 @@ class MedicalRecordFormValidation(TestCase):
         Testar a edição de avaliação medica
         """
 
-        patient_mock = self.util.create_patient_mock()
+        patient_mock = self.util.create_patient_mock(user=self.user)
         medical_record_mock = self.util.create_medical_record_mock(self.user, patient_mock)
         # Test a medical record edit method - no changes it will occurs - just pass by the method
         url = reverse("medical_record_edit", args=[patient_mock.pk, medical_record_mock.pk, ])
@@ -161,7 +161,7 @@ class MedicalRecordFormValidation(TestCase):
         """
         Testar a criação de exames
         """
-        patient_mock = self.util.create_patient_mock()
+        patient_mock = self.util.create_patient_mock(user=self.user)
         medical_record_mock = self.util.create_medical_record_mock(self.user, patient_mock)
         diagnosis_mock = self.util.create_diagnosis_mock(medical_record_mock)
 
@@ -228,7 +228,7 @@ class MedicalRecordFormValidation(TestCase):
         """
         Testar a atualização de um exame complementar
         """
-        patient_mock = self.util.create_patient_mock()
+        patient_mock = self.util.create_patient_mock(user=self.user)
         medical_record_mock = self.util.create_medical_record_mock(self.user, patient_mock)
         diagnosis_mock = self.util.create_diagnosis_mock(medical_record_mock)
 
@@ -256,7 +256,7 @@ class MedicalRecordFormValidation(TestCase):
         """
         Testar a adição de exame com arquivo anexo - inclusao e remoção
         """
-        patient_mock = self.util.create_patient_mock()
+        patient_mock = self.util.create_patient_mock(user=self.user)
         medical_record_mock = self.util.create_medical_record_mock(self.user, patient_mock)
         diagnosis_mock = self.util.create_diagnosis_mock(medical_record_mock)
 

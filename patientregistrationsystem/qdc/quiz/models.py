@@ -5,6 +5,7 @@ from django.db import models
 from django.core.exceptions import ValidationError
 from django.utils.translation import ugettext as _
 from django.contrib.auth.models import User
+from simple_history.models import HistoricalRecords
 from validation import CPF
 import datetime
 
@@ -17,8 +18,8 @@ def validate_cpf(value):
         raise ValidationError(_('CPF %s não é válido') % value)
 
 
-#Valida data de nascimento:
-#data de nascimento maior que a data atual
+# Valida data de nascimento:
+# data de nascimento maior que a data atual
 def validate_date_birth(value):
     if value > datetime.date.today():
         raise ValidationError('Data de nascimento não pode ser maior que a data de hoje.')
@@ -108,6 +109,18 @@ class Patient(models.Model):
     marital_status_opt = models.ForeignKey(MaritalStatusOption, null=True, blank=True)
     removed = models.BooleanField(null=False, default=False)
 
+    # Audit trail
+    history = HistoricalRecords()
+    changed_by = models.ForeignKey('auth.User')
+
+    @property
+    def _history_user(self):
+        return self.changed_by
+
+    @_history_user.setter
+    def _history_user(self, value):
+        self.changed_by = value
+
     class Meta:
         permissions = (
             ("view_patient", "Can view patient"),
@@ -141,13 +154,22 @@ class SocialDemographicData(models.Model):
     house_maid_opt = models.IntegerField(null=True, blank=True, )
     social_class_opt = models.CharField(null=True, blank=True, max_length=10)
 
+    # Changes to audit trail
+    history = HistoricalRecords()
+    changed_by = models.ForeignKey('auth.User')
+
     def __unicode__(self):
         return \
-            self.id_patient, self.religion_opt, self.profession_txt, self.occupation_txt, bool(
-                self.benefit_government_bool), \
-            self.payment_opt, self.flesh_tone_opt, self.schooling_opt, self.tv_opt, self.dvd_opt, self.radio_opt, \
-            self.bath_opt, self.automobile_opt, self.wash_machine_opt, self.refrigerator_opt, self.freezer_opt, \
-            self.house_maid_opt, self.social_class_opt
+            str(self.id_patient)
+
+    @property
+    def _history_user(self):
+        return self.changed_by
+
+    @_history_user.setter
+    def _history_user(self, value):
+        self.changed_by = value
+
 
     @staticmethod
     def calculate_social_class(**keywords):
@@ -205,10 +227,22 @@ class SocialHistoryData(models.Model):
     alcohol_period_opt = models.ForeignKey(AlcoholPeriodOption, null=True, blank=True, default=0)
     drugs_opt = models.CharField(max_length=25, null=True, blank=True)
 
+    # Audit trail
+    history = HistoricalRecords()
+    changed_by = models.ForeignKey('auth.User')
+
+    @property
+    def _history_user(self):
+        return self.changed_by
+
+    @_history_user.setter
+    def _history_user(self, value):
+        self.changed_by = value
+
+
     def __unicode__(self):
         return \
-            self.id_patient, bool(self.smoker), self.amount_cigarettes_opt, bool(self.ex_smoker), \
-            bool(self.alcoholic), self.alcohol_frequency_opt, self.alcohol_period_opt, self.drugs_opt
+            str(self.id_patient)
 
 
 class MedicalRecordData(models.Model):
