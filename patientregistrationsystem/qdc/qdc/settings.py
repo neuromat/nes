@@ -42,6 +42,7 @@ INSTALLED_APPS = (
     'django.contrib.staticfiles',
     'quiz',
     'django_jenkins',
+    'experiment'
 )
 
 JENKINS_TASKS = (
@@ -79,8 +80,8 @@ DATABASES = {
         'NAME': 'qdcdb_dev',
         'USER': 'qdc',
         'PASSWORD': 'DEVqdc1716',
-        # 'HOST': '200.144.254.136',
-        # 'test_name': 'test_local',
+        'HOST': '200.144.254.136',
+        'test_name': 'test_local',
     }
 }
 
