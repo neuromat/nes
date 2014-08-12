@@ -1,0 +1,133 @@
+{% extends "quiz/template.html" %}
+{% block activeAdvancedExperiment %}class="active"{% endblock %}
+
+{% block header %}
+{% endblock %}
+
+{% block form %}
+    <div class="row">
+    <form id="user_form" method="post">
+    {% csrf_token %}
+{% endblock %}
+
+{% block content %}
+
+    <div class="tab-pane fade in active" id="experimentBreadCrumb">
+
+        <div class="col-md-1">
+        </div>
+
+        <div class="col-md-10">
+
+            <ol class="breadcrumb">
+                <li>Home</li>
+                <li>Experimentos</li>
+
+                {% if creating %}
+                    <li>Novo</li>
+                {% else %}
+                    <li> {{ experiment_form.title.value }} </li>
+                {% endif %}
+
+            </ol>
+
+        </div>
+
+        <div class="col-md-1">
+        </div>
+    </div>
+
+    <div class="tab-pane fade in active" id="menuUserTab">
+        <div class="col-md-10">
+            <div class="container span6 offset3 well ">
+                <div class="row">
+                    <div class="col-xs-6 col-sm-6">
+                        <div class="form-group">
+                            <label>Título</label>
+{#                            <div class="input-group input-group-sm">#}
+{#                                <span class="input-group-addon"> <span class="glyphicon glyphicon-user"></span></span>#}
+                                {{ experiment_form.title }}
+{#                            </div>#}
+                        </div>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-xs-6 col-sm-10">
+                        <div class="form-group">
+                            <label>Descrição</label>
+{#                            <div class="input-group input-group-sm">#}
+{#                                <span class="input-group-addon"> <span class="glyphicon glyphicon-user"></span></span>#}
+                                {{ experiment_form.description }}
+{#                            </div>#}
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+
+            <div class="container span6 offset3 well ">
+                <div class="row">
+                    <div class="col-xs-6 col-sm-12">
+                        <div class="form-group">
+                            <label>Questionários relacionados ao experimento:</label>
+                            <div class="input-group  input-group-sm">
+                                {% for questionnaire in questionnaires_list %}
+                                    <div class="checkbox">
+{#                                            {{ name }}#}
+                                        <label>
+                                            <input type="checkbox" value="{{ questionnaire.sid }}" name="chosen_questionnaires" />
+                                            {{ questionnaire.surveyls_title }}
+                                        </label>
+                                    </div>
+                                {% endfor %}
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            {% if not creating %}
+                <div class="container span6 offset3 well ">
+                    <div class="row">
+                        <div class="col-xs-6 col-sm-12">
+                            {# TODO: botao participante #}
+                            <a href="/experiment/new/" class="btn btn-primary">Participantes do experimento</a>
+                        </div>
+                    </div>
+                </div>
+            {% endif %}
+
+
+            <div class="btn-toolbar">
+
+                {# TODO: botao excluir #}
+                <div class="btn-group pull-left">
+                    {% if not creating %}
+                            <input type="submit" value="Excluir" class="btn btn-danger" id="submit"/>
+                    {% endif %}
+                </div>
+
+                <div class="btn-group pull-right">
+                    <button type="submit" name="action" value="save" class="btn btn-primary">Salvar</button>
+                </div>
+
+                {# TODO: botao cancelar #}
+                <div class="btn-group pull-right">
+                    {% if creating %}
+                        <input type="submit" value="Cancelar" class="btn" id="submit"/>
+                    {% endif %}
+                </div>
+
+            </div>
+
+        </div>
+    </div>
+
+
+
+{% endblock %}
+
+{% block end_form %}
+    </form>
+    </div>
+{% endblock %}

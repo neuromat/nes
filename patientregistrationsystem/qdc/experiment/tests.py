@@ -38,8 +38,7 @@ class ExperimentListTest(TestCase):
                      'cpf_id': '374.276.738-08',
                      'gender_opt': str(self.gender_opt.id),
                      'date_birth_txt': '01/02/1995',
-                     'email_txt': 'email@email.com'
-        }
+                     'email_txt': 'email@email.com'}
 
     def test_experiment_list(self):
         """
@@ -63,4 +62,5 @@ class ExperimentListTest(TestCase):
 
         # deve retornar 1 experimento
         self.assertEqual(len(response.context['experiments']), 1)
+
 

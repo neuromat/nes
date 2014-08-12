@@ -5,6 +5,7 @@ from django.forms.widgets import Textarea
 from models import Patient, SocialDemographicData, SocialHistoryData, ComplementaryExam, ExamFile
 from django.contrib.auth.hashers import make_password
 from quiz_widget import SelectBoxCountries, SelectBoxState
+from cep.widgets import CEPInput
 
 from django.contrib.auth.models import User
 
@@ -33,9 +34,13 @@ class PatientForm(ModelForm):
                                                'id': "naturalOf"}),
             'street_txt': TextInput(attrs={'class': 'form-control', 'placeholder': 'Rua - Complemento',
                                            'id': "street_txt"}),
-            'zipcode_number': TextInput(
-                attrs={'class': 'form-control', 'placeholder': 'Entrar CEP', 'id': "zipcode",
-                       'data-error': "CEP inválido", 'pattern': '\d{5}-?\d{3}'}),
+            #'zipcode_number': TextInput(
+            #    attrs={'class': 'form-control', 'placeholder': 'Entrar CEP', 'id': "zipcode",
+            #           'data-error': "CEP inválido", 'pattern': '\d{5}-?\d{3}'}),
+            'zipcode_number': CEPInput(address={'street': 'id_street_txt',
+                                                'city': 'id_city_txt',
+                                                'state': 'id_state_txt'},
+                                       attrs={'data-error': "CEP inválido", 'pattern': '\d{5}-?\d{3}'}),
             'city_txt': TextInput(attrs={'class': 'form-control', 'placeholder': 'Entrar cidade', 'id': "city"}),
             'phone_number': TextInput(attrs={'class': 'form-control', 'placeholder': 'Entrar telefone para contato',
                                              'id': "phone"}),
