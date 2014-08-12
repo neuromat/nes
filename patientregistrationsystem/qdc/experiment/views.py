@@ -31,22 +31,18 @@ def experiment_create(request, template_name="experiment/experiment_register.htm
 
             if experiment_form.is_valid():
 
-                experiment_added = experiment_form.save(commit=False)
-
+                experiment_added = experiment_form.save()
                 if 'chosen_questionnaires' in request.POST:
 
                     for survey_id in request.POST.getlist('chosen_questionnaires'):
 
                         try:
                             questionnaire = Questionnaire.objects.get(survey_id=survey_id)
-                        except Questionnaire.DoesNotExist:
+                        except questionnaire.DoesNotExist:
                             questionnaire_id = Questionnaire(survey_id=survey_id).save()
                             questionnaire = Questionnaire.objects.get(pk=questionnaire_id)
 
-                        questionnaires_list.append(questionnaire)
-
-                experiment_added.questionnaires = questionnaires_list
-                experiment_added.save()
+                        experiment_added.questionnaires.add(questionnaire)
 
                 messages.success(request, 'Experimento criado com sucesso.')
 
