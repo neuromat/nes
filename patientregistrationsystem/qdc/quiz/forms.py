@@ -143,6 +143,7 @@ class UserForm(ModelForm):
                                       'pattern': '^[_A-Za-z0-9-\+]+(\.[_A-Za-z0-9-]+)*@[A-Za-z0-9-]' +
                                                  '+(\.[A-Za-z0-9]+)*(\.[A-Za-z]{2,})$'}),
             'groups': CheckboxSelectMultiple(choices=(('blue', 'Blue'), ('green', 'Green'))),
+            'groups': CheckboxSelectMultiple(choices=(('blue', 'Blue'), ('green', 'Green'))),
         }
 
     def clean_username(self):

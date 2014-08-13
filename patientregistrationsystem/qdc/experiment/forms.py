@@ -1,5 +1,6 @@
+# coding=utf-8
 from models import Experiment, Questionnaire
-from django.forms import ModelForm, TextInput, DateInput
+from django.forms import ModelForm, TextInput, Textarea
 
 
 class ExperimentForm(ModelForm):
@@ -10,10 +11,11 @@ class ExperimentForm(ModelForm):
         fields = ['title', 'description', 'questionnaires']
 
         widgets = {
-            'title': TextInput(attrs={'class': 'form-control', 'placeholder': 'Entrar titulo',
+            'title': TextInput(attrs={'class': 'form-control',
+                                      'placeholder': 'Entrar titulo',
                                       'id': "experiment_title"}),
-            'description': TextInput(attrs={'class': 'form-control', 'placeholder': 'Entrar descricao',
-                                            'id': 'experiment_description'}),
+            'description': Textarea(attrs={'class': 'form-control', 'placeholder': 'Entrar descrição',
+                                           'rows': '4', 'id': 'experiment_description'}),
             # 'start_date': DateInput(attrs={'class': 'form-control', 'placeholder': 'Data', 'id': 'start_date'}),
             # 'end_date': DateInput(attrs={'class': 'form-control', 'placeholder': 'Data', 'id': 'end_date'}),
             # 'eci_software': TextInput(attrs={'class': 'form-control', 'placeholder': 'eci-software',

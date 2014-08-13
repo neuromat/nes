@@ -44,10 +44,7 @@
                     <div class="col-xs-6 col-sm-6">
                         <div class="form-group">
                             <label>Título</label>
-{#                            <div class="input-group input-group-sm">#}
-{#                                <span class="input-group-addon"> <span class="glyphicon glyphicon-user"></span></span>#}
                                 {{ experiment_form.title }}
-{#                            </div>#}
                         </div>
                     </div>
                 </div>
@@ -55,15 +52,32 @@
                     <div class="col-xs-6 col-sm-10">
                         <div class="form-group">
                             <label>Descrição</label>
-{#                            <div class="input-group input-group-sm">#}
-{#                                <span class="input-group-addon"> <span class="glyphicon glyphicon-user"></span></span>#}
                                 {{ experiment_form.description }}
-{#                            </div>#}
                         </div>
                     </div>
                 </div>
 
             </div>
+
+{#            <div class="container span6 offset3 well ">#}
+{#                <div class="row">#}
+{#                    <div class="col-xs-6 col-sm-12">#}
+{#                        <div class="form-group">#}
+{#                            <label>Questionários relacionados ao experimento:</label>#}
+{#                            <div class="input-group  input-group-sm">#}
+{#                                {% for questionnaire in questionnaires_list %}#}
+{#                                    <div class="checkbox">#}
+{#                                        <label>#}
+{#                                            <input type="checkbox" value="{{ questionnaire.sid }}" name="chosen_questionnaires" />#}
+{#                                            {{ questionnaire.surveyls_title }}#}
+{#                                        </label>#}
+{#                                    </div>#}
+{#                                {% endfor %}#}
+{#                            </div>#}
+{#                        </div>#}
+{#                    </div>#}
+{#                </div>#}
+{#            </div>#}
 
             <div class="container span6 offset3 well ">
                 <div class="row">
@@ -73,7 +87,6 @@
                             <div class="input-group  input-group-sm">
                                 {% for questionnaire in questionnaires_list %}
                                     <div class="checkbox">
-{#                                            {{ name }}#}
                                         <label>
                                             <input type="checkbox" value="{{ questionnaire.sid }}" name="chosen_questionnaires" />
                                             {{ questionnaire.surveyls_title }}
@@ -83,20 +96,25 @@
                             </div>
                         </div>
                     </div>
+                    <div class="col-xs-6 col-sm-12">
+                        {# TODO: botao questionario #}
+                        <a href="/experiment/new/" class="btn btn-primary">Inserir questionário</a>
+                    </div>
+
                 </div>
             </div>
+
 
             {% if not creating %}
                 <div class="container span6 offset3 well ">
                     <div class="row">
                         <div class="col-xs-6 col-sm-12">
                             {# TODO: botao participante #}
-                            <a href="/experiment/new/" class="btn btn-primary">Participantes do experimento</a>
+                            <a href="/experiment/new/" class="btn btn-primary">Participantes</a>
                         </div>
                     </div>
                 </div>
             {% endif %}
-
 
             <div class="btn-toolbar">
 
@@ -122,8 +140,6 @@
 
         </div>
     </div>
-
-
 
 {% endblock %}
 
