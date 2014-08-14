@@ -1,14 +1,13 @@
 # coding=utf-8
 from models import Experiment, Questionnaire
-from django.forms import ModelForm, TextInput, Textarea
+from django.forms import ModelForm, TextInput, Textarea, Select
 
 
 class ExperimentForm(ModelForm):
     class Meta:
         model = Experiment
 
-        # fields = ['title', 'description', 'start_date', 'end_date', 'eci_software']
-        fields = ['title', 'description', 'questionnaires']
+        fields = ['title', 'description']
 
         widgets = {
             'title': TextInput(attrs={'class': 'form-control',
@@ -16,18 +15,25 @@ class ExperimentForm(ModelForm):
                                       'id': "experiment_title"}),
             'description': Textarea(attrs={'class': 'form-control', 'placeholder': 'Entrar descrição',
                                            'rows': '4', 'id': 'experiment_description'}),
-            # 'start_date': DateInput(attrs={'class': 'form-control', 'placeholder': 'Data', 'id': 'start_date'}),
-            # 'end_date': DateInput(attrs={'class': 'form-control', 'placeholder': 'Data', 'id': 'end_date'}),
-            # 'eci_software': TextInput(attrs={'class': 'form-control', 'placeholder': 'eci-software',
-            #                                  'id': 'eci_software'})
         }
 
 
 class QuestionnaireForm(ModelForm):
     class Meta:
         model = Questionnaire
-        fields = ['survey_id']
+        fields = ['number_of_fills', 'interval_between_fills_value', 'interval_between_fills_unit']
 
         widgets = {
-            'survey_id': TextInput(attrs={'class': 'form-control', 'placeholder': 'SID', 'id': 'survey_id'})
+            'number_of_fills': TextInput(attrs={'class': 'form-control',
+                                                'placeholder': 'Quantidade de prenchimentos',
+                                                'id': "number_of_fills",
+                                                'required': ""}),
+            'interval_between_fills_value': TextInput(attrs={'class': 'form-control',
+                                                             'placeholder': 'Intervalo entre prenchimentos',
+                                                             'id': "interval_between_fills_value",
+                                                             'required': ""}),
+            'interval_between_fills_unit': Select(attrs={'class': 'form-control',
+                                                         'id': 'interval_between_fills_unit',
+                                                         'required': "",
+                                                         'data-error': "Unidade deve ser preenchida"}),
         }

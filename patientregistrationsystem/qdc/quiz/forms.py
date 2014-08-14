@@ -5,7 +5,6 @@ from django.forms.widgets import Textarea
 from models import Patient, SocialDemographicData, SocialHistoryData, ComplementaryExam, ExamFile
 from django.contrib.auth.hashers import make_password
 from quiz_widget import SelectBoxCountries, SelectBoxState
-from cep.widgets import CEPInput
 
 from django.contrib.auth.models import User
 
@@ -142,8 +141,7 @@ class UserForm(ModelForm):
                                       'type': 'email', 'data-error': "E-mail inválido",
                                       'pattern': '^[_A-Za-z0-9-\+]+(\.[_A-Za-z0-9-]+)*@[A-Za-z0-9-]' +
                                                  '+(\.[A-Za-z0-9]+)*(\.[A-Za-z]{2,})$'}),
-            'groups': CheckboxSelectMultiple(choices=(('blue', 'Blue'), ('green', 'Green'))),
-            'groups': CheckboxSelectMultiple(choices=(('blue', 'Blue'), ('green', 'Green'))),
+            'groups': CheckboxSelectMultiple(),
         }
 
     def clean_username(self):

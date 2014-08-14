@@ -12,6 +12,33 @@
 
 {% block content %}
 
+    {% if messages %}
+        {% for message in messages %}
+
+            {% if message.tags == "success" %}
+                <script>showSuccessMessage('{{ message }}')</script>
+            {% endif %}
+
+            {% if message.tags == "warning" %}
+                <script>showWarningMessage('{{ message }}')</script>
+            {% endif %}
+
+            {% if message.tags == "error" %}
+                <script>showErrorMessage('{{ message }}')</script>
+            {% endif %}
+
+            {% if message.tags == "info" %}
+                <script>showInfoMessage('{{ message }}')</script>
+            {% endif %}
+
+        {% endfor %}
+    {% endif %}
+
+    {% if experiment_form.errors %}
+        <script>showErrorMessage('Por favor, corrija os campos em destaque.')</script>
+    {% endif %}
+
+
     <div class="tab-pane fade in active" id="experimentBreadCrumb">
 
         <div class="col-md-1">
@@ -83,7 +110,7 @@
                 <div class="row">
                     <div class="col-xs-6 col-sm-12">
                         <div class="form-group">
-                            <label>Questionários relacionados ao experimento:</label>
+                            <label>Questionários</label>
                             <div class="input-group  input-group-sm">
                                 {% for questionnaire in questionnaires_list %}
                                     <div class="checkbox">
@@ -98,30 +125,27 @@
                     </div>
                     <div class="col-xs-6 col-sm-12">
                         {# TODO: botao questionario #}
-                        <a href="/experiment/new/" class="btn btn-primary">Inserir questionário</a>
+                        <a href="/experiment/{{ experiment.id }}/questionnaire/new" class="btn btn-primary {% if creating %} disabled{% endif %}">Inserir questionário</a>
                     </div>
 
                 </div>
             </div>
 
-
-            {% if not creating %}
-                <div class="container span6 offset3 well ">
-                    <div class="row">
-                        <div class="col-xs-6 col-sm-12">
-                            {# TODO: botao participante #}
-                            <a href="/experiment/new/" class="btn btn-primary">Participantes</a>
-                        </div>
+            <div class="container span6 offset3 well ">
+                <div class="row">
+                    <div class="col-xs-6 col-sm-12">
+                        {# TODO: botao participante #}
+                        <a href="/experiment/new/" class="btn btn-primary {% if creating %} disabled{% endif %}" >Participantes</a>
                     </div>
                 </div>
-            {% endif %}
+            </div>
 
             <div class="btn-toolbar">
 
                 {# TODO: botao excluir #}
                 <div class="btn-group pull-left">
                     {% if not creating %}
-                            <input type="submit" value="Excluir" class="btn btn-danger" id="submit"/>
+                        <input type="submit" value="Excluir" class="btn btn-danger" id="submit"/>
                     {% endif %}
                 </div>
 
@@ -133,6 +157,8 @@
                 <div class="btn-group pull-right">
                     {% if creating %}
                         <input type="submit" value="Cancelar" class="btn" id="submit"/>
+                    {% else %}
+                        <input type="submit" value="Voltar" class="btn" id="submit"/>
                     {% endif %}
                 </div>
 

@@ -11,4 +11,5 @@ urlpatterns = patterns(
         'experiment.views.subjects_insert', name='subject_insert'),
     url(r'^(?P<experiment_id>\d+)/subjects/delete/(?P<subject_id>\d+)/$',
         'experiment.views.subjects_delete', name='subject_delete'),
+    url(r'^(?P<experiment_id>\d+)/questionnaire/new/$', 'experiment.views.questionnaire_create', name='questionnaire_new'),
 )

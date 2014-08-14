@@ -6,18 +6,32 @@ class Subject(models.Model):
     patient = models.ForeignKey(Patient)
 
 
+class TimeUnit(models.Model):
+    name = models.CharField(max_length=30, null=False, blank=False)
+
+    def __unicode__(self):
+        return self.name
+
+    class Meta:
+        ordering = ["id"]
+
+
+class Survey(models.Model):
+    lime_survey_id = models.IntegerField(null=False, blank=False)
+
+
 class Questionnaire(models.Model):
-    survey_id = models.IntegerField(null=False, blank=False)
+    survey = models.ForeignKey(Survey, null=False)
+    number_of_fills = models.IntegerField(null=False, blank=False)
+    interval_between_fills_value = models.IntegerField(null=False, blank=False)
+    interval_between_fills_unit = models.ForeignKey(TimeUnit, null=False)
 
 
 class Experiment(models.Model):
     title = models.CharField(null=False, max_length=50, blank=False)
     description = models.CharField(max_length=150, null=False, blank=False)
-    # start_date = models.DateField(null=True, blank=True)
-    # end_date = models.DateField(null=True, blank=True)
-    # eci_software = models.CharField(max_length=100, null=True, blank=True)
-    questionnaires = models.ManyToManyField(Questionnaire, null=True, blank=True)
-    subjects = models.ManyToManyField(Subject, null=True, blank=True)
+    questionnaires = models.ManyToManyField(Questionnaire, null=True)
+    subjects = models.ManyToManyField(Subject, null=True)
 
 
 class QuestionnaireResponse(models.Model):

@@ -118,9 +118,9 @@
                     {% endif %}
                 </li>
 
-                <li {% block activeAdvancedSearch %}{% endblock %}>
-                    <a href="/quiz/busca_avancada/">Busca avançada</a>
-                </li>
+{#                <li {% block activeAdvancedSearch %}{% endblock %}>#}
+{#                    <a href="/quiz/busca_avancada/">Busca avançada</a>#}
+{#                </li>#}
 
                 {% if perms.auth.add_user and perms.auth.change_user %}
                     <li {% block activeUser %}{% endblock %}><a href="/quiz/user/search/">Usuários</a>
