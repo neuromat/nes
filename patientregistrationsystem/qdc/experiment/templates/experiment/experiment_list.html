@@ -1,13 +1,20 @@
 {% extends "quiz/template.html" %}
 
+{% load i18n %}
+
 {% block header %}
+    <script>
+        $(function(){
+            $("[data-toggle=tooltip]").tooltip();
+        });
+    </script>
 {% endblock %}
 
 {% block activeAdvancedExperiment %}class="active"{% endblock %}
 
 {% block content %}
 
-    <div class="tab-pane fade in active" id="examTab">
+    <div class="tab-pane fade in active" id="experimentBreadCrumb">
 
         <div class="col-md-1">
         </div>
@@ -22,6 +29,48 @@
         </div>
 
         <div class="col-md-1">
+        </div>
+    </div>
+
+    <div class="tab-pane fade in active" id="mainMenuUserTab">
+        <div class="col-md-10">
+            <div class="container span6 offset3 well ">
+                <div class="form-group">
+                    <table class="table table-striped">
+                        <thead>
+                            <tr>
+                                <th>Título</th>
+                                <th>Descrição</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                        {% for experiment in experiments %}
+                            <tr>
+                                <td><a data-toggle="tooltip" data-placement="left" title="Editar" href="/experiment/edit/{{ experiment.id }}">{{ experiment.title }}</a></td>
+                                <td>{{ experiment.description }}</td>
+                            </tr>
+                        {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+                <div class="btn-group pull-left">
+                    <a href="/experiment/new/" class="btn btn-primary">Inserir novo experimento</a>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="modal fade" id="modalRemove" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-body">
+                    Tem certeza que deseja excluir o usuário?
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-default" data-dismiss="modal">Cancelar</button>
+                    <a id="removeUser" class="btn btn-primary" style="background-color: indianred; color: #ffffff" href="">Excluir</a>
+                </div>
+            </div>
         </div>
     </div>
 

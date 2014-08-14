@@ -36,5 +36,6 @@ urlpatterns = patterns(
      {'post_reset_redirect': '/user/password/done/'}),
     (r'^user/password/done/$',
      'django.contrib.auth.views.password_reset_complete'),
+    url(r'^cep/', include('cep.urls')),
 
 ) + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)

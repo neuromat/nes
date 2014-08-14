@@ -1,3 +1,4 @@
 from django.contrib import admin
+from experiment.models import TimeUnit
 
-# Register your models here.
+admin.site.register(TimeUnit)
