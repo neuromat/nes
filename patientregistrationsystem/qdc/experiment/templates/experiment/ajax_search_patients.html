@@ -1,0 +1,13 @@
+{% load i18n %}
+{% if patients.count > 0 %}
+
+    {% for patient in patients %}
+        <li><a href="/experiment/{{ experiment_id }}/subjects/{{ patient.number_record }}">
+            {% if patient.cpf_id %} {{ patient.cpf_id }} - {% endif %} {{ patient.name_txt }}</a></li>
+    {% endfor %}
+
+{% else %}
+
+    <li>{% trans "Nenhum paciente encontrado!" %}</li>
+
+{% endif %}
