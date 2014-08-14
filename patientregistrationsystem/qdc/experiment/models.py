@@ -9,9 +9,15 @@ class Subject(models.Model):
 class TimeUnit(models.Model):
     name = models.CharField(max_length=30, null=False, blank=False)
 
+    def __unicode__(self):
+        return self.name
+
+    class Meta:
+        ordering = ["id"]
+
 
 class Survey(models.Model):
-    survey_id = models.IntegerField(null=False, blank=False)
+    lime_survey_id = models.IntegerField(null=False, blank=False)
 
 
 class Questionnaire(models.Model):

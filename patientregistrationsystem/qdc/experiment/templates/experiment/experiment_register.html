@@ -12,6 +12,33 @@
 
 {% block content %}
 
+    {% if messages %}
+        {% for message in messages %}
+
+            {% if message.tags == "success" %}
+                <script>showSuccessMessage('{{ message }}')</script>
+            {% endif %}
+
+            {% if message.tags == "warning" %}
+                <script>showWarningMessage('{{ message }}')</script>
+            {% endif %}
+
+            {% if message.tags == "error" %}
+                <script>showErrorMessage('{{ message }}')</script>
+            {% endif %}
+
+            {% if message.tags == "info" %}
+                <script>showInfoMessage('{{ message }}')</script>
+            {% endif %}
+
+        {% endfor %}
+    {% endif %}
+
+    {% if experiment_form.errors %}
+        <script>showErrorMessage('Por favor, corrija os campos em destaque.')</script>
+    {% endif %}
+
+
     <div class="tab-pane fade in active" id="experimentBreadCrumb">
 
         <div class="col-md-1">
@@ -98,7 +125,7 @@
                     </div>
                     <div class="col-xs-6 col-sm-12">
                         {# TODO: botao questionario #}
-                        <a href="/experiment/new/" class="btn btn-primary {% if creating %} disabled{% endif %}">Inserir questionário</a>
+                        <a href="/experiment/{{ experiment.id }}/questionnaire/new" class="btn btn-primary {% if creating %} disabled{% endif %}">Inserir questionário</a>
                     </div>
 
                 </div>
@@ -118,7 +145,7 @@
                 {# TODO: botao excluir #}
                 <div class="btn-group pull-left">
                     {% if not creating %}
-                            <input type="submit" value="Excluir" class="btn btn-danger" id="submit"/>
+                        <input type="submit" value="Excluir" class="btn btn-danger" id="submit"/>
                     {% endif %}
                 </div>
 
@@ -130,6 +157,8 @@
                 <div class="btn-group pull-right">
                     {% if creating %}
                         <input type="submit" value="Cancelar" class="btn" id="submit"/>
+                    {% else %}
+                        <input type="submit" value="Voltar" class="btn" id="submit"/>
                     {% endif %}
                 </div>
 

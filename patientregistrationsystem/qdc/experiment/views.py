@@ -1,11 +1,13 @@
+# coding=utf-8
+
 from django.shortcuts import render, get_object_or_404
 from django.contrib.auth.decorators import login_required
 from django.contrib import messages
 from django.http import HttpResponseRedirect
 from django.core.urlresolvers import reverse
 
-from experiment.models import Experiment, Questionnaire
-from experiment.forms import ExperimentForm
+from experiment.models import Experiment, Questionnaire, Survey, TimeUnit
+from experiment.forms import ExperimentForm, QuestionnaireForm
 
 from quiz.abc_search_engine import Questionnaires
 
@@ -83,6 +85,51 @@ def experiment_update(request, experiment_id, template_name="experiment/experime
     context = {
         "experiment_form": experiment_form,
         "creating": False,
+        "questionnaires_list": questionnaires_list,
+        "experiment": experiment}
+
+    return render(request, template_name, context)
+
+
+@login_required
+def questionnaire_create(request, experiment_id, template_name="experiment/questionnaire_register.html"):
+
+    experiment = get_object_or_404(Experiment, pk=experiment_id)
+    questionnaire_form = QuestionnaireForm(request.POST or None)
+
+    questionnaires_list = Questionnaires().find_all_active_questionnaires()
+
+    if request.method == "POST":
+        if request.POST['action'] == "save":
+            if questionnaire_form.is_valid():
+
+                lime_survey_id = request.POST['questionnaire_selected']
+                survey = Survey()
+
+                try:
+                    survey = Survey.objects.get(lime_survey_id=lime_survey_id)
+                except survey.DoesNotExist:
+                    Survey(lime_survey_id=lime_survey_id).save()
+                    survey = Survey.objects.get(lime_survey_id=lime_survey_id)
+
+                questionnaire = Questionnaire()
+                questionnaire.survey = survey
+                questionnaire.number_of_fills = request.POST['number_of_fills']
+                questionnaire.interval_between_fills_value = request.POST['interval_between_fills_value']
+                questionnaire.interval_between_fills_unit = get_object_or_404(TimeUnit, pk=request.POST['interval_between_fills_unit'])
+
+                questionnaire.save()
+
+                messages.success(request, 'Questionário incluído com sucesso.')
+
+                redirect_url = reverse("experiment_edit", args=(experiment_id,))
+                return HttpResponseRedirect(redirect_url)
+
+    context = {
+        "questionnaire_form": questionnaire_form,
+        "creating": True,
+        "experiment": experiment,
         "questionnaires_list": questionnaires_list}
 
     return render(request, template_name, context)
+
