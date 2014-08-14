@@ -2,9 +2,11 @@
 from django.forms import ModelForm, TextInput, DateInput, Select, RadioSelect, PasswordInput, CheckboxSelectMultiple, \
     CharField, ValidationError
 from django.forms.widgets import Textarea
+from cep.widgets import CEPInput
 from models import Patient, SocialDemographicData, SocialHistoryData, ComplementaryExam, ExamFile
 from django.contrib.auth.hashers import make_password
 from quiz_widget import SelectBoxCountries, SelectBoxState
+from cep.widgets import CEPInput
 
 from django.contrib.auth.models import User
 
