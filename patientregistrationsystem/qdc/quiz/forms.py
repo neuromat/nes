@@ -137,7 +137,7 @@ class UserForm(ModelForm):
                                       'type': 'email', 'data-error': "E-mail inválido",
                                       'pattern': '^[_A-Za-z0-9-\+]+(\.[_A-Za-z0-9-]+)*@[A-Za-z0-9-]' +
                                                  '+(\.[A-Za-z0-9]+)*(\.[A-Za-z]{2,})$'}),
-            'groups': CheckboxSelectMultiple(choices=(('blue', 'Blue'), ('green', 'Green'))),
+            'groups': CheckboxSelectMultiple(),
         }
 
     def clean_username(self):

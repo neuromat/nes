@@ -1,4 +1,7 @@
 {% extends "quiz/template.html" %}
+
+{% load i18n %}
+
 {% block activeUser %}class="active"{% endblock %}
 
 {% block header %}
@@ -234,9 +237,16 @@
                         <div class="form-group">
                             <label>Em quais desses perfis o usuário se indentifica?</label>
                             <div class="input-group  input-group-sm">
-                                {% for name in form.groups %}
+                                {% for group in groups %}
                                     <div class="checkbox">
-                                        {{ name }}
+                                        <label>
+                                            <input name="groups" type="checkbox" value={{ group.pk }}> {{ group }}
+                                        </label>
+                                        <h5><small>(
+                                        {% for permission in group.permissions.all %}
+                                            {{ permission.name }}.
+                                        {% endfor %}
+                                        )</small></h5>
                                     </div>
                                 {% endfor %}
                             </div>
