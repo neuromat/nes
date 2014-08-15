@@ -16,10 +16,6 @@ from quiz.abc_search_engine import Questionnaires
 import re
 
 
-class QuestionnaireConfigurationCustom(QuestionnaireConfiguration):
-    title = ""
-
-
 @login_required
 def experiment_list(request, template_name="experiment/experiment_list.html"):
     experiments = Experiment.objects.order_by('title')
