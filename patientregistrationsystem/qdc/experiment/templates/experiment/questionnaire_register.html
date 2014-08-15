@@ -69,9 +69,9 @@
                         <div class="form-group">
                             <label>Questionário</label>
                             <select class="form-control" required="" id="questionnaire_selected" name="questionnaire_selected">
-                                <option selected="selected" value="">---------</option>
+                                {% if creating %}<option selected="selected" value="">---------</option>{% endif %}
                                 {% for survey in questionnaires_list %}
-                                    <option value="{{ survey.sid }}">{{ survey.surveyls_title }} ({{ survey.sid }})</option>
+                                    <option selected="selected" value="{{ survey.sid }}">{{ survey.surveyls_title }} ({{ survey.sid }})</option>
                                 {% endfor %}
                             </select>
                         </div>

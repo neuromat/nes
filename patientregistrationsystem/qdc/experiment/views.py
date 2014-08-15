@@ -16,6 +16,10 @@ from quiz.abc_search_engine import Questionnaires
 import re
 
 
+class QuestionnaireConfigurationCustom(QuestionnaireConfiguration):
+    title = ""
+
+
 @login_required
 def experiment_list(request, template_name="experiment/experiment_list.html"):
     experiments = Experiment.objects.order_by('title')
@@ -69,6 +73,7 @@ def experiment_update(request, experiment_id, template_name="experiment/experime
     questionnaires_list = []
 
     if experiment:
+        questionnaires_configuration_list = QuestionnaireConfiguration.objects.filter(experiment=experiment)
         questionnaires_list = Questionnaires().find_all_active_questionnaires()
 
         experiment_form = ExperimentForm(request.POST or None, instance=experiment)
@@ -87,6 +92,7 @@ def experiment_update(request, experiment_id, template_name="experiment/experime
         "experiment_form": experiment_form,
         "creating": False,
         "questionnaires_list": questionnaires_list,
+        "questionnaires_configuration_list": questionnaires_configuration_list,
         "experiment": experiment}
 
     return render(request, template_name, context)
@@ -102,21 +108,10 @@ def questionnaire_create(request, experiment_id, template_name="experiment/quest
 
     if request.method == "POST":
 
-        if request.POST['action'] == "cancel":
-
-            redirect_url = reverse("experiment_edit", args=(experiment_id,))
-            return HttpResponseRedirect(redirect_url)
-
         if request.POST['action'] == "save":
             if questionnaire_form.is_valid():
 
                 lime_survey_id = request.POST['questionnaire_selected']
-
-                # try:
-                #     survey = Survey.objects.get(lime_survey_id=lime_survey_id)
-                # except survey.DoesNotExist:
-                #     Survey(lime_survey_id=lime_survey_id).save()
-                #     survey = Survey.objects.get(lime_survey_id=lime_survey_id)
 
                 questionnaire = QuestionnaireConfiguration()
                 questionnaire.lime_survey_id = lime_survey_id
@@ -139,6 +134,46 @@ def questionnaire_create(request, experiment_id, template_name="experiment/quest
         "questionnaires_list": questionnaires_list}
 
     return render(request, template_name, context)
+
+
+@login_required
+def questionnaire_update(request, questionnaire_configuration_id, template_name="experiment/questionnaire_register.html"):
+
+    questionnaire_configuration = get_object_or_404(QuestionnaireConfiguration, pk=questionnaire_configuration_id)
+    experiment = get_object_or_404(Experiment, pk=questionnaire_configuration.experiment.id)
+    questionnaire_form = QuestionnaireConfigurationForm(request.POST or None, instance=questionnaire_configuration)
+
+    questionnaires_origin_list = Questionnaires().find_all_active_questionnaires()
+    questionnaires_list = []
+
+    for questionnaire_origin in questionnaires_origin_list:
+        if questionnaire_origin['sid'] == questionnaire_configuration.lime_survey_id:
+            questionnaires_list.append(questionnaire_origin)
+
+    if request.method == "POST":
+
+        if request.POST['action'] == "save":
+            if questionnaire_form.is_valid():
+
+                questionnaire_configuration.number_of_fills = request.POST['number_of_fills']
+                questionnaire_configuration.interval_between_fills_value = request.POST['interval_between_fills_value']
+                questionnaire_configuration.interval_between_fills_unit = get_object_or_404(TimeUnit, pk=request.POST['interval_between_fills_unit'])
+
+                questionnaire_configuration.save()
+
+                messages.success(request, 'Questionário atualizado com sucesso.')
+
+                redirect_url = reverse("experiment_edit", args=(experiment.id,))
+                return HttpResponseRedirect(redirect_url)
+
+    context = {
+        "questionnaire_form": questionnaire_form,
+        "creating": False,
+        "experiment": experiment,
+        "questionnaires_list": questionnaires_list}
+
+    return render(request, template_name, context)
+
 
 def subjects(request, experiment_id, template_name="experiment/subjects.html"):
     experiment = get_object_or_404(Experiment, id=experiment_id)

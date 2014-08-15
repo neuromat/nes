@@ -34,4 +34,4 @@ class QuestionnaireResponse(models.Model):
     token = models.IntegerField(null=False, primary_key=True)
     subject = models.ForeignKey(Subject, null=False)
     questionnaire_configuration = models.ForeignKey(QuestionnaireConfiguration, null=False)
-    date = models.DateTimeField(null=False, auto_now_add=True)
+    date = models.DateTimeField(null=False)

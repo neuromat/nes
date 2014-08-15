@@ -107,28 +107,44 @@
 {#            </div>#}
 
             <div class="container span6 offset3 well ">
-                <div class="row">
-                    <div class="col-xs-6 col-sm-12">
-                        <div class="form-group">
-                            <label>Questionários</label>
-                            <div class="input-group  input-group-sm">
-                                {% for questionnaire in questionnaires_list %}
-                                    <div class="checkbox">
-                                        <label>
-                                            <input type="checkbox" value="{{ questionnaire.sid }}" name="chosen_questionnaires" />
-                                            {{ questionnaire.surveyls_title }}
-                                        </label>
-                                    </div>
-                                {% endfor %}
-                            </div>
-                        </div>
-                    </div>
-                    <div class="col-xs-6 col-sm-12">
-                        {# TODO: botao questionario #}
-                        <a href="/experiment/{{ experiment.id }}/questionnaire/new" class="btn btn-primary {% if creating %} disabled{% endif %}">Inserir questionário</a>
-                    </div>
+                {% if not creating and questionnaires_configuration_list %}
+                    <div class="form-group">
 
+                        <table class="table table-striped">
+                            <thead>
+                            <tr>
+                                <th>Questionário</th>
+                                <th>Preenchimentos</th>
+                                <th>Intervalo entre preenchimentos</th>
+                            </tr>
+                            </thead>
+                            <tbody>
+                            {% for questionnaire_configuration in questionnaires_configuration_list %}
+                                <tr>
+                                    <td>
+                                        <a data-toggle="tooltip" data-placement="left" title="Editar" href="/experiment/questionnaire/edit/{{ questionnaire_configuration.id }}">
+
+                                        {% for questionnaire in questionnaires_list %}
+                                            {% if questionnaire.sid == questionnaire_configuration.lime_survey_id %}
+                                                {{ questionnaire.surveyls_title }}
+                                            {% endif %}
+                                        {% endfor %}
+                                        </a>
+                                    </td>
+                                    <td>{{ questionnaire_configuration.number_of_fills }}</td>
+                                    <td>{{ questionnaire_configuration.interval_between_fills_value }} {{ questionnaire_configuration.interval_between_fills_unit.name }}</td>
+                                </tr>
+                            {% endfor %}
+                            </tbody>
+                        </table>
+
+                    </div>
+                {% endif %}
+                <div class="col-xs-6 col-sm-12">
+                    {# TODO: botao questionario #}
+                    <a href="/experiment/{{ experiment.id }}/questionnaire/new" class="btn btn-primary {% if creating %} disabled{% endif %}">Inserir questionário</a>
                 </div>
+
             </div>
 
             <div class="container span6 offset3 well ">
