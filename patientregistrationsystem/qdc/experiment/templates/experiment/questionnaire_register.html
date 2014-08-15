@@ -118,7 +118,11 @@
                 {# TODO: botao cancelar #}
                 <div class="btn-group pull-right">
                     {% if creating %}
-                        <input type="submit" value="Cancelar" class="btn" id="submit"/>
+{#                        <input type="submit" value="Cancelar" class="btn" id="submit"/>#}
+{#                        <button type="submit" name="action" value="cancel" class="btn">Cancelar</button>#}
+
+                        <a type="button" class="btn" href="/experiment/edit/{{ experiment.id }}">Voltar</a>
+
                     {% else %}
                         <input type="submit" value="Voltar" class="btn" id="submit"/>
                     {% endif %}

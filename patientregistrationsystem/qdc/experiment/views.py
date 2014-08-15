@@ -100,6 +100,12 @@ def questionnaire_create(request, experiment_id, template_name="experiment/quest
     questionnaires_list = Questionnaires().find_all_active_questionnaires()
 
     if request.method == "POST":
+
+        if request.POST['action'] == "cancel":
+
+            redirect_url = reverse("experiment_edit", args=(experiment_id,))
+            return HttpResponseRedirect(redirect_url)
+
         if request.POST['action'] == "save":
             if questionnaire_form.is_valid():
 
