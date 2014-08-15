@@ -71,7 +71,7 @@
                             <select class="form-control" required="" id="questionnaire_selected" name="questionnaire_selected">
                                 {% if creating %}<option selected="selected" value="">---------</option>{% endif %}
                                 {% for survey in questionnaires_list %}
-                                    <option selected="selected" value="{{ survey.sid }}">{{ survey.surveyls_title }} ({{ survey.sid }})</option>
+                                    <option value="{{ survey.sid }}">{{ survey.surveyls_title }} ({{ survey.sid }})</option>
                                 {% endfor %}
                             </select>
                         </div>
