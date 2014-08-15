@@ -7,10 +7,8 @@ from django.http import HttpResponseRedirect
 from django.core.urlresolvers import reverse
 from django.shortcuts import render_to_response
 
-from experiment.models import Experiment, Questionnaire, Survey, TimeUnit
-from experiment.forms import ExperimentForm, QuestionnaireForm
-from experiment.models import Experiment, Questionnaire, Subject
-from experiment.forms import ExperimentForm
+from experiment.models import Experiment, QuestionnaireConfiguration, Subject, TimeUnit
+from experiment.forms import ExperimentForm, QuestionnaireConfigurationForm
 
 from quiz.models import Patient
 from quiz.abc_search_engine import Questionnaires
@@ -98,7 +96,7 @@ def experiment_update(request, experiment_id, template_name="experiment/experime
 def questionnaire_create(request, experiment_id, template_name="experiment/questionnaire_register.html"):
 
     experiment = get_object_or_404(Experiment, pk=experiment_id)
-    questionnaire_form = QuestionnaireForm(request.POST or None)
+    questionnaire_form = QuestionnaireConfigurationForm(request.POST or None)
 
     questionnaires_list = Questionnaires().find_all_active_questionnaires()
 
@@ -113,16 +111,16 @@ def questionnaire_create(request, experiment_id, template_name="experiment/quest
             if questionnaire_form.is_valid():
 
                 lime_survey_id = request.POST['questionnaire_selected']
-                survey = Survey()
 
-                try:
-                    survey = Survey.objects.get(lime_survey_id=lime_survey_id)
-                except survey.DoesNotExist:
-                    Survey(lime_survey_id=lime_survey_id).save()
-                    survey = Survey.objects.get(lime_survey_id=lime_survey_id)
+                # try:
+                #     survey = Survey.objects.get(lime_survey_id=lime_survey_id)
+                # except survey.DoesNotExist:
+                #     Survey(lime_survey_id=lime_survey_id).save()
+                #     survey = Survey.objects.get(lime_survey_id=lime_survey_id)
 
-                questionnaire = Questionnaire()
-                questionnaire.survey = survey
+                questionnaire = QuestionnaireConfiguration()
+                questionnaire.lime_survey_id = lime_survey_id
+                questionnaire.experiment = experiment
                 questionnaire.number_of_fills = request.POST['number_of_fills']
                 questionnaire.interval_between_fills_value = request.POST['interval_between_fills_value']
                 questionnaire.interval_between_fills_unit = get_object_or_404(TimeUnit, pk=request.POST['interval_between_fills_unit'])

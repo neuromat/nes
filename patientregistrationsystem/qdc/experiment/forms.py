@@ -1,5 +1,5 @@
 # coding=utf-8
-from models import Experiment, Questionnaire
+from models import Experiment, QuestionnaireConfiguration
 from django.forms import ModelForm, TextInput, Textarea, Select
 
 
@@ -18,9 +18,9 @@ class ExperimentForm(ModelForm):
         }
 
 
-class QuestionnaireForm(ModelForm):
+class QuestionnaireConfigurationForm(ModelForm):
     class Meta:
-        model = Questionnaire
+        model = QuestionnaireConfiguration
         fields = ['number_of_fills', 'interval_between_fills_value', 'interval_between_fills_unit']
 
         widgets = {

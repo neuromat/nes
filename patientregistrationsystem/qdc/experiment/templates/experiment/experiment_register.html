@@ -134,8 +134,7 @@
             <div class="container span6 offset3 well ">
                 <div class="row">
                     <div class="col-xs-6 col-sm-12">
-                        {# TODO: botao participante #}
-                        <a href="/experiment/new/" class="btn btn-primary {% if creating %} disabled{% endif %}" >Participantes</a>
+                        <a href="/experiment/{{ experiment.id }}/subjects" class="btn btn-primary {% if creating %} disabled{% endif %}" >Participantes</a>
                     </div>
                 </div>
             </div>
