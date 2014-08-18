@@ -44,6 +44,7 @@ INSTALLED_APPS = (
     'experiment',
     'django_jenkins',
     'simple_history',
+    'cep',
 )
 
 JENKINS_TASKS = (
