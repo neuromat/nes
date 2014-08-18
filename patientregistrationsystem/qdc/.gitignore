@@ -2,3 +2,4 @@
 qdc/settings.py
 .idea/
 *.pyc
+media/
