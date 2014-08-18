@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2014-06-06 08:41-0300\n"
+"POT-Creation-Date: 2014-08-15 16:22-0300\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -18,12 +18,19 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=(n > 1);\n"
 
-#: models.py:16
+#: models.py:18
 #, python-format
 msgid "CPF %s não é válido"
 msgstr ""
 
-#. Translators: This message appears on the search page only
+#: views.py:437
+msgid "Definir senha"
+msgstr ""
+
+#: templates/quiz/ajax_cid10.html:17
+msgid "Nenhuma doença encontrada!"
+msgstr ""
+
 #: templates/quiz/ajax_search.html:11
 msgid "Nenhum paciente encontrado!"
 msgstr ""

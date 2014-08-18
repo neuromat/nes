@@ -244,7 +244,7 @@
                                         </label>
                                         <h5><small>(
                                         {% for permission in group.permissions.all %}
-                                            {{ permission.name }}.
+                                            {%  trans permission.name %}.
                                         {% endfor %}
                                         )</small></h5>
                                     </div>
