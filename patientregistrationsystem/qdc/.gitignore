@@ -4,3 +4,4 @@ qdc/settings.py
 .idea/
 *.pyc
 media
+.idea/workspace.xml
