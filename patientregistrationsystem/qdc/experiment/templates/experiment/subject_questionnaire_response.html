@@ -2,15 +2,14 @@
 {% block activeAdvancedExperiment %}class="active"{% endblock %}
 
 {% block header %}
-    <script>
-        function show_modal_remove(experiment_id, subject_id) {
-            var modal_remove = document.getElementById('removeSubject');
+  <script>
+        function show_modal_date(experiment_id, subject_id) {
+            var modal_remove = document.getElementById('dateInform');
             modal_remove.setAttribute("href", "/experiment/" + experiment_id + '/subjects/delete/' + subject_id);
-            $('#modalRemove').modal('show');
+            $('#modalDate').modal('show');
 
         }
     </script>
-
 {% endblock %}
 
 {% block form %}
@@ -31,8 +30,10 @@
             <ol class="breadcrumb">
                 <li>Home</li>
                 <li><a href="/experiment/list">Experimentos</a></li>
-                <li>Experimento {{ experiment_id }}</li>
-                <li>Participantes</li>
+                <li><a href="/experiment/edit/{{ experiment_id }}/"> Experimento: {{ experiment_id }} </a></li>
+                <li><a href="/experiment/{{ experiment_id }}/subjects/">Participantes</a></li>
+                <li>Participante: {{ subject_id }}</li>
+                <li>Preencher questionários</li>
             </ol>
 
         </div>
@@ -65,56 +66,38 @@
 
     <div class="tab-pane fade in active" id="menuUserTab">
         <div class="col-md-10">
-            <div class="container span6 offset3 well ">
-                <div class="row">
-                    <div class="col-xs-6 col-sm-10">
-                        <div class="form-group">
-                            <input id="experiment_id" value="{{ experiment_id }}" style="display: none;">
-                            <label>Inserir participante</label>
-
-                            <div class="input-group input-group-sm">
-                                <span class="input-group-addon"> <span class="glyphicon glyphicon-search"></span></span>
-                                <input class="form-control" placeholder="Entre com o nome ou CPF do participante"
-                                       id="subject_name" type="text" autofocus="true" required="true">
-                            </div>
-                            {% csrf_token %}
-                            <ul id="search-results-subjects" style="list-style: none;">
-                            </ul>
-                        </div>
-                    </div>
-                </div>
-            </div>
             <div class="row">
                 <div class="col-xs-6 col-sm-12">
                     <div class="form-group">
                         <table class="table table-striped">
                             <thead>
                             <tr>
-                                <th>Participante</th>
-                                <th>Questionários concluídos</th>
+                                <th>Questionário</th>
+                                <th>Preenchimentos</th>
                             </tr>
                             </thead>
                             <tbody>
-                            {% if subject_list.count == 0 %}
+                            {% if questionnaires_configuration_list.count == 0 %}
                                 <tr>
-                                    <td>(Nenhum participante inserido)</td>
+                                    <td>(Nenhum questionário para preencher)</td>
                                     <td></td>
                                 </tr>
                             {% else %}
-                                {% if subject_list.count > 0 %}
-                                    {% for subject in subject_list %}
+                                {% if questionnaires_configuration_list.count > 0 %}
+                                    {% for questionnaire_configuration in questionnaires_configuration_list %}
                                         <tr>
                                             <td>
-                                                <a href='/experiment/{{ experiment_id }}/subjects/{{ subject.id }}/questionnaire/'>{{ subject.patient.name_txt }}</a>
-                                            </td>
-                                            <td>
+                                                <a data-toggle="tooltip" data-placement="left" title="Preencher"
+                                                   href="/experiment/{{ experiment_id }}/subjects/{{ subject_id }}/questionnaire/{{ questionnaire_configuration.id }}">
 
+                                                    {% for questionnaire in questionnaires_list %}
+                                                        {% if questionnaire.sid == questionnaire_configuration.lime_survey_id %}
+                                                            {{ questionnaire.surveyls_title }}
+                                                        {% endif %}
+                                                    {% endfor %}
+                                                </a>
                                             </td>
-                                            <td>
-                                                <a class="glyphicon glyphicon-remove" data-toggle="tooltip"
-                                                   data-placement="right" title="Remover" style="color: indianred"
-                                                   onclick="show_modal_remove({{ experiment_id }},{{ subject.id }})"></a>
-                                            </td>
+                                            <td></td>
                                         </tr>
                                     {% endfor %}
                                 {% endif %}
@@ -127,7 +110,7 @@
             <div class="btn-toolbar">
                 <div class="btn-group pull-right">
                     <a type="button" class="btn btn-primary"
-                       href="/experiment/list/">Voltar</a>
+                       href="/experiment/{{ experiment_id }}/subjects/{{ subject_id }}">Voltar</a>
                 </div>
             </div>
 
@@ -136,7 +119,7 @@
 
     </div>
 
-    <div class="modal fade" id="modalRemove" tabindex="-1" role="dialog" aria-labelledby="myModalLabel"
+    <div class="modal fade" id="modalDate" tabindex="-1" role="dialog" aria-labelledby="myModalLabel"
          aria-hidden="true">
         <div class="modal-dialog">
             <div class="modal-content">

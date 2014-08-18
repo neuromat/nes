@@ -5,3 +5,4 @@ qdc/settings.py
 *.pyc
 media
 .idea/workspace.xml
+*.DS_Store

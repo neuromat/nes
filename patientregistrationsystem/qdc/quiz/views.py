@@ -17,7 +17,7 @@ from quiz.forms import PatientForm, SocialDemographicDataForm, SocialHistoryData
 from quiz.quiz_widget import SelectBoxCountriesDisabled, SelectBoxStateDisabled
 from django.contrib import messages
 
-from django.contrib.auth.models import User, Group
+from django.contrib.auth.models import User
 from django.db.models import Q
 
 from django.core.mail import send_mail
@@ -370,7 +370,6 @@ def user_list(request, template_name='quiz/user_list.html'):
 @permission_required('auth.add_user')
 def user_create(request, template_name='quiz/register_users.html'):
     form = UserForm(request.POST or None)
-    groups = Group.objects.all()
     if request.method == "POST":
         if form.is_valid():
             user_added = form.save()
@@ -379,7 +378,7 @@ def user_create(request, template_name='quiz/register_users.html'):
             return redirect('user_list')
         else:
             messages.error(request, 'Não foi possível criar usuário.')
-    return render(request, template_name, {'form': form, 'groups': groups})
+    return render(request, template_name, {'form': form})
 
 
 @login_required
@@ -396,7 +395,6 @@ def user_delete(request, user_id):
 @permission_required('auth.change_user')
 def user_update(request, user_id, template_name="quiz/register_users.html"):
     form = UserFormUpdate(request.POST or None, instance=User.objects.get(id=user_id))
-    groups = Group.objects.all()
     if request.method == "POST":
         if form.is_valid():
             form.save()
@@ -406,7 +404,6 @@ def user_update(request, user_id, template_name="quiz/register_users.html"):
     context = {
         'form': form,
         'editing': True,
-        'groups': groups,
     }
     return render(request, template_name, context)
 

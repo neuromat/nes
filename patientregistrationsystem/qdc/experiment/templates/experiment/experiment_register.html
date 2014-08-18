@@ -140,11 +140,9 @@
 
                     </div>
                 {% endif %}
-                <div class="row">
-                    <div class="col-xs-6 col-sm-12">
-                        {# TODO: botao questionario #}
-                        <a href="/experiment/{{ experiment.id }}/questionnaire/new" class="btn btn-primary {% if creating %} disabled{% endif %}">Inserir questionário</a>
-                    </div>
+                <div class="col-xs-6 col-sm-12">
+                    {# TODO: botao questionario #}
+                    <a href="/experiment/{{ experiment.id }}/questionnaire/new" class="btn btn-primary {% if creating %} disabled{% endif %}">Inserir questionário</a>
                 </div>
 
             </div>

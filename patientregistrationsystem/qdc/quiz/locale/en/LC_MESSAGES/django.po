@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2014-06-06 08:41-0300\n"
+"POT-Creation-Date: 2014-08-15 16:22-0300\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -17,12 +17,51 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 
-#: models.py:16
+#: models.py:18
 #, python-format
 msgid "CPF %s não é válido"
 msgstr "CPF %s invalid"
 
-#. Translators: This message appears on the search page only
+#: views.py:437
+msgid "Definir senha"
+msgstr ""
+
+#: templates/quiz/ajax_cid10.html:17
+#, fuzzy
+msgid "Nenhuma doença encontrada!"
+msgstr "No patient found!"
+
 #: templates/quiz/ajax_search.html:11
 msgid "Nenhum paciente encontrado!"
 msgstr "No patient found!"
+
+msgid "Can add user"
+msgstr "Pode adicionar usuário"
+
+msgid "Can change user"
+msgstr "Pode alterar usuário"
+
+msgid "Can delete user"
+msgstr "Pode remover usuário"
+
+msgid "Can add patient"
+msgstr "Pode adicionar paciente"
+
+msgid "Can change patient"
+msgstr "Pode alterar paciente"
+
+msgid "Can delete patient"
+msgstr "Pode remover paciente"
+
+msgid "Can view patient"
+msgstr "Pode ver paciente"
+
+msgid "Can add medical record data"
+msgstr "Pode adicionar dados de prontuário"
+
+msgid "Can delete medical record data"
+msgstr "Pode remover dados de prontuário"
+
+msgid "Can view medical record"
+msgstr "Pode ver dados de prontuário"
+

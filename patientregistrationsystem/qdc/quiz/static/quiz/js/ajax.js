@@ -66,28 +66,10 @@ $(function(){
             });
     });
 
-    //Search for patient in search mode
-    $('#subject_name').keyup(function() {
-
-        $.ajax({
-            type: "POST",
-            url: "/experiment/subject/search/",
-            data: {
-                'search_text' : $('#subject_name').val(),
-                'experiment_id': $('#experiment_id').val(),
-                'csrfmiddlewaretoken' : $("input[name=csrfmiddlewaretoken]").val()
-            },
-            success: searchSuccess,
-            dataType: 'html'
-        });
-
-    });
-
 });
 
 
 function searchSuccess(data, textStatus, jqXHR) {
-    $('#search-results-subjects').html(data);
     $('#search-results').html(data);
     $('#search-results1').html(data); //workaround to handle modal for patient excluded
                                       //see id="search-results1" in register.html
