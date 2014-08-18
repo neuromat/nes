@@ -25,9 +25,9 @@ class Experiment(models.Model):
 class QuestionnaireConfiguration(models.Model):
     lime_survey_id = models.IntegerField(null=False, blank=False)
     experiment = models.ForeignKey(Experiment, null=False)
-    number_of_fills = models.IntegerField(null=False, blank=False)
-    interval_between_fills_value = models.IntegerField(null=False, blank=False)
-    interval_between_fills_unit = models.ForeignKey(TimeUnit, null=False)
+    number_of_fills = models.IntegerField(null=True, blank=True)
+    interval_between_fills_value = models.IntegerField(null=True, blank=True)
+    interval_between_fills_unit = models.ForeignKey(TimeUnit, null=True)
 
 
 class QuestionnaireResponse(models.Model):
