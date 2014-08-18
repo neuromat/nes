@@ -76,7 +76,7 @@
                     </div>
                 </div>
                 <div class="row">
-                    <div class="col-xs-6 col-sm-10">
+                    <div class="col-xs-6 col-sm-12">
                         <div class="form-group">
                             <label>Descrição</label>
                                 {{ experiment_form.description }}
@@ -140,9 +140,11 @@
 
                     </div>
                 {% endif %}
-                <div class="col-xs-6 col-sm-12">
-                    {# TODO: botao questionario #}
-                    <a href="/experiment/{{ experiment.id }}/questionnaire/new" class="btn btn-primary {% if creating %} disabled{% endif %}">Inserir questionário</a>
+                <div class="row">
+                    <div class="col-xs-6 col-sm-12">
+                        {# TODO: botao questionario #}
+                        <a href="/experiment/{{ experiment.id }}/questionnaire/new" class="btn btn-primary {% if creating %} disabled{% endif %}">Inserir questionário</a>
+                    </div>
                 </div>
 
             </div>
