@@ -1,0 +1,160 @@
+{% extends "quiz/template.html" %}
+{% block activeAdvancedExperiment %}class="active"{% endblock %}
+
+{% block header %}
+    <script>
+        function show_modal_remove(experiment_id, subject_id) {
+            var modal_remove = document.getElementById('removeSubject');
+            modal_remove.setAttribute("href", "/experiment/" + experiment_id + '/subjects/delete/' + subject_id);
+            $('#modalRemove').modal('show');
+
+        }
+    </script>
+
+{% endblock %}
+
+{% block form %}
+    <div class="row">
+    <form id="subject_form" method="post">
+    {% csrf_token %}
+{% endblock %}
+
+{% block content %}
+
+    <div class="tab-pane fade in active" id="subjectBreadCrumb">
+
+        <div class="col-md-1">
+        </div>
+
+        <div class="col-md-10">
+
+            <ol class="breadcrumb">
+                <li>Home</li>
+                <li><a href="/experiment/list">Experimentos</a></li>
+                <li>Experimento {{ experiment_id }}</li>
+                <li>Participantes</li>
+            </ol>
+
+        </div>
+
+        <div class="col-md-1">
+        </div>
+    </div>
+
+    {% if messages %}
+        {% for message in messages %}
+
+            {% if message.tags == "success" %}
+                <script>showSuccessMessage('{{ message }}')</script>
+            {% endif %}
+
+            {% if message.tags == "warning" %}
+                <script>showWarningMessage('{{ message }}')</script>
+            {% endif %}
+
+            {% if message.tags == "error" %}
+                <script>showErrorMessage('{{ message }}')</script>
+            {% endif %}
+
+            {% if message.tags == "info" %}
+                <script>showInfoMessage('{{ message }}')</script>
+            {% endif %}
+
+        {% endfor %}
+    {% endif %}
+
+    <div class="tab-pane fade in active" id="menuUserTab">
+        <div class="col-md-10">
+            <div class="container span6 offset3 well ">
+                <div class="row">
+                    <div class="col-xs-6 col-sm-10">
+                        <div class="form-group">
+                            <input id="experiment_id" value="{{ experiment_id }}" style="display: none;">
+                            <label>Inserir participante</label>
+
+                            <div class="input-group input-group-sm">
+                                <span class="input-group-addon"> <span class="glyphicon glyphicon-search"></span></span>
+                                <input class="form-control" placeholder="Entre com o nome ou CPF do participante"
+                                       id="subject_name" type="text" autofocus="true" required="true">
+                            </div>
+                            {% csrf_token %}
+                            <ul id="search-results-subjects" style="list-style: none;">
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-xs-6 col-sm-12">
+                    <div class="form-group">
+                        <table class="table table-striped">
+                            <thead>
+                            <tr>
+                                <th>Participante</th>
+                                <th>Questionários concluídos</th>
+                            </tr>
+                            </thead>
+                            <tbody>
+                            {% if subject_list.count == 0 %}
+                                <tr>
+                                    <td>(Nenhum participante inserido)</td>
+                                    <td></td>
+                                </tr>
+                            {% else %}
+                                {% if subject_list.count > 0 %}
+                                    {% for subject in subject_list %}
+                                        <tr>
+                                            <td>
+                                                {{ subject.patient.name_txt }}
+                                            </td>
+                                            <td>
+
+                                            </td>
+                                            <td>
+                                                <a class="glyphicon glyphicon-remove" data-toggle="tooltip"
+                                                   data-placement="right" title="Remover" style="color: indianred"
+                                                   onclick="show_modal_remove({{ experiment_id }},{{ subject.id }})"></a>
+                                            </td>
+                                        </tr>
+                                    {% endfor %}
+                                {% endif %}
+                            {% endif %}
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+            <div class="btn-toolbar">
+                <div class="btn-group pull-right">
+                    <a type="button" class="btn btn-primary"
+                            href="/experiment/list/">Voltar</a>
+                </div>
+            </div>
+
+        </div>
+
+
+    </div>
+
+    <div class="modal fade" id="modalRemove" tabindex="-1" role="dialog" aria-labelledby="myModalLabel"
+         aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-body">
+                    Tem certeza que deseja excluir o participante?
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-default" data-dismiss="modal">Cancelar</button>
+                    <a id="removeSubject" class="btn btn-primary" style="background-color: indianred; color: #ffffff"
+                       href="">Excluir</a>
+                </div>
+            </div>
+        </div>
+    </div>
+
+{% endblock %}
+
+{% block end_form %}
+    </form>
+    </div>
+{% endblock %}

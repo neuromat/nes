@@ -1,0 +1,141 @@
+{% extends "quiz/template.html" %}
+{% block activeAdvancedExperiment %}class="active"{% endblock %}
+
+{% block header %}
+{% endblock %}
+
+{% block form %}
+    <div class="row">
+    <form id="user_form" method="post">
+    {% csrf_token %}
+{% endblock %}
+
+{% block content %}
+
+    {% if messages %}
+        {% for message in messages %}
+
+            {% if message.tags == "success" %}
+                <script>showSuccessMessage('{{ message }}')</script>
+            {% endif %}
+
+            {% if message.tags == "warning" %}
+                <script>showWarningMessage('{{ message }}')</script>
+            {% endif %}
+
+            {% if message.tags == "error" %}
+                <script>showErrorMessage('{{ message }}')</script>
+            {% endif %}
+
+            {% if message.tags == "info" %}
+                <script>showInfoMessage('{{ message }}')</script>
+            {% endif %}
+
+        {% endfor %}
+    {% endif %}
+
+    {% if questionnaire_form.errors %}
+        <script>showErrorMessage('Por favor, corrija os campos em destaque.')</script>
+    {% endif %}
+
+
+    <div class="tab-pane fade in active" id="questionnaireBreadCrumb">
+
+        <div class="col-md-1">
+        </div>
+
+        <div class="col-md-10">
+
+            <ol class="breadcrumb">
+                <li>Home</li>
+                <li>Experimentos</li>
+                <li> {{ experiment.title }} </li>
+                <li>Questionário</li>
+                <li>Novo</li>
+
+            </ol>
+
+        </div>
+
+        <div class="col-md-1">
+        </div>
+    </div>
+
+    <div class="tab-pane fade in active" id="menuUserTab">
+        <div class="col-md-10">
+            <div class="container span6 offset3 well ">
+                <div class="row">
+                    <div class="col-xs-6 col-sm-12">
+                        <div class="form-group">
+                            <label>Questionário</label>
+                            <select class="form-control" required="" id="questionnaire_selected" name="questionnaire_selected">
+                                {% if creating %}<option selected="selected" value="">---------</option>{% endif %}
+                                {% for survey in questionnaires_list %}
+                                    <option value="{{ survey.sid }}">{{ survey.surveyls_title }} ({{ survey.sid }})</option>
+                                {% endfor %}
+                            </select>
+                        </div>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-xs-6 col-sm-4">
+                        <div class="form-group">
+                            <label>Quantidade de preenchimentos</label>
+                                {{ questionnaire_form.number_of_fills }}
+                        </div>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-xs-6 col-sm-4">
+                        <div class="form-group">
+                            <label>Intervalo entre preenchimentos</label>
+                                {{ questionnaire_form.interval_between_fills_value }}
+                        </div>
+                    </div>
+                    <div class="col-xs-6 col-sm-2">
+                        <div class="form-group">
+                            <label>Unidade</label>
+                                {{ questionnaire_form.interval_between_fills_unit }}
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+
+            <div class="btn-toolbar">
+
+                {# TODO: botao excluir #}
+                <div class="btn-group pull-left">
+                    {% if not creating %}
+                        <input type="submit" value="Excluir" class="btn btn-danger" id="submit"/>
+                    {% endif %}
+                </div>
+
+                <div class="btn-group pull-right">
+                    <button type="submit" name="action" value="save" class="btn btn-primary">Salvar</button>
+                </div>
+
+                {# TODO: botao cancelar #}
+                <div class="btn-group pull-right">
+                    {% if creating %}
+{#                        <input type="submit" value="Cancelar" class="btn" id="submit"/>#}
+{#                        <button type="submit" name="action" value="cancel" class="btn">Cancelar</button>#}
+
+                        <a type="button" class="btn" href="/experiment/edit/{{ experiment.id }}">Voltar</a>
+
+                    {% else %}
+                        <input type="submit" value="Voltar" class="btn" id="submit"/>
+                    {% endif %}
+                </div>
+
+            </div>
+
+        </div>
+    </div>
+
+{% endblock %}
+
+{% block end_form %}
+    </form>
+    </div>
+{% endblock %}
