@@ -6,7 +6,8 @@ urlpatterns = patterns(
     url(r'^new/$', 'experiment.views.experiment_create', name='experiment_new'),
     url(r'^edit/(?P<experiment_id>\d+)/$', 'experiment.views.experiment_update', name='experiment_edit'),
 
-    url(r'^(?P<experiment_id>\d+)/questionnaire/new/$', 'experiment.views.questionnaire_create', name='questionnaire_new'),
+    url(r'^(?P<experiment_id>\d+)/questionnaire/new/$', 'experiment.views.questionnaire_create',
+        name='questionnaire_new'),
     url(r'^questionnaire/edit/(?P<questionnaire_configuration_id>\d+)/$',
         'experiment.views.questionnaire_update', name='questionnaire_edit'),
 
@@ -16,5 +17,12 @@ urlpatterns = patterns(
         'experiment.views.subjects_insert', name='subject_insert'),
     url(r'^(?P<experiment_id>\d+)/subjects/delete/(?P<subject_id>\d+)/$',
         'experiment.views.subjects_delete', name='subject_delete'),
+    url(r'^(?P<experiment_id>\d+)/questionnaire/new/$', 'experiment.views.questionnaire_create',
+        name='questionnaire_new'),
+    url(r'^(?P<experiment_id>\d+)/subjects/(?P<subject_id>\d+)/questionnaire/$',
+        'experiment.views.subject_questionnaire_view', name='subject_questionnaire'),
 
+    url(r'^(?P<experiment_id>\d+)/subjects/(?P<subject_id>\d+)/questionnaire/(?P<questionnaire_id>\d+)/$',
+        'experiment.views.subject_questionnaire_response', name='subject_questionnaire_response'),
+    
 )

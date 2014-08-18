@@ -105,7 +105,7 @@
                                     {% for subject in subject_list %}
                                         <tr>
                                             <td>
-                                                {{ subject.patient.name_txt }}
+                                                <a href='/experiment/{{ experiment_id }}/subjects/{{ subject.id }}/questionnaire/'>{{ subject.patient.name_txt }}</a>
                                             </td>
                                             <td>
 
@@ -127,7 +127,7 @@
             <div class="btn-toolbar">
                 <div class="btn-group pull-right">
                     <a type="button" class="btn btn-primary"
-                            href="/experiment/list/">Voltar</a>
+                       href="/experiment/list/">Voltar</a>
                 </div>
             </div>
 
