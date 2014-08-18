@@ -48,10 +48,10 @@
 
             <ol class="breadcrumb">
                 <li>Home</li>
-                <li>Experimentos</li>
-                <li> {{ experiment.title }} </li>
+                <li><a href="/experiment/list">Experimentos</a></li>
+                <li><a href="/experiment/edit/{{ experiment.id }}">{{ experiment.title }}</a></li>
                 <li>Questionário</li>
-                <li>Novo</li>
+                <li class="active">Novo</li>
 
             </ol>
 
@@ -103,33 +103,42 @@
             </div>
 
             <div class="btn-toolbar">
-
-                {# TODO: botao excluir #}
                 <div class="btn-group pull-left">
                     {% if not creating %}
-                        <input type="submit" value="Excluir" class="btn btn-danger" id="submit"/>
+                        <button type="button" class="btn btn-danger" onclick="$('#modalRemove').modal('show')">Excluir</button>
                     {% endif %}
                 </div>
-
                 <div class="btn-group pull-right">
                     <button type="submit" name="action" value="save" class="btn btn-primary">Salvar</button>
                 </div>
-
-                {# TODO: botao cancelar #}
                 <div class="btn-group pull-right">
                     {% if creating %}
-{#                        <input type="submit" value="Cancelar" class="btn" id="submit"/>#}
-{#                        <button type="submit" name="action" value="cancel" class="btn">Cancelar</button>#}
-
-                        <a type="button" class="btn" href="/experiment/edit/{{ experiment.id }}">Voltar</a>
+                        <a href="/experiment/edit/{{ experiment.id }}" class="btn" style="background-color: #f5f5f5">Cancelar</a>
 
                     {% else %}
-                        <input type="submit" value="Voltar" class="btn" id="submit"/>
+                        <a href="/experiment/edit/{{ experiment.id }}" class="btn" style="background-color: #f5f5f5">Voltar</a>
                     {% endif %}
                 </div>
 
             </div>
 
+        </div>
+    </div>
+
+    <div class="modal fade" id="modalRemove" tabindex="-1" role="dialog" aria-labelledby="myModalLabel"
+         aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-body">
+                    Tem certeza que deseja excluir o questionário?
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-default" data-dismiss="modal">Cancelar</button>
+                    <button type="submit" class="btn btn-primary" value="remove" name="action"
+                            style="background-color: indianred; color: #ffffff">Excluir
+                    </button>
+                </div>
+            </div>
         </div>
     </div>
 

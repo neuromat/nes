@@ -1,6 +1,6 @@
 # coding=utf-8
 
-from django.shortcuts import render, get_object_or_404
+from django.shortcuts import render, get_object_or_404, redirect
 from django.contrib.auth.decorators import login_required
 from django.contrib import messages
 from django.http import HttpResponseRedirect
@@ -80,9 +80,13 @@ def experiment_update(request, experiment_id, template_name="experiment/experime
 
                 if experiment_form.is_valid():
                     experiment_form.save()
-
                     redirect_url = reverse("experiment_edit", args=(experiment_id,))
                     return HttpResponseRedirect(redirect_url)
+
+            else:
+                if request.POST['action'] == "remove":
+                    experiment.delete()
+                    return redirect('experiment_list')
 
     context = {
         "experiment_form": experiment_form,
@@ -159,6 +163,11 @@ def questionnaire_update(request, questionnaire_configuration_id, template_name=
 
                 messages.success(request, 'Questionário atualizado com sucesso.')
 
+                redirect_url = reverse("experiment_edit", args=(experiment.id,))
+                return HttpResponseRedirect(redirect_url)
+        else:
+            if request.POST['action'] == "remove":
+                questionnaire_configuration.delete()
                 redirect_url = reverse("experiment_edit", args=(experiment.id,))
                 return HttpResponseRedirect(redirect_url)
 
