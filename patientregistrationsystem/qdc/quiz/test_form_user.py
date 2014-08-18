@@ -11,7 +11,7 @@ from django.template import loader
 from django.template.context import Context
 from django.utils.http import int_to_base36
 from django.utils.translation import ugettext_lazy as _
-from views import User, reverse, user_update, user_delete
+from quiz.views import User, reverse, user_update, user_delete
 
 import re
 

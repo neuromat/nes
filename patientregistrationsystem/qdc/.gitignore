@@ -1,0 +1,8 @@
+# Created by .gitignore support plugin (hsz.mobi)
+qdc/settings.py
+.idea
+.idea/
+*.pyc
+media
+.idea/workspace.xml
+*.DS_Store

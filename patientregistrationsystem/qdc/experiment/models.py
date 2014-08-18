@@ -29,7 +29,7 @@ class Experiment(models.Model):
 
 
 class QuestionnaireResponse(models.Model):
-    token = models.IntegerField(null=False, primary_key=True)
+    token = models.CharField(null=False, primary_key=True, max_length=30)
     subject = models.ForeignKey(Subject, null=False)
     experiment = models.ForeignKey(Experiment, null=False)
     questionnaire = models.ForeignKey(Questionnaire, null=False)
