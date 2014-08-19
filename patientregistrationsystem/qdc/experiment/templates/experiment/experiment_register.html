@@ -114,7 +114,7 @@
                             <thead>
                             <tr>
                                 <th>Questionário</th>
-                                <th>Preenchimentos</th>
+                                <th>Quantidade de preenchimentos</th>
                                 <th>Intervalo entre preenchimentos</th>
                             </tr>
                             </thead>
@@ -131,8 +131,20 @@
                                         {% endfor %}
                                         </a>
                                     </td>
-                                    <td>{% if questionnaire_configuration.number_of_fills %}{{ questionnaire_configuration.number_of_fills }}{% endif %}</td>
-                                    <td>{% if questionnaire_configuration.interval_between_fills_value and questionnaire_configuration.interval_between_fills_unit %}{{ questionnaire_configuration.interval_between_fills_value }} {{ questionnaire_configuration.interval_between_fills_unit.name }}{% endif %}</td>
+                                    <td>
+                                        {% if questionnaire_configuration.number_of_fills %}
+                                            {{ questionnaire_configuration.number_of_fills }}
+                                        {% else %}
+                                            Ilimitada
+                                        {% endif %}
+                                    </td>
+                                    <td>
+                                        {% if questionnaire_configuration.interval_between_fills_value and questionnaire_configuration.interval_between_fills_unit %}
+                                            {{ questionnaire_configuration.interval_between_fills_value }} {{ questionnaire_configuration.interval_between_fills_unit.name }}
+                                        {% else %}
+                                            Indefinido
+                                        {% endif %}
+                                    </td>
                                 </tr>
                             {% endfor %}
                             </tbody>

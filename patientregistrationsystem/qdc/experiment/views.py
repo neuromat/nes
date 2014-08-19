@@ -102,7 +102,9 @@ def experiment_update(request, experiment_id, template_name="experiment/experime
 def questionnaire_create(request, experiment_id, template_name="experiment/questionnaire_register.html"):
 
     experiment = get_object_or_404(Experiment, pk=experiment_id)
-    questionnaire_form = QuestionnaireConfigurationForm(request.POST or None)
+    questionnaire_form = QuestionnaireConfigurationForm(
+        request.POST or None,
+        initial={'number_of_fills': 1, 'interval_between_fills_value': None})
 
     questionnaires_list = Questionnaires().find_all_active_questionnaires()
 
@@ -147,6 +149,7 @@ def questionnaire_create(request, experiment_id, template_name="experiment/quest
 @login_required
 def questionnaire_update(request, questionnaire_configuration_id,
                          template_name="experiment/questionnaire_register.html"):
+
     questionnaire_configuration = get_object_or_404(QuestionnaireConfiguration, pk=questionnaire_configuration_id)
     experiment = get_object_or_404(Experiment, pk=questionnaire_configuration.experiment.id)
     questionnaire_form = QuestionnaireConfigurationForm(request.POST or None, instance=questionnaire_configuration)
@@ -163,10 +166,16 @@ def questionnaire_update(request, questionnaire_configuration_id,
         if request.POST['action'] == "save":
             if questionnaire_form.is_valid():
 
-                questionnaire_configuration.number_of_fills = request.POST['number_of_fills']
-                questionnaire_configuration.interval_between_fills_value = request.POST['interval_between_fills_value']
-                questionnaire_configuration.interval_between_fills_unit = get_object_or_404(TimeUnit, pk=request.POST[
-                    'interval_between_fills_unit'])
+                if "number_of_fills" in request.POST:
+                    questionnaire_configuration.number_of_fills = request.POST['number_of_fills']
+
+                if "interval_between_fills_value" in request.POST:
+                    questionnaire_configuration.interval_between_fills_value = \
+                        request.POST['interval_between_fills_value']
+
+                if "interval_between_fills_unit" in request.POST:
+                    questionnaire_configuration.interval_between_fills_unit = \
+                        get_object_or_404(TimeUnit, pk=request.POST['interval_between_fills_unit'])
 
                 questionnaire_configuration.save()
 
