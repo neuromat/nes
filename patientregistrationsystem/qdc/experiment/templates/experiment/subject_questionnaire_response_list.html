@@ -1,0 +1,160 @@
+{% extends "quiz/template.html" %}
+{% block activeAdvancedExperiment %}class="active"{% endblock %}
+
+{% block header %}
+    <script>
+        function show_modal_date(questionnaire_title, lime_survey_id) {
+            {% comment %}
+                var modal_remove = document.getElementById('dateInform');
+                modal_remove.setAttribute("href", "/experiment/" + experiment_id + '/subjects/delete/' + subject_id);
+            {% endcomment %}
+            $('#modalDate').modal('show');
+
+        }
+    </script>
+{% endblock %}
+
+{% block form %}
+    <div class="row">
+    <form id="subject_form" method="post">
+    {% csrf_token %}
+{% endblock %}
+
+{% block content %}
+
+    <div class="tab-pane fade in active" id="subjectBreadCrumb">
+
+        <div class="col-md-1">
+        </div>
+
+        <div class="col-md-10">
+
+            <ol class="breadcrumb">
+                <li>Home</li>
+                <li><a href="/experiment/list">Experimentos</a></li>
+                <li><a href="/experiment/edit/{{ experiment_id }}/"> Experimento: {{ experiment_id }} </a></li>
+                <li><a href="/experiment/{{ experiment_id }}/subjects/">Participantes</a></li>
+                <li>Participante: {{ subject_id }}</li>
+                <li>Preencher questionários</li>
+            </ol>
+
+        </div>
+
+        <div class="col-md-1">
+        </div>
+    </div>
+
+    {% if messages %}
+        {% for message in messages %}
+
+            {% if message.tags == "success" %}
+                <script>showSuccessMessage('{{ message }}')</script>
+            {% endif %}
+
+            {% if message.tags == "warning" %}
+                <script>showWarningMessage('{{ message }}')</script>
+            {% endif %}
+
+            {% if message.tags == "error" %}
+                <script>showErrorMessage('{{ message }}')</script>
+            {% endif %}
+
+            {% if message.tags == "info" %}
+                <script>showInfoMessage('{{ message }}')</script>
+            {% endif %}
+
+        {% endfor %}
+    {% endif %}
+
+    <div class="tab-pane fade in active" id="menuUserTab">
+        <div class="col-md-10">
+            <div class="row">
+                <div class="col-xs-6 col-sm-12">
+                    <div class="form-group">
+                        <table class="table table-striped">
+                            <thead>
+                            <tr>
+                                <th>Questionário</th>
+                                <th>Preenchimentos</th>
+                            </tr>
+                            </thead>
+                            <tbody>
+                            {% if questionnaires_configuration_list.count == 0 %}
+                                <tr>
+                                    <td>(Nenhum questionário para preenchimento)</td>
+                                    <td></td>
+                                </tr>
+                            {% else %}
+                                {% if questionnaires_configuration_list.count > 0 %}
+                                    {% for questionnaire_configuration in questionnaires_configuration_list %}
+                                        <tr>
+
+                                            {% for questionnaire in questionnaires_list %}
+                                                {% if questionnaire.sid == questionnaire_configuration.lime_survey_id %}
+                                                    <td>
+                                                        {{ questionnaire.surveyls_title }}
+                                                    </td>
+                                                    <td><a type="button" href="#" class="btn btn-primary"
+                                                           onclick="show_modal_date({{ questionnaire.surveyls_title }},{{ questionnaire_configuration.lime_survey_id }})">Novo
+                                                        preenchimento</a></td>
+                                                {% endif %}
+                                            {% endfor %}
+
+                                        </tr>
+                                    {% endfor %}
+                                {% endif %}
+                            {% endif %}
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+            <div class="btn-toolbar">
+                <div class="btn-group pull-right">
+                    <a type="button" class="btn btn-primary"
+                       href="/experiment/{{ experiment_id }}/subjects/{{ subject_id }}">Voltar</a>
+                </div>
+            </div>
+
+        </div>
+
+
+    </div>
+
+    <div class="modal fade" id="modalDate" tabindex="-1" role="dialog" aria-labelledby="myModalLabel"
+         aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-body">
+                    <div class="form-group">
+                        
+                    </div>
+
+                    <div class="form-group {% if patient_form.errors.date_birth_txt %}has-error{% endif %}">
+                        <label for="date_birth_txt" class="control-label">Data de preenchimento <b
+                                style="color: red;">*</b></label>
+
+                        <div class="input-group input-group-sm">
+                            <span class="input-group-addon"> <span class="glyphicon glyphicon-th"></span></span>
+                            <input class="form-control" data-error="Data de preenchimento" id="date_questionnaire" name="date_questionnaire" placeholder="Data" required="" type="text">
+                        </div>
+
+                    </div>
+                </div>
+
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-default" data-dismiss="modal">Cancelar</button>
+                    <button type="submit" class="btn btn-default" data-dismiss="modal">Confirmar</button>
+                    <a id="removeSubject" class="btn btn-primary" style="background-color: indianred; color: #ffffff"
+                       href="">Confirmar LINK</a>
+                </div>
+            </div>
+        </div>
+    </div>
+
+{% endblock %}
+
+{% block end_form %}
+    </form>
+    </div>
+{% endblock %}

@@ -2,10 +2,12 @@
 {% block activeAdvancedExperiment %}class="active"{% endblock %}
 
 {% block header %}
-  <script>
-        function show_modal_date(experiment_id, subject_id) {
-            var modal_remove = document.getElementById('dateInform');
-            modal_remove.setAttribute("href", "/experiment/" + experiment_id + '/subjects/delete/' + subject_id);
+    <script>
+        function show_modal_date(questionnaire_title, lime_survey_id) {
+            {% comment %}
+                var modal_remove = document.getElementById('dateInform');
+                modal_remove.setAttribute("href", "/experiment/" + experiment_id + '/subjects/delete/' + subject_id);
+            {% endcomment %}
             $('#modalDate').modal('show');
 
         }
@@ -79,25 +81,25 @@
                             <tbody>
                             {% if questionnaires_configuration_list.count == 0 %}
                                 <tr>
-                                    <td>(Nenhum questionário para preencher)</td>
+                                    <td>(Nenhum questionário para preenchimento)</td>
                                     <td></td>
                                 </tr>
                             {% else %}
                                 {% if questionnaires_configuration_list.count > 0 %}
                                     {% for questionnaire_configuration in questionnaires_configuration_list %}
                                         <tr>
-                                            <td>
-                                                <a data-toggle="tooltip" data-placement="left" title="Preencher"
-                                                   href="/experiment/{{ experiment_id }}/subjects/{{ subject_id }}/questionnaire/{{ questionnaire_configuration.id }}">
 
-                                                    {% for questionnaire in questionnaires_list %}
-                                                        {% if questionnaire.sid == questionnaire_configuration.lime_survey_id %}
-                                                            {{ questionnaire.surveyls_title }}
-                                                        {% endif %}
-                                                    {% endfor %}
-                                                </a>
-                                            </td>
-                                            <td></td>
+                                            {% for questionnaire in questionnaires_list %}
+                                                {% if questionnaire.sid == questionnaire_configuration.lime_survey_id %}
+                                                    <td>
+                                                        {{ questionnaire.surveyls_title }}
+                                                    </td>
+                                                    <td><a type="button" href="#" class="btn btn-primary"
+                                                           onclick="show_modal_date({{ questionnaire.surveyls_title }},{{ questionnaire_configuration.lime_survey_id }})">Novo
+                                                        preenchimento</a></td>
+                                                {% endif %}
+                                            {% endfor %}
+
                                         </tr>
                                     {% endfor %}
                                 {% endif %}
@@ -124,12 +126,27 @@
         <div class="modal-dialog">
             <div class="modal-content">
                 <div class="modal-body">
-                    Tem certeza que deseja excluir o participante?
+                    <div class="form-group">
+                        
+                    </div>
+
+                    <div class="form-group {% if patient_form.errors.date_birth_txt %}has-error{% endif %}">
+                        <label for="date_birth_txt" class="control-label">Data de preenchimento <b
+                                style="color: red;">*</b></label>
+
+                        <div class="input-group input-group-sm">
+                            <span class="input-group-addon"> <span class="glyphicon glyphicon-th"></span></span>
+                            <input class="form-control" data-error="Data de preenchimento" id="date_questionnaire" name="date_questionnaire" placeholder="Data" required="" type="text">
+                        </div>
+
+                    </div>
                 </div>
+
                 <div class="modal-footer">
                     <button type="button" class="btn btn-default" data-dismiss="modal">Cancelar</button>
+                    <button type="submit" class="btn btn-default" data-dismiss="modal">Confirmar</button>
                     <a id="removeSubject" class="btn btn-primary" style="background-color: indianred; color: #ffffff"
-                       href="">Excluir</a>
+                       href="">Confirmar LINK</a>
                 </div>
             </div>
         </div>
