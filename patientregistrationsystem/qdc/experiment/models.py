@@ -25,13 +25,13 @@ class Experiment(models.Model):
 class QuestionnaireConfiguration(models.Model):
     lime_survey_id = models.IntegerField(null=False, blank=False)
     experiment = models.ForeignKey(Experiment, null=False)
-    number_of_fills = models.IntegerField(null=False, blank=False)
-    interval_between_fills_value = models.IntegerField(null=False, blank=False)
-    interval_between_fills_unit = models.ForeignKey(TimeUnit, null=False)
+    number_of_fills = models.IntegerField(null=True, blank=True)
+    interval_between_fills_value = models.IntegerField(null=True, blank=True)
+    interval_between_fills_unit = models.ForeignKey(TimeUnit, null=True)
 
 
 class QuestionnaireResponse(models.Model):
-    token = models.IntegerField(null=False, primary_key=True)
+    token = models.CharField(null=False, primary_key=True, max_length=30)
     subject = models.ForeignKey(Subject, null=False)
     questionnaire_configuration = models.ForeignKey(QuestionnaireConfiguration, null=False)
     date = models.DateTimeField(null=False)

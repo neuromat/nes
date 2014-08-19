@@ -1,5 +1,5 @@
 # coding=utf-8
-
+from django.http import QueryDict
 from django.shortcuts import render, get_object_or_404, redirect
 from django.contrib.auth.decorators import login_required
 from django.contrib import messages
@@ -7,14 +7,14 @@ from django.http import HttpResponseRedirect
 from django.core.urlresolvers import reverse
 from django.shortcuts import render_to_response
 
-from experiment.models import Experiment, QuestionnaireConfiguration, Subject, TimeUnit
+from experiment.models import Experiment, QuestionnaireConfiguration, Subject, TimeUnit, QuestionnaireResponse
 from experiment.forms import ExperimentForm, QuestionnaireConfigurationForm
 
 from quiz.models import Patient
 from quiz.abc_search_engine import Questionnaires
 
 import re
-
+import datetime
 
 @login_required
 def experiment_list(request, template_name="experiment/experiment_list.html"):
@@ -137,8 +137,8 @@ def questionnaire_create(request, experiment_id, template_name="experiment/quest
 
 
 @login_required
-def questionnaire_update(request, questionnaire_configuration_id, template_name="experiment/questionnaire_register.html"):
-
+def questionnaire_update(request, questionnaire_configuration_id,
+                         template_name="experiment/questionnaire_register.html"):
     questionnaire_configuration = get_object_or_404(QuestionnaireConfiguration, pk=questionnaire_configuration_id)
     experiment = get_object_or_404(Experiment, pk=questionnaire_configuration.experiment.id)
     questionnaire_form = QuestionnaireConfigurationForm(request.POST or None, instance=questionnaire_configuration)
@@ -157,7 +157,8 @@ def questionnaire_update(request, questionnaire_configuration_id, template_name=
 
                 questionnaire_configuration.number_of_fills = request.POST['number_of_fills']
                 questionnaire_configuration.interval_between_fills_value = request.POST['interval_between_fills_value']
-                questionnaire_configuration.interval_between_fills_unit = get_object_or_404(TimeUnit, pk=request.POST['interval_between_fills_unit'])
+                questionnaire_configuration.interval_between_fills_unit = get_object_or_404(TimeUnit, pk=request.POST[
+                    'interval_between_fills_unit'])
 
                 questionnaire_configuration.save()
 
@@ -186,7 +187,48 @@ def subjects(request, experiment_id, template_name="experiment/subjects.html"):
 
     context = {
         'experiment_id': experiment_id,
-        'subject_list': subject_list.all()
+        'subject_list': subject_list
+    }
+
+    return render(request, template_name, context)
+
+
+def subject_questionnaire_response(request, experiment_id, subject_id, questionnaire_id):
+    questionnaire_config = get_object_or_404(QuestionnaireConfiguration, id=questionnaire_id)
+    questionnaire_lime_survey = Questionnaires()
+
+    subject = get_object_or_404(Subject, pk=subject_id)
+    patient = subject.patient
+
+    subject_data = {'email': 'email@mail.com', 'firstname': patient.name_txt, 'lastname': 'A1last1'}
+    result = questionnaire_lime_survey.add_participant(questionnaire_config.lime_survey_id, [subject_data])
+    token = result[0]['token']
+
+    questionnaire_response = QuestionnaireResponse()
+    questionnaire_response.subject = subject
+    questionnaire_response.questionnaire_configuration = questionnaire_config
+    questionnaire_response.token = token
+    questionnaire_response.date = datetime.datetime.now()
+    questionnaire_response.save()
+    messages.info(request, 'Você será redirecionado para o questionário... Aguarde')
+
+    redirect_url = 'http://survey.numec.prp.usp.br/index.php/survey/index/sid/%s/token/%s' % (
+        questionnaire_config.lime_survey_id, token)
+
+    return HttpResponseRedirect(redirect_url)
+
+
+def subject_questionnaire_view(request, experiment_id, subject_id,
+                               template_name="experiment/subject_questionnaire_response.html"):
+    experiment = get_object_or_404(Experiment, id=experiment_id)
+    questionnaires_configuration_list = QuestionnaireConfiguration.objects.filter(experiment=experiment)
+    questionnaires_list = Questionnaires().find_all_active_questionnaires()
+
+    context = {
+        'subject_id': subject_id,
+        'experiment_id': experiment_id,
+        'questionnaires_configuration_list': questionnaires_configuration_list,
+        'questionnaires_list': questionnaires_list
     }
 
     return render(request, template_name, context)
@@ -209,14 +251,13 @@ def subjects_insert(request, experiment_id, patient_id):
         experiment.subjects.add(subject)
         experiment.save()
     else:
-        messages.warning(request, 'Participante jah inserido para este experimento.')
+        messages.warning(request, 'Participante já inserido para este experimento.')
 
     redirect_url = reverse("subjects", args=(experiment_id))
-    return HttpResponseRedirect(redirect_url)  # + "?status=edit&currentTab=3"
+    return HttpResponseRedirect(redirect_url)
 
 
 def subjects_delete(request, experiment_id, subject_id):
-
     subject = Subject()
 
     try:
@@ -229,7 +270,7 @@ def subjects_delete(request, experiment_id, subject_id):
     experiment = get_object_or_404(Experiment, id=experiment_id)
     experiment.subjects.remove(subject)
 
-    messages.warning(request, 'Participante removido do experimento.')
+    messages.info(request, 'Participante removido do experimento.')
     redirect_url = reverse("subjects", args=(experiment_id))
     return HttpResponseRedirect(redirect_url)
 
