@@ -131,8 +131,8 @@
                                         {% endfor %}
                                         </a>
                                     </td>
-                                    <td>{{ questionnaire_configuration.number_of_fills }}</td>
-                                    <td>{{ questionnaire_configuration.interval_between_fills_value }} {{ questionnaire_configuration.interval_between_fills_unit.name }}</td>
+                                    <td>{% if questionnaire_configuration.number_of_fills %}{{ questionnaire_configuration.number_of_fills }}{% endif %}</td>
+                                    <td>{% if questionnaire_configuration.interval_between_fills_value and questionnaire_configuration.interval_between_fills_unit %}{{ questionnaire_configuration.interval_between_fills_value }} {{ questionnaire_configuration.interval_between_fills_unit.name }}{% endif %}</td>
                                 </tr>
                             {% endfor %}
                             </tbody>
