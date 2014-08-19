@@ -1,6 +1,6 @@
 # coding=utf-8
 from django.http import QueryDict
-from django.shortcuts import render, get_object_or_404
+from django.shortcuts import render, get_object_or_404, redirect
 from django.contrib.auth.decorators import login_required
 from django.contrib import messages
 from django.http import HttpResponseRedirect
@@ -15,7 +15,6 @@ from quiz.abc_search_engine import Questionnaires
 
 import re
 import datetime
-
 
 @login_required
 def experiment_list(request, template_name="experiment/experiment_list.html"):
@@ -35,18 +34,19 @@ def experiment_create(request, template_name="experiment/experiment_register.htm
         if request.POST['action'] == "save":
 
             if experiment_form.is_valid():
+
                 experiment_added = experiment_form.save()
 
                 # if 'chosen_questionnaires' in request.POST:
                 #
-                # for survey_id in request.POST.getlist('chosen_questionnaires'):
+                #     for survey_id in request.POST.getlist('chosen_questionnaires'):
                 #
-                # questionnaire = Questionnaire()
+                #         questionnaire = Questionnaire()
                 #
-                # try:
-                # questionnaire = Questionnaire.objects.get(survey_id=survey_id)
-                # except questionnaire.DoesNotExist:
-                # Questionnaire(survey_id=survey_id).save()
+                #         try:
+                #             questionnaire = Questionnaire.objects.get(survey_id=survey_id)
+                #         except questionnaire.DoesNotExist:
+                #             Questionnaire(survey_id=survey_id).save()
                 #             questionnaire = Questionnaire.objects.get(survey_id=survey_id)
                 #
                 #         experiment_added.questionnaires.add(questionnaire)
@@ -80,9 +80,13 @@ def experiment_update(request, experiment_id, template_name="experiment/experime
 
                 if experiment_form.is_valid():
                     experiment_form.save()
-
                     redirect_url = reverse("experiment_edit", args=(experiment_id,))
                     return HttpResponseRedirect(redirect_url)
+
+            else:
+                if request.POST['action'] == "remove":
+                    experiment.delete()
+                    return redirect('experiment_list')
 
     context = {
         "experiment_form": experiment_form,
@@ -96,6 +100,7 @@ def experiment_update(request, experiment_id, template_name="experiment/experime
 
 @login_required
 def questionnaire_create(request, experiment_id, template_name="experiment/questionnaire_register.html"):
+
     experiment = get_object_or_404(Experiment, pk=experiment_id)
     questionnaire_form = QuestionnaireConfigurationForm(request.POST or None)
 
@@ -103,27 +108,17 @@ def questionnaire_create(request, experiment_id, template_name="experiment/quest
 
     if request.method == "POST":
 
-        if request.POST['action'] == "cancel":
-            redirect_url = reverse("experiment_edit", args=(experiment_id,))
-            return HttpResponseRedirect(redirect_url)
-
         if request.POST['action'] == "save":
             if questionnaire_form.is_valid():
-                lime_survey_id = request.POST['questionnaire_selected']
 
-                # try:
-                # survey = Survey.objects.get(lime_survey_id=lime_survey_id)
-                # except survey.DoesNotExist:
-                # Survey(lime_survey_id=lime_survey_id).save()
-                # survey = Survey.objects.get(lime_survey_id=lime_survey_id)
+                lime_survey_id = request.POST['questionnaire_selected']
 
                 questionnaire = QuestionnaireConfiguration()
                 questionnaire.lime_survey_id = lime_survey_id
                 questionnaire.experiment = experiment
                 questionnaire.number_of_fills = request.POST['number_of_fills']
                 questionnaire.interval_between_fills_value = request.POST['interval_between_fills_value']
-                questionnaire.interval_between_fills_unit = get_object_or_404(TimeUnit, pk=request.POST[
-                    'interval_between_fills_unit'])
+                questionnaire.interval_between_fills_unit = get_object_or_404(TimeUnit, pk=request.POST['interval_between_fills_unit'])
 
                 questionnaire.save()
 
@@ -159,6 +154,7 @@ def questionnaire_update(request, questionnaire_configuration_id,
 
         if request.POST['action'] == "save":
             if questionnaire_form.is_valid():
+
                 questionnaire_configuration.number_of_fills = request.POST['number_of_fills']
                 questionnaire_configuration.interval_between_fills_value = request.POST['interval_between_fills_value']
                 questionnaire_configuration.interval_between_fills_unit = get_object_or_404(TimeUnit, pk=request.POST[
@@ -168,6 +164,11 @@ def questionnaire_update(request, questionnaire_configuration_id,
 
                 messages.success(request, 'Questionário atualizado com sucesso.')
 
+                redirect_url = reverse("experiment_edit", args=(experiment.id,))
+                return HttpResponseRedirect(redirect_url)
+        else:
+            if request.POST['action'] == "remove":
+                questionnaire_configuration.delete()
                 redirect_url = reverse("experiment_edit", args=(experiment.id,))
                 return HttpResponseRedirect(redirect_url)
 
@@ -186,7 +187,8 @@ def subjects(request, experiment_id, template_name="experiment/subjects.html"):
 
     context = {
         'experiment_id': experiment_id,
-        'subject_list': subject_list
+        'subject_list': subject_list,
+        'experiment_title': experiment.title
     }
 
     return render(request, template_name, context)
@@ -226,6 +228,7 @@ def subject_questionnaire_view(request, experiment_id, subject_id,
     context = {
         'subject_id': subject_id,
         'experiment_id': experiment_id,
+        'experiment_title': experiment.title,
         'questionnaires_configuration_list': questionnaires_configuration_list,
         'questionnaires_list': questionnaires_list
     }
