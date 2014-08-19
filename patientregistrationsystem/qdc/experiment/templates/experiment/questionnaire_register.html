@@ -87,8 +87,13 @@
                 <li>Home</li>
                 <li><a href="/experiment/list">Experimentos</a></li>
                 <li><a href="/experiment/edit/{{ experiment.id }}">{{ experiment.title }}</a></li>
-                <li>Questionário</li>
-                <li class="active">Novo</li>
+                {% if creating %}
+                    <li class="active">Novo questionário</li>
+                {% else %}
+                    {% for survey in questionnaires_list %}
+                        <li class="active">{{ survey.surveyls_title }}</li>
+                    {% endfor %}
+                {% endif %}
 
             </ol>
 

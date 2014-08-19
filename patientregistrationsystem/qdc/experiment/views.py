@@ -204,7 +204,8 @@ def subjects(request, experiment_id, template_name="experiment/subjects.html"):
 
     context = {
         'experiment_id': experiment_id,
-        'subject_list': subject_list
+        'subject_list': subject_list,
+        'experiment_title': experiment.title
     }
 
     return render(request, template_name, context)
@@ -244,6 +245,7 @@ def subject_questionnaire_view(request, experiment_id, subject_id,
     context = {
         'subject_id': subject_id,
         'experiment_id': experiment_id,
+        'experiment_title': experiment.title,
         'questionnaires_configuration_list': questionnaires_configuration_list,
         'questionnaires_list': questionnaires_list
     }
