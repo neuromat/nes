@@ -251,12 +251,12 @@ def subject_questionnaire_response_start_fill_questionnaire(request, experiment_
 
         questionnaire_response.subject = subject
         questionnaire_response.questionnaire_configuration = questionnaire_config
-        questionnaire_response.token = result
+        questionnaire_response.token_id = result['token_id']
         questionnaire_response.date = datetime.datetime.strptime(request.POST['date'], '%d/%m/%Y')
         questionnaire_response.save()
 
         redirect_url = 'http://survey.numec.prp.usp.br/index.php/survey/index/sid/%s/token/%s' % (
-            questionnaire_config.lime_survey_id, result)
+            questionnaire_config.lime_survey_id, result['token'])
 
         return redirect_url
     else:

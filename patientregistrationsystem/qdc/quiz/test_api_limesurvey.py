@@ -55,7 +55,7 @@ class ABCSearchEngineTest(TestCase):
         survey = list_active_surveys[0]
         sid = int(survey['sid'])
 
-        # list_participants = self.server.list_participants(self.session_key, sid)
+        list_participants = self.server.list_participants(self.session_key, sid)
 
         participant_data = {'email': 'juquinha@hotmail.com', 'lastname': 'junqueira', 'firstname': 'juca'}
         participant_data_result = surveys.add_participant(
@@ -68,24 +68,51 @@ class ABCSearchEngineTest(TestCase):
 
         self.assertNotEqual(participant_data_result, None)
 
-        # list_participants_new = self.server.list_participants(self.session_key, sid)
+        list_participants_new = self.server.list_participants(self.session_key, sid)
 
-        # self.assertEqual(len(list_participants_new), len(list_participants) + 1)
+        self.assertEqual(len(list_participants_new), len(list_participants) + 1)
 
         # token_id = participant_data_result[0]['tid']
-        token_id = participant_data_result
+        token_id = participant_data_result['token_id']
         tokens_to_delete = []
         tokens_to_delete.append(token_id)
 
         # remover participante do questionario
         result = self.server.delete_participants(self.session_key, sid, [token_id])
 
-        # self.assertEqual(result[str(token_id)], 'Deleted')
+        self.assertEqual(result[str(token_id)], 'Deleted')
 
-    def test_get_survey_property_usetokens(self):
-        """testa a obtencao das propriedades de um questionario"""
+    # def test_get_survey_property_usetokens(self):
+    #     """testa a obtencao das propriedades de um questionario"""
+    #
+    #     surveys = Questionnaires()
+    #     result = surveys.get_survey_properties(641729, "usetokens")
+    #
+    #     pass
 
-        surveys = Questionnaires()
-        result = surveys.get_survey_properties(641729, "usetokens")
+    # def test_get_participant_property_usetokens(self):
+    #     """testa a obtencao das propriedades de um participant/token"""
+    #
+    #     surveys = Questionnaires()
+    #
+    #     # completo
+    #     result1 = surveys.get_participant_properties(426494, 2, "completed")
+    #
+    #     # nao completo
+    #     result2 = surveys.get_participant_properties(426494, 230, "completed")
+    #     result3 = surveys.get_participant_properties(426494, 230, "token")
+    #
+    #     pass
 
-        pass
+    # def test_survey_has_token_table(self):
+    #     """testa se determinado questionario tem tabela de tokens criada"""
+    #
+    #     surveys = Questionnaires()
+    #
+    #     # exemplo de "true"
+    #     result = surveys.survey_has_token_table(426494)
+    #
+    #     # exemplo de "false"
+    #     result2 = surveys.survey_has_token_table(642916)
+    #
+    #     pass
