@@ -17,7 +17,7 @@ import re
 import datetime
 
 @login_required
-@permission_required('experiment.view_experiment')
+# @permission_required('experiment.view_experiment')
 def experiment_list(request, template_name="experiment/experiment_list.html"):
     experiments = Experiment.objects.order_by('title')
 
