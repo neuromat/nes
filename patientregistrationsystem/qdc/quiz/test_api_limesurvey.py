@@ -82,6 +82,6 @@ class ABCSearchEngineTest(TestCase):
         """testa a obtencao das propriedades de um questionario"""
 
         surveys = Questionnaires()
-        result = surveys.get_survey_property_usetokens(641729)
+        result = surveys.get_survey_properties(641729, "usetokens")
 
         pass

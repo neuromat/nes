@@ -82,7 +82,6 @@ class ABCSearchEngine:
 
         return result
 
-
     @abstractmethod
     def get_survey_title(self, sid):
         """Retorna o titulo da survey pelo id"""
@@ -98,7 +97,7 @@ class ABCSearchEngine:
 
     @abstractmethod
     def get_survey_properties(self, sid, prop):
-        """Retorna o titulo da survey pelo id"""
+        """Retorna uma determinada propriedade de um questionario"""
 
         server = pyjsonrpc.HttpClient("http://survey.numec.prp.usp.br/index.php/admin/remotecontrol")
         session_key = server.get_session_key("evandro", "8YtztuqeGzUU")
@@ -108,24 +107,6 @@ class ABCSearchEngine:
         server.release_session_key(session_key)
 
         return result.get(prop)
-
-
-    @abstractmethod
-    def get_survey_property_usetokens(self, sid):
-        """obtem propriedade 'usetokens' de um determinado questionario"""
-
-        server = pyjsonrpc.HttpClient("http://survey.numec.prp.usp.br/index.php/admin/remotecontrol")
-        session_key = server.get_session_key("evandro", "8YtztuqeGzUU")
-
-        result = server.get_survey_properties(
-            session_key,
-            sid,
-            ['usetokens']
-        )
-
-        server.release_session_key(session_key)
-
-        return result
 
 
 class Questionnaires(ABCSearchEngine):
@@ -148,6 +129,3 @@ class Questionnaires(ABCSearchEngine):
 
     def get_survey_title(self, sid):
         return super(Questionnaires, self).get_survey_title(sid)
-
-    def get_survey_property_usetokens(self, sid):
-        return super(Questionnaires, self).get_survey_property_usetokens(sid)
