@@ -1,0 +1,1 @@
+/usr/local/lib/python2.7/dist-packages/cep/static/cep/js/cep.js

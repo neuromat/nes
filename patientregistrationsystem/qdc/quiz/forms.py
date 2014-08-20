@@ -2,7 +2,6 @@
 from django.forms import ModelForm, TextInput, DateInput, Select, RadioSelect, PasswordInput, CheckboxSelectMultiple, \
     CharField, ValidationError
 from django.forms.widgets import Textarea
-from cep.widgets import CEPInput
 from models import Patient, SocialDemographicData, SocialHistoryData, ComplementaryExam, ExamFile
 from django.contrib.auth.hashers import make_password
 from quiz_widget import SelectBoxCountries, SelectBoxState
@@ -13,6 +12,12 @@ from django.contrib.auth.models import User
 # pylint: disable=E1101
 # pylint: disable=E1103
 
+STATE = (('AA', ''), ('AC', 'Acre'), ('AL', 'Alagoas'), ('AP', 'Amapá'), ('AM', 'Amazonas'), ('BA', 'Bahia'), ('CE', 'Ceará'),
+         ('DF', 'Distrito Federal'), ('ES', 'Espírito Santo'), ('GO', 'Goiás'), ('MA', 'Maranhão'), ('MT', 'Mato Grosso'),
+         ('MS', 'Mato Grosso do Sul'), ('MG', 'Minas Gerais'), ('PA', 'Pará'), ('PB', 'Paraíba'), ('PR', 'Paraná'),
+         ('PE', 'Pernambuco'), ('PI', 'Piauí'), ('RJ', 'Rio de Janeiro'), ('RN', 'Rio Grande do Norte'),
+         ('RS', 'Rio Grande do Sul'), ('RO', 'Rondônia'), ('RR', 'Roraima'), ('SC', 'Santa Catarina'), ('SP', 'São Paulo'),
+         ('SE', 'Sergipe'), ('TO', 'Tocantins'))
 
 class PatientForm(ModelForm):
     class Meta:
@@ -20,11 +25,22 @@ class PatientForm(ModelForm):
 
         fields = [
             'cpf_id', 'name_txt', 'number_record', 'rg_id', 'medical_record_number', 'natural_of_txt',
-            'citizenship_txt', 'street_txt', 'zipcode_number', 'country_txt', 'state_txt', 'city_txt', 'phone_number',
-            'cellphone_number', 'email_txt', 'date_birth_txt', 'gender_opt', 'marital_status_opt',
+            'citizenship_txt', 'zipcode_number', 'street_txt', 'city_txt', 'state_txt', 'country_txt', 'phone_number',
+            'cellphone_number', 'email_txt', 'date_birth_txt', 'gender_opt', 'marital_status_opt', 'district',
+            'address_complement', 'address_number'
         ]
 
         widgets = {
+            'zipcode_number': CEPInput(address={'street': 'street_txt', 'district': 'district', 'city': 'city',
+                                                'state': 'id_chosen_state'},
+                                       attrs={'class': 'form-control', 'placeholder': 'Digite o CEP', 'pattern': '\d{5}-?\d{3}'}),
+            'street_txt': TextInput(attrs={'class': 'form-control', 'id': "street_txt"}),
+            'address_number': TextInput(attrs={'class': 'form-control', 'placeholder': 'Número Residencial', 'id': "number"}),
+            'address_complement': TextInput(attrs={'class': 'form-control', 'placeholder': 'Entrar Complemento', 'id': "complement"}),
+            'district': TextInput(attrs={'class': 'form-control', 'id': "district"}),
+            'city_txt': TextInput(attrs={'class': 'form-control', 'id': "city"}),
+            'state_txt': Select(attrs={'class': 'form-control', 'id': 'id_chosen_state'}, choices = STATE),
+            'country_txt': SelectBoxCountries(attrs={'id': 'id_country_state_address', 'data-flags': 'true'}),
             'name_txt': TextInput(attrs={'class': 'form-control', 'placeholder': 'Entrar nome completo',
                                          'id': "full_name", 'autofocus': "true", 'required': "",
                                          'data-error': "Nome deve ser preenchido"}),
@@ -33,16 +49,6 @@ class PatientForm(ModelForm):
             'rg_id': TextInput(attrs={'class': 'form-control', 'placeholder': 'Entrar RG', 'id': "rg_id"}),
             'natural_of_txt': TextInput(attrs={'class': 'form-control', 'placeholder': 'Entrar Naturalidade',
                                                'id': "naturalOf"}),
-            'street_txt': TextInput(attrs={'class': 'form-control', 'placeholder': 'Rua - Complemento',
-                                           'id': "street_txt"}),
-            #'zipcode_number': TextInput(
-            #    attrs={'class': 'form-control', 'placeholder': 'Entrar CEP', 'id': "zipcode",
-            #           'data-error': "CEP inválido", 'pattern': '\d{5}-?\d{3}'}),
-            'zipcode_number': CEPInput(address={'street': 'id_street_txt',
-                                                'city': 'id_city_txt',
-                                                'state': 'id_state_txt'},
-                                       attrs={'data-error': "CEP inválido", 'pattern': '\d{5}-?\d{3}'}),
-            'city_txt': TextInput(attrs={'class': 'form-control', 'placeholder': 'Entrar cidade', 'id': "city"}),
             'phone_number': TextInput(attrs={'class': 'form-control', 'placeholder': 'Entrar telefone para contato',
                                              'id': "phone"}),
             'cellphone_number': TextInput(attrs={'class': 'form-control', 'placeholder': 'Entrar celular',
@@ -55,8 +61,6 @@ class PatientForm(ModelForm):
                                                       'placeholder': 'Entrar número do prontuário',
                                                       'id': "records_number"}),
             'citizenship_txt': SelectBoxCountries(attrs={'id': 'id_chosen_country', 'data-flags': 'true'}),
-            'country_txt': SelectBoxCountries(attrs={'id': 'id_country_state_address', 'data-flags': 'true'}),
-            'state_txt': SelectBoxState(attrs={'data-country': 'id_country_state_address', 'id': 'id_chosen_state'}),
             'gender_opt': Select(attrs={'class': 'form-control', 'id': 'gender_id', 'required': "",
                                         'data-error': "Sexo deve ser preenchido"}),
             'marital_status_opt': Select(attrs={'class': 'form-control', 'id': 'marital_status'}),
