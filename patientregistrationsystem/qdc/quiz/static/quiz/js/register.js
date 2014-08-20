@@ -1,5 +1,7 @@
 $(document).ready(function () {
 
+    $("#date_fill").mask("99/99/9999");
+
     $("#birthday").mask("99/99/9999");
 
     $("#exam_date").mask("99/99/9999");

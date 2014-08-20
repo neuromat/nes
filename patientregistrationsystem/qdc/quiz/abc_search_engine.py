@@ -5,7 +5,6 @@ from abc import ABCMeta, abstractmethod
 
 
 class ABCSearchEngine:
-
     __metaclass__ = ABCMeta
 
     @abstractmethod
@@ -57,21 +56,59 @@ class ABCSearchEngine:
         return survey
 
     @abstractmethod
-    def add_participant(self, sid, participant_data):
+    def add_participant(self, sid, firstname, lastname, email):
         """adiciona participante ao questionario e retorna informacao do mesmo incluindo o sid"""
 
         server = pyjsonrpc.HttpClient("http://survey.numec.prp.usp.br/index.php/admin/remotecontrol")
         session_key = server.get_session_key("evandro", "8YtztuqeGzUU")
 
+        participant_data = {'email': email, 'firstname': firstname, 'lastname': lastname}
+
         participant_data_result = server.add_participants(
             session_key,
             sid,
-            participant_data,
+            [participant_data],
             True)
 
         server.release_session_key(session_key)
 
-        return participant_data_result
+        if len(participant_data_result) > 0:
+            if 'error' in participant_data_result[0]:
+                result = None
+            else:
+                result = participant_data_result[0]['token']
+        else:
+            result = None
+
+        return result
+
+
+    @abstractmethod
+    def get_survey_title(self, sid):
+        """Retorna o titulo da survey pelo id"""
+
+        server = pyjsonrpc.HttpClient("http://survey.numec.prp.usp.br/index.php/admin/remotecontrol")
+        session_key = server.get_session_key("evandro", "8YtztuqeGzUU")
+
+        survey_title = server.get_language_properties(session_key, sid, {'method': 'surveyls_title'})
+
+        server.release_session_key(session_key)
+
+        return survey_title.get('surveyls_title')
+
+    @abstractmethod
+    def get_survey_properties(self, sid, prop):
+        """Retorna o titulo da survey pelo id"""
+
+        server = pyjsonrpc.HttpClient("http://survey.numec.prp.usp.br/index.php/admin/remotecontrol")
+        session_key = server.get_session_key("evandro", "8YtztuqeGzUU")
+
+        result = server.get_survey_properties(session_key, sid, {'method': prop})
+
+        server.release_session_key(session_key)
+
+        return result.get(prop)
+
 
     @abstractmethod
     def get_survey_property_usetokens(self, sid):
@@ -103,9 +140,14 @@ class Questionnaires(ABCSearchEngine):
     def find_questionnaire_by_id(self, str_id):
         return super(Questionnaires, self).find_questionnaire_by_id(str_id)
 
-    def add_participant(self, str_id, participant_data):
-        return super(Questionnaires, self).add_participant(str_id, participant_data)
+    def add_participant(self, str_id, firstname, lastname, email):
+        return super(Questionnaires, self).add_participant(str_id, firstname, lastname, email)
+
+    def get_survey_properties(self, sid, prop):
+        return super(Questionnaires, self).get_survey_properties(sid, prop)
+
+    def get_survey_title(self, sid):
+        return super(Questionnaires, self).get_survey_title(sid)
 
     def get_survey_property_usetokens(self, sid):
         return super(Questionnaires, self).get_survey_property_usetokens(sid)
-
