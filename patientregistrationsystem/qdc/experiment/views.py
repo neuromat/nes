@@ -1,6 +1,4 @@
 # coding=utf-8
-from django.shortcuts import render, get_object_or_404
-from django.http import QueryDict
 from django.shortcuts import render, get_object_or_404, redirect
 from django.contrib.auth.decorators import login_required
 from django.contrib import messages
@@ -16,8 +14,6 @@ from quiz.abc_search_engine import Questionnaires
 
 import re
 import datetime
-import pyjsonrpc
-
 
 @login_required
 def experiment_list(request, template_name="experiment/experiment_list.html"):
@@ -37,21 +33,22 @@ def experiment_create(request, template_name="experiment/experiment_register.htm
         if request.POST['action'] == "save":
 
             if experiment_form.is_valid():
+
                 experiment_added = experiment_form.save()
 
                 # if 'chosen_questionnaires' in request.POST:
                 #
-                # for survey_id in request.POST.getlist('chosen_questionnaires'):
+                #     for survey_id in request.POST.getlist('chosen_questionnaires'):
                 #
-                # questionnaire = Questionnaire()
+                #         questionnaire = Questionnaire()
                 #
-                # try:
-                # questionnaire = Questionnaire.objects.get(survey_id=survey_id)
-                # except questionnaire.DoesNotExist:
-                # Questionnaire(survey_id=survey_id).save()
-                # questionnaire = Questionnaire.objects.get(survey_id=survey_id)
+                #         try:
+                #             questionnaire = Questionnaire.objects.get(survey_id=survey_id)
+                #         except questionnaire.DoesNotExist:
+                #             Questionnaire(survey_id=survey_id).save()
+                #             questionnaire = Questionnaire.objects.get(survey_id=survey_id)
                 #
-                # experiment_added.questionnaires.add(questionnaire)
+                #         experiment_added.questionnaires.add(questionnaire)
 
                 messages.success(request, 'Experimento criado com sucesso.')
 
@@ -102,15 +99,20 @@ def experiment_update(request, experiment_id, template_name="experiment/experime
 
 @login_required
 def questionnaire_create(request, experiment_id, template_name="experiment/questionnaire_register.html"):
+
     experiment = get_object_or_404(Experiment, pk=experiment_id)
-    questionnaire_form = QuestionnaireConfigurationForm(request.POST or None)
+    questionnaire_form = QuestionnaireConfigurationForm(
+        request.POST or None,
+        initial={'number_of_fills': 1, 'interval_between_fills_value': None})
 
     questionnaires_list = Questionnaires().find_all_active_questionnaires()
 
     if request.method == "POST":
 
         if request.POST['action'] == "save":
+
             if questionnaire_form.is_valid():
+
                 lime_survey_id = request.POST['questionnaire_selected']
 
                 questionnaire = QuestionnaireConfiguration()
@@ -118,8 +120,17 @@ def questionnaire_create(request, experiment_id, template_name="experiment/quest
                 questionnaire.experiment = experiment
                 questionnaire.number_of_fills = request.POST['number_of_fills']
                 questionnaire.interval_between_fills_value = request.POST['interval_between_fills_value']
-                questionnaire.interval_between_fills_unit = get_object_or_404(TimeUnit, pk=request.POST[
-                    'interval_between_fills_unit'])
+                questionnaire.interval_between_fills_unit = get_object_or_404(TimeUnit, pk=request.POST['interval_between_fills_unit'])
+
+                if "number_of_fills" in request.POST:
+                    questionnaire.number_of_fills = request.POST['number_of_fills']
+
+                if "interval_between_fills_value" in request.POST:
+                    questionnaire.interval_between_fills_value = request.POST['interval_between_fills_value']
+
+                if "interval_between_fills_unit" in request.POST:
+                    questionnaire.interval_between_fills_unit = \
+                        get_object_or_404(TimeUnit, pk=request.POST['interval_between_fills_unit'])
 
                 questionnaire.save()
 
@@ -140,6 +151,7 @@ def questionnaire_create(request, experiment_id, template_name="experiment/quest
 @login_required
 def questionnaire_update(request, questionnaire_configuration_id,
                          template_name="experiment/questionnaire_register.html"):
+
     questionnaire_configuration = get_object_or_404(QuestionnaireConfiguration, pk=questionnaire_configuration_id)
     experiment = get_object_or_404(Experiment, pk=questionnaire_configuration.experiment.id)
     questionnaire_form = QuestionnaireConfigurationForm(request.POST or None, instance=questionnaire_configuration)
@@ -155,6 +167,7 @@ def questionnaire_update(request, questionnaire_configuration_id,
 
         if request.POST['action'] == "save":
             if questionnaire_form.is_valid():
+
                 questionnaire_configuration.number_of_fills = request.POST['number_of_fills']
                 questionnaire_configuration.interval_between_fills_value = request.POST['interval_between_fills_value']
                 questionnaire_configuration.interval_between_fills_unit = get_object_or_404(TimeUnit, pk=request.POST[

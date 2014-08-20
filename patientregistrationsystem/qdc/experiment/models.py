@@ -28,7 +28,7 @@ class QuestionnaireConfiguration(models.Model):
     experiment = models.ForeignKey(Experiment, null=False)
     number_of_fills = models.IntegerField(null=True, blank=True)
     interval_between_fills_value = models.IntegerField(null=True, blank=True)
-    interval_between_fills_unit = models.ForeignKey(TimeUnit, null=True)
+    interval_between_fills_unit = models.ForeignKey(TimeUnit, null=True, blank=True)
 
 
 class QuestionnaireResponse(models.Model):
