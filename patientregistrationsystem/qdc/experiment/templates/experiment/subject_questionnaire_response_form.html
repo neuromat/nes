@@ -57,9 +57,9 @@
         {% endfor %}
     {% endif %}
 
-    {% if FAIL == False %}
-        <script>location.href('{{ url }}')</script>
-    {% endif %}
+    {#    {% if FAIL == False %}#}
+    {#        <script>location.href('{{ url }}')</script>#}
+    {#    {% endif %}#}
 
     <div class="tab-pane fade in active" id="menuUserTab">
     <div class="col-md-10">
@@ -138,10 +138,10 @@
                             <label for="date" class="control-label">Data preenchimento <b
                                     style="color: red;">*</b></label>
 
-                            {#                            {{ questionnaire_response_form.date }}#}
-                            <input class="form-control" data-error="Data de preenchimento deve ser preenchida"
-                                   id="date_fill" name="date" placeholder="Data" required="" type="text"
-                                  value="{{ date_fill_today }}">
+                            {{ questionnaire_response_form.date }}
+                            {#                            <input class="form-control" data-error="Data de preenchimento deve ser preenchida"#}
+                            {#                                   id="date_fill" name="date" placeholder="Data" required="" type="text"#}
+                            {#                                  value="{{ date_fill_today }}">#}
 
                             <div class="help-block with-errors">
                                 {% if questionnaire_response_form.date.errors %}

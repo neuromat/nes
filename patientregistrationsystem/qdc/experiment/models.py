@@ -40,5 +40,5 @@ class QuestionnaireResponse(models.Model):
     token = models.CharField(null=False, primary_key=True, max_length=30)
     subject = models.ForeignKey(Subject, null=False)
     questionnaire_configuration = models.ForeignKey(QuestionnaireConfiguration, null=False)
-    date = models.DateTimeField(default=datetime.date.today, null=False)
+    date = models.DateTimeField(null=False)
     questionnaire_responsible = models.ForeignKey(User, null=False)
