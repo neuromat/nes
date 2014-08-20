@@ -82,7 +82,6 @@ class ABCSearchEngine:
 
         return result
 
-
     @abstractmethod
     def get_survey_title(self, sid):
         """Retorna o titulo da survey pelo id"""
@@ -98,7 +97,7 @@ class ABCSearchEngine:
 
     @abstractmethod
     def get_survey_properties(self, sid, prop):
-        """Retorna o titulo da survey pelo id"""
+        """Retorna uma determinada propriedade de um questionario"""
 
         server = pyjsonrpc.HttpClient("http://survey.numec.prp.usp.br/index.php/admin/remotecontrol")
         session_key = server.get_session_key("evandro", "8YtztuqeGzUU")
