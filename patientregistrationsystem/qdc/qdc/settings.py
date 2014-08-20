@@ -45,7 +45,6 @@ INSTALLED_APPS = (
     'django_jenkins',
     'simple_history',
     'cep',
-    'localflavor',
 )
 
 JENKINS_TASKS = (

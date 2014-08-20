@@ -1,6 +1,7 @@
 from django.db import models
-from quiz.models import Patient
+from quiz.models import Patient, User
 
+import datetime
 
 class Subject(models.Model):
     patient = models.ForeignKey(Patient)
@@ -21,13 +22,18 @@ class Experiment(models.Model):
     description = models.CharField(max_length=150, null=False, blank=False)
     subjects = models.ManyToManyField(Subject, null=True)
 
+    class Meta:
+        permissions = (
+            ("view_experiment", "Can view experiment"),
+        )
+
 
 class QuestionnaireConfiguration(models.Model):
     lime_survey_id = models.IntegerField(null=False, blank=False)
     experiment = models.ForeignKey(Experiment, null=False)
     number_of_fills = models.IntegerField(null=True, blank=True)
     interval_between_fills_value = models.IntegerField(null=True, blank=True)
-    interval_between_fills_unit = models.ForeignKey(TimeUnit, null=True)
+    interval_between_fills_unit = models.ForeignKey(TimeUnit, null=True, blank=True)
 
 
 class QuestionnaireResponse(models.Model):
@@ -35,3 +41,9 @@ class QuestionnaireResponse(models.Model):
     subject = models.ForeignKey(Subject, null=False)
     questionnaire_configuration = models.ForeignKey(QuestionnaireConfiguration, null=False)
     date = models.DateTimeField(null=False)
+    questionnaire_responsible = models.ForeignKey(User, null=False)
+
+    class Meta:
+        permissions = (
+            ("view_questionnaireresponse", "Can view questionnaire response"),
+        )

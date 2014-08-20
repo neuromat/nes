@@ -1,7 +1,7 @@
 # coding=utf-8
-from models import Experiment, QuestionnaireConfiguration
-from django.forms import ModelForm, TextInput, Textarea, Select
-
+from models import Experiment, QuestionnaireConfiguration, QuestionnaireResponse
+from django.forms import ModelForm, TextInput, Textarea, Select, DateInput
+# from datetimewidget.widgets import DateTimeWidget
 
 class ExperimentForm(ModelForm):
     class Meta:
@@ -25,15 +25,31 @@ class QuestionnaireConfigurationForm(ModelForm):
 
         widgets = {
             'number_of_fills': TextInput(attrs={'class': 'form-control',
-                                                'placeholder': 'Quantidade de prenchimentos',
+                                                'placeholder': '',
                                                 'id': "number_of_fills",
-                                                'required': ""}),
+                                                'required': "",
+                                                'data-error': 'Quantidade deve ser preenchida.'}),
             'interval_between_fills_value': TextInput(attrs={'class': 'form-control',
-                                                             'placeholder': 'Intervalo entre prenchimentos',
+                                                             'placeholder': '',
                                                              'id': "interval_between_fills_value",
-                                                             'required': ""}),
+                                                             'required': "",
+                                                             'data-error': 'Intervalo deve ser preenchido.'}),
             'interval_between_fills_unit': Select(attrs={'class': 'form-control',
                                                          'id': 'interval_between_fills_unit',
                                                          'required': "",
                                                          'data-error': "Unidade deve ser preenchida"}),
+        }
+
+
+class QuestionnaireResponseForm(ModelForm):
+    class Meta:
+        model = QuestionnaireResponse
+        fields = [
+            'date',
+        ]
+
+        widgets = {
+            'date': DateInput(attrs={'class': 'form-control', 'placeholder': 'Data',
+                                     'id': "date_fill", 'required': "",
+                                     'data-error': "Data de preenchimento deve ser preenchida"}, )
         }
