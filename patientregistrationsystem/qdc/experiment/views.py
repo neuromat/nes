@@ -17,6 +17,7 @@ import re
 import datetime
 
 @login_required
+@permission_required('experiment.view_experiment')
 def experiment_list(request, template_name="experiment/experiment_list.html"):
     experiments = Experiment.objects.order_by('title')
 
@@ -26,6 +27,7 @@ def experiment_list(request, template_name="experiment/experiment_list.html"):
 
 
 @login_required
+@permission_required('experiment.add_experiment')
 def experiment_create(request, template_name="experiment/experiment_register.html"):
     experiment_form = ExperimentForm(request.POST or None)
 
@@ -64,6 +66,8 @@ def experiment_create(request, template_name="experiment/experiment_register.htm
 
 
 @login_required
+@permission_required('experiment.change_experiment')
+# @permission_required('experiment.delete_experiment')
 def experiment_update(request, experiment_id, template_name="experiment/experiment_register.html"):
     experiment = get_object_or_404(Experiment, pk=experiment_id)
     questionnaires_list = []
@@ -99,6 +103,7 @@ def experiment_update(request, experiment_id, template_name="experiment/experime
 
 
 @login_required
+@permission_required('experiment.add_experiment')
 def questionnaire_create(request, experiment_id, template_name="experiment/questionnaire_register.html"):
 
     experiment = get_object_or_404(Experiment, pk=experiment_id)
@@ -147,6 +152,7 @@ def questionnaire_create(request, experiment_id, template_name="experiment/quest
 
 
 @login_required
+@permission_required('experiment.change_experiment')
 def questionnaire_update(request, questionnaire_configuration_id,
                          template_name="experiment/questionnaire_register.html"):
 
@@ -198,6 +204,8 @@ def questionnaire_update(request, questionnaire_configuration_id,
     return render(request, template_name, context)
 
 
+@login_required
+@permission_required('experiment.add_experiment')
 def subjects(request, experiment_id, template_name="experiment/subjects.html"):
     experiment = get_object_or_404(Experiment, id=experiment_id)
     subject_list = experiment.subjects.all()
@@ -211,6 +219,8 @@ def subjects(request, experiment_id, template_name="experiment/subjects.html"):
     return render(request, template_name, context)
 
 
+@login_required
+@permission_required('experiment.add_experiment')
 def subject_questionnaire_response(request, experiment_id, subject_id, questionnaire_id):
     questionnaire_config = get_object_or_404(QuestionnaireConfiguration, id=questionnaire_id)
     questionnaire_lime_survey = Questionnaires()
@@ -236,6 +246,8 @@ def subject_questionnaire_response(request, experiment_id, subject_id, questionn
     return HttpResponseRedirect(redirect_url)
 
 
+@login_required
+@permission_required('experiment.add_experiment')
 def subject_questionnaire_view(request, experiment_id, subject_id,
                                template_name="experiment/subject_questionnaire_response.html"):
     experiment = get_object_or_404(Experiment, id=experiment_id)
@@ -253,6 +265,8 @@ def subject_questionnaire_view(request, experiment_id, subject_id,
     return render(request, template_name, context)
 
 
+@login_required
+@permission_required('experiment.add_experiment')
 def subjects_insert(request, experiment_id, patient_id):
     patient = get_object_or_404(Patient, pk=patient_id)
 
@@ -276,6 +290,8 @@ def subjects_insert(request, experiment_id, patient_id):
     return HttpResponseRedirect(redirect_url)
 
 
+@login_required
+@permission_required('experiment.add_experiment')
 def subjects_delete(request, experiment_id, subject_id):
     subject = Subject()
 
@@ -294,6 +310,8 @@ def subjects_delete(request, experiment_id, subject_id):
     return HttpResponseRedirect(redirect_url)
 
 
+@login_required
+@permission_required('experiment.add_experiment')
 def search_patients_ajax(request):
     patient_list = ''
     if request.method == "POST":
