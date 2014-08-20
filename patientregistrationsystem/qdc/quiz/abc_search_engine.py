@@ -1,6 +1,6 @@
 __author__ = ''
 
-#import pyjsonrpc
+import pyjsonrpc
 from abc import ABCMeta, abstractmethod
 
 

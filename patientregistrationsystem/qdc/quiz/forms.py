@@ -27,7 +27,7 @@ class PatientForm(ModelForm):
             'cpf_id', 'name_txt', 'number_record', 'rg_id', 'medical_record_number', 'natural_of_txt',
             'citizenship_txt', 'zipcode_number', 'street_txt', 'city_txt', 'state_txt', 'country_txt', 'phone_number',
             'cellphone_number', 'email_txt', 'date_birth_txt', 'gender_opt', 'marital_status_opt', 'district',
-            'complement', 'number'
+            'address_complement', 'address_number'
         ]
 
         widgets = {
@@ -35,8 +35,8 @@ class PatientForm(ModelForm):
                                                 'state': 'id_chosen_state'},
                                        attrs={'class': 'form-control', 'placeholder': 'Digite o CEP', 'pattern': '\d{5}-?\d{3}'}),
             'street_txt': TextInput(attrs={'class': 'form-control', 'id': "street_txt"}),
-            'number': TextInput(attrs={'class': 'form-control', 'placeholder': 'Número Residencial', 'id': "number"}),
-            'complement': TextInput(attrs={'class': 'form-control', 'placeholder': 'Entrar Complemento', 'id': "complement"}),
+            'address_number': TextInput(attrs={'class': 'form-control', 'placeholder': 'Número Residencial', 'id': "number"}),
+            'address_complement': TextInput(attrs={'class': 'form-control', 'placeholder': 'Entrar Complemento', 'id': "complement"}),
             'district': TextInput(attrs={'class': 'form-control', 'id': "district"}),
             'city_txt': TextInput(attrs={'class': 'form-control', 'id': "city"}),
             'state_txt': Select(attrs={'class': 'form-control', 'id': 'id_chosen_state'}, choices = STATE),

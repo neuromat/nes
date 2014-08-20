@@ -78,14 +78,12 @@ WSGI_APPLICATION = 'qdc.wsgi.application'
 # https://docs.djangoproject.com/en/1.6/ref/settings/#databases
 DATABASES = {
     'default': {
-        # 'ENGINE': 'django.db.backends.postgresql_psycopg2',
-        # 'NAME': 'qdcdb_dev',
-        # 'USER': 'qdc',
-        # 'PASSWORD': 'DEVqdc1716',
+        'ENGINE': 'django.db.backends.postgresql_psycopg2',
+        'NAME': 'qdcdb_dev',
+        'USER': 'qdc',
+        'PASSWORD': 'DEVqdc1716',
         # 'HOST': '200.144.254.136',
         # 'TEST_NAME': 'test_romulo',
-        'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': os.path.join(BASE_DIR, 'carlos.db'),
     }
 }
 
