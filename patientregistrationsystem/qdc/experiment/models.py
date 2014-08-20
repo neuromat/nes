@@ -40,3 +40,8 @@ class QuestionnaireResponse(models.Model):
     subject = models.ForeignKey(Subject, null=False)
     questionnaire_configuration = models.ForeignKey(QuestionnaireConfiguration, null=False)
     date = models.DateTimeField(null=False)
+
+    class Meta:
+        permissions = (
+            ("view_questionnaireresponse", "Can view questionnaire response"),
+        )

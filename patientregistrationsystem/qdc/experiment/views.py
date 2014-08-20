@@ -103,7 +103,7 @@ def experiment_update(request, experiment_id, template_name="experiment/experime
 
 
 @login_required
-@permission_required('experiment.add_experiment')
+@permission_required('experiment.add_questionnaireconfiguration')
 def questionnaire_create(request, experiment_id, template_name="experiment/questionnaire_register.html"):
 
     experiment = get_object_or_404(Experiment, pk=experiment_id)
@@ -152,7 +152,7 @@ def questionnaire_create(request, experiment_id, template_name="experiment/quest
 
 
 @login_required
-@permission_required('experiment.change_experiment')
+@permission_required('experiment.change_questionnaireconfiguration')
 def questionnaire_update(request, questionnaire_configuration_id,
                          template_name="experiment/questionnaire_register.html"):
 
@@ -205,7 +205,7 @@ def questionnaire_update(request, questionnaire_configuration_id,
 
 
 @login_required
-@permission_required('experiment.add_experiment')
+@permission_required('experiment.add_subject')
 def subjects(request, experiment_id, template_name="experiment/subjects.html"):
     experiment = get_object_or_404(Experiment, id=experiment_id)
     subject_list = experiment.subjects.all()
@@ -220,7 +220,7 @@ def subjects(request, experiment_id, template_name="experiment/subjects.html"):
 
 
 @login_required
-@permission_required('experiment.add_experiment')
+@permission_required('experiment.add_questionnaireresponse')
 def subject_questionnaire_response(request, experiment_id, subject_id, questionnaire_id):
     questionnaire_config = get_object_or_404(QuestionnaireConfiguration, id=questionnaire_id)
     questionnaire_lime_survey = Questionnaires()
@@ -247,7 +247,7 @@ def subject_questionnaire_response(request, experiment_id, subject_id, questionn
 
 
 @login_required
-@permission_required('experiment.add_experiment')
+@permission_required('experiment.view_questionnaireresponse')
 def subject_questionnaire_view(request, experiment_id, subject_id,
                                template_name="experiment/subject_questionnaire_response.html"):
     experiment = get_object_or_404(Experiment, id=experiment_id)
@@ -266,7 +266,7 @@ def subject_questionnaire_view(request, experiment_id, subject_id,
 
 
 @login_required
-@permission_required('experiment.add_experiment')
+@permission_required('experiment.add_subject')
 def subjects_insert(request, experiment_id, patient_id):
     patient = get_object_or_404(Patient, pk=patient_id)
 
@@ -291,7 +291,7 @@ def subjects_insert(request, experiment_id, patient_id):
 
 
 @login_required
-@permission_required('experiment.add_experiment')
+@permission_required('experiment.delete_subject')
 def subjects_delete(request, experiment_id, subject_id):
     subject = Subject()
 
@@ -311,7 +311,7 @@ def subjects_delete(request, experiment_id, subject_id):
 
 
 @login_required
-@permission_required('experiment.add_experiment')
+@permission_required('experiment.add_subject')
 def search_patients_ajax(request):
     patient_list = ''
     if request.method == "POST":
