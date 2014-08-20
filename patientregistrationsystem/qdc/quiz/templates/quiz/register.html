@@ -21,6 +21,19 @@
             $("#idTabs li:eq( {{ currentTab }} ) a").tab('show');
         });
 
+        $(document).ready(function () {
+            var smoker = document.getElementById("id_smoker_0");
+            var not_smoker = document.getElementById("id_smoker_1");
+            var amount_cigarettes = document.getElementById("id_amount_cigarettes")
+            if(smoker.checked){
+                amount_cigarettes.prop('disabled', false);
+            } else {
+                if(not_smoker.checked){
+                amount_cigarettes.prop('disabled', true);
+            }    
+            }   
+        });
+
         {% if editing or inserting %}
             $(document).ready(function () {
                 $('a[data-toggle="tab"]').on('shown.bs.tab', function (e) {
