@@ -228,26 +228,39 @@
         <div class="row">
             <div class="col-xs-6 col-sm-6">
                 <div class="form-group">
-                    <label>País</label>
+                    <label>Número</label>
 
-                    <div class="input-group  input-group-sm">
+                    <div class="input-group  input-group-sm ">
                         <span class="input-group-addon"> <span class="glyphicon glyphicon-home"></span></span>
-                        {{ patient_form.country_txt }}
+                        {{ patient_form.number }}
                     </div>
+
                 </div>
             </div>
             <div class="col-xs-6 col-sm-6">
                 <div class="form-group">
-                    <label>Estado</label>
+                    <label>Complemento</label>
 
                     <div class="input-group  input-group-sm">
                         <span class="input-group-addon"> <span class="glyphicon glyphicon-home"></span></span>
-                        {{ patient_form.state_txt }}
+                        {{ patient_form.complement }}
                     </div>
+                    <div class="help-block with-errors"></div>
                 </div>
             </div>
         </div>
         <div class="row">
+            <div class="col-xs-6 col-sm-6">
+                <div class="form-group">
+                    <label>Bairro</label>
+
+                    <div class="input-group  input-group-sm ">
+                        <span class="input-group-addon"> <span class="glyphicon glyphicon-home"></span></span>
+                        {{ patient_form.district }}
+                    </div>
+
+                </div>
+            </div>
             <div class="col-xs-6 col-sm-6">
                 <div class="form-group">
                     <label>Cidade</label>
@@ -258,15 +271,26 @@
                     </div>
                 </div>
             </div>
+        </div>
+        <div class="row">
             <div class="col-xs-6 col-sm-6">
                 <div class="form-group">
-                    <label for="email" class="control-label">E-mail</label>
+                    <label>Estado</label>
 
-                    <div class="input-group input-group-sm">
-                        <span class="input-group-addon"> <span class="glyphicon glyphicon-envelope"></span></span>
-                        {{ patient_form.email_txt }}
+                    <div class="input-group  input-group-sm">
+                        <span class="input-group-addon"> <span class="glyphicon glyphicon-home"></span></span>
+                        {{ patient_form.state_txt }}
                     </div>
-                    <div class="help-block with-errors"></div>
+                </div>
+            </div>
+            <div class="col-xs-6 col-sm-6">
+                <div class="form-group">
+                    <label>País</label>
+
+                    <div class="input-group  input-group-sm">
+                        <span class="input-group-addon"> <span class="glyphicon glyphicon-home"></span></span>
+                        {{ patient_form.country_txt }}
+                    </div>
                 </div>
             </div>
         </div>
@@ -289,6 +313,19 @@
                     <div class="input-group input-group-sm">
                         <span class="input-group-addon"> <span class="glyphicon glyphicon-earphone"></span></span>
                         {{ patient_form.cellphone_number }}
+                    </div>
+                    <div class="help-block with-errors"></div>
+                </div>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-xs-6 col-sm-6">
+                <div class="form-group">
+                    <label for="email" class="control-label">E-mail</label>
+
+                    <div class="input-group input-group-sm">
+                        <span class="input-group-addon"> <span class="glyphicon glyphicon-envelope"></span></span>
+                        {{ patient_form.email_txt }}
                     </div>
                     <div class="help-block with-errors"></div>
                 </div>
