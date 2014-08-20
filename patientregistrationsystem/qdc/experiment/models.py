@@ -22,6 +22,11 @@ class Experiment(models.Model):
     description = models.CharField(max_length=150, null=False, blank=False)
     subjects = models.ManyToManyField(Subject, null=True)
 
+    class Meta:
+        permissions = (
+            ("view_experiment", "Can view experiment"),
+        )
+
 
 class QuestionnaireConfiguration(models.Model):
     lime_survey_id = models.IntegerField(null=False, blank=False)
