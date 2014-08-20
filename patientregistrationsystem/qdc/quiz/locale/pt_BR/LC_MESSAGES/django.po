@@ -34,3 +34,34 @@ msgstr ""
 #: templates/quiz/ajax_search.html:11
 msgid "Nenhum paciente encontrado!"
 msgstr ""
+
+# Permissões de usuário - Mensagens do BD 
+msgid "Can add user"
+msgstr "Pode adicionar usuário"
+
+msgid "Can change user"
+msgstr "Pode alterar usuário"
+
+msgid "Can delete user"
+msgstr "Pode remover usuário"
+
+msgid "Can add patient"
+msgstr "Pode adicionar paciente"
+
+msgid "Can change patient"
+msgstr "Pode alterar paciente"
+
+msgid "Can delete patient"
+msgstr "Pode remover paciente"
+
+msgid "Can view patient"
+msgstr "Pode ver paciente"
+
+msgid "Can add medical record data"
+msgstr "Pode adicionar dados de prontuário"
+
+msgid "Can delete medical record data"
+msgstr "Pode remover dados de prontuário"
+
+msgid "Can view medical record"
+msgstr "Pode ver dados de prontuário"
