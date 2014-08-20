@@ -73,6 +73,23 @@ class ABCSearchEngine:
 
         return participant_data_result
 
+    @abstractmethod
+    def get_survey_property_usetokens(self, sid):
+        """obtem propriedade 'usetokens' de um determinado questionario"""
+
+        server = pyjsonrpc.HttpClient("http://survey.numec.prp.usp.br/index.php/admin/remotecontrol")
+        session_key = server.get_session_key("evandro", "8YtztuqeGzUU")
+
+        result = server.get_survey_properties(
+            session_key,
+            sid,
+            ['usetokens']
+        )
+
+        server.release_session_key(session_key)
+
+        return result
+
 
 class Questionnaires(ABCSearchEngine):
     """ Classe envelope para o API do limesurvey """
@@ -88,4 +105,7 @@ class Questionnaires(ABCSearchEngine):
 
     def add_participant(self, str_id, participant_data):
         return super(Questionnaires, self).add_participant(str_id, participant_data)
+
+    def get_survey_property_usetokens(self, sid):
+        return super(Questionnaires, self).get_survey_property_usetokens(sid)
 

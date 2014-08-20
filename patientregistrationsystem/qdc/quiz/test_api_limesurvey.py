@@ -77,3 +77,11 @@ class ABCSearchEngineTest(TestCase):
         result = self.server.delete_participants(self.session_key, sid, [token_id])
 
         self.assertEqual(result[str(token_id)], 'Deleted')
+
+    def test_get_survey_property_usetokens(self):
+        """testa a obtencao das propriedades de um questionario"""
+
+        surveys = Questionnaires()
+        result = surveys.get_survey_property_usetokens(641729)
+
+        pass
