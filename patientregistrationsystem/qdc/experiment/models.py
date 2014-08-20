@@ -1,6 +1,7 @@
 from django.db import models
-from quiz.models import Patient
+from quiz.models import Patient, User
 
+import datetime
 
 class Subject(models.Model):
     patient = models.ForeignKey(Patient)
@@ -34,4 +35,5 @@ class QuestionnaireResponse(models.Model):
     token = models.CharField(null=False, primary_key=True, max_length=30)
     subject = models.ForeignKey(Subject, null=False)
     questionnaire_configuration = models.ForeignKey(QuestionnaireConfiguration, null=False)
-    date = models.DateTimeField(null=False)
+    date = models.DateTimeField(default=datetime.date.today, null=False)
+    questionnaire_responsible = models.ForeignKey(User, null=False)

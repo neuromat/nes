@@ -94,9 +94,10 @@
                                                     <td>
                                                         {{ questionnaire.surveyls_title }}
                                                     </td>
-                                                    <td><a type="button" href="#" class="btn btn-primary"
-                                                           onclick="show_modal_date({{ questionnaire.surveyls_title }},{{ questionnaire_configuration.lime_survey_id }})">Novo
-                                                        preenchimento</a></td>
+                                                    <td><a
+                                                            href="/experiment/{{ experiment_id }}/subjects/{{ subject_id }}/questionnaire/{{ questionnaire_configuration.id }}/response/"
+                                                            class="btn ">[Novo
+                                                        preenchimento]</a></td>
                                                 {% endif %}
                                             {% endfor %}
 
@@ -127,7 +128,7 @@
             <div class="modal-content">
                 <div class="modal-body">
                     <div class="form-group">
-                        
+
                     </div>
 
                     <div class="form-group {% if patient_form.errors.date_birth_txt %}has-error{% endif %}">
@@ -136,7 +137,8 @@
 
                         <div class="input-group input-group-sm">
                             <span class="input-group-addon"> <span class="glyphicon glyphicon-th"></span></span>
-                            <input class="form-control" data-error="Data de preenchimento" id="date_questionnaire" name="date_questionnaire" placeholder="Data" required="" type="text">
+                            <input class="form-control" data-error="Data de preenchimento" id="date_questionnaire"
+                                   name="date_questionnaire" placeholder="Data" required="" type="text">
                         </div>
 
                     </div>

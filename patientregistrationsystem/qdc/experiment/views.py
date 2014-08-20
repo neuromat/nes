@@ -1,4 +1,5 @@
 # coding=utf-8
+from django.shortcuts import render, get_object_or_404
 from django.http import QueryDict
 from django.shortcuts import render, get_object_or_404, redirect
 from django.contrib.auth.decorators import login_required
@@ -8,13 +9,15 @@ from django.core.urlresolvers import reverse
 from django.shortcuts import render_to_response
 
 from experiment.models import Experiment, QuestionnaireConfiguration, Subject, TimeUnit, QuestionnaireResponse
-from experiment.forms import ExperimentForm, QuestionnaireConfigurationForm
+from experiment.forms import ExperimentForm, QuestionnaireConfigurationForm, QuestionnaireResponseForm
 
 from quiz.models import Patient
 from quiz.abc_search_engine import Questionnaires
 
 import re
 import datetime
+import pyjsonrpc
+
 
 @login_required
 def experiment_list(request, template_name="experiment/experiment_list.html"):
@@ -34,22 +37,21 @@ def experiment_create(request, template_name="experiment/experiment_register.htm
         if request.POST['action'] == "save":
 
             if experiment_form.is_valid():
-
                 experiment_added = experiment_form.save()
 
                 # if 'chosen_questionnaires' in request.POST:
                 #
-                #     for survey_id in request.POST.getlist('chosen_questionnaires'):
+                # for survey_id in request.POST.getlist('chosen_questionnaires'):
                 #
-                #         questionnaire = Questionnaire()
+                # questionnaire = Questionnaire()
                 #
-                #         try:
-                #             questionnaire = Questionnaire.objects.get(survey_id=survey_id)
-                #         except questionnaire.DoesNotExist:
-                #             Questionnaire(survey_id=survey_id).save()
-                #             questionnaire = Questionnaire.objects.get(survey_id=survey_id)
+                # try:
+                # questionnaire = Questionnaire.objects.get(survey_id=survey_id)
+                # except questionnaire.DoesNotExist:
+                # Questionnaire(survey_id=survey_id).save()
+                # questionnaire = Questionnaire.objects.get(survey_id=survey_id)
                 #
-                #         experiment_added.questionnaires.add(questionnaire)
+                # experiment_added.questionnaires.add(questionnaire)
 
                 messages.success(request, 'Experimento criado com sucesso.')
 
@@ -100,7 +102,6 @@ def experiment_update(request, experiment_id, template_name="experiment/experime
 
 @login_required
 def questionnaire_create(request, experiment_id, template_name="experiment/questionnaire_register.html"):
-
     experiment = get_object_or_404(Experiment, pk=experiment_id)
     questionnaire_form = QuestionnaireConfigurationForm(request.POST or None)
 
@@ -110,7 +111,6 @@ def questionnaire_create(request, experiment_id, template_name="experiment/quest
 
         if request.POST['action'] == "save":
             if questionnaire_form.is_valid():
-
                 lime_survey_id = request.POST['questionnaire_selected']
 
                 questionnaire = QuestionnaireConfiguration()
@@ -118,7 +118,8 @@ def questionnaire_create(request, experiment_id, template_name="experiment/quest
                 questionnaire.experiment = experiment
                 questionnaire.number_of_fills = request.POST['number_of_fills']
                 questionnaire.interval_between_fills_value = request.POST['interval_between_fills_value']
-                questionnaire.interval_between_fills_unit = get_object_or_404(TimeUnit, pk=request.POST['interval_between_fills_unit'])
+                questionnaire.interval_between_fills_unit = get_object_or_404(TimeUnit, pk=request.POST[
+                    'interval_between_fills_unit'])
 
                 questionnaire.save()
 
@@ -154,7 +155,6 @@ def questionnaire_update(request, questionnaire_configuration_id,
 
         if request.POST['action'] == "save":
             if questionnaire_form.is_valid():
-
                 questionnaire_configuration.number_of_fills = request.POST['number_of_fills']
                 questionnaire_configuration.interval_between_fills_value = request.POST['interval_between_fills_value']
                 questionnaire_configuration.interval_between_fills_unit = get_object_or_404(TimeUnit, pk=request.POST[
@@ -194,33 +194,82 @@ def subjects(request, experiment_id, template_name="experiment/subjects.html"):
     return render(request, template_name, context)
 
 
-def subject_questionnaire_response(request, experiment_id, subject_id, questionnaire_id):
+def subject_questionnaire_response_start_fill_questionnaire(request, experiment_id, subject_id, questionnaire_id):
+    questionnaire_response_form = QuestionnaireResponseForm(request.POST)
+
     questionnaire_config = get_object_or_404(QuestionnaireConfiguration, id=questionnaire_id)
+
     questionnaire_lime_survey = Questionnaires()
 
     subject = get_object_or_404(Subject, pk=subject_id)
     patient = subject.patient
 
-    subject_data = {'email': 'email@mail.com', 'firstname': patient.name_txt, 'lastname': 'A1last1'}
-    result = questionnaire_lime_survey.add_participant(questionnaire_config.lime_survey_id, [subject_data])
-    token = result[0]['token']
+    result = questionnaire_lime_survey.add_participant(questionnaire_config.lime_survey_id, patient.name_txt, '',
+                                                       patient.email_txt)
+
+    if not result:
+        messages.warning(request,
+                         'Falha ao gerar token para responder questionário. Verifique se o questionário está ativo')
+        return None
 
     questionnaire_response = QuestionnaireResponse()
     questionnaire_response.subject = subject
     questionnaire_response.questionnaire_configuration = questionnaire_config
-    questionnaire_response.token = token
-    questionnaire_response.date = datetime.datetime.now()
+    questionnaire_response.token = result
+    questionnaire_response.date = datetime.datetime.strptime(request.POST['date'], '%d/%m/%Y')
     questionnaire_response.save()
-    messages.info(request, 'Você será redirecionado para o questionário... Aguarde')
 
     redirect_url = 'http://survey.numec.prp.usp.br/index.php/survey/index/sid/%s/token/%s' % (
-        questionnaire_config.lime_survey_id, token)
+        questionnaire_config.lime_survey_id, result)
 
-    return HttpResponseRedirect(redirect_url)
+    return redirect_url
+
+
+def subject_questionnaire_response_create(request, experiment_id, subject_id, questionnaire_id,
+                                          template_name="experiment/subject_questionnaire_response_form.html"):
+    questionnaire_response_form = QuestionnaireResponseForm(request.POST)
+
+    if request.method == "GET":
+        questionnaire_config = get_object_or_404(QuestionnaireConfiguration, id=questionnaire_id)
+        subject = get_object_or_404(Subject, pk=subject_id)
+        survey_title = Questionnaires().get_survey_title(questionnaire_config.lime_survey_id)
+        survey_active = Questionnaires().get_survey_properties(questionnaire_config.lime_survey_id, 'active')
+        survey_admin = Questionnaires().get_survey_properties(questionnaire_config.lime_survey_id, 'admin')
+        questionnaire_responsible = request.user.get_full_name()
+        date_fill_today = datetime.datetime.now().date().strftime('%d/%m/%Y')
+
+    if request.method == "POST":
+        if request.POST['action'] == "save":
+            redirect_url = subject_questionnaire_response_start_fill_questionnaire(request, experiment_id, subject_id,
+                                                                                   questionnaire_id)
+            if not redirect_url:
+                context = {"questionnaire_response_form": questionnaire_response_form,
+                           'FAIL': True}
+            else:
+                context = {"questionnaire_response_form": questionnaire_response_form, 'FAIL': False,
+                           'URL': redirect_url}
+
+            messages.info(request, 'Você será redirecionado para o questionário... Aguarde')
+
+            return render(request, template_name, context)
+
+    context = {
+        "questionnaire_response_form": questionnaire_response_form,
+        "questionnaire_configuration": questionnaire_config,
+        "date_fill_today": date_fill_today,
+        "experiment_id": experiment_id,
+        "survey_title": survey_title,
+        "survey_admin": survey_admin,
+        "survey_active": survey_active,
+        "questionnaire_responsible": questionnaire_responsible,
+        "creating": True,
+        "subject": subject}
+
+    return render(request, template_name, context)
 
 
 def subject_questionnaire_view(request, experiment_id, subject_id,
-                               template_name="experiment/subject_questionnaire_response.html"):
+                               template_name="experiment/subject_questionnaire_response_list.html"):
     experiment = get_object_or_404(Experiment, id=experiment_id)
     questionnaires_configuration_list = QuestionnaireConfiguration.objects.filter(experiment=experiment)
     questionnaires_list = Questionnaires().find_all_active_questionnaires()
