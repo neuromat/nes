@@ -1,7 +1,7 @@
 # coding=utf-8
 from django.http import QueryDict
 from django.shortcuts import render, get_object_or_404, redirect
-from django.contrib.auth.decorators import login_required
+from django.contrib.auth.decorators import login_required, permission_required
 from django.contrib import messages
 from django.http import HttpResponseRedirect
 from django.core.urlresolvers import reverse
@@ -17,7 +17,7 @@ import re
 import datetime
 
 @login_required
-# @permission_required('experiment.view_experiment')
+@permission_required('experiment.view_experiment')
 def experiment_list(request, template_name="experiment/experiment_list.html"):
     experiments = Experiment.objects.order_by('title')
 
