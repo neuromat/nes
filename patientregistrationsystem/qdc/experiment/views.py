@@ -267,6 +267,8 @@ def subject_questionnaire_response_start_fill_questionnaire(request, experiment_
 @permission_required('experiment.add_questionnaireresponse')
 def subject_questionnaire_response_create(request, experiment_id, subject_id, questionnaire_id,
                                           template_name="experiment/subject_questionnaire_response_form.html"):
+
+    experiment = get_object_or_404(Experiment, id=experiment_id)
     if request.method == "GET":
         questionnaire_response_form = QuestionnaireResponseForm(request.POST or None)
         questionnaire_config = get_object_or_404(QuestionnaireConfiguration, id=questionnaire_id)
@@ -296,12 +298,14 @@ def subject_questionnaire_response_create(request, experiment_id, subject_id, qu
         "questionnaire_configuration": questionnaire_config,
         "date_fill_today": date_fill_today,
         "experiment_id": experiment_id,
+        "experiment_title": experiment.title,
         "survey_title": survey_title,
         "survey_admin": survey_admin,
         "survey_active": survey_active,
         "questionnaire_responsible": questionnaire_responsible,
         "creating": True,
-        "subject": subject}
+        "subject": subject,
+        "subject_id": subject_id}
 
     return render(request, template_name, context)
 
