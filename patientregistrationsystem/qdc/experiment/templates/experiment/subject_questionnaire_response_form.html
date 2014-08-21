@@ -23,9 +23,11 @@
             <ol class="breadcrumb">
                 <li>Home</li>
                 <li><a href="/experiment/list">Experimentos</a></li>
-                <li><a href="/experiment/edit/{{ experiment_id }}/">{{ experiment_title }} </a></li>
-                <li><a href="/experiment/{{ experiment_id }}/subjects/">Participantes</a></li>
-                <li><a href="/experiment/{{ experiment_id }}/subjects/{{ subject_id }}/questionnaire">{{ subject_id }}</a></li>
+                <li><a href="/experiment/edit/{{ questionnaire_configuration.experiment.id }}/">{{ questionnaire_configuration.experiment.title }} </a></li>
+                <li><a href="/experiment/{{ questionnaire_configuration.experiment.id }}/subjects/">Participantes</a></li>
+                <li>
+                    <a href="/experiment/{{ questionnaire_configuration.experiment.id }}/subjects/{{ subject.id }}/questionnaire">{{ subject.id }}</a>
+                </li>
                 <li class="active">Preencher questionário</li>
             </ol>
 
@@ -61,11 +63,9 @@
         <script>
             popup('{{ URL }}');
             setTimeout(function () {
-                window.location.href = '/experiment/1/subjects/1/questionnaire/'
+                window.location.href = '/experiment/{{ questionnaire_configuration.experiment.id }}/subjects/{{ subject.id }}/questionnaire/'
             }, 5000);
-            //window.location.href = '/experiment/1/subjects/1/questionnaire/'
         </script>
-
     {% endif %}
 
     <div class="tab-pane fade in active" id="menuUserTab">
@@ -175,7 +175,7 @@
                 <button type="submit" name="action" value="save" class="btn btn-primary">Salvar</button>
             </div>
             <div class="btn-group pull-right">
-                <a href="/experiment/{{ experiment_id }}/subjects/{{ subject_id }}/questionnaire" class="btn"
+                <a href="/experiment/{{ questionnaire_configuration.experiment.id }}/subjects/{{ subject.id }}/questionnaire" class="btn"
                    style="background-color: #f5f5f5">Voltar</a>
             </div>
         </div>

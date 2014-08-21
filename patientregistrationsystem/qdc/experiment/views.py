@@ -226,7 +226,7 @@ def subjects(request, experiment_id, template_name="experiment/subjects.html"):
 
 @login_required
 @permission_required('experiment.add_questionnaireresponse')
-def subject_questionnaire_response_start_fill_questionnaire(request, experiment_id, subject_id, questionnaire_id):
+def subject_questionnaire_response_start_fill_questionnaire(request, subject_id, questionnaire_id):
     questionnaire_response_form = QuestionnaireResponseForm(request.POST)
 
     if questionnaire_response_form.is_valid():
@@ -280,44 +280,45 @@ def subject_questionnaire_response_start_fill_questionnaire(request, experiment_
 @permission_required('experiment.add_questionnaireresponse')
 def subject_questionnaire_response_create(request, experiment_id, subject_id, questionnaire_id,
                                           template_name="experiment/subject_questionnaire_response_form.html"):
-
     experiment = get_object_or_404(Experiment, id=experiment_id)
+
+    questionnaire_config = get_object_or_404(QuestionnaireConfiguration, id=questionnaire_id)
+    survey_title = Questionnaires().get_survey_title(questionnaire_config.lime_survey_id)
+    survey_active = Questionnaires().get_survey_properties(questionnaire_config.lime_survey_id, 'active')
+    survey_admin = Questionnaires().get_survey_properties(questionnaire_config.lime_survey_id, 'admin')
+    questionnaire_responsible = request.user.get_full_name()
+    subject = get_object_or_404(Subject, pk=subject_id)
+
     if request.method == "GET":
         questionnaire_response_form = QuestionnaireResponseForm(request.POST or None)
-        questionnaire_config = get_object_or_404(QuestionnaireConfiguration, id=questionnaire_id)
-        subject = get_object_or_404(Subject, pk=subject_id)
-        survey_title = Questionnaires().get_survey_title(questionnaire_config.lime_survey_id)
-        survey_active = Questionnaires().get_survey_properties(questionnaire_config.lime_survey_id, 'active')
-        survey_admin = Questionnaires().get_survey_properties(questionnaire_config.lime_survey_id, 'admin')
-        questionnaire_responsible = request.user.get_full_name()
-        date_fill_today = datetime.datetime.now().date().strftime('%d/%m/%Y')
+        fail = None
+        redirect_url = None
 
     if request.method == "POST":
+        questionnaire_response_form = QuestionnaireResponseForm(request.POST)
+
         if request.POST['action'] == "save":
-            redirect_url = subject_questionnaire_response_start_fill_questionnaire(request, experiment_id, subject_id,
+            redirect_url = subject_questionnaire_response_start_fill_questionnaire(request, subject_id,
                                                                                    questionnaire_id)
             if not redirect_url:
-                context = {'FAIL': False}
+                fail = False
             else:
-                context = {'FAIL': True,
-                           'URL': redirect_url}
-                messages.info(request, 'Você será redirecionado para o questionário... Aguarde')
-
-            return render(request, template_name, context)
+                fail = True
+                URL = redirect_url
+                messages.info(request, 'Você será redirecionado para o questionário. Aguarde.')
 
     context = {
+        "FAIL": fail,
+        "URL": redirect_url,
         "questionnaire_response_form": questionnaire_response_form,
         "questionnaire_configuration": questionnaire_config,
-        "date_fill_today": date_fill_today,
-        "experiment_id": experiment_id,
-        "experiment_title": experiment.title,
         "survey_title": survey_title,
         "survey_admin": survey_admin,
         "survey_active": survey_active,
         "questionnaire_responsible": questionnaire_responsible,
         "creating": True,
-        "subject": subject,
-        "subject_id": subject_id}
+        "subject": subject
+    }
 
     return render(request, template_name, context)
 
