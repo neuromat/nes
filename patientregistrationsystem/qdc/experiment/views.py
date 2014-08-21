@@ -230,6 +230,8 @@ def subject_questionnaire_response_start_fill_questionnaire(request, subject_id,
     questionnaire_response_form = QuestionnaireResponseForm(request.POST)
 
     if questionnaire_response_form.is_valid():
+        date = request.POST['date']
+
         questionnaire_response = questionnaire_response_form.save(commit=False)
 
         questionnaire_config = get_object_or_404(QuestionnaireConfiguration, id=questionnaire_id)
@@ -256,7 +258,6 @@ def subject_questionnaire_response_start_fill_questionnaire(request, subject_id,
             messages.warning(request,
                              'Falha ao gerar token para responder questionário. Verifique se o questionário está ativo')
             return None
-
         questionnaire_response.subject = subject
         questionnaire_response.questionnaire_configuration = questionnaire_config
         questionnaire_response.token_id = result['token_id']
@@ -264,8 +265,9 @@ def subject_questionnaire_response_start_fill_questionnaire(request, subject_id,
         questionnaire_response.questionnaire_responsible = request.user
         questionnaire_response.save()
 
+
+
         # Montagem da URL para redirecionar ao Lime Survey
-        date = request.POST['date']
         date = date.replace('/', '-')
 
         redirect_url = 'http://survey.numec.prp.usp.br/index.php/survey/index/sid/%s/token/%s/lang/pt-BR/idavaliador/%s/datdataaquisicao/%s/idparticipante/%s' % (
@@ -304,7 +306,6 @@ def subject_questionnaire_response_create(request, experiment_id, subject_id, qu
                 fail = False
             else:
                 fail = True
-                URL = redirect_url
                 messages.info(request, 'Você será redirecionado para o questionário. Aguarde.')
 
     context = {
