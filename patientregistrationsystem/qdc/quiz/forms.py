@@ -125,8 +125,8 @@ class SocialHistoryDataForm(ModelForm):
             'amount_cigarettes_opt': Select(attrs={'class': 'form-control', 'id': 'id_amount_cigarettes'}),
             'ex_smoker': RadioSelect(attrs={'id': 'id_ex_smoker'}, choices=(('1', 'Sim'), ('0', 'Não'))),
             'alcoholic': RadioSelect(attrs={'id': 'id_alcoholic'}, choices=(('1', 'Sim'), ('0', 'Não'))),
-            'alcohol_frequency_opt': Select(attrs={'class': 'form-control', 'id': 'id_freqSmok'}),
-            'alcohol_period_opt': Select(attrs={'class': 'form-control', 'id': 'id_periodSmok'}),
+            'alcohol_frequency_opt': Select(attrs={'class': 'form-control', 'id': 'id_freqAlcoholic'}),
+            'alcohol_period_opt': Select(attrs={'class': 'form-control', 'id': 'id_periodAlcoholic'}),
             'drugs_opt': RadioSelect(attrs={'id': 'id_drugs_opt'},
                                      choices=(('ja_fez', 'Já fez'), ('faz', 'Faz'), ('nunca_fez', 'Nunca fez'))),
         }

@@ -30,6 +30,22 @@
                         $("#form_id").submit();
                     }
                 });
+
+                var smoke_option = document.querySelector('input[name = "smoker"]:checked').value;
+                if (smoke_option == 1){
+                    $("#id_amount_cigarettes").prop('disabled', false);
+                } else {
+                    $("#id_amount_cigarettes").prop('disabled', true);
+                }
+
+                var alcoholic_option = document.querySelector('input[name = "alcoholic"]:checked').value;
+                if (alcoholic_option == 1){
+                    $("#id_freqAlcoholic").prop('disabled', false);
+                    $("#id_periodAlcoholic").prop('disabled', false);
+                } else {
+                    $("#id_freqAlcoholic").prop('disabled', true);
+                    $("#id_periodAlcoholic").prop('disabled', true);
+                }
             });
         {% endif %}
     </script>
