@@ -19,17 +19,17 @@ $(document).ready(function () {
     });
 
     $("#id_alcoholic_0").click(function () {
-        $("#id_freqSmok").prop('disabled', false);
-        $("#id_periodSmok").prop('disabled', false);
+        $("#id_freqAlcoholic").prop('disabled', false);
+        $("#id_periodAlcoholic").prop('disabled', false);
     });
 
     $("#id_alcoholic_1").click(function () {
-        var x = document.getElementById("id_freqSmok");
-        var y = document.getElementById("id_periodSmok");
+        var x = document.getElementById("id_freqAlcoholic");
+        var y = document.getElementById("id_periodAlcoholic");
         x.value = "";
         y.value = "";
-        $("#id_freqSmok").prop('disabled', true);
-        $("#id_periodSmok").prop('disabled', true);
+        $("#id_freqAlcoholic").prop('disabled', true);
+        $("#id_periodAlcoholic").prop('disabled', true);
     });
 
     $("#cpf_id").mask("999.999.999-99");
