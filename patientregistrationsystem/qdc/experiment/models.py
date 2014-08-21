@@ -44,7 +44,7 @@ class QuestionnaireConfiguration(models.Model):
 
 
 class QuestionnaireResponse(models.Model):
-    token_id = models.IntegerField(null=False, primary_key=True)
+    token_id = models.IntegerField(null=False)
     subject = models.ForeignKey(Subject, null=False)
     questionnaire_configuration = models.ForeignKey(QuestionnaireConfiguration, null=False)
     date = models.DateField(default=datetime.date.today, null=False,
