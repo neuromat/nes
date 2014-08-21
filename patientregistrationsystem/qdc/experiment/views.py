@@ -214,12 +214,67 @@ def questionnaire_update(request, questionnaire_configuration_id,
 @login_required
 @permission_required('experiment.add_subject')
 def subjects(request, experiment_id, template_name="experiment/subjects.html"):
+
     experiment = get_object_or_404(Experiment, id=experiment_id)
     subject_list = experiment.subjects.all()
 
+    subject_list_with_status = []
+
+    questionnaires_configuration_list = QuestionnaireConfiguration.objects.filter(experiment=experiment)
+
+    surveys = Questionnaires()
+
+    for subject in subject_list:
+
+        # print " subject: " + subject.patient.name_txt
+
+        number_of_questionnaires_filled = 0
+
+        for questionnaire_configuration in questionnaires_configuration_list:
+
+            # print "     questionnaire: " + str(questionnaire_configuration.lime_survey_id)
+
+            subject_responses = QuestionnaireResponse.objects.\
+                filter(subject=subject).\
+                filter(questionnaire_configuration=questionnaire_configuration)
+
+            if subject_responses:
+                if (questionnaire_configuration.number_of_fills == None and subject_responses.count() > 0 ) or (questionnaire_configuration.number_of_fills == subject_responses.count()):
+
+                    number_of_questionnaires_completed = 0
+
+                    for subject_response in subject_responses:
+
+                        response_result = surveys.get_participant_properties(questionnaire_configuration.lime_survey_id, subject_response.token_id, "completed")
+
+                        # print "          token_id: " + str(subject_response.token_id) + " - completed: " + response_result
+
+                        if response_result == "N":
+                            # print "          NAO COMPLETOU pelo menos 1 preenchimento"
+                            break
+                        else:
+                            number_of_questionnaires_completed += 1
+
+                    if number_of_questionnaires_completed >= questionnaire_configuration.number_of_fills:
+                        number_of_questionnaires_filled += 1
+
+            #     else:
+            #         print "         nao preencheu a qtde necessaria"
+            # else:
+            #     print "         nao ha respostas para o questionario"
+
+            # questionnaire_configuration.number_of_fills
+            # buscar em questionnaire_response e verificar se tem foram preenchidos
+
+        subject_list_with_status.append(
+            {'subject': subject,
+             'number_of_questionnaires_filled': number_of_questionnaires_filled,
+             'total_of_questionnaires': questionnaires_configuration_list.count(),
+             'percentage': 100 * number_of_questionnaires_filled / questionnaires_configuration_list.count()})
+
     context = {
         'experiment_id': experiment_id,
-        'subject_list': subject_list,
+        'subject_list': subject_list_with_status,
         'experiment_title': experiment.title
     }
 

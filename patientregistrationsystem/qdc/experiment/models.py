@@ -3,6 +3,7 @@ from quiz.models import Patient, User
 
 import datetime
 
+
 class Subject(models.Model):
     patient = models.ForeignKey(Patient)
 
