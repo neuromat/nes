@@ -45,12 +45,12 @@ def experiment_create(request, template_name="experiment/experiment_register.htm
                 # questionnaire = Questionnaire()
                 #
                 # try:
-                #             questionnaire = Questionnaire.objects.get(survey_id=survey_id)
-                #         except questionnaire.DoesNotExist:
-                #             Questionnaire(survey_id=survey_id).save()
-                #             questionnaire = Questionnaire.objects.get(survey_id=survey_id)
+                # questionnaire = Questionnaire.objects.get(survey_id=survey_id)
+                # except questionnaire.DoesNotExist:
+                # Questionnaire(survey_id=survey_id).save()
+                # questionnaire = Questionnaire.objects.get(survey_id=survey_id)
                 #
-                #         experiment_added.questionnaires.add(questionnaire)
+                # experiment_added.questionnaires.add(questionnaire)
 
                 messages.success(request, 'Experimento criado com sucesso.')
 
@@ -104,7 +104,6 @@ def experiment_update(request, experiment_id, template_name="experiment/experime
 @login_required
 @permission_required('experiment.add_questionnaireconfiguration')
 def questionnaire_create(request, experiment_id, template_name="experiment/questionnaire_register.html"):
-
     experiment = get_object_or_404(Experiment, pk=experiment_id)
     questionnaire_form = QuestionnaireConfigurationForm(
         request.POST or None,
@@ -157,7 +156,6 @@ def questionnaire_create(request, experiment_id, template_name="experiment/quest
 @permission_required('experiment.change_questionnaireconfiguration')
 def questionnaire_update(request, questionnaire_configuration_id,
                          template_name="experiment/questionnaire_register.html"):
-
     questionnaire_configuration = get_object_or_404(QuestionnaireConfiguration, pk=questionnaire_configuration_id)
     experiment = get_object_or_404(Experiment, pk=questionnaire_configuration.experiment.id)
     questionnaire_form = QuestionnaireConfigurationForm(request.POST or None, instance=questionnaire_configuration)
@@ -180,7 +178,7 @@ def questionnaire_update(request, questionnaire_configuration_id,
                 # questionnaire_configuration.number_of_fills = request.POST['number_of_fills']
                 # questionnaire_configuration.interval_between_fills_value = request.POST['interval_between_fills_value']
                 # questionnaire_configuration.interval_between_fills_unit = get_object_or_404(TimeUnit, pk=request.POST[
-                #     'interval_between_fills_unit'])
+                # 'interval_between_fills_unit'])
 
                 if "interval_between_fills_value" in request.POST:
                     questionnaire_configuration.interval_between_fills_value = \
@@ -241,6 +239,16 @@ def subject_questionnaire_response_start_fill_questionnaire(request, experiment_
         subject = get_object_or_404(Subject, pk=subject_id)
         patient = subject.patient
 
+        if not questionnaire_lime_survey.survey_has_token_table(questionnaire_config.lime_survey_id):
+            messages.warning(request,
+                             'Preenchimento não disponível - Tabela de tokens não iniciada')
+            return None
+
+        if questionnaire_lime_survey.get_survey_properties(questionnaire_config.lime_survey_id, 'active') == 'N':
+            messages.warning(request,
+                             'Preenchimento não disponível - Questionário não está ativo')
+            return None
+
         result = questionnaire_lime_survey.add_participant(questionnaire_config.lime_survey_id, patient.name_txt, '',
                                                            patient.email_txt)
 
@@ -253,10 +261,15 @@ def subject_questionnaire_response_start_fill_questionnaire(request, experiment_
         questionnaire_response.questionnaire_configuration = questionnaire_config
         questionnaire_response.token_id = result['token_id']
         questionnaire_response.date = datetime.datetime.strptime(request.POST['date'], '%d/%m/%Y')
+        questionnaire_response.questionnaire_responsible = request.user
         questionnaire_response.save()
 
-        redirect_url = 'http://survey.numec.prp.usp.br/index.php/survey/index/sid/%s/token/%s' % (
-            questionnaire_config.lime_survey_id, result['token'])
+        # Montagem da URL para redirecionar ao Lime Survey
+        date = request.POST['date']
+        date = date.replace('/', '-')
+
+        redirect_url = 'http://survey.numec.prp.usp.br/index.php/survey/index/sid/%s/token/%s/lang/pt-BR/idavaliador/%s/datdataaquisicao/%s/idparticipante/%s' % (
+            questionnaire_config.lime_survey_id, result['token'], request.user.id, date, subject.id)
 
         return redirect_url
     else:
@@ -284,12 +297,11 @@ def subject_questionnaire_response_create(request, experiment_id, subject_id, qu
             redirect_url = subject_questionnaire_response_start_fill_questionnaire(request, experiment_id, subject_id,
                                                                                    questionnaire_id)
             if not redirect_url:
-                context = {'FAIL': True}
+                context = {'FAIL': False}
             else:
-                context = {'FAIL': False,
+                context = {'FAIL': True,
                            'URL': redirect_url}
-
-            messages.info(request, 'Você será redirecionado para o questionário... Aguarde')
+                messages.info(request, 'Você será redirecionado para o questionário... Aguarde')
 
             return render(request, template_name, context)
 
@@ -317,8 +329,10 @@ def subject_questionnaire_view(request, experiment_id, subject_id,
     experiment = get_object_or_404(Experiment, id=experiment_id)
     questionnaires_configuration_list = QuestionnaireConfiguration.objects.filter(experiment=experiment)
     questionnaires_list = Questionnaires().find_all_active_questionnaires()
+    subject = get_object_or_404(Subject, id=subject_id)
 
     context = {
+        'subject': subject,
         'subject_id': subject_id,
         'experiment_id': experiment_id,
         'experiment_title': experiment.title,

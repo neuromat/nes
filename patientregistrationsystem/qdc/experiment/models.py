@@ -40,7 +40,7 @@ class QuestionnaireResponse(models.Model):
     token_id = models.IntegerField(null=False, primary_key=True)
     subject = models.ForeignKey(Subject, null=False)
     questionnaire_configuration = models.ForeignKey(QuestionnaireConfiguration, null=False)
-    date = models.DateTimeField(null=False)
+    date = models.DateTimeField(default=datetime.date.today,null=False)
     questionnaire_responsible = models.ForeignKey(User, null=False)
 
     class Meta:

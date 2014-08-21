@@ -92,7 +92,7 @@ $(document).ready(function () {
     });
 
     //Ajax part to show modal if patient with same name exists in database
-    $('#full_name').blur(function() {
+    $('#full_name').blur(function () {
         var myElem = document.getElementById('patient_homonym');
         if (myElem != null) $('#modalHomonym').modal('show');
 
@@ -101,7 +101,7 @@ $(document).ready(function () {
     });
 
     //Ajax part to show modal if patient with same cpf exists in database
-    $('#cpf_id').blur(function() {
+    $('#cpf_id').blur(function () {
         var myElem = document.getElementById('patient_homonym');
         if (myElem != null) $('#modalHomonym').modal('show');
 
@@ -174,7 +174,7 @@ $(document).ready(function () {
             jumpToElement('exam_date');
             document.getElementById('exam_date').focus();
             document.getElementById('exam_description').focus();
-        } else{
+        } else {
             $("#form_exam").submit();
         }
     });
@@ -191,6 +191,18 @@ $(document).ready(function () {
     });
 
 });
+
+function popup(URL) {
+
+    var width = 650;
+    var height = 550;
+
+    var left = (screen.width / 2) - (width / 2);
+    var top = (screen.height / 2) - (height / 2);
+
+    window.open(URL, 'janela', 'width=' + width + ', height=' + height + ', top=' + top + ', left=' + left + ', scrollbars=yes, status=no, toolbar=no, location=no, directories=no, menubar=no, resizable=no, fullscreen=no');
+
+}
 
 function validateEmail(email) {
     var re = /^(([^<>()[\]\\.,;:\s@\"]+(\.[^<>()[\]\\.,;:\s@\"]+)*)|(\".+\"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
