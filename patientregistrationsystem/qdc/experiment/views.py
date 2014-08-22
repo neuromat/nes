@@ -224,13 +224,9 @@ def subjects(request, experiment_id, template_name="experiment/subjects.html"):
 
     for subject in subject_list:
 
-        # print " subject: " + subject.patient.name_txt
-
         number_of_questionnaires_filled = 0
 
         for questionnaire_configuration in questionnaires_configuration_list:
-
-            # print "     questionnaire: " + str(questionnaire_configuration.lime_survey_id)
 
             subject_responses = QuestionnaireResponse.objects.\
                 filter(subject=subject).\
@@ -246,10 +242,7 @@ def subjects(request, experiment_id, template_name="experiment/subjects.html"):
 
                         response_result = surveys.get_participant_properties(questionnaire_configuration.lime_survey_id, subject_response.token_id, "completed")
 
-                        # print "          token_id: " + str(subject_response.token_id) + " - completed: " + response_result
-
                         if response_result == "N":
-                            # print "          NAO COMPLETOU pelo menos 1 preenchimento"
                             break
                         else:
                             number_of_questionnaires_completed += 1
@@ -259,14 +252,6 @@ def subjects(request, experiment_id, template_name="experiment/subjects.html"):
                             (questionnaire_configuration.number_of_fills is not None and number_of_questionnaires_completed >= questionnaire_configuration.number_of_fills):
 
                         number_of_questionnaires_filled += 1
-
-            #     else:
-            #         print "         nao preencheu a qtde necessaria"
-            # else:
-            #     print "         nao ha respostas para o questionario"
-
-            # questionnaire_configuration.number_of_fills
-            # buscar em questionnaire_response e verificar se tem foram preenchidos
 
         subject_list_with_status.append(
             {'subject': subject,
@@ -392,14 +377,18 @@ def subject_questionnaire_view(request, experiment_id, subject_id,
 
     subject_questionnaires = []
 
+    surveys = Questionnaires()
+
     for questionnaire_configuration in questionnaires_configuration_list:
 
-        questionnaire_responses = QuestionnaireResponse.objects.filter(subject=subject).filter(questionnaire_configuration=questionnaire_configuration)
+        questionnaire_responses = QuestionnaireResponse.objects.\
+            filter(subject=subject).\
+            filter(questionnaire_configuration=questionnaire_configuration)
 
         questionnaire_responses_with_status = []
 
         for questionnaire_response in questionnaire_responses:
-            response_result = Questionnaires().get_participant_properties(questionnaire_configuration.lime_survey_id, questionnaire_response.token_id, "completed")
+            response_result = surveys.get_participant_properties(questionnaire_configuration.lime_survey_id, questionnaire_response.token_id, "completed")
             questionnaire_responses_with_status.append(
                 {'questionnaire_response': questionnaire_response,
                  'completed': response_result != "N"}
@@ -407,7 +396,7 @@ def subject_questionnaire_view(request, experiment_id, subject_id,
 
         subject_questionnaires.append(
             {'questionnaire_configuration': questionnaire_configuration,
-             'title': Questionnaires().get_survey_title(questionnaire_configuration.lime_survey_id),
+             'title': surveys.get_survey_title(questionnaire_configuration.lime_survey_id),
              'questionnaire_responses': questionnaire_responses_with_status
             }
         )
