@@ -204,6 +204,16 @@
         <div class="row">
             <div class="col-xs-6 col-sm-6">
                 <div class="form-group">
+                    <label>País</label>
+
+                    <div class="input-group  input-group-sm">
+                        <span class="input-group-addon"> <span class="glyphicon glyphicon-home"></span></span>
+                        {{ patient_form.country_txt }}
+                    </div>
+                </div>
+            </div>
+            <div class="col-xs-6 col-sm-6">
+                <div class="form-group">
                     <label>CEP</label>
 
                     <div class="input-group  input-group-sm">
@@ -213,6 +223,8 @@
                     <div class="help-block with-errors"></div>
                 </div>
             </div>
+        </div>
+        <div class="row">
             <div class="col-xs-6 col-sm-6">
                 <div class="form-group">
                     <label>Endereço</label>
@@ -224,8 +236,6 @@
 
                 </div>
             </div>
-        </div>
-        <div class="row">
             <div class="col-xs-6 col-sm-6">
                 <div class="form-group">
                     <label>Número</label>
@@ -237,6 +247,8 @@
 
                 </div>
             </div>
+        </div>
+        <div class="row">
             <div class="col-xs-6 col-sm-6">
                 <div class="form-group">
                     <label>Complemento</label>
@@ -248,8 +260,6 @@
                     <div class="help-block with-errors"></div>
                 </div>
             </div>
-        </div>
-        <div class="row">
             <div class="col-xs-6 col-sm-6">
                 <div class="form-group">
                     <label>Bairro</label>
@@ -261,6 +271,8 @@
 
                 </div>
             </div>
+        </div>
+        <div class="row">
             <div class="col-xs-6 col-sm-6">
                 <div class="form-group">
                     <label>Cidade</label>
@@ -271,8 +283,6 @@
                     </div>
                 </div>
             </div>
-        </div>
-        <div class="row">
             <div class="col-xs-6 col-sm-6">
                 <div class="form-group">
                     <label>Estado</label>
@@ -280,16 +290,6 @@
                     <div class="input-group  input-group-sm">
                         <span class="input-group-addon"> <span class="glyphicon glyphicon-home"></span></span>
                         {{ patient_form.state_txt }}
-                    </div>
-                </div>
-            </div>
-            <div class="col-xs-6 col-sm-6">
-                <div class="form-group">
-                    <label>País</label>
-
-                    <div class="input-group  input-group-sm">
-                        <span class="input-group-addon"> <span class="glyphicon glyphicon-home"></span></span>
-                        {{ patient_form.country_txt }}
                     </div>
                 </div>
             </div>
