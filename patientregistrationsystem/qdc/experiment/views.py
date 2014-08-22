@@ -388,16 +388,34 @@ def subject_questionnaire_view(request, experiment_id, subject_id,
 
     experiment = get_object_or_404(Experiment, id=experiment_id)
     questionnaires_configuration_list = QuestionnaireConfiguration.objects.filter(experiment=experiment)
-    questionnaires_list = Questionnaires().find_all_active_questionnaires()
     subject = get_object_or_404(Subject, id=subject_id)
+
+    subject_questionnaires = []
+
+    for questionnaire_configuration in questionnaires_configuration_list:
+
+        questionnaire_responses = QuestionnaireResponse.objects.filter(subject=subject).filter(questionnaire_configuration=questionnaire_configuration)
+
+        questionnaire_responses_with_status = []
+
+        for questionnaire_response in questionnaire_responses:
+            response_result = Questionnaires().get_participant_properties(questionnaire_configuration.lime_survey_id, questionnaire_response.token_id, "completed")
+            questionnaire_responses_with_status.append(
+                {'questionnaire_response': questionnaire_response,
+                 'completed': response_result != "N"}
+            )
+
+        subject_questionnaires.append(
+            {'questionnaire_configuration': questionnaire_configuration,
+             'title': Questionnaires().get_survey_title(questionnaire_configuration.lime_survey_id),
+             'questionnaire_responses': questionnaire_responses_with_status
+            }
+        )
 
     context = {
         'subject': subject,
-        'subject_id': subject_id,
-        'experiment_id': experiment_id,
-        'experiment_title': experiment.title,
-        'questionnaires_configuration_list': questionnaires_configuration_list,
-        'questionnaires_list': questionnaires_list
+        'experiment': experiment,
+        'subject_questionnaires': subject_questionnaires
     }
 
     return render(request, template_name, context)
