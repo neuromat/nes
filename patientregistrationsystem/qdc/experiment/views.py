@@ -45,12 +45,12 @@ def experiment_create(request, template_name="experiment/experiment_register.htm
                 # questionnaire = Questionnaire()
                 #
                 # try:
-                #             questionnaire = Questionnaire.objects.get(survey_id=survey_id)
-                #         except questionnaire.DoesNotExist:
-                #             Questionnaire(survey_id=survey_id).save()
-                #             questionnaire = Questionnaire.objects.get(survey_id=survey_id)
+                # questionnaire = Questionnaire.objects.get(survey_id=survey_id)
+                # except questionnaire.DoesNotExist:
+                # Questionnaire(survey_id=survey_id).save()
+                # questionnaire = Questionnaire.objects.get(survey_id=survey_id)
                 #
-                #         experiment_added.questionnaires.add(questionnaire)
+                # experiment_added.questionnaires.add(questionnaire)
 
                 messages.success(request, 'Experimento criado com sucesso.')
 
@@ -104,7 +104,6 @@ def experiment_update(request, experiment_id, template_name="experiment/experime
 @login_required
 @permission_required('experiment.add_questionnaireconfiguration')
 def questionnaire_create(request, experiment_id, template_name="experiment/questionnaire_register.html"):
-
     experiment = get_object_or_404(Experiment, pk=experiment_id)
     questionnaire_form = QuestionnaireConfigurationForm(
         request.POST or None,
@@ -157,7 +156,6 @@ def questionnaire_create(request, experiment_id, template_name="experiment/quest
 @permission_required('experiment.change_questionnaireconfiguration')
 def questionnaire_update(request, questionnaire_configuration_id,
                          template_name="experiment/questionnaire_register.html"):
-
     questionnaire_configuration = get_object_or_404(QuestionnaireConfiguration, pk=questionnaire_configuration_id)
     experiment = get_object_or_404(Experiment, pk=questionnaire_configuration.experiment.id)
     questionnaire_form = QuestionnaireConfigurationForm(request.POST or None, instance=questionnaire_configuration)
@@ -180,7 +178,7 @@ def questionnaire_update(request, questionnaire_configuration_id,
                 # questionnaire_configuration.number_of_fills = request.POST['number_of_fills']
                 # questionnaire_configuration.interval_between_fills_value = request.POST['interval_between_fills_value']
                 # questionnaire_configuration.interval_between_fills_unit = get_object_or_404(TimeUnit, pk=request.POST[
-                #     'interval_between_fills_unit'])
+                # 'interval_between_fills_unit'])
 
                 if "interval_between_fills_value" in request.POST:
                     questionnaire_configuration.interval_between_fills_value = \
@@ -214,12 +212,56 @@ def questionnaire_update(request, questionnaire_configuration_id,
 @login_required
 @permission_required('experiment.add_subject')
 def subjects(request, experiment_id, template_name="experiment/subjects.html"):
+
     experiment = get_object_or_404(Experiment, id=experiment_id)
     subject_list = experiment.subjects.all()
 
+    subject_list_with_status = []
+
+    questionnaires_configuration_list = QuestionnaireConfiguration.objects.filter(experiment=experiment)
+
+    surveys = Questionnaires()
+
+    for subject in subject_list:
+
+        number_of_questionnaires_filled = 0
+
+        for questionnaire_configuration in questionnaires_configuration_list:
+
+            subject_responses = QuestionnaireResponse.objects.\
+                filter(subject=subject).\
+                filter(questionnaire_configuration=questionnaire_configuration)
+
+            if subject_responses:
+                if (questionnaire_configuration.number_of_fills is None and subject_responses.count() > 0) or \
+                        (questionnaire_configuration.number_of_fills is not None and questionnaire_configuration.number_of_fills == subject_responses.count()):
+
+                    number_of_questionnaires_completed = 0
+
+                    for subject_response in subject_responses:
+
+                        response_result = surveys.get_participant_properties(questionnaire_configuration.lime_survey_id, subject_response.token_id, "completed")
+
+                        if response_result == "N":
+                            break
+                        else:
+                            number_of_questionnaires_completed += 1
+
+                    if (questionnaire_configuration.number_of_fills is None and
+                            number_of_questionnaires_completed > 0) or \
+                            (questionnaire_configuration.number_of_fills is not None and number_of_questionnaires_completed >= questionnaire_configuration.number_of_fills):
+
+                        number_of_questionnaires_filled += 1
+
+        subject_list_with_status.append(
+            {'subject': subject,
+             'number_of_questionnaires_filled': number_of_questionnaires_filled,
+             'total_of_questionnaires': questionnaires_configuration_list.count(),
+             'percentage': 100 * number_of_questionnaires_filled / questionnaires_configuration_list.count()})
+
     context = {
         'experiment_id': experiment_id,
-        'subject_list': subject_list,
+        'subject_list': subject_list_with_status,
         'experiment_title': experiment.title
     }
 
@@ -228,10 +270,12 @@ def subjects(request, experiment_id, template_name="experiment/subjects.html"):
 
 @login_required
 @permission_required('experiment.add_questionnaireresponse')
-def subject_questionnaire_response_start_fill_questionnaire(request, experiment_id, subject_id, questionnaire_id):
+def subject_questionnaire_response_start_fill_questionnaire(request, subject_id, questionnaire_id):
     questionnaire_response_form = QuestionnaireResponseForm(request.POST)
 
     if questionnaire_response_form.is_valid():
+        date = request.POST['date']
+
         questionnaire_response = questionnaire_response_form.save(commit=False)
 
         questionnaire_config = get_object_or_404(QuestionnaireConfiguration, id=questionnaire_id)
@@ -241,6 +285,16 @@ def subject_questionnaire_response_start_fill_questionnaire(request, experiment_
         subject = get_object_or_404(Subject, pk=subject_id)
         patient = subject.patient
 
+        if not questionnaire_lime_survey.survey_has_token_table(questionnaire_config.lime_survey_id):
+            messages.warning(request,
+                             'Preenchimento não disponível - Tabela de tokens não iniciada')
+            return None
+
+        if questionnaire_lime_survey.get_survey_properties(questionnaire_config.lime_survey_id, 'active') == 'N':
+            messages.warning(request,
+                             'Preenchimento não disponível - Questionário não está ativo')
+            return None
+
         result = questionnaire_lime_survey.add_participant(questionnaire_config.lime_survey_id, patient.name_txt, '',
                                                            patient.email_txt)
 
@@ -248,15 +302,18 @@ def subject_questionnaire_response_start_fill_questionnaire(request, experiment_
             messages.warning(request,
                              'Falha ao gerar token para responder questionário. Verifique se o questionário está ativo')
             return None
-
         questionnaire_response.subject = subject
         questionnaire_response.questionnaire_configuration = questionnaire_config
-        questionnaire_response.token = result
+        questionnaire_response.token_id = result['token_id']
         questionnaire_response.date = datetime.datetime.strptime(request.POST['date'], '%d/%m/%Y')
+        questionnaire_response.questionnaire_responsible = request.user
         questionnaire_response.save()
 
-        redirect_url = 'http://survey.numec.prp.usp.br/index.php/survey/index/sid/%s/token/%s' % (
-            questionnaire_config.lime_survey_id, result)
+        # Montagem da URL para redirecionar ao Lime Survey
+        date = date.replace('/', '-')
+
+        redirect_url = 'http://survey.numec.prp.usp.br/index.php/survey/index/sid/%s/token/%s/lang/pt-BR/idavaliador/%s/datdataaquisicao/%s/idparticipante/%s' % (
+            questionnaire_config.lime_survey_id, result['token'], request.user.id, date, subject.id)
 
         return redirect_url
     else:
@@ -267,41 +324,44 @@ def subject_questionnaire_response_start_fill_questionnaire(request, experiment_
 @permission_required('experiment.add_questionnaireresponse')
 def subject_questionnaire_response_create(request, experiment_id, subject_id, questionnaire_id,
                                           template_name="experiment/subject_questionnaire_response_form.html"):
+    experiment = get_object_or_404(Experiment, id=experiment_id)
+
+    questionnaire_config = get_object_or_404(QuestionnaireConfiguration, id=questionnaire_id)
+    survey_title = Questionnaires().get_survey_title(questionnaire_config.lime_survey_id)
+    survey_active = Questionnaires().get_survey_properties(questionnaire_config.lime_survey_id, 'active')
+    survey_admin = Questionnaires().get_survey_properties(questionnaire_config.lime_survey_id, 'admin')
+    questionnaire_responsible = request.user.get_full_name()
+    subject = get_object_or_404(Subject, pk=subject_id)
+
     if request.method == "GET":
         questionnaire_response_form = QuestionnaireResponseForm(request.POST or None)
-        questionnaire_config = get_object_or_404(QuestionnaireConfiguration, id=questionnaire_id)
-        subject = get_object_or_404(Subject, pk=subject_id)
-        survey_title = Questionnaires().get_survey_title(questionnaire_config.lime_survey_id)
-        survey_active = Questionnaires().get_survey_properties(questionnaire_config.lime_survey_id, 'active')
-        survey_admin = Questionnaires().get_survey_properties(questionnaire_config.lime_survey_id, 'admin')
-        questionnaire_responsible = request.user.get_full_name()
-        date_fill_today = datetime.datetime.now().date().strftime('%d/%m/%Y')
+        fail = None
+        redirect_url = None
 
     if request.method == "POST":
+        questionnaire_response_form = QuestionnaireResponseForm(request.POST)
+
         if request.POST['action'] == "save":
-            redirect_url = subject_questionnaire_response_start_fill_questionnaire(request, experiment_id, subject_id,
+            redirect_url = subject_questionnaire_response_start_fill_questionnaire(request, subject_id,
                                                                                    questionnaire_id)
             if not redirect_url:
-                context = {'FAIL': True}
+                fail = False
             else:
-                context = {'FAIL': False,
-                           'URL': redirect_url}
-
-            messages.info(request, 'Você será redirecionado para o questionário... Aguarde')
-
-            return render(request, template_name, context)
+                fail = True
+                messages.info(request, 'Você será redirecionado para o questionário. Aguarde.')
 
     context = {
+        "FAIL": fail,
+        "URL": redirect_url,
         "questionnaire_response_form": questionnaire_response_form,
         "questionnaire_configuration": questionnaire_config,
-        "date_fill_today": date_fill_today,
-        "experiment_id": experiment_id,
         "survey_title": survey_title,
         "survey_admin": survey_admin,
         "survey_active": survey_active,
         "questionnaire_responsible": questionnaire_responsible,
         "creating": True,
-        "subject": subject}
+        "subject": subject
+    }
 
     return render(request, template_name, context)
 
@@ -310,16 +370,41 @@ def subject_questionnaire_response_create(request, experiment_id, subject_id, qu
 @permission_required('experiment.view_questionnaireresponse')
 def subject_questionnaire_view(request, experiment_id, subject_id,
                                template_name="experiment/subject_questionnaire_response_list.html"):
+
     experiment = get_object_or_404(Experiment, id=experiment_id)
     questionnaires_configuration_list = QuestionnaireConfiguration.objects.filter(experiment=experiment)
-    questionnaires_list = Questionnaires().find_all_active_questionnaires()
+    subject = get_object_or_404(Subject, id=subject_id)
+
+    subject_questionnaires = []
+
+    surveys = Questionnaires()
+
+    for questionnaire_configuration in questionnaires_configuration_list:
+
+        questionnaire_responses = QuestionnaireResponse.objects.\
+            filter(subject=subject).\
+            filter(questionnaire_configuration=questionnaire_configuration)
+
+        questionnaire_responses_with_status = []
+
+        for questionnaire_response in questionnaire_responses:
+            response_result = surveys.get_participant_properties(questionnaire_configuration.lime_survey_id, questionnaire_response.token_id, "completed")
+            questionnaire_responses_with_status.append(
+                {'questionnaire_response': questionnaire_response,
+                 'completed': response_result != "N"}
+            )
+
+        subject_questionnaires.append(
+            {'questionnaire_configuration': questionnaire_configuration,
+             'title': surveys.get_survey_title(questionnaire_configuration.lime_survey_id),
+             'questionnaire_responses': questionnaire_responses_with_status
+            }
+        )
 
     context = {
-        'subject_id': subject_id,
-        'experiment_id': experiment_id,
-        'experiment_title': experiment.title,
-        'questionnaires_configuration_list': questionnaires_configuration_list,
-        'questionnaires_list': questionnaires_list
+        'subject': subject,
+        'experiment': experiment,
+        'subject_questionnaires': subject_questionnaires
     }
 
     return render(request, template_name, context)

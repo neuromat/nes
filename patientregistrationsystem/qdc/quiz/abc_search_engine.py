@@ -72,13 +72,11 @@ class ABCSearchEngine:
 
         server.release_session_key(session_key)
 
-        if len(participant_data_result) > 0:
-            if 'error' in participant_data_result[0]:
-                result = None
-            else:
-                result = participant_data_result[0]['token']
-        else:
+        if len(participant_data_result) <= 0 or 'error' in participant_data_result[0]:
             result = None
+        else:
+            result = {'token': participant_data_result[0]['token'],
+                      'token_id': participant_data_result[0]['tid']}
 
         return result
 
@@ -108,6 +106,32 @@ class ABCSearchEngine:
 
         return result.get(prop)
 
+    @abstractmethod
+    def get_participant_properties(self, survey_id, token_id, property):
+        """Retorna uma determinada propriedade de um participante/token"""
+
+        server = pyjsonrpc.HttpClient("http://survey.numec.prp.usp.br/index.php/admin/remotecontrol")
+        session_key = server.get_session_key("evandro", "8YtztuqeGzUU")
+
+        result = server.get_participant_properties(session_key, survey_id, token_id, {'method': property})
+
+        server.release_session_key(session_key)
+
+        return result.get(property)
+
+    @abstractmethod
+    def survey_has_token_table(self, sid):
+        """Retorna flag indicando se a tabela de tokens foi iniciada para determinado questionario"""
+
+        server = pyjsonrpc.HttpClient("http://survey.numec.prp.usp.br/index.php/admin/remotecontrol")
+        session_key = server.get_session_key("evandro", "8YtztuqeGzUU")
+
+        result = server.get_summary(session_key, sid, "all")
+
+        server.release_session_key(session_key)
+
+        return "token_completed" in result
+
 
 class Questionnaires(ABCSearchEngine):
     """ Classe envelope para o API do limesurvey """
@@ -127,5 +151,11 @@ class Questionnaires(ABCSearchEngine):
     def get_survey_properties(self, sid, prop):
         return super(Questionnaires, self).get_survey_properties(sid, prop)
 
+    def get_participant_properties(self, survey_id, token_id, property):
+        return super(Questionnaires, self).get_participant_properties(survey_id, token_id, property)
+
     def get_survey_title(self, sid):
         return super(Questionnaires, self).get_survey_title(sid)
+
+    def survey_has_token_table(self, sid):
+        return super(Questionnaires, self).survey_has_token_table(sid)

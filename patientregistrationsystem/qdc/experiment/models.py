@@ -1,7 +1,14 @@
+# -*- coding: UTF-8 -*-
 from django.db import models
+from django.core.exceptions import ValidationError
 from quiz.models import Patient, User
 
 import datetime
+
+
+def validate_date_questionnaire_response(value):
+    if value > datetime.date.today():
+        raise ValidationError('Data de preenchimento não pode ser maior que a data de hoje.')
 
 class Subject(models.Model):
     patient = models.ForeignKey(Patient)
@@ -37,13 +44,15 @@ class QuestionnaireConfiguration(models.Model):
 
 
 class QuestionnaireResponse(models.Model):
-    token = models.CharField(null=False, primary_key=True, max_length=30)
+    token_id = models.IntegerField(null=False)
     subject = models.ForeignKey(Subject, null=False)
     questionnaire_configuration = models.ForeignKey(QuestionnaireConfiguration, null=False)
-    date = models.DateTimeField(null=False)
+    date = models.DateField(default=datetime.date.today, null=False,
+                                validators=[validate_date_questionnaire_response])
     questionnaire_responsible = models.ForeignKey(User, null=False)
 
     class Meta:
         permissions = (
             ("view_questionnaireresponse", "Can view questionnaire response"),
         )
+

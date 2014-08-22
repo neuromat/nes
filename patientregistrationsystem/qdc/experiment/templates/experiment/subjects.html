@@ -3,12 +3,14 @@
 
 {% block header %}
     <script>
+
         function show_modal_remove(experiment_id, subject_id) {
             var modal_remove = document.getElementById('removeSubject');
             modal_remove.setAttribute("href", "/experiment/" + experiment_id + '/subjects/delete/' + subject_id);
             $('#modalRemove').modal('show');
 
         }
+
     </script>
 
 {% endblock %}
@@ -102,18 +104,22 @@
                                 </tr>
                             {% else %}
                                 {% if subject_list.count > 0 %}
-                                    {% for subject in subject_list %}
+                                    {% for item in subject_list %}
                                         <tr>
                                             <td>
-                                                <a href='/experiment/{{ experiment_id }}/subjects/{{ subject.id }}/questionnaire/'>{{ subject.patient.name_txt }}</a>
+                                                <a href='/experiment/{{ experiment_id }}/subjects/{{ item.subject.id }}/questionnaire/'>{{ item.subject.patient.name_txt }}</a>
                                             </td>
                                             <td>
-
+                                                <div class="progress" >
+                                                    <div class="progress-bar {% if item.percentage == 100 %}progress-bar-success{% else %}progress-bar-warning{% endif %}" role="progressbar" aria-valuenow="{{ item.number_of_questionnaires_filled }}" aria-valuemin="0" aria-valuemax="{{ item.total_of_questionnaires }}" style="color: #000000; width: {{ item.percentage }}%;">
+                                                        {{ item.number_of_questionnaires_filled }}/{{ item.total_of_questionnaires }}
+                                                    </div>
+                                                </div>
                                             </td>
                                             <td>
                                                 <a class="glyphicon glyphicon-remove" data-toggle="tooltip"
                                                    data-placement="right" title="Remover" style="color: indianred"
-                                                   onclick="show_modal_remove({{ experiment_id }},{{ subject.id }})"></a>
+                                                   onclick="show_modal_remove({{ experiment_id }},{{ item.subject.id }})"></a>
                                             </td>
                                         </tr>
                                     {% endfor %}
