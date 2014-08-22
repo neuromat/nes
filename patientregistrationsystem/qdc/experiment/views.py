@@ -237,7 +237,8 @@ def subjects(request, experiment_id, template_name="experiment/subjects.html"):
                 filter(questionnaire_configuration=questionnaire_configuration)
 
             if subject_responses:
-                if (questionnaire_configuration.number_of_fills == None and subject_responses.count() > 0 ) or (questionnaire_configuration.number_of_fills == subject_responses.count()):
+                if (questionnaire_configuration.number_of_fills is None and subject_responses.count() > 0) or \
+                        (questionnaire_configuration.number_of_fills is not None and questionnaire_configuration.number_of_fills == subject_responses.count()):
 
                     number_of_questionnaires_completed = 0
 
@@ -253,7 +254,10 @@ def subjects(request, experiment_id, template_name="experiment/subjects.html"):
                         else:
                             number_of_questionnaires_completed += 1
 
-                    if number_of_questionnaires_completed >= questionnaire_configuration.number_of_fills:
+                    if (questionnaire_configuration.number_of_fills is None and
+                            number_of_questionnaires_completed > 0) or \
+                            (questionnaire_configuration.number_of_fills is not None and number_of_questionnaires_completed >= questionnaire_configuration.number_of_fills):
+
                         number_of_questionnaires_filled += 1
 
             #     else:
@@ -320,8 +324,6 @@ def subject_questionnaire_response_start_fill_questionnaire(request, subject_id,
         questionnaire_response.questionnaire_responsible = request.user
         questionnaire_response.save()
 
-
-
         # Montagem da URL para redirecionar ao Lime Survey
         date = date.replace('/', '-')
 
@@ -383,6 +385,7 @@ def subject_questionnaire_response_create(request, experiment_id, subject_id, qu
 @permission_required('experiment.view_questionnaireresponse')
 def subject_questionnaire_view(request, experiment_id, subject_id,
                                template_name="experiment/subject_questionnaire_response_list.html"):
+
     experiment = get_object_or_404(Experiment, id=experiment_id)
     questionnaires_configuration_list = QuestionnaireConfiguration.objects.filter(experiment=experiment)
     questionnaires_list = Questionnaires().find_all_active_questionnaires()
