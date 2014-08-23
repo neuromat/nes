@@ -83,8 +83,15 @@ DATABASES = {
         'USER': 'qdc',
         'PASSWORD': 'DEVqdc1716',
         # 'HOST': '200.144.254.136',
-        # 'TEST_NAME': 'test_romulo',
+        # 'TEST_NAME': 'test_evandro',
     }
+}
+
+# LimeSurvey configuration
+LIMESURVEY = {
+    'URL': 'http://survey.numec.prp.usp.br',
+    'USER': 'evandro',
+    'PASSWORD': '8YtztuqeGzUU',
 }
 
 TEMPLATE_DIRS = [os.path.join(BASE_DIR, 'templates')]

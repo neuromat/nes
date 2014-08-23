@@ -2,11 +2,6 @@
 {% block activeAdvancedExperiment %}class="active"{% endblock %}
 
 {% block header %}
-{#    <script>#}
-{#        function show_modal_date(questionnaire_title, lime_survey_id) {#}
-{#            $('#modalDate').modal('show');#}
-{#        }#}
-{#    </script>#}
 {% endblock %}
 
 {% block form %}
@@ -96,23 +91,18 @@
                                                 <table>
                                                     {% for response in subject_questionnaire.questionnaire_responses %}
                                                         <tr>
-                                                            <td>{{ response.questionnaire_response.date }}</td>
+                                                            <td>
+                                                                <a href="/experiment/questionnaire_response/edit/{{ response.questionnaire_response.id }}" data-toggle="tooltip" data-placement="right" title="Completar">
+
+                                                                    {{ response.questionnaire_response.date }}
+                                                                </a>
+                                                            </td>
                                                             <td>
                                                                 {% if response.completed %}
                                                                     <span class="label label-success">Completo</span>
                                                                 {% else %}
                                                                     <span class="label label-warning">Incompleto</span>
                                                                 {% endif %}
-                                                            </td>
-                                                            <td>
-                                                                {% if not response.completed %}
-                                                                    <a class="btn glyphicon glyphicon-edit" data-toggle="tooltip" data-placement="right" title="Remover" style="color: blue; vertical-align: -5%; padding-left: 0;"
-                                                                       onclick="show_modal_remove({{ patient_id }}, {{ diagnosis.id }});"></a>
-                                                                {% endif %}
-                                                            </td>
-                                                            <td>
-                                                                <a class="btn glyphicon glyphicon-remove" data-toggle="tooltip" data-placement="right" title="Remover" style="color: indianred; vertical-align: -5%; padding-left: 0;"
-                                                                   onclick="show_modal_remove({{ patient_id }}, {{ diagnosis.id }});"></a>
                                                             </td>
 
                                                         </tr>
@@ -123,6 +113,8 @@
                                                                 <a href="/experiment/{{ experiment.id }}/subjects/{{ subject.id }}/questionnaire/{{ subject_questionnaire.questionnaire_configuration.id }}/response/"
                                                                     class="btn btn-primary">Novo preenchimento</a>
                                                             </td>
+                                                            <td></td>
+                                                            <td></td>
                                                         {% endif %}
                                                     </tr>
                                                 </table>
@@ -138,6 +130,11 @@
                 </div>
             </div>
             <div class="btn-toolbar">
+                <div class="btn-group pull-left">
+                    {% if not creating %}
+                        <button {% if not can_remove %}disabled{% endif %} type="button" class="btn btn-danger" onclick="$('#modalRemove').modal('show')">Excluir</button>
+                    {% endif %}
+                </div>
                 <div class="btn-group pull-right">
                     <a href="/experiment/{{ experiment.id }}/subjects" class="btn" style="background-color: #f5f5f5">Voltar</a>
                 </div>
@@ -147,37 +144,20 @@
 
     </div>
 
-{#    <div class="modal fade" id="modalDate" tabindex="-1" role="dialog" aria-labelledby="myModalLabel"#}
-{#         aria-hidden="true">#}
-{#        <div class="modal-dialog">#}
-{#            <div class="modal-content">#}
-{#                <div class="modal-body">#}
-{#                    <div class="form-group">#}
-{##}
-{#                    </div>#}
-{##}
-{#                    <div class="form-group {% if patient_form.errors.date_birth_txt %}has-error{% endif %}">#}
-{#                        <label for="date_birth_txt" class="control-label">Data de preenchimento <b#}
-{#                                style="color: red;">*</b></label>#}
-{##}
-{#                        <div class="input-group input-group-sm">#}
-{#                            <span class="input-group-addon"> <span class="glyphicon glyphicon-th"></span></span>#}
-{#                            <input class="form-control" data-error="Data de preenchimento" id="date_questionnaire"#}
-{#                                   name="date_questionnaire" placeholder="Data" required="" type="text">#}
-{#                        </div>#}
-{##}
-{#                    </div>#}
-{#                </div>#}
-{##}
-{#                <div class="modal-footer">#}
-{#                    <button type="button" class="btn btn-default" data-dismiss="modal">Cancelar</button>#}
-{#                    <button type="submit" class="btn btn-default" data-dismiss="modal">Confirmar</button>#}
-{#                    <a id="removeSubject" class="btn btn-primary" style="background-color: indianred; color: #ffffff"#}
-{#                       href="">Confirmar LINK</a>#}
-{#                </div>#}
-{#            </div>#}
-{#        </div>#}
-{#    </div>#}
+    <div class="modal fade" id="modalRemove" tabindex="-1" role="dialog" aria-labelledby="myModalLabel"
+         aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-body">
+                    Tem certeza que deseja excluir o participante?
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-default" data-dismiss="modal">Cancelar</button>
+                    <button type="submit" class="btn btn-danger" value="remove" name="action">Excluir</button>
+                </div>
+            </div>
+        </div>
+    </div>
 
 {% endblock %}
 

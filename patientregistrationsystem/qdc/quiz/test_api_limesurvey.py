@@ -19,20 +19,24 @@ class ABCSearchEngineTest(TestCase):
         list_survey = self.server.list_surveys(self.session_key, None)
         self.server.release_session_key(self.session_key)
         self.assertEqual(q.find_all_questionnaires(), list_survey)
+        q.release_session_key()
 
     def test_find_questionnaire_by_id_method_found_survey(self):
         q = Questionnaires()
         list_survey = self.server.list_surveys(self.session_key, None)
         self.server.release_session_key(self.session_key)
         self.assertEqual(q.find_questionnaire_by_id(list_survey[3]['sid']), list_survey[3])
+        q.release_session_key()
 
     def test_find_questionnaire_by_id_method_not_found_survey_by_string(self):
         q = Questionnaires()
         self.assertEqual(None, q.find_questionnaire_by_id('three'))
+        q.release_session_key()
 
     def test_find_questionnaire_by_id_method_not_found_survey_by_out_of_range(self):
         q = Questionnaires()
         self.assertEqual(None, q.find_questionnaire_by_id(10000000))
+        q.release_session_key()
 
     def test_list_active_questionnaires(self):
         q = Questionnaires()
@@ -43,6 +47,7 @@ class ABCSearchEngineTest(TestCase):
             if survey['active'] == "Y":
                 list_active_survey.append(survey)
         self.assertEqual(q.find_all_active_questionnaires(), list_active_survey)
+        q.release_session_key()
 
     def test_add_participant_to_a_survey(self):
         """testa a insercao de participante em um questionario """
@@ -82,11 +87,14 @@ class ABCSearchEngineTest(TestCase):
 
         self.assertEqual(result[str(token_id)], 'Deleted')
 
+        surveys.release_session_key()
+
     # def test_get_survey_property_usetokens(self):
     #     """testa a obtencao das propriedades de um questionario"""
     #
     #     surveys = Questionnaires()
     #     result = surveys.get_survey_properties(641729, "usetokens")
+    #     surveys.release_session_key()
     #
     #     pass
 
@@ -101,6 +109,7 @@ class ABCSearchEngineTest(TestCase):
     #     # nao completo
     #     result2 = surveys.get_participant_properties(426494, 230, "completed")
     #     result3 = surveys.get_participant_properties(426494, 230, "token")
+    #     surveys.release_session_key()
     #
     #     pass
 
@@ -114,5 +123,6 @@ class ABCSearchEngineTest(TestCase):
     #
     #     # exemplo de "false"
     #     result2 = surveys.survey_has_token_table(642916)
+    #     surveys.release_session_key()
     #
     #     pass

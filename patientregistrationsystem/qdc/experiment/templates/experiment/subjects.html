@@ -2,17 +2,6 @@
 {% block activeAdvancedExperiment %}class="active"{% endblock %}
 
 {% block header %}
-    <script>
-
-        function show_modal_remove(experiment_id, subject_id) {
-            var modal_remove = document.getElementById('removeSubject');
-            modal_remove.setAttribute("href", "/experiment/" + experiment_id + '/subjects/delete/' + subject_id);
-            $('#modalRemove').modal('show');
-
-        }
-
-    </script>
-
 {% endblock %}
 
 {% block form %}
@@ -116,11 +105,6 @@
                                                     </div>
                                                 </div>
                                             </td>
-                                            <td>
-                                                <a class="glyphicon glyphicon-remove" data-toggle="tooltip"
-                                                   data-placement="right" title="Remover" style="color: indianred"
-                                                   onclick="show_modal_remove({{ experiment_id }},{{ item.subject.id }})"></a>
-                                            </td>
                                         </tr>
                                     {% endfor %}
                                 {% endif %}
@@ -139,22 +123,6 @@
         </div>
 
 
-    </div>
-
-    <div class="modal fade" id="modalRemove" tabindex="-1" role="dialog" aria-labelledby="myModalLabel"
-         aria-hidden="true">
-        <div class="modal-dialog">
-            <div class="modal-content">
-                <div class="modal-body">
-                    Tem certeza que deseja excluir o participante?
-                </div>
-                <div class="modal-footer">
-                    <button type="button" class="btn btn-default" data-dismiss="modal">Cancelar</button>
-                    <a id="removeSubject" class="btn btn-primary" style="background-color: indianred; color: #ffffff"
-                       href="">Excluir</a>
-                </div>
-            </div>
-        </div>
     </div>
 
 {% endblock %}

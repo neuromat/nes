@@ -12,6 +12,8 @@ from experiment.forms import ExperimentForm, QuestionnaireConfigurationForm, Que
 from quiz.models import Patient
 from quiz.abc_search_engine import Questionnaires
 
+from django.conf import settings
+
 import re
 import datetime
 
@@ -38,20 +40,6 @@ def experiment_create(request, template_name="experiment/experiment_register.htm
             if experiment_form.is_valid():
                 experiment_added = experiment_form.save()
 
-                # if 'chosen_questionnaires' in request.POST:
-                #
-                # for survey_id in request.POST.getlist('chosen_questionnaires'):
-                #
-                # questionnaire = Questionnaire()
-                #
-                # try:
-                # questionnaire = Questionnaire.objects.get(survey_id=survey_id)
-                # except questionnaire.DoesNotExist:
-                # Questionnaire(survey_id=survey_id).save()
-                # questionnaire = Questionnaire.objects.get(survey_id=survey_id)
-                #
-                # experiment_added.questionnaires.add(questionnaire)
-
                 messages.success(request, 'Experimento criado com sucesso.')
 
                 redirect_url = reverse("experiment_edit", args=(experiment_added.id,))
@@ -66,14 +54,16 @@ def experiment_create(request, template_name="experiment/experiment_register.htm
 
 @login_required
 @permission_required('experiment.change_experiment')
-# @permission_required('experiment.delete_experiment')
 def experiment_update(request, experiment_id, template_name="experiment/experiment_register.html"):
     experiment = get_object_or_404(Experiment, pk=experiment_id)
     questionnaires_list = []
 
     if experiment:
         questionnaires_configuration_list = QuestionnaireConfiguration.objects.filter(experiment=experiment)
-        questionnaires_list = Questionnaires().find_all_active_questionnaires()
+
+        surveys = Questionnaires()
+        questionnaires_list = surveys.find_all_active_questionnaires()
+        surveys.release_session_key()
 
         experiment_form = ExperimentForm(request.POST or None, instance=experiment)
 
@@ -122,9 +112,6 @@ def questionnaire_create(request, experiment_id, template_name="experiment/quest
                 questionnaire = QuestionnaireConfiguration()
                 questionnaire.lime_survey_id = lime_survey_id
                 questionnaire.experiment = experiment
-                # questionnaire.number_of_fills = request.POST['number_of_fills']
-                # questionnaire.interval_between_fills_value = request.POST['interval_between_fills_value']
-                # questionnaire.interval_between_fills_unit = get_object_or_404(TimeUnit, pk=request.POST['interval_between_fills_unit'])
 
                 if "number_of_fills" in request.POST:
                     questionnaire.number_of_fills = request.POST['number_of_fills']
@@ -160,7 +147,10 @@ def questionnaire_update(request, questionnaire_configuration_id,
     experiment = get_object_or_404(Experiment, pk=questionnaire_configuration.experiment.id)
     questionnaire_form = QuestionnaireConfigurationForm(request.POST or None, instance=questionnaire_configuration)
 
-    questionnaires_origin_list = Questionnaires().find_all_active_questionnaires()
+    surveys = Questionnaires()
+    questionnaires_origin_list = surveys.find_all_active_questionnaires()
+    surveys.release_session_key()
+
     questionnaires_list = []
 
     for questionnaire_origin in questionnaires_origin_list:
@@ -174,11 +164,6 @@ def questionnaire_update(request, questionnaire_configuration_id,
 
                 if "number_of_fills" in request.POST:
                     questionnaire_configuration.number_of_fills = request.POST['number_of_fills']
-
-                # questionnaire_configuration.number_of_fills = request.POST['number_of_fills']
-                # questionnaire_configuration.interval_between_fills_value = request.POST['interval_between_fills_value']
-                # questionnaire_configuration.interval_between_fills_unit = get_object_or_404(TimeUnit, pk=request.POST[
-                # 'interval_between_fills_unit'])
 
                 if "interval_between_fills_value" in request.POST:
                     questionnaire_configuration.interval_between_fills_value = \
@@ -265,6 +250,8 @@ def subjects(request, experiment_id, template_name="experiment/subjects.html"):
         'experiment_title': experiment.title
     }
 
+    surveys.release_session_key()
+
     return render(request, template_name, context)
 
 
@@ -298,6 +285,8 @@ def subject_questionnaire_response_start_fill_questionnaire(request, subject_id,
         result = questionnaire_lime_survey.add_participant(questionnaire_config.lime_survey_id, patient.name_txt, '',
                                                            patient.email_txt)
 
+        questionnaire_lime_survey.release_session_key()
+
         if not result:
             messages.warning(request,
                              'Falha ao gerar token para responder questionário. Verifique se o questionário está ativo')
@@ -312,12 +301,33 @@ def subject_questionnaire_response_start_fill_questionnaire(request, subject_id,
         # Montagem da URL para redirecionar ao Lime Survey
         date = date.replace('/', '-')
 
-        redirect_url = 'http://survey.numec.prp.usp.br/index.php/survey/index/sid/%s/token/%s/lang/pt-BR/idavaliador/%s/datdataaquisicao/%s/idparticipante/%s' % (
-            questionnaire_config.lime_survey_id, result['token'], request.user.id, date, subject.id)
+        # redirect_url = '%s/index.php/survey/index/sid/%s/token/%s/lang/pt-BR/idavaliador/%s/datdataaquisicao/%s/idparticipante/%s' % (
+        #     settings.LIMESURVEY['URL'], questionnaire_config.lime_survey_id, result['token'], request.user.id, date, subject.id)
+
+        redirect_url = get_limesurvey_response_url(questionnaire_response)
 
         return redirect_url
     else:
         return None
+
+
+def get_limesurvey_response_url(questionnaire_response):
+
+    questionnaire_lime_survey = Questionnaires()
+    token = questionnaire_lime_survey.get_participant_properties(
+        questionnaire_response.questionnaire_configuration.lime_survey_id,
+        questionnaire_response.token_id, "token")
+    questionnaire_lime_survey.release_session_key()
+
+    redirect_url = '%s/index.php/survey/index/sid/%s/token/%s/lang/pt-BR/idavaliador/%s/datdataaquisicao/%s/idparticipante/%s' % (
+        settings.LIMESURVEY['URL'],
+        questionnaire_response.questionnaire_configuration.lime_survey_id,
+        token,
+        questionnaire_response.questionnaire_responsible.id,
+        questionnaire_response.date.strftime('%d-%m-%Y'),
+        questionnaire_response.subject.id)
+
+    return redirect_url
 
 
 @login_required
@@ -327,9 +337,13 @@ def subject_questionnaire_response_create(request, experiment_id, subject_id, qu
     experiment = get_object_or_404(Experiment, id=experiment_id)
 
     questionnaire_config = get_object_or_404(QuestionnaireConfiguration, id=questionnaire_id)
-    survey_title = Questionnaires().get_survey_title(questionnaire_config.lime_survey_id)
-    survey_active = Questionnaires().get_survey_properties(questionnaire_config.lime_survey_id, 'active')
-    survey_admin = Questionnaires().get_survey_properties(questionnaire_config.lime_survey_id, 'admin')
+
+    surveys = Questionnaires()
+    survey_title = surveys.get_survey_title(questionnaire_config.lime_survey_id)
+    survey_active = surveys.get_survey_properties(questionnaire_config.lime_survey_id, 'active')
+    survey_admin = surveys.get_survey_properties(questionnaire_config.lime_survey_id, 'admin')
+    surveys.release_session_key()
+
     questionnaire_responsible = request.user.get_full_name()
     subject = get_object_or_404(Subject, pk=subject_id)
 
@@ -367,15 +381,87 @@ def subject_questionnaire_response_create(request, experiment_id, subject_id, qu
 
 
 @login_required
+@permission_required('experiment.add_questionnaireresponse')
+def questionnaire_response_update(request, questionnaire_response_id,
+                                template_name="experiment/subject_questionnaire_response_form.html"):
+
+    questionnaire_response = get_object_or_404(QuestionnaireResponse, id=questionnaire_response_id)
+
+    questionnaire_configuration = questionnaire_response.questionnaire_configuration
+
+    surveys = Questionnaires()
+    survey_title = surveys.get_survey_title(questionnaire_configuration.lime_survey_id)
+    survey_active = surveys.get_survey_properties(questionnaire_configuration.lime_survey_id, 'active')
+    survey_admin = surveys.get_survey_properties(questionnaire_configuration.lime_survey_id, 'admin')
+    surveys.release_session_key()
+
+    questionnaire_responsible = questionnaire_response.questionnaire_responsible
+    subject = questionnaire_response.subject
+
+    if request.method == "GET":
+        questionnaire_response_form = QuestionnaireResponseForm(request.POST or None, instance=questionnaire_response)
+        fail = None
+        redirect_url = None
+
+    if request.method == "POST":
+        questionnaire_response_form = QuestionnaireResponseForm(request.POST, instance=questionnaire_response)
+
+        if request.POST['action'] == "save":
+
+            redirect_url = get_limesurvey_response_url(questionnaire_response)
+
+            if not redirect_url:
+                fail = False
+            else:
+                fail = True
+                messages.info(request, 'Você será redirecionado para o questionário. Aguarde.')
+
+        else:
+            if request.POST['action'] == "remove":
+                questionnaire_response.delete()
+                redirect_url = reverse("subject_questionnaire",
+                                       args=(questionnaire_configuration.experiment.id, subject.id))
+                return HttpResponseRedirect(redirect_url)
+
+
+    context = {
+        "FAIL": fail,
+        "URL": redirect_url,
+        "questionnaire_response_form": questionnaire_response_form,
+        "questionnaire_configuration": questionnaire_configuration,
+        "survey_title": survey_title,
+        "survey_admin": survey_admin,
+        "survey_active": survey_active,
+        "questionnaire_responsible": questionnaire_responsible,
+        "creating": False,
+        "subject": subject
+    }
+
+    return render(request, template_name, context)
+
+
+@login_required
 @permission_required('experiment.view_questionnaireresponse')
 def subject_questionnaire_view(request, experiment_id, subject_id,
                                template_name="experiment/subject_questionnaire_response_list.html"):
 
     experiment = get_object_or_404(Experiment, id=experiment_id)
-    questionnaires_configuration_list = QuestionnaireConfiguration.objects.filter(experiment=experiment)
     subject = get_object_or_404(Subject, id=subject_id)
 
+    if request.method == "POST":
+
+        if request.POST['action'] == "remove":
+
+            experiment.subjects.remove(subject)
+
+            messages.info(request, 'Participante removido do experimento.')
+            redirect_url = reverse("subjects", args=(experiment_id))
+            return HttpResponseRedirect(redirect_url)
+
+    questionnaires_configuration_list = QuestionnaireConfiguration.objects.filter(experiment=experiment)
+
     subject_questionnaires = []
+    can_remove = True
 
     surveys = Questionnaires()
 
@@ -386,6 +472,9 @@ def subject_questionnaire_view(request, experiment_id, subject_id,
             filter(questionnaire_configuration=questionnaire_configuration)
 
         questionnaire_responses_with_status = []
+
+        if questionnaire_responses:
+            can_remove = False
 
         for questionnaire_response in questionnaire_responses:
             response_result = surveys.get_participant_properties(questionnaire_configuration.lime_survey_id, questionnaire_response.token_id, "completed")
@@ -404,8 +493,11 @@ def subject_questionnaire_view(request, experiment_id, subject_id,
     context = {
         'subject': subject,
         'experiment': experiment,
-        'subject_questionnaires': subject_questionnaires
+        'subject_questionnaires': subject_questionnaires,
+        'can_remove': can_remove
     }
+
+    surveys.release_session_key()
 
     return render(request, template_name, context)
 
@@ -431,26 +523,6 @@ def subjects_insert(request, experiment_id, patient_id):
     else:
         messages.warning(request, 'Participante já inserido para este experimento.')
 
-    redirect_url = reverse("subjects", args=(experiment_id))
-    return HttpResponseRedirect(redirect_url)
-
-
-@login_required
-@permission_required('experiment.delete_subject')
-def subjects_delete(request, experiment_id, subject_id):
-    subject = Subject()
-
-    try:
-        subject = Subject.objects.get(pk=subject_id)
-    except subject.DoesNotExist:
-        messages.warning(request, 'Falha ao remover participante do experimento.')
-        redirect_url = reverse("subjects", args=(experiment_id))
-        return HttpResponseRedirect(redirect_url)
-
-    experiment = get_object_or_404(Experiment, id=experiment_id)
-    experiment.subjects.remove(subject)
-
-    messages.info(request, 'Participante removido do experimento.')
     redirect_url = reverse("subjects", args=(experiment_id))
     return HttpResponseRedirect(redirect_url)
 
