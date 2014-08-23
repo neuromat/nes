@@ -33,5 +33,10 @@ function jumpToElement(h) {
     window.scrollTo(0, top);
 }
 
-
-
+//$(document).ready(function () {
+//    $("#id_zipcode_number").on("keyup", function(e){
+//        if(this.value!="")
+//            $('input[name="country_txt"]')[0].setAttribute("value", "BR");
+//            $('#id_country_state_address').find('span[class="bfh-selectbox-option"]').append('<i class="glyphicon bfh-flag-BR"></i>Brazil');
+//    });
+//});

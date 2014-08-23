@@ -12,12 +12,6 @@ from django.contrib.auth.models import User
 # pylint: disable=E1101
 # pylint: disable=E1103
 
-STATE = (('AA', ''), ('AC', 'Acre'), ('AL', 'Alagoas'), ('AP', 'Amapá'), ('AM', 'Amazonas'), ('BA', 'Bahia'), ('CE', 'Ceará'),
-         ('DF', 'Distrito Federal'), ('ES', 'Espírito Santo'), ('GO', 'Goiás'), ('MA', 'Maranhão'), ('MT', 'Mato Grosso'),
-         ('MS', 'Mato Grosso do Sul'), ('MG', 'Minas Gerais'), ('PA', 'Pará'), ('PB', 'Paraíba'), ('PR', 'Paraná'),
-         ('PE', 'Pernambuco'), ('PI', 'Piauí'), ('RJ', 'Rio de Janeiro'), ('RN', 'Rio Grande do Norte'),
-         ('RS', 'Rio Grande do Sul'), ('RO', 'Rondônia'), ('RR', 'Roraima'), ('SC', 'Santa Catarina'), ('SP', 'São Paulo'),
-         ('SE', 'Sergipe'), ('TO', 'Tocantins'))
 
 class PatientForm(ModelForm):
     class Meta:
@@ -33,13 +27,15 @@ class PatientForm(ModelForm):
         widgets = {
             'zipcode_number': CEPInput(address={'street': 'street_txt', 'district': 'district', 'city': 'city',
                                                 'state': 'id_chosen_state'},
-                                       attrs={'class': 'form-control', 'placeholder': 'Digite o CEP', 'pattern': '\d{5}-?\d{3}'}),
+                                       attrs={'class': 'form-control', 'placeholder': 'Digite o CEP',
+                                              'pattern': '\d{5}-?\d{3}'}),
             'street_txt': TextInput(attrs={'class': 'form-control', 'id': "street_txt"}),
-            'address_number': TextInput(attrs={'class': 'form-control', 'placeholder': 'Número Residencial', 'id': "number"}),
-            'address_complement': TextInput(attrs={'class': 'form-control', 'placeholder': 'Entrar Complemento', 'id': "complement"}),
+            'address_number': TextInput(attrs={'class': 'form-control', 'id': "number"}),
+            'address_complement': TextInput(attrs={'class': 'form-control', 'placeholder': 'Entrar Complemento',
+                                                   'id': "complement"}),
             'district': TextInput(attrs={'class': 'form-control', 'id': "district"}),
             'city_txt': TextInput(attrs={'class': 'form-control', 'id': "city"}),
-            'state_txt': Select(attrs={'class': 'form-control', 'id': 'id_chosen_state'}, choices = STATE),
+            'state_txt': SelectBoxState(attrs={'data-country': 'id_country_state_address' ,'id': 'id_chosen_state'}),
             'country_txt': SelectBoxCountries(attrs={'id': 'id_country_state_address', 'data-flags': 'true'}),
             'name_txt': TextInput(attrs={'class': 'form-control', 'placeholder': 'Entrar nome completo',
                                          'id': "full_name", 'autofocus': "true", 'required': "",
