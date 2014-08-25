@@ -133,6 +133,7 @@ def questionnaire_create(request, experiment_id, template_name="experiment/quest
     context = {
         "questionnaire_form": questionnaire_form,
         "creating": True,
+        "updating": False,
         "experiment": experiment,
         "questionnaires_list": questionnaires_list}
 
@@ -148,14 +149,8 @@ def questionnaire_update(request, questionnaire_configuration_id,
     questionnaire_form = QuestionnaireConfigurationForm(request.POST or None, instance=questionnaire_configuration)
 
     surveys = Questionnaires()
-    questionnaires_origin_list = surveys.find_all_active_questionnaires()
+    questionnaire_title = surveys.get_survey_title(questionnaire_configuration.lime_survey_id)
     surveys.release_session_key()
-
-    questionnaires_list = []
-
-    for questionnaire_origin in questionnaires_origin_list:
-        if questionnaire_origin['sid'] == questionnaire_configuration.lime_survey_id:
-            questionnaires_list.append(questionnaire_origin)
 
     if request.method == "POST":
 
@@ -188,8 +183,10 @@ def questionnaire_update(request, questionnaire_configuration_id,
     context = {
         "questionnaire_form": questionnaire_form,
         "creating": False,
+        "updating": True,
         "experiment": experiment,
-        "questionnaires_list": questionnaires_list}
+        "questionnaire_title": questionnaire_title,
+        "questionnaire_id": questionnaire_configuration.lime_survey_id}
 
     return render(request, template_name, context)
 
@@ -421,7 +418,7 @@ def questionnaire_response_update(request, questionnaire_response_id,
             if request.POST['action'] == "remove":
                 questionnaire_response.delete()
                 redirect_url = reverse("subject_questionnaire",
-                                       args=(questionnaire_configuration.experiment.id, subject.id))
+                                       args=(questionnaire_configuration.experiment.id, subject.id,))
                 return HttpResponseRedirect(redirect_url)
 
 
@@ -457,7 +454,7 @@ def subject_questionnaire_view(request, experiment_id, subject_id,
             experiment.subjects.remove(subject)
 
             messages.info(request, 'Participante removido do experimento.')
-            redirect_url = reverse("subjects", args=(experiment_id))
+            redirect_url = reverse("subjects", args=(experiment_id,))
             return HttpResponseRedirect(redirect_url)
 
     questionnaires_configuration_list = QuestionnaireConfiguration.objects.filter(experiment=experiment)
@@ -524,7 +521,7 @@ def subjects_insert(request, experiment_id, patient_id):
     else:
         messages.warning(request, 'Participante já inserido para este experimento.')
 
-    redirect_url = reverse("subjects", args=(experiment_id))
+    redirect_url = reverse("subjects", args=(experiment_id,))
     return HttpResponseRedirect(redirect_url)
 
 
