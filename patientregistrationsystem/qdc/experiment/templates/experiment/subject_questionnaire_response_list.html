@@ -110,7 +110,7 @@
                                                     <tr>
                                                         {% if not subject_questionnaire.questionnaire_configuration.number_of_fills or subject_questionnaire.questionnaire_responses|length < subject_questionnaire.questionnaire_configuration.number_of_fills %}
                                                             <td>
-                                                                <a href="/experiment/{{ experiment.id }}/subjects/{{ subject.id }}/questionnaire/{{ subject_questionnaire.questionnaire_configuration.id }}/response/"
+                                                                <a href="/experiment/{{ experiment.id }}/subjects/{{ subject.id }}/questionnaire/{{ subject_questionnaire.questionnaire_configuration.id }}/response/?action=create"
                                                                     class="btn btn-primary">Novo preenchimento</a>
                                                             </td>
                                                             <td></td>

@@ -370,7 +370,15 @@ def user_list(request, template_name='quiz/user_list.html'):
 @permission_required('auth.add_user')
 def user_create(request, template_name='quiz/register_users.html'):
     form = UserForm(request.POST or None)
+    group_permissions = []
     groups = Group.objects.all()
+
+    for group in groups:
+        group_permissions.append(
+            {'group': group,
+             'checked': False}
+        )
+
     if request.method == "POST":
         if form.is_valid():
             user_added = form.save()
@@ -379,7 +387,7 @@ def user_create(request, template_name='quiz/register_users.html'):
             return redirect('user_list')
         else:
             messages.error(request, 'Não foi possível criar usuário.')
-    return render(request, template_name, {'form': form, 'groups': groups})
+    return render(request, template_name, {'form': form, 'group_permissions': group_permissions})
 
 
 @login_required
@@ -396,7 +404,22 @@ def user_delete(request, user_id):
 @permission_required('auth.change_user')
 def user_update(request, user_id, template_name="quiz/register_users.html"):
     form = UserFormUpdate(request.POST or None, instance=User.objects.get(id=user_id))
+    user_groups = User.objects.get(id=user_id).groups.all()
+    group_permissions = []
     groups = Group.objects.all()
+
+    for group in groups:
+        if group in user_groups:
+            group_permissions.append(
+                {'group': group,
+                 'checked': True}
+            )
+        else:
+            group_permissions.append(
+                {'group': group,
+                 'checked': False}
+            )
+
     if request.method == "POST":
         if form.is_valid():
             form.save()
@@ -406,7 +429,7 @@ def user_update(request, user_id, template_name="quiz/register_users.html"):
     context = {
         'form': form,
         'editing': True,
-        'groups': groups,
+        'group_permissions': group_permissions,
     }
     return render(request, template_name, context)
 

@@ -133,6 +133,7 @@ def questionnaire_create(request, experiment_id, template_name="experiment/quest
     context = {
         "questionnaire_form": questionnaire_form,
         "creating": True,
+        "updating": False,
         "experiment": experiment,
         "questionnaires_list": questionnaires_list}
 
@@ -148,14 +149,8 @@ def questionnaire_update(request, questionnaire_configuration_id,
     questionnaire_form = QuestionnaireConfigurationForm(request.POST or None, instance=questionnaire_configuration)
 
     surveys = Questionnaires()
-    questionnaires_origin_list = surveys.find_all_active_questionnaires()
+    questionnaire_title = surveys.get_survey_title(questionnaire_configuration.lime_survey_id)
     surveys.release_session_key()
-
-    questionnaires_list = []
-
-    for questionnaire_origin in questionnaires_origin_list:
-        if questionnaire_origin['sid'] == questionnaire_configuration.lime_survey_id:
-            questionnaires_list.append(questionnaire_origin)
 
     if request.method == "POST":
 
@@ -188,8 +183,10 @@ def questionnaire_update(request, questionnaire_configuration_id,
     context = {
         "questionnaire_form": questionnaire_form,
         "creating": False,
+        "updating": True,
         "experiment": experiment,
-        "questionnaires_list": questionnaires_list}
+        "questionnaire_title": questionnaire_title,
+        "questionnaire_id": questionnaire_configuration.lime_survey_id}
 
     return render(request, template_name, context)
 
@@ -488,8 +485,7 @@ def subject_questionnaire_view(request, experiment_id, subject_id,
         subject_questionnaires.append(
             {'questionnaire_configuration': questionnaire_configuration,
              'title': surveys.get_survey_title(questionnaire_configuration.lime_survey_id),
-             'questionnaire_responses': questionnaire_responses_with_status
-            }
+             'questionnaire_responses': questionnaire_responses_with_status}
         )
 
     context = {

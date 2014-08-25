@@ -21,6 +21,25 @@
     </style>
 
     <script type="text/javascript">
+        function Validate(){
+           if(!validateForm()){
+                showErrorMessage('É necessário escolher pelo menos um perfil de usuário!');
+                return false;
+           }
+           return true
+        }
+
+        function validateForm()
+        {
+           var c=document.getElementsByTagName('input');
+           for (var i = 0; i<c.length; i++){
+               if (c[i].type=='checkbox') {
+                    if (c[i].checked){return true}
+               }
+           }
+           return false;
+        }
+
         var beginCheckPassword1 = false;
         function checkPass(){
             var password1 = $('#id_password').val();
@@ -108,7 +127,7 @@
 
 {% block form %}
     <div class="row">
-    <form id="user_form" method="post">
+    <form id="user_form" method="post" onsubmit="return Validate()">
     {% csrf_token %}
 {% endblock %}
 
@@ -235,15 +254,20 @@
                 <div class="row">
                     <div class="col-xs-6 col-sm-12">
                         <div class="form-group">
-                            <label>Em quais desses perfis o usuário se indentifica?</label>
+                            <label class="control-label">Em quais desses perfis o usuário se indentifica? <b style="color: red;">*</b></label>
                             <div class="input-group  input-group-sm">
-                                {% for group in groups %}
-                                    <div class="checkbox">
+                                {% for group_permission in group_permissions %}
+                                    <div class="myradio">
                                         <label>
-                                            <input name="groups" type="checkbox" value={{ group.pk }}> {{ group }}
+                                            {% if group_permission.checked == True %}
+                                                <input name="groups" type="checkbox" checked="checked" value={{ group_permission.group.pk }}> {{ group_permission.group }}
+                                            {% else %}
+                                                <input name="groups" type="checkbox" value={{ group_permission.group.pk }}> {{ group_permission.group }}
+                                            {% endif %}
+
                                         </label>
                                         <h5><small>(
-                                        {% for permission in group.permissions.all %}
+                                        {% for permission in group_permission.group.permissions.all %}
                                             {%  trans permission.name %}.
                                         {% endfor %}
                                         )</small></h5>

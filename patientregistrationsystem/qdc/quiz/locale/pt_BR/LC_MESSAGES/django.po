@@ -65,3 +65,46 @@ msgstr "Pode remover dados de prontuário"
 
 msgid "Can view medical record"
 msgstr "Pode ver dados de prontuário"
+
+msgid "Can add experiment"
+msgstr "Pode adicionar experimento"
+
+msgid "Can change experiment"
+msgstr "Pode alterar experimento"
+
+msgid "Can delete experiment"
+msgstr "Pode remover experimento"
+
+msgid "Can view experiment"
+msgstr "Pode ver experimento"
+
+msgid "Can add questionnaire configuration"
+msgstr "Pode adicionar configurações ao questionário"
+
+msgid "Can change questionnaire configuration"
+msgstr "Pode alterar configurações de questionário"
+
+msgid "Can delete questionnaire configuration"
+msgstr "Pode remover configurações de questionário"
+
+msgid "Can add questionnaire response"
+msgstr "Pode adicionar respostas ao questionário"
+
+msgid "Can change questionnaire response"
+msgstr "Pode alterar respostas do questionário"
+
+msgid "Can delete questionnaire response"
+msgstr "Pode remover respostas do questionário"
+
+msgid "Can view questionnaire response"
+msgstr "Pode ver respostas do questionário"
+
+msgid "Can add subject"
+msgstr "Pode adicionar participante"
+
+msgid "Can change subject"
+msgstr "Pode alterar participante"
+
+msgid "Can delete subject"
+msgstr "Pode remover participante"
+
