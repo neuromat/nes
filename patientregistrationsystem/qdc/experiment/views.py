@@ -488,8 +488,7 @@ def subject_questionnaire_view(request, experiment_id, subject_id,
         subject_questionnaires.append(
             {'questionnaire_configuration': questionnaire_configuration,
              'title': surveys.get_survey_title(questionnaire_configuration.lime_survey_id),
-             'questionnaire_responses': questionnaire_responses_with_status
-            }
+             'questionnaire_responses': questionnaire_responses_with_status}
         )
 
     context = {
