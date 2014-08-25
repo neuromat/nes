@@ -393,6 +393,7 @@ def questionnaire_response_update(request, questionnaire_response_id,
     survey_title = surveys.get_survey_title(questionnaire_configuration.lime_survey_id)
     survey_active = surveys.get_survey_properties(questionnaire_configuration.lime_survey_id, 'active')
     survey_admin = surveys.get_survey_properties(questionnaire_configuration.lime_survey_id, 'admin')
+    survey_completed = (surveys.get_participant_properties(questionnaire_configuration.lime_survey_id, questionnaire_response.token_id, "completed") != "N")
     surveys.release_session_key()
 
     questionnaire_responsible = questionnaire_response.questionnaire_responsible
@@ -434,7 +435,8 @@ def questionnaire_response_update(request, questionnaire_response_id,
         "survey_active": survey_active,
         "questionnaire_responsible": questionnaire_responsible,
         "creating": False,
-        "subject": subject
+        "subject": subject,
+        "completed": survey_completed
     }
 
     return render(request, template_name, context)

@@ -83,7 +83,7 @@
                                                  <blockquote>
                                                     <i><h6>
                                                     Quantidade de preenchimentos: {% if subject_questionnaire.questionnaire_configuration.number_of_fills %}{{ subject_questionnaire.questionnaire_configuration.number_of_fills }}{% else %}ilimitada{% endif %} <br/>
-                                                    Intervalo entre preenchimentos: {{ subject_questionnaire.questionnaire_configuration.interval_between_fills_value }} {{ subject_questionnaire.questionnaire_configuration.interval_between_fills_unit }} <br/>
+                                                    Intervalo entre preenchimentos: {% if subject_questionnaire.questionnaire_configuration.interval_between_fills_value %}{{ subject_questionnaire.questionnaire_configuration.interval_between_fills_value }} {{ subject_questionnaire.questionnaire_configuration.interval_between_fills_unit }}{% else %}indefinido{% endif %} <br/>
                                                     </h6></i>
                                                  </blockquote>
                                             </td>

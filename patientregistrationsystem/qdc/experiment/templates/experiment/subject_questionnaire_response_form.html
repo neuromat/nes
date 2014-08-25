@@ -176,7 +176,9 @@
                 {% endif %}
             </div>
             <div class="btn-group pull-right">
-                <button type="submit" name="action" value="save" class="btn btn-primary">{% if creating %}Novo preenchimento{% else %}Continuar preenchimento{% endif %}</button>
+                {% if not completed %}
+                    <button type="submit" name="action" value="save" class="btn btn-primary">{% if creating %}Novo preenchimento{% else %}Continuar preenchimento{% endif %}</button>
+                {% endif %}
             </div>
             <div class="btn-group pull-right">
                 <a href="/experiment/{{ questionnaire_configuration.experiment.id }}/subjects/{{ subject.id }}/questionnaire" class="btn"
