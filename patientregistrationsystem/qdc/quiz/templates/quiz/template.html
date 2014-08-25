@@ -130,7 +130,7 @@
                 {% endif %}
 
                 <li {% block activeAdvancedExperiment %}{% endblock %}>
-                    {% if perms.auth.view_experiment %}
+                    {% if perms.experiment.view_experiment %}
                     <a href="/experiment/list/">Experimentos</a>
                     {% endif %}
                 </li>
