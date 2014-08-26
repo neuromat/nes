@@ -101,7 +101,7 @@
 
             <div class="tab-content">
                 <div class="row">
-                    <div class="col-md-10">
+                    <div class="col-md-12">
                         <div class="container span6 offset3 well ">
                             <div class="row">
                                 <div class="col-xs-6 col-sm-4">
@@ -196,40 +196,32 @@
                         </div>
                     </div>
                 </div>
-            </div>
-        </div>
-    </div>
-    <div class="col-md-1">
-    </div>
-
-        <div class="row">
-            <div class="col-md-1">
-            </div>
-            <div class="col-md-10">
-                <div class="btn-group pull-right">
+                <div class="btn-toolbar">
+                    <div class="btn-group pull-left">
                     {% if not creating and not viewing %}
                         <button name="action" value="remove" type="button" class="btn btn-secondary" style="background-color: indianred; color: #ffffff" onclick="show_modal_remove_for_complementary_exam()">Excluir</button>
                     {% endif %}
+                </div>
+                <div class="btn-group pull-right">
                     {% if length == 0 %}
-                        <button type="button" class="btn btn-secondary" style="background-color: #808080; color: #ffffff"
-                        onclick="show_modal_remove_exam()">Voltar</button>
+                        <button type="button" class="btn" style="background-color: #f5f5f5" onclick="show_modal_remove_exam()">Voltar</button>
                     {% else %}
                         {% if viewing %}
-                            <a type="button" class="btn btn-secondary" style="background-color: #808080; color: #ffffff"
-                            href="/quiz/patient/{{ patient_id }}/medical_record/{{ record_id }}/?status=view&currentTab=3">Voltar</a>
+                            <a href="/quiz/patient/{{ patient_id }}/medical_record/{{ record_id }}/?status=view&currentTab=3" class="btn" style="background-color: #f5f5f5">Voltar</a>
                         {% else %}
-                            <a type="button" class="btn btn-secondary" style="background-color: #808080; color: #ffffff"
-                           href="/quiz/patient/{{ patient_id }}/medical_record/edit/{{ record_id }}/?status=view&currentTab=3">Voltar</a>
+                            <a href="/quiz/patient/{{ patient_id }}/medical_record/edit/{{ record_id }}/?status=view&currentTab=3" class="btn" style="background-color: #f5f5f5">Voltar</a>
                         {% endif %}
                     {% endif %}
                     {% if not viewing %}
                     <button id="save_exam" name="action" value="save" type="submit" class="btn btn-primary">Salvar</button>
                     {% endif %}
                 </div>
-            </div>
-            <div class="col-md-1">
+                </div>
             </div>
         </div>
+    </div>
+    <div class="col-md-1">
+    </div>
 
     <div class="modal fade" id="modalRemove" tabindex="-1" role="dialog" aria-labelledby="myModalLabel"
          aria-hidden="true">
