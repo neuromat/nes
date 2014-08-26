@@ -132,14 +132,14 @@
                                         </a>
                                     </td>
                                     <td>
-                                        {% if questionnaire_configuration.number_of_fills %}
+                                        {% if questionnaire_configuration.number_of_fills != None %}
                                             {{ questionnaire_configuration.number_of_fills }}
                                         {% else %}
                                             Ilimitada
                                         {% endif %}
                                     </td>
                                     <td>
-                                        {% if questionnaire_configuration.interval_between_fills_value and questionnaire_configuration.interval_between_fills_unit %}
+                                        {% if questionnaire_configuration.interval_between_fills_value != None and questionnaire_configuration.interval_between_fills_unit != None %}
                                             {{ questionnaire_configuration.interval_between_fills_value }} {{ questionnaire_configuration.interval_between_fills_unit.name }}
                                         {% else %}
                                             Indefinido

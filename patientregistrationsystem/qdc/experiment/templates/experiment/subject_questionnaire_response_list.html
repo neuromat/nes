@@ -82,8 +82,8 @@
                                                 <br/>
                                                  <blockquote>
                                                     <i><h6>
-                                                    Quantidade de preenchimentos: {% if subject_questionnaire.questionnaire_configuration.number_of_fills %}{{ subject_questionnaire.questionnaire_configuration.number_of_fills }}{% else %}ilimitada{% endif %} <br/>
-                                                    Intervalo entre preenchimentos: {% if subject_questionnaire.questionnaire_configuration.interval_between_fills_value %}{{ subject_questionnaire.questionnaire_configuration.interval_between_fills_value }} {{ subject_questionnaire.questionnaire_configuration.interval_between_fills_unit }}{% else %}indefinido{% endif %} <br/>
+                                                    Quantidade de preenchimentos: {% if subject_questionnaire.questionnaire_configuration.number_of_fills != None %}{{ subject_questionnaire.questionnaire_configuration.number_of_fills }}{% else %}ilimitada{% endif %} <br/>
+                                                    Intervalo entre preenchimentos: {% if subject_questionnaire.questionnaire_configuration.interval_between_fills_value != None %}{{ subject_questionnaire.questionnaire_configuration.interval_between_fills_value }} {{ subject_questionnaire.questionnaire_configuration.interval_between_fills_unit }}{% else %}indefinido{% endif %} <br/>
                                                     </h6></i>
                                                  </blockquote>
                                             </td>
@@ -111,7 +111,7 @@
                                                         </tr>
                                                     {% endfor %}
                                                     <tr>
-                                                        {% if not subject_questionnaire.questionnaire_configuration.number_of_fills or subject_questionnaire.questionnaire_responses|length < subject_questionnaire.questionnaire_configuration.number_of_fills %}
+                                                        {% if subject_questionnaire.questionnaire_configuration.number_of_fills == None or subject_questionnaire.questionnaire_responses|length < subject_questionnaire.questionnaire_configuration.number_of_fills %}
                                                             <td>
                                                                 {% if perms.experiment.add_questionnaireresponse %}
                                                                     <a href="/experiment/{{ experiment.id }}/subjects/{{ subject.id }}/questionnaire/{{ subject_questionnaire.questionnaire_configuration.id }}/response/?action=create"
