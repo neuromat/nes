@@ -380,14 +380,15 @@ def user_create(request, template_name='quiz/register_users.html'):
         )
 
     if request.method == "POST":
-        if form.is_valid():
-            user_added = form.save()
-            send_email_user(user_added, request)
-            messages.success(request, 'Usuário criado com sucesso.')
-            return redirect('user_list')
-        else:
-            messages.error(request, 'Não foi possível criar usuário.')
-    return render(request, template_name, {'form': form, 'group_permissions': group_permissions})
+        if request.POST['action'] == "save":
+            if form.is_valid():
+                user_added = form.save()
+                send_email_user(user_added, request)
+                messages.success(request, 'Usuário criado com sucesso.')
+                return redirect('user_list')
+            else:
+                messages.error(request, 'Não foi possível criar usuário.')
+    return render(request, template_name, {'form': form, 'group_permissions': group_permissions, 'creating': True})
 
 
 @login_required
@@ -421,15 +422,24 @@ def user_update(request, user_id, template_name="quiz/register_users.html"):
             )
 
     if request.method == "POST":
-        if form.is_valid():
-            form.save()
-            messages.success(request, 'Usuário atualizado com sucesso.')
-            return redirect('user_list')
+        if request.POST['action'] == "save":
+            if form.is_valid():
+                form.save()
+                messages.success(request, 'Usuário atualizado com sucesso.')
+        else:
+            if request.POST['action'] == "remove":
+                user = get_object_or_404(User, id=user_id)
+                user.is_active = False
+                user.save()
+                messages.success(request, 'Usuário removido com sucesso.')
+
+        return redirect('user_list')
 
     context = {
         'form': form,
         'editing': True,
         'group_permissions': group_permissions,
+        'creating': False
     }
     return render(request, template_name, context)
 

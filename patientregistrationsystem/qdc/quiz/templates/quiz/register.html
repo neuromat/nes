@@ -736,6 +736,29 @@
     </div>
     <!-- Esta div finaliza a quarta aba do formulário, #tab4 -->
 
+        <div class="btn-toolbar">
+            <div class="btn-group pull-left">
+                {% if not editing %}
+                    {% if perms.quiz.delete_patient %}
+                        <button type="button" class="btn btn-secondary"
+                                style="background-color: indianred; color: #ffffff"
+                                onclick="$('#modalRemove').modal('show')">Excluir
+                        </button>
+                    {% endif %}
+                {% endif %}
+            </div>
+            <div class="btn-group pull-right">
+                <button type="button" class="btn btn-default" id="prevtab">Anterior</button>
+                <button type="button" class="btn btn-default" id="nexttab">Próximo</button>
+                {% if editing %}
+                    <button type="button" class="btn btn-primary" id="savetab">Salvar</button>
+                {% else %}
+                    {% if perms.quiz.change_patient %}
+                        <button type="button" class="btn btn-primary" id="editPatient">Editar</button>
+                    {% endif %}
+                {% endif %}
+            </div>
+        </div>
     </div>
     </div>
     </div>
@@ -803,30 +826,6 @@
                 <div class="modal-footer">
                     <button type="button" class="btn btn-default" data-dismiss="modal">Cancelar</button>
                 </div>
-            </div>
-        </div>
-    </div>
-
-    <div class="row">
-        <div class="col-md-12">
-            <div class="btn-group pull-right">
-                <button type="button" class="btn btn-default" id="prevtab">Anterior</button>
-                <button type="button" class="btn btn-default" id="nexttab">Próximo</button>
-                {% if editing %}
-                    <button type="button" class="btn btn-primary" id="savetab">Salvar</button>
-                {% else %}
-                    {% if perms.quiz.change_patient %}
-                        <button type="button" class="btn btn-primary" id="editPatient">Editar</button>
-                    {% endif %}
-
-                    {% if perms.quiz.delete_patient %}
-                        <button type="button" class="btn btn-secondary"
-                                style="background-color: indianred; color: #ffffff"
-                                onclick="$('#modalRemove').modal('show')">Excluir
-                        </button>
-                    {% endif %}
-
-                {% endif %}
             </div>
         </div>
     </div>
