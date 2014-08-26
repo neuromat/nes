@@ -193,7 +193,7 @@
 
             <div class="btn-toolbar">
                 <div class="btn-group pull-left">
-                    {% if not creating %}
+                    {% if not creating and perms.experiment.delete_questionnaireconfiguration %}
                         <button type="button" class="btn btn-danger" onclick="$('#modalRemove').modal('show')">Excluir</button>
                     {% endif %}
                 </div>
@@ -224,8 +224,7 @@
                 <div class="modal-footer">
                     <button type="button" class="btn btn-default" data-dismiss="modal">Cancelar</button>
                     <button type="submit" class="btn btn-primary" value="remove" name="action"
-                            style="background-color: indianred; color: #ffffff">Excluir
-                    </button>
+                        style="background-color: indianred; color: #ffffff">Excluir</button>
                 </div>
             </div>
         </div>

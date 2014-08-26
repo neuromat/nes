@@ -96,7 +96,11 @@
                                     {% for item in subject_list %}
                                         <tr>
                                             <td>
-                                                <a href='/experiment/{{ experiment_id }}/subjects/{{ item.subject.id }}/questionnaire/'>{{ item.subject.patient.name_txt }}</a>
+                                                {% if perms.experiment.change_subject %}
+                                                    <a href='/experiment/{{ experiment_id }}/subjects/{{ item.subject.id }}/questionnaire/'>{{ item.subject.patient.name_txt }}</a>
+                                                {% else %}
+                                                    {{ item.subject.patient.name_txt }}
+                                                {% endif %}
                                             </td>
                                             <td>
                                                 <div class="progress" >

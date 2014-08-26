@@ -53,7 +53,7 @@ def experiment_create(request, template_name="experiment/experiment_register.htm
 
 
 @login_required
-@permission_required('experiment.change_experiment')
+@permission_required('experiment.view_experiment')
 def experiment_update(request, experiment_id, template_name="experiment/experiment_register.html"):
     experiment = get_object_or_404(Experiment, pk=experiment_id)
     questionnaires_list = []
@@ -216,13 +216,15 @@ def subjects(request, experiment_id, template_name="experiment/subjects.html"):
 
             if subject_responses:
                 if (questionnaire_configuration.number_of_fills is None and subject_responses.count() > 0) or \
-                        (questionnaire_configuration.number_of_fills is not None and questionnaire_configuration.number_of_fills == subject_responses.count()):
+                        (questionnaire_configuration.number_of_fills is not None and
+                            questionnaire_configuration.number_of_fills == subject_responses.count()):
 
                     number_of_questionnaires_completed = 0
 
                     for subject_response in subject_responses:
 
-                        response_result = surveys.get_participant_properties(questionnaire_configuration.lime_survey_id, subject_response.token_id, "completed")
+                        response_result = surveys.get_participant_properties(questionnaire_configuration.lime_survey_id,
+                                                                             subject_response.token_id, "completed")
 
                         if response_result == "N":
                             break
@@ -231,7 +233,8 @@ def subjects(request, experiment_id, template_name="experiment/subjects.html"):
 
                     if (questionnaire_configuration.number_of_fills is None and
                             number_of_questionnaires_completed > 0) or \
-                            (questionnaire_configuration.number_of_fills is not None and number_of_questionnaires_completed >= questionnaire_configuration.number_of_fills):
+                            (questionnaire_configuration.number_of_fills is not None and
+                                number_of_questionnaires_completed >= questionnaire_configuration.number_of_fills):
 
                         number_of_questionnaires_filled += 1
 
@@ -252,13 +255,11 @@ def subjects(request, experiment_id, template_name="experiment/subjects.html"):
     return render(request, template_name, context)
 
 
-@login_required
-@permission_required('experiment.add_questionnaireresponse')
 def subject_questionnaire_response_start_fill_questionnaire(request, subject_id, questionnaire_id):
     questionnaire_response_form = QuestionnaireResponseForm(request.POST)
 
     if questionnaire_response_form.is_valid():
-        date = request.POST['date']
+        # date = request.POST['date']
 
         questionnaire_response = questionnaire_response_form.save(commit=False)
 
@@ -296,10 +297,7 @@ def subject_questionnaire_response_start_fill_questionnaire(request, subject_id,
         questionnaire_response.save()
 
         # Montagem da URL para redirecionar ao Lime Survey
-        date = date.replace('/', '-')
-
-        # redirect_url = '%s/index.php/survey/index/sid/%s/token/%s/lang/pt-BR/idavaliador/%s/datdataaquisicao/%s/idparticipante/%s' % (
-        #     settings.LIMESURVEY['URL'], questionnaire_config.lime_survey_id, result['token'], request.user.id, date, subject.id)
+        # date = date.replace('/', '-')
 
         redirect_url = get_limesurvey_response_url(questionnaire_response)
 
@@ -316,7 +314,8 @@ def get_limesurvey_response_url(questionnaire_response):
         questionnaire_response.token_id, "token")
     questionnaire_lime_survey.release_session_key()
 
-    redirect_url = '%s/index.php/survey/index/sid/%s/token/%s/lang/pt-BR/idavaliador/%s/datdataaquisicao/%s/idparticipante/%s' % (
+    redirect_url = \
+        '%s/index.php/survey/index/sid/%s/token/%s/lang/pt-BR/idavaliador/%s/datdataaquisicao/%s/idparticipante/%s' % (
         settings.LIMESURVEY['URL'],
         questionnaire_response.questionnaire_configuration.lime_survey_id,
         token,
@@ -331,7 +330,8 @@ def get_limesurvey_response_url(questionnaire_response):
 @permission_required('experiment.add_questionnaireresponse')
 def subject_questionnaire_response_create(request, experiment_id, subject_id, questionnaire_id,
                                           template_name="experiment/subject_questionnaire_response_form.html"):
-    experiment = get_object_or_404(Experiment, id=experiment_id)
+
+    # experiment = get_object_or_404(Experiment, id=experiment_id)
 
     questionnaire_config = get_object_or_404(QuestionnaireConfiguration, id=questionnaire_id)
 
@@ -378,9 +378,9 @@ def subject_questionnaire_response_create(request, experiment_id, subject_id, qu
 
 
 @login_required
-@permission_required('experiment.add_questionnaireresponse')
+@permission_required('experiment.change_questionnaireresponse')
 def questionnaire_response_update(request, questionnaire_response_id,
-                                template_name="experiment/subject_questionnaire_response_form.html"):
+                                  template_name="experiment/subject_questionnaire_response_form.html"):
 
     questionnaire_response = get_object_or_404(QuestionnaireResponse, id=questionnaire_response_id)
 
@@ -390,7 +390,9 @@ def questionnaire_response_update(request, questionnaire_response_id,
     survey_title = surveys.get_survey_title(questionnaire_configuration.lime_survey_id)
     survey_active = surveys.get_survey_properties(questionnaire_configuration.lime_survey_id, 'active')
     survey_admin = surveys.get_survey_properties(questionnaire_configuration.lime_survey_id, 'admin')
-    survey_completed = (surveys.get_participant_properties(questionnaire_configuration.lime_survey_id, questionnaire_response.token_id, "completed") != "N")
+    survey_completed = (surveys.get_participant_properties(questionnaire_configuration.lime_survey_id,
+                                                           questionnaire_response.token_id,
+                                                           "completed") != "N")
     surveys.release_session_key()
 
     questionnaire_responsible = questionnaire_response.questionnaire_responsible
@@ -420,7 +422,6 @@ def questionnaire_response_update(request, questionnaire_response_id,
                 redirect_url = reverse("subject_questionnaire",
                                        args=(questionnaire_configuration.experiment.id, subject.id,))
                 return HttpResponseRedirect(redirect_url)
-
 
     context = {
         "FAIL": fail,
@@ -476,7 +477,9 @@ def subject_questionnaire_view(request, experiment_id, subject_id,
             can_remove = False
 
         for questionnaire_response in questionnaire_responses:
-            response_result = surveys.get_participant_properties(questionnaire_configuration.lime_survey_id, questionnaire_response.token_id, "completed")
+            response_result = surveys.get_participant_properties(questionnaire_configuration.lime_survey_id,
+                                                                 questionnaire_response.token_id,
+                                                                 "completed")
             questionnaire_responses_with_status.append(
                 {'questionnaire_response': questionnaire_response,
                  'completed': response_result != "N"}
