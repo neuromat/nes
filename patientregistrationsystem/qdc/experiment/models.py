@@ -1,6 +1,7 @@
 # -*- coding: UTF-8 -*-
 from django.db import models
 from django.core.exceptions import ValidationError
+from django.core.validators import MinValueValidator
 from quiz.models import Patient, User
 
 import datetime
@@ -38,8 +39,8 @@ class Experiment(models.Model):
 class QuestionnaireConfiguration(models.Model):
     lime_survey_id = models.IntegerField(null=False, blank=False)
     experiment = models.ForeignKey(Experiment, null=False)
-    number_of_fills = models.IntegerField(null=True, blank=True)
-    interval_between_fills_value = models.IntegerField(null=True, blank=True)
+    number_of_fills = models.IntegerField(null=True, blank=True, validators=[MinValueValidator(1)])
+    interval_between_fills_value = models.IntegerField(null=True, blank=True, validators=[MinValueValidator(1)])
     interval_between_fills_unit = models.ForeignKey(TimeUnit, null=True, blank=True)
 
 

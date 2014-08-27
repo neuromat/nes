@@ -142,7 +142,11 @@
                         <div class="form-group {% if questionnaire_form.errors.number_of_fills %}has-error{% endif %}">
                             <label for="number_of_fills" class="control-label">Quantidade</label>
                                 {{ questionnaire_form.number_of_fills }}
-                            <div class="help-block with-errors"></div>
+                            <div class="help-block with-errors">
+                                {% if questionnaire_form.number_of_fills.errors %}
+                                    {% for error in questionnaire_form.number_of_fills.errors %}{{ error }}{% endfor %}
+                                {% endif %}
+                            </div>
                         </div>
                     </div>
 
@@ -163,10 +167,14 @@
                     </div>
 
                     <div class="col-xs-6 col-sm-2">
-                        <div class="form-group">
+                        <div class="form-group {% if questionnaire_form.errors.interval_between_fills_value %}has-error{% endif %}">
                             <label for="interval_between_fills_value" class="control-label">Intervalo</label>
                                 {{ questionnaire_form.interval_between_fills_value }}
-                            <div class="help-block with-errors"></div>
+                            <div class="help-block with-errors">
+                                {% if questionnaire_form.interval_between_fills_value.errors %}
+                                    {% for error in questionnaire_form.interval_between_fills_value.errors %}{{ error }}{% endfor %}
+                                {% endif %}
+                            </div>
                         </div>
                     </div>
 
