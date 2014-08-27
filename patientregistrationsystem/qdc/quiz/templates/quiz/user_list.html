@@ -2,14 +2,6 @@
 
 {% block header %}
     <script>
-        function show_modal_remove (user_id){
-            if(user_id != {{ current_user_id }}){
-                var  modal_remove = document.getElementById('removeUser');
-                modal_remove.setAttribute( "href", '/quiz/user/delete/' + user_id);
-                $('#modalRemove').modal('show');
-            }
-            else showErrorMessageTemporary("Usuário em uso.")
-        }
         $(function(){
             $("[data-toggle=tooltip]").tooltip();
             {% for message in messages %}
@@ -51,11 +43,6 @@
                                 <td>{{ user.first_name }}</td>
                                 <td>{{ user.last_name }}</td>
                                 <td>{{ user.email }}</td>
-                                <td>
-                                    {% if perms.auth.delete_user and current_user_id != user.id %}
-                                        <a class="glyphicon glyphicon-remove" data-toggle="tooltip" data-placement="right" title="Remover" style="color: indianred" onclick="show_modal_remove({{ user.id }})"></a>
-                                    {% endif %}
-                                </td>
                             </tr>
                         {% endfor %}
                         </tbody>
@@ -66,19 +53,6 @@
                     <a href="/quiz/user/new/" class="btn btn-primary">Inserir novo usuário</a>
                 </div>
                 {% endif %}
-            </div>
-        </div>
-    </div>
-    <div class="modal fade" id="modalRemove" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
-        <div class="modal-dialog">
-            <div class="modal-content">
-                <div class="modal-body">
-                    Tem certeza que deseja excluir o usuário?
-                </div>
-                <div class="modal-footer">
-                    <button type="button" class="btn btn-default" data-dismiss="modal">Cancelar</button>
-                    <a id="removeUser" class="btn btn-primary" style="background-color: indianred; color: #ffffff" href="">Excluir</a>
-                </div>
             </div>
         </div>
     </div>

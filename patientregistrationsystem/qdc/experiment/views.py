@@ -60,8 +60,14 @@ def experiment_update(request, experiment_id, template_name="experiment/experime
 
     if experiment:
         questionnaires_configuration_list = QuestionnaireConfiguration.objects.filter(experiment=experiment)
-
         surveys = Questionnaires()
+        questionnaires_configuration_list = [
+            {"survey_title": surveys.get_survey_title(questionnaire_configuration.lime_survey_id),
+             "number_of_fills": questionnaire_configuration.number_of_fills,
+             "interval_between_fills_value": questionnaire_configuration.interval_between_fills_value,
+             "interval_between_fills_unit": questionnaire_configuration.interval_between_fills_unit,
+             "id": questionnaire_configuration.id}
+            for questionnaire_configuration in questionnaires_configuration_list]
         questionnaires_list = surveys.find_all_active_questionnaires()
         surveys.release_session_key()
 

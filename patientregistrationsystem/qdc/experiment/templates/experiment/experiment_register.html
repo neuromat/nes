@@ -123,12 +123,7 @@
                                 <tr>
                                     <td>
                                         <a data-toggle="tooltip" data-placement="left" title="Editar" href="/experiment/questionnaire/edit/{{ questionnaire_configuration.id }}">
-
-                                        {% for questionnaire in questionnaires_list %}
-                                            {% if questionnaire.sid == questionnaire_configuration.lime_survey_id %}
-                                                {{ questionnaire.surveyls_title }}
-                                            {% endif %}
-                                        {% endfor %}
+                                        {{ questionnaire_configuration.survey_title }}
                                         </a>
                                     </td>
                                     <td>

@@ -41,7 +41,7 @@
 
     <ol class="breadcrumb">
         <li>Pacientes</li>
-        {% if status_mode %}
+        {% if status_mode == "edit" or creating %}
             <li><a href="/quiz/patient/edit/{{ patient_id }}/?currentTab=3">{{ name_patient }}</a></li>
         {% else %}
             <li><a href="/quiz/patient/{{ patient_id }}/?currentTab=3">{{ name_patient }}</a></li>
@@ -226,24 +226,29 @@
             </div>
         </div>
         <div class="col-md-1"></div>
-    </div>
 
-    <div class="col-md-1"></div>
-    </div>
-    </div>
-
-    <div class="row">
-        <div class="col-md-1">
-        </div>
-        <div class="col-md-12">
+        <div class="btn-toolbar">
             <div class="btn-group pull-right">
                 {% if creating or editing %}
                     <button type="submit" name="action" value="finish" class="btn btn-primary">Finalizar avaliação</button>
                 {% endif %}
             </div>
+            <div class="btn-group pull-right">
+                {% if creating %}
+                    <a href="/quiz/patient/edit/{{ patient_id }}/?currentTab=3" class="btn" style="background-color: #f5f5f5">Cancelar</a>
+                {% else %}
+                    {% if status_mode == "edit" %}
+                        <a href="/quiz/patient/edit/{{ patient_id }}/?currentTab=3" class="btn" style="background-color: #f5f5f5">Voltar</a>
+                    {% else %}
+                        <a href="/quiz/patient/{{ patient_id }}/?currentTab=3" class="btn" style="background-color: #f5f5f5">Voltar</a>
+                    {% endif %}
+                {% endif %}
+            </div>
         </div>
-        <div class="col-md-1">
-        </div>
+    </div>
+
+    <div class="col-md-1"></div>
+    </div>
     </div>
 
     <div class="modal fade" id="modalRemove" tabindex="-1" role="dialog" aria-labelledby="myModalLabel"
