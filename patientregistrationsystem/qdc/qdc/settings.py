@@ -68,6 +68,7 @@ MIDDLEWARE_CLASSES = (
     'django.middleware.locale.LocaleMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
+    'qdc.middleware.PasswordChangeMiddleware',
 )
 
 ROOT_URLCONF = 'qdc.urls'
@@ -82,8 +83,8 @@ DATABASES = {
         'NAME': 'qdcdb_dev',
         'USER': 'qdc',
         'PASSWORD': 'DEVqdc1716',
-        # 'HOST': '200.144.254.136',
-        # 'TEST_NAME': 'test_evandro',
+        'HOST': '200.144.254.136',
+        'TEST_NAME': 'test_romulo',
     }
 }
 
@@ -93,6 +94,9 @@ LIMESURVEY = {
     'USER': 'evandro',
     'PASSWORD': '8YtztuqeGzUU',
 }
+
+#AUTH_USER_MODEL = 'quiz.UserProfile'
+AUTH_PROFILE_MODULE = 'quiz.UserProfile'
 
 TEMPLATE_DIRS = [os.path.join(BASE_DIR, 'templates')]
 
@@ -130,7 +134,7 @@ SERVER_EMAIL = EMAIL_HOST_USER
 # EMAIL_HOST = 'localhost'
 # EMAIL_PORT = 1025
 # EMAIL_HOST_USER = ''
-#     EMAIL_HOST_PASSWORD = ''
+# EMAIL_HOST_PASSWORD = ''
 #     EMAIL_USE_TLS = False
 #     DEFAULT_FROM_EMAIL = 'testing@example.com'
 
@@ -143,3 +147,5 @@ STATIC_URL = '/static/'
 
 MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
 MEDIA_URL = '/media/'
+
+

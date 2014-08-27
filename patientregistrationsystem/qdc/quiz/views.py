@@ -131,14 +131,14 @@ def save_patient(current_tab, patient_form, request, social_demographic_form, so
         if insert_new or social_demographic_form.has_changed():
 
             if (new_social_demographic_data.tv_opt is not None and
-                    new_social_demographic_data.radio_opt is not None and
-                    new_social_demographic_data.bath_opt is not None and
-                    new_social_demographic_data.automobile_opt is not None and
-                    new_social_demographic_data.house_maid_opt is not None and
-                    new_social_demographic_data.wash_machine_opt is not None and
-                    new_social_demographic_data.dvd_opt is not None and
-                    new_social_demographic_data.refrigerator_opt is not None and
-                    new_social_demographic_data.freezer_opt is not None):
+                        new_social_demographic_data.radio_opt is not None and
+                        new_social_demographic_data.bath_opt is not None and
+                        new_social_demographic_data.automobile_opt is not None and
+                        new_social_demographic_data.house_maid_opt is not None and
+                        new_social_demographic_data.wash_machine_opt is not None and
+                        new_social_demographic_data.dvd_opt is not None and
+                        new_social_demographic_data.refrigerator_opt is not None and
+                        new_social_demographic_data.freezer_opt is not None):
 
                 new_social_demographic_data.social_class_opt = new_social_demographic_data.calculate_social_class(
                     tv=request.POST['tv_opt'], radio=request.POST['radio_opt'],
@@ -152,14 +152,14 @@ def save_patient(current_tab, patient_form, request, social_demographic_form, so
                 new_social_demographic_data.social_class_opt = None
 
                 if (new_social_demographic_data.tv_opt is not None or
-                        new_social_demographic_data.radio_opt is not None or
-                        new_social_demographic_data.bath_opt is not None or
-                        new_social_demographic_data.automobile_opt is not None or
-                        new_social_demographic_data.house_maid_opt is not None or
-                        new_social_demographic_data.wash_machine_opt is not None or
-                        new_social_demographic_data.dvd_opt is not None or
-                        new_social_demographic_data.refrigerator_opt is not None or
-                        new_social_demographic_data.freezer_opt is not None):
+                            new_social_demographic_data.radio_opt is not None or
+                            new_social_demographic_data.bath_opt is not None or
+                            new_social_demographic_data.automobile_opt is not None or
+                            new_social_demographic_data.house_maid_opt is not None or
+                            new_social_demographic_data.wash_machine_opt is not None or
+                            new_social_demographic_data.dvd_opt is not None or
+                            new_social_demographic_data.refrigerator_opt is not None or
+                            new_social_demographic_data.freezer_opt is not None):
                     messages.warning(request, 'Classe Social não calculada, pois os campos necessários '
                                               'para o cálculo não foram preenchidos.')
                     current_tab = "1"
@@ -425,6 +425,13 @@ def user_update(request, user_id, template_name="quiz/register_users.html"):
         if request.POST['action'] == "save":
             if form.is_valid():
                 form.save()
+                
+                if request.POST['password']:
+                    user = get_object_or_404(User, id=user_id)
+                    profile = user.get_profile()
+                    profile.force_password_change = True
+                    profile.save()
+                
                 messages.success(request, 'Usuário atualizado com sucesso.')
         else:
             if request.POST['action'] == "remove":
@@ -462,7 +469,7 @@ def send_email_user(user_added=None, request=None, domain_override=None,
         'email': user_added.email,
         'domain': domain,
         'site_name': site_name,
-        'uid': urlsafe_base64_encode(force_bytes(user_added.pk)), #int_to_base36(user_added.id),
+        'uid': urlsafe_base64_encode(force_bytes(user_added.pk)),  # int_to_base36(user_added.id),
         'user': user_added,
         'token': token_generator.make_token(user_added),
         'protocol': use_https and 'https' or 'http',
@@ -546,7 +553,6 @@ def medical_record_view(request, patient_id, record_id, template_name="quiz/medi
 @login_required
 @permission_required('quiz.add_medicalrecorddata')
 def medical_record_update(request, patient_id, record_id, template_name="quiz/medical_record.html"):
-
     status_mode = request.GET['status']
     current_tab = get_current_tab(request)
 
