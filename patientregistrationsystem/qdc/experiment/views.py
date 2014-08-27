@@ -259,7 +259,6 @@ def subject_questionnaire_response_start_fill_questionnaire(request, subject_id,
     questionnaire_response_form = QuestionnaireResponseForm(request.POST)
 
     if questionnaire_response_form.is_valid():
-        # date = request.POST['date']
 
         questionnaire_response = questionnaire_response_form.save(commit=False)
 
@@ -296,9 +295,6 @@ def subject_questionnaire_response_start_fill_questionnaire(request, subject_id,
         questionnaire_response.questionnaire_responsible = request.user
         questionnaire_response.save()
 
-        # Montagem da URL para redirecionar ao Lime Survey
-        # date = date.replace('/', '-')
-
         redirect_url = get_limesurvey_response_url(questionnaire_response)
 
         return redirect_url
@@ -330,8 +326,6 @@ def get_limesurvey_response_url(questionnaire_response):
 @permission_required('experiment.add_questionnaireresponse')
 def subject_questionnaire_response_create(request, experiment_id, subject_id, questionnaire_id,
                                           template_name="experiment/subject_questionnaire_response_form.html"):
-
-    # experiment = get_object_or_404(Experiment, id=experiment_id)
 
     questionnaire_config = get_object_or_404(QuestionnaireConfiguration, id=questionnaire_id)
 
@@ -398,13 +392,13 @@ def questionnaire_response_update(request, questionnaire_response_id,
     questionnaire_responsible = questionnaire_response.questionnaire_responsible
     subject = questionnaire_response.subject
 
+    questionnaire_response_form = QuestionnaireResponseForm(None, instance=questionnaire_response)
+
     if request.method == "GET":
-        questionnaire_response_form = QuestionnaireResponseForm(request.POST or None, instance=questionnaire_response)
         fail = None
         redirect_url = None
 
     if request.method == "POST":
-        questionnaire_response_form = QuestionnaireResponseForm(request.POST, instance=questionnaire_response)
 
         if request.POST['action'] == "save":
 
