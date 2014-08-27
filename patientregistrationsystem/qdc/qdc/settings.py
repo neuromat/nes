@@ -83,8 +83,8 @@ DATABASES = {
         'NAME': 'qdcdb_dev',
         'USER': 'qdc',
         'PASSWORD': 'DEVqdc1716',
-        'HOST': '200.144.254.136',
-        'TEST_NAME': 'test_romulo',
+        # 'HOST': '200.144.254.136',
+        # 'TEST_NAME': 'test_evandro',
     }
 }
 
@@ -147,5 +147,3 @@ STATIC_URL = '/static/'
 
 MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
 MEDIA_URL = '/media/'
-
-
