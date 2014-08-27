@@ -328,7 +328,7 @@ def password_change_signal(sender, instance, **kwargs):
     try:
         user = User.objects.get(username=instance.username)
         if not user.password == instance.password:
-            profile = user.get_profile()
+            profile, created = UserProfile.objects.get_or_create(user=user)
             profile.force_password_change = False
             profile.save()
     except User.DoesNotExist:
