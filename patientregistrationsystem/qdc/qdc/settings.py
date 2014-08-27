@@ -83,8 +83,8 @@ DATABASES = {
         'NAME': 'qdcdb_dev',
         'USER': 'qdc',
         'PASSWORD': 'DEVqdc1716',
-        # 'HOST': '200.144.254.136',
-        # 'TEST_NAME': 'test_evandro',
+        'HOST': '200.144.254.136',
+        'TEST_NAME': 'test_romulo',
     }
 }
 
@@ -96,7 +96,7 @@ LIMESURVEY = {
 }
 
 #AUTH_USER_MODEL = 'quiz.UserProfile'
-AUTH_PROFILE_MODULE = 'quiz.UserProfile'
+#AUTH_PROFILE_MODULE = 'quiz.UserProfile'
 
 TEMPLATE_DIRS = [os.path.join(BASE_DIR, 'templates')]
 
