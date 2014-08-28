@@ -3,6 +3,7 @@
 from __future__ import unicode_literals
 from django.db import models
 from django.core.exceptions import ValidationError
+from django.shortcuts import get_object_or_404
 from django.utils.translation import ugettext as _
 from django.contrib.auth.models import User
 from django.db.models import signals
@@ -326,7 +327,15 @@ def create_user_profile_signal(sender, instance, created, **kwargs):
 
 def password_change_signal(sender, instance, **kwargs):
     try:
+
+        if User.objects.all().count() == 0:
+            return
+
         user = User.objects.get(username=instance.username)
+
+        if user.is_superuser:
+            return
+
         if not user.password == instance.password:
             profile, created = UserProfile.objects.get_or_create(user=user)
             profile.force_password_change = False
