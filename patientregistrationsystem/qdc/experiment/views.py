@@ -427,7 +427,17 @@ def questionnaire_response_update(request, questionnaire_response_id,
 
         else:
             if request.POST['action'] == "remove":
-                questionnaire_response.delete()
+                surveys = Questionnaires()
+                result = surveys.delete_participant(
+                    questionnaire_configuration.lime_survey_id,
+                    questionnaire_response.token_id)
+                surveys.release_session_key()
+                result = result[str(questionnaire_response.token_id)]
+                if result == 'Deleted' or result == 'Invalid token ID':
+                    questionnaire_response.delete()
+                    messages.success(request, 'Preenchimento removido com sucesso')
+                else:
+                    messages.error(request, "Erro ao deletar o preenchimento")
                 redirect_url = reverse("subject_questionnaire",
                                        args=(questionnaire_configuration.experiment.id, subject.id,))
                 return HttpResponseRedirect(redirect_url)

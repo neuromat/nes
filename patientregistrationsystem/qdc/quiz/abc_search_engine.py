@@ -75,6 +75,17 @@ class ABCSearchEngine:
         return result
 
     @abstractmethod
+    def delete_participant(self, survey_id, tokens_ids):
+        """Delete survey participant and return on success a array of deletion status for each participant or a failure
+         status array"""
+        result = self.server.delete_participants(
+            self.session_key,
+            survey_id,
+            [tokens_ids]
+        )
+        return result
+
+    @abstractmethod
     def get_survey_title(self, sid):
         """Retorna o titulo da survey pelo id"""
 
@@ -121,6 +132,9 @@ class Questionnaires(ABCSearchEngine):
 
     def add_participant(self, str_id, firstname, lastname, email):
         return super(Questionnaires, self).add_participant(str_id, firstname, lastname, email)
+
+    def delete_participant(self, survey_id, tokens_ids):
+        return super(Questionnaires, self).delete_participant(survey_id, tokens_ids)
 
     def get_survey_properties(self, sid, prop):
         return super(Questionnaires, self).get_survey_properties(sid, prop)
