@@ -102,6 +102,30 @@ class ABCSearchEngine:
         return result.get(prop)
 
     @abstractmethod
+    def set_survey_properties(self, sid, prop):
+        """Configura uma determinada propriedade de um questionario"""
+
+        result = self.server.set_survey_properties(self.session_key, sid, {'method': prop})
+
+        return result.get(prop)
+
+    @abstractmethod
+    def activate_survey(self, sid):
+        """Ativa uma survey criada e disponibiliza para os participantes"""
+
+        result = self.server.activate_survey(self.session_key, sid)
+
+        return result['status']
+
+    @abstractmethod
+    def activate_tokens(self, sid):
+        """Ativa tokens para uma survey """
+
+        result = self.server.activate_tokens(self.session_key, sid)
+
+        return result['status']
+
+    @abstractmethod
     def get_participant_properties(self, survey_id, token_id, prop):
         """Retorna uma determinada propriedade de um participante/token"""
 
@@ -116,6 +140,22 @@ class ABCSearchEngine:
         result = self.server.get_summary(self.session_key, sid, "all")
 
         return "token_completed" in result
+
+    @abstractmethod
+    def add_survey(self, wish_sid, title, language, survey_format):
+        """
+        Adiciona uma survey ao Lime Survey
+        """
+        survey_id_generated = self.server.add_survey(self.session_key, wish_sid, title, language, survey_format)
+        return survey_id_generated
+
+    @abstractmethod
+    def delete_survey(self, sid):
+        """
+        Deleta uma survey do Lime Survey
+        """
+        status = self.server.delete_survey(self.session_key, sid)
+        return status['status']
 
 
 class Questionnaires(ABCSearchEngine):
@@ -139,6 +179,9 @@ class Questionnaires(ABCSearchEngine):
     def get_survey_properties(self, sid, prop):
         return super(Questionnaires, self).get_survey_properties(sid, prop)
 
+    def set_survey_properties(self, sid, prop):
+        return super(Questionnaires, self).get_survey_properties(sid, prop)
+
     def get_participant_properties(self, survey_id, token_id, prop):
         return super(Questionnaires, self).get_participant_properties(survey_id, token_id, prop)
 
@@ -147,3 +190,15 @@ class Questionnaires(ABCSearchEngine):
 
     def survey_has_token_table(self, sid):
         return super(Questionnaires, self).survey_has_token_table(sid)
+
+    def add_survey(self, wish_sid, title, language, survey_format):
+        return super(Questionnaires, self).add_survey(wish_sid, title, language, survey_format)
+
+    def delete_survey(self, sid):
+        return super(Questionnaires, self).delete_survey(sid)
+
+    def activate_survey(self, sid):
+        return super(Questionnaires, self).activate_survey(sid)
+
+    def activate_tokens(self, sid):
+        return super(Questionnaires, self).activate_tokens(sid)

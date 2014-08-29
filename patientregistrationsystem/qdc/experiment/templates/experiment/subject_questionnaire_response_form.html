@@ -3,15 +3,6 @@
 
 {% block header %}
 
-    <script type="text/javascript">
-
-    function windowOpen() {
-        var childWindow2 = window.open("{{ URL }}",'_blank');
-{#        childWindow2.location.reload(true);#}
-    };
-
-    </script>
-
 {% endblock %}
 
 {% block form %}
@@ -77,26 +68,11 @@
 
     {% if FAIL == True %}
         <script>
-{#            popup('{{ URL }}');#}
-{#            child = window.open("{{ URL }}");#}
-{#            setTimeout(function () {#}
-{#                alert("agora");#}
-{#                child.location.reload(true);#}
-{#            }, 3000);#}
-{#            setTimeout(function () {#}
-{#                window.location.href = '/experiment/{{ questionnaire_configuration.experiment.id }}/subjects/{{ subject.id }}/questionnaire/'#}
-{#            }, 3000);#}
+            popup('{{ URL }}');
+            setTimeout(function () {
+                window.location.href = '/experiment/{{ questionnaire_configuration.experiment.id }}/subjects/{{ subject.id }}/questionnaire/'
+            }, 5000);
         </script>
-    {% endif %}
-
-    {% if FAIL == True %}
-        <a href="javascript:windowOpen();">Nova janela</a>
-        <a href="{{ URL }}">Nesta janela</a>
-
-        <input type='button' id='btnOpen' value='Open Child'>
-        <input type='button' id='btnClose' value='Close Child'>
-        <input type='button' id='btnRefresh' value='Refresh Child'>
-
     {% endif %}
 
     <div class="tab-pane fade in active" id="menuUserTab">
@@ -168,14 +144,15 @@
                     <div class="col-xs-3 col-sm-6">
 
                         <div class="form-group {% if questionnaire_response_form.errors.date %}has-error{% endif %}">
-                            <label for="date_birth_txt" class="control-label">Data de preenchimento<b
+                            <label for="fill_date" class="control-label">Data de preenchimento<b
                                     style="color: red;">*</b></label>
 
                             <div class="input-group input-group-sm">
                                 <span class="input-group-addon"> <span class="glyphicon glyphicon-th"></span></span>
                                 {% if completed or not creating %}
                                     <input class="form-control" id="fill_date"
-                                       value="{{ questionnaire_response_form.date.value|date:"d/m/Y" }}" type="text" disabled>
+                                           value="{{ questionnaire_response_form.date.value|date:"d/m/Y" }}" type="text"
+                                           disabled>
                                 {% else %}
                                     {{ questionnaire_response_form.date }}
                                 {% endif %}
@@ -183,7 +160,8 @@
                             <div class="help-block with-errors">
                                 {% if questionnaire_response_form.date.errors %}
                                     <span>
-                                        {% for error in questionnaire_response_form.date.errors %}{{ error }}{% endfor %}
+                                        {% for error in questionnaire_response_form.date.errors %}
+                                            {{ error }}{% endfor %}
                                     </span>
                                 {% endif %}
                             </div>
@@ -229,48 +207,6 @@
         </div>
     </div>
 
-    <script>
-
-        (function() {
-          var childWindow;
-
-          document.getElementById('btnOpen').onclick = openChildWindow;
-          document.getElementById('btnClose').onclick = closeChildWindow;
-          document.getElementById('btnRefresh').onclick = refreshChildWindow;
-
-          function openChildWindow() {
-            if (childWindow) {
-              alert("We already have one open.");
-            }
-            else {
-        {#      childWindow = window.open('http://jsbin.com/awiri4');#}
-              childWindow = window.open('{{ URL }}');
-        {#      childWindow.close();#}
-        {#      childWindow = window.open('{{ URL }}');#}
-            }
-          }
-
-          function closeChildWindow() {
-            if (!childWindow) {
-              alert("There is no child window open.");
-            }
-            else {
-              childWindow.close();
-              childWindow = undefined;
-            }
-          }
-
-          function refreshChildWindow() {
-            if (!childWindow) {
-              alert("There is no child window open.");
-            }
-            else {
-              childWindow.location.reload();
-            }
-          }
-        })();
-
-    </script>
 
 {% endblock %}
 

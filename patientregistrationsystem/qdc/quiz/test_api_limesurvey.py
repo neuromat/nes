@@ -89,6 +89,26 @@ class ABCSearchEngineTest(TestCase):
 
         surveys.release_session_key()
 
+    def test_add_and_delete_survey(self):
+        """
+        TDD - Criar uma survey de teste e apos devera ser excluida
+        """
+        survey_id_generated = self.server.add_survey(self.session_key, 9999, 'Questionario de Teste', 'en', 'G')
+        self.assertGreaterEqual(survey_id_generated, 0)
+
+        status = self.server.delete_survey(self.session_key, survey_id_generated)
+        self.assertEqual(status['status'], 'OK')
+        self.server.release_session_key(self.session_key)
+
+    def test_add_and_delete_survey_methods(self):
+        q = Questionnaires()
+        sid = q.add_survey('9999', 'Questionario de Teste', 'en', 'G')
+        self.assertGreaterEqual(sid, 0)
+
+        status = q.delete_survey(sid)
+        self.assertEqual(status, 'OK')
+
+
     # def test_get_survey_property_usetokens(self):
     #     """testa a obtencao das propriedades de um questionario"""
     #

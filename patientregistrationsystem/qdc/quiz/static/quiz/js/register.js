@@ -200,7 +200,10 @@ function popup(URL) {
     var left = (screen.width / 2) - (width / 2);
     var top = (screen.height / 2) - (height / 2);
 
-    window.open(URL, 'janela', 'width=' + width + ', height=' + height + ', top=' + top + ', left=' + left + ', scrollbars=yes, status=no, toolbar=no, location=no, directories=no, menubar=no, resizable=no, fullscreen=no');
+    var opener = window.open(URL, 'janela', 'width=' + width + ', height=' + height + ', top=' + top + ', left=' + left + ', scrollbars=yes, status=no, toolbar=no, location=no, directories=no, menubar=no, resizable=no, fullscreen=no');
+
+    return opener;
+
 
 }
 
