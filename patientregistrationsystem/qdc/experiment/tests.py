@@ -4,7 +4,7 @@ from django.test import TestCase
 from django.test.client import RequestFactory
 from django.core.urlresolvers import reverse
 
-from experiment.models import Experiment, QuestionnaireConfiguration, TimeUnit, Subject
+from experiment.models import Experiment, QuestionnaireConfiguration, TimeUnit, Subject, QuestionnaireResponse
 from experiment.views import experiment_update
 from quiz.abc_search_engine import Questionnaires
 from quiz.util_test import UtilTests
@@ -239,7 +239,7 @@ class QuestionnaireConfigurationTest(TestCase):
             # Executa a operacao via metodo POST
             response = self.client.post(reverse('questionnaire_edit', args=(questionnaire.pk,)), self.data, follow=True)
 
-            #Verifica se o retorno e valido
+            # Verifica se o retorno e valido
             self.assertEqual(response.status_code, 200)
 
             # Conta numero de questionarios existentes apos a atualizacao. Isso certifica que nao ira
@@ -345,8 +345,12 @@ class SubjectTest(TestCase):
             self.assertEqual(response.status_code, 200)
             self.assertEqual(len(response.context['subject_list']), 0)
 
+            count_before_insert_subject = experiment.subjects.all().count()
             response = self.client.post(reverse('subject_insert', args=(experiment.pk, patient_mock.pk)))
             self.assertEqual(response.status_code, 302)
+            count_after_insert_subject = experiment.subjects.all().count()
+            self.assertEqual(count_after_insert_subject, count_before_insert_subject + 1)
+
 
             # Reabre a tela de cadastro de participantes - devera conter ao menos um participante
             # cadastrado
@@ -354,17 +358,89 @@ class SubjectTest(TestCase):
             self.assertEqual(response.status_code, 200)
             self.assertEqual(len(response.context['subject_list']), 1)
 
+            # Inserir participante ja inserido para o experimento
+            count_before_insert_subject = experiment.subjects.all().count()
+            response = self.client.post(reverse('subject_insert', args=(experiment.pk, patient_mock.pk)))
+            self.assertEqual(response.status_code, 302)
+            count_after_insert_subject = experiment.subjects.all().count()
+            self.assertEqual(count_after_insert_subject, count_before_insert_subject)
+
             subject = Subject.objects.all().first()
 
-            # Associar participante a questionario e iniciar resposta ao questionario
+            # Associar participante a Survey e iniciar preenchimento
+            # Abrir a tela de associacao
+            response = self.client.get(reverse('subject_questionnaire',
+                                               args=[experiment.pk, subject.pk]))
+            self.assertEqual(response.status_code, 200)
 
+            # Prepara para o a associacao entre preenchimento da Survey,
+            # participante e experimento
             response = self.client.get(reverse('subject_questionnaire_response',
-                                       args=[experiment.pk, subject.pk, questionnaire.pk,]))
+                                               args=[experiment.pk, subject.pk, questionnaire.pk, ]))
             self.assertEqual(response.status_code, 200)
             self.assertEqual(response.context['creating'], True)
 
+            # Dados para preenchimento da Survey
+            self.data = {'date': ['29/08/2014'], 'action': ['save']}
 
+            # Inicia o preenchimento de uma Survey sem tabela de tokens iniciada
+            response = self.client.post(reverse('subject_questionnaire_response',
+                                                args=[experiment.pk, subject.pk, questionnaire.pk, ]), self.data)
+            self.assertEqual(response.status_code, 200)
+            self.assertEqual(response.context['FAIL'], False)
 
+            # Inicia o preenchimento de uma Survey INATIVA
+            response = self.client.post(reverse('subject_questionnaire_response',
+                                                args=[experiment.pk, subject.pk, questionnaire.pk, ]), self.data)
+            self.assertEqual(response.status_code, 200)
+            self.assertEqual(response.context['FAIL'], False)
+
+            status = q.activate_tokens(sid)
+            self.assertEqual(status, 'OK')
+
+            # Ativar survey
+            status = q.activate_survey(sid)
+            self.assertEqual(status, 'OK')
+
+            # Inicia o preenchimento de uma Survey NORMAL
+            response = self.client.post(reverse('subject_questionnaire_response',
+                                                args=[experiment.pk, subject.pk, questionnaire.pk, ]), self.data)
+            self.assertEqual(response.status_code, 200)
+            self.assertEqual(response.context['FAIL'], True)
+
+            questionnaire_response = QuestionnaireResponse.objects.all().first()
+
+            # Acessa tela de atualizacao do preenchimento da Survey
+            response = self.client.get(reverse('questionnaire_response_edit',
+                                               args=[questionnaire_response.pk, ]), self.data)
+            self.assertEqual(response.status_code, 200)
+            self.assertEqual(response.context['FAIL'], None)
+
+            # Atualiza o preenchimento da survey
+            response = self.client.post(reverse('questionnaire_response_edit',
+                                                args=[questionnaire_response.pk, ]), self.data)
+            self.assertEqual(response.status_code, 200)
+            self.assertEqual(response.context['FAIL'], True)
+
+            # Remove preenchimento da Survey
+            count_before_delete_questionnaire_response = QuestionnaireResponse.objects.all().count()
+
+            self.data['action'] = 'remove'
+            response = self.client.post(reverse('questionnaire_response_edit',
+                                                args=[questionnaire_response.pk, ]), self.data)
+            self.assertEqual(response.status_code, 302)
+
+            count_after_delete_questionnaire_response = QuestionnaireResponse.objects.all().count()
+            self.assertEqual(count_before_delete_questionnaire_response - 1, count_after_delete_questionnaire_response)
+
+            # Remover participante associado a survey
+            self.data = {'action': 'remove'}
+            count_before_delete_subject = experiment.subjects.all().count()
+            response = self.client.post(reverse('subject_questionnaire', args=(experiment.pk, subject.pk)),
+                                        self.data)
+            self.assertEqual(response.status_code, 302)
+            count_after_delete_subject = experiment.subjects.all().count()
+            self.assertEqual(count_before_delete_subject-1, count_after_delete_subject)
 
         finally:
             # Deleta a survey gerada no Lime Survey
