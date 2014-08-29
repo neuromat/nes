@@ -106,6 +106,26 @@ class ABCSearchEngine:
 
         return "token_completed" in result
 
+    @abstractmethod
+    def add_survey(self, wish_sid, title, language, survey_format):
+        """
+        Adiciona uma survey ao Lime Survey
+        :param wishid:
+        :return:
+        """
+        survey_id_generated = self.server.add_survey(self.session_key, wish_sid, title, language, survey_format)
+        return survey_id_generated
+
+    @abstractmethod
+    def delete_survey(self, sid):
+        """
+        Deleta uma survey do Lime Survey
+        :param id:
+        :return:
+        """
+        status = self.server.delete_survey(self.session_key, sid)
+        return status['status']
+
 
 class Questionnaires(ABCSearchEngine):
     """ Classe envelope para o API do limesurvey """
@@ -133,3 +153,9 @@ class Questionnaires(ABCSearchEngine):
 
     def survey_has_token_table(self, sid):
         return super(Questionnaires, self).survey_has_token_table(sid)
+
+    def add_survey(self, wish_sid, title, language, survey_format):
+        return super(Questionnaires, self).add_survey(wish_sid, title, language, survey_format)
+
+    def delete_survey(self, sid):
+        return super(Questionnaires, self).delete_survey(sid)
