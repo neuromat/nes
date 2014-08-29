@@ -100,8 +100,13 @@ class ABCSearchEngineTest(TestCase):
         self.assertEqual(status['status'], 'OK')
         self.server.release_session_key(self.session_key)
 
+    def test_add_and_delete_survey_methods(self):
+        q = Questionnaires()
+        sid = q.add_survey('9999', 'Questionario de Teste', 'en', 'G')
+        self.assertGreaterEqual(sid, 0)
 
-
+        status = q.delete_survey(sid)
+        self.assertEqual(status, 'OK')
 
 
     # def test_get_survey_property_usetokens(self):
