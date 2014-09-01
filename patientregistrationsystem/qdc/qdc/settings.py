@@ -69,6 +69,7 @@ MIDDLEWARE_CLASSES = (
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
     'qdc.middleware.PasswordChangeMiddleware',
+    'simple_history.middleware.HistoryRequestMiddleware',
 )
 
 ROOT_URLCONF = 'qdc.urls'
@@ -83,8 +84,8 @@ DATABASES = {
         'NAME': 'qdcdb_dev',
         'USER': 'qdc',
         'PASSWORD': 'DEVqdc1716',
-        #'HOST': '200.144.254.136',
-        #'TEST_NAME': 'test_romulo',
+        'HOST': '200.144.254.136',
+        'TEST_NAME': 'test_romulo',
     }
 }
 
