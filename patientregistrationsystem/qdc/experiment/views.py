@@ -5,6 +5,7 @@ from django.contrib import messages
 from django.http import HttpResponseRedirect
 from django.core.urlresolvers import reverse
 from django.shortcuts import render_to_response
+from django.db.models.deletion import ProtectedError
 
 from experiment.models import Experiment, QuestionnaireConfiguration, Subject, TimeUnit, QuestionnaireResponse
 from experiment.forms import ExperimentForm, QuestionnaireConfigurationForm, QuestionnaireResponseForm
@@ -84,7 +85,12 @@ def experiment_update(request, experiment_id, template_name="experiment/experime
 
             else:
                 if request.POST['action'] == "remove":
-                    experiment.delete()
+                    try:
+                        experiment.delete()
+                    except ProtectedError:
+                        messages.error(request, "Não foi possível excluir o experimento, pois há questões associadas")
+                        redirect_url = reverse("experiment_edit", args=(experiment.id,))
+                        return HttpResponseRedirect(redirect_url)
                     return redirect('experiment_list')
 
     context = {
@@ -182,7 +188,13 @@ def questionnaire_update(request, questionnaire_configuration_id,
                 return HttpResponseRedirect(redirect_url)
         else:
             if request.POST['action'] == "remove":
-                questionnaire_configuration.delete()
+                try:
+                    questionnaire_configuration.delete()
+                except ProtectedError:
+                    messages.error(request, "Não foi possível excluir o questionário, pois há respostas associadas")
+                    redirect_url = reverse("questionnaire_edit", args=(questionnaire_configuration_id,))
+                    return HttpResponseRedirect(redirect_url)
+
                 redirect_url = reverse("experiment_edit", args=(experiment.id,))
                 return HttpResponseRedirect(redirect_url)
 
@@ -467,16 +479,6 @@ def subject_questionnaire_view(request, experiment_id, subject_id,
     experiment = get_object_or_404(Experiment, id=experiment_id)
     subject = get_object_or_404(Subject, id=subject_id)
 
-    if request.method == "POST":
-
-        if request.POST['action'] == "remove":
-
-            experiment.subjects.remove(subject)
-
-            messages.info(request, 'Participante removido do experimento.')
-            redirect_url = reverse("subjects", args=(experiment_id,))
-            return HttpResponseRedirect(redirect_url)
-
     questionnaires_configuration_list = QuestionnaireConfiguration.objects.filter(experiment=experiment)
 
     subject_questionnaires = []
@@ -510,11 +512,24 @@ def subject_questionnaire_view(request, experiment_id, subject_id,
              'questionnaire_responses': questionnaire_responses_with_status}
         )
 
+    if request.method == "POST":
+
+        if request.POST['action'] == "remove":
+            if can_remove:
+                experiment.subjects.remove(subject)
+
+                messages.info(request, 'Participante removido do experimento.')
+                redirect_url = reverse("subjects", args=(experiment_id,))
+                return HttpResponseRedirect(redirect_url)
+            else:
+                messages.error(request, "Não foi possível excluir o paciente, pois há respostas associadas")
+                redirect_url = reverse("subject_questionnaire", args=(experiment_id, subject_id,))
+                return HttpResponseRedirect(redirect_url)
+
     context = {
         'subject': subject,
         'experiment': experiment,
-        'subject_questionnaires': subject_questionnaires,
-        'can_remove': can_remove
+        'subject_questionnaires': subject_questionnaires
     }
 
     surveys.release_session_key()

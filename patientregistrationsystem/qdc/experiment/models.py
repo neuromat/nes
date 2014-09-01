@@ -38,7 +38,7 @@ class Experiment(models.Model):
 
 class QuestionnaireConfiguration(models.Model):
     lime_survey_id = models.IntegerField(null=False, blank=False)
-    experiment = models.ForeignKey(Experiment, null=False)
+    experiment = models.ForeignKey(Experiment, null=False, on_delete=models.PROTECT)
     number_of_fills = models.IntegerField(null=True, blank=True, validators=[MinValueValidator(1)])
     interval_between_fills_value = models.IntegerField(null=True, blank=True, validators=[MinValueValidator(1)])
     interval_between_fills_unit = models.ForeignKey(TimeUnit, null=True, blank=True)
@@ -47,7 +47,7 @@ class QuestionnaireConfiguration(models.Model):
 class QuestionnaireResponse(models.Model):
     token_id = models.IntegerField(null=False)
     subject = models.ForeignKey(Subject, null=False)
-    questionnaire_configuration = models.ForeignKey(QuestionnaireConfiguration, null=False)
+    questionnaire_configuration = models.ForeignKey(QuestionnaireConfiguration, null=False, on_delete=models.PROTECT)
     date = models.DateField(default=datetime.date.today, null=False,
                                 validators=[validate_date_questionnaire_response])
     questionnaire_responsible = models.ForeignKey(User, null=False)

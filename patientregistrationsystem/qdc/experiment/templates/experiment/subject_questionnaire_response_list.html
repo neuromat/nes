@@ -137,7 +137,7 @@
             <div class="btn-toolbar">
                 <div class="btn-group pull-left">
                     {% if not creating and perms.experiment.delete_subject %}
-                        <button {% if not can_remove %}disabled{% endif %} type="button" class="btn btn-danger" onclick="$('#modalRemove').modal('show')">Excluir</button>
+                        <button type="button" class="btn btn-danger" onclick="$('#modalRemove').modal('show')">Excluir</button>
                     {% endif %}
                 </div>
                 <div class="btn-group pull-right">
