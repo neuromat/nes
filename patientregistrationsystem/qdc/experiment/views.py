@@ -79,7 +79,9 @@ def experiment_update(request, experiment_id, template_name="experiment/experime
             if request.POST['action'] == "save":
 
                 if experiment_form.is_valid():
-                    experiment_form.save()
+                    if experiment_form.has_changed():
+                        experiment_form.save()
+
                     redirect_url = reverse("experiment_edit", args=(experiment_id,))
                     return HttpResponseRedirect(redirect_url)
 

@@ -48,7 +48,7 @@ class MedicalRecordFormValidation(TestCase):
             file_to_test = SimpleUploadedFile('quiz/tests.py', 'rb')
             self.data['content'] = file_to_test
 
-    def test_diagnosis_ctate_and_delete(self):
+    def test_diagnosis_create_and_delete(self):
         """
         Testar a criação, leitura, atualização e exclusão do Diagnóstico
         """
