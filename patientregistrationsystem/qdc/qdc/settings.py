@@ -69,7 +69,7 @@ MIDDLEWARE_CLASSES = (
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
     'qdc.middleware.PasswordChangeMiddleware',
-    #'simple_history.middleware.HistoryRequestMiddleware',
+    'simple_history.middleware.HistoryRequestMiddleware',
 )
 
 ROOT_URLCONF = 'qdc.urls'
@@ -97,7 +97,7 @@ LIMESURVEY = {
 }
 
 # AUTH_USER_MODEL = 'quiz.UserProfile'
-#AUTH_PROFILE_MODULE = 'quiz.UserProfile'
+# AUTH_PROFILE_MODULE = 'quiz.UserProfile'
 
 TEMPLATE_DIRS = [os.path.join(BASE_DIR, 'templates')]
 
@@ -136,7 +136,7 @@ SERVER_EMAIL = EMAIL_HOST_USER
 # EMAIL_PORT = 1025
 # EMAIL_HOST_USER = ''
 # EMAIL_HOST_PASSWORD = ''
-#     EMAIL_USE_TLS = False
+# EMAIL_USE_TLS = False
 #     DEFAULT_FROM_EMAIL = 'testing@example.com'
 
 # Static files (CSS, JavaScript, Images)
