@@ -331,7 +331,7 @@ def get_limesurvey_response_url(questionnaire_response):
     questionnaire_lime_survey.release_session_key()
 
     redirect_url = \
-        '%s/index.php/%s/token/%s/idavaliador/%s/datdataaquisicao/%s/idparticipante/%s' % (
+        '%s/index.php/%s/token/%s/idavaliador/%s/datdataaquisicao/%s/idparticipante/%s/newtest/Y' % (
         settings.LIMESURVEY['URL'],
         questionnaire_response.questionnaire_configuration.lime_survey_id,
         token,
