@@ -17,7 +17,6 @@ from django.conf import settings
 import re
 import datetime
 
-
 @login_required
 @permission_required('experiment.view_experiment')
 def experiment_list(request, template_name="experiment/experiment_list.html"):
@@ -384,7 +383,7 @@ def subject_questionnaire_response_create(request, experiment_id, subject_id, qu
 
 
 @login_required
-@permission_required('experiment.add_questionnaireresponse')
+@permission_required('experiment.change_questionnaireresponse')
 def questionnaire_response_update(request, questionnaire_response_id,
                                 template_name="experiment/subject_questionnaire_response_form.html"):
 
@@ -436,6 +435,7 @@ def questionnaire_response_update(request, questionnaire_response_id,
         "survey_title": survey_title,
         "survey_admin": survey_admin,
         "survey_active": survey_active,
+        "questionnaire_response_id": questionnaire_response_id,
         "questionnaire_responsible": questionnaire_responsible,
         "creating": False,
         "subject": subject,
@@ -444,6 +444,96 @@ def questionnaire_response_update(request, questionnaire_response_id,
 
     return render(request, template_name, context)
 
+
+@login_required
+@permission_required('experiment.view_questionnaireresponse')
+def questionnaire_response_view(request, questionnaire_response_id,
+                                template_name="experiment/subject_questionnaire_response_view.html"):
+
+    questionnaire_response = get_object_or_404(QuestionnaireResponse, id=questionnaire_response_id)
+    questionnaire_configuration = questionnaire_response.questionnaire_configuration
+    surveys = Questionnaires()
+    survey_title = surveys.get_survey_title(questionnaire_configuration.lime_survey_id)
+    token = surveys.get_participant_properties(questionnaire_configuration.lime_survey_id,
+                                               questionnaire_response.token_id, "token")
+    question_list = surveys.list_questions(questionnaire_configuration.lime_survey_id)
+    questions_properties = []
+    for question in question_list:
+        properties = surveys.get_question_properties(question)
+        if ('if' not in properties['question']) and ('{(' not in properties['question']) and ('pont' not in properties['question']):
+            properties['question'] = re.sub('<.*?>', '', properties['question'])
+            questions_properties.append(properties)
+
+    responses_list = surveys.get_responses_by_token(questionnaire_configuration.lime_survey_id, token)
+    responses_list = responses_list.replace('\"', '')
+    responses_list = responses_list.split('\n')
+    responses_list[0] = responses_list[0].split(",")
+    responses_list[1] = responses_list[1].split(",")
+
+    questions_responses = []
+    for property in questions_properties:
+        for response_question in responses_list[0]:
+            if property['title'] in response_question:
+                if isinstance(property['subquestions'], dict):
+                    questions_responses.append({
+                        'question': property['question'],
+                        'question_id': property['title'],
+                        'answer_options': 'super_question'
+                    })
+                    for key, value in property['subquestions'].iteritems():
+                        questions_responses.append({
+                            'question': value['question'],
+                            'question_id': property['title']+'['+value['title']+']',
+                            'answer_options': property['answeroptions']
+                        })
+                    break
+                else:
+                    questions_responses.append({
+                        'question': property['question'],
+                        'question_id': property['title'],
+                        'answer_options': ''
+                    })
+                    break
+
+    questionnaire_responses = []
+    for question in questions_responses:
+        if isinstance(question['answer_options'], basestring) and question['answer_options'] == "super_question":
+            questionnaire_responses.append({
+                'question': question['question'],
+                'answer': '',
+            })
+        else:
+            index = 0
+            for query in responses_list[0]:
+                if query == question['question_id']:
+                    answer_options = question['answer_options']
+                    if isinstance(answer_options, dict):
+                        answer_option = answer_options[responses_list[1][index]]
+                        answer = answer_option['answer']
+                    else:
+                        answer = responses_list[1][index]
+
+                    questionnaire_responses.append({
+                        'question': question['question'],
+                        'answer': answer
+                    })
+                    break
+                else:
+                    index += 1
+
+    surveys.release_session_key()
+
+    subject = questionnaire_response.subject
+
+    context = {
+        "questionnaire_responses": questionnaire_responses,
+        "questionnaire_configuration": questionnaire_configuration,
+        "questionnaire_response_id": questionnaire_response_id,
+        "survey_title": survey_title,
+        "subject": subject
+    }
+
+    return render(request, template_name, context)
 
 @login_required
 @permission_required('experiment.view_questionnaireresponse')
