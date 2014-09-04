@@ -1,0 +1,6 @@
+Django==1.6.6
+django-cep==1.0.9
+django-jenkins==0.15.0
+django-simple-history==1.5.0
+psycopg2==2.5.3
+python-jsonrpc==0.4.1
