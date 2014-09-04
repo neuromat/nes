@@ -4,7 +4,6 @@ from abc_search_engine import Questionnaires
 
 
 class ABCSearchEngineTest(TestCase):
-
     session_key = None
     server = None
 
@@ -44,7 +43,8 @@ class ABCSearchEngineTest(TestCase):
         self.server.release_session_key(self.session_key)
         list_active_survey = []
         for survey in list_survey:
-            if survey['active'] == "Y":
+            survey_has_token = q.survey_has_token_table(survey['sid'])
+            if survey['active'] == "Y" and survey_has_token is True:
                 list_active_survey.append(survey)
         self.assertEqual(q.find_all_active_questionnaires(), list_active_survey)
         q.release_session_key()
@@ -110,7 +110,7 @@ class ABCSearchEngineTest(TestCase):
 
 
     # def test_get_survey_property_usetokens(self):
-    #     """testa a obtencao das propriedades de um questionario"""
+    # """testa a obtencao das propriedades de um questionario"""
     #
     #     surveys = Questionnaires()
     #     result = surveys.get_survey_properties(641729, "usetokens")

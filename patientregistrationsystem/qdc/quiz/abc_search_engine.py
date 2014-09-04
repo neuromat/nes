@@ -37,7 +37,8 @@ class ABCSearchEngine:
 
         list_active_survey = []
         for survey in list_survey:
-            if survey['active'] == "Y":
+            survey_token = self.survey_has_token_table(survey['sid'])
+            if survey['active'] == "Y" and survey_token is True:
                 list_active_survey.append(survey)
 
         return list_active_survey
@@ -66,11 +67,17 @@ class ABCSearchEngine:
             [participant_data],
             True)
 
-        if len(participant_data_result) <= 0 or 'error' in participant_data_result[0]:
+        result = None
+
+        try:
+            if len(participant_data_result) <= 0 or 'error' in participant_data_result[0]:
+                result = None
+            else:
+                result = {'token': participant_data_result[0]['token'],
+                          'token_id': participant_data_result[0]['tid']}
+        except:
             result = None
-        else:
-            result = {'token': participant_data_result[0]['token'],
-                      'token_id': participant_data_result[0]['tid']}
+            pass
 
         return result
 
