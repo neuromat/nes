@@ -17,7 +17,7 @@ from django.conf import settings
 
 import re
 
-from datetime import datetime
+import datetime
 
 @login_required
 @permission_required('experiment.view_experiment')
@@ -543,7 +543,7 @@ def questionnaire_response_view(request, questionnaire_response_id,
                         answer = answer_option['answer']
                     else:
                         if question['type'] == 'D':
-                            answer = datetime.strptime(responses_list[1][index], '%Y-%m-%d %H:%M:%S')
+                            answer = datetime.datetime.strptime(responses_list[1][index], '%Y-%m-%d %H:%M:%S')
                         else:
                             answer = responses_list[1][index]
 
