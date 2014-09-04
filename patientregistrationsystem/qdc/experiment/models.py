@@ -30,7 +30,6 @@ class TimeUnit(models.Model):
 class Experiment(models.Model):
     title = models.CharField(null=False, max_length=50, blank=False)
     description = models.CharField(max_length=150, null=False, blank=False)
-    subjects = models.ManyToManyField(Subject, null=True)
 
     #Audit trail - Simple History
     history = HistoricalRecords()
@@ -53,6 +52,19 @@ class Experiment(models.Model):
         self.changed_by = value
 
 
+def get_dir(instance, filename):
+    return "documents/%s/%s/%s" % (instance.experiment.id, instance.subject.id, filename)
+
+
+class SubjectOfExperiment(models.Model):
+    subject = models.ForeignKey(Subject, null=False, blank=False)
+    experiment = models.ForeignKey(Experiment, null=False, blank=False)
+    consent_form = models.FileField(upload_to=get_dir, null=True)
+
+    class Meta:
+        unique_together = ('subject', 'experiment',)
+
+
 class QuestionnaireConfiguration(models.Model):
     lime_survey_id = models.IntegerField(null=False, blank=False)
     experiment = models.ForeignKey(Experiment, null=False, on_delete=models.PROTECT)
@@ -63,7 +75,6 @@ class QuestionnaireConfiguration(models.Model):
     #Audit trail - Simple History
     history = HistoricalRecords()
     #changed_by = models.ForeignKey('auth.User')
-
 
     @property
     def _history_user(self):
@@ -76,11 +87,14 @@ class QuestionnaireConfiguration(models.Model):
     def __unicode__(self):  # Python 3: def __str__(self):
         return self.experiment.title + " - " + str(self.lime_survey_id)
 
+    class Meta:
+        unique_together = ('lime_survey_id', 'experiment',)
+
 
 class QuestionnaireResponse(models.Model):
-    token_id = models.IntegerField(null=False)
-    subject = models.ForeignKey(Subject, null=False)
+    subject_of_experiment = models.ForeignKey(SubjectOfExperiment, null=False)
     questionnaire_configuration = models.ForeignKey(QuestionnaireConfiguration, null=False, on_delete=models.PROTECT)
+    token_id = models.IntegerField(null=False)
     date = models.DateField(default=datetime.date.today, null=False,
                                 validators=[validate_date_questionnaire_response])
     questionnaire_responsible = models.ForeignKey(User, null=False, related_name="+")
@@ -104,4 +118,3 @@ class QuestionnaireResponse(models.Model):
 
     def __unicode__(self):  # Python 3: def __str__(self):
         return "token id: " + str(self.token_id)
-

@@ -3,8 +3,10 @@ from django.http import Http404
 from django.test import TestCase
 from django.test.client import RequestFactory
 from django.core.urlresolvers import reverse
+from django.shortcuts import get_object_or_404
 
-from experiment.models import Experiment, QuestionnaireConfiguration, TimeUnit, Subject, QuestionnaireResponse
+from experiment.models import Experiment, QuestionnaireConfiguration, TimeUnit, Subject, \
+    QuestionnaireResponse, SubjectOfExperiment
 from experiment.views import experiment_update
 from quiz.abc_search_engine import Questionnaires
 from quiz.util_test import UtilTests
@@ -167,6 +169,11 @@ class QuestionnaireConfigurationTest(TestCase):
 
             count_after_insert = QuestionnaireConfiguration.objects.all().count()
             self.assertEqual(count_after_insert, count_before_insert + 1)
+
+            # Remove o questionario criado
+            questionnaire_created = get_object_or_404(QuestionnaireConfiguration, experiment=experiment, lime_survey_id=sid)
+            if questionnaire_created:
+                questionnaire_created.delete()
 
             # Criar um questionario com dados incompletos - Codigo Questionario invalido
             count_before_insert = QuestionnaireConfiguration.objects.all().count()
@@ -345,10 +352,10 @@ class SubjectTest(TestCase):
             self.assertEqual(response.status_code, 200)
             self.assertEqual(len(response.context['subject_list']), 0)
 
-            count_before_insert_subject = experiment.subjects.all().count()
+            count_before_insert_subject = SubjectOfExperiment.objects.all().filter(experiment=experiment).count()
             response = self.client.post(reverse('subject_insert', args=(experiment.pk, patient_mock.pk)))
             self.assertEqual(response.status_code, 302)
-            count_after_insert_subject = experiment.subjects.all().count()
+            count_after_insert_subject = SubjectOfExperiment.objects.all().filter(experiment=experiment).count()
             self.assertEqual(count_after_insert_subject, count_before_insert_subject + 1)
 
 
@@ -359,10 +366,10 @@ class SubjectTest(TestCase):
             self.assertEqual(len(response.context['subject_list']), 1)
 
             # Inserir participante ja inserido para o experimento
-            count_before_insert_subject = experiment.subjects.all().count()
+            count_before_insert_subject = SubjectOfExperiment.objects.all().filter(experiment=experiment).count()
             response = self.client.post(reverse('subject_insert', args=(experiment.pk, patient_mock.pk)))
             self.assertEqual(response.status_code, 302)
-            count_after_insert_subject = experiment.subjects.all().count()
+            count_after_insert_subject = SubjectOfExperiment.objects.all().filter(experiment=experiment).count()
             self.assertEqual(count_after_insert_subject, count_before_insert_subject)
 
             subject = Subject.objects.all().first()
@@ -435,11 +442,11 @@ class SubjectTest(TestCase):
 
             # Remover participante associado a survey
             self.data = {'action': 'remove'}
-            count_before_delete_subject = experiment.subjects.all().count()
+            count_before_delete_subject = SubjectOfExperiment.objects.all().filter(experiment=experiment).count()
             response = self.client.post(reverse('subject_questionnaire', args=(experiment.pk, subject.pk)),
                                         self.data)
             self.assertEqual(response.status_code, 302)
-            count_after_delete_subject = experiment.subjects.all().count()
+            count_after_delete_subject = SubjectOfExperiment.objects.all().filter(experiment=experiment).count()
             self.assertEqual(count_before_delete_subject-1, count_after_delete_subject)
 
         finally:

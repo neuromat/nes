@@ -7,7 +7,8 @@ from django.core.urlresolvers import reverse
 from django.shortcuts import render_to_response
 from django.db.models.deletion import ProtectedError
 
-from experiment.models import Experiment, QuestionnaireConfiguration, Subject, TimeUnit, QuestionnaireResponse
+from experiment.models import Experiment, QuestionnaireConfiguration, Subject, TimeUnit, \
+    QuestionnaireResponse, SubjectOfExperiment
 from experiment.forms import ExperimentForm, QuestionnaireConfigurationForm, QuestionnaireResponseForm
 
 from quiz.models import Patient
@@ -216,7 +217,8 @@ def questionnaire_update(request, questionnaire_configuration_id,
 def subjects(request, experiment_id, template_name="experiment/subjects.html"):
 
     experiment = get_object_or_404(Experiment, id=experiment_id)
-    subject_list = experiment.subjects.all()
+
+    subject_of_experiment_list = SubjectOfExperiment.objects.all().filter(experiment=experiment)
 
     subject_list_with_status = []
 
@@ -224,14 +226,14 @@ def subjects(request, experiment_id, template_name="experiment/subjects.html"):
 
     surveys = Questionnaires()
 
-    for subject in subject_list:
+    for subject_of_experiment in subject_of_experiment_list:
 
         number_of_questionnaires_filled = 0
 
         for questionnaire_configuration in questionnaires_configuration_list:
 
             subject_responses = QuestionnaireResponse.objects.\
-                filter(subject=subject).\
+                filter(subject_of_experiment=subject_of_experiment).\
                 filter(questionnaire_configuration=questionnaire_configuration)
 
             if subject_responses:
@@ -259,7 +261,7 @@ def subjects(request, experiment_id, template_name="experiment/subjects.html"):
                         number_of_questionnaires_filled += 1
 
         subject_list_with_status.append(
-            {'subject': subject,
+            {'subject': subject_of_experiment.subject,
              'number_of_questionnaires_filled': number_of_questionnaires_filled,
              'total_of_questionnaires': questionnaires_configuration_list.count(),
              'percentage': 100 * number_of_questionnaires_filled / questionnaires_configuration_list.count()})
@@ -289,6 +291,8 @@ def subject_questionnaire_response_start_fill_questionnaire(request, subject_id,
         subject = get_object_or_404(Subject, pk=subject_id)
         patient = subject.patient
 
+        subject_of_experiment = get_object_or_404(SubjectOfExperiment, subject=subject, experiment=questionnaire_config.experiment)
+
         if not questionnaire_lime_survey.survey_has_token_table(questionnaire_config.lime_survey_id):
             messages.warning(request,
                              'Preenchimento não disponível - Tabela de tokens não iniciada')
@@ -308,7 +312,8 @@ def subject_questionnaire_response_start_fill_questionnaire(request, subject_id,
             messages.warning(request,
                              'Falha ao gerar token para responder questionário. Verifique se o questionário está ativo')
             return None
-        questionnaire_response.subject = subject
+
+        questionnaire_response.subject_of_experiment = subject_of_experiment
         questionnaire_response.questionnaire_configuration = questionnaire_config
         questionnaire_response.token_id = result['token_id']
         questionnaire_response.date = datetime.datetime.strptime(request.POST['date'], '%d/%m/%Y')
@@ -337,7 +342,7 @@ def get_limesurvey_response_url(questionnaire_response):
         token,
         str(questionnaire_response.questionnaire_responsible.id),
         questionnaire_response.date.strftime('%d-%m-%Y'),
-        str(questionnaire_response.subject.id))
+        str(questionnaire_response.subject_of_experiment.subject.id))
 
     # redirect_url = \
     #     '%s/index.php/survey/index/sid/%s/token/%s/lang/pt-BR/idavaliador/%s/datdataaquisicao/%s/idparticipante/%s' % (
@@ -419,7 +424,7 @@ def questionnaire_response_update(request, questionnaire_response_id,
     surveys.release_session_key()
 
     questionnaire_responsible = questionnaire_response.questionnaire_responsible
-    subject = questionnaire_response.subject
+    subject = questionnaire_response.subject_of_experiment.subject
 
     questionnaire_response_form = QuestionnaireResponseForm(None, instance=questionnaire_response)
 
@@ -490,8 +495,10 @@ def subject_questionnaire_view(request, experiment_id, subject_id,
 
     for questionnaire_configuration in questionnaires_configuration_list:
 
+        subject_of_experiment = get_object_or_404(SubjectOfExperiment, experiment=experiment, subject=subject)
+
         questionnaire_responses = QuestionnaireResponse.objects.\
-            filter(subject=subject).\
+            filter(subject_of_experiment=subject_of_experiment).\
             filter(questionnaire_configuration=questionnaire_configuration)
 
         questionnaire_responses_with_status = []
@@ -518,7 +525,8 @@ def subject_questionnaire_view(request, experiment_id, subject_id,
 
         if request.POST['action'] == "remove":
             if can_remove:
-                experiment.subjects.remove(subject)
+                subject_of_experiment = get_object_or_404(SubjectOfExperiment, experiment=experiment, subject=subject)
+                subject_of_experiment.delete()
 
                 messages.info(request, 'Participante removido do experimento.')
                 redirect_url = reverse("subjects", args=(experiment_id,))
@@ -554,9 +562,8 @@ def subjects_insert(request, experiment_id, patient_id):
 
     experiment = get_object_or_404(Experiment, id=experiment_id)
 
-    if not experiment.subjects.all().filter(patient=patient):
-        experiment.subjects.add(subject)
-        experiment.save()
+    if not SubjectOfExperiment.objects.all().filter(experiment=experiment, subject=subject):
+        SubjectOfExperiment(subject=subject, experiment=experiment).save()
     else:
         messages.warning(request, 'Participante já inserido para este experimento.')
 
