@@ -71,7 +71,7 @@
             popup('{{ URL }}');
             setTimeout(function () {
                 window.location.href = '/experiment/{{ questionnaire_configuration.experiment.id }}/subjects/{{ subject.id }}/questionnaire/'
-            }, 5000);
+            }, 2000);
         </script>
     {% endif %}
 
@@ -182,6 +182,8 @@
             <div class="btn-group pull-right">
                 {% if not completed %}
                     <button type="submit" name="action" value="save" class="btn btn-primary">{% if creating %}Novo preenchimento{% else %}Continuar preenchimento{% endif %}</button>
+                {% else %}
+                    <a href="/experiment/questionnaire_response/{{ questionnaire_response_id }}" class="btn btn-primary">Ver preenchimento</a>
                 {% endif %}
             </div>
             <div class="btn-group pull-right">
