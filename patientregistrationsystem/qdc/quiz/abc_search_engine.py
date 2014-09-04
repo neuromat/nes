@@ -3,6 +3,7 @@ __author__ = ''
 import pyjsonrpc
 from django.conf import settings
 from abc import ABCMeta, abstractmethod
+import base64
 
 
 class ABCSearchEngine:
@@ -107,6 +108,38 @@ class ABCSearchEngine:
         return "token_completed" in result
 
 
+    @abstractmethod
+    def get_responses_by_token(self, sid, token):
+
+        responses = self.server.export_responses_by_token(self.session_key, sid, 'csv', token)
+        responses_txt = base64.b64decode(responses)
+
+        return responses_txt
+
+
+    @abstractmethod
+    def get_question_properties(self, question_id):
+        properties = self.server.get_question_properties(self.session_key, question_id,
+                                                         ['question', 'subquestions', 'answeroptions', 'title', 'type'])
+
+        return properties
+
+    @abstractmethod
+    def list_groups(self, sid):
+        groups = self.server.list_groups(self.session_key, sid)
+
+        return groups
+
+    @abstractmethod
+    def list_questions(self, sid, gid):
+        question_list = []
+        questions = self.server.list_questions(self.session_key, sid, gid)
+        for question in questions:
+            question_list.append(question['id']['qid'])
+
+        return question_list
+
+
 class Questionnaires(ABCSearchEngine):
     """ Classe envelope para o API do limesurvey """
 
@@ -133,3 +166,15 @@ class Questionnaires(ABCSearchEngine):
 
     def survey_has_token_table(self, sid):
         return super(Questionnaires, self).survey_has_token_table(sid)
+
+    def get_responses_by_token(self, sid, token):
+        return super(Questionnaires, self).get_responses_by_token(sid, token)
+
+    def list_questions(self, sid, gid):
+        return super(Questionnaires, self).list_questions(sid, gid)
+
+    def get_question_properties(self, question_id):
+        return super(Questionnaires, self).get_question_properties(question_id)
+
+    def list_groups(self, sid):
+        return super(Questionnaires, self).list_groups(sid)

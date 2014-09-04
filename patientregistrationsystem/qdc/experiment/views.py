@@ -15,7 +15,8 @@ from quiz.abc_search_engine import Questionnaires
 from django.conf import settings
 
 import re
-import datetime
+
+from datetime import datetime
 
 @login_required
 @permission_required('experiment.view_experiment')
@@ -456,13 +457,38 @@ def questionnaire_response_view(request, questionnaire_response_id,
     survey_title = surveys.get_survey_title(questionnaire_configuration.lime_survey_id)
     token = surveys.get_participant_properties(questionnaire_configuration.lime_survey_id,
                                                questionnaire_response.token_id, "token")
-    question_list = surveys.list_questions(questionnaire_configuration.lime_survey_id)
-    questions_properties = []
-    for question in question_list:
-        properties = surveys.get_question_properties(question)
-        if ('if' not in properties['question']) and ('{(' not in properties['question']) and ('pont' not in properties['question']):
-            properties['question'] = re.sub('<.*?>', '', properties['question'])
-            questions_properties.append(properties)
+
+    question_properties = []
+    groups = surveys.list_groups(questionnaire_configuration.lime_survey_id)
+    for group in groups:
+        question_list = surveys.list_questions(questionnaire_configuration.lime_survey_id, group['id'])
+        question_list = sorted(question_list)
+        for question in question_list:
+            properties = surveys.get_question_properties(question)
+            if ('{if' not in properties['question']) and ('{(' not in properties['question']) and ('pont' not in properties['question']):
+                properties['question'] = re.sub('<.*?>', '', properties['question'])
+
+                if isinstance(properties['subquestions'], dict):
+                    question_properties.append({
+                        'question': properties['question'],
+                        'question_id': properties['title'],
+                        'answer_options': 'super_question',
+                        'type': properties['type']
+                    })
+                    for key, value in sorted(properties['subquestions'].iteritems()):
+                        question_properties.append({
+                            'question': value['question'],
+                            'question_id': properties['title']+'['+value['title']+']',
+                            'answer_options': properties['answeroptions'],
+                            'type': properties['type']
+                        })
+                else:
+                    question_properties.append({
+                        'question': properties['question'],
+                        'question_id': properties['title'],
+                        'answer_options': '',
+                        'type': properties['type']
+                    })
 
     responses_list = surveys.get_responses_by_token(questionnaire_configuration.lime_survey_id, token)
     responses_list = responses_list.replace('\"', '')
@@ -470,38 +496,15 @@ def questionnaire_response_view(request, questionnaire_response_id,
     responses_list[0] = responses_list[0].split(",")
     responses_list[1] = responses_list[1].split(",")
 
-    questions_responses = []
-    for property in questions_properties:
-        for response_question in responses_list[0]:
-            if property['title'] in response_question:
-                if isinstance(property['subquestions'], dict):
-                    questions_responses.append({
-                        'question': property['question'],
-                        'question_id': property['title'],
-                        'answer_options': 'super_question'
-                    })
-                    for key, value in property['subquestions'].iteritems():
-                        questions_responses.append({
-                            'question': value['question'],
-                            'question_id': property['title']+'['+value['title']+']',
-                            'answer_options': property['answeroptions']
-                        })
-                    break
-                else:
-                    questions_responses.append({
-                        'question': property['question'],
-                        'question_id': property['title'],
-                        'answer_options': ''
-                    })
-                    break
-
     questionnaire_responses = []
-    for question in questions_responses:
+    for question in question_properties:
         if isinstance(question['answer_options'], basestring) and question['answer_options'] == "super_question":
-            questionnaire_responses.append({
-                'question': question['question'],
-                'answer': '',
-            })
+            if question['question'] != '':
+                questionnaire_responses.append({
+                    'question': question['question'],
+                    'answer': '',
+                    'type': question['type']
+                })
         else:
             index = 0
             for query in responses_list[0]:
@@ -511,11 +514,15 @@ def questionnaire_response_view(request, questionnaire_response_id,
                         answer_option = answer_options[responses_list[1][index]]
                         answer = answer_option['answer']
                     else:
-                        answer = responses_list[1][index]
+                        if question['type'] == 'D':
+                            answer = datetime.strptime(responses_list[1][index], '%Y-%m-%d %H:%M:%S')
+                        else:
+                            answer = responses_list[1][index]
 
                     questionnaire_responses.append({
                         'question': question['question'],
-                        'answer': answer
+                        'answer': answer,
+                        'type': question['type']
                     })
                     break
                 else:

@@ -26,5 +26,7 @@ urlpatterns = patterns(
         'experiment.views.subject_questionnaire_response_create', name='subject_questionnaire_response'),
     url(r'^questionnaire_response/edit/(?P<questionnaire_response_id>\d+)$',
         'experiment.views.questionnaire_response_update', name='questionnaire_response_edit'),
+    url(r'^questionnaire_response/(?P<questionnaire_response_id>\d+)$',
+        'experiment.views.questionnaire_response_view', name='questionnaire_response_view'),
 
 )
