@@ -127,14 +127,14 @@
                                         </a>
                                     </td>
                                     <td>
-                                        {% if questionnaire_configuration.number_of_fills %}
+                                        {% if questionnaire_configuration.number_of_fills != None %}
                                             {{ questionnaire_configuration.number_of_fills }}
                                         {% else %}
                                             Ilimitada
                                         {% endif %}
                                     </td>
                                     <td>
-                                        {% if questionnaire_configuration.interval_between_fills_value and questionnaire_configuration.interval_between_fills_unit %}
+                                        {% if questionnaire_configuration.interval_between_fills_value != None and questionnaire_configuration.interval_between_fills_unit != None %}
                                             {{ questionnaire_configuration.interval_between_fills_value }} {{ questionnaire_configuration.interval_between_fills_unit.name }}
                                         {% else %}
                                             Indefinido
@@ -147,25 +147,31 @@
 
                     </div>
                 {% endif %}
-                <a href="/experiment/{{ experiment.id }}/questionnaire/new" class="btn btn-primary {% if creating %} disabled{% endif %}">Inserir questionário</a>
+                {% if perms.experiment.add_questionnaireconfiguration %}
+                    <a href="/experiment/{{ experiment.id }}/questionnaire/new" class="btn btn-primary {% if creating %} disabled{% endif %}">Inserir questionário</a>
+                {% endif %}
             </div>
 
-            <div class="container span6 offset3 well ">
-                <div class="row">
-                    <div class="col-xs-6 col-sm-12">
-                        <a href="/experiment/{{ experiment.id }}/subjects" class="btn btn-primary {% if creating %} disabled{% endif %}" >Participantes</a>
+            {% if perms.experiment.add_subject %}
+                <div class="container span6 offset3 well ">
+                    <div class="row">
+                        <div class="col-xs-6 col-sm-12">
+                            <a href="/experiment/{{ experiment.id }}/subjects" class="btn btn-primary {% if creating %} disabled{% endif %}" >Participantes</a>
+                        </div>
                     </div>
                 </div>
-            </div>
+            {% endif %}
 
             <div class="btn-toolbar">
                 <div class="btn-group pull-left">
-                    {% if not creating %}
+                    {% if not creating and perms.experiment.delete_experiment %}
                         <button type="button" class="btn btn-danger" onclick="$('#modalRemove').modal('show')">Excluir</button>
                     {% endif %}
                 </div>
                 <div class="btn-group pull-right">
-                    <button type="submit" name="action" value="save" class="btn btn-primary">Salvar</button>
+                    {% if perms.experiment.change_experiment %}
+                        <button type="submit" name="action" value="save" class="btn btn-primary">Salvar</button>
+                    {% endif %}
                 </div>
                 <div class="btn-group pull-right">
                     {% if creating %}

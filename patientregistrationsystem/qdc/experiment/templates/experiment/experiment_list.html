@@ -53,9 +53,11 @@
                         </tbody>
                     </table>
                 </div>
-                <div class="btn-group pull-left">
-                    <a href="/experiment/new/" class="btn btn-primary">Inserir novo experimento</a>
-                </div>
+                {% if perms.experiment.add_experiment %}
+                    <div class="btn-group pull-left">
+                        <a href="/experiment/new/" class="btn btn-primary">Inserir novo experimento</a>
+                    </div>
+                {% endif %}
             </div>
         </div>
     </div>

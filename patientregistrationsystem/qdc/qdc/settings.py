@@ -69,6 +69,7 @@ MIDDLEWARE_CLASSES = (
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
     'qdc.middleware.PasswordChangeMiddleware',
+    'simple_history.middleware.HistoryRequestMiddleware',
 )
 
 ROOT_URLCONF = 'qdc.urls'
@@ -83,8 +84,8 @@ DATABASES = {
         'NAME': 'qdcdb_dev',
         'USER': 'qdc',
         'PASSWORD': 'DEVqdc1716',
-        # 'HOST': '200.144.254.136',
-        # 'TEST_NAME': 'test_evandro',
+        #'HOST': '200.144.254.136',
+        #'TEST_NAME': 'test_romulo',
     }
 }
 
@@ -95,8 +96,8 @@ LIMESURVEY = {
     'PASSWORD': '8YtztuqeGzUU',
 }
 
-#AUTH_USER_MODEL = 'quiz.UserProfile'
-AUTH_PROFILE_MODULE = 'quiz.UserProfile'
+# AUTH_USER_MODEL = 'quiz.UserProfile'
+# AUTH_PROFILE_MODULE = 'quiz.UserProfile'
 
 TEMPLATE_DIRS = [os.path.join(BASE_DIR, 'templates')]
 
@@ -135,15 +136,19 @@ SERVER_EMAIL = EMAIL_HOST_USER
 # EMAIL_PORT = 1025
 # EMAIL_HOST_USER = ''
 # EMAIL_HOST_PASSWORD = ''
-#     EMAIL_USE_TLS = False
+# EMAIL_USE_TLS = False
 #     DEFAULT_FROM_EMAIL = 'testing@example.com'
 
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/1.6/howto/static-files/
 
+
+
 STATIC_ROOT = '/home/crns/PycharmProjects/neuromat-cc-ribas/patientregistrationsystem/qdc/quiz/'
 # STATIC_ROOT = [os.path.join(BASE_DIR, 'static')]
 STATIC_URL = '/static/'
+
+ADMIN_MEDIA_PREFIX = STATIC_URL + 'admin/'
 
 MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
 MEDIA_URL = '/media/'

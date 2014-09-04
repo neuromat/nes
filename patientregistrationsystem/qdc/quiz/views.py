@@ -31,6 +31,7 @@ from django.utils.encoding import force_bytes
 from django.utils.translation import ugettext_lazy as _
 
 import re
+from quiz.models import UserProfile
 
 # pylint: disable=E1101
 # pylint: disable=E1103
@@ -425,13 +426,13 @@ def user_update(request, user_id, template_name="quiz/register_users.html"):
         if request.POST['action'] == "save":
             if form.is_valid():
                 form.save()
-                
+
                 if request.POST['password']:
                     user = get_object_or_404(User, id=user_id)
-                    profile = user.get_profile()
+                    profile, created = UserProfile.objects.get_or_create(user=user)
                     profile.force_password_change = True
                     profile.save()
-                
+
                 messages.success(request, 'Usuário atualizado com sucesso.')
         else:
             if request.POST['action'] == "remove":

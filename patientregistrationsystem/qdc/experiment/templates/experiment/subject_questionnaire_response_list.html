@@ -82,8 +82,8 @@
                                                 <br/>
                                                  <blockquote>
                                                     <i><h6>
-                                                    Quantidade de preenchimentos: {% if subject_questionnaire.questionnaire_configuration.number_of_fills %}{{ subject_questionnaire.questionnaire_configuration.number_of_fills }}{% else %}ilimitada{% endif %} <br/>
-                                                    Intervalo entre preenchimentos: {% if subject_questionnaire.questionnaire_configuration.interval_between_fills_value %}{{ subject_questionnaire.questionnaire_configuration.interval_between_fills_value }} {{ subject_questionnaire.questionnaire_configuration.interval_between_fills_unit }}{% else %}indefinido{% endif %} <br/>
+                                                    Quantidade de preenchimentos: {% if subject_questionnaire.questionnaire_configuration.number_of_fills != None %}{{ subject_questionnaire.questionnaire_configuration.number_of_fills }}{% else %}ilimitada{% endif %} <br/>
+                                                    Intervalo entre preenchimentos: {% if subject_questionnaire.questionnaire_configuration.interval_between_fills_value != None %}{{ subject_questionnaire.questionnaire_configuration.interval_between_fills_value }} {{ subject_questionnaire.questionnaire_configuration.interval_between_fills_unit }}{% else %}indefinido{% endif %} <br/>
                                                     </h6></i>
                                                  </blockquote>
                                             </td>
@@ -92,10 +92,13 @@
                                                     {% for response in subject_questionnaire.questionnaire_responses %}
                                                         <tr>
                                                             <td>
-                                                                <a href="/experiment/questionnaire_response/edit/{{ response.questionnaire_response.id }}" data-toggle="tooltip" data-placement="right" title="Completar">
-
+                                                                {% if perms.experiment.change_questionnaireresponse %}
+                                                                    <a href="/experiment/questionnaire_response/edit/{{ response.questionnaire_response.id }}" data-toggle="tooltip" data-placement="right" title="Completar">
+                                                                        {{ response.questionnaire_response.date }}
+                                                                    </a>
+                                                                {% else %}
                                                                     {{ response.questionnaire_response.date }}
-                                                                </a>
+                                                                {% endif %}
                                                             </td>
                                                             <td>
                                                                 {% if response.completed %}
@@ -108,10 +111,12 @@
                                                         </tr>
                                                     {% endfor %}
                                                     <tr>
-                                                        {% if not subject_questionnaire.questionnaire_configuration.number_of_fills or subject_questionnaire.questionnaire_responses|length < subject_questionnaire.questionnaire_configuration.number_of_fills %}
+                                                        {% if subject_questionnaire.questionnaire_configuration.number_of_fills == None or subject_questionnaire.questionnaire_responses|length < subject_questionnaire.questionnaire_configuration.number_of_fills %}
                                                             <td>
-                                                                <a href="/experiment/{{ experiment.id }}/subjects/{{ subject.id }}/questionnaire/{{ subject_questionnaire.questionnaire_configuration.id }}/response/?action=create"
-                                                                    class="btn btn-primary">Novo preenchimento</a>
+                                                                {% if perms.experiment.add_questionnaireresponse %}
+                                                                    <a href="/experiment/{{ experiment.id }}/subjects/{{ subject.id }}/questionnaire/{{ subject_questionnaire.questionnaire_configuration.id }}/response/?action=create"
+                                                                        class="btn btn-primary">Novo preenchimento</a>
+                                                                {% endif %}
                                                             </td>
                                                             <td></td>
                                                             <td></td>
@@ -131,8 +136,8 @@
             </div>
             <div class="btn-toolbar">
                 <div class="btn-group pull-left">
-                    {% if not creating %}
-                        <button {% if not can_remove %}disabled{% endif %} type="button" class="btn btn-danger" onclick="$('#modalRemove').modal('show')">Excluir</button>
+                    {% if not creating and perms.experiment.delete_subject %}
+                        <button type="button" class="btn btn-danger" onclick="$('#modalRemove').modal('show')">Excluir</button>
                     {% endif %}
                 </div>
                 <div class="btn-group pull-right">

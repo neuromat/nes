@@ -1,17 +1,16 @@
 # -*- coding: UTF-8 -*-
 from django.contrib.messages.storage.fallback import FallbackStorage
+from django.shortcuts import get_object_or_404
 from django.test import TestCase
 from django.test.client import RequestFactory
 from django.contrib.auth.models import Group
 
 from django.contrib.auth.tokens import default_token_generator
-from django.contrib.sites.models import Site, get_current_site
-from django.core.mail import send_mail
+from django.contrib.sites.models import get_current_site
 from django.template import loader
-from django.template.context import Context
 from django.utils.http import int_to_base36
-from django.utils.translation import ugettext_lazy as _
 from quiz.views import User, reverse, user_update, user_delete
+from quiz.models import UserProfile
 
 import re
 
@@ -29,10 +28,20 @@ class FormUserValidation(TestCase):
         """ Configura autenticacao e variaveis para iniciar cada teste """
         print 'Set up for', self._testMethodName
 
-        self.user = User.objects.create_user(username=USER_USERNAME, email='jenkins.neuromat@gmail.com', password=USER_PWD)
+        self.user = User.objects.create_superuser(username=USER_USERNAME, email='jenkins.neuromat@gmail.com',
+                                                  password=USER_PWD)
+        # self.user = User.objects.create_user(username=USER_USERNAME, email='test@dummy.com', password=USER_PWD)
+        #self.user = User.objects.create()
+
+        #self.user.username = USER_USERNAME
+        #self.user.email = 'jenkins.neuromat@gmail.com'
+        #self.user.password = USER_PWD
         self.user.is_staff = True
         self.user.is_superuser = True
         self.user.save()
+        profile, created = UserProfile.objects.get_or_create(user=self.user)
+        profile.force_password_change = False
+        profile.save()
 
         self.group = Group.objects.create(name='group')
         self.group.save()
@@ -45,13 +54,15 @@ class FormUserValidation(TestCase):
                      'password': ['Adm!123'],
                      'password2': ['Adm!123'],
                      'groups': [self.group.id],
-                     'email': ['email@test.com']}
+                     'email': ['email@test.com'],
+                     'action': 'save'}
 
         logged = self.client.login(username=USER_USERNAME, password=USER_PWD)
         self.assertEqual(logged, True)
 
-    def reset(self, user_added=None, request=None, domain_override=None, email_template_name='registration/password_reset_email.html',
-             use_https=False, token_generator=default_token_generator):
+    def reset(self, user_added=None, request=None, domain_override=None,
+              email_template_name='registration/password_reset_email.html',
+              use_https=False, token_generator=default_token_generator):
         """Reset users password"""
         if not user_added.email:
             raise ValueError('Email address is required to send an email')
@@ -72,7 +83,7 @@ class FormUserValidation(TestCase):
             'token': token_generator.make_token(user_added),
             'protocol': use_https and 'https' or 'http',
         }
-        #send_mail(_("Your account for %s") % site_name, t.render(Context(c)), None, [user_added.email])
+        # send_mail(_("Your account for %s") % site_name, t.render(Context(c)), None, [user_added.email])
         subject_template_name = 'registration/password_reset_subject.txt'
         subject = loader.render_to_string(subject_template_name, c)
         # Email subject *must not* contain newlines
@@ -82,6 +93,7 @@ class FormUserValidation(TestCase):
         html_content = loader.render_to_string(email_template_name, c)
 
         from django.core.mail import EmailMultiAlternatives
+
         msg = EmailMultiAlternatives(subject, plain_text_content, 'jenkins.neuromat@gmail.com', [user_added.email])
         msg.attach_alternative(html_content, "text/html")
         msg.send()
@@ -197,7 +209,8 @@ class FormUserValidation(TestCase):
         username = 'test_username'
         self.data['username'] = username
 
-        self.client.post(reverse(USER_NEW), self.data, follow=True)
+        response = self.client.post(reverse(USER_NEW), self.data)
+        self.assertEqual(response.status_code, 302)
         self.assertEqual(User.objects.filter(username=username).count(), 1)
 
     def test_user_create_mail_password_define(self):
@@ -272,20 +285,35 @@ class FormUserValidation(TestCase):
                                                   password='Del!123')
         user_to_delete.is_staff = True
         user_to_delete.is_superuser = True
+        user_to_delete.is_active = True
         user_to_delete.save()
+        self.assertEqual(User.objects.filter(username=user_str).count(), 1)
+
+        self.data['action'] = 'remove'
+
+        response = self.client.post(reverse('user_delete', args=(user_to_delete.pk,)), self.data, follow=True)
+        self.assertEqual(response.status_code, 200)
+        user_to_delete = get_object_or_404(User, pk=user_to_delete.pk)
+        self.assertEqual(user_to_delete.is_active, False)
+
+        user_to_delete.is_active = True
+        response = self.client.post(reverse(USER_EDIT, args=(self.user.pk,)), self.data, follow=True)
+        self.assertEqual(response.status_code, 200)
+        user_to_delete = get_object_or_404(User, pk=user_to_delete.pk)
+        self.assertEqual(user_to_delete.is_active, False)
 
         # Create an instance of a GET request.
-        request = self.factory.get(reverse('user_delete', args=(user_to_delete.pk,)))
-        request.user = self.user
+        # request = self.factory.get(reverse('user_delete', args=(user_to_delete.pk,)))
+        #request.user = self.user
 
-        self.assertEqual(User.objects.filter(username=user_str).count(), 1)
+
 
         # Test view() as if it were deployed at /quiz/patient/%id
 
-        setattr(request, 'session', 'session')
-        msg = FallbackStorage(request)
-        setattr(request, '_messages', msg)
+        #setattr(request, 'session', 'session')
+        #msg = FallbackStorage(request)
+        #setattr(request, '_messages', msg)
 
-        response = user_delete(request, user_id=user_to_delete.pk)
-        self.assertEqual(response.status_code, 302)
-        self.assertEqual(User.objects.filter(username=user_str, is_active=False).count(), 1)
+        #response = user_delete(request, user_id=user_to_delete.pk)
+        #self.assertEqual(response.status_code, 302)
+        #self.assertEqual(User.objects.filter(username=user_str, is_active=False).count(), 1)

@@ -8,12 +8,12 @@
 
         $(document).ready(function () {
 
-            {% if not questionnaire_form.number_of_fills.value %}
+            {% if questionnaire_form.number_of_fills.value == None %}
                 $("#number_of_fills").prop('disabled', true);
                 $("#unlimited_number_of_fills").prop('checked', true);
             {% endif %}
 
-            {% if not questionnaire_form.interval_between_fills_value.value %}
+            {% if questionnaire_form.interval_between_fills_value.value == None %}
                 $("#interval_between_fills_value").prop('disabled', true);
                 $("#interval_between_fills_unit").prop('disabled', true);
                 $("#undefined_interval_between_fills").prop('checked', true);
@@ -142,7 +142,11 @@
                         <div class="form-group {% if questionnaire_form.errors.number_of_fills %}has-error{% endif %}">
                             <label for="number_of_fills" class="control-label">Quantidade</label>
                                 {{ questionnaire_form.number_of_fills }}
-                            <div class="help-block with-errors"></div>
+                            <div class="help-block with-errors">
+                                {% if questionnaire_form.number_of_fills.errors %}
+                                    {% for error in questionnaire_form.number_of_fills.errors %}{{ error }}{% endfor %}
+                                {% endif %}
+                            </div>
                         </div>
                     </div>
 
@@ -163,10 +167,14 @@
                     </div>
 
                     <div class="col-xs-6 col-sm-2">
-                        <div class="form-group">
+                        <div class="form-group {% if questionnaire_form.errors.interval_between_fills_value %}has-error{% endif %}">
                             <label for="interval_between_fills_value" class="control-label">Intervalo</label>
                                 {{ questionnaire_form.interval_between_fills_value }}
-                            <div class="help-block with-errors"></div>
+                            <div class="help-block with-errors">
+                                {% if questionnaire_form.interval_between_fills_value.errors %}
+                                    {% for error in questionnaire_form.interval_between_fills_value.errors %}{{ error }}{% endfor %}
+                                {% endif %}
+                            </div>
                         </div>
                     </div>
 
@@ -193,7 +201,7 @@
 
             <div class="btn-toolbar">
                 <div class="btn-group pull-left">
-                    {% if not creating %}
+                    {% if not creating and perms.experiment.delete_questionnaireconfiguration %}
                         <button type="button" class="btn btn-danger" onclick="$('#modalRemove').modal('show')">Excluir</button>
                     {% endif %}
                 </div>
@@ -223,8 +231,7 @@
                 <div class="modal-footer">
                     <button type="button" class="btn btn-default" data-dismiss="modal">Cancelar</button>
                     <button type="submit" class="btn btn-primary" value="remove" name="action"
-                            style="background-color: indianred; color: #ffffff">Excluir
-                    </button>
+                        style="background-color: indianred; color: #ffffff">Excluir</button>
                 </div>
             </div>
         </div>
