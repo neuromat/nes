@@ -22,8 +22,8 @@
             <ol class="breadcrumb">
                 <li>Home</li>
                 <li><a href="/experiment/list">Experimentos</a></li>
-                <li><a href="/experiment/edit/{{ experiment_id }}">{{ experiment_title }}</a></li>
-                <li class="active">Participantes</li>
+                <li><a href="/experiment/edit/{{ experiment.id }}">{{ experiment.title }}</a></li>
+                <li class="active"><a href="/experiment/{{ experiment.id }}/subjects">Participantes</a></li>
             </ol>
 
         </div>
@@ -82,8 +82,8 @@
                                     </div>
                                     <div class="col-xs-6 col-sm-6">
                                         <div class="form-group">
-                                            <a class="glyphicon glyphicon-remove pull-right" data-toggle="tooltip" data-placement="right" title="Remover" style="color: indianred"></a>
-                                            <a class="glyphicon glyphicon-download-alt pull-right" data-toggle="tooltip" data-placement="bottom" title="download"  href="{{ exam_file.content.url }}"></a>
+                                            <a class="glyphicon glyphicon-remove" title="Remover" style="color: indianred" href='/experiment/{{ experiment_id }}/subjects/{{ item.subject.id }}/delete_file'></a>
+                                            <a class="glyphicon glyphicon-download-alt" title="download"  href="{{ file_list.url }}"></a>
                                         </div>
                                     </div>
                             {% endif %}
@@ -92,7 +92,7 @@
             </div>
             <div class="btn-toolbar">
                 <div class="btn-group pull-right">
-                    <a href="/experiment/{{ experiment_id }}/subjects" class="btn" style="background-color: #f5f5f5">Voltar</a>
+                    <a href="/experiment/{{ experiment.id }}/subjects" class="btn" style="background-color: #f5f5f5">Voltar</a>
                 </div>
             </div>
         </div>

@@ -714,15 +714,14 @@ def upload_file(request, subject_id, experiment_id, template_name="experiment/up
     return render(request, template_name, context)
 
 
-# def delete_file(request, subject_id, experiment_id):
-#     subject = get_object_or_404(Subject, pk=subject_id)
-#     experiment = get_object_or_404(Experiment, pk=experiment_id)
-#
-#     try:
-#         subject_of_experiment = SubjectOfExperiment.objects.all().filter(experiment=experiment, subject=subject)
-#         subject_of_experiment.consent_form = ''
-#         subject_of_experiment.save()
-#         messages.success(request, 'Anexo removido com sucesso.')
-#
-#     redirect_url = reverse("subject_insert", args=(subject_id, experiment_id, ))
-#     return HttpResponseRedirect(redirect_url)
+def delete_file(request, subject_id, experiment_id):
+    subject = get_object_or_404(Subject, pk=subject_id)
+    experiment = get_object_or_404(Experiment, pk=experiment_id)
+    subject_of_experiment = get_object_or_404(SubjectOfExperiment, subject=subject, experiment=experiment)
+
+    subject_of_experiment.consent_form = ''
+    subject_of_experiment.save()
+    messages.success(request, 'Anexo removido com sucesso.')
+
+    redirect_url = reverse("upload_file", args=(subject_id, experiment_id, ))
+    return HttpResponseRedirect(redirect_url)
