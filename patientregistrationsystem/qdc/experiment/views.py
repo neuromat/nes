@@ -9,7 +9,7 @@ from django.db.models.deletion import ProtectedError
 
 from experiment.models import Experiment, QuestionnaireConfiguration, Subject, TimeUnit, \
     QuestionnaireResponse, SubjectOfExperiment
-from experiment.forms import ExperimentForm, QuestionnaireConfigurationForm, QuestionnaireResponseForm
+from experiment.forms import ExperimentForm, QuestionnaireConfigurationForm, QuestionnaireResponseForm, FileForm
 
 from quiz.models import Patient
 from quiz.abc_search_engine import Questionnaires
@@ -224,6 +224,8 @@ def subjects(request, experiment_id, template_name="experiment/subjects.html"):
 
     surveys = Questionnaires()
 
+    file_form = FileForm(request.POST, request.FILES)
+
     for subject_of_experiment in subject_of_experiment_list:
 
         number_of_questionnaires_filled = 0
@@ -262,12 +264,14 @@ def subjects(request, experiment_id, template_name="experiment/subjects.html"):
             {'subject': subject_of_experiment.subject,
              'number_of_questionnaires_filled': number_of_questionnaires_filled,
              'total_of_questionnaires': questionnaires_configuration_list.count(),
-             'percentage': 100 * number_of_questionnaires_filled / questionnaires_configuration_list.count()})
+             'percentage': 100 * number_of_questionnaires_filled / questionnaires_configuration_list.count(),
+             'consent': subject_of_experiment.consent_form})
 
     context = {
         'experiment_id': experiment_id,
         'subject_list': subject_list_with_status,
-        'experiment_title': experiment.title
+        'experiment_title': experiment.title,
+        'file_form': file_form
     }
 
     surveys.release_session_key()
@@ -681,3 +685,35 @@ def search_patients_ajax(request):
 
     return render_to_response('experiment/ajax_search_patients.html',
                               {'patients': patient_list, 'experiment_id': experiment_id})
+
+
+def upload_file(request, subject_id, experiment_id):
+
+    subject = get_object_or_404(Subject, pk=subject_id)
+    experiment = get_object_or_404(Experiment, pk=experiment_id)
+    subject_of_experiment = get_object_or_404(SubjectOfExperiment, subject=subject, experiment=experiment)
+
+    if request.method == "POST":
+        file_form = FileForm(request.POST, request.FILES)
+
+        if 'content' in request.FILES:
+            if file_form.is_valid():
+                subject_of_experiment.consent_form = file_form
+                subject_of_experiment.save()
+                messages.success(request, 'Termo salvo com sucesso.')
+
+    redirect_url = reverse("subject_insert", args=(subject_id, experiment_id, ))
+    return HttpResponseRedirect(redirect_url)
+
+# def delete_file(request, subject_id, experiment_id):
+#     subject = get_object_or_404(Subject, pk=subject_id)
+#     experiment = get_object_or_404(Experiment, pk=experiment_id)
+#
+#     try:
+#         subject_of_experiment = SubjectOfExperiment.objects.all().filter(experiment=experiment, subject=subject)
+#         subject_of_experiment.consent_form = ''
+#         subject_of_experiment.save()
+#         messages.success(request, 'Anexo removido com sucesso.')
+#
+#     redirect_url = reverse("subject_insert", args=(subject_id, experiment_id, ))
+#     return HttpResponseRedirect(redirect_url)

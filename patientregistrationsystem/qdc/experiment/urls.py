@@ -18,6 +18,8 @@ urlpatterns = patterns(
     url(r'^subject/search/$', 'experiment.views.search_patients_ajax', name='subject_search'),
     url(r'^(?P<experiment_id>\d+)/subjects/(?P<patient_id>\d+)/$',
         'experiment.views.subjects_insert', name='subject_insert'),
+    url(r'^(?P<experiment_id>\d+)/subjects/(?P<subject_id>\d+)/upload_file/$',
+        'experiment.views.upload_file', name='upload_file'),
 
     # subject + questionnaire
     url(r'^(?P<experiment_id>\d+)/subjects/(?P<subject_id>\d+)/questionnaire/$',
