@@ -692,7 +692,7 @@ def upload_file(request, subject_id, experiment_id, template_name="experiment/up
 
     if request.method == "POST":
         file_form = FileForm(request.POST, request.FILES)
-        if 'content' in request.FILES:
+        if 'consent_form' in request.FILES:
             if file_form.is_valid():
                 subject_of_experiment.consent_form = file_form
                 subject_of_experiment.save()
