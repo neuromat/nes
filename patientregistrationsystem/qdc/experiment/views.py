@@ -684,7 +684,7 @@ def search_patients_ajax(request):
                               {'patients': patient_list, 'experiment_id': experiment_id})
 
 
-def upload_file(request, subject_id, experiment_id, template_name="experiment/upload_consent_form"):
+def upload_file(request, subject_id, experiment_id, template_name="experiment/upload_consent_form.html"):
 
     subject = get_object_or_404(Subject, pk=subject_id)
     experiment = get_object_or_404(Experiment, pk=experiment_id)
