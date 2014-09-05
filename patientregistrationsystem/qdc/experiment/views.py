@@ -702,6 +702,9 @@ def upload_file(request, subject_id, experiment_id, template_name="experiment/up
         else:
             messages.error(request, 'Não existem anexos para salvar')
 
+    else:
+        file_form = FileForm(request.POST or None)
+
     context = {
         'subject': subject,
         'experiment': experiment,
