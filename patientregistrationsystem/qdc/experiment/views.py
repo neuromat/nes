@@ -698,10 +698,8 @@ def upload_file(request, subject_id, experiment_id, template_name="experiment/up
                 subject_of_experiment.save()
                 messages.success(request, 'Termo salvo com sucesso.')
 
-                if request.POST['action'] == "upload":
-                    redirect_url = reverse("subject_insert", args=(subject_id, experiment_id, ))
-
-                    return HttpResponseRedirect(redirect_url)
+                redirect_url = reverse("subject_insert", args=(subject_id, experiment_id, ))
+                return HttpResponseRedirect(redirect_url)
 
     else:
         file_form = FileForm(request.POST)
