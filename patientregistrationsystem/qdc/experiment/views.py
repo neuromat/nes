@@ -698,19 +698,21 @@ def upload_file(request, subject_id, experiment_id, template_name="experiment/up
                 subject_of_experiment.save()
                 messages.success(request, 'Termo salvo com sucesso.')
 
-                redirect_url = reverse("subjects", args=(experiment_id, ))
-                return HttpResponseRedirect(redirect_url)
+            redirect_url = reverse("subjects", args=(experiment_id, ))
+            return HttpResponseRedirect(redirect_url)
+        else:
+            messages.error(request,'Não existem anexos para salvar')
 
     else:
         file_form = FileForm(request.POST)
 
-        context = {
-            'subject': subject,
-            'experiment': experiment,
-            'file_form': file_form,
-            'file_list': subject_of_experiment.consent_form
-        }
-        return render(request, template_name, context)
+    context = {
+        'subject': subject,
+        'experiment': experiment,
+        'file_form': file_form,
+        'file_list': subject_of_experiment.consent_form
+    }
+    return render(request, template_name, context)
 
 
 # def delete_file(request, subject_id, experiment_id):
