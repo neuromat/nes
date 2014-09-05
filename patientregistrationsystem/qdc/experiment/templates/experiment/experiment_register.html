@@ -86,26 +86,6 @@
 
             </div>
 
-{#            <div class="container span6 offset3 well ">#}
-{#                <div class="row">#}
-{#                    <div class="col-xs-6 col-sm-12">#}
-{#                        <div class="form-group">#}
-{#                            <label>Questionários relacionados ao experimento:</label>#}
-{#                            <div class="input-group  input-group-sm">#}
-{#                                {% for questionnaire in questionnaires_list %}#}
-{#                                    <div class="checkbox">#}
-{#                                        <label>#}
-{#                                            <input type="checkbox" value="{{ questionnaire.sid }}" name="chosen_questionnaires" />#}
-{#                                            {{ questionnaire.surveyls_title }}#}
-{#                                        </label>#}
-{#                                    </div>#}
-{#                                {% endfor %}#}
-{#                            </div>#}
-{#                        </div>#}
-{#                    </div>#}
-{#                </div>#}
-{#            </div>#}
-
             <div class="container span6 offset3 well ">
                 {% if not creating and questionnaires_configuration_list %}
                     <div class="form-group">
