@@ -691,20 +691,16 @@ def upload_file(request, subject_id, experiment_id, template_name="experiment/up
     subject_of_experiment = get_object_or_404(SubjectOfExperiment, subject=subject, experiment=experiment)
 
     if request.method == "POST":
-        file_form = FileForm(request.POST, request.FILES)
+        file_form = FileForm(request.POST, request.FILES, instance=subject_of_experiment)
         if 'consent_form' in request.FILES:
             if file_form.is_valid():
-                subject_of_experiment.consent_form = file_form
-                subject_of_experiment.save()
+                file_form.save()
                 messages.success(request, 'Termo salvo com sucesso.')
 
             redirect_url = reverse("subjects", args=(experiment_id, ))
             return HttpResponseRedirect(redirect_url)
         else:
             messages.error(request, 'Não existem anexos para salvar')
-
-    else:
-        file_form = FileForm(request.POST)
 
     context = {
         'subject': subject,
