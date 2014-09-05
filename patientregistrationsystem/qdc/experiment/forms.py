@@ -1,5 +1,5 @@
 # coding=utf-8
-from models import Experiment, QuestionnaireConfiguration, QuestionnaireResponse
+from models import Experiment, QuestionnaireConfiguration, QuestionnaireResponse, SubjectOfExperiment
 from django.forms import ModelForm, TextInput, Textarea, Select, DateInput
 # from datetimewidget.widgets import DateTimeWidget
 
@@ -53,3 +53,9 @@ class QuestionnaireResponseForm(ModelForm):
                                      'id': "date_fill", 'required': "",
                                      'data-error': "Data de preenchimento deve ser preenchida"}, )
         }
+
+
+class SubjectOfExperimentForm(ModelForm):
+    class Meta:
+        model = SubjectOfExperiment
+        fields = ['consent_form']

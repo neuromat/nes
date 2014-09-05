@@ -82,6 +82,7 @@
                             <thead>
                             <tr>
                                 <th>Participante</th>
+                                <th>Termo de consentimento</th>
                                 <th>Questionários concluídos</th>
                             </tr>
                             </thead>
@@ -102,6 +103,22 @@
                                                     {{ item.subject.patient.name_txt }}
                                                 {% endif %}
                                             </td>
+                                            {% if not item.consent_form %}
+                                                <td> {{ file_form.content }}
+                                                    <a href='/experiment/{{ experiment_id }}/subjects/{{ item.subject_id }}/upload_file/'></a>
+{#                                                    <div class="col-xs-6 col-sm-6">#}
+{#                                                        <div class="form-group">#}
+{#                                                            <button id="save_exam2" name="action" value="upload" type="submit" class="btn btn-primary">Upload</button>#}
+{#                                                        </div>#}
+{#                                                    </div>#}
+                                                </td>
+                                            {% else %}
+                                                <td>
+{#                                                    {{ exam_file.content.name }}#}
+{#                                                    <a class="glyphicon glyphicon-remove pull-right" data-toggle="tooltip" data-placement="right" title="Remover" style="color: indianred" onclick="show_modal_remove({{ exam_file.id }})"></a>#}
+{#                                                    <a class="glyphicon glyphicon-download-alt pull-right" data-toggle="tooltip" data-placement="bottom" title="download"  href="{{ exam_file.content.url }}"></a>#}
+                                                </td>
+                                            {% endif %}
                                             <td>
                                                 <div class="progress" >
                                                     <div class="progress-bar {% if item.percentage == 100 %}progress-bar-success{% else %}progress-bar-warning{% endif %}" role="progressbar" aria-valuenow="{{ item.number_of_questionnaires_filled }}" aria-valuemin="0" aria-valuemax="{{ item.total_of_questionnaires }}" style="color: #000000; width: {{ item.percentage }}%;">
