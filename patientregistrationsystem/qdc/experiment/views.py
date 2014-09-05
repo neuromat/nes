@@ -267,7 +267,7 @@ def subjects(request, experiment_id, template_name="experiment/subjects.html"):
              'number_of_questionnaires_filled': number_of_questionnaires_filled,
              'total_of_questionnaires': questionnaires_configuration_list.count(),
              'percentage': 100 * number_of_questionnaires_filled / questionnaires_configuration_list.count(),
-             'consent_form': subject_of_experiment.consent_form})
+             'consent': subject_of_experiment.consent_form})
 
     context = {
         'experiment_id': experiment_id,
