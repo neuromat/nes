@@ -693,16 +693,15 @@ def upload_file(request, subject_id, experiment_id):
 
     subject = get_object_or_404(Subject, pk=subject_id)
     experiment = get_object_or_404(Experiment, pk=experiment_id)
+    subject_of_experiment = get_object_or_404(SubjectOfExperiment, subject=subject, experiment=experiment)
 
     if request.method == "POST":
         file_form = FileForm(request.POST, request.FILES)
 
         if 'content' in request.FILES:
             if file_form.is_valid():
-                new_file_data = file_form.save(commit=False)
-                new_file_data.subject = subject
-                new_file_data.experiment = experiment
-                new_file_data.save()
+                subject_of_experiment.consent_form = file_form
+                subject_of_experiment.save()
                 messages.success(request, 'Termo salvo com sucesso.')
 
     redirect_url = reverse("subject_insert", args=(subject_id, experiment_id, ))
