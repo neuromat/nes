@@ -260,15 +260,12 @@ def subjects(request, experiment_id, template_name="experiment/subjects.html"):
 
                         number_of_questionnaires_filled += 1
 
-        file_form = FileForm(request.POST, request.FILES)
-
         subject_list_with_status.append(
             {'subject': subject_of_experiment.subject,
              'number_of_questionnaires_filled': number_of_questionnaires_filled,
              'total_of_questionnaires': questionnaires_configuration_list.count(),
              'percentage': 100 * number_of_questionnaires_filled / questionnaires_configuration_list.count(),
-             'consent': subject_of_experiment.consent_form,
-             'file_form': file_form})
+             'consent': subject_of_experiment.consent_form})
 
     context = {
         'experiment_id': experiment_id,
@@ -689,7 +686,7 @@ def search_patients_ajax(request):
                               {'patients': patient_list, 'experiment_id': experiment_id})
 
 
-def upload_file(request, subject_id, experiment_id):
+def upload_file(request, subject_id, experiment_id, template_name="experiment/upload_consent_form"):
 
     subject = get_object_or_404(Subject, pk=subject_id)
     experiment = get_object_or_404(Experiment, pk=experiment_id)
@@ -697,15 +694,27 @@ def upload_file(request, subject_id, experiment_id):
 
     if request.method == "POST":
         file_form = FileForm(request.POST, request.FILES)
-
         if 'content' in request.FILES:
             if file_form.is_valid():
                 subject_of_experiment.consent_form = file_form
                 subject_of_experiment.save()
                 messages.success(request, 'Termo salvo com sucesso.')
 
-    redirect_url = reverse("subject_insert", args=(subject_id, experiment_id, ))
-    return HttpResponseRedirect(redirect_url)
+                if request.POST['action'] == "upload":
+                    redirect_url = reverse("subject_insert", args=(subject_id, experiment_id, ))
+
+                    return HttpResponseRedirect(redirect_url)
+
+    else:
+        file_form = FileForm(request.POST)
+
+        context = {
+            'subject': subject,
+            'experiment': experiment,
+            'file_form': file_form
+        }
+        return render(request, template_name, context)
+
 
 # def delete_file(request, subject_id, experiment_id):
 #     subject = get_object_or_404(Subject, pk=subject_id)
