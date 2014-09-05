@@ -9,8 +9,7 @@ from django.db.models.deletion import ProtectedError
 
 from experiment.models import Experiment, QuestionnaireConfiguration, Subject, TimeUnit, \
     QuestionnaireResponse, SubjectOfExperiment
-from experiment.forms import ExperimentForm, QuestionnaireConfigurationForm, QuestionnaireResponseForm, \
-    SubjectOfExperimentForm
+from experiment.forms import ExperimentForm, QuestionnaireConfigurationForm, QuestionnaireResponseForm, FileForm
 
 from quiz.models import Patient
 from quiz.abc_search_engine import Questionnaires
@@ -227,6 +226,8 @@ def subjects(request, experiment_id, template_name="experiment/subjects.html"):
 
     surveys = Questionnaires()
 
+    file_form = FileForm(request.POST, request.FILES)
+
     for subject_of_experiment in subject_of_experiment_list:
 
         number_of_questionnaires_filled = 0
@@ -261,20 +262,18 @@ def subjects(request, experiment_id, template_name="experiment/subjects.html"):
 
                         number_of_questionnaires_filled += 1
 
-        file_form = SubjectOfExperimentForm(request.POST, request.FILES)
-
         subject_list_with_status.append(
             {'subject': subject_of_experiment.subject,
              'number_of_questionnaires_filled': number_of_questionnaires_filled,
              'total_of_questionnaires': questionnaires_configuration_list.count(),
              'percentage': 100 * number_of_questionnaires_filled / questionnaires_configuration_list.count(),
-             'consent_form': subject_of_experiment.consent_form,
-             'file_form': file_form})
+             'consent_form': subject_of_experiment.consent_form})
 
     context = {
         'experiment_id': experiment_id,
         'subject_list': subject_list_with_status,
-        'experiment_title': experiment.title
+        'experiment_title': experiment.title,
+        'file_form': file_form
     }
 
     surveys.release_session_key()
@@ -696,7 +695,7 @@ def upload_file(request, subject_id, experiment_id):
     experiment = get_object_or_404(Experiment, pk=experiment_id)
 
     if request.method == "POST":
-        file_form = SubjectOfExperimentForm(request.POST, request.FILES)
+        file_form = FileForm(request.POST, request.FILES)
 
         if 'content' in request.FILES:
             if file_form.is_valid():

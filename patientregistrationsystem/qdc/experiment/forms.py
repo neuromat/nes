@@ -55,7 +55,7 @@ class QuestionnaireResponseForm(ModelForm):
         }
 
 
-class SubjectOfExperimentForm(ModelForm):
+class FileForm(ModelForm):
     class Meta:
         model = SubjectOfExperiment
         fields = ['consent_form']
