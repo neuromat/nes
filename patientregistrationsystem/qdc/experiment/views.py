@@ -723,5 +723,5 @@ def delete_file(request, subject_id, experiment_id):
     subject_of_experiment.save()
     messages.success(request, 'Anexo removido com sucesso.')
 
-    redirect_url = reverse("upload_file", args=(subject_id, experiment_id, ))
+    redirect_url = reverse("subjects", args=(experiment_id,))
     return HttpResponseRedirect(redirect_url)
