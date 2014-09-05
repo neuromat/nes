@@ -261,7 +261,7 @@ def subjects(request, experiment_id, template_name="experiment/subjects.html"):
 
                         number_of_questionnaires_filled += 1
 
-        file_form = SubjectOfExperimentForm(request.POST or None, request.FILES)
+        file_form = SubjectOfExperimentForm(request.POST, request.FILES)
 
         subject_list_with_status.append(
             {'subject': subject_of_experiment.subject,
