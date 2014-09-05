@@ -57,8 +57,8 @@ def experiment_create(request, template_name="experiment/experiment_register.htm
 @login_required
 @permission_required('experiment.view_experiment')
 def experiment_update(request, experiment_id, template_name="experiment/experiment_register.html"):
+
     experiment = get_object_or_404(Experiment, pk=experiment_id)
-    questionnaires_list = []
 
     if experiment:
         questionnaires_configuration_list = QuestionnaireConfiguration.objects.filter(experiment=experiment)
@@ -70,7 +70,6 @@ def experiment_update(request, experiment_id, template_name="experiment/experime
              "interval_between_fills_unit": questionnaire_configuration.interval_between_fills_unit,
              "id": questionnaire_configuration.id}
             for questionnaire_configuration in questionnaires_configuration_list]
-        questionnaires_list = surveys.find_all_active_questionnaires()
         surveys.release_session_key()
 
         experiment_form = ExperimentForm(request.POST or None, instance=experiment)
@@ -99,7 +98,6 @@ def experiment_update(request, experiment_id, template_name="experiment/experime
     context = {
         "experiment_form": experiment_form,
         "creating": False,
-        "questionnaires_list": questionnaires_list,
         "questionnaires_configuration_list": questionnaires_configuration_list,
         "experiment": experiment}
 
