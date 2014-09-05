@@ -6,7 +6,7 @@
 
 {% block form %}
     <div class="row">
-    <form id="file_form" method="post">
+    <form id="file_form" method="post" enctype="multipart/form-data">
     {% csrf_token %}
 {% endblock %}
 
@@ -74,10 +74,8 @@
                                     </div>
                                 </div>
                             {% else %}
-                                {{ exam_file.content.name }}
-                                {% if not viewing %}
-                                    <a class="glyphicon glyphicon-remove pull-right" data-toggle="tooltip" data-placement="right" title="Remover" style="color: indianred"></a>
-                                {% endif %}
+                                {{ file_list.content_form.name }}
+                                <a class="glyphicon glyphicon-remove pull-right" data-toggle="tooltip" data-placement="right" title="Remover" style="color: indianred"></a>
                                 <a class="glyphicon glyphicon-download-alt pull-right" data-toggle="tooltip" data-placement="bottom" title="download"  href="{{ exam_file.content.url }}"></a>
                             {% endif %}
                     </div>
