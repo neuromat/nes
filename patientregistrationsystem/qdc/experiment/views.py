@@ -226,8 +226,6 @@ def subjects(request, experiment_id, template_name="experiment/subjects.html"):
 
     surveys = Questionnaires()
 
-    file_form = FileForm(request.POST, request.FILES)
-
     for subject_of_experiment in subject_of_experiment_list:
 
         number_of_questionnaires_filled = 0
@@ -262,18 +260,20 @@ def subjects(request, experiment_id, template_name="experiment/subjects.html"):
 
                         number_of_questionnaires_filled += 1
 
+        file_form = FileForm(request.POST, request.FILES)
+
         subject_list_with_status.append(
             {'subject': subject_of_experiment.subject,
              'number_of_questionnaires_filled': number_of_questionnaires_filled,
              'total_of_questionnaires': questionnaires_configuration_list.count(),
              'percentage': 100 * number_of_questionnaires_filled / questionnaires_configuration_list.count(),
-             'consent': subject_of_experiment.consent_form})
+             'consent': subject_of_experiment.consent_form,
+             'file_form': file_form})
 
     context = {
         'experiment_id': experiment_id,
         'subject_list': subject_list_with_status,
-        'experiment_title': experiment.title,
-        'file_form': file_form
+        'experiment_title': experiment.title
     }
 
     surveys.release_session_key()
