@@ -60,12 +60,11 @@
                 <div class="col-xs-6 col-sm-12">
                     <div class="form-group">
                         <label>Termo de consentimento</label>
-
                             {% if not file_list %}
                                 <div class="row">
                                     <div class="col-xs-6 col-sm-6">
                                         <div class="form-group">
-                                            {{ file_form.content }}
+                                            {{ file_form.consent_form }}
                                         </div>
                                     </div>
                                     <div class="col-xs-6 col-sm-6">
@@ -81,9 +80,6 @@
                                 {% endif %}
                                 <a class="glyphicon glyphicon-download-alt pull-right" data-toggle="tooltip" data-placement="bottom" title="download"  href="{{ exam_file.content.url }}"></a>
                             {% endif %}
-
-
-
                     </div>
                 </div>
             </div>

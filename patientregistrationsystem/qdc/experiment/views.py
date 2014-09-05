@@ -709,7 +709,8 @@ def upload_file(request, subject_id, experiment_id, template_name="experiment/up
         context = {
             'subject': subject,
             'experiment': experiment,
-            'file_form': file_form
+            'file_form': file_form,
+            'file_list': subject_of_experiment.consent_form
         }
         return render(request, template_name, context)
 
