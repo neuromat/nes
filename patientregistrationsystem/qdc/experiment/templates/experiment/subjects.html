@@ -103,7 +103,7 @@
                                                     {{ item.subject.patient.name_txt }}
                                                 {% endif %}
                                             </td>
-                                            {% if not item.consent_form %}
+                                            {% if item.consent_form == '' %}
                                                 <td> {{ file_form.content }}
                                                     <a href='/experiment/{{ experiment_id }}/subjects/{{ item.subject_id }}/upload_file/'></a>
 {#                                                    <div class="col-xs-6 col-sm-6">#}
