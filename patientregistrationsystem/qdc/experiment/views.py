@@ -529,57 +529,57 @@ def questionnaire_response_view(request, questionnaire_response_id,
     responses_list[1] = responses_list[1].split(",")
 
     questionnaire_responses = []
+
     for question in question_properties:
+
         if isinstance(question['answer_options'], basestring) and question['answer_options'] == "super_question":
+
             if question['question'] != '':
+
                 questionnaire_responses.append({
                     'question': question['question'],
                     'answer': '',
                     'type': question['type']
                 })
         else:
-            index = 0
-            try:
-                for query in responses_list[0]:
-                    if query == question['question_id']:
-                        answer_options = question['answer_options']
-                        if isinstance(answer_options, dict):
-                            if not answer_options[responses_list[1][index]]:
-                                answer_option = answer_options[responses_list[1][index]]
-                                answer = answer_option['answer']
-                            else:
-                                answer = ''
-                        else:
-                            if question['type'] == 'D':
-                                answer = datetime.datetime.strptime(responses_list[1][index], '%Y-%m-%d %H:%M:%S')
-                            else:
-                                answer = responses_list[1][index]
 
-                        questionnaire_responses.append({
-                            'question': question['question'],
-                            'answer': answer,
-                            'type': question['type']
-                        })
-                        break
+            answer = ''
+
+            if question['question_id'] in responses_list[0]:
+
+                index = responses_list[0].index(question['question_id'])
+
+                answer_options = question['answer_options']
+
+                if isinstance(answer_options, dict):
+
+                    if responses_list[1][index] in answer_options:
+                        answer_option = answer_options[responses_list[1][index]]
+                        answer = answer_option['answer']
                     else:
-                        index += 1
-            except:
-                print 'erro '
-                pass
+                        answer = 'Sem resposta'
+                else:
+                    if question['type'] == 'D':
+                        answer = datetime.datetime.strptime(responses_list[1][index], '%Y-%m-%d %H:%M:%S')
+                    else:
+                        answer = responses_list[1][index]
+
+            questionnaire_responses.append({
+                'question': question['question'],
+                'answer': answer,
+                'type': question['type']
+            })
 
     surveys.release_session_key()
 
-    subject = questionnaire_response.subject_of_experiment
-
     context = {
         "questionnaire_responses": questionnaire_responses,
-        "questionnaire_configuration": questionnaire_configuration,
-        "questionnaire_response_id": questionnaire_response_id,
         "survey_title": survey_title,
-        "subject": subject
+        "questionnaire_response": questionnaire_response
     }
 
     return render(request, template_name, context)
+
 
 @login_required
 @permission_required('experiment.view_questionnaireresponse')
