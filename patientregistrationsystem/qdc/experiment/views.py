@@ -539,30 +539,37 @@ def questionnaire_response_view(request, questionnaire_response_id,
                 })
         else:
             index = 0
-            for query in responses_list[0]:
-                if query == question['question_id']:
-                    answer_options = question['answer_options']
-                    if isinstance(answer_options, dict):
-                        answer_option = answer_options[responses_list[1][index]]
-                        answer = answer_option['answer']
-                    else:
-                        if question['type'] == 'D':
-                            answer = datetime.datetime.strptime(responses_list[1][index], '%Y-%m-%d %H:%M:%S')
+            try:
+                for query in responses_list[0]:
+                    if query == question['question_id']:
+                        answer_options = question['answer_options']
+                        if isinstance(answer_options, dict):
+                            if not answer_options[responses_list[1][index]]:
+                                answer_option = answer_options[responses_list[1][index]]
+                                answer = answer_option['answer']
+                            else:
+                                answer = ''
                         else:
-                            answer = responses_list[1][index]
+                            if question['type'] == 'D':
+                                answer = datetime.datetime.strptime(responses_list[1][index], '%Y-%m-%d %H:%M:%S')
+                            else:
+                                answer = responses_list[1][index]
 
-                    questionnaire_responses.append({
-                        'question': question['question'],
-                        'answer': answer,
-                        'type': question['type']
-                    })
-                    break
-                else:
-                    index += 1
+                        questionnaire_responses.append({
+                            'question': question['question'],
+                            'answer': answer,
+                            'type': question['type']
+                        })
+                        break
+                    else:
+                        index += 1
+            except:
+                print 'erro '
+                pass
 
     surveys.release_session_key()
 
-    subject = questionnaire_response.subject
+    subject = questionnaire_response.subject_of_experiment
 
     context = {
         "questionnaire_responses": questionnaire_responses,
