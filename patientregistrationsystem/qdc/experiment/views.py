@@ -20,6 +20,7 @@ import re
 
 import datetime
 
+
 @login_required
 @permission_required('experiment.view_experiment', raise_exception=True)
 def experiment_list(request, template_name="experiment/experiment_list.html"):
@@ -57,7 +58,6 @@ def experiment_create(request, template_name="experiment/experiment_register.htm
 @login_required
 @permission_required('experiment.view_experiment')
 def experiment_update(request, experiment_id, template_name="experiment/experiment_register.html"):
-
     experiment = get_object_or_404(Experiment, pk=experiment_id)
 
     if experiment:
@@ -213,7 +213,6 @@ def questionnaire_update(request, questionnaire_configuration_id,
 @login_required
 @permission_required('experiment.add_subject')
 def subjects(request, experiment_id, template_name="experiment/subjects.html"):
-
     experiment = get_object_or_404(Experiment, id=experiment_id)
 
     subject_of_experiment_list = SubjectOfExperiment.objects.all().filter(experiment=experiment)
@@ -230,14 +229,14 @@ def subjects(request, experiment_id, template_name="experiment/subjects.html"):
 
         for questionnaire_configuration in questionnaires_configuration_list:
 
-            subject_responses = QuestionnaireResponse.objects.\
-                filter(subject_of_experiment=subject_of_experiment).\
+            subject_responses = QuestionnaireResponse.objects. \
+                filter(subject_of_experiment=subject_of_experiment). \
                 filter(questionnaire_configuration=questionnaire_configuration)
 
             if subject_responses:
                 if (questionnaire_configuration.number_of_fills is None and subject_responses.count() > 0) or \
                         (questionnaire_configuration.number_of_fills is not None and
-                            questionnaire_configuration.number_of_fills == subject_responses.count()):
+                                 questionnaire_configuration.number_of_fills == subject_responses.count()):
 
                     number_of_questionnaires_completed = 0
 
@@ -252,10 +251,9 @@ def subjects(request, experiment_id, template_name="experiment/subjects.html"):
                             number_of_questionnaires_completed += 1
 
                     if (questionnaire_configuration.number_of_fills is None and
-                            number_of_questionnaires_completed > 0) or \
+                                number_of_questionnaires_completed > 0) or \
                             (questionnaire_configuration.number_of_fills is not None and
-                                number_of_questionnaires_completed >= questionnaire_configuration.number_of_fills):
-
+                                     number_of_questionnaires_completed >= questionnaire_configuration.number_of_fills):
                         number_of_questionnaires_filled += 1
 
         subject_list_with_status.append(
@@ -290,7 +288,8 @@ def subject_questionnaire_response_start_fill_questionnaire(request, subject_id,
         subject = get_object_or_404(Subject, pk=subject_id)
         patient = subject.patient
 
-        subject_of_experiment = get_object_or_404(SubjectOfExperiment, subject=subject, experiment=questionnaire_config.experiment)
+        subject_of_experiment = get_object_or_404(SubjectOfExperiment, subject=subject,
+                                                  experiment=questionnaire_config.experiment)
 
         if not questionnaire_lime_survey.survey_has_token_table(questionnaire_config.lime_survey_id):
             messages.warning(request,
@@ -327,7 +326,6 @@ def subject_questionnaire_response_start_fill_questionnaire(request, subject_id,
 
 
 def get_limesurvey_response_url(questionnaire_response):
-
     questionnaire_lime_survey = Questionnaires()
     token = questionnaire_lime_survey.get_participant_properties(
         questionnaire_response.questionnaire_configuration.lime_survey_id,
@@ -336,15 +334,15 @@ def get_limesurvey_response_url(questionnaire_response):
 
     redirect_url = \
         '%s/index.php/%s/token/%s/idavaliador/%s/datdataaquisicao/%s/idparticipante/%s/newtest/Y' % (
-        settings.LIMESURVEY['URL'],
-        questionnaire_response.questionnaire_configuration.lime_survey_id,
-        token,
-        str(questionnaire_response.questionnaire_responsible.id),
-        questionnaire_response.date.strftime('%d-%m-%Y'),
-        str(questionnaire_response.subject_of_experiment.subject.id))
+            settings.LIMESURVEY['URL'],
+            questionnaire_response.questionnaire_configuration.lime_survey_id,
+            token,
+            str(questionnaire_response.questionnaire_responsible.id),
+            questionnaire_response.date.strftime('%d-%m-%Y'),
+            str(questionnaire_response.subject_of_experiment.subject.id))
 
     # redirect_url = \
-    #     '%s/index.php/survey/index/sid/%s/token/%s/lang/pt-BR/idavaliador/%s/datdataaquisicao/%s/idparticipante/%s' % (
+    # '%s/index.php/survey/index/sid/%s/token/%s/lang/pt-BR/idavaliador/%s/datdataaquisicao/%s/idparticipante/%s' % (
     #     settings.LIMESURVEY['URL'],
     #     questionnaire_response.questionnaire_configuration.lime_survey_id,
     #     token,
@@ -359,7 +357,6 @@ def get_limesurvey_response_url(questionnaire_response):
 @permission_required('experiment.add_questionnaireresponse')
 def subject_questionnaire_response_create(request, experiment_id, subject_id, questionnaire_id,
                                           template_name="experiment/subject_questionnaire_response_form.html"):
-
     questionnaire_config = get_object_or_404(QuestionnaireConfiguration, id=questionnaire_id)
 
     surveys = Questionnaires()
@@ -408,7 +405,6 @@ def subject_questionnaire_response_create(request, experiment_id, subject_id, qu
 @permission_required('experiment.change_questionnaireresponse')
 def questionnaire_response_update(request, questionnaire_response_id,
                                   template_name="experiment/subject_questionnaire_response_form.html"):
-
     questionnaire_response = get_object_or_404(QuestionnaireResponse, id=questionnaire_response_id)
 
     questionnaire_configuration = questionnaire_response.questionnaire_configuration
@@ -482,7 +478,6 @@ def questionnaire_response_update(request, questionnaire_response_id,
 @permission_required('experiment.view_questionnaireresponse')
 def questionnaire_response_view(request, questionnaire_response_id,
                                 template_name="experiment/subject_questionnaire_response_view.html"):
-
     questionnaire_response = get_object_or_404(QuestionnaireResponse, id=questionnaire_response_id)
     questionnaire_configuration = questionnaire_response.questionnaire_configuration
     surveys = Questionnaires()
@@ -493,34 +488,36 @@ def questionnaire_response_view(request, questionnaire_response_id,
     question_properties = []
     groups = surveys.list_groups(questionnaire_configuration.lime_survey_id)
     for group in groups:
-        question_list = surveys.list_questions(questionnaire_configuration.lime_survey_id, group['id'])
-        question_list = sorted(question_list)
-        for question in question_list:
-            properties = surveys.get_question_properties(question)
-            if ('{if' not in properties['question']) and ('{(' not in properties['question']) and ('pont' not in properties['question']):
-                properties['question'] = re.sub('<.*?>', '', properties['question'])
+        if 'id' in group:
+            question_list = surveys.list_questions(questionnaire_configuration.lime_survey_id, group['id'])
+            question_list = sorted(question_list)
+            for question in question_list:
+                properties = surveys.get_question_properties(question)
+                if ('{if' not in properties['question']) and ('{(' not in properties['question']) and (
+                    'pont' not in properties['question']):
+                    properties['question'] = re.sub('<.*?>', '', properties['question'])
 
-                if isinstance(properties['subquestions'], dict):
-                    question_properties.append({
-                        'question': properties['question'],
-                        'question_id': properties['title'],
-                        'answer_options': 'super_question',
-                        'type': properties['type']
-                    })
-                    for key, value in sorted(properties['subquestions'].iteritems()):
+                    if isinstance(properties['subquestions'], dict):
                         question_properties.append({
-                            'question': value['question'],
-                            'question_id': properties['title']+'['+value['title']+']',
-                            'answer_options': properties['answeroptions'],
+                            'question': properties['question'],
+                            'question_id': properties['title'],
+                            'answer_options': 'super_question',
                             'type': properties['type']
                         })
-                else:
-                    question_properties.append({
-                        'question': properties['question'],
-                        'question_id': properties['title'],
-                        'answer_options': '',
-                        'type': properties['type']
-                    })
+                        for key, value in sorted(properties['subquestions'].iteritems()):
+                            question_properties.append({
+                                'question': value['question'],
+                                'question_id': properties['title'] + '[' + value['title'] + ']',
+                                'answer_options': properties['answeroptions'],
+                                'type': properties['type']
+                            })
+                    else:
+                        question_properties.append({
+                            'question': properties['question'],
+                            'question_id': properties['title'],
+                            'answer_options': '',
+                            'type': properties['type']
+                        })
 
     responses_list = surveys.get_responses_by_token(questionnaire_configuration.lime_survey_id, token)
     responses_list = responses_list.replace('\"', '')
@@ -535,7 +532,6 @@ def questionnaire_response_view(request, questionnaire_response_id,
         if isinstance(question['answer_options'], basestring) and question['answer_options'] == "super_question":
 
             if question['question'] != '':
-
                 questionnaire_responses.append({
                     'question': question['question'],
                     'answer': '',
@@ -585,7 +581,6 @@ def questionnaire_response_view(request, questionnaire_response_id,
 @permission_required('experiment.view_questionnaireresponse')
 def subject_questionnaire_view(request, experiment_id, subject_id,
                                template_name="experiment/subject_questionnaire_response_list.html"):
-
     experiment = get_object_or_404(Experiment, id=experiment_id)
     subject = get_object_or_404(Subject, id=subject_id)
 
@@ -600,8 +595,8 @@ def subject_questionnaire_view(request, experiment_id, subject_id,
 
         subject_of_experiment = get_object_or_404(SubjectOfExperiment, experiment=experiment, subject=subject)
 
-        questionnaire_responses = QuestionnaireResponse.objects.\
-            filter(subject_of_experiment=subject_of_experiment).\
+        questionnaire_responses = QuestionnaireResponse.objects. \
+            filter(subject_of_experiment=subject_of_experiment). \
             filter(questionnaire_configuration=questionnaire_configuration)
 
         questionnaire_responses_with_status = []
@@ -692,7 +687,6 @@ def search_patients_ajax(request):
 
 
 def upload_file(request, subject_id, experiment_id, template_name="experiment/upload_consent_form.html"):
-
     subject = get_object_or_404(Subject, pk=subject_id)
     experiment = get_object_or_404(Experiment, pk=experiment_id)
     subject_of_experiment = get_object_or_404(SubjectOfExperiment, subject=subject, experiment=experiment)

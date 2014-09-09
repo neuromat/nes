@@ -28,7 +28,7 @@ class ExperimentTest(TestCase):
         Configura autenticacao e variaveis para iniciar cada teste
 
         """
-        print 'Set up for', self._testMethodName
+        # print 'Set up for', self._testMethodName
 
         self.user = User.objects.create_user(username=USER_USERNAME, email='test@dummy.com', password=USER_PWD)
         self.user.is_staff = True
@@ -123,12 +123,14 @@ class ExperimentTest(TestCase):
 
 
 class QuestionnaireConfigurationTest(TestCase):
+    lime_survey = None
+
     def setUp(self):
         """
         Configura autenticacao e variaveis para iniciar cada teste
 
         """
-        print 'Set up for', self._testMethodName
+        # print 'Set up for', self._testMethodName
 
         self.user = User.objects.create_user(username=USER_USERNAME, email='test@dummy.com', password=USER_PWD)
         self.user.is_staff = True
@@ -139,6 +141,14 @@ class QuestionnaireConfigurationTest(TestCase):
 
         logged = self.client.login(username=USER_USERNAME, password=USER_PWD)
         self.assertEqual(logged, True)
+
+        # Conecta no Lime Survey
+        self.lime_survey = Questionnaires()
+        # Checa se conseguiu conectar no lime Survey com as credenciais fornecidas no settings.py
+        if isinstance(self.lime_survey.session_key, dict):
+            if 'status' in self.lime_survey.session_key:
+                self.assertNotEqual(self.lime_survey.session_key['status'], 'Invalid user name or password')
+                print 'Failed to connect Lime Survey %s' % self.lime_survey.session_key['status']
 
     def test_questionnaire_create(self):
         """Testa a criacao de um questionario para um dado experimento"""
@@ -156,9 +166,7 @@ class QuestionnaireConfigurationTest(TestCase):
         response = self.client.get(reverse('questionnaire_new', args=(experiment.pk,)))
         self.assertEqual(response.status_code, 200)
 
-        # Cria uma survey no Lime Survey
-        q = Questionnaires()
-        sid = q.add_survey(9999, 'Questionario de teste', 'en', 'G')
+        sid = self.lime_survey.add_survey(9999, 'Questionario de teste - DjangoTests', 'en', 'G')
 
         try:
             # Cria um questionario com os dados default apresentados em tela
@@ -171,7 +179,8 @@ class QuestionnaireConfigurationTest(TestCase):
             self.assertEqual(count_after_insert, count_before_insert + 1)
 
             # Remove o questionario criado
-            questionnaire_created = get_object_or_404(QuestionnaireConfiguration, experiment=experiment, lime_survey_id=sid)
+            questionnaire_created = get_object_or_404(QuestionnaireConfiguration, experiment=experiment,
+                                                      lime_survey_id=sid)
             if questionnaire_created:
                 questionnaire_created.delete()
 
@@ -203,7 +212,7 @@ class QuestionnaireConfigurationTest(TestCase):
 
         finally:
             # Deleta a survey gerada no Lime Survey
-            status = q.delete_survey(sid)
+            status = self.lime_survey.delete_survey(sid)
             self.assertEqual(status, 'OK')
 
     def test_questionnaire_update(self):
@@ -215,8 +224,7 @@ class QuestionnaireConfigurationTest(TestCase):
         experiment.save()
 
         # Cria uma survey no Lime Survey
-        q = Questionnaires()
-        sid = q.add_survey(9999, 'Questionario de teste', 'en', 'G')
+        sid = self.lime_survey.add_survey(9999, 'Questionario de teste - DjangoTests', 'en', 'G')
 
         try:
             # Cria um questionario
@@ -269,7 +277,7 @@ class QuestionnaireConfigurationTest(TestCase):
 
         finally:
             # Deleta a survey gerada no Lime Survey
-            status = q.delete_survey(sid)
+            status = self.lime_survey.delete_survey(sid)
             self.assertEqual(status, 'OK')
 
 
@@ -281,7 +289,7 @@ class SubjectTest(TestCase):
         Configura autenticacao e variaveis para iniciar cada teste
 
         """
-        print 'Set up for', self._testMethodName
+        # print 'Set up for', self._testMethodName
 
         self.user = User.objects.create_user(username=USER_USERNAME, email='test@dummy.com', password=USER_PWD)
         self.user.is_staff = True
@@ -292,6 +300,15 @@ class SubjectTest(TestCase):
 
         logged = self.client.login(username=USER_USERNAME, password=USER_PWD)
         self.assertEqual(logged, True)
+
+        # Conecta no Lime Survey
+        self.lime_survey = Questionnaires()
+
+        # Checa se conseguiu conectar no lime Survey com as credenciais fornecidas no settings.py
+        if isinstance(self.lime_survey.session_key, dict):
+            if 'status' in self.lime_survey.session_key:
+                self.assertNotEqual(self.lime_survey.session_key['status'], 'Invalid user name or password')
+                print 'Failed to connect Lime Survey %s' % self.lime_survey.session_key['status']
 
     def test_subject_view_and_search(self):
         """
@@ -334,8 +351,10 @@ class SubjectTest(TestCase):
         patient_mock = self.util.create_patient_mock(user=self.user)
 
         # Cria uma survey no Lime Survey
-        q = Questionnaires()
-        sid = q.add_survey(9999, 'Questionario de teste', 'en', 'G')
+        # self.lime_survey = Questionnaires()
+        # Checa se conseguiu conectar no lime Survey com as credenciais fornecidas no settings.py
+        # self.assertNotEqual(self.lime_survey.session_key['status'], 'Invalid user name or password')
+        sid = self.lime_survey.add_survey(9999, 'Questionario de teste - DjangoTests', 'en', 'G')
 
         try:
             # Cria um questionario
@@ -402,11 +421,11 @@ class SubjectTest(TestCase):
             self.assertEqual(response.status_code, 200)
             self.assertEqual(response.context['FAIL'], False)
 
-            status = q.activate_tokens(sid)
+            status = self.lime_survey.activate_tokens(sid)
             self.assertEqual(status, 'OK')
 
             # Ativar survey
-            status = q.activate_survey(sid)
+            status = self.lime_survey.activate_survey(sid)
             self.assertEqual(status, 'OK')
 
             # Inicia o preenchimento de uma Survey NORMAL
@@ -429,6 +448,10 @@ class SubjectTest(TestCase):
             self.assertEqual(response.status_code, 200)
             self.assertEqual(response.context['FAIL'], True)
 
+            response = self.client.get(reverse('questionnaire_response_edit',
+                                               args=[questionnaire_response.pk, ]), self.data)
+            self.assertEqual(response.status_code, 200)
+
             # Remove preenchimento da Survey
             count_before_delete_questionnaire_response = QuestionnaireResponse.objects.all().count()
 
@@ -447,9 +470,11 @@ class SubjectTest(TestCase):
                                         self.data)
             self.assertEqual(response.status_code, 302)
             count_after_delete_subject = SubjectOfExperiment.objects.all().filter(experiment=experiment).count()
-            self.assertEqual(count_before_delete_subject-1, count_after_delete_subject)
+            self.assertEqual(count_before_delete_subject - 1, count_after_delete_subject)
+
+
 
         finally:
             # Deleta a survey gerada no Lime Survey
-            status = q.delete_survey(sid)
+            status = self.lime_survey.delete_survey(sid)
             self.assertEqual(status, 'OK')

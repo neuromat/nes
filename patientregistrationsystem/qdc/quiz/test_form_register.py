@@ -29,7 +29,7 @@ class PatientFormValidation(TestCase):
         Configura autenticacao e variaveis para iniciar cada teste
 
         """
-        print 'Set up for', self._testMethodName
+        #print 'Set up for', self._testMethodName
 
         self.user = User.objects.create_user(username=USER_USERNAME, email='test@dummy.com', password=USER_PWD)
         self.user.is_staff = True
