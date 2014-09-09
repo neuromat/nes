@@ -729,16 +729,3 @@ def upload_file(request, subject_id, experiment_id, template_name="experiment/up
         'file_list': subject_of_experiment.consent_form
     }
     return render(request, template_name, context)
-
-
-# def delete_file(request, subject_id, experiment_id):
-#     subject = get_object_or_404(Subject, pk=subject_id)
-#     experiment = get_object_or_404(Experiment, pk=experiment_id)
-#     subject_of_experiment = get_object_or_404(SubjectOfExperiment, subject=subject, experiment=experiment)
-#
-#     subject_of_experiment.consent_form = ''
-#     subject_of_experiment.save()
-#     messages.success(request, 'Anexo removido com sucesso.')
-#
-#     redirect_url = reverse("subjects", args=(experiment_id,))
-#     return HttpResponseRedirect(redirect_url)
