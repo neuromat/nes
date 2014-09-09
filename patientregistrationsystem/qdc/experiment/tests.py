@@ -452,6 +452,11 @@ class SubjectTest(TestCase):
                                                args=[questionnaire_response.pk, ]), self.data)
             self.assertEqual(response.status_code, 200)
 
+            #Visualiza preenchimento da Survey
+            response = self.client.get(reverse('questionnaire_response_view',
+                                               args=[questionnaire_response.pk, ]), self.data)
+            self.assertEqual(response.status_code, 200)
+
             # Remove preenchimento da Survey
             count_before_delete_questionnaire_response = QuestionnaireResponse.objects.all().count()
 
@@ -471,8 +476,6 @@ class SubjectTest(TestCase):
             self.assertEqual(response.status_code, 302)
             count_after_delete_subject = SubjectOfExperiment.objects.all().filter(experiment=experiment).count()
             self.assertEqual(count_before_delete_subject - 1, count_after_delete_subject)
-
-
 
         finally:
             # Deleta a survey gerada no Lime Survey

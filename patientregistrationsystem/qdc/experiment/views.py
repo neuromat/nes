@@ -343,8 +343,8 @@ def get_limesurvey_response_url(questionnaire_response):
 
     # redirect_url = \
     # '%s/index.php/survey/index/sid/%s/token/%s/lang/pt-BR/idavaliador/%s/datdataaquisicao/%s/idparticipante/%s' % (
-    #     settings.LIMESURVEY['URL'],
-    #     questionnaire_response.questionnaire_configuration.lime_survey_id,
+    # settings.LIMESURVEY['URL'],
+    # questionnaire_response.questionnaire_configuration.lime_survey_id,
     #     token,
     #     questionnaire_response.questionnaire_responsible.id,
     #     questionnaire_response.date.strftime('%d-%m-%Y'),
@@ -487,84 +487,85 @@ def questionnaire_response_view(request, questionnaire_response_id,
 
     question_properties = []
     groups = surveys.list_groups(questionnaire_configuration.lime_survey_id)
-    for group in groups:
-        if 'id' in group:
-            question_list = surveys.list_questions(questionnaire_configuration.lime_survey_id, group['id'])
-            question_list = sorted(question_list)
-            for question in question_list:
-                properties = surveys.get_question_properties(question)
-                if ('{if' not in properties['question']) and ('{(' not in properties['question']) and (
-                    'pont' not in properties['question']):
-                    properties['question'] = re.sub('<.*?>', '', properties['question'])
-
-                    if isinstance(properties['subquestions'], dict):
-                        question_properties.append({
-                            'question': properties['question'],
-                            'question_id': properties['title'],
-                            'answer_options': 'super_question',
-                            'type': properties['type']
-                        })
-                        for key, value in sorted(properties['subquestions'].iteritems()):
-                            question_properties.append({
-                                'question': value['question'],
-                                'question_id': properties['title'] + '[' + value['title'] + ']',
-                                'answer_options': properties['answeroptions'],
-                                'type': properties['type']
-                            })
-                    else:
-                        question_properties.append({
-                            'question': properties['question'],
-                            'question_id': properties['title'],
-                            'answer_options': '',
-                            'type': properties['type']
-                        })
-
-    responses_list = surveys.get_responses_by_token(questionnaire_configuration.lime_survey_id, token)
-    responses_list = responses_list.replace('\"', '')
-    responses_list = responses_list.split('\n')
-    responses_list[0] = responses_list[0].split(",")
-    responses_list[1] = responses_list[1].split(",")
-
     questionnaire_responses = []
 
-    for question in question_properties:
+    if not isinstance(groups, dict):
+        for group in groups:
+            if 'id' in group:
+                question_list = surveys.list_questions(questionnaire_configuration.lime_survey_id, group['id'])
+                question_list = sorted(question_list)
+                for question in question_list:
+                    properties = surveys.get_question_properties(question)
+                    if ('{if' not in properties['question']) and ('{(' not in properties['question']) and (
+                                'pont' not in properties['question']):
+                        properties['question'] = re.sub('<.*?>', '', properties['question'])
 
-        if isinstance(question['answer_options'], basestring) and question['answer_options'] == "super_question":
+                        if isinstance(properties['subquestions'], dict):
+                            question_properties.append({
+                                'question': properties['question'],
+                                'question_id': properties['title'],
+                                'answer_options': 'super_question',
+                                'type': properties['type']
+                            })
+                            for key, value in sorted(properties['subquestions'].iteritems()):
+                                question_properties.append({
+                                    'question': value['question'],
+                                    'question_id': properties['title'] + '[' + value['title'] + ']',
+                                    'answer_options': properties['answeroptions'],
+                                    'type': properties['type']
+                                })
+                        else:
+                            question_properties.append({
+                                'question': properties['question'],
+                                'question_id': properties['title'],
+                                'answer_options': '',
+                                'type': properties['type']
+                            })
 
-            if question['question'] != '':
+        responses_list = surveys.get_responses_by_token(questionnaire_configuration.lime_survey_id, token)
+        responses_list = responses_list.replace('\"', '')
+        responses_list = responses_list.split('\n')
+        responses_list[0] = responses_list[0].split(",")
+        responses_list[1] = responses_list[1].split(",")
+
+        for question in question_properties:
+
+            if isinstance(question['answer_options'], basestring) and question['answer_options'] == "super_question":
+
+                if question['question'] != '':
+                    questionnaire_responses.append({
+                        'question': question['question'],
+                        'answer': '',
+                        'type': question['type']
+                    })
+            else:
+
+                answer = ''
+
+                if question['question_id'] in responses_list[0]:
+
+                    index = responses_list[0].index(question['question_id'])
+
+                    answer_options = question['answer_options']
+
+                    if isinstance(answer_options, dict):
+
+                        if responses_list[1][index] in answer_options:
+                            answer_option = answer_options[responses_list[1][index]]
+                            answer = answer_option['answer']
+                        else:
+                            answer = 'Sem resposta'
+                    else:
+                        if question['type'] == 'D':
+                            answer = datetime.datetime.strptime(responses_list[1][index], '%Y-%m-%d %H:%M:%S')
+                        else:
+                            answer = responses_list[1][index]
+
                 questionnaire_responses.append({
                     'question': question['question'],
-                    'answer': '',
+                    'answer': answer,
                     'type': question['type']
                 })
-        else:
-
-            answer = ''
-
-            if question['question_id'] in responses_list[0]:
-
-                index = responses_list[0].index(question['question_id'])
-
-                answer_options = question['answer_options']
-
-                if isinstance(answer_options, dict):
-
-                    if responses_list[1][index] in answer_options:
-                        answer_option = answer_options[responses_list[1][index]]
-                        answer = answer_option['answer']
-                    else:
-                        answer = 'Sem resposta'
-                else:
-                    if question['type'] == 'D':
-                        answer = datetime.datetime.strptime(responses_list[1][index], '%Y-%m-%d %H:%M:%S')
-                    else:
-                        answer = responses_list[1][index]
-
-            questionnaire_responses.append({
-                'question': question['question'],
-                'answer': answer,
-                'type': question['type']
-            })
 
     surveys.release_session_key()
 
