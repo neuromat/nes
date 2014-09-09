@@ -20,8 +20,6 @@ urlpatterns = patterns(
         'experiment.views.subjects_insert', name='subject_insert'),
     url(r'^(?P<experiment_id>\d+)/subjects/(?P<subject_id>\d+)/upload_file/$',
         'experiment.views.upload_file', name='upload_file'),
-    url(r'^(?P<experiment_id>\d+)/subjects/(?P<subject_id>\d+)/delete_file/$',
-        'experiment.views.delete_file', name='delete_file'),
 
     # subject + questionnaire
     url(r'^(?P<experiment_id>\d+)/subjects/(?P<subject_id>\d+)/questionnaire/$',
