@@ -28,13 +28,13 @@
                 <li>
                     <a href="/experiment/{{ questionnaire_configuration.experiment.id }}/subjects/{{ subject.id }}/questionnaire">{{ subject.patient.name_txt }}</a>
                 </li>
-                <li class="active">
+                <li>
                     {{ survey_title }}
                 </li>
                 {% if creating %}
                     <li class="active">Novo preenchimento</li>
                 {% else %}
-                    <li class="active"></li>
+                    <li class="active">{{ questionnaire_response_form.date.value|date:"d-m-Y" }}</li>
                 {% endif %}
             </ol>
 
