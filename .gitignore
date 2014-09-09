@@ -1,4 +1,4 @@
 .idea/
 *.pyc
-settings.py
+patientregistrationsystem/qdc/.idea
 patientregistrationsystem/qdc/qdc/settings.py

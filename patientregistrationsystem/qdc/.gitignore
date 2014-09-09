@@ -1,8 +1,6 @@
 # Created by .gitignore support plugin (hsz.mobi)
-settings.py
-qdc/settings.py
-.idea
-.idea/
 *.pyc
 media
+.idea
+qdc/settings.py
 *.DS_Store

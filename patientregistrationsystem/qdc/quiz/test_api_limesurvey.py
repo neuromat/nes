@@ -9,9 +9,14 @@ class ABCSearchEngineTest(TestCase):
 
     def setUp(self):
         self.server = pyjsonrpc.HttpClient("http://survey.numec.prp.usp.br/index.php/admin/remotecontrol")
-        username = "evandro"
-        password = "8YtztuqeGzUU"
+        username = "jenkins"
+        password = "numecusp"
         self.session_key = self.server.get_session_key(username, password)
+        # Checa se conseguiu conectar no lime Survey com as credenciais fornecidas no settings.py
+        if isinstance(self.session_key, dict):
+            if 'status' in self.session_key:
+                self.assertNotEqual(self.session_key['status'], 'Invalid user name or password')
+                print 'Failed to connect Lime Survey %s' % self.session_key['status']
 
     def test_find_all_questionnaires_method_returns_correct_result(self):
         q = Questionnaires()
@@ -69,7 +74,7 @@ class ABCSearchEngineTest(TestCase):
         # verificar se info retornada eh a mesma
         # self.assertEqual(participant_data_result[0]['email'], participant_data['email'])
         # self.assertEqual(participant_data_result[0]['lastname'], participant_data['lastname'])
-        # self.assertEqual(participant_data_result[0]['firstname'], participant_data['firstname'])
+        # self.assertEqual(participant_data_result[0]['firsStname'], participant_data['firstname'])
 
         self.assertNotEqual(participant_data_result, None)
 
@@ -112,9 +117,9 @@ class ABCSearchEngineTest(TestCase):
     # def test_get_survey_property_usetokens(self):
     # """testa a obtencao das propriedades de um questionario"""
     #
-    #     surveys = Questionnaires()
-    #     result = surveys.get_survey_properties(641729, "usetokens")
-    #     surveys.release_session_key()
+    # surveys = Questionnaires()
+    # result = surveys.get_survey_properties(641729, "usetokens")
+    # surveys.release_session_key()
     #
     #     pass
 

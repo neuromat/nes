@@ -1,6 +1,4 @@
-from django.test import TestCase
-
-from views import Patient, GenderOption, User
+from views import Patient, GenderOption
 from models import ClassificationOfDiseases, MedicalRecordData, Diagnosis
 
 
