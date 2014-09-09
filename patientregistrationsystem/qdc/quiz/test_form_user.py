@@ -26,7 +26,7 @@ class FormUserValidation(TestCase):
 
     def setUp(self):
         """ Configura autenticacao e variaveis para iniciar cada teste """
-        print 'Set up for', self._testMethodName
+        # print 'Set up for', self._testMethodName
 
         self.user = User.objects.create_superuser(username=USER_USERNAME, email='jenkins.neuromat@gmail.com',
                                                   password=USER_PWD)
@@ -298,13 +298,13 @@ class FormUserValidation(TestCase):
 
         user_to_delete.is_active = True
         response = self.client.post(reverse(USER_EDIT, args=(self.user.pk,)), self.data, follow=True)
-        self.assertEqual(response.status_code, 200)
+        self.assertEqual(response.status_code, 403)
         user_to_delete = get_object_or_404(User, pk=user_to_delete.pk)
         self.assertEqual(user_to_delete.is_active, False)
 
         # Create an instance of a GET request.
         # request = self.factory.get(reverse('user_delete', args=(user_to_delete.pk,)))
-        #request.user = self.user
+        # request.user = self.user
 
 
 

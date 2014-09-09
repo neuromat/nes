@@ -33,6 +33,9 @@
                 <li>
                     <a href="/experiment/questionnaire_response/edit/{{ questionnaire_response.id }}">{{ survey_title }}</a>
                 </li>
+                <li>
+                    {{ questionnaire_response.date|date:"d-m-Y" }}
+                </li>
                 <li class="active">Visualização do preenchimento</li>
             </ol>
         </div>
