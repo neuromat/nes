@@ -26,7 +26,7 @@
                 showErrorMessage('É necessário escolher pelo menos um perfil de usuário!');
                 return false;
            }
-           return true
+           return true;
         }
 
         function validateForm()
@@ -65,6 +65,11 @@
                     event.preventDefault();
                 if(password_strong() < 60 && $('#id_password').val()){
                     showErrorMessageTemporary("Senha incompatível com o padrão definido.");
+                    event.preventDefault();
+                }
+                if(!$('#mail').val()){
+                    showErrorMessage("Email deve ser preenchido!");
+                    $('#mailDivId').addClass('has-error');
                     event.preventDefault();
                 }
             })
@@ -201,8 +206,8 @@
                         </div>
                     </div>
                     <div class="col-xs-6 col-sm-6">
-                        <div class="form-group {% if form.errors.email %}has-error{% endif %}">
-                            <label for="full_name" class="control-label">E-mail</label>
+                        <div class="form-group {% if form.errors.email %}has-error{% endif %}" id="mailDivId">
+                            <label for="full_name" class="control-label">E-mail<b style="color: red;">*</b></label>
 
                             <div class="input-group input-group-sm">
                                 <span class="input-group-addon"> <span class="glyphicon glyphicon-user"></span></span>
