@@ -360,7 +360,7 @@ def patients_verify_homonym(request):
 
 
 @login_required
-@permission_required('auth.add_user')
+@permission_required('auth.add_user', raise_exception=True)
 def user_list(request, template_name='quiz/user_list.html'):
     users = User.objects.filter(is_active=True).order_by('username')
     data = {'object_list': users, 'current_user_id': request.user.id}

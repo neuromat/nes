@@ -39,3 +39,5 @@ urlpatterns = patterns(
     url(r'^cep/', include('cep.urls')),
 
 ) + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
+
+handler403 = 'qdc.views.qdc_permission_denied_view'
