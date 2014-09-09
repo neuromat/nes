@@ -6,6 +6,8 @@ from django.http import HttpResponseRedirect
 from django.core.urlresolvers import reverse
 from django.shortcuts import render_to_response
 
+from functools import partial
+
 from quiz.models import Patient, SocialDemographicData, SocialHistoryData, FleshToneOption, \
     MaritalStatusOption, SchoolingOption, PaymentOption, ReligionOption, MedicalRecordData, \
     GenderOption, AmountCigarettesOption, AlcoholFrequencyOption, AlcoholPeriodOption, \
@@ -36,6 +38,7 @@ from quiz.models import UserProfile
 # pylint: disable=E1101
 # pylint: disable=E1103
 
+permission_required = partial(permission_required, raise_exception=True)
 
 @login_required
 @permission_required('quiz.add_patient')
@@ -360,7 +363,7 @@ def patients_verify_homonym(request):
 
 
 @login_required
-@permission_required('auth.add_user', raise_exception=True)
+@permission_required('auth.add_user')
 def user_list(request, template_name='quiz/user_list.html'):
     users = User.objects.filter(is_active=True).order_by('username')
     data = {'object_list': users, 'current_user_id': request.user.id}

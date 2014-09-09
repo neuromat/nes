@@ -16,12 +16,16 @@ from quiz.abc_search_engine import Questionnaires
 
 from django.conf import settings
 
+from functools import partial
+
 import re
 
 import datetime
 
+permission_required = partial(permission_required, raise_exception=True)
+
 @login_required
-@permission_required('experiment.view_experiment', raise_exception=True)
+@permission_required('experiment.view_experiment')
 def experiment_list(request, template_name="experiment/experiment_list.html"):
     experiments = Experiment.objects.order_by('title')
 
