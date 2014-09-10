@@ -19,19 +19,17 @@ BASE_DIR = os.path.dirname(os.path.dirname(__file__))
 # See https://docs.djangoproject.com/en/1.6/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = 'f#&1%$3(#1&9rb6dk7i@%vzr^wh8*&4x8m3*!g#v*w7ffa23kn'
+SECRET_KEY = ''
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
+DEBUG = False
 
-TEMPLATE_DEBUG = True
+TEMPLATE_DEBUG = DEBUG
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = ['localhost']
 
 
 # Application definition
-
-PROJECT_APPS = ['quiz', 'experiment']
 
 INSTALLED_APPS = (
     'django.contrib.admin',
@@ -40,25 +38,17 @@ INSTALLED_APPS = (
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
-    'quiz',
-    'experiment',
     'django_jenkins',
     'simple_history',
     'cep',
 )
 
-JENKINS_TASKS = (
-    'django_jenkins.tasks.with_coverage',
-    # 'django_jenkins.tasks.django_tests',   # select one django or
-    # 'django_jenkins.tasks.dir_tests'      # directory tests discovery
-    'django_jenkins.tasks.run_pep8',
-    'django_jenkins.tasks.run_pyflakes',
-    # 'django_jenkins.tasks.run_jslint',
-    # 'django_jenkins.tasks.run_csslint',
-    'django_jenkins.tasks.run_sloccount',
-    # 'django_jenkins.tasks.lettuce_tests',
-    'django_jenkins.tasks.run_pylint',
+PROJECT_APPS = (
+    'quiz',
+    'experiment',
 )
+
+INSTALLED_APPS += PROJECT_APPS
 
 MIDDLEWARE_CLASSES = (
     'django.contrib.sessions.middleware.SessionMiddleware',
@@ -81,19 +71,18 @@ WSGI_APPLICATION = 'qdc.wsgi.application'
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.postgresql_psycopg2',
-        'NAME': 'qdcdb_dev',
-        'USER': 'qdc',
-        'PASSWORD': 'DEVqdc1716',
-        #'HOST': '200.144.254.136',
-        #'TEST_NAME': 'test_romulo',
+        'NAME': '',
+        'USER': '',
+        'PASSWORD': '',
+        'HOST': '',
     }
 }
 
 # LimeSurvey configuration
 LIMESURVEY = {
-    'URL': 'http://survey.numec.prp.usp.br',
-    'USER': 'evandro',
-    'PASSWORD': '8YtztuqeGzUU',
+    'URL': '',
+    'USER': '',
+    'PASSWORD': '',
 }
 
 # AUTH_USER_MODEL = 'quiz.UserProfile'
@@ -122,33 +111,18 @@ USE_L10N = True
 
 USE_TZ = True
 
-# Settings to send emails
-EMAIL_USE_TLS = True
-EMAIL_HOST = 'smtp.gmail.com'
-EMAIL_PORT = 587
-EMAIL_HOST_USER = 'jenkins.neuromat@gmail.com'
-EMAIL_HOST_PASSWORD = 'numecusp'
-DEFAULT_FROM_EMAIL = 'jenkins.neuromat@gmail.com'
-SERVER_EMAIL = EMAIL_HOST_USER
-
-# if DEBUG:
-# EMAIL_HOST = 'localhost'
-# EMAIL_PORT = 1025
-# EMAIL_HOST_USER = ''
-# EMAIL_HOST_PASSWORD = ''
-# EMAIL_USE_TLS = False
-#     DEFAULT_FROM_EMAIL = 'testing@example.com'
-
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/1.6/howto/static-files/
 
-
-
-STATIC_ROOT = '/home/crns/PycharmProjects/neuromat-cc-ribas/patientregistrationsystem/qdc/quiz/'
-# STATIC_ROOT = [os.path.join(BASE_DIR, 'static')]
+STATIC_ROOT = ''
 STATIC_URL = '/static/'
 
 ADMIN_MEDIA_PREFIX = STATIC_URL + 'admin/'
 
 MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
 MEDIA_URL = '/media/'
+
+try:
+    from settings_local import *
+except ImportError:
+    pass

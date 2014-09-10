@@ -2,5 +2,5 @@
 *.pyc
 media
 .idea
-qdc/settings.py
+qdc/settings_local.py
 *.DS_Store
