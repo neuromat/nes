@@ -148,7 +148,8 @@ class UserForm(ModelForm):
 
     def clean_username(self):
         username = self.cleaned_data['username']
-        user = User.objects.get(username=username)
+        #TODO Rever este trecho de codigo
+        user = User.objects.filter(username=username).first() #User.objects.get(username=username)
         if not self.instance.pk and user:
             if user.is_active:
                 raise ValidationError(u'Este nome de usuário já existe.')
