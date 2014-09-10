@@ -387,7 +387,7 @@ def user_create(request, template_name='quiz/register_users.html'):
         if request.POST['action'] == "save":
             if form.is_valid():
                 user_added = form.save()
-                send_email_user(user_added, request)
+                # send_email_user(user_added, request)
                 messages.success(request, 'Usuário criado com sucesso.')
                 return redirect('user_list')
             else:
