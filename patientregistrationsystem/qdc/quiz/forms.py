@@ -148,8 +148,12 @@ class UserForm(ModelForm):
 
     def clean_username(self):
         username = self.cleaned_data['username']
-        if not self.instance.pk and User.objects.filter(username=username):
-            raise ValidationError(u'Este nome de usuário já existe.')
+        user = User.objects.get(username=username)
+        if not self.instance.pk and user:
+            if user.is_active:
+                raise ValidationError(u'Este nome de usuário já existe.')
+            else:
+                raise ValidationError(u'Este nome de usuário já existe em um usuário desabilitado.')
         return username
 
     def clean_password(self):
