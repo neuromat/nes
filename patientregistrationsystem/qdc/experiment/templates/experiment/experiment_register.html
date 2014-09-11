@@ -6,7 +6,7 @@
 
 {% block form %}
     <div class="row">
-    <form id="user_form" method="post">
+    <form id="user_form" method="post" data-toggle="validator">
     {% csrf_token %}
 {% endblock %}
 
@@ -70,7 +70,7 @@
                 <div class="row">
                     <div class="col-xs-6 col-sm-6">
                         <div class="form-group">
-                            <label class="control-label">Título<b style="color: red;">*</b></label>
+                            <label class="control-label">Título <b style="color: red;">*</b></label>
                                 {{ experiment_form.title }}
                             <div class="help-block with-errors"></div>
                         </div>
@@ -79,7 +79,7 @@
                 <div class="row">
                     <div class="col-xs-6 col-sm-12">
                         <div class="form-group">
-                            <label class="control-label">Descrição<b style="color: red;">*</b></label>
+                            <label class="control-label">Descrição <b style="color: red;">*</b></label>
                                 {{ experiment_form.description }}
                             <div class="help-block with-errors"></div>
                         </div>
