@@ -122,7 +122,7 @@ def questionnaire_create(request, experiment_id, template_name="experiment/quest
         active_questionnaires_list = Questionnaires().find_all_active_questionnaires()
         for questionnaire in questionnaires_of_experiment:
             for active_questionnaire in active_questionnaires_list:
-                if active_questionnaire['survey_id'] == questionnaire.lime_survey_id:
+                if active_questionnaire['sid'] == questionnaire.lime_survey_id:
                     active_questionnaires_list.remove(active_questionnaire)
         questionnaires_list = active_questionnaires_list
 
