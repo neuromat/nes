@@ -12,9 +12,13 @@ class ExperimentForm(ModelForm):
         widgets = {
             'title': TextInput(attrs={'class': 'form-control',
                                       'placeholder': 'Entrar titulo',
-                                      'id': "experiment_title"}),
+                                      'id': "experiment_title",
+                                      'required': "",
+                                      'data-error': 'Título deve ser preenchido.'}),
             'description': Textarea(attrs={'class': 'form-control', 'placeholder': 'Entrar descrição',
-                                           'rows': '4', 'id': 'experiment_description'}),
+                                           'rows': '4', 'id': 'experiment_description',
+                                           'required': "",
+                                           'data-error': 'Descrição deve ser preenchida.'}),
         }
 
 
