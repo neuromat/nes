@@ -115,14 +115,17 @@ def questionnaire_create(request, experiment_id, template_name="experiment/quest
         request.POST or None,
         initial={'number_of_fills': 1, 'interval_between_fills_value': None})
 
-    questionnaires_of_experiment = get_object_or_404(QuestionnaireConfiguration, experiment=experiment)
-    active_questionnaires_list = Questionnaires().find_all_active_questionnaires()
-    for active_questionnaire in active_questionnaires_list:
-        for questionnaire in questionnaires_of_experiment:
-            if active_questionnaire.sid == questionnaire.lime_survey_id:
-                active_questionnaires_list.remove(active_questionnaire)
-                break
-    questionnaires_list = active_questionnaires_list
+    questionnaires_of_experiment = QuestionnaireConfiguration.objects.filter(experiment=experiment)
+    if not questionnaires_of_experiment:
+        questionnaires_list = Questionnaires().find_all_active_questionnaires()
+    else:
+        active_questionnaires_list = Questionnaires().find_all_active_questionnaires()
+        for active_questionnaire in active_questionnaires_list:
+            for questionnaire in questionnaires_of_experiment:
+                if active_questionnaire.sid == questionnaire.lime_survey_id:
+                    active_questionnaires_list.remove(active_questionnaire)
+                    break
+        questionnaires_list = active_questionnaires_list
 
     if request.method == "POST":
 
