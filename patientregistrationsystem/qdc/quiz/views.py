@@ -392,6 +392,15 @@ def user_create(request, template_name='quiz/register_users.html'):
                 return redirect('user_list')
             else:
                 messages.error(request, 'Não foi possível criar usuário.')
+                if 'username' in form.errors:
+                    try:
+                        form.errors['username'].remove(u'Usuário com este Usuário já existe.')
+                        if User.objects.get_by_natural_key(request.POST['username']).is_active:
+                            form.errors['username'] = ['Este nome de usuário já existe.']
+                        else:
+                            form.errors['username'] = ['Este nome de usuário já existe em um usuário desabilitado.']
+                    except ValueError:
+                        None
     return render(request, template_name, {'form': form, 'group_permissions': group_permissions, 'creating': True})
 
 

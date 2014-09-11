@@ -1,6 +1,7 @@
 # coding=utf-8
 from django.forms import ModelForm, TextInput, DateInput, Select, RadioSelect, PasswordInput, CheckboxSelectMultiple, \
     CharField, ValidationError
+from django.core.exceptions import ObjectDoesNotExist
 from django.forms.widgets import Textarea
 from models import Patient, SocialDemographicData, SocialHistoryData, ComplementaryExam, ExamFile
 from django.contrib.auth.hashers import make_password
@@ -145,17 +146,6 @@ class UserForm(ModelForm):
                                                  '+(\.[A-Za-z0-9]+)*(\.[A-Za-z]{2,})$'}),
             'groups': CheckboxSelectMultiple(),
         }
-
-    def clean_username(self):
-        username = self.cleaned_data['username']
-        #TODO Rever este trecho de codigo
-        user = User.objects.filter(username=username).first() #User.objects.get(username=username)
-        if not self.instance.pk and user:
-            if user.is_active:
-                raise ValidationError(u'Este nome de usuário já existe.')
-            else:
-                raise ValidationError(u'Este nome de usuário já existe em um usuário desabilitado.')
-        return username
 
     def clean_password(self):
         return make_password(self.cleaned_data['password'])
