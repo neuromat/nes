@@ -274,11 +274,16 @@ def subjects(request, experiment_id, template_name="experiment/subjects.html"):
                                      number_of_questionnaires_completed >= questionnaire_configuration.number_of_fills):
                         number_of_questionnaires_filled += 1
 
+        percentage = 0
+
+        if questionnaires_configuration_list.count() > 0:
+            percentage = 100 * number_of_questionnaires_filled / questionnaires_configuration_list.count()
+
         subject_list_with_status.append(
             {'subject': subject_of_experiment.subject,
              'number_of_questionnaires_filled': number_of_questionnaires_filled,
              'total_of_questionnaires': questionnaires_configuration_list.count(),
-             'percentage': 100 * number_of_questionnaires_filled / questionnaires_configuration_list.count(),
+             'percentage': percentage,
              'consent': subject_of_experiment.consent_form})
 
     context = {
