@@ -4,3 +4,6 @@ django-jenkins==0.15.0
 django-simple-history==1.5.0
 psycopg2==2.5.3
 python-jsonrpc==0.4.1
+pyflakes==0.8.1
+pylint==1.1.0
+pep8==1.5.7
