@@ -7,16 +7,15 @@ from datetime import date
 import pyjsonrpc
 
 from django.shortcuts import get_object_or_404
-from django.test import TestCase
 from django.test.client import RequestFactory
 from django.contrib.auth.models import Group
-from models import ClassificationOfDiseases, MedicalRecordData, Diagnosis, ComplementaryExam, ExamFile
+from quiz.models import ClassificationOfDiseases, MedicalRecordData, Diagnosis, ComplementaryExam, ExamFile
 
 from quiz.views import medical_record_view, medical_record_update, diagnosis_create, \
     medical_record_create_diagnosis_create, exam_create, exam_view, \
     GenderOption, SchoolingOption, Patient, patient_update, patient, restore_patient, \
     User, reverse, user_update
-from abc_search_engine import Questionnaires
+from quiz.abc_search_engine import Questionnaires
 
 from django.contrib.auth.tokens import default_token_generator
 from django.contrib.sites.models import get_current_site
@@ -24,7 +23,7 @@ from django.template import loader
 from django.utils.http import int_to_base36
 from quiz.models import UserProfile
 
-from validation import CPF
+from quiz.validation import CPF
 
 import re
 
@@ -494,7 +493,7 @@ class PatientFormValidation(TestCase):
                      'gender_opt': str(self.gender_opt.id),
                      'date_birth_txt': '01/02/1995',
                      'email_txt': 'email@email.com'
-        }
+                     }
 
     def test_patient_invalid_cpf(self):
         """
@@ -956,7 +955,6 @@ class MedicalRecordFormValidation(TestCase):
         response = medical_record_update(request, patient_id=patient_mock.pk, record_id=medical_record_mock.pk)
         self.assertEqual(response.status_code, 200)
 
-
         # It makes tests with a invalid ID for method medical record edit
         try:
             url = reverse("medical_record_edit", args=[patient_mock.pk, 9999, ])
@@ -1092,7 +1090,7 @@ class MedicalRecordFormValidation(TestCase):
             # Tests for exam edit method
             self.create_complementary_exam(patient_mock, medical_record_mock, diagnosis_mock)
             complementary_exam = ComplementaryExam.objects.all().first()
-            count_exams = ComplementaryExam.objects.all().count()
+            # count_exams = ComplementaryExam.objects.all().count()
 
             self.data['status'] = 'edit'
             request = self.factory.get(
@@ -1324,7 +1322,6 @@ class ABCSearchEngineTest(TestCase):
         status = q.delete_survey(sid)
         self.assertEqual(status, 'OK')
 
-
     # def test_get_survey_property_usetokens(self):
     # """testa a obtencao das propriedades de um questionario"""
     #
@@ -1403,5 +1400,3 @@ class ABCSearchEngineTest(TestCase):
         self.assertEqual(result[str(token_id)], 'Deleted')
 
         surveys.release_session_key()
-
-

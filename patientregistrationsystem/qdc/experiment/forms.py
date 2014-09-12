@@ -1,7 +1,8 @@
 # coding=utf-8
-from models import Experiment, QuestionnaireConfiguration, QuestionnaireResponse, SubjectOfExperiment
+from experiment.models import Experiment, QuestionnaireConfiguration, QuestionnaireResponse, SubjectOfExperiment
 from django.forms import ModelForm, TextInput, Textarea, Select, DateInput
 # from datetimewidget.widgets import DateTimeWidget
+
 
 class ExperimentForm(ModelForm):
     class Meta:

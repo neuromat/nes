@@ -254,7 +254,7 @@ def subjects(request, experiment_id, template_name="experiment/subjects.html"):
             if subject_responses:
                 if (questionnaire_configuration.number_of_fills is None and subject_responses.count() > 0) or \
                         (questionnaire_configuration.number_of_fills is not None and
-                                 questionnaire_configuration.number_of_fills == subject_responses.count()):
+                            questionnaire_configuration.number_of_fills == subject_responses.count()):
 
                     number_of_questionnaires_completed = 0
 
@@ -269,9 +269,9 @@ def subjects(request, experiment_id, template_name="experiment/subjects.html"):
                             number_of_questionnaires_completed += 1
 
                     if (questionnaire_configuration.number_of_fills is None and
-                                number_of_questionnaires_completed > 0) or \
+                            number_of_questionnaires_completed > 0) or \
                             (questionnaire_configuration.number_of_fills is not None and
-                                     number_of_questionnaires_completed >= questionnaire_configuration.number_of_fills):
+                                number_of_questionnaires_completed >= questionnaire_configuration.number_of_fills):
                         number_of_questionnaires_filled += 1
 
         percentage = 0
@@ -520,7 +520,7 @@ def questionnaire_response_view(request, questionnaire_response_id,
                 for question in question_list:
                     properties = surveys.get_question_properties(question)
                     if ('{if' not in properties['question']) and ('{(' not in properties['question']) and (
-                                'pont' not in properties['question']):
+                            'pont' not in properties['question']):
                         properties['question'] = re.sub('<.*?>', '', properties['question'])
 
                         if isinstance(properties['subquestions'], dict):
@@ -733,7 +733,7 @@ def upload_file(request, subject_id, experiment_id, template_name="experiment/up
                 messages.error(request, 'Não existem anexos para salvar')
         else:
             if request.POST['action'] == "remove":
-                #subject_of_experiment.consent_form = ''
+                # subject_of_experiment.consent_form = ''
                 subject_of_experiment.consent_form.delete()
                 subject_of_experiment.save()
                 messages.success(request, 'Anexo removido com sucesso.')

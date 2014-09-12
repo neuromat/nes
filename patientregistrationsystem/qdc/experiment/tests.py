@@ -72,14 +72,12 @@ class ExperimentTest(TestCase):
         # deve retornar 1 experimento
         self.assertEqual(len(response.context['experiments']), 1)
 
-
     def test_experiment_create(self):
         """Testa a criacao de um experimento """
 
         # Abre tela de cadastro de experimento
         response = self.client.get(reverse('experiment_new'))
         self.assertEqual(response.status_code, 200)
-
 
         # Dados sobre o experimento
         self.data = {'action': ['save'], 'description': ['Experimento de Teste'], 'title': ['Teste Experimento']}
@@ -209,7 +207,6 @@ class QuestionnaireConfigurationTest(TestCase):
             self.data = {'interval_between_fills_value': ['12'],
                          'number_of_fills': ['3'],
                          'questionnaire_selected': [sid],
-                         'interval_between_fills_value': ['1'],
                          'interval_between_fills_unit': str(time_unit.pk),
                          'action': ['save']}
 
@@ -256,7 +253,6 @@ class QuestionnaireConfigurationTest(TestCase):
             self.data = {'interval_between_fills_value': ['12'],
                          'number_of_fills': ['3'],
                          'questionnaire_selected': [sid],
-                         'interval_between_fills_value': ['1'],
                          'interval_between_fills_unit': str(time_unit.pk),
                          'action': ['save']}
 
@@ -459,7 +455,6 @@ class SubjectTest(TestCase):
                                                args=[questionnaire_response.pk, ]), self.data)
             self.assertEqual(response.status_code, 200)
 
-
             # Remove preenchimento da Survey
             count_before_delete_questionnaire_response = QuestionnaireResponse.objects.all().count()
 
@@ -487,7 +482,6 @@ class SubjectTest(TestCase):
 
     def test_questionaire_view(self):
         """ Testa a visualizacao completa do questionario respondido no Lime Survey"""
-
 
         # Criar um experimento mock para ser utilizado no teste
         experiment = Experiment.objects.create(title="Experimento-Teste-View",
@@ -601,10 +595,10 @@ class SubjectTest(TestCase):
         # response = upload_file(request, subject_id=subject_mock.pk, experiment_id=experiment.pk)
         response = self.client.post(reverse('upload_file', args=[experiment.pk, subject_mock.pk, ]), self.data,
                                     follow=True)
-        #print response.content
+        # print response.content
         self.assertEqual(response.status_code, 200)
 
         # Remover arquivo
         self.data = {'action': 'remove'}
-        response = self.client.post(reverse('upload_file', args=[experiment.pk, subject_mock.pk,]), self.data)
+        response = self.client.post(reverse('upload_file', args=[experiment.pk, subject_mock.pk, ]), self.data)
         self.assertEqual(response.status_code, 302)

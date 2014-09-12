@@ -40,6 +40,7 @@ from quiz.models import UserProfile
 
 permission_required = partial(permission_required, raise_exception=True)
 
+
 @login_required
 @permission_required('quiz.add_patient')
 def patient_create(request, template_name="quiz/register.html"):
@@ -135,14 +136,14 @@ def save_patient(current_tab, patient_form, request, social_demographic_form, so
         if insert_new or social_demographic_form.has_changed():
 
             if (new_social_demographic_data.tv_opt is not None and
-                        new_social_demographic_data.radio_opt is not None and
-                        new_social_demographic_data.bath_opt is not None and
-                        new_social_demographic_data.automobile_opt is not None and
-                        new_social_demographic_data.house_maid_opt is not None and
-                        new_social_demographic_data.wash_machine_opt is not None and
-                        new_social_demographic_data.dvd_opt is not None and
-                        new_social_demographic_data.refrigerator_opt is not None and
-                        new_social_demographic_data.freezer_opt is not None):
+                    new_social_demographic_data.radio_opt is not None and
+                    new_social_demographic_data.bath_opt is not None and
+                    new_social_demographic_data.automobile_opt is not None and
+                    new_social_demographic_data.house_maid_opt is not None and
+                    new_social_demographic_data.wash_machine_opt is not None and
+                    new_social_demographic_data.dvd_opt is not None and
+                    new_social_demographic_data.refrigerator_opt is not None and
+                    new_social_demographic_data.freezer_opt is not None):
 
                 new_social_demographic_data.social_class_opt = new_social_demographic_data.calculate_social_class(
                     tv=request.POST['tv_opt'], radio=request.POST['radio_opt'],
@@ -156,14 +157,14 @@ def save_patient(current_tab, patient_form, request, social_demographic_form, so
                 new_social_demographic_data.social_class_opt = None
 
                 if (new_social_demographic_data.tv_opt is not None or
-                            new_social_demographic_data.radio_opt is not None or
-                            new_social_demographic_data.bath_opt is not None or
-                            new_social_demographic_data.automobile_opt is not None or
-                            new_social_demographic_data.house_maid_opt is not None or
-                            new_social_demographic_data.wash_machine_opt is not None or
-                            new_social_demographic_data.dvd_opt is not None or
-                            new_social_demographic_data.refrigerator_opt is not None or
-                            new_social_demographic_data.freezer_opt is not None):
+                        new_social_demographic_data.radio_opt is not None or
+                        new_social_demographic_data.bath_opt is not None or
+                        new_social_demographic_data.automobile_opt is not None or
+                        new_social_demographic_data.house_maid_opt is not None or
+                        new_social_demographic_data.wash_machine_opt is not None or
+                        new_social_demographic_data.dvd_opt is not None or
+                        new_social_demographic_data.refrigerator_opt is not None or
+                        new_social_demographic_data.freezer_opt is not None):
                     messages.warning(request, 'Classe Social não calculada, pois os campos necessários '
                                               'para o cálculo não foram preenchidos.')
                     current_tab = "1"
@@ -386,8 +387,7 @@ def user_create(request, template_name='quiz/register_users.html'):
     if request.method == "POST":
         if request.POST['action'] == "save":
             if form.is_valid():
-                user_added = form.save()
-                # send_email_user(user_added, request)
+                form.save()
                 messages.success(request, 'Usuário criado com sucesso.')
                 return redirect('user_list')
             else:
