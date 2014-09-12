@@ -37,9 +37,9 @@ class ABCSearchEngine:
         list_survey = self.server.list_surveys(self.session_key, None)
 
         list_active_survey = []
+
         for survey in list_survey:
-            survey_token = self.survey_has_token_table(survey['sid'])
-            if survey['active'] == "Y" and survey_token is True:
+            if survey['active'] == "Y" and self.survey_has_token_table(survey['sid']):
                 list_active_survey.append(survey)
 
         return list_active_survey
@@ -145,9 +145,8 @@ class ABCSearchEngine:
     def survey_has_token_table(self, sid):
         """Retorna flag indicando se a tabela de tokens foi iniciada para determinado questionario"""
 
-        result = self.server.get_summary(self.session_key, sid, "all")
-
-        return "token_completed" in result
+        result = self.server.get_summary(self.session_key, sid, "token_completed")
+        return isinstance(result, int)
 
     @abstractmethod
     def add_survey(self, wish_sid, title, language, survey_format):

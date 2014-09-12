@@ -110,21 +110,26 @@ def experiment_update(request, experiment_id, template_name="experiment/experime
 @login_required
 @permission_required('experiment.add_questionnaireconfiguration')
 def questionnaire_create(request, experiment_id, template_name="experiment/questionnaire_register.html"):
+
     experiment = get_object_or_404(Experiment, pk=experiment_id)
+
     questionnaire_form = QuestionnaireConfigurationForm(
         request.POST or None,
         initial={'number_of_fills': 1, 'interval_between_fills_value': None})
 
-    questionnaires_of_experiment = QuestionnaireConfiguration.objects.filter(experiment=experiment)
-    if not questionnaires_of_experiment:
-        questionnaires_list = Questionnaires().find_all_active_questionnaires()
-    else:
-        active_questionnaires_list = Questionnaires().find_all_active_questionnaires()
-        for questionnaire in questionnaires_of_experiment:
-            for active_questionnaire in active_questionnaires_list:
-                if active_questionnaire['sid'] == questionnaire.lime_survey_id:
-                    active_questionnaires_list.remove(active_questionnaire)
-        questionnaires_list = active_questionnaires_list
+    if request.method == "GET":
+
+        questionnaires_of_experiment = QuestionnaireConfiguration.objects.filter(experiment=experiment)
+
+        if not questionnaires_of_experiment:
+            questionnaires_list = Questionnaires().find_all_active_questionnaires()
+        else:
+            active_questionnaires_list = Questionnaires().find_all_active_questionnaires()
+            for questionnaire in questionnaires_of_experiment:
+                for active_questionnaire in active_questionnaires_list:
+                    if active_questionnaire['sid'] == questionnaire.lime_survey_id:
+                        active_questionnaires_list.remove(active_questionnaire)
+            questionnaires_list = active_questionnaires_list
 
     if request.method == "POST":
 
