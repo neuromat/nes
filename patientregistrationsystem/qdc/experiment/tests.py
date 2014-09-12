@@ -3,15 +3,22 @@ from django.http import Http404
 from django.test import TestCase
 from django.test.client import RequestFactory
 from django.core.urlresolvers import reverse
+from django.core.files.uploadedfile import SimpleUploadedFile
 from django.shortcuts import get_object_or_404
 
 from experiment.models import Experiment, QuestionnaireConfiguration, TimeUnit, Subject, \
     QuestionnaireResponse, SubjectOfExperiment
-from experiment.views import experiment_update
+from experiment.views import experiment_update, upload_file
 from quiz.abc_search_engine import Questionnaires
-from quiz.util_test import UtilTests
+from quiz.tests import UtilTests
 
 from quiz.views import User
+
+import datetime
+
+LIME_SURVEY_TOKEN_ID_2 = 24
+
+LIME_SURVEY_TOKEN_ID_1 = 7
 
 EXPERIMENT_LIST = 'experiment_list'
 
@@ -20,6 +27,8 @@ USER_PWD = 'mypassword'
 
 SEARCH_TEXT = 'search_text'
 SUBJECT_SEARCH = 'subject_search'
+
+LIME_SURVEY_CODE_ID_TEST = 641729
 
 
 class ExperimentTest(TestCase):
@@ -289,8 +298,10 @@ class SubjectTest(TestCase):
         Configura autenticacao e variaveis para iniciar cada teste
 
         """
-        # print 'Set up for', self._testMethodName
+        print 'Set up for', self._testMethodName
 
+        #self.user = User.objects.all().first()
+        #if self.user:
         self.user = User.objects.create_user(username=USER_USERNAME, email='test@dummy.com', password=USER_PWD)
         self.user.is_staff = True
         self.user.is_superuser = True
@@ -351,15 +362,12 @@ class SubjectTest(TestCase):
         patient_mock = self.util.create_patient_mock(user=self.user)
 
         # Cria uma survey no Lime Survey
-        # self.lime_survey = Questionnaires()
-        # Checa se conseguiu conectar no lime Survey com as credenciais fornecidas no settings.py
-        # self.assertNotEqual(self.lime_survey.session_key['status'], 'Invalid user name or password')
         sid = self.lime_survey.add_survey(9999, 'Questionario de teste - DjangoTests', 'en', 'G')
 
         try:
             # Cria um questionario
             questionnaire = QuestionnaireConfiguration.objects.create(lime_survey_id=sid, experiment=experiment,
-                                                                      number_of_fills=2)
+                                                                      number_of_fills=1)
             questionnaire.save()
 
             # Cria o TimeUnit para ser utilizado nos testes com intervalo de tempo
@@ -376,7 +384,6 @@ class SubjectTest(TestCase):
             self.assertEqual(response.status_code, 302)
             count_after_insert_subject = SubjectOfExperiment.objects.all().filter(experiment=experiment).count()
             self.assertEqual(count_after_insert_subject, count_before_insert_subject + 1)
-
 
             # Reabre a tela de cadastro de participantes - devera conter ao menos um participante
             # cadastrado
@@ -452,10 +459,6 @@ class SubjectTest(TestCase):
                                                args=[questionnaire_response.pk, ]), self.data)
             self.assertEqual(response.status_code, 200)
 
-            #Visualiza preenchimento da Survey
-            response = self.client.get(reverse('questionnaire_response_view',
-                                               args=[questionnaire_response.pk, ]), self.data)
-            self.assertEqual(response.status_code, 200)
 
             # Remove preenchimento da Survey
             count_before_delete_questionnaire_response = QuestionnaireResponse.objects.all().count()
@@ -481,3 +484,109 @@ class SubjectTest(TestCase):
             # Deleta a survey gerada no Lime Survey
             status = self.lime_survey.delete_survey(sid)
             self.assertEqual(status, 'OK')
+
+    def test_questionaire_view(self):
+        """ Testa a visualizacao completa do questionario respondido no Lime Survey"""
+
+
+        # Criar um experimento mock para ser utilizado no teste
+        experiment = Experiment.objects.create(title="Experimento-Teste-View",
+                                               description="Descricao do Experimento-View")
+        experiment.save()
+
+        # Criar um Subject para o experimento
+        patient_mock = self.util.create_patient_mock(user=self.user)
+
+        subject_mock = Subject(patient=patient_mock)
+        subject_mock.save()
+
+        subject_experiment = SubjectOfExperiment(subject=subject_mock, experiment=experiment)
+        subject_experiment.save()
+
+        experiment.subjectofexperiment_set.add(subject_experiment)
+        experiment.save()
+
+        # Cria um questionario
+        questionnaire_configuration = QuestionnaireConfiguration(lime_survey_id=LIME_SURVEY_CODE_ID_TEST,
+                                                                 experiment=experiment,
+                                                                 number_of_fills=2)
+        questionnaire_configuration.save()
+
+        questionnaire_response = QuestionnaireResponse()
+        questionnaire_response.questionnaire_configuration = questionnaire_configuration
+        questionnaire_response.subject_of_experiment = subject_experiment
+        questionnaire_response.token_id = LIME_SURVEY_TOKEN_ID_1
+        questionnaire_response.questionnaire_responsible = self.user
+        questionnaire_response.date = datetime.datetime.now()
+        questionnaire_response.save()
+
+        # Visualiza preenchimento da Survey
+        response = self.client.get(reverse('questionnaire_response_view',
+                                           args=[questionnaire_response.pk, ]))
+        self.assertEqual(response.status_code, 200)
+
+        questionnaire_response = QuestionnaireResponse()
+        questionnaire_response.questionnaire_configuration = questionnaire_configuration
+        questionnaire_response.subject_of_experiment = subject_experiment
+        questionnaire_response.token_id = LIME_SURVEY_TOKEN_ID_2
+        questionnaire_response.questionnaire_responsible = self.user
+        questionnaire_response.date = datetime.datetime.now()
+        questionnaire_response.save()
+
+        # Visualiza preenchimento da Survey
+        response = self.client.get(reverse('questionnaire_response_view',
+                                           args=[questionnaire_response.pk, ]))
+        self.assertEqual(response.status_code, 200)
+
+        # Abre tela de cadastro de participantes com nenhum participante cadastrado a priori
+        response = self.client.get(reverse('subjects', args=(experiment.pk,)))
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(len(response.context['subject_list']), 1)
+
+    def test_subject_upload_consent_file(self):
+        """
+        Testa o upload de arquivos que corresponde ao formulario de consentimento do participante no experimento
+        """
+
+        experiment = Experiment.objects.create(title="Experimento-Teste-Upload",
+                                description="Descricao do Experimento-Upload")
+
+        experiment.save()
+
+        patient_mock = self.util.create_patient_mock(user=self.user)
+        print patient_mock.pk, patient_mock.number_record
+
+        subject_mock = Subject(patient=patient_mock)
+        subject_mock.save()
+        print subject_mock.pk, subject_mock.id
+
+        subject_experiment = SubjectOfExperiment.objects.create(subject=subject_mock, experiment=experiment)
+        subject_experiment.save()
+        print subject_experiment.pk, subject_experiment.id
+
+        experiment.subjectofexperiment_set.add(subject_experiment)
+        experiment.save()
+        print experiment.pk, experiment.id
+
+        # Upload Consent_form
+        # Simula click no icone de acesso a pagina de upload do arquivo
+        request = self.factory.get(reverse('upload_file', args=[subject_mock.pk, experiment.pk, ]))
+        request.user = self.user
+        response = upload_file(request, subject_id=subject_mock.pk, experiment_id=experiment.pk)
+        self.assertEqual(response.status_code, 200)
+
+        # Anexar arquivo
+        consent_form_file = SimpleUploadedFile('quiz/consent_form.txt', 'rb')
+        self.data = {'action': 'upload', 'consent_form': consent_form_file}
+        url = reverse('upload_file', args=[subject_mock.pk, experiment.pk])
+        # request = self.factory.post(url, self.data)
+        #request.user = self.user
+        #response = upload_file(request, subject_id=subject_mock.pk, experiment_id=experiment.pk)
+        response = self.client.post(reverse('upload_file', args=[subject_mock.id, experiment.id, ]), self.data)
+        print response.content
+        self.assertEqual(response.status_code, 404)
+
+        # Remover arquivo
+        self.data = {'action': 'remove'}
+        response = self.client.post(reverse('upload_file', args=[subject_mock.pk, experiment.pk]), self.data)
+        self.assertEqual(response.status_code, 404)

@@ -24,6 +24,7 @@ import datetime
 
 permission_required = partial(permission_required, raise_exception=True)
 
+
 @login_required
 @permission_required('experiment.view_experiment')
 def experiment_list(request, template_name="experiment/experiment_list.html"):
@@ -362,7 +363,7 @@ def get_limesurvey_response_url(questionnaire_response):
     # '%s/index.php/survey/index/sid/%s/token/%s/lang/pt-BR/idavaliador/%s/datdataaquisicao/%s/idparticipante/%s' % (
     # settings.LIMESURVEY['URL'],
     # questionnaire_response.questionnaire_configuration.lime_survey_id,
-    #     token,
+    # token,
     #     questionnaire_response.questionnaire_responsible.id,
     #     questionnaire_response.date.strftime('%d-%m-%Y'),
     #     questionnaire_response.subject.id)
@@ -574,7 +575,10 @@ def questionnaire_response_view(request, questionnaire_response_id,
                             answer = 'Sem resposta'
                     else:
                         if question['type'] == 'D':
-                            answer = datetime.datetime.strptime(responses_list[1][index], '%Y-%m-%d %H:%M:%S')
+                            if responses_list[1][index]:
+                                answer = datetime.datetime.strptime(responses_list[1][index], '%Y-%m-%d %H:%M:%S')
+                            else:
+                                answer = ''
                         else:
                             answer = responses_list[1][index]
 
@@ -724,7 +728,8 @@ def upload_file(request, subject_id, experiment_id, template_name="experiment/up
                 messages.error(request, 'Não existem anexos para salvar')
         else:
             if request.POST['action'] == "remove":
-                subject_of_experiment.consent_form = ''
+                #subject_of_experiment.consent_form = ''
+                subject_of_experiment.consent_form.delete()
                 subject_of_experiment.save()
                 messages.success(request, 'Anexo removido com sucesso.')
 
