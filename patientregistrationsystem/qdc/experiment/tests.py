@@ -300,8 +300,8 @@ class SubjectTest(TestCase):
         """
         print 'Set up for', self._testMethodName
 
-        #self.user = User.objects.all().first()
-        #if self.user:
+        # self.user = User.objects.all().first()
+        # if self.user:
         self.user = User.objects.create_user(username=USER_USERNAME, email='test@dummy.com', password=USER_PWD)
         self.user.is_staff = True
         self.user.is_superuser = True
@@ -548,25 +548,42 @@ class SubjectTest(TestCase):
         Testa o upload de arquivos que corresponde ao formulario de consentimento do participante no experimento
         """
 
-        experiment = Experiment.objects.create(title="Experimento-Teste-Upload",
-                                description="Descricao do Experimento-Upload")
-
-        experiment.save()
+        experiment = Experiment.objects.all().first()
+        if not experiment:
+            experiment = Experiment.objects.create(title="Experimento-Teste-Upload",
+                                                   description="Descricao do Experimento-Upload")
+            experiment.save()
 
         patient_mock = self.util.create_patient_mock(user=self.user)
         print patient_mock.pk, patient_mock.number_record
 
-        subject_mock = Subject(patient=patient_mock)
-        subject_mock.save()
-        print subject_mock.pk, subject_mock.id
+        subject_mock = Subject.objects.all().first()
 
-        subject_experiment = SubjectOfExperiment.objects.create(subject=subject_mock, experiment=experiment)
+        if not subject_mock:
+            subject_mock = Subject.objects.create(patient=patient_mock)
+            subject_mock.patient = patient_mock
+            subject_mock.save()
+
+        print subject_mock.pk, subject_mock.id
+        self.assertEqual(get_object_or_404(Subject, pk=subject_mock.pk), subject_mock)
+
+        subject_experiment = SubjectOfExperiment.objects.all().first()
+        if not subject_experiment:
+            subject_experiment = SubjectOfExperiment.objects.create(subject=subject_mock, experiment=experiment)
+
+        subject_experiment.experiment = experiment
+        subject_experiment.subject = subject_mock
         subject_experiment.save()
+
         print subject_experiment.pk, subject_experiment.id
 
         experiment.subjectofexperiment_set.add(subject_experiment)
         experiment.save()
+
         print experiment.pk, experiment.id
+        self.assertEqual(get_object_or_404(Experiment, pk=experiment.pk), experiment)
+        self.assertEqual(get_object_or_404(SubjectOfExperiment, subject=subject_mock, experiment=experiment),
+                         subject_experiment)
 
         # Upload Consent_form
         # Simula click no icone de acesso a pagina de upload do arquivo
@@ -578,15 +595,16 @@ class SubjectTest(TestCase):
         # Anexar arquivo
         consent_form_file = SimpleUploadedFile('quiz/consent_form.txt', 'rb')
         self.data = {'action': 'upload', 'consent_form': consent_form_file}
-        url = reverse('upload_file', args=[subject_mock.pk, experiment.pk])
-        # request = self.factory.post(url, self.data)
-        #request.user = self.user
-        #response = upload_file(request, subject_id=subject_mock.pk, experiment_id=experiment.pk)
-        response = self.client.post(reverse('upload_file', args=[subject_mock.id, experiment.id, ]), self.data)
-        print response.content
-        self.assertEqual(response.status_code, 404)
+        url = reverse('upload_file', args=[experiment.pk, subject_mock.pk])
+        # request = self.factory.post(url, self.data)d
+        # request.user = self.user
+        # response = upload_file(request, subject_id=subject_mock.pk, experiment_id=experiment.pk)
+        response = self.client.post(reverse('upload_file', args=[experiment.pk, subject_mock.pk, ]), self.data,
+                                    follow=True)
+        #print response.content
+        self.assertEqual(response.status_code, 200)
 
         # Remover arquivo
         self.data = {'action': 'remove'}
-        response = self.client.post(reverse('upload_file', args=[subject_mock.pk, experiment.pk]), self.data)
-        self.assertEqual(response.status_code, 404)
+        response = self.client.post(reverse('upload_file', args=[experiment.pk, subject_mock.pk,]), self.data)
+        self.assertEqual(response.status_code, 302)
