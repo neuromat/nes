@@ -464,45 +464,6 @@ def user_update(request, user_id, template_name="quiz/register_users.html"):
     return render(request, template_name, context)
 
 
-def send_email_user(user_added=None, request=None, domain_override=None,
-                    email_template_name='registration/password_define_email.html',
-                    use_https=False, token_generator=default_token_generator):
-    """Reset users password"""
-    if not user_added.email:
-        raise ValueError('Email address is required to send an email')
-
-    if not domain_override:
-        current_site = get_current_site(request)
-        site_name = current_site.name
-        domain = current_site.domain
-    else:
-        site_name = domain = domain_override
-    t = loader.get_template(email_template_name)
-    c = {
-        'email': user_added.email,
-        'domain': domain,
-        'site_name': site_name,
-        'uid': urlsafe_base64_encode(force_bytes(user_added.pk)),  # int_to_base36(user_added.id),
-        'user': user_added,
-        'token': token_generator.make_token(user_added),
-        'protocol': use_https and 'https' or 'http',
-    }
-    send_mail(_("Definir senha"), t.render(Context(c)), None, [user_added.email])
-    # #send_mail(_("Your account for %s") % site_name, t.render(Context(c)), None, [user_added.email])
-    # subject_template_name = 'registration/password_reset_subject.txt'
-    # subject = loader.render_to_string(subject_template_name, c)
-    # # Email subject *must not* contain newlines
-    # subject = ''.join(subject.splitlines())
-    # # CHANGES START HERE!
-    # plain_text_content = loader.render_to_string(email_template_name.replace('with_html', 'plaintext'), c)
-    # html_content = loader.render_to_string(email_template_name, c)
-    #
-    # from django.core.mail import EmailMultiAlternatives
-    # msg = EmailMultiAlternatives(subject, plain_text_content, 'jenkins.neuromat@gmail.com', [user_added.email])
-    # msg.attach_alternative(html_content, "text/html")
-    # msg.send()
-
-
 @login_required
 @permission_required('quiz.add_medicalrecorddata')
 def search_cid10_ajax(request):
