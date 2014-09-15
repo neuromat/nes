@@ -549,7 +549,6 @@ class SubjectTest(TestCase):
             experiment.save()
 
         patient_mock = self.util.create_patient_mock(user=self.user)
-        print patient_mock.pk, patient_mock.number_record
 
         subject_mock = Subject.objects.all().first()
 
@@ -558,7 +557,6 @@ class SubjectTest(TestCase):
             subject_mock.patient = patient_mock
             subject_mock.save()
 
-        print subject_mock.pk, subject_mock.id
         self.assertEqual(get_object_or_404(Subject, pk=subject_mock.pk), subject_mock)
 
         subject_experiment = SubjectOfExperiment.objects.all().first()
@@ -569,12 +567,9 @@ class SubjectTest(TestCase):
         subject_experiment.subject = subject_mock
         subject_experiment.save()
 
-        print subject_experiment.pk, subject_experiment.id
-
         experiment.subjectofexperiment_set.add(subject_experiment)
         experiment.save()
 
-        print experiment.pk, experiment.id
         self.assertEqual(get_object_or_404(Experiment, pk=experiment.pk), experiment)
         self.assertEqual(get_object_or_404(SubjectOfExperiment, subject=subject_mock, experiment=experiment),
                          subject_experiment)
