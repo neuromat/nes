@@ -24,6 +24,8 @@ import datetime
 
 permission_required = partial(permission_required, raise_exception=True)
 
+# pylint: disable=E1101
+# pylint: disable=E1103
 
 @login_required
 @permission_required('experiment.view_experiment')
