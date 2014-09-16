@@ -45,7 +45,7 @@
 
         {##}
         .footer /*rodapé do sistema */
-                                           {
+                                              {
             background-color: transparent;
             height: 30px;
             text-align: left;
@@ -157,7 +157,10 @@
 
 <div class="footer" style="display: inherit">
     <p><a href="http://ccsl.ime.usp.br"><img src="{% static 'quiz/imgs/logo-ccsl-sm.png' %}" alt="" height="34px"
-                                             width="96px"></a>Versao:   {% settings_value "VERSION" %}</p>
+                                             width="96px"></a>
+
+        <span class="credit" style="position: fixed;right: 10px">V: {% settings_value "VERSION" %}</span></p>
+
 </div>
 
 </body>
