@@ -1159,7 +1159,7 @@ class MedicalRecordFormValidation(TestCase):
         self.assertEqual(response.status_code, 200)
         self.assertEqual(response.context['cid_10_list'], '')
 
-@unittest.skip("Don't want to test")
+#@unittest.skip("Don't want to test")
 class ABCSearchEngineTest(TestCase):
     session_key = None
     server = None
