@@ -164,7 +164,6 @@ class ABCSearchEngine:
         status = self.server.delete_survey(self.session_key, sid)
         return status['status']
 
-
     @abstractmethod
     def get_responses_by_token(self, sid, token):
 
@@ -204,8 +203,6 @@ class ABCSearchEngine:
                 return None
         else:
             return result
-
-
 
     @abstractmethod
     def get_question_properties(self, question_id):

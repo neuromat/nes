@@ -1,11 +1,10 @@
 # coding=utf-8
 from django.forms import ModelForm, TextInput, DateInput, Select, RadioSelect, PasswordInput, CheckboxSelectMultiple, \
     CharField, ValidationError
-from django.core.exceptions import ObjectDoesNotExist
 from django.forms.widgets import Textarea
-from models import Patient, SocialDemographicData, SocialHistoryData, ComplementaryExam, ExamFile
+from quiz.models import Patient, SocialDemographicData, SocialHistoryData, ComplementaryExam, ExamFile
 from django.contrib.auth.hashers import make_password
-from quiz_widget import SelectBoxCountries, SelectBoxState
+from quiz.quiz_widget import SelectBoxCountries, SelectBoxState
 from cep.widgets import CEPInput
 
 from django.contrib.auth.models import User
@@ -36,7 +35,7 @@ class PatientForm(ModelForm):
                                                    'id': "complement"}),
             'district': TextInput(attrs={'class': 'form-control', 'id': "district"}),
             'city_txt': TextInput(attrs={'class': 'form-control', 'id': "city"}),
-            'state_txt': SelectBoxState(attrs={'data-country': 'id_country_state_address' ,'id': 'id_chosen_state'}),
+            'state_txt': SelectBoxState(attrs={'data-country': 'id_country_state_address', 'id': 'id_chosen_state'}),
             'country_txt': SelectBoxCountries(attrs={'id': 'id_country_state_address', 'data-flags': 'true'}),
             'name_txt': TextInput(attrs={'class': 'form-control', 'placeholder': 'Entrar nome completo',
                                          'id': "full_name", 'autofocus': "true", 'required': "",

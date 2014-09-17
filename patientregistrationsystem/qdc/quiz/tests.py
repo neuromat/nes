@@ -6,7 +6,6 @@ from django.core.files.uploadedfile import SimpleUploadedFile
 from datetime import date
 
 import pyjsonrpc
-import unittest
 
 from django.shortcuts import get_object_or_404
 from django.test.client import RequestFactory
@@ -77,9 +76,9 @@ class UtilTests():
 
         return cid10
 
-    def create_medical_record_mock(self, user, patient):
+    def create_medical_record_mock(self, user, new_patient):
         medical_record = MedicalRecordData()
-        medical_record.patient = patient
+        medical_record.patient = new_patient
         medical_record.record_responsible = user
         medical_record.save()
         return medical_record
@@ -1159,7 +1158,8 @@ class MedicalRecordFormValidation(TestCase):
         self.assertEqual(response.status_code, 200)
         self.assertEqual(response.context['cid_10_list'], '')
 
-#@unittest.skip("Don't want to test")
+
+# @unittest.skip("Don't want to test")
 class ABCSearchEngineTest(TestCase):
     session_key = None
     server = None
