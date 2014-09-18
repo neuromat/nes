@@ -44,7 +44,7 @@ INSTALLED_APPS = (
     'django_jenkins',
     'simple_history',
     'cep',
-)
+    'quiz.templatetags.qdc_tags',)
 
 PROJECT_APPS = (
     'quiz',
@@ -124,6 +124,8 @@ ADMIN_MEDIA_PREFIX = STATIC_URL + 'admin/'
 
 MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
 MEDIA_URL = '/media/'
+
+VERSION = '0.1.1.DEV-0.1'
 
 try:
     from settings_local import *

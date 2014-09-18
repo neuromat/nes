@@ -1,5 +1,6 @@
 # -*- coding: UTF-8 -*-
 from django.test import TestCase, Client
+
 from django.http import Http404
 from django.core.files.uploadedfile import SimpleUploadedFile
 from datetime import date
@@ -75,9 +76,9 @@ class UtilTests():
 
         return cid10
 
-    def create_medical_record_mock(self, user, patient):
+    def create_medical_record_mock(self, user, new_patient):
         medical_record = MedicalRecordData()
-        medical_record.patient = patient
+        medical_record.patient = new_patient
         medical_record.record_responsible = user
         medical_record.save()
         return medical_record
@@ -1158,6 +1159,7 @@ class MedicalRecordFormValidation(TestCase):
         self.assertEqual(response.context['cid_10_list'], '')
 
 
+# @unittest.skip("Don't want to test")
 class ABCSearchEngineTest(TestCase):
     session_key = None
     server = None

@@ -22,15 +22,6 @@ from django.contrib import messages
 from django.contrib.auth.models import User, Group
 from django.db.models import Q
 
-from django.core.mail import send_mail
-from django.template.context import Context
-from django.contrib.auth.tokens import default_token_generator
-from django.contrib.sites.models import get_current_site
-from django.template import loader
-from django.utils.http import urlsafe_base64_encode
-from django.utils.encoding import force_bytes
-
-from django.utils.translation import ugettext_lazy as _
 
 import re
 from quiz.models import UserProfile
