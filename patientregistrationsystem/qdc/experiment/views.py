@@ -521,8 +521,8 @@ def questionnaire_response_view(request, questionnaire_response_id,
                 question_list = sorted(question_list)
                 for question in question_list:
                     properties = surveys.get_question_properties(question)
-                    if ('{if' not in properties['question']) and ('{(' not in properties['question']) and (
-                            'pont' not in properties['question']):
+                    if ('{int' not in properties['question']) and ('{(' not in properties['question'])\
+                            and ('{if' not in properties['question']) and ('{pont' not in properties['question']):
                         properties['question'] = re.sub('<.*?>', '', properties['question'])
 
                         if isinstance(properties['subquestions'], dict):
