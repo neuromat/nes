@@ -68,11 +68,7 @@
 
     {% if FAIL == True %}
         <script>
-            window.open('{{ URL }}');
-{#            popup('{{ URL }}');#}
-{#            setTimeout(function () {#}
-{#                window.location.href = '/experiment/{{ questionnaire_configuration.experiment.id }}/subjects/{{ subject.id }}/questionnaire/'#}
-{#            }, 2000);#}
+            window.open("{{ URL }}", "_self");
         </script>
     {% endif %}
 
