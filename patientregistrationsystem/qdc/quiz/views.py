@@ -654,6 +654,7 @@ def exam_create(request, patient_id, record_id, diagnosis_id, template_name="qui
 
                 if request.POST['action'] == "upload":
                     redirect_url = reverse("exam_edit", args=(patient_id, record_id, new_complementary_exam.pk))
+                # Nunca entra no save
                 elif request.POST['action'] == "save":
                     redirect_url = reverse("medical_record_edit", args=(patient_id, record_id, ))
                 else:

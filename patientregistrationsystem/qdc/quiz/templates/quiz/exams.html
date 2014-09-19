@@ -22,6 +22,10 @@
             modal_remove.setAttribute( "href", part[0]+'exam/remove'+part[1]);
             $('#modalRemoveExam').modal('show');
         }
+        function submit(value){
+            $('#action').val(value);
+            $('#form_exam').submit();
+        }
         $(function(){$("[data-toggle=tooltip]").tooltip();})
     </script>
 {% endblock %}
@@ -36,6 +40,7 @@
 
 
 {% block content %}
+    <input type="hidden" id="action" name="action">
 
     <div class="tab-pane fade in active" id="examTab">
 
@@ -188,7 +193,7 @@
                                     </div>
                                     <div class="col-xs-6 col-sm-6">
                                         <div class="form-group">
-                                            <button id="save_exam2" name="action" value="upload" type="submit" class="btn btn-primary">Upload</button>
+                                            <button type="button" id="save_exam2" class="btn btn-primary" onclick="submit('upload')">Upload</button>
                                         </div>
                                     </div>
                                 </div>
@@ -213,7 +218,7 @@
                         {% endif %}
                     {% endif %}
                     {% if not viewing %}
-                    <button id="save_exam" name="action" value="save" type="submit" class="btn btn-primary">Salvar</button>
+                    <button type="button" id="save_exam" class="btn btn-primary" onclick="submit('save')">Salvar</button>
                     {% endif %}
                 </div>
                 </div>
