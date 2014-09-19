@@ -168,10 +168,9 @@
                                                             {{ exam_file.content.name }}
                                                             {% if not viewing %}
                                                                 <button class="glyphicon glyphicon-remove pull-right" data-toggle="tooltip" data-placement="right" title="Remover" style="color: indianred" onclick="show_modal_remove({{ exam_file.id }})"></button>
-{#                                                                <a class="glyphicon glyphicon-remove pull-right" data-toggle="tooltip" data-placement="right" title="Remover" style="color: indianred" onclick="show_modal_remove({{ exam_file.id }})"></a>#}
                                                             {% endif %}
-                                                            <button class="glyphicon glyphicon-download-alt pull-right" data-toggle="tooltip" data-placement="bottom" title="Download" onclick="location.href='{{ exam_file.content.url }}'"></button>
-{#                                                            <a class="glyphicon glyphicon-download-alt pull-right" data-toggle="tooltip" data-placement="bottom" title="download"  href="{{ exam_file.content.url }}"></a>#}
+                                                            <div class="col-md-1"></div>
+                                                            <button class="glyphicon glyphicon-download-alt pull-right" data-toggle="tooltip" data-placement="bottom" title="Download" style="color: royalblue" onclick="location.href='{{ exam_file.content.url }}'"></button>
                                                         </td>
                                                     </tr>
                                                 {% endfor %}
