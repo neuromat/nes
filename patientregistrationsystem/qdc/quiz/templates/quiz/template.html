@@ -3,6 +3,7 @@
 <head>
     {% load static %}
     {% load l10n %}
+    {% load qdc_tags %}
     <meta charset="utf-8">
     <title>Cadastro: Dados Sociodemográficos e Clínicos</title>
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -13,13 +14,13 @@
     <script src="{% static 'quiz/js/ajax.js' %}"></script>
 
     <link href="{% static 'quiz/bootstrap-3.0.0-dist/css/bootstrap.min.css' %}" rel="stylesheet">
-{#    <link href="{% static 'quiz/dist/css/bootstrap.min.css' %}" rel="stylesheet">#}
-{#    <link href="http://netdna.bootstrapcdn.com/bootstrap/3.0.0/css/bootstrap.min.css" rel="stylesheet">#}
+    {#    <link href="{% static 'quiz/dist/css/bootstrap.min.css' %}" rel="stylesheet">#}
+    {#    <link href="http://netdna.bootstrapcdn.com/bootstrap/3.0.0/css/bootstrap.min.css" rel="stylesheet">#}
 
     <link href="{% static 'quiz/BootstrapFormHelpers-master/dist/css/bootstrap-formhelpers.min.css' %}"
           rel="stylesheet">
 
-{#    <script src="{% static 'quiz/dist/js/bootstrap.min.js' %}"></script>#}
+    {#    <script src="{% static 'quiz/dist/js/bootstrap.min.js' %}"></script>#}
     <script src="{% static 'quiz/bootstrap-3.0.0-dist/js/bootstrap.min.js' %}"></script>
 
     <script src="{% static 'quiz/masked_input/jquery.maskedinput.min.js' %}"></script>
@@ -44,7 +45,7 @@
 
         {##}
         .footer /*rodapé do sistema */
-                                          {
+                                              {
             background-color: transparent;
             height: 30px;
             text-align: left;
@@ -120,9 +121,9 @@
                     {% endif %}
                 </li>
 
-{#                <li {% block activeAdvancedSearch %}{% endblock %}>#}
-{#                    <a href="/quiz/busca_avancada/">Busca avançada</a>#}
-{#                </li>#}
+                {#                <li {% block activeAdvancedSearch %}{% endblock %}>#}
+                {#                    <a href="/quiz/busca_avancada/">Busca avançada</a>#}
+                {#                </li>#}
 
                 {% if perms.auth.add_user and perms.auth.change_user %}
                     <li {% block activeUser %}{% endblock %}>
@@ -156,7 +157,10 @@
 
 <div class="footer" style="display: inherit">
     <p><a href="http://ccsl.ime.usp.br"><img src="{% static 'quiz/imgs/logo-ccsl-sm.png' %}" alt="" height="34px"
-                                             width="96px"></a></p>
+                                             width="96px"></a>
+
+        <span class="credit" style="position: fixed;right: 10px">V: {% settings_value "VERSION" %}</span></p>
+
 </div>
 
 </body>

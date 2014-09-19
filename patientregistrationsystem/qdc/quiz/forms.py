@@ -2,9 +2,9 @@
 from django.forms import ModelForm, TextInput, DateInput, Select, RadioSelect, PasswordInput, CheckboxSelectMultiple, \
     CharField, ValidationError
 from django.forms.widgets import Textarea
-from models import Patient, SocialDemographicData, SocialHistoryData, ComplementaryExam, ExamFile
+from quiz.models import Patient, SocialDemographicData, SocialHistoryData, ComplementaryExam, ExamFile
 from django.contrib.auth.hashers import make_password
-from quiz_widget import SelectBoxCountries, SelectBoxState
+from quiz.quiz_widget import SelectBoxCountries, SelectBoxState
 from cep.widgets import CEPInput
 
 from django.contrib.auth.models import User
@@ -35,7 +35,7 @@ class PatientForm(ModelForm):
                                                    'id': "complement"}),
             'district': TextInput(attrs={'class': 'form-control', 'id': "district"}),
             'city_txt': TextInput(attrs={'class': 'form-control', 'id': "city"}),
-            'state_txt': SelectBoxState(attrs={'data-country': 'id_country_state_address' ,'id': 'id_chosen_state'}),
+            'state_txt': SelectBoxState(attrs={'data-country': 'id_country_state_address', 'id': 'id_chosen_state'}),
             'country_txt': SelectBoxCountries(attrs={'id': 'id_country_state_address', 'data-flags': 'true'}),
             'name_txt': TextInput(attrs={'class': 'form-control', 'placeholder': 'Entrar nome completo',
                                          'id': "full_name", 'autofocus': "true", 'required': "",
@@ -145,17 +145,6 @@ class UserForm(ModelForm):
                                                  '+(\.[A-Za-z0-9]+)*(\.[A-Za-z]{2,})$'}),
             'groups': CheckboxSelectMultiple(),
         }
-
-    def clean_username(self):
-        username = self.cleaned_data['username']
-        #TODO Rever este trecho de codigo
-        user = User.objects.filter(username=username).first() #User.objects.get(username=username)
-        if not self.instance.pk and user:
-            if user.is_active:
-                raise ValidationError(u'Este nome de usuário já existe.')
-            else:
-                raise ValidationError(u'Este nome de usuário já existe em um usuário desabilitado.')
-        return username
 
     def clean_password(self):
         return make_password(self.cleaned_data['password'])

@@ -24,6 +24,9 @@ import datetime
 
 permission_required = partial(permission_required, raise_exception=True)
 
+# pylint: disable=E1101
+# pylint: disable=E1103
+
 @login_required
 @permission_required('experiment.view_experiment')
 def experiment_list(request, template_name="experiment/experiment_list.html"):
@@ -110,21 +113,26 @@ def experiment_update(request, experiment_id, template_name="experiment/experime
 @login_required
 @permission_required('experiment.add_questionnaireconfiguration')
 def questionnaire_create(request, experiment_id, template_name="experiment/questionnaire_register.html"):
+
     experiment = get_object_or_404(Experiment, pk=experiment_id)
+
     questionnaire_form = QuestionnaireConfigurationForm(
         request.POST or None,
         initial={'number_of_fills': 1, 'interval_between_fills_value': None})
 
-    questionnaires_of_experiment = QuestionnaireConfiguration.objects.filter(experiment=experiment)
-    if not questionnaires_of_experiment:
-        questionnaires_list = Questionnaires().find_all_active_questionnaires()
-    else:
-        active_questionnaires_list = Questionnaires().find_all_active_questionnaires()
-        for questionnaire in questionnaires_of_experiment:
-            for active_questionnaire in active_questionnaires_list:
-                if active_questionnaire['sid'] == questionnaire.lime_survey_id:
-                    active_questionnaires_list.remove(active_questionnaire)
-        questionnaires_list = active_questionnaires_list
+    if request.method == "GET":
+
+        questionnaires_of_experiment = QuestionnaireConfiguration.objects.filter(experiment=experiment)
+
+        if not questionnaires_of_experiment:
+            questionnaires_list = Questionnaires().find_all_active_questionnaires()
+        else:
+            active_questionnaires_list = Questionnaires().find_all_active_questionnaires()
+            for questionnaire in questionnaires_of_experiment:
+                for active_questionnaire in active_questionnaires_list:
+                    if active_questionnaire['sid'] == questionnaire.lime_survey_id:
+                        active_questionnaires_list.remove(active_questionnaire)
+            questionnaires_list = active_questionnaires_list
 
     if request.method == "POST":
 
@@ -248,7 +256,7 @@ def subjects(request, experiment_id, template_name="experiment/subjects.html"):
             if subject_responses:
                 if (questionnaire_configuration.number_of_fills is None and subject_responses.count() > 0) or \
                         (questionnaire_configuration.number_of_fills is not None and
-                                 questionnaire_configuration.number_of_fills == subject_responses.count()):
+                            questionnaire_configuration.number_of_fills == subject_responses.count()):
 
                     number_of_questionnaires_completed = 0
 
@@ -263,16 +271,21 @@ def subjects(request, experiment_id, template_name="experiment/subjects.html"):
                             number_of_questionnaires_completed += 1
 
                     if (questionnaire_configuration.number_of_fills is None and
-                                number_of_questionnaires_completed > 0) or \
+                            number_of_questionnaires_completed > 0) or \
                             (questionnaire_configuration.number_of_fills is not None and
-                                     number_of_questionnaires_completed >= questionnaire_configuration.number_of_fills):
+                                number_of_questionnaires_completed >= questionnaire_configuration.number_of_fills):
                         number_of_questionnaires_filled += 1
+
+        percentage = 0
+
+        if questionnaires_configuration_list.count() > 0:
+            percentage = 100 * number_of_questionnaires_filled / questionnaires_configuration_list.count()
 
         subject_list_with_status.append(
             {'subject': subject_of_experiment.subject,
              'number_of_questionnaires_filled': number_of_questionnaires_filled,
              'total_of_questionnaires': questionnaires_configuration_list.count(),
-             'percentage': 100 * number_of_questionnaires_filled / questionnaires_configuration_list.count(),
+             'percentage': percentage,
              'consent': subject_of_experiment.consent_form})
 
     context = {
@@ -357,7 +370,7 @@ def get_limesurvey_response_url(questionnaire_response):
     # '%s/index.php/survey/index/sid/%s/token/%s/lang/pt-BR/idavaliador/%s/datdataaquisicao/%s/idparticipante/%s' % (
     # settings.LIMESURVEY['URL'],
     # questionnaire_response.questionnaire_configuration.lime_survey_id,
-    #     token,
+    # token,
     #     questionnaire_response.questionnaire_responsible.id,
     #     questionnaire_response.date.strftime('%d-%m-%Y'),
     #     questionnaire_response.subject.id)
@@ -508,8 +521,8 @@ def questionnaire_response_view(request, questionnaire_response_id,
                 question_list = sorted(question_list)
                 for question in question_list:
                     properties = surveys.get_question_properties(question)
-                    if ('{if' not in properties['question']) and ('{(' not in properties['question']) and (
-                                'pont' not in properties['question']):
+                    if ('{int' not in properties['question']) and ('{(' not in properties['question'])\
+                            and ('{if' not in properties['question']) and ('{pont' not in properties['question']):
                         properties['question'] = re.sub('<.*?>', '', properties['question'])
 
                         if isinstance(properties['subquestions'], dict):
@@ -569,7 +582,10 @@ def questionnaire_response_view(request, questionnaire_response_id,
                             answer = 'Sem resposta'
                     else:
                         if question['type'] == 'D':
-                            answer = datetime.datetime.strptime(responses_list[1][index], '%Y-%m-%d %H:%M:%S')
+                            if responses_list[1][index]:
+                                answer = datetime.datetime.strptime(responses_list[1][index], '%Y-%m-%d %H:%M:%S')
+                            else:
+                                answer = ''
                         else:
                             answer = responses_list[1][index]
 
@@ -719,7 +735,8 @@ def upload_file(request, subject_id, experiment_id, template_name="experiment/up
                 messages.error(request, 'Não existem anexos para salvar')
         else:
             if request.POST['action'] == "remove":
-                subject_of_experiment.consent_form = ''
+                # subject_of_experiment.consent_form = ''
+                subject_of_experiment.consent_form.delete()
                 subject_of_experiment.save()
                 messages.success(request, 'Anexo removido com sucesso.')
 

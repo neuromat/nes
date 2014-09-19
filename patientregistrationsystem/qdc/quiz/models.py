@@ -3,15 +3,14 @@
 from __future__ import unicode_literals
 from django.db import models
 from django.core.exceptions import ValidationError
-from django.shortcuts import get_object_or_404
 from django.utils.translation import ugettext as _
 from django.contrib.auth.models import User
 from django.db.models import signals
 from simple_history.models import HistoricalRecords
-from validation import CPF
+from quiz.validation import CPF
+
 import datetime
 
-import re
 
 # Valida CPF
 def validate_cpf(value):
@@ -176,7 +175,6 @@ class SocialDemographicData(models.Model):
     def _history_user(self, value):
         self.changed_by = value
 
-
     @staticmethod
     def calculate_social_class(**keywords):
         dict_dvd = {'0': 0, '1': 2, '2': 2, '3': 2, '4': 2}
@@ -244,7 +242,6 @@ class SocialHistoryData(models.Model):
     @_history_user.setter
     def _history_user(self, value):
         self.changed_by = value
-
 
     def __unicode__(self):
         return \

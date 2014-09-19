@@ -31,9 +31,9 @@ class Experiment(models.Model):
     title = models.CharField(null=False, max_length=50, blank=False)
     description = models.CharField(max_length=150, null=False, blank=False)
 
-    #Audit trail - Simple History
+    # Audit trail - Simple History
     history = HistoricalRecords()
-    #changed_by = models.ForeignKey('auth.User')
+    # changed_by = models.ForeignKey('auth.User')
 
     class Meta:
         permissions = (
@@ -72,9 +72,9 @@ class QuestionnaireConfiguration(models.Model):
     interval_between_fills_value = models.IntegerField(null=True, blank=True, validators=[MinValueValidator(1)])
     interval_between_fills_unit = models.ForeignKey(TimeUnit, null=True, blank=True)
 
-    #Audit trail - Simple History
+    # Audit trail - Simple History
     history = HistoricalRecords()
-    #changed_by = models.ForeignKey('auth.User')
+    # changed_by = models.ForeignKey('auth.User')
 
     @property
     def _history_user(self):
@@ -96,12 +96,12 @@ class QuestionnaireResponse(models.Model):
     questionnaire_configuration = models.ForeignKey(QuestionnaireConfiguration, null=False, on_delete=models.PROTECT)
     token_id = models.IntegerField(null=False)
     date = models.DateField(default=datetime.date.today, null=False,
-                                validators=[validate_date_questionnaire_response])
+                            validators=[validate_date_questionnaire_response])
     questionnaire_responsible = models.ForeignKey(User, null=False, related_name="+")
 
-    #Audit trail - Simple History
+    # Audit trail - Simple History
     history = HistoricalRecords()
-    #changed_by = models.ForeignKey('auth.User')
+    # changed_by = models.ForeignKey('auth.User')
 
     class Meta:
         permissions = (
