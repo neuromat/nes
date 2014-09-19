@@ -204,7 +204,7 @@
                 <div class="btn-toolbar">
                     <div class="btn-group pull-left">
                     {% if not creating and not viewing %}
-                        <button name="action" value="remove" type="button" class="btn btn-secondary" style="background-color: indianred; color: #ffffff" onclick="show_modal_remove_for_complementary_exam()">Excluir</button>
+                        <button type="button" class="btn btn-secondary" style="background-color: indianred; color: #ffffff" onclick="show_modal_remove_for_complementary_exam(); submit('remove');">Excluir</button>
                     {% endif %}
                 </div>
                 <div class="btn-group pull-right">
