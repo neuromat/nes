@@ -171,10 +171,12 @@
                                                     <tr>
                                                         <td>
                                                             {{ exam_file.content.name }}
-                                                            {% if not viewing %}
-                                                                <button class="glyphicon glyphicon-remove pull-right" data-toggle="tooltip" data-placement="right" title="Remover" style="color: indianred" onclick="show_modal_remove({{ exam_file.id }})"></button>
-                                                            {% endif %}
-                                                            <button class="glyphicon glyphicon-download-alt pull-right" data-toggle="tooltip" data-placement="bottom" title="Download" style="color: royalblue" onclick="location.href='{{ exam_file.content.url }}'"></button>
+                                                            <div class="btn-toolbar pull-right">
+                                                            <button class="btn btn-default pull-left" type="button" data-toggle="tooltip" title="Download" data-placement="bottom" onclick="location.href='{{ exam_file.content.url }}'"><span class="glyphicon glyphicon-download-alt" style="color: royalblue"></span></button>
+                                                                {% if not viewing %}
+                                                                <button class="btn btn-default pull-right" type="button" data-toggle="tooltip" title="Remover" data-placement="right" onclick="show_modal_remove({{ exam_file.id }})"><span class="glyphicon glyphicon-remove" style="color: indianred"></span></button>
+                                                                {% endif %}
+                                                            </div>
                                                         </td>
                                                     </tr>
                                                 {% endfor %}
