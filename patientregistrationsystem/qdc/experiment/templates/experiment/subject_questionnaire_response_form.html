@@ -68,7 +68,19 @@
 
     {% if FAIL == True %}
         <script>
-            window.open("{{ URL }}", "_self");
+            $(document).ready(function () {
+                var elem1 = document.getElementById('button1');
+                var elem2 = document.getElementById('button2');
+                var new_window = window.open("{{ URL }}", "");
+
+                if (new_window) {
+                    elem1.style.display = 'none';
+                    elem2.style.display = 'none';
+                    new_window.focus();
+                } else {
+                    showErrorMessage("Não foi possível abrir o questionário. Habilite pop-ups para esse site.");
+                }
+            });
         </script>
     {% endif %}
 
@@ -173,12 +185,12 @@
         <div class="btn-toolbar">
             <div class="btn-group pull-left">
                 {% if not creating and perms.experiment.delete_questionnaireresponse %}
-                    <button type="button" class="btn btn-danger" onclick="$('#modalRemove').modal('show')">Excluir</button>
+                    <button type="button" id="button1" class="btn btn-danger" onclick="$('#modalRemove').modal('show')">Excluir</button>
                 {% endif %}
             </div>
             <div class="btn-group pull-right">
                 {% if not completed %}
-                    <button type="submit" name="action" value="save" class="btn btn-primary">{% if creating %}Novo preenchimento{% else %}Continuar preenchimento{% endif %}</button>
+                    <button type="submit" id="button2" name="action" value="save" class="btn btn-primary">{% if creating %}Novo preenchimento{% else %}Continuar preenchimento{% endif %}</button>
                 {% else %}
                     <a href="/experiment/questionnaire_response/{{ questionnaire_response_id }}" class="btn btn-primary">Ver preenchimento</a>
                 {% endif %}
