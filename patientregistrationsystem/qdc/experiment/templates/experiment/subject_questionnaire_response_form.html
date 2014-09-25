@@ -69,15 +69,24 @@
     {% if FAIL == True %}
         <script>
             $(document).ready(function () {
-                var elem1 = document.getElementById('button1');
-                var elem2 = document.getElementById('button2');
+                var elem1 = undefined;
+                var elem2;
+
+                if (document.getElementById('button1') != undefined)
+                    elem1 = document.getElementById('button1');
+
+                elem2 = document.getElementById('button2');
                 var new_window = window.open("{{ URL }}", "");
 
                 if (new_window) {
-                    elem1.style.display = 'none';
+
+                    if (elem1 != undefined)
+                        elem1.style.display = 'none';
+
                     elem2.style.display = 'none';
                     new_window.focus();
                 } else {
+                    window.open("/experiment/questionnaire_response/edit/{{ questionnaire_response_id }}", "_self");
                     showErrorMessage("Não foi possível abrir o questionário. Habilite pop-ups para esse site.");
                 }
             });

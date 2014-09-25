@@ -319,12 +319,12 @@ def subject_questionnaire_response_start_fill_questionnaire(request, subject_id,
         if not questionnaire_lime_survey.survey_has_token_table(questionnaire_config.lime_survey_id):
             messages.warning(request,
                              'Preenchimento não disponível - Tabela de tokens não iniciada')
-            return None
+            return None, None
 
         if questionnaire_lime_survey.get_survey_properties(questionnaire_config.lime_survey_id, 'active') == 'N':
             messages.warning(request,
                              'Preenchimento não disponível - Questionário não está ativo')
-            return None
+            return None, None
 
         result = questionnaire_lime_survey.add_participant(questionnaire_config.lime_survey_id, patient.name_txt, '',
                                                            patient.email_txt)
@@ -334,7 +334,7 @@ def subject_questionnaire_response_start_fill_questionnaire(request, subject_id,
         if not result:
             messages.warning(request,
                              'Falha ao gerar token para responder questionário. Verifique se o questionário está ativo')
-            return None
+            return None, None
 
         questionnaire_response.subject_of_experiment = subject_of_experiment
         questionnaire_response.questionnaire_configuration = questionnaire_config
@@ -345,9 +345,9 @@ def subject_questionnaire_response_start_fill_questionnaire(request, subject_id,
 
         redirect_url = get_limesurvey_response_url(questionnaire_response)
 
-        return redirect_url
+        return redirect_url, questionnaire_response.pk
     else:
-        return None
+        return None, None
 
 
 def get_limesurvey_response_url(questionnaire_response):
@@ -397,12 +397,13 @@ def subject_questionnaire_response_create(request, experiment_id, subject_id, qu
         questionnaire_response_form = QuestionnaireResponseForm(request.POST or None)
         fail = None
         redirect_url = None
+        questionnaire_response_id = None
 
     if request.method == "POST":
         questionnaire_response_form = QuestionnaireResponseForm(request.POST)
 
         if request.POST['action'] == "save":
-            redirect_url = subject_questionnaire_response_start_fill_questionnaire(request, subject_id,
+            redirect_url, questionnaire_response_id = subject_questionnaire_response_start_fill_questionnaire(request, subject_id,
                                                                                    questionnaire_id)
             if not redirect_url:
                 fail = False
@@ -413,6 +414,7 @@ def subject_questionnaire_response_create(request, experiment_id, subject_id, qu
     context = {
         "FAIL": fail,
         "URL": redirect_url,
+        "questionnaire_response_id": questionnaire_response_id,
         "questionnaire_response_form": questionnaire_response_form,
         "questionnaire_configuration": questionnaire_config,
         "survey_title": survey_title,
