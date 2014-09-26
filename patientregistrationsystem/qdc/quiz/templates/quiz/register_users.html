@@ -67,7 +67,7 @@
                     showErrorMessageTemporary("Senha incompatível com o padrão definido.");
                     event.preventDefault();
                 }
-                if(!$('#email').val()){
+                if(!$('#id_email').val()){
                     showErrorMessage("Email deve ser preenchido!");
                     $('#mailDivId').addClass('has-error');
                     event.preventDefault();
@@ -191,7 +191,7 @@
                     <div class="col-xs-6 col-sm-6">
                         <div class="form-group">
                             <div class="form-group {% if form.errors.username %}has-error{% endif %}">
-                                <label for="full_name" class="control-label">Nome de usuário<b style="color: red;">*</b></label>
+                                <label for="name" class="control-label">Nome de usuário<b style="color: red;">*</b></label>
 
                                 <div class="input-group input-group-sm">
                                     <span class="input-group-addon"> <span class="glyphicon glyphicon-user"></span></span>
@@ -207,7 +207,7 @@
                     </div>
                     <div class="col-xs-6 col-sm-6">
                         <div class="form-group {% if form.errors.email %}has-error{% endif %}" id="mailDivId">
-                            <label for="full_name" class="control-label">E-mail<b style="color: red;">*</b></label>
+                            <label for="name" class="control-label">E-mail<b style="color: red;">*</b></label>
 
                             <div class="input-group input-group-sm">
                                 <span class="input-group-addon"> <span class="glyphicon glyphicon-user"></span></span>
@@ -239,7 +239,7 @@
                     </div>
                     <div class="col-xs-6 col-sm-6">
                         <div class="form-group {% if form.errors.password %}has-error{% endif %}" id="confirmation">
-                            <label for="full_name" class="control-label">Confirmar senha<b style="color: red;">*</b></label>
+                            <label for="name" class="control-label">Confirmar senha<b style="color: red;">*</b></label>
                             <div class="input-group input-group-sm has-feedback">
                                 <span class="input-group-addon"> <span class="glyphicon glyphicon-user"></span></span>
                                 <input class="form-control" id="id_password2" maxlength="128" name="password2" placeholder="Entrar senha" type="password" onkeyup="checkPass(); beginCheckPassword1=true;">

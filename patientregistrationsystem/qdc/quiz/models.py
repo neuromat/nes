@@ -25,94 +25,93 @@ def validate_cpf(value):
 # data de nascimento maior que a data atual
 def validate_date_birth(value):
     if value > datetime.date.today():
-        raise ValidationError('Data de nascimento não pode ser maior que a data de hoje.')
+        raise ValidationError(_('Data de nascimento não pode ser maior que a data de hoje.'))
 
 
-class PaymentOption(models.Model):
-    payment_txt = models.CharField(max_length=50)
-
-    def __unicode__(self):  # Python 3: def __str__(self):
-        return self.payment_txt
-
-
-class GenderOption(models.Model):
-    gender_txt = models.CharField(max_length=50)
+class Payment(models.Model):
+    name = models.CharField(max_length=50)
 
     def __unicode__(self):  # Python 3: def __str__(self):
-        return self.gender_txt
+        return self.name
 
 
-class FleshToneOption(models.Model):
-    flesh_tone_txt = models.CharField(max_length=50)
-
-    def __unicode__(self):  # Python 3: def __str__(self):
-        return self.flesh_tone_txt
-
-
-class MaritalStatusOption(models.Model):
-    marital_status_txt = models.CharField(max_length=50)
+class Gender(models.Model):
+    name = models.CharField(max_length=50)
 
     def __unicode__(self):  # Python 3: def __str__(self):
-        return self.marital_status_txt
+        return self.name
 
 
-class ReligionOption(models.Model):
-    religion_txt = models.CharField(max_length=50)
-
-    def __unicode__(self):  # Python 3: def __str__(self):
-        return self.religion_txt
-
-
-class SchoolingOption(models.Model):
-    schooling_txt = models.CharField(max_length=50)
+class FleshTone(models.Model):
+    name = models.CharField(max_length=50)
 
     def __unicode__(self):  # Python 3: def __str__(self):
-        return self.schooling_txt
+        return self.name
 
 
-class AmountCigarettesOption(models.Model):
-    amount_cigarettes_txt = models.CharField(max_length=50)
+class MaritalStatus(models.Model):
+    name = models.CharField(max_length=50)
+
+    def __unicode__(self):  # Python 3: def __str__(self):
+        return self.name
+
+
+class Religion(models.Model):
+    name = models.CharField(max_length=50)
+
+    def __unicode__(self):  # Python 3: def __str__(self):
+        return self.name
+
+
+class Schooling(models.Model):
+    name = models.CharField(max_length=50)
+
+    def __unicode__(self):  # Python 3: def __str__(self):
+        return self.name
+
+
+class AmountCigarettes(models.Model):
+    name = models.CharField(max_length=50)
 
     def __unicode__(self):
-        return self.amount_cigarettes_txt
+        return self.name
 
 
-class AlcoholFrequencyOption(models.Model):
-    alcohol_frequency_txt = models.CharField(max_length=100)
-
-    def __unicode__(self):
-        return self.alcohol_frequency_txt
-
-
-class AlcoholPeriodOption(models.Model):
-    alcohol_period_txt = models.CharField(max_length=50)
+class AlcoholFrequency(models.Model):
+    name = models.CharField(max_length=100)
 
     def __unicode__(self):
-        return self.alcohol_period_txt
+        return self.name
+
+
+class AlcoholPeriod(models.Model):
+    name = models.CharField(max_length=50)
+
+    def __unicode__(self):
+        return self.name
 
 
 class Patient(models.Model):
-    cpf_id = models.CharField(null=True, blank=True, max_length=15, unique=True, validators=[validate_cpf])
-    rg_id = models.CharField(max_length=15, null=True, blank=True)
-    name_txt = models.CharField(max_length=50)
-    number_record = models.AutoField(primary_key=True)
-    medical_record_number = models.CharField(max_length=25, null=True, blank=True)
-    natural_of_txt = models.CharField(max_length=50, null=True, blank=True)
-    citizenship_txt = models.CharField(max_length=50, null=True, blank=True)
-    street_txt = models.CharField(max_length=50, null=True, blank=True)
+    cpf = models.CharField(null=True, blank=True, max_length=15, unique=True, validators=[validate_cpf])
+    rg = models.CharField(max_length=15, null=True, blank=True)
+    name = models.CharField(max_length=50)
+    medical_record = models.CharField(max_length=25, null=True, blank=True)
+    natural_of = models.CharField(max_length=50, null=True, blank=True)
+    citizenship = models.CharField(max_length=50, null=True, blank=True)
+    street = models.CharField(max_length=50, null=True, blank=True)
     address_number = models.IntegerField(max_length=6, null=True, blank=True)
     district = models.CharField(max_length=50, null=True, blank=True)
     address_complement = models.CharField(max_length=50, null=True, blank=True)
-    zipcode_number = models.CharField(max_length=12, null=True, blank=True)
-    country_txt = models.CharField(max_length=30, null=True, blank=True)
-    state_txt = models.CharField(max_length=30, null=True, blank=True)
-    city_txt = models.CharField(max_length=30, null=True, blank=True)
-    phone_number = models.CharField(max_length=15, null=True, blank=True)
-    cellphone_number = models.CharField(max_length=15, null=True, blank=True)
-    email_txt = models.EmailField(null=True, blank=True)
-    date_birth_txt = models.DateField(null=False, blank=False, validators=[validate_date_birth])
-    gender_opt = models.ForeignKey(GenderOption, null=False, blank=False)
-    marital_status_opt = models.ForeignKey(MaritalStatusOption, null=True, blank=True)
+    zipcode = models.CharField(max_length=12, null=True, blank=True)
+    country = models.CharField(max_length=30, null=True, blank=True)
+    state = models.CharField(max_length=30, null=True, blank=True)
+    city = models.CharField(max_length=30, null=True, blank=True)
+    phone = models.CharField(max_length=15, null=True, blank=True)
+    cellphone = models.CharField(max_length=15, null=True, blank=True)
+    email = models.EmailField(null=True, blank=True)
+    date_birth = models.DateField(null=False, blank=False, validators=[validate_date_birth])
+    gender = models.ForeignKey(Gender, null=False, blank=False)
+    marital_status = models.ForeignKey(MaritalStatus, null=True, blank=True)
     removed = models.BooleanField(null=False, default=False)
 
     # Audit trail
@@ -137,28 +136,28 @@ class Patient(models.Model):
 
     def __unicode__(self):  # Python 3: def __str__(self):
         return \
-            self.name_txt
+            self.name
 
 
 class SocialDemographicData(models.Model):
-    id_patient = models.ForeignKey(Patient)
-    religion_opt = models.ForeignKey(ReligionOption, null=True, blank=True)
-    profession_txt = models.CharField(null=True, blank=True, max_length=50)
-    occupation_txt = models.CharField(null=True, blank=True, max_length=50)
-    benefit_government_bool = models.CharField(null=True, blank=True, max_length=10)
-    payment_opt = models.ForeignKey(PaymentOption, null=True, blank=True)
-    flesh_tone_opt = models.ForeignKey(FleshToneOption, null=True, blank=True)
-    schooling_opt = models.ForeignKey(SchoolingOption, null=True, blank=True)
-    tv_opt = models.IntegerField(null=True, blank=True, )
-    dvd_opt = models.IntegerField(null=True, blank=True, )
-    radio_opt = models.IntegerField(null=True, blank=True, )
-    bath_opt = models.IntegerField(null=True, blank=True, )
-    automobile_opt = models.IntegerField(null=True, blank=True, )
-    wash_machine_opt = models.IntegerField(null=True, blank=True, )
-    refrigerator_opt = models.IntegerField(null=True, blank=True, )
-    freezer_opt = models.IntegerField(null=True, blank=True, )
-    house_maid_opt = models.IntegerField(null=True, blank=True, )
-    social_class_opt = models.CharField(null=True, blank=True, max_length=10)
+    patient = models.ForeignKey(Patient)
+    religion = models.ForeignKey(Religion, null=True, blank=True)
+    profession = models.CharField(null=True, blank=True, max_length=50)
+    occupation = models.CharField(null=True, blank=True, max_length=50)
+    benefit_government = models.CharField(null=True, blank=True, max_length=10)
+    payment = models.ForeignKey(Payment, null=True, blank=True)
+    flesh_tone = models.ForeignKey(FleshTone, null=True, blank=True)
+    schooling = models.ForeignKey(Schooling, null=True, blank=True)
+    tv = models.IntegerField(null=True, blank=True, )
+    dvd = models.IntegerField(null=True, blank=True, )
+    radio = models.IntegerField(null=True, blank=True, )
+    bath = models.IntegerField(null=True, blank=True, )
+    automobile = models.IntegerField(null=True, blank=True, )
+    wash_machine = models.IntegerField(null=True, blank=True, )
+    refrigerator = models.IntegerField(null=True, blank=True, )
+    freezer = models.IntegerField(null=True, blank=True, )
+    house_maid = models.IntegerField(null=True, blank=True, )
+    social_class = models.CharField(null=True, blank=True, max_length=10)
 
     # Changes to audit trail
     history = HistoricalRecords()
@@ -166,7 +165,7 @@ class SocialDemographicData(models.Model):
 
     def __unicode__(self):
         return \
-            str(self.id_patient)
+            str(self.patient)
 
     @property
     def _history_user(self):
@@ -184,7 +183,7 @@ class SocialDemographicData(models.Model):
         dict_auto = {'0': 0, '1': 4, '2': 7, '3': 9, '4': 9}
         dict_housemaid = {'0': 0, '1': 3, '2': 4, '3': 4, '4': 4}
         dict_refrigerator = {'0': 0, '1': 4, '2': 4, '3': 4, '4': 4}
-        dict_scholarity = {'1': 0, '2': 1, '3': 2, '4': 4, '5': 8}
+        dict_schooling = {'1': 0, '2': 1, '3': 2, '4': 4, '5': 8}
         points = 0
 
         for kw in keywords.keys():
@@ -201,7 +200,7 @@ class SocialDemographicData(models.Model):
             elif kw == 'geladeira':
                 points += dict_refrigerator[keywords[kw]]
             elif kw == 'escolaridade':
-                points += dict_scholarity[keywords[kw]]
+                points += dict_schooling[keywords[kw]]
 
         if 0 <= points <= 7:
             return 'E'
@@ -224,14 +223,14 @@ class SocialDemographicData(models.Model):
 
 
 class SocialHistoryData(models.Model):
-    id_patient = models.ForeignKey(Patient)
+    patient = models.ForeignKey(Patient)
     smoker = models.CharField(max_length=10, null=True, blank=True)
-    amount_cigarettes_opt = models.ForeignKey(AmountCigarettesOption, null=True, blank=True, default=0)
+    amount_cigarettes = models.ForeignKey(AmountCigarettes, null=True, blank=True, default=0)
     ex_smoker = models.CharField(max_length=10, null=True, blank=True)
     alcoholic = models.CharField(max_length=10, null=True, blank=True)
-    alcohol_frequency_opt = models.ForeignKey(AlcoholFrequencyOption, null=True, blank=True, default=0)
-    alcohol_period_opt = models.ForeignKey(AlcoholPeriodOption, null=True, blank=True, default=0)
-    drugs_opt = models.CharField(max_length=25, null=True, blank=True)
+    alcohol_frequency = models.ForeignKey(AlcoholFrequency, null=True, blank=True, default=0)
+    alcohol_period = models.ForeignKey(AlcoholPeriod, null=True, blank=True, default=0)
+    drugs = models.CharField(max_length=25, null=True, blank=True)
 
     # Audit trail
     history = HistoricalRecords()
@@ -248,7 +247,7 @@ class SocialHistoryData(models.Model):
 
     def __unicode__(self):
         return \
-            str(self.id_patient)
+            str(self.patient)
 
 
 class MedicalRecordData(models.Model):

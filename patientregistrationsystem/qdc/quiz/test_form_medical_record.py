@@ -5,7 +5,7 @@ from django.http import Http404
 from django.test.client import RequestFactory
 from util_test import UtilTests
 from models import ClassificationOfDiseases, MedicalRecordData, Diagnosis, ComplementaryExam, ExamFile
-from views import User, GenderOption, reverse, Patient, \
+from views import User, Gender, reverse, Patient, \
     medical_record_view, medical_record_update, diagnosis_create, \
     medical_record_create_diagnosis_create, exam_create, exam_view
 

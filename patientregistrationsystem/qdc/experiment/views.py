@@ -304,8 +304,8 @@ def subject_questionnaire_response_start_fill_questionnaire(request, subject_id,
                              'Preenchimento não disponível - Questionário não está ativo')
             return None
 
-        result = questionnaire_lime_survey.add_participant(questionnaire_config.lime_survey_id, patient.name_txt, '',
-                                                           patient.email_txt)
+        result = questionnaire_lime_survey.add_participant(questionnaire_config.lime_survey_id, patient.name, '',
+                                                           patient.email)
 
         questionnaire_lime_survey.release_session_key()
 
@@ -682,9 +682,9 @@ def search_patients_ajax(request):
         experiment_id = request.POST['experiment_id']
         if search_text:
             if re.match('[a-zA-Z ]+', search_text):
-                patient_list = Patient.objects.filter(name_txt__icontains=search_text).exclude(removed=True)
+                patient_list = Patient.objects.filter(name__icontains=search_text).exclude(removed=True)
             else:
-                patient_list = Patient.objects.filter(cpf_id__icontains=search_text).exclude(removed=True)
+                patient_list = Patient.objects.filter(cpf__icontains=search_text).exclude(removed=True)
 
     return render_to_response('experiment/ajax_search_patients.html',
                               {'patients': patient_list, 'experiment_id': experiment_id})

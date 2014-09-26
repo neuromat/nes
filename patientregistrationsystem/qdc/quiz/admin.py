@@ -1,22 +1,22 @@
 from django.contrib import admin
 from simple_history.admin import SimpleHistoryAdmin
-from models import SchoolingOption, PaymentOption, ReligionOption, FleshToneOption, MaritalStatusOption, \
-    GenderOption, AmountCigarettesOption, AlcoholFrequencyOption, AlcoholPeriodOption, Patient, MedicalRecordData, \
+from models import Schooling, Payment, Religion, FleshTone, MaritalStatus, \
+    Gender, AmountCigarettes, AlcoholFrequency, AlcoholPeriod, Patient, MedicalRecordData, \
     SocialDemographicData, SocialHistoryData
 
 
 # Register your models here.
-search_fields = ['cpf_id']
+search_fields = ['cpf']
 
-admin.site.register(SchoolingOption)
-admin.site.register(PaymentOption)
-admin.site.register(ReligionOption)
-admin.site.register(FleshToneOption)
-admin.site.register(MaritalStatusOption)
-admin.site.register(GenderOption)
-admin.site.register(AmountCigarettesOption)
-admin.site.register(AlcoholFrequencyOption)
-admin.site.register(AlcoholPeriodOption)
+admin.site.register(Schooling)
+admin.site.register(Payment)
+admin.site.register(Religion)
+admin.site.register(FleshTone)
+admin.site.register(MaritalStatus)
+admin.site.register(Gender)
+admin.site.register(AmountCigarettes)
+admin.site.register(AlcoholFrequency)
+admin.site.register(AlcoholPeriod)
 
 # Register models for Admin history and audit changes
 admin.site.register(Patient, SimpleHistoryAdmin)

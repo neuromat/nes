@@ -6,6 +6,7 @@ from models import Patient, SocialDemographicData, SocialHistoryData, Complement
 from django.contrib.auth.hashers import make_password
 from quiz_widget import SelectBoxCountries, SelectBoxState
 from cep.widgets import CEPInput
+from django.utils.translation import ugettext_lazy as _
 
 from django.contrib.auth.models import User
 
@@ -18,113 +19,83 @@ class PatientForm(ModelForm):
         model = Patient
 
         fields = [
-            'cpf_id', 'name_txt', 'number_record', 'rg_id', 'medical_record_number', 'natural_of_txt',
-            'citizenship_txt', 'zipcode_number', 'street_txt', 'city_txt', 'state_txt', 'country_txt', 'phone_number',
-            'cellphone_number', 'email_txt', 'date_birth_txt', 'gender_opt', 'marital_status_opt', 'district',
+            'cpf', 'name', 'rg', 'medical_record', 'natural_of','citizenship', 'zipcode', 'street', 'city', 'state',
+            'country', 'phone', 'cellphone', 'email', 'date_birth', 'gender', 'marital_status', 'district',
             'address_complement', 'address_number'
         ]
 
         widgets = {
-            'zipcode_number': CEPInput(address={'street': 'street_txt', 'district': 'district', 'city': 'city',
-                                                'state': 'id_chosen_state'},
-                                       attrs={'class': 'form-control', 'placeholder': 'Digite o CEP',
-                                              'pattern': '\d{5}-?\d{3}'}),
-            'street_txt': TextInput(attrs={'class': 'form-control', 'id': "street_txt"}),
-            'address_number': TextInput(attrs={'class': 'form-control', 'id': "number"}),
-            'address_complement': TextInput(attrs={'class': 'form-control', 'placeholder': 'Entrar Complemento',
-                                                   'id': "complement"}),
-            'district': TextInput(attrs={'class': 'form-control', 'id': "district"}),
-            'city_txt': TextInput(attrs={'class': 'form-control', 'id': "city"}),
-            'state_txt': SelectBoxState(attrs={'data-country': 'id_country_state_address' ,'id': 'id_chosen_state'}),
-            'country_txt': SelectBoxCountries(attrs={'id': 'id_country_state_address', 'data-flags': 'true'}),
-            'name_txt': TextInput(attrs={'class': 'form-control', 'placeholder': 'Entrar nome completo',
-                                         'id': "full_name", 'autofocus': "true", 'required': "",
-                                         'data-error': "Nome deve ser preenchido"}),
-            'cpf_id': TextInput(attrs={'class': 'form-control', 'placeholder': 'Entrar CPF',
-                                       'id': "cpf_id"}),
-            'rg_id': TextInput(attrs={'class': 'form-control', 'placeholder': 'Entrar RG', 'id': "rg_id"}),
-            'natural_of_txt': TextInput(attrs={'class': 'form-control', 'placeholder': 'Entrar Naturalidade',
-                                               'id': "naturalOf"}),
-            'phone_number': TextInput(attrs={'class': 'form-control', 'placeholder': 'Entrar telefone para contato',
-                                             'id': "phone"}),
-            'cellphone_number': TextInput(attrs={'class': 'form-control', 'placeholder': 'Entrar celular',
-                                                 'id': "cellphone"}),
-            'email_txt': TextInput(attrs={
-                'class': 'form-control', 'placeholder': 'Entrar e-mail', 'id': "email",
-                'type': 'email', 'data-error': "E-mail inválido",
-                'pattern': '^[_A-Za-z0-9-\+]+(\.[_A-Za-z0-9-]+)*@[A-Za-z0-9-]+(\.[A-Za-z0-9]+)*(\.[A-Za-z]{2,})$'}),
-            'medical_record_number': TextInput(attrs={'class': 'form-control',
-                                                      'placeholder': 'Entrar número do prontuário',
-                                                      'id': "records_number"}),
-            'citizenship_txt': SelectBoxCountries(attrs={'id': 'id_chosen_country', 'data-flags': 'true'}),
-            'gender_opt': Select(attrs={'class': 'form-control', 'id': 'gender_id', 'required': "",
-                                        'data-error': "Sexo deve ser preenchido"}),
-            'marital_status_opt': Select(attrs={'class': 'form-control', 'id': 'marital_status'}),
-            'date_birth_txt': DateInput(attrs={'class': 'form-control', 'placeholder': 'Data',
-                                               'id': "birthday", 'required': "",
-                                               'data-error': "Data de nascimento deve ser preenchida"}, )
-        }
-        error_messages = {
-            'name_txt': {
-                'required': 'Nome não preenchido'
-            }
+            'zipcode': CEPInput(address={'street': 'id_street', 'district': 'id_district', 'city': 'id_city',
+                                         'state': 'id_state'},
+                                       attrs={'class': 'form-control', 'pattern': '\d{5}-?\d{3}'}),
+            'street': TextInput(attrs={'class': 'form-control'}),
+            'address_number': TextInput(attrs={'class': 'form-control'}),
+            'address_complement': TextInput(attrs={'class': 'form-control'}),
+            'district': TextInput(attrs={'class': 'form-control'}),
+            'city': TextInput(attrs={'class': 'form-control'}),
+            'state': SelectBoxState(attrs={'data-country': 'id_country'}),
+            'country': SelectBoxCountries(attrs={'data-flags': 'true'}),
+            'name': TextInput(attrs={'class': 'form-control', 'autofocus': "true", 'required': "",
+                                     'data-error': _('Nome deve ser preenchido')}),
+            'cpf': TextInput(attrs={'class': 'form-control'}),
+            'rg': TextInput(attrs={'class': 'form-control'}),
+            'natural_of': TextInput(attrs={'class': 'form-control'}),
+            'phone': TextInput(attrs={'class': 'form-control'}),
+            'cellphone': TextInput(attrs={'class': 'form-control'}),
+            'email': TextInput(attrs={'class': 'form-control', 'type': 'email', 'data-error': _('E-mail incorreto'),
+                                      'pattern': '^[_A-Za-z0-9-\+]+(\.[_A-Za-z0-9-]+)*@[A-Za-z0-9-]+(\.[A-Za-z0-9]+)*(\.[A-Za-z]{2,})$'}),
+            'medical_record': TextInput(attrs={'class': 'form-control'}),
+            'citizenship': SelectBoxCountries(attrs={'data-flags': 'true'}),
+            'gender': Select(attrs={'class': 'form-control', 'required': "",
+                                    'data-error': _('Sexo deve ser preenchido')}),
+            'marital_status': Select(attrs={'class': 'form-control'}),
+            'date_birth': DateInput(attrs={'class': 'form-control', 'required': "",
+                                           'data-error': _('Data de nascimento deve ser preenchida')})
         }
 
 
 class SocialDemographicDataForm(ModelForm):
     class Meta:
         model = SocialDemographicData
-        fields = ['profession_txt', 'occupation_txt', 'tv_opt', 'dvd_opt', 'radio_opt', 'bath_opt',
-                  'automobile_opt', 'wash_machine_opt', 'refrigerator_opt', 'freezer_opt', 'house_maid_opt',
-                  'religion_opt', 'payment_opt', 'flesh_tone_opt', 'schooling_opt', 'benefit_government_bool',
-                  'social_class_opt']
+        fields = ['profession', 'occupation', 'tv', 'dvd', 'radio', 'bath',
+                  'automobile', 'wash_machine', 'refrigerator', 'freezer', 'house_maid',
+                  'religion', 'payment', 'flesh_tone', 'schooling', 'benefit_government',
+                  'social_class']
         widgets = {
-            'benefit_government_bool': RadioSelect(attrs={'id': 'id_benefit'}, choices=(('1', 'Sim'), ('0', 'Não'))),
-            'schooling_opt': Select(attrs={'class': 'form-control', 'id': 'scolarity'}),
-            'flesh_tone_opt': Select(attrs={'class': 'form-control', 'id': 'skin_color'}),
-            'religion_opt': Select(attrs={'class': 'form-control', 'id': 'religion_id'}),
-            'profession_txt': TextInput(attrs={'class': 'form-control', 'placeholder': 'Entrar profissão',
-                                               'id': "profession"}),
-            'occupation_txt': TextInput(attrs={'class': 'form-control', 'placeholder': 'Entrar ocupação',
-                                               'id': "occupation"}),
-            'payment_opt': Select(attrs={'class': 'form-control', 'id': 'payment_id'}),
-            'tv_opt': RadioSelect(attrs={'id': 'id_tv_opt'},
-                                  choices=((0, '0'), (1, '1'), (2, '2'), (3, '3'), (4, '4 ou +'))),
-            'dvd_opt': RadioSelect(attrs={'id': 'id_dvd_opt'},
-                                   choices=((0, '0'), (1, '1'), (2, '2'), (3, '3'), (4, '4 ou +'))),
-            'radio_opt': RadioSelect(attrs={'id': 'id_radio_opt'},
-                                     choices=((0, '0'), (1, '1'), (2, '2'), (3, '3'), (4, '4 ou +'))),
-            'bath_opt': RadioSelect(attrs={'id': 'id_bath_opt'},
-                                    choices=((0, '0'), (1, '1'), (2, '2'), (3, '3'), (4, '4 ou +'))),
-            'automobile_opt': RadioSelect(attrs={'id': 'id_automobile_opt'},
-                                          choices=((0, '0'), (1, '1'), (2, '2'), (3, '3'), (4, '4 ou +'))),
-            'house_maid_opt': RadioSelect(attrs={'id': 'id_house_maid_opt'},
-                                          choices=((0, '0'), (1, '1'), (2, '2'), (3, '3'), (4, '4 ou +'))),
-            'wash_machine_opt': RadioSelect(attrs={'id': 'id_wash_machine_opt'},
-                                            choices=((0, '0'), (1, '1'), (2, '2'), (3, '3'), (4, '4 ou +'))),
-            'refrigerator_opt': RadioSelect(attrs={'id': 'id_refrigerator_opt'},
-                                            choices=((0, '0'), (1, '1'), (2, '2'), (3, '3'), (4, '4 ou +'))),
-            'freezer_opt': RadioSelect(attrs={'id': 'id_freezer_opt'},
-                                       choices=((0, '0'), (1, '1'), (2, '2'), (3, '3'), (4, '4 ou +'))),
-            'social_class_opt': TextInput(attrs={'class': 'form-control', 'id': "social_class_opt", 'readonly': ""})
+            'benefit_government': RadioSelect(choices=(('1', 'Sim'), ('0', 'Não'))),
+            'schooling': Select(attrs={'class': 'form-control'}),
+            'flesh_tone': Select(attrs={'class': 'form-control'}),
+            'religion': Select(attrs={'class': 'form-control'}),
+            'profession': TextInput(attrs={'class': 'form-control', 'placeholder': 'Entrar profissão'}),
+            'occupation': TextInput(attrs={'class': 'form-control', 'placeholder': 'Entrar ocupação'}),
+            'payment': Select(attrs={'class': 'form-control'}),
+            'tv': RadioSelect(choices=((0, '0'), (1, '1'), (2, '2'), (3, '3'), (4, '4 ou +'))),
+            'dvd': RadioSelect(choices=((0, '0'), (1, '1'), (2, '2'), (3, '3'), (4, '4 ou +'))),
+            'radio': RadioSelect(choices=((0, '0'), (1, '1'), (2, '2'), (3, '3'), (4, '4 ou +'))),
+            'bath': RadioSelect(choices=((0, '0'), (1, '1'), (2, '2'), (3, '3'), (4, '4 ou +'))),
+            'automobile': RadioSelect(choices=((0, '0'), (1, '1'), (2, '2'), (3, '3'), (4, '4 ou +'))),
+            'house_maid': RadioSelect(choices=((0, '0'), (1, '1'), (2, '2'), (3, '3'), (4, '4 ou +'))),
+            'wash_machine': RadioSelect(choices=((0, '0'), (1, '1'), (2, '2'), (3, '3'), (4, '4 ou +'))),
+            'refrigerator': RadioSelect(choices=((0, '0'), (1, '1'), (2, '2'), (3, '3'), (4, '4 ou +'))),
+            'freezer': RadioSelect(choices=((0, '0'), (1, '1'), (2, '2'), (3, '3'), (4, '4 ou +'))),
+            'social_class': TextInput(attrs={'class': 'form-control', 'readonly': ""})
         }
 
 
 class SocialHistoryDataForm(ModelForm):
     class Meta:
         model = SocialHistoryData
-        fields = ['smoker', 'amount_cigarettes_opt', 'ex_smoker', 'alcoholic', 'alcohol_frequency_opt',
-                  'alcohol_period_opt', 'drugs_opt', ]
+        fields = ['smoker', 'amount_cigarettes', 'ex_smoker', 'alcoholic', 'alcohol_frequency',
+                  'alcohol_period', 'drugs', ]
 
         widgets = {
-            'smoker': RadioSelect(attrs={'id': 'id_smoker'}, choices=(('1', 'Sim'), ('0', 'Não'))),
-            'amount_cigarettes_opt': Select(attrs={'class': 'form-control', 'id': 'id_amount_cigarettes'}),
-            'ex_smoker': RadioSelect(attrs={'id': 'id_ex_smoker'}, choices=(('1', 'Sim'), ('0', 'Não'))),
-            'alcoholic': RadioSelect(attrs={'id': 'id_alcoholic'}, choices=(('1', 'Sim'), ('0', 'Não'))),
-            'alcohol_frequency_opt': Select(attrs={'class': 'form-control', 'id': 'id_freqAlcoholic'}),
-            'alcohol_period_opt': Select(attrs={'class': 'form-control', 'id': 'id_periodAlcoholic'}),
-            'drugs_opt': RadioSelect(attrs={'id': 'id_drugs_opt'},
-                                     choices=(('ja_fez', 'Já fez'), ('faz', 'Faz'), ('nunca_fez', 'Nunca fez'))),
+            'smoker': RadioSelect(choices=(('1', 'Sim'), ('0', 'Não'))),
+            'amount_cigarettes': Select(attrs={'class': 'form-control'}),
+            'ex_smoker': RadioSelect(choices=(('1', 'Sim'), ('0', 'Não'))),
+            'alcoholic': RadioSelect(choices=(('1', 'Sim'), ('0', 'Não'))),
+            'alcohol_frequency': Select(attrs={'class': 'form-control'}),
+            'alcohol_period': Select(attrs={'class': 'form-control'}),
+            'drugs': RadioSelect(choices=(('ja_fez', 'Já fez'), ('faz', 'Faz'), ('nunca_fez', 'Nunca fez'))),
         }
 
 

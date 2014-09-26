@@ -26,7 +26,7 @@
                 <li><a href="/experiment/edit/{{ questionnaire_configuration.experiment.id }}/">{{ questionnaire_configuration.experiment.title }} </a></li>
                 <li><a href="/experiment/{{ questionnaire_configuration.experiment.id }}/subjects/">Participantes</a></li>
                 <li>
-                    <a href="/experiment/{{ questionnaire_configuration.experiment.id }}/subjects/{{ subject.id }}/questionnaire">{{ subject.patient.name_txt }}</a>
+                    <a href="/experiment/{{ questionnaire_configuration.experiment.id }}/subjects/{{ subject.id }}/questionnaire">{{ subject.patient.name }}</a>
                 </li>
                 <li>
                     {{ survey_title }}
@@ -136,7 +136,7 @@
                                     <span class="input-group-addon"><span
                                             class="glyphicon glyphicon-user"></span></span>
                                 <input class="form-control" id="id_subject" name="subject"
-                                       value="{{ subject.patient.name_txt }}" type="text" disabled>
+                                       value="{{ subject.patient.name }}" type="text" disabled>
                             </div>
                         </div>
                     </div>

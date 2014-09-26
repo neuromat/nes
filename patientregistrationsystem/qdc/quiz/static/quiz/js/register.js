@@ -2,7 +2,7 @@ $(document).ready(function () {
 
     $("#date_fill").mask("99/99/9999");
 
-    $("#birthday").mask("99/99/9999");
+    $("#id_date_birth").mask("99/99/9999");
 
     $("#exam_date").mask("99/99/9999");
 
@@ -32,7 +32,7 @@ $(document).ready(function () {
         $("#id_periodAlcoholic").prop('disabled', true);
     });
 
-    $("#cpf_id").mask("999.999.999-99");
+    $("#id_cpf").mask("999.999.999-99");
 
     $("#nexttab").click(function () {
         var $tabs = $('.tabbable li');
@@ -40,59 +40,59 @@ $(document).ready(function () {
     });
 
 
-    $('#cellphone').val();
-    $('#cellphone').change(function () {
-        $('#cellphone').unmask();
+    $('#id_cellphone').val();
+    $('#id_cellphone').change(function () {
+        $('#id_cellphone').unmask();
     });
 
-    $('#cellphone').focus(function () {
-        $('#cellphone').unmask();
+    $('#id_cellphone').focus(function () {
+        $('#id_cellphone').unmask();
     });
 
-    $('#cellphone').blur(function () {
-        if ($("#cellphone").val().length == 11)
-            $("#cellphone").mask("(99) 99999-9999");
-        else if ($("#cellphone").val().length == 10)
-            $("#cellphone").mask("(99) 9999-9999");
+    $('#id_cellphone').blur(function () {
+        if ($("#id_cellphone").val().length == 11)
+            $("#id_cellphone").mask("(99) 99999-9999");
+        else if ($("#id_cellphone").val().length == 10)
+            $("#id_cellphone").mask("(99) 9999-9999");
         else
-            $("#cellphone").unmask();
+            $("#id_cellphone").unmask();
     });
 
-    $('#phone').val();
-    $('#phone').change(function () {
-        $('#phone').unmask();
+    $('#id_phone').val();
+    $('#id_phone').change(function () {
+        $('#id_phone').unmask();
     });
 
-    $('#phone').focus(function () {
-        $('#phone').unmask();
+    $('#id_phone').focus(function () {
+        $('#id_phone').unmask();
     });
 
-    $('#phone').blur(function () {
-        if ($("#phone").val().length == 11)
-            $("#phone").mask("(99) 99999-9999");
-        else if ($("#phone").val().length == 10)
-            $("#phone").mask("(99) 9999-9999");
+    $('#id_phone').blur(function () {
+        if ($("#id_phone").val().length == 11)
+            $("#id_phone").mask("(99) 99999-9999");
+        else if ($("#id_phone").val().length == 10)
+            $("#id_phone").mask("(99) 9999-9999");
         else
-            $("#phone").unmask();
+            $("#id_phone").unmask();
     });
 
-    $('#zipcode').val();
-    $('#zipcode').change(function () {
-        $('#zipcode').unmask();
+    $('#id_zipcode').val();
+    $('#id_zipcode').change(function () {
+        $('#id_zipcode').unmask();
     });
 
-    $('#zipcode').focus(function () {
-        $('#zipcode').unmask();
+    $('#id_zipcode').focus(function () {
+        $('#id_zipcode').unmask();
     });
 
-    $('#zipcode').blur(function () {
+    $('#id_zipcode').blur(function () {
         if (this.value.length == 8) {
-            $('#zipcode').mask('99999-999');
+            $('#id_zipcode').mask('99999-999');
         }
     });
 
     //Ajax part to show modal if patient with same name exists in database
-    $('#full_name').blur(function () {
+    $('#id_name').blur(function () {
         var myElem = document.getElementById('patient_homonym');
         if (myElem != null) $('#modalHomonym').modal('show');
 
@@ -101,7 +101,7 @@ $(document).ready(function () {
     });
 
     //Ajax part to show modal if patient with same cpf exists in database
-    $('#cpf_id').blur(function () {
+    $('#id_cpf').blur(function () {
         var myElem = document.getElementById('patient_homonym');
         if (myElem != null) $('#modalHomonym').modal('show');
 
@@ -119,7 +119,7 @@ $(document).ready(function () {
     });
 
     $("#editPatient").click(function () {
-        $("#full_name").unbind("blur");
+        $("#name").unbind("blur");
         document.getElementById('action').value = "edit";
         $("#form_id").submit();
     });
@@ -131,24 +131,24 @@ $(document).ready(function () {
 
     $("#savetab").click(function () {
         //disable blur if patient has homonym
-        $("#full_name").unbind("blur");
+        $("#id_name").unbind("blur");
 
-        var name_value = $.trim($("#full_name").val());
-        var date_birth_value = $.trim($("#birthday").val());
-        var gender_value = $.trim($("#gender_id").val());
-        var cpf_value = $.trim($("#cpf_id").val());
+        var name_value = $.trim($("#id_name").val());
+        var date_birth_value = $.trim($("#id_date_birth").val());
+        var gender_value = $.trim($("#id_gender").val());
+        var cpf_value = $.trim($("#id_cpf").val());
 
         if (name_value.length == 0 || date_birth_value.length == 0 || gender_value.length == 0) {
             showErrorMessageTemporary("Campos obrigatórios devem ser preenchidos.");
-            jumpToElement('full_name');
-            document.getElementById('birthday').focus();
-            document.getElementById('gender_id').focus();
-            document.getElementById('full_name').focus();
+            jumpToElement('name');
+            document.getElementById('date_birth').focus();
+            document.getElementById('gender').focus();
+            document.getElementById('name').focus();
             $("#idTabs li:eq( 0 ) a").tab('show');
 
         } else {
 
-            var email_value = $.trim($('#email').val());
+            var email_value = $.trim($('#id_email').val());
 
             if (email_value.length != 0 && !validateEmail(email_value)) {
                 showErrorMessageTemporary("Preencha os campos corretamente. Campo de e-mail inválido");

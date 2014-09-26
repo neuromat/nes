@@ -123,12 +123,12 @@
 
         <div class="row">
             <div class="col-xs-6 col-sm-6">
-                <div class="form-group {% if patient_form.errors.name_txt %}has-error{% endif %}">
-                    <label for="full_name" class="control-label">Nome completo <b style="color: red;">*</b></label>
+                <div class="form-group {% if patient_form.errors.name %}has-error{% endif %}">
+                    <label for="name" class="control-label">Nome completo <b style="color: red;">*</b></label>
 
                     <div class="input-group input-group-sm">
                         <span class="input-group-addon"> <span class="glyphicon glyphicon-user"></span></span>
-                        {{ patient_form.name_txt }}
+                        {{ patient_form.name }}
                     </div>
                     <div class="help-block with-errors"></div>
                 </div>
@@ -139,23 +139,23 @@
 
                     <div class="input-group input-group-sm">
                         <span class="input-group-addon"> <span class="glyphicon glyphicon-list-alt"></span></span>
-                        {{ patient_form.medical_record_number }}
+                        {{ patient_form.medical_record }}
                     </div>
                 </div>
             </div>
         </div>
         <div class="row">
             <div class="col-xs-6 col-sm-6">
-                <div class="form-group {% if patient_form.errors.cpf_id %}has-error{% endif %}">
-                    <label for="cpf_id" class="control-label">CPF</label>
+                <div class="form-group {% if patient_form.errors.cpf %}has-error{% endif %}">
+                    <label for="cpf" class="control-label">CPF</label>
                     <div class="input-group input-group-sm">
                         <span class="input-group-addon"> <span class="glyphicon glyphicon-asterisk"></span></span>
-                        {{ patient_form.cpf_id }}
+                        {{ patient_form.cpf }}
                     </div>
                     <div class="help-block with-errors">
-                        {% if patient_form.cpf_id.errors %}
+                        {% if patient_form.cpf.errors %}
                             <span>
-                        {% for error in patient_form.cpf_id.errors %}{{ error }}{% endfor %}
+                        {% for error in patient_form.cpf.errors %}{{ error }}{% endfor %}
                     </span>
                         {% endif %}
                     </div>
@@ -166,25 +166,25 @@
                     <label>RG</label>
                     <div class="input-group input-group-sm">
                         <span class="input-group-addon"><span class="glyphicon glyphicon-user"></span></span>
-                        {{ patient_form.rg_id }}
+                        {{ patient_form.rg }}
                     </div>
                 </div>
             </div>
         </div>
         <div class="row">
             <div class="col-xs-6 col-sm-6">
-                <div class="form-group {% if patient_form.errors.date_birth_txt %}has-error{% endif %}">
-                    <label for="date_birth_txt" class="control-label">Data de nascimento <b
+                <div class="form-group {% if patient_form.errors.date_birth %}has-error{% endif %}">
+                    <label for="date_birth" class="control-label">Data de nascimento <b
                             style="color: red;">*</b></label>
 
                     <div class="input-group input-group-sm">
                         <span class="input-group-addon"> <span class="glyphicon glyphicon-th"></span></span>
-                        {{ patient_form.date_birth_txt }}
+                        {{ patient_form.date_birth }}
                     </div>
                     <div class="help-block with-errors">
-                        {% if patient_form.date_birth_txt.errors %}
+                        {% if patient_form.date_birth.errors %}
                             <span>
-                            {% for error in patient_form.date_birth_txt.errors %}{{ error }}{% endfor %}
+                            {% for error in patient_form.date_birth.errors %}{{ error }}{% endfor %}
                         </span>
                         {% endif %}
                     </div>
@@ -192,11 +192,11 @@
             </div>
             <div class="col-xs-6 col-sm-6">
                 <div class="form-group">
-                    <label for="gender_id" class="control-label">Sexo <b style="color: red;">*</b></label>
+                    <label for="id_gender" class="control-label">Sexo <b style="color: red;">*</b></label>
 
                     <div class="input-group input-group-sm">
                         <span class="input-group-addon"> <span class="glyphicon"></span></span>
-                        {{ patient_form.gender_opt }}
+                        {{ patient_form.gender }}
                     </div>
                     <div class="help-block with-errors"></div>
                 </div>
@@ -209,7 +209,7 @@
 
                     <div class="input-group  input-group-sm">
                         <span class="input-group-addon"> <span class="glyphicon"></span></span>
-                        {{ patient_form.marital_status_opt }}
+                        {{ patient_form.marital_status }}
                     </div>
                 </div>
             </div>
@@ -224,7 +224,7 @@
 
                     <div class="input-group  input-group-sm">
                         <span class="input-group-addon"> <span class="glyphicon glyphicon-home"></span></span>
-                        {{ patient_form.country_txt }}
+                        {{ patient_form.country }}
                     </div>
                 </div>
             </div>
@@ -234,7 +234,7 @@
 
                     <div class="input-group  input-group-sm">
                         <span class="input-group-addon"> <span class="glyphicon glyphicon-home"></span></span>
-                        {{ patient_form.zipcode_number }}
+                        {{ patient_form.zipcode }}
                     </div>
                     <div class="help-block with-errors"></div>
                 </div>
@@ -247,7 +247,7 @@
 
                     <div class="input-group  input-group-sm ">
                         <span class="input-group-addon"> <span class="glyphicon glyphicon-home"></span></span>
-                        {{ patient_form.street_txt }}
+                        {{ patient_form.street }}
                     </div>
 
                 </div>
@@ -295,7 +295,7 @@
 
                     <div class="input-group  input-group-sm ">
                         <span class="input-group-addon"> <span class="glyphicon glyphicon-home"></span></span>
-                        {{ patient_form.city_txt }}
+                        {{ patient_form.city }}
                     </div>
                 </div>
             </div>
@@ -305,7 +305,7 @@
 
                     <div class="input-group  input-group-sm">
                         <span class="input-group-addon"> <span class="glyphicon glyphicon-home"></span></span>
-                        {{ patient_form.state_txt }}
+                        {{ patient_form.state }}
                     </div>
                 </div>
             </div>
@@ -317,7 +317,7 @@
 
                     <div class="input-group  input-group-sm">
                         <span class="input-group-addon"> <span class="glyphicon glyphicon-earphone"></span></span>
-                        {{ patient_form.phone_number }}
+                        {{ patient_form.phone }}
                     </div>
                     <div class="help-block with-errors"></div>
                 </div>
@@ -328,7 +328,7 @@
 
                     <div class="input-group input-group-sm">
                         <span class="input-group-addon"> <span class="glyphicon glyphicon-earphone"></span></span>
-                        {{ patient_form.cellphone_number }}
+                        {{ patient_form.cellphone }}
                     </div>
                     <div class="help-block with-errors"></div>
                 </div>
@@ -341,7 +341,7 @@
 
                     <div class="input-group input-group-sm">
                         <span class="input-group-addon"> <span class="glyphicon glyphicon-envelope"></span></span>
-                        {{ patient_form.email_txt }}
+                        {{ patient_form.email }}
                     </div>
                     <div class="help-block with-errors"></div>
                 </div>
@@ -362,7 +362,7 @@
 
                     <div class="input-group input-group-sm">
                         <span class="input-group-addon"> <span class="glyphicon glyphicon-flag"></span></span>
-                        {{ patient_form.natural_of_txt }}
+                        {{ patient_form.natural_of }}
                     </div>
                 </div>
             </div>
@@ -372,7 +372,7 @@
 
                     <div class="input-group input-group-sm">
                         <span class="input-group-addon"> <span class="glyphicon glyphicon-home"></span></span>
-                        {{ patient_form.citizenship_txt }}
+                        {{ patient_form.citizenship }}
                     </div>
                 </div>
             </div>
@@ -384,7 +384,7 @@
 
                     <div class="input-group  input-group-sm ">
                         <span class="input-group-addon"> <span class="glyphicon"></span></span>
-                        {{ social_demographic_form.profession_txt }}
+                        {{ social_demographic_form.profession }}
                     </div>
                 </div>
             </div>
@@ -394,7 +394,7 @@
 
                     <div class="input-group  input-group-sm">
                         <span class="input-group-addon"> <span class="glyphicon"></span></span>
-                        {{ social_demographic_form.occupation_txt }}
+                        {{ social_demographic_form.occupation }}
                     </div>
                 </div>
             </div>
@@ -405,7 +405,7 @@
                     <label>Recebe algum benefício de escala municipal, estadual ou federal de governo?</label>
 
                     <div class="input-group  input-group-sm">
-                        {% for radio in social_demographic_form.benefit_government_bool %}
+                        {% for radio in social_demographic_form.benefit_government %}
                             <div class="radio-inline">
                                 {{ radio }}
                             </div>
@@ -420,7 +420,7 @@
                     <label>Qual a forma de pagamento do tratamento realizado?</label>
 
                     <div class="input-group  input-group-sm">
-                        {{ social_demographic_form.payment_opt }}
+                        {{ social_demographic_form.payment }}
                     </div>
                 </div>
             </div>
@@ -431,7 +431,7 @@
                     <label>Religião (IBGE)</label>
 
                     <div class="input-group  input-group-sm">
-                        {{ social_demographic_form.religion_opt }}
+                        {{ social_demographic_form.religion }}
                     </div>
                 </div>
             </div>
@@ -440,7 +440,7 @@
                     <label for="skin_color">Cor da pele (IBGE)</label>
 
                     <div class="input-group  input-group-sm">
-                        {{ social_demographic_form.flesh_tone_opt }}
+                        {{ social_demographic_form.flesh_tone }}
                     </div>
                 </div>
             </div>
@@ -458,7 +458,7 @@
                     <label>Grau de instrução do chefe de família - Critério Brasil 2013</label>
 
                     <div class="input-group input-group-sm">
-                        {{ social_demographic_form.schooling_opt }}
+                        {{ social_demographic_form.schooling }}
                     </div>
                 </div>
             </div>
@@ -472,7 +472,7 @@
                         <label class="col-sm-5 control-label">Televisores em cores</label>
 
                         <div class="col-sm-7">
-                            {% for radio in social_demographic_form.tv_opt %}
+                            {% for radio in social_demographic_form.tv %}
                                 <div class="radio-inline">
                                     {{ radio }}
                                 </div>
@@ -483,7 +483,7 @@
                         <label class="col-sm-5 control-label">Videocassete/DVD</label>
 
                         <div class="col-sm-7">
-                            {% for radio in social_demographic_form.dvd_opt %}
+                            {% for radio in social_demographic_form.dvd %}
                                 <div class="radio-inline">
                                     {{ radio }}
                                 </div>
@@ -494,7 +494,7 @@
                         <label class="col-sm-5 control-label">Rádios</label>
 
                         <div class="col-sm-7">
-                            {% for radio in social_demographic_form.radio_opt %}
+                            {% for radio in social_demographic_form.radio %}
                                 <div class="radio-inline">
                                     {{ radio }}
                                 </div>
@@ -505,7 +505,7 @@
                         <label class="col-sm-5 control-label">Banheiros</label>
 
                         <div class="col-sm-7">
-                            {% for radio in social_demographic_form.bath_opt %}
+                            {% for radio in social_demographic_form.bath %}
                                 <div class="radio-inline">
                                     {{ radio }}
                                 </div>
@@ -516,7 +516,7 @@
                         <label class="col-sm-5 control-label">Automóveis</label>
 
                         <div class="col-sm-7">
-                            {% for radio in social_demographic_form.automobile_opt %}
+                            {% for radio in social_demographic_form.automobile %}
                                 <div class="radio-inline">
                                     {{ radio }}
                                 </div>
@@ -527,7 +527,7 @@
                         <label class="col-sm-5 control-label">Empregadas mensalistas</label>
 
                         <div class="col-sm-7">
-                            {% for radio in social_demographic_form.house_maid_opt %}
+                            {% for radio in social_demographic_form.house_maid %}
                                 <div class="radio-inline">
                                     {{ radio }}
                                 </div>
@@ -538,7 +538,7 @@
                         <label class="col-sm-5 control-label">Máquinas de lavar</label>
 
                         <div class="col-sm-7">
-                            {% for radio in social_demographic_form.wash_machine_opt %}
+                            {% for radio in social_demographic_form.wash_machine %}
                                 <div class="radio-inline">
                                     {{ radio }}
                                 </div>
@@ -549,7 +549,7 @@
                         <label class="col-sm-5 control-label">Geladeiras</label>
 
                         <div class="col-sm-7">
-                            {% for radio in social_demographic_form.refrigerator_opt %}
+                            {% for radio in social_demographic_form.refrigerator %}
                                 <div class="radio-inline">
                                     {{ radio }}
                                 </div>
@@ -560,7 +560,7 @@
                         <label class="col-sm-5 control-label">Freezer*</label>
 
                         <div class="col-sm-7">
-                            {% for radio in social_demographic_form.freezer_opt %}
+                            {% for radio in social_demographic_form.freezer %}
                                 <div class="radio-inline">
                                     {{ radio }}
                                 </div>
@@ -581,7 +581,7 @@
                     <br/>
                     <label>Classe social calculada</label>
                     <div class="input-group input-group-sm">
-                        {{ social_demographic_form.social_class_opt }}
+                        {{ social_demographic_form.social_class }}
                     </div>
                 </div>
             </div>
@@ -615,7 +615,7 @@
                                 <label>Cigarros/Dia</label>
 
                                 <div class="input-group  input-group-sm">
-                                    {{ social_history_form.amount_cigarettes_opt }}
+                                    {{ social_history_form.amount_cigarettes }}
                                 </div>
                             </div>
                         </div>
@@ -654,7 +654,7 @@
                                 <label>Frequência</label>
 
                                 <div class="input-group  input-group-sm">
-                                    {{ social_history_form.alcohol_frequency_opt }}
+                                    {{ social_history_form.alcohol_frequency }}
                                 </div>
                             </div>
                         </div>
@@ -663,7 +663,7 @@
                                 <label>Tempo</label>
 
                                 <div class="input-group  input-group-sm">
-                                    {{ social_history_form.alcohol_period_opt }}
+                                    {{ social_history_form.alcohol_period}}
                                 </div>
                             </div>
                         </div>
@@ -674,7 +674,7 @@
                                 <label>Uso de drogas ilícitas</label>
 
                                 <div class="input-group  input-group-sm">
-                                    {% for radio in social_history_form.drugs_opt %}
+                                    {% for radio in social_history_form.drugs %}
                                         <div class="radio-inline">
                                             {{ radio }}
                                         </div>

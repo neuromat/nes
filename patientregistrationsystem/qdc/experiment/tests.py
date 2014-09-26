@@ -325,14 +325,14 @@ class SubjectTest(TestCase):
 
         response = self.client.post(reverse(SUBJECT_SEARCH), self.data)
         self.assertEqual(response.status_code, 200)
-        self.assertContains(response, patient_mock.name_txt)
+        self.assertContains(response, patient_mock.name)
         self.assertEqual(response.context['patients'].count(), 1)
 
         self.data[SEARCH_TEXT] = 374
         response = self.client.post(reverse(SUBJECT_SEARCH), self.data)
         self.assertEqual(response.status_code, 200)
         self.assertEqual(response.context['patients'].count(), 1)
-        self.assertContains(response, patient_mock.cpf_id)
+        self.assertContains(response, patient_mock.cpf)
 
         self.data[SEARCH_TEXT] = ''
         response = self.client.post(reverse(SUBJECT_SEARCH), self.data)
