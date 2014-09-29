@@ -22,6 +22,10 @@
             modal_remove.setAttribute( "href", part[0]+'exam/remove'+part[1]);
             $('#modalRemoveExam').modal('show');
         }
+        function submit(value){
+            $('#action').val(value);
+            $('#form_exam').submit();
+        }
         $(function(){$("[data-toggle=tooltip]").tooltip();})
     </script>
 {% endblock %}
@@ -36,6 +40,7 @@
 
 
 {% block content %}
+    <input type="hidden" id="action" name="action">
 
     <div class="tab-pane fade in active" id="examTab">
 
@@ -166,10 +171,12 @@
                                                     <tr>
                                                         <td>
                                                             {{ exam_file.content.name }}
-                                                            {% if not viewing %}
-                                                                <a class="glyphicon glyphicon-remove pull-right" data-toggle="tooltip" data-placement="right" title="Remover" style="color: indianred" onclick="show_modal_remove({{ exam_file.id }})"></a>
-                                                            {% endif %}
-                                                            <a class="glyphicon glyphicon-download-alt pull-right" data-toggle="tooltip" data-placement="bottom" title="download"  href="{{ exam_file.content.url }}"></a>
+                                                            <div class="btn-toolbar pull-right">
+                                                            <button class="btn btn-default pull-left" type="button" onclick="location.href='{{ exam_file.content.url }}'"><span class="glyphicon glyphicon-download-alt" style="color: royalblue"></span></button>
+                                                                {% if not viewing %}
+                                                                <button class="btn btn-default pull-right" type="button" onclick="show_modal_remove({{ exam_file.id }})"><span class="glyphicon glyphicon-remove" style="color: indianred"></span></button>
+                                                                {% endif %}
+                                                            </div>
                                                         </td>
                                                     </tr>
                                                 {% endfor %}
@@ -188,7 +195,7 @@
                                     </div>
                                     <div class="col-xs-6 col-sm-6">
                                         <div class="form-group">
-                                            <button id="save_exam2" name="action" value="upload" type="submit" class="btn btn-primary">Upload</button>
+                                            <button type="button" id="save_exam2" class="btn btn-primary" onclick="submit('upload')">Upload</button>
                                         </div>
                                     </div>
                                 </div>
@@ -199,7 +206,7 @@
                 <div class="btn-toolbar">
                     <div class="btn-group pull-left">
                     {% if not creating and not viewing %}
-                        <button name="action" value="remove" type="button" class="btn btn-secondary" style="background-color: indianred; color: #ffffff" onclick="show_modal_remove_for_complementary_exam()">Excluir</button>
+                        <button type="button" class="btn btn-secondary" style="background-color: indianred; color: #ffffff" onclick="show_modal_remove_for_complementary_exam(); submit('remove');">Excluir</button>
                     {% endif %}
                 </div>
                 <div class="btn-group pull-right">
@@ -213,7 +220,7 @@
                         {% endif %}
                     {% endif %}
                     {% if not viewing %}
-                    <button id="save_exam" name="action" value="save" type="submit" class="btn btn-primary">Salvar</button>
+                    <button type="button" id="save_exam" class="btn btn-primary" onclick="submit('save')">Salvar</button>
                     {% endif %}
                 </div>
                 </div>

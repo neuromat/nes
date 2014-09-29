@@ -68,10 +68,28 @@
 
     {% if FAIL == True %}
         <script>
-            popup('{{ URL }}');
-            setTimeout(function () {
-                window.location.href = '/experiment/{{ questionnaire_configuration.experiment.id }}/subjects/{{ subject.id }}/questionnaire/'
-            }, 2000);
+            $(document).ready(function () {
+                var elem1 = undefined;
+                var elem2;
+
+                if (document.getElementById('button1') != undefined)
+                    elem1 = document.getElementById('button1');
+
+                elem2 = document.getElementById('button2');
+                var new_window = window.open("{{ URL }}", "");
+
+                if (new_window) {
+
+                    if (elem1 != undefined)
+                        elem1.style.display = 'none';
+
+                    elem2.style.display = 'none';
+                    new_window.focus();
+                } else {
+                    window.open("/experiment/questionnaire_response/edit/{{ questionnaire_response_id }}", "_self");
+                    showErrorMessage("Não foi possível abrir o questionário. Habilite pop-ups para esse site.");
+                }
+            });
         </script>
     {% endif %}
 
@@ -176,12 +194,12 @@
         <div class="btn-toolbar">
             <div class="btn-group pull-left">
                 {% if not creating and perms.experiment.delete_questionnaireresponse %}
-                    <button type="button" class="btn btn-danger" onclick="$('#modalRemove').modal('show')">Excluir</button>
+                    <button type="button" id="button1" class="btn btn-danger" onclick="$('#modalRemove').modal('show')">Excluir</button>
                 {% endif %}
             </div>
             <div class="btn-group pull-right">
                 {% if not completed %}
-                    <button type="submit" name="action" value="save" class="btn btn-primary">{% if creating %}Novo preenchimento{% else %}Continuar preenchimento{% endif %}</button>
+                    <button type="submit" id="button2" name="action" value="save" class="btn btn-primary">{% if creating %}Novo preenchimento{% else %}Continuar preenchimento{% endif %}</button>
                 {% else %}
                     <a href="/experiment/questionnaire_response/{{ questionnaire_response_id }}" class="btn btn-primary">Ver preenchimento</a>
                 {% endif %}

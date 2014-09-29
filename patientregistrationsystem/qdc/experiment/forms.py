@@ -1,7 +1,8 @@
 # coding=utf-8
-from models import Experiment, QuestionnaireConfiguration, QuestionnaireResponse, SubjectOfExperiment
+from experiment.models import Experiment, QuestionnaireConfiguration, QuestionnaireResponse, SubjectOfExperiment
 from django.forms import ModelForm, TextInput, Textarea, Select, DateInput
 # from datetimewidget.widgets import DateTimeWidget
+
 
 class ExperimentForm(ModelForm):
     class Meta:
@@ -12,9 +13,13 @@ class ExperimentForm(ModelForm):
         widgets = {
             'title': TextInput(attrs={'class': 'form-control',
                                       'placeholder': 'Entrar titulo',
-                                      'id': "experiment_title"}),
+                                      'id': "experiment_title",
+                                      'required': "",
+                                      'data-error': 'Título deve ser preenchido.'}),
             'description': Textarea(attrs={'class': 'form-control', 'placeholder': 'Entrar descrição',
-                                           'rows': '4', 'id': 'experiment_description'}),
+                                           'rows': '4', 'id': 'experiment_description',
+                                           'required': "",
+                                           'data-error': 'Descrição deve ser preenchida.'}),
         }
 
 

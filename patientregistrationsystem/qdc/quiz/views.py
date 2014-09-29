@@ -22,15 +22,6 @@ from django.contrib import messages
 from django.contrib.auth.models import User, Group
 from django.db.models import Q
 
-from django.core.mail import send_mail
-from django.template.context import Context
-from django.contrib.auth.tokens import default_token_generator
-from django.contrib.sites.models import get_current_site
-from django.template import loader
-from django.utils.http import urlsafe_base64_encode
-from django.utils.encoding import force_bytes
-
-from django.utils.translation import ugettext_lazy as _
 
 import re
 from quiz.models import UserProfile
@@ -386,12 +377,20 @@ def user_create(request, template_name='quiz/register_users.html'):
     if request.method == "POST":
         if request.POST['action'] == "save":
             if form.is_valid():
-                user_added = form.save()
-                # send_email_user(user_added, request)
+                form.save()
                 messages.success(request, 'Usuário criado com sucesso.')
                 return redirect('user_list')
             else:
                 messages.error(request, 'Não foi possível criar usuário.')
+                if 'username' in form.errors:
+                    try:
+                        form.errors['username'].remove(u'Usuário com este Usuário já existe.')
+                        if User.objects.get_by_natural_key(request.POST['username']).is_active:
+                            form.errors['username'] = ['Este nome de usuário já existe.']
+                        else:
+                            form.errors['username'] = ['Este nome de usuário já existe em um usuário desabilitado.']
+                    except ValueError:
+                        None
     return render(request, template_name, {'form': form, 'group_permissions': group_permissions, 'creating': True})
 
 
@@ -453,45 +452,6 @@ def user_update(request, user_id, template_name="quiz/register_users.html"):
         'creating': False
     }
     return render(request, template_name, context)
-
-
-def send_email_user(user_added=None, request=None, domain_override=None,
-                    email_template_name='registration/password_define_email.html',
-                    use_https=False, token_generator=default_token_generator):
-    """Reset users password"""
-    if not user_added.email:
-        raise ValueError('Email address is required to send an email')
-
-    if not domain_override:
-        current_site = get_current_site(request)
-        site_name = current_site.name
-        domain = current_site.domain
-    else:
-        site_name = domain = domain_override
-    t = loader.get_template(email_template_name)
-    c = {
-        'email': user_added.email,
-        'domain': domain,
-        'site_name': site_name,
-        'uid': urlsafe_base64_encode(force_bytes(user_added.pk)),  # int_to_base36(user_added.id),
-        'user': user_added,
-        'token': token_generator.make_token(user_added),
-        'protocol': use_https and 'https' or 'http',
-    }
-    send_mail(_("Definir senha"), t.render(Context(c)), None, [user_added.email])
-    # #send_mail(_("Your account for %s") % site_name, t.render(Context(c)), None, [user_added.email])
-    # subject_template_name = 'registration/password_reset_subject.txt'
-    # subject = loader.render_to_string(subject_template_name, c)
-    # # Email subject *must not* contain newlines
-    # subject = ''.join(subject.splitlines())
-    # # CHANGES START HERE!
-    # plain_text_content = loader.render_to_string(email_template_name.replace('with_html', 'plaintext'), c)
-    # html_content = loader.render_to_string(email_template_name, c)
-    #
-    # from django.core.mail import EmailMultiAlternatives
-    # msg = EmailMultiAlternatives(subject, plain_text_content, 'jenkins.neuromat@gmail.com', [user_added.email])
-    # msg.attach_alternative(html_content, "text/html")
-    # msg.send()
 
 
 @login_required
@@ -693,6 +653,7 @@ def exam_create(request, patient_id, record_id, diagnosis_id, template_name="qui
 
                 if request.POST['action'] == "upload":
                     redirect_url = reverse("exam_edit", args=(patient_id, record_id, new_complementary_exam.pk))
+                # Nunca entra no save
                 elif request.POST['action'] == "save":
                     redirect_url = reverse("medical_record_edit", args=(patient_id, record_id, ))
                 else:

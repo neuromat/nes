@@ -37,9 +37,9 @@ class ABCSearchEngine:
         list_survey = self.server.list_surveys(self.session_key, None)
 
         list_active_survey = []
+
         for survey in list_survey:
-            survey_token = self.survey_has_token_table(survey['sid'])
-            if survey['active'] == "Y" and survey_token is True:
+            if survey['active'] == "Y" and self.survey_has_token_table(survey['sid']):
                 list_active_survey.append(survey)
 
         return list_active_survey
@@ -145,9 +145,8 @@ class ABCSearchEngine:
     def survey_has_token_table(self, sid):
         """Retorna flag indicando se a tabela de tokens foi iniciada para determinado questionario"""
 
-        result = self.server.get_summary(self.session_key, sid, "all")
-
-        return "token_completed" in result
+        result = self.server.get_summary(self.session_key, sid, "token_completed")
+        return isinstance(result, int)
 
     @abstractmethod
     def add_survey(self, wish_sid, title, language, survey_format):
@@ -165,7 +164,6 @@ class ABCSearchEngine:
         status = self.server.delete_survey(self.session_key, sid)
         return status['status']
 
-
     @abstractmethod
     def get_responses_by_token(self, sid, token):
 
@@ -174,6 +172,37 @@ class ABCSearchEngine:
 
         return responses_txt
 
+    @abstractmethod
+    def insert_group(self, sid, groups_data, format_import_file):
+        groups_data_b64 = base64.b64encode(groups_data)
+        result = self.server.import_group(self.session_key, sid, groups_data_b64,
+                                          format_import_file)  # format_import_file (lsg | csv)
+
+        if isinstance(result, dict):
+            if 'status' in result:
+                return result['status']
+        else:
+            return result
+
+    def add_group_questions(self, sid, group_title, description):
+        result = self.server.add_group(self.session_key, sid, group_title, description)
+
+        if isinstance(result, dict):
+            if 'status' in result:
+                return result['status']
+        else:
+            return result
+
+    def insert_questions(self, sid, questions_data, format_import_file):
+        questions_data_b64 = base64.b64encode(questions_data)
+        result = self.server.import_group(self.session_key, sid, questions_data_b64,
+                                          format_import_file)  # format_import_file (lsg | csv)
+
+        if isinstance(result, dict):
+            if 'status' in result:
+                return None
+        else:
+            return result
 
     @abstractmethod
     def get_question_properties(self, question_id):
@@ -254,3 +283,12 @@ class Questionnaires(ABCSearchEngine):
 
     def list_groups(self, sid):
         return super(Questionnaires, self).list_groups(sid)
+
+    def insert_questions(self, sid, questions_data, format_import_file):
+        return super(Questionnaires, self).insert_questions(sid, questions_data, format_import_file)
+
+    def insert_group(self, sid, groups_data, format_import_file):
+        return super(Questionnaires, self).insert_group(sid, groups_data, format_import_file)
+
+    def add_group_questions(self, sid, group_title, description):
+        return super(Questionnaires, self).add_group_questions(sid, group_title, description)
