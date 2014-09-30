@@ -89,10 +89,10 @@ class SocialHistoryDataForm(ModelForm):
                   'alcohol_period', 'drugs', ]
 
         widgets = {
-            'smoker': RadioSelect(choices=(('1', 'Sim'), ('0', 'Não'))),
+            'smoker': RadioSelect(attrs={'id': 'id_smoker'}, choices=(('1', 'Sim'), ('0', 'Não'))),
             'amount_cigarettes': Select(attrs={'class': 'form-control'}),
             'ex_smoker': RadioSelect(choices=(('1', 'Sim'), ('0', 'Não'))),
-            'alcoholic': RadioSelect(choices=(('1', 'Sim'), ('0', 'Não'))),
+            'alcoholic': RadioSelect(attrs={'id': 'id_alcoholic'}, choices=(('1', 'Sim'), ('0', 'Não'))),
             'alcohol_frequency': Select(attrs={'class': 'form-control'}),
             'alcohol_period': Select(attrs={'class': 'form-control'}),
             'drugs': RadioSelect(choices=(('ja_fez', 'Já fez'), ('faz', 'Faz'), ('nunca_fez', 'Nunca fez'))),

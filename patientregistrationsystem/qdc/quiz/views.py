@@ -395,16 +395,6 @@ def user_create(request, template_name='quiz/register_users.html'):
 
 
 @login_required
-@permission_required('auth.delete_user')
-def user_delete(request, user_id):
-    user = get_object_or_404(User, id=user_id)
-    user.is_active = False
-    user.save()
-    messages.success(request, 'Usuário removido com sucesso.')
-    return redirect('user_list')
-
-
-@login_required
 @permission_required('auth.change_user')
 def user_update(request, user_id, template_name="quiz/register_users.html"):
     form = UserFormUpdate(request.POST or None, instance=User.objects.get(id=user_id))

@@ -40,11 +40,11 @@
 
                 var alcoholic_option = document.querySelector('input[name = "alcoholic"]:checked').value;
                 if (alcoholic_option == 1){
-                    $("#id_freqAlcoholic").prop('disabled', false);
-                    $("#id_periodAlcoholic").prop('disabled', false);
+                    $("#id_alcohol_frequency").prop('disabled', false);
+                    $("#id_alcohol_period").prop('disabled', false);
                 } else {
-                    $("#id_freqAlcoholic").prop('disabled', true);
-                    $("#id_periodAlcoholic").prop('disabled', true);
+                    $("#id_alcohol_frequency").prop('disabled', true);
+                    $("#id_alcohol_period").prop('disabled', true);
                 }
             });
         {% endif %}

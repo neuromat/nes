@@ -14,7 +14,7 @@ from quiz.models import ClassificationOfDiseases, MedicalRecordData, Diagnosis, 
 
 from quiz.views import medical_record_view, medical_record_update, diagnosis_create, \
     medical_record_create_diagnosis_create, exam_create, exam_view, \
-    GenderOption, SchoolingOption, Patient, patient_update, patient, restore_patient, \
+    Gender, Schooling, Patient, patient_update, patient, restore_patient, \
     User, reverse, user_update
 from quiz.abc_search_engine import Questionnaires
 
@@ -37,7 +37,7 @@ USER_NEW = 'user_new'
 
 # Constantes para testes paciente
 ACTION = 'action'
-CPF_ID = 'cpf_id'
+CPF_ID = 'cpf'
 SEARCH_TEXT = 'search_text'
 
 PATIENT_SEARCH = 'patient_search'
@@ -49,14 +49,14 @@ PATIENT_EDIT = 'patient_edit'
 class UtilTests():
     def create_patient_mock(self, name='Pacient Test', user=None):
         """ Cria um paciente para ser utilizado durante os testes """
-        gender_opt = GenderOption.objects.create(gender_txt='Masculino')
-        gender_opt.save()
+        gender = Gender.objects.create(name='Masculino')
+        gender.save()
 
         p_mock = Patient()
-        p_mock.name_txt = name
-        p_mock.date_birth_txt = '2001-01-15'
-        p_mock.cpf_id = '374.276.738-08'
-        p_mock.gender_opt_id = gender_opt.id
+        p_mock.name = name
+        p_mock.date_birth = '2001-01-15'
+        p_mock.cpf = '374.276.738-08'
+        p_mock.gender = gender
         p_mock.changed_by = user
         p_mock.save()
         return p_mock
@@ -486,14 +486,14 @@ class PatientFormValidation(TestCase):
         logged = self.client.login(username=USER_USERNAME, password=USER_PWD)
         self.assertEqual(logged, True)
 
-        self.gender_opt = GenderOption.objects.create(gender_txt='Masculino')
-        self.gender_opt.save()
+        self.gender = Gender.objects.create(name='Masculino')
+        self.gender.save()
 
-        self.data = {'name_txt': 'Patient for test',
-                     'cpf_id': '374.276.738-08',
-                     'gender_opt': str(self.gender_opt.id),
-                     'date_birth_txt': '01/02/1995',
-                     'email_txt': 'email@email.com'
+        self.data = {'name': 'Patient for test',
+                     'cpf': '374.276.738-08',
+                     'gender': str(self.gender.id),
+                     'date_birth': '01/02/1995',
+                     'email': 'email@email.com'
                      }
 
     def test_patient_invalid_cpf(self):
@@ -503,11 +503,11 @@ class PatientFormValidation(TestCase):
 
         # CPF invalido
         cpf = '100.913.651-81'
-        self.data['cpf_id'] = cpf
+        self.data['cpf'] = cpf
 
         response = self.client.post(reverse(PATIENT_NEW), self.data)
         self.assertEqual(response.status_code, 200)
-        self.assertFormError(response, "patient_form", "cpf_id", u'CPF ' + cpf + u' n\xe3o \xe9 v\xe1lido')
+        self.assertFormError(response, "patient_form", "cpf", u'CPF ' + cpf + u' n\xe3o \xe9 v\xe1lido')
 
     def test_patient_empty_cpf(self):
         """
@@ -516,24 +516,24 @@ class PatientFormValidation(TestCase):
 
         # CPF vazio
         name = self._testMethodName
-        self.data['name_txt'] = name
+        self.data['name'] = name
         self.data[CPF_ID] = ''
 
         response = self.client.post(reverse(PATIENT_NEW), self.data)
         self.assertEqual(response.status_code, 302)
-        self.assertEqual(Patient.objects.filter(name_txt=name).count(), 1)
+        self.assertEqual(Patient.objects.filter(name=name).count(), 1)
 
     def test_patient_future_date_birth(self):
         """
         Testa inclusao de paciente com data de nascimento futura
         """
         name = self._testMethodName
-        self.data['name_txt'] = name
-        self.data['date_birth_txt'] = '15/05/2201'
+        self.data['name'] = name
+        self.data['date_birth'] = '15/05/2201'
 
         self.client.post(reverse(PATIENT_NEW), self.data)
 
-        self.assertEqual(Patient.objects.filter(name_txt=name).count(), 0)
+        self.assertEqual(Patient.objects.filter(name=name).count(), 0)
 
     def get_current_date(self):
         """
@@ -551,72 +551,72 @@ class PatientFormValidation(TestCase):
 
         date_birth = self.get_current_date()
         name = self._testMethodName
-        self.data['date_birth_txt'] = date_birth
-        self.data['name_txt'] = name
+        self.data['date_birth'] = date_birth
+        self.data['name'] = name
 
         self.client.post(reverse(PATIENT_NEW), self.data)
 
-        self.assertEqual(Patient.objects.filter(name_txt=name).count(), 1)
+        self.assertEqual(Patient.objects.filter(name=name).count(), 1)
 
     def test_patient_create(self):
         """
         Testa inclusao de paciente com campos obrigatorios
         """
         name = self._testMethodName
-        self.data['name_txt'] = name
+        self.data['name'] = name
 
         self.client.post(reverse(PATIENT_NEW), self.data, follow=True)
-        self.assertEqual(Patient.objects.filter(name_txt=name).count(), 1)
+        self.assertEqual(Patient.objects.filter(name=name).count(), 1)
 
         self.data['currentTab'] = 0
         self.client.post(reverse(PATIENT_NEW), self.data, follow=True)
-        self.assertEqual(Patient.objects.filter(name_txt=name).count(), 1)
+        self.assertEqual(Patient.objects.filter(name=name).count(), 1)
 
     def fill_social_demographic_data(self):
         """ Criar uma opcao de Schooling """
 
-        school_opt = SchoolingOption.objects.create(schooling_txt='Fundamental Completo')
-        school_opt.save()
+        school = Schooling.objects.create(name='Fundamental Completo')
+        school.save()
 
-        self.data['house_maid_opt'] = '0'
-        self.data['religion_opt'] = '',
-        self.data['amount_cigarettes_opt'] = ''
-        self.data['dvd_opt'] = '1'
-        self.data['wash_machine_opt'] = '1'
-        self.data['refrigerator_opt'] = '1'
-        self.data['alcohol_frequency_opt'] = ''
-        self.data['schooling_opt'] = school_opt.pk
-        self.data['freezer_opt'] = '0'
-        self.data['tv_opt'] = '1'
-        self.data['bath_opt'] = '1'
-        self.data['radio_opt'] = '1'
-        self.data['automobile_opt'] = '1'
+        self.data['house_maid'] = '0'
+        self.data['religion'] = '',
+        self.data['amount_cigarettes'] = ''
+        self.data['dvd'] = '1'
+        self.data['wash_machine'] = '1'
+        self.data['refrigerator'] = '1'
+        self.data['alcohol_frequency'] = ''
+        self.data['schooling'] = school.pk
+        self.data['freezer'] = '0'
+        self.data['tv'] = '1'
+        self.data['bath'] = '1'
+        self.data['radio'] = '1'
+        self.data['automobile'] = '1'
 
     def test_patient_social_demographic_data(self):
         """
         Testa a inclusao de paciente com campos obrigatorios e dados sociais preenchidos
         """
         name = self._testMethodName
-        self.data['name_txt'] = name
+        self.data['name'] = name
         self.fill_social_demographic_data()
 
         response = self.client.post(reverse(PATIENT_NEW), self.data, follow=True)
-        self.assertEqual(Patient.objects.filter(name_txt=name).count(), 1)
+        self.assertEqual(Patient.objects.filter(name=name).count(), 1)
         self.assertNotContains(response, u'Classe Social não calculada')
 
-        patient_to_update = Patient.objects.filter(name_txt=name).first()
+        patient_to_update = Patient.objects.filter(name=name).first()
 
         response = self.client.post(
             reverse('patient_edit', args=(patient_to_update.pk,)), self.data, follow=True)
-        self.assertEqual(Patient.objects.filter(name_txt=name).count(), 1)
+        self.assertEqual(Patient.objects.filter(name=name).count(), 1)
         self.assertNotContains(response, u'Classe Social não calculada')
 
-        self.data.pop('wash_machine_opt')
+        self.data.pop('wash_machine')
         name = 'test_patient_social_demographic_data_1'
-        self.data['name_txt'] = name
+        self.data['name'] = name
         self.data[CPF_ID] = ''
         response = self.client.post(reverse(PATIENT_NEW), self.data, follow=True)
-        self.assertEqual(Patient.objects.filter(name_txt=name).count(), 1)
+        self.assertEqual(Patient.objects.filter(name=name).count(), 1)
         self.assertContains(response, u'Classe Social não calculada')
 
     def test_patient_valid_email(self):
@@ -624,7 +624,7 @@ class PatientFormValidation(TestCase):
         Teste de email invalido
         """
 
-        self.data['email_txt'] = 'mail@invalid.'
+        self.data['email'] = 'mail@invalid.'
 
         response = self.client.post(reverse(PATIENT_NEW), self.data)
 
@@ -635,11 +635,11 @@ class PatientFormValidation(TestCase):
         Teste de validacao do campo nome completo  - obrigatorio
         """
 
-        self.data['name_txt'] = ''
+        self.data['name'] = ''
 
         response = self.client.post(reverse(PATIENT_NEW), self.data)
 
-        self.assertContains(response, 'Nome não preenchido')
+        self.assertContains(response, 'Nome deve ser preenchido')
 
     def test_patient_view_and_search(self):
         """
@@ -659,14 +659,14 @@ class PatientFormValidation(TestCase):
         self.data[SEARCH_TEXT] = 'Pacient'
         response = self.client.post(reverse(PATIENT_SEARCH), self.data)
         self.assertEqual(response.status_code, 200)
-        self.assertContains(response, patient_mock.name_txt)
+        self.assertContains(response, patient_mock.name)
         self.assertEqual(response.context['patients'].count(), 1)
 
         self.data[SEARCH_TEXT] = 374
         response = self.client.post(reverse(PATIENT_SEARCH), self.data)
         self.assertEqual(response.status_code, 200)
         self.assertEqual(response.context['patients'].count(), 1)
-        self.assertContains(response, patient_mock.cpf_id)
+        self.assertContains(response, patient_mock.cpf)
 
         self.data[SEARCH_TEXT] = ''
         response = self.client.post(reverse(PATIENT_SEARCH), self.data)
@@ -707,7 +707,7 @@ class PatientFormValidation(TestCase):
         response = self.client.post(reverse(PATIENT_EDIT, args=[patient_mock.pk]), self.data)
         self.assertEqual(response.status_code, 302)
 
-        self.data[CPF_ID] = patient_mock.cpf_id
+        self.data[CPF_ID] = patient_mock.cpf
         response = self.client.post(reverse(PATIENT_EDIT, args=[patient_mock.pk]), self.data)
         self.assertEqual(response.status_code, 302)
 
@@ -715,7 +715,7 @@ class PatientFormValidation(TestCase):
         self.data[SEARCH_TEXT] = 374
         response = self.client.post(reverse(PATIENT_SEARCH), self.data)
         self.assertEqual(response.status_code, 200)
-        self.assertContains(response, patient_mock.cpf_id)
+        self.assertContains(response, patient_mock.cpf)
 
         self.data[ACTION] = 'remove'
         response = self.client.post(reverse(PATIENT_VIEW, args=[patient_mock.pk]), self.data)
@@ -732,7 +732,7 @@ class PatientFormValidation(TestCase):
         self.data[SEARCH_TEXT] = 374
         response = self.client.post(reverse(PATIENT_SEARCH), self.data)
         self.assertEqual(response.status_code, 200)
-        self.assertNotContains(response, patient_mock.cpf_id)
+        self.assertNotContains(response, patient_mock.cpf)
 
     def test_update_patient_not_exist(self):
         """Teste de paciente nao existente na base de dados """
@@ -765,16 +765,16 @@ class PatientFormValidation(TestCase):
         self.data['search_text'] = 374
         response = self.client.post(reverse(PATIENT_SEARCH), self.data)
         self.assertEqual(response.status_code, 200)
-        self.assertNotContains(response, patient_mock.cpf_id)
+        self.assertNotContains(response, patient_mock.cpf)
 
         response = restore_patient(request, patient_id=patient_mock.pk)
         self.assertEqual(response.status_code, 302)
-        self.assertEqual(Patient.objects.filter(name_txt=patient_mock.name_txt).exclude(removed=True).count(), 1)
+        self.assertEqual(Patient.objects.filter(name=patient_mock.name).exclude(removed=True).count(), 1)
 
         self.data['search_text'] = 374
         response = self.client.post(reverse(PATIENT_SEARCH), self.data)
         self.assertEqual(response.status_code, 200)
-        self.assertContains(response, patient_mock.cpf_id)
+        self.assertContains(response, patient_mock.cpf)
 
     def test_views(self):
         """
@@ -795,13 +795,13 @@ class PatientFormValidation(TestCase):
         patient_mock = self.util.create_patient_mock(user=self.user)
 
         # Busca valida
-        self.data[SEARCH_TEXT] = patient_mock.name_txt
+        self.data[SEARCH_TEXT] = patient_mock.name
         response = self.client.post(reverse('patients_verify_homonym'), self.data)
         self.assertEqual(response.status_code, 200)
         self.assertEqual(response.context['patient_homonym_excluded'].count(), 0)
         self.assertEqual(response.context['patient_homonym'].count(), 1)
 
-        self.data[SEARCH_TEXT] = patient_mock.cpf_id
+        self.data[SEARCH_TEXT] = patient_mock.cpf
         response = self.client.post(reverse('patients_verify_homonym'), self.data)
         self.assertEqual(response.status_code, 200)
         self.assertEqual(response.context['patient_homonym_excluded'].count(), 0)
@@ -821,14 +821,14 @@ class PatientFormValidation(TestCase):
         patient_mock.removed = True
         patient_mock.save()
 
-        self.data[SEARCH_TEXT] = patient_mock.name_txt
+        self.data[SEARCH_TEXT] = patient_mock.name
 
         response = self.client.post(reverse('patients_verify_homonym'), self.data)
         self.assertEqual(response.status_code, 200)
         self.assertEqual(response.context['patient_homonym_excluded'].count(), 1)
         self.assertEqual(response.context['patient_homonym'].count(), 0)
 
-        self.data[SEARCH_TEXT] = patient_mock.cpf_id
+        self.data[SEARCH_TEXT] = patient_mock.cpf
         response = self.client.post(reverse('patients_verify_homonym'), self.data)
         self.assertEqual(response.status_code, 200)
         self.assertEqual(response.context['patient_homonym_excluded'].count(), 1)

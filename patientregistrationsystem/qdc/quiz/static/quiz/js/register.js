@@ -19,17 +19,17 @@ $(document).ready(function () {
     });
 
     $("#id_alcoholic_0").click(function () {
-        $("#id_freqAlcoholic").prop('disabled', false);
-        $("#id_periodAlcoholic").prop('disabled', false);
+        $("#id_alcohol_frequency").prop('disabled', false);
+        $("#id_alcohol_period").prop('disabled', false);
     });
 
     $("#id_alcoholic_1").click(function () {
-        var x = document.getElementById("id_freqAlcoholic");
-        var y = document.getElementById("id_periodAlcoholic");
+        var x = document.getElementById("id_alcohol_frequency");
+        var y = document.getElementById("id_alcohol_period");
         x.value = "";
         y.value = "";
-        $("#id_freqAlcoholic").prop('disabled', true);
-        $("#id_periodAlcoholic").prop('disabled', true);
+        $("#id_alcohol_frequency").prop('disabled', true);
+        $("#id_alcohol_period").prop('disabled', true);
     });
 
     $("#id_cpf").mask("999.999.999-99");
@@ -119,7 +119,7 @@ $(document).ready(function () {
     });
 
     $("#editPatient").click(function () {
-        $("#name").unbind("blur");
+        $("#id_name").unbind("blur");
         document.getElementById('action').value = "edit";
         $("#form_id").submit();
     });
@@ -141,9 +141,9 @@ $(document).ready(function () {
         if (name_value.length == 0 || date_birth_value.length == 0 || gender_value.length == 0) {
             showErrorMessageTemporary("Campos obrigatórios devem ser preenchidos.");
             jumpToElement('name');
-            document.getElementById('date_birth').focus();
-            document.getElementById('gender').focus();
-            document.getElementById('name').focus();
+            document.getElementById('id_date_birth').focus();
+            document.getElementById('id_gender').focus();
+            document.getElementById('id_name').focus();
             $("#idTabs li:eq( 0 ) a").tab('show');
 
         } else {
