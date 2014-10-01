@@ -14,10 +14,6 @@ urlpatterns = patterns(
     url(r'^patient/(?P<patient_id>\d+)/$', 'quiz.views.patient', name='patient_view'),
     url(r'^restore/patient/(?P<patient_id>\d+)/$', 'quiz.views.restore_patient', name='patient_restore'),
 
-    url(r'^user/search/$', 'quiz.views.user_list', name='user_list'),
-    url(r'^user/new/$', 'quiz.views.user_create', name='user_new'),
-    url(r'^user/edit/(?P<user_id>\d+)/$', 'quiz.views.user_update', name='user_edit'),
-
     # medical_record (create, read, update)
     url(r'^patient/(?P<patient_id>\d+)/medical_record/new/$',
         'quiz.views.medical_record_create', name='medical_record_new'),

@@ -12,7 +12,7 @@ from experiment.views import experiment_update, upload_file
 from quiz.abc_search_engine import Questionnaires
 from quiz.tests import UtilTests
 
-from quiz.views import User
+from custom_user.views import User
 
 import datetime
 

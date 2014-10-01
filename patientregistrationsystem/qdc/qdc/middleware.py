@@ -1,7 +1,6 @@
-from django.http import HttpResponseRedirect
-from quiz.models import UserProfile
+from custom_user.models import UserProfile
 import re
-from django.shortcuts import redirect, get_object_or_404
+from django.shortcuts import redirect
 
 
 class PasswordChangeMiddleware:

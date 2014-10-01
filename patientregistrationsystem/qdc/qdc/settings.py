@@ -48,6 +48,7 @@ INSTALLED_APPS = (
 
 PROJECT_APPS = (
     'quiz',
+    'custom_user',
     'experiment',
 )
 

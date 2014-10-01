@@ -30,5 +30,4 @@ urlpatterns = patterns(
         'experiment.views.questionnaire_response_update', name='questionnaire_response_edit'),
     url(r'^questionnaire_response/(?P<questionnaire_response_id>\d+)$',
         'experiment.views.questionnaire_response_view', name='questionnaire_response_view'),
-
 )

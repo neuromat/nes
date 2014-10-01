@@ -1,6 +1,6 @@
 # coding=utf-8
 import datetime
-from django.shortcuts import render, redirect, get_object_or_404
+from django.shortcuts import render, get_object_or_404
 from django.contrib.auth.decorators import login_required, permission_required
 from django.http import HttpResponseRedirect
 from django.core.urlresolvers import reverse
@@ -13,23 +13,22 @@ from quiz.models import Patient, SocialDemographicData, SocialHistoryData, Flesh
     Gender, AmountCigarettes, AlcoholFrequency, AlcoholPeriod, \
     ClassificationOfDiseases, Diagnosis, ExamFile, ComplementaryExam
 
-from quiz.forms import PatientForm, SocialDemographicDataForm, SocialHistoryDataForm, UserForm, UserFormUpdate, \
+from quiz.forms import PatientForm, SocialDemographicDataForm, SocialHistoryDataForm, \
     ComplementaryExamForm, ExamFileForm
 
 from quiz.quiz_widget import SelectBoxCountriesDisabled, SelectBoxStateDisabled
 from django.contrib import messages
 
-from django.contrib.auth.models import User, Group
 from django.db.models import Q
 
 
 import re
-from quiz.models import UserProfile
 
 # pylint: disable=E1101
 # pylint: disable=E1103
 
 permission_required = partial(permission_required, raise_exception=True)
+
 
 @login_required
 @permission_required('quiz.add_patient')
@@ -126,14 +125,14 @@ def save_patient(current_tab, patient_form, request, social_demographic_form, so
         if insert_new or social_demographic_form.has_changed():
 
             if (new_social_demographic_data.tv is not None and
-                        new_social_demographic_data.radio is not None and
-                        new_social_demographic_data.bath is not None and
-                        new_social_demographic_data.automobile is not None and
-                        new_social_demographic_data.house_maid is not None and
-                        new_social_demographic_data.wash_machine is not None and
-                        new_social_demographic_data.dvd is not None and
-                        new_social_demographic_data.refrigerator is not None and
-                        new_social_demographic_data.freezer is not None):
+                    new_social_demographic_data.radio is not None and
+                    new_social_demographic_data.bath is not None and
+                    new_social_demographic_data.automobile is not None and
+                    new_social_demographic_data.house_maid is not None and
+                    new_social_demographic_data.wash_machine is not None and
+                    new_social_demographic_data.dvd is not None and
+                    new_social_demographic_data.refrigerator is not None and
+                    new_social_demographic_data.freezer is not None):
 
                 new_social_demographic_data.social_class = new_social_demographic_data.calculate_social_class(
                     tv=request.POST['tv'], radio=request.POST['radio'],
@@ -147,14 +146,14 @@ def save_patient(current_tab, patient_form, request, social_demographic_form, so
                 new_social_demographic_data.social_class = None
 
                 if (new_social_demographic_data.tv is not None or
-                            new_social_demographic_data.radio is not None or
-                            new_social_demographic_data.bath is not None or
-                            new_social_demographic_data.automobile is not None or
-                            new_social_demographic_data.house_maid is not None or
-                            new_social_demographic_data.wash_machine is not None or
-                            new_social_demographic_data.dvd is not None or
-                            new_social_demographic_data.refrigerator is not None or
-                            new_social_demographic_data.freezer is not None):
+                        new_social_demographic_data.radio is not None or
+                        new_social_demographic_data.bath is not None or
+                        new_social_demographic_data.automobile is not None or
+                        new_social_demographic_data.house_maid is not None or
+                        new_social_demographic_data.wash_machine is not None or
+                        new_social_demographic_data.dvd is not None or
+                        new_social_demographic_data.refrigerator is not None or
+                        new_social_demographic_data.freezer is not None):
                     messages.warning(request, 'Classe Social não calculada, pois os campos necessários '
                                               'para o cálculo não foram preenchidos.')
                     current_tab = "1"
@@ -351,97 +350,6 @@ def patients_verify_homonym(request):
 
     return render_to_response('quiz/ajax_homonym.html', {'patient_homonym': patient_homonym,
                                                          'patient_homonym_excluded': patient_homonym_excluded})
-
-
-@login_required
-@permission_required('auth.add_user')
-def user_list(request, template_name='quiz/user_list.html'):
-    users = User.objects.filter(is_active=True).order_by('username')
-    data = {'object_list': users, 'current_user_id': request.user.id}
-    return render(request, template_name, data)
-
-
-@login_required
-@permission_required('auth.add_user')
-def user_create(request, template_name='quiz/register_users.html'):
-    form = UserForm(request.POST or None)
-    group_permissions = []
-    groups = Group.objects.all()
-
-    for group in groups:
-        group_permissions.append(
-            {'group': group,
-             'checked': False}
-        )
-
-    if request.method == "POST":
-        if request.POST['action'] == "save":
-            if form.is_valid():
-                form.save()
-                messages.success(request, 'Usuário criado com sucesso.')
-                return redirect('user_list')
-            else:
-                messages.error(request, 'Não foi possível criar usuário.')
-                if 'username' in form.errors:
-                    try:
-                        form.errors['username'].remove(u'Usuário com este Usuário já existe.')
-                        if User.objects.get_by_natural_key(request.POST['username']).is_active:
-                            form.errors['username'] = ['Este nome de usuário já existe.']
-                        else:
-                            form.errors['username'] = ['Este nome de usuário já existe em um usuário desabilitado.']
-                    except ValueError:
-                        None
-    return render(request, template_name, {'form': form, 'group_permissions': group_permissions, 'creating': True})
-
-
-@login_required
-@permission_required('auth.change_user')
-def user_update(request, user_id, template_name="quiz/register_users.html"):
-    form = UserFormUpdate(request.POST or None, instance=User.objects.get(id=user_id))
-    user_groups = User.objects.get(id=user_id).groups.all()
-    group_permissions = []
-    groups = Group.objects.all()
-
-    for group in groups:
-        if group in user_groups:
-            group_permissions.append(
-                {'group': group,
-                 'checked': True}
-            )
-        else:
-            group_permissions.append(
-                {'group': group,
-                 'checked': False}
-            )
-
-    if request.method == "POST":
-        if request.POST['action'] == "save":
-            if form.is_valid():
-                form.save()
-
-                if request.POST['password']:
-                    user = get_object_or_404(User, id=user_id)
-                    profile, created = UserProfile.objects.get_or_create(user=user)
-                    profile.force_password_change = True
-                    profile.save()
-
-                messages.success(request, 'Usuário atualizado com sucesso.')
-        else:
-            if request.POST['action'] == "remove":
-                user = get_object_or_404(User, id=user_id)
-                user.is_active = False
-                user.save()
-                messages.success(request, 'Usuário removido com sucesso.')
-
-        return redirect('user_list')
-
-    context = {
-        'form': form,
-        'editing': True,
-        'group_permissions': group_permissions,
-        'creating': False
-    }
-    return render(request, template_name, context)
 
 
 @login_required
