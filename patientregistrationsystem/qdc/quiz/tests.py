@@ -34,7 +34,6 @@ USER_USERNAME = 'myadmin'
 USER_PWD = 'mypassword'
 USER_NEW = 'user_new'
 
-
 # Constantes para testes paciente
 ACTION = 'action'
 CPF_ID = 'cpf'
