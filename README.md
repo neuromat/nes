@@ -1,5 +1,5 @@
-nes
-===
+nes - neuroscience experiments system
+=====================================
 
 
 Demonstration environment: 
