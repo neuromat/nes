@@ -140,7 +140,7 @@ $(document).ready(function () {
 
         if (name_value.length == 0 || date_birth_value.length == 0 || gender_value.length == 0) {
             showErrorMessageTemporary("Campos obrigatórios devem ser preenchidos.");
-            jumpToElement('name');
+            jumpToElement('id_name');
             document.getElementById('id_date_birth').focus();
             document.getElementById('id_gender').focus();
             document.getElementById('id_name').focus();

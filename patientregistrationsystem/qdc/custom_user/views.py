@@ -80,6 +80,7 @@ def user_update(request, user_id, template_name="custom_user/register_users.html
         if request.method == "POST":
             if request.POST['action'] == "save":
                 if form.is_valid():
+
                     form.save()
 
                     if request.POST['password']:
@@ -89,6 +90,8 @@ def user_update(request, user_id, template_name="custom_user/register_users.html
                         profile.save()
 
                     messages.success(request, 'Usuário atualizado com sucesso.')
+                    return redirect('user_list')
+
             else:
                 if request.POST['action'] == "remove":
                     user = get_object_or_404(User, id=user_id)
@@ -96,7 +99,7 @@ def user_update(request, user_id, template_name="custom_user/register_users.html
                     user.save()
                     messages.success(request, 'Usuário removido com sucesso.')
 
-            return redirect('user_list')
+                    return redirect('user_list')
 
         context = {
             'form': form,
