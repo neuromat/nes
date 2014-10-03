@@ -92,7 +92,7 @@
                                                     {% for response in subject_questionnaire.questionnaire_responses %}
                                                         <tr>
                                                             <td>
-                                                                {% if perms.experiment.change_questionnaireresponse %}
+                                                                {% if perms.experiment.change_questionnaireresponse and limesurvey_available %}
                                                                     <a href="/experiment/questionnaire_response/edit/{{ response.questionnaire_response.id }}" data-toggle="tooltip" data-placement="right" title="Completar">
                                                                         {{ response.questionnaire_response.date }}
                                                                     </a>
@@ -101,10 +101,14 @@
                                                                 {% endif %}
                                                             </td>
                                                             <td>
-                                                                {% if response.completed %}
-                                                                    <span class="label label-success">Completo</span>
+                                                                {% if limesurvey_available %}
+                                                                    {% if response.completed %}
+                                                                        <span class="label label-success">Completo</span>
+                                                                    {% else %}
+                                                                        <span class="label label-warning">Incompleto</span>
+                                                                    {% endif %}
                                                                 {% else %}
-                                                                    <span class="label label-warning">Incompleto</span>
+                                                                    <span class="label label-default">Sem status</span>
                                                                 {% endif %}
                                                             </td>
 
@@ -115,7 +119,7 @@
                                                             <td>
                                                                 {% if perms.experiment.add_questionnaireresponse %}
                                                                     <a href="/experiment/{{ experiment.id }}/subjects/{{ subject.id }}/questionnaire/{{ subject_questionnaire.questionnaire_configuration.id }}/response/?action=create"
-                                                                        class="btn btn-primary">Novo preenchimento</a>
+                                                                        class="btn btn-primary {% if not limesurvey_available %} disabled {% endif %}">Novo preenchimento</a>
                                                                 {% endif %}
                                                             </td>
                                                             <td></td>

@@ -17,10 +17,14 @@ class ABCSearchEngine:
 
     def get_session_key(self):
         self.server = pyjsonrpc.HttpClient(settings.LIMESURVEY['URL'] + "/index.php/admin/remotecontrol")
-        self.session_key = self.server.get_session_key(settings.LIMESURVEY['USER'], settings.LIMESURVEY['PASSWORD'])
+        try:
+            self.session_key = self.server.get_session_key(settings.LIMESURVEY['USER'], settings.LIMESURVEY['PASSWORD'])
+        except:
+            self.session_key = None
 
     def release_session_key(self):
-        self.server.release_session_key(self.session_key)
+        if self.session_key:
+            self.server.release_session_key(self.session_key)
 
     @abstractmethod
     def find_all_questionnaires(self):
@@ -97,9 +101,13 @@ class ABCSearchEngine:
     def get_survey_title(self, sid):
         """Retorna o titulo da survey pelo id"""
 
-        survey_title = self.server.get_language_properties(self.session_key, sid, {'method': 'surveyls_title'})
+        if self.session_key:
+            survey_title = self.server.get_language_properties(self.session_key, sid, {'method': 'surveyls_title'})
+            survey_title = survey_title.get('surveyls_title')
+        else:
+            survey_title = ""
 
-        return survey_title.get('surveyls_title')
+        return survey_title
 
     @abstractmethod
     def get_survey_properties(self, sid, prop):
@@ -137,9 +145,13 @@ class ABCSearchEngine:
     def get_participant_properties(self, survey_id, token_id, prop):
         """Retorna uma determinada propriedade de um participante/token"""
 
-        result = self.server.get_participant_properties(self.session_key, survey_id, token_id, {'method': prop})
+        if self.session_key:
+            result = self.server.get_participant_properties(self.session_key, survey_id, token_id, {'method': prop})
+            result = result.get(prop)
+        else:
+            result = ""
 
-        return result.get(prop)
+        return result
 
     @abstractmethod
     def survey_has_token_table(self, sid):

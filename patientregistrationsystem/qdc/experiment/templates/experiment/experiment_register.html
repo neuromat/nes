@@ -130,7 +130,7 @@
                     </div>
                 {% endif %}
                 {% if perms.experiment.add_questionnaireconfiguration %}
-                    <a href="/experiment/{{ experiment.id }}/questionnaire/new" class="btn btn-primary {% if creating %} disabled{% endif %}">Inserir questionário</a>
+                    <a href="/experiment/{{ experiment.id }}/questionnaire/new" class="btn btn-primary {% if creating or not limesurvey_available%} disabled{% endif %}">Inserir questionário</a>
                 {% endif %}
             </div>
 
