@@ -1,10 +1,13 @@
 # coding=utf-8
 from django.forms import ModelForm, TextInput, DateInput, Select, RadioSelect
 from django.forms.widgets import Textarea
-from quiz.models import Patient, SocialDemographicData, SocialHistoryData, ComplementaryExam, ExamFile
-from quiz.quiz_widget import SelectBoxCountries, SelectBoxState
 from cep.widgets import CEPInput
 from django.utils.translation import ugettext_lazy as _
+
+from patient.models import Patient, SocialDemographicData, SocialHistoryData, ComplementaryExam, ExamFile
+from patient.quiz_widget import SelectBoxCountries, SelectBoxState
+
+
 
 # pylint: disable=E1101
 # pylint: disable=E1103

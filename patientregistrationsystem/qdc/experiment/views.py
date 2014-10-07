@@ -1,4 +1,8 @@
 # coding=utf-8
+from functools import partial
+import re
+import datetime
+
 from django.shortcuts import render, get_object_or_404, redirect
 from django.contrib.auth.decorators import login_required, permission_required
 from django.contrib import messages
@@ -6,21 +10,14 @@ from django.http import HttpResponseRedirect
 from django.core.urlresolvers import reverse
 from django.shortcuts import render_to_response
 from django.db.models.deletion import ProtectedError
+from django.conf import settings
 
 from experiment.models import Experiment, QuestionnaireConfiguration, Subject, TimeUnit, \
     QuestionnaireResponse, SubjectOfExperiment
 from experiment.forms import ExperimentForm, QuestionnaireConfigurationForm, QuestionnaireResponseForm, FileForm
+from patient.models import Patient
+from experiment.abc_search_engine import Questionnaires
 
-from quiz.models import Patient
-from quiz.abc_search_engine import Questionnaires
-
-from django.conf import settings
-
-from functools import partial
-
-import re
-
-import datetime
 
 permission_required = partial(permission_required, raise_exception=True)
 

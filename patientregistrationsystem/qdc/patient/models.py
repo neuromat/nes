@@ -1,14 +1,15 @@
 # -*- coding: UTF-8 -*-
 
 from __future__ import unicode_literals
+import datetime
+
 from django.db import models
 from django.core.exceptions import ValidationError
 from django.utils.translation import ugettext as _
 from django.contrib.auth.models import User
 from simple_history.models import HistoricalRecords
-from quiz.validation import CPF
 
-import datetime
+from patient.validation import CPF
 
 
 # Valida CPF
@@ -130,7 +131,7 @@ class Patient(models.Model):
         )
 
     def get_absolute_url(self):
-        return "/quiz/patient/%i/" % self.pk
+        return "/patient/%i/" % self.pk
 
     def __unicode__(self):  # Python 3: def __str__(self):
         return \

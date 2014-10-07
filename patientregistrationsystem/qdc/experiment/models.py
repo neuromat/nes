@@ -1,11 +1,12 @@
 # -*- coding: UTF-8 -*-
+import datetime
+
 from django.db import models
 from django.core.exceptions import ValidationError
 from django.core.validators import MinValueValidator
-from quiz.models import Patient, User
 from simple_history.models import HistoricalRecords
 
-import datetime
+from patient.models import Patient, User
 
 
 def validate_date_questionnaire_response(value):

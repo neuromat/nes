@@ -1,28 +1,26 @@
 # coding=utf-8
 import datetime
+from functools import partial
+import re
+
 from django.shortcuts import render, get_object_or_404
 from django.contrib.auth.decorators import login_required, permission_required
 from django.http import HttpResponseRedirect
 from django.core.urlresolvers import reverse
 from django.shortcuts import render_to_response
+from django.contrib import messages
+from django.db.models import Q
 
-from functools import partial
-
-from quiz.models import Patient, SocialDemographicData, SocialHistoryData, FleshTone, \
+from patient.models import Patient, SocialDemographicData, SocialHistoryData, FleshTone, \
     MaritalStatus, Schooling, Payment, Religion, MedicalRecordData, \
     Gender, AmountCigarettes, AlcoholFrequency, AlcoholPeriod, \
     ClassificationOfDiseases, Diagnosis, ExamFile, ComplementaryExam
-
-from quiz.forms import PatientForm, SocialDemographicDataForm, SocialHistoryDataForm, \
+from patient.forms import PatientForm, SocialDemographicDataForm, SocialHistoryDataForm, \
     ComplementaryExamForm, ExamFileForm
-
-from quiz.quiz_widget import SelectBoxCountriesDisabled, SelectBoxStateDisabled
-from django.contrib import messages
-
-from django.db.models import Q
+from patient.quiz_widget import SelectBoxCountriesDisabled, SelectBoxStateDisabled
 
 
-import re
+
 
 # pylint: disable=E1101
 # pylint: disable=E1103
@@ -31,8 +29,8 @@ permission_required = partial(permission_required, raise_exception=True)
 
 
 @login_required
-@permission_required('quiz.add_patient')
-def patient_create(request, template_name="quiz/register.html"):
+@permission_required('patient.add_patient')
+def patient_create(request, template_name="patient/register.html"):
     flesh_tone = FleshTone.objects.all()
     marital_status = MaritalStatus.objects.all()
     gender = Gender.objects.all()
@@ -177,8 +175,8 @@ def save_patient(current_tab, patient_form, request, social_demographic_form, so
 
 
 @login_required
-@permission_required('quiz.change_patient')
-def patient_update(request, patient_id, template_name="quiz/register.html"):
+@permission_required('patient.change_patient')
+def patient_update(request, patient_id, template_name="patient/register.html"):
     current_patient = get_object_or_404(Patient, pk=patient_id)
 
     if current_patient and not current_patient.removed:
@@ -227,8 +225,8 @@ def patient_update(request, patient_id, template_name="quiz/register.html"):
 
 
 @login_required
-@permission_required('quiz.view_patient')
-def patient(request, patient_id, template_name="quiz/register.html"):
+@permission_required('patient.view_patient')
+def patient(request, patient_id, template_name="patient/register.html"):
     if request.method == "POST":
 
         redirect_url = reverse("search_patient")
@@ -292,19 +290,14 @@ def patient(request, patient_id, template_name="quiz/register.html"):
 
 
 @login_required
-@permission_required('quiz.view_patient')
+@permission_required('patient.view_patient')
 def search_patient(request):
-    return render(request, 'quiz/busca.html')
+    return render(request, 'patient/busca.html')
 
 
 @login_required
 def advanced_search(request):
-    return render(request, 'quiz/busca_avancada.html')
-
-
-@login_required
-def contact(request):
-    return render(request, 'quiz/contato.html')
+    return render(request, 'patient/busca_avancada.html')
 
 
 @login_required
@@ -318,7 +311,7 @@ def restore_patient(request, patient_id):
 
 
 @login_required
-@permission_required('quiz.view_patient')
+@permission_required('patient.view_patient')
 def search_patients_ajax(request):
     patient_list = ''
     if request.method == "POST":
@@ -329,11 +322,11 @@ def search_patients_ajax(request):
             else:
                 patient_list = Patient.objects.filter(cpf__icontains=search_text).exclude(removed=True)
 
-    return render_to_response('quiz/ajax_search.html', {'patients': patient_list})
+    return render_to_response('patient/ajax_search.html', {'patients': patient_list})
 
 
 @login_required
-@permission_required('quiz.view_patient')
+@permission_required('patient.view_patient')
 def patients_verify_homonym(request):
     if request.method == "POST":
         search_text = request.POST['search_text']
@@ -348,12 +341,12 @@ def patients_verify_homonym(request):
             patient_homonym = ''
             patient_homonym_excluded = ''
 
-    return render_to_response('quiz/ajax_homonym.html', {'patient_homonym': patient_homonym,
+    return render_to_response('patient/ajax_homonym.html', {'patient_homonym': patient_homonym,
                                                          'patient_homonym_excluded': patient_homonym_excluded})
 
 
 @login_required
-@permission_required('quiz.add_medicalrecorddata')
+@permission_required('patient.add_medicalrecorddata')
 def search_cid10_ajax(request):
     cid_10_list = ''
 
@@ -366,13 +359,13 @@ def search_cid10_ajax(request):
             cid_10_list = ClassificationOfDiseases.objects.filter(Q(abbreviated_description__icontains=search_text) |
                                                                   Q(description__icontains=search_text))
 
-        return render_to_response('quiz/ajax_cid10.html', {'cid_10_list': cid_10_list, 'medical_record': medical_record,
+        return render_to_response('patient/ajax_cid10.html', {'cid_10_list': cid_10_list, 'medical_record': medical_record,
                                                            'patient_id': patient_id})
 
 
 @login_required
-@permission_required('quiz.add_medicalrecorddata')
-def medical_record_create(request, patient_id, template_name='quiz/medical_record.html'):
+@permission_required('patient.add_medicalrecorddata')
+def medical_record_create(request, patient_id, template_name='patient/medical_record.html'):
     current_patient = get_object_or_404(Patient, pk=patient_id)
 
     return render(request, template_name,
@@ -383,8 +376,8 @@ def medical_record_create(request, patient_id, template_name='quiz/medical_recor
 
 
 @login_required
-@permission_required('quiz.view_medicalrecorddata')
-def medical_record_view(request, patient_id, record_id, template_name="quiz/medical_record.html"):
+@permission_required('patient.view_medicalrecorddata')
+def medical_record_view(request, patient_id, record_id, template_name="patient/medical_record.html"):
     status_mode = request.GET['status']
 
     current_patient = get_object_or_404(Patient, pk=patient_id)
@@ -413,8 +406,8 @@ def medical_record_view(request, patient_id, record_id, template_name="quiz/medi
 
 
 @login_required
-@permission_required('quiz.add_medicalrecorddata')
-def medical_record_update(request, patient_id, record_id, template_name="quiz/medical_record.html"):
+@permission_required('patient.add_medicalrecorddata')
+def medical_record_update(request, patient_id, record_id, template_name="patient/medical_record.html"):
     status_mode = request.GET['status']
     current_tab = get_current_tab(request)
 
@@ -475,7 +468,7 @@ def medical_record_update(request, patient_id, record_id, template_name="quiz/me
 
 
 @login_required
-@permission_required('quiz.add_medicalrecorddata')
+@permission_required('patient.add_medicalrecorddata')
 def diagnosis_create(request, patient_id, medical_record_id, cid10_id):
     medical_record = MedicalRecordData.objects.get(pk=medical_record_id)
     cid10 = ClassificationOfDiseases.objects.get(pk=cid10_id)
@@ -491,7 +484,7 @@ def diagnosis_create(request, patient_id, medical_record_id, cid10_id):
 
 
 @login_required
-@permission_required('quiz.add_medicalrecorddata')
+@permission_required('patient.add_medicalrecorddata')
 def medical_record_create_diagnosis_create(request, patient_id, cid10_id):
     current_patient = Patient.objects.get(id=patient_id)
 
@@ -510,7 +503,7 @@ def medical_record_create_diagnosis_create(request, patient_id, cid10_id):
 
 
 @login_required
-@permission_required('quiz.add_medicalrecorddata')
+@permission_required('patient.add_medicalrecorddata')
 def diagnosis_delete(request, patient_id, diagnosis_id):
     exams = ComplementaryExam.objects.filter(diagnosis=diagnosis_id)
     if exams:
@@ -527,8 +520,8 @@ def diagnosis_delete(request, patient_id, diagnosis_id):
 
 
 @login_required
-@permission_required('quiz.add_medicalrecorddata')
-def exam_create(request, patient_id, record_id, diagnosis_id, template_name="quiz/exams.html"):
+@permission_required('patient.add_medicalrecorddata')
+def exam_create(request, patient_id, record_id, diagnosis_id, template_name="patient/exams.html"):
     form = ComplementaryExamForm(request.POST or None)
 
     diagnosis = get_object_or_404(Diagnosis, pk=diagnosis_id)
@@ -576,8 +569,8 @@ def exam_create(request, patient_id, record_id, diagnosis_id, template_name="qui
 
 
 @login_required
-@permission_required('quiz.add_medicalrecorddata')
-def exam_edit(request, patient_id, record_id, exam_id, template_name="quiz/exams.html"):
+@permission_required('patient.add_medicalrecorddata')
+def exam_edit(request, patient_id, record_id, exam_id, template_name="patient/exams.html"):
     current_patient = Patient.objects.get(id=patient_id)
     complementary_exam = ComplementaryExam.objects.get(pk=exam_id)
 
@@ -627,8 +620,8 @@ def exam_edit(request, patient_id, record_id, exam_id, template_name="quiz/exams
 
 
 @login_required
-@permission_required('quiz.view_medicalrecorddata')
-def exam_view(request, patient_id, record_id, exam_id, template_name="quiz/exams.html"):
+@permission_required('patient.view_medicalrecorddata')
+def exam_view(request, patient_id, record_id, exam_id, template_name="patient/exams.html"):
     status_mode = request.GET['status']
 
     current_patient = Patient.objects.get(id=patient_id)
@@ -655,7 +648,7 @@ def exam_view(request, patient_id, record_id, exam_id, template_name="quiz/exams
 
 
 @login_required
-@permission_required('quiz.add_medicalrecorddata')
+@permission_required('patient.add_medicalrecorddata')
 def exam_delete(request, patient_id, record_id, exam_id):
     complementary_exam = get_object_or_404(ComplementaryExam, pk=exam_id)
 
@@ -668,7 +661,7 @@ def exam_delete(request, patient_id, record_id, exam_id):
 
 
 @login_required
-@permission_required('quiz.add_medicalrecorddata')
+@permission_required('patient.add_medicalrecorddata')
 def exam_file_delete(request, exam_file_id):
     exam_file = get_object_or_404(ExamFile, pk=exam_file_id)
     exam_file.delete()

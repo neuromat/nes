@@ -1,7 +1,7 @@
 {% load i18n %}
 {% if patient_homonym %}
     {% for patient in patient_homonym %}
-        <li><a href="/quiz/patient/{{ patient.id }}">
+        <li><a href="/patient/{{ patient.id }}">
             {% if patient.cpf %} {{ patient.cpf }} - {% endif %}{{ patient.name }}</a></li>
     {% endfor %}
 
@@ -10,7 +10,7 @@
 
 {% if patient_homonym_excluded %}
     {% for patient in patient_homonym_excluded %}
-        <li><a href="/quiz/restore/patient/{{ patient.id }}">
+        <li><a href="/restore/patient/{{ patient.id }}">
             {% if patient.cpf %} {{ patient.cpf }} - {% endif %}{{ patient.name }}</a></li>
     {% endfor %}
 
