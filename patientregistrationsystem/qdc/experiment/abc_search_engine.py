@@ -105,7 +105,7 @@ class ABCSearchEngine:
             survey_title = self.server.get_language_properties(self.session_key, sid, {'method': 'surveyls_title'})
             survey_title = survey_title.get('surveyls_title')
         else:
-            survey_title = ""
+            survey_title = str(sid)
 
         return survey_title
 

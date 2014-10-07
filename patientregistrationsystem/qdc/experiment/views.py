@@ -69,14 +69,11 @@ def experiment_update(request, experiment_id, template_name="experiment/experime
 
         surveys = Questionnaires()
 
-        if not surveys.session_key:
-            limesurvey_available = False
-            messages.warning(request, "LimeSurvey indisponível. Funcionalidade com restrições.")
-        else:
-            limesurvey_available = True
+
+        limesurvey_available = check_limesurvey_access(request, surveys)
 
         questionnaires_configuration_list = [
-            {"survey_title": str(questionnaire_configuration.lime_survey_id) + " " + surveys.get_survey_title(questionnaire_configuration.lime_survey_id),
+            {"survey_title": surveys.get_survey_title(questionnaire_configuration.lime_survey_id),
              "number_of_fills": questionnaire_configuration.number_of_fills,
              "interval_between_fills_value": questionnaire_configuration.interval_between_fills_value,
              "interval_between_fills_unit": questionnaire_configuration.interval_between_fills_unit,
@@ -250,11 +247,7 @@ def subjects(request, experiment_id, template_name="experiment/subjects.html"):
 
     surveys = Questionnaires()
 
-    if not surveys.session_key:
-        limesurvey_available = False
-        messages.warning(request, "LimeSurvey indisponível. Funcionalidade com restrições.")
-    else:
-        limesurvey_available = True
+    limesurvey_available = check_limesurvey_access(request, surveys)
 
     for subject_of_experiment in subject_of_experiment_list:
 
@@ -622,6 +615,15 @@ def questionnaire_response_view(request, questionnaire_response_id,
     return render(request, template_name, context)
 
 
+def check_limesurvey_access(request, surveys):
+    limesurvey_available = True
+    if not surveys.session_key:
+        limesurvey_available = False
+        messages.warning(request, "LimeSurvey indisponível. Sistema funcionando parcialmente.")
+
+    return limesurvey_available
+
+
 @login_required
 @permission_required('experiment.view_questionnaireresponse')
 def subject_questionnaire_view(request, experiment_id, subject_id,
@@ -636,12 +638,7 @@ def subject_questionnaire_view(request, experiment_id, subject_id,
 
     surveys = Questionnaires()
 
-    if not surveys.session_key:
-        limesurvey_available = False
-        messages.warning(request, "LimeSurvey indisponível. Funcionalidade com restrições.")
-    else:
-        limesurvey_available = True
-
+    limesurvey_available = check_limesurvey_access(request, surveys)
 
     for questionnaire_configuration in questionnaires_configuration_list:
 
@@ -667,7 +664,7 @@ def subject_questionnaire_view(request, experiment_id, subject_id,
 
         subject_questionnaires.append(
             {'questionnaire_configuration': questionnaire_configuration,
-             'title': str(questionnaire_configuration.lime_survey_id) + " " + surveys.get_survey_title(questionnaire_configuration.lime_survey_id),
+             'title': surveys.get_survey_title(questionnaire_configuration.lime_survey_id),
              'questionnaire_responses': questionnaire_responses_with_status}
         )
 

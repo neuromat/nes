@@ -117,11 +117,15 @@
                                                         <a href='/experiment/{{ experiment_id }}/subjects/{{ item.subject.id }}/questionnaire/' class="glyphicon glyphicon-edit"></a>
                                                     </div>
                                                 {% endif %}
-                                                <div class="progress" >
-                                                    <div class="progress-bar {% if item.percentage == 100 %}progress-bar-success{% else %}progress-bar-warning{% endif %}" role="progressbar" aria-valuenow="{{ item.number_of_questionnaires_filled }}" aria-valuemin="0" aria-valuemax="{{ item.total_of_questionnaires }}" style="color: #000000; width: {{ item.percentage }}%;">
-                                                        {{ item.number_of_questionnaires_filled }}/{{ item.total_of_questionnaires }}
+                                                {% if limesurvey_available %}
+                                                    <div class="progress" >
+                                                        <div class="progress-bar {% if item.percentage == 100 %}progress-bar-success{% else %}progress-bar-warning{% endif %}" role="progressbar" aria-valuenow="{{ item.number_of_questionnaires_filled }}" aria-valuemin="0" aria-valuemax="{{ item.total_of_questionnaires }}" style="color: #000000; width: {{ item.percentage }}%;">
+                                                            {{ item.number_of_questionnaires_filled }}/{{ item.total_of_questionnaires }}
+                                                        </div>
                                                     </div>
-                                                </div>
+                                                {% else %}
+                                                    <span class="label label-default">Sem status</span>
+                                                {% endif %}
                                             </td>
                                         </tr>
                                     {% endfor %}
