@@ -104,12 +104,10 @@ class ComplementaryExamForm(ModelForm):
         fields = ['date', 'description', 'doctor', 'doctor_register', 'exam_site']
 
         widgets = {
-            'date': DateInput(attrs={'class': 'form-control', 'placeholder': 'Data',
-                                     'id': 'exam_date', 'required': "",
+            'date': DateInput(attrs={'class': 'form-control', 'placeholder': 'Data', 'required': "",
                                      'data-error': "Data deve ser preenchida"}),
-            'description': Textarea(attrs={'class': 'form-control', 'placeholder': 'Descrição',
-                                           'rows': '4', 'id': 'exam_description', 'required': "",
-                                           'data-error': "Descrição deve ser preenchida"}),
+            'description': Textarea(attrs={'class': 'form-control', 'placeholder': 'Descrição', 'rows': '4',
+                                           'required': "", 'data-error': "Descrição deve ser preenchida"}),
             'doctor': TextInput(attrs={'class': 'form-control', 'placeholder': 'Médico'}),
             'doctor_register': TextInput(attrs={'class': 'form-control', 'placeholder': 'CRM'}),
             'exam_site': TextInput(attrs={'class': 'form-control', 'placeholder': 'Local de realização'}),

@@ -2,6 +2,7 @@ from django.conf.urls import patterns, url
 
 urlpatterns = patterns(
     '',
+    url(r'^$', 'patient.views.search_patient', name='search_patient'),
     url(r'^find/$', 'patient.views.search_patient', name='search_patient'),
     url(r'^advanced_search/$', 'patient.views.advanced_search', name='advanced_search'),
 
