@@ -1,12 +1,8 @@
 $(document).ready(function () {
 
-    $("#date_fill").mask("99/99/9999");
-
     $("#id_date_birth").mask("99/99/9999");
 
     $("#id_date").mask("99/99/9999");
-
-    $("#date").mask("99/99/9999");
 
     $("#id_smoker_0").click(function () {
         $("#id_amount_cigarettes").prop('disabled', false);
