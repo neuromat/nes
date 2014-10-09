@@ -54,7 +54,7 @@ class QuestionnaireResponseForm(ModelForm):
         ]
 
         widgets = {
-            'date': DateInput(attrs={'class': 'form-control', 'placeholder': 'Data',
+            'date': DateInput(attrs={'class': 'form-control', 'placeholder': 'dd/mm/aaaa',
                                      'id': "date_fill", 'required': "",
                                      'data-error': "Data de preenchimento deve ser preenchida"}, )
         }

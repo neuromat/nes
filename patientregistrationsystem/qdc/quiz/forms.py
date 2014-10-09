@@ -33,7 +33,8 @@ class PatientForm(ModelForm):
             'country': SelectBoxCountries(attrs={'data-flags': 'true'}),
             'name': TextInput(attrs={'class': 'form-control', 'autofocus': "true", 'required': "",
                                      'data-error': _('Nome deve ser preenchido')}),
-            'cpf': TextInput(attrs={'class': 'form-control'}),
+            'cpf': TextInput(attrs={'class': 'form-control',
+                                    'placeholder': 'xxx.xxx.xxx-xx'}),
             'rg': TextInput(attrs={'class': 'form-control'}),
             'natural_of': TextInput(attrs={'class': 'form-control'}),
             'phone': TextInput(attrs={'class': 'form-control'}),
@@ -46,7 +47,8 @@ class PatientForm(ModelForm):
                                     'data-error': _('Sexo deve ser preenchido')}),
             'marital_status': Select(attrs={'class': 'form-control'}),
             'date_birth': DateInput(attrs={'class': 'form-control', 'required': "",
-                                           'data-error': _('Data de nascimento deve ser preenchida')})
+                                           'data-error': _('Data de nascimento deve ser preenchida'),
+                                           'placeholder': 'dd/mm/aaaa'})
         }
 
 
@@ -101,7 +103,7 @@ class ComplementaryExamForm(ModelForm):
         fields = ['date', 'description', 'doctor', 'doctor_register', 'exam_site']
 
         widgets = {
-            'date': DateInput(attrs={'class': 'form-control', 'placeholder': 'Data',
+            'date': DateInput(attrs={'class': 'form-control', 'placeholder': 'dd/mm/aaaa',
                                      'id': 'exam_date', 'required': "",
                                      'data-error': "Data deve ser preenchida"}),
             'description': Textarea(attrs={'class': 'form-control', 'placeholder': 'Descrição',
