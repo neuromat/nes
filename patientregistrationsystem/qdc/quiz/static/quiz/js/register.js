@@ -1,8 +1,66 @@
 $(document).ready(function () {
 
     $("#id_date_birth").mask("99/99/9999");
+    var ua = navigator.userAgent.toLowerCase();
+    var isNotAndroid = ua.indexOf("android") <= -1; //&& ua.indexOf("mobile");
+    if(isNotAndroid) {
 
-    $("#id_date").mask("99/99/9999");
+        $("#id_date_birth").mask("99/99/9999");
+
+        $("#id_date").mask("99/99/9999");
+
+        $("#id_cpf").mask("999.999.999-99");
+
+        $('#id_cellphone').val();
+        $('#id_cellphone').change(function () {
+            $('#id_cellphone').unmask();
+        });
+        $('#id_cellphone').focus(function () {
+            $('#id_cellphone').unmask();
+        });
+
+        $('#id_cellphone').blur(function () {
+            if ($("#id_cellphone").val().length == 11)
+                $("#id_cellphone").mask("(99) 99999-9999");
+            else if ($("#id_cellphone").val().length == 10)
+                $("#id_cellphone").mask("(99) 9999-9999");
+            else
+                $("#id_cellphone").unmask();
+        });
+
+        $('#id_phone').val();
+        $('#id_phone').change(function () {
+            $('#id_phone').unmask();
+        });
+
+        $('#id_phone').focus(function () {
+            $('#id_phone').unmask();
+        });
+
+        $('#id_phone').blur(function () {
+            if ($("#id_phone").val().length == 11)
+                $("#id_phone").mask("(99) 99999-9999");
+            else if ($("#id_phone").val().length == 10)
+                $("#id_phone").mask("(99) 9999-9999");
+            else
+                $("#id_phone").unmask();
+        });
+
+        $('#id_zipcode').val();
+        $('#id_zipcode').change(function () {
+            $('#id_zipcode').unmask();
+        });
+
+        $('#id_zipcode').focus(function () {
+            $('#id_zipcode').unmask();
+        });
+
+        $('#id_zipcode').blur(function () {
+            if (this.value.length == 8) {
+                $('#id_zipcode').mask('99999-999');
+            }
+        });
+    }
 
     $("#id_smoker_0").click(function () {
         $("#id_amount_cigarettes").prop('disabled', false);
@@ -28,63 +86,9 @@ $(document).ready(function () {
         $("#id_alcohol_period").prop('disabled', true);
     });
 
-    $("#id_cpf").mask("999.999.999-99");
-
     $("#nexttab").click(function () {
         var $tabs = $('.tabbable li');
         $tabs.filter('.active').next('li').find('a[data-toggle="tab"]').tab('show');
-    });
-
-
-    $('#id_cellphone').val();
-    $('#id_cellphone').change(function () {
-        $('#id_cellphone').unmask();
-    });
-
-    $('#id_cellphone').focus(function () {
-        $('#id_cellphone').unmask();
-    });
-
-    $('#id_cellphone').blur(function () {
-        if ($("#id_cellphone").val().length == 11)
-            $("#id_cellphone").mask("(99) 99999-9999");
-        else if ($("#id_cellphone").val().length == 10)
-            $("#id_cellphone").mask("(99) 9999-9999");
-        else
-            $("#id_cellphone").unmask();
-    });
-
-    $('#id_phone').val();
-    $('#id_phone').change(function () {
-        $('#id_phone').unmask();
-    });
-
-    $('#id_phone').focus(function () {
-        $('#id_phone').unmask();
-    });
-
-    $('#id_phone').blur(function () {
-        if ($("#id_phone").val().length == 11)
-            $("#id_phone").mask("(99) 99999-9999");
-        else if ($("#id_phone").val().length == 10)
-            $("#id_phone").mask("(99) 9999-9999");
-        else
-            $("#id_phone").unmask();
-    });
-
-    $('#id_zipcode').val();
-    $('#id_zipcode').change(function () {
-        $('#id_zipcode').unmask();
-    });
-
-    $('#id_zipcode').focus(function () {
-        $('#id_zipcode').unmask();
-    });
-
-    $('#id_zipcode').blur(function () {
-        if (this.value.length == 8) {
-            $('#id_zipcode').mask('99999-999');
-        }
     });
 
     //Ajax part to show modal if patient with same name exists in database
