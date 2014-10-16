@@ -510,6 +510,33 @@ def questionnaire_response_update(request, questionnaire_response_id,
     return render(request, template_name, context)
 
 
+def questionnaire_verification(questionnaire_id):
+    questionnaire_configuration = get_object_or_404(QuestionnaireConfiguration, id=questionnaire_id)
+    surveys = Questionnaires()
+    groups = surveys.list_groups(questionnaire_configuration.lime_survey_id)
+    for group in groups:
+        if group['group_name'] == 'identificação':
+            question_list = surveys.list_questions(questionnaire_configuration.lime_survey_id, group['id'])
+            for question in question_list:
+                if question['question_id'] == 'responsibleid':
+                    if question['type'] != 'N':
+                        return False
+                    else:
+                        break
+                if question['question_id'] == 'acquisitiondate':
+                    if question['type'] != 'D':
+                        return False
+                    else:
+                        break
+                if question['question_id'] == 'subjectid':
+                    if question['type'] != 'N':
+                        return False
+                    else:
+                        break
+                else:
+                    return False
+
+
 @login_required
 @permission_required('experiment.view_questionnaireresponse')
 def questionnaire_response_view(request, questionnaire_response_id,
