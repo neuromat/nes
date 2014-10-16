@@ -216,24 +216,20 @@ def patient_update(request, patient_id, template_name="patient/register.html"):
 
         surveys = Questionnaires()
         questionnaires_data = []
-        subject = get_object_or_404(Subject, patient=current_patient)
+        subject = Subject.objects.filter(patient=current_patient)
         subject_of_experiment_list = SubjectOfExperiment.objects.filter(subject=subject)
         for subject_of_experiment in subject_of_experiment_list:
-            experiment = get_object_or_404(Experiment, id=subject_of_experiment.experiment.id)
+            experiment = Experiment.objects.filter(id=subject_of_experiment.experiment.id)
             questionnaire_configuration_list = QuestionnaireConfiguration.objects.filter(experiment=experiment)
             for questionnaire_configuration in questionnaire_configuration_list:
                 questionnaire_response_list = QuestionnaireResponse.objects.filter(subject_of_experiment=subject_of_experiment). \
                     filter(questionnaire_configuration=questionnaire_configuration)
                 for questionnaire_response in questionnaire_response_list:
-                    response_result = surveys.get_participant_properties(questionnaire_configuration.lime_survey_id,
-                                                                 questionnaire_response.token_id,
-                                                                 "completed")
                     questionnaires_data.append(
                         {
                             'experiment_title': experiment.title,
                             'questionnaire_title': surveys.get_survey_title(questionnaire_configuration.lime_survey_id),
-                            'questionnaire_response': questionnaire_response,
-                            'completed': response_result != "N" and response_result != ""
+                            'questionnaire_response': questionnaire_response
                         }
                     )
 
@@ -307,24 +303,20 @@ def patient(request, patient_id, template_name="patient/register.html"):
 
         surveys = Questionnaires()
         questionnaires_data = []
-        subject = get_object_or_404(Subject, patient=current_patient)
+        subject = Subject.objects.filter(patient=current_patient)
         subject_of_experiment_list = SubjectOfExperiment.objects.filter(subject=subject)
         for subject_of_experiment in subject_of_experiment_list:
-            experiment = get_object_or_404(Experiment, id=subject_of_experiment.experiment.id)
+            experiment = Experiment.objects.filter(id=subject_of_experiment.experiment.id)
             questionnaire_configuration_list = QuestionnaireConfiguration.objects.filter(experiment=experiment)
             for questionnaire_configuration in questionnaire_configuration_list:
                 questionnaire_response_list = QuestionnaireResponse.objects.filter(subject_of_experiment=subject_of_experiment). \
                     filter(questionnaire_configuration=questionnaire_configuration)
                 for questionnaire_response in questionnaire_response_list:
-                    response_result = surveys.get_participant_properties(questionnaire_configuration.lime_survey_id,
-                                                                 questionnaire_response.token_id,
-                                                                 "completed")
                     questionnaires_data.append(
                         {
                             'experiment_title': experiment.title,
                             'questionnaire_title': surveys.get_survey_title(questionnaire_configuration.lime_survey_id),
-                            'questionnaire_response': questionnaire_response,
-                            'completed': response_result != "N" and response_result != ""
+                            'questionnaire_response': questionnaire_response
                         }
                     )
 
