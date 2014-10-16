@@ -219,7 +219,7 @@ def patient_update(request, patient_id, template_name="patient/register.html"):
         subject = Subject.objects.filter(patient=current_patient)
         subject_of_experiment_list = SubjectOfExperiment.objects.filter(subject=subject)
         for subject_of_experiment in subject_of_experiment_list:
-            experiment = Experiment.objects.filter(id=subject_of_experiment.experiment.id)
+            experiment = get_object_or_404(Experiment, id=subject_of_experiment.experiment.id)
             questionnaire_configuration_list = QuestionnaireConfiguration.objects.filter(experiment=experiment)
             for questionnaire_configuration in questionnaire_configuration_list:
                 questionnaire_response_list = QuestionnaireResponse.objects.filter(subject_of_experiment=subject_of_experiment). \
@@ -306,7 +306,7 @@ def patient(request, patient_id, template_name="patient/register.html"):
         subject = Subject.objects.filter(patient=current_patient)
         subject_of_experiment_list = SubjectOfExperiment.objects.filter(subject=subject)
         for subject_of_experiment in subject_of_experiment_list:
-            experiment = Experiment.objects.filter(id=subject_of_experiment.experiment.id)
+            experiment = get_object_or_404(Experiment, id=subject_of_experiment.experiment.id)
             questionnaire_configuration_list = QuestionnaireConfiguration.objects.filter(experiment=experiment)
             for questionnaire_configuration in questionnaire_configuration_list:
                 questionnaire_response_list = QuestionnaireResponse.objects.filter(subject_of_experiment=subject_of_experiment). \
