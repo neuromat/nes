@@ -510,6 +510,7 @@ def questionnaire_response_update(request, questionnaire_response_id,
     return render(request, template_name, context)
 
 
+# método para verificar se o questionário tem as questões de identificação corretas e se seus tipos também são corretos
 def questionnaire_verification(questionnaire_id):
     questionnaire_configuration = get_object_or_404(QuestionnaireConfiguration, id=questionnaire_id)
     surveys = Questionnaires()
