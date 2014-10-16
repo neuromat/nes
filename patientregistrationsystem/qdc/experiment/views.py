@@ -365,7 +365,7 @@ def get_limesurvey_response_url(questionnaire_response):
     questionnaire_lime_survey.release_session_key()
 
     redirect_url = \
-        '%s/index.php/%s/token/%s/idavaliador/%s/datdataaquisicao/%s/idparticipante/%s/newtest/Y' % (
+        '%s/index.php/%s/token/%s/responsibleid/%s/acquisitiondate/%s/subjectid/%s/newtest/Y' % (
             settings.LIMESURVEY['URL'],
             questionnaire_response.questionnaire_configuration.lime_survey_id,
             token,
@@ -373,14 +373,16 @@ def get_limesurvey_response_url(questionnaire_response):
             questionnaire_response.date.strftime('%d-%m-%Y'),
             str(questionnaire_response.subject_of_experiment.subject.id))
 
+    # versao com os nomes dos campos em portugues
+    #
     # redirect_url = \
-    # '%s/index.php/survey/index/sid/%s/token/%s/lang/pt-BR/idavaliador/%s/datdataaquisicao/%s/idparticipante/%s' % (
-    # settings.LIMESURVEY['URL'],
-    # questionnaire_response.questionnaire_configuration.lime_survey_id,
-    # token,
-    #     questionnaire_response.questionnaire_responsible.id,
-    #     questionnaire_response.date.strftime('%d-%m-%Y'),
-    #     questionnaire_response.subject.id)
+    #     '%s/index.php/%s/token/%s/idavaliador/%s/datdataaquisicao/%s/idparticipante/%s/newtest/Y' % (
+    #         settings.LIMESURVEY['URL'],
+    #         questionnaire_response.questionnaire_configuration.lime_survey_id,
+    #         token,
+    #         str(questionnaire_response.questionnaire_responsible.id),
+    #         questionnaire_response.date.strftime('%d-%m-%Y'),
+    #         str(questionnaire_response.subject_of_experiment.subject.id))
 
     return redirect_url
 
