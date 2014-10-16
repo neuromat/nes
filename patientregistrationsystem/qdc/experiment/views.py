@@ -512,6 +512,10 @@ def questionnaire_response_update(request, questionnaire_response_id,
 @permission_required('experiment.view_questionnaireresponse')
 def questionnaire_response_view(request, questionnaire_response_id,
                                 template_name="experiment/subject_questionnaire_response_view.html"):
+
+    view = request.GET['view']
+    status_mode = request.GET['status']
+
     questionnaire_response = get_object_or_404(QuestionnaireResponse, id=questionnaire_response_id)
     questionnaire_configuration = questionnaire_response.questionnaire_configuration
     surveys = Questionnaires()
@@ -609,7 +613,9 @@ def questionnaire_response_view(request, questionnaire_response_id,
     context = {
         "questionnaire_responses": questionnaire_responses,
         "survey_title": survey_title,
-        "questionnaire_response": questionnaire_response
+        "questionnaire_response": questionnaire_response,
+        "view": view,
+        "status_mode": status_mode
     }
 
     return render(request, template_name, context)

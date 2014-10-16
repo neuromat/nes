@@ -19,7 +19,8 @@ from patient.forms import PatientForm, SocialDemographicDataForm, SocialHistoryD
     ComplementaryExamForm, ExamFileForm
 from patient.quiz_widget import SelectBoxCountriesDisabled, SelectBoxStateDisabled
 
-
+from experiment.models import Subject, Experiment, SubjectOfExperiment, QuestionnaireConfiguration, QuestionnaireResponse
+from experiment.abc_search_engine import Questionnaires
 
 
 # pylint: disable=E1101
@@ -213,6 +214,30 @@ def patient_update(request, patient_id, template_name="patient/register.html"):
 
         medical_data = MedicalRecordData.objects.filter(patient_id=patient_id).order_by('record_date')
 
+        surveys = Questionnaires()
+        questionnaires_data = []
+        subject = get_object_or_404(Subject, patient=current_patient)
+        subject_of_experiment_list = SubjectOfExperiment.objects.filter(subject=subject)
+        for subject_of_experiment in subject_of_experiment_list:
+            experiment = get_object_or_404(Experiment, id=subject_of_experiment.experiment.id)
+            questionnaire_configuration_list = QuestionnaireConfiguration.objects.filter(experiment=experiment)
+            for questionnaire_configuration in questionnaire_configuration_list:
+                questionnaire_response_list = QuestionnaireResponse.objects.filter(subject_of_experiment=subject_of_experiment). \
+                    filter(questionnaire_configuration=questionnaire_configuration)
+                for questionnaire_response in questionnaire_response_list:
+                    response_result = surveys.get_participant_properties(questionnaire_configuration.lime_survey_id,
+                                                                 questionnaire_response.token_id,
+                                                                 "completed")
+                    questionnaires_data.append(
+                        {
+                            'experiment_title': experiment.title,
+                            'questionnaire_title': surveys.get_survey_title(questionnaire_configuration.lime_survey_id),
+                            'questionnaire_response': questionnaire_response,
+                            'completed': response_result != "N" and response_result != ""
+                        }
+                    )
+
+
         context = {
             'patient_form': patient_form,
             'social_demographic_form': social_demographic_form,
@@ -220,7 +245,8 @@ def patient_update(request, patient_id, template_name="patient/register.html"):
             'editing': True,
             'currentTab': current_tab,
             'patient_id': patient_id,
-            'object_list': medical_data}
+            'object_list': medical_data,
+            'questionnaire_data': questionnaires_data}
         return render(request, template_name, context)
 
 
@@ -279,12 +305,36 @@ def patient(request, patient_id, template_name="patient/register.html"):
         patient_form.fields['citizenship'].widget = SelectBoxCountriesDisabled(
             attrs={'id': 'id_chosen_country', 'data-flags': 'true', 'disabled': 'true'})
 
+        surveys = Questionnaires()
+        questionnaires_data = []
+        subject = get_object_or_404(Subject, patient=current_patient)
+        subject_of_experiment_list = SubjectOfExperiment.objects.filter(subject=subject)
+        for subject_of_experiment in subject_of_experiment_list:
+            experiment = get_object_or_404(Experiment, id=subject_of_experiment.experiment.id)
+            questionnaire_configuration_list = QuestionnaireConfiguration.objects.filter(experiment=experiment)
+            for questionnaire_configuration in questionnaire_configuration_list:
+                questionnaire_response_list = QuestionnaireResponse.objects.filter(subject_of_experiment=subject_of_experiment). \
+                    filter(questionnaire_configuration=questionnaire_configuration)
+                for questionnaire_response in questionnaire_response_list:
+                    response_result = surveys.get_participant_properties(questionnaire_configuration.lime_survey_id,
+                                                                 questionnaire_response.token_id,
+                                                                 "completed")
+                    questionnaires_data.append(
+                        {
+                            'experiment_title': experiment.title,
+                            'questionnaire_title': surveys.get_survey_title(questionnaire_configuration.lime_survey_id),
+                            'questionnaire_response': questionnaire_response,
+                            'completed': response_result != "N" and response_result != ""
+                        }
+                    )
+
         context = {'patient_form': patient_form, 'social_demographic_form': social_demographic_form,
                    'social_history_form': social_history_form,
                    'editing': False,
                    'currentTab': current_tab,
                    'patient_id': patient_id,
-                   'object_list': medical_data}
+                   'object_list': medical_data,
+                   'questionnaire_data': questionnaires_data}
 
         return render(request, template_name, context)
 
