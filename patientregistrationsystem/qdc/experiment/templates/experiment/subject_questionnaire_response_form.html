@@ -201,7 +201,7 @@
                 {% if not completed %}
                     <button type="submit" id="button2" name="action" value="save" class="btn btn-primary">{% if creating %}Novo preenchimento{% else %}Continuar preenchimento{% endif %}</button>
                 {% else %}
-                    <a href="/experiment/questionnaire_response/{{ questionnaire_response_id }}" class="btn btn-primary">Ver preenchimento</a>
+                    <a href="/experiment/questionnaire_response/{{ questionnaire_response_id }}/?view=experiment&status=view" class="btn btn-primary">Ver preenchimento</a>
                 {% endif %}
             </div>
             <div class="btn-group pull-right">

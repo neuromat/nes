@@ -1,15 +1,13 @@
 $(document).ready(function () {
 
+    $("#id_date_birth").mask("99/99/9999");
     var ua = navigator.userAgent.toLowerCase();
     var isNotAndroid = ua.indexOf("android") <= -1; //&& ua.indexOf("mobile");
     if(isNotAndroid) {
-        $("#date_fill").mask("99/99/9999");
 
         $("#id_date_birth").mask("99/99/9999");
 
-        $("#exam_date").mask("99/99/9999");
-
-        $("#date").mask("99/99/9999");
+        $("#id_date").mask("99/99/9999");
 
         $("#id_cpf").mask("999.999.999-99");
 
@@ -142,7 +140,7 @@ $(document).ready(function () {
 
         if (name_value.length == 0 || date_birth_value.length == 0 || gender_value.length == 0) {
             showErrorMessageTemporary("Campos obrigatórios devem ser preenchidos.");
-            jumpToElement('name');
+            jumpToElement('id_name');
             document.getElementById('id_date_birth').focus();
             document.getElementById('id_gender').focus();
             document.getElementById('id_name').focus();

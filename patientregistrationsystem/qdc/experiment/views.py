@@ -1,4 +1,8 @@
 # coding=utf-8
+from functools import partial
+import re
+import datetime
+
 from django.shortcuts import render, get_object_or_404, redirect
 from django.contrib.auth.decorators import login_required, permission_required
 from django.contrib import messages
@@ -6,21 +10,14 @@ from django.http import HttpResponseRedirect
 from django.core.urlresolvers import reverse
 from django.shortcuts import render_to_response
 from django.db.models.deletion import ProtectedError
+from django.conf import settings
 
 from experiment.models import Experiment, QuestionnaireConfiguration, Subject, TimeUnit, \
     QuestionnaireResponse, SubjectOfExperiment
 from experiment.forms import ExperimentForm, QuestionnaireConfigurationForm, QuestionnaireResponseForm, FileForm
+from patient.models import Patient
+from experiment.abc_search_engine import Questionnaires
 
-from quiz.models import Patient
-from quiz.abc_search_engine import Questionnaires
-
-from django.conf import settings
-
-from functools import partial
-
-import re
-
-import datetime
 
 permission_required = partial(permission_required, raise_exception=True)
 
@@ -368,7 +365,7 @@ def get_limesurvey_response_url(questionnaire_response):
     questionnaire_lime_survey.release_session_key()
 
     redirect_url = \
-        '%s/index.php/%s/token/%s/idavaliador/%s/datdataaquisicao/%s/idparticipante/%s/newtest/Y' % (
+        '%s/index.php/%s/token/%s/responsibleid/%s/acquisitiondate/%s/subjectid/%s/newtest/Y' % (
             settings.LIMESURVEY['URL'],
             questionnaire_response.questionnaire_configuration.lime_survey_id,
             token,
@@ -376,14 +373,16 @@ def get_limesurvey_response_url(questionnaire_response):
             questionnaire_response.date.strftime('%d-%m-%Y'),
             str(questionnaire_response.subject_of_experiment.subject.id))
 
+    # versao com os nomes dos campos em portugues
+    #
     # redirect_url = \
-    # '%s/index.php/survey/index/sid/%s/token/%s/lang/pt-BR/idavaliador/%s/datdataaquisicao/%s/idparticipante/%s' % (
-    # settings.LIMESURVEY['URL'],
-    # questionnaire_response.questionnaire_configuration.lime_survey_id,
-    # token,
-    #     questionnaire_response.questionnaire_responsible.id,
-    #     questionnaire_response.date.strftime('%d-%m-%Y'),
-    #     questionnaire_response.subject.id)
+    #     '%s/index.php/%s/token/%s/idavaliador/%s/datdataaquisicao/%s/idparticipante/%s/newtest/Y' % (
+    #         settings.LIMESURVEY['URL'],
+    #         questionnaire_response.questionnaire_configuration.lime_survey_id,
+    #         token,
+    #         str(questionnaire_response.questionnaire_responsible.id),
+    #         questionnaire_response.date.strftime('%d-%m-%Y'),
+    #         str(questionnaire_response.subject_of_experiment.subject.id))
 
     return redirect_url
 
@@ -511,10 +510,42 @@ def questionnaire_response_update(request, questionnaire_response_id,
     return render(request, template_name, context)
 
 
+# método para verificar se o questionário tem as questões de identificação corretas e se seus tipos também são corretos
+def questionnaire_verification(questionnaire_id):
+    questionnaire_configuration = get_object_or_404(QuestionnaireConfiguration, id=questionnaire_id)
+    surveys = Questionnaires()
+    groups = surveys.list_groups(questionnaire_configuration.lime_survey_id)
+    for group in groups:
+        if group['group_name'] == 'identificação':
+            question_list = surveys.list_questions(questionnaire_configuration.lime_survey_id, group['id'])
+            for question in question_list:
+                if question['question_id'] == 'responsibleid':
+                    if question['type'] != 'N':
+                        return False
+                    else:
+                        break
+                if question['question_id'] == 'acquisitiondate':
+                    if question['type'] != 'D':
+                        return False
+                    else:
+                        break
+                if question['question_id'] == 'subjectid':
+                    if question['type'] != 'N':
+                        return False
+                    else:
+                        break
+                else:
+                    return False
+
+
 @login_required
 @permission_required('experiment.view_questionnaireresponse')
 def questionnaire_response_view(request, questionnaire_response_id,
                                 template_name="experiment/subject_questionnaire_response_view.html"):
+
+    view = request.GET['view']
+    status_mode = request.GET['status']
+
     questionnaire_response = get_object_or_404(QuestionnaireResponse, id=questionnaire_response_id)
     questionnaire_configuration = questionnaire_response.questionnaire_configuration
     surveys = Questionnaires()
@@ -612,7 +643,9 @@ def questionnaire_response_view(request, questionnaire_response_id,
     context = {
         "questionnaire_responses": questionnaire_responses,
         "survey_title": survey_title,
-        "questionnaire_response": questionnaire_response
+        "questionnaire_response": questionnaire_response,
+        "view": view,
+        "status_mode": status_mode
     }
 
     return render(request, template_name, context)

@@ -1,0 +1,18 @@
+{% load i18n %}
+{% if patient_homonym %}
+    {% for patient in patient_homonym %}
+        <li><a href="/patient/{{ patient.id }}">
+            {% if patient.cpf %} {{ patient.cpf }} - {% endif %}{{ patient.name }}</a></li>
+    {% endfor %}
+
+    <div id="patient_homonym"></div>
+{% endif %}
+
+{% if patient_homonym_excluded %}
+    {% for patient in patient_homonym_excluded %}
+        <li><a href="/restore/patient/{{ patient.id }}">
+            {% if patient.cpf %} {{ patient.cpf }} - {% endif %}{{ patient.name }}</a></li>
+    {% endfor %}
+
+    <div id="patient_homonym_excluded"></div>
+{% endif %}

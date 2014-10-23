@@ -4,7 +4,7 @@ $(function(){
 
         $.ajax({
             type: "POST",
-            url: "/quiz/patient/search/",
+            url: "/patient/search/",
             data: {
                 'search_text' : $('#nameKey').val(),
                 'csrfmiddlewaretoken' : $("input[name=csrfmiddlewaretoken]").val()
@@ -20,7 +20,7 @@ $(function(){
 
         $.ajax({
             type: "POST",
-            url: "/quiz/patient/verify_homonym/",
+            url: "/patient/verify_homonym/",
             data: {
                 'search_text': $('#name').val(),
                 'csrfmiddlewaretoken': $("input[name=csrfmiddlewaretoken]").val()
@@ -36,7 +36,7 @@ $(function(){
 
         $.ajax({
             type: "POST",
-            url: "/quiz/patient/verify_homonym/",
+            url: "/patient/verify_homonym/",
             data: {
                 'search_text': $('#cpf').val(),
                 'csrfmiddlewaretoken': $("input[name=csrfmiddlewaretoken]").val()
@@ -52,7 +52,7 @@ $(function(){
 
             $.ajax({
                 type: "POST",
-                url: "/quiz/patient/medical_record/cid-10/",
+                url: "/patient/medical_record/cid-10/",
                 data: {
                     'search_text': ($('#id_whichComplementaryExam').val().length >= 3 ?
                         $('#id_whichComplementaryExam').val() : ''),
