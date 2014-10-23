@@ -1,5 +1,5 @@
 # coding=utf-8
-from django.forms import ModelForm, TextInput, DateInput, Select, RadioSelect
+from django.forms import ModelForm, TextInput, DateInput, Select, RadioSelect, TypedChoiceField
 from django.forms.widgets import Textarea
 from quiz.models import Patient, SocialDemographicData, SocialHistoryData, ComplementaryExam, ExamFile
 from quiz.quiz_widget import SelectBoxCountries, SelectBoxState
@@ -53,6 +53,11 @@ class PatientForm(ModelForm):
 
 
 class SocialDemographicDataForm(ModelForm):
+    benefit_government = TypedChoiceField(required=False,
+                                          empty_value=None,
+                                          choices=((True, 'Sim'), (False, 'Não')),
+                                          widget=RadioSelect)
+
     class Meta:
         model = SocialDemographicData
         fields = ['profession', 'occupation', 'tv', 'dvd', 'radio', 'bath',
@@ -60,7 +65,6 @@ class SocialDemographicDataForm(ModelForm):
                   'religion', 'payment', 'flesh_tone', 'schooling', 'benefit_government',
                   'social_class']
         widgets = {
-            'benefit_government': RadioSelect(choices=(('1', 'Sim'), ('0', 'Não'))),
             'schooling': Select(attrs={'class': 'form-control'}),
             'flesh_tone': Select(attrs={'class': 'form-control'}),
             'religion': Select(attrs={'class': 'form-control'}),
@@ -81,16 +85,26 @@ class SocialDemographicDataForm(ModelForm):
 
 
 class SocialHistoryDataForm(ModelForm):
+    smoker = TypedChoiceField(required=False,
+                              empty_value=None,
+                              choices=((True, 'Sim'), (False, 'Não')),
+                              widget=RadioSelect(attrs={'id': 'id_smoker'}))
+    ex_smoker = TypedChoiceField(required=False,
+                                 empty_value=None,
+                                 choices=((True, 'Sim'), (False, 'Não')),
+                                 widget=RadioSelect)
+    alcoholic = TypedChoiceField(required=False,
+                                 empty_value=None,
+                                 choices=((True, 'Sim'), (False, 'Não')),
+                                 widget=RadioSelect(attrs={'id': 'id_alcoholic'}))
+
     class Meta:
         model = SocialHistoryData
         fields = ['smoker', 'amount_cigarettes', 'ex_smoker', 'alcoholic', 'alcohol_frequency',
                   'alcohol_period', 'drugs', ]
 
         widgets = {
-            'smoker': RadioSelect(attrs={'id': 'id_smoker'}, choices=(('1', 'Sim'), ('0', 'Não'))),
             'amount_cigarettes': Select(attrs={'class': 'form-control'}),
-            'ex_smoker': RadioSelect(choices=(('1', 'Sim'), ('0', 'Não'))),
-            'alcoholic': RadioSelect(attrs={'id': 'id_alcoholic'}, choices=(('1', 'Sim'), ('0', 'Não'))),
             'alcohol_frequency': Select(attrs={'class': 'form-control'}),
             'alcohol_period': Select(attrs={'class': 'form-control'}),
             'drugs': RadioSelect(choices=(('ja_fez', 'Já fez'), ('faz', 'Faz'), ('nunca_fez', 'Nunca fez'))),

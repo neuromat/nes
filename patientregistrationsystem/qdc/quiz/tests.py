@@ -15,6 +15,8 @@ from quiz.views import medical_record_view, medical_record_update, diagnosis_cre
     medical_record_create_diagnosis_create, exam_create, exam_view, \
     patient_update, patient, restore_patient, reverse
 
+from quiz.forms import SocialDemographicDataForm
+
 from custom_user.models import User
 
 from quiz.abc_search_engine import Questionnaires
@@ -180,6 +182,50 @@ class CpfValidationTest(TestCase):
         for cpf in self.invalid_values:
             result = CPF(cpf).isValid()
             self.assertEqual(result, False)
+
+
+class SocialDemographicDataFormValidation(TestCase):
+    """ Verifica se o SocialDemographicData está criando objetos da classe SocialDemographicData corretamente  """
+    user = ''
+    data = {}
+    patient_mock = None
+    social_demographic_data = None
+    util = UtilTests()
+
+    def setUp(self):
+        """ Cria uma instância do Patient para que se possa usar o SocialDemographicDataForm """
+        self.user = User.objects.create_user(username=USER_USERNAME, email='test@dummy.com', password=USER_PWD)
+        self.user.is_staff = True
+        self.user.is_superuser = True
+        self.user.save()
+
+        logged = self.client.login(username=USER_USERNAME, password=USER_PWD)
+        self.assertEqual(logged, True)
+
+        self.patient_mock = self.util.create_patient_mock(user=self.user)
+
+        self.social_demographic_data = SocialDemographicDataForm().save(commit=False)
+        self.social_demographic_data.patient = self.patient_mock
+        self.social_demographic_data.changed_by_id = self.user.pk
+
+        self.social_demographic_data.save()
+
+    def test_attribute_benefit_government_when_create(self):
+        """ Testando o atributo benefit_governments ao ser criado """
+        self.assertEqual(self.social_demographic_data.benefit_government, None)
+
+    def test_attribute_benefit_government_when_update(self):
+        """ Testando o atributo benefit_governments ao ser criado """
+        # self.data = {
+        #     'name': 'Pacient Test',
+        #     'gender': str(Gender.objects.get(name='Masculino')),
+        #     'date_birth': '2001-01-15',
+        #     'cpf': '374.276.738-08',
+        #     'benefit_government': 'true'
+        # }
+        # response = self.client.post(reverse(PATIENT_EDIT, args=(self.patient_mock.id,)), self.data)
+        # self.assertEqual(response.status_code, 200)
+
 
 
 class PatientFormValidation(TestCase):

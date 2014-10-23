@@ -142,7 +142,7 @@ class SocialDemographicData(models.Model):
     religion = models.ForeignKey(Religion, null=True, blank=True)
     profession = models.CharField(null=True, blank=True, max_length=50)
     occupation = models.CharField(null=True, blank=True, max_length=50)
-    benefit_government = models.CharField(null=True, blank=True, max_length=10)
+    benefit_government = models.NullBooleanField(blank=True)
     payment = models.ForeignKey(Payment, null=True, blank=True)
     flesh_tone = models.ForeignKey(FleshTone, null=True, blank=True)
     schooling = models.ForeignKey(Schooling, null=True, blank=True)
@@ -221,10 +221,10 @@ class SocialDemographicData(models.Model):
 
 class SocialHistoryData(models.Model):
     patient = models.ForeignKey(Patient)
-    smoker = models.CharField(max_length=10, null=True, blank=True)
+    smoker = models.NullBooleanField(blank=True)
     amount_cigarettes = models.ForeignKey(AmountCigarettes, null=True, blank=True, default=0)
-    ex_smoker = models.CharField(max_length=10, null=True, blank=True)
-    alcoholic = models.CharField(max_length=10, null=True, blank=True)
+    ex_smoker = models.NullBooleanField(blank=True)
+    alcoholic = models.NullBooleanField(blank=True)
     alcohol_frequency = models.ForeignKey(AlcoholFrequency, null=True, blank=True, default=0)
     alcohol_period = models.ForeignKey(AlcoholPeriod, null=True, blank=True, default=0)
     drugs = models.CharField(max_length=25, null=True, blank=True)
@@ -298,7 +298,7 @@ class ComplementaryExam(models.Model):
 
 def get_user_dir(instance, filename):
     # return 'images/%s/%s' % (instance.user.user.username, filename)
-    return "documents/%s/%s/%s" % (instance.exam.diagnosis.medical_record_data.patient.pk, instance.exam.pk, filename)
+    return "exams/%s/%s/%s" % (instance.exam.diagnosis.medical_record_data.patient.pk, instance.exam.pk, filename)
 
 
 class ExamFile(models.Model):
