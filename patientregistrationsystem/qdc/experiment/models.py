@@ -54,7 +54,7 @@ class Experiment(models.Model):
 
 
 def get_dir(instance, filename):
-    return "consent-forms/%s/%s/%s" % (instance.experiment.id, instance.subject.id, filename)
+    return "consent_forms/%s/%s/%s" % (instance.experiment.id, instance.subject.id, filename)
 
 
 class SubjectOfExperiment(models.Model):
