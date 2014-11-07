@@ -13,8 +13,9 @@ from django.db.models.deletion import ProtectedError
 from django.conf import settings
 
 from experiment.models import Experiment, QuestionnaireConfiguration, Subject, TimeUnit, \
-    QuestionnaireResponse, SubjectOfExperiment
-from experiment.forms import ExperimentForm, QuestionnaireConfigurationForm, QuestionnaireResponseForm, FileForm
+    QuestionnaireResponse, SubjectOfGroup, Group
+from experiment.forms import ExperimentForm, QuestionnaireConfigurationForm, QuestionnaireResponseForm, \
+    FileForm, GroupForm
 from patient.models import Patient
 from experiment.abc_search_engine import Questionnaires
 
@@ -65,21 +66,22 @@ def experiment_update(request, experiment_id, template_name="experiment/experime
 
     if experiment:
 
-        questionnaires_configuration_list = QuestionnaireConfiguration.objects.filter(experiment=experiment)
+        # questionnaires_configuration_list = QuestionnaireConfiguration.objects.filter(experiment=experiment)
 
-        surveys = Questionnaires()
+        # surveys = Questionnaires()
 
+        # limesurvey_available = check_limesurvey_access(request, surveys)
 
-        limesurvey_available = check_limesurvey_access(request, surveys)
+        # questionnaires_configuration_list = [
+        #     {"survey_title": surveys.get_survey_title(questionnaire_configuration.lime_survey_id),
+        #      "number_of_fills": questionnaire_configuration.number_of_fills,
+        #      "interval_between_fills_value": questionnaire_configuration.interval_between_fills_value,
+        #      "interval_between_fills_unit": questionnaire_configuration.interval_between_fills_unit,
+        #      "id": questionnaire_configuration.id}
+        #     for questionnaire_configuration in questionnaires_configuration_list]
+        # surveys.release_session_key()
 
-        questionnaires_configuration_list = [
-            {"survey_title": surveys.get_survey_title(questionnaire_configuration.lime_survey_id),
-             "number_of_fills": questionnaire_configuration.number_of_fills,
-             "interval_between_fills_value": questionnaire_configuration.interval_between_fills_value,
-             "interval_between_fills_unit": questionnaire_configuration.interval_between_fills_unit,
-             "id": questionnaire_configuration.id}
-            for questionnaire_configuration in questionnaires_configuration_list]
-        surveys.release_session_key()
+        group_list = Group.objects.filter(experiment=experiment)
 
         experiment_form = ExperimentForm(request.POST or None, instance=experiment)
 
@@ -99,7 +101,8 @@ def experiment_update(request, experiment_id, template_name="experiment/experime
                     try:
                         experiment.delete()
                     except ProtectedError:
-                        messages.error(request, "Não foi possível excluir o experimento, pois há questões associadas")
+                        # messages.error(request, "Não foi possível excluir o experimento, pois há questões associadas")
+                        messages.error(request, "Não foi possível excluir o experimento, pois há grupos associados")
                         redirect_url = reverse("experiment_edit", args=(experiment.id,))
                         return HttpResponseRedirect(redirect_url)
                     return redirect('experiment_list')
@@ -107,8 +110,94 @@ def experiment_update(request, experiment_id, template_name="experiment/experime
     context = {
         "experiment_form": experiment_form,
         "creating": False,
+        "group_list": group_list,
+        # "questionnaires_configuration_list": questionnaires_configuration_list,
+        "experiment": experiment,}
+        # "limesurvey_available": limesurvey_available}
+
+    return render(request, template_name, context)
+
+@login_required
+def group_create(request, experiment_id, template_name="experiment/group_register.html"):
+
+    experiment = get_object_or_404(Experiment, pk=experiment_id)
+
+    group_form = GroupForm(request.POST or None)
+
+    if request.method == "POST":
+        if request.POST['action'] == "save":
+            if group_form.is_valid():
+                group_added = group_form.save(commit=False)
+                group_added.experiment_id = experiment_id
+                group_added.save()
+
+                messages.success(request, 'Grupo incluído com sucesso.')
+
+                redirect_url = reverse("group_edit", args=(group_added.id,))
+                return HttpResponseRedirect(redirect_url)
+
+    context = {
+        "group_form": group_form,
+        "creating": True,
+        "updating": False,
+        "experiment": experiment}
+
+    return render(request, template_name, context)
+
+
+@login_required
+def group_update(request, group_id, template_name="experiment/group_register.html"):
+
+    group = get_object_or_404(Group, pk=group_id)
+    experiment = get_object_or_404(Experiment, pk=group.experiment_id)
+
+    if group:
+
+        group_form = GroupForm(request.POST or None, instance=group)
+
+        questionnaires_configuration_list = QuestionnaireConfiguration.objects.filter(group=group)
+
+        surveys = Questionnaires()
+
+        limesurvey_available = check_limesurvey_access(request, surveys)
+
+        questionnaires_configuration_list = [
+            {"survey_title": surveys.get_survey_title(questionnaire_configuration.lime_survey_id),
+             "number_of_fills": questionnaire_configuration.number_of_fills,
+             "interval_between_fills_value": questionnaire_configuration.interval_between_fills_value,
+             "interval_between_fills_unit": questionnaire_configuration.interval_between_fills_unit,
+             "id": questionnaire_configuration.id}
+            for questionnaire_configuration in questionnaires_configuration_list]
+        surveys.release_session_key()
+
+        if request.method == "POST":
+
+            if request.POST['action'] == "save":
+
+                if group_form.is_valid():
+                    if group_form.has_changed():
+                        group_form.save()
+
+                    redirect_url = reverse("group_edit", args=(group_id,))
+                    return HttpResponseRedirect(redirect_url)
+
+            else:
+                if request.POST['action'] == "remove":
+                    try:
+                        group.delete()
+                    except ProtectedError:
+                        messages.error(request, "Não foi possível excluir o grupo, pois há dependências.")
+                        redirect_url = reverse("group_edit", args=(group.id,))
+                        return HttpResponseRedirect(redirect_url)
+                    redirect_url = reverse("experiment_edit", args=(experiment.id,))
+                    return HttpResponseRedirect(redirect_url)
+
+    context = {
+        "group_form": group_form,
+        "creating": False,
         "questionnaires_configuration_list": questionnaires_configuration_list,
         "experiment": experiment,
+        "group": group,
         "limesurvey_available": limesurvey_available}
 
     return render(request, template_name, context)
@@ -116,9 +205,9 @@ def experiment_update(request, experiment_id, template_name="experiment/experime
 
 @login_required
 @permission_required('experiment.add_questionnaireconfiguration')
-def questionnaire_create(request, experiment_id, template_name="experiment/questionnaire_register.html"):
+def questionnaire_create(request, group_id, template_name="experiment/questionnaire_register.html"):
 
-    experiment = get_object_or_404(Experiment, pk=experiment_id)
+    group = get_object_or_404(Group, pk=group_id)
 
     questionnaire_form = QuestionnaireConfigurationForm(
         request.POST or None,
@@ -126,13 +215,13 @@ def questionnaire_create(request, experiment_id, template_name="experiment/quest
 
     if request.method == "GET":
 
-        questionnaires_of_experiment = QuestionnaireConfiguration.objects.filter(experiment=experiment)
+        questionnaires_of_group = QuestionnaireConfiguration.objects.filter(group=group)
 
-        if not questionnaires_of_experiment:
+        if not questionnaires_of_group:
             questionnaires_list = Questionnaires().find_all_active_questionnaires()
         else:
             active_questionnaires_list = Questionnaires().find_all_active_questionnaires()
-            for questionnaire in questionnaires_of_experiment:
+            for questionnaire in questionnaires_of_group:
                 for active_questionnaire in active_questionnaires_list:
                     if active_questionnaire['sid'] == questionnaire.lime_survey_id:
                         active_questionnaires_list.remove(active_questionnaire)
@@ -148,7 +237,7 @@ def questionnaire_create(request, experiment_id, template_name="experiment/quest
 
                 questionnaire = QuestionnaireConfiguration()
                 questionnaire.lime_survey_id = lime_survey_id
-                questionnaire.experiment = experiment
+                questionnaire.group = group
 
                 if "number_of_fills" in request.POST:
                     questionnaire.number_of_fills = request.POST['number_of_fills']
@@ -164,14 +253,14 @@ def questionnaire_create(request, experiment_id, template_name="experiment/quest
 
                 messages.success(request, 'Questionário incluído com sucesso.')
 
-                redirect_url = reverse("experiment_edit", args=(experiment_id,))
+                redirect_url = reverse("group_edit", args=(group_id,))
                 return HttpResponseRedirect(redirect_url)
 
     context = {
         "questionnaire_form": questionnaire_form,
         "creating": True,
         "updating": False,
-        "experiment": experiment,
+        "group": group,
         "questionnaires_list": questionnaires_list}
 
     return render(request, template_name, context)
@@ -182,7 +271,8 @@ def questionnaire_create(request, experiment_id, template_name="experiment/quest
 def questionnaire_update(request, questionnaire_configuration_id,
                          template_name="experiment/questionnaire_register.html"):
     questionnaire_configuration = get_object_or_404(QuestionnaireConfiguration, pk=questionnaire_configuration_id)
-    experiment = get_object_or_404(Experiment, pk=questionnaire_configuration.experiment.id)
+    # experiment = get_object_or_404(Experiment, pk=questionnaire_configuration.experiment.id)
+    group = get_object_or_404(Group, pk=questionnaire_configuration.group.id)
     questionnaire_form = QuestionnaireConfigurationForm(request.POST or None, instance=questionnaire_configuration)
 
     surveys = Questionnaires()
@@ -209,7 +299,7 @@ def questionnaire_update(request, questionnaire_configuration_id,
 
                 messages.success(request, 'Questionário atualizado com sucesso.')
 
-                redirect_url = reverse("experiment_edit", args=(experiment.id,))
+                redirect_url = reverse("group_edit", args=(group.id,))
                 return HttpResponseRedirect(redirect_url)
         else:
             if request.POST['action'] == "remove":
@@ -220,14 +310,14 @@ def questionnaire_update(request, questionnaire_configuration_id,
                     redirect_url = reverse("questionnaire_edit", args=(questionnaire_configuration_id,))
                     return HttpResponseRedirect(redirect_url)
 
-                redirect_url = reverse("experiment_edit", args=(experiment.id,))
+                redirect_url = reverse("experiment_edit", args=(group.id,))
                 return HttpResponseRedirect(redirect_url)
 
     context = {
         "questionnaire_form": questionnaire_form,
         "creating": False,
         "updating": True,
-        "experiment": experiment,
+        "group": group,
         "questionnaire_title": questionnaire_title,
         "questionnaire_id": questionnaire_configuration.lime_survey_id}
 
@@ -236,27 +326,28 @@ def questionnaire_update(request, questionnaire_configuration_id,
 
 @login_required
 @permission_required('experiment.add_subject')
-def subjects(request, experiment_id, template_name="experiment/subjects.html"):
-    experiment = get_object_or_404(Experiment, id=experiment_id)
+def subjects(request, group_id, template_name="experiment/subjects.html"):
+    # experiment = get_object_or_404(Experiment, id=experiment_id)
+    group = get_object_or_404(Group, id=group_id)
 
-    subject_of_experiment_list = SubjectOfExperiment.objects.all().filter(experiment=experiment)
+    subject_of_group_list = SubjectOfGroup.objects.all().filter(group=group)
 
     subject_list_with_status = []
 
-    questionnaires_configuration_list = QuestionnaireConfiguration.objects.filter(experiment=experiment)
+    questionnaires_configuration_list = QuestionnaireConfiguration.objects.filter(group=group)
 
     surveys = Questionnaires()
 
     limesurvey_available = check_limesurvey_access(request, surveys)
 
-    for subject_of_experiment in subject_of_experiment_list:
+    for subject_of_group in subject_of_group_list:
 
         number_of_questionnaires_filled = 0
 
         for questionnaire_configuration in questionnaires_configuration_list:
 
             subject_responses = QuestionnaireResponse.objects. \
-                filter(subject_of_experiment=subject_of_experiment). \
+                filter(subject_of_group=subject_of_group). \
                 filter(questionnaire_configuration=questionnaire_configuration)
 
             if subject_responses:
@@ -288,16 +379,18 @@ def subjects(request, experiment_id, template_name="experiment/subjects.html"):
             percentage = 100 * number_of_questionnaires_filled / questionnaires_configuration_list.count()
 
         subject_list_with_status.append(
-            {'subject': subject_of_experiment.subject,
+            {'subject': subject_of_group.subject,
              'number_of_questionnaires_filled': number_of_questionnaires_filled,
              'total_of_questionnaires': questionnaires_configuration_list.count(),
              'percentage': percentage,
-             'consent': subject_of_experiment.consent_form})
+             'consent': subject_of_group.consent_form})
 
     context = {
-        'experiment_id': experiment_id,
+        # 'experiment_id': experiment_id,
+        'group': group,
+        "group_id": group_id,
         'subject_list': subject_list_with_status,
-        'experiment_title': experiment.title,
+        # 'experiment_title': experiment.title,
         "limesurvey_available": limesurvey_available
     }
 
@@ -320,8 +413,7 @@ def subject_questionnaire_response_start_fill_questionnaire(request, subject_id,
         subject = get_object_or_404(Subject, pk=subject_id)
         patient = subject.patient
 
-        subject_of_experiment = get_object_or_404(SubjectOfExperiment, subject=subject,
-                                                  experiment=questionnaire_config.experiment)
+        subject_of_group = get_object_or_404(SubjectOfGroup, subject=subject, group=questionnaire_config.group)
 
         if not questionnaire_lime_survey.survey_has_token_table(questionnaire_config.lime_survey_id):
             messages.warning(request,
@@ -343,7 +435,7 @@ def subject_questionnaire_response_start_fill_questionnaire(request, subject_id,
                              'Falha ao gerar token para responder questionário. Verifique se o questionário está ativo')
             return None, None
 
-        questionnaire_response.subject_of_experiment = subject_of_experiment
+        questionnaire_response.subject_of_group = subject_of_group
         questionnaire_response.questionnaire_configuration = questionnaire_config
         questionnaire_response.token_id = result['token_id']
         questionnaire_response.date = datetime.datetime.strptime(request.POST['date'], '%d/%m/%Y')
@@ -371,7 +463,7 @@ def get_limesurvey_response_url(questionnaire_response):
             token,
             str(questionnaire_response.questionnaire_responsible.id),
             questionnaire_response.date.strftime('%d-%m-%Y'),
-            str(questionnaire_response.subject_of_experiment.subject.id))
+            str(questionnaire_response.subject_of_group.subject.id))
 
     # versao com os nomes dos campos em portugues
     #
@@ -389,7 +481,7 @@ def get_limesurvey_response_url(questionnaire_response):
 
 @login_required
 @permission_required('experiment.add_questionnaireresponse')
-def subject_questionnaire_response_create(request, experiment_id, subject_id, questionnaire_id,
+def subject_questionnaire_response_create(request, subject_id, questionnaire_id,
                                           template_name="experiment/subject_questionnaire_response_form.html"):
     questionnaire_config = get_object_or_404(QuestionnaireConfiguration, id=questionnaire_id)
 
@@ -412,8 +504,8 @@ def subject_questionnaire_response_create(request, experiment_id, subject_id, qu
         questionnaire_response_form = QuestionnaireResponseForm(request.POST)
 
         if request.POST['action'] == "save":
-            redirect_url, questionnaire_response_id = subject_questionnaire_response_start_fill_questionnaire(request, subject_id,
-                                                                                   questionnaire_id)
+            redirect_url, questionnaire_response_id = \
+                subject_questionnaire_response_start_fill_questionnaire(request, subject_id, questionnaire_id)
             if not redirect_url:
                 fail = False
             else:
@@ -431,7 +523,8 @@ def subject_questionnaire_response_create(request, experiment_id, subject_id, qu
         "survey_active": survey_active,
         "questionnaire_responsible": questionnaire_responsible,
         "creating": True,
-        "subject": subject
+        "subject": subject,
+        "group": questionnaire_config.group
     }
 
     return render(request, template_name, context)
@@ -455,7 +548,7 @@ def questionnaire_response_update(request, questionnaire_response_id,
     surveys.release_session_key()
 
     questionnaire_responsible = questionnaire_response.questionnaire_responsible
-    subject = questionnaire_response.subject_of_experiment.subject
+    subject = questionnaire_response.subject_of_group.subject
 
     questionnaire_response_form = QuestionnaireResponseForm(None, instance=questionnaire_response)
 
@@ -504,7 +597,8 @@ def questionnaire_response_update(request, questionnaire_response_id,
         "questionnaire_responsible": questionnaire_responsible,
         "creating": False,
         "subject": subject,
-        "completed": survey_completed
+        "completed": survey_completed,
+        "group": questionnaire_configuration.group
     }
 
     return render(request, template_name, context)
@@ -662,12 +756,13 @@ def check_limesurvey_access(request, surveys):
 
 @login_required
 @permission_required('experiment.view_questionnaireresponse')
-def subject_questionnaire_view(request, experiment_id, subject_id,
+def subject_questionnaire_view(request, group_id, subject_id,
                                template_name="experiment/subject_questionnaire_response_list.html"):
-    experiment = get_object_or_404(Experiment, id=experiment_id)
+    # experiment = get_object_or_404(Experiment, id=experiment_id)
+    group = get_object_or_404(Group, id=group_id)
     subject = get_object_or_404(Subject, id=subject_id)
 
-    questionnaires_configuration_list = QuestionnaireConfiguration.objects.filter(experiment=experiment)
+    questionnaires_configuration_list = QuestionnaireConfiguration.objects.filter(group=group)
 
     subject_questionnaires = []
     can_remove = True
@@ -678,10 +773,10 @@ def subject_questionnaire_view(request, experiment_id, subject_id,
 
     for questionnaire_configuration in questionnaires_configuration_list:
 
-        subject_of_experiment = get_object_or_404(SubjectOfExperiment, experiment=experiment, subject=subject)
+        subject_of_group = get_object_or_404(SubjectOfGroup, group=group, subject=subject)
 
         questionnaire_responses = QuestionnaireResponse.objects. \
-            filter(subject_of_experiment=subject_of_experiment). \
+            filter(subject_of_group=subject_of_group). \
             filter(questionnaire_configuration=questionnaire_configuration)
 
         questionnaire_responses_with_status = []
@@ -708,20 +803,21 @@ def subject_questionnaire_view(request, experiment_id, subject_id,
 
         if request.POST['action'] == "remove":
             if can_remove:
-                subject_of_experiment = get_object_or_404(SubjectOfExperiment, experiment=experiment, subject=subject)
+                subject_of_experiment = get_object_or_404(SubjectOfGroup, group=group, subject=subject)
                 subject_of_experiment.delete()
 
                 messages.info(request, 'Participante removido do experimento.')
-                redirect_url = reverse("subjects", args=(experiment_id,))
+                redirect_url = reverse("subjects", args=(group_id,))
                 return HttpResponseRedirect(redirect_url)
             else:
                 messages.error(request, "Não foi possível excluir o paciente, pois há respostas associadas")
-                redirect_url = reverse("subject_questionnaire", args=(experiment_id, subject_id,))
+                redirect_url = reverse("subject_questionnaire", args=(group_id, subject_id,))
                 return HttpResponseRedirect(redirect_url)
 
     context = {
         'subject': subject,
-        'experiment': experiment,
+        # 'experiment': experiment,
+        'group': group,
         'subject_questionnaires': subject_questionnaires,
         'limesurvey_available': limesurvey_available
     }
@@ -733,7 +829,7 @@ def subject_questionnaire_view(request, experiment_id, subject_id,
 
 @login_required
 @permission_required('experiment.add_subject')
-def subjects_insert(request, experiment_id, patient_id):
+def subjects_insert(request, group_id, patient_id):
     patient = get_object_or_404(Patient, pk=patient_id)
 
     subject = Subject()
@@ -744,14 +840,15 @@ def subjects_insert(request, experiment_id, patient_id):
         subject.patient = patient
         subject.save()
 
-    experiment = get_object_or_404(Experiment, id=experiment_id)
+    # experiment = get_object_or_404(Experiment, id=experiment_id)
+    group = get_object_or_404(Group, id=group_id)
 
-    if not SubjectOfExperiment.objects.all().filter(experiment=experiment, subject=subject):
-        SubjectOfExperiment(subject=subject, experiment=experiment).save()
+    if not SubjectOfGroup.objects.all().filter(group=group, subject=subject):
+        SubjectOfGroup(subject=subject, group=group).save()
     else:
-        messages.warning(request, 'Participante já inserido para este experimento.')
+        messages.warning(request, 'Participante já inserido para este grupo.')
 
-    redirect_url = reverse("subjects", args=(experiment_id,))
+    redirect_url = reverse("subjects", args=(group_id,))
     return HttpResponseRedirect(redirect_url)
 
 
@@ -761,7 +858,8 @@ def search_patients_ajax(request):
     patient_list = ''
     if request.method == "POST":
         search_text = request.POST['search_text']
-        experiment_id = request.POST['experiment_id']
+        # experiment_id = request.POST['experiment_id']
+        group_id = request.POST['group_id']
         if search_text:
             if re.match('[a-zA-Z ]+', search_text):
                 patient_list = Patient.objects.filter(name__icontains=search_text).exclude(removed=True)
@@ -769,35 +867,36 @@ def search_patients_ajax(request):
                 patient_list = Patient.objects.filter(cpf__icontains=search_text).exclude(removed=True)
 
     return render_to_response('experiment/ajax_search_patients.html',
-                              {'patients': patient_list, 'experiment_id': experiment_id})
+                              {'patients': patient_list, 'group_id': group_id})
 
 
-def upload_file(request, subject_id, experiment_id, template_name="experiment/upload_consent_form.html"):
+def upload_file(request, subject_id, group_id, template_name="experiment/upload_consent_form.html"):
     subject = get_object_or_404(Subject, pk=subject_id)
-    experiment = get_object_or_404(Experiment, pk=experiment_id)
-    subject_of_experiment = get_object_or_404(SubjectOfExperiment, subject=subject, experiment=experiment)
+    # experiment = get_object_or_404(Experiment, pk=experiment_id)
+    group = get_object_or_404(Group, pk=group_id)
+    subject_of_group = get_object_or_404(SubjectOfGroup, subject=subject, group=group)
 
     if request.method == "POST":
 
         if request.POST['action'] == "upload":
-            file_form = FileForm(request.POST, request.FILES, instance=subject_of_experiment)
+            file_form = FileForm(request.POST, request.FILES, instance=subject_of_group)
             if 'consent_form' in request.FILES:
                 if file_form.is_valid():
                     file_form.save()
                     messages.success(request, 'Termo salvo com sucesso.')
 
-                redirect_url = reverse("subjects", args=(experiment_id, ))
+                redirect_url = reverse("subjects", args=(group_id, ))
                 return HttpResponseRedirect(redirect_url)
             else:
                 messages.error(request, 'Não existem anexos para salvar')
         else:
             if request.POST['action'] == "remove":
                 # subject_of_experiment.consent_form = ''
-                subject_of_experiment.consent_form.delete()
-                subject_of_experiment.save()
+                subject_of_group.consent_form.delete()
+                subject_of_group.save()
                 messages.success(request, 'Anexo removido com sucesso.')
 
-                redirect_url = reverse("subjects", args=(experiment_id,))
+                redirect_url = reverse("subjects", args=(group_id,))
                 return HttpResponseRedirect(redirect_url)
 
     else:
@@ -805,8 +904,9 @@ def upload_file(request, subject_id, experiment_id, template_name="experiment/up
 
     context = {
         'subject': subject,
-        'experiment': experiment,
+        # 'experiment': experiment,
+        'group': group,
         'file_form': file_form,
-        'file_list': subject_of_experiment.consent_form
+        'file_list': subject_of_group.consent_form
     }
     return render(request, template_name, context)

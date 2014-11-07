@@ -74,7 +74,7 @@ $(function(){
             url: "/experiment/subject/search/",
             data: {
                 'search_text' : $('#subject_name').val(),
-                'experiment_id': $('#experiment_id').val(),
+                'group_id': $('#group_id').val(),
                 'csrfmiddlewaretoken' : $("input[name=csrfmiddlewaretoken]").val()
             },
             success: searchSuccess,

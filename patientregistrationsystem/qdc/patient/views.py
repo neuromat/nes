@@ -19,7 +19,7 @@ from patient.forms import PatientForm, SocialDemographicDataForm, SocialHistoryD
     ComplementaryExamForm, ExamFileForm
 from patient.quiz_widget import SelectBoxCountriesDisabled, SelectBoxStateDisabled
 
-from experiment.models import Subject, Experiment, SubjectOfExperiment, QuestionnaireConfiguration, QuestionnaireResponse
+from experiment.models import Subject, Experiment, SubjectOfGroup, QuestionnaireConfiguration, QuestionnaireResponse
 from experiment.abc_search_engine import Questionnaires
 
 
@@ -217,7 +217,7 @@ def patient_update(request, patient_id, template_name="patient/register.html"):
         surveys = Questionnaires()
         questionnaires_data = []
         subject = Subject.objects.filter(patient=current_patient)
-        subject_of_experiment_list = SubjectOfExperiment.objects.filter(subject=subject)
+        subject_of_experiment_list = SubjectOfGroup.objects.filter(subject=subject)
         for subject_of_experiment in subject_of_experiment_list:
             experiment = get_object_or_404(Experiment, id=subject_of_experiment.experiment.id)
             questionnaire_configuration_list = QuestionnaireConfiguration.objects.filter(experiment=experiment)
@@ -304,7 +304,7 @@ def patient(request, patient_id, template_name="patient/register.html"):
         surveys = Questionnaires()
         questionnaires_data = []
         subject = Subject.objects.filter(patient=current_patient)
-        subject_of_experiment_list = SubjectOfExperiment.objects.filter(subject=subject)
+        subject_of_experiment_list = SubjectOfGroup.objects.filter(subject=subject)
         for subject_of_experiment in subject_of_experiment_list:
             experiment = get_object_or_404(Experiment, id=subject_of_experiment.experiment.id)
             questionnaire_configuration_list = QuestionnaireConfiguration.objects.filter(experiment=experiment)

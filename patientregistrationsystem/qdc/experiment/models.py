@@ -6,7 +6,7 @@ from django.core.exceptions import ValidationError
 from django.core.validators import MinValueValidator
 from simple_history.models import HistoricalRecords
 
-from patient.models import Patient, User
+from patient.models import Patient, User, ClassificationOfDiseases
 
 
 def validate_date_questionnaire_response(value):
@@ -53,22 +53,38 @@ class Experiment(models.Model):
         self.changed_by = value
 
 
+class Group(models.Model):
+    experiment = models.ForeignKey(Experiment, null=False, blank=False)
+    title = models.CharField(null=False, max_length=50, blank=False)
+    description = models.CharField(max_length=150, null=False, blank=False)
+    instruction =  models.CharField(max_length=150, null=True, blank=True)
+    # classification_of_diseases =  models.ForeignKey(ClassificationOfDiseases, null=True)
+
+
 def get_dir(instance, filename):
     return "consent_forms/%s/%s/%s" % (instance.experiment.id, instance.subject.id, filename)
 
 
-class SubjectOfExperiment(models.Model):
+# class SubjectOfExperiment(models.Model):
+#     subject = models.ForeignKey(Subject, null=False, blank=False)
+#     experiment = models.ForeignKey(Experiment, null=False, blank=False)
+#     consent_form = models.FileField(upload_to=get_dir, null=True)
+#
+#     class Meta:
+#         unique_together = ('subject', 'experiment',)
+
+class SubjectOfGroup(models.Model):
     subject = models.ForeignKey(Subject, null=False, blank=False)
-    experiment = models.ForeignKey(Experiment, null=False, blank=False)
+    group = models.ForeignKey(Group, null=False, blank=False)
     consent_form = models.FileField(upload_to=get_dir, null=True)
 
     class Meta:
-        unique_together = ('subject', 'experiment',)
+        unique_together = ('subject', 'group',)
 
 
 class QuestionnaireConfiguration(models.Model):
     lime_survey_id = models.IntegerField(null=False, blank=False)
-    experiment = models.ForeignKey(Experiment, null=False, on_delete=models.PROTECT)
+    group = models.ForeignKey(Group, null=False, on_delete=models.PROTECT)
     number_of_fills = models.IntegerField(null=True, blank=True, validators=[MinValueValidator(1)])
     interval_between_fills_value = models.IntegerField(null=True, blank=True, validators=[MinValueValidator(1)])
     interval_between_fills_unit = models.ForeignKey(TimeUnit, null=True, blank=True)
@@ -89,11 +105,11 @@ class QuestionnaireConfiguration(models.Model):
         return self.experiment.title + " - " + str(self.lime_survey_id)
 
     class Meta:
-        unique_together = ('lime_survey_id', 'experiment',)
+        unique_together = ('lime_survey_id', 'group',)
 
 
 class QuestionnaireResponse(models.Model):
-    subject_of_experiment = models.ForeignKey(SubjectOfExperiment, null=False)
+    subject_of_group = models.ForeignKey(SubjectOfGroup, null=False)
     questionnaire_configuration = models.ForeignKey(QuestionnaireConfiguration, null=False, on_delete=models.PROTECT)
     token_id = models.IntegerField(null=False)
     date = models.DateField(default=datetime.date.today, null=False,

@@ -25,18 +25,15 @@
                 {% else %}
                     <li><a href="/experiment/list">Experimentos</a></li>
                     <li>
-                        <a href="/experiment/edit/{{ questionnaire_response.questionnaire_configuration.experiment.id }}/">
-                            {{ questionnaire_response.questionnaire_configuration.experiment.title }}
+                        <a href="/experiment/edit/{{ questionnaire_response.questionnaire_configuration.group.experiment.id }}/">
+                            {{ questionnaire_response.questionnaire_configuration.group.experiment.title }}
                         </a>
                     </li>
+                    <li><a href="/experiment/group/edit/{{ questionnaire_response.questionnaire_configuration.group.id }}">{{ questionnaire_response.questionnaire_configuration.group.title }}</a></li>
+                    <li><a href="/experiment/group/{{ questionnaire_response.questionnaire_configuration.group.id }}/subjects/">Participantes</a></li>
                     <li>
-                        <a href="/experiment/{{ questionnaire_response.questionnaire_configuration.experiment.id }}/subjects/">
-                            Participantes
-                        </a>
-                    </li>
-                    <li>
-                        <a href="/experiment/{{ questionnaire_response.questionnaire_configuration.experiment.id }}/subjects/{{ questionnaire_response.subject_of_experiment.subject.id }}/questionnaire">
-                            {{ questionnaire_response.subject_of_experiment.subject.patient.name }}
+                        <a href="/experiment/group/{{ questionnaire_response.questionnaire_configuration.group.id }}/subjects/{{ questionnaire_response.subject_of_group.subject.id }}/questionnaire">
+                            {{ questionnaire_response.subject_of_group.subject.patient.name }}
                         </a>
                     </li>
                     <li>
