@@ -746,6 +746,7 @@
                             <thead>
                             <tr>
                                 <th>Experimento</th>
+                                <th>Grupo</th>
                                 <th>Questionário</th>
                                 <th>Data</th>
                                 <th></th>
@@ -755,6 +756,7 @@
                             {% for questionnaire in questionnaire_data %}
                                 <tr>
                                     <td>{{ questionnaire.experiment_title }}</td>
+                                    <td>{{ questionnaire.group_title }}</td>
                                     <td>{{ questionnaire.questionnaire_title }}</td>
                                     <td>{{ questionnaire.questionnaire_response.date }}</td>
                                     {% if editing %}

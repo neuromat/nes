@@ -19,7 +19,8 @@ from patient.forms import PatientForm, SocialDemographicDataForm, SocialHistoryD
     ComplementaryExamForm, ExamFileForm
 from patient.quiz_widget import SelectBoxCountriesDisabled, SelectBoxStateDisabled
 
-from experiment.models import Subject, Experiment, SubjectOfGroup, QuestionnaireConfiguration, QuestionnaireResponse
+from experiment.models import Subject, Experiment, Group, SubjectOfGroup, \
+    QuestionnaireConfiguration, QuestionnaireResponse
 from experiment.abc_search_engine import Questionnaires
 
 
@@ -217,17 +218,19 @@ def patient_update(request, patient_id, template_name="patient/register.html"):
         surveys = Questionnaires()
         questionnaires_data = []
         subject = Subject.objects.filter(patient=current_patient)
-        subject_of_experiment_list = SubjectOfGroup.objects.filter(subject=subject)
-        for subject_of_experiment in subject_of_experiment_list:
-            experiment = get_object_or_404(Experiment, id=subject_of_experiment.experiment.id)
-            questionnaire_configuration_list = QuestionnaireConfiguration.objects.filter(experiment=experiment)
+        subject_of_group_list = SubjectOfGroup.objects.filter(subject=subject)
+        for subject_of_group in subject_of_group_list:
+            group = get_object_or_404(Group, id=subject_of_group.group.id)
+            experiment = get_object_or_404(Experiment, id=group.experiment.id)
+            questionnaire_configuration_list = QuestionnaireConfiguration.objects.filter(group=group)
             for questionnaire_configuration in questionnaire_configuration_list:
-                questionnaire_response_list = QuestionnaireResponse.objects.filter(subject_of_experiment=subject_of_experiment). \
+                questionnaire_response_list = QuestionnaireResponse.objects.filter(subject_of_group=subject_of_group). \
                     filter(questionnaire_configuration=questionnaire_configuration)
                 for questionnaire_response in questionnaire_response_list:
                     questionnaires_data.append(
                         {
                             'experiment_title': experiment.title,
+                            'group_title': group.title,
                             'questionnaire_title': surveys.get_survey_title(questionnaire_configuration.lime_survey_id),
                             'questionnaire_response': questionnaire_response
                         }
@@ -304,17 +307,19 @@ def patient(request, patient_id, template_name="patient/register.html"):
         surveys = Questionnaires()
         questionnaires_data = []
         subject = Subject.objects.filter(patient=current_patient)
-        subject_of_experiment_list = SubjectOfGroup.objects.filter(subject=subject)
-        for subject_of_experiment in subject_of_experiment_list:
-            experiment = get_object_or_404(Experiment, id=subject_of_experiment.experiment.id)
-            questionnaire_configuration_list = QuestionnaireConfiguration.objects.filter(experiment=experiment)
+        subject_of_group_list = SubjectOfGroup.objects.filter(subject=subject)
+        for subject_of_group in subject_of_group_list:
+            group = get_object_or_404(Group, id=subject_of_group.group.id)
+            experiment = get_object_or_404(Experiment, id=group.experiment.id)
+            questionnaire_configuration_list = QuestionnaireConfiguration.objects.filter(group=group)
             for questionnaire_configuration in questionnaire_configuration_list:
-                questionnaire_response_list = QuestionnaireResponse.objects.filter(subject_of_experiment=subject_of_experiment). \
+                questionnaire_response_list = QuestionnaireResponse.objects.filter(subject_of_group=subject_of_group). \
                     filter(questionnaire_configuration=questionnaire_configuration)
                 for questionnaire_response in questionnaire_response_list:
                     questionnaires_data.append(
                         {
                             'experiment_title': experiment.title,
+                            'group_title' : group.title,
                             'questionnaire_title': surveys.get_survey_title(questionnaire_configuration.lime_survey_id),
                             'questionnaire_response': questionnaire_response
                         }
