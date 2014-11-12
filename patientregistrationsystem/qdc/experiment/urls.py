@@ -36,4 +36,10 @@ urlpatterns = patterns(
         'experiment.views.questionnaire_response_update', name='questionnaire_response_edit'),
     url(r'^questionnaire_response/(?P<questionnaire_response_id>\d+)/$',
         'experiment.views.questionnaire_response_view', name='questionnaire_response_view'),
+
+    #experimental_protocol
+    url(r'^group/(?P<group_id>\d+)/experimental_protocol/$',
+        'experiment.views.create_experimental_protocol', name='experimental_protocol'),
+    url(r'^group/(?P<group_id>\d+)/experimental_protocol/new_task/$',
+        'experiment.views.create_new_task', name='new_task'),
 )

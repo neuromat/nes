@@ -910,3 +910,12 @@ def upload_file(request, subject_id, group_id, template_name="experiment/upload_
         'file_list': subject_of_group.consent_form
     }
     return render(request, template_name, context)
+
+
+def create_experimental_protocol(request, group_id, template_name="experiment/sequence_component.html"):
+    context = {"group_id": group_id}
+    return render(request, template_name, context)
+
+
+def create_new_task(request, group_id, template_name="experiment/task_component.html"):
+    return render(request, template_name)

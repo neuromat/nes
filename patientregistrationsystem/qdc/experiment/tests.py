@@ -10,8 +10,8 @@ from django.core.files.uploadedfile import SimpleUploadedFile
 from django.shortcuts import get_object_or_404
 import pyjsonrpc
 
-from experiment.models import Experiment, QuestionnaireConfiguration, TimeUnit, Subject, \
-    QuestionnaireResponse, SubjectOfExperiment
+from experiment.models import Experiment, Group, QuestionnaireConfiguration, TimeUnit, Subject, \
+    QuestionnaireResponse, SubjectOfGroup
 from experiment.views import experiment_update, upload_file
 from experiment.abc_search_engine import Questionnaires
 from patient.tests import UtilTests
@@ -377,7 +377,7 @@ class SubjectTest(TestCase):
             self.assertEqual(response.status_code, 200)
             self.assertEqual(len(response.context['subject_list']), 0)
 
-            count_before_insert_subject = SubjectOfExperiment.objects.all().filter(experiment=experiment).count()
+            count_before_insert_subject = SubjectOfGroup.objects.all().filter(experiment=experiment).count()
             response = self.client.post(reverse('subject_insert', args=(experiment.pk, patient_mock.pk)))
             self.assertEqual(response.status_code, 302)
             count_after_insert_subject = SubjectOfExperiment.objects.all().filter(experiment=experiment).count()
