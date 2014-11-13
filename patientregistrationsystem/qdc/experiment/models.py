@@ -53,14 +53,6 @@ class Experiment(models.Model):
         self.changed_by = value
 
 
-class Group(models.Model):
-    experiment = models.ForeignKey(Experiment, null=False, blank=False)
-    title = models.CharField(null=False, max_length=50, blank=False)
-    description = models.CharField(max_length=150, null=False, blank=False)
-    instruction = models.CharField(max_length=150, null=True, blank=True)
-    classification_of_diseases = models.ManyToManyField(ClassificationOfDiseases, null=True)
-
-
 class Component(models.Model):
     identification = models.CharField(null=False, max_length=50, blank=False)
     description = models.CharField(max_length=150, null=False, blank=False)
@@ -101,6 +93,15 @@ class ComponentConfiguration(models.Model):
     interval_between_repetitions_unit = models.ForeignKey(TimeUnit, null=True, blank=True)
     component = models.ForeignKey(Component, null=False, related_name="configuration")
     parent = models.ForeignKey(Component, null=True, related_name="children")
+
+
+class Group(models.Model):
+    experiment = models.ForeignKey(Experiment, null=False, blank=False)
+    title = models.CharField(null=False, max_length=50, blank=False)
+    description = models.CharField(max_length=150, null=False, blank=False)
+    instruction = models.CharField(max_length=150, null=True, blank=True)
+    classification_of_diseases = models.ManyToManyField(ClassificationOfDiseases, null=True)
+    experimental_protocol = models.ForeignKey(ComponentConfiguration, null=True)
 
 
 def get_dir(instance, filename):
