@@ -1,5 +1,6 @@
 # coding=utf-8
-from experiment.models import Experiment, QuestionnaireConfiguration, QuestionnaireResponse, SubjectOfGroup, Group
+from experiment.models import Experiment, QuestionnaireConfiguration, QuestionnaireResponse, SubjectOfGroup, Group, \
+    Component, Task, Stimulus, Pause, Sequence, Questionnaire, ComponentConfiguration
 from django.forms import ModelForm, TextInput, Textarea, Select, DateInput
 # from datetimewidget.widgets import DateTimeWidget
 
@@ -39,9 +40,6 @@ class GroupForm(ModelForm):
         }
 
 
-
-
-
 class QuestionnaireConfigurationForm(ModelForm):
     class Meta:
         model = QuestionnaireConfiguration
@@ -74,3 +72,80 @@ class FileForm(ModelForm):
     class Meta:
         model = SubjectOfGroup
         fields = ['consent_form']
+
+
+class ComponentForm(ModelForm):
+    class Meta:
+        model = Component
+        fields = ['identification', 'description']
+
+        widgets = {
+            'identification': TextInput(attrs={'class': 'form-control', 'required': "",
+                                                'data-error': 'Identificação deve ser preenchida.'}),
+            'description': TextInput(attrs={'class': 'form-control', 'required': "",
+                                                'data-error': 'Descrição deve ser preenchida.'})
+        }
+
+
+class ComponentConfigurationForm(ModelForm):
+    class Meta:
+        model = ComponentConfiguration
+        fields = ['name', 'number_of_repetitions', 'interval_between_repetitions_value',
+                  'interval_between_repetitions_unit']
+
+        widgets = {
+            'name': TextInput(attrs={'class': 'form-control', 'required': "",
+                                                'data-error': 'Nome deve ser preenchido.'}),
+            'number_of_repetitions': TextInput(attrs={'class': 'form-control', 'required': "",
+                                                'data-error': 'Número de repetições deve ser preenchida.'}),
+            'interval_between_repetitions_value': TextInput(attrs={'class': 'form-control', 'required': "",
+                                                'data-error': 'Deve ser preenchido.'}),
+            'interval_between_repetitions_unit': TextInput(attrs={'class': 'form-control', 'required': "",
+                                                'data-error': 'Deve ser preenchido.'}),
+        }
+
+
+class TaskForm(ModelForm):
+    class Meta:
+        model = Task
+        fields = ['instruction']
+
+        widgets = {
+            'instruction': TextInput(attrs={'class': 'form-control', 'required': "",
+                                                'data-error': 'Instrução deve ser preenchida.'})
+        }
+
+
+class StimulusForm(ModelForm):
+    class Meta:
+        model = Stimulus
+        fields = ['stimulus_type']
+
+        widgets = {
+            'stimulus_type': TextInput(attrs={'class': 'form-control', 'required': "",
+                                                'data-error': 'Tipo do estímulo deve ser preenchido.'})
+        }
+
+
+class PauseForm(ModelForm):
+    class Meta:
+        model = Pause
+        fields = ['duration']
+
+        widgets = {
+            'duration': TextInput(attrs={'class': 'form-control', 'required': "",
+                                         'data-error': 'Duração da pause deve ser preenchida.'})
+        }
+
+
+# talvez os dois forms abaixo não sejam necessários
+# class QuestionnaireForm(ModelForm):
+#     class Meta:
+#         model = Questionnaire
+#         fields = ['limesurvey_id']
+
+
+# class SequenceForm(ModelForm):
+#     class Meta:
+#         model = Sequence
+#         fields = ['has_random_components', 'number_of_mandatory_components']

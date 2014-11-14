@@ -124,6 +124,14 @@
                 {% endif %}
             </div>
 
+            <div class="container span6 offset3 well ">
+                <div class="row">
+                    <div class="col-xs-6 col-sm-12">
+                        <a href="/experiment/{{ experiment.id }}/components" class="btn btn-primary {% if creating %} disabled{% endif %}" >Componentes de Protocolo Experimental</a>
+                    </div>
+                </div>
+            </div>
+
             <div class="btn-toolbar">
                 <div class="btn-group pull-left">
                     {% if not creating and perms.experiment.delete_experiment %}

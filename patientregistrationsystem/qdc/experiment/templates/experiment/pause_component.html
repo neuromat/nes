@@ -1,14 +1,14 @@
 {% extends "experiment/component_template.html" %}
 
 {% block breadcrumb %}
-    <li class="active">Nova tarefa</li>
+    <li class="active">Nova pausa</li>
 {% endblock %}
 
 {% block list_components %}
     {% if creating_protocol_experimental %}
         <div class="row">
             <div class="col-xs-6 col-sm-6">
-                <label class="control-label">Tarefa <b style="color: red;">*</b></label>
+                <label class="control-label">Pausa <b style="color: red;">*</b></label>
             </div>
         </div>
         <div class="row">
@@ -36,8 +36,8 @@
         <div class="row">
             <div class="col-xs-6 col-sm-6">
                 <div class="form-group">
-                    <label class="control-label">Instrução <b style="color: red;">*</b></label>
-                        {{ form.instruction }}
+                    <label class="control-label">Duração <b style="color: red;">*</b></label>
+                        {{ form.duration }}
                     <div class="help-block with-errors"></div>
                 </div>
             </div>

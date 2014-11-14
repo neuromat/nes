@@ -68,6 +68,9 @@ class Component(models.Model):
 class Task(Component):
     instruction = models.CharField(max_length=150, null=False, blank=False)
 
+    def save(self, *args, **kwargs):
+        super(Component, self).save(*args, **kwargs)
+
 
 class Pause(Component):
     duration = models.IntegerField(null=False, blank=False)

@@ -1,0 +1,119 @@
+{% extends "quiz/template.html" %}
+{% block activeAdvancedExperiment %}class="active"{% endblock %}
+
+{% block header %}
+{% endblock %}
+
+{% block form %}
+    <div class="row">
+    <form id="user_form" method="post" data-toggle="validator">
+    {% csrf_token %}
+{% endblock %}
+
+{% block content %}
+
+    {% if messages %}
+        {% for message in messages %}
+
+            {% if message.tags == "success" %}
+                <script>showSuccessMessage('{{ message }}')</script>
+            {% endif %}
+
+            {% if message.tags == "warning" %}
+                <script>showWarningMessage('{{ message }}')</script>
+            {% endif %}
+
+            {% if message.tags == "error" %}
+                <script>showErrorMessage('{{ message }}')</script>
+            {% endif %}
+
+            {% if message.tags == "info" %}
+                <script>showInfoMessage('{{ message }}')</script>
+            {% endif %}
+
+        {% endfor %}
+    {% endif %}
+
+    {% if experiment_form.errors %}
+        <script>showErrorMessage('Por favor, corrija os campos em destaque.')</script>
+    {% endif %}
+
+
+    <div class="tab-pane fade in active" id="experimentBreadCrumb">
+
+        <div class="col-md-1">
+        </div>
+
+        <div class="col-md-10">
+
+            <ol class="breadcrumb">
+                <li>Home</li>
+                <li><a href="/experiment/list">Experimentos</a></li>
+                <li><a href="/experiment/edit/{{ experiment.id }}">{{ experiment.title }}</a></li>
+                <li class="active">Componentes de Protocolo Experimental</li>
+            </ol>
+
+        </div>
+
+        <div class="col-md-1">
+        </div>
+    </div>
+
+    <div class="tab-pane fade in active" id="menuUserTab">
+        <div class="col-md-10">
+            <div class="container span6 offset3 well ">
+                <div class="row">
+                    <div class="col-xs-6 col-sm-6">
+                        <label class="control-label">Lista de Componentes:</label>
+                    </div>
+                </div>
+                <br>
+                <div class="form-group">
+                    <table class="table table-bordered table-striped">
+                        <thead>
+                            <tr>
+                                <th>Identificação</th>
+                                <th>Descrição</th>
+                                <th>Tipo</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for component in component_list %}
+                            <tr>
+                                <td>{{ component.identification }}</td>
+                                <td>{{ component.description }}</td>
+                                <td>{{ component.component_type }}</td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+                <div class="dropdown">
+                    <button class="btn btn-default dropdown-toggle" type="button" id="dropdownMenu1" data-toggle="dropdown" aria-expanded="true">
+                        Novo componente
+                        <span class="caret"></span>
+                    </button>
+                    <ul class="dropdown-menu" role="menu" aria-labelledby="dropdownMenu1">
+                        <li role="presentation"><a role="menuitem" tabindex="-1" href="/experiment/{{ experiment.id }}/new_component/task">Tarefa</a></li>
+                        <li role="presentation"><a role="menuitem" tabindex="-1" href="/experiment/{{ experiment.id }}/new_component/stimulus">Estímulo</a></li>
+                        <li role="presentation"><a role="menuitem" tabindex="-1" href="/experiment/{{ experiment.id }}/new_component/pause">Pausa</a></li>
+                        <li role="presentation"><a role="menuitem" tabindex="-1" href="/experiment/{{ experiment.id }}/new_component/questionnaire">Questionário</a></li>
+                        <li role="presentation"><a role="menuitem" tabindex="-1" href="/experiment/{{ experiment.id }}/new_component/sequence">Sequência</a></li>
+                    </ul>
+                </div>
+            </div>
+
+            <div class="btn-toolbar">
+                <div class="btn-group pull-right">
+                    <a href="/experiment/edit/{{ experiment.id }}" class="btn" style="background-color: #f5f5f5">Voltar</a>
+                </div>
+            </div>
+        </div>
+    </div>
+
+{% endblock %}
+
+{% block end_form %}
+    </form>
+    </div>
+{% endblock %}

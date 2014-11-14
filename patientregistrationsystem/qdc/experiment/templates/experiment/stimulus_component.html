@@ -1,7 +1,7 @@
 {% extends "experiment/component_template.html" %}
 
 {% block breadcrumb %}
-    <li class="active">Nova tarefa</li>
+    <li class="active">Novo estímulo</li>
 {% endblock %}
 
 {% block list_components %}
@@ -36,8 +36,8 @@
         <div class="row">
             <div class="col-xs-6 col-sm-6">
                 <div class="form-group">
-                    <label class="control-label">Instrução <b style="color: red;">*</b></label>
-                        {{ form.instruction }}
+                    <label class="control-label">Tipo do estímulo <b style="color: red;">*</b></label>
+                        {{ form.stimulus_type }}
                     <div class="help-block with-errors"></div>
                 </div>
             </div>

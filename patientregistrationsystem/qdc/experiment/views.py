@@ -13,9 +13,9 @@ from django.db.models.deletion import ProtectedError
 from django.conf import settings
 
 from experiment.models import Experiment, QuestionnaireConfiguration, Subject, TimeUnit, \
-    QuestionnaireResponse, SubjectOfGroup, Group
+    QuestionnaireResponse, SubjectOfGroup, Group, Component, ComponentConfiguration, Questionnaire
 from experiment.forms import ExperimentForm, QuestionnaireConfigurationForm, QuestionnaireResponseForm, \
-    FileForm, GroupForm
+    FileForm, GroupForm, TaskForm, ComponentForm, StimulusForm, PauseForm
 from patient.models import Patient
 from experiment.abc_search_engine import Questionnaires
 
@@ -912,10 +912,62 @@ def upload_file(request, subject_id, group_id, template_name="experiment/upload_
     return render(request, template_name, context)
 
 
-def create_experimental_protocol(request, group_id, template_name="experiment/sequence_component.html"):
-    context = {"group_id": group_id}
+def list_components(request, experiment_id, template_name="experiment/components.html"):
+    experiment = get_object_or_404(Experiment, pk=experiment_id)
+    components = Component.objects.filter(experiment=experiment)
+    context = {
+        "experiment": experiment,
+        "component_list": components}
     return render(request, template_name, context)
 
 
-def create_new_task(request, group_id, template_name="experiment/task_component.html"):
-    return render(request, template_name)
+def create_new_component(request, experiment_id, type):
+    template_name = "experiment/" + type + "_component.html"
+    experiment = get_object_or_404(Experiment, pk=experiment_id)
+    component_form = ComponentForm(request.POST or None)
+    questionnaires_list = []
+    form = None
+
+    if type == 'task':
+        form = TaskForm(request.POST or None)
+    else:
+        if type == 'stimulus':
+            form = StimulusForm(request.POST or None)
+        else:
+            if type == 'pause':
+                form = PauseForm(request.POST or None)
+            else:
+                if type == 'questionnaire':
+                        questionnaires_list = Questionnaires().find_all_active_questionnaires()
+
+    if request.method == "POST":
+        if type == 'questionnaire':
+            new_component = Questionnaire()
+            new_component.lime_survey_id = request.POST['questionnaire_selected']
+        else:
+            if form.is_valid():
+                new_component = form.save(commit=False)
+
+        if component_form.is_valid():
+            component = component_form.save(commit=False)
+            new_component.description = component.description
+            new_component.identification = component.identification
+            new_component.component_type = type
+            new_component.experiment = experiment
+            new_component.save()
+
+            messages.success(request, 'Tarefa incluída com sucesso.')
+
+            redirect_url = reverse("list_components", args=(experiment_id,))
+            return HttpResponseRedirect(redirect_url)
+
+
+    context = {
+        "creating_protocol_experimental": False,
+        "form": form,
+        "experiment": experiment,
+        "component_form": component_form,
+        "creating": True,
+        "questionnaires_list": questionnaires_list,
+    }
+    return render(request, template_name, context)

@@ -38,8 +38,8 @@ urlpatterns = patterns(
         'experiment.views.questionnaire_response_view', name='questionnaire_response_view'),
 
     #experimental_protocol
-    url(r'^group/(?P<group_id>\d+)/experimental_protocol/$',
-        'experiment.views.create_experimental_protocol', name='experimental_protocol'),
-    url(r'^group/(?P<group_id>\d+)/experimental_protocol/new_task/$',
-        'experiment.views.create_new_task', name='new_task'),
+    url(r'^(?P<experiment_id>\d+)/components/$',
+        'experiment.views.list_components', name='list_components'),
+    url(r'^(?P<experiment_id>\d+)/new_component/(?P<type>\w+)/$',
+        'experiment.views.create_new_component', name='new_component'),
 )
