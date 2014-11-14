@@ -33,6 +33,7 @@ PATIENT_EDIT = 'patient_edit'
 
 
 class UtilTests():
+
     def create_patient_mock(self, name='Pacient Test', user=None):
         """ Cria um paciente para ser utilizado durante os testes """
         gender = Gender.objects.create(name='Masculino')
@@ -46,6 +47,7 @@ class UtilTests():
         p_mock.changed_by = user
         p_mock.save()
         return p_mock
+
 
     def create_cid10_to_search(self):
         cid10 = ClassificationOfDiseases.objects.create(code='A01', description='Febres paratifoide',
