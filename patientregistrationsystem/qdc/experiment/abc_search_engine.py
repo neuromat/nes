@@ -16,7 +16,7 @@ class ABCSearchEngine:
         self.get_session_key()
 
     def get_session_key(self):
-        self.server = pyjsonrpc.HttpClient(settings.LIMESURVEY['URL'] + "/index.php/admin/remotecontrol")
+        self.server = pyjsonrpc.HttpClient(settings.LIMESURVEY['URL_API'] + "/index.php/admin/remotecontrol")
         try:
             self.session_key = self.server.get_session_key(settings.LIMESURVEY['USER'], settings.LIMESURVEY['PASSWORD'])
         except:
@@ -103,7 +103,11 @@ class ABCSearchEngine:
 
         if self.session_key:
             survey_title = self.server.get_language_properties(self.session_key, sid, {'method': 'surveyls_title'})
-            survey_title = survey_title.get('surveyls_title')
+
+            if 'surveyls_title' in survey_title:
+                survey_title = survey_title.get('surveyls_title')
+            else:
+                survey_title = str(sid)
         else:
             survey_title = str(sid)
 

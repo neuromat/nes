@@ -1,6 +1,7 @@
 # -*- coding: UTF-8 -*-
 from datetime import date
 
+from django.shortcuts import get_object_or_404
 from django.test import TestCase, Client
 from django.http import Http404
 from django.core.files.uploadedfile import SimpleUploadedFile
@@ -32,6 +33,7 @@ PATIENT_EDIT = 'patient_edit'
 
 
 class UtilTests():
+
     def create_patient_mock(self, name='Pacient Test', user=None):
         """ Cria um paciente para ser utilizado durante os testes """
         gender = Gender.objects.create(name='Masculino')
@@ -45,6 +47,7 @@ class UtilTests():
         p_mock.changed_by = user
         p_mock.save()
         return p_mock
+
 
     def create_cid10_to_search(self):
         cid10 = ClassificationOfDiseases.objects.create(code='A01', description='Febres paratifoide',
@@ -444,6 +447,22 @@ class PatientFormValidation(TestCase):
         response = self.client.post(reverse(PATIENT_SEARCH), self.data)
         self.assertEqual(response.status_code, 200)
         self.assertNotContains(response, patient_mock.cpf)
+
+    def test_remove_patient_get(self):
+        patient_mock = self.util.create_patient_mock(user=self.user)
+
+        count_patients = Patient.objects.count()
+
+        self.assertEqual(count_patients, 1)
+
+        self.data[ACTION] = 'remove'
+        request = self.factory.get(reverse(PATIENT_EDIT, args=[patient_mock.pk]))
+        request.user = self.user
+
+        patient_update(request=request, patient_id=patient_mock.pk)
+        patient_mock = get_object_or_404(Patient, id=patient_mock.pk)
+
+        self.assertEqual(patient_mock.removed, False)
 
     def test_update_patient_not_exist(self):
         """Teste de paciente nao existente na base de dados """

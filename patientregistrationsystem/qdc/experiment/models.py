@@ -53,19 +53,11 @@ class Experiment(models.Model):
         self.changed_by = value
 
 
-class Group(models.Model):
-    experiment = models.ForeignKey(Experiment, null=False, blank=False)
-    title = models.CharField(null=False, max_length=50, blank=False)
-    description = models.CharField(max_length=150, null=False, blank=False)
-    instruction = models.CharField(max_length=150, null=True, blank=True)
-    classification_of_diseases = models.ManyToManyField(ClassificationOfDiseases, null=True)
-
-
 class Component(models.Model):
     identification = models.CharField(null=False, max_length=50, blank=False)
     description = models.CharField(max_length=150, null=False, blank=False)
     experiment = models.ForeignKey(Experiment, null=False)
-    component_type = models.CharField(null=False, max_length=50,
+    component_type = models.CharField(null=False, max_length=15,
                             choices=(("task", "Task component"),
                                      ("pause", "Pause component"),
                                      ("stimulus", "Stimulus component"),
@@ -85,7 +77,7 @@ class Stimulus(Component):
     stimulus_type = models.CharField(max_length=50, null=False, blank=False)
 
 
-class QuestionnaireComponent(Component):
+class Questionnaire(Component):
     lime_survey_id = models.IntegerField(null=False, blank=False)
 
 
@@ -100,7 +92,16 @@ class ComponentConfiguration(models.Model):
     interval_between_repetitions_value = models.IntegerField(null=True, blank=True, validators=[MinValueValidator(1)])
     interval_between_repetitions_unit = models.ForeignKey(TimeUnit, null=True, blank=True)
     component = models.ForeignKey(Component, null=False, related_name="configuration")
-    parent = models.ForeignKey(Component, null=True, related_name="children")
+    parent = models.ForeignKey('self', null=True, related_name='children')
+
+
+class Group(models.Model):
+    experiment = models.ForeignKey(Experiment, null=False, blank=False)
+    title = models.CharField(null=False, max_length=50, blank=False)
+    description = models.CharField(max_length=150, null=False, blank=False)
+    instruction = models.CharField(max_length=150, null=True, blank=True)
+    classification_of_diseases = models.ManyToManyField(ClassificationOfDiseases, null=True)
+    experimental_protocol = models.ForeignKey(ComponentConfiguration, null=True)
 
 
 def get_dir(instance, filename):

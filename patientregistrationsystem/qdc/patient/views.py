@@ -215,27 +215,29 @@ def patient_update(request, patient_id, template_name="patient/register.html"):
 
         medical_data = MedicalRecordData.objects.filter(patient_id=patient_id).order_by('record_date')
 
-        surveys = Questionnaires()
         questionnaires_data = []
-        subject = Subject.objects.filter(patient=current_patient)
-        subject_of_group_list = SubjectOfGroup.objects.filter(subject=subject)
-        for subject_of_group in subject_of_group_list:
-            group = get_object_or_404(Group, id=subject_of_group.group.id)
-            experiment = get_object_or_404(Experiment, id=group.experiment.id)
-            questionnaire_configuration_list = QuestionnaireConfiguration.objects.filter(group=group)
-            for questionnaire_configuration in questionnaire_configuration_list:
-                questionnaire_response_list = QuestionnaireResponse.objects.filter(subject_of_group=subject_of_group). \
-                    filter(questionnaire_configuration=questionnaire_configuration)
-                for questionnaire_response in questionnaire_response_list:
-                    questionnaires_data.append(
-                        {
-                            'experiment_title': experiment.title,
-                            'group_title': group.title,
-                            'questionnaire_title': surveys.get_survey_title(questionnaire_configuration.lime_survey_id),
-                            'questionnaire_response': questionnaire_response
-                        }
-                    )
 
+        if current_tab == '4':
+            surveys = Questionnaires()
+            subject = Subject.objects.filter(patient=current_patient)
+            subject_of_group_list = SubjectOfGroup.objects.filter(subject=subject)
+            for subject_of_group in subject_of_group_list:
+                group = get_object_or_404(Group, id=subject_of_group.group.id)
+                experiment = get_object_or_404(Experiment, id=group.experiment.id)
+                questionnaire_configuration_list = QuestionnaireConfiguration.objects.filter(group=group)
+                for questionnaire_configuration in questionnaire_configuration_list:
+                    questionnaire_response_list = QuestionnaireResponse.objects.filter(subject_of_group=subject_of_group). \
+                        filter(questionnaire_configuration=questionnaire_configuration)
+                    for questionnaire_response in questionnaire_response_list:
+                        questionnaires_data.append(
+                            {
+                                'experiment_title': experiment.title,
+                                'group_title': group.title,
+                                'questionnaire_title': surveys.get_survey_title(questionnaire_configuration.lime_survey_id),
+                                'questionnaire_response': questionnaire_response
+                            }
+                        )
+            surveys.release_session_key()
 
         context = {
             'patient_form': patient_form,
