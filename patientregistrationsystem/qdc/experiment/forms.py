@@ -19,6 +19,7 @@ class ExperimentForm(ModelForm):
                                            'data-error': 'Descrição deve ser preenchida.'}),
         }
 
+
 class GroupForm(ModelForm):
     class Meta:
 
@@ -37,9 +38,6 @@ class GroupForm(ModelForm):
                                            'rows': '4', 'required': "",
                                            'data-error': 'Descrição deve ser preenchida.'}),
         }
-
-
-
 
 
 class QuestionnaireConfigurationForm(ModelForm):

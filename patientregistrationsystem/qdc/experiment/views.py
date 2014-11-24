@@ -10,10 +10,11 @@ from django.http import HttpResponseRedirect
 from django.core.urlresolvers import reverse
 from django.shortcuts import render_to_response
 from django.db.models.deletion import ProtectedError
+from django.db.models import Q
 from django.conf import settings
 
 from experiment.models import Experiment, QuestionnaireConfiguration, Subject, TimeUnit, \
-    QuestionnaireResponse, SubjectOfGroup, Group
+    QuestionnaireResponse, SubjectOfGroup, Group, ClassificationOfDiseases
 from experiment.forms import ExperimentForm, QuestionnaireConfigurationForm, QuestionnaireResponseForm, \
     FileForm, GroupForm
 from patient.models import Patient
@@ -193,6 +194,8 @@ def group_update(request, group_id, template_name="experiment/group_register.htm
                     return HttpResponseRedirect(redirect_url)
 
     context = {
+        "classification_of_diseases_list": group.classification_of_diseases.all(),
+        "group_id": group_id,
         "group_form": group_form,
         "creating": False,
         "questionnaires_configuration_list": questionnaires_configuration_list,
@@ -201,6 +204,42 @@ def group_update(request, group_id, template_name="experiment/group_register.htm
         "limesurvey_available": limesurvey_available}
 
     return render(request, template_name, context)
+
+
+@login_required
+def search_cid10_ajax(request):
+    cid_10_list = ''
+
+    if request.method == "POST":
+        search_text = request.POST['search_text']
+        group_id = request.POST['group_id']
+
+        if search_text:
+            cid_10_list = ClassificationOfDiseases.objects.filter(Q(abbreviated_description__icontains=search_text) |
+                                                                  Q(description__icontains=search_text))
+
+        return render_to_response('experiment/ajax_cid10.html', {'cid_10_list': cid_10_list, 'group_id': group_id})
+
+
+@login_required
+def disease_create(request, group_id, cid10_id):
+    """Add group disease"""
+    group = get_object_or_404(Group, pk=group_id)
+    cid10 = get_object_or_404(ClassificationOfDiseases, pk=cid10_id)
+    group.classification_of_diseases.add(cid10)
+    group.save()
+    redirect_url = reverse("group_edit", args=(group_id,))
+    return HttpResponseRedirect(redirect_url)
+
+
+@login_required
+def group_create_disease_create(request):
+    """?"""
+
+
+@login_required
+def disease_delete(request):
+    """Remove group disease"""
 
 
 @login_required

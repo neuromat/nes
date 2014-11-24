@@ -13,6 +13,17 @@ urlpatterns = patterns(
     url(r'^group/edit/(?P<group_id>\d+)/$',
         'experiment.views.group_update', name='group_edit'),
 
+    # cid
+    url(r'^group_diseases/cid-10/$', 'experiment.views.search_cid10_ajax', name='cid10_search'),
+
+    # diagnosis (create, delete, update)
+    url(r'^group/edit/(?P<group_id>\d+)/diagnosis/(?P<cid10_id>\d+)/$',
+        'experiment.views.disease_create', name='disease_create'),
+    # url(r'^(?P<group_id>\d+)/group_diseases/new/diagnosis/(?P<cid10_id>\d+)/$',
+    #     'experiment.views.group_create_disease_create', name='group_disease_create'),
+    # url(r'^diagnosis/delete/(?P<group_id>\d+)/(?P<diagnosis_id>\d+)/$',
+    #     'experiment.views.disease_delete', name='disease_delete'),
+
     # questionnaire
     url(r'^group/(?P<group_id>\d+)/questionnaire/new/$',
         'experiment.views.questionnaire_create', name='questionnaire_new'),
