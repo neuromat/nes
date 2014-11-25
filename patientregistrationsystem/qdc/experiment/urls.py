@@ -16,7 +16,7 @@ urlpatterns = patterns(
     # cid
     url(r'^group_diseases/cid-10/$', 'experiment.views.search_cid10_ajax', name='cid10_search'),
 
-    # diagnosis (create, delete, update)
+    # classification_of_diseases (add, remove)
     url(r'^group/edit/(?P<group_id>\d+)/diagnosis/(?P<classification_of_diseases_id>\d+)/$',
         'experiment.views.classification_of_diseases_create', name='classification_of_diseases_create'),
     url(r'^diagnosis/delete/(?P<group_id>\d+)/(?P<classification_of_diseases_id>\d+)/$',
