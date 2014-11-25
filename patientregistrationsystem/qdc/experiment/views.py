@@ -207,6 +207,7 @@ def group_update(request, group_id, template_name="experiment/group_register.htm
 
 
 @login_required
+@permission_required('experiment.add_subject')
 def search_cid10_ajax(request):
     cid_10_list = ''
 

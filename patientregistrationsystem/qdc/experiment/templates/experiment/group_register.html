@@ -128,17 +128,19 @@
                                 </tr>
                                 </thead>
                                 <tbody>
-                                <tr>
-                                    {% if not classification_of_diseases_list %}
+                                {% if not classification_of_diseases_list %}
+                                    <tr>
                                         <td>(sem diagnósticos)</td>
                                         <td></td>
-                                    {% else %}
-                                        {% for classification_of_diseases in classification_of_diseases_list %}
+                                    </tr>
+                                {% else %}
+                                    {% for classification_of_diseases in classification_of_diseases_list %}
+                                        <tr>
                                             <td>{{ classification_of_diseases.code }}</td>
                                             <td>{{ classification_of_diseases.abbreviated_description }}</td>
-                                        {% endfor %}
-                                    {% endif %}
-                                </tr>
+                                        </tr>
+                                    {% endfor %}
+                                {% endif %}
                                 </tbody>
                             </table>
                         </div>
