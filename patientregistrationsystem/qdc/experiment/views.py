@@ -119,6 +119,7 @@ def experiment_update(request, experiment_id, template_name="experiment/experime
     return render(request, template_name, context)
 
 @login_required
+@permission_required('experiment.add_experiment')
 def group_create(request, experiment_id, template_name="experiment/group_register.html"):
 
     experiment = get_object_or_404(Experiment, pk=experiment_id)
@@ -147,6 +148,7 @@ def group_create(request, experiment_id, template_name="experiment/group_registe
 
 
 @login_required
+@permission_required('experiment.add_experiment')
 def group_update(request, group_id, template_name="experiment/group_register.html"):
 
     group = get_object_or_404(Group, pk=group_id)
@@ -223,6 +225,7 @@ def search_cid10_ajax(request):
 
 
 @login_required
+@permission_required('experiment.add_experiment')
 def classification_of_diseases_create(request, group_id, classification_of_diseases_id):
     """Add group disease"""
     group = get_object_or_404(Group, pk=group_id)
@@ -233,6 +236,7 @@ def classification_of_diseases_create(request, group_id, classification_of_disea
 
 
 @login_required
+@permission_required('experiment.add_experiment')
 def classification_of_diseases_delete(request, group_id, classification_of_diseases_id):
     """Remove group disease"""
     group = get_object_or_404(Group, pk=group_id)
