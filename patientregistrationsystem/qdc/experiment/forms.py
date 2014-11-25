@@ -134,15 +134,8 @@ class PauseForm(ModelForm):
 
         widgets = {
             'duration': TextInput(attrs={'class': 'form-control', 'required': "",
-                                         'data-error': 'Duração da pause deve ser preenchida.'})
+                                         'data-error': 'Duração da pausa deve ser preenchida.'})
         }
-
-
-# talvez os dois forms abaixo não sejam necessários
-# class QuestionnaireForm(ModelForm):
-#     class Meta:
-#         model = Questionnaire
-#         fields = ['limesurvey_id']
 
 
 # class SequenceForm(ModelForm):

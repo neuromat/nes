@@ -13,7 +13,7 @@ from django.db.models.deletion import ProtectedError
 from django.conf import settings
 
 from experiment.models import Experiment, QuestionnaireConfiguration, Subject, TimeUnit, \
-    QuestionnaireResponse, SubjectOfGroup, Group, Component, ComponentConfiguration, Questionnaire
+    QuestionnaireResponse, SubjectOfGroup, Group, Component, ComponentConfiguration, Questionnaire, Task, Stimulus, Pause
 from experiment.forms import ExperimentForm, QuestionnaireConfigurationForm, QuestionnaireResponseForm, \
     FileForm, GroupForm, TaskForm, ComponentForm, StimulusForm, PauseForm
 from patient.models import Patient
@@ -912,7 +912,7 @@ def upload_file(request, subject_id, group_id, template_name="experiment/upload_
     return render(request, template_name, context)
 
 
-def list_components(request, experiment_id, template_name="experiment/components.html"):
+def component_list(request, experiment_id, template_name="experiment/component_list.html"):
     experiment = get_object_or_404(Experiment, pk=experiment_id)
     components = Component.objects.filter(experiment=experiment)
     context = {
@@ -921,7 +921,7 @@ def list_components(request, experiment_id, template_name="experiment/components
     return render(request, template_name, context)
 
 
-def create_new_component(request, experiment_id, type):
+def component_create(request, experiment_id, type):
     template_name = "experiment/" + type + "_component.html"
     experiment = get_object_or_404(Experiment, pk=experiment_id)
     component_form = ComponentForm(request.POST or None)
@@ -941,6 +941,7 @@ def create_new_component(request, experiment_id, type):
                         questionnaires_list = Questionnaires().find_all_active_questionnaires()
 
     if request.method == "POST":
+        new_component = None
         if type == 'questionnaire':
             new_component = Questionnaire()
             new_component.lime_survey_id = request.POST['questionnaire_selected']
@@ -956,18 +957,78 @@ def create_new_component(request, experiment_id, type):
             new_component.experiment = experiment
             new_component.save()
 
-            messages.success(request, 'Tarefa incluída com sucesso.')
+            messages.success(request, 'Componente incluído com sucesso.')
 
-            redirect_url = reverse("list_components", args=(experiment_id,))
+            redirect_url = reverse("component_list", args=(experiment_id,))
             return HttpResponseRedirect(redirect_url)
 
-
     context = {
-        "creating_protocol_experimental": False,
+        "creating_workflow": False,
         "form": form,
         "experiment": experiment,
         "component_form": component_form,
         "creating": True,
+        "updating": False,
         "questionnaires_list": questionnaires_list,
+    }
+    return render(request, template_name, context)
+
+
+def component_update(request, component_id, type):
+    template_name = "experiment/" + type + "_component.html"
+    component = get_object_or_404(Component, pk=component_id)
+    experiment = get_object_or_404(Experiment, pk=component.experiment.id)
+    questionnaire_id = None
+    questionnaire_title = None
+    component_form = None
+    form = None
+
+    if component:
+        component_form = ComponentForm(request.POST or None, instance=component)
+        form = None
+        if type == 'task':
+            task = get_object_or_404(Task, pk=component.id)
+            form = TaskForm(request.POST or None, instance=task)
+        else:
+            if type == 'stimulus':
+                stimulus = get_object_or_404(Stimulus, pk=component.id)
+                form = StimulusForm(request.POST or None, instance=stimulus)
+            else:
+                if type == 'pause':
+                    pause = get_object_or_404(Pause, pk=component.id)
+                    form = PauseForm(request.POST or None, instance=pause)
+                else:
+                    if type == 'questionnaire':
+                        questionnaire = get_object_or_404(Questionnaire, pk=component.id)
+                        questionnaire_details = Questionnaires().find_questionnaire_by_id(questionnaire.lime_survey_id)
+                        questionnaire_id = questionnaire_details['sid'],
+                        questionnaire_title = questionnaire_details['surveyls_title']
+
+    if request.method == "POST":
+        if request.POST['action'] == "save":
+            if form.is_valid():
+                form.save()
+                if component_form.is_valid():
+                    component_form.save()
+
+                    messages.success(request, 'Componente alterado com sucesso.')
+
+                    redirect_url = reverse("component_list", args=(experiment.id,))
+                    return HttpResponseRedirect(redirect_url)
+        else:
+            if request.POST['action'] == "remove":
+                component.delete()
+                redirect_url = reverse("component_list", args=(experiment.id,))
+                return HttpResponseRedirect(redirect_url)
+
+    context = {
+        "creating_workflow": False,
+        "form": form,
+        "experiment": experiment,
+        "component_form": component_form,
+        "creating": False,
+        "updating": True,
+        "questionnaire_id": questionnaire_id,
+        "questionnaire_title": questionnaire_title,
     }
     return render(request, template_name, context)
