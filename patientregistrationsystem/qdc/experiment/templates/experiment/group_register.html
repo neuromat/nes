@@ -2,6 +2,16 @@
 {% block activeAdvancedExperiment %}class="active"{% endblock %}
 
 {% block header %}
+    <script type="text/javascript">
+        $(function(){
+            $("[data-toggle=tooltip]").tooltip();
+        });
+        function show_modal_remove (group_id, classification_of_diseases_id){
+            var  modal_remove = document.getElementById('removeClassificationOfDiseases');
+            modal_remove.setAttribute( "href", '/experiment/diagnosis/delete/' + group_id + '/' + classification_of_diseases_id);
+            $('#modalRemoveClassificationOfDiseases').modal('show');
+        }
+    </script>
 {% endblock %}
 
 {% block form %}
@@ -137,7 +147,12 @@
                                     {% for classification_of_diseases in classification_of_diseases_list %}
                                         <tr>
                                             <td>{{ classification_of_diseases.code }}</td>
-                                            <td>{{ classification_of_diseases.abbreviated_description }}</td>
+                                            <td>{{ classification_of_diseases.abbreviated_description }}
+                                                <a class="btn glyphicon glyphicon-remove" data-toggle="tooltip"
+                                                   data-placement="right" title="Remover" style="color: indianred;
+                                               position: relative; float: right; padding: 0"
+                                                   onclick="show_modal_remove({{ group_id }},
+                                                           {{ classification_of_diseases.id }});"></a></td>
                                         </tr>
                                     {% endfor %}
                                 {% endif %}
@@ -247,6 +262,21 @@
                     <button type="submit" class="btn btn-primary" value="remove" name="action"
                             style="background-color: indianred; color: #ffffff">Excluir
                     </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="modal fade" id="modalRemoveClassificationOfDiseases" tabindex="-1" role="dialog" aria-labelledby="myModalLabel"
+         aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-body">
+                    Tem certeza que deseja excluir o diagnóstico?
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-default" data-dismiss="modal">Cancelar</button>
+                    <a type="button" class="btn btn-primary" id="removeClassificationOfDiseases" style="background-color: indianred; color: #ffffff" href="">Excluir</a>
                 </div>
             </div>
         </div>

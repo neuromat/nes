@@ -6,7 +6,7 @@ import datetime
 from django.shortcuts import render, get_object_or_404, redirect
 from django.contrib.auth.decorators import login_required, permission_required
 from django.contrib import messages
-from django.http import HttpResponseRedirect
+from django.http import HttpResponseRedirect, HttpResponse
 from django.core.urlresolvers import reverse
 from django.shortcuts import render_to_response
 from django.db.models.deletion import ProtectedError
@@ -223,24 +223,23 @@ def search_cid10_ajax(request):
 
 
 @login_required
-def disease_create(request, group_id, cid10_id):
+def classification_of_diseases_create(request, group_id, classification_of_diseases_id):
     """Add group disease"""
     group = get_object_or_404(Group, pk=group_id)
-    cid10 = get_object_or_404(ClassificationOfDiseases, pk=cid10_id)
-    group.classification_of_diseases.add(cid10)
-    group.save()
+    classification_of_diseases = get_object_or_404(ClassificationOfDiseases, pk=classification_of_diseases_id)
+    group.classification_of_diseases.add(classification_of_diseases)
     redirect_url = reverse("group_edit", args=(group_id,))
     return HttpResponseRedirect(redirect_url)
 
 
 @login_required
-def group_create_disease_create(request):
-    """?"""
-
-
-@login_required
-def disease_delete(request):
+def classification_of_diseases_delete(request, group_id, classification_of_diseases_id):
     """Remove group disease"""
+    group = get_object_or_404(Group, pk=group_id)
+    classification_of_diseases = get_object_or_404(ClassificationOfDiseases, pk=classification_of_diseases_id)
+    classification_of_diseases.group_set.remove(group)
+    redirect_url = reverse("group_edit", args=(group_id,))
+    return HttpResponseRedirect(redirect_url)
 
 
 @login_required

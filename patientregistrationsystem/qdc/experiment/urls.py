@@ -17,12 +17,10 @@ urlpatterns = patterns(
     url(r'^group_diseases/cid-10/$', 'experiment.views.search_cid10_ajax', name='cid10_search'),
 
     # diagnosis (create, delete, update)
-    url(r'^group/edit/(?P<group_id>\d+)/diagnosis/(?P<cid10_id>\d+)/$',
-        'experiment.views.disease_create', name='disease_create'),
-    # url(r'^(?P<group_id>\d+)/group_diseases/new/diagnosis/(?P<cid10_id>\d+)/$',
-    #     'experiment.views.group_create_disease_create', name='group_disease_create'),
-    # url(r'^diagnosis/delete/(?P<group_id>\d+)/(?P<diagnosis_id>\d+)/$',
-    #     'experiment.views.disease_delete', name='disease_delete'),
+    url(r'^group/edit/(?P<group_id>\d+)/diagnosis/(?P<classification_of_diseases_id>\d+)/$',
+        'experiment.views.classification_of_diseases_create', name='classification_of_diseases_create'),
+    url(r'^diagnosis/delete/(?P<group_id>\d+)/(?P<classification_of_diseases_id>\d+)/$',
+        'experiment.views.classification_of_diseases_delete', name='classification_of_diseases_delete'),
 
     # questionnaire
     url(r'^group/(?P<group_id>\d+)/questionnaire/new/$',
@@ -53,4 +51,4 @@ urlpatterns = patterns(
         'experiment.views.create_experimental_protocol', name='experimental_protocol'),
     url(r'^group/(?P<group_id>\d+)/experimental_protocol/new_task/$',
         'experiment.views.create_new_task', name='new_task'),
-)
+    )
