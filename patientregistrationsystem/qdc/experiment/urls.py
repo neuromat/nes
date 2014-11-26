@@ -40,8 +40,13 @@ urlpatterns = patterns(
     #experimental_protocol
     url(r'^(?P<experiment_id>\d+)/components/$',
         'experiment.views.component_list', name='component_list'),
-    url(r'^(?P<experiment_id>\d+)/new_component/(?P<type>\w+)/$',
+    url(r'^(?P<experiment_id>\d+)/new_component/(?P<component_type>\w+)/$',
         'experiment.views.component_create', name='component_new'),
-    url(r'^component/edit/(?P<component_id>\d+)/(?P<type>\w+)/$',
+    url(r'^component/edit/(?P<component_id>\d+)/(?P<component_type>\w+)/$',
         'experiment.views.component_update', name='component_edit'),
+
+    url(r'^(?P<experiment_id>\d+)/sequence/(?P<sequence_id>\d+)/new_component/(?P<component_type>\w+)/$',
+        'experiment.views.sequence_component_create', name='sequence_component_new'),
+    url(r'^(?P<experiment_id>\d+)/sequence/(?P<sequence_id>\d+)/component/edit/(?P<component_id>\d+)/(?P<component_type>\w+)/$',
+        'experiment.views.sequence_component_update', name='sequence_component_update'),
 )

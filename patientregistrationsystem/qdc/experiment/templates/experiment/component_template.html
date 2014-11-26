@@ -98,6 +98,13 @@
                                 <div class="help-block with-errors"></div>
                             </div>
                         </div>
+                        <div class="col-xs-6 col-sm-2">
+                            <div class="form-group">
+                                <label class="control-label">Ordem <b style="color: red;">*</b></label>
+                                    {{ configuration_form.order }}
+                                <div class="help-block with-errors"></div>
+                            </div>
+                        </div>
                     </div>
                     <div class="row">
                         <div class="col-xs-6 col-sm-6">
@@ -113,18 +120,23 @@
                             <div class="form-group">
                                 <label for="number_of_repetitions" class="control-label">Quantidade</label>
                                     {{ configuration_form.number_of_repetitions }}
+                                <div class="help-block with-errors"></div>
                             </div>
+                        </div>
+                        <div class="col-xs-6 col-sm-1">
                         </div>
                         <div class="col-xs-6 col-sm-2">
                             <div class="form-group">
                                 <label for="interval_between_repetitions_value" class="control-label">Intervalo</label>
                                     {{ configuration_form.interval_between_repetitions_value }}
+                                <div class="help-block with-errors"></div>
                             </div>
                         </div>
                         <div class="col-xs-6 col-sm-2">
                             <div class="form-group">
                                 <label for="interval_between_repetitions_unit" class="control-label">Unidade</label>
                                     {{ configuration_form.interval_between_repetitions_unit }}
+                                <div class="help-block with-errors"></div>
                             </div>
                         </div>
                     </div>

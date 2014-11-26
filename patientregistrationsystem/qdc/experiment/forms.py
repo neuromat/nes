@@ -1,7 +1,7 @@
 # coding=utf-8
 from experiment.models import Experiment, QuestionnaireConfiguration, QuestionnaireResponse, SubjectOfGroup, Group, \
     Component, Task, Stimulus, Pause, Sequence, Questionnaire, ComponentConfiguration
-from django.forms import ModelForm, TextInput, Textarea, Select, DateInput
+from django.forms import ModelForm, TextInput, Textarea, Select, DateInput, CheckboxInput, BooleanField
 # from datetimewidget.widgets import DateTimeWidget
 
 
@@ -91,7 +91,7 @@ class ComponentConfigurationForm(ModelForm):
     class Meta:
         model = ComponentConfiguration
         fields = ['name', 'number_of_repetitions', 'interval_between_repetitions_value',
-                  'interval_between_repetitions_unit']
+                  'interval_between_repetitions_unit', 'order']
 
         widgets = {
             'name': TextInput(attrs={'class': 'form-control', 'required': "",
@@ -99,9 +99,11 @@ class ComponentConfigurationForm(ModelForm):
             'number_of_repetitions': TextInput(attrs={'class': 'form-control', 'required': "",
                                                 'data-error': 'Número de repetições deve ser preenchida.'}),
             'interval_between_repetitions_value': TextInput(attrs={'class': 'form-control', 'required': "",
-                                                'data-error': 'Deve ser preenchido.'}),
-            'interval_between_repetitions_unit': TextInput(attrs={'class': 'form-control', 'required': "",
-                                                'data-error': 'Deve ser preenchido.'}),
+                                                'data-error': 'Intervalo deve ser preenchido.'}),
+            'interval_between_repetitions_unit': Select(attrs={'class': 'form-control', 'required': "",
+                                                         'data-error': "Unidade deve ser preenchida"}),
+            'order': TextInput(attrs={'class': 'form-control', 'required': "",
+                                                'data-error': 'Ordem deve ser preenchida.'}),
         }
 
 
@@ -138,7 +140,12 @@ class PauseForm(ModelForm):
         }
 
 
-# class SequenceForm(ModelForm):
-#     class Meta:
-#         model = Sequence
-#         fields = ['has_random_components', 'number_of_mandatory_components']
+class SequenceForm(ModelForm):
+    class Meta:
+        model = Sequence
+        fields = ['has_random_components', 'number_of_mandatory_components']
+
+        widgets = {
+            'number_of_mandatory_components': TextInput(attrs={'class': 'form-control', 'required': "",
+                                                'data-error': 'Quantidade deve ser preenchida.'}),
+        }

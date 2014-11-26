@@ -1,5 +1,28 @@
 {% extends "experiment/component_template.html" %}
 
+{% block header %}
+
+    <script type="text/javascript">
+
+        $(document).ready(function () {
+
+            {% if form.number_of_mandatory_components.value == None %}
+                $("#id_number_of_mandatory_components").prop('disabled', true);
+                $("#mandatory_components").prop('checked', true);
+            {% endif %}
+
+            $("#mandatory_components").click(function () {
+                var unlimited = $("#mandatory_components").is(":checked");
+                $("#id_number_of_mandatory_components").prop('disabled', unlimited);
+                $("#id_number_of_mandatory_components").prop('value', "");
+            });
+
+        });
+
+    </script>
+
+{% endblock %}
+
 {% block breadcrumb %}
     <li class="active">Nova sequência</li>
 {% endblock %}
@@ -45,65 +68,65 @@
                             </tr>
                         </thead>
                         <tbody>
+                            {% for configuration in configuration_list %}
                             <tr>
-                                <td>Intrução inicial</td>
-                                <td>Tarefa</td>
-                                <td>1</td>
+                                <td><a data-toggle="tooltip" data-placement="left" title="Editar" href="/experiment/{{ experiment.id }}/sequence/{{ sequence.id }}/component/edit/{{ configuration.component.id }}/{{ configuration.component.component_type }}">{{ configuration.component.identification }}</a></td>
+                                <td>{{ configuration.component.component_type }}</td>
+                                <td>{{ configuration.order }}</td>
                             </tr>
-                            <tr>
-                                <td>Ver desenho do tio patinhas para descontrair</td>
-                                <td>Estímulo Visual</td>
-                                <td>2</td>
-                            </tr>
+                            {% endfor %}
+
                         </tbody>
                     </table>
                 </div>
+
+
+
                 <div class="dropdown">
-                    <button class="btn btn-default dropdown-toggle" type="button" id="dropdownMenu1" data-toggle="dropdown" aria-expanded="true">
+                    <button class="btn btn-default dropdown-toggle {% if creating %} disabled{% endif %}" type="button" id="dropdownMenu1" data-toggle="dropdown" aria-expanded="true">
                         Inserir componente
                         <span class="caret"></span>
                     </button>
-                    <ul class="dropdown-menu" role="menu" aria-labelledby="dropdownMenu1">
-                        <li role="presentation"><a role="menuitem" tabindex="-1" href="/experiment/group/{{ group_id }}/experimental_protocol/new_task">Tarefa</a></li>
-                        <li role="presentation"><a role="menuitem" tabindex="-1" href="#">Estímulo</a></li>
-                        <li role="presentation"><a role="menuitem" tabindex="-1" href="#">Pausa</a></li>
-                        <li role="presentation"><a role="menuitem" tabindex="-1" href="#">Questionário</a></li>
-                        <li role="presentation"><a role="menuitem" tabindex="-1" href="#">Sequência</a></li>
-                    </ul>
+                    {% if updating %}
+                        <ul class="dropdown-menu" role="menu" aria-labelledby="dropdownMenu1">
+                            <li role="presentation"><a role="menuitem" tabindex="-1" href="/experiment/{{ experiment.id }}/sequence/{{ sequence.id }}/new_component/task">Tarefa</a></li>
+                            <li role="presentation"><a role="menuitem" tabindex="-1" href="/experiment/{{ experiment.id }}/sequence/{{ sequence.id }}/new_component/stimulus">Estímulo</a></li>
+                            <li role="presentation"><a role="menuitem" tabindex="-1" href="/experiment/{{ experiment.id }}/sequence/{{ sequence.id }}/new_component/pause">Pausa</a></li>
+                            <li role="presentation"><a role="menuitem" tabindex="-1" href="/experiment/{{ experiment.id }}/sequence/{{ sequence.id }}/new_component/questionnaire">Questionário</a></li>
+                            <li role="presentation"><a role="menuitem" tabindex="-1" href="/experiment/{{ experiment.id }}/sequence/{{ sequence.id }}/new_component/sequence">Sequência</a></li>
+                        </ul>
+                    {% endif %}
                 </div>
-            </div>
-        </div>
-    </div>
-    <div class="container span6 offset3 well ">
-        <div class="row">
-            <div class="col-xs-6 col-sm-10">
+                </br>
                 {% if not workflow %}
                     <div class="row">
-                        <div class="col-xs-6 col-sm-12">
+                        <div class="col-xs-6 col-sm-6">
                             <div class="checkbox">
                                 <label>
-                                    <input id="random_sequence" type="checkbox"> Sequência aleatória
+                                    <input id="has_random_components" {% if form.has_random_components.value == True %} checked {% endif %} name="has_random_components" type="checkbox"> Sequência aleatória
                                 </label>
                             </div>
                         </div>
                     </div>
                     <div class="row">
-                        <div class="col-xs-6 col-sm-12">
+                        <div class="col-xs-6 col-sm-6">
                             <div class="checkbox">
                                 <label>
-                                    <input id="sequence_condition" type="checkbox"> Todos os componentes são obrigatórios
+                                    <input id="mandatory_components" type="checkbox"> Todos os componentes são obrigatórios
                                 </label>
                             </div>
                         </div>
                     </div>
                     <div class="row">
-                        <div class="col-xs-6 col-sm-2"></div>
-                        <div class="col-xs-6 col-sm-10">
-                        <div class="form-group">
-                            {{ sequence_form.number_of_repetitions }}
-                            <label for="number_of_mandatory_components" class="control-label">Quantidade de componentes obrigatórios</label>
+                        <div class="col-xs-6 col-sm-1"></div>
+                        <div class="col-xs-6 col-sm-2">
+                            <div class="form-group">
+                                {{ form.number_of_mandatory_components }}
+                            </div>
                         </div>
-                    </div>
+                        <div class="col-xs-6 col-sm-6">
+                            Quantidade de componentes obrigatórios
+                        </div>
                     </div>
                 {% endif %}
             </div>
