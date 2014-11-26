@@ -6,15 +6,16 @@ import datetime
 from django.shortcuts import render, get_object_or_404, redirect
 from django.contrib.auth.decorators import login_required, permission_required
 from django.contrib import messages
-from django.http import HttpResponseRedirect
+from django.http import HttpResponseRedirect, HttpResponse
 from django.core.urlresolvers import reverse
 from django.shortcuts import render_to_response
 from django.db.models.deletion import ProtectedError
+from django.db.models import Q
 from django.conf import settings
 
 from experiment.models import Experiment, QuestionnaireConfiguration, Subject, TimeUnit, \
     QuestionnaireResponse, SubjectOfGroup, Group, Component, ComponentConfiguration, Questionnaire, Task, Stimulus, \
-    Pause, Sequence
+    Pause, Sequence, ClassificationOfDiseases
 from experiment.forms import ExperimentForm, QuestionnaireConfigurationForm, QuestionnaireResponseForm, \
     FileForm, GroupForm, TaskForm, ComponentForm, StimulusForm, PauseForm, SequenceForm, ComponentConfigurationForm
 from patient.models import Patient
@@ -147,6 +148,7 @@ def group_create(request, experiment_id, template_name="experiment/group_registe
 
 
 @login_required
+@permission_required('experiment.add_experiment')
 def group_update(request, group_id, template_name="experiment/group_register.html"):
 
     group = get_object_or_404(Group, pk=group_id)
@@ -194,6 +196,8 @@ def group_update(request, group_id, template_name="experiment/group_register.htm
                     return HttpResponseRedirect(redirect_url)
 
     context = {
+        "classification_of_diseases_list": group.classification_of_diseases.all(),
+        "group_id": group_id,
         "group_form": group_form,
         "creating": False,
         "questionnaires_configuration_list": questionnaires_configuration_list,
@@ -202,6 +206,43 @@ def group_update(request, group_id, template_name="experiment/group_register.htm
         "limesurvey_available": limesurvey_available}
 
     return render(request, template_name, context)
+
+
+@permission_required('experiment.add_subject')
+def search_cid10_ajax(request):
+    cid_10_list = ''
+
+    if request.method == "POST":
+        search_text = request.POST['search_text']
+        group_id = request.POST['group_id']
+
+        if search_text:
+            cid_10_list = ClassificationOfDiseases.objects.filter(Q(abbreviated_description__icontains=search_text) |
+                                                                  Q(description__icontains=search_text))
+
+        return render_to_response('experiment/ajax_cid10.html', {'cid_10_list': cid_10_list, 'group_id': group_id})
+
+
+@login_required
+@permission_required('experiment.add_experiment')
+def classification_of_diseases_create(request, group_id, classification_of_diseases_id):
+    """Add group disease"""
+    group = get_object_or_404(Group, pk=group_id)
+    classification_of_diseases = get_object_or_404(ClassificationOfDiseases, pk=classification_of_diseases_id)
+    group.classification_of_diseases.add(classification_of_diseases)
+    redirect_url = reverse("group_edit", args=(group_id,))
+    return HttpResponseRedirect(redirect_url)
+
+
+@login_required
+@permission_required('experiment.add_experiment')
+def classification_of_diseases_delete(request, group_id, classification_of_diseases_id):
+    """Remove group disease"""
+    group = get_object_or_404(Group, pk=group_id)
+    classification_of_diseases = get_object_or_404(ClassificationOfDiseases, pk=classification_of_diseases_id)
+    classification_of_diseases.group_set.remove(group)
+    redirect_url = reverse("group_edit", args=(group_id,))
+    return HttpResponseRedirect(redirect_url)
 
 
 @login_required
@@ -426,6 +467,11 @@ def subject_questionnaire_response_start_fill_questionnaire(request, subject_id,
                              'Preenchimento não disponível - Questionário não está ativo')
             return None, None
 
+        if not check_required_fields(questionnaire_lime_survey, questionnaire_config.lime_survey_id):
+            messages.warning(request,
+                             'Preenchimento não disponível - Questionário não contém campos padronizados')
+            return None, None
+
         result = questionnaire_lime_survey.add_participant(questionnaire_config.lime_survey_id, patient.name, '',
                                                            patient.email)
 
@@ -459,7 +505,7 @@ def get_limesurvey_response_url(questionnaire_response):
 
     redirect_url = \
         '%s/index.php/%s/token/%s/responsibleid/%s/acquisitiondate/%s/subjectid/%s/newtest/Y' % (
-            settings.LIMESURVEY['URL'],
+            settings.LIMESURVEY['URL_WEB'],
             questionnaire_response.questionnaire_configuration.lime_survey_id,
             token,
             str(questionnaire_response.questionnaire_responsible.id),
@@ -583,7 +629,7 @@ def questionnaire_response_update(request, questionnaire_response_id,
                 else:
                     messages.error(request, "Erro ao deletar o preenchimento")
                 redirect_url = reverse("subject_questionnaire",
-                                       args=(questionnaire_configuration.experiment.id, subject.id,))
+                                       args=(questionnaire_configuration.group.experiment.id, subject.id,))
                 return HttpResponseRedirect(redirect_url)
 
     context = {
@@ -631,6 +677,42 @@ def questionnaire_verification(questionnaire_id):
                         break
                 else:
                     return False
+
+
+# método para verificar se o questionário tem as questões de identificação corretas e se seus tipos também são corretos
+def check_required_fields(surveys, lime_survey_id):
+
+    fields_to_validate = {
+        'responsibleid': {'type': 'N', 'found': False},
+        'acquisitiondate': {'type': 'D', 'found': False},
+        'subjectid': {'type': 'N', 'found': False},
+    }
+
+    validated_quantity = 0
+    error = False
+
+    groups = surveys.list_groups(lime_survey_id)
+
+    if not 'status' in groups:
+
+        for group in groups:
+            question_list = surveys.list_questions(lime_survey_id, group['id'])
+            for question in question_list:
+                question_properties = surveys.get_question_properties(question)
+                if question_properties['title'] in fields_to_validate:
+                    field = fields_to_validate[question_properties['title']]
+                    if not field['found']:
+                        field['found'] = True
+                        if field['type'] == question_properties['type']:
+                            validated_quantity += 1
+                        else:
+                            error = True
+                if error or validated_quantity == len(fields_to_validate):
+                    break
+            if error or validated_quantity == len(fields_to_validate):
+                break
+
+    return validated_quantity == len(fields_to_validate)
 
 
 @login_required
@@ -791,7 +873,7 @@ def subject_questionnaire_view(request, group_id, subject_id,
                                                                  "completed")
             questionnaire_responses_with_status.append(
                 {'questionnaire_response': questionnaire_response,
-                 'completed': response_result != "N" and response_result != ""}
+                 'completed': None if response_result is None else response_result != "N" and response_result != ""}
             )
 
         subject_questionnaires.append(

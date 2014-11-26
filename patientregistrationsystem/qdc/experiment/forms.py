@@ -20,6 +20,7 @@ class ExperimentForm(ModelForm):
                                            'data-error': 'Descrição deve ser preenchida.'}),
         }
 
+
 class GroupForm(ModelForm):
     class Meta:
 

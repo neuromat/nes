@@ -2,6 +2,7 @@
 import datetime
 
 from django.http import Http404
+from django.template.defaultfilters import title
 from django.test import TestCase
 from django.test.client import RequestFactory
 from django.core.urlresolvers import reverse
@@ -30,7 +31,8 @@ USER_PWD = 'mypassword'
 SEARCH_TEXT = 'search_text'
 SUBJECT_SEARCH = 'subject_search'
 
-LIME_SURVEY_CODE_ID_TEST = 641729
+# LIME_SURVEY_CODE_ID_TEST = 641729
+LIME_SURVEY_CODE_ID_TEST = 953591
 
 
 class ExperimentTest(TestCase):
@@ -171,8 +173,14 @@ class QuestionnaireConfigurationTest(TestCase):
         time_unit = TimeUnit.objects.create(name='Horas')
         time_unit.save()
 
+        # Criar um grupo mock para ser utilizado no teste
+        group = Group.objects.create(experiment=experiment,
+                                     title="Group-update",
+                                     description="Descricao do Group-update")
+        group.save()
+
         # Abre tela de cadastro de questionario
-        response = self.client.get(reverse('questionnaire_new', args=(experiment.pk,)))
+        response = self.client.get(reverse('questionnaire_new', args=(group.pk,)))
         self.assertEqual(response.status_code, 200)
 
         sid = self.lime_survey.add_survey(9999, 'Questionario de teste - DjangoTests', 'en', 'G')
@@ -181,14 +189,14 @@ class QuestionnaireConfigurationTest(TestCase):
             # Cria um questionario com os dados default apresentados em tela
             count_before_insert = QuestionnaireConfiguration.objects.all().count()
             self.data = {'action': ['save'], 'number_of_fills': ['1'], 'questionnaire_selected': [sid]}
-            response = self.client.post(reverse('questionnaire_new', args=(experiment.pk,)), self.data, follow=True)
+            response = self.client.post(reverse('questionnaire_new', args=(group.pk,)), self.data, follow=True)
             self.assertEqual(response.status_code, 200)
 
             count_after_insert = QuestionnaireConfiguration.objects.all().count()
             self.assertEqual(count_after_insert, count_before_insert + 1)
 
             # Remove o questionario criado
-            questionnaire_created = get_object_or_404(QuestionnaireConfiguration, experiment=experiment,
+            questionnaire_created = get_object_or_404(QuestionnaireConfiguration, group=group,
                                                       lime_survey_id=sid)
             if questionnaire_created:
                 questionnaire_created.delete()
@@ -196,7 +204,7 @@ class QuestionnaireConfigurationTest(TestCase):
             # Criar um questionario com dados incompletos - Codigo Questionario invalido
             count_before_insert = QuestionnaireConfiguration.objects.all().count()
             self.data = {'action': ['save'], 'number_of_fills': ['1'], 'questionnaire_selected': [0]}
-            response = self.client.post(reverse('questionnaire_new', args=(experiment.pk,)), self.data, follow=True)
+            response = self.client.post(reverse('questionnaire_new', args=(group.pk,)), self.data, follow=True)
             self.assertEqual(response.status_code, 200)
 
             # TODO Verificar este teste, esta permitindo codigo de questionario do Lime Survey invalido
@@ -212,7 +220,7 @@ class QuestionnaireConfigurationTest(TestCase):
                          'interval_between_fills_unit': str(time_unit.pk),
                          'action': ['save']}
 
-            response = self.client.post(reverse('questionnaire_new', args=(experiment.pk,)), self.data, follow=True)
+            response = self.client.post(reverse('questionnaire_new', args=(group.pk,)), self.data, follow=True)
             self.assertEqual(response.status_code, 200)
 
             count_after_insert = QuestionnaireConfiguration.objects.all().count()
@@ -231,12 +239,17 @@ class QuestionnaireConfigurationTest(TestCase):
                                                description="Descricao do Experimento-Update")
         experiment.save()
 
+        # Criar um grupo mock para ser utilizado no teste
+        group = Group.objects.create(experiment=experiment,
+                                     title="Group-update",
+                                     description="Descricao do Group-update")
+
         # Cria uma survey no Lime Survey
         sid = self.lime_survey.add_survey(9999, 'Questionario de teste - DjangoTests', 'en', 'G')
 
         try:
             # Cria um questionario
-            questionnaire = QuestionnaireConfiguration.objects.create(lime_survey_id=sid, experiment=experiment,
+            questionnaire = QuestionnaireConfiguration.objects.create(lime_survey_id=sid, group=group,
                                                                       number_of_fills=2)
             questionnaire.save()
 
@@ -277,7 +290,7 @@ class QuestionnaireConfigurationTest(TestCase):
                          'action': ['remove']}
 
             response = self.client.post(reverse('questionnaire_edit', args=(questionnaire.pk,)), self.data, follow=True)
-            self.assertEqual(response.status_code, 200)
+            self.assertEqual(response.status_code, 404)
 
             count_after_remove = QuestionnaireConfiguration.objects.all().count()
             self.assertEqual(count_after_remove, count_after_insert - 1)
@@ -357,14 +370,21 @@ class SubjectTest(TestCase):
                                                description="Descricao do Experimento-Update")
         experiment.save()
 
+        # Criar um grupo mock para ser utilizado no teste
+        group = Group.objects.create(experiment=experiment,
+                                     title="Group-update",
+                                     description="Descricao do Group-update")
+        group.save()
+
         patient_mock = self.util.create_patient_mock(user=self.user)
 
         # Cria uma survey no Lime Survey
         sid = self.lime_survey.add_survey(9999, 'Questionario de teste - DjangoTests', 'en', 'G')
 
         try:
+
             # Cria um questionario
-            questionnaire = QuestionnaireConfiguration.objects.create(lime_survey_id=sid, experiment=experiment,
+            questionnaire = QuestionnaireConfiguration.objects.create(lime_survey_id=sid, group=group,
                                                                       number_of_fills=1)
             questionnaire.save()
 
@@ -373,27 +393,27 @@ class SubjectTest(TestCase):
             time_unit.save()
 
             # Abre tela de cadastro de participantes com nenhum participante cadastrado a priori
-            response = self.client.get(reverse('subjects', args=(experiment.pk,)))
+            response = self.client.get(reverse('subjects', args=(group.pk,)))
             self.assertEqual(response.status_code, 200)
             self.assertEqual(len(response.context['subject_list']), 0)
 
-            count_before_insert_subject = SubjectOfGroup.objects.all().filter(experiment=experiment).count()
-            response = self.client.post(reverse('subject_insert', args=(experiment.pk, patient_mock.pk)))
+            count_before_insert_subject = SubjectOfGroup.objects.all().filter(group=group).count()
+            response = self.client.post(reverse('subject_insert', args=(group.pk, patient_mock.pk)))
             self.assertEqual(response.status_code, 302)
-            count_after_insert_subject = SubjectOfExperiment.objects.all().filter(experiment=experiment).count()
+            count_after_insert_subject = SubjectOfGroup.objects.all().filter(group=group).count()
             self.assertEqual(count_after_insert_subject, count_before_insert_subject + 1)
 
             # Reabre a tela de cadastro de participantes - devera conter ao menos um participante
             # cadastrado
-            response = self.client.get(reverse('subjects', args=(experiment.pk,)))
+            response = self.client.get(reverse('subjects', args=(group.pk,)))
             self.assertEqual(response.status_code, 200)
             self.assertEqual(len(response.context['subject_list']), 1)
 
             # Inserir participante ja inserido para o experimento
-            count_before_insert_subject = SubjectOfExperiment.objects.all().filter(experiment=experiment).count()
-            response = self.client.post(reverse('subject_insert', args=(experiment.pk, patient_mock.pk)))
+            count_before_insert_subject = SubjectOfGroup.objects.all().filter(group=group).count()
+            response = self.client.post(reverse('subject_insert', args=(group.pk, patient_mock.pk)))
             self.assertEqual(response.status_code, 302)
-            count_after_insert_subject = SubjectOfExperiment.objects.all().filter(experiment=experiment).count()
+            count_after_insert_subject = SubjectOfGroup.objects.all().filter(group=group).count()
             self.assertEqual(count_after_insert_subject, count_before_insert_subject)
 
             subject = Subject.objects.all().first()
@@ -401,13 +421,13 @@ class SubjectTest(TestCase):
             # Associar participante a Survey e iniciar preenchimento
             # Abrir a tela de associacao
             response = self.client.get(reverse('subject_questionnaire',
-                                               args=[experiment.pk, subject.pk]))
+                                               args=[group.pk, subject.pk]))
             self.assertEqual(response.status_code, 200)
 
             # Prepara para o a associacao entre preenchimento da Survey,
             # participante e experimento
             response = self.client.get(reverse('subject_questionnaire_response',
-                                               args=[experiment.pk, subject.pk, questionnaire.pk, ]))
+                                               args=[subject.pk, questionnaire.pk, ]))
             self.assertEqual(response.status_code, 200)
             self.assertEqual(response.context['creating'], True)
 
@@ -416,13 +436,13 @@ class SubjectTest(TestCase):
 
             # Inicia o preenchimento de uma Survey sem tabela de tokens iniciada
             response = self.client.post(reverse('subject_questionnaire_response',
-                                                args=[experiment.pk, subject.pk, questionnaire.pk, ]), self.data)
+                                                args=[subject.pk, questionnaire.pk, ]), self.data)
             self.assertEqual(response.status_code, 200)
             self.assertEqual(response.context['FAIL'], False)
 
             # Inicia o preenchimento de uma Survey INATIVA
             response = self.client.post(reverse('subject_questionnaire_response',
-                                                args=[experiment.pk, subject.pk, questionnaire.pk, ]), self.data)
+                                                args=[subject.pk, questionnaire.pk, ]), self.data)
             self.assertEqual(response.status_code, 200)
             self.assertEqual(response.context['FAIL'], False)
 
@@ -435,7 +455,7 @@ class SubjectTest(TestCase):
 
             # Inicia o preenchimento de uma Survey NORMAL
             response = self.client.post(reverse('subject_questionnaire_response',
-                                                args=[experiment.pk, subject.pk, questionnaire.pk, ]), self.data)
+                                                args=[subject.pk, questionnaire.pk, ]), self.data)
             self.assertEqual(response.status_code, 200)
             self.assertEqual(response.context['FAIL'], True)
 
@@ -470,11 +490,11 @@ class SubjectTest(TestCase):
 
             # Remover participante associado a survey
             self.data = {'action': 'remove'}
-            count_before_delete_subject = SubjectOfExperiment.objects.all().filter(experiment=experiment).count()
-            response = self.client.post(reverse('subject_questionnaire', args=(experiment.pk, subject.pk)),
+            count_before_delete_subject = SubjectOfGroup.objects.all().filter(group=group).count()
+            response = self.client.post(reverse('subject_questionnaire', args=(group.pk, subject.pk)),
                                         self.data)
             self.assertEqual(response.status_code, 302)
-            count_after_delete_subject = SubjectOfExperiment.objects.all().filter(experiment=experiment).count()
+            count_after_delete_subject = SubjectOfGroup.objects.all().filter(group=group).count()
             self.assertEqual(count_before_delete_subject - 1, count_after_delete_subject)
 
         finally:
@@ -490,40 +510,48 @@ class SubjectTest(TestCase):
                                                description="Descricao do Experimento-View")
         experiment.save()
 
+        # Criar um grupo mock para ser utilizado no teste
+        group = Group.objects.create(experiment=experiment,
+                                     title="Group-update",
+                                     description="Descricao do Group-update")
+        group.save()
+
         # Criar um Subject para o experimento
         patient_mock = self.util.create_patient_mock(user=self.user)
 
         subject_mock = Subject(patient=patient_mock)
         subject_mock.save()
 
-        subject_experiment = SubjectOfExperiment(subject=subject_mock, experiment=experiment)
-        subject_experiment.save()
+        subject_group = SubjectOfGroup(subject=subject_mock, group=group)
+        subject_group.save()
 
-        experiment.subjectofexperiment_set.add(subject_experiment)
+        group.subjectofgroup_set.add(subject_group)
         experiment.save()
 
         # Cria um questionario
         questionnaire_configuration = QuestionnaireConfiguration(lime_survey_id=LIME_SURVEY_CODE_ID_TEST,
-                                                                 experiment=experiment,
+                                                                 group=group,
                                                                  number_of_fills=2)
         questionnaire_configuration.save()
 
         questionnaire_response = QuestionnaireResponse()
         questionnaire_response.questionnaire_configuration = questionnaire_configuration
-        questionnaire_response.subject_of_experiment = subject_experiment
+        questionnaire_response.subject_of_group = subject_group
         questionnaire_response.token_id = LIME_SURVEY_TOKEN_ID_1
         questionnaire_response.questionnaire_responsible = self.user
         questionnaire_response.date = datetime.datetime.now()
         questionnaire_response.save()
 
         # Visualiza preenchimento da Survey
+        get_data = {'view': "experiment", 'status': "view"}
+
         response = self.client.get(reverse('questionnaire_response_view',
-                                           args=[questionnaire_response.pk, ]))
+                                           args=[questionnaire_response.pk, ]), data=get_data)
         self.assertEqual(response.status_code, 200)
 
         questionnaire_response = QuestionnaireResponse()
         questionnaire_response.questionnaire_configuration = questionnaire_configuration
-        questionnaire_response.subject_of_experiment = subject_experiment
+        questionnaire_response.subject_of_group = subject_group
         questionnaire_response.token_id = LIME_SURVEY_TOKEN_ID_2
         questionnaire_response.questionnaire_responsible = self.user
         questionnaire_response.date = datetime.datetime.now()
@@ -531,11 +559,11 @@ class SubjectTest(TestCase):
 
         # Visualiza preenchimento da Survey
         response = self.client.get(reverse('questionnaire_response_view',
-                                           args=[questionnaire_response.pk, ]))
+                                           args=[questionnaire_response.pk, ]), data=get_data)
         self.assertEqual(response.status_code, 200)
 
         # Abre tela de cadastro de participantes com nenhum participante cadastrado a priori
-        response = self.client.get(reverse('subjects', args=(experiment.pk,)))
+        response = self.client.get(reverse('subjects', args=(group.pk,)))
         self.assertEqual(response.status_code, 200)
         self.assertEqual(len(response.context['subject_list']), 1)
 
@@ -545,10 +573,16 @@ class SubjectTest(TestCase):
         """
 
         experiment = Experiment.objects.all().first()
+
         if not experiment:
             experiment = Experiment.objects.create(title="Experimento-Teste-Upload",
                                                    description="Descricao do Experimento-Upload")
             experiment.save()
+
+            group = Group.objects.create(experiment=experiment,
+                                         title="Grupo-teste-updload",
+                                         description="Descricao do Grupo-teste-updload")
+            group.save()
 
         patient_mock = self.util.create_patient_mock(user=self.user)
 
@@ -561,20 +595,20 @@ class SubjectTest(TestCase):
 
         self.assertEqual(get_object_or_404(Subject, pk=subject_mock.pk), subject_mock)
 
-        subject_experiment = SubjectOfExperiment.objects.all().first()
-        if not subject_experiment:
-            subject_experiment = SubjectOfExperiment.objects.create(subject=subject_mock, experiment=experiment)
+        subject_group = SubjectOfGroup.objects.all().first()
+        if not subject_group:
+            subject_group = SubjectOfGroup.objects.create(subject=subject_mock, group=group)
 
-        subject_experiment.experiment = experiment
-        subject_experiment.subject = subject_mock
-        subject_experiment.save()
+        subject_group.group = group
+        subject_group.subject = subject_mock
+        subject_group.save()
 
-        experiment.subjectofexperiment_set.add(subject_experiment)
+        experiment.subjectofexperiment_set.add(subject_group)
         experiment.save()
 
         self.assertEqual(get_object_or_404(Experiment, pk=experiment.pk), experiment)
-        self.assertEqual(get_object_or_404(SubjectOfExperiment, subject=subject_mock, experiment=experiment),
-                         subject_experiment)
+        self.assertEqual(get_object_or_404(SubjectOfGroup, subject=subject_mock, group=group),
+                         subject_group)
 
         # Upload Consent_form
         # Simula click no icone de acesso a pagina de upload do arquivo
@@ -586,18 +620,18 @@ class SubjectTest(TestCase):
         # Anexar arquivo
         consent_form_file = SimpleUploadedFile('quiz/consent_form.txt', 'rb')
         self.data = {'action': 'upload', 'consent_form': consent_form_file}
-        url = reverse('upload_file', args=[experiment.pk, subject_mock.pk])
+        url = reverse('upload_file', args=[group.pk, subject_mock.pk])
         # request = self.factory.post(url, self.data)d
         # request.user = self.user
         # response = upload_file(request, subject_id=subject_mock.pk, experiment_id=experiment.pk)
-        response = self.client.post(reverse('upload_file', args=[experiment.pk, subject_mock.pk, ]), self.data,
+        response = self.client.post(reverse('upload_file', args=[group.pk, subject_mock.pk, ]), self.data,
                                     follow=True)
         # print response.content
         self.assertEqual(response.status_code, 200)
 
         # Remover arquivo
         self.data = {'action': 'remove'}
-        response = self.client.post(reverse('upload_file', args=[experiment.pk, subject_mock.pk, ]), self.data)
+        response = self.client.post(reverse('upload_file', args=[group.pk, subject_mock.pk, ]), self.data)
         self.assertEqual(response.status_code, 302)
 
 
