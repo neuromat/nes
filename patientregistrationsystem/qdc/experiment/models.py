@@ -74,6 +74,7 @@ class Task(Component):
 
 class Pause(Component):
     duration = models.IntegerField(null=False, blank=False)
+    duration_unit = models.ForeignKey(TimeUnit, null=True, blank=True)
 
 
 class Stimulus(Component):

@@ -96,7 +96,7 @@
                             <thead>
                             <tr>
                                 <th>Grupo</th>
-                                <th>Diagnóstico</th>
+                                <th>Descrição</th>
                             </tr>
                             </thead>
                             <tbody>
@@ -108,9 +108,7 @@
                                         </a>
                                     </td>
                                     <td>
-                                        {% if group.classification_of_diseases %}
-                                            {{ group.classification_of_diseases.abbreviated_description }}
-                                        {% endif %}
+                                        {{ group.description }}
                                     </td>
                                 </tr>
                             {% endfor %}
@@ -127,7 +125,7 @@
             <div class="container span6 offset3 well ">
                 <div class="row">
                     <div class="col-xs-6 col-sm-12">
-                        <a href="/experiment/{{ experiment.id }}/components" class="btn btn-primary {% if creating %} disabled{% endif %}" >Componentes de Protocolo Experimental</a>
+                        <a href="/experiment/{{ experiment.id }}/components" class="btn btn-primary {% if creating %} disabled{% endif %}" >Componentes de protocolo experimental</a>
                     </div>
                 </div>
             </div>

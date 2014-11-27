@@ -69,7 +69,7 @@
                 </div>
                 <br>
                 <div class="form-group">
-                    <table class="table table-bordered table-striped">
+                    <table class="table table-striped">
                         <thead>
                             <tr>
                                 <th>Identificação</th>
@@ -82,23 +82,26 @@
                             <tr>
                                 <td><a data-toggle="tooltip" data-placement="left" title="Editar" href="/experiment/component/edit/{{ component.id }}/{{ component.component_type }}">{{ component.identification }}</a></td>
                                 <td>{{ component.description }}</td>
-                                <td>{{ component.component_type }}</td>
+                                <td>
+                                    <span class="{{ component.icon_class }}"/>
+                                    {{ component.component_type }}
+                                </td>
                             </tr>
                             {% endfor %}
                         </tbody>
                     </table>
                 </div>
                 <div class="dropdown">
-                    <button class="btn btn-default dropdown-toggle" type="button" id="dropdownMenu1" data-toggle="dropdown" aria-expanded="true">
-                        Novo componente
+                    <button class="btn btn-primary dropdown-toggle" type="button" id="dropdownMenu1" data-toggle="dropdown" aria-expanded="true">
+                        Inserir novo componente
                         <span class="caret"></span>
                     </button>
                     <ul class="dropdown-menu" role="menu" aria-labelledby="dropdownMenu1">
-                        <li role="presentation"><a role="menuitem" tabindex="-1" href="/experiment/{{ experiment.id }}/new_component/task">Tarefa</a></li>
-                        <li role="presentation"><a role="menuitem" tabindex="-1" href="/experiment/{{ experiment.id }}/new_component/stimulus">Estímulo</a></li>
-                        <li role="presentation"><a role="menuitem" tabindex="-1" href="/experiment/{{ experiment.id }}/new_component/pause">Pausa</a></li>
-                        <li role="presentation"><a role="menuitem" tabindex="-1" href="/experiment/{{ experiment.id }}/new_component/questionnaire">Questionário</a></li>
-                        <li role="presentation"><a role="menuitem" tabindex="-1" href="/experiment/{{ experiment.id }}/new_component/sequence">Sequência</a></li>
+                        <li role="presentation"><a role="menuitem" tabindex="-1" class="{{ icon_class.task }}" href="/experiment/{{ experiment.id }}/new_component/task"> Tarefa</a></li>
+                        <li role="presentation"><a role="menuitem" tabindex="-1" class="{{ icon_class.stimulus }}" href="/experiment/{{ experiment.id }}/new_component/stimulus"> Estímulo</a></li>
+                        <li role="presentation"><a role="menuitem" tabindex="-1" class="{{ icon_class.pause }}" href="/experiment/{{ experiment.id }}/new_component/pause"> Pausa</a></li>
+                        <li role="presentation"><a role="menuitem" tabindex="-1" class="{{ icon_class.questionnaire }}" href="/experiment/{{ experiment.id }}/new_component/questionnaire"> Questionário</a></li>
+                        <li role="presentation"><a role="menuitem" tabindex="-1" class="{{ icon_class.sequence }}" href="/experiment/{{ experiment.id }}/new_component/sequence"> Sequência</a></li>
                     </ul>
                 </div>
             </div>

@@ -24,6 +24,15 @@ from experiment.abc_search_engine import Questionnaires
 
 permission_required = partial(permission_required, raise_exception=True)
 
+icon_class = {
+    u'task': 'glyphicon glyphicon-check',
+    u'stimulus': 'glyphicon glyphicon-headphones',
+    u'pause': 'glyphicon glyphicon-time',
+    u'questionnaire': 'glyphicon glyphicon-list-alt',
+    u'sequence': 'glyphicon glyphicon-list',
+}
+
+
 # pylint: disable=E1101
 # pylint: disable=E1103
 
@@ -998,14 +1007,21 @@ def upload_file(request, subject_id, group_id, template_name="experiment/upload_
 def component_list(request, experiment_id, template_name="experiment/component_list.html"):
     experiment = get_object_or_404(Experiment, pk=experiment_id)
     components = Component.objects.filter(experiment=experiment)
+
+    for component in components:
+        component.icon_class = icon_class[component.component_type]
+
     context = {
         "experiment": experiment,
-        "component_list": components}
+        "component_list": components,
+        "icon_class": icon_class}
     return render(request, template_name, context)
 
 
 def component_create(request, experiment_id, component_type):
+
     template_name = "experiment/" + component_type + "_component.html"
+
     experiment = get_object_or_404(Experiment, pk=experiment_id)
     component_form = ComponentForm(request.POST or None)
     questionnaires_list = []
@@ -1021,7 +1037,7 @@ def component_create(request, experiment_id, component_type):
                 form = PauseForm(request.POST or None)
             else:
                 if component_type == 'questionnaire':
-                        questionnaires_list = Questionnaires().find_all_active_questionnaires()
+                    questionnaires_list = Questionnaires().find_all_active_questionnaires()
                 else:
                     if component_type == 'sequence':
                         form = SequenceForm(request.POST or None,
@@ -1072,9 +1088,12 @@ def component_create(request, experiment_id, component_type):
 
 
 def component_update(request, component_id, component_type):
+
     template_name = "experiment/" + component_type + "_component.html"
+
     component = get_object_or_404(Component, pk=component_id)
     experiment = get_object_or_404(Experiment, pk=component.experiment.id)
+
     questionnaire_id = None
     questionnaire_title = None
     component_form = None
@@ -1085,6 +1104,7 @@ def component_update(request, component_id, component_type):
     if component:
         component_form = ComponentForm(request.POST or None, instance=component)
         form = None
+
         if component_type == 'task':
             task = get_object_or_404(Task, pk=component.id)
             form = TaskForm(request.POST or None, instance=task)
@@ -1102,6 +1122,7 @@ def component_update(request, component_id, component_type):
                         questionnaire_details = Questionnaires().find_questionnaire_by_id(questionnaire.lime_survey_id)
                         questionnaire_id = questionnaire_details['sid'],
                         questionnaire_title = questionnaire_details['surveyls_title']
+                        # form = Que
                     else:
                         if component_type == 'sequence':
                             sequence = get_object_or_404(Sequence, pk=component_id)
@@ -1110,8 +1131,11 @@ def component_update(request, component_id, component_type):
 
     if request.method == "POST":
         if request.POST['action'] == "save":
-            if form.is_valid():
-                form.save()
+            if component_type == "questionnaire" or form.is_valid():
+
+                if component_type != "questionnaire":
+                    form.save()
+
                 if component_form.is_valid():
                     component_form.save()
 
@@ -1138,22 +1162,30 @@ def component_update(request, component_id, component_type):
         "sequence": sequence,
         "questionnaire_id": questionnaire_id,
         "questionnaire_title": questionnaire_title,
-        "configuration_list": configuration_list
+        "configuration_list": configuration_list,
+        "icon_class": icon_class
     }
     return render(request, template_name, context)
 
 
 def sequence_component_create(request, experiment_id, sequence_id, component_type):
+
     template_name = "experiment/" + component_type + "_component.html"
+
     experiment = get_object_or_404(Experiment, pk=experiment_id)
     sequence = get_object_or_404(Sequence, pk=sequence_id)
+
     component_form = ComponentForm(request.POST or None)
     configuration_form = ComponentConfigurationForm(request.POST or None)
     questionnaires_list = []
     form = None
 
+    existing_component_list = []
+
     if component_type == 'task':
         form = TaskForm(request.POST or None)
+        existing_component_list = Component.objects.filter(component_type="task")
+
     else:
         if component_type == 'stimulus':
             form = StimulusForm(request.POST or None)
@@ -1162,7 +1194,7 @@ def sequence_component_create(request, experiment_id, sequence_id, component_typ
                 form = PauseForm(request.POST or None)
             else:
                 if component_type == 'questionnaire':
-                        questionnaires_list = Questionnaires().find_all_active_questionnaires()
+                    questionnaires_list = Questionnaires().find_all_active_questionnaires()
                 else:
                     if component_type == 'sequence':
                         form = SequenceForm(request.POST or None,
@@ -1214,6 +1246,7 @@ def sequence_component_create(request, experiment_id, sequence_id, component_typ
         "creating": True,
         "updating": False,
         "questionnaires_list": questionnaires_list,
+        "existing_component_list": existing_component_list
     }
     return render(request, template_name, context)
 

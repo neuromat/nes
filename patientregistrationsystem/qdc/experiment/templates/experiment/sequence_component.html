@@ -24,7 +24,13 @@
 {% endblock %}
 
 {% block breadcrumb %}
-    <li class="active">Nova sequência</li>
+
+    {% if creating %}
+        <li class="active">Nova sequência</li>
+    {% else %}
+        <li class="active"> Sequência: {{ component_form.identification.value }} </li>
+    {% endif %}
+
 {% endblock %}
 
 {% block list_components %}
@@ -59,7 +65,7 @@
         <div class="row">
             <div class="col-xs-6 col-sm-10">
                 <div class="form-group">
-                    <table class="table table-bordered table-striped">
+                    <table class="table table-striped">
                         <thead>
                             <tr>
                                 <th>Componente</th>
@@ -80,20 +86,18 @@
                     </table>
                 </div>
 
-
-
                 <div class="dropdown">
-                    <button class="btn btn-default dropdown-toggle {% if creating %} disabled{% endif %}" type="button" id="dropdownMenu1" data-toggle="dropdown" aria-expanded="true">
-                        Inserir componente
+                    <button class="btn btn-primary dropdown-toggle {% if creating %} disabled{% endif %}" type="button" id="dropdownMenu1" data-toggle="dropdown" aria-expanded="true">
+                        Inserir componente à sequência
                         <span class="caret"></span>
                     </button>
                     {% if updating %}
                         <ul class="dropdown-menu" role="menu" aria-labelledby="dropdownMenu1">
-                            <li role="presentation"><a role="menuitem" tabindex="-1" href="/experiment/{{ experiment.id }}/sequence/{{ sequence.id }}/new_component/task">Tarefa</a></li>
-                            <li role="presentation"><a role="menuitem" tabindex="-1" href="/experiment/{{ experiment.id }}/sequence/{{ sequence.id }}/new_component/stimulus">Estímulo</a></li>
-                            <li role="presentation"><a role="menuitem" tabindex="-1" href="/experiment/{{ experiment.id }}/sequence/{{ sequence.id }}/new_component/pause">Pausa</a></li>
-                            <li role="presentation"><a role="menuitem" tabindex="-1" href="/experiment/{{ experiment.id }}/sequence/{{ sequence.id }}/new_component/questionnaire">Questionário</a></li>
-                            <li role="presentation"><a role="menuitem" tabindex="-1" href="/experiment/{{ experiment.id }}/sequence/{{ sequence.id }}/new_component/sequence">Sequência</a></li>
+                            <li role="presentation"><a role="menuitem" tabindex="-1" class="{{ icon_class.task }}" href="/experiment/{{ experiment.id }}/sequence/{{ sequence.id }}/new_component/task"> Tarefa</a></li>
+                            <li role="presentation"><a role="menuitem" tabindex="-1" class="{{ icon_class.stimulus }}" href="/experiment/{{ experiment.id }}/sequence/{{ sequence.id }}/new_component/stimulus"> Estímulo</a></li>
+                            <li role="presentation"><a role="menuitem" tabindex="-1" class="{{ icon_class.pause }}" href="/experiment/{{ experiment.id }}/sequence/{{ sequence.id }}/new_component/pause"> Pausa</a></li>
+                            <li role="presentation"><a role="menuitem" tabindex="-1" class="{{ icon_class.questionnaire }}" href="/experiment/{{ experiment.id }}/sequence/{{ sequence.id }}/new_component/questionnaire"> Questionário</a></li>
+                            <li role="presentation"><a role="menuitem" tabindex="-1" class="{{ icon_class.sequence }}" href="/experiment/{{ experiment.id }}/sequence/{{ sequence.id }}/new_component/sequence"> Sequência</a></li>
                         </ul>
                     {% endif %}
                 </div>

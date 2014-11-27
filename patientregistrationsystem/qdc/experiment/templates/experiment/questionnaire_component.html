@@ -1,7 +1,13 @@
 {% extends "experiment/component_template.html" %}
 
 {% block breadcrumb %}
-    <li class="active">Novo questionário</li>
+
+    {% if creating %}
+        <li class="active">Novo questionário</li>
+    {% else %}
+            <li class="active"> Questionário: {{ component_form.identification.value }} </li>
+    {% endif %}
+
 {% endblock %}
 
 {% block list_components %}

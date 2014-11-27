@@ -1,7 +1,13 @@
 {% extends "experiment/component_template.html" %}
 
 {% block breadcrumb %}
-    <li class="active">Nova tarefa</li>
+
+    {% if creating %}
+        <li class="active">Nova tarefa</li>
+    {% else %}
+        <li class="active"> Tarefa: {{ component_form.identification.value }} </li>
+    {% endif %}
+
 {% endblock %}
 
 {% block list_components %}
@@ -15,14 +21,15 @@
             <div class="col-xs-6 col-sm-6">
                 <div class="dropdown">
                     <button class="btn btn-default dropdown-toggle" type="button" id="dropdownMenu1" data-toggle="dropdown" aria-expanded="true">
-                        Escolha a tarefa
+                        ---- Escolha a tarefa ----
                         <span class="caret"></span>
                     </button>
                     <ul class="dropdown-menu" role="menu" aria-labelledby="dropdownMenu1">
-                        <li role="presentation"><a role="menuitem" tabindex="-1" href="#">Tarefa 1</a></li>
-                        <li role="presentation"><a role="menuitem" tabindex="-1" href="#">Tarefa 2</a></li>
+                        {% for existing_component in existing_component_list %}
+                            <li role="presentation"><a role="menuitem" tabindex="-1" href="#">{{ existing_component.identification }}</a></li>
+                        {% endfor %}
                         <li role="presentation" class="divider"></li>
-                        <li role="presentation"><a role="menuitem" tabindex="-1" href="#">Nova tarefa</a></li>
+                        <li role="presentation"><a role="menuitem" tabindex="-1" href="#"><< Nova tarefa>></a></li>
                     </ul>
                 </div>
             </div>

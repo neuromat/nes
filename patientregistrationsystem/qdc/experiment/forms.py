@@ -133,11 +133,13 @@ class StimulusForm(ModelForm):
 class PauseForm(ModelForm):
     class Meta:
         model = Pause
-        fields = ['duration']
+        fields = ['duration', 'duration_unit']
 
         widgets = {
             'duration': TextInput(attrs={'class': 'form-control', 'required': "",
-                                         'data-error': 'Duração da pausa deve ser preenchida.'})
+                                         'data-error': 'Duração da pausa deve ser preenchida.'}),
+            'duration_unit': Select(attrs={'class': 'form-control', 'required': "",
+                                                         'data-error': "Unidade deve ser preenchida"}),
         }
 
 

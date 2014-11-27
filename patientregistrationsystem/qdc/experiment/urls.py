@@ -46,7 +46,7 @@ urlpatterns = patterns(
     url(r'^questionnaire_response/(?P<questionnaire_response_id>\d+)/$',
         'experiment.views.questionnaire_response_view', name='questionnaire_response_view'),
 
-    #experimental_protocol
+    # experimental_protocol
     url(r'^(?P<experiment_id>\d+)/components/$',
         'experiment.views.component_list', name='component_list'),
     url(r'^(?P<experiment_id>\d+)/new_component/(?P<component_type>\w+)/$',
