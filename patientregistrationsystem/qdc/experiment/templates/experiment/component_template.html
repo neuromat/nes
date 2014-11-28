@@ -65,12 +65,53 @@
     <div class="tab-pane fade in active" id="menuUserTab">
         <div class="col-md-10">
             <div class="container span6 offset3 well ">
-                {% block list_components %}
-                {% endblock %}
+
+                {% if creating_workflow %}
+
+                    <div class="row">
+                        <div class="col-xs-6 col-sm-6">
+                            {% block component_label %}
+                            {% endblock %}
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-xs-6 col-sm-6">
+                            <div class="dropdown">
+                                <button class="btn btn-default dropdown-toggle" type="button" id="dropdownMenu1" data-toggle="dropdown" aria-expanded="true">
+                                    {% if reusing_component %}
+                                        {{ component_form.identification.value }}
+                                    {% else %}
+                                        {% block component_button_label %}
+                                        {% endblock %}
+                                    {% endif %}
+                                    <span class="caret"></span>
+                                </button>
+
+                                {% if creating %}
+                                    <ul class="dropdown-menu" role="menu" aria-labelledby="dropdownMenu1">
+
+                                        {% for existing_component in existing_component_list %}
+                                            <li role="presentation"><a role="menuitem" tabindex="-1" href="/experiment/{{ experiment.id }}/sequence/{{ sequence.id }}/component/{{ existing_component.id }}">{{ existing_component.identification }}</a></li>
+                                        {% endfor %}
+
+
+                                        {% if reusing_component %}
+                                            <li role="presentation" class="divider"></li>
+                                            {% block component_add_new %}
+                                            {% endblock %}
+                                        {% endif %}
+                                    </ul>
+                                {% endif %}
+                            </div>
+                        </div>
+                    </div>
+                    <br>
+                {% endif %}
+
                 <div class="row">
                     <div class="col-xs-6 col-sm-6">
-                        <div class="form-group">
-                            <label class="control-label">Identificação <b style="color: red;">*</b></label>
+                        <div class="form-group ">
+                            <label class="control-label disabled">Identificação <b style="color: red;">*</b></label>
                                 {{ component_form.identification }}
                             <div class="help-block with-errors"></div>
                         </div>

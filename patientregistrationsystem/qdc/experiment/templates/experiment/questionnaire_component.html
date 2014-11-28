@@ -10,32 +10,44 @@
 
 {% endblock %}
 
-{% block list_components %}
-    {% if creating_workflow %}
-        <div class="row">
-            <div class="col-xs-6 col-sm-6">
-                <label class="control-label">Questionário <b style="color: red;">*</b></label>
-            </div>
-        </div>
-        <div class="row">
-            <div class="col-xs-6 col-sm-6">
-                <div class="dropdown">
-                    <button class="btn btn-default dropdown-toggle" type="button" id="dropdownMenu1" data-toggle="dropdown" aria-expanded="true">
-                        Escolha a tarefa
-                        <span class="caret"></span>
-                    </button>
-                    <ul class="dropdown-menu" role="menu" aria-labelledby="dropdownMenu1">
-                        <li role="presentation"><a role="menuitem" tabindex="-1" href="#">Tarefa 1</a></li>
-                        <li role="presentation"><a role="menuitem" tabindex="-1" href="#">Tarefa 2</a></li>
-                        <li role="presentation" class="divider"></li>
-                        <li role="presentation"><a role="menuitem" tabindex="-1" href="#">Nova tarefa</a></li>
-                    </ul>
-                </div>
-            </div>
-        </div>
-        <br>
-    {% endif %}
+{% block component_label %}
+    <label class="control-label">Questionário </label>
 {% endblock %}
+
+{% block component_add_new %}
+    <li role="presentation"><a role="menuitem" tabindex="-1" href="/experiment/{{ experiment.id }}/sequence/{{ sequence.id }}/new_component/task"><< Novo questionário >></a></li>
+{% endblock %}
+
+{% block component_button_label %}
+    Novo questionário
+{% endblock %}
+
+{#{% block list_components %}#}
+{#    {% if creating_workflow %}#}
+{#        <div class="row">#}
+{#            <div class="col-xs-6 col-sm-6">#}
+{#                <label class="control-label">Questionário <b style="color: red;">*</b></label>#}
+{#            </div>#}
+{#        </div>#}
+{#        <div class="row">#}
+{#            <div class="col-xs-6 col-sm-6">#}
+{#                <div class="dropdown">#}
+{#                    <button class="btn btn-default dropdown-toggle" type="button" id="dropdownMenu1" data-toggle="dropdown" aria-expanded="true">#}
+{#                        Escolha a tarefa#}
+{#                        <span class="caret"></span>#}
+{#                    </button>#}
+{#                    <ul class="dropdown-menu" role="menu" aria-labelledby="dropdownMenu1">#}
+{#                        <li role="presentation"><a role="menuitem" tabindex="-1" href="#">Tarefa 1</a></li>#}
+{#                        <li role="presentation"><a role="menuitem" tabindex="-1" href="#">Tarefa 2</a></li>#}
+{#                        <li role="presentation" class="divider"></li>#}
+{#                        <li role="presentation"><a role="menuitem" tabindex="-1" href="#">Nova tarefa</a></li>#}
+{#                    </ul>#}
+{#                </div>#}
+{#            </div>#}
+{#        </div>#}
+{#        <br>#}
+{#    {% endif %}#}
+{#{% endblock %}#}
 
 {% block extra_fields %}
     <div class="container span6 offset3 well ">
