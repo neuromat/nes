@@ -68,9 +68,13 @@ class Component(models.Model):
 class Task(Component):
     instruction = models.CharField(max_length=150, null=False, blank=False)
 
+    def save(self, *args, **kwargs):
+        super(Component, self).save(*args, **kwargs)
+
 
 class Pause(Component):
     duration = models.IntegerField(null=False, blank=False)
+    duration_unit = models.ForeignKey(TimeUnit, null=True, blank=True)
 
 
 class Stimulus(Component):
@@ -92,7 +96,9 @@ class ComponentConfiguration(models.Model):
     interval_between_repetitions_value = models.IntegerField(null=True, blank=True, validators=[MinValueValidator(1)])
     interval_between_repetitions_unit = models.ForeignKey(TimeUnit, null=True, blank=True)
     component = models.ForeignKey(Component, null=False, related_name="configuration")
-    parent = models.ForeignKey('self', null=True, related_name='children')
+    # parent = models.ForeignKey('self', null=True, related_name='children')
+    parent = models.ForeignKey(Component, null=True, related_name='children')
+    order = models.IntegerField(null=False, blank=False, validators=[MinValueValidator(1)])
 
 
 class Group(models.Model):

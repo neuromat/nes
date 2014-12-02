@@ -1,6 +1,7 @@
 # coding=utf-8
-from experiment.models import Experiment, QuestionnaireConfiguration, QuestionnaireResponse, SubjectOfGroup, Group
-from django.forms import ModelForm, TextInput, Textarea, Select, DateInput
+from experiment.models import Experiment, QuestionnaireConfiguration, QuestionnaireResponse, SubjectOfGroup, Group, \
+    Component, Task, Stimulus, Pause, Sequence, Questionnaire, ComponentConfiguration
+from django.forms import ModelForm, TextInput, Textarea, Select, DateInput, CheckboxInput, BooleanField
 # from datetimewidget.widgets import DateTimeWidget
 
 
@@ -32,11 +33,13 @@ class GroupForm(ModelForm):
                                       'required': "",
                                       'data-error': 'Título deve ser preenchido.'}),
             'description': Textarea(attrs={'class': 'form-control',
-                                           'rows': '4', 'required': "",
-                                           'data-error': 'Descrição deve ser preenchida.'}),
+                                           'rows': '2', 'required': "",
+                                           'data-error': 'Descrição deve ser preenchida.',
+                                           'maxlength': '150'}),
             'instruction': Textarea(attrs={'class': 'form-control',
-                                           'rows': '4', 'required': "",
-                                           'data-error': 'Descrição deve ser preenchida.'}),
+                                           'rows': '2', 'required': "",
+                                           'data-error': 'Descrição deve ser preenchida.',
+                                           'maxlength': '150'}),
         }
 
 
@@ -72,3 +75,82 @@ class FileForm(ModelForm):
     class Meta:
         model = SubjectOfGroup
         fields = ['consent_form']
+
+
+class ComponentForm(ModelForm):
+    class Meta:
+        model = Component
+        fields = ['identification', 'description']
+
+        widgets = {
+            'identification': TextInput(attrs={'class': 'form-control', 'required': "",
+                                                'data-error': 'Identificação deve ser preenchida.'}),
+            'description': TextInput(attrs={'class': 'form-control', 'required': "",
+                                                'data-error': 'Descrição deve ser preenchida.'})
+        }
+
+
+class ComponentConfigurationForm(ModelForm):
+    class Meta:
+        model = ComponentConfiguration
+        fields = ['name', 'number_of_repetitions', 'interval_between_repetitions_value',
+                  'interval_between_repetitions_unit', 'order']
+
+        widgets = {
+            'name': TextInput(attrs={'class': 'form-control', 'required': "",
+                                                'data-error': 'Nome deve ser preenchido.'}),
+            'number_of_repetitions': TextInput(attrs={'class': 'form-control', 'required': "",
+                                                'data-error': 'Número de repetições deve ser preenchida.'}),
+            'interval_between_repetitions_value': TextInput(attrs={'class': 'form-control', 'required': "",
+                                                'data-error': 'Intervalo deve ser preenchido.'}),
+            'interval_between_repetitions_unit': Select(attrs={'class': 'form-control', 'required': "",
+                                                         'data-error': "Unidade deve ser preenchida"}),
+            'order': TextInput(attrs={'class': 'form-control', 'required': "",
+                                                'data-error': 'Ordem deve ser preenchida.'}),
+        }
+
+
+class TaskForm(ModelForm):
+    class Meta:
+        model = Task
+        fields = ['instruction']
+
+        widgets = {
+            'instruction': TextInput(attrs={'class': 'form-control', 'required': "",
+                                                'data-error': 'Instrução deve ser preenchida.'})
+        }
+
+
+class StimulusForm(ModelForm):
+    class Meta:
+        model = Stimulus
+        fields = ['stimulus_type']
+
+        widgets = {
+            'stimulus_type': TextInput(attrs={'class': 'form-control', 'required': "",
+                                                'data-error': 'Tipo do estímulo deve ser preenchido.'})
+        }
+
+
+class PauseForm(ModelForm):
+    class Meta:
+        model = Pause
+        fields = ['duration', 'duration_unit']
+
+        widgets = {
+            'duration': TextInput(attrs={'class': 'form-control', 'required': "",
+                                         'data-error': 'Duração da pausa deve ser preenchida.'}),
+            'duration_unit': Select(attrs={'class': 'form-control', 'required': "",
+                                                         'data-error': "Unidade deve ser preenchida"}),
+        }
+
+
+class SequenceForm(ModelForm):
+    class Meta:
+        model = Sequence
+        fields = ['has_random_components', 'number_of_mandatory_components']
+
+        widgets = {
+            'number_of_mandatory_components': TextInput(attrs={'class': 'form-control', 'required': "",
+                                                'data-error': 'Quantidade deve ser preenchida.'}),
+        }

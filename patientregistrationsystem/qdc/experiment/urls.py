@@ -46,9 +46,23 @@ urlpatterns = patterns(
     url(r'^questionnaire_response/(?P<questionnaire_response_id>\d+)/$',
         'experiment.views.questionnaire_response_view', name='questionnaire_response_view'),
 
-    #experimental_protocol
-    url(r'^group/(?P<group_id>\d+)/experimental_protocol/$',
-        'experiment.views.create_experimental_protocol', name='experimental_protocol'),
-    url(r'^group/(?P<group_id>\d+)/experimental_protocol/new_task/$',
-        'experiment.views.create_new_task', name='new_task'),
-    )
+    # experimental_protocol
+    url(r'^(?P<experiment_id>\d+)/components/$',
+        'experiment.views.component_list', name='component_list'),
+    url(r'^(?P<experiment_id>\d+)/new_component/(?P<component_type>\w+)/$',
+        'experiment.views.component_create', name='component_new'),
+    url(r'^component/edit/(?P<component_id>\d+)/(?P<component_type>\w+)/$',
+        'experiment.views.component_update', name='component_edit'),
+
+    # experimental_protocol_with_configuration
+    url(r'^(?P<experiment_id>\d+)/sequence/(?P<sequence_id>\d+)/new_component/(?P<component_type>\w+)/$',
+        'experiment.views.sequence_component_create', name='sequence_component_new'),
+    url(r'^(?P<experiment_id>\d+)/sequence/(?P<sequence_id>\d+)/component/(?P<component_id>\d+)/$',
+        'experiment.views.sequence_component_reuse', name='sequence_component_reuse'),
+    url(r'^(?P<experiment_id>\d+)/sequence/(?P<sequence_id>\d+)/component/edit/(?P<component_id>\d+)/$',
+        'experiment.views.sequence_component_update', name='sequence_component_update'),
+
+    url(r'^component_configuration/(?P<component_configuration_id>\d+)/$',
+        'experiment.views.sequence_component_update', name='sequence_component_update'),
+
+)

@@ -1,114 +1,83 @@
-{% extends "quiz/template.html" %}
-{% block activeAdvancedExperiment %}class="active"{% endblock %}
+{% extends "experiment/component_template.html" %}
 
 {% block header %}
+
+    <script type="text/javascript">
+
+        $(document).ready(function () {
+
+            {% if form.number_of_mandatory_components.value == None %}
+                $("#id_number_of_mandatory_components").prop('disabled', true);
+                $("#mandatory_components").prop('checked', true);
+            {% endif %}
+
+            $("#mandatory_components").click(function () {
+                var unlimited = $("#mandatory_components").is(":checked");
+                $("#id_number_of_mandatory_components").prop('disabled', unlimited);
+                $("#id_number_of_mandatory_components").prop('value', "");
+            });
+
+        });
+
+    </script>
+
 {% endblock %}
 
-{% block form %}
-    <div class="row">
-    <form id="user_form" method="post" data-toggle="validator">
-    {% csrf_token %}
+{% block breadcrumb %}
+
+    {% if creating %}
+        <li class="active">Nova sequência</li>
+    {% else %}
+        <li class="active"> Sequência: {{ component_form.identification.value }} </li>
+    {% endif %}
+
 {% endblock %}
 
-{% block content %}
+{% block component_label %}
+    <label class="control-label">Sequência </label>
+{% endblock %}
 
-    {% if messages %}
-        {% for message in messages %}
+{% block component_add_new %}
+    <li role="presentation"><a role="menuitem" tabindex="-1" href="/experiment/{{ experiment.id }}/sequence/{{ sequence.id }}/new_component/task"><< Nova sequência >></a></li>
+{% endblock %}
 
-            {% if message.tags == "success" %}
-                <script>showSuccessMessage('{{ message }}')</script>
-            {% endif %}
+{% block component_button_label %}
+    Nova sequência
+{% endblock %}
 
-            {% if message.tags == "warning" %}
-                <script>showWarningMessage('{{ message }}')</script>
-            {% endif %}
+{#{% block list_components %}#}
+{#    {% if creating_workflow %}#}
+{#        <div class="row">#}
+{#            <div class="col-xs-6 col-sm-6">#}
+{#                <label class="control-label">Sequência <b style="color: red;">*</b></label>#}
+{#            </div>#}
+{#        </div>#}
+{#        <div class="row">#}
+{#            <div class="col-xs-6 col-sm-6">#}
+{#                <div class="dropdown">#}
+{#                    <button class="btn btn-default dropdown-toggle" type="button" id="dropdownMenu1" data-toggle="dropdown" aria-expanded="true">#}
+{#                        Escolha a sequência#}
+{#                        <span class="caret"></span>#}
+{#                    </button>#}
+{#                    <ul class="dropdown-menu" role="menu" aria-labelledby="dropdownMenu1">#}
+{#                        <li role="presentation"><a role="menuitem" tabindex="-1" href="#">Sequência 1</a></li>#}
+{#                        <li role="presentation"><a role="menuitem" tabindex="-1" href="#">Sequência 2</a></li>#}
+{#                        <li role="presentation" class="divider"></li>#}
+{#                        <li role="presentation"><a role="menuitem" tabindex="-1" href="#">Nova sequência</a></li>#}
+{#                    </ul>#}
+{#                </div>#}
+{#            </div>#}
+{#        </div>#}
+{#        <br>#}
+{#    {% endif %}#}
+{#{% endblock %}#}
 
-            {% if message.tags == "error" %}
-                <script>showErrorMessage('{{ message }}')</script>
-            {% endif %}
-
-            {% if message.tags == "info" %}
-                <script>showInfoMessage('{{ message }}')</script>
-            {% endif %}
-
-        {% endfor %}
-    {% endif %}
-
-    {% if experiment_form.errors %}
-        <script>showErrorMessage('Por favor, corrija os campos em destaque.')</script>
-    {% endif %}
-
-
-    <div class="tab-pane fade in active" id="experimentBreadCrumb">
-
-        <div class="col-md-1">
-        </div>
-
-        <div class="col-md-10">
-
-            <ol class="breadcrumb">
-                <li>Home</li>
-                <li><a href="/experiment/list">Experimentos</a></li>
-                <li><a href="/experiment/edit/{{ experiment.id }}">{{ experiment.title }}</a></li>
-
-                {% if creating %}
-                    <li class="active">Novo grupo</li>
-                {% else %}
-                    <li class="active"> {{ group_form.title.value }} </li>
-                {% endif %}
-
-            </ol>
-
-        </div>
-
-        <div class="col-md-1">
-        </div>
-    </div>
-
-    <div class="tab-pane fade in active" id="menuUserTab">
-        <div class="col-md-10">
-            <div class="container span6 offset3 well ">
-                <div class="row">
-                    <div class="col-xs-6 col-sm-6">
-                        <label class="control-label">Sequência <b style="color: red;">*</b></label>
-                    </div>
-                </div>
-                <div class="row">
-                    <div class="col-xs-6 col-sm-6">
-                        <div class="dropdown">
-                            <button class="btn btn-default dropdown-toggle" type="button" id="dropdownMenu1" data-toggle="dropdown" aria-expanded="true">
-                                Escolha a sequência
-                                <span class="caret"></span>
-                            </button>
-                            <ul class="dropdown-menu" role="menu" aria-labelledby="dropdownMenu1">
-                                <li role="presentation"><a role="menuitem" tabindex="-1" href="#">Sequência 1</a></li>
-                                <li role="presentation"><a role="menuitem" tabindex="-1" href="#">Sequência 2</a></li>
-                                <li role="presentation" class="divider"></li>
-                                <li role="presentation"><a role="menuitem" tabindex="-1" href="#">Nova sequência</a></li>
-                            </ul>
-                        </div>
-                    </div>
-                </div>
-                <br>
-                <div class="row">
-                    <div class="col-xs-6 col-sm-6">
-                        <div class="form-group">
-                            <label class="control-label">Identificação <b style="color: red;">*</b></label>
-                                {{ sequence_form.identification }}
-                            <div class="help-block with-errors"></div>
-                        </div>
-                    </div>
-                    <div class="col-xs-6 col-sm-6">
-                        <div class="form-group">
-                            <label class="control-label">Descrição <b style="color: red;">*</b></label>
-                                {{ sequence_form.description }}
-                            <div class="help-block with-errors"></div>
-                        </div>
-                    </div>
-                </div>
-
+{% block extra_fields %}
+    <div class="container span6 offset3 well ">
+        <div class="row">
+            <div class="col-xs-6 col-sm-10">
                 <div class="form-group">
-                    <table class="table table-bordered table-striped">
+                    <table class="table table-striped">
                         <thead>
                             <tr>
                                 <th>Componente</th>
@@ -117,162 +86,67 @@
                             </tr>
                         </thead>
                         <tbody>
+                            {% for configuration in configuration_list %}
                             <tr>
-                                <td>Intrução inicial</td>
-                                <td>Tarefa</td>
-                                <td>1</td>
+{#                                <td><a data-toggle="tooltip" data-placement="left" title="Editar" href="/experiment/{{ experiment.id }}/sequence/{{ sequence.id }}/component/edit/{{ configuration.component.id }}">{{ configuration.component.identification }}</a></td>#}
+                                <td><a data-toggle="tooltip" data-placement="left" title="Editar" href="/experiment/component_configuration/{{ configuration.id }}">{{ configuration.component.identification }}</a></td>
+                                <td>{{ configuration.component.component_type }}</td>
+                                <td>{{ configuration.order }}</td>
                             </tr>
-                            <tr>
-                                <td>Ver desenho do tio patinhas para descontrair</td>
-                                <td>Estímulo Visual</td>
-                                <td>2</td>
-                            </tr>
-                            <tr>
-                                <td>Fazer sequência-x como treinamento</td>
-                                <td>Sequência</td>
-                                <td>3</td>
-                            </tr>
-                            <tr>
-                                <td>Esperar 2 minutos para descanso</td>
-                                <td>Pausa</td>
-                                <td>4</td>
-                            </tr>
-                            <tr>
-                                <td>Fazer sequência-x pra valer</td>
-                                <td>Sequência</td>
-                                <td>5</td>
-                            </tr>
-                            <tr>
-                                <td>Preencher questionário sobre as atividades</td>
-                                <td>Questionário</td>
-                                <td>6</td>
-                            </tr>
+                            {% endfor %}
+
                         </tbody>
                     </table>
                 </div>
-                {% if not workflow %}
-                    <div class="row">
-                        <div class="col-xs-6 col-sm-12">
-                            <div class="checkbox">
-                                <label>
-                                    <input id="random_sequence" type="checkbox"> Sequência aleatória
-                                </label>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="row">
-                        <div class="col-xs-6 col-sm-12">
-                            <div class="checkbox">
-                                <label>
-                                    <input id="sequence_condition" type="checkbox"> Todos os componentes são obrigatórios
-                                </label>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="row">
-                        <div class="col-xs-6 col-sm-2"></div>
-                        <div class="col-xs-6 col-sm-10">
-                        <div class="form-group">
-                            {{ sequence_form.number_of_repetitions }}
-                            <label for="number_of_mandatory_components" class="control-label">Quantidade de componentes obrigatórios</label>
-                        </div>
-                    </div>
-                    </div>
-                {% endif %}
+
                 <div class="dropdown">
-                    <button class="btn btn-default dropdown-toggle" type="button" id="dropdownMenu1" data-toggle="dropdown" aria-expanded="true">
-                        Inserir componente
+                    <button class="btn btn-primary dropdown-toggle {% if creating %} disabled{% endif %}" type="button" id="dropdownMenu1" data-toggle="dropdown" aria-expanded="true">
+                        Inserir componente à sequência
                         <span class="caret"></span>
                     </button>
-                    <ul class="dropdown-menu" role="menu" aria-labelledby="dropdownMenu1">
-                        <li role="presentation"><a role="menuitem" tabindex="-1" href="/experiment/group/{{ group_id }}/experimental_protocol/new_task">Tarefa</a></li>
-                        <li role="presentation"><a role="menuitem" tabindex="-1" href="#">Estímulo</a></li>
-                        <li role="presentation"><a role="menuitem" tabindex="-1" href="#">Pausa</a></li>
-                        <li role="presentation"><a role="menuitem" tabindex="-1" href="#">Questionário</a></li>
-                        <li role="presentation"><a role="menuitem" tabindex="-1" href="#">Sequência</a></li>
-                    </ul>
-                </div>
-            </div>
-
-            <div class="container span6 offset3 well ">
-                <div class="row">
-                    <div class="col-xs-6 col-sm-6">
-                        <div class="form-group">
-                            <label class="control-label">Nome <b style="color: red;">*</b></label>
-                                {{ sequence_form.name }}
-                            <div class="help-block with-errors"></div>
-                        </div>
-                    </div>
-                </div>
-                <div class="row">
-                    <div class="col-xs-6 col-sm-6">
-                        <div class="form-group">
-                            <label>Repetições</label>
-                        </div>
-                    </div>
-                </div>
-                <div class="row">
-                    <div class="col-xs-6 col-sm-1">
-                    </div>
-                    <div class="col-xs-6 col-sm-2">
-                        <div class="form-group">
-                            <label for="number_of_repetitions" class="control-label">Quantidade</label>
-                                {{ sequence_form.number_of_repetitions }}
-                        </div>
-                    </div>
-                    <div class="col-xs-6 col-sm-2">
-                        <div class="form-group">
-                            <label for="interval_between_repetitions_value" class="control-label">Intervalo</label>
-                                {{ sequence_form.interval_between_repetitions_value }}
-                        </div>
-                    </div>
-                    <div class="col-xs-6 col-sm-2">
-                        <div class="form-group">
-                            <label for="interval_between_repetitions_unit" class="control-label">Unidade</label>
-                                {{ sequence_form.interval_between_repetitions_unit }}
-                        </div>
-                    </div>
-                </div>
-            </div>
-
-            <div class="btn-toolbar">
-                <div class="btn-group pull-left">
-                    <button type="button" class="btn btn-danger" onclick="$('#modalRemove').modal('show')">Excluir</button>
-                </div>
-                <div class="btn-group pull-right">
-                    <button type="submit" name="action" value="save" class="btn btn-primary">Salvar</button>
-                </div>
-                <div class="btn-group pull-right">
-                    {% if creating %}
-                        <a href="/experiment/group/edit/{{ group.id }}" class="btn" style="background-color: #f5f5f5">Cancelar</a>
-                    {% else %}
-                        <a href="/experiment/group/edit/{{ group.id }}" class="btn" style="background-color: #f5f5f5">Voltar</a>
+                    {% if updating %}
+                        <ul class="dropdown-menu" role="menu" aria-labelledby="dropdownMenu1">
+                            <li role="presentation"><a role="menuitem" tabindex="-1" class="{{ icon_class.task }}" href="/experiment/{{ experiment.id }}/sequence/{{ sequence.id }}/new_component/task"> Tarefa</a></li>
+                            <li role="presentation"><a role="menuitem" tabindex="-1" class="{{ icon_class.stimulus }}" href="/experiment/{{ experiment.id }}/sequence/{{ sequence.id }}/new_component/stimulus"> Estímulo</a></li>
+                            <li role="presentation"><a role="menuitem" tabindex="-1" class="{{ icon_class.pause }}" href="/experiment/{{ experiment.id }}/sequence/{{ sequence.id }}/new_component/pause"> Pausa</a></li>
+                            <li role="presentation"><a role="menuitem" tabindex="-1" class="{{ icon_class.questionnaire }}" href="/experiment/{{ experiment.id }}/sequence/{{ sequence.id }}/new_component/questionnaire"> Questionário</a></li>
+                            <li role="presentation"><a role="menuitem" tabindex="-1" class="{{ icon_class.sequence }}" href="/experiment/{{ experiment.id }}/sequence/{{ sequence.id }}/new_component/sequence"> Sequência</a></li>
+                        </ul>
                     {% endif %}
                 </div>
+                </br>
+                {% if not workflow %}
+                    <div class="row">
+                        <div class="col-xs-6 col-sm-6">
+                            <div class="checkbox">
+                                <label>
+                                    <input id="has_random_components" {% if form.has_random_components.value == True %} checked {% endif %} name="has_random_components" type="checkbox"> Sequência aleatória
+                                </label>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-xs-6 col-sm-6">
+                            <div class="checkbox">
+                                <label>
+                                    <input id="mandatory_components" type="checkbox"> Todos os componentes são obrigatórios
+                                </label>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-xs-6 col-sm-1"></div>
+                        <div class="col-xs-6 col-sm-2">
+                            <div class="form-group">
+                                {{ form.number_of_mandatory_components }}
+                            </div>
+                        </div>
+                        <div class="col-xs-6 col-sm-6">
+                            Quantidade de componentes obrigatórios
+                        </div>
+                    </div>
+                {% endif %}
             </div>
         </div>
-    </div>
-
-    <div class="modal fade" id="modalRemove" tabindex="-1" role="dialog" aria-labelledby="myModalLabel"
-         aria-hidden="true">
-        <div class="modal-dialog">
-            <div class="modal-content">
-                <div class="modal-body">
-                    Tem certeza que deseja excluir o experimento?
-                </div>
-                <div class="modal-footer">
-                    <button type="button" class="btn btn-default" data-dismiss="modal">Cancelar</button>
-                    <button type="submit" class="btn btn-primary" value="remove" name="action"
-                            style="background-color: indianred; color: #ffffff">Excluir
-                    </button>
-                </div>
-            </div>
-        </div>
-    </div>
-
-{% endblock %}
-
-{% block end_form %}
-    </form>
     </div>
 {% endblock %}
