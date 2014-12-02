@@ -225,7 +225,7 @@ def search_cid10_ajax(request):
 
 @login_required
 @permission_required('experiment.add_experiment')
-def classification_of_diseases_create(request, group_id, classification_of_diseases_id):
+def classification_of_diseases_insert(request, group_id, classification_of_diseases_id):
     """Add group disease"""
     group = get_object_or_404(Group, pk=group_id)
     classification_of_diseases = get_object_or_404(ClassificationOfDiseases, pk=classification_of_diseases_id)
@@ -236,7 +236,7 @@ def classification_of_diseases_create(request, group_id, classification_of_disea
 
 @login_required
 @permission_required('experiment.add_experiment')
-def classification_of_diseases_delete(request, group_id, classification_of_diseases_id):
+def classification_of_diseases_remove(request, group_id, classification_of_diseases_id):
     """Remove group disease"""
     group = get_object_or_404(Group, pk=group_id)
     classification_of_diseases = get_object_or_404(ClassificationOfDiseases, pk=classification_of_diseases_id)

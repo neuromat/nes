@@ -18,9 +18,9 @@ urlpatterns = patterns(
 
     # classification_of_diseases (add, remove)
     url(r'^group/edit/(?P<group_id>\d+)/diagnosis/(?P<classification_of_diseases_id>\d+)/$',
-        'experiment.views.classification_of_diseases_create', name='classification_of_diseases_create'),
+        'experiment.views.classification_of_diseases_insert', name='classification_of_diseases_insert'),
     url(r'^diagnosis/delete/(?P<group_id>\d+)/(?P<classification_of_diseases_id>\d+)/$',
-        'experiment.views.classification_of_diseases_delete', name='classification_of_diseases_delete'),
+        'experiment.views.classification_of_diseases_remove', name='classification_of_diseases_remove'),
 
     # questionnaire
     url(r'^group/(?P<group_id>\d+)/questionnaire/new/$',

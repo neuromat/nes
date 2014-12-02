@@ -13,6 +13,7 @@ import pyjsonrpc
 
 from experiment.models import Experiment, Group, QuestionnaireConfiguration, TimeUnit, Subject, \
     QuestionnaireResponse, SubjectOfGroup
+from patient.models import ClassificationOfDiseases
 from experiment.views import experiment_update, upload_file
 from experiment.abc_search_engine import Questionnaires
 from patient.tests import UtilTests
@@ -24,6 +25,9 @@ LIME_SURVEY_TOKEN_ID_2 = 24
 LIME_SURVEY_TOKEN_ID_1 = 7
 
 EXPERIMENT_LIST = 'experiment_list'
+CLASSIFICATION_OF_DISEASES_CREATE = 'classification_of_diseases_insert'
+CLASSIFICATION_OF_DISEASES_DELETE = 'classification_of_diseases_remove'
+EXPERIMENT_NEW = 'experiment_new'
 
 USER_USERNAME = 'myadmin'
 USER_PWD = 'mypassword'
@@ -33,6 +37,74 @@ SUBJECT_SEARCH = 'subject_search'
 
 # LIME_SURVEY_CODE_ID_TEST = 641729
 LIME_SURVEY_CODE_ID_TEST = 953591
+
+
+class ClassificationOfDiseasesTest(TestCase):
+    def setUp(self):
+        """
+        Configura autenticação e ambiente para testar a inclusão e remoção de um ClassificationOfDiseases em um Group de
+         um Experiment
+
+        """
+        self.user = User.objects.create_user(username=USER_USERNAME, email='test@dummy.com', password=USER_PWD)
+        self.user.is_staff = True
+        self.user.is_superuser = True
+        self.user.save()
+
+        self.factory = RequestFactory()
+
+        logged = self.client.login(username=USER_USERNAME, password=USER_PWD)
+        self.assertEqual(logged, True)
+
+    def classification_of_diseases_insert(self):
+        """
+        Testa a view classification_of_diseases_insert
+        """
+        # Crinando instancia de Experiment
+        experiment = Experiment.objects.create(title="Experimento-1", description="Descricao do Experimento-1")
+        experiment.save()
+
+        # Criando instancia de Group
+        group = Group.objects.create(experiment=experiment, title="Group-1", description="Descrição do Group-1")
+        group.save()
+
+        # Criando instancia de ClassificationOfDiseases
+        classification_of_diseases = ClassificationOfDiseases.objects.create(code="1", description="test",
+                                                                             abbreviated_description="t")
+        # Inserindo o classification_of_diseases no group
+        response = self.client.get(reverse(CLASSIFICATION_OF_DISEASES_CREATE, args=(group.id, classification_of_diseases.id)))
+        self.assertEqual(response.status_code, 302)
+
+        self.assertEqual(group.classification_of_diseases.count(), 1)
+
+    def classification_of_diseases_remove(self):
+        """
+        Testa a view classification_of_diseases_insert
+        """
+        # Crinando instancia de Experiment
+        experiment = Experiment.objects.create(title="Experimento-1", description="Descricao do Experimento-1")
+        experiment.save()
+
+        # Criando instancia de Group
+        group = Group.objects.create(experiment=experiment, title="Group-1", description="Descrição do Group-1")
+        group.save()
+
+        # Criando instancia de ClassificationOfDiseases
+        classification_of_diseases = ClassificationOfDiseases.objects.create(code="1", description="test",
+                                                                             abbreviated_description="t")
+        # Inserindo o classification_of_diseases no group
+        response = self.client.get(reverse(CLASSIFICATION_OF_DISEASES_CREATE,
+                                           args=(group.id, classification_of_diseases.id)))
+        self.assertEqual(response.status_code, 302)
+
+        self.assertEqual(group.classification_of_diseases.count(), 1)
+
+        # Removendo o classification_of_diseases no group
+        response = self.client.get(reverse(CLASSIFICATION_OF_DISEASES_DELETE,
+                                           args=(group.id, classification_of_diseases.id)))
+        self.assertEqual(response.status_code, 302)
+
+        self.assertEqual(group.classification_of_diseases.count(), 0)
 
 
 class ExperimentTest(TestCase):
