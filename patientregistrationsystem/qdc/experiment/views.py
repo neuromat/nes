@@ -1371,9 +1371,13 @@ def sequence_component_update(request, component_configuration_id):
                 redirect_url = reverse("component_list", args=(experiment.id,))
                 return HttpResponseRedirect(redirect_url)
 
-    for form_used in {form, component_form}:
-        for field in form_used.fields:
-            form_used.fields[field].widget.attrs['disabled'] = True
+    if component_type == 'questionnaire':
+        for field in component_form.fields:
+            component_form.fields[field].widget.attrs['disabled'] = True
+    else:
+        for form_used in {form, component_form}:
+            for field in form_used.fields:
+                form_used.fields[field].widget.attrs['disabled'] = True
 
     context = {
         "creating_workflow": True,
@@ -1388,7 +1392,7 @@ def sequence_component_update(request, component_configuration_id):
         "questionnaire_id": questionnaire_id,
         "questionnaire_title": questionnaire_title,
         "reusing_component": True,
-        "sequence_id": component_configuration_id
+        "sequence_id": component_configuration.parent_id
     }
 
     return render(request, template_name, context)
