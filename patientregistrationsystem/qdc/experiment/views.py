@@ -1125,7 +1125,7 @@ def component_update(request, component_id, component_type):
         "questionnaire_id": questionnaire_id,
         "questionnaire_title": questionnaire_title,
         "configuration_list": configuration_list,
-        "icon_class": icon_class
+        "icon_class": icon_class,
     }
     return render(request, template_name, context)
 
@@ -1370,7 +1370,8 @@ def sequence_component_update(request, component_configuration_id):
         "sequence": sequence,
         "questionnaire_id": questionnaire_id,
         "questionnaire_title": questionnaire_title,
-        "reusing_component": True
+        "reusing_component": True,
+        "sequence_id": component_configuration_id
     }
 
     return render(request, template_name, context)
