@@ -91,8 +91,12 @@
                                 <td><a data-toggle="tooltip" data-placement="left" title="Editar" href="/experiment/component_configuration/{{ configuration.id }}">{{ configuration.component.identification }}</a></td>
                                 <td>
                                     {{ configuration.component.component_type }}
-                                    {% ifnotequal configuration configuration_list.last %}<a class="btn glyphicon glyphicon-arrow-down" href="/experiment/component/edit/{{ sequence.id }}/sequence/{{ configuration.order }}/{{ configuration.order|add:"1" }}/"></a>{% endifnotequal %}
-                                    {% ifnotequal configuration configuration_list.first %}<a class="btn glyphicon glyphicon-arrow-up" href="/experiment/component/edit/{{ sequence.id }}/sequence/{{ configuration.order }}/{{ configuration.order|add:"-1" }}/"></a>{% endifnotequal %}
+                                    {% ifnotequal configuration configuration_list.last %}
+                                        <a class="btn glyphicon glyphicon-arrow-down" href="/experiment/component/edit/{{ sequence.id }}/sequence/{{ configuration.order }}/{{ configuration.order|add:"1" }}/"></a>
+                                    {% endifnotequal %}
+                                    {% ifnotequal configuration configuration_list.first %}
+                                        <a class="btn glyphicon glyphicon-arrow-up" href="/experiment/component/edit/{{ sequence.id }}/sequence/{{ configuration.order }}/{{ configuration.order|add:"-1" }}/"></a>
+                                    {% endifnotequal %}
                                 </td>
                             </tr>
                         {% endfor %}
