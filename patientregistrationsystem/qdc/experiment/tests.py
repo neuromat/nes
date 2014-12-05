@@ -72,6 +72,28 @@ class ComponentConfigurationTest(TestCase):
         self.assertEqual(ComponentConfiguration.objects.count(), 1)
         self.assertEqual(component_configuration.order, 1)
 
+    def sequence_component_update_remove(self):
+        # TODO terminar a remoção do component sequence através da view sequence_component_update
+        experiment = Experiment.objects.create(title="Experiment_title", description="Experiment_description")
+        experiment.save()
+        self.assertEqual(Experiment.objects.count(), 1)
+        component = Sequence.objects.create(
+            has_random_components=False,
+            identification='Sequence_identification',
+            description='Sequence_description',
+            experiment=experiment,
+            component_type='sequence'
+        )
+        component.save()
+        self.assertEqual(Sequence.objects.count(), 1)
+        component_configuration = ComponentConfiguration.objects.create(
+            name='ComponentConfiguration_name',
+            component=component
+        )
+        component_configuration.save()
+        self.assertEqual(ComponentConfiguration.objects.count(), 1)
+        self.assertEqual(component_configuration.order, 1)
+
 
 class ClassificationOfDiseasesTest(TestCase):
     def setUp(self):
