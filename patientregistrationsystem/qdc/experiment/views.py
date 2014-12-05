@@ -1138,7 +1138,9 @@ def sequence_component_create(request, experiment_id, sequence_id, component_typ
     sequence = get_object_or_404(Sequence, pk=sequence_id)
 
     component_form = ComponentForm(request.POST or None)
-    configuration_form = ComponentConfigurationForm(request.POST or None)
+    configuration_form = ComponentConfigurationForm(request.POST or None,
+                                                    initial={'number_of_repetitions': 1,
+                                                             'interval_between_repetitions_value': None})
     questionnaires_list = []
     form = None
 
@@ -1187,6 +1189,14 @@ def sequence_component_create(request, experiment_id, sequence_id, component_typ
             configuration = configuration_form.save(commit=False)
             configuration.component = new_component
             configuration.parent = sequence
+            if "number_of_fills" in request.POST:
+                configuration.number_of_repetitions = request.POST['number_of_repetitions']
+            if "interval_between_fills_value" in request.POST:
+                configuration.interval_between_repetitions_value = request.POST['interval_between_repetitions_value']
+
+            if "interval_between_fills_unit" in request.POST:
+                configuration.interval_between_repetitions_unit = \
+                    get_object_or_404(TimeUnit, pk=request.POST['interval_between_repetitions_unit'])
             configuration.save()
 
             messages.success(request, 'Componente incluído com sucesso.')

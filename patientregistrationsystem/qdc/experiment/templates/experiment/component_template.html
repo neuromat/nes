@@ -2,6 +2,39 @@
 {% block activeAdvancedExperiment %}class="active"{% endblock %}
 
 {% block header %}
+    <script type="text/javascript">
+
+        $(document).ready(function () {
+
+            {% if configuration_form.number_of_repetitions.value == None %}
+                $("#id_number_of_repetitions").prop('disabled', true);
+                $("#unlimited_number_of_repetitions").prop('checked', true);
+            {% endif %}
+
+            {% if configuration_form.interval_between_repetitions_value.value == None %}
+                $("#id_interval_between_repetitions_value").prop('disabled', true);
+                $("#id_interval_between_repetitions_unit").prop('disabled', true);
+                $("#undefined_interval").prop('checked', true);
+            {% endif %}
+
+            $("#unlimited_number_of_repetitions").click(function () {
+                var unlimited = $("#unlimited_number_of_repetitions").is(":checked");
+                $("#id_number_of_repetitions").prop('disabled', unlimited);
+                $("#id_number_of_repetitions").prop('value', "");
+            });
+
+            $("#undefined_interval").click(function () {
+                var undefined = $("#undefined_interval").is(":checked");
+                $("#id_interval_between_repetitions_value").prop('disabled', undefined);
+                $("#id_interval_between_repetitions_unit").prop('disabled', undefined);
+
+                $("#id_interval_between_repetitions_value").prop('value', "");
+                $("#id_interval_between_repetitions_unit").prop('value', "");
+            });
+
+        });
+
+    </script>
 {% endblock %}
 
 {% block form %}
@@ -164,6 +197,16 @@
                                 <div class="help-block with-errors"></div>
                             </div>
                         </div>
+                        <div class="col-xs-6 col-sm-2">
+                            <label></label>
+                            <div class="checkbox">
+                                <label>
+                                    <input id="unlimited_number_of_repetitions" type="checkbox"> Ilimitada
+                                </label>
+                            </div>
+                        </div>
+{#                    </div>#}
+{#                    <div class="row">#}
                         <div class="col-xs-6 col-sm-1">
                         </div>
                         <div class="col-xs-6 col-sm-2">
@@ -178,6 +221,14 @@
                                 <label for="interval_between_repetitions_unit" class="control-label">Unidade</label>
                                     {{ configuration_form.interval_between_repetitions_unit }}
                                 <div class="help-block with-errors"></div>
+                            </div>
+                        </div>
+                        <div class="col-xs-6 col-sm-2">
+                            <label></label>
+                            <div class="checkbox">
+                                <label>
+                                    <input id="undefined_interval" type="checkbox"> Indefinido
+                                </label>
                             </div>
                         </div>
                     </div>
