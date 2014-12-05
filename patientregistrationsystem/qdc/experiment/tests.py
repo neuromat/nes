@@ -12,7 +12,7 @@ from django.shortcuts import get_object_or_404
 import pyjsonrpc
 
 from experiment.models import Experiment, Group, QuestionnaireConfiguration, TimeUnit, Subject, \
-    QuestionnaireResponse, SubjectOfGroup
+    QuestionnaireResponse, SubjectOfGroup, Sequence, ComponentConfiguration
 from patient.models import ClassificationOfDiseases
 from experiment.views import experiment_update, upload_file
 from experiment.abc_search_engine import Questionnaires
@@ -37,6 +37,40 @@ SUBJECT_SEARCH = 'subject_search'
 
 # LIME_SURVEY_CODE_ID_TEST = 641729
 LIME_SURVEY_CODE_ID_TEST = 953591
+
+
+class ComponentConfigurationTest(TestCase):
+    def setUp(self):
+        self.user = User.objects.create_user(username=USER_USERNAME, email='test@dummy.com', password=USER_PWD)
+        self.user.is_staff = True
+        self.user.is_superuser = True
+        self.user.save()
+
+        self.factory = RequestFactory()
+
+        logged = self.client.login(username=USER_USERNAME, password=USER_PWD)
+        self.assertEqual(logged, True)
+
+    def component_configuration_create(self):
+        experiment = Experiment.objects.create(title="Experiment_title", description="Experiment_description")
+        experiment.save()
+        self.assertEqual(Experiment.objects.count(), 1)
+        component = Sequence.objects.create(
+            has_random_components=False,
+            identification='Sequence_identification',
+            description='Sequence_description',
+            experiment=experiment,
+            component_type='sequence'
+        )
+        component.save()
+        self.assertEqual(Sequence.objects.count(), 1)
+        component_configuration = ComponentConfiguration.objects.create(
+            name='ComponentConfiguration_name',
+            component=component
+        )
+        component_configuration.save()
+        self.assertEqual(ComponentConfiguration.objects.count(), 1)
+        self.assertEqual(component_configuration.order, 1)
 
 
 class ClassificationOfDiseasesTest(TestCase):

@@ -46,6 +46,11 @@ urlpatterns = patterns(
     url(r'^questionnaire_response/(?P<questionnaire_response_id>\d+)/$',
         'experiment.views.questionnaire_response_view', name='questionnaire_response_view'),
 
+    # component swap order
+    url(r'^component/edit/(?P<component_id>\d+)/(?P<component_type>\w+)/(?P<first_order>\d+)/'
+        r'(?P<second_order>\d+)/$',
+        'experiment.views.swap_component', name='swap_component'),
+
     # experimental_protocol
     url(r'^(?P<experiment_id>\d+)/components/$',
         'experiment.views.component_list', name='component_list'),

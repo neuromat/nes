@@ -980,6 +980,16 @@ def component_list(request, experiment_id, template_name="experiment/component_l
     return render(request, template_name, context)
 
 
+def swap_component(request, component_id, component_type, first_order, second_order):
+    first_component = ComponentConfiguration.objects.get(parent_id=component_id, order=first_order)
+    second_component = ComponentConfiguration.objects.get(parent_id=component_id, order=second_order)
+    first_component.order, second_component.order = second_component.order, first_component.order
+    first_component.save()
+    second_component.save()
+    redirect_url = reverse("component_edit", args=(component_id, component_type))
+    return HttpResponseRedirect(redirect_url)
+
+
 def component_create(request, experiment_id, component_type):
 
     template_name = "experiment/" + component_type + "_component.html"
@@ -1089,7 +1099,8 @@ def component_update(request, component_id, component_type):
                         if component_type == 'sequence':
                             sequence = get_object_or_404(Sequence, pk=component_id)
                             form = SequenceForm(request.POST or None, instance=sequence)
-                            configuration_list = ComponentConfiguration.objects.filter(parent=sequence)
+                            configuration_list = ComponentConfiguration.objects.filter(parent=sequence)\
+                                .order_by('order')
 
     if request.method == "POST":
         if request.POST['action'] == "save":
@@ -1350,6 +1361,12 @@ def sequence_component_update(request, component_configuration_id):
 
         else:
             if request.POST['action'] == "remove":
+                component_configuration_list = ComponentConfiguration.objects.filter(
+                    parent_id=component_configuration.parent_id).order_by('order')
+                for component_configuration_element in component_configuration_list:
+                    if component_configuration_element.order > component_configuration.order:
+                        component_configuration_element.order -= 1
+                        component_configuration_element.save()
                 component.delete()
                 redirect_url = reverse("component_list", args=(experiment.id,))
                 return HttpResponseRedirect(redirect_url)
