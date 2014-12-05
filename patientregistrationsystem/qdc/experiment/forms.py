@@ -94,7 +94,7 @@ class ComponentConfigurationForm(ModelForm):
     class Meta:
         model = ComponentConfiguration
         fields = ['name', 'number_of_repetitions', 'interval_between_repetitions_value',
-                  'interval_between_repetitions_unit', 'order']
+                  'interval_between_repetitions_unit']
 
         widgets = {
             'name': TextInput(attrs={'class': 'form-control', 'required': "",
@@ -105,8 +105,6 @@ class ComponentConfigurationForm(ModelForm):
                                                 'data-error': 'Intervalo deve ser preenchido.'}),
             'interval_between_repetitions_unit': Select(attrs={'class': 'form-control', 'required': "",
                                                          'data-error': "Unidade deve ser preenchida"}),
-            'order': TextInput(attrs={'class': 'form-control', 'required': "",
-                                                'data-error': 'Ordem deve ser preenchida.'}),
         }
 
 

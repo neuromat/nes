@@ -100,6 +100,13 @@ class ComponentConfiguration(models.Model):
     parent = models.ForeignKey(Component, null=True, related_name='children')
     order = models.IntegerField(null=False, blank=False, validators=[MinValueValidator(1)])
 
+    def save(self, force_insert=False, force_update=False, using=None,
+             update_fields=None):
+        if not self.pk:
+            top = ComponentConfiguration.objects.filter(parent=self.parent).order_by('-order').first()
+            self.order = top.order + 1 if top else 1
+        super(ComponentConfiguration, self).save()
+
 
 class Group(models.Model):
     experiment = models.ForeignKey(Experiment, null=False, blank=False)
