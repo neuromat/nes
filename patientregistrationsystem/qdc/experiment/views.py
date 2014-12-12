@@ -740,7 +740,7 @@ def questionnaire_response_view(request, questionnaire_response_id,
                             question_properties.append({
                                 'question': properties['question'],
                                 'question_id': properties['title'],
-                                'answer_options': '',
+                                'answer_options': properties['answeroptions'],
                                 'type': properties['type']
                             })
 
