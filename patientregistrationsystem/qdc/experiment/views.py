@@ -342,7 +342,7 @@ def questionnaire_update(request, questionnaire_configuration_id,
                     redirect_url = reverse("questionnaire_edit", args=(questionnaire_configuration_id,))
                     return HttpResponseRedirect(redirect_url)
 
-                redirect_url = reverse("experiment_edit", args=(group.id,))
+                redirect_url = reverse("group_edit", args=(group.id,))
                 return HttpResponseRedirect(redirect_url)
 
     context = {

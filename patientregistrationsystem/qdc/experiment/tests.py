@@ -731,8 +731,8 @@ class SubjectTest(TestCase):
         subject_group.subject = subject_mock
         subject_group.save()
 
-        experiment.subjectofexperiment_set.add(subject_group)
-        experiment.save()
+        # experiment.subjectofexperiment_set.add(subject_group)
+        # experiment.save()
 
         self.assertEqual(get_object_or_404(Experiment, pk=experiment.pk), experiment)
         self.assertEqual(get_object_or_404(SubjectOfGroup, subject=subject_mock, group=group),
@@ -742,7 +742,8 @@ class SubjectTest(TestCase):
         # Simula click no icone de acesso a pagina de upload do arquivo
         request = self.factory.get(reverse('upload_file', args=[subject_mock.pk, experiment.pk, ]))
         request.user = self.user
-        response = upload_file(request, subject_id=subject_mock.pk, experiment_id=experiment.pk)
+        response = upload_file(request, subject_id=subject_mock.pk, group_id=group.pk)
+
         self.assertEqual(response.status_code, 200)
 
         # Anexar arquivo
