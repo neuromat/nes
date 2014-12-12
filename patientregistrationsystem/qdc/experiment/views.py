@@ -599,8 +599,18 @@ def questionnaire_response_update(request, questionnaire_response_id,
                     questionnaire_configuration.lime_survey_id,
                     questionnaire_response.token_id)
                 surveys.release_session_key()
-                result = result[str(questionnaire_response.token_id)]
-                if result == 'Deleted' or result == 'Invalid token ID':
+
+                can_delete = False
+
+                if str(questionnaire_response.token_id) in result:
+                    result = result[str(questionnaire_response.token_id)]
+                    if result == 'Deleted' or result == 'Invalid token ID':
+                        can_delete = True
+                else:
+                    if 'status' in result and result['status'] == u'Error: Invalid survey ID':
+                        can_delete = True
+
+                if can_delete:
                     questionnaire_response.delete()
                     messages.success(request, 'Preenchimento removido com sucesso')
                 else:
