@@ -854,6 +854,7 @@ class MedicalRecordFormValidation(TestCase):
         """
 
         search_text_meta = 'search_text'
+        group_id_meta = 'group_id'
 
         # Create a cids to make search.
         self.util.create_cid10_to_search()
@@ -862,6 +863,7 @@ class MedicalRecordFormValidation(TestCase):
         self.data['medical_record'] = ''
         self.data['patient_id'] = ''
         self.data[search_text_meta] = 'A'
+        self.data[group_id_meta] = 1
         response = self.client.post(reverse('cid10_search'), self.data)
         self.assertEqual(response.status_code, 200)
         self.assertContains(response, 'paratifoide')
