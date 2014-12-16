@@ -82,6 +82,7 @@
                         <tr>
                             <th>Componente</th>
                             <th>Tipo</th>
+                            <th>Ordem</th>
                         </tr>
                         </thead>
                         <tbody>
@@ -91,6 +92,8 @@
                                 <td><a data-toggle="tooltip" data-placement="left" title="Editar" href="/experiment/component_configuration/{{ configuration.id }}">{{ configuration.component.identification }}</a></td>
                                 <td>
                                     {{ configuration.component.component_type }}
+                                </td>
+                                <td>
                                     {% ifnotequal configuration configuration_list.last %}
                                         <a class="btn glyphicon glyphicon-arrow-down" href="/experiment/component/edit/{{ sequence.id }}/sequence/{{ configuration.order }}/{{ configuration.order|add:"1" }}/"></a>
                                     {% endifnotequal %}
