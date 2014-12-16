@@ -1102,8 +1102,9 @@ def component_update(request, component_id, component_type):
                     if component_type == 'questionnaire':
                         questionnaire = get_object_or_404(Questionnaire, pk=component.id)
                         questionnaire_details = Questionnaires().find_questionnaire_by_id(questionnaire.lime_survey_id)
-                        questionnaire_id = questionnaire_details['sid'],
-                        questionnaire_title = questionnaire_details['surveyls_title']
+                        if questionnaire_details:
+                            questionnaire_id = questionnaire_details['sid'],
+                            questionnaire_title = questionnaire_details['surveyls_title']
                         # form = Que
                     else:
                         if component_type == 'sequence':
@@ -1272,8 +1273,9 @@ def sequence_component_reuse(request, experiment_id, sequence_id, component_id):
                 if component_type == 'questionnaire':
                     questionnaire = get_object_or_404(Questionnaire, pk=component.id)
                     questionnaire_details = Questionnaires().find_questionnaire_by_id(questionnaire.lime_survey_id)
-                    questionnaire_id = questionnaire_details['sid'],
-                    questionnaire_title = questionnaire_details['surveyls_title']
+                    if questionnaire_details:
+                        questionnaire_id = questionnaire_details['sid'],
+                        questionnaire_title = questionnaire_details['surveyls_title']
                 else:
                     if component_type == 'sequence':
                         sequence = get_object_or_404(Sequence, pk=component_id)
@@ -1349,8 +1351,9 @@ def sequence_component_update(request, component_configuration_id):
                     if component_type == 'questionnaire':
                         questionnaire = get_object_or_404(Questionnaire, pk=component.id)
                         questionnaire_details = Questionnaires().find_questionnaire_by_id(questionnaire.lime_survey_id)
-                        questionnaire_id = questionnaire_details['sid'],
-                        questionnaire_title = questionnaire_details['surveyls_title']
+                        if questionnaire_details:
+                            questionnaire_id = questionnaire_details['sid'],
+                            questionnaire_title = questionnaire_details['surveyls_title']
                     else:
                         if component_type == 'sequence':
                             sequence = get_object_or_404(Sequence, pk=component.id)
