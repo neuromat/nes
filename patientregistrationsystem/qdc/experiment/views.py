@@ -1132,8 +1132,13 @@ def component_update(request, component_id, component_type):
                     return HttpResponseRedirect(redirect_url)
         else:
             if request.POST['action'] == "remove":
-                component.delete()
-                redirect_url = reverse("component_list", args=(experiment.id,))
+                dependent_components = ComponentConfiguration.objects.filter(parent=component)
+                if dependent_components:
+                    messages.error(request, 'Componente não pode ser removido pois contém outros componentes dependentes.')
+                    redirect_url = reverse("component_edit", args=(component.id, component.component_type,))
+                else:
+                    component.delete()
+                    redirect_url = reverse("component_list", args=(experiment.id,))
                 return HttpResponseRedirect(redirect_url)
 
     context = {
