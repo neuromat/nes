@@ -125,7 +125,7 @@ class StimulusForm(ModelForm):
         fields = ['stimulus_type']
 
         widgets = {
-            'stimulus_type': TextInput(attrs={'class': 'form-control', 'required': "",
+            'stimulus_type': Select(attrs={'class': 'form-control', 'required': "",
                                                 'data-error': 'Tipo do estímulo deve ser preenchido.'})
         }
 
