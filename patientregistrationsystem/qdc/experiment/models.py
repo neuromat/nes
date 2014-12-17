@@ -28,6 +28,12 @@ class TimeUnit(models.Model):
         ordering = ["id"]
 
 
+class StimulusType(models.Model):
+    name = models.CharField(max_length=30, null=False, blank=False)
+    
+    def __unicode__(self):
+        return self.name
+
 class Experiment(models.Model):
     title = models.CharField(null=False, max_length=50, blank=False)
     description = models.CharField(max_length=150, null=False, blank=False)
@@ -76,18 +82,31 @@ class Pause(Component):
     duration = models.IntegerField(null=False, blank=False)
     duration_unit = models.ForeignKey(TimeUnit, null=True, blank=True)
 
+    def save(self, *args, **kwargs):
+        super(Component, self).save(*args, **kwargs)
+    
 
 class Stimulus(Component):
-    stimulus_type = models.CharField(max_length=50, null=False, blank=False)
+    #stimulus_type = models.CharField(max_length=50, null=False, blank=False)
+    stimulus_type = models.ForeignKey(StimulusType, null=False, blank=False)
+    
+    def save(self, *args, **kwargs):
+        super(Component, self).save(*args, **kwargs)
 
 
 class Questionnaire(Component):
     lime_survey_id = models.IntegerField(null=False, blank=False)
 
+    def save(self, *args, **kwargs):
+        super(Component, self).save(*args, **kwargs)
+
 
 class Sequence(Component):
     has_random_components = models.BooleanField(null=False, blank=False)
     number_of_mandatory_components = models.IntegerField(null=True, blank=True)
+
+    def save(self, *args, **kwargs):
+        super(Component, self).save(*args, **kwargs)
 
 
 class ComponentConfiguration(models.Model):
