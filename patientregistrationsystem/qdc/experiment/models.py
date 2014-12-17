@@ -121,14 +121,6 @@ def get_dir(instance, filename):
     return "consent_forms/%s/%s/%s/%s" % (instance.group.experiment.id, instance.group.id, instance.subject.id, filename)
 
 
-# class SubjectOfExperiment(models.Model):
-#     subject = models.ForeignKey(Subject, null=False, blank=False)
-#     experiment = models.ForeignKey(Experiment, null=False, blank=False)
-#     consent_form = models.FileField(upload_to=get_dir, null=True)
-#
-#     class Meta:
-#         unique_together = ('subject', 'experiment',)
-
 class SubjectOfGroup(models.Model):
     subject = models.ForeignKey(Subject, null=False, blank=False)
     group = models.ForeignKey(Group, null=False, blank=False)
