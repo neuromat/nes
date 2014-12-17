@@ -106,9 +106,10 @@ def experiment_update(request, experiment_id, template_name="experiment/experime
         "experiment_form": experiment_form,
         "creating": False,
         "group_list": group_list,
-        "experiment": experiment,}
+        "experiment": experiment}
 
     return render(request, template_name, context)
+
 
 @login_required
 def group_create(request, experiment_id, template_name="experiment/group_register.html"):
@@ -359,7 +360,6 @@ def questionnaire_update(request, questionnaire_configuration_id,
 @login_required
 @permission_required('experiment.add_subject')
 def subjects(request, group_id, template_name="experiment/subjects.html"):
-    # experiment = get_object_or_404(Experiment, id=experiment_id)
     group = get_object_or_404(Group, id=group_id)
 
     subject_of_group_list = SubjectOfGroup.objects.all().filter(group=group)
@@ -680,7 +680,7 @@ def check_required_fields(surveys, lime_survey_id):
 
     groups = surveys.list_groups(lime_survey_id)
 
-    if not 'status' in groups:
+    if 'status' not in groups:
 
         for group in groups:
             question_list = surveys.list_questions(lime_survey_id, group['id'])
@@ -1134,7 +1134,8 @@ def component_update(request, component_id, component_type):
             if request.POST['action'] == "remove":
                 dependent_components = ComponentConfiguration.objects.filter(parent=component)
                 if dependent_components:
-                    messages.error(request, 'Componente não pode ser removido pois contém outros componentes dependentes.')
+                    messages.error(request,
+                                   'Componente não pode ser removido pois contém outros componentes dependentes.')
                     redirect_url = reverse("component_edit", args=(component.id, component.component_type,))
                 else:
                     component.delete()
@@ -1259,7 +1260,7 @@ def sequence_component_reuse(request, experiment_id, sequence_id, component_id):
 
     component_form = ComponentForm(request.POST or None, instance=component)
     configuration_form = ComponentConfigurationForm(request.POST or None,
-							initial={'number_of_repetitions': 1,
+                                                    initial={'number_of_repetitions': 1,
                                                              'interval_between_repetitions_value': None})
 
     existing_component_list = Component.objects.filter(component_type=component_type)
@@ -1306,8 +1307,9 @@ def sequence_component_reuse(request, experiment_id, sequence_id, component_id):
 
             if "interval_between_fills_unit" in request.POST:
                 configuration.interval_between_repetitions_unit = \
-                    get_object_or_404(TimeUnit, pk=request.POST['interval_between_repetitions_unit']) 
-	    configuration.save()
+                    get_object_or_404(TimeUnit, pk=request.POST['interval_between_repetitions_unit'])
+
+            configuration.save()
 
             messages.success(request, 'Componente incluído com sucesso.')
 

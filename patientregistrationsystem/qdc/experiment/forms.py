@@ -1,8 +1,7 @@
 # coding=utf-8
 from experiment.models import Experiment, QuestionnaireConfiguration, QuestionnaireResponse, SubjectOfGroup, Group, \
-    Component, Task, Stimulus, Pause, Sequence, Questionnaire, ComponentConfiguration
-from django.forms import ModelForm, TextInput, Textarea, Select, DateInput, CheckboxInput, BooleanField
-# from datetimewidget.widgets import DateTimeWidget
+    Component, Task, Stimulus, Pause, Sequence, ComponentConfiguration
+from django.forms import ModelForm, TextInput, Textarea, Select, DateInput
 
 
 class ExperimentForm(ModelForm):
@@ -84,9 +83,9 @@ class ComponentForm(ModelForm):
 
         widgets = {
             'identification': TextInput(attrs={'class': 'form-control', 'required': "",
-                                                'data-error': 'Identificação deve ser preenchida.'}),
+                                               'data-error': 'Identificação deve ser preenchida.'}),
             'description': TextInput(attrs={'class': 'form-control', 'required': "",
-                                                'data-error': 'Descrição deve ser preenchida.'})
+                                            'data-error': 'Descrição deve ser preenchida.'})
         }
 
 
@@ -98,13 +97,13 @@ class ComponentConfigurationForm(ModelForm):
 
         widgets = {
             'name': TextInput(attrs={'class': 'form-control', 'required': "",
-                                                'data-error': 'Nome deve ser preenchido.'}),
+                                     'data-error': 'Nome deve ser preenchido.'}),
             'number_of_repetitions': TextInput(attrs={'class': 'form-control', 'required': "",
-                                                'data-error': 'Número de repetições deve ser preenchida.'}),
+                                                      'data-error': 'Número de repetições deve ser preenchida.'}),
             'interval_between_repetitions_value': TextInput(attrs={'class': 'form-control', 'required': "",
-                                                'data-error': 'Intervalo deve ser preenchido.'}),
+                                                                   'data-error': 'Intervalo deve ser preenchido.'}),
             'interval_between_repetitions_unit': Select(attrs={'class': 'form-control', 'required': "",
-                                                         'data-error': "Unidade deve ser preenchida"}),
+                                                               'data-error': "Unidade deve ser preenchida"}),
         }
 
 
@@ -115,7 +114,7 @@ class TaskForm(ModelForm):
 
         widgets = {
             'instruction': TextInput(attrs={'class': 'form-control', 'required': "",
-                                                'data-error': 'Instrução deve ser preenchida.'})
+                                            'data-error': 'Instrução deve ser preenchida.'})
         }
 
 
@@ -126,7 +125,7 @@ class StimulusForm(ModelForm):
 
         widgets = {
             'stimulus_type': Select(attrs={'class': 'form-control', 'required': "",
-                                                'data-error': 'Tipo do estímulo deve ser preenchido.'})
+                                           'data-error': 'Tipo do estímulo deve ser preenchido.'})
         }
 
 
@@ -139,7 +138,7 @@ class PauseForm(ModelForm):
             'duration': TextInput(attrs={'class': 'form-control', 'required': "",
                                          'data-error': 'Duração da pausa deve ser preenchida.'}),
             'duration_unit': Select(attrs={'class': 'form-control', 'required': "",
-                                                         'data-error': "Unidade deve ser preenchida"}),
+                                           'data-error': "Unidade deve ser preenchida"}),
         }
 
 
@@ -150,5 +149,5 @@ class SequenceForm(ModelForm):
 
         widgets = {
             'number_of_mandatory_components': TextInput(attrs={'class': 'form-control', 'required': "",
-                                                'data-error': 'Quantidade deve ser preenchida.'}),
+                                                               'data-error': 'Quantidade deve ser preenchida.'}),
         }

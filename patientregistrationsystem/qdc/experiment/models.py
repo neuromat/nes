@@ -30,9 +30,10 @@ class TimeUnit(models.Model):
 
 class StimulusType(models.Model):
     name = models.CharField(max_length=30, null=False, blank=False)
-    
+
     def __unicode__(self):
         return self.name
+
 
 class Experiment(models.Model):
     title = models.CharField(null=False, max_length=50, blank=False)
@@ -64,11 +65,11 @@ class Component(models.Model):
     description = models.CharField(max_length=150, null=False, blank=False)
     experiment = models.ForeignKey(Experiment, null=False)
     component_type = models.CharField(null=False, max_length=15,
-                            choices=(("task", "Task component"),
-                                     ("pause", "Pause component"),
-                                     ("stimulus", "Stimulus component"),
-                                     ("questionnaire", "Questionnaire component"),
-                                     ("sequence", "Sequence component")))
+                                      choices=(("task", "Task component"),
+                                               ("pause", "Pause component"),
+                                               ("stimulus", "Stimulus component"),
+                                               ("questionnaire", "Questionnaire component"),
+                                               ("sequence", "Sequence component")))
 
 
 class Task(Component):
@@ -84,12 +85,12 @@ class Pause(Component):
 
     def save(self, *args, **kwargs):
         super(Component, self).save(*args, **kwargs)
-    
+
 
 class Stimulus(Component):
-    #stimulus_type = models.CharField(max_length=50, null=False, blank=False)
+    # stimulus_type = models.CharField(max_length=50, null=False, blank=False)
     stimulus_type = models.ForeignKey(StimulusType, null=False, blank=False)
-    
+
     def save(self, *args, **kwargs):
         super(Component, self).save(*args, **kwargs)
 
@@ -137,7 +138,8 @@ class Group(models.Model):
 
 
 def get_dir(instance, filename):
-    return "consent_forms/%s/%s/%s/%s" % (instance.group.experiment.id, instance.group.id, instance.subject.id, filename)
+    return "consent_forms/%s/%s/%s/%s" % \
+           (instance.group.experiment.id, instance.group.id, instance.subject.id, filename)
 
 
 class SubjectOfGroup(models.Model):

@@ -2,7 +2,6 @@
 import datetime
 
 from django.http import Http404
-from django.template.defaultfilters import title
 from django.test import TestCase
 from django.test.client import RequestFactory
 from django.core.urlresolvers import reverse
@@ -20,9 +19,9 @@ from patient.tests import UtilTests
 from custom_user.views import User
 
 
-LIME_SURVEY_TOKEN_ID_2 = 2 # 24
+LIME_SURVEY_TOKEN_ID_2 = 2
 
-LIME_SURVEY_TOKEN_ID_1 = 1 # 2
+LIME_SURVEY_TOKEN_ID_1 = 1
 
 EXPERIMENT_LIST = 'experiment_list'
 CLASSIFICATION_OF_DISEASES_CREATE = 'classification_of_diseases_insert'
@@ -35,7 +34,6 @@ USER_PWD = 'mypassword'
 SEARCH_TEXT = 'search_text'
 SUBJECT_SEARCH = 'subject_search'
 
-# LIME_SURVEY_CODE_ID_TEST = 641729
 LIME_SURVEY_CODE_ID_TEST = 953591
 
 
@@ -128,7 +126,8 @@ class ClassificationOfDiseasesTest(TestCase):
         classification_of_diseases = ClassificationOfDiseases.objects.create(code="1", description="test",
                                                                              abbreviated_description="t")
         # Inserindo o classification_of_diseases no group
-        response = self.client.get(reverse(CLASSIFICATION_OF_DISEASES_CREATE, args=(group.id, classification_of_diseases.id)))
+        response = self.client.get(reverse(CLASSIFICATION_OF_DISEASES_CREATE,
+                                           args=(group.id, classification_of_diseases.id)))
         self.assertEqual(response.status_code, 302)
 
         self.assertEqual(group.classification_of_diseases.count(), 1)
@@ -494,7 +493,6 @@ class SubjectTest(TestCase):
         self.assertEqual(response.status_code, 200)
         self.assertEqual(response.context['patients'], '')
 
-
     # TODO: Reescrever este teste.
     # Este teste nao tem funcionado desde que começamos a validar se o questionario do limesurvey
     # tem os campos obrigatorios. A solucao seria deixar criado um questionario com os campos obrigatorios
@@ -624,7 +622,8 @@ class SubjectTest(TestCase):
     #         self.assertEqual(response.status_code, 302)
     #
     #         count_after_delete_questionnaire_response = QuestionnaireResponse.objects.all().count()
-    #         self.assertEqual(count_before_delete_questionnaire_response - 1, count_after_delete_questionnaire_response)
+    #         self.assertEqual(count_before_delete_questionnaire_response - 1,
+    #                          count_after_delete_questionnaire_response)
     #
     #         # Remover participante associado a survey
     #         self.data = {'action': 'remove'}
