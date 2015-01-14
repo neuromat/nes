@@ -1172,7 +1172,7 @@ def sequence_component_create(request, experiment_id, sequence_id, component_typ
     questionnaires_list = []
     form = None
 
-    existing_component_list = Component.objects.filter(component_type=component_type)
+    existing_component_list = Component.objects.filter(experiment=experiment, component_type=component_type)
 
     if component_type == 'task':
         form = TaskForm(request.POST or None)
@@ -1229,7 +1229,11 @@ def sequence_component_create(request, experiment_id, sequence_id, component_typ
 
             messages.success(request, 'Componente incluído com sucesso.')
 
-            redirect_url = reverse("component_edit", args=(sequence_id, "sequence"))
+            if component_type == "sequence":
+                redirect_url = reverse("sequence_component_update", args=(configuration.id, ))
+            else:
+                redirect_url = reverse("component_edit", args=(sequence_id, "sequence"))
+
             return HttpResponseRedirect(redirect_url)
 
     context = {
@@ -1350,6 +1354,8 @@ def sequence_component_update(request, component_configuration_id):
 
     configuration_form = ComponentConfigurationForm(request.POST or None, instance=component_configuration)
 
+    configuration_list = []
+
     if component:
         component_form = ComponentForm(request.POST or None, instance=component)
         form = None
@@ -1375,6 +1381,8 @@ def sequence_component_update(request, component_configuration_id):
                         if component_type == 'sequence':
                             sequence = get_object_or_404(Sequence, pk=component.id)
                             form = SequenceForm(request.POST or None, instance=sequence)
+                            configuration_list = ComponentConfiguration.objects.filter(parent=sequence)\
+                                .order_by('order')
 
     if request.method == "POST":
         if request.POST['action'] == "save":
@@ -1422,7 +1430,10 @@ def sequence_component_update(request, component_configuration_id):
         "questionnaire_id": questionnaire_id,
         "questionnaire_title": questionnaire_title,
         "reusing_component": True,
-        "sequence_id": component_configuration.parent_id
+        "sequence_id": component_configuration.parent_id,
+        "configuration_list": configuration_list,
+        "icon_class": icon_class,
     }
+
 
     return render(request, template_name, context)
