@@ -73,6 +73,7 @@ def experiment_create(request, template_name="experiment/experiment_register.htm
 @login_required
 @permission_required('experiment.view_experiment')
 def experiment_update(request, experiment_id, template_name="experiment/experiment_register.html"):
+
     experiment = get_object_or_404(Experiment, pk=experiment_id)
 
     if experiment:
@@ -102,13 +103,13 @@ def experiment_update(request, experiment_id, template_name="experiment/experime
                         return HttpResponseRedirect(redirect_url)
                     return redirect('experiment_list')
 
-    context = {
-        "experiment_form": experiment_form,
-        "creating": False,
-        "group_list": group_list,
-        "experiment": experiment}
+        context = {
+            "experiment_form": experiment_form,
+            "creating": False,
+            "group_list": group_list,
+            "experiment": experiment}
 
-    return render(request, template_name, context)
+        return render(request, template_name, context)
 
 
 @login_required
@@ -187,17 +188,17 @@ def group_update(request, group_id, template_name="experiment/group_register.htm
                     redirect_url = reverse("experiment_edit", args=(experiment.id,))
                     return HttpResponseRedirect(redirect_url)
 
-    context = {
-        "classification_of_diseases_list": group.classification_of_diseases.all(),
-        "group_id": group_id,
-        "group_form": group_form,
-        "creating": False,
-        "questionnaires_configuration_list": questionnaires_configuration_list,
-        "experiment": experiment,
-        "group": group,
-        "limesurvey_available": limesurvey_available}
+        context = {
+            "classification_of_diseases_list": group.classification_of_diseases.all(),
+            "group_id": group_id,
+            "group_form": group_form,
+            "creating": False,
+            "questionnaires_configuration_list": questionnaires_configuration_list,
+            "experiment": experiment,
+            "group": group,
+            "limesurvey_available": limesurvey_available}
 
-    return render(request, template_name, context)
+        return render(request, template_name, context)
 
 
 @permission_required('experiment.add_subject')
@@ -246,6 +247,8 @@ def questionnaire_create(request, group_id, template_name="experiment/questionna
     questionnaire_form = QuestionnaireConfigurationForm(
         request.POST or None,
         initial={'number_of_fills': 1, 'interval_between_fills_value': None})
+
+    questionnaires_list = []
 
     if request.method == "GET":
 
@@ -518,11 +521,13 @@ def subject_questionnaire_response_create(request, subject_id, questionnaire_id,
     questionnaire_responsible = request.user.get_full_name()
     subject = get_object_or_404(Subject, pk=subject_id)
 
+    questionnaire_response_form = None
+    fail = None
+    redirect_url = None
+    questionnaire_response_id = None
+
     if request.method == "GET":
         questionnaire_response_form = QuestionnaireResponseForm(request.POST or None)
-        fail = None
-        redirect_url = None
-        questionnaire_response_id = None
 
     if request.method == "POST":
         questionnaire_response_form = QuestionnaireResponseForm(request.POST)
@@ -576,9 +581,8 @@ def questionnaire_response_update(request, questionnaire_response_id,
 
     questionnaire_response_form = QuestionnaireResponseForm(None, instance=questionnaire_response)
 
-    if request.method == "GET":
-        fail = None
-        redirect_url = None
+    fail = None
+    redirect_url = None
 
     if request.method == "POST":
 
@@ -925,7 +929,6 @@ def search_patients_ajax(request):
     patient_list = ''
     if request.method == "POST":
         search_text = request.POST['search_text']
-        # experiment_id = request.POST['experiment_id']
         group_id = request.POST['group_id']
         if search_text:
             if re.match('[a-zA-Z ]+', search_text):
@@ -933,14 +936,16 @@ def search_patients_ajax(request):
             else:
                 patient_list = Patient.objects.filter(cpf__icontains=search_text).exclude(removed=True)
 
-    return render_to_response('experiment/ajax_search_patients.html',
-                              {'patients': patient_list, 'group_id': group_id})
+        return render_to_response('experiment/ajax_search_patients.html',
+                                  {'patients': patient_list, 'group_id': group_id})
 
 
 def upload_file(request, subject_id, group_id, template_name="experiment/upload_consent_form.html"):
     subject = get_object_or_404(Subject, pk=subject_id)
     group = get_object_or_404(Group, pk=group_id)
     subject_of_group = get_object_or_404(SubjectOfGroup, subject=subject, group=group)
+
+    file_form = None
 
     if request.method == "POST":
 
@@ -1285,9 +1290,11 @@ def sequence_component_reuse(request, experiment_id, sequence_id, component_id):
                 if component_type == 'questionnaire':
                     questionnaire = get_object_or_404(Questionnaire, pk=component.id)
                     questionnaire_details = Questionnaires().find_questionnaire_by_id(questionnaire.lime_survey_id)
-                    if questionnaire_details:
-                        questionnaire_id = questionnaire_details['sid'],
-                        questionnaire_title = questionnaire_details['surveyls_title']
+
+                    # TODO: verificar se essas variaveis deveriam ser utilizadas
+                    # if questionnaire_details:
+                    #     questionnaire_id = questionnaire_details['sid'],
+                    #     questionnaire_title = questionnaire_details['surveyls_title']
                 else:
                     if component_type == 'sequence':
                         sequence = get_object_or_404(Sequence, pk=component_id)
@@ -1434,6 +1441,5 @@ def sequence_component_update(request, component_configuration_id):
         "configuration_list": configuration_list,
         "icon_class": icon_class,
     }
-
 
     return render(request, template_name, context)
