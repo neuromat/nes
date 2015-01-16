@@ -65,9 +65,9 @@ urlpatterns = patterns(
     url(r'^(?P<experiment_id>\d+)/sequence/(?P<sequence_id>\d+)/component/(?P<component_id>\d+)/$',
         'experiment.views.sequence_component_reuse', name='sequence_component_reuse'),
 
-    # TODO: ainda eh utilizado?
-    # url(r'^(?P<experiment_id>\d+)/sequence/(?P<sequence_id>\d+)/component/edit/(?P<component_id>\d+)/$',
-    #     'experiment.views.sequence_component_update', name='sequence_component_update'),
+    url(r'^component_configuration/(?P<component_configuration_id>\d+)/$',
+        'experiment.views.sequence_component_update', name='sequence_component_update'),
+    # /(?P<component_root>\w+)
 
     # configuration of experimental protocol
     # url(r'^group/(?P<group_id>\d+)/experimental_protocol/new/$',
@@ -76,8 +76,5 @@ urlpatterns = patterns(
     #     'experiment.views.experimental_protocol_reuse', name='experimental_protocol_reuse'),
     # url(r'^experimental_protocol/(?P<experimental_protocol_id>\d+)/$',
     #     'experiment.views.experimental_protocol_update', name='experimental_protocol_update'),
-
-    url(r'^component_configuration/(?P<component_configuration_id>\d+)/$',
-        'experiment.views.sequence_component_update', name='sequence_component_update'),
 
 )

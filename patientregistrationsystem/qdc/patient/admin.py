@@ -22,4 +22,3 @@ admin.site.register(AlcoholPeriod)
 admin.site.register(Patient, SimpleHistoryAdmin)
 admin.site.register(SocialDemographicData, SimpleHistoryAdmin)
 admin.site.register(SocialHistoryData, SimpleHistoryAdmin)
-
