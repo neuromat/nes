@@ -48,7 +48,6 @@ class UtilTests():
         p_mock.save()
         return p_mock
 
-
     def create_cid10_to_search(self):
         cid10 = ClassificationOfDiseases.objects.create(code='A01', description='Febres paratifoide',
                                                         abbreviated_description='A01 Febres paratifoide')

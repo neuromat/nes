@@ -7,8 +7,6 @@ from django.utils.translation import ugettext_lazy as _
 from patient.models import Patient, SocialDemographicData, SocialHistoryData, ComplementaryExam, ExamFile
 from patient.quiz_widget import SelectBoxCountries, SelectBoxState
 
-
-
 # pylint: disable=E1101
 # pylint: disable=E1103
 

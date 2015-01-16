@@ -226,14 +226,16 @@ def patient_update(request, patient_id, template_name="patient/register.html"):
                 experiment = get_object_or_404(Experiment, id=group.experiment.id)
                 questionnaire_configuration_list = QuestionnaireConfiguration.objects.filter(group=group)
                 for questionnaire_configuration in questionnaire_configuration_list:
-                    questionnaire_response_list = QuestionnaireResponse.objects.filter(subject_of_group=subject_of_group). \
+                    questionnaire_response_list = \
+                        QuestionnaireResponse.objects.filter(subject_of_group=subject_of_group).\
                         filter(questionnaire_configuration=questionnaire_configuration)
                     for questionnaire_response in questionnaire_response_list:
                         questionnaires_data.append(
                             {
                                 'experiment_title': experiment.title,
                                 'group_title': group.title,
-                                'questionnaire_title': surveys.get_survey_title(questionnaire_configuration.lime_survey_id),
+                                'questionnaire_title': surveys.get_survey_title(
+                                    questionnaire_configuration.lime_survey_id),
                                 'questionnaire_response': questionnaire_response
                             }
                         )
@@ -321,7 +323,7 @@ def patient(request, patient_id, template_name="patient/register.html"):
                     questionnaires_data.append(
                         {
                             'experiment_title': experiment.title,
-                            'group_title' : group.title,
+                            'group_title': group.title,
                             'questionnaire_title': surveys.get_survey_title(questionnaire_configuration.lime_survey_id),
                             'questionnaire_response': questionnaire_response
                         }
@@ -391,7 +393,7 @@ def patients_verify_homonym(request):
             patient_homonym_excluded = ''
 
     return render_to_response('patient/ajax_homonym.html', {'patient_homonym': patient_homonym,
-                                                         'patient_homonym_excluded': patient_homonym_excluded})
+                                                            'patient_homonym_excluded': patient_homonym_excluded})
 
 
 @login_required
@@ -408,8 +410,9 @@ def search_cid10_ajax(request):
             cid_10_list = ClassificationOfDiseases.objects.filter(Q(abbreviated_description__icontains=search_text) |
                                                                   Q(description__icontains=search_text))
 
-        return render_to_response('patient/ajax_cid10.html', {'cid_10_list': cid_10_list, 'medical_record': medical_record,
-                                                           'patient_id': patient_id})
+        return render_to_response('patient/ajax_cid10.html', {'cid_10_list': cid_10_list,
+                                                              'medical_record': medical_record,
+                                                              'patient_id': patient_id})
 
 
 @login_required
