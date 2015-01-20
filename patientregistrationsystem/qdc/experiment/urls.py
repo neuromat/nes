@@ -68,11 +68,11 @@ urlpatterns = patterns(
         'experiment.views.sequence_component_update', name='sequence_component_update'),
 
     # configuration of experimental protocol
-    # url(r'^group/(?P<group_id>\d+)/experimental_protocol/new/$',
-    #     'experiment.views.experimental_protocol_create', name='experimental_protocol_new'),
-    # url(r'^group/(?P<group_id>\d+)/experimental_protocol/(?P<experimental_protocol_id>\d+)/$',
-    #     'experiment.views.experimental_protocol_reuse', name='experimental_protocol_reuse'),
-    # url(r'^experimental_protocol/(?P<experimental_protocol_id>\d+)/$',
-    #     'experiment.views.experimental_protocol_update', name='experimental_protocol_update'),
+    url(r'^group/(?P<group_id>\d+)/experimental_protocol/new/$',
+        'experiment.views.experimental_protocol_create', name='experimental_protocol_new'),
+    # url(r'^group/(?P<group_id>\d+)/experimental_protocol/change/(?P<component_configuration_id>\d+)/$',
+    #     'experiment.views.experimental_protocol_change', name='experimental_protocol_reuse'),
+    url(r'^group/(?P<group_id>\d+)/experimental_protocol/edit/$',
+        'experiment.views.experimental_protocol_update', name='experimental_protocol_update'),
 
 )
