@@ -32,6 +32,7 @@ icon_class = {
     u'sequence': 'glyphicon glyphicon-list',
 }
 
+delimiter = "-"
 
 # pylint: disable=E1101
 # pylint: disable=E1103
@@ -1342,9 +1343,16 @@ def sequence_component_reuse(request, experiment_id, sequence_id, component_id):
     return render(request, template_name, context)
 
 
-def sequence_component_update(request, component_configuration_id):
+def sequence_component_update(request, component_configuration_id_list):
 
+    list_of_component_configuration_id = component_configuration_id_list.split(delimiter)
+
+    component_configuration_id = list_of_component_configuration_id[-1]
     component_configuration = get_object_or_404(ComponentConfiguration, pk=component_configuration_id)
+
+    previous_component_configuration = \
+        None if len(list_of_component_configuration_id) <= 1 else \
+        delimiter.join(list_of_component_configuration_id[:-1])
 
     component = get_object_or_404(Component, pk=component_configuration.component.id)
     experiment = get_object_or_404(Experiment, pk=component.experiment.id)
@@ -1440,6 +1448,8 @@ def sequence_component_update(request, component_configuration_id):
         "sequence_id": component_configuration.parent_id,
         "configuration_list": configuration_list,
         "icon_class": icon_class,
+        "component_configuration_id_list": component_configuration_id_list,
+        "previous_component_configuration": previous_component_configuration
     }
 
     return render(request, template_name, context)
