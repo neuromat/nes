@@ -66,6 +66,7 @@ class Component(models.Model):
     experiment = models.ForeignKey(Experiment, null=False)
     component_type = models.CharField(null=False, max_length=15,
                                       choices=(("task", "Task component"),
+                                               ("instruction", "Instruction component"),
                                                ("pause", "Pause component"),
                                                ("stimulus", "Stimulus component"),
                                                ("questionnaire", "Questionnaire component"),
@@ -74,6 +75,13 @@ class Component(models.Model):
 
 class Task(Component):
     instruction = models.CharField(max_length=150, null=False, blank=False)
+
+    def save(self, *args, **kwargs):
+        super(Component, self).save(*args, **kwargs)
+
+
+class Instruction(Component):
+    text = models.CharField(max_length=150, null=False, blank=False)
 
     def save(self, *args, **kwargs):
         super(Component, self).save(*args, **kwargs)
@@ -88,7 +96,6 @@ class Pause(Component):
 
 
 class Stimulus(Component):
-    # stimulus_type = models.CharField(max_length=50, null=False, blank=False)
     stimulus_type = models.ForeignKey(StimulusType, null=False, blank=False)
 
     def save(self, *args, **kwargs):

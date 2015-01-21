@@ -15,9 +15,10 @@ from django.conf import settings
 
 from experiment.models import Experiment, QuestionnaireConfiguration, Subject, TimeUnit, \
     QuestionnaireResponse, SubjectOfGroup, Group, Component, ComponentConfiguration, Questionnaire, Task, Stimulus, \
-    Pause, Sequence, ClassificationOfDiseases
+    Pause, Sequence, Instruction, ClassificationOfDiseases
 from experiment.forms import ExperimentForm, QuestionnaireConfigurationForm, QuestionnaireResponseForm, \
-    FileForm, GroupForm, TaskForm, ComponentForm, StimulusForm, PauseForm, SequenceForm, ComponentConfigurationForm
+    FileForm, GroupForm, TaskForm, InstructionForm, ComponentForm, StimulusForm, PauseForm, SequenceForm, \
+    ComponentConfigurationForm
 from patient.models import Patient
 from experiment.abc_search_engine import Questionnaires
 
@@ -26,6 +27,7 @@ permission_required = partial(permission_required, raise_exception=True)
 
 icon_class = {
     u'task': 'glyphicon glyphicon-check',
+    u'instruction': 'glyphicon glyphicon-bullhorn',
     u'stimulus': 'glyphicon glyphicon-headphones',
     u'pause': 'glyphicon glyphicon-time',
     u'questionnaire': 'glyphicon glyphicon-list-alt',
@@ -1019,18 +1021,21 @@ def component_create(request, experiment_id, component_type):
     if component_type == 'task':
         form = TaskForm(request.POST or None)
     else:
-        if component_type == 'stimulus':
-            form = StimulusForm(request.POST or None)
+        if component_type == 'instruction':
+            form = InstructionForm(request.POST or None)
         else:
-            if component_type == 'pause':
-                form = PauseForm(request.POST or None)
+            if component_type == 'stimulus':
+                form = StimulusForm(request.POST or None)
             else:
-                if component_type == 'questionnaire':
-                    questionnaires_list = Questionnaires().find_all_active_questionnaires()
+                if component_type == 'pause':
+                    form = PauseForm(request.POST or None)
                 else:
-                    if component_type == 'sequence':
-                        form = SequenceForm(request.POST or None,
-                                            initial={'number_of_mandatory_components': None})
+                    if component_type == 'questionnaire':
+                        questionnaires_list = Questionnaires().find_all_active_questionnaires()
+                    else:
+                        if component_type == 'sequence':
+                            form = SequenceForm(request.POST or None,
+                                                initial={'number_of_mandatory_components': None})
 
     if request.method == "POST":
         new_component = None
@@ -1098,27 +1103,31 @@ def component_update(request, component_id, component_type):
             task = get_object_or_404(Task, pk=component.id)
             form = TaskForm(request.POST or None, instance=task)
         else:
-            if component_type == 'stimulus':
-                stimulus = get_object_or_404(Stimulus, pk=component.id)
-                form = StimulusForm(request.POST or None, instance=stimulus)
+            if component_type == 'instruction':
+                instruction = get_object_or_404(Instruction, pk=component.id)
+                form = InstructionForm(request.POST or None, instance=instruction)
             else:
-                if component_type == 'pause':
-                    pause = get_object_or_404(Pause, pk=component.id)
-                    form = PauseForm(request.POST or None, instance=pause)
+                if component_type == 'stimulus':
+                    stimulus = get_object_or_404(Stimulus, pk=component.id)
+                    form = StimulusForm(request.POST or None, instance=stimulus)
                 else:
-                    if component_type == 'questionnaire':
-                        questionnaire = get_object_or_404(Questionnaire, pk=component.id)
-                        questionnaire_details = Questionnaires().find_questionnaire_by_id(questionnaire.lime_survey_id)
-                        if questionnaire_details:
-                            questionnaire_id = questionnaire_details['sid'],
-                            questionnaire_title = questionnaire_details['surveyls_title']
-                        # form = Que
+                    if component_type == 'pause':
+                        pause = get_object_or_404(Pause, pk=component.id)
+                        form = PauseForm(request.POST or None, instance=pause)
                     else:
-                        if component_type == 'sequence':
-                            sequence = get_object_or_404(Sequence, pk=component_id)
-                            form = SequenceForm(request.POST or None, instance=sequence)
-                            configuration_list = ComponentConfiguration.objects.filter(parent=sequence)\
-                                .order_by('order')
+                        if component_type == 'questionnaire':
+                            questionnaire = get_object_or_404(Questionnaire, pk=component.id)
+                            questionnaire_details = Questionnaires().find_questionnaire_by_id(questionnaire.lime_survey_id)
+                            if questionnaire_details:
+                                questionnaire_id = questionnaire_details['sid'],
+                                questionnaire_title = questionnaire_details['surveyls_title']
+                            # form = Que
+                        else:
+                            if component_type == 'sequence':
+                                sequence = get_object_or_404(Sequence, pk=component_id)
+                                form = SequenceForm(request.POST or None, instance=sequence)
+                                configuration_list = ComponentConfiguration.objects.filter(parent=sequence)\
+                                    .order_by('order')
 
     if request.method == "POST":
         if request.POST['action'] == "save":
@@ -1184,18 +1193,21 @@ def sequence_component_create(request, experiment_id, sequence_id, component_typ
     if component_type == 'task':
         form = TaskForm(request.POST or None)
     else:
-        if component_type == 'stimulus':
-            form = StimulusForm(request.POST or None)
+        if component_type == 'instruction':
+            form = InstructionForm(request.POST or None)
         else:
-            if component_type == 'pause':
-                form = PauseForm(request.POST or None)
+            if component_type == 'stimulus':
+                form = StimulusForm(request.POST or None)
             else:
-                if component_type == 'questionnaire':
-                    questionnaires_list = Questionnaires().find_all_active_questionnaires()
+                if component_type == 'pause':
+                    form = PauseForm(request.POST or None)
                 else:
-                    if component_type == 'sequence':
-                        form = SequenceForm(request.POST or None,
-                                            initial={'number_of_mandatory_components': None})
+                    if component_type == 'questionnaire':
+                        questionnaires_list = Questionnaires().find_all_active_questionnaires()
+                    else:
+                        if component_type == 'sequence':
+                            form = SequenceForm(request.POST or None,
+                                                initial={'number_of_mandatory_components': None})
 
     if request.method == "POST":
         new_component = None
@@ -1281,26 +1293,30 @@ def sequence_component_reuse(request, experiment_id, sequence_id, component_id):
         task = get_object_or_404(Task, pk=component.id)
         form = TaskForm(request.POST or None, instance=task)
     else:
-        if component_type == 'stimulus':
-            stimulus = get_object_or_404(Stimulus, pk=component.id)
-            form = StimulusForm(request.POST or None, instance=stimulus)
+        if component_type == 'instruction':
+            instruction = get_object_or_404(Instruction, pk=component.id)
+            form = InstructionForm(request.POST or None, instance=instruction)
         else:
-            if component_type == 'pause':
-                pause = get_object_or_404(Pause, pk=component.id)
-                form = PauseForm(request.POST or None, instance=pause)
+            if component_type == 'stimulus':
+                stimulus = get_object_or_404(Stimulus, pk=component.id)
+                form = StimulusForm(request.POST or None, instance=stimulus)
             else:
-                if component_type == 'questionnaire':
-                    questionnaire = get_object_or_404(Questionnaire, pk=component.id)
-                    questionnaire_details = Questionnaires().find_questionnaire_by_id(questionnaire.lime_survey_id)
-
-                    # TODO: verificar se essas variaveis deveriam ser utilizadas
-                    # if questionnaire_details:
-                    #     questionnaire_id = questionnaire_details['sid'],
-                    #     questionnaire_title = questionnaire_details['surveyls_title']
+                if component_type == 'pause':
+                    pause = get_object_or_404(Pause, pk=component.id)
+                    form = PauseForm(request.POST or None, instance=pause)
                 else:
-                    if component_type == 'sequence':
-                        sequence = get_object_or_404(Sequence, pk=component_id)
-                        form = SequenceForm(request.POST or None, instance=sequence)
+                    if component_type == 'questionnaire':
+                        questionnaire = get_object_or_404(Questionnaire, pk=component.id)
+                        questionnaire_details = Questionnaires().find_questionnaire_by_id(questionnaire.lime_survey_id)
+
+                        # TODO: verificar se essas variaveis deveriam ser utilizadas
+                        # if questionnaire_details:
+                        #     questionnaire_id = questionnaire_details['sid'],
+                        #     questionnaire_title = questionnaire_details['surveyls_title']
+                    else:
+                        if component_type == 'sequence':
+                            sequence = get_object_or_404(Sequence, pk=component_id)
+                            form = SequenceForm(request.POST or None, instance=sequence)
 
     for form_used in {form, component_form}:
         for field in form_used.fields:
@@ -1379,26 +1395,30 @@ def sequence_component_update(request, component_configuration_id_list):
             task = get_object_or_404(Task, pk=component.id)
             form = TaskForm(request.POST or None, instance=task)
         else:
-            if component_type == 'stimulus':
-                stimulus = get_object_or_404(Stimulus, pk=component.id)
-                form = StimulusForm(request.POST or None, instance=stimulus)
+            if component_type == 'instruction':
+                instruction = get_object_or_404(Instruction, pk=component.id)
+                form = InstructionForm(request.POST or None, instance=instruction)
             else:
-                if component_type == 'pause':
-                    pause = get_object_or_404(Pause, pk=component.id)
-                    form = PauseForm(request.POST or None, instance=pause)
+                if component_type == 'stimulus':
+                    stimulus = get_object_or_404(Stimulus, pk=component.id)
+                    form = StimulusForm(request.POST or None, instance=stimulus)
                 else:
-                    if component_type == 'questionnaire':
-                        questionnaire = get_object_or_404(Questionnaire, pk=component.id)
-                        questionnaire_details = Questionnaires().find_questionnaire_by_id(questionnaire.lime_survey_id)
-                        if questionnaire_details:
-                            questionnaire_id = questionnaire_details['sid'],
-                            questionnaire_title = questionnaire_details['surveyls_title']
+                    if component_type == 'pause':
+                        pause = get_object_or_404(Pause, pk=component.id)
+                        form = PauseForm(request.POST or None, instance=pause)
                     else:
-                        if component_type == 'sequence':
-                            sequence = get_object_or_404(Sequence, pk=component.id)
-                            form = SequenceForm(request.POST or None, instance=sequence)
-                            configuration_list = ComponentConfiguration.objects.filter(parent=sequence)\
-                                .order_by('order')
+                        if component_type == 'questionnaire':
+                            questionnaire = get_object_or_404(Questionnaire, pk=component.id)
+                            questionnaire_details = Questionnaires().find_questionnaire_by_id(questionnaire.lime_survey_id)
+                            if questionnaire_details:
+                                questionnaire_id = questionnaire_details['sid'],
+                                questionnaire_title = questionnaire_details['surveyls_title']
+                        else:
+                            if component_type == 'sequence':
+                                sequence = get_object_or_404(Sequence, pk=component.id)
+                                form = SequenceForm(request.POST or None, instance=sequence)
+                                configuration_list = ComponentConfiguration.objects.filter(parent=sequence)\
+                                    .order_by('order')
 
     if request.method == "POST":
         if request.POST['action'] == "save":

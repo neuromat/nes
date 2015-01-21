@@ -1,6 +1,6 @@
 # coding=utf-8
 from experiment.models import Experiment, QuestionnaireConfiguration, QuestionnaireResponse, SubjectOfGroup, Group, \
-    Component, Task, Stimulus, Pause, Sequence, ComponentConfiguration
+    Component, Task, Stimulus, Pause, Sequence, Instruction, ComponentConfiguration
 from django.forms import ModelForm, TextInput, Textarea, Select, DateInput
 
 
@@ -115,6 +115,17 @@ class TaskForm(ModelForm):
         widgets = {
             'instruction': TextInput(attrs={'class': 'form-control', 'required': "",
                                             'data-error': 'Instrução deve ser preenchida.'})
+        }
+
+
+class InstructionForm(ModelForm):
+    class Meta:
+        model = Instruction
+        fields = ['text']
+
+        widgets = {
+            'text': TextInput(attrs={'class': 'form-control', 'required': "",
+                                     'data-error': 'Instrução deve ser preenchida.'})
         }
 
 
