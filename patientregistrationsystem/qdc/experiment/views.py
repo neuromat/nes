@@ -1157,6 +1157,13 @@ def component_update(request, component_id, component_type):
                     component.delete()
                     redirect_url = reverse("component_list", args=(experiment.id,))
                 return HttpResponseRedirect(redirect_url)
+            else:
+                if request.POST['action'][:7] == "remove-":
+                    component_configuration_id_to_be_deleted = request.POST['action'].split("-")[-1]
+                    component_configutation = get_object_or_404(ComponentConfiguration, pk=int(component_configuration_id_to_be_deleted))
+                    component_configutation.delete()
+                    redirect_url = reverse("component_edit", args=(sequence.id, component_type))
+                    return HttpResponseRedirect(redirect_url)
 
     context = {
         "creating_workflow": False,
@@ -1444,6 +1451,13 @@ def sequence_component_update(request, component_configuration_id_list):
                 component.delete()
                 redirect_url = reverse("component_list", args=(experiment.id,))
                 return HttpResponseRedirect(redirect_url)
+            else:
+                if request.POST['action'][:7] == "remove-":
+                    component_configuration_id_to_be_deleted = request.POST['action'].split("-")[-1]
+                    component_configutation = get_object_or_404(ComponentConfiguration, pk=int(component_configuration_id_to_be_deleted))
+                    component_configutation.delete()
+                    redirect_url = reverse("sequence_component_update", args=(component_configuration_id_list,))
+                    return HttpResponseRedirect(redirect_url)
 
     if component_type == 'questionnaire':
         for field in component_form.fields:

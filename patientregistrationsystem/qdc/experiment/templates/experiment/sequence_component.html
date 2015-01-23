@@ -21,6 +21,18 @@
 
     </script>
 
+    <script type="text/javascript">
+
+        $(function(){
+            $("[data-toggle=tooltip]").tooltip();
+        });
+        function show_modal_remove (component_configuration_id){
+            var  modal_remove = document.getElementById('removeComponentConfiguration');
+            modal_remove.setAttribute( "value", 'remove-' + component_configuration_id);
+            $('#modalComponentConfigurationRemove').modal('show');
+        }
+    </script>
+
 {% endblock %}
 
 {% block breadcrumb %}
@@ -61,7 +73,10 @@
                         <tbody>
                         {% for configuration in configuration_list %}
                             <tr>
-                                <td><a data-toggle="tooltip" data-placement="left" title="Editar" href="/experiment/component_configuration/{% if component_configuration_id_list %}{{ component_configuration_id_list }}-{% endif %}{{ configuration.id }}">{{ configuration.component.identification }}</a></td>
+                                <td>
+                                    <a class="btn glyphicon glyphicon-remove" data-toggle="tooltip" data-placement="right" title="Remover da lista" style="color: indianred; vertical-align: -5%; padding-left: 0;" onclick="show_modal_remove({{ configuration.id }});"></a>
+                                    <a data-toggle="tooltip" data-placement="left" title="Editar" href="/experiment/component_configuration/{% if component_configuration_id_list %}{{ component_configuration_id_list }}-{% endif %}{{ configuration.id }}">{{ configuration.component.identification }}</a>
+                                </td>
                                 <td>
                                     {{ configuration.component.component_type }}
                                 </td>
@@ -131,4 +146,24 @@
             </div>
         </div>
     </div>
+
+    <div class="modal fade" id="modalComponentConfigurationRemove" tabindex="-1" role="dialog" aria-labelledby="myModalLabel"
+         aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-body">
+                    Tem certeza que deseja excluir este componente da lista?
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-default" data-dismiss="modal">Cancelar</button>
+
+                    <button class="btn btn-primary" type="submit" name="action" value="remove-" id="removeComponentConfiguration" style="background-color: indianred; color: #ffffff">
+                        Excluir
+                    </button>
+
+                </div>
+            </div>
+        </div>
+    </div>
+
 {% endblock %}
