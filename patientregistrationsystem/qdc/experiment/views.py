@@ -985,6 +985,8 @@ def upload_file(request, subject_id, group_id, template_name="experiment/upload_
     return render(request, template_name, context)
 
 
+@login_required
+@permission_required('experiment.view_experiment')
 def component_list(request, experiment_id, template_name="experiment/component_list.html"):
     experiment = get_object_or_404(Experiment, pk=experiment_id)
     components = Component.objects.filter(experiment=experiment)
@@ -999,6 +1001,8 @@ def component_list(request, experiment_id, template_name="experiment/component_l
     return render(request, template_name, context)
 
 
+@login_required
+@permission_required('experiment.change_experiment')
 def swap_component(request, component_id, component_type, first_order, second_order):
     first_component = ComponentConfiguration.objects.get(parent_id=component_id, order=first_order)
     second_component = ComponentConfiguration.objects.get(parent_id=component_id, order=second_order)
@@ -1009,6 +1013,8 @@ def swap_component(request, component_id, component_type, first_order, second_or
     return HttpResponseRedirect(redirect_url)
 
 
+@login_required
+@permission_required('experiment.change_experiment')
 def component_create(request, experiment_id, component_type):
 
     template_name = "experiment/" + component_type + "_component.html"
@@ -1081,6 +1087,8 @@ def component_create(request, experiment_id, component_type):
     return render(request, template_name, context)
 
 
+@login_required
+@permission_required('experiment.change_experiment')
 def component_update(request, component_id, component_type):
 
     template_name = "experiment/" + component_type + "_component.html"
@@ -1181,6 +1189,8 @@ def component_update(request, component_id, component_type):
     return render(request, template_name, context)
 
 
+@login_required
+@permission_required('experiment.change_experiment')
 def sequence_component_create(request, experiment_id, sequence_id, component_type):
 
     template_name = "experiment/" + component_type + "_component.html"
@@ -1278,6 +1288,8 @@ def sequence_component_create(request, experiment_id, sequence_id, component_typ
     return render(request, template_name, context)
 
 
+@login_required
+@permission_required('experiment.change_experiment')
 def sequence_component_reuse(request, experiment_id, sequence_id, component_id):
 
     component = get_object_or_404(Component, pk=component_id)
@@ -1367,6 +1379,8 @@ def sequence_component_reuse(request, experiment_id, sequence_id, component_id):
     return render(request, template_name, context)
 
 
+@login_required
+@permission_required('experiment.change_experiment')
 def sequence_component_update(request, component_configuration_id_list):
 
     list_of_component_configuration_id = component_configuration_id_list.split(delimiter)
@@ -1490,6 +1504,8 @@ def sequence_component_update(request, component_configuration_id_list):
     return render(request, template_name, context)
 
 
+@login_required
+@permission_required('experiment.change_experiment')
 def experimental_protocol_create(request, group_id):
 
     component_type = "sequence"
@@ -1571,6 +1587,8 @@ def experimental_protocol_create(request, group_id):
     return render(request, template_name, context)
 
 
+@login_required
+@permission_required('experiment.change_experiment')
 def experimental_protocol_update(request, group_id):
 
     list_of_component_configuration_id = []
@@ -1661,6 +1679,8 @@ def experimental_protocol_update(request, group_id):
     return render(request, template_name, context)
 
 
+@login_required
+@permission_required('experiment.change_experiment')
 def experimental_protocol_create(request, group_id, component_configuration_id):
 
     group = get_object_or_404(Group, pk=group_id)
