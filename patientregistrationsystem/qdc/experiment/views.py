@@ -394,7 +394,7 @@ def subjects(request, group_id, template_name="experiment/subjects.html"):
                         (questionnaire_configuration.number_of_fills is not None and
                             questionnaire_configuration.number_of_fills == subject_responses.count()):
 
-                    number_of_questionnaires_completed = 0
+                    number_of_completed_questionnaires = 0
 
                     for subject_response in subject_responses:
 
@@ -404,12 +404,12 @@ def subjects(request, group_id, template_name="experiment/subjects.html"):
                         if response_result == "N" or response_result == "":
                             break
                         else:
-                            number_of_questionnaires_completed += 1
+                            number_of_completed_questionnaires += 1
 
                     if (questionnaire_configuration.number_of_fills is None and
-                            number_of_questionnaires_completed >= subject_responses.count()) or \
+                            number_of_completed_questionnaires >= subject_responses.count()) or \
                             (questionnaire_configuration.number_of_fills is not None and
-                                number_of_questionnaires_completed >= questionnaire_configuration.number_of_fills):
+                                number_of_completed_questionnaires >= questionnaire_configuration.number_of_fills):
                         number_of_questionnaires_filled += 1
 
         percentage = 0
@@ -1125,7 +1125,8 @@ def component_update(request, component_id, component_type):
                     else:
                         if component_type == 'questionnaire':
                             questionnaire = get_object_or_404(Questionnaire, pk=component.id)
-                            questionnaire_details = Questionnaires().find_questionnaire_by_id(questionnaire.lime_survey_id)
+                            questionnaire_details = Questionnaires().\
+                                find_questionnaire_by_id(questionnaire.lime_survey_id)
                             if questionnaire_details:
                                 questionnaire_id = questionnaire_details['sid'],
                                 questionnaire_title = questionnaire_details['surveyls_title']
@@ -1168,7 +1169,8 @@ def component_update(request, component_id, component_type):
             else:
                 if request.POST['action'][:7] == "remove-":
                     component_configuration_id_to_be_deleted = request.POST['action'].split("-")[-1]
-                    component_configutation = get_object_or_404(ComponentConfiguration, pk=int(component_configuration_id_to_be_deleted))
+                    component_configutation = get_object_or_404(
+                        ComponentConfiguration, pk=int(component_configuration_id_to_be_deleted))
                     component_configutation.delete()
                     redirect_url = reverse("component_edit", args=(sequence.id, component_type))
                     return HttpResponseRedirect(redirect_url)
@@ -1430,7 +1432,8 @@ def sequence_component_update(request, component_configuration_id_list):
                     else:
                         if component_type == 'questionnaire':
                             questionnaire = get_object_or_404(Questionnaire, pk=component.id)
-                            questionnaire_details = Questionnaires().find_questionnaire_by_id(questionnaire.lime_survey_id)
+                            questionnaire_details = Questionnaires().\
+                                find_questionnaire_by_id(questionnaire.lime_survey_id)
                             if questionnaire_details:
                                 questionnaire_id = questionnaire_details['sid'],
                                 questionnaire_title = questionnaire_details['surveyls_title']
@@ -1468,7 +1471,8 @@ def sequence_component_update(request, component_configuration_id_list):
             else:
                 if request.POST['action'][:7] == "remove-":
                     component_configuration_id_to_be_deleted = request.POST['action'].split("-")[-1]
-                    component_configutation = get_object_or_404(ComponentConfiguration, pk=int(component_configuration_id_to_be_deleted))
+                    component_configutation = get_object_or_404(
+                        ComponentConfiguration, pk=int(component_configuration_id_to_be_deleted))
                     component_configutation.delete()
                     redirect_url = reverse("sequence_component_update", args=(component_configuration_id_list,))
                     return HttpResponseRedirect(redirect_url)

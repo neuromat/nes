@@ -40,8 +40,9 @@ class PatientForm(ModelForm):
             'natural_of': TextInput(attrs={'class': 'form-control'}),
             'phone': TextInput(attrs={'class': 'form-control'}),
             'cellphone': TextInput(attrs={'class': 'form-control'}),
-            'email': TextInput(attrs={'class': 'form-control', 'type': 'email', 'data-error': _('E-mail incorreto'),
-                                      'pattern': '^[_A-Za-z0-9-\+]+(\.[_A-Za-z0-9-]+)*@[A-Za-z0-9-]+(\.[A-Za-z0-9]+)*(\.[A-Za-z]{2,})$'}),
+            'email': TextInput(attrs={
+                'class': 'form-control', 'type': 'email', 'data-error': _('E-mail incorreto'),
+                'pattern': '^[_A-Za-z0-9-\+]+(\.[_A-Za-z0-9-]+)*@[A-Za-z0-9-]+(\.[A-Za-z0-9]+)*(\.[A-Za-z]{2,})$'}),
             'medical_record': TextInput(attrs={'class': 'form-control'}),
             'citizenship': SelectBoxCountries(attrs={'data-flags': 'true'}),
             'gender': Select(attrs={'class': 'form-control', 'required': "",
