@@ -46,9 +46,8 @@ urlpatterns = patterns(
     url(r'^questionnaire_response/(?P<questionnaire_response_id>\d+)/$',
         'experiment.views.questionnaire_response_view', name='questionnaire_response_view'),
 
-    # component swap order
-    url(r'^component/edit/(?P<component_id>\d+)/(?P<component_type>\w+)/(?P<first_order>\d+)/'
-        r'(?P<second_order>\d+)/$',
+    # change the order of the sub-components
+    url(r'^component/(?P<component_id>\d+)/change_the_order/(?P<first_order>\d+)/(?P<second_order>\d+)/$',
         'experiment.views.swap_component', name='swap_component'),
 
     # experimental protocol components
@@ -56,7 +55,7 @@ urlpatterns = patterns(
         'experiment.views.component_list', name='component_list'),
     url(r'^(?P<experiment_id>\d+)/new_component/(?P<component_type>\w+)/$',
         'experiment.views.component_create', name='component_new'),
-    url(r'^component/edit/(?P<component_id>\d+)/(?P<component_type>\w+)/$',
+    url(r'^component/edit/(?P<component_id>\d+)/$',
         'experiment.views.component_update', name='component_edit'),
 
     # experimental protocol components with configuration
@@ -70,8 +69,6 @@ urlpatterns = patterns(
     # configuration of experimental protocol
     url(r'^group/(?P<group_id>\d+)/experimental_protocol/new/$',
         'experiment.views.experimental_protocol_create', name='experimental_protocol_new'),
-    # url(r'^group/(?P<group_id>\d+)/experimental_protocol/change/(?P<component_configuration_id>\d+)/$',
-    #     'experiment.views.experimental_protocol_change', name='experimental_protocol_reuse'),
     url(r'^group/(?P<group_id>\d+)/experimental_protocol/edit/$',
         'experiment.views.experimental_protocol_update', name='experimental_protocol_update'),
 

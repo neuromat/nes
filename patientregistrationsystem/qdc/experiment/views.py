@@ -1003,13 +1003,13 @@ def component_list(request, experiment_id, template_name="experiment/component_l
 
 @login_required
 @permission_required('experiment.change_experiment')
-def swap_component(request, component_id, component_type, first_order, second_order):
+def swap_component(request, component_id, first_order, second_order):
     first_component = ComponentConfiguration.objects.get(parent_id=component_id, order=first_order)
     second_component = ComponentConfiguration.objects.get(parent_id=component_id, order=second_order)
     first_component.order, second_component.order = second_component.order, first_component.order
     first_component.save()
     second_component.save()
-    redirect_url = reverse("component_edit", args=(component_id, component_type))
+    redirect_url = reverse("component_edit", args=(component_id,))
     return HttpResponseRedirect(redirect_url)
 
 
@@ -1070,7 +1070,7 @@ def component_create(request, experiment_id, component_type):
             messages.success(request, 'Componente incluído com sucesso.')
 
             if component_type == 'sequence':
-                redirect_url = reverse("component_edit", args=(new_component.id, component_type))
+                redirect_url = reverse("component_edit", args=(new_component.id,))
             else:
                 redirect_url = reverse("component_list", args=(experiment_id,))
             return HttpResponseRedirect(redirect_url)
@@ -1089,11 +1089,12 @@ def component_create(request, experiment_id, component_type):
 
 @login_required
 @permission_required('experiment.change_experiment')
-def component_update(request, component_id, component_type):
-
-    template_name = "experiment/" + component_type + "_component.html"
+def component_update(request, component_id):
 
     component = get_object_or_404(Component, pk=component_id)
+
+    template_name = "experiment/" + component.component_type + "_component.html"
+
     experiment = get_object_or_404(Experiment, pk=component.experiment.id)
 
     questionnaire_id = None
@@ -1107,32 +1108,31 @@ def component_update(request, component_id, component_type):
         component_form = ComponentForm(request.POST or None, instance=component)
         form = None
 
-        if component_type == 'task':
+        if component.component_type == 'task':
             task = get_object_or_404(Task, pk=component.id)
             form = TaskForm(request.POST or None, instance=task)
         else:
-            if component_type == 'instruction':
+            if component.component_type == 'instruction':
                 instruction = get_object_or_404(Instruction, pk=component.id)
                 form = InstructionForm(request.POST or None, instance=instruction)
             else:
-                if component_type == 'stimulus':
+                if component.component_type == 'stimulus':
                     stimulus = get_object_or_404(Stimulus, pk=component.id)
                     form = StimulusForm(request.POST or None, instance=stimulus)
                 else:
-                    if component_type == 'pause':
+                    if component.component_type == 'pause':
                         pause = get_object_or_404(Pause, pk=component.id)
                         form = PauseForm(request.POST or None, instance=pause)
                     else:
-                        if component_type == 'questionnaire':
+                        if component.component_type == 'questionnaire':
                             questionnaire = get_object_or_404(Questionnaire, pk=component.id)
                             questionnaire_details = Questionnaires().\
                                 find_questionnaire_by_id(questionnaire.lime_survey_id)
                             if questionnaire_details:
                                 questionnaire_id = questionnaire_details['sid'],
                                 questionnaire_title = questionnaire_details['surveyls_title']
-                            # form = Que
                         else:
-                            if component_type == 'sequence':
+                            if component.component_type == 'sequence':
                                 sequence = get_object_or_404(Sequence, pk=component_id)
                                 form = SequenceForm(request.POST or None, instance=sequence)
                                 configuration_list = ComponentConfiguration.objects.filter(parent=sequence)\
@@ -1140,9 +1140,9 @@ def component_update(request, component_id, component_type):
 
     if request.method == "POST":
         if request.POST['action'] == "save":
-            if component_type == "questionnaire" or form.is_valid():
+            if component.component_type == "questionnaire" or form.is_valid():
 
-                if component_type != "questionnaire":
+                if component.component_type != "questionnaire":
                     form.save()
 
                 if component_form.is_valid():
@@ -1150,8 +1150,8 @@ def component_update(request, component_id, component_type):
 
                     messages.success(request, 'Componente alterado com sucesso.')
 
-                    if component_type == 'sequence':
-                        redirect_url = reverse("component_edit", args=(sequence.id, component_type))
+                    if component.component_type == 'sequence':
+                        redirect_url = reverse("component_edit", args=(sequence.id,))
                     else:
                         redirect_url = reverse("component_list", args=(experiment.id,))
                     return HttpResponseRedirect(redirect_url)
@@ -1161,7 +1161,7 @@ def component_update(request, component_id, component_type):
                 if dependent_components:
                     messages.error(request,
                                    'Componente não pode ser removido pois contém outros componentes dependentes.')
-                    redirect_url = reverse("component_edit", args=(component.id, component.component_type,))
+                    redirect_url = reverse("component_edit", args=(component.id,))
                 else:
                     component.delete()
                     redirect_url = reverse("component_list", args=(experiment.id,))
@@ -1172,7 +1172,7 @@ def component_update(request, component_id, component_type):
                     component_configutation = get_object_or_404(
                         ComponentConfiguration, pk=int(component_configuration_id_to_be_deleted))
                     component_configutation.delete()
-                    redirect_url = reverse("component_edit", args=(sequence.id, component_type))
+                    redirect_url = reverse("component_edit", args=(sequence.id,))
                     return HttpResponseRedirect(redirect_url)
 
     context = {
@@ -1270,7 +1270,7 @@ def sequence_component_create(request, experiment_id, sequence_id, component_typ
             if component_type == "sequence":
                 redirect_url = reverse("sequence_component_update", args=(configuration.id, ))
             else:
-                redirect_url = reverse("component_edit", args=(sequence_id, "sequence"))
+                redirect_url = reverse("component_edit", args=(sequence_id,))
 
             return HttpResponseRedirect(redirect_url)
 
@@ -1363,7 +1363,7 @@ def sequence_component_reuse(request, experiment_id, sequence_id, component_id):
 
             messages.success(request, 'Componente incluído com sucesso.')
 
-            redirect_url = reverse("component_edit", args=(sequence_id, "sequence"))
+            redirect_url = reverse("component_edit", args=(sequence_id,))
             return HttpResponseRedirect(redirect_url)
 
     context = {
@@ -1454,7 +1454,7 @@ def sequence_component_update(request, component_configuration_id_list):
 
                 messages.success(request, 'Componente atualizado com sucesso.')
 
-                redirect_url = reverse("component_edit", args=(component_configuration.parent.id, "sequence"))
+                redirect_url = reverse("component_edit", args=(component_configuration.parent.id,))
                 return HttpResponseRedirect(redirect_url)
 
         else:
@@ -1641,7 +1641,7 @@ def experimental_protocol_update(request, group_id):
 
                 messages.success(request, 'Componente atualizado com sucesso.')
 
-                redirect_url = reverse("component_edit", args=(component_configuration.parent.id, "sequence"))
+                redirect_url = reverse("component_edit", args=(component_configuration.parent.id,))
                 return HttpResponseRedirect(redirect_url)
 
         else:

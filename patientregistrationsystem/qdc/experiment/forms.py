@@ -110,11 +110,11 @@ class ComponentConfigurationForm(ModelForm):
 class TaskForm(ModelForm):
     class Meta:
         model = Task
-        fields = ['instruction']
+        fields = ['instruction_text']
 
         widgets = {
-            'instruction': TextInput(attrs={'class': 'form-control', 'required': "",
-                                            'data-error': 'Instrução deve ser preenchida.'})
+            'instruction_text': TextInput(attrs={'class': 'form-control', 'required': "",
+                                                 'data-error': 'Instrução deve ser preenchida.'})
         }
 
 
