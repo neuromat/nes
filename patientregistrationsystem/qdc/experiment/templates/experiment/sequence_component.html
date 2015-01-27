@@ -67,26 +67,31 @@
                         <tr>
                             <th>Componente</th>
                             <th>Tipo</th>
-                            <th>Ordem</th>
+                            <th class="text-center" colspan="2">Ordem</th>
                         </tr>
                         </thead>
                         <tbody>
                         {% for configuration in configuration_list %}
                             <tr>
-                                <td>
+                                <td class="col-md-6">
                                     <a class="btn glyphicon glyphicon-remove" data-toggle="tooltip" data-placement="right" title="Remover da lista" style="color: indianred; vertical-align: -5%; padding-left: 0;" onclick="show_modal_remove({{ configuration.id }});"></a>
                                     <a data-toggle="tooltip" data-placement="left" title="Editar" href="/experiment/component_configuration/{% if component_configuration_id_list %}{{ component_configuration_id_list }}-{% endif %}{{ configuration.id }}">{{ configuration.component.identification }}</a>
                                 </td>
-                                <td>
+                                <td class="col-md-4">
                                     {{ configuration.component.component_type }}
                                 </td>
-                                <td>
+                                <td class="col-md-1">
                                     {% ifnotequal configuration configuration_list.last %}
-                                        <a class="btn glyphicon glyphicon-arrow-down" href="/experiment/component/{{ sequence.id }}/change_the_order/{{ configuration.order }}/{{ configuration.order|add:"1" }}/"></a>
+{#                                        <a class="btn glyphicon glyphicon-arrow-down" href="/experiment/component/{{ sequence.id }}/change_the_order/{{ configuration.order }}/{{ configuration.order|add:"1" }}/"></a>#}
+                                        <a class="btn glyphicon glyphicon-arrow-down" href="/experiment/component_configuration/change_the_order/{{ configuration.id }}/down/"></a>
                                     {% endifnotequal %}
+                                </td>
+                                <td class="col-md-1">
                                     {% ifnotequal configuration configuration_list.first %}
-                                        <a class="btn glyphicon glyphicon-arrow-up" href="/experiment/component/{{ sequence.id }}/change_the_order/{{ configuration.order }}/{{ configuration.order|add:"-1" }}/"></a>
+{#                                        <a class="btn glyphicon glyphicon-arrow-up" href="/experiment/component/{{ sequence.id }}/change_the_order/{{ configuration.order }}/{{ configuration.order|add:"-1" }}/"></a>#}
+                                        <a class="btn glyphicon glyphicon-arrow-up" href="/experiment/component_configuration/change_the_order/{{ configuration.id }}/up/"></a>
                                     {% endifnotequal %}
+
                                 </td>
                             </tr>
                         {% endfor %}

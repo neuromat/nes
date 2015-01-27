@@ -27,7 +27,7 @@ permission_required = partial(permission_required, raise_exception=True)
 
 icon_class = {
     u'task': 'glyphicon glyphicon-check',
-    u'instruction': 'glyphicon glyphicon-bullhorn',
+    u'instruction': 'glyphicon glyphicon-comment',
     u'stimulus': 'glyphicon glyphicon-headphones',
     u'pause': 'glyphicon glyphicon-time',
     u'questionnaire': 'glyphicon glyphicon-list-alt',
@@ -1001,15 +1001,43 @@ def component_list(request, experiment_id, template_name="experiment/component_l
     return render(request, template_name, context)
 
 
+# This function was rewritten as "component_configuration_change_the_order"
+#
+# @login_required
+# @permission_required('experiment.change_experiment')
+# def swap_component(request, component_id, first_order, second_order):
+#     first_component = ComponentConfiguration.objects.get(parent_id=component_id, order=first_order)
+#     second_component = ComponentConfiguration.objects.get(parent_id=component_id, order=second_order)
+#     first_component.order, second_component.order = second_component.order, first_component.order
+#     first_component.save()
+#     second_component.save()
+#     redirect_url = reverse("component_edit", args=(component_id,))
+#     return HttpResponseRedirect(redirect_url)
+
+
 @login_required
 @permission_required('experiment.change_experiment')
-def swap_component(request, component_id, first_order, second_order):
-    first_component = ComponentConfiguration.objects.get(parent_id=component_id, order=first_order)
-    second_component = ComponentConfiguration.objects.get(parent_id=component_id, order=second_order)
-    first_component.order, second_component.order = second_component.order, first_component.order
-    first_component.save()
-    second_component.save()
-    redirect_url = reverse("component_edit", args=(component_id,))
+def component_configuration_change_the_order(request, component_configuration_id, command):
+
+    component_configuration = get_object_or_404(ComponentConfiguration, pk=component_configuration_id)
+    component = get_object_or_404(Component, pk=component_configuration.parent_id)
+
+    component_configuration_to_exchange = ComponentConfiguration.objects.filter(parent_id=component.id)
+    if command == "down":
+        component_configuration_to_exchange = \
+            component_configuration_to_exchange.filter(order__gt=component_configuration.order).order_by('order')
+    else:
+        component_configuration_to_exchange = \
+            component_configuration_to_exchange.filter(order__lt=component_configuration.order).order_by('-order')
+    component_configuration_to_exchange = component_configuration_to_exchange[0]
+
+    original_order = component_configuration.order
+    component_configuration.order = component_configuration_to_exchange.order
+    component_configuration_to_exchange.order = original_order
+    component_configuration.save()
+    component_configuration_to_exchange.save()
+
+    redirect_url = reverse("component_edit", args=(component.id,))
     return HttpResponseRedirect(redirect_url)
 
 
@@ -1336,8 +1364,8 @@ def sequence_component_reuse(request, experiment_id, sequence_id, component_id):
                         #     questionnaire_title = questionnaire_details['surveyls_title']
                     else:
                         if component_type == 'sequence':
-                            sequence = get_object_or_404(Sequence, pk=component_id)
-                            form = SequenceForm(request.POST or None, instance=sequence)
+                            sub_sequence = get_object_or_404(Sequence, pk=component_id)
+                            form = SequenceForm(request.POST or None, instance=sub_sequence)
 
     for form_used in {form, component_form}:
         for field in form_used.fields:
