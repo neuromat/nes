@@ -646,36 +646,11 @@ def questionnaire_response_update(request, questionnaire_response_id,
     return render(request, template_name, context)
 
 
-# método para verificar se o questionário tem as questões de identificação corretas e se seus tipos também são corretos
-def questionnaire_verification(questionnaire_id):
-    questionnaire_configuration = get_object_or_404(QuestionnaireConfiguration, id=questionnaire_id)
-    surveys = Questionnaires()
-    groups = surveys.list_groups(questionnaire_configuration.lime_survey_id)
-    for group in groups:
-        if group['group_name'] == 'identificação':
-            question_list = surveys.list_questions(questionnaire_configuration.lime_survey_id, group['id'])
-            for question in question_list:
-                if question['question_id'] == 'responsibleid':
-                    if question['type'] != 'N':
-                        return False
-                    else:
-                        break
-                if question['question_id'] == 'acquisitiondate':
-                    if question['type'] != 'D':
-                        return False
-                    else:
-                        break
-                if question['question_id'] == 'subjectid':
-                    if question['type'] != 'N':
-                        return False
-                    else:
-                        break
-                else:
-                    return False
-
-
-# método para verificar se o questionário tem as questões de identificação corretas e se seus tipos também são corretos
 def check_required_fields(surveys, lime_survey_id):
+    """
+    método para verificar se o questionário tem as questões de identificação corretas
+    e se seus tipos também são corretos
+    """
 
     fields_to_validate = {
         'responsibleid': {'type': 'N', 'found': False},
@@ -1216,12 +1191,12 @@ def component_update(request, component_id):
 
 @login_required
 @permission_required('experiment.change_experiment')
-def sequence_component_create(request, experiment_id, sequence_id, component_type):
+def sequence_component_create(request, sequence_id, component_type):
 
     template_name = "experiment/" + component_type + "_component.html"
 
-    experiment = get_object_or_404(Experiment, pk=experiment_id)
     sequence = get_object_or_404(Sequence, pk=sequence_id)
+    experiment = get_object_or_404(Experiment, pk=sequence.experiment_id)
 
     component_form = ComponentForm(request.POST or None)
     configuration_form = ComponentConfigurationForm(request.POST or None,
@@ -1315,7 +1290,7 @@ def sequence_component_create(request, experiment_id, sequence_id, component_typ
 
 @login_required
 @permission_required('experiment.change_experiment')
-def sequence_component_reuse(request, experiment_id, sequence_id, component_id):
+def sequence_component_reuse(request, sequence_id, component_id):
 
     component = get_object_or_404(Component, pk=component_id)
     component_type = component.component_type
@@ -1330,7 +1305,7 @@ def sequence_component_reuse(request, experiment_id, sequence_id, component_id):
                                                     initial={'number_of_repetitions': 1,
                                                              'interval_between_repetitions_value': None})
 
-    existing_component_list = Component.objects.filter(component_type=component_type)
+    existing_component_list = Component.objects.filter(component_type=component_type, experiment=experiment)
 
     form = None
     if component_type == 'task':

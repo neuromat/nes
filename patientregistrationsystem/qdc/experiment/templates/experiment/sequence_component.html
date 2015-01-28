@@ -50,7 +50,7 @@
 {% endblock %}
 
 {% block component_add_new %}
-    <li role="presentation"><a role="menuitem" tabindex="-1" href="/experiment/{{ experiment.id }}/sequence/{{ sequence.id }}/new_component/task"><< Nova sequência >></a></li>
+    <li role="presentation"><a role="menuitem" tabindex="-1" href="/experiment/sequence/{{ sequence.id }}/set_new_component/sequence"><< Nova sequência >></a></li>
 {% endblock %}
 
 {% block component_button_label %}
@@ -105,12 +105,12 @@
                     </button>
                     {% if updating %}
                         <ul class="dropdown-menu" role="menu" aria-labelledby="dropdownMenu1">
-                            <li role="presentation"><a role="menuitem" tabindex="-1" class="{{ icon_class.task }}" href="/experiment/{{ experiment.id }}/sequence/{{ sequence.id }}/new_component/task"> Tarefa</a></li>
-                            <li role="presentation"><a role="menuitem" tabindex="-1" class="{{ icon_class.instruction }}" href="/experiment/{{ experiment.id }}/sequence/{{ sequence.id }}/new_component/instruction"> Instrução</a></li>
-                            <li role="presentation"><a role="menuitem" tabindex="-1" class="{{ icon_class.stimulus }}" href="/experiment/{{ experiment.id }}/sequence/{{ sequence.id }}/new_component/stimulus"> Estímulo</a></li>
-                            <li role="presentation"><a role="menuitem" tabindex="-1" class="{{ icon_class.pause }}" href="/experiment/{{ experiment.id }}/sequence/{{ sequence.id }}/new_component/pause"> Pausa</a></li>
-                            <li role="presentation"><a role="menuitem" tabindex="-1" class="{{ icon_class.questionnaire }}" href="/experiment/{{ experiment.id }}/sequence/{{ sequence.id }}/new_component/questionnaire"> Questionário</a></li>
-                            <li role="presentation"><a role="menuitem" tabindex="-1" class="{{ icon_class.sequence }}" href="/experiment/{{ experiment.id }}/sequence/{{ sequence.id }}/new_component/sequence"> Sequência</a></li>
+                            <li role="presentation"><a role="menuitem" tabindex="-1" class="{{ icon_class.task }}" href="/experiment/sequence/{{ sequence.id }}/set_new_component/task"> Tarefa</a></li>
+                            <li role="presentation"><a role="menuitem" tabindex="-1" class="{{ icon_class.instruction }}" href="/experiment/sequence/{{ sequence.id }}/set_new_component/instruction"> Instrução</a></li>
+                            <li role="presentation"><a role="menuitem" tabindex="-1" class="{{ icon_class.stimulus }}" href="/experiment/sequence/{{ sequence.id }}/set_new_component/stimulus"> Estímulo</a></li>
+                            <li role="presentation"><a role="menuitem" tabindex="-1" class="{{ icon_class.pause }}" href="/experiment/sequence/{{ sequence.id }}/set_new_component/pause"> Pausa</a></li>
+                            <li role="presentation"><a role="menuitem" tabindex="-1" class="{{ icon_class.questionnaire }}" href="/experiment/sequence/{{ sequence.id }}/set_new_component/questionnaire"> Questionário</a></li>
+                            <li role="presentation"><a role="menuitem" tabindex="-1" class="{{ icon_class.sequence }}" href="/experiment/sequence/{{ sequence.id }}/set_new_component/sequence"> Sequência</a></li>
                         </ul>
                     {% endif %}
                 </div>

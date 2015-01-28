@@ -123,7 +123,6 @@ class ComponentConfiguration(models.Model):
     interval_between_repetitions_value = models.IntegerField(null=True, blank=True, validators=[MinValueValidator(1)])
     interval_between_repetitions_unit = models.ForeignKey(TimeUnit, null=True, blank=True)
     component = models.ForeignKey(Component, null=False, related_name="configuration")
-    # parent = models.ForeignKey('self', null=True, related_name='children')
     parent = models.ForeignKey(Component, null=True, related_name='children')
     order = models.IntegerField(null=False, blank=False, validators=[MinValueValidator(1)])
 
