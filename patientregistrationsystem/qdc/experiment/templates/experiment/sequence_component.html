@@ -82,14 +82,12 @@
                                 </td>
                                 <td class="col-md-1">
                                     {% ifnotequal configuration configuration_list.last %}
-{#                                        <a class="btn glyphicon glyphicon-arrow-down" href="/experiment/component/{{ sequence.id }}/change_the_order/{{ configuration.order }}/{{ configuration.order|add:"1" }}/"></a>#}
-                                        <a class="btn glyphicon glyphicon-arrow-down" href="/experiment/component_configuration/change_the_order/{{ configuration.id }}/down/"></a>
+                                        <a class="btn glyphicon glyphicon-arrow-down" href="/experiment/component_configuration/change_the_order/{% if component_configuration_id_list %}{{ component_configuration_id_list }}-{% endif %}{{ configuration.id }}/down/"></a>
                                     {% endifnotequal %}
                                 </td>
                                 <td class="col-md-1">
                                     {% ifnotequal configuration configuration_list.first %}
-{#                                        <a class="btn glyphicon glyphicon-arrow-up" href="/experiment/component/{{ sequence.id }}/change_the_order/{{ configuration.order }}/{{ configuration.order|add:"-1" }}/"></a>#}
-                                        <a class="btn glyphicon glyphicon-arrow-up" href="/experiment/component_configuration/change_the_order/{{ configuration.id }}/up/"></a>
+                                        <a class="btn glyphicon glyphicon-arrow-up" href="/experiment/component_configuration/change_the_order/{% if component_configuration_id_list %}{{ component_configuration_id_list }}-{% endif %}{{ configuration.id }}/up/"></a>
                                     {% endifnotequal %}
 
                                 </td>

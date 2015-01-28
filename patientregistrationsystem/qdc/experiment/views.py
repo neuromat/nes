@@ -1001,23 +1001,12 @@ def component_list(request, experiment_id, template_name="experiment/component_l
     return render(request, template_name, context)
 
 
-# This function was rewritten as "component_configuration_change_the_order"
-#
-# @login_required
-# @permission_required('experiment.change_experiment')
-# def swap_component(request, component_id, first_order, second_order):
-#     first_component = ComponentConfiguration.objects.get(parent_id=component_id, order=first_order)
-#     second_component = ComponentConfiguration.objects.get(parent_id=component_id, order=second_order)
-#     first_component.order, second_component.order = second_component.order, first_component.order
-#     first_component.save()
-#     second_component.save()
-#     redirect_url = reverse("component_edit", args=(component_id,))
-#     return HttpResponseRedirect(redirect_url)
-
-
 @login_required
 @permission_required('experiment.change_experiment')
-def component_configuration_change_the_order(request, component_configuration_id, command):
+def component_configuration_change_the_order(request, component_configuration_id_list, command):
+
+    list_of_component_configuration_id = component_configuration_id_list.split(delimiter)
+    component_configuration_id = list_of_component_configuration_id[-1]
 
     component_configuration = get_object_or_404(ComponentConfiguration, pk=component_configuration_id)
     component = get_object_or_404(Component, pk=component_configuration.parent_id)
@@ -1037,7 +1026,13 @@ def component_configuration_change_the_order(request, component_configuration_id
     component_configuration.save()
     component_configuration_to_exchange.save()
 
-    redirect_url = reverse("component_edit", args=(component.id,))
+    if len(list_of_component_configuration_id) <= 1:
+        redirect_url = \
+            reverse("component_edit", args=(component.id,))
+    else:
+        redirect_url = \
+            reverse("sequence_component_update", args=(delimiter.join(list_of_component_configuration_id[:-1]),))
+
     return HttpResponseRedirect(redirect_url)
 
 

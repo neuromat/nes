@@ -47,9 +47,7 @@ urlpatterns = patterns(
         'experiment.views.questionnaire_response_view', name='questionnaire_response_view'),
 
     # change the order of the sub-components
-    # url(r'^component/(?P<component_id>\d+)/change_the_order/(?P<first_order>\d+)/(?P<second_order>\d+)/$',
-    #     'experiment.views.swap_component', name='swap_component'),
-    url(r'^component_configuration/change_the_order/(?P<component_configuration_id>\d+)/(?P<command>\w+)/$',
+    url(r'^component_configuration/change_the_order/(?P<component_configuration_id_list>[0-9-]+)/(?P<command>\w+)/$',
         'experiment.views.component_configuration_change_the_order', name='component_configuration_change_the_order'),
 
     # experimental protocol components
