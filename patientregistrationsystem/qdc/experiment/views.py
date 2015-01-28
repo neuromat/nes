@@ -1324,18 +1324,9 @@ def sequence_component_reuse(request, sequence_id, component_id):
                     pause = get_object_or_404(Pause, pk=component.id)
                     form = PauseForm(request.POST or None, instance=pause)
                 else:
-                    if component_type == 'questionnaire':
-                        questionnaire = get_object_or_404(Questionnaire, pk=component.id)
-                        questionnaire_details = Questionnaires().find_questionnaire_by_id(questionnaire.lime_survey_id)
-
-                        # TODO: verificar se essas variaveis deveriam ser utilizadas
-                        # if questionnaire_details:
-                        #     questionnaire_id = questionnaire_details['sid'],
-                        #     questionnaire_title = questionnaire_details['surveyls_title']
-                    else:
-                        if component_type == 'sequence':
-                            sub_sequence = get_object_or_404(Sequence, pk=component_id)
-                            form = SequenceForm(request.POST or None, instance=sub_sequence)
+                    if component_type == 'sequence':
+                        sub_sequence = get_object_or_404(Sequence, pk=component_id)
+                        form = SequenceForm(request.POST or None, instance=sub_sequence)
 
     for form_used in {form, component_form}:
         for field in form_used.fields:
@@ -1521,7 +1512,6 @@ def experimental_protocol_create(request, group_id):
                                                     initial={'number_of_repetitions': 1,
                                                              'interval_between_repetitions_value': None})
     questionnaires_list = []
-    form = None
 
     existing_component_list = Component.objects.filter(experiment=experiment, component_type=component_type)
 
@@ -1623,7 +1613,6 @@ def experimental_protocol_update(request, group_id):
 
     if component:
         component_form = ComponentForm(request.POST or None, instance=component)
-        form = None
         sequence = get_object_or_404(Sequence, pk=component.id)
         form = SequenceForm(request.POST or None, instance=sequence)
         configuration_list = ComponentConfiguration.objects.filter(parent=sequence)\
