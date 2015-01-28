@@ -28,13 +28,17 @@
             <div class="col-xs-6 col-sm-10">
                 <div class="form-group">
                     <label for="questionnaire_selected" class="control-label">Questionário <b style="color: red;">*</b></label>
-                    <select class="form-control" required="" id="questionnaire_selected" name="questionnaire_selected" data-error="Por favor, selecione um questionário da lista." {% if updating %}disabled{% endif %}>
-                        {% if creating %}<option selected="selected" value="">---------</option>{% endif %}
-                        {% if updating %}<option selected="selected" value="{{ questionnaire_id }}">{{ questionnaire_title }} ({{ questionnaire_id }})</option>
+                    <select class="form-control" required="" id="questionnaire_selected" name="questionnaire_selected" data-error="Por favor, selecione um questionário da lista." {% if updating or reusing_component %}disabled{% endif %}>
+                        {% if reusing_component %}
+                            <option selected="selected" value="{{ questionnaire_id }}">{{ questionnaire_title }} ({{ questionnaire_id }})
                         {% else %}
-                            {% for survey in questionnaires_list %}
-                                <option value="{{ survey.sid }}">{{ survey.surveyls_title }} ({{ survey.sid }})</option>
-                            {% endfor %}
+                            {% if creating %}<option selected="selected" value="">---------</option>{% endif %}
+                            {% if updating %}<option selected="selected" value="{{ questionnaire_id }}">{{ questionnaire_title }} ({{ questionnaire_id }})</option>
+                            {% else %}
+                                {% for survey in questionnaires_list %}
+                                    <option value="{{ survey.sid }}">{{ survey.surveyls_title }} ({{ survey.sid }})</option>
+                                {% endfor %}
+                            {% endif %}
                         {% endif %}
                     </select>
                     <div class="help-block with-errors"></div>

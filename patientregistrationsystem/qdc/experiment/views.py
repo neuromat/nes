@@ -995,10 +995,18 @@ def component_configuration_change_the_order(request, component_configuration_id
             component_configuration_to_exchange.filter(order__lt=component_configuration.order).order_by('-order')
     component_configuration_to_exchange = component_configuration_to_exchange[0]
 
-    original_order = component_configuration.order
-    component_configuration.order = component_configuration_to_exchange.order
-    component_configuration_to_exchange.order = original_order
+    configuration_order = component_configuration.order
+    configuration_to_exchange_order = component_configuration_to_exchange.order
+    last_configuration = \
+        ComponentConfiguration.objects.filter(parent=component_configuration.parent).order_by('-order').first()
+
+    component_configuration_to_exchange.order = last_configuration.order + 1
+    component_configuration_to_exchange.save()
+
+    component_configuration.order = configuration_to_exchange_order
     component_configuration.save()
+
+    component_configuration_to_exchange.order = configuration_order
     component_configuration_to_exchange.save()
 
     if len(list_of_component_configuration_id) <= 1:
@@ -1324,13 +1332,25 @@ def sequence_component_reuse(request, sequence_id, component_id):
                     pause = get_object_or_404(Pause, pk=component.id)
                     form = PauseForm(request.POST or None, instance=pause)
                 else:
-                    if component_type == 'sequence':
-                        sub_sequence = get_object_or_404(Sequence, pk=component_id)
-                        form = SequenceForm(request.POST or None, instance=sub_sequence)
+                    if component_type == 'questionnaire':
+                        questionnaire = get_object_or_404(Questionnaire, pk=component.id)
+                        questionnaire_details = Questionnaires().\
+                            find_questionnaire_by_id(questionnaire.lime_survey_id)
+                        if questionnaire_details:
+                            questionnaire_id = questionnaire_details['sid'],
+                            questionnaire_title = questionnaire_details['surveyls_title']
+                    else:
+                        if component_type == 'sequence':
+                            sub_sequence = get_object_or_404(Sequence, pk=component_id)
+                            form = SequenceForm(request.POST or None, instance=sub_sequence)
 
-    for form_used in {form, component_form}:
-        for field in form_used.fields:
-            form_used.fields[field].widget.attrs['disabled'] = True
+    if component_type == 'questionnaire':
+        for field in component_form.fields:
+            component_form.fields[field].widget.attrs['disabled'] = True
+    else:
+        for form_used in {form, component_form}:
+            for field in form_used.fields:
+                form_used.fields[field].widget.attrs['disabled'] = True
 
     if request.method == "POST":
 
@@ -1365,6 +1385,8 @@ def sequence_component_reuse(request, sequence_id, component_id):
         "updating": False,
         "existing_component_list": existing_component_list,
         "sequence": sequence,
+        "questionnaire_id": questionnaire_id,
+        "questionnaire_title": questionnaire_title,
         "reusing_component": True
     }
     return render(request, template_name, context)
