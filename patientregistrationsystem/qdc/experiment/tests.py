@@ -758,7 +758,7 @@ class SubjectTest(TestCase):
         # Anexar arquivo
         consent_form_file = SimpleUploadedFile('quiz/consent_form.txt', 'rb')
         self.data = {'action': 'upload', 'consent_form': consent_form_file}
-        url = reverse('upload_file', args=[group.pk, subject_mock.pk])
+        # url = reverse('upload_file', args=[group.pk, subject_mock.pk])
         # request = self.factory.post(url, self.data)d
         # request.user = self.user
         # response = upload_file(request, subject_id=subject_mock.pk, experiment_id=experiment.pk)
@@ -844,40 +844,40 @@ class ABCSearchEngineTest(TestCase):
             self.assertEqual(status, 'OK')
 
     def test_find_all_questionnaires_method_returns_correct_result(self):
-        q = Questionnaires()
+        questionnaires = Questionnaires()
         list_survey = self.server.list_surveys(self.session_key, None)
         self.server.release_session_key(self.session_key)
-        self.assertEqual(q.find_all_questionnaires(), list_survey)
-        q.release_session_key()
+        self.assertEqual(questionnaires.find_all_questionnaires(), list_survey)
+        questionnaires.release_session_key()
 
     def test_find_questionnaire_by_id_method_found_survey(self):
-        q = Questionnaires()
+        questionnaires = Questionnaires()
         list_survey = self.server.list_surveys(self.session_key, None)
         self.server.release_session_key(self.session_key)
-        self.assertEqual(q.find_questionnaire_by_id(list_survey[3]['sid']), list_survey[3])
-        q.release_session_key()
+        self.assertEqual(questionnaires.find_questionnaire_by_id(list_survey[3]['sid']), list_survey[3])
+        questionnaires.release_session_key()
 
     def test_find_questionnaire_by_id_method_not_found_survey_by_string(self):
-        q = Questionnaires()
-        self.assertEqual(None, q.find_questionnaire_by_id('three'))
-        q.release_session_key()
+        questionnaires = Questionnaires()
+        self.assertEqual(None, questionnaires.find_questionnaire_by_id('three'))
+        questionnaires.release_session_key()
 
     def test_find_questionnaire_by_id_method_not_found_survey_by_out_of_range(self):
-        q = Questionnaires()
-        self.assertEqual(None, q.find_questionnaire_by_id(10000000))
-        q.release_session_key()
+        questionnaires = Questionnaires()
+        self.assertEqual(None, questionnaires.find_questionnaire_by_id(10000000))
+        questionnaires.release_session_key()
 
     def test_list_active_questionnaires(self):
-        q = Questionnaires()
+        questionnaires = Questionnaires()
         list_survey = self.server.list_surveys(self.session_key, None)
         self.server.release_session_key(self.session_key)
         list_active_survey = []
         for survey in list_survey:
-            survey_has_token = q.survey_has_token_table(survey['sid'])
+            survey_has_token = questionnaires.survey_has_token_table(survey['sid'])
             if survey['active'] == "Y" and survey_has_token is True:
                 list_active_survey.append(survey)
-        self.assertEqual(q.find_all_active_questionnaires(), list_active_survey)
-        q.release_session_key()
+        self.assertEqual(questionnaires.find_all_active_questionnaires(), list_active_survey)
+        questionnaires.release_session_key()
 
     def test_add_participant_to_a_survey(self):
         """testa a insercao de participante em um questionario """
@@ -931,11 +931,11 @@ class ABCSearchEngineTest(TestCase):
         self.server.release_session_key(self.session_key)
 
     def test_add_and_delete_survey_methods(self):
-        q = Questionnaires()
-        sid = q.add_survey('9999', 'Questionario de Teste', 'en', 'G')
+        questionnaires = Questionnaires()
+        sid = questionnaires.add_survey('9999', 'Questionario de Teste', 'en', 'G')
         self.assertGreaterEqual(sid, 0)
 
-        status = q.delete_survey(sid)
+        status = questionnaires.delete_survey(sid)
         self.assertEqual(status, 'OK')
 
     # def test_get_survey_property_usetokens(self):
@@ -977,8 +977,10 @@ class ABCSearchEngineTest(TestCase):
     #     pass
 
     def test_delete_participant_to_a_survey(self):
-        """Remove survey participant test"""
-        """testa a insercao de participante em um questionario """
+        """
+        Remove survey participant test
+        testa a insercao de participante em um questionario
+        """
 
         surveys = Questionnaires()
         list_active_surveys = surveys.find_all_active_questionnaires()

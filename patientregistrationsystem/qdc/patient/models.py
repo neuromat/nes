@@ -184,21 +184,21 @@ class SocialDemographicData(models.Model):
         dict_schooling = {'1': 0, '2': 1, '3': 2, '4': 4, '5': 8}
         points = 0
 
-        for kw in keywords.keys():
-            if kw == 'tv' or kw == 'radio':
-                points += int(keywords[kw])
-            elif kw == 'banheiro':
-                points += dict_bath[keywords[kw]]
-            elif kw == 'automovel':
-                points += dict_auto[keywords[kw]]
-            elif kw == 'empregada':
-                points += dict_housemaid[keywords[kw]]
-            elif kw == 'dvd' or kw == 'maquina' or kw == 'freezer':
-                points += dict_dvd[keywords[kw]]
-            elif kw == 'geladeira':
-                points += dict_refrigerator[keywords[kw]]
-            elif kw == 'escolaridade':
-                points += dict_schooling[keywords[kw]]
+        for key_word in keywords.keys():
+            if key_word == 'tv' or key_word == 'radio':
+                points += int(keywords[key_word])
+            elif key_word == 'banheiro':
+                points += dict_bath[keywords[key_word]]
+            elif key_word == 'automovel':
+                points += dict_auto[keywords[key_word]]
+            elif key_word == 'empregada':
+                points += dict_housemaid[keywords[key_word]]
+            elif key_word == 'dvd' or key_word == 'maquina' or key_word == 'freezer':
+                points += dict_dvd[keywords[key_word]]
+            elif key_word == 'geladeira':
+                points += dict_refrigerator[keywords[key_word]]
+            elif key_word == 'escolaridade':
+                points += dict_schooling[keywords[key_word]]
 
         if 0 <= points <= 7:
             return 'E'

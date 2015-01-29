@@ -155,19 +155,19 @@ def group_update(request, group_id, template_name="experiment/group_register.htm
 
         group_form = GroupForm(request.POST or None, instance=group)
 
-        questionnaires_configuration_list = QuestionnaireConfiguration.objects.filter(group=group)
+        list_of_questionnaires_configuration = QuestionnaireConfiguration.objects.filter(group=group)
 
         surveys = Questionnaires()
 
         limesurvey_available = check_limesurvey_access(request, surveys)
 
-        questionnaires_configuration_list = [
+        list_of_questionnaires_configuration = [
             {"survey_title": surveys.get_survey_title(questionnaire_configuration.lime_survey_id),
              "number_of_fills": questionnaire_configuration.number_of_fills,
              "interval_between_fills_value": questionnaire_configuration.interval_between_fills_value,
              "interval_between_fills_unit": questionnaire_configuration.interval_between_fills_unit,
              "id": questionnaire_configuration.id}
-            for questionnaire_configuration in questionnaires_configuration_list]
+            for questionnaire_configuration in list_of_questionnaires_configuration]
         surveys.release_session_key()
 
         if request.method == "POST":
@@ -197,7 +197,7 @@ def group_update(request, group_id, template_name="experiment/group_register.htm
             "group_id": group_id,
             "group_form": group_form,
             "creating": False,
-            "questionnaires_configuration_list": questionnaires_configuration_list,
+            "questionnaires_configuration_list": list_of_questionnaires_configuration,
             "experiment": experiment,
             "group": group,
             "limesurvey_available": limesurvey_available}
@@ -367,23 +367,22 @@ def questionnaire_update(request, questionnaire_configuration_id,
 @login_required
 @permission_required('experiment.add_subject')
 def subjects(request, group_id, template_name="experiment/subjects.html"):
-    group = get_object_or_404(Group, id=group_id)
 
-    subject_of_group_list = SubjectOfGroup.objects.all().filter(group=group)
+    group = get_object_or_404(Group, id=group_id)
 
     subject_list_with_status = []
 
-    questionnaires_configuration_list = QuestionnaireConfiguration.objects.filter(group=group)
+    list_of_questionnaires_configuration = QuestionnaireConfiguration.objects.filter(group=group)
 
     surveys = Questionnaires()
 
     limesurvey_available = check_limesurvey_access(request, surveys)
 
-    for subject_of_group in subject_of_group_list:
+    for subject_of_group in SubjectOfGroup.objects.all().filter(group=group):
 
         number_of_questionnaires_filled = 0
 
-        for questionnaire_configuration in questionnaires_configuration_list:
+        for questionnaire_configuration in list_of_questionnaires_configuration:
 
             subject_responses = QuestionnaireResponse.objects. \
                 filter(subject_of_group=subject_of_group). \
@@ -394,7 +393,7 @@ def subjects(request, group_id, template_name="experiment/subjects.html"):
                         (questionnaire_configuration.number_of_fills is not None and
                             questionnaire_configuration.number_of_fills == subject_responses.count()):
 
-                    number_of_completed_questionnaires = 0
+                    amount_of_completed_questionnaires = 0
 
                     for subject_response in subject_responses:
 
@@ -404,23 +403,23 @@ def subjects(request, group_id, template_name="experiment/subjects.html"):
                         if response_result == "N" or response_result == "":
                             break
                         else:
-                            number_of_completed_questionnaires += 1
+                            amount_of_completed_questionnaires += 1
 
                     if (questionnaire_configuration.number_of_fills is None and
-                            number_of_completed_questionnaires >= subject_responses.count()) or \
+                            amount_of_completed_questionnaires >= subject_responses.count()) or \
                             (questionnaire_configuration.number_of_fills is not None and
-                                number_of_completed_questionnaires >= questionnaire_configuration.number_of_fills):
+                                amount_of_completed_questionnaires >= questionnaire_configuration.number_of_fills):
                         number_of_questionnaires_filled += 1
 
         percentage = 0
 
-        if questionnaires_configuration_list.count() > 0:
-            percentage = 100 * number_of_questionnaires_filled / questionnaires_configuration_list.count()
+        if list_of_questionnaires_configuration.count() > 0:
+            percentage = 100 * number_of_questionnaires_filled / list_of_questionnaires_configuration.count()
 
         subject_list_with_status.append(
             {'subject': subject_of_group.subject,
              'number_of_questionnaires_filled': number_of_questionnaires_filled,
-             'total_of_questionnaires': questionnaires_configuration_list.count(),
+             'total_of_questionnaires': list_of_questionnaires_configuration.count(),
              'percentage': percentage,
              'consent': subject_of_group.consent_form})
 
@@ -522,9 +521,6 @@ def subject_questionnaire_response_create(request, subject_id, questionnaire_id,
     survey_admin = surveys.get_survey_properties(questionnaire_config.lime_survey_id, 'admin')
     surveys.release_session_key()
 
-    questionnaire_responsible = request.user.get_full_name()
-    subject = get_object_or_404(Subject, pk=subject_id)
-
     questionnaire_response_form = None
     fail = None
     redirect_url = None
@@ -554,9 +550,9 @@ def subject_questionnaire_response_create(request, subject_id, questionnaire_id,
         "survey_title": survey_title,
         "survey_admin": survey_admin,
         "survey_active": survey_active,
-        "questionnaire_responsible": questionnaire_responsible,
+        "questionnaire_responsible": request.user.get_full_name(),
         "creating": True,
-        "subject": subject,
+        "subject": get_object_or_404(Subject, pk=subject_id),
         "group": questionnaire_config.group
     }
 
@@ -580,7 +576,6 @@ def questionnaire_response_update(request, questionnaire_response_id,
                                                            "completed") != "N")
     surveys.release_session_key()
 
-    questionnaire_responsible = questionnaire_response.questionnaire_responsible
     subject = questionnaire_response.subject_of_group.subject
 
     questionnaire_response_form = QuestionnaireResponseForm(None, instance=questionnaire_response)
@@ -636,7 +631,7 @@ def questionnaire_response_update(request, questionnaire_response_id,
         "survey_admin": survey_admin,
         "survey_active": survey_active,
         "questionnaire_response_id": questionnaire_response_id,
-        "questionnaire_responsible": questionnaire_responsible,
+        "questionnaire_responsible": questionnaire_response.questionnaire_responsible,
         "creating": False,
         "subject": subject,
         "completed": survey_completed,
@@ -814,8 +809,6 @@ def subject_questionnaire_view(request, group_id, subject_id,
     group = get_object_or_404(Group, id=group_id)
     subject = get_object_or_404(Subject, id=subject_id)
 
-    questionnaires_configuration_list = QuestionnaireConfiguration.objects.filter(group=group)
-
     subject_questionnaires = []
     can_remove = True
 
@@ -823,12 +816,10 @@ def subject_questionnaire_view(request, group_id, subject_id,
 
     limesurvey_available = check_limesurvey_access(request, surveys)
 
-    for questionnaire_configuration in questionnaires_configuration_list:
-
-        subject_of_group = get_object_or_404(SubjectOfGroup, group=group, subject=subject)
+    for questionnaire_configuration in QuestionnaireConfiguration.objects.filter(group=group):
 
         questionnaire_responses = QuestionnaireResponse.objects. \
-            filter(subject_of_group=subject_of_group). \
+            filter(subject_of_group=get_object_or_404(SubjectOfGroup, group=group, subject=subject)). \
             filter(questionnaire_configuration=questionnaire_configuration)
 
         questionnaire_responses_with_status = []
@@ -855,8 +846,7 @@ def subject_questionnaire_view(request, group_id, subject_id,
 
         if request.POST['action'] == "remove":
             if can_remove:
-                subject_of_experiment = get_object_or_404(SubjectOfGroup, group=group, subject=subject)
-                subject_of_experiment.delete()
+                get_object_or_404(SubjectOfGroup, group=group, subject=subject).delete()
 
                 messages.info(request, 'Participante removido do experimento.')
                 redirect_url = reverse("subjects", args=(group_id,))
@@ -1315,7 +1305,11 @@ def sequence_component_reuse(request, sequence_id, component_id):
 
     existing_component_list = Component.objects.filter(component_type=component_type, experiment=experiment)
 
+    questionnaire_id = None
+    questionnaire_title = None
+
     form = None
+
     if component_type == 'task':
         task = get_object_or_404(Task, pk=component.id)
         form = TaskForm(request.POST or None, instance=task)
