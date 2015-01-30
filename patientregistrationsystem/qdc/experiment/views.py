@@ -1138,7 +1138,6 @@ def component_update(request, component_id):
                                     configuration.component.icon_class = \
                                         icon_class[configuration.component.component_type]
 
-
     if request.method == "POST":
         if request.POST['action'] == "save":
             if component.component_type == "questionnaire" or form.is_valid():
@@ -1752,7 +1751,29 @@ def experimental_protocol_create(request, group_id):
 
 @login_required
 @permission_required('experiment.change_experiment')
-def experimental_protocol_update(request, group_id):
+def experimental_protocol(request, group_id):
+
+    """
+    tenho o group_id
+
+    consulto o group
+
+    if o group tem experimental_protocol
+        consulto o component_configuration
+        encaminho como se fosse "atualizar um componente configuration"
+            - tenho que, de alguma forma, indicar que essa configuracao é um experimental_protocol
+            - tem que alterar o html para contemplar essa opcao
+
+    else
+        encaminho como se fosse "criar um componente configuration"
+            - tb tenho que indicar que é um experimental_protocol
+            - tb tem que alterar o html para contemplar essa opcao
+
+    - no html
+        .tenho que contemplar a opcao de ser um protocolo_experimental
+        .ao reutilizar um componente, tem que atualizar o protocolo_experimental
+        .tem que possibilitar desconfigurar um protocolo experimental
+    """
 
     list_of_component_configuration_id = []
 
@@ -1841,14 +1862,14 @@ def experimental_protocol_update(request, group_id):
     return render(request, template_name, context)
 
 
-@login_required
-@permission_required('experiment.change_experiment')
-def experimental_protocol_create(request, group_id, component_configuration_id):
-
-    group = get_object_or_404(Group, pk=group_id)
-    component_configuration = get_object_or_404(ComponentConfiguration, pk=component_configuration_id)
-    group.experimental_protocol = component_configuration
-
-    redirect_url = reverse("group_edit", args=(group.id, ))
-
-    return HttpResponseRedirect(redirect_url)
+# @login_required
+# @permission_required('experiment.change_experiment')
+# def experimental_protocol_create(request, group_id, component_configuration_id):
+#
+#     group = get_object_or_404(Group, pk=group_id)
+#     component_configuration = get_object_or_404(ComponentConfiguration, pk=component_configuration_id)
+#     group.experimental_protocol = component_configuration
+#
+#     redirect_url = reverse("group_edit", args=(group.id, ))
+#
+#     return HttpResponseRedirect(redirect_url)
