@@ -125,7 +125,7 @@
                                     <ul class="dropdown-menu" role="menu" aria-labelledby="dropdownMenu1">
 
                                         {% for existing_component in existing_component_list %}
-                                            <li role="presentation"><a role="menuitem" tabindex="-1" href="/experiment/sequence/{{ sequence.id }}/set_component/{{ existing_component.id }}">{{ existing_component.identification }}</a></li>
+                                            <li role="presentation"><a role="menuitem" tabindex="-1" href="/experiment/component_configuration/{% if path_of_the_sub_components %}{{ path_of_the_sub_components }}{% else %}{{ sequence.id }}{% endif %}/add_component/{{ existing_component.id }}">{{ existing_component.identification }}</a></li>
                                         {% endfor %}
 
                                         {% if reusing_component %}
@@ -240,7 +240,7 @@
                 <div class="btn-group pull-right">
                     {% if creating %}
                         {% if creating_workflow %}
-                            <a href="/experiment/component/edit/{{ sequence.id }}" class="btn" style="background-color: #f5f5f5">Cancelar</a>
+                            <a href="/experiment/component/{{ sequence.id }}" class="btn" style="background-color: #f5f5f5">Cancelar</a>
                         {% else %}
                             <a href="/experiment/{{ experiment.id }}/components" class="btn" style="background-color: #f5f5f5">Cancelar</a>
                         {% endif %}
@@ -249,7 +249,7 @@
                             {% if previous_component_configuration %}
                                 <a href="/experiment/component_configuration/{{ previous_component_configuration }}" class="btn" style="background-color: #f5f5f5">Voltar</a>
                             {% else %}
-                                <a href="/experiment/component/edit/{{ sequence_id }}" class="btn" style="background-color: #f5f5f5">Voltar</a>
+                                <a href="/experiment/component/{{ sequence_id }}" class="btn" style="background-color: #f5f5f5">Voltar</a>
                             {% endif %}
                         {% else %}
                             <a href="/experiment/{{ experiment.id }}/components" class="btn" style="background-color: #f5f5f5">Voltar</a>

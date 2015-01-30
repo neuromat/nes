@@ -968,9 +968,9 @@ def component_list(request, experiment_id, template_name="experiment/component_l
 
 @login_required
 @permission_required('experiment.change_experiment')
-def component_configuration_change_the_order(request, component_configuration_id_list, command):
+def component_configuration_change_the_order(request, path_of_the_sub_components, command):
 
-    list_of_component_configuration_id = component_configuration_id_list.split(delimiter)
+    list_of_component_configuration_id = path_of_the_sub_components.split(delimiter)
     component_configuration_id = list_of_component_configuration_id[-1]
 
     component_configuration = get_object_or_404(ComponentConfiguration, pk=component_configuration_id)
@@ -999,12 +999,12 @@ def component_configuration_change_the_order(request, component_configuration_id
     component_configuration_to_exchange.order = configuration_order
     component_configuration_to_exchange.save()
 
-    if len(list_of_component_configuration_id) <= 1:
+    if len(list_of_component_configuration_id) > 2:
         redirect_url = \
-            reverse("component_edit", args=(component.id,))
+            reverse("component_configuration_update", args=(delimiter.join(list_of_component_configuration_id[:-1]),))
     else:
         redirect_url = \
-            reverse("sequence_component_update", args=(delimiter.join(list_of_component_configuration_id[:-1]),))
+            reverse("component_edit", args=(component.id,))
 
     return HttpResponseRedirect(redirect_url)
 
@@ -1134,6 +1134,11 @@ def component_update(request, component_id):
                                 configuration_list = ComponentConfiguration.objects.filter(parent=sequence)\
                                     .order_by('order')
 
+                                for configuration in configuration_list:
+                                    configuration.component.icon_class = \
+                                        icon_class[configuration.component.component_type]
+
+
     if request.method == "POST":
         if request.POST['action'] == "save":
             if component.component_type == "questionnaire" or form.is_valid():
@@ -1187,13 +1192,129 @@ def component_update(request, component_id):
     return render(request, template_name, context)
 
 
+# @login_required
+# @permission_required('experiment.change_experiment')
+# def sequence_component_create(request, sequence_id, component_type):
+#
+#     template_name = "experiment/" + component_type + "_component.html"
+#
+#     sequence = get_object_or_404(Sequence, pk=sequence_id)
+#     experiment = get_object_or_404(Experiment, pk=sequence.experiment_id)
+#
+#     component_form = ComponentForm(request.POST or None)
+#     configuration_form = ComponentConfigurationForm(request.POST or None,
+#                                                     initial={'number_of_repetitions': 1,
+#                                                              'interval_between_repetitions_value': None})
+#     questionnaires_list = []
+#     form = None
+#
+#     existing_component_list = Component.objects.filter(experiment=experiment, component_type=component_type)
+#
+#     if component_type == 'task':
+#         form = TaskForm(request.POST or None)
+#     else:
+#         if component_type == 'instruction':
+#             form = InstructionForm(request.POST or None)
+#         else:
+#             if component_type == 'stimulus':
+#                 form = StimulusForm(request.POST or None)
+#             else:
+#                 if component_type == 'pause':
+#                     form = PauseForm(request.POST or None)
+#                 else:
+#                     if component_type == 'questionnaire':
+#                         questionnaires_list = Questionnaires().find_all_active_questionnaires()
+#                     else:
+#                         if component_type == 'sequence':
+#                             form = SequenceForm(request.POST or None,
+#                                                 initial={'number_of_mandatory_components': None})
+#
+#     if request.method == "POST":
+#
+#         new_component = None
+#
+#         if component_type == 'questionnaire':
+#             new_component = Questionnaire()
+#             new_component.lime_survey_id = request.POST['questionnaire_selected']
+#         else:
+#             if form.is_valid():
+#
+#                 new_component = form.save(commit=False)
+#
+#                 if component_type == 'sequence':
+#
+#                     if "number_of_mandatory_components" in request.POST:
+#                         new_component.number_of_mandatory_components = request.POST['number_of_mandatory_components']
+#                     if "has_random_components" in request.POST:
+#                         new_component.has_random_components = True
+#                     else:
+#                         new_component.has_random_components = False
+#
+#         if component_form.is_valid() and configuration_form.is_valid():
+#
+#             component = component_form.save(commit=False)
+#
+#             new_component.description = component.description
+#             new_component.identification = component.identification
+#             new_component.component_type = component_type
+#             new_component.experiment = experiment
+#             new_component.save()
+#
+#             configuration = configuration_form.save(commit=False)
+#             configuration.component = new_component
+#             configuration.parent = sequence
+#
+#             if "number_of_fills" in request.POST:
+#                 configuration.number_of_repetitions = request.POST['number_of_repetitions']
+#
+#             if "interval_between_fills_value" in request.POST:
+#                 configuration.interval_between_repetitions_value = request.POST['interval_between_repetitions_value']
+#
+#             if "interval_between_fills_unit" in request.POST:
+#                 configuration.interval_between_repetitions_unit = \
+#                     get_object_or_404(TimeUnit, pk=request.POST['interval_between_repetitions_unit'])
+#
+#             configuration.save()
+#
+#             messages.success(request, 'Componente incluído com sucesso.')
+#
+#             if component_type == "sequence":
+#                 redirect_url = reverse("component_configuration_update", args=(configuration.id, ))
+#             else:
+#                 redirect_url = reverse("component_edit", args=(sequence_id,))
+#
+#             return HttpResponseRedirect(redirect_url)
+#
+#     context = {
+#         "creating_workflow": True,
+#         "form": form,
+#         "experiment": experiment,
+#         "component_form": component_form,
+#         "configuration_form": configuration_form,
+#         "creating": True,
+#         "updating": False,
+#         "questionnaires_list": questionnaires_list,
+#         "existing_component_list": existing_component_list,
+#         "sequence": sequence,
+#         "reusing_component": False
+#     }
+#     return render(request, template_name, context)
+
+
 @login_required
 @permission_required('experiment.change_experiment')
-def sequence_component_create(request, sequence_id, component_type):
+def component_configuration_add_new_component(request, path_of_the_sub_components, component_type):
 
     template_name = "experiment/" + component_type + "_component.html"
 
-    sequence = get_object_or_404(Sequence, pk=sequence_id)
+    list_of_identifiers = path_of_the_sub_components.split(delimiter)
+
+    if len(list_of_identifiers) == 1:
+        component_id = int(list_of_identifiers[0])
+    else:
+        component_id = get_object_or_404(ComponentConfiguration, pk=int(list_of_identifiers[-1])).component.id
+
+    sequence = get_object_or_404(Sequence, pk=component_id)
     experiment = get_object_or_404(Experiment, pk=sequence.experiment_id)
 
     component_form = ComponentForm(request.POST or None)
@@ -1225,14 +1346,19 @@ def sequence_component_create(request, sequence_id, component_type):
                                                 initial={'number_of_mandatory_components': None})
 
     if request.method == "POST":
+
         new_component = None
+
         if component_type == 'questionnaire':
             new_component = Questionnaire()
             new_component.lime_survey_id = request.POST['questionnaire_selected']
         else:
             if form.is_valid():
+
                 new_component = form.save(commit=False)
+
                 if component_type == 'sequence':
+
                     if "number_of_mandatory_components" in request.POST:
                         new_component.number_of_mandatory_components = request.POST['number_of_mandatory_components']
                     if "has_random_components" in request.POST:
@@ -1241,7 +1367,9 @@ def sequence_component_create(request, sequence_id, component_type):
                         new_component.has_random_components = False
 
         if component_form.is_valid() and configuration_form.is_valid():
+
             component = component_form.save(commit=False)
+
             new_component.description = component.description
             new_component.identification = component.identification
             new_component.component_type = component_type
@@ -1251,22 +1379,29 @@ def sequence_component_create(request, sequence_id, component_type):
             configuration = configuration_form.save(commit=False)
             configuration.component = new_component
             configuration.parent = sequence
+
             if "number_of_fills" in request.POST:
                 configuration.number_of_repetitions = request.POST['number_of_repetitions']
+
             if "interval_between_fills_value" in request.POST:
                 configuration.interval_between_repetitions_value = request.POST['interval_between_repetitions_value']
 
             if "interval_between_fills_unit" in request.POST:
                 configuration.interval_between_repetitions_unit = \
                     get_object_or_404(TimeUnit, pk=request.POST['interval_between_repetitions_unit'])
+
             configuration.save()
 
             messages.success(request, 'Componente incluído com sucesso.')
 
             if component_type == "sequence":
-                redirect_url = reverse("sequence_component_update", args=(configuration.id, ))
+                redirect_url = reverse("component_configuration_update",
+                                       args=(path_of_the_sub_components + "-" + str(configuration.id), ))
             else:
-                redirect_url = reverse("component_edit", args=(sequence_id,))
+                if len(list_of_identifiers) == 1:
+                    redirect_url = reverse("component_edit", args=(component_id,))
+                else:
+                    redirect_url = reverse("component_configuration_update", args=(path_of_the_sub_components,))
 
             return HttpResponseRedirect(redirect_url)
 
@@ -1281,22 +1416,30 @@ def sequence_component_create(request, sequence_id, component_type):
         "questionnaires_list": questionnaires_list,
         "existing_component_list": existing_component_list,
         "sequence": sequence,
-        "reusing_component": False
+        "reusing_component": False,
+        "path_of_the_sub_components": path_of_the_sub_components,
     }
     return render(request, template_name, context)
 
 
 @login_required
 @permission_required('experiment.change_experiment')
-def sequence_component_reuse(request, sequence_id, component_id):
+def component_configuration_reuse_component(request, path_of_the_sub_components, component_id):
 
     component = get_object_or_404(Component, pk=component_id)
     component_type = component.component_type
 
     template_name = "experiment/" + component_type + "_component.html"
 
+    list_of_identifiers = path_of_the_sub_components.split(delimiter)
+
+    if len(list_of_identifiers) == 1:
+        component_id = int(list_of_identifiers[0])
+    else:
+        component_id = get_object_or_404(ComponentConfiguration, pk=int(list_of_identifiers[-1])).component.id
+
     experiment = get_object_or_404(Experiment, pk=component.experiment.id)
-    sequence = get_object_or_404(Sequence, pk=sequence_id)
+    sequence = get_object_or_404(Sequence, pk=component_id)
 
     component_form = ComponentForm(request.POST or None, instance=component)
     configuration_form = ComponentConfigurationForm(request.POST or None,
@@ -1366,7 +1509,15 @@ def sequence_component_reuse(request, sequence_id, component_id):
 
             messages.success(request, 'Componente incluído com sucesso.')
 
-            redirect_url = reverse("component_edit", args=(sequence_id,))
+            if component_type == "sequence":
+                redirect_url = reverse("component_configuration_update",
+                                       args=(path_of_the_sub_components + "-" + str(configuration.id),))
+            else:
+                if len(list_of_identifiers) == 1:
+                    redirect_url = reverse("component_edit", args=(component_id,))
+                else:
+                    redirect_url = reverse("component_configuration_update", args=(path_of_the_sub_components,))
+
             return HttpResponseRedirect(redirect_url)
 
     context = {
@@ -1381,23 +1532,23 @@ def sequence_component_reuse(request, sequence_id, component_id):
         "sequence": sequence,
         "questionnaire_id": questionnaire_id,
         "questionnaire_title": questionnaire_title,
-        "reusing_component": True
+        "reusing_component": True,
+        "path_of_the_sub_components": path_of_the_sub_components,
     }
     return render(request, template_name, context)
 
 
 @login_required
 @permission_required('experiment.change_experiment')
-def sequence_component_update(request, component_configuration_id_list):
+def component_configuration_update(request, path_of_the_sub_components):
 
-    list_of_component_configuration_id = component_configuration_id_list.split(delimiter)
+    list_of_component_configuration_id = path_of_the_sub_components.split(delimiter)
 
     component_configuration_id = list_of_component_configuration_id[-1]
     component_configuration = get_object_or_404(ComponentConfiguration, pk=component_configuration_id)
 
     previous_component_configuration = \
-        None if len(list_of_component_configuration_id) <= 1 else \
-        delimiter.join(list_of_component_configuration_id[:-1])
+        delimiter.join(list_of_component_configuration_id[:-1]) if len(list_of_component_configuration_id) > 2 else None
 
     component = get_object_or_404(Component, pk=component_configuration.component.id)
     experiment = get_object_or_404(Experiment, pk=component.experiment.id)
@@ -1449,6 +1600,10 @@ def sequence_component_update(request, component_configuration_id_list):
                                 configuration_list = ComponentConfiguration.objects.filter(parent=sequence)\
                                     .order_by('order')
 
+                                for configuration in configuration_list:
+                                    configuration.component.icon_class = \
+                                        icon_class[configuration.component.component_type]
+
     if request.method == "POST":
         if request.POST['action'] == "save":
 
@@ -1479,7 +1634,7 @@ def sequence_component_update(request, component_configuration_id_list):
                     component_configutation = get_object_or_404(
                         ComponentConfiguration, pk=int(component_configuration_id_to_be_deleted))
                     component_configutation.delete()
-                    redirect_url = reverse("sequence_component_update", args=(component_configuration_id_list,))
+                    redirect_url = reverse("component_configuration_update", args=(path_of_the_sub_components,))
                     return HttpResponseRedirect(redirect_url)
 
     if component_type == 'questionnaire':
@@ -1506,7 +1661,7 @@ def sequence_component_update(request, component_configuration_id_list):
         "sequence_id": component_configuration.parent_id,
         "configuration_list": configuration_list,
         "icon_class": icon_class,
-        "component_configuration_id_list": component_configuration_id_list,
+        "path_of_the_sub_components": path_of_the_sub_components,
         "previous_component_configuration": previous_component_configuration
     }
 
@@ -1679,7 +1834,7 @@ def experimental_protocol_update(request, group_id):
         "sequence_id": component_configuration.parent_id,
         "configuration_list": configuration_list,
         "icon_class": icon_class,
-        "component_configuration_id_list": "",
+        "path_of_the_sub_components": "",
         "previous_component_configuration": previous_component_configuration
     }
 

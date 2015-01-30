@@ -46,25 +46,25 @@ urlpatterns = patterns(
     url(r'^questionnaire_response/(?P<questionnaire_response_id>\d+)/$',
         'experiment.views.questionnaire_response_view', name='questionnaire_response_view'),
 
-    # change the order of the sub-components
-    url(r'^component_configuration/change_the_order/(?P<component_configuration_id_list>[0-9-]+)/(?P<command>\w+)/$',
-        'experiment.views.component_configuration_change_the_order', name='component_configuration_change_the_order'),
-
     # experimental protocol components
     url(r'^(?P<experiment_id>\d+)/components/$',
         'experiment.views.component_list', name='component_list'),
     url(r'^(?P<experiment_id>\d+)/new_component/(?P<component_type>\w+)/$',
         'experiment.views.component_create', name='component_new'),
-    url(r'^component/edit/(?P<component_id>\d+)/$',
+    url(r'^component/(?P<component_id>\d+)/$',
         'experiment.views.component_update', name='component_edit'),
 
     # experimental protocol components with configuration
-    url(r'^sequence/(?P<sequence_id>\d+)/set_new_component/(?P<component_type>\w+)/$',
-        'experiment.views.sequence_component_create', name='sequence_component_new'),
-    url(r'^sequence/(?P<sequence_id>\d+)/set_component/(?P<component_id>\d+)/$',
-        'experiment.views.sequence_component_reuse', name='sequence_component_reuse'),
-    url(r'^component_configuration/(?P<component_configuration_id_list>[0-9-]+)/$',
-        'experiment.views.sequence_component_update', name='sequence_component_update'),
+    url(r'^component_configuration/(?P<path_of_the_sub_components>[0-9-]+)/add_new_component/(?P<component_type>\w+)/$',
+        'experiment.views.component_configuration_add_new_component', name='component_configuration_add_new_component'),
+    url(r'^component_configuration/(?P<path_of_the_sub_components>[0-9-]+)/add_component/(?P<component_id>\d+)/$',
+        'experiment.views.component_configuration_reuse_component', name='component_configuration_reuse_component'),
+    url(r'^component_configuration/(?P<path_of_the_sub_components>[0-9-]+)/$',
+        'experiment.views.component_configuration_update', name='component_configuration_update'),
+
+    # change the order of the sub-components
+    url(r'^component_configuration/change_the_order/(?P<path_of_the_sub_components>[0-9-]+)/(?P<command>\w+)/$',
+        'experiment.views.component_configuration_change_the_order', name='component_configuration_change_the_order'),
 
     # configuration of experimental protocol
     url(r'^group/(?P<group_id>\d+)/experimental_protocol/new/$',

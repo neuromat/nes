@@ -15,7 +15,7 @@
 {% endblock %}
 
 {% block component_add_new %}
-    <li role="presentation"><a role="menuitem" tabindex="-1" href="/experiment/sequence/{{ sequence.id }}/set_new_component/pause"><< Nova pausa >></a></li>
+    <li role="presentation"><a role="menuitem" tabindex="-1" href="/experiment/component_configuration/{% if path_of_the_sub_components %}{{ path_of_the_sub_components }}{% else %}{{ sequence.id }}{% endif %}/add_new_component/pause"><< Nova pausa >></a></li>
 {% endblock %}
 
 {% block component_button_label %}

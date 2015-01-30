@@ -50,7 +50,7 @@
 {% endblock %}
 
 {% block component_add_new %}
-    <li role="presentation"><a role="menuitem" tabindex="-1" href="/experiment/sequence/{{ sequence.id }}/set_new_component/sequence"><< Nova sequência >></a></li>
+    <li role="presentation"><a role="menuitem" tabindex="-1" href="/experiment/component_configuration/{% if path_of_the_sub_components %}{{ path_of_the_sub_components }}{% else %}{{ sequence.id }}{% endif %}/add_new_component/sequence"><< Nova sequência >></a></li>
 {% endblock %}
 
 {% block component_button_label %}
@@ -75,19 +75,20 @@
                             <tr>
                                 <td class="col-md-6">
                                     <a class="btn glyphicon glyphicon-remove" data-toggle="tooltip" data-placement="right" title="Remover da lista" style="color: indianred; vertical-align: -5%; padding-left: 0;" onclick="show_modal_remove({{ configuration.id }});"></a>
-                                    <a data-toggle="tooltip" data-placement="left" title="Editar" href="/experiment/component_configuration/{% if component_configuration_id_list %}{{ component_configuration_id_list }}-{% endif %}{{ configuration.id }}">{{ configuration.component.identification }}</a>
+                                    <a data-toggle="tooltip" data-placement="left" title="Editar" href="/experiment/component_configuration/{% if path_of_the_sub_components %}{{ path_of_the_sub_components }}{% else %}{{ sequence.id }}{% endif %}-{{ configuration.id }}">{{ configuration.component.identification }}</a>
                                 </td>
                                 <td class="col-md-4">
+                                    <span class="{{ configuration.component.icon_class }}"/>
                                     {{ configuration.component.component_type }}
                                 </td>
                                 <td class="col-md-1">
                                     {% ifnotequal configuration configuration_list.last %}
-                                        <a class="btn glyphicon glyphicon-arrow-down" href="/experiment/component_configuration/change_the_order/{% if component_configuration_id_list %}{{ component_configuration_id_list }}-{% endif %}{{ configuration.id }}/down/"></a>
+                                        <a class="btn glyphicon glyphicon-arrow-down" href="/experiment/component_configuration/change_the_order/{% if path_of_the_sub_components %}{{ path_of_the_sub_components }}{% else %}{{ sequence.id }}{% endif %}-{{ configuration.id }}/down/"></a>
                                     {% endifnotequal %}
                                 </td>
                                 <td class="col-md-1">
                                     {% ifnotequal configuration configuration_list.first %}
-                                        <a class="btn glyphicon glyphicon-arrow-up" href="/experiment/component_configuration/change_the_order/{% if component_configuration_id_list %}{{ component_configuration_id_list }}-{% endif %}{{ configuration.id }}/up/"></a>
+                                        <a class="btn glyphicon glyphicon-arrow-up" href="/experiment/component_configuration/change_the_order/{% if path_of_the_sub_components %}{{ path_of_the_sub_components }}{% else %}{{ sequence.id }}{% endif %}-{{ configuration.id }}/up/"></a>
                                     {% endifnotequal %}
 
                                 </td>
@@ -105,12 +106,12 @@
                     </button>
                     {% if updating %}
                         <ul class="dropdown-menu" role="menu" aria-labelledby="dropdownMenu1">
-                            <li role="presentation"><a role="menuitem" tabindex="-1" class="{{ icon_class.task }}" href="/experiment/sequence/{{ sequence.id }}/set_new_component/task"> Tarefa</a></li>
-                            <li role="presentation"><a role="menuitem" tabindex="-1" class="{{ icon_class.instruction }}" href="/experiment/sequence/{{ sequence.id }}/set_new_component/instruction"> Instrução</a></li>
-                            <li role="presentation"><a role="menuitem" tabindex="-1" class="{{ icon_class.stimulus }}" href="/experiment/sequence/{{ sequence.id }}/set_new_component/stimulus"> Estímulo</a></li>
-                            <li role="presentation"><a role="menuitem" tabindex="-1" class="{{ icon_class.pause }}" href="/experiment/sequence/{{ sequence.id }}/set_new_component/pause"> Pausa</a></li>
-                            <li role="presentation"><a role="menuitem" tabindex="-1" class="{{ icon_class.questionnaire }}" href="/experiment/sequence/{{ sequence.id }}/set_new_component/questionnaire"> Questionário</a></li>
-                            <li role="presentation"><a role="menuitem" tabindex="-1" class="{{ icon_class.sequence }}" href="/experiment/sequence/{{ sequence.id }}/set_new_component/sequence"> Sequência</a></li>
+                            <li role="presentation"><a role="menuitem" tabindex="-1" class="{{ icon_class.task }}" href="/experiment/component_configuration/{% if path_of_the_sub_components %}{{ path_of_the_sub_components }}{% else %}{{ sequence.id }}{% endif %}/add_new_component/task"> Tarefa</a></li>
+                            <li role="presentation"><a role="menuitem" tabindex="-1" class="{{ icon_class.instruction }}" href="/experiment/component_configuration/{% if path_of_the_sub_components %}{{ path_of_the_sub_components }}{% else %}{{ sequence.id }}{% endif %}/add_new_component/instruction"> Instrução</a></li>
+                            <li role="presentation"><a role="menuitem" tabindex="-1" class="{{ icon_class.stimulus }}" href="/experiment/component_configuration/{% if path_of_the_sub_components %}{{ path_of_the_sub_components }}{% else %}{{ sequence.id }}{% endif %}/add_new_component/stimulus"> Estímulo</a></li>
+                            <li role="presentation"><a role="menuitem" tabindex="-1" class="{{ icon_class.pause }}" href="/experiment/component_configuration/{% if path_of_the_sub_components %}{{ path_of_the_sub_components }}{% else %}{{ sequence.id }}{% endif %}/add_new_component/pause"> Pausa</a></li>
+                            <li role="presentation"><a role="menuitem" tabindex="-1" class="{{ icon_class.questionnaire }}" href="/experiment/component_configuration/{% if path_of_the_sub_components %}{{ path_of_the_sub_components }}{% else %}{{ sequence.id }}{% endif %}/add_new_component/questionnaire"> Questionário</a></li>
+                            <li role="presentation"><a role="menuitem" tabindex="-1" class="{{ icon_class.sequence }}" href="/experiment/component_configuration/{% if path_of_the_sub_components %}{{ path_of_the_sub_components }}{% else %}{{ sequence.id }}{% endif %}/add_new_component/sequence"> Sequência</a></li>
                         </ul>
                     {% endif %}
                 </div>
