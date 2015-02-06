@@ -2,6 +2,13 @@ from django.conf.urls import patterns, url
 
 urlpatterns = patterns(
     '',
+
+    # research project
+    url(r'^research_project/list/$', 'experiment.views.research_project_list', name='research_project_list'),
+    url(r'^research_project/new/$', 'experiment.views.research_project_create', name='research_project_new'),
+    url(r'^research_project/(?P<research_project_id>\d+)/$',
+        'experiment.views.research_project_update', name='research_project_edit'),
+
     # experiment
     url(r'^list/$', 'experiment.views.experiment_list', name='experiment_list'),
     url(r'^new/$', 'experiment.views.experiment_create', name='experiment_new'),

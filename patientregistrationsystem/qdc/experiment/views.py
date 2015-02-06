@@ -15,10 +15,10 @@ from django.conf import settings
 
 from experiment.models import Experiment, QuestionnaireConfiguration, Subject, TimeUnit, \
     QuestionnaireResponse, SubjectOfGroup, Group, Component, ComponentConfiguration, Questionnaire, Task, Stimulus, \
-    Pause, Sequence, Instruction, ClassificationOfDiseases
+    Pause, Sequence, Instruction, ClassificationOfDiseases, ResearchProject
 from experiment.forms import ExperimentForm, QuestionnaireConfigurationForm, QuestionnaireResponseForm, \
     FileForm, GroupForm, TaskForm, InstructionForm, ComponentForm, StimulusForm, PauseForm, SequenceForm, \
-    ComponentConfigurationForm
+    ComponentConfigurationForm, ResearchProjectForm
 from patient.models import Patient
 from experiment.abc_search_engine import Questionnaires
 
@@ -41,10 +41,82 @@ delimiter = "-"
 
 
 @login_required
+@permission_required('experiment.view_researchproject')
+def research_project_list(request, template_name="experiment/research_project_list.html"):
+
+    research_projects = ResearchProject.objects.order_by('title')
+    context = {"research_projects": research_projects}
+
+    return render(request, template_name, context)
+
+
+@login_required
+@permission_required('experiment.add_researchproject')
+def research_project_create(request, template_name="experiment/research_project_register.html"):
+    research_project_form = ResearchProjectForm(request.POST or None)
+
+    if request.method == "POST":
+
+        if request.POST['action'] == "save":
+
+            if research_project_form.is_valid():
+                research_project_added = research_project_form.save()
+
+                messages.success(request, 'Estudo criado com sucesso.')
+
+                redirect_url = reverse("research_project_edit", args=(research_project_added.id,))
+                return HttpResponseRedirect(redirect_url)
+
+    context = {
+        "research_project_form": research_project_form,
+        "creating": True}
+
+    return render(request, template_name, context)
+
+
+@login_required
+@permission_required('experiment.change_researchproject')
+def research_project_update(request, research_project_id, template_name="experiment/research_project_register.html"):
+
+    research_project = get_object_or_404(ResearchProject, pk=research_project_id)
+
+    if research_project:
+
+        research_project_form = ResearchProjectForm(request.POST or None, instance=research_project)
+
+        if request.method == "POST":
+
+            if request.POST['action'] == "save":
+
+                if research_project_form.is_valid():
+
+                    if research_project_form.has_changed():
+                        research_project_form.save()
+                        messages.success(request, 'Estudo atualizado com sucesso.')
+
+            else:
+                if request.POST['action'] == "remove":
+                    try:
+                        research_project.delete()
+                    except ProtectedError:
+                        messages.error(request, "Erro ao tentar excluir o estudo.")
+                        redirect_url = reverse("research_project_edit", args=(research_project.id,))
+                        return HttpResponseRedirect(redirect_url)
+                    return redirect('experiment_list')
+
+        context = {
+            "research_project_form": research_project_form,
+            "creating": False,
+            "research_project": research_project}
+
+        return render(request, template_name, context)
+
+
+@login_required
 @permission_required('experiment.view_experiment')
 def experiment_list(request, template_name="experiment/experiment_list.html"):
-    experiments = Experiment.objects.order_by('title')
 
+    experiments = Experiment.objects.order_by('title')
     context = {"experiments": experiments}
 
     return render(request, template_name, context)

@@ -1,6 +1,6 @@
 # coding=utf-8
 from experiment.models import Experiment, QuestionnaireConfiguration, QuestionnaireResponse, SubjectOfGroup, Group, \
-    Component, Task, Stimulus, Pause, Sequence, Instruction, ComponentConfiguration
+    Component, Task, Stimulus, Pause, Sequence, Instruction, ComponentConfiguration, ResearchProject
 from django.forms import ModelForm, TextInput, Textarea, Select, DateInput
 
 
@@ -161,4 +161,19 @@ class SequenceForm(ModelForm):
         widgets = {
             'number_of_mandatory_components': TextInput(attrs={'class': 'form-control', 'required': "",
                                                                'data-error': 'Quantidade deve ser preenchida.'}),
+        }
+
+
+class ResearchProjectForm(ModelForm):
+    class Meta:
+        model = ResearchProject
+        fields = ['title', 'description']
+
+        widgets = {
+            'title': TextInput(attrs={'class': 'form-control',
+                                      'required': "",
+                                      'data-error': 'Título deve ser preenchido.'}),
+            'description': Textarea(attrs={'class': 'form-control',
+                                           'rows': '4', 'required': "",
+                                           'data-error': 'Descrição deve ser preenchida.'}),
         }

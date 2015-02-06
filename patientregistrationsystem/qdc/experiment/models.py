@@ -35,9 +35,21 @@ class StimulusType(models.Model):
         return self.name
 
 
+class ResearchProject(models.Model):
+    title = models.CharField(max_length=50, null=False, blank=False)
+    description = models.CharField(max_length=150, null=False, blank=False)
+
+    class Meta:
+        permissions = (
+            ("view_researchproject", "Can view research project"),
+        )
+
 class Experiment(models.Model):
     title = models.CharField(null=False, max_length=50, blank=False)
     description = models.CharField(max_length=150, null=False, blank=False)
+
+    # TODO: migrar o banco de dados
+    # research_project = models.ForeignKey(ResearchProject, null=True)
 
     # Audit trail - Simple History
     history = HistoricalRecords()
