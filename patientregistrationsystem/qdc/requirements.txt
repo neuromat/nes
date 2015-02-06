@@ -1,4 +1,3 @@
-pyjsonrpc
 Django==1.6.6
 django-cep==1.0.9
 django-jenkins==0.15.0

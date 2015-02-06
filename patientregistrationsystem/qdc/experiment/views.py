@@ -1752,11 +1752,8 @@ def experimental_protocol_create(request, group_id):
 @login_required
 @permission_required('experiment.change_experiment')
 def experimental_protocol(request, group_id):
-
     """
-    tenho o group_id
-
-    consulto o group
+    consulto o group pelo group_id
 
     if o group tem experimental_protocol
         consulto o component_configuration
