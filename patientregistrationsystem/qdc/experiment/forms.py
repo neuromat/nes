@@ -36,8 +36,7 @@ class GroupForm(ModelForm):
                                            'data-error': 'Descrição deve ser preenchida.',
                                            'maxlength': '150'}),
             'instruction': Textarea(attrs={'class': 'form-control',
-                                           'rows': '2', 'required': "",
-                                           'data-error': 'Descrição deve ser preenchida.',
+                                           'rows': '2',
                                            'maxlength': '150'}),
         }
 
