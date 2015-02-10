@@ -1826,7 +1826,7 @@ def experimental_protocol_create(request, group_id):
 def experimental_protocol(request, group_id):
 
     """
-    consulto o group pelo group_id
+    consulto o group pelo group_id.
 
     if o group tem experimental_protocol
         consulto o component_configuration
