@@ -1824,6 +1824,7 @@ def experimental_protocol_create(request, group_id):
 @login_required
 @permission_required('experiment.change_experiment')
 def experimental_protocol(request, group_id):
+
     """
     consulto o group pelo group_id
 
@@ -1844,9 +1845,14 @@ def experimental_protocol(request, group_id):
         .tem que possibilitar desconfigurar um protocolo experimental
     """
 
-    list_of_component_configuration_id = []
-
     group = get_object_or_404(Group, pk=group_id)
+
+    if group:
+        if group.experimental_protocol:
+
+            component_configuration = group.experimental_protocol
+
+    list_of_component_configuration_id = []
 
     component_configuration_id = group.experimental_protocol.id
     component_configuration = get_object_or_404(ComponentConfiguration, pk=component_configuration_id)
