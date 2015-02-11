@@ -44,7 +44,8 @@ INSTALLED_APPS = (
     'django_jenkins',
     'simple_history',
     'cep',
-    'quiz.templatetags.qdc_tags',)
+    'quiz.templatetags.qdc_tags',
+    'south',)
 
 PROJECT_APPS = (
     'quiz',
