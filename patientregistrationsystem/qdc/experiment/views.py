@@ -44,7 +44,7 @@ delimiter = "-"
 @permission_required('experiment.view_researchproject')
 def research_project_list(request, template_name="experiment/research_project_list.html"):
 
-    research_projects = ResearchProject.objects.order_by('title')
+    research_projects = ResearchProject.objects.order_by('start_date')
     context = {"research_projects": research_projects}
 
     return render(request, template_name, context)
