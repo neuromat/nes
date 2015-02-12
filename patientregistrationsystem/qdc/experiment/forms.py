@@ -8,9 +8,11 @@ class ExperimentForm(ModelForm):
     class Meta:
         model = Experiment
 
-        fields = ['title', 'description']
+        fields = ['research_project', 'title', 'description']
+        # fields = ['title', 'description']
 
         widgets = {
+            'research_project': Select(attrs={'class': 'form-control'}, choices='research_projects'),
             'title': TextInput(attrs={'class': 'form-control',
                                       'required': "",
                                       'data-error': 'Título deve ser preenchido.'}),
