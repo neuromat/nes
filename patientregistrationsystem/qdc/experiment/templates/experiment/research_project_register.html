@@ -79,6 +79,17 @@
                 <div class="row">
                     <div class="col-xs-6 col-sm-12">
                         <div class="form-group">
+                            <label class="control-label">Data de início <b style="color: red;">*</b></label>
+                                {{ research_project_form.start_date }}
+                            <label class="control-label">Data de fim</label>
+                                {{ research_project_form.end_date }}
+                            <div class="help-block with-errors"></div>
+                        </div>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-xs-6 col-sm-12">
+                        <div class="form-group">
                             <label class="control-label">Descrição <b style="color: red;">*</b></label>
                                 {{ research_project_form.description }}
                             <div class="help-block with-errors"></div>

@@ -9,7 +9,6 @@ class ExperimentForm(ModelForm):
         model = Experiment
 
         fields = ['research_project', 'title', 'description']
-        # fields = ['title', 'description']
 
         widgets = {
             'research_project': Select(attrs={'class': 'form-control'}, choices='research_projects'),
@@ -168,13 +167,14 @@ class SequenceForm(ModelForm):
 class ResearchProjectForm(ModelForm):
     class Meta:
         model = ResearchProject
-        fields = ['title', 'description']
+        fields = ['start_date', 'end_date', 'title', 'description']
 
         widgets = {
-            'title': TextInput(attrs={'class': 'form-control',
-                                      'required': "",
+            'start_date': DateInput(attrs={'class': 'datepicker', 'placeholder': 'dd/mm/aaaa',
+                                           'required': "", 'data-error': "Data de início deve ser preenchida"},),
+            'end_date': DateInput(attrs={'class': 'datepicker', 'placeholder': 'dd/mm/aaaa', }),
+            'title': TextInput(attrs={'class': 'form-control', 'required': "",
                                       'data-error': 'Título deve ser preenchido.'}),
-            'description': Textarea(attrs={'class': 'form-control',
-                                           'rows': '4', 'required': "",
+            'description': Textarea(attrs={'class': 'form-control', 'rows': '4', 'required': "",
                                            'data-error': 'Descrição deve ser preenchida.'}),
         }

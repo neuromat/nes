@@ -11,9 +11,9 @@ from django.shortcuts import get_object_or_404
 import pyjsonrpc
 
 from experiment.models import Experiment, Group, QuestionnaireConfiguration, TimeUnit, Subject, \
-    QuestionnaireResponse, SubjectOfGroup, Sequence, ComponentConfiguration
+    QuestionnaireResponse, SubjectOfGroup, Sequence, ComponentConfiguration, ResearchProject
 from patient.models import ClassificationOfDiseases
-from experiment.views import experiment_update, upload_file
+from experiment.views import experiment_update, upload_file, research_project_update
 from experiment.abc_search_engine import Questionnaires
 from patient.tests import UtilTests
 from custom_user.views import User
@@ -1018,3 +1018,98 @@ class ABCSearchEngineTest(TestCase):
         self.assertEqual(result[str(token_id)], 'Deleted')
 
         surveys.release_session_key()
+
+
+class ResearchProjectTest(TestCase):
+    def setUp(self):
+        # print 'Set up for', self._testMethodName
+
+        self.user = User.objects.create_user(username=USER_USERNAME, email='test@dummy.com', password=USER_PWD)
+        self.user.is_staff = True
+        self.user.is_superuser = True
+        self.user.save()
+
+        self.factory = RequestFactory()
+
+        logged = self.client.login(username=USER_USERNAME, password=USER_PWD)
+        self.assertEqual(logged, True)
+
+    def test_research_project_list(self):
+        # Check if list of research projects is empty before inserting any.
+        response = self.client.get(reverse('research_project_list'))
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(len(response.context['research_projects']), 0)
+
+        # Check if list of research projects returns one item after inserting one.
+        research_project = ResearchProject.objects.create(title="Research project title",
+                                                          start_date=datetime.date.today(),
+                                                          description="Research project description")
+        research_project.save()
+        response = self.client.get(reverse('research_project_list'))
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(len(response.context['research_projects']), 1)
+
+    def test_research_project_create(self):
+        # Request the research project register screen
+        response = self.client.get(reverse('research_project_new'))
+        self.assertEqual(response.status_code, 200)
+
+        # Set research project data
+        self.data = {'action': ['save'], 'title': ['Research project title'], 'start_date': [datetime.date.today()],
+                     'description': ['Research project description']}
+
+        # Count the number of research projects currently in database
+        count_before_insert = ResearchProject.objects.all().count()
+
+        # Add the new research project
+        response = self.client.post(reverse('research_project_new'), self.data)
+        self.assertEqual(response.status_code, 302)
+
+        # Count the number of research projects currently in database
+        count_after_insert = ResearchProject.objects.all().count()
+
+        # Check if it has increased
+        self.assertEqual(count_after_insert, count_before_insert + 1)
+
+    def test_research_project_update(self):
+        # Create a research project to be used in the test
+        research_project = ResearchProject.objects.create(title="Research project title",
+                                                          start_date=datetime.date.today(),
+                                                          description="Research project description")
+        research_project.save()
+
+        # Create an instance of a GET request.
+        request = self.factory.get(reverse('research_project_edit', args=[research_project.pk, ]))
+        request.user = self.user
+
+        try:
+            response = research_project_update(request, research_project_id=research_project.pk)
+            self.assertEqual(response.status_code, 200)
+        except Http404:
+            pass
+
+        # Do an update
+        self.data = {'action': ['save'], 'title': ['New research project title'],
+                     'start_date': [datetime.date.today() - datetime.timedelta(days=1)],
+                     'description': ['New research project description']}
+        response = self.client.post(reverse('research_project_edit', args=(research_project.pk,)), self.data,
+                                    follow=True)
+        self.assertEqual(response.status_code, 200)
+
+    def test_research_project_remove(self):
+        # Create a research project to be used in the test
+        research_project = ResearchProject.objects.create(title="Research project title",
+                                                          start_date=datetime.date.today(),
+                                                          description="Research project description")
+        research_project.save()
+
+        # Save current number of research projects
+        count = ResearchProject.objects.all().count()
+
+        self.data = {'action': ['remove'], 'title': ['Research project title'],
+                     'description': ['Research project description']}
+        response = self.client.post(reverse('research_project_edit', args=(research_project.pk,)), self.data, follow=True)
+        self.assertEqual(response.status_code, 200)
+
+        # Check if numeber of reserch projets decreased by 1
+        self.assertEqual(ResearchProject.objects.all().count(), count - 1)

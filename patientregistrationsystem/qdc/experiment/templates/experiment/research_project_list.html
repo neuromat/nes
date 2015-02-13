@@ -40,14 +40,14 @@
                         <thead>
                             <tr>
                                 <th>Título</th>
-                                <th>Descrição</th>
+                                <th>Vigência</th>
                             </tr>
                         </thead>
                         <tbody>
                         {% for research_project in research_projects %}
                             <tr>
                                 <td><a data-toggle="tooltip" data-placement="left" title="Editar" href="/experiment/research_project/{{ research_project.id }}">{{ research_project.title }}</a></td>
-                                <td>{{ research_project.description }}</td>
+                                <td>{{ research_project.start_date }}<br>a<br>{{ research_project.end_date }}</td>
                             </tr>
                         {% endfor %}
                         </tbody>
