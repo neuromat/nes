@@ -15,7 +15,9 @@
     <script src="{% static 'quiz/jquery-ui-1.11.2/jquery-ui.js' %}"></script>
     <script>
         $(document).ready(function() {
-            $('.datepicker').datepicker();
+            $('.datepicker').datepicker({
+                dateFormat: "dd/mm/yy"
+            });
         });
     </script>
     <script src="{% static 'quiz/js/ajax.js' %}"></script>
