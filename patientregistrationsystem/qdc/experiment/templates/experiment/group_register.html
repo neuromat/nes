@@ -222,7 +222,11 @@
             <div class="container span6 offset3 well ">
                 <div class="row">
                     <div class="col-xs-6 col-sm-12">
-                        <a href="/experiment/group/{{ group.id }}/experimental_protocol" class="btn btn-primary {% if creating %} disabled{% endif %}" >{% if group.experimental_protocol %}Editar{% else %}Criar{% endif %} Protocolo Experimental</a>
+                        {% if group.experimental_protocol %}
+                            <a href="/experiment/group/{{ group.id }}/experimental_protocol_edit" class="btn btn-primary {% if creating %} disabled{% endif %}" >Editar Protocolo Experimental</a>
+                        {% else %}
+                            <a href="/experiment/group/{{ group.id }}/experimental_protocol_new" class="btn btn-primary {% if creating %} disabled{% endif %}" >Criar Protocolo Experimental</a>
+                        {% endif %}
                     </div>
                 </div>
             </div>
