@@ -1943,108 +1943,105 @@ def experimental_protocol_create(request, group_id):
     return render(request, template_name, context)
 
 
-# @login_required
-# @permission_required('experiment.change_experiment')
-# def experimental_protocol_update(request, group_id):
-#
-#     list_of_component_configuration_id = path_of_the_sub_components.split(delimiter)
-#
-#     component_configuration_id = list_of_component_configuration_id[-1]
-#     component_configuration = get_object_or_404(ComponentConfiguration, pk=component_configuration_id)
-#
-#     previous_component_configuration = \
-#         delimiter.join(list_of_component_configuration_id[:-1]) if len(list_of_component_configuration_id) > 2 else None
-#
-#     group = get_object_or_404(Group, pk=group_id)
-#     component_configuration = group.experimental_protocol
-#     component = component_configuration.component
-#     experiment = group.experiment
-#
-#     # component = get_object_or_404(Component, pk=component_configuration.component.id)
-#     # experiment = get_object_or_404(Experiment, pk=component.experiment.id)
-#
-#     component_type = component.component_type
-#
-#     template_name = "experiment/" + component_type + "_component.html"
-#
-#     questionnaire_id = None
-#     questionnaire_title = None
-#     component_form = None
-#     form = None
-#     sequence = None
-#
-#     configuration_form = ComponentConfigurationForm(request.POST or None, instance=component_configuration)
-#
-#     configuration_list = []
-#
-#     sequence = get_object_or_404(Sequence, pk=component.id)
-#     form = SequenceForm(request.POST or None, instance=sequence)
-#     configuration_list = ComponentConfiguration.objects.filter(parent=sequence)\
-#         .order_by('order')
-#
-#     for configuration in configuration_list:
-#         configuration.component.icon_class = \
-#             icon_class[configuration.component.component_type]
-#
-#     if request.method == "POST":
-#         if request.POST['action'] == "save":
-#
-#             if configuration_form.is_valid():
-#
-#                 configuration = configuration_form.save(commit=False)
-#                 configuration.save()
-#
-#                 messages.success(request, 'Componente atualizado com sucesso.')
-#
-#                 redirect_url = reverse("component_edit", args=(component_configuration.parent.id,))
-#                 return HttpResponseRedirect(redirect_url)
-#
-#         else:
-#             if request.POST['action'] == "remove":
-#                 component_configuration_list = ComponentConfiguration.objects.filter(
-#                     parent_id=component_configuration.parent_id).order_by('order')
-#                 for component_configuration_element in component_configuration_list:
-#                     if component_configuration_element.order > component_configuration.order:
-#                         component_configuration_element.order -= 1
-#                         component_configuration_element.save()
-#                 component.delete()
-#                 redirect_url = reverse("component_list", args=(experiment.id,))
-#                 return HttpResponseRedirect(redirect_url)
-#             else:
-#                 if request.POST['action'][:7] == "remove-":
-#                     component_configuration_id_to_be_deleted = request.POST['action'].split("-")[-1]
-#                     component_configutation = get_object_or_404(
-#                         ComponentConfiguration, pk=int(component_configuration_id_to_be_deleted))
-#                     component_configutation.delete()
-#                     redirect_url = reverse("component_configuration_update", args=(path_of_the_sub_components,))
-#                     return HttpResponseRedirect(redirect_url)
-#
-#     if component_type == 'questionnaire':
-#         for field in component_form.fields:
-#             component_form.fields[field].widget.attrs['disabled'] = True
-#     else:
-#         for form_used in {form, component_form}:
-#             for field in form_used.fields:
-#                 form_used.fields[field].widget.attrs['disabled'] = True
-#
-#     context = {
-#         "creating_workflow": True,
-#         "form": form,
-#         "experiment": experiment,
-#         "component_form": component_form,
-#         "configuration_form": configuration_form,
-#         "creating": False,
-#         "updating": True,
-#         "existing_component_list": [],
-#         "sequence": sequence,
-#         "questionnaire_id": questionnaire_id,
-#         "questionnaire_title": questionnaire_title,
-#         "reusing_component": True,
-#         "sequence_id": component_configuration.parent_id,
-#         "configuration_list": configuration_list,
-#         "icon_class": icon_class,
-#         "path_of_the_sub_components": path_of_the_sub_components,
-#         "previous_component_configuration": previous_component_configuration
-#     }
-#
-#     return render(request, template_name, context)
+@login_required
+@permission_required('experiment.change_experiment')
+def experimental_protocol_update(request, group_id):
+
+    # list_of_component_configuration_id = path_of_the_sub_components.split(delimiter)
+
+    # component_configuration_id = list_of_component_configuration_id[-1]
+    # component_configuration = get_object_or_404(ComponentConfiguration, pk=component_configuration_id)
+
+    # previous_component_configuration = \
+    #     delimiter.join(list_of_component_configuration_id[:-1]) if len(list_of_component_configuration_id) > 2 else None
+
+    group = get_object_or_404(Group, pk=group_id)
+    component_configuration = group.experimental_protocol
+    component = component_configuration.component
+    experiment = group.experiment
+
+    # component = get_object_or_404(Component, pk=component_configuration.component.id)
+    # experiment = get_object_or_404(Experiment, pk=component.experiment.id)
+
+    component_type = component.component_type
+    template_name = "experiment/" + component_type + "_component.html"
+
+    questionnaire_id = None
+    questionnaire_title = None
+
+    # component_form = None
+    # form = None
+    # sequence = None
+
+    component_form = ComponentForm(request.POST or None, instance=component)
+    configuration_form = ComponentConfigurationForm(request.POST or None, instance=component_configuration)
+
+    # configuration_list = []
+
+    sequence = get_object_or_404(Sequence, pk=component.id)
+    form = SequenceForm(request.POST or None, instance=sequence)
+    configuration_list = ComponentConfiguration.objects.filter(parent=sequence).order_by('order')
+
+    for configuration in configuration_list:
+        configuration.component.icon_class = icon_class[configuration.component.component_type]
+
+    if request.method == "POST":
+        if request.POST['action'] == "save":
+
+            if configuration_form.is_valid():
+
+                configuration = configuration_form.save(commit=False)
+                configuration.save()
+
+                messages.success(request, 'Componente atualizado com sucesso.')
+
+                redirect_url = reverse("component_edit", args=(component_configuration.parent.id,))
+                return HttpResponseRedirect(redirect_url)
+
+        # else:
+        #     if request.POST['action'] == "remove":
+        #         component_configuration_list = ComponentConfiguration.objects.filter(
+        #             parent_id=component_configuration.parent_id).order_by('order')
+        #         for component_configuration_element in component_configuration_list:
+        #             if component_configuration_element.order > component_configuration.order:
+        #                 component_configuration_element.order -= 1
+        #                 component_configuration_element.save()
+        #         component.delete()
+        #         redirect_url = reverse("component_list", args=(experiment.id,))
+        #         return HttpResponseRedirect(redirect_url)
+        #     else:
+        #         if request.POST['action'][:7] == "remove-":
+        #             component_configuration_id_to_be_deleted = request.POST['action'].split("-")[-1]
+        #             component_configutation = get_object_or_404(
+        #                 ComponentConfiguration, pk=int(component_configuration_id_to_be_deleted))
+        #             component_configutation.delete()
+        #             redirect_url = reverse("component_configuration_update", args=(path_of_the_sub_components,))
+        #             return HttpResponseRedirect(redirect_url)
+
+    for form_used in {form, component_form}:
+        for field in form_used.fields:
+            form_used.fields[field].widget.attrs['disabled'] = True
+
+    context = {
+        "creating_workflow": True,
+        "form": form,
+        "experiment": experiment,
+        "component_form": component_form,
+        "configuration_form": configuration_form,
+        "creating": False,
+        "updating": True,
+        "existing_component_list": [],
+        "sequence": sequence,
+        "questionnaire_id": questionnaire_id,
+        "questionnaire_title": questionnaire_title,
+        "reusing_component": True,
+        "sequence_id": component_configuration.parent_id,
+        "configuration_list": configuration_list,
+        "icon_class": icon_class,
+        # "path_of_the_sub_components": path_of_the_sub_components,
+        # "previous_component_configuration": previous_component_configuration
+        "path_of_the_sub_components": None,
+        "previous_component_configuration": None
+    }
+
+    return render(request, template_name, context)

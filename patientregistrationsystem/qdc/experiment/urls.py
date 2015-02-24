@@ -67,7 +67,7 @@ urlpatterns = patterns(
     # configuration of experimental protocol
     url(r'^group/(?P<group_id>\d+)/experimental_protocol_new/$',
         'experimental_protocol_create', name='experimental_protocol_new'),
-    # url(r'^group/(?P<group_id>\d+)/experimental_protocol_edit/$',
-    #     'experimental_protocol_update', name='experimental_protocol_update'),
+    url(r'^group/(?P<group_id>\d+)/experimental_protocol_edit/$',
+        'experimental_protocol_update', name='experimental_protocol_update'),
 
 )
