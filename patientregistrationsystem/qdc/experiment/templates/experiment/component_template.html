@@ -121,7 +121,7 @@
                                     <span class="caret"></span>
                                 </button>
 
-                                {% if creating %}
+                                {% if creating or existing_component_list %}
                                     <ul class="dropdown-menu" role="menu" aria-labelledby="dropdownMenu1">
 
                                         {% for existing_component in existing_component_list %}

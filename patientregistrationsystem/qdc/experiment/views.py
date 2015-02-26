@@ -1144,6 +1144,7 @@ def component_create(request, experiment_id, component_type):
             return HttpResponseRedirect(redirect_url)
 
     context = {
+        "experimental_protocol": False,
         "creating_workflow": False,
         "form": form,
         "experiment": experiment,
@@ -1248,6 +1249,7 @@ def component_update(request, component_id):
                     return HttpResponseRedirect(redirect_url)
 
     context = {
+        "experimental_protocol": False,
         "creating_workflow": False,
         "form": form,
         "experiment": experiment,
@@ -1477,6 +1479,7 @@ def component_configuration_add_new_component(request, path_of_the_sub_component
             return HttpResponseRedirect(redirect_url)
 
     context = {
+        "experimental_protocol": False,
         "creating_workflow": True,
         "form": form,
         "experiment": experiment,
@@ -1592,6 +1595,7 @@ def component_configuration_reuse_component(request, path_of_the_sub_components,
             return HttpResponseRedirect(redirect_url)
 
     context = {
+        "experimental_protocol": False,
         "creating_workflow": True,
         "form": form,
         "experiment": experiment,
@@ -1717,6 +1721,7 @@ def component_configuration_update(request, path_of_the_sub_components):
                 form_used.fields[field].widget.attrs['disabled'] = True
 
     context = {
+        "experimental_protocol": False,
         "creating_workflow": True,
         "form": form,
         "experiment": experiment,
@@ -1739,86 +1744,86 @@ def component_configuration_update(request, path_of_the_sub_components):
     return render(request, template_name, context)
 
 
-@login_required
-@permission_required('experiment.change_experiment')
-def experimental_protocol_create(request, group_id):
-
-    component_type = "sequence"
-    template_name = "experiment/" + component_type + "_component.html"
-
-    group = get_object_or_404(Group, pk=group_id)
-    experiment = get_object_or_404(Experiment, pk=group.experiment_id)
-
-    component_form = ComponentForm(request.POST or None)
-    configuration_form = ComponentConfigurationForm(request.POST or None,
-                                                    initial={'number_of_repetitions': 1,
-                                                             'interval_between_repetitions_value': None})
-    questionnaires_list = []
-
-    existing_component_list = Component.objects.filter(experiment=experiment, component_type=component_type)
-
-    form = SequenceForm(request.POST or None,
-                        initial={'number_of_mandatory_components': None})
-
-    if request.method == "POST":
-
-        new_component = None
-
-        if form.is_valid():
-
-            new_component = form.save(commit=False)
-
-            if "number_of_mandatory_components" in request.POST:
-                new_component.number_of_mandatory_components = request.POST['number_of_mandatory_components']
-            if "has_random_components" in request.POST:
-                new_component.has_random_components = True
-            else:
-                new_component.has_random_components = False
-
-        if component_form.is_valid() and configuration_form.is_valid():
-            component = component_form.save(commit=False)
-            new_component.description = component.description
-            new_component.identification = component.identification
-            new_component.component_type = component_type
-            new_component.experiment = experiment
-            new_component.save()
-
-            configuration = configuration_form.save(commit=False)
-            configuration.component = new_component
-            configuration.parent = None
-            if "number_of_fills" in request.POST:
-                configuration.number_of_repetitions = request.POST['number_of_repetitions']
-            if "interval_between_fills_value" in request.POST:
-                configuration.interval_between_repetitions_value = request.POST['interval_between_repetitions_value']
-
-            if "interval_between_fills_unit" in request.POST:
-                configuration.interval_between_repetitions_unit = \
-                    get_object_or_404(TimeUnit, pk=request.POST['interval_between_repetitions_unit'])
-            configuration.save()
-
-            group.experimental_protocol = configuration
-            group.save()
-
-            messages.success(request, 'Protocolo experimental incluído com sucesso.')
-
-            redirect_url = reverse("group_edit", args=(group.id, ))
-
-            return HttpResponseRedirect(redirect_url)
-
-    context = {
-        "creating_workflow": True,
-        "form": form,
-        "experiment": experiment,
-        "component_form": component_form,
-        "configuration_form": configuration_form,
-        "creating": True,
-        "updating": False,
-        "questionnaires_list": questionnaires_list,
-        "existing_component_list": existing_component_list,
-        "sequence": None,
-        "reusing_component": False
-    }
-    return render(request, template_name, context)
+# @login_required
+# @permission_required('experiment.change_experiment')
+# def experimental_protocol_create(request, group_id):
+#
+#     component_type = "sequence"
+#     template_name = "experiment/" + component_type + "_component.html"
+#
+#     group = get_object_or_404(Group, pk=group_id)
+#     experiment = get_object_or_404(Experiment, pk=group.experiment_id)
+#
+#     component_form = ComponentForm(request.POST or None)
+#     configuration_form = ComponentConfigurationForm(request.POST or None,
+#                                                     initial={'number_of_repetitions': 1,
+#                                                              'interval_between_repetitions_value': None})
+#     questionnaires_list = []
+#
+#     existing_component_list = Component.objects.filter(experiment=experiment, component_type=component_type)
+#
+#     form = SequenceForm(request.POST or None,
+#                         initial={'number_of_mandatory_components': None})
+#
+#     if request.method == "POST":
+#
+#         new_component = None
+#
+#         if form.is_valid():
+#
+#             new_component = form.save(commit=False)
+#
+#             if "number_of_mandatory_components" in request.POST:
+#                 new_component.number_of_mandatory_components = request.POST['number_of_mandatory_components']
+#             if "has_random_components" in request.POST:
+#                 new_component.has_random_components = True
+#             else:
+#                 new_component.has_random_components = False
+#
+#         if component_form.is_valid() and configuration_form.is_valid():
+#             component = component_form.save(commit=False)
+#             new_component.description = component.description
+#             new_component.identification = component.identification
+#             new_component.component_type = component_type
+#             new_component.experiment = experiment
+#             new_component.save()
+#
+#             configuration = configuration_form.save(commit=False)
+#             configuration.component = new_component
+#             configuration.parent = None
+#             if "number_of_fills" in request.POST:
+#                 configuration.number_of_repetitions = request.POST['number_of_repetitions']
+#             if "interval_between_fills_value" in request.POST:
+#                 configuration.interval_between_repetitions_value = request.POST['interval_between_repetitions_value']
+#
+#             if "interval_between_fills_unit" in request.POST:
+#                 configuration.interval_between_repetitions_unit = \
+#                     get_object_or_404(TimeUnit, pk=request.POST['interval_between_repetitions_unit'])
+#             configuration.save()
+#
+#             group.experimental_protocol = configuration
+#             group.save()
+#
+#             messages.success(request, 'Protocolo experimental incluído com sucesso.')
+#
+#             redirect_url = reverse("group_edit", args=(group.id, ))
+#
+#             return HttpResponseRedirect(redirect_url)
+#
+#     context = {
+#         "creating_workflow": True,
+#         "form": form,
+#         "experiment": experiment,
+#         "component_form": component_form,
+#         "configuration_form": configuration_form,
+#         "creating": True,
+#         "updating": False,
+#         "questionnaires_list": questionnaires_list,
+#         "existing_component_list": existing_component_list,
+#         "sequence": None,
+#         "reusing_component": False
+#     }
+#     return render(request, template_name, context)
 
 
 @login_required
@@ -1921,12 +1926,11 @@ def experimental_protocol_create(request, group_id):
 
             messages.success(request, 'Protocolo experimental incluído com sucesso.')
 
-            redirect_url = reverse("component_configuration_update",
-                                   args=(path_of_the_sub_components + "-" + str(configuration.id), ))
-
+            redirect_url = reverse("experimental_protocol_update", args=(group_id,))
             return HttpResponseRedirect(redirect_url)
 
     context = {
+        "experimental_protocol": True,
         "creating_workflow": True,
         "form": form,
         "experiment": experiment,
@@ -1957,13 +1961,12 @@ def experimental_protocol_update(request, group_id):
 
     group = get_object_or_404(Group, pk=group_id)
     component_configuration = group.experimental_protocol
-    component = component_configuration.component
     experiment = group.experiment
 
     # component = get_object_or_404(Component, pk=component_configuration.component.id)
     # experiment = get_object_or_404(Experiment, pk=component.experiment.id)
 
-    component_type = component.component_type
+    component_type = component_configuration.component.component_type
     template_name = "experiment/" + component_type + "_component.html"
 
     questionnaire_id = None
@@ -1973,12 +1976,14 @@ def experimental_protocol_update(request, group_id):
     # form = None
     # sequence = None
 
-    component_form = ComponentForm(request.POST or None, instance=component)
+    component_form = ComponentForm(request.POST or None, instance=component_configuration.component)
     configuration_form = ComponentConfigurationForm(request.POST or None, instance=component_configuration)
 
     # configuration_list = []
 
-    sequence = get_object_or_404(Sequence, pk=component.id)
+    existing_component_list = Component.objects.filter(experiment=experiment, component_type=component_type)
+
+    sequence = get_object_or_404(Sequence, pk=component_configuration.component.id)
     form = SequenceForm(request.POST or None, instance=sequence)
     configuration_list = ComponentConfiguration.objects.filter(parent=sequence).order_by('order')
 
@@ -1986,16 +1991,18 @@ def experimental_protocol_update(request, group_id):
         configuration.component.icon_class = icon_class[configuration.component.component_type]
 
     if request.method == "POST":
+
         if request.POST['action'] == "save":
 
             if configuration_form.is_valid():
 
-                configuration = configuration_form.save(commit=False)
-                configuration.save()
+                component_form.save(commit=True)
+                form.save(commit=True)
+                configuration_form.save(commit=True)
 
                 messages.success(request, 'Componente atualizado com sucesso.')
 
-                redirect_url = reverse("component_edit", args=(component_configuration.parent.id,))
+                redirect_url = reverse("experimental_protocol_update", args=(group_id,))
                 return HttpResponseRedirect(redirect_url)
 
         # else:
@@ -2018,11 +2025,12 @@ def experimental_protocol_update(request, group_id):
         #             redirect_url = reverse("component_configuration_update", args=(path_of_the_sub_components,))
         #             return HttpResponseRedirect(redirect_url)
 
-    for form_used in {form, component_form}:
-        for field in form_used.fields:
-            form_used.fields[field].widget.attrs['disabled'] = True
+    # for form_used in {form, component_form}:
+    #     for field in form_used.fields:
+    #         form_used.fields[field].widget.attrs['disabled'] = True
 
     context = {
+        "experimental_protocol": True,
         "creating_workflow": True,
         "form": form,
         "experiment": experiment,
@@ -2030,7 +2038,7 @@ def experimental_protocol_update(request, group_id):
         "configuration_form": configuration_form,
         "creating": False,
         "updating": True,
-        "existing_component_list": [],
+        "existing_component_list": existing_component_list,
         "sequence": sequence,
         "questionnaire_id": questionnaire_id,
         "questionnaire_title": questionnaire_title,
