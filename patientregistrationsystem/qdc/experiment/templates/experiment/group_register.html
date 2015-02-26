@@ -151,8 +151,7 @@
                                                 <a class="btn glyphicon glyphicon-remove" data-toggle="tooltip"
                                                    data-placement="right" title="Remover" style="color: indianred;
                                                position: relative; float: right; padding: 0"
-                                                   onclick="show_modal_remove({{ group_id }},
-                                                           {{ classification_of_diseases.id }});"></a></td>
+                                                   onclick="show_modal_remove({{ group_id }}, {{ classification_of_diseases.id }});"></a></td>
                                         </tr>
                                     {% endfor %}
                                 {% endif %}
@@ -222,7 +221,11 @@
             <div class="container span6 offset3 well ">
                 <div class="row">
                     <div class="col-xs-6 col-sm-12">
-                        <a href="/experiment/group/{{ group.id }}/experimental_protocol" class="btn btn-primary {% if creating %} disabled{% endif %}" >{% if group.experimental_protocol %}Editar{% else %}Criar{% endif %} Protocolo Experimental</a>
+                        {% if group.experimental_protocol %}
+                            <a href="/experiment/group/{{ group.id }}/experimental_protocol_edit" class="btn btn-primary {% if creating %} disabled{% endif %}" >Editar Protocolo Experimental</a>
+                        {% else %}
+                            <a href="/experiment/group/{{ group.id }}/experimental_protocol_new" class="btn btn-primary {% if creating %} disabled{% endif %}" >Criar Protocolo Experimental</a>
+                        {% endif %}
                     </div>
                 </div>
             </div>
