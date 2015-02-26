@@ -10,6 +10,7 @@
     <meta name="description" content="">
     <meta name="author" content="">
 
+    {# TODO Include jquery-ui only in templates that use a datepicker (or other component). #}
     <script src="{% static 'quiz/jquery/jquery-2.0.0.min.js' %}"></script>
     <link rel="stylesheet" href="{% static 'quiz/jquery-ui-1.11.2/jquery-ui.css' %}">
     <script src="{% static 'quiz/jquery-ui-1.11.2/jquery-ui.js' %}"></script>
@@ -20,6 +21,8 @@
             });
         });
     </script>
+
+    {# TODO Break ajax.js in several files, so that templates include only the part that they need. #}
     <script src="{% static 'quiz/js/ajax.js' %}"></script>
 
     <link href="{% static 'quiz/bootstrap-3.0.0-dist/css/bootstrap.min.css' %}" rel="stylesheet">

@@ -3,6 +3,11 @@ from django.conf.urls import patterns, url
 urlpatterns = patterns(
     'experiment.views',
 
+    # keyword
+    url(r'^keyword/search/$', 'keyword_search_ajax', name='keywords_search'),
+    url(r'^keyword/new/(?P<research_project_id>\d+)/(?P<keyword_name>.+)/$', 'keyword_create_ajax', name='keyword_new'),
+    url(r'^keyword/add/(?P<research_project_id>\d+)/(?P<keyword_id>\d+)/$', 'keyword_add_ajax', name='keyword_add'),
+
     # research project
     url(r'^research_project/list/$', 'research_project_list', name='research_project_list'),
     url(r'^research_project/new/$', 'research_project_create', name='research_project_new'),

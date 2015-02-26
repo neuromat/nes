@@ -96,7 +96,36 @@
                         </div>
                     </div>
                 </div>
+            </div>
 
+            <div class="container span6 offset3 well ">
+                <div class="form-group">
+                    <input id="research_project_id" value="{{ research_project.id }}" style="display: none;">
+                    <table class="table table-striped">
+                        <thead>
+                            <tr>
+                                <th>Palavras-chave</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                        {% for keyword in keywords %}
+                            <tr>
+                                <td>{{ keyword.name }}</td>
+                            </tr>
+                        {% endfor %}
+                        </tbody>
+                    </table>
+
+                    <div class="input-group input-group-sm">
+                        <span class="input-group-addon"> <span class="glyphicon glyphicon-search"></span></span>
+                        <input class="form-control" placeholder=
+                                "Digite uma palavra chave para acrescentar uma existente ou uma nova" id="keywords"
+                               type="text">
+                    </div>
+                    {% csrf_token %}
+                    <ul id="search-results" style="list-style: none;">
+                    </ul>
+                </div>
             </div>
 
             <div class="btn-toolbar">

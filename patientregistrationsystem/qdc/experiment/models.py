@@ -35,6 +35,13 @@ class StimulusType(models.Model):
         return self.name
 
 
+class Keyword(models.Model):
+    name = models.CharField(max_length=50, null=False, blank=False)
+
+    def __unicode__(self):
+        return self.name
+
+
 class ResearchProject(models.Model):
     title = models.CharField(max_length=150, null=False, blank=False)
     description = models.CharField(max_length=1500, null=False, blank=False)
@@ -44,6 +51,8 @@ class ResearchProject(models.Model):
     end_date = models.DateField(null=True, blank=True)
 
     # TODO Create a boolean field that indicates if it is a current project without end date, as done by Lattes?
+
+    keywords = models.ManyToManyField(Keyword)
 
     def __unicode__(self):
         return self.title

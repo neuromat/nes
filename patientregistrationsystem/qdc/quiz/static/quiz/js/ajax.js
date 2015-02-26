@@ -99,6 +99,22 @@ $(function(){
 
     });
 
+    //Search for keywords in search mode
+    $('#keywords').keyup(function() {
+
+        $.ajax({
+            type: "POST",
+            url: "/experiment/keyword/search/",
+            data: {
+                'search_text' : $('#keywords').val(),
+                'research_project_id' : $('#research_project_id').val(),
+                'csrfmiddlewaretoken' : $("input[name=csrfmiddlewaretoken]").val()
+            },
+            success: searchSuccess,
+            dataType: 'html'
+        });
+
+    });
 });
 
 
