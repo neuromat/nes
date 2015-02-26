@@ -15,7 +15,7 @@ from django.conf import settings
 
 from experiment.models import Experiment, QuestionnaireConfiguration, Subject, TimeUnit, \
     QuestionnaireResponse, SubjectOfGroup, Group, Component, ComponentConfiguration, Questionnaire, Task, Stimulus, \
-    Pause, Sequence, Instruction, ClassificationOfDiseases, ResearchProject
+    Pause, Sequence, Instruction, ClassificationOfDiseases, ResearchProject, Keyword
 from experiment.forms import ExperimentForm, QuestionnaireConfigurationForm, QuestionnaireResponseForm, \
     FileForm, GroupForm, TaskForm, InstructionForm, ComponentForm, StimulusForm, PauseForm, SequenceForm, \
     ComponentConfigurationForm, ResearchProjectForm
@@ -102,14 +102,56 @@ def research_project_update(request, research_project_id, template_name="experim
                         messages.error(request, "Erro ao tentar excluir o estudo.")
                         redirect_url = reverse("research_project_edit", args=(research_project.id,))
                         return HttpResponseRedirect(redirect_url)
-                    return redirect('experiment_list')
+                    return redirect('research_project_list')
 
         context = {
             "research_project_form": research_project_form,
             "creating": False,
-            "research_project": research_project}
+            "research_project": research_project,
+            "keywords": research_project.keywords.all()}
 
         return render(request, template_name, context)
+
+
+@login_required
+@permission_required('experiment.view_researchproject')
+def keyword_search_ajax(request):
+    keywords_list = ''
+    if request.method == "POST":
+        search_text = request.POST['search_text']
+
+        if search_text:
+            keywords_list = Keyword.objects.filter(name__icontains=search_text)
+
+    return render_to_response('experiment/keyword_ajax_search.html',
+                              {'keywords': keywords_list,
+                               'research_project_id': request.POST['research_project_id'],
+                               'new_keyword_name': search_text})
+
+
+@login_required
+@permission_required('experiment.view_researchproject')
+def keyword_create_ajax(request, research_project_id, keyword_name):
+    keyword = Keyword.objects.create(name=keyword_name)
+    keyword.save()
+
+    research_project = get_object_or_404(ResearchProject, pk=research_project_id)
+    research_project.keywords.add(keyword)
+
+    redirect_url = reverse("research_project_edit", args=(research_project_id,))
+    return HttpResponseRedirect(redirect_url)
+
+
+@login_required
+@permission_required('experiment.view_researchproject')
+def keyword_add_ajax(request, research_project_id, keyword_id):
+
+    research_project = get_object_or_404(ResearchProject, pk=research_project_id)
+    keyword = get_object_or_404(Keyword, pk=keyword_id)
+    research_project.keywords.add(keyword)
+
+    redirect_url = reverse("research_project_edit", args=(research_project_id,))
+    return HttpResponseRedirect(redirect_url)
 
 
 @login_required
