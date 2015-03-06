@@ -170,11 +170,30 @@ class ResearchProjectForm(ModelForm):
         fields = ['start_date', 'end_date', 'title', 'description']
 
         widgets = {
-            'start_date': DateInput(attrs={'class': 'datepicker', 'placeholder': 'dd/mm/aaaa',
-                                           'required': "", 'data-error': "Data de início deve ser preenchida"},),
-            'end_date': DateInput(attrs={'class': 'datepicker', 'placeholder': 'dd/mm/aaaa', }),
             'title': TextInput(attrs={'class': 'form-control', 'required': "",
                                       'data-error': 'Título deve ser preenchido.'}),
+            # Even though maxlength is already set in the model, it has be be repeated here, because the form dos not
+            # respect that information.
             'description': Textarea(attrs={'class': 'form-control', 'rows': '4', 'required': "",
+                                           'maxlength': '1500',
                                            'data-error': 'Descrição deve ser preenchida.'}),
+            'start_date': DateInput(attrs={'class': 'datepicker', 'placeholder': 'dd/mm/aaaa', 'required': "",
+                                           'data-error': "Data de início deve ser preenchida"},),
+            'end_date': DateInput(attrs={'class': 'datepicker', 'placeholder': 'dd/mm/aaaa', }),
+
         }
+
+    def clean(self):
+        cleaned_data = super(ResearchProjectForm, self).clean()
+        start_date = cleaned_data.get("start_date")
+        end_date = cleaned_data.get("end_date")
+
+        if end_date and end_date < start_date:
+            msg = u"Data de início deve ser menor que data de fim."
+            self._errors["start_date"] = self.error_class([msg])
+            self._errors["end_date"] = self.error_class([msg])
+
+            del cleaned_data["end_date"]
+            del cleaned_data["start_date"]
+
+        return cleaned_data

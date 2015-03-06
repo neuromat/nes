@@ -11,7 +11,7 @@ from django.shortcuts import get_object_or_404
 import pyjsonrpc
 
 from experiment.models import Experiment, Group, QuestionnaireConfiguration, TimeUnit, Subject, \
-    QuestionnaireResponse, SubjectOfGroup, Sequence, ComponentConfiguration, ResearchProject
+    QuestionnaireResponse, SubjectOfGroup, Sequence, ComponentConfiguration, ResearchProject, Keyword
 from patient.models import ClassificationOfDiseases
 from experiment.views import experiment_update, upload_file, research_project_update
 from experiment.abc_search_engine import Questionnaires
@@ -709,17 +709,14 @@ class SubjectTest(TestCase):
         Testa o upload de arquivos que corresponde ao formulario de consentimento do participante no experimento
         """
 
-        experiment = Experiment.objects.all().first()
-
-        if not experiment:
-            experiment = Experiment.objects.create(title="Experimento-Teste-Upload",
+        experiment = Experiment.objects.create(title="Experimento-Teste-Upload",
                                                    description="Descricao do Experimento-Upload")
-            experiment.save()
+        experiment.save()
 
-            group = Group.objects.create(experiment=experiment,
-                                         title="Grupo-teste-updload",
-                                         description="Descricao do Grupo-teste-updload")
-            group.save()
+        group = Group.objects.create(experiment=experiment,
+                                     title="Grupo-teste-updload",
+                                     description="Descricao do Grupo-teste-updload")
+        group.save()
 
         patient_mock = self.util.create_patient_mock(user=self.user)
 
@@ -1113,3 +1110,59 @@ class ResearchProjectTest(TestCase):
 
         # Check if numeber of reserch projets decreased by 1
         self.assertEqual(ResearchProject.objects.all().count(), count - 1)
+
+    def test_research_project_keywords(self):
+        # Create a research project to be used in the test
+        research_project = ResearchProject.objects.create(title="Research project title",
+                                                          start_date=datetime.date.today(),
+                                                          description="Research project description")
+        research_project.save()
+
+        # Insert keyword
+        self.assertEqual(Keyword.objects.all().count(), 0)
+        self.assertEqual(research_project.keywords.count(), 0)
+        response = self.client.get(reverse('keyword_new', args=(research_project.pk, "test_keyword")), follow=True)
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(Keyword.objects.all().count(), 1)
+        self.assertEqual(research_project.keywords.count(), 1)
+
+        # Add keyword
+        keyword = Keyword.objects.create(name="second_test_keyword")
+        keyword.save()
+        self.assertEqual(Keyword.objects.all().count(), 2)
+        self.assertEqual(research_project.keywords.count(), 1)
+        response = self.client.get(reverse('keyword_add', args=(research_project.pk, keyword.id)), follow=True)
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(Keyword.objects.all().count(), 2)
+        self.assertEqual(research_project.keywords.count(), 2)
+
+        # Create a second research project to be used in the test
+        research_project2 = ResearchProject.objects.create(title="Research project 2",
+                                                          start_date=datetime.date.today(),
+                                                          description="Research project description")
+        research_project2.save()
+
+        # Insert keyword
+        response = self.client.get(reverse('keyword_new', args=(research_project2.pk, "third_test_keyword")), follow=True)
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(Keyword.objects.all().count(), 3)
+        self.assertEqual(research_project2.keywords.count(), 1)
+
+        # Add keyword
+        response = self.client.get(reverse('keyword_add', args=(research_project2.pk, keyword.id)), follow=True)
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(Keyword.objects.all().count(), 3)
+        self.assertEqual(research_project2.keywords.count(), 2)
+
+        # Remove keyword that is also in another research project
+        response = self.client.get(reverse('keyword_remove', args=(research_project2.pk, keyword.id)), follow=True)
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(Keyword.objects.all().count(), 3)
+        self.assertEqual(research_project2.keywords.count(), 1)
+
+        # Remove keyword that is not in another research project
+        keyword3 = Keyword.objects.get(name="third_test_keyword")
+        response = self.client.get(reverse('keyword_remove', args=(research_project2.pk, keyword3.id)), follow=True)
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(Keyword.objects.all().count(), 2)
+        self.assertEqual(research_project2.keywords.count(), 0)

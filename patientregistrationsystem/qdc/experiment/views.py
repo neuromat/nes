@@ -97,6 +97,8 @@ def research_project_update(request, research_project_id, template_name="experim
             else:
                 if request.POST['action'] == "remove":
                     try:
+                        for keyword in research_project.keywords.all():
+                            manage_keywords(keyword, ResearchProject.objects.exclude(id=research_project.id))
                         research_project.delete()
                     except ProtectedError:
                         messages.error(request, "Erro ao tentar excluir o estudo.")
@@ -116,15 +118,25 @@ def research_project_update(request, research_project_id, template_name="experim
 @login_required
 @permission_required('experiment.view_researchproject')
 def keyword_search_ajax(request):
-    keywords_list = ''
+    keywords_name_list = []
+    keywords_list_filtered = []
+    search_text = None
+
     if request.method == "POST":
         search_text = request.POST['search_text']
 
         if search_text:
+            # Avoid suggesting the creation of a keyword that already exists.
             keywords_list = Keyword.objects.filter(name__icontains=search_text)
+            keywords_name_list = keywords_list.values_list('name', flat=True)
+            # Avoid suggestion keywords that are already associated with this research project
+            research_project = get_object_or_404(ResearchProject, pk=request.POST['research_project_id'])
+            keywords_included = research_project.keywords.values_list('name', flat=True)
+            keywords_list_filtered = keywords_list.exclude(name__in=keywords_included)
 
     return render_to_response('experiment/keyword_ajax_search.html',
-                              {'keywords': keywords_list,
+                              {'keywords': keywords_list_filtered,
+                               'offer_creation': search_text not in keywords_name_list,
                                'research_project_id': request.POST['research_project_id'],
                                'new_keyword_name': search_text})
 
@@ -149,6 +161,30 @@ def keyword_add_ajax(request, research_project_id, keyword_id):
     research_project = get_object_or_404(ResearchProject, pk=research_project_id)
     keyword = get_object_or_404(Keyword, pk=keyword_id)
     research_project.keywords.add(keyword)
+
+    redirect_url = reverse("research_project_edit", args=(research_project_id,))
+    return HttpResponseRedirect(redirect_url)
+
+
+def manage_keywords(keyword, research_projects):
+    should_remove = True
+    for research_project in research_projects:
+        if keyword in research_project.keywords.all():
+            should_remove = False
+            break
+    if should_remove:
+        keyword.delete()
+
+
+@login_required
+@permission_required('experiment.view_researchproject')
+def keyword_remove_ajax(request, research_project_id, keyword_id):
+
+    research_project = get_object_or_404(ResearchProject, pk=research_project_id)
+    keyword = get_object_or_404(Keyword, pk=keyword_id)
+    research_project.keywords.remove(keyword)
+
+    manage_keywords(keyword, ResearchProject.objects.all())
 
     redirect_url = reverse("research_project_edit", args=(research_project_id,))
     return HttpResponseRedirect(redirect_url)

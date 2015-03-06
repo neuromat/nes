@@ -45,13 +45,8 @@ class Keyword(models.Model):
 class ResearchProject(models.Model):
     title = models.CharField(max_length=150, null=False, blank=False)
     description = models.CharField(max_length=1500, null=False, blank=False)
-
-    # TODO Check if blank attributes are correctly set.
     start_date = models.DateField()
     end_date = models.DateField(null=True, blank=True)
-
-    # TODO Create a boolean field that indicates if it is a current project without end date, as done by Lattes?
-
     keywords = models.ManyToManyField(Keyword)
 
     def __unicode__(self):

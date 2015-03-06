@@ -1,11 +1,10 @@
 {% load i18n %}
-{% if keywords.count > 0 %}
 
-    {% for keyword in keywords %}
-        <li><a href="/experiment/keyword/add/{{ research_project_id }}/{{ keyword.id }}">{{ keyword.name }}</a></li>
-    {% endfor %}
+{% for keyword in keywords %}
+    <li><a href="/experiment/keyword/add/{{ research_project_id }}/{{ keyword.id }}">{{ keyword.name }}</a></li>
+{% endfor %}
 
-{% else %}
+{% if offer_creation %}
     <li><a href="/experiment/keyword/new/{{ research_project_id }}/{{new_keyword_name}}">Adicionar nova palavra-chave
         "{{ new_keyword_name }}"</a></li>
 {% endif %}
