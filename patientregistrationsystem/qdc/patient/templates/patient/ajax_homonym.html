@@ -10,7 +10,7 @@
 
 {% if patient_homonym_excluded %}
     {% for patient in patient_homonym_excluded %}
-        <li><a href="/restore/patient/{{ patient.id }}">
+        <li><a href="/patient/restore/{{ patient.id }}">
             {% if patient.cpf %} {{ patient.cpf }} - {% endif %}{{ patient.name }}</a></li>
     {% endfor %}
 

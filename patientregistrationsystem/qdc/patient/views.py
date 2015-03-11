@@ -343,7 +343,9 @@ def patient(request, patient_id, template_name="patient/register.html"):
 @login_required
 @permission_required('patient.view_patient')
 def search_patient(request):
-    return render(request, 'patient/busca.html')
+    context = {'number_of_patients': Patient.objects.exclude(removed=True).count()}
+
+    return render(request, 'patient/busca.html', context)
 
 
 @login_required
@@ -369,9 +371,9 @@ def search_patients_ajax(request):
         search_text = request.POST['search_text']
         if search_text:
             if re.match('[a-zA-Z ]+', search_text):
-                patient_list = Patient.objects.filter(name__icontains=search_text).exclude(removed=True)
+                patient_list = Patient.objects.filter(name__icontains=search_text).exclude(removed=True).order_by('name')
             else:
-                patient_list = Patient.objects.filter(cpf__icontains=search_text).exclude(removed=True)
+                patient_list = Patient.objects.filter(cpf__icontains=search_text).exclude(removed=True).order_by('name')
 
     return render_to_response('patient/ajax_search.html', {'patients': patient_list})
 

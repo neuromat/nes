@@ -10,7 +10,7 @@ class PasswordChangeFormCustomized(PasswordChangeForm):
                                                                   'placeholder': 'Entrar senha'})
         self.fields['new_password1'].widget = PasswordInput(attrs={'class': 'form-control',
                                                                    'placeholder': 'Entrar senha',
-                                                                   'onkeyup': "password_strong();"})
+                                                                   'onkeyup': "passwordForce();"})
         self.fields['new_password2'].widget = PasswordInput(attrs={'class': 'form-control',
                                                                    'placeholder': 'Entrar senha',
                                                                    'onkeyup': "checkPass();"})

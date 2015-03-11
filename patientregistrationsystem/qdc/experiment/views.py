@@ -116,7 +116,7 @@ def research_project_update(request, research_project_id, template_name="experim
 
 
 @login_required
-@permission_required('experiment.view_researchproject')
+@permission_required('experiment.change_researchproject')
 def keyword_search_ajax(request):
     keywords_name_list = []
     keywords_list_filtered = []
@@ -132,7 +132,7 @@ def keyword_search_ajax(request):
             # Avoid suggestion keywords that are already associated with this research project
             research_project = get_object_or_404(ResearchProject, pk=request.POST['research_project_id'])
             keywords_included = research_project.keywords.values_list('name', flat=True)
-            keywords_list_filtered = keywords_list.exclude(name__in=keywords_included)
+            keywords_list_filtered = keywords_list.exclude(name__in=keywords_included).order_by('name')
 
     return render_to_response('experiment/keyword_ajax_search.html',
                               {'keywords': keywords_list_filtered,
@@ -142,7 +142,7 @@ def keyword_search_ajax(request):
 
 
 @login_required
-@permission_required('experiment.view_researchproject')
+@permission_required('experiment.change_researchproject')
 def keyword_create_ajax(request, research_project_id, keyword_name):
     keyword = Keyword.objects.create(name=keyword_name)
     keyword.save()
@@ -155,7 +155,7 @@ def keyword_create_ajax(request, research_project_id, keyword_name):
 
 
 @login_required
-@permission_required('experiment.view_researchproject')
+@permission_required('experiment.change_researchproject')
 def keyword_add_ajax(request, research_project_id, keyword_id):
 
     research_project = get_object_or_404(ResearchProject, pk=research_project_id)
@@ -177,7 +177,7 @@ def manage_keywords(keyword, research_projects):
 
 
 @login_required
-@permission_required('experiment.view_researchproject')
+@permission_required('experiment.change_researchproject')
 def keyword_remove_ajax(request, research_project_id, keyword_id):
 
     research_project = get_object_or_404(ResearchProject, pk=research_project_id)
@@ -225,7 +225,7 @@ def experiment_create(request, template_name="experiment/experiment_register.htm
 
 
 @login_required
-@permission_required('experiment.view_experiment')
+@permission_required('experiment.change_experiment')
 def experiment_update(request, experiment_id, template_name="experiment/experiment_register.html"):
 
     experiment = get_object_or_404(Experiment, pk=experiment_id)
@@ -528,7 +528,7 @@ def subjects(request, group_id, template_name="experiment/subjects.html"):
 
     limesurvey_available = check_limesurvey_access(request, surveys)
 
-    for subject_of_group in SubjectOfGroup.objects.all().filter(group=group):
+    for subject_of_group in SubjectOfGroup.objects.all().filter(group=group).order_by('subject__patient__name'):
 
         number_of_questionnaires_filled = 0
 
@@ -1051,9 +1051,9 @@ def search_patients_ajax(request):
         group_id = request.POST['group_id']
         if search_text:
             if re.match('[a-zA-Z ]+', search_text):
-                patient_list = Patient.objects.filter(name__icontains=search_text).exclude(removed=True)
+                patient_list = Patient.objects.filter(name__icontains=search_text).exclude(removed=True).order_by('name')
             else:
-                patient_list = Patient.objects.filter(cpf__icontains=search_text).exclude(removed=True)
+                patient_list = Patient.objects.filter(cpf__icontains=search_text).exclude(removed=True).order_by('name')
 
         return render_to_response('experiment/ajax_search_patients.html',
                                   {'patients': patient_list, 'group_id': group_id})
