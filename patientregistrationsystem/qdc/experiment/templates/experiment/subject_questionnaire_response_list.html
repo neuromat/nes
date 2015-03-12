@@ -94,7 +94,7 @@
                                                         <tr>
                                                             <td>
                                                                 {% if perms.experiment.change_questionnaireresponse and limesurvey_available %}
-                                                                    <a href="/experiment/questionnaire_response/edit/{{ response.questionnaire_response.id }}" data-toggle="tooltip" data-placement="right" title="Completar">
+                                                                    <a href="/experiment/questionnaire_response/edit/{{ response.questionnaire_response.id }}?origin=subject" data-toggle="tooltip" data-placement="right" title="Completar">
                                                                         {{ response.questionnaire_response.date }}
                                                                     </a>
                                                                 {% else %}
@@ -119,7 +119,7 @@
                                                         {% if subject_questionnaire.questionnaire_configuration.number_of_fills == None or subject_questionnaire.questionnaire_responses|length < subject_questionnaire.questionnaire_configuration.number_of_fills %}
                                                             <td>
                                                                 {% if perms.experiment.add_questionnaireresponse %}
-                                                                    <a href="/experiment/subjects/{{ subject.id }}/questionnaire/{{ subject_questionnaire.questionnaire_configuration.id }}/response/?action=create"
+                                                                    <a href="/experiment/subjects/{{ subject.id }}/questionnaire/{{ subject_questionnaire.questionnaire_configuration.id }}/response/?origin=subject"
                                                                         class="btn btn-primary {% if not limesurvey_available %} disabled {% endif %}">Novo preenchimento</a>
                                                                 {% endif %}
                                                             </td>
