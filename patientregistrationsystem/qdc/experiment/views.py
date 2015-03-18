@@ -116,7 +116,7 @@ def research_project_update(request, research_project_id, template_name="experim
 
 
 @login_required
-@permission_required('experiment.view_researchproject')
+@permission_required('experiment.change_researchproject')
 def keyword_search_ajax(request):
     keywords_name_list = []
     keywords_list_filtered = []
@@ -132,7 +132,7 @@ def keyword_search_ajax(request):
             # Avoid suggestion keywords that are already associated with this research project
             research_project = get_object_or_404(ResearchProject, pk=request.POST['research_project_id'])
             keywords_included = research_project.keywords.values_list('name', flat=True)
-            keywords_list_filtered = keywords_list.exclude(name__in=keywords_included)
+            keywords_list_filtered = keywords_list.exclude(name__in=keywords_included).order_by('name')
 
     return render_to_response('experiment/keyword_ajax_search.html',
                               {'keywords': keywords_list_filtered,
@@ -142,7 +142,7 @@ def keyword_search_ajax(request):
 
 
 @login_required
-@permission_required('experiment.view_researchproject')
+@permission_required('experiment.change_researchproject')
 def keyword_create_ajax(request, research_project_id, keyword_name):
     keyword = Keyword.objects.create(name=keyword_name)
     keyword.save()
@@ -155,7 +155,7 @@ def keyword_create_ajax(request, research_project_id, keyword_name):
 
 
 @login_required
-@permission_required('experiment.view_researchproject')
+@permission_required('experiment.change_researchproject')
 def keyword_add_ajax(request, research_project_id, keyword_id):
 
     research_project = get_object_or_404(ResearchProject, pk=research_project_id)
@@ -177,7 +177,7 @@ def manage_keywords(keyword, research_projects):
 
 
 @login_required
-@permission_required('experiment.view_researchproject')
+@permission_required('experiment.change_researchproject')
 def keyword_remove_ajax(request, research_project_id, keyword_id):
 
     research_project = get_object_or_404(ResearchProject, pk=research_project_id)
@@ -225,7 +225,7 @@ def experiment_create(request, template_name="experiment/experiment_register.htm
 
 
 @login_required
-@permission_required('experiment.view_experiment')
+@permission_required('experiment.change_experiment')
 def experiment_update(request, experiment_id, template_name="experiment/experiment_register.html"):
 
     experiment = get_object_or_404(Experiment, pk=experiment_id)
@@ -465,10 +465,6 @@ def questionnaire_update(request, questionnaire_configuration_id,
     group = get_object_or_404(Group, pk=questionnaire_configuration.group.id)
     questionnaire_form = QuestionnaireConfigurationForm(request.POST or None, instance=questionnaire_configuration)
 
-    surveys = Questionnaires()
-    questionnaire_title = surveys.get_survey_title(questionnaire_configuration.lime_survey_id)
-    surveys.release_session_key()
-
     if request.method == "POST":
 
         if request.POST['action'] == "save":
@@ -503,13 +499,75 @@ def questionnaire_update(request, questionnaire_configuration_id,
                 redirect_url = reverse("group_edit", args=(group.id,))
                 return HttpResponseRedirect(redirect_url)
 
+
+
+    surveys = Questionnaires()
+    questionnaire_title = surveys.get_survey_title(questionnaire_configuration.lime_survey_id)
+
+    limesurvey_available = check_limesurvey_access(request, surveys)
+
+    subject_list_with_status = []
+
+    for subject_of_group in SubjectOfGroup.objects.all().filter(group=group).order_by('subject__patient__name'):
+
+        subject_responses = QuestionnaireResponse.objects.\
+            filter(subject_of_group=subject_of_group). \
+            filter(questionnaire_configuration=questionnaire_configuration)
+
+        amount_of_completed_questionnaires = 0
+        questionnaire_responses_with_status = []
+
+        for subject_response in subject_responses:
+            response_result = surveys.get_participant_properties(questionnaire_configuration.lime_survey_id,
+                                                                 subject_response.token_id, "completed")
+
+            completed = False
+
+            if response_result != "N" and response_result != "":
+                amount_of_completed_questionnaires += 1
+                completed = True
+
+            questionnaire_responses_with_status.append(
+                {'questionnaire_response': subject_response,
+                 'completed': completed}
+            )
+
+        # If unlimited fills, percentage is related to the number of completed questionnaires
+        if questionnaire_configuration.number_of_fills is None:
+            denominator = subject_responses.count()
+
+            if subject_responses.count() > 0:
+                percentage = 100 * amount_of_completed_questionnaires / denominator
+            else:
+                percentage = 0
+        else:
+            denominator = questionnaire_configuration.number_of_fills
+
+            # Handle cases in which number of possible responses was reduced afterwords.
+            if questionnaire_configuration.number_of_fills < amount_of_completed_questionnaires:
+                percentage = 100
+            else:
+                percentage = 100 * amount_of_completed_questionnaires / denominator
+
+        subject_list_with_status.append(
+            {'subject': subject_of_group.subject,
+             'amount_of_completed_questionnaires': amount_of_completed_questionnaires,
+             'denominator': denominator,
+             'percentage': percentage,
+             'questionnaire_responses': questionnaire_responses_with_status})
+
+    surveys.release_session_key()
+
     context = {
         "questionnaire_form": questionnaire_form,
         "creating": False,
         "updating": True,
         "group": group,
         "questionnaire_title": questionnaire_title,
-        "questionnaire_id": questionnaire_configuration.lime_survey_id}
+        "questionnaire_configuration": questionnaire_configuration,
+        'subject_list': subject_list_with_status,
+        "limesurvey_available": limesurvey_available
+        }
 
     return render(request, template_name, context)
 
@@ -528,7 +586,7 @@ def subjects(request, group_id, template_name="experiment/subjects.html"):
 
     limesurvey_available = check_limesurvey_access(request, surveys)
 
-    for subject_of_group in SubjectOfGroup.objects.all().filter(group=group):
+    for subject_of_group in SubjectOfGroup.objects.all().filter(group=group).order_by('subject__patient__name'):
 
         number_of_questionnaires_filled = 0
 
@@ -541,7 +599,7 @@ def subjects(request, group_id, template_name="experiment/subjects.html"):
             if subject_responses:
                 if (questionnaire_configuration.number_of_fills is None and subject_responses.count() > 0) or \
                         (questionnaire_configuration.number_of_fills is not None and
-                            questionnaire_configuration.number_of_fills == subject_responses.count()):
+                            questionnaire_configuration.number_of_fills <= subject_responses.count()):
 
                     amount_of_completed_questionnaires = 0
 
@@ -556,7 +614,7 @@ def subjects(request, group_id, template_name="experiment/subjects.html"):
                             amount_of_completed_questionnaires += 1
 
                     if (questionnaire_configuration.number_of_fills is None and
-                            amount_of_completed_questionnaires >= subject_responses.count()) or \
+                            amount_of_completed_questionnaires == subject_responses.count()) or \
                             (questionnaire_configuration.number_of_fills is not None and
                                 amount_of_completed_questionnaires >= questionnaire_configuration.number_of_fills):
                         number_of_questionnaires_filled += 1
@@ -691,6 +749,8 @@ def subject_questionnaire_response_create(request, subject_id, questionnaire_id,
                 fail = True
                 messages.info(request, 'Você será redirecionado para o questionário. Aguarde.')
 
+    origin = get_origin(request)
+
     context = {
         "FAIL": fail,
         "URL": redirect_url,
@@ -703,7 +763,8 @@ def subject_questionnaire_response_create(request, subject_id, questionnaire_id,
         "questionnaire_responsible": request.user.get_full_name(),
         "creating": True,
         "subject": get_object_or_404(Subject, pk=subject_id),
-        "group": questionnaire_config.group
+        "group": questionnaire_config.group,
+        "origin": origin
     }
 
     return render(request, template_name, context)
@@ -772,6 +833,8 @@ def questionnaire_response_update(request, questionnaire_response_id,
                                        args=(questionnaire_configuration.group.id, subject.id,))
                 return HttpResponseRedirect(redirect_url)
 
+    origin = get_origin(request)
+
     context = {
         "FAIL": fail,
         "URL": redirect_url,
@@ -785,10 +848,24 @@ def questionnaire_response_update(request, questionnaire_response_id,
         "creating": False,
         "subject": subject,
         "completed": survey_completed,
-        "group": questionnaire_configuration.group
+        "group": questionnaire_configuration.group,
+        "origin": origin
     }
 
     return render(request, template_name, context)
+
+
+def get_origin(request):
+    origin = '0'
+
+    if request.method == "POST":
+        if 'origin' in request.POST:
+            origin = request.POST['origin']
+    else:
+        if 'origin' in request.GET:
+            origin = request.GET['origin']
+
+    return origin
 
 
 def check_required_fields(surveys, lime_survey_id):
@@ -836,7 +913,11 @@ def questionnaire_response_view(request, questionnaire_response_id,
                                 template_name="experiment/subject_questionnaire_response_view.html"):
 
     view = request.GET['view']
-    status_mode = request.GET['status']
+
+    status_mode = None
+
+    if 'status' in request.GET:
+        status_mode = request.GET['status']
 
     questionnaire_response = get_object_or_404(QuestionnaireResponse, id=questionnaire_response_id)
     questionnaire_configuration = questionnaire_response.questionnaire_configuration
@@ -1051,9 +1132,9 @@ def search_patients_ajax(request):
         group_id = request.POST['group_id']
         if search_text:
             if re.match('[a-zA-Z ]+', search_text):
-                patient_list = Patient.objects.filter(name__icontains=search_text).exclude(removed=True)
+                patient_list = Patient.objects.filter(name__icontains=search_text).exclude(removed=True).order_by('name')
             else:
-                patient_list = Patient.objects.filter(cpf__icontains=search_text).exclude(removed=True)
+                patient_list = Patient.objects.filter(cpf__icontains=search_text).exclude(removed=True).order_by('name')
 
         return render_to_response('experiment/ajax_search_patients.html',
                                   {'patients': patient_list, 'group_id': group_id})

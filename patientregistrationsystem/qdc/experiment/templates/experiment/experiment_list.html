@@ -46,7 +46,11 @@
                         <tbody>
                         {% for experiment in experiments %}
                             <tr>
-                                <td><a data-toggle="tooltip" data-placement="left" title="Editar" href="/experiment/edit/{{ experiment.id }}">{{ experiment.title }}</a></td>
+                                <td>{% if perms.experiment.change_experiment %}
+                                    <a data-toggle="tooltip" data-placement="left" title="Editar" href="/experiment/edit/{{ experiment.id }}">{{ experiment.title }}</a></td>
+                                    {% else %}
+                                    {{ experiment.title }}
+                                    {% endif %}
                                 <td>{{ experiment.description }}</td>
                             </tr>
                         {% endfor %}

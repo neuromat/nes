@@ -25,13 +25,17 @@
                 <li><a href="/experiment/list">Experimentos</a></li>
                 <li><a href="/experiment/edit/{{ group.experiment.id }}">{{ group.experiment.title }}</a></li>
                 <li><a href="/experiment/group/edit/{{ group.id }}">{{ group.title }}</a></li>
-                <li><a href="/experiment/group/{{ group.id }}/subjects/">Participantes</a></li>
-                <li>
-                    <a href="/experiment/group/{{ group.id }}/subjects/{{ subject.id }}/questionnaire">{{ subject.patient.name }}</a>
-                </li>
-                <li>
-                    {{ survey_title }}
-                </li>
+                {% if origin == 'subject' %}
+                    <li><a href="/experiment/group/{{ group.id }}/subjects/">Participantes</a></li>
+                    <li>
+                        <a href="/experiment/group/{{ group.id }}/subjects/{{ subject.id }}/questionnaire">{{ subject.patient.name }}</a>
+                    </li>
+                    <li>
+                        {{ survey_title }}
+                    </li>
+                {% else %}
+                    <li><a href="/experiment/questionnaire/edit/{{ questionnaire_configuration.id }}">{{ survey_title }}</a></li>
+                {% endif %}
                 {% if creating %}
                     <li class="active">Novo preenchimento</li>
                 {% else %}
@@ -202,12 +206,21 @@
                 {% if not completed %}
                     <button type="submit" id="button2" name="action" value="save" class="btn btn-primary">{% if creating %}Novo preenchimento{% else %}Continuar preenchimento{% endif %}</button>
                 {% else %}
-                    <a href="/experiment/questionnaire_response/{{ questionnaire_response_id }}/?view=experiment&status=view" class="btn btn-primary">Ver preenchimento</a>
+                    {% if origin == 'subject' %}
+                        <a href="/experiment/questionnaire_response/{{ questionnaire_response_id }}/?view=experiment_subject" class="btn btn-primary">Ver preenchimento</a>
+                    {% else %}
+                        <a href="/experiment/questionnaire_response/{{ questionnaire_response_id }}/?view=experiment" class="btn btn-primary">Ver preenchimento</a>
+                    {% endif %}
                 {% endif %}
             </div>
             <div class="btn-group pull-right">
-                <a href="/experiment/group/{{ group.id }}/subjects/{{ subject.id }}/questionnaire" class="btn"
-                   style="background-color: #f5f5f5">Voltar</a>
+                {% if origin == 'subject' %}
+                    <a href="/experiment/group/{{ group.id }}/subjects/{{ subject.id }}/questionnaire" class="btn"
+                       style="background-color: #f5f5f5">Voltar</a>
+                {% else %}
+                    <a href="/experiment/questionnaire/edit/{{ questionnaire_configuration.id }}" class="btn"
+                       style="background-color: #f5f5f5">Voltar</a>
+                {% endif %}
             </div>
         </div>
 

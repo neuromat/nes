@@ -16,13 +16,13 @@ $(function(){
     });
 
     //Search for homonym patient
-    $('#name').keyup(function() {
+    $('#id_name').keyup(function() {
 
         $.ajax({
             type: "POST",
             url: "/patient/verify_homonym/",
             data: {
-                'search_text': $('#name').val(),
+                'search_text': $('#id_name').val(),
                 'csrfmiddlewaretoken': $("input[name=csrfmiddlewaretoken]").val()
             },
             success:searchSuccess,
@@ -32,13 +32,13 @@ $(function(){
     });
 
     //Serch for same cpf
-    $('#cpf').keyup(function() {
+    $('#id_cpf').keyup(function() {
 
         $.ajax({
             type: "POST",
             url: "/patient/verify_homonym/",
             data: {
-                'search_text': $('#cpf').val(),
+                'search_text': $('#id_cpf').val(),
                 'csrfmiddlewaretoken': $("input[name=csrfmiddlewaretoken]").val()
             },
             success:searchSuccess,
