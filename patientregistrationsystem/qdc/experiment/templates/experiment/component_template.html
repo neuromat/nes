@@ -112,7 +112,7 @@
                         <div class="col-xs-6 col-sm-6">
                             <div class="dropdown">
                                 <button class="btn btn-default dropdown-toggle" type="button" id="dropdownMenu1" data-toggle="dropdown" aria-expanded="true">
-                                    {% if reusing_component %}
+                                    {% if component_form.identification.value %}
                                         {{ component_form.identification.value }}
                                     {% else %}
                                         {% block component_button_label %}
@@ -125,10 +125,14 @@
                                     <ul class="dropdown-menu" role="menu" aria-labelledby="dropdownMenu1">
 
                                         {% for existing_component in existing_component_list %}
-                                            <li role="presentation"><a role="menuitem" tabindex="-1" href="/experiment/component_configuration/{% if path_of_the_sub_components %}{{ path_of_the_sub_components }}{% else %}{{ sequence.id }}{% endif %}/add_component/{{ existing_component.id }}">{{ existing_component.identification }}</a></li>
+                                            {% if experimental_protocol %}
+                                                <li role="presentation"><a role="menuitem" tabindex="-1" href="/experiment/group/{{ group.id }}/experimental_protocol_change_component/{{ existing_component.id }}">{{ existing_component.identification }}</a></li>
+                                            {% else %}
+                                                <li role="presentation"><a role="menuitem" tabindex="-1" href="/experiment/component_configuration/{% if path_of_the_sub_components %}{{ path_of_the_sub_components }}{% else %}{{ sequence.id }}{% endif %}/add_component/{{ existing_component.id }}">{{ existing_component.identification }}</a></li>
+                                            {% endif %}
                                         {% endfor %}
 
-                                        {% if reusing_component %}
+                                        {% if reusing_component or not creating %}
                                             <li role="presentation" class="divider"></li>
                                             {% block component_add_new %}
                                             {% endblock %}
