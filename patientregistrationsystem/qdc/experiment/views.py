@@ -361,6 +361,7 @@ def group_update(request, group_id, template_name="experiment/group_register.htm
             "questionnaires_configuration_list": list_of_questionnaires_configuration,
             "experiment": experiment,
             "group": group,
+            "number_of_subjects": SubjectOfGroup.objects.all().filter(group=group).count(),
             "limesurvey_available": limesurvey_available}
 
         return render(request, template_name, context)
