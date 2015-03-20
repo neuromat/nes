@@ -332,7 +332,9 @@ def group_update(request, group_id, template_name="experiment/group_register.htm
                     return HttpResponseRedirect(redirect_url)
 
             else:
+
                 if request.POST['action'] == "remove":
+
                     try:
                         group.delete()
                     except ProtectedError:
@@ -341,6 +343,15 @@ def group_update(request, group_id, template_name="experiment/group_register.htm
                         return HttpResponseRedirect(redirect_url)
                     redirect_url = reverse("experiment_edit", args=(experiment.id,))
                     return HttpResponseRedirect(redirect_url)
+
+                else:
+
+                    if request.POST['action'] == "remove_experimental_protocol":
+                        component_configuration = get_object_or_404(ComponentConfiguration,
+                                                                    pk=group.experimental_protocol_id)
+                        group.experimental_protocol = None
+                        group.save()
+                        component_configuration.delete()
 
         context = {
             "classification_of_diseases_list": group.classification_of_diseases.all(),
