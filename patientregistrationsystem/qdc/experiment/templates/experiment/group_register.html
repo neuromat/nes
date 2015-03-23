@@ -215,11 +215,16 @@
                 <div class="container span6 offset3 well ">
                     <div class="row">
                         <div class="col-xs-6 col-sm-12">
-
-{#                            TODO: number of subjects #}
-                            {{ number_of_subjects }}
-
-                            <a href="/experiment/group/{{ group.id }}/subjects" class="btn btn-primary {% if creating %} disabled{% endif %}" >Participantes</a>
+                            {% if number_of_subjects > 0 %}
+                                <label>
+                                    <h5>Participantes</h5>
+                                </label>
+                                <div class="form-group">
+                                    <a data-toggle="tooltip" data-placement="left" title="Ver / Editar" href="/experiment/group/{{ group.id }}/subjects">Há {{ number_of_subjects }} participante(s) cadastrado(s)</a>
+                                </div>
+                            {% else %}
+                                <a href="/experiment/group/{{ group.id }}/subjects" class="btn btn-primary {% if creating %} disabled{% endif %}" >Cadastrar participantes</a>
+                            {% endif %}
                         </div>
                     </div>
                 </div>
