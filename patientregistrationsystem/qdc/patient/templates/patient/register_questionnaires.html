@@ -1,0 +1,55 @@
+{% extends "patient/register.html" %}
+
+{% load i18n admin_static %}
+
+{% block header_continuation %}
+
+    <script src="{% static 'quiz/js/patient_questinonaires.js' %}"></script>
+
+{% endblock %}
+
+{% block sub_content %}
+
+    <div class="tab-pane {% if currentTab == '4' %}active{% endif %}" id="tab5">
+        <div class="row">
+            <div class="col-md-12">
+                <div class="container span6 offset3 well ">
+                    <div class="form-group">
+                        <table class="table table-striped">
+                            <thead>
+                            <tr>
+                                <th>Experimento</th>
+                                <th>Grupo</th>
+                                <th>Questionário</th>
+                                <th>Data</th>
+                                <th></th>
+                            </tr>
+                            </thead>
+                            <tbody>
+                            {% for questionnaire in questionnaire_data %}
+                                <tr>
+                                    <td>{{ questionnaire.experiment_title }}</td>
+                                    <td>{{ questionnaire.group_title }}</td>
+                                    <td>{{ questionnaire.questionnaire_title }}</td>
+                                    <td>{{ questionnaire.questionnaire_response.date }}</td>
+                                    {% if editing %}
+                                        <td><a class="glyphicon glyphicon-search"
+                                               href="/experiment/questionnaire_response/{{ questionnaire.questionnaire_response.pk }}/?view=patient&status=edit"></a>
+                                        </td>
+                                    {% else %}
+                                        <td><a class="glyphicon glyphicon-search"
+                                               href="/experiment/questionnaire_response/{{ questionnaire.questionnaire_response.pk }}/?view=patient&status=view"></a>
+                                        </td>
+                                    {% endif %}
+                                </tr>
+                            {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+
+{% endblock %}

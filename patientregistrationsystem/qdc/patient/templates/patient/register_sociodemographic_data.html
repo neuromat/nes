@@ -1,0 +1,245 @@
+{% extends "patient/register.html" %}
+
+{% block sub_content %}
+
+    <div class="tab-pane {% if currentTab == '1' %}active{% endif %}" id="tab2">
+        <div class="row">
+            <div class="col-md-12">
+                <div class="container span6 offset3 well ">
+                    <div class="row">
+                        <div class="col-xs-6 col-sm-6">
+                            <div class="form-group">
+                                <label>Natural de</label>
+
+                                <div class="input-group input-group-sm">
+                                    <span class="input-group-addon"> <span class="glyphicon glyphicon-flag"></span></span>
+                                    {{ social_demographic_form.natural_of }}
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-xs-6 col-sm-6">
+                            <div class="form-group">
+                                <label>País de nascimento</label>
+
+                                <div class="input-group input-group-sm">
+                                    <span class="input-group-addon"> <span class="glyphicon glyphicon-home"></span></span>
+                                    {{ social_demographic_form.citizenship }}
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-xs-6 col-sm-6">
+                            <div class="form-group">
+                                <label>Profissão</label>
+
+                                <div class="input-group  input-group-sm ">
+                                    <span class="input-group-addon"> <span class="glyphicon"></span></span>
+                                    {{ social_demographic_form.profession }}
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-xs-6 col-sm-6">
+                            <div class="form-group">
+                                <label for="occupation">Ocupação</label>
+
+                                <div class="input-group  input-group-sm">
+                                    <span class="input-group-addon"> <span class="glyphicon"></span></span>
+                                    {{ social_demographic_form.occupation }}
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-xs-6 col-sm-12">
+                            <div class="form-group">
+                                <label>Recebe algum benefício de escala municipal, estadual ou federal de governo?</label>
+
+                                <div class="input-group  input-group-sm">
+                                    {% for radio in social_demographic_form.benefit_government %}
+                                        <div class="radio-inline">
+                                            {{ radio }}
+                                        </div>
+                                    {% endfor %}
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-xs-6 col-sm-12">
+                            <div class="form-group">
+                                <label>Qual a forma de pagamento do tratamento realizado?</label>
+
+                                <div class="input-group  input-group-sm">
+                                    {{ social_demographic_form.payment }}
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-xs-6 col-sm-6">
+                            <div class="form-group">
+                                <label>Religião (IBGE)</label>
+
+                                <div class="input-group  input-group-sm">
+                                    {{ social_demographic_form.religion }}
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-xs-6 col-sm-6">
+                            <div class="form-group">
+                                <label for="skin_color">Cor da pele (IBGE)</label>
+
+                                <div class="input-group  input-group-sm">
+                                    {{ social_demographic_form.flesh_tone }}
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="container span6 offset3 well ">
+                    <div class="row">
+                        <div class="col-xs-6 col-sm-12">
+                            <label>
+                                <h4>Classe social</h4>
+                                <br/>
+                            </label>
+
+                            <div class="form-group">
+                                <label>Grau de instrução do chefe de família - Critério Brasil 2013</label>
+
+                                <div class="input-group input-group-sm">
+                                    {{ social_demographic_form.schooling }}
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-xs-6 col-sm-12">
+                            <div class="form-group">
+                                <label>Quantidade de itens de conforto familiar - Critério Brasil 2013</label>
+
+                                <div class="form-group">
+                                    <label class="col-sm-5 control-label">Televisores em cores</label>
+
+                                    <div class="col-sm-7">
+                                        {% for radio in social_demographic_form.tv %}
+                                            <div class="radio-inline">
+                                                {{ radio }}
+                                            </div>
+                                        {% endfor %}
+                                    </div>
+                                </div>
+                                <div class="form-group">
+                                    <label class="col-sm-5 control-label">Videocassete/DVD</label>
+
+                                    <div class="col-sm-7">
+                                        {% for radio in social_demographic_form.dvd %}
+                                            <div class="radio-inline">
+                                                {{ radio }}
+                                            </div>
+                                        {% endfor %}
+                                    </div>
+                                </div>
+                                <div class="form-group">
+                                    <label class="col-sm-5 control-label">Rádios</label>
+
+                                    <div class="col-sm-7">
+                                        {% for radio in social_demographic_form.radio %}
+                                            <div class="radio-inline">
+                                                {{ radio }}
+                                            </div>
+                                        {% endfor %}
+                                    </div>
+                                </div>
+                                <div class="form-group">
+                                    <label class="col-sm-5 control-label">Banheiros</label>
+
+                                    <div class="col-sm-7">
+                                        {% for radio in social_demographic_form.bath %}
+                                            <div class="radio-inline">
+                                                {{ radio }}
+                                            </div>
+                                        {% endfor %}
+                                    </div>
+                                </div>
+                                <div class="form-group">
+                                    <label class="col-sm-5 control-label">Automóveis</label>
+
+                                    <div class="col-sm-7">
+                                        {% for radio in social_demographic_form.automobile %}
+                                            <div class="radio-inline">
+                                                {{ radio }}
+                                            </div>
+                                        {% endfor %}
+                                    </div>
+                                </div>
+                                <div class="form-group">
+                                    <label class="col-sm-5 control-label">Empregadas mensalistas</label>
+
+                                    <div class="col-sm-7">
+                                        {% for radio in social_demographic_form.house_maid %}
+                                            <div class="radio-inline">
+                                                {{ radio }}
+                                            </div>
+                                        {% endfor %}
+                                    </div>
+                                </div>
+                                <div class="form-group">
+                                    <label class="col-sm-5 control-label">Máquinas de lavar</label>
+
+                                    <div class="col-sm-7">
+                                        {% for radio in social_demographic_form.wash_machine %}
+                                            <div class="radio-inline">
+                                                {{ radio }}
+                                            </div>
+                                        {% endfor %}
+                                    </div>
+                                </div>
+                                <div class="form-group">
+                                    <label class="col-sm-5 control-label">Geladeiras</label>
+
+                                    <div class="col-sm-7">
+                                        {% for radio in social_demographic_form.refrigerator %}
+                                            <div class="radio-inline">
+                                                {{ radio }}
+                                            </div>
+                                        {% endfor %}
+                                    </div>
+                                </div>
+                                <div class="form-group">
+                                    <label class="col-sm-5 control-label">Freezer*</label>
+
+                                    <div class="col-sm-7">
+                                        {% for radio in social_demographic_form.freezer %}
+                                            <div class="radio-inline">
+                                                {{ radio }}
+                                            </div>
+                                        {% endfor %}
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-sm-12">
+                            <h6>*Aparelho independente ou parte da geladeira duplex.</h6>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-xs-6 col-sm-12">
+                            <div class="form-group">
+                                <br/>
+                                <label>Classe social calculada</label>
+                                <div class="input-group input-group-sm">
+                                    {{ social_demographic_form.social_class }}
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+{% endblock %}

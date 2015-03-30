@@ -4,7 +4,7 @@ from django.forms.widgets import Textarea
 from cep.widgets import CEPInput
 from django.utils.translation import ugettext_lazy as _
 
-from patient.models import Patient, SocialDemographicData, SocialHistoryData, ComplementaryExam, ExamFile
+from patient.models import Patient, Telephone, SocialDemographicData, SocialHistoryData, ComplementaryExam, ExamFile
 from patient.quiz_widget import SelectBoxCountries, SelectBoxState
 
 # pylint: disable=E1101
@@ -16,8 +16,8 @@ class PatientForm(ModelForm):
         model = Patient
 
         fields = [
-            'cpf', 'name', 'rg', 'medical_record', 'natural_of', 'citizenship', 'zipcode', 'street', 'city', 'state',
-            'country', 'phone', 'cellphone', 'email', 'date_birth', 'gender', 'marital_status', 'district',
+            'cpf', 'name', 'rg', 'medical_record', 'zipcode', 'street', 'city', 'state',
+            'country', 'email', 'date_birth', 'gender', 'marital_status', 'district',
             'address_complement', 'address_number'
         ]
 
@@ -37,20 +37,29 @@ class PatientForm(ModelForm):
             'cpf': TextInput(attrs={'class': 'form-control',
                                     'placeholder': 'xxx.xxx.xxx-xx'}),
             'rg': TextInput(attrs={'class': 'form-control'}),
-            'natural_of': TextInput(attrs={'class': 'form-control'}),
-            'phone': TextInput(attrs={'class': 'form-control'}),
-            'cellphone': TextInput(attrs={'class': 'form-control'}),
             'email': TextInput(attrs={
                 'class': 'form-control', 'type': 'email', 'data-error': _('E-mail incorreto'),
                 'pattern': '^[_A-Za-z0-9-\+]+(\.[_A-Za-z0-9-]+)*@[A-Za-z0-9-]+(\.[A-Za-z0-9]+)*(\.[A-Za-z]{2,})$'}),
             'medical_record': TextInput(attrs={'class': 'form-control'}),
-            'citizenship': SelectBoxCountries(attrs={'data-flags': 'true'}),
             'gender': Select(attrs={'class': 'form-control', 'required': "",
                                     'data-error': _('Sexo deve ser preenchido')}),
             'marital_status': Select(attrs={'class': 'form-control'}),
             'date_birth': DateInput(attrs={'class': 'form-control', 'required': "",
                                            'data-error': _('Data de nascimento deve ser preenchida'),
                                            'placeholder': 'dd/mm/aaaa'})
+        }
+
+
+class TelephoneForm(ModelForm):
+    class Meta:
+        model = Telephone
+
+        fields = ['number', 'type', 'note']
+
+        widgets = {
+            'number': TextInput(attrs={'class': 'form-control telephone_number', 'pattern': '^[- ()0-9]+'}),
+            'type': Select(attrs={'class': 'form-control'}),
+            'note': TextInput(attrs={'class': 'form-control'})
         }
 
 
@@ -62,11 +71,13 @@ class SocialDemographicDataForm(ModelForm):
 
     class Meta:
         model = SocialDemographicData
-        fields = ['profession', 'occupation', 'tv', 'dvd', 'radio', 'bath',
+        fields = ['natural_of', 'citizenship', 'profession', 'occupation', 'tv', 'dvd', 'radio', 'bath',
                   'automobile', 'wash_machine', 'refrigerator', 'freezer', 'house_maid',
                   'religion', 'payment', 'flesh_tone', 'schooling', 'benefit_government',
                   'social_class']
         widgets = {
+            'natural_of': TextInput(attrs={'class': 'form-control'}),
+            'citizenship': SelectBoxCountries(attrs={'data-flags': 'true'}),
             'schooling': Select(attrs={'class': 'form-control'}),
             'flesh_tone': Select(attrs={'class': 'form-control'}),
             'religion': Select(attrs={'class': 'form-control'}),

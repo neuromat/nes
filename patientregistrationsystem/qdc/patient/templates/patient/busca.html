@@ -1,5 +1,13 @@
 {% extends "quiz/template.html" %}
 
+{% load i18n admin_static %}
+
+{% block header %}
+
+    <script src="{% static 'quiz/js/patient_search.js' %}"></script>
+
+{% endblock %}
+
 {% block activePatient %}class="active"{% endblock %}
 
 {% block content %}
@@ -15,7 +23,7 @@
                         <input class="form-control" placeholder="Digite o nome ou o CPF para buscar um paciente" id="nameKey" type="text">
                     </div>
                     {% csrf_token %}
-                    <ul id="search-results" style="list-style: none;">
+                    <ul id="search-results-patients" style="list-style: none;">
                     </ul>
                 </div>
                 <div class="btn-group pull-left">

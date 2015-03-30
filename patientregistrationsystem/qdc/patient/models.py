@@ -95,8 +95,6 @@ class Patient(models.Model):
     rg = models.CharField(max_length=15, null=True, blank=True)
     name = models.CharField(max_length=50)
     medical_record = models.CharField(max_length=25, null=True, blank=True)
-    natural_of = models.CharField(max_length=50, null=True, blank=True)
-    citizenship = models.CharField(max_length=50, null=True, blank=True)
     street = models.CharField(max_length=50, null=True, blank=True)
     address_number = models.IntegerField(max_length=6, null=True, blank=True)
     district = models.CharField(max_length=50, null=True, blank=True)
@@ -105,8 +103,6 @@ class Patient(models.Model):
     country = models.CharField(max_length=30, null=True, blank=True)
     state = models.CharField(max_length=30, null=True, blank=True)
     city = models.CharField(max_length=30, null=True, blank=True)
-    phone = models.CharField(max_length=15, null=True, blank=True)
-    cellphone = models.CharField(max_length=15, null=True, blank=True)
     email = models.EmailField(null=True, blank=True)
     date_birth = models.DateField(null=False, blank=False, validators=[validate_date_birth])
     gender = models.ForeignKey(Gender, null=False, blank=False)
@@ -138,8 +134,50 @@ class Patient(models.Model):
             self.name
 
 
+class Telephone(models.Model):
+    patient = models.ForeignKey(Patient)
+    number = models.CharField(max_length=15)
+
+    MOBILE = 'MO'
+    HOME = 'HO'
+    WORK = 'WO'
+    MAIN = 'MA'
+    FAX_WORK = 'FW'
+    FAX_HOME = 'FH'
+    PAGER = 'PA'
+    OTHER = 'OT'
+    TYPE_CHOICES = ((MOBILE, "Celular"),
+                    (HOME, "Residencial"),
+                    (WORK, "Comercial"),
+                    (MAIN, "Principal"),
+                    (FAX_WORK, "Fax comercial"),
+                    (FAX_HOME, "Fax residencial"),
+                    (PAGER, "Pager"),
+                    (OTHER, "Outros"))
+
+    type = models.CharField(max_length=15, choices=TYPE_CHOICES, blank=True)
+    note = models.CharField(max_length=50, blank=True)
+
+    # Audit trail
+    history = HistoricalRecords()
+    changed_by = models.ForeignKey('auth.User')
+
+    @property
+    def _history_user(self):
+        return self.changed_by
+
+    @_history_user.setter
+    def _history_user(self, value):
+        self.changed_by = value
+
+    def __unicode__(self):
+        return self.number + '(' + self.type + ') - ' + self.note
+
+
 class SocialDemographicData(models.Model):
     patient = models.ForeignKey(Patient)
+    natural_of = models.CharField(max_length=50, null=True, blank=True)
+    citizenship = models.CharField(max_length=50, null=True, blank=True)
     religion = models.ForeignKey(Religion, null=True, blank=True)
     profession = models.CharField(null=True, blank=True, max_length=50)
     occupation = models.CharField(null=True, blank=True, max_length=50)
@@ -176,29 +214,26 @@ class SocialDemographicData(models.Model):
 
     @staticmethod
     def calculate_social_class(**keywords):
-        dict_dvd = {'0': 0, '1': 2, '2': 2, '3': 2, '4': 2}
-        dict_bath = {'0': 0, '1': 4, '2': 5, '3': 6, '4': 7}
-        dict_auto = {'0': 0, '1': 4, '2': 7, '3': 9, '4': 9}
-        dict_housemaid = {'0': 0, '1': 3, '2': 4, '3': 4, '4': 4}
-        dict_refrigerator = {'0': 0, '1': 4, '2': 4, '3': 4, '4': 4}
-        dict_schooling = {'1': 0, '2': 1, '3': 2, '4': 4, '5': 8}
+        #  According to IBGE:
+        punctuation_table = {
+            'tv':           {0:0, 1:1, 2:2, 3:3, 4:4},
+            'radio':        {0:0, 1:1, 2:2, 3:3, 4:4},
+
+            'dvd':          {0:0, 1:2, 2:2, 3:2, 4:2},
+            'wash_mashine': {0:0, 1:2, 2:2, 3:2, 4:2},
+            'freezer':      {0:0, 1:2, 2:2, 3:2, 4:2},
+
+            'bath':         {0:0, 1:4, 2:5, 3:6, 4:7},
+            'car':          {0:0, 1:4, 2:7, 3:9, 4:9},
+            'housemaid':    {0:0, 1:3, 2:4, 3:4, 4:4},
+            'refrigerator': {0:0, 1:4, 2:4, 3:4, 4:4},
+
+            'schooling':    {'1':0, '2':1, '3':2, '4':4, '5':8}
+        }
         points = 0
 
         for key_word in keywords.keys():
-            if key_word == 'tv' or key_word == 'radio':
-                points += int(keywords[key_word])
-            elif key_word == 'banheiro':
-                points += dict_bath[keywords[key_word]]
-            elif key_word == 'automovel':
-                points += dict_auto[keywords[key_word]]
-            elif key_word == 'empregada':
-                points += dict_housemaid[keywords[key_word]]
-            elif key_word == 'dvd' or key_word == 'maquina' or key_word == 'freezer':
-                points += dict_dvd[keywords[key_word]]
-            elif key_word == 'geladeira':
-                points += dict_refrigerator[keywords[key_word]]
-            elif key_word == 'escolaridade':
-                points += dict_schooling[keywords[key_word]]
+            points += (punctuation_table[key_word])[keywords[key_word]]
 
         if 0 <= points <= 7:
             return 'E'

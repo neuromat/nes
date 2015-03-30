@@ -11,7 +11,8 @@ urlpatterns = patterns(
     url(r'^edit/(?P<patient_id>\d+)/$', 'patient_update', name='patient_edit'),
     url(r'^search/$', 'search_patients_ajax', name='patient_search'),
     url(r'^verify_homonym/$', 'patients_verify_homonym', name='patients_verify_homonym'),
-    url(r'^(?P<patient_id>\d+)/$', 'patient', name='patient_view'),
+    url(r'^verify_homonym_excluded/$', 'patients_verify_homonym_excluded', name='patients_verify_homonym_excluded'),
+    url(r'^(?P<patient_id>\d+)/$', 'patient_view', name='patient_view'),
     url(r'^restore/(?P<patient_id>\d+)/$', 'restore_patient', name='patient_restore'),
 
     # medical_record (create, read, update)

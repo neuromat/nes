@@ -3,19 +3,17 @@ import datetime
 from functools import partial
 import re
 
-from django.shortcuts import render, get_object_or_404
-from django.contrib.auth.decorators import login_required, permission_required
-from django.http import HttpResponseRedirect
-from django.core.urlresolvers import reverse
-from django.shortcuts import render_to_response
 from django.contrib import messages
+from django.contrib.auth.decorators import login_required, permission_required
+from django.core.urlresolvers import reverse
 from django.db.models import Q
+from django.forms.models import inlineformset_factory
+from django.http import HttpResponseRedirect
+from django.shortcuts import render, render_to_response, get_object_or_404
 
-from patient.models import Patient, SocialDemographicData, SocialHistoryData, FleshTone, \
-    MaritalStatus, Schooling, Payment, Religion, MedicalRecordData, \
-    Gender, AmountCigarettes, AlcoholFrequency, AlcoholPeriod, \
+from patient.models import Patient, Telephone, SocialDemographicData, SocialHistoryData, MedicalRecordData, \
     ClassificationOfDiseases, Diagnosis, ExamFile, ComplementaryExam
-from patient.forms import PatientForm, SocialDemographicDataForm, SocialHistoryDataForm, \
+from patient.forms import PatientForm, TelephoneForm, SocialDemographicDataForm, SocialHistoryDataForm, \
     ComplementaryExamForm, ExamFileForm
 from patient.quiz_widget import SelectBoxCountriesDisabled, SelectBoxStateDisabled
 
@@ -32,62 +30,69 @@ permission_required = partial(permission_required, raise_exception=True)
 
 @login_required
 @permission_required('patient.add_patient')
-def patient_create(request, template_name="patient/register.html"):
-    flesh_tone = FleshTone.objects.all()
-    marital_status = MaritalStatus.objects.all()
-    gender = Gender.objects.all()
-    schooling = Schooling.objects.all()
-    payment = Payment.objects.all()
-    religion = Religion.objects.all()
-    amount_cigarettes = AmountCigarettes.objects.all()
-    alcohol_frequency = AlcoholFrequency.objects.all()
-    alcohol_period = AlcoholPeriod.objects.all()
-
-    patient_form = PatientForm()
-    social_demographic_form = SocialDemographicDataForm()
-    social_history_form = SocialHistoryDataForm()
-
-    current_tab = get_current_tab(request)
+def patient_create(request, template_name="patient/register_personal_data.html"):
+    patient_form = PatientForm(request.POST or None)
 
     if request.method == "POST":
-
-        patient_form = PatientForm(request.POST)
-        social_demographic_form = SocialDemographicDataForm(request.POST)
-        social_history_form = SocialHistoryDataForm(request.POST)
-
         if patient_form.is_valid():
+            new_patient = patient_form.save(commit=False)
 
-            current_tab, new_patient_id = save_patient(current_tab, patient_form, request, social_demographic_form,
-                                                       social_history_form, insert_new=True)
+            if not new_patient.cpf:
+                new_patient.cpf = None
 
-            redirect_url = reverse("patient_edit", args=(new_patient_id,))
-            return HttpResponseRedirect(redirect_url + "?currentTab=" + str(current_tab))
+            new_patient.changed_by = request.user
+            new_patient.save()
+            messages.success(request, 'Dados pessoais gravados com sucesso.')
+
+            if 'action' in request.POST and request.POST['action'] == "show_next":
+                redirect_url = reverse("patient_edit", args=(new_patient.id,))
+                return HttpResponseRedirect(redirect_url + "?currentTab=1")
+            else:
+                redirect_url = reverse("patient_view", args=(new_patient.id,))
+                return HttpResponseRedirect(redirect_url)
 
         else:
-
             if request.POST['cpf']:
                 patient_found = Patient.objects.filter(cpf=request.POST['cpf'])
 
                 if patient_found:
-
                     if patient_found[0].removed:
                         patient_form.errors['cpf'][0] = "Já existe paciente removido com este CPF."
                     else:
                         patient_form.errors['cpf'][0] = "Já existe paciente cadastrado com este CPF."
 
     context = {
-        'patient_form': patient_form, 'social_demographic_form': social_demographic_form,
-        'social_history_form': social_history_form,
-        'gender': gender, 'flesh_tone': flesh_tone,
-        'marital_status': marital_status, 'schooling': schooling,
-        'payment': payment, 'religion': religion,
-        'amount_cigarettes': amount_cigarettes, 'alcohol_frequency': alcohol_frequency,
-        'alcohol_period': alcohol_period,
+        'patient_form': patient_form,
         'editing': True,
         'inserting': True,
-        'currentTab': current_tab}
+        'currentTab': '0'}
 
     return render(request, template_name, context)
+
+
+@login_required
+@permission_required('patient.change_patient')
+def patient_update(request, patient_id):
+    patient = get_object_or_404(Patient, pk=patient_id)
+
+    if patient and not patient.removed:
+        current_tab = get_current_tab(request)
+
+        context = {
+            'editing': True,
+            'currentTab': current_tab,
+            'patient_id': patient_id}
+
+        if current_tab == '0':
+            return patient_update_personal_data(request, patient, context)
+        elif current_tab == '1':
+            return patient_update_social_demographic_data(request, patient, context)
+        elif current_tab == '2':
+            return patient_update_social_history(request, patient, context)
+        elif current_tab == '3':
+            return patient_update_medical_record(request, patient, context)
+        else: # current_tab == '4':
+            return patient_update_questionnaires(request, patient, context)
 
 
 def get_current_tab(request):
@@ -103,242 +108,353 @@ def get_current_tab(request):
     return current_tab
 
 
-def save_patient(current_tab, patient_form, request, social_demographic_form, social_history_form, insert_new=False):
-    new_patient = patient_form.save(commit=False)
-    if not new_patient.cpf:
-        new_patient.cpf = None
+def patient_update_personal_data(request, patient, context):
+    # Part of the patient form is shown on this tab and part is shown on the second tab.
+    patient_form = PatientForm(request.POST or None, instance=patient)
 
-    if not patient_form.has_changed() \
-            and not social_demographic_form.has_changed() \
-            and not social_history_form.has_changed():
-        return current_tab, new_patient.id
+    TelephoneFormSet = inlineformset_factory(Patient, Telephone, form=TelephoneForm)
 
-    if patient_form.has_changed():
-        new_patient.changed_by = request.user
-        new_patient.save()
+    if request.method == "POST":
+        patient_form_is_valid = patient_form.is_valid()
 
-    if social_demographic_form.is_valid():
+        telephone_formset = TelephoneFormSet(request.POST, request.FILES, instance=patient)
+        telephone_formset_is_valid = telephone_formset.is_valid()
 
-        new_social_demographic_data = social_demographic_form.save(commit=False)
-        new_social_demographic_data.patient = new_patient
+        if patient_form_is_valid and telephone_formset_is_valid:
+            patient_form_has_changed = patient_form.has_changed()
+            telephone_formset_has_changed = telephone_formset.has_changed()
 
-        if insert_new or social_demographic_form.has_changed():
+            if patient_form_has_changed:
+                new_patient = patient_form.save(commit=False)
 
-            if (new_social_demographic_data.tv is not None and
-                    new_social_demographic_data.radio is not None and
-                    new_social_demographic_data.bath is not None and
-                    new_social_demographic_data.automobile is not None and
-                    new_social_demographic_data.house_maid is not None and
-                    new_social_demographic_data.wash_machine is not None and
-                    new_social_demographic_data.dvd is not None and
-                    new_social_demographic_data.refrigerator is not None and
-                    new_social_demographic_data.freezer is not None):
+                if not new_patient.cpf:
+                    new_patient.cpf = None
 
-                new_social_demographic_data.social_class = new_social_demographic_data.calculate_social_class(
-                    tv=request.POST['tv'], radio=request.POST['radio'],
-                    banheiro=request.POST['bath'], automovel=request.POST['automobile'],
-                    empregada=request.POST['house_maid'], maquina=request.POST['wash_machine'],
-                    dvd=request.POST['dvd'], geladeira=request.POST['refrigerator'],
-                    freezer=request.POST['freezer'], escolaridade=request.POST['schooling'])
+                new_patient.changed_by = request.user
+                new_patient.save()
 
-            else:
+            if telephone_formset_has_changed:
+                new_phone_list = telephone_formset.save(commit=False)
 
-                new_social_demographic_data.social_class = None
+                for phone in new_phone_list:
+                    phone.changed_by = request.user
+                    phone.save()
 
-                if (new_social_demographic_data.tv is not None or
-                        new_social_demographic_data.radio is not None or
-                        new_social_demographic_data.bath is not None or
-                        new_social_demographic_data.automobile is not None or
-                        new_social_demographic_data.house_maid is not None or
-                        new_social_demographic_data.wash_machine is not None or
-                        new_social_demographic_data.dvd is not None or
-                        new_social_demographic_data.refrigerator is not None or
-                        new_social_demographic_data.freezer is not None):
-                    messages.warning(request, 'Classe Social não calculada, pois os campos necessários '
-                                              'para o cálculo não foram preenchidos.')
-                    current_tab = "1"
+            if patient_form_has_changed or telephone_formset_has_changed:
+                messages.success(request, 'Dados pessoais gravados com sucesso.')
 
-            new_social_demographic_data.changed_by = request.user
-            new_social_demographic_data.save()
+            return finish_handling_post(request, patient.id, 0)
+    else:
+        telephone_formset = TelephoneFormSet(instance=patient)
 
-    if insert_new or (social_history_form.is_valid() and social_history_form.has_changed()):
-        new_social_history_data = social_history_form.save(commit=False)
-        new_social_history_data.patient = new_patient
-        new_social_history_data.changed_by = request.user
-        new_social_history_data.save()
+    context.update({
+        'patient_form': patient_form,
+        'telephone_formset': telephone_formset})
 
-    if patient_form.has_changed() \
-            or social_demographic_form.has_changed() \
-            or social_history_form.has_changed():
-        messages.success(request, 'Paciente gravado com sucesso.')
-
-    new_patient_id = new_patient.id
-    return current_tab, new_patient_id
+    return render(request, "patient/register_personal_data.html", context)
 
 
-@login_required
-@permission_required('patient.change_patient')
-def patient_update(request, patient_id, template_name="patient/register.html"):
-    current_patient = get_object_or_404(Patient, pk=patient_id)
+def patient_update_social_demographic_data(request, patient, context):
+    try:
+        p_social_demo = SocialDemographicData.objects.get(patient_id=patient.id)
+        social_demographic_form = SocialDemographicDataForm(request.POST or None, instance=p_social_demo)
+    except SocialDemographicData.DoesNotExist:
+        social_demographic_form = SocialDemographicDataForm()
 
-    if current_patient and not current_patient.removed:
+    if request.method == "POST":
+        if social_demographic_form.is_valid():
+            if social_demographic_form.has_changed():
+                new_social_demographic_data = social_demographic_form.save(commit=False)
 
-        patient_form = PatientForm(request.POST or None, instance=current_patient)
+                # Calculate social class only if all fields were filled
+                if (new_social_demographic_data.tv is not None and
+                        new_social_demographic_data.radio is not None and
+                        new_social_demographic_data.bath is not None and
+                        new_social_demographic_data.automobile is not None and
+                        new_social_demographic_data.house_maid is not None and
+                        new_social_demographic_data.wash_machine is not None and
+                        new_social_demographic_data.dvd is not None and
+                        new_social_demographic_data.refrigerator is not None and
+                        new_social_demographic_data.freezer is not None and
+                        new_social_demographic_data.schooling is not None):
 
-        try:
-            p_social_demo = SocialDemographicData.objects.get(patient_id=patient_id)
-            social_demographic_form = SocialDemographicDataForm(request.POST or None, instance=p_social_demo)
-        except SocialDemographicData.DoesNotExist:
-            social_demographic_form = SocialDemographicDataForm()
+                    new_social_demographic_data.social_class = new_social_demographic_data.calculate_social_class(
+                        tv=new_social_demographic_data.tv,
+                        radio=new_social_demographic_data.radio,
+                        bath=new_social_demographic_data.bath,
+                        car=new_social_demographic_data.automobile,
+                        housemaid=new_social_demographic_data.house_maid,
+                        wash_mashine=new_social_demographic_data.wash_machine,
+                        dvd=new_social_demographic_data.dvd,
+                        refrigerator=new_social_demographic_data.refrigerator,
+                        freezer=new_social_demographic_data.freezer,
+                        # If we use the object, the parameter will have the names registered in the admin interface.
+                        # To avoid that, we use post data, which is a string (hopefully) containing a number from 1 to 5.
+                        # schooling=new_social_demographic_data.schooling)
+                        schooling=request.POST['schooling'])
 
-        try:
-            p_social_hist = SocialHistoryData.objects.get(patient_id=patient_id)
-            social_history_form = SocialHistoryDataForm(request.POST or None, instance=p_social_hist)
-        except SocialHistoryData.DoesNotExist:
-            social_history_form = SocialDemographicDataForm()
+                else:
+                    new_social_demographic_data.social_class = None
 
-        current_tab = get_current_tab(request)
+                    # Show message only if any of the fields were filled. Nothing is shown or calculated if none of the
+                    # fields were filled.
+                    if (new_social_demographic_data.tv is not None or
+                            new_social_demographic_data.radio is not None or
+                            new_social_demographic_data.bath is not None or
+                            new_social_demographic_data.automobile is not None or
+                            new_social_demographic_data.house_maid is not None or
+                            new_social_demographic_data.wash_machine is not None or
+                            new_social_demographic_data.dvd is not None or
+                            new_social_demographic_data.refrigerator is not None or
+                            new_social_demographic_data.freezer is not None or
+                            new_social_demographic_data.schooling is not None):
+                        messages.warning(request, 'Classe Social não calculada, pois nem todos os campos necessários '
+                                                  'para o cálculo foram preenchidos.')
 
-        if request.method == "POST":
+                new_social_demographic_data.changed_by = request.user
+                new_social_demographic_data.save()
 
-            if patient_form.is_valid():
+                messages.success(request, 'Dados sociodemográficos gravados com sucesso.')
 
-                current_tab, new_patient_id = save_patient(current_tab, patient_form, request, social_demographic_form,
-                                                           social_history_form)
+            return finish_handling_post(request, patient.id, 1)
 
-                redirect_url = reverse("patient_edit", args=(new_patient_id,))
-                return HttpResponseRedirect(redirect_url + "?currentTab=" + current_tab)
+    context.update({
+        'social_demographic_form': social_demographic_form})
 
-            else:
-                if request.POST['cpf'] and Patient.objects.filter(cpf=request.POST['cpf']):
-                    patient_form.errors['cpf'][0] = "Já existe paciente cadastrado com este CPF."
+    return render(request, "patient/register_sociodemographic_data.html", context)
 
-        medical_data = MedicalRecordData.objects.filter(patient_id=patient_id).order_by('record_date')
 
-        questionnaires_data = []
+def patient_update_social_history(request, patient, context):
+    try:
+        p_social_hist = SocialHistoryData.objects.get(patient_id=patient.id)
+        social_history_form = SocialHistoryDataForm(request.POST or None, instance=p_social_hist)
+    except SocialHistoryData.DoesNotExist:
+        social_history_form = SocialHistoryDataForm()
 
-        if current_tab == '4':
-            surveys = Questionnaires()
-            subject = Subject.objects.filter(patient=current_patient)
-            subject_of_group_list = SubjectOfGroup.objects.filter(subject=subject)
-            for subject_of_group in subject_of_group_list:
-                group = get_object_or_404(Group, id=subject_of_group.group.id)
-                experiment = get_object_or_404(Experiment, id=group.experiment.id)
-                questionnaire_configuration_list = QuestionnaireConfiguration.objects.filter(group=group)
-                for questionnaire_configuration in questionnaire_configuration_list:
-                    questionnaire_response_list = \
-                        QuestionnaireResponse.objects.filter(subject_of_group=subject_of_group).\
-                        filter(questionnaire_configuration=questionnaire_configuration)
-                    for questionnaire_response in questionnaire_response_list:
-                        questionnaires_data.append(
-                            {
-                                'experiment_title': experiment.title,
-                                'group_title': group.title,
-                                'questionnaire_title': surveys.get_survey_title(
-                                    questionnaire_configuration.lime_survey_id),
-                                'questionnaire_response': questionnaire_response
-                            }
-                        )
-            surveys.release_session_key()
+    if request.method == "POST":
+        if social_history_form.is_valid():
+            if social_history_form.has_changed():
+                new_social_history_data = social_history_form.save(commit=False)
+                new_social_history_data.changed_by = request.user
+                new_social_history_data.save()
+                messages.success(request, 'História social gravada com sucesso.')
 
-        context = {
-            'patient_form': patient_form,
-            'social_demographic_form': social_demographic_form,
-            'social_history_form': social_history_form,
-            'editing': True,
-            'currentTab': current_tab,
-            'patient_id': patient_id,
-            'object_list': medical_data,
-            'questionnaire_data': questionnaires_data}
-        return render(request, template_name, context)
+            return finish_handling_post(request, patient.id, 2)
+
+    context.update({
+        'social_history_form': social_history_form})
+
+    return render(request, "patient/register_social_history.html", context)
+
+
+def patient_update_medical_record(request, patient, context):
+    if request.method == "POST":
+        return finish_handling_post(request, patient.id, 3)
+
+    medical_record = MedicalRecordData.objects.filter(patient=patient).order_by('record_date')
+
+    context.update({
+        'medical_record': medical_record})
+
+    return render(request, "patient/register_medical_record.html", context)
+
+
+def patient_update_questionnaires(request, patient, context):
+    if request.method == "POST":
+        return finish_handling_post(request, patient.id, 4)
+
+    questionnaires_data = []
+
+    # TODO Sort the questionnaires somehow.
+
+    surveys = Questionnaires()
+    subject = Subject.objects.filter(patient=patient)
+    subject_of_group_list = SubjectOfGroup.objects.filter(subject=subject)
+
+    for subject_of_group in subject_of_group_list:
+        group = get_object_or_404(Group, id=subject_of_group.group.id)
+        experiment = get_object_or_404(Experiment, id=group.experiment.id)
+        questionnaire_configuration_list = QuestionnaireConfiguration.objects.filter(group=group)
+
+        for questionnaire_configuration in questionnaire_configuration_list:
+            questionnaire_response_list = QuestionnaireResponse.objects.filter(subject_of_group=subject_of_group).\
+                filter(questionnaire_configuration=questionnaire_configuration)
+
+            for questionnaire_response in questionnaire_response_list:
+                questionnaires_data.append({
+                    'experiment_title': experiment.title,
+                    'group_title': group.title,
+                    'questionnaire_title': surveys.get_survey_title(questionnaire_configuration.lime_survey_id),
+                    'questionnaire_response': questionnaire_response
+                })
+
+    surveys.release_session_key()
+
+    context.update({
+        'questionnaire_data': questionnaires_data})
+
+    return render(request, "patient/register_questionnaires.html", context)
+
+
+def finish_handling_post(request, patient_id, currentTab):
+    if 'action' in request.POST:
+        redirect_url = reverse("patient_edit", args=(patient_id,))
+
+        if request.POST['action'] == "show_previous":
+            return HttpResponseRedirect(redirect_url + "?currentTab=" + str(currentTab - 1))
+        elif request.POST['action'] == "show_next":
+            return HttpResponseRedirect(redirect_url + "?currentTab=" + str(currentTab + 1))
+        elif request.POST['action'] == "change_tab":
+            return HttpResponseRedirect(redirect_url + "?currentTab=" + request.POST['nextTab'])
+        elif request.POST['action'] == "more_phones":
+            return HttpResponseRedirect(redirect_url + "?currentTab=0")
+
+    redirect_url = reverse("patient_view", args=(patient_id,))
+    return HttpResponseRedirect(redirect_url + "?currentTab=" + str(currentTab))
 
 
 @login_required
 @permission_required('patient.view_patient')
-def patient(request, patient_id, template_name="patient/register.html"):
-    if request.method == "POST":
+def patient_view(request, patient_id):
+    current_tab = get_current_tab(request)
+    patient = get_object_or_404(Patient, pk=patient_id)
 
+    if request.method == "POST":
         redirect_url = reverse("search_patient")
 
         if 'action' in request.POST:
-
             if request.POST['action'] == "remove":
-
-                patient_remove = Patient.objects.get(id=patient_id)
-                patient_remove.removed = True
-                patient_remove.save()
-
+                patient.removed = True
+                patient.save()
+            elif request.POST['action'] == "show_previous":
+                redirect_url = reverse("patient_view", args=(patient_id,))
+                return HttpResponseRedirect(redirect_url + "?currentTab=" + str(int(current_tab) - 1))
+            elif request.POST['action'] == "show_next":
+                redirect_url = reverse("patient_view", args=(patient_id,))
+                return HttpResponseRedirect(redirect_url + "?currentTab=" + str(int(current_tab) + 1))
             else:
-                current_tab = request.POST['currentTab']
                 redirect_url = reverse("patient_edit", args=(patient_id,))
-                return HttpResponseRedirect(redirect_url + "?currentTab=" + str(current_tab))
+                return HttpResponseRedirect(redirect_url + "?currentTab=" + current_tab)
 
         return HttpResponseRedirect(redirect_url)
 
-    current_tab = get_current_tab(request)
+    if patient and not patient.removed:
+        context = {
+            'editing': False,
+            'currentTab': current_tab,
+            'patient_id': patient_id}
 
-    current_patient = get_object_or_404(Patient, pk=patient_id)
+        if current_tab == '0':
+            return patient_view_personal_data(request, patient, context)
+        elif current_tab == '1':
+            return patient_view_social_demographic_data(request, patient, context)
+        elif current_tab == '2':
+            return patient_view_social_history(request, patient, context)
+        elif current_tab == '3':
+            return patient_view_medical_record(request, patient, context)
+        else: # current_tab == '4':
+            return patient_view_questionnaires(request, patient, context)
 
-    if current_patient and not current_patient.removed:
 
-        patient_form = PatientForm(instance=current_patient)
+def patient_view_personal_data(request, patient, context):
+    # Part of the patient form is shown on this tab and part is shown on the second tab.
+    patient_form = PatientForm(instance=patient)
 
-        try:
-            p_social_demo = SocialDemographicData.objects.get(patient_id=patient_id)
-            social_demographic_form = SocialDemographicDataForm(instance=p_social_demo)
-        except SocialDemographicData.DoesNotExist:
-            social_demographic_form = SocialDemographicDataForm()
+    TelephoneFormSet = inlineformset_factory(Patient, Telephone, form=TelephoneForm, extra=1)
+    telephone_formset = TelephoneFormSet(instance=patient)
 
-        try:
-            p_social_hist = SocialHistoryData.objects.get(patient_id=patient_id)
-            social_history_form = SocialHistoryDataForm(instance=p_social_hist)
-        except SocialHistoryData.DoesNotExist:
-            social_history_form = SocialDemographicDataForm()
+    for field in patient_form.fields:
+        patient_form.fields[field].widget.attrs['disabled'] = True
 
-        medical_data = MedicalRecordData.objects.filter(patient_id=patient_id).order_by('record_date')
+    for form in telephone_formset:
+        for field in form.fields:
+            form.fields[field].widget.attrs['disabled'] = True
 
-        for form in {patient_form, social_demographic_form, social_history_form}:
-            for field in form.fields:
-                form.fields[field].widget.attrs['disabled'] = True
+    patient_form.fields['country'].widget = SelectBoxCountriesDisabled(
+        attrs={'id': 'id_country_state_address', 'data-flags': 'true', 'disabled': 'true'})
+    patient_form.fields['state'].widget = SelectBoxStateDisabled(
+        attrs={'data-country': 'id_country_state_address', 'id': 'id_chosen_state', 'disabled': 'true'})
 
-        patient_form.fields['country'].widget = SelectBoxCountriesDisabled(
-            attrs={'id': 'id_country_state_address', 'data-flags': 'true', 'disabled': 'true'})
-        patient_form.fields['state'].widget = SelectBoxStateDisabled(
-            attrs={'data-country': 'id_country_state_address', 'id': 'id_chosen_state', 'disabled': 'true'})
-        patient_form.fields['citizenship'].widget = SelectBoxCountriesDisabled(
-            attrs={'id': 'id_chosen_country', 'data-flags': 'true', 'disabled': 'true'})
+    context.update({
+        'patient_form': patient_form,
+        'telephone_formset': telephone_formset})
 
-        surveys = Questionnaires()
-        questionnaires_data = []
-        subject = Subject.objects.filter(patient=current_patient)
-        subject_of_group_list = SubjectOfGroup.objects.filter(subject=subject)
-        for subject_of_group in subject_of_group_list:
-            group = get_object_or_404(Group, id=subject_of_group.group.id)
-            experiment = get_object_or_404(Experiment, id=group.experiment.id)
-            questionnaire_configuration_list = QuestionnaireConfiguration.objects.filter(group=group)
-            for questionnaire_configuration in questionnaire_configuration_list:
-                questionnaire_response_list = QuestionnaireResponse.objects.filter(subject_of_group=subject_of_group). \
-                    filter(questionnaire_configuration=questionnaire_configuration)
-                for questionnaire_response in questionnaire_response_list:
-                    questionnaires_data.append(
-                        {
-                            'experiment_title': experiment.title,
-                            'group_title': group.title,
-                            'questionnaire_title': surveys.get_survey_title(questionnaire_configuration.lime_survey_id),
-                            'questionnaire_response': questionnaire_response
-                        }
-                    )
+    return render(request, "patient/register_personal_data.html", context)
 
-        context = {'patient_form': patient_form, 'social_demographic_form': social_demographic_form,
-                   'social_history_form': social_history_form,
-                   'editing': False,
-                   'currentTab': current_tab,
-                   'patient_id': patient_id,
-                   'object_list': medical_data,
-                   'questionnaire_data': questionnaires_data}
 
-        return render(request, template_name, context)
+def patient_view_social_demographic_data(request, patient, context):
+    try:
+        p_social_demo = SocialDemographicData.objects.get(patient_id=patient.id)
+        social_demographic_form = SocialDemographicDataForm(instance=p_social_demo)
+    except SocialDemographicData.DoesNotExist:
+        social_demographic_form = SocialDemographicDataForm()
 
+    social_demographic_form.fields['citizenship'].widget = SelectBoxCountriesDisabled(
+        attrs={'id': 'id_chosen_country', 'data-flags': 'true', 'disabled': 'true'})
+
+    for field in social_demographic_form.fields:
+        social_demographic_form.fields[field].widget.attrs['disabled'] = True
+
+    context.update({
+        'social_demographic_form': social_demographic_form})
+
+    return render(request, "patient/register_sociodemographic_data.html", context)
+
+
+def patient_view_social_history(request, patient, context):
+    try:
+        p_social_hist = SocialHistoryData.objects.get(patient_id=patient.id)
+        social_history_form = SocialHistoryDataForm(instance=p_social_hist)
+    except SocialHistoryData.DoesNotExist:
+        social_history_form = SocialDemographicDataForm()
+
+    for field in social_history_form.fields:
+        social_history_form.fields[field].widget.attrs['disabled'] = True
+
+    context.update({
+        'social_history_form': social_history_form})
+
+    return render(request, "patient/register_social_history.html", context)
+
+
+def patient_view_medical_record(request, patient, context):
+    medical_record = MedicalRecordData.objects.filter(patient_id=patient.id).order_by('record_date')
+
+    context.update({
+        'medical_record': medical_record})
+
+    return render(request, "patient/register_medical_record.html", context)
+
+
+def patient_view_questionnaires(request, patient, context):
+    surveys = Questionnaires()
+    questionnaires_data = []
+    subject = Subject.objects.filter(patient=patient)
+    subject_of_group_list = SubjectOfGroup.objects.filter(subject=subject)
+
+    for subject_of_group in subject_of_group_list:
+        group = get_object_or_404(Group, id=subject_of_group.group.id)
+        experiment = get_object_or_404(Experiment, id=group.experiment.id)
+        questionnaire_configuration_list = QuestionnaireConfiguration.objects.filter(group=group)
+
+        for questionnaire_configuration in questionnaire_configuration_list:
+            questionnaire_response_list = QuestionnaireResponse.objects.filter(subject_of_group=subject_of_group). \
+                filter(questionnaire_configuration=questionnaire_configuration)
+
+            for questionnaire_response in questionnaire_response_list:
+                questionnaires_data.append(
+                    {
+                        'experiment_title': experiment.title,
+                        'group_title': group.title,
+                        'questionnaire_title': surveys.get_survey_title(questionnaire_configuration.lime_survey_id),
+                        'questionnaire_response': questionnaire_response
+                    }
+                )
+
+    context.update({
+        'questionnaire_data': questionnaires_data})
+
+    return render(request, "patient/register_questionnaires.html", context)
 
 @login_required
 @permission_required('patient.view_patient')
@@ -386,16 +502,28 @@ def patients_verify_homonym(request):
         if search_text:
             if re.match('[a-zA-Z ]+', search_text):
                 patient_homonym = Patient.objects.filter(name=search_text).exclude(removed=True)
-                patient_homonym_excluded = Patient.objects.filter(name=search_text, removed=True)
             else:
                 patient_homonym = Patient.objects.filter(cpf=search_text).exclude(removed=True)
-                patient_homonym_excluded = Patient.objects.filter(cpf=search_text, removed=True)
         else:
             patient_homonym = ''
+
+    return render_to_response('patient/ajax_homonym.html', {'patient_homonym': patient_homonym})
+
+
+@login_required
+@permission_required('patient.view_patient')
+def patients_verify_homonym_excluded(request):
+    if request.method == "POST":
+        search_text = request.POST['search_text']
+        if search_text:
+            if re.match('[a-zA-Z ]+', search_text):
+                patient_homonym_excluded = Patient.objects.filter(name=search_text, removed=True)
+            else:
+                patient_homonym_excluded = Patient.objects.filter(cpf=search_text, removed=True)
+        else:
             patient_homonym_excluded = ''
 
-    return render_to_response('patient/ajax_homonym.html', {'patient_homonym': patient_homonym,
-                                                            'patient_homonym_excluded': patient_homonym_excluded})
+    return render_to_response('patient/ajax_homonym.html', {'patient_homonym_excluded': patient_homonym_excluded})
 
 
 @login_required
