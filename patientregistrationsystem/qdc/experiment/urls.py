@@ -7,8 +7,8 @@ urlpatterns = patterns(
     url(r'^keyword/search/$', 'keyword_search_ajax', name='keywords_search'),
     url(r'^keyword/new/(?P<research_project_id>\d+)/(?P<keyword_name>.+)/$', 'keyword_create_ajax', name='keyword_new'),
     url(r'^keyword/add/(?P<research_project_id>\d+)/(?P<keyword_id>\d+)/$', 'keyword_add_ajax', name='keyword_add'),
-    url(r'^keyword/remove/(?P<research_project_id>\d+)/(?P<keyword_id>\d+)/$',
-        'keyword_remove_ajax', name='keyword_remove'),
+    url(r'^keyword/remove/(?P<research_project_id>\d+)/(?P<keyword_id>\d+)/$', 'keyword_remove_ajax',
+        name='keyword_remove'),
 
     # research project
     url(r'^research_project/list/$', 'research_project_list', name='research_project_list'),

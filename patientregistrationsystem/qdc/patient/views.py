@@ -33,8 +33,15 @@ permission_required = partial(permission_required, raise_exception=True)
 def patient_create(request, template_name="patient/register_personal_data.html"):
     patient_form = PatientForm(request.POST or None)
 
+    TelephoneFormSet = inlineformset_factory(Patient, Telephone, form=TelephoneForm)
+
     if request.method == "POST":
-        if patient_form.is_valid():
+        patient_form_is_valid = patient_form.is_valid()
+
+        telephone_formset = TelephoneFormSet(request.POST, request.FILES)
+        telephone_formset_is_valid = telephone_formset.is_valid()
+
+        if patient_form_is_valid and telephone_formset_is_valid:
             new_patient = patient_form.save(commit=False)
 
             if not new_patient.cpf:
@@ -42,15 +49,16 @@ def patient_create(request, template_name="patient/register_personal_data.html")
 
             new_patient.changed_by = request.user
             new_patient.save()
+
+            new_phone_list = telephone_formset.save(commit=False)
+
+            for phone in new_phone_list:
+                phone.changed_by = request.user
+                phone.patient_id = new_patient.id
+                phone.save()
+
             messages.success(request, 'Dados pessoais gravados com sucesso.')
-
-            if 'action' in request.POST and request.POST['action'] == "show_next":
-                redirect_url = reverse("patient_edit", args=(new_patient.id,))
-                return HttpResponseRedirect(redirect_url + "?currentTab=1")
-            else:
-                redirect_url = reverse("patient_view", args=(new_patient.id,))
-                return HttpResponseRedirect(redirect_url)
-
+            return finish_handling_post(request, new_patient.id, 0)
         else:
             if request.POST['cpf']:
                 patient_found = Patient.objects.filter(cpf=request.POST['cpf'])
@@ -60,9 +68,13 @@ def patient_create(request, template_name="patient/register_personal_data.html")
                         patient_form.errors['cpf'][0] = "Já existe paciente removido com este CPF."
                     else:
                         patient_form.errors['cpf'][0] = "Já existe paciente cadastrado com este CPF."
+    else:
+        telephone_formset = TelephoneFormSet()
+
 
     context = {
         'patient_form': patient_form,
+        'telephone_formset': telephone_formset,
         'editing': True,
         'inserting': True,
         'currentTab': '0'}
@@ -109,7 +121,6 @@ def get_current_tab(request):
 
 
 def patient_update_personal_data(request, patient, context):
-    # Part of the patient form is shown on this tab and part is shown on the second tab.
     patient_form = PatientForm(request.POST or None, instance=patient)
 
     TelephoneFormSet = inlineformset_factory(Patient, Telephone, form=TelephoneForm)
@@ -159,7 +170,9 @@ def patient_update_social_demographic_data(request, patient, context):
         p_social_demo = SocialDemographicData.objects.get(patient_id=patient.id)
         social_demographic_form = SocialDemographicDataForm(request.POST or None, instance=p_social_demo)
     except SocialDemographicData.DoesNotExist:
-        social_demographic_form = SocialDemographicDataForm()
+        new_sdd = SocialDemographicData()
+        new_sdd.patient = patient
+        social_demographic_form = SocialDemographicDataForm(request.POST or None, instance=new_sdd)
 
     if request.method == "POST":
         if social_demographic_form.is_valid():
@@ -221,7 +234,7 @@ def patient_update_social_demographic_data(request, patient, context):
     context.update({
         'social_demographic_form': social_demographic_form})
 
-    return render(request, "patient/register_sociodemographic_data.html", context)
+    return render(request, "patient/register_socialdemographic_data.html", context)
 
 
 def patient_update_social_history(request, patient, context):
@@ -229,7 +242,9 @@ def patient_update_social_history(request, patient, context):
         p_social_hist = SocialHistoryData.objects.get(patient_id=patient.id)
         social_history_form = SocialHistoryDataForm(request.POST or None, instance=p_social_hist)
     except SocialHistoryData.DoesNotExist:
-        social_history_form = SocialHistoryDataForm()
+        new_shd = SocialHistoryData()
+        new_shd.patient = patient
+        social_history_form = SocialHistoryDataForm(request.POST or None, instance=new_shd)
 
     if request.method == "POST":
         if social_history_form.is_valid():
@@ -357,7 +372,6 @@ def patient_view(request, patient_id):
 
 
 def patient_view_personal_data(request, patient, context):
-    # Part of the patient form is shown on this tab and part is shown on the second tab.
     patient_form = PatientForm(instance=patient)
 
     TelephoneFormSet = inlineformset_factory(Patient, Telephone, form=TelephoneForm, extra=1)
@@ -398,7 +412,7 @@ def patient_view_social_demographic_data(request, patient, context):
     context.update({
         'social_demographic_form': social_demographic_form})
 
-    return render(request, "patient/register_sociodemographic_data.html", context)
+    return render(request, "patient/register_socialdemographic_data.html", context)
 
 
 def patient_view_social_history(request, patient, context):
@@ -406,7 +420,7 @@ def patient_view_social_history(request, patient, context):
         p_social_hist = SocialHistoryData.objects.get(patient_id=patient.id)
         social_history_form = SocialHistoryDataForm(instance=p_social_hist)
     except SocialHistoryData.DoesNotExist:
-        social_history_form = SocialDemographicDataForm()
+        social_history_form = SocialHistoryDataForm()
 
     for field in social_history_form.fields:
         social_history_form.fields[field].widget.attrs['disabled'] = True

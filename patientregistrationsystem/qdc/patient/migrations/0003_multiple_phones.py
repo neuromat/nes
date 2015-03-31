@@ -276,6 +276,7 @@ class Migration(DataMigration):
             hist_pho_objects = orm.HistoricalTelephone.objects.filter(patient_id=pat_id).order_by('-history_date').exclude(type="MO")
         else:
             hist_pho_objects = orm.HistoricalTelephone.objects.filter(patient_id=pat_id).order_by('-history_date').filter(type=type)
+
         cur_hist_pho = hist_pho_objects.first()
 
         if cur_hist_pho is not None:

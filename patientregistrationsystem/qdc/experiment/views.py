@@ -302,7 +302,6 @@ def group_update(request, group_id, template_name="experiment/group_register.htm
     experiment = get_object_or_404(Experiment, pk=group.experiment_id)
 
     if group:
-
         group_form = GroupForm(request.POST or None, instance=group)
 
         list_of_questionnaires_configuration = QuestionnaireConfiguration.objects.filter(group=group)
@@ -321,20 +320,15 @@ def group_update(request, group_id, template_name="experiment/group_register.htm
         surveys.release_session_key()
 
         if request.method == "POST":
-
             if request.POST['action'] == "save":
-
                 if group_form.is_valid():
                     if group_form.has_changed():
                         group_form.save()
 
                     redirect_url = reverse("group_edit", args=(group_id,))
                     return HttpResponseRedirect(redirect_url)
-
             else:
-
                 if request.POST['action'] == "remove":
-
                     try:
                         group.delete()
                     except ProtectedError:
@@ -343,9 +337,7 @@ def group_update(request, group_id, template_name="experiment/group_register.htm
                         return HttpResponseRedirect(redirect_url)
                     redirect_url = reverse("experiment_edit", args=(experiment.id,))
                     return HttpResponseRedirect(redirect_url)
-
                 else:
-
                     if request.POST['action'] == "remove_experimental_protocol":
                         component_configuration = get_object_or_404(ComponentConfiguration,
                                                                     pk=group.experimental_protocol_id)

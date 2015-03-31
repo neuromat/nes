@@ -1,31 +1,31 @@
 $(document).ready(function () {
 
     // The following 5 handlers prepare to show a confirmation modal by storing the future tab number.
-    $("#tab0").click(function (e) {
+    $("#linkToTab0").click(function (e) {
         document.getElementById('nextTab').value = '0';
         document.getElementById('nextTabURL').value = $(this).attr('href');
         tabClick(e);
     });
 
-    $("#tab1").click(function (e) {
+    $("#linkToTab1").click(function (e) {
         document.getElementById('nextTab').value = '1';
         document.getElementById('nextTabURL').value = $(this).attr('href');
         tabClick(e);
     });
 
-    $("#tab2").click(function (e) {
+    $("#linkToTab2").click(function (e) {
         document.getElementById('nextTab').value = '2';
         document.getElementById('nextTabURL').value = $(this).attr('href');
         tabClick(e);
     });
 
-    $("#tab3").click(function (e) {
+    $("#linkToTab3").click(function (e) {
         document.getElementById('nextTab').value = '3';
         document.getElementById('nextTabURL').value = $(this).attr('href');
         tabClick(e);
     });
 
-    $("#tab4").click(function (e) {
+    $("#linkToTab4").click(function (e) {
         document.getElementById('nextTab').value = '4';
         document.getElementById('nextTabURL').value = $(this).attr('href');
         tabClick(e);

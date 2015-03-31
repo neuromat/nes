@@ -40,19 +40,19 @@
                             {# Ids are included only when editing, so that javascript can act. #}
                             <li {% if currentTab == '0' %}class="active"{% endif %}>
                                 <a href="/patient/{% if editing %}edit/{% endif %}{{ patient_id }}/?currentTab=0"
-                                        {% if editing %} id="tab0"{% endif %}>Dados pessoais</a></li>
+                                        {% if editing %} id="linkToTab0"{% endif %}>Dados pessoais</a></li>
                             <li {% if currentTab == '1' %}class="active"{% endif %}>
                                 <a href="/patient/{% if editing %}edit/{% endif %}{{ patient_id }}/?currentTab=1"
-                                        {% if editing %} id="tab1"{% endif %}>Dados sociodemográficos</a></li>
+                                        {% if editing %} id="linkToTab1"{% endif %}>Dados sociodemográficos</a></li>
                             <li {% if currentTab == '2' %}class="active"{% endif %}>
                                 <a href="/patient/{% if editing %}edit/{% endif %}{{ patient_id }}/?currentTab=2"
-                                        {% if editing %} id="tab2"{% endif %}>História social</a></li>
+                                        {% if editing %} id="linkToTab2"{% endif %}>História social</a></li>
                             <li {% if currentTab == '3' %}class="active"{% endif %}>
                                 <a href="/patient/{% if editing %}edit/{% endif %}{{ patient_id }}/?currentTab=3"
-                                        {% if editing %} id="tab3"{% endif %}>Avaliações médicas</a></li>
+                                        {% if editing %} id="linkToTab3"{% endif %}>Avaliações médicas</a></li>
                             <li {% if currentTab == '4' %}class="active"{% endif %}>
                                 <a href="/patient/{% if editing %}edit/{% endif %}{{ patient_id }}/?currentTab=4"
-                                        {% if editing %} id="tab4"{% endif %}>Questionários</a></li>
+                                        {% if editing %} id="linkToTab4"{% endif %}>Questionários</a></li>
                         </ul>
 
                         <input type="text" id="currentTab" name="currentTab" value="{{ currentTab }}" style="visibility: hidden"/>

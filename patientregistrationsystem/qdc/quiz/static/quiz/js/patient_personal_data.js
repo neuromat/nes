@@ -147,7 +147,7 @@ $(document).ready(function () {
                 showErrorMessageTemporary("Preencha os campos corretamente. Campo de e-mail inválido");
             } else {
                 if (cpf_value.length == 0) {
-                    $("#myModal").modal('show');
+                    $("#modalNoCPF").modal('show');
                 } else {
                     $("#form_id").submit();
                 }

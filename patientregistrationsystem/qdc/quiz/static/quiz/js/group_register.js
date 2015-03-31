@@ -12,6 +12,10 @@ function show_modal_remove (group_id, classification_of_diseases_id){
     $('#modalRemoveClassificationOfDiseases').modal('show');
 }
 
+function show_modal_remove_experimental_protocol(){
+    $('#modalRemoveExperimentalProtocol').modal('show');
+}
+
 $(document).ready(function () {
     $('#get_diseases').keyup(function() {
         var get_diseases = $('#get_diseases');

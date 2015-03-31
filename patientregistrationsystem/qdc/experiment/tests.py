@@ -759,8 +759,7 @@ class SubjectTest(TestCase):
         # request = self.factory.post(url, self.data)d
         # request.user = self.user
         # response = upload_file(request, subject_id=subject_mock.pk, experiment_id=experiment.pk)
-        response = self.client.post(reverse('upload_file', args=[group.pk, subject_mock.pk, ]), self.data,
-                                    follow=True)
+        response = self.client.post(reverse('upload_file', args=[group.pk, subject_mock.pk, ]), self.data, follow=True)
         # print response.content
         self.assertEqual(response.status_code, 200)
 
