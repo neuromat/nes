@@ -206,7 +206,16 @@
                 <div class="container span6 offset3 well ">
                     <div class="row">
                         <div class="col-xs-6 col-sm-12">
-                            <a href="/experiment/group/{{ group.id }}/subjects" class="btn btn-primary {% if creating %} disabled{% endif %}" >Participantes</a>
+                            {% if number_of_subjects > 0 %}
+                                <label>
+                                    <h5>Participantes</h5>
+                                </label>
+                                <div class="form-group">
+                                    <a data-toggle="tooltip" data-placement="left" title="Ver / Editar" href="/experiment/group/{{ group.id }}/subjects">Há {{ number_of_subjects }} participante(s) cadastrado(s)</a>
+                                </div>
+                            {% else %}
+                                <a href="/experiment/group/{{ group.id }}/subjects" class="btn btn-primary {% if creating %} disabled{% endif %}" >Cadastrar participantes</a>
+                            {% endif %}
                         </div>
                     </div>
                 </div>
@@ -215,10 +224,46 @@
             <div class="container span6 offset3 well ">
                 <div class="row">
                     <div class="col-xs-6 col-sm-12">
+
                         {% if group.experimental_protocol %}
-                            <a href="/experiment/group/{{ group.id }}/experimental_protocol_edit" class="btn btn-primary {% if creating %} disabled{% endif %}" >Editar Protocolo Experimental</a>
+
+                            <div class="form-group">
+                                <table class="table table-striped">
+                                    <thead>
+                                    <tr>
+                                        <th>Protocolo Experimental</th>
+                                        <th>Descrição</th>
+                                    </tr>
+                                    </thead>
+                                    <tbody>
+                                    <tr>
+                                        <td>
+                                            <a data-toggle="tooltip" data-placement="left" title="Editar" href="/experiment/group/{{ group.id }}/experimental_protocol_edit">{{ group.experimental_protocol.component.identification }}</a>
+                                        </td>
+                                        <td>
+                                            {{ group.experimental_protocol.component.description }}
+
+                                            <a class="btn glyphicon glyphicon-remove" data-toggle="tooltip"
+                                               data-placement="right" title="Desconfigurar protocolo experimental"
+                                               style="color: indianred; position: relative; float: right; padding: 0"
+                                               onclick="show_modal_remove_experimental_protocol();"></a>
+                                        </td>
+                                    </tr>
+
+                                    </tbody>
+                                </table>
+                            </div>
+
                         {% else %}
-                            <a href="/experiment/group/{{ group.id }}/experimental_protocol_new" class="btn btn-primary {% if creating %} disabled{% endif %}" >Criar Protocolo Experimental</a>
+
+                            <label>
+                                <h5>Protocolo Experimental</h5>
+                            </label>
+
+                            <div class="form-group">
+                                <a href="/experiment/group/{{ group.id }}/experimental_protocol_new" class="btn btn-primary {% if creating %} disabled{% endif %}" >Criar Protocolo Experimental</a>
+                            </div>
+
                         {% endif %}
                     </div>
                 </div>
@@ -264,8 +309,7 @@
         </div>
     </div>
 
-    <div class="modal fade" id="modalRemoveClassificationOfDiseases" tabindex="-1" role="dialog" aria-labelledby="myModalLabel"
-         aria-hidden="true">
+    <div class="modal fade" id="modalRemoveClassificationOfDiseases" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
         <div class="modal-dialog">
             <div class="modal-content">
                 <div class="modal-body">
@@ -274,6 +318,22 @@
                 <div class="modal-footer">
                     <button type="button" class="btn btn-default" data-dismiss="modal">Cancelar</button>
                     <a type="button" class="btn btn-primary" id="removeClassificationOfDiseases" style="background-color: indianred; color: #ffffff" href="">Excluir</a>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="modal fade" id="modalRemoveExperimentalProtocol" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-body">
+                    Tem certeza que deseja desconfigurar o protocolo experimental?
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-default" data-dismiss="modal">Cancelar</button>
+                    <button type="submit" class="btn btn-primary" value="remove_experimental_protocol" name="action"
+                            style="background-color: indianred; color: #ffffff">Excluir
+                    </button>
                 </div>
             </div>
         </div>

@@ -50,7 +50,11 @@
 {% endblock %}
 
 {% block component_add_new %}
-    <li role="presentation"><a role="menuitem" tabindex="-1" href="/experiment/component_configuration/{% if path_of_the_sub_components %}{{ path_of_the_sub_components }}{% else %}{{ sequence.id }}{% endif %}/add_new_component/sequence"><< Nova sequência >></a></li>
+    {% if experimental_protocol %}
+        <li role="presentation"><a role="menuitem" tabindex="-1" href="/experiment/group/{{ group.id }}/experimental_protocol_new"><< Nova sequência >></a></li>
+    {% else %}
+        <li role="presentation"><a role="menuitem" tabindex="-1" href="/experiment/component_configuration/{% if path_of_the_sub_components %}{{ path_of_the_sub_components }}{% else %}{{ sequence.id }}{% endif %}/add_new_component/sequence"><< Nova sequência >></a></li>
+    {% endif %}
 {% endblock %}
 
 {% block component_button_label %}
@@ -74,23 +78,31 @@
                         {% for configuration in configuration_list %}
                             <tr>
                                 <td class="col-md-6">
-                                    <a class="btn glyphicon glyphicon-remove" data-toggle="tooltip" data-placement="right" title="Remover da lista" style="color: indianred; vertical-align: -5%; padding-left: 0;" onclick="show_modal_remove({{ configuration.id }});"></a>
-                                    <a data-toggle="tooltip" data-placement="left" title="Editar" href="/experiment/component_configuration/{% if path_of_the_sub_components %}{{ path_of_the_sub_components }}{% else %}{{ sequence.id }}{% endif %}-{{ configuration.id }}">{{ configuration.component.identification }}</a>
+                                    {% if experimental_protocol and reusing_component %}
+                                        {{ configuration.component.identification }}
+                                    {% else %}
+                                        <a class="btn glyphicon glyphicon-remove" data-toggle="tooltip" data-placement="right" title="Remover da lista" style="color: indianred; vertical-align: -5%; padding-left: 0;" onclick="show_modal_remove({{ configuration.id }});"></a>
+                                        <a data-toggle="tooltip" data-placement="left" title="Editar" href="/experiment/component_configuration/{% if path_of_the_sub_components %}{{ path_of_the_sub_components }}{% else %}{{ sequence.id }}{% endif %}-{{ configuration.id }}">{{ configuration.component.identification }}</a>
+                                    {% endif %}
+
                                 </td>
                                 <td class="col-md-4">
                                     <span class="{{ configuration.component.icon_class }}"/>
                                     {{ configuration.component.component_type }}
                                 </td>
                                 <td class="col-md-1">
-                                    {% ifnotequal configuration configuration_list.last %}
-                                        <a class="btn glyphicon glyphicon-arrow-down" href="/experiment/component_configuration/change_the_order/{% if path_of_the_sub_components %}{{ path_of_the_sub_components }}{% else %}{{ sequence.id }}{% endif %}-{{ configuration.id }}/down/"></a>
-                                    {% endifnotequal %}
+                                    {% if not experimental_protocol or not reusing_component %}
+                                        {% ifnotequal configuration configuration_list.last %}
+                                            <a class="btn glyphicon glyphicon-arrow-down" href="/experiment/component_configuration/change_the_order/{% if path_of_the_sub_components %}{{ path_of_the_sub_components }}{% else %}{{ sequence.id }}{% endif %}-{{ configuration.id }}/down/"></a>
+                                        {% endifnotequal %}
+                                    {% endif %}
                                 </td>
                                 <td class="col-md-1">
-                                    {% ifnotequal configuration configuration_list.first %}
-                                        <a class="btn glyphicon glyphicon-arrow-up" href="/experiment/component_configuration/change_the_order/{% if path_of_the_sub_components %}{{ path_of_the_sub_components }}{% else %}{{ sequence.id }}{% endif %}-{{ configuration.id }}/up/"></a>
-                                    {% endifnotequal %}
-
+                                    {% if not experimental_protocol or not reusing_component %}
+                                        {% ifnotequal configuration configuration_list.first %}
+                                            <a class="btn glyphicon glyphicon-arrow-up" href="/experiment/component_configuration/change_the_order/{% if path_of_the_sub_components %}{{ path_of_the_sub_components }}{% else %}{{ sequence.id }}{% endif %}-{{ configuration.id }}/up/"></a>
+                                        {% endifnotequal %}
+                                    {% endif %}
                                 </td>
                             </tr>
                         {% endfor %}
@@ -100,7 +112,7 @@
                 </div>
 
                 <div class="dropdown">
-                    <button class="btn btn-primary dropdown-toggle {% if creating %} disabled{% endif %}" type="button" id="dropdownMenu1" data-toggle="dropdown" aria-expanded="true">
+                    <button class="btn btn-primary dropdown-toggle {% if creating or reusing_component %} disabled{% endif %}" type="button" id="dropdownMenu1" data-toggle="dropdown" aria-expanded="true">
                         Inserir componente à sequência
                         <span class="caret"></span>
                     </button>
