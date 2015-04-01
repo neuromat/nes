@@ -16,12 +16,26 @@ class PatientForm(ModelForm):
         model = Patient
 
         fields = [
-            'cpf', 'name', 'rg', 'medical_record', 'zipcode', 'street', 'city', 'state',
-            'country', 'email', 'date_birth', 'gender', 'marital_status', 'district',
-            'address_complement', 'address_number'
+            'name', 'cpf', 'origin', 'medical_record',  'date_birth', 'gender', 'rg', 'marital_status',
+            'country', 'zipcode', 'street', 'address_number', 'address_complement', 'district', 'city', 'state', 'email'
         ]
 
         widgets = {
+            'name': TextInput(attrs={'class': 'form-control', 'autofocus': "true", 'required': "",
+                                     'data-error': _('Nome deve ser preenchido')}),
+            'cpf': TextInput(attrs={'class': 'form-control',
+                                    'placeholder': 'xxx.xxx.xxx-xx'}),
+            'origin': TextInput(attrs={'class': 'form-control'}),
+            'medical_record': TextInput(attrs={'class': 'form-control'}),
+            'date_birth': DateInput(attrs={'class': 'form-control', 'required': "",
+                                           'data-error': _('Data de nascimento deve ser preenchida'),
+                                           'placeholder': 'dd/mm/aaaa'}),
+            'gender': Select(attrs={'class': 'form-control', 'required': "",
+                                    'data-error': _('Sexo deve ser preenchido')}),
+            'rg': TextInput(attrs={'class': 'form-control'}),
+            'marital_status': Select(attrs={'class': 'form-control'}),
+
+            'country': SelectBoxCountries(attrs={'data-flags': 'true'}),
             'zipcode': CEPInput(address={'street': 'id_street', 'district': 'id_district', 'city': 'id_city',
                                          'state': 'id_state'},
                                 attrs={'class': 'form-control', 'pattern': '\d{5}-?\d{3}'}),
@@ -31,22 +45,9 @@ class PatientForm(ModelForm):
             'district': TextInput(attrs={'class': 'form-control'}),
             'city': TextInput(attrs={'class': 'form-control'}),
             'state': SelectBoxState(attrs={'data-country': 'id_country'}),
-            'country': SelectBoxCountries(attrs={'data-flags': 'true'}),
-            'name': TextInput(attrs={'class': 'form-control', 'autofocus': "true", 'required': "",
-                                     'data-error': _('Nome deve ser preenchido')}),
-            'cpf': TextInput(attrs={'class': 'form-control',
-                                    'placeholder': 'xxx.xxx.xxx-xx'}),
-            'rg': TextInput(attrs={'class': 'form-control'}),
             'email': TextInput(attrs={
                 'class': 'form-control', 'type': 'email', 'data-error': _('E-mail incorreto'),
                 'pattern': '^[_A-Za-z0-9-\+]+(\.[_A-Za-z0-9-]+)*@[A-Za-z0-9-]+(\.[A-Za-z0-9]+)*(\.[A-Za-z]{2,})$'}),
-            'medical_record': TextInput(attrs={'class': 'form-control'}),
-            'gender': Select(attrs={'class': 'form-control', 'required': "",
-                                    'data-error': _('Sexo deve ser preenchido')}),
-            'marital_status': Select(attrs={'class': 'form-control'}),
-            'date_birth': DateInput(attrs={'class': 'form-control', 'required': "",
-                                           'data-error': _('Data de nascimento deve ser preenchida'),
-                                           'placeholder': 'dd/mm/aaaa'})
         }
 
 

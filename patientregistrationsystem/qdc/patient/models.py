@@ -91,22 +91,25 @@ class AlcoholPeriod(models.Model):
 
 
 class Patient(models.Model):
-    cpf = models.CharField(null=True, blank=True, max_length=15, unique=True, validators=[validate_cpf])
-    rg = models.CharField(max_length=15, null=True, blank=True)
     name = models.CharField(max_length=50)
+    cpf = models.CharField(null=True, blank=True, max_length=15, unique=True, validators=[validate_cpf])
+    origin = models.CharField(max_length=50, null=True, blank=True)
     medical_record = models.CharField(max_length=25, null=True, blank=True)
-    street = models.CharField(max_length=50, null=True, blank=True)
-    address_number = models.IntegerField(max_length=6, null=True, blank=True)
-    district = models.CharField(max_length=50, null=True, blank=True)
-    address_complement = models.CharField(max_length=50, null=True, blank=True)
-    zipcode = models.CharField(max_length=12, null=True, blank=True)
-    country = models.CharField(max_length=30, null=True, blank=True)
-    state = models.CharField(max_length=30, null=True, blank=True)
-    city = models.CharField(max_length=30, null=True, blank=True)
-    email = models.EmailField(null=True, blank=True)
     date_birth = models.DateField(null=False, blank=False, validators=[validate_date_birth])
     gender = models.ForeignKey(Gender, null=False, blank=False)
+    rg = models.CharField(max_length=15, null=True, blank=True)
     marital_status = models.ForeignKey(MaritalStatus, null=True, blank=True)
+
+    country = models.CharField(max_length=30, null=True, blank=True)
+    zipcode = models.CharField(max_length=12, null=True, blank=True)
+    street = models.CharField(max_length=50, null=True, blank=True)
+    address_number = models.IntegerField(max_length=6, null=True, blank=True)
+    address_complement = models.CharField(max_length=50, null=True, blank=True)
+    district = models.CharField(max_length=50, null=True, blank=True)
+    city = models.CharField(max_length=30, null=True, blank=True)
+    state = models.CharField(max_length=30, null=True, blank=True)
+    email = models.EmailField(null=True, blank=True)
+
     removed = models.BooleanField(null=False, default=False)
 
     # Audit trail

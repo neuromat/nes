@@ -41,18 +41,6 @@
                             </div>
                         </div>
                         <div class="col-xs-6 col-sm-6">
-                            <div class="form-group">
-                                <label>Número do prontuário</label>
-
-                                <div class="input-group input-group-sm">
-                                    <span class="input-group-addon"> <span class="glyphicon glyphicon-list-alt"></span></span>
-                                    {{ patient_form.medical_record }}
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="row">
-                        <div class="col-xs-6 col-sm-6">
                             <div class="form-group {% if patient_form.errors.cpf %}has-error{% endif %}">
                                 <label for="cpf" class="control-label">CPF</label>
                                 <div class="input-group input-group-sm">
@@ -68,12 +56,25 @@
                                 </div>
                             </div>
                         </div>
+                    </div>
+                    <div class="row">
                         <div class="col-xs-6 col-sm-6">
                             <div class="form-group">
-                                <label>RG</label>
+                                <label>Origem</label>
+
                                 <div class="input-group input-group-sm">
-                                    <span class="input-group-addon"><span class="glyphicon glyphicon-user"></span></span>
-                                    {{ patient_form.rg }}
+                                    <span class="input-group-addon"> <span class="glyphicon glyphicon-import"></span></span>
+                                    {{ patient_form.origin }}
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-xs-6 col-sm-6">
+                            <div class="form-group">
+                                <label>Número do prontuário</label>
+
+                                <div class="input-group input-group-sm">
+                                    <span class="input-group-addon"> <span class="glyphicon glyphicon-list-alt"></span></span>
+                                    {{ patient_form.medical_record }}
                                 </div>
                             </div>
                         </div>
@@ -110,6 +111,15 @@
                         </div>
                     </div>
                     <div class="row">
+                        <div class="col-xs-6 col-sm-6">
+                            <div class="form-group">
+                                <label>RG</label>
+                                <div class="input-group input-group-sm">
+                                    <span class="input-group-addon"><span class="glyphicon glyphicon-user"></span></span>
+                                    {{ patient_form.rg }}
+                                </div>
+                            </div>
+                        </div>
                         <div class="col-xs-6 col-sm-6">
                             <div class="form-group">
                                 <label>Estado civil</label>
