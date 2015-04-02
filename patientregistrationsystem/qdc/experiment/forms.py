@@ -65,7 +65,7 @@ class QuestionnaireResponseForm(ModelForm):
         ]
 
         widgets = {
-            'date': DateInput(attrs={'class': 'form-control', 'placeholder': 'dd/mm/aaaa', 'required': "",
+            'date': DateInput(attrs={'class': 'form-control datepicker', 'placeholder': 'dd/mm/aaaa', 'required': "",
                                      'data-error': "Data de preenchimento deve ser preenchida"}, )
         }
 
@@ -177,9 +177,9 @@ class ResearchProjectForm(ModelForm):
             'description': Textarea(attrs={'class': 'form-control', 'rows': '4', 'required': "",
                                            'maxlength': '1500',
                                            'data-error': 'Descrição deve ser preenchida.'}),
-            'start_date': DateInput(attrs={'class': 'datepicker', 'placeholder': 'dd/mm/aaaa', 'required': "",
-                                           'data-error': "Data de início deve ser preenchida"},),
-            'end_date': DateInput(attrs={'class': 'datepicker', 'placeholder': 'dd/mm/aaaa', }),
+            'start_date': DateInput(attrs={'class': 'form-control datepicker', 'placeholder': 'dd/mm/aaaa',
+                                           'required': "", 'data-error': "Data de início deve ser preenchida"},),
+            'end_date': DateInput(attrs={'class': 'form-control datepicker', 'placeholder': 'dd/mm/aaaa'}),
 
         }
 

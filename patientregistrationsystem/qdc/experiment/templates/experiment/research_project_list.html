@@ -47,7 +47,10 @@
                         {% for research_project in research_projects %}
                             <tr>
                                 <td>{% if perms.experiment.change_researchproject %}
-                                        <a data-toggle="tooltip" data-placement="left" title="Editar" href="/experiment/research_project/{{ research_project.id }}">{{ research_project.title }}</a>
+                                        <a data-toggle="tooltip" data-placement="left" title="Visualizar"
+                                           href="/experiment/research_project/{{ research_project.id }}">
+                                            {{ research_project.title }}
+                                        </a>
                                     {% else %}
                                         {{ research_project.title }}
                                     {% endif %}

@@ -64,12 +64,43 @@ def research_project_create(request, template_name="experiment/research_project_
 
                 messages.success(request, 'Estudo criado com sucesso.')
 
-                redirect_url = reverse("research_project_edit", args=(research_project_added.id,))
+                redirect_url = reverse("research_project_view", args=(research_project_added.id,))
                 return HttpResponseRedirect(redirect_url)
 
     context = {
         "research_project_form": research_project_form,
-        "creating": True}
+        "editing": True}
+
+    return render(request, template_name, context)
+
+
+@login_required
+@permission_required('experiment.change_researchproject')
+def research_project_view(request, research_project_id, template_name="experiment/research_project_register.html"):
+
+    research_project = get_object_or_404(ResearchProject, pk=research_project_id)
+    research_project_form = ResearchProjectForm(request.POST or None, instance=research_project)
+
+    for field in research_project_form.fields:
+        research_project_form.fields[field].widget.attrs['disabled'] = True
+
+    if request.method == "POST":
+        if request.POST['action'] == "remove":
+            try:
+                for keyword in research_project.keywords.all():
+                    manage_keywords(keyword, ResearchProject.objects.exclude(id=research_project.id))
+                research_project.delete()
+            except ProtectedError:
+                messages.error(request, "Erro ao tentar excluir o estudo.")
+                redirect_url = reverse("research_project_edit", args=(research_project.id,))
+                return HttpResponseRedirect(redirect_url)
+            return redirect('research_project_list')
+
+    context = {
+        "research_project": research_project,
+        "research_project_form": research_project_form,
+        "keywords": research_project.keywords.all(),
+        "editing": False}
 
     return render(request, template_name, context)
 
@@ -79,40 +110,26 @@ def research_project_create(request, template_name="experiment/research_project_
 def research_project_update(request, research_project_id, template_name="experiment/research_project_register.html"):
 
     research_project = get_object_or_404(ResearchProject, pk=research_project_id)
+    research_project_form = ResearchProjectForm(request.POST or None, instance=research_project)
 
-    if research_project:
+    if request.method == "POST":
+        if request.POST['action'] == "save":
+            if research_project_form.is_valid():
+                if research_project_form.has_changed():
+                    research_project_form.save()
+                    messages.success(request, 'Estudo atualizado com sucesso.')
+                else:
+                    messages.success(request, 'Não há alterações para salvar.')
 
-        research_project_form = ResearchProjectForm(request.POST or None, instance=research_project)
+                redirect_url = reverse("research_project_view", args=(research_project.id,))
+                return HttpResponseRedirect(redirect_url)
 
-        if request.method == "POST":
+    context = {
+        "research_project": research_project,
+        "research_project_form": research_project_form,
+        "editing": True}
 
-            if request.POST['action'] == "save":
-
-                if research_project_form.is_valid():
-
-                    if research_project_form.has_changed():
-                        research_project_form.save()
-                        messages.success(request, 'Estudo atualizado com sucesso.')
-
-            else:
-                if request.POST['action'] == "remove":
-                    try:
-                        for keyword in research_project.keywords.all():
-                            manage_keywords(keyword, ResearchProject.objects.exclude(id=research_project.id))
-                        research_project.delete()
-                    except ProtectedError:
-                        messages.error(request, "Erro ao tentar excluir o estudo.")
-                        redirect_url = reverse("research_project_edit", args=(research_project.id,))
-                        return HttpResponseRedirect(redirect_url)
-                    return redirect('research_project_list')
-
-        context = {
-            "research_project_form": research_project_form,
-            "creating": False,
-            "research_project": research_project,
-            "keywords": research_project.keywords.all()}
-
-        return render(request, template_name, context)
+    return render(request, template_name, context)
 
 
 @login_required
@@ -150,7 +167,7 @@ def keyword_create_ajax(request, research_project_id, keyword_name):
     research_project = get_object_or_404(ResearchProject, pk=research_project_id)
     research_project.keywords.add(keyword)
 
-    redirect_url = reverse("research_project_edit", args=(research_project_id,))
+    redirect_url = reverse("research_project_view", args=(research_project_id,))
     return HttpResponseRedirect(redirect_url)
 
 
@@ -162,7 +179,7 @@ def keyword_add_ajax(request, research_project_id, keyword_id):
     keyword = get_object_or_404(Keyword, pk=keyword_id)
     research_project.keywords.add(keyword)
 
-    redirect_url = reverse("research_project_edit", args=(research_project_id,))
+    redirect_url = reverse("research_project_view", args=(research_project_id,))
     return HttpResponseRedirect(redirect_url)
 
 
@@ -186,7 +203,7 @@ def keyword_remove_ajax(request, research_project_id, keyword_id):
 
     manage_keywords(keyword, ResearchProject.objects.all())
 
-    redirect_url = reverse("research_project_edit", args=(research_project_id,))
+    redirect_url = reverse("research_project_view", args=(research_project_id,))
     return HttpResponseRedirect(redirect_url)
 
 
@@ -231,22 +248,17 @@ def experiment_update(request, experiment_id, template_name="experiment/experime
     experiment = get_object_or_404(Experiment, pk=experiment_id)
 
     if experiment:
-
         group_list = Group.objects.filter(experiment=experiment)
-
         experiment_form = ExperimentForm(request.POST or None, instance=experiment)
 
         if request.method == "POST":
-
             if request.POST['action'] == "save":
-
                 if experiment_form.is_valid():
                     if experiment_form.has_changed():
                         experiment_form.save()
 
                     redirect_url = reverse("experiment_edit", args=(experiment_id,))
                     return HttpResponseRedirect(redirect_url)
-
             else:
                 if request.POST['action'] == "remove":
                     try:

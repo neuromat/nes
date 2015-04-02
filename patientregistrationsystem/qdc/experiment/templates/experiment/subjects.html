@@ -92,13 +92,14 @@
                             </tr>
                             </thead>
                             <tbody>
-                            {% if subject_list.count == 0 %}
+                            {% if subject_list|length == 0 %}
                                 <tr>
                                     <td>(Nenhum participante inserido)</td>
                                     <td></td>
+                                    <td></td>
                                 </tr>
                             {% else %}
-                                {% if subject_list.count > 0 %}
+                                {% if subject_list|length > 0 %}
                                     {% for item in subject_list %}
                                         <tr>
                                             <td>

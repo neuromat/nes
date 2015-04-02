@@ -12,15 +12,15 @@
     <meta name="description" content="">
     <meta name="author" content="">
 
-    {# TODO Include jquery-ui only in templates that use a datepicker (or other component from jquery-ui). #}
     <script src="{% static 'quiz/jquery/jquery-2.0.0.min.js' %}"></script>
     <link rel="stylesheet" href="{% static 'quiz/jquery-ui-1.11.2/jquery-ui.css' %}">
     <script src="{% static 'quiz/jquery-ui-1.11.2/jquery-ui.js' %}"></script>
+
+    {# Apply a date picker and a mask to every field that has the class "datepicker".   #}
     <script>
         $(document).ready(function() {
-            $('.datepicker').datepicker({
-                dateFormat: "dd/mm/yy"
-            });
+            $('.datepicker').datepicker({dateFormat: "dd/mm/yy"}).
+                mask("99/99/9999");
         });
     </script>
 

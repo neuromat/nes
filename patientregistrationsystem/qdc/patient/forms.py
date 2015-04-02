@@ -27,7 +27,7 @@ class PatientForm(ModelForm):
                                     'placeholder': 'xxx.xxx.xxx-xx'}),
             'origin': TextInput(attrs={'class': 'form-control'}),
             'medical_record': TextInput(attrs={'class': 'form-control'}),
-            'date_birth': DateInput(attrs={'class': 'form-control', 'required': "",
+            'date_birth': DateInput(attrs={'class': 'form-control datepicker', 'required': "",
                                            'data-error': _('Data de nascimento deve ser preenchida'),
                                            'placeholder': 'dd/mm/aaaa'}),
             'gender': Select(attrs={'class': 'form-control', 'required': "",
@@ -131,7 +131,7 @@ class ComplementaryExamForm(ModelForm):
         fields = ['date', 'description', 'doctor', 'doctor_register', 'exam_site']
 
         widgets = {
-            'date': DateInput(attrs={'class': 'form-control', 'placeholder': 'dd/mm/aaaa',
+            'date': DateInput(attrs={'class': 'form-control datepicker', 'placeholder': 'dd/mm/aaaa',
                                      'required': "", 'data-error': "Data deve ser preenchida"}),
             'description': Textarea(attrs={'class': 'form-control', 'placeholder': 'Descrição', 'rows': '4',
                                            'required': "", 'data-error': "Descrição deve ser preenchida"}),

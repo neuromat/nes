@@ -69,13 +69,13 @@
                             </tr>
                             </thead>
                             <tbody>
-                            {% if subject_questionnaires.count == 0 %}
+                            {% if subject_questionnaires|length == 0 %}
                                 <tr>
                                     <td>(Nenhum questionário para preenchimento)</td>
                                     <td></td>
                                 </tr>
                             {% else %}
-                                {% if subject_questionnaires.count > 0 %}
+                                {% if subject_questionnaires|length > 0 %}
                                     {% for subject_questionnaire in subject_questionnaires %}
                                         <tr>
                                             <td>

@@ -13,7 +13,9 @@ urlpatterns = patterns(
     # research project
     url(r'^research_project/list/$', 'research_project_list', name='research_project_list'),
     url(r'^research_project/new/$', 'research_project_create', name='research_project_new'),
-    url(r'^research_project/(?P<research_project_id>\d+)/$', 'research_project_update', name='research_project_edit'),
+    url(r'^research_project/(?P<research_project_id>\d+)/$', 'research_project_view', name='research_project_view'),
+    url(r'^research_project/edit/(?P<research_project_id>\d+)/$', 'research_project_update',
+        name='research_project_edit'),
 
     # experiment
     url(r'^list/$', 'experiment_list', name='experiment_list'),

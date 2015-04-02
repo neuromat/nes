@@ -100,33 +100,8 @@ $(document).ready(function () {
         }
     });
 
-    // TODO Use plugin correctly
-    $("#id_date_birth").mask("99/99/9999");
-    var ua = navigator.userAgent.toLowerCase();
-    var isNotAndroid = ua.indexOf("android") <= -1; //&& ua.indexOf("mobile");
-    if(isNotAndroid) {
-
-        $("#id_date_birth").mask("99/99/9999");
-
-        $("#id_date").mask("99/99/9999");
-
-        $("#id_cpf").mask("999.999.999-99");
-
-        $('#id_zipcode').val();
-        $('#id_zipcode').change(function () {
-            $('#id_zipcode').unmask();
-        });
-
-        $('#id_zipcode').focus(function () {
-            $('#id_zipcode').unmask();
-        });
-
-        $('#id_zipcode').blur(function () {
-            if (this.value.length == 8) {
-                $('#id_zipcode').mask('99999-999');
-            }
-        });
-    }
+    $("#id_cpf").mask("999.999.999-99");
+    $('#id_zipcode').mask('99999-999');
 
     $("#savetab").click(function () {
         var name_value = $.trim($("#id_name").val());
