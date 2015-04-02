@@ -255,7 +255,7 @@ class ExperimentTest(TestCase):
 
         # Remove experimento
         self.data = {'action': ['remove'], 'description': ['Experimento de Teste'], 'title': ['Teste Experimento']}
-        response = self.client.post(reverse('experiment_edit', args=(experiment.pk,)), self.data, follow=True)
+        response = self.client.post(reverse('experiment_view', args=(experiment.pk,)), self.data, follow=True)
         self.assertEqual(response.status_code, 200)
         self.assertEqual(Experiment.objects.all().count(), count - 1)
 
@@ -1104,7 +1104,7 @@ class ResearchProjectTest(TestCase):
 
         self.data = {'action': ['remove'], 'title': ['Research project title'],
                      'description': ['Research project description']}
-        response = self.client.post(reverse('research_project_edit', args=(research_project.pk,)), self.data, follow=True)
+        response = self.client.post(reverse('research_project_view', args=(research_project.pk,)), self.data, follow=True)
         self.assertEqual(response.status_code, 200)
 
         # Check if numeber of reserch projets decreased by 1
