@@ -53,7 +53,12 @@
                 {% if creating %}
                     <li class="active">Novo</li>
                 {% else %}
-                    <li class="active"> {{ experiment_form.title.value }} </li>
+                    {% if editing %}
+                        <li><a href="/experiment/{{ experiment.id }}">{{ experiment_form.title.value }}</a></li>
+                        <li class="active">Edição</li>
+                    {% else %}
+                        <li class="active"> {{ experiment_form.title.value }} </li>
+                    {% endif %}
                 {% endif %}
 
             </ol>
@@ -95,69 +100,74 @@
                     </div>
                 </div>
 
-            </div>
-
-            <div class="container span6 offset3 well ">
-                {% if not creating and group_list %}
-                    <div class="form-group">
-
-                        <table class="table table-striped">
-                            <thead>
-                            <tr>
-                                <th>Grupo</th>
-                                <th>Descrição</th>
-                            </tr>
-                            </thead>
-                            <tbody>
-                            {% for group in group_list %}
-                                <tr>
-                                    <td>
-                                        <a data-toggle="tooltip" data-placement="left" title="Editar" href="/experiment/group/edit/{{ group.id }}">
-                                        {{ group.title }}
-                                        </a>
-                                    </td>
-                                    <td>
-                                        {{ group.description }}
-                                    </td>
-                                </tr>
-                            {% endfor %}
-                            </tbody>
-                        </table>
-
+                {% if not editing %}
+                    <div class="btn-group pull-left">
+                        <a href="/experiment/edit/{{ experiment.id }}" class="btn btn-primary">Editar</a>
                     </div>
                 {% endif %}
-                {% if perms.experiment.add_questionnaireconfiguration %}
-                    <a href="/experiment/{{ experiment.id }}/group/new" class="btn btn-primary {% if creating %} disabled{% endif %}">Inserir grupo</a>
-                {% endif %}
             </div>
 
-            <div class="container span6 offset3 well ">
-                <div class="row">
-                    <div class="col-xs-6 col-sm-12">
-                        <a href="/experiment/{{ experiment.id }}/components" class="btn btn-primary {% if creating %} disabled{% endif %}" >Componentes de protocolo experimental</a>
+            {% if not editing %}
+                <div class="container span6 offset3 well ">
+                    {% if group_list %}
+                        <div class="form-group">
+                            <table class="table table-striped">
+                                <thead>
+                                <tr>
+                                    <th>Grupo</th>
+                                    <th>Descrição</th>
+                                </tr>
+                                </thead>
+                                <tbody>
+                                {% for group in group_list %}
+                                    <tr>
+                                        <td>
+                                            <a data-toggle="tooltip" data-placement="left" title="Editar" href="/experiment/group/{{ group.id }}">
+                                            {{ group.title }}
+                                            </a>
+                                        </td>
+                                        <td>
+                                            {{ group.description }}
+                                        </td>
+                                    </tr>
+                                {% endfor %}
+                                </tbody>
+                            </table>
+                        </div>
+                    {% endif %}
+                    {% if perms.experiment.add_questionnaireconfiguration %}
+                        <a href="/experiment/{{ experiment.id }}/group/new" class="btn btn-primary">Inserir grupo</a>
+                    {% endif %}
+                </div>
+
+                <div class="container span6 offset3 well ">
+                    <div class="row">
+                        <div class="col-xs-6 col-sm-12">
+                            <a href="/experiment/{{ experiment.id }}/components" class="btn btn-primary" >Componentes de protocolo experimental</a>
+                        </div>
                     </div>
                 </div>
-            </div>
+            {% endif %}
 
             <div class="btn-toolbar">
                 <div class="btn-group pull-left">
-                    {% if not creating and perms.experiment.delete_experiment %}
+                    {% if not editing and perms.experiment.delete_experiment %}
                         <button type="button" class="btn btn-danger" onclick="$('#modalRemove').modal('show')">Excluir</button>
                     {% endif %}
                 </div>
-                <div class="btn-group pull-right">
-                    {% if perms.experiment.change_experiment %}
+                {% if editing %}
+                    <div class="btn-group pull-right">
                         <button type="submit" name="action" value="save" class="btn btn-primary">Salvar</button>
-                    {% endif %}
-                </div>
-                <div class="btn-group pull-right">
-                    {% if creating %}
-{#                        <input value="Cancelar" class="btn"/>#}
-                        <a href="/experiment/list" class="btn" style="background-color: #f5f5f5">Cancelar</a>
-                    {% else %}
+                    </div>
+                    <div class="btn-group pull-right">
+                        <a href="/experiment/{% if creating %}list{% else %}{{ experiment.id }}{% endif %}"
+                           class="btn" style="background-color: #f5f5f5">Cancelar</a>
+                    </div>
+                {% else %}
+                    <div class="btn-group pull-right">
                         <a href="/experiment/list" class="btn" style="background-color: #f5f5f5">Voltar</a>
-                    {% endif %}
-                </div>
+                    </div>
+                {% endif %}
             </div>
         </div>
     </div>
@@ -172,8 +182,7 @@
                 <div class="modal-footer">
                     <button type="button" class="btn btn-default" data-dismiss="modal">Cancelar</button>
                     <button type="submit" class="btn btn-primary" value="remove" name="action"
-                            style="background-color: indianred; color: #ffffff">Excluir
-                    </button>
+                            style="background-color: indianred; color: #ffffff">Excluir</button>
                 </div>
             </div>
         </div>

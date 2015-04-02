@@ -53,12 +53,17 @@
             <ol class="breadcrumb">
                 <li>Home</li>
                 <li><a href="/experiment/list">Experimentos</a></li>
-                <li><a href="/experiment/edit/{{ experiment.id }}">{{ experiment.title }}</a></li>
+                <li><a href="/experiment/{{ experiment.id }}">{{ experiment.title }}</a></li>
 
                 {% if creating %}
                     <li class="active">Novo grupo</li>
                 {% else %}
-                    <li class="active"> {{ group_form.title.value }} </li>
+                    {% if editing %}
+                        <li><a href="/experiment/group/{{ group.id }}">{{ group_form.title.value }}</a></li>
+                        <li class="active">Edição</li>
+                    {% else %}
+                        <li class="active"> {{ group_form.title.value }} </li>
+                    {% endif %}
                 {% endif %}
 
             </ol>
@@ -100,66 +105,68 @@
                     </div>
                 </div>
 
+                {% if not editing %}
+                    <div class="btn-group pull-left">
+                        <a href="/experiment/group/edit/{{ group.id }}" class="btn btn-primary">Editar</a>
+                    </div>
+                {% endif %}
             </div>
 
-            <div class="container span6 offset3 well ">
-                <div class="row">
-                    <div class="col-xs-6 col-sm-12">
-                        <div class="form-group">
-                            <input id="group_id" value="{{ group_id }}" style="display: none;">
-                            <div class="input-group  input-group-sm "><span class="input-group-addon">
-                                    <span class="glyphicon glyphicon-edit"></span></span>
-                                {#                                {{ group_form.classification_of_diseases }}#}
-                                <input class="form-control"
-                                       placeholder="Especificar o diagnóstico da doença ou o código da doença (CID-10)"
-                                       id="get_diseases" type="text" {% if creating %}disabled{% endif %}>
+            {% if not editing %}
+                <div class="container span6 offset3 well ">
+                    <div class="row">
+                        <div class="col-xs-6 col-sm-12">
+                            <div class="form-group">
+                                <input id="group_id" value="{{ group.id }}" style="display: none;">
+                                <div class="input-group  input-group-sm "><span class="input-group-addon">
+                                        <span class="glyphicon glyphicon-edit"></span></span>
+                                    <input class="form-control" id="get_diseases" type="text"
+                                           placeholder="Especificar o diagnóstico da doença ou o código da doença (CID-10)">
+                                </div>
+                                {% csrf_token %}
+                                <ul id="search-results-diseases" style="list-style: none;"></ul>
                             </div>
-                            {% csrf_token %}
-                            <ul id="search-results-diseases" style="list-style: none;"></ul>
                         </div>
                     </div>
-                </div>
-                <div class="col-md-1">
-                </div>
-                <div class="row">
-                    <div class="col-xs-6 col-sm-12">
-                        <div class="form-group">
-                            <table class="table table-striped">
-                                <thead>
-                                <tr>
-                                    <th>CID</th>
-                                    <th>Descrição</th>
-                                </tr>
-                                </thead>
-                                <tbody>
-                                {% if not classification_of_diseases_list %}
+                    <div class="col-md-1">
+                    </div>
+                    <div class="row">
+                        <div class="col-xs-6 col-sm-12">
+                            <div class="form-group">
+                                <table class="table table-striped">
+                                    <thead>
                                     <tr>
-                                        <td>(sem diagnósticos)</td>
-                                        <td></td>
+                                        <th>CID</th>
+                                        <th>Descrição</th>
                                     </tr>
-                                {% else %}
-                                    {% for classification_of_diseases in classification_of_diseases_list %}
+                                    </thead>
+                                    <tbody>
+                                    {% if not classification_of_diseases_list %}
                                         <tr>
-                                            <td>{{ classification_of_diseases.code }}</td>
-                                            <td>{{ classification_of_diseases.abbreviated_description }}
-                                                <a class="btn glyphicon glyphicon-remove" data-toggle="tooltip"
-                                                   data-placement="right" title="Remover" style="color: indianred;
-                                               position: relative; float: right; padding: 0"
-                                                   onclick="show_modal_remove({{ group_id }}, {{ classification_of_diseases.id }});"></a></td>
+                                            <td>(sem diagnósticos)</td>
+                                            <td></td>
                                         </tr>
-                                    {% endfor %}
-                                {% endif %}
-                                </tbody>
-                            </table>
+                                    {% else %}
+                                        {% for classification_of_diseases in classification_of_diseases_list %}
+                                            <tr>
+                                                <td>{{ classification_of_diseases.code }}</td>
+                                                <td>{{ classification_of_diseases.abbreviated_description }}
+                                                    <a class="btn glyphicon glyphicon-remove" data-toggle="tooltip"
+                                                       data-placement="right" title="Remover" style="color: indianred;
+                                                   position: relative; float: right; padding: 0"
+                                                       onclick="show_modal_remove({{ group.id }}, {{ classification_of_diseases.id }});"></a></td>
+                                            </tr>
+                                        {% endfor %}
+                                    {% endif %}
+                                    </tbody>
+                                </table>
+                            </div>
                         </div>
                     </div>
                 </div>
-            </div>
 
-            <div class="container span6 offset3 well ">
-                {% if not creating and questionnaires_configuration_list %}
+                <div class="container span6 offset3 well ">
                     <div class="form-group">
-
                         <table class="table table-striped">
                             <thead>
                             <tr>
@@ -194,100 +201,106 @@
                             {% endfor %}
                             </tbody>
                         </table>
+                    </div>
 
+                    {% if perms.experiment.add_questionnaireconfiguration %}
+                        <a href="/experiment/group/{{ group.id }}/questionnaire/new" class="btn btn-primary {% if not limesurvey_available%} disabled{% endif %}">Inserir questionário</a>
+                    {% endif %}
+                </div>
+
+                {% if perms.experiment.add_subject %}
+                    <div class="container span6 offset3 well ">
+                        <div class="row">
+                            <div class="col-xs-6 col-sm-12">
+                                {% if number_of_subjects > 0 %}
+                                    <label>
+                                        <h5>Participantes</h5>
+                                    </label>
+                                    <div class="form-group">
+                                        <a data-toggle="tooltip" data-placement="left" title="Ver / Editar"
+                                           href="/experiment/group/{{ group.id }}/subjects">
+                                            {% if number_of_subjects == 1 %}
+                                                Há {{ number_of_subjects }} participante cadastrado
+                                            {% else %}
+                                                Há {{ number_of_subjects }} participantes cadastrados
+                                            {% endif %}
+                                        </a>
+                                    </div>
+                                {% else %}
+                                    <a href="/experiment/group/{{ group.id }}/subjects" class="btn btn-primary">
+                                        Cadastrar participantes</a>
+                                {% endif %}
+                            </div>
+                        </div>
                     </div>
                 {% endif %}
-                {% if perms.experiment.add_questionnaireconfiguration %}
-                    <a href="/experiment/group/{{ group.id }}/questionnaire/new" class="btn btn-primary {% if creating or not limesurvey_available%} disabled{% endif %}">Inserir questionário</a>
-                {% endif %}
-            </div>
 
-            {% if perms.experiment.add_subject %}
                 <div class="container span6 offset3 well ">
                     <div class="row">
                         <div class="col-xs-6 col-sm-12">
-                            {% if number_of_subjects > 0 %}
-                                <label>
-                                    <h5>Participantes</h5>
-                                </label>
+                            {% if group.experimental_protocol %}
                                 <div class="form-group">
-                                    <a data-toggle="tooltip" data-placement="left" title="Ver / Editar" href="/experiment/group/{{ group.id }}/subjects">Há {{ number_of_subjects }} participante(s) cadastrado(s)</a>
+                                    <table class="table table-striped">
+                                        <thead>
+                                            <tr>
+                                                <th>Protocolo Experimental</th>
+                                                <th>Descrição</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            <tr>
+                                                <td>
+                                                    <a data-toggle="tooltip" data-placement="left" title="Editar"
+                                                       href="/experiment/group/{{ group.id }}/experimental_protocol_edit">
+                                                        {{ group.experimental_protocol.component.identification }}
+                                                    </a>
+                                                </td>
+                                                <td>
+                                                    {{ group.experimental_protocol.component.description }}
+
+                                                    <a class="btn glyphicon glyphicon-remove" data-toggle="tooltip"
+                                                       data-placement="right" title="Desconfigurar protocolo experimental"
+                                                       style="color: indianred; position: relative; float: right; padding: 0"
+                                                       onclick="show_modal_remove_experimental_protocol();"></a>
+                                                </td>
+                                            </tr>
+                                        </tbody>
+                                    </table>
                                 </div>
                             {% else %}
-                                <a href="/experiment/group/{{ group.id }}/subjects" class="btn btn-primary {% if creating %} disabled{% endif %}" >Cadastrar participantes</a>
+                                <label>
+                                    <h5>Protocolo Experimental</h5>
+                                </label>
+
+                                <div class="form-group">
+                                    <a href="/experiment/group/{{ group.id }}/experimental_protocol_new" class="btn btn-primary" >Criar Protocolo Experimental</a>
+                                </div>
+
                             {% endif %}
                         </div>
                     </div>
                 </div>
             {% endif %}
 
-            <div class="container span6 offset3 well ">
-                <div class="row">
-                    <div class="col-xs-6 col-sm-12">
-
-                        {% if group.experimental_protocol %}
-
-                            <div class="form-group">
-                                <table class="table table-striped">
-                                    <thead>
-                                    <tr>
-                                        <th>Protocolo Experimental</th>
-                                        <th>Descrição</th>
-                                    </tr>
-                                    </thead>
-                                    <tbody>
-                                    <tr>
-                                        <td>
-                                            <a data-toggle="tooltip" data-placement="left" title="Editar" href="/experiment/group/{{ group.id }}/experimental_protocol_edit">{{ group.experimental_protocol.component.identification }}</a>
-                                        </td>
-                                        <td>
-                                            {{ group.experimental_protocol.component.description }}
-
-                                            <a class="btn glyphicon glyphicon-remove" data-toggle="tooltip"
-                                               data-placement="right" title="Desconfigurar protocolo experimental"
-                                               style="color: indianred; position: relative; float: right; padding: 0"
-                                               onclick="show_modal_remove_experimental_protocol();"></a>
-                                        </td>
-                                    </tr>
-
-                                    </tbody>
-                                </table>
-                            </div>
-
-                        {% else %}
-
-                            <label>
-                                <h5>Protocolo Experimental</h5>
-                            </label>
-
-                            <div class="form-group">
-                                <a href="/experiment/group/{{ group.id }}/experimental_protocol_new" class="btn btn-primary {% if creating %} disabled{% endif %}" >Criar Protocolo Experimental</a>
-                            </div>
-
-                        {% endif %}
-                    </div>
-                </div>
-            </div>
-
             <div class="btn-toolbar">
                 <div class="btn-group pull-left">
-                    {% if not creating and perms.experiment.delete_experiment %}
+                    {% if not editing and perms.experiment.delete_experiment %}
                         <button type="button" class="btn btn-danger" onclick="$('#modalRemove').modal('show')">Excluir</button>
                     {% endif %}
                 </div>
-                <div class="btn-group pull-right">
-                    {% if perms.experiment.change_experiment %}
+                {% if editing %}
+                    <div class="btn-group pull-right">
                         <button type="submit" name="action" value="save" class="btn btn-primary">Salvar</button>
-                    {% endif %}
-                </div>
-                <div class="btn-group pull-right">
-                    {% if creating %}
-                        {#                        <input value="Cancelar" class="btn"/>#}
-                        <a href="/experiment/edit/{{ experiment.id }}" class="btn" style="background-color: #f5f5f5">Cancelar</a>
-                    {% else %}
-                        <a href="/experiment/edit/{{ experiment.id }}" class="btn" style="background-color: #f5f5f5">Voltar</a>
-                    {% endif %}
-                </div>
+                    </div>
+                    <div class="btn-group pull-right">
+                        <a href="/experiment/{% if creating %}{{ experiment.id }}{% else %}group/{{ group.id }}{% endif %}"
+                           class="btn" style="background-color: #f5f5f5">Cancelar</a>
+                    </div>
+                {% else %}
+                    <div class="btn-group pull-right">
+                        <a href="/experiment/{{ experiment.id }}" class="btn" style="background-color: #f5f5f5">Voltar</a>
+                    </div>
+                {% endif %}
             </div>
         </div>
     </div>
@@ -297,7 +310,7 @@
         <div class="modal-dialog">
             <div class="modal-content">
                 <div class="modal-body">
-                    Tem certeza que deseja excluir o experimento?
+                    Tem certeza que deseja excluir o grupo?
                 </div>
                 <div class="modal-footer">
                     <button type="button" class="btn btn-default" data-dismiss="modal">Cancelar</button>

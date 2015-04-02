@@ -20,10 +20,12 @@ urlpatterns = patterns(
     # experiment
     url(r'^list/$', 'experiment_list', name='experiment_list'),
     url(r'^new/$', 'experiment_create', name='experiment_new'),
+    url(r'^(?P<experiment_id>\d+)/$', 'experiment_view', name='experiment_view'),
     url(r'^edit/(?P<experiment_id>\d+)/$', 'experiment_update', name='experiment_edit'),
 
     # group
     url(r'^(?P<experiment_id>\d+)/group/new/$', 'group_create', name='group_new'),
+    url(r'^group/(?P<group_id>\d+)/$', 'group_view', name='group_view'),
     url(r'^group/edit/(?P<group_id>\d+)/$', 'group_update', name='group_edit'),
 
     # cid

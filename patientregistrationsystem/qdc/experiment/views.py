@@ -69,6 +69,7 @@ def research_project_create(request, template_name="experiment/research_project_
 
     context = {
         "research_project_form": research_project_form,
+        "creating": True,
         "editing": True}
 
     return render(request, template_name, context)
@@ -89,18 +90,16 @@ def research_project_view(request, research_project_id, template_name="experimen
             try:
                 for keyword in research_project.keywords.all():
                     manage_keywords(keyword, ResearchProject.objects.exclude(id=research_project.id))
+
                 research_project.delete()
+                return redirect('research_project_list')
             except ProtectedError:
                 messages.error(request, "Erro ao tentar excluir o estudo.")
-                redirect_url = reverse("research_project_edit", args=(research_project.id,))
-                return HttpResponseRedirect(redirect_url)
-            return redirect('research_project_list')
 
     context = {
         "research_project": research_project,
         "research_project_form": research_project_form,
-        "keywords": research_project.keywords.all(),
-        "editing": False}
+        "keywords": research_project.keywords.all()}
 
     return render(request, template_name, context)
 
@@ -223,20 +222,46 @@ def experiment_create(request, template_name="experiment/experiment_register.htm
     experiment_form = ExperimentForm(request.POST or None)
 
     if request.method == "POST":
-
         if request.POST['action'] == "save":
-
             if experiment_form.is_valid():
                 experiment_added = experiment_form.save()
 
                 messages.success(request, 'Experimento criado com sucesso.')
 
-                redirect_url = reverse("experiment_edit", args=(experiment_added.id,))
+                redirect_url = reverse("experiment_view", args=(experiment_added.id,))
                 return HttpResponseRedirect(redirect_url)
 
     context = {
         "experiment_form": experiment_form,
-        "creating": True}
+        "creating": True,
+        "editing": True}
+
+    return render(request, template_name, context)
+
+
+@login_required
+@permission_required('experiment.change_experiment')
+def experiment_view(request, experiment_id, template_name="experiment/experiment_register.html"):
+
+    experiment = get_object_or_404(Experiment, pk=experiment_id)
+    group_list = Group.objects.filter(experiment=experiment)
+    experiment_form = ExperimentForm(request.POST or None, instance=experiment)
+
+    for field in experiment_form.fields:
+        experiment_form.fields[field].widget.attrs['disabled'] = True
+
+    if request.method == "POST":
+        if request.POST['action'] == "remove":
+            try:
+                experiment.delete()
+                return redirect('experiment_list')
+            except ProtectedError:
+                messages.error(request, "Não foi possível excluir o experimento, pois há grupos associados")
+
+    context = {
+        "experiment_form": experiment_form,
+        "group_list": group_list,
+        "experiment": experiment}
 
     return render(request, template_name, context)
 
@@ -246,43 +271,34 @@ def experiment_create(request, template_name="experiment/experiment_register.htm
 def experiment_update(request, experiment_id, template_name="experiment/experiment_register.html"):
 
     experiment = get_object_or_404(Experiment, pk=experiment_id)
+    group_list = Group.objects.filter(experiment=experiment)
+    experiment_form = ExperimentForm(request.POST or None, instance=experiment)
 
-    if experiment:
-        group_list = Group.objects.filter(experiment=experiment)
-        experiment_form = ExperimentForm(request.POST or None, instance=experiment)
+    if request.method == "POST":
+        if request.POST['action'] == "save":
+            if experiment_form.is_valid():
+                if experiment_form.has_changed():
+                    experiment_form.save()
+                    messages.success(request, 'Experimento atualizado com sucesso.')
+                else:
+                    messages.success(request, 'Não há alterações para salvar.')
 
-        if request.method == "POST":
-            if request.POST['action'] == "save":
-                if experiment_form.is_valid():
-                    if experiment_form.has_changed():
-                        experiment_form.save()
+                redirect_url = reverse("experiment_view", args=(experiment_id,))
+                return HttpResponseRedirect(redirect_url)
 
-                    redirect_url = reverse("experiment_edit", args=(experiment_id,))
-                    return HttpResponseRedirect(redirect_url)
-            else:
-                if request.POST['action'] == "remove":
-                    try:
-                        experiment.delete()
-                    except ProtectedError:
-                        messages.error(request, "Não foi possível excluir o experimento, pois há grupos associados")
-                        redirect_url = reverse("experiment_edit", args=(experiment.id,))
-                        return HttpResponseRedirect(redirect_url)
-                    return redirect('experiment_list')
+    context = {
+        "experiment_form": experiment_form,
+        "editing": True,
+        "group_list": group_list,
+        "experiment": experiment}
 
-        context = {
-            "experiment_form": experiment_form,
-            "creating": False,
-            "group_list": group_list,
-            "experiment": experiment}
-
-        return render(request, template_name, context)
+    return render(request, template_name, context)
 
 
 @login_required
 def group_create(request, experiment_id, template_name="experiment/group_register.html"):
 
     experiment = get_object_or_404(Experiment, pk=experiment_id)
-
     group_form = GroupForm(request.POST or None)
 
     if request.method == "POST":
@@ -294,14 +310,67 @@ def group_create(request, experiment_id, template_name="experiment/group_registe
 
                 messages.success(request, 'Grupo incluído com sucesso.')
 
-                redirect_url = reverse("group_edit", args=(group_added.id,))
+                redirect_url = reverse("group_view", args=(group_added.id,))
                 return HttpResponseRedirect(redirect_url)
 
     context = {
         "group_form": group_form,
         "creating": True,
-        "updating": False,
+        "editing": True,
         "experiment": experiment}
+
+    return render(request, template_name, context)
+
+
+@login_required
+@permission_required('experiment.add_experiment')
+def group_view(request, group_id, template_name="experiment/group_register.html"):
+
+    group = get_object_or_404(Group, pk=group_id)
+    group_form = GroupForm(request.POST or None, instance=group)
+
+    for field in group_form.fields:
+        group_form.fields[field].widget.attrs['disabled'] = True
+
+    experiment = get_object_or_404(Experiment, pk=group.experiment_id)
+
+    list_of_questionnaires_configuration = QuestionnaireConfiguration.objects.filter(group=group)
+    surveys = Questionnaires()
+    limesurvey_available = check_limesurvey_access(request, surveys)
+
+    list_of_questionnaires_configuration = [
+        {"survey_title": surveys.get_survey_title(questionnaire_configuration.lime_survey_id),
+         "number_of_fills": questionnaire_configuration.number_of_fills,
+         "interval_between_fills_value": questionnaire_configuration.interval_between_fills_value,
+         "interval_between_fills_unit": questionnaire_configuration.interval_between_fills_unit,
+         "id": questionnaire_configuration.id}
+        for questionnaire_configuration in list_of_questionnaires_configuration]
+    surveys.release_session_key()
+
+    if request.method == "POST":
+        if request.POST['action'] == "remove":
+            try:
+                group.delete()
+                redirect_url = reverse("experiment_view", args=(experiment.id,))
+                return HttpResponseRedirect(redirect_url)
+            except ProtectedError:
+                messages.error(request, "Não foi possível excluir o grupo, pois há dependências.")
+        elif request.POST['action'] == "remove_experimental_protocol":
+                component_configuration = get_object_or_404(ComponentConfiguration,
+                                                            pk=group.experimental_protocol_id)
+                group.experimental_protocol = None
+                group.save()
+                component_configuration.delete()
+
+    context = {
+        "classification_of_diseases_list": group.classification_of_diseases.all(),
+        "group_form": group_form,
+        "questionnaires_configuration_list": list_of_questionnaires_configuration,
+        "experiment": experiment,
+        "group": group,
+        "editing": False,
+        "number_of_subjects": SubjectOfGroup.objects.all().filter(group=group).count(),
+        "limesurvey_available": limesurvey_available}
 
     return render(request, template_name, context)
 
@@ -311,64 +380,47 @@ def group_create(request, experiment_id, template_name="experiment/group_registe
 def group_update(request, group_id, template_name="experiment/group_register.html"):
 
     group = get_object_or_404(Group, pk=group_id)
+    group_form = GroupForm(request.POST or None, instance=group)
+
     experiment = get_object_or_404(Experiment, pk=group.experiment_id)
 
-    if group:
-        group_form = GroupForm(request.POST or None, instance=group)
+    list_of_questionnaires_configuration = QuestionnaireConfiguration.objects.filter(group=group)
+    surveys = Questionnaires()
+    limesurvey_available = check_limesurvey_access(request, surveys)
 
-        list_of_questionnaires_configuration = QuestionnaireConfiguration.objects.filter(group=group)
+    list_of_questionnaires_configuration = [
+        {"survey_title": surveys.get_survey_title(questionnaire_configuration.lime_survey_id),
+         "number_of_fills": questionnaire_configuration.number_of_fills,
+         "interval_between_fills_value": questionnaire_configuration.interval_between_fills_value,
+         "interval_between_fills_unit": questionnaire_configuration.interval_between_fills_unit,
+         "id": questionnaire_configuration.id}
+        for questionnaire_configuration in list_of_questionnaires_configuration]
+    surveys.release_session_key()
 
-        surveys = Questionnaires()
-
-        limesurvey_available = check_limesurvey_access(request, surveys)
-
-        list_of_questionnaires_configuration = [
-            {"survey_title": surveys.get_survey_title(questionnaire_configuration.lime_survey_id),
-             "number_of_fills": questionnaire_configuration.number_of_fills,
-             "interval_between_fills_value": questionnaire_configuration.interval_between_fills_value,
-             "interval_between_fills_unit": questionnaire_configuration.interval_between_fills_unit,
-             "id": questionnaire_configuration.id}
-            for questionnaire_configuration in list_of_questionnaires_configuration]
-        surveys.release_session_key()
-
-        if request.method == "POST":
-            if request.POST['action'] == "save":
-                if group_form.is_valid():
-                    if group_form.has_changed():
-                        group_form.save()
-
-                    redirect_url = reverse("group_edit", args=(group_id,))
-                    return HttpResponseRedirect(redirect_url)
-            else:
-                if request.POST['action'] == "remove":
-                    try:
-                        group.delete()
-                    except ProtectedError:
-                        messages.error(request, "Não foi possível excluir o grupo, pois há dependências.")
-                        redirect_url = reverse("group_edit", args=(group.id,))
-                        return HttpResponseRedirect(redirect_url)
-                    redirect_url = reverse("experiment_edit", args=(experiment.id,))
-                    return HttpResponseRedirect(redirect_url)
+    if request.method == "POST":
+        if request.POST['action'] == "save":
+            if group_form.is_valid():
+                if group_form.has_changed():
+                    group_form.save()
+                    messages.success(request, 'Grupo atualizado com sucesso.')
                 else:
-                    if request.POST['action'] == "remove_experimental_protocol":
-                        component_configuration = get_object_or_404(ComponentConfiguration,
-                                                                    pk=group.experimental_protocol_id)
-                        group.experimental_protocol = None
-                        group.save()
-                        component_configuration.delete()
+                    messages.success(request, 'Não há alterações para salvar.')
 
-        context = {
-            "classification_of_diseases_list": group.classification_of_diseases.all(),
-            "group_id": group_id,
-            "group_form": group_form,
-            "creating": False,
-            "questionnaires_configuration_list": list_of_questionnaires_configuration,
-            "experiment": experiment,
-            "group": group,
-            "number_of_subjects": SubjectOfGroup.objects.all().filter(group=group).count(),
-            "limesurvey_available": limesurvey_available}
+                redirect_url = reverse("group_view", args=(group_id,))
+                return HttpResponseRedirect(redirect_url)
 
-        return render(request, template_name, context)
+    context = {
+        "classification_of_diseases_list": group.classification_of_diseases.all(),
+        "group_id": group_id,
+        "group_form": group_form,
+        "editing": True,
+        "questionnaires_configuration_list": list_of_questionnaires_configuration,
+        "experiment": experiment,
+        "group": group,
+        "number_of_subjects": SubjectOfGroup.objects.all().filter(group=group).count(),
+        "limesurvey_available": limesurvey_available}
+
+    return render(request, template_name, context)
 
 
 @permission_required('experiment.add_subject')
@@ -393,7 +445,7 @@ def classification_of_diseases_insert(request, group_id, classification_of_disea
     group = get_object_or_404(Group, pk=group_id)
     classification_of_diseases = get_object_or_404(ClassificationOfDiseases, pk=classification_of_diseases_id)
     group.classification_of_diseases.add(classification_of_diseases)
-    redirect_url = reverse("group_edit", args=(group_id,))
+    redirect_url = reverse("group_view", args=(group_id,))
     return HttpResponseRedirect(redirect_url)
 
 
@@ -404,7 +456,7 @@ def classification_of_diseases_remove(request, group_id, classification_of_disea
     group = get_object_or_404(Group, pk=group_id)
     classification_of_diseases = get_object_or_404(ClassificationOfDiseases, pk=classification_of_diseases_id)
     classification_of_diseases.group_set.remove(group)
-    redirect_url = reverse("group_edit", args=(group_id,))
+    redirect_url = reverse("group_view", args=(group_id,))
     return HttpResponseRedirect(redirect_url)
 
 
@@ -421,25 +473,23 @@ def questionnaire_create(request, group_id, template_name="experiment/questionna
     questionnaires_list = []
 
     if request.method == "GET":
-
         questionnaires_of_group = QuestionnaireConfiguration.objects.filter(group=group)
 
         if not questionnaires_of_group:
             questionnaires_list = Questionnaires().find_all_active_questionnaires()
         else:
             active_questionnaires_list = Questionnaires().find_all_active_questionnaires()
+
             for questionnaire in questionnaires_of_group:
                 for active_questionnaire in active_questionnaires_list:
                     if active_questionnaire['sid'] == questionnaire.lime_survey_id:
                         active_questionnaires_list.remove(active_questionnaire)
+
             questionnaires_list = active_questionnaires_list
 
     if request.method == "POST":
-
         if request.POST['action'] == "save":
-
             if questionnaire_form.is_valid():
-
                 lime_survey_id = request.POST['questionnaire_selected']
 
                 questionnaire = QuestionnaireConfiguration()
@@ -457,10 +507,8 @@ def questionnaire_create(request, group_id, template_name="experiment/questionna
                         get_object_or_404(TimeUnit, pk=request.POST['interval_between_fills_unit'])
 
                 questionnaire.save()
-
                 messages.success(request, 'Questionário incluído com sucesso.')
-
-                redirect_url = reverse("group_edit", args=(group_id,))
+                redirect_url = reverse("group_view", args=(group_id,))
                 return HttpResponseRedirect(redirect_url)
 
     context = {
@@ -482,10 +530,8 @@ def questionnaire_update(request, questionnaire_configuration_id,
     questionnaire_form = QuestionnaireConfigurationForm(request.POST or None, instance=questionnaire_configuration)
 
     if request.method == "POST":
-
         if request.POST['action'] == "save":
             if questionnaire_form.is_valid():
-
                 if "number_of_fills" in request.POST:
                     questionnaire_configuration.number_of_fills = request.POST['number_of_fills']
 
@@ -498,24 +544,16 @@ def questionnaire_update(request, questionnaire_configuration_id,
                         get_object_or_404(TimeUnit, pk=request.POST['interval_between_fills_unit'])
 
                 questionnaire_configuration.save()
-
                 messages.success(request, 'Questionário atualizado com sucesso.')
-
-                redirect_url = reverse("group_edit", args=(group.id,))
+                redirect_url = reverse("group_view", args=(group.id,))
                 return HttpResponseRedirect(redirect_url)
-        else:
-            if request.POST['action'] == "remove":
-                try:
-                    questionnaire_configuration.delete()
-                except ProtectedError:
-                    messages.error(request, "Não foi possível excluir o questionário, pois há respostas associadas")
-                    redirect_url = reverse("questionnaire_edit", args=(questionnaire_configuration_id,))
-                    return HttpResponseRedirect(redirect_url)
-
-                redirect_url = reverse("group_edit", args=(group.id,))
+        elif request.POST['action'] == "remove":
+            try:
+                questionnaire_configuration.delete()
+                redirect_url = reverse("group_view", args=(group.id,))
                 return HttpResponseRedirect(redirect_url)
-
-
+            except ProtectedError:
+                messages.error(request, "Não foi possível excluir o questionário, pois há respostas associadas")
 
     surveys = Questionnaires()
     questionnaire_title = surveys.get_survey_title(questionnaire_configuration.lime_survey_id)
@@ -525,18 +563,15 @@ def questionnaire_update(request, questionnaire_configuration_id,
     subject_list_with_status = []
 
     for subject_of_group in SubjectOfGroup.objects.all().filter(group=group).order_by('subject__patient__name'):
-
         subject_responses = QuestionnaireResponse.objects.\
             filter(subject_of_group=subject_of_group). \
             filter(questionnaire_configuration=questionnaire_configuration)
-
         amount_of_completed_questionnaires = 0
         questionnaire_responses_with_status = []
 
         for subject_response in subject_responses:
             response_result = surveys.get_participant_properties(questionnaire_configuration.lime_survey_id,
                                                                  subject_response.token_id, "completed")
-
             completed = False
 
             if response_result != "N" and response_result != "":
@@ -603,11 +638,9 @@ def subjects(request, group_id, template_name="experiment/subjects.html"):
     limesurvey_available = check_limesurvey_access(request, surveys)
 
     for subject_of_group in SubjectOfGroup.objects.all().filter(group=group).order_by('subject__patient__name'):
-
         number_of_questionnaires_filled = 0
 
         for questionnaire_configuration in list_of_questionnaires_configuration:
-
             subject_responses = QuestionnaireResponse.objects. \
                 filter(subject_of_group=subject_of_group). \
                 filter(questionnaire_configuration=questionnaire_configuration)
@@ -620,7 +653,6 @@ def subjects(request, group_id, template_name="experiment/subjects.html"):
                     amount_of_completed_questionnaires = 0
 
                     for subject_response in subject_responses:
-
                         response_result = surveys.get_participant_properties(questionnaire_configuration.lime_survey_id,
                                                                              subject_response.token_id, "completed")
 
@@ -811,9 +843,7 @@ def questionnaire_response_update(request, questionnaire_response_id,
     redirect_url = None
 
     if request.method == "POST":
-
         if request.POST['action'] == "save":
-
             redirect_url = get_limesurvey_response_url(questionnaire_response)
 
             if not redirect_url:
@@ -822,32 +852,31 @@ def questionnaire_response_update(request, questionnaire_response_id,
                 fail = True
                 messages.info(request, 'Você será redirecionado para o questionário. Aguarde.')
 
-        else:
-            if request.POST['action'] == "remove":
-                surveys = Questionnaires()
-                result = surveys.delete_participant(
-                    questionnaire_configuration.lime_survey_id,
-                    questionnaire_response.token_id)
-                surveys.release_session_key()
+        elif request.POST['action'] == "remove":
+            surveys = Questionnaires()
+            result = surveys.delete_participant(
+                questionnaire_configuration.lime_survey_id,
+                questionnaire_response.token_id)
+            surveys.release_session_key()
 
-                can_delete = False
+            can_delete = False
 
-                if str(questionnaire_response.token_id) in result:
-                    result = result[str(questionnaire_response.token_id)]
-                    if result == 'Deleted' or result == 'Invalid token ID':
-                        can_delete = True
-                else:
-                    if 'status' in result and result['status'] == u'Error: Invalid survey ID':
-                        can_delete = True
+            if str(questionnaire_response.token_id) in result:
+                result = result[str(questionnaire_response.token_id)]
+                if result == 'Deleted' or result == 'Invalid token ID':
+                    can_delete = True
+            else:
+                if 'status' in result and result['status'] == u'Error: Invalid survey ID':
+                    can_delete = True
 
-                if can_delete:
-                    questionnaire_response.delete()
-                    messages.success(request, 'Preenchimento removido com sucesso')
-                else:
-                    messages.error(request, "Erro ao deletar o preenchimento")
-                redirect_url = reverse("subject_questionnaire",
-                                       args=(questionnaire_configuration.group.id, subject.id,))
-                return HttpResponseRedirect(redirect_url)
+            if can_delete:
+                questionnaire_response.delete()
+                messages.success(request, 'Preenchimento removido com sucesso')
+            else:
+                messages.error(request, "Erro ao deletar o preenchimento")
+            redirect_url = reverse("subject_questionnaire",
+                                   args=(questionnaire_configuration.group.id, subject.id,))
+            return HttpResponseRedirect(redirect_url)
 
     origin = get_origin(request)
 
@@ -1090,7 +1119,6 @@ def subject_questionnaire_view(request, group_id, subject_id,
         )
 
     if request.method == "POST":
-
         if request.POST['action'] == "remove":
             if can_remove:
                 get_object_or_404(SubjectOfGroup, group=group, subject=subject).delete()
@@ -1164,7 +1192,6 @@ def upload_file(request, subject_id, group_id, template_name="experiment/upload_
     file_form = None
 
     if request.method == "POST":
-
         if request.POST['action'] == "upload":
             file_form = FileForm(request.POST, request.FILES, instance=subject_of_group)
             if 'consent_form' in request.FILES:
@@ -1176,8 +1203,7 @@ def upload_file(request, subject_id, group_id, template_name="experiment/upload_
                 return HttpResponseRedirect(redirect_url)
             else:
                 messages.error(request, 'Não existem anexos para salvar')
-        else:
-            if request.POST['action'] == "remove":
+        elif request.POST['action'] == "remove":
                 subject_of_group.consent_form.delete()
                 subject_of_group.save()
                 messages.success(request, 'Anexo removido com sucesso.')
@@ -1210,6 +1236,7 @@ def component_list(request, experiment_id, template_name="experiment/component_l
         "experiment": experiment,
         "component_list": components,
         "icon_class": icon_class}
+
     return render(request, template_name, context)
 
 
