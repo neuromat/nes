@@ -82,9 +82,9 @@
         <div class="col-md-10">
 
             <ol class="breadcrumb">
-                <li>Home</li>
+                <li><a href="/home">Home</a></li>
                 <li><a href="/experiment/list">Experimentos</a></li>
-                <li><a href="/experiment/edit/{{ experiment.id }}">{{ experiment.title }}</a></li>
+                <li><a href="/experiment/{{ experiment.id }}">{{ experiment.title }}</a></li>
                 <li><a href="/experiment/{{ experiment.id }}/components">Componentes de Protocolo Experimental</a></li>
                 {% block breadcrumb %}
                 {% endblock %}

@@ -32,7 +32,7 @@ urlpatterns = patterns(
     url(r'^group_diseases/cid-10/$', 'search_cid10_ajax', name='cid10_search'),
 
     # classification_of_diseases (add, remove)
-    url(r'^group/edit/(?P<group_id>\d+)/diagnosis/(?P<classification_of_diseases_id>\d+)/$',
+    url(r'^group/(?P<group_id>\d+)/diagnosis/(?P<classification_of_diseases_id>\d+)/$',
         'classification_of_diseases_insert', name='classification_of_diseases_insert'),
     url(r'^diagnosis/delete/(?P<group_id>\d+)/(?P<classification_of_diseases_id>\d+)/$',
         'classification_of_diseases_remove', name='classification_of_diseases_remove'),

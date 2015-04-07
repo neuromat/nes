@@ -14,7 +14,7 @@
         <div class="col-md-10">
 
             <ol class="breadcrumb">
-                <li>Home</li>
+                <li><a href="/home">Home</a></li>
                 {% if view == "patient" %}
                     <li>Pacientes</li>
                     {% if status_mode == "edit"%}
@@ -25,11 +25,11 @@
                 {% else %}
                     <li><a href="/experiment/list">Experimentos</a></li>
                     <li>
-                        <a href="/experiment/edit/{{ questionnaire_response.questionnaire_configuration.group.experiment.id }}/">
+                        <a href="/experiment/{{ questionnaire_response.questionnaire_configuration.group.experiment.id }}/">
                             {{ questionnaire_response.questionnaire_configuration.group.experiment.title }}
                         </a>
                     </li>
-                    <li><a href="/experiment/group/edit/{{ questionnaire_response.questionnaire_configuration.group.id }}">{{ questionnaire_response.questionnaire_configuration.group.title }}</a></li>
+                    <li><a href="/experiment/group/{{ questionnaire_response.questionnaire_configuration.group.id }}">{{ questionnaire_response.questionnaire_configuration.group.title }}</a></li>
 
                     {% if view == "experiment_subject" %}
                         <li><a href="/experiment/group/{{ questionnaire_response.questionnaire_configuration.group.id }}/subjects/">Participantes</a></li>
