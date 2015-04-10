@@ -2,6 +2,9 @@
 from functools import partial
 import re
 import datetime
+import csv
+
+from StringIO import StringIO
 
 from django.shortcuts import render, get_object_or_404, redirect
 from django.contrib.auth.decorators import login_required, permission_required
@@ -618,7 +621,7 @@ def questionnaire_update(request, questionnaire_configuration_id,
         "questionnaire_configuration": questionnaire_configuration,
         'subject_list': subject_list_with_status,
         "limesurvey_available": limesurvey_available
-        }
+    }
 
     return render(request, template_name, context)
 
@@ -978,41 +981,57 @@ def questionnaire_response_view(request, questionnaire_response_id,
     if not isinstance(groups, dict):
         for group in groups:
             if 'id' in group:
+
                 question_list = surveys.list_questions(questionnaire_configuration.lime_survey_id, group['id'])
                 question_list = sorted(question_list)
+
                 for question in question_list:
+
                     properties = surveys.get_question_properties(question)
-                    if ('{int' not in properties['question']) and ('{(' not in properties['question'])\
-                            and ('{if' not in properties['question']) and ('{pont' not in properties['question']):
-                        properties['question'] = re.sub('<.*?>', '', properties['question'])
+
+                    # cleaning the question field
+                    properties['question'] = re.sub('{.*?}', '', re.sub('<.*?>', '', properties['question']))
+                    properties['question'] = properties['question'].replace('&nbsp;', '').strip()
+
+                    is_purely_formula = (properties['type'] == '*') and (properties['question'] == '')
+
+                    if not is_purely_formula and properties['question'] != '':
 
                         if isinstance(properties['subquestions'], dict):
                             question_properties.append({
                                 'question': properties['question'],
                                 'question_id': properties['title'],
                                 'answer_options': 'super_question',
-                                'type': properties['type']
+                                'type': properties['type'],
+                                'attributes_lang': properties['attributes_lang']
                             })
                             for key, value in sorted(properties['subquestions'].iteritems()):
                                 question_properties.append({
                                     'question': value['question'],
                                     'question_id': properties['title'] + '[' + value['title'] + ']',
                                     'answer_options': properties['answeroptions'],
-                                    'type': properties['type']
+                                    'type': properties['type'],
+                                    'attributes_lang': properties['attributes_lang']
                                 })
                         else:
                             question_properties.append({
                                 'question': properties['question'],
                                 'question_id': properties['title'],
                                 'answer_options': properties['answeroptions'],
-                                'type': properties['type']
+                                'type': properties['type'],
+                                'attributes_lang': properties['attributes_lang']
                             })
 
-        responses_list = surveys.get_responses_by_token(questionnaire_configuration.lime_survey_id, token)
-        responses_list = responses_list.replace('\"', '')
-        responses_list = responses_list.split('\n')
-        responses_list[0] = responses_list[0].split(",")
-        responses_list[1] = responses_list[1].split(",")
+        # Reading from Limesurvey and...
+        responses_string = surveys.get_responses_by_token(questionnaire_configuration.lime_survey_id, token)
+
+        # ... transforming to a list:
+        #   response_list[0] has the questions
+        #   response_list[1] has the answers
+        reader = csv.reader(StringIO(responses_string), delimiter=',')
+        responses_list = []
+        for row in reader:
+            responses_list.append(row)
 
         for question in question_properties:
 
@@ -1028,33 +1047,73 @@ def questionnaire_response_view(request, questionnaire_response_id,
 
                 answer = ''
 
-                if question['question_id'] in responses_list[0]:
+                if question['type'] == '1':
 
-                    index = responses_list[0].index(question['question_id'])
+                    answer_list = []
 
-                    answer_options = question['answer_options']
-
-                    if isinstance(answer_options, dict):
-
+                    if question['question_id']+"[1]" in responses_list[0]:
+                        index = responses_list[0].index(question['question_id']+"[1]")
+                        answer_options = question['answer_options']
+                        answer = question['attributes_lang']['dualscale_headerA'] + ": "
                         if responses_list[1][index] in answer_options:
                             answer_option = answer_options[responses_list[1][index]]
-                            answer = answer_option['answer']
+                            answer += answer_option['answer']
                         else:
-                            answer = 'Sem resposta'
-                    else:
-                        if question['type'] == 'D':
-                            if responses_list[1][index]:
-                                answer = datetime.datetime.strptime(responses_list[1][index], '%Y-%m-%d %H:%M:%S')
-                            else:
-                                answer = ''
-                        else:
-                            answer = responses_list[1][index]
+                            answer += 'Sem resposta'
 
-                questionnaire_responses.append({
-                    'question': question['question'],
-                    'answer': answer,
-                    'type': question['type']
-                })
+                    answer_list.append(answer)
+                    # questionnaire_responses.append({
+                    #     'question': question['question'],
+                    #     'answer': answer,
+                    #     'type': question['type']
+                    # })
+
+                    if question['question_id']+"[2]" in responses_list[0]:
+                        index = responses_list[0].index(question['question_id']+"[2]")
+                        answer_options = question['answer_options']
+                        answer = question['attributes_lang']['dualscale_headerB'] + ": "
+                        if responses_list[1][index] in answer_options:
+                            answer_option = answer_options[responses_list[1][index]]
+                            answer += answer_option['answer']
+                        else:
+                            answer += 'Sem resposta'
+
+                    answer_list.append(answer)
+
+                    questionnaire_responses.append({
+                        'question': question['question'],
+                        'answer': answer_list,
+                        'type': question['type']
+                    })
+                else:
+
+                    if question['question_id'] in responses_list[0]:
+
+                        index = responses_list[0].index(question['question_id'])
+
+                        answer_options = question['answer_options']
+
+                        if isinstance(answer_options, dict):
+
+                            if responses_list[1][index] in answer_options:
+                                answer_option = answer_options[responses_list[1][index]]
+                                answer = answer_option['answer']
+                            else:
+                                answer = 'Sem resposta'
+                        else:
+                            if question['type'] == 'D':
+                                if responses_list[1][index]:
+                                    answer = datetime.datetime.strptime(responses_list[1][index], '%Y-%m-%d %H:%M:%S')
+                                else:
+                                    answer = ''
+                            else:
+                                answer = responses_list[1][index]
+
+                    questionnaire_responses.append({
+                        'question': question['question'],
+                        'answer': answer,
+                        'type': question['type']
+                    })
 
     surveys.release_session_key()
 
@@ -1176,9 +1235,11 @@ def search_patients_ajax(request):
         group_id = request.POST['group_id']
         if search_text:
             if re.match('[a-zA-Z ]+', search_text):
-                patient_list = Patient.objects.filter(name__icontains=search_text).exclude(removed=True).order_by('name')
+                patient_list = \
+                    Patient.objects.filter(name__icontains=search_text).exclude(removed=True).order_by('name')
             else:
-                patient_list = Patient.objects.filter(cpf__icontains=search_text).exclude(removed=True).order_by('name')
+                patient_list = \
+                    Patient.objects.filter(cpf__icontains=search_text).exclude(removed=True).order_by('name')
 
         return render_to_response('experiment/ajax_search_patients.html',
                                   {'patients': patient_list, 'group_id': group_id})
