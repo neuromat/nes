@@ -74,8 +74,16 @@
                                             {% if question_response.type == 'D' %}
                                                 <input class="form-control" value="{{ question_response.answer|date:"d/m/Y" }}" type="text" disabled>
                                             {% else %}
-                                                {% if question_response.answer != '' %}
-                                                    <input class="form-control" value="{{ question_response.answer }}" type="text" disabled>
+                                                {% if question_response.type == '1' %}
+                                                    {% for answer in question_response.answer %}
+                                                        {% if answer != '' %}
+                                                            <input class="form-control" value="{{ answer }}" type="text" disabled>
+                                                        {% endif %}
+                                                    {% endfor %}
+                                                {% else %}
+                                                    {% if question_response.answer != '' %}
+                                                        <input class="form-control" value="{{ question_response.answer }}" type="text" disabled>
+                                                    {% endif %}
                                                 {% endif %}
                                             {% endif %}
                                         {% endif %}

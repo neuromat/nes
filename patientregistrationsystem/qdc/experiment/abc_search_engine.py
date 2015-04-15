@@ -223,7 +223,8 @@ class ABCSearchEngine:
     @abstractmethod
     def get_question_properties(self, question_id):
         properties = self.server.get_question_properties(self.session_key, question_id,
-                                                         ['question', 'subquestions', 'answeroptions', 'title', 'type'])
+                                                         ['question', 'subquestions', 'answeroptions', 'title', 'type',
+                                                          'attributes_lang'])
 
         return properties
 
