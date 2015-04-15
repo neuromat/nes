@@ -978,13 +978,14 @@ def questionnaire_response_view(request, questionnaire_response_id,
     groups = surveys.list_groups(questionnaire_configuration.lime_survey_id)
     questionnaire_responses = []
 
-    # defining language to be showed
-    languages = surveys.get_survey_languages(questionnaire_configuration.lime_survey_id)
-    language = languages['language']
-    if request.LANGUAGE_CODE in languages['additional_languages'].split(' '):
-        language = request.LANGUAGE_CODE
-
     if not isinstance(groups, dict):
+
+        # defining language to be showed
+        languages = surveys.get_survey_languages(questionnaire_configuration.lime_survey_id)
+        language = languages['language']
+        if request.LANGUAGE_CODE in languages['additional_languages'].split(' '):
+            language = request.LANGUAGE_CODE
+
         for group in groups:
             if 'id' in group and group['id']['language'] == language:
 
