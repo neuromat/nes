@@ -4,8 +4,6 @@
 
     {% if creating %}
         <li class="active">Nova instrução</li>
-    {% else %}
-        <li class="active"> Instrução: {{ component_form.identification.value }} </li>
     {% endif %}
 
 {% endblock %}
@@ -15,7 +13,12 @@
 {% endblock %}
 
 {% block component_add_new %}
-    <li role="presentation"><a role="menuitem" tabindex="-1" href="/experiment/component_configuration/{% if path_of_the_sub_components %}{{ path_of_the_sub_components }}{% else %}{{ sequence.id }}{% endif %}/add_new_component/instruction"><< Nova instrução >></a></li>
+    <li role="presentation">
+        <a role="menuitem" tabindex="-1"
+           href="/experiment/component/{% if path_of_the_components %}{{ path_of_the_components }}{% else %}{{ sequence.id }}{% endif %}/add_new/instruction">
+            << Nova instrução >>
+        </a>
+    </li>
 {% endblock %}
 
 {% block component_button_label %}
@@ -23,14 +26,12 @@
 {% endblock %}
 
 {% block extra_fields %}
-    <div class="container span6 offset3 well ">
-        <div class="row">
-            <div class="col-xs-6 col-sm-6">
-                <div class="form-group">
-                    <label class="control-label">Instrução <b style="color: red;">*</b></label>
-                        {{ form.text }}
-                    <div class="help-block with-errors"></div>
-                </div>
+    <div class="row">
+        <div class="col-xs-6 col-sm-12">
+            <div class="form-group">
+                <label class="control-label">Texto da instrução <b style="color: red;">*</b></label>
+                    {{ specific_form.text }}
+                <div class="help-block with-errors"></div>
             </div>
         </div>
     </div>

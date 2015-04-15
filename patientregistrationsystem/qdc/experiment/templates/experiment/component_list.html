@@ -80,7 +80,11 @@
                         <tbody>
                             {% for component in component_list %}
                             <tr>
-                                <td><a data-toggle="tooltip" data-placement="left" title="Editar" href="/experiment/component/{{ component.id }}">{{ component.identification }}</a></td>
+                                {% if component.component_type == "sequence" %}
+                                    <td><a data-toggle="tooltip" data-placement="left" title="Editar" href="/experiment/component/{{ component.id }}">{{ component.identification }}</a></td>
+                                {% else %}
+                                    <td><a data-toggle="tooltip" data-placement="left" title="Editar" href="/experiment/component/edit/{{ component.id }}">{{ component.identification }}</a></td>
+                                {% endif %}
                                 <td>{{ component.description }}</td>
                                 <td>
                                     <span class="{{ component.icon_class }}"/>
@@ -109,7 +113,7 @@
 
             <div class="btn-toolbar">
                 <div class="btn-group pull-right">
-                    <a href="/experiment/edit/{{ experiment.id }}" class="btn" style="background-color: #f5f5f5">Voltar</a>
+                    <a href="/experiment/{{ experiment.id }}" class="btn" style="background-color: #f5f5f5">Voltar</a>
                 </div>
             </div>
         </div>

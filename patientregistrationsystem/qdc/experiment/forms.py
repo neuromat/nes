@@ -84,8 +84,9 @@ class ComponentForm(ModelForm):
         widgets = {
             'identification': TextInput(attrs={'class': 'form-control', 'required': "",
                                                'data-error': 'Identificação deve ser preenchida.'}),
-            'description': TextInput(attrs={'class': 'form-control', 'required': "",
-                                            'data-error': 'Descrição deve ser preenchida.'})
+            # Even though maxlength is already set in the model, it has be be repeated here, because the form dos not
+            # respect that information.
+            'description': Textarea(attrs={'class': 'form-control', 'rows': '4', 'maxlength': '1500'}),
         }
 
 
@@ -96,8 +97,7 @@ class ComponentConfigurationForm(ModelForm):
                   'interval_between_repetitions_unit']
 
         widgets = {
-            'name': TextInput(attrs={'class': 'form-control', 'required': "",
-                                     'data-error': 'Nome deve ser preenchido.'}),
+            'name': TextInput(attrs={'class': 'form-control'}),
             'number_of_repetitions': TextInput(attrs={'class': 'form-control', 'required': "",
                                                       'data-error': 'Número de repetições deve ser preenchida.'}),
             'interval_between_repetitions_value': TextInput(attrs={'class': 'form-control', 'required': "",
@@ -124,8 +124,8 @@ class InstructionForm(ModelForm):
         fields = ['text']
 
         widgets = {
-            'text': TextInput(attrs={'class': 'form-control', 'required': "",
-                                     'data-error': 'Instrução deve ser preenchida.'})
+            'text': Textarea(attrs={'class': 'form-control', 'required': "", 'rows': '6',
+                                    'data-error': 'Instrução deve ser preenchida.'}),
         }
 
 

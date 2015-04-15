@@ -4,8 +4,6 @@
 
     {% if creating %}
         <li class="active">Novo questionário</li>
-    {% else %}
-            <li class="active"> Questionário: {{ component_form.identification.value }} </li>
     {% endif %}
 
 {% endblock %}
@@ -15,7 +13,12 @@
 {% endblock %}
 
 {% block component_add_new %}
-    <li role="presentation"><a role="menuitem" tabindex="-1" href="/experiment/component_configuration/{% if path_of_the_sub_components %}{{ path_of_the_sub_components }}{% else %}{{ sequence.id }}{% endif %}/add_new_component/questionnaire"><< Novo questionário >></a></li>
+    <li role="presentation">
+        <a role="menuitem" tabindex="-1"
+           href="/experiment/component/{% if path_of_the_components %}{{ path_of_the_components }}{% else %}{{ sequence.id }}{% endif %}/add_new/questionnaire">
+            << Novo questionário >>
+        </a>
+    </li>
 {% endblock %}
 
 {% block component_button_label %}
@@ -23,28 +26,25 @@
 {% endblock %}
 
 {% block extra_fields %}
-    <div class="container span6 offset3 well ">
-        <div class="row">
-            <div class="col-xs-6 col-sm-10">
-                <div class="form-group">
-                    <label for="questionnaire_selected" class="control-label">Questionário <b style="color: red;">*</b></label>
-                    <select class="form-control" required="" id="questionnaire_selected" name="questionnaire_selected" data-error="Por favor, selecione um questionário da lista." {% if updating or reusing_component %}disabled{% endif %}>
-                        {% if reusing_component %}
-                            <option selected="selected" value="{{ questionnaire_id }}">{{ questionnaire_title }} ({{ questionnaire_id }})
+    <div class="row">
+        <div class="col-xs-6 col-sm-12">
+            <div class="form-group">
+                <label for="questionnaire_selected" class="control-label">Nome do questionário no LimeSurvey<b style="color: red;">*</b></label>
+                <select class="form-control" required="" id="questionnaire_selected" name="questionnaire_selected" data-error="Por favor, selecione um questionário da lista." {% if updating or reusing %}disabled{% endif %}>
+                    {% if reusing %}
+                        <option selected="selected" value="{{ questionnaire_id }}">{{ questionnaire_title }} ({{ questionnaire_id }})
+                    {% else %}
+                        {% if creating %}<option selected="selected" value="">---------</option>{% endif %}
+                        {% if updating %}<option selected="selected" value="{{ questionnaire_id }}">{{ questionnaire_title }} ({{ questionnaire_id }})</option>
                         {% else %}
-                            {% if creating %}<option selected="selected" value="">---------</option>{% endif %}
-                            {% if updating %}<option selected="selected" value="{{ questionnaire_id }}">{{ questionnaire_title }} ({{ questionnaire_id }})</option>
-                            {% else %}
-                                {% for survey in questionnaires_list %}
-                                    <option value="{{ survey.sid }}">{{ survey.surveyls_title }} ({{ survey.sid }})</option>
-                                {% endfor %}
-                            {% endif %}
+                            {% for survey in questionnaires_list %}
+                                <option value="{{ survey.sid }}">{{ survey.surveyls_title }} ({{ survey.sid }})</option>
+                            {% endfor %}
                         {% endif %}
-                    </select>
-                    <div class="help-block with-errors"></div>
-                </div>
+                    {% endif %}
+                </select>
+                <div class="help-block with-errors"></div>
             </div>
         </div>
     </div>
-
 {% endblock %}

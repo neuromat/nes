@@ -88,7 +88,7 @@ class Experiment(models.Model):
 
 class Component(models.Model):
     identification = models.CharField(null=False, max_length=50, blank=False)
-    description = models.CharField(max_length=150, null=False, blank=False)
+    description = models.CharField(max_length=1500, null=True, blank=True)
     experiment = models.ForeignKey(Experiment, null=False)
     component_type = models.CharField(null=False, max_length=15,
                                       choices=(("task", "Task component"),
@@ -107,7 +107,7 @@ class Task(Component):
 
 
 class Instruction(Component):
-    text = models.CharField(max_length=150, null=False, blank=False)
+    text = models.TextField(null=False, blank=False)
 
     def save(self, *args, **kwargs):
         super(Component, self).save(*args, **kwargs)
@@ -144,7 +144,7 @@ class Sequence(Component):
 
 
 class ComponentConfiguration(models.Model):
-    name = models.CharField(max_length=50, null=False, blank=False)
+    name = models.CharField(max_length=50, null=True, blank=True)
     number_of_repetitions = models.IntegerField(null=True, blank=True, validators=[MinValueValidator(1)])
     interval_between_repetitions_value = models.IntegerField(null=True, blank=True, validators=[MinValueValidator(1)])
     interval_between_repetitions_unit = models.ForeignKey(TimeUnit, null=True, blank=True)
