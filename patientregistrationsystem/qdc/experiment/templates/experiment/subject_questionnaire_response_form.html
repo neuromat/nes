@@ -21,25 +21,17 @@
         <div class="col-md-10">
 
             <ol class="breadcrumb">
-                <li>Home</li>
+                <li><a href="/home">Home</a></li>
                 <li><a href="/experiment/list">Experimentos</a></li>
-                <li><a href="/experiment/edit/{{ group.experiment.id }}">{{ group.experiment.title }}</a></li>
-                <li><a href="/experiment/group/edit/{{ group.id }}">{{ group.title }}</a></li>
+                <li><a href="/experiment/{{ group.experiment.id }}">{{ group.experiment.title }}</a></li>
+                <li><a href="/experiment/group/{{ group.id }}">{{ group.title }}</a></li>
                 {% if origin == 'subject' %}
                     <li><a href="/experiment/group/{{ group.id }}/subjects/">Participantes</a></li>
-                    <li>
-                        <a href="/experiment/group/{{ group.id }}/subjects/{{ subject.id }}/questionnaire">{{ subject.patient.name }}</a>
-                    </li>
-                    <li>
-                        {{ survey_title }}
-                    </li>
+                    <li><a href="/experiment/group/{{ group.id }}/subjects/{{ subject.id }}/questionnaire">{{ subject.patient.name }}</a></li>
+                    <li class="active">{{ survey_title }} - {% if creating %}Novo preenchimento{% else %}{{ questionnaire_response_form.date.value|date:"d-m-Y" }}{% endif %}</li>
                 {% else %}
                     <li><a href="/experiment/questionnaire/edit/{{ questionnaire_configuration.id }}">{{ survey_title }}</a></li>
-                {% endif %}
-                {% if creating %}
-                    <li class="active">Novo preenchimento</li>
-                {% else %}
-                    <li class="active">{{ questionnaire_response_form.date.value|date:"d-m-Y" }}</li>
+                    <li class="active">{% if creating %}Novo preenchimento{% else %}{{ questionnaire_response_form.date.value|date:"d-m-Y" }}{% endif %}</li>
                 {% endif %}
             </ol>
 
