@@ -1288,7 +1288,7 @@ def upload_file(request, subject_id, group_id, template_name="experiment/upload_
 @permission_required('experiment.view_experiment')
 def component_list(request, experiment_id, template_name="experiment/component_list.html"):
     experiment = get_object_or_404(Experiment, pk=experiment_id)
-    components = Component.objects.filter(experiment=experiment).order_by("identification")
+    components = Component.objects.filter(experiment=experiment).order_by("component_type", "identification")
 
     for component in components:
         component.icon_class = icon_class[component.component_type]
@@ -1304,7 +1304,6 @@ def component_list(request, experiment_id, template_name="experiment/component_l
 @login_required
 @permission_required('experiment.change_experiment')
 def component_change_the_order(request, path_of_the_components, command):
-
     list_of_ids_of_components_and_configurations = path_of_the_components.split(delimiter)
     component_configuration_id = list_of_ids_of_components_and_configurations[-1]
 
@@ -1342,7 +1341,6 @@ def component_change_the_order(request, path_of_the_components, command):
 @login_required
 @permission_required('experiment.change_experiment')
 def component_create(request, experiment_id, component_type):
-
     template_name = "experiment/" + component_type + "_component.html"
 
     experiment = get_object_or_404(Experiment, pk=experiment_id)
@@ -1403,31 +1401,75 @@ def create_list_of_breadcrumbs(list_of_ids_of_components_and_configurations):
     # Create a list of components or component configurations to be able to show the breadcrumb.
     list_of_breadcrumbs = []
 
-    # length = len(list_of_ids_of_components_and_configurations)
-
     for idx, id_item in enumerate(list_of_ids_of_components_and_configurations):
-        if id_item[0] == "U":  # If id_item starts with 'U' (from 'use'), it is a configuration.
-            cc = get_object_or_404(ComponentConfiguration, pk=id_item[1:])
+        if id_item[0] != "G":
+            if id_item[0] == "U":  # If id_item starts with 'U' (from 'use'), it is a configuration.
+                cc = get_object_or_404(ComponentConfiguration, pk=id_item[1:])
 
-            if cc.name is not None:
-                name = cc.name
+                if cc.name is not None:
+                    name = cc.name
+                else:
+                    name = "Uso do componente " + cc.component.identification
+
+                view_name = "component_edit"
             else:
-                name = "Uso do componente " + cc.component.identification
-        else:
-            c = get_object_or_404(Component, pk=id_item)
-            name = c.identification
+                c = get_object_or_404(Component, pk=id_item)
+                name = c.identification
+                view_name = "component_view"
 
-        list_of_breadcrumbs.append({"name": name, "url":
-            reverse("component_view", args=(delimiter.join(list_of_ids_of_components_and_configurations[:idx+1]),))})
+            list_of_breadcrumbs.append({
+                "name": name, "url":
+                reverse(view_name, args=(delimiter.join(list_of_ids_of_components_and_configurations[:idx+1]),))})
 
     return list_of_breadcrumbs
 
 
-def access_objects(request, path_of_the_components):
+def create_back_cancel_url(component_type, component_configuration, path_of_the_components,
+                           list_of_ids_of_components_and_configurations, experiment):
+    if component_type == "sequence" and component_configuration is None:
+        # Return to the screen for viewing a sequence
+        back_cancel_url = "/experiment/component/" + path_of_the_components
+    elif len(list_of_ids_of_components_and_configurations) > 1:
+        # There is a parent. Remove the current element from the path so that the parent is shown.
+        path_without_last = path_of_the_components[:path_of_the_components.rfind("-")]
+        last_hyphen_index = path_without_last.rfind("-")
+
+        if last_hyphen_index == -1:
+            parent = path_without_last
+        else:
+            parent = path_without_last[last_hyphen_index + 1:]
+
+        if parent[0] == "G":
+            back_cancel_url = "/experiment/group/" + parent[1:]
+        else:
+            if parent[0] == "U":
+                parent = ComponentConfiguration.objects.get(id=parent[1:]).component
+
+            # if parent is sequence:
+            if Sequence.objects.filter(pk=parent).exists():
+                back_cancel_url = "/experiment/component/" + path_without_last
+            else:
+                back_cancel_url = "/experiment/component/edit/" + path_without_last
+    else:
+        # Return to the lis of components
+        back_cancel_url = "/experiment/" + str(experiment.id) + "/components"
+
+    return back_cancel_url
+
+
+def access_objects_for_view_and_update(request, path_of_the_components):
     list_of_ids_of_components_and_configurations = path_of_the_components.split(delimiter)
 
     # The last id of the list is the one that we want to show.
     id = list_of_ids_of_components_and_configurations[-1]
+
+    group = None
+
+    if path_of_the_components[0] == "G":
+        # The id of the group comes after "G"
+        group_id = int(list_of_ids_of_components_and_configurations[0][1:])
+        group = get_object_or_404(Group, pk=group_id)
+
     component_configuration = None
     configuration_form = None
 
@@ -1452,29 +1494,12 @@ def access_objects(request, path_of_the_components):
     else:
         show_remove = False
 
+    back_cancel_url = create_back_cancel_url(component_type, component_configuration, path_of_the_components,
+                                             list_of_ids_of_components_and_configurations, experiment)
+
     return component, component_configuration, component_form, configuration_form, experiment, component_type,\
-        template_name, list_of_ids_of_components_and_configurations, show_remove, list_of_breadcrumbs
-
-
-def remove_current_from_path_and_return_url(path_of_the_components):
-    path_without_last = path_of_the_components[:path_of_the_components.rfind("-")]
-    last_hyphen_index = path_without_last.rfind("-")
-
-    if last_hyphen_index == -1:
-        parent = path_without_last
-    else:
-        parent = path_without_last[last_hyphen_index + 1:]
-
-    if parent[0] == "U":
-        parent = ComponentConfiguration.objects.get(id=parent[1:]).component
-
-    # if parent is sequence:
-    if Sequence.objects.filter(pk=parent).exists():
-        back_cancel_url = "/experiment/component/" + path_without_last
-    else:
-        back_cancel_url = "/experiment/component/edit/" + path_without_last
-
-    return back_cancel_url
+        template_name, list_of_ids_of_components_and_configurations, show_remove, list_of_breadcrumbs, group,\
+        back_cancel_url
 
 
 def remove_component_and_related_configurations(component,
@@ -1524,8 +1549,8 @@ def remove_component_and_related_configurations(component,
 @permission_required('experiment.change_experiment')
 def component_view(request, path_of_the_components):
     component, component_configuration, component_form, configuration_form, experiment, component_type, template_name,\
-        list_of_ids_of_components_and_configurations, show_remove, list_of_breadcrumbs =\
-        access_objects(request, path_of_the_components)
+        list_of_ids_of_components_and_configurations, show_remove, list_of_breadcrumbs, group, back_cancel_url =\
+        access_objects_for_view_and_update(request, path_of_the_components)
 
     # It will always be a sequence because we don't have a view screen for other components.
     sequence = get_object_or_404(Sequence, pk=component.id)
@@ -1539,13 +1564,6 @@ def component_view(request, path_of_the_components):
     for form in {sequence_form, component_form}:
         for field in form.fields:
             form.fields[field].widget.attrs['disabled'] = True
-
-    if len(list_of_ids_of_components_and_configurations) > 1:
-        # There is a parent. Remove the current element from the path so that the parent is shown.
-        back_cancel_url = remove_current_from_path_and_return_url(path_of_the_components)
-    else:
-        # Return to the list of components
-        back_cancel_url = "/experiment/" + str(experiment.id) + "/components"
 
     if request.method == "POST":
         if request.POST['action'] == "save":
@@ -1576,6 +1594,7 @@ def component_view(request, path_of_the_components):
         "configuration_form": configuration_form,
         "configuration_list": configuration_list,
         "experiment": experiment,
+        "group": group,
         "icon_class": icon_class,
         "list_of_breadcrumbs": list_of_breadcrumbs,
         "path_of_the_components": path_of_the_components,
@@ -1591,24 +1610,14 @@ def component_view(request, path_of_the_components):
 @permission_required('experiment.change_experiment')
 def component_update(request, path_of_the_components):
     component, component_configuration, component_form, configuration_form, experiment, component_type, template_name,\
-        list_of_ids_of_components_and_configurations, show_remove, list_of_breadcrumbs =\
-        access_objects(request, path_of_the_components)
+        list_of_ids_of_components_and_configurations, show_remove, list_of_breadcrumbs, group, back_cancel_url =\
+        access_objects_for_view_and_update(request, path_of_the_components)
 
     questionnaire_id = None
     questionnaire_title = None
     sequence = None
     configuration_list = []
     specific_form = None
-
-    if component_type == "sequence":
-        # Return to the screen for viewing a sequence
-        back_cancel_url = "/experiment/component/" + path_of_the_components
-    elif len(list_of_ids_of_components_and_configurations) > 1:
-        # There is a parent. Remove the current element from the path so that the parent is shown.
-        back_cancel_url = remove_current_from_path_and_return_url(path_of_the_components)
-    else:
-        # Return to the lis of components
-        back_cancel_url = "/experiment/" + str(experiment.id) + "/components"
 
     if component_type == 'task':
         task = get_object_or_404(Task, pk=component.id)
@@ -1687,14 +1696,6 @@ def component_update(request, path_of_the_components):
             remove_component_and_related_configurations(component)
             return HttpResponseRedirect(back_cancel_url)
 
-    # if component_type == 'questionnaire':
-    #     for field in component_form.fields:
-    #         component_form.fields[field].widget.attrs['disabled'] = True
-    # else:
-    #     for form_used in {specific_form, component_form}:
-    #         for field in form_used.fields:
-    #             form_used.fields[field].widget.attrs['disabled'] = True
-
     # It is not possible to edit the component fields while editing a component configuration.
     if component_configuration is not None:
         if component_type != "questionnaire":
@@ -1712,6 +1713,7 @@ def component_update(request, path_of_the_components):
         "configuration_list": configuration_list,
         "icon_class": icon_class,
         "experiment": experiment,
+        "group": group,
         "list_of_breadcrumbs": list_of_breadcrumbs,
         "path_of_the_components": path_of_the_components,
         "questionnaire_id": questionnaire_id,
@@ -1725,26 +1727,39 @@ def component_update(request, path_of_the_components):
     return render(request, template_name, context)
 
 
+def access_objects_for_add_new_and_reuse(component_type, path_of_the_components):
+    template_name = "experiment/" + component_type + "_component.html"
+    list_of_ids_of_components_and_configurations = path_of_the_components.split(delimiter)
+    list_of_breadcrumbs = create_list_of_breadcrumbs(list_of_ids_of_components_and_configurations)
+
+    sequence = None
+    group = None
+
+    if len(list_of_ids_of_components_and_configurations) > 1 or path_of_the_components[0] != "G":
+        # The last id of the list is the sequence where the new component will be added.
+        sequence_id = list_of_ids_of_components_and_configurations[-1]
+        sequence = get_object_or_404(Component, pk=sequence_id)
+        experiment = sequence.experiment
+    if path_of_the_components[0] == "G":
+        # The id of the group comes after "G"
+        group_id = int(list_of_ids_of_components_and_configurations[0][1:])
+        group = get_object_or_404(Group, pk=group_id)
+        experiment = group.experiment
+
+    existing_component_list = Component.objects.filter(experiment=experiment, component_type=component_type)
+    specific_form = None
+
+    return existing_component_list, experiment, group, list_of_breadcrumbs, sequence, template_name, specific_form
+
+
 @login_required
 @permission_required('experiment.change_experiment')
 def component_add_new(request, path_of_the_components, component_type):
-
-    list_of_ids_of_components_and_configurations = path_of_the_components.split(delimiter)
-
-    # The last id of the list is the sequence where the new component will be added.
-    id = list_of_ids_of_components_and_configurations[-1]
-    sequence = get_object_or_404(Component, pk=id)
+    existing_component_list, experiment, group, list_of_breadcrumbs, sequence, template_name,\
+        specific_form = access_objects_for_add_new_and_reuse(component_type, path_of_the_components)
 
     component_form = ComponentForm(request.POST or None)
-
-    experiment = sequence.experiment
-
-    template_name = "experiment/" + component_type + "_component.html"
-
     questionnaires_list = []
-    specific_form = None
-
-    existing_component_list = Component.objects.filter(experiment=experiment, component_type=component_type)
 
     if component_type == 'task':
         specific_form = TaskForm(request.POST or None)
@@ -1776,30 +1791,37 @@ def component_add_new(request, path_of_the_components, component_type):
             new_specific_component.experiment = experiment
             new_specific_component.save()
 
-            new_configuration = ComponentConfiguration()
-            new_configuration.component = new_specific_component
-            new_configuration.parent = sequence
-            new_configuration.save()
+            if group is None:
+                new_configuration = ComponentConfiguration()
+                new_configuration.component = new_specific_component
+                new_configuration.parent = sequence
+                new_configuration.save()
 
-            messages.success(request, 'Componente incluído com sucesso.')
+                messages.success(request, 'Componente incluído com sucesso.')
 
-            redirect_url = reverse("component_edit",
-                                   args=(path_of_the_components + "-U" + str(new_configuration.id), ))
+                redirect_url = reverse("component_edit",
+                                       args=(path_of_the_components + "-U" + str(new_configuration.id), ))
+            else:
+                group.experimental_protocol = new_specific_component
+                group.save()
+
+                messages.success(request, 'Protocolo experimental incluído com sucesso.')
+
+                redirect_url = reverse("component_view",
+                                       args=(path_of_the_components + "-" + str(new_specific_component.id), ))
             return HttpResponseRedirect(redirect_url)
-
-    list_of_breadcrumbs = create_list_of_breadcrumbs(list_of_ids_of_components_and_configurations)
 
     context = {
         "back_cancel_url": "/experiment/component/" + path_of_the_components,
+        "can_reuse": True,
         "component_form": component_form,
         "creating": True,
         "existing_component_list": existing_component_list,
         "experiment": experiment,
-        "experimental_protocol": False,
+        "group": group,
         "list_of_breadcrumbs": list_of_breadcrumbs,
         "questionnaires_list": questionnaires_list,
         "path_of_the_components": path_of_the_components,
-        "can_reuse": True,
         "sequence": sequence,
         "specific_form": specific_form,
     }
@@ -1810,27 +1832,16 @@ def component_add_new(request, path_of_the_components, component_type):
 @login_required
 @permission_required('experiment.change_experiment')
 def component_reuse(request, path_of_the_components, component_id):
-
     component_to_add = get_object_or_404(Component, pk=component_id)
     component_type = component_to_add.component_type
 
-    template_name = "experiment/" + component_type + "_component.html"
-
-    list_of_ids_of_components_and_configurations = path_of_the_components.split(delimiter)
-
-    # The last id of the list is the sequence where the new component will be added.
-    id = list_of_ids_of_components_and_configurations[-1]
-    sequence = get_object_or_404(Component, pk=id)
-    experiment = sequence.experiment
+    existing_component_list, experiment, group, list_of_breadcrumbs, sequence, template_name,\
+        specific_form = access_objects_for_add_new_and_reuse(component_type, path_of_the_components)
 
     component_form = ComponentForm(request.POST or None, instance=component_to_add)
 
-    existing_component_list = Component.objects.filter(experiment=experiment, component_type=component_type)
-
     questionnaire_id = None
     questionnaire_title = None
-
-    specific_form = None
 
     if component_type == 'task':
         task = get_object_or_404(Task, pk=component_to_add.id)
@@ -1875,15 +1886,13 @@ def component_reuse(request, path_of_the_components, component_id):
                                    args=(path_of_the_components + "-U" + str(new_configuration.id), ))
             return HttpResponseRedirect(redirect_url)
 
-    list_of_breadcrumbs = create_list_of_breadcrumbs(list_of_ids_of_components_and_configurations)
-
     context = {
-        "back_cancel_url": "/experiment/component/" + str(sequence.id),
+        "back_cancel_url": "/experiment/component/" + path_of_the_components,
         "component_form": component_form,
         "creating": True, # So that the "Use" button is shown.
         "existing_component_list": existing_component_list,
         "experiment": experiment,
-        "experimental_protocol": False,
+        "group": group,
         "list_of_breadcrumbs": list_of_breadcrumbs,
         "path_of_the_components": path_of_the_components,
         "questionnaire_id": questionnaire_id,
@@ -1891,282 +1900,6 @@ def component_reuse(request, path_of_the_components, component_id):
         "reusing": True,
         "sequence": sequence,
         "specific_form": specific_form,
-    }
-
-    return render(request, template_name, context)
-
-
-@login_required
-@permission_required('experiment.change_experiment')
-def experimental_protocol_create(request, group_id):
-
-    group = get_object_or_404(Group, pk=group_id)
-    experiment = group.experiment
-
-    component_type = "sequence"
-    template_name = "experiment/" + component_type + "_component.html"
-    existing_component_list = Component.objects.filter(experiment=experiment, component_type=component_type)
-
-    component_form = ComponentForm(request.POST or None)
-    sequence_form = SequenceForm(request.POST or None)
-
-    if request.method == "POST":
-        new_sequence = None
-
-        if sequence_form.is_valid():
-            new_sequence = sequence_form.save(commit=False)
-
-        if component_form.is_valid():
-            component = component_form.save(commit=False)
-
-            new_sequence.description = component.description
-            new_sequence.identification = component.identification
-            new_sequence.component_type = component_type
-            new_sequence.experiment = experiment
-            new_sequence.save()
-
-            # If there is not an experimental protocol, it will be created a new one. Otherwise, it will be updated.
-            # This is useful only if the user access this url that she bookmarked before.
-            if not group.experimental_protocol:
-                configuration_to_be_saved = ComponentConfiguration()
-            else:
-                configuration_to_be_saved = group.experimental_protocol
-
-            configuration_to_be_saved.component = new_sequence
-            configuration_to_be_saved.save()
-
-            group.experimental_protocol = configuration_to_be_saved
-            group.save()
-
-            messages.success(request, 'Protocolo experimental incluído com sucesso.')
-
-            redirect_url = reverse("experimental_protocol_update", args=(group_id,))
-            return HttpResponseRedirect(redirect_url)
-
-    context = {
-        "can_reuse": True,
-        "component_form": component_form,
-        "creating": True,
-        "existing_component_list": existing_component_list,
-        "experiment": experiment,
-        "experimental_protocol": True,
-        "group": group,
-        "specific_form": sequence_form,
-    }
-
-    return render(request, template_name, context)
-
-
-@login_required
-@permission_required('experiment.change_experiment')
-def experimental_protocol_view(request, group_id):
-
-    group = get_object_or_404(Group, pk=group_id)
-    component_configuration = group.experimental_protocol
-    experiment = group.experiment
-
-    component_type = component_configuration.component.component_type
-    template_name = "experiment/" + component_type + "_component.html"
-
-    questionnaire_id = None
-    questionnaire_title = None
-
-    component = get_object_or_404(Component, pk=component_configuration.component.id)
-    component_form = ComponentForm(request.POST or None, instance=component)
-
-    configuration_form = ComponentConfigurationForm(request.POST or None, instance=component_configuration)
-
-    sequence = get_object_or_404(Sequence, pk=component_configuration.component.id)
-    form = SequenceForm(request.POST or None, instance=sequence)
-
-    existing_component_list = Component.objects.filter(experiment=experiment, component_type=component_type)
-    configuration_list = ComponentConfiguration.objects.filter(parent=sequence).order_by('order')
-
-    for configuration in configuration_list:
-        configuration.component.icon_class = icon_class[configuration.component.component_type]
-
-    context = {
-        "experimental_protocol": True,
-        "group": group,
-        "form": form,
-        "experiment": experiment,
-        "component_form": component_form,
-        "configuration_form": configuration_form,
-        "creating": False,
-        "updating": True,
-        "existing_component_list": existing_component_list,
-        "sequence": sequence,
-        "questionnaire_id": questionnaire_id,
-        "questionnaire_title": questionnaire_title,
-        "sequence_id": component_configuration.parent_id,
-        "configuration_list": configuration_list,
-        "icon_class": icon_class,
-        "path_of_the_components": None,
-        "previous_component_configuration": None
-    }
-
-    return render(request, template_name, context)
-
-
-@login_required
-@permission_required('experiment.change_experiment')
-def experimental_protocol_update(request, group_id):
-
-    group = get_object_or_404(Group, pk=group_id)
-    component_configuration = group.experimental_protocol
-    experiment = group.experiment
-
-    component_type = component_configuration.component.component_type
-    template_name = "experiment/" + component_type + "_component.html"
-
-    questionnaire_id = None
-    questionnaire_title = None
-
-    component = get_object_or_404(Component, pk=component_configuration.component.id)
-    component_form = ComponentForm(request.POST or None, instance=component)
-
-    configuration_form = ComponentConfigurationForm(request.POST or None, instance=component_configuration)
-
-    sequence = get_object_or_404(Sequence, pk=component_configuration.component.id)
-    form = SequenceForm(request.POST or None, instance=sequence)
-
-    existing_component_list = Component.objects.filter(experiment=experiment, component_type=component_type)
-    configuration_list = ComponentConfiguration.objects.filter(parent=sequence).order_by('order')
-
-    for configuration in configuration_list:
-        configuration.component.icon_class = icon_class[configuration.component.component_type]
-
-    if request.method == "POST":
-        if request.POST['action'] == "save":
-            if configuration_form.is_valid():
-                # important: form.save() must be performed before component_form.save()
-                form.save()
-                component_form.save()
-                configuration_form.save()
-                messages.success(request, 'Componente atualizado com sucesso.')
-
-                redirect_url = reverse("experimental_protocol_view", args=(group_id,))
-                return HttpResponseRedirect(redirect_url)
-
-    context = {
-        "experimental_protocol": True,
-        "group": group,
-        "form": form,
-        "experiment": experiment,
-        "component_form": component_form,
-        "configuration_form": configuration_form,
-        "creating": False,
-        "updating": True,
-        "existing_component_list": existing_component_list,
-        "sequence": sequence,
-        "questionnaire_id": questionnaire_id,
-        "questionnaire_title": questionnaire_title,
-        "reusing": True,
-        "sequence_id": component_configuration.parent_id,
-        "configuration_list": configuration_list,
-        "icon_class": icon_class,
-        "path_of_the_components": None,
-        "previous_component_configuration": None
-    }
-
-    return render(request, template_name, context)
-
-
-@login_required
-@permission_required('experiment.change_experiment')
-def experimental_protocol_reuse_component(request, group_id, component_id):
-
-    group = get_object_or_404(Group, pk=group_id)
-
-    component_type = "sequence"
-    template_name = "experiment/" + component_type + "_component.html"
-
-    component = get_object_or_404(Component, pk=component_id)
-    component_form = ComponentForm(request.POST or None, instance=component)
-
-    # If the original component was chosen, then the original component configuration will be loaded.
-    configuration_form = \
-        (
-            ComponentConfigurationForm(request.POST or None, instance=group.experimental_protocol)
-            if (group.experimental_protocol and group.experimental_protocol.component_id == int(component_id))
-            else
-            ComponentConfigurationForm(request.POST or None,
-                                       initial={'number_of_repetitions': 1,
-                                                'interval_between_repetitions_value': None})
-        )
-
-    sequence = get_object_or_404(Sequence, pk=component_id)
-    form = SequenceForm(request.POST or None, instance=sequence)
-
-    existing_component_list = Component.objects.filter(experiment=group.experiment, component_type=component_type)
-    configuration_list = ComponentConfiguration.objects.filter(parent=sequence).order_by('order')
-
-    for configuration in configuration_list:
-        configuration.component.icon_class = icon_class[configuration.component.component_type]
-
-    if request.method == "POST":
-        if request.POST['action'] == "save":
-            if configuration_form.is_valid():
-                new_component_configuration = configuration_form.save(commit=False)
-
-                if group.experimental_protocol:
-                    component_configuration = group.experimental_protocol
-                else:
-                    component_configuration = new_component_configuration
-
-                component_configuration.component_id = component_id
-
-                if "number_of_repetitions" in request.POST:
-                    component_configuration.number_of_repetitions = request.POST['number_of_repetitions']
-                else:
-                    component_configuration.number_of_repetitions = None
-
-                if "interval_between_repetitions_value" in request.POST:
-                    component_configuration.interval_between_repetitions_value = \
-                        request.POST['interval_between_repetitions_value']
-                else:
-                    component_configuration.interval_between_repetitions_value = None
-
-                if "interval_between_repetitions_unit" in request.POST:
-                    component_configuration.interval_between_repetitions_unit = \
-                        get_object_or_404(TimeUnit, pk=request.POST['interval_between_repetitions_unit'])
-                else:
-                    component_configuration.interval_between_repetitions_unit = None
-
-                component_configuration.save()
-
-                if not group.experimental_protocol:
-                    group.experimental_protocol = component_configuration
-                    group.save()
-
-                messages.success(request, 'Componente atualizado com sucesso.')
-
-                redirect_url = reverse("experimental_protocol_update", args=(group_id,))
-                return HttpResponseRedirect(redirect_url)
-
-    for form_used in {form, component_form}:
-        for field in form_used.fields:
-            form_used.fields[field].widget.attrs['disabled'] = True
-
-    context = {
-        "experimental_protocol": True,
-        "group": group,
-        "form": form,
-        "experiment": group.experiment,
-        "component_form": component_form,
-        "configuration_form": configuration_form,
-        "creating": False,
-        "updating": True,
-        "existing_component_list": existing_component_list,
-        "sequence": sequence,
-        "questionnaire_id": None,
-        "questionnaire_title": None,
-        "reusing": True,
-        "sequence_id": None,
-        "configuration_list": configuration_list,
-        "icon_class": icon_class,
-        "path_of_the_components": None,
-        "previous_component_configuration": None
     }
 
     return render(request, template_name, context)

@@ -72,24 +72,24 @@
                     <table class="table table-striped">
                         <thead>
                             <tr>
+                                <th>Tipo</th>
                                 <th>Identificação</th>
                                 <th>Descrição</th>
-                                <th>Tipo</th>
                             </tr>
                         </thead>
                         <tbody>
                             {% for component in component_list %}
                             <tr>
+                                <td>
+                                    <span class="{{ component.icon_class }}"/>
+                                    {{ component.component_type }}
+                                </td>
                                 {% if component.component_type == "sequence" %}
                                     <td><a data-toggle="tooltip" data-placement="left" title="Editar" href="/experiment/component/{{ component.id }}">{{ component.identification }}</a></td>
                                 {% else %}
                                     <td><a data-toggle="tooltip" data-placement="left" title="Editar" href="/experiment/component/edit/{{ component.id }}">{{ component.identification }}</a></td>
                                 {% endif %}
                                 <td>{{ component.description }}</td>
-                                <td>
-                                    <span class="{{ component.icon_class }}"/>
-                                    {{ component.component_type }}
-                                </td>
                             </tr>
                             {% endfor %}
                         </tbody>

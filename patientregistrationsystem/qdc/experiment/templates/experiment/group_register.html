@@ -251,12 +251,12 @@
                                             <tr>
                                                 <td>
                                                     <a data-toggle="tooltip" data-placement="left" title="Editar"
-                                                       href="/experiment/group/{{ group.id }}/experimental_protocol_edit">
-                                                        {{ group.experimental_protocol.component.identification }}
+                                                       href="/experiment/component/G{{ group.id }}-{{ group.experimental_protocol.id}}">
+                                                        {{ group.experimental_protocol.identification }}
                                                     </a>
                                                 </td>
                                                 <td>
-                                                    {{ group.experimental_protocol.component.description }}
+                                                    {{ group.experimental_protocol.description }}
 
                                                     <a class="btn glyphicon glyphicon-remove" data-toggle="tooltip"
                                                        data-placement="right" title="Desconfigurar protocolo experimental"
@@ -273,7 +273,7 @@
                                 </label>
 
                                 <div class="form-group">
-                                    <a href="/experiment/group/{{ group.id }}/experimental_protocol_new" class="btn btn-primary" >Criar Protocolo Experimental</a>
+                                    <a href="/experiment/component/G{{ group.id }}/add_new/sequence" class="btn btn-primary" >Criar Protocolo Experimental</a>
                                 </div>
 
                             {% endif %}
