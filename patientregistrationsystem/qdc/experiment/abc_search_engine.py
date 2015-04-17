@@ -121,6 +121,15 @@ class ABCSearchEngine:
 
         return result.get(prop)
 
+
+    @abstractmethod
+    def get_survey_languages(self, sid):
+        """Retorna o idioma base e os idiomas adicionais"""
+
+        result = self.server.get_survey_properties(self.session_key, sid, ['additional_languages', 'language'])
+
+        return result
+
     @abstractmethod
     def set_survey_properties(self, sid, prop):
         """Configura uma determinada propriedade de um questionario"""
@@ -181,9 +190,9 @@ class ABCSearchEngine:
         return status['status']
 
     @abstractmethod
-    def get_responses_by_token(self, sid, token):
+    def get_responses_by_token(self, sid, token, language):
 
-        responses = self.server.export_responses_by_token(self.session_key, sid, 'csv', token, None, 'all')
+        responses = self.server.export_responses_by_token(self.session_key, sid, 'csv', token, language, 'complete')
         responses_txt = base64.b64decode(responses)
 
         return responses_txt
@@ -221,10 +230,11 @@ class ABCSearchEngine:
             return result
 
     @abstractmethod
-    def get_question_properties(self, question_id):
+    def get_question_properties(self, question_id, language):
         properties = self.server.get_question_properties(self.session_key, question_id,
                                                          ['question', 'subquestions', 'answeroptions', 'title', 'type',
-                                                          'attributes_lang'])
+                                                          'attributes_lang', 'attributes'],
+                                                         language)
 
         return properties
 
@@ -268,6 +278,9 @@ class Questionnaires(ABCSearchEngine):
     def set_survey_properties(self, sid, prop):
         return super(Questionnaires, self).get_survey_properties(sid, prop)
 
+    def get_survey_languages(self, sid):
+        return super(Questionnaires, self).get_survey_languages(sid)
+
     def get_participant_properties(self, survey_id, token_id, prop):
         return super(Questionnaires, self).get_participant_properties(survey_id, token_id, prop)
 
@@ -289,14 +302,14 @@ class Questionnaires(ABCSearchEngine):
     def activate_tokens(self, sid):
         return super(Questionnaires, self).activate_tokens(sid)
 
-    def get_responses_by_token(self, sid, token):
-        return super(Questionnaires, self).get_responses_by_token(sid, token)
+    def get_responses_by_token(self, sid, token, language):
+        return super(Questionnaires, self).get_responses_by_token(sid, token, language)
 
     def list_questions(self, sid, gid):
         return super(Questionnaires, self).list_questions(sid, gid)
 
-    def get_question_properties(self, question_id):
-        return super(Questionnaires, self).get_question_properties(question_id)
+    def get_question_properties(self, question_id, language):
+        return super(Questionnaires, self).get_question_properties(question_id, language)
 
     def list_groups(self, sid):
         return super(Questionnaires, self).list_groups(sid)
