@@ -192,7 +192,7 @@ class ABCSearchEngine:
     @abstractmethod
     def get_responses_by_token(self, sid, token, language):
 
-        responses = self.server.export_responses_by_token(self.session_key, sid, 'csv', token, language, 'all')
+        responses = self.server.export_responses_by_token(self.session_key, sid, 'csv', token, language, 'complete')
         responses_txt = base64.b64decode(responses)
 
         return responses_txt
