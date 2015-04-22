@@ -95,15 +95,6 @@
                         </div>
                     </div>
                 </div>
-                <div class="row">
-                    <div class="col-xs-6 col-sm-12">
-                        <div class="form-group">
-                            <label class="control-label">Instrução</label>
-                            {{ group_form.instruction }}
-                            <div class="help-block with-errors"></div>
-                        </div>
-                    </div>
-                </div>
 
                 {% if not editing %}
                     <div class="btn-group pull-left">
@@ -251,12 +242,12 @@
                                             <tr>
                                                 <td>
                                                     <a data-toggle="tooltip" data-placement="left" title="Editar"
-                                                       href="/experiment/group/{{ group.id }}/experimental_protocol_edit">
-                                                        {{ group.experimental_protocol.component.identification }}
+                                                       href="/experiment/component/G{{ group.id }}-{{ group.experimental_protocol.id}}">
+                                                        {{ group.experimental_protocol.identification }}
                                                     </a>
                                                 </td>
                                                 <td>
-                                                    {{ group.experimental_protocol.component.description }}
+                                                    {{ group.experimental_protocol.description }}
 
                                                     <a class="btn glyphicon glyphicon-remove" data-toggle="tooltip"
                                                        data-placement="right" title="Desconfigurar protocolo experimental"
@@ -273,7 +264,7 @@
                                 </label>
 
                                 <div class="form-group">
-                                    <a href="/experiment/group/{{ group.id }}/experimental_protocol_new" class="btn btn-primary" >Criar Protocolo Experimental</a>
+                                    <a href="/experiment/component/G{{ group.id }}/add_new/sequence" class="btn btn-primary" >Criar Protocolo Experimental</a>
                                 </div>
 
                             {% endif %}

@@ -167,9 +167,8 @@ class Group(models.Model):
     experiment = models.ForeignKey(Experiment, null=False, blank=False)
     title = models.CharField(null=False, max_length=50, blank=False)
     description = models.CharField(max_length=150, null=False, blank=False)
-    instruction = models.CharField(max_length=150, null=True, blank=True)
     classification_of_diseases = models.ManyToManyField(ClassificationOfDiseases, null=True)
-    experimental_protocol = models.ForeignKey(ComponentConfiguration, null=True)
+    experimental_protocol = models.ForeignKey(Component, null=True)
 
 
 def get_dir(instance, filename):

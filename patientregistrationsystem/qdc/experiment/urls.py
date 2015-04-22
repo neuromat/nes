@@ -61,23 +61,12 @@ urlpatterns = patterns(
     # experimental protocol components
     url(r'^(?P<experiment_id>\d+)/components/$', 'component_list', name='component_list'),
     url(r'^(?P<experiment_id>\d+)/new_component/(?P<component_type>\w+)/$', 'component_create', name='component_new'),
-    url(r'^component/(?P<path_of_the_components>[0-9-U]+)/$', 'component_view', name='component_view'),
-    url(r'^component/edit/(?P<path_of_the_components>[0-9-U]+)/$', 'component_update', name='component_edit'),
-    url(r'^component/(?P<path_of_the_components>[0-9-U]+)/add_new/(?P<component_type>\w+)/$',
+    url(r'^component/(?P<path_of_the_components>[0-9-UG]+)/$', 'component_view', name='component_view'),
+    url(r'^component/edit/(?P<path_of_the_components>[0-9-UG]+)/$', 'component_update', name='component_edit'),
+    url(r'^component/(?P<path_of_the_components>[0-9-UG]+)/add_new/(?P<component_type>\w+)/$',
         'component_add_new', name='component_add_new'),
-    url(r'^component/(?P<path_of_the_components>[0-9-U]+)/add/(?P<component_id>\d+)/$',
+    url(r'^component/(?P<path_of_the_components>[0-9-UG]+)/add/(?P<component_id>\d+)/$',
         'component_reuse', name='component_reuse'),
-    url(r'^component/change_the_order/(?P<path_of_the_components>[0-9-U]+)/(?P<command>\w+)/$',
+    url(r'^component/change_the_order/(?P<path_of_the_components>[0-9-UG]+)/(?P<command>\w+)/$',
         'component_change_the_order', name='component_change_the_order'),
-
-    # configuration of experimental protocol from a group
-    url(r'^group/(?P<group_id>\d+)/experimental_protocol_new/$',
-        'experimental_protocol_create', name='experimental_protocol_new'),
-    url(r'^group/(?P<group_id>\d+)/experimental_protocol/$',
-        'experimental_protocol_view', name='experimental_protocol_view'),
-    url(r'^group/(?P<group_id>\d+)/experimental_protocol_edit/$',
-        'experimental_protocol_update', name='experimental_protocol_update'),
-    url(r'^group/(?P<group_id>\d+)/experimental_protocol_change_component/(?P<component_id>\d+)/$',
-        'experimental_protocol_reuse_component', name='experimental_protocol_reuse_component'),
-
 )
