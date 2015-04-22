@@ -87,9 +87,8 @@ class Migration(SchemaMigration):
             'classification_of_diseases': ('django.db.models.fields.related.ManyToManyField', [], {'to': u"orm['patient.ClassificationOfDiseases']", 'null': 'True', 'symmetrical': 'False'}),
             'description': ('django.db.models.fields.CharField', [], {'max_length': '150'}),
             'experiment': ('django.db.models.fields.related.ForeignKey', [], {'to': u"orm['experiment.Experiment']"}),
-            'experimental_protocol': ('django.db.models.fields.related.ForeignKey', [], {'to': u"orm['experiment.ComponentConfiguration']", 'null': 'True'}),
+            'experimental_protocol': ('django.db.models.fields.related.ForeignKey', [], {'to': u"orm['experiment.Component']", 'null': 'True'}),
             u'id': ('django.db.models.fields.AutoField', [], {'primary_key': 'True'}),
-            'instruction': ('django.db.models.fields.CharField', [], {'max_length': '150', 'null': 'True', 'blank': 'True'}),
             'title': ('django.db.models.fields.CharField', [], {'max_length': '50'})
         },
         u'experiment.historicalexperiment': {
