@@ -131,6 +131,7 @@ class Stimulus(Component):
 
 class Questionnaire(Component):
     lime_survey_id = models.IntegerField(null=False, blank=False)
+    used_also_outside_an_experiment = models.BooleanField(null=False, blank=False, default=False)
 
     def save(self, *args, **kwargs):
         super(Component, self).save(*args, **kwargs)
