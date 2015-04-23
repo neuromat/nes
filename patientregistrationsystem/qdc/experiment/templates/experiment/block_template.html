@@ -1,0 +1,174 @@
+{% extends "experiment/component_template.html" %}
+
+{% block specific_header %}
+
+    <script type="text/javascript">
+
+        $(document).ready(function () {
+            var id_number_of_mandatory_components = $("#id_number_of_mandatory_components");
+            var id_label_for_number_of_mandatory_components = $("#id_label_for_number_of_mandatory_components");
+            var mandatory_components = $("#mandatory_components");
+
+            {% if specific_form.number_of_mandatory_components.value == None %}
+                id_number_of_mandatory_components.css("visibility", "hidden");
+                id_number_of_mandatory_components.prop('disabled', true);
+                id_label_for_number_of_mandatory_components.css("visibility", "hidden");
+            {% endif %}
+
+            mandatory_components.click(function () {
+                var all_mandatory = mandatory_components.is(":checked");
+
+                if (all_mandatory) {
+                    id_number_of_mandatory_components.css("visibility", "hidden");
+                    id_number_of_mandatory_components.prop('disabled', true);
+                    id_label_for_number_of_mandatory_components.css("visibility", "hidden");
+                } else {
+                    id_number_of_mandatory_components.prop('value', "");
+                    id_number_of_mandatory_components.prop('disabled', false);
+                    id_number_of_mandatory_components.css("visibility", "visible");
+                    id_label_for_number_of_mandatory_components.css("visibility", "visible");
+                }
+            });
+
+        });
+
+    </script>
+
+    <script type="text/javascript">
+
+        $(function(){
+            $("[data-toggle=tooltip]").tooltip();
+        });
+        function show_modal_remove (component_configuration_id){
+            var  modal_remove = document.getElementById('removeComponentConfiguration');
+            modal_remove.setAttribute( "value", 'remove-' + component_configuration_id);
+            $('#modalComponentConfigurationRemove').modal('show');
+        }
+    </script>
+
+{% endblock %}
+
+{% block extra_fields %}
+    <div class="row">
+        <div class="col-xs-6 col-sm-6">
+            <div class="checkbox">
+                <label>
+                    <input id="mandatory_components" type="checkbox"
+                            {% if not updating and not creating or reusing %} disabled="True" {% endif %}
+                            {% if specific_form.number_of_mandatory_components.value == None %} checked {% endif %}
+                            >Todos os componentes são obrigatórios
+                </label>
+            </div>
+        </div>
+        <div class="col-xs-6 col-sm-6">
+            <div class="form-group">
+                <label class="control-label" id="id_label_for_number_of_mandatory_components"
+                       for="number_of_mandatory_components">Quantidade de componentes obrigatórios</label>
+                    {{ specific_form.number_of_mandatory_components }}
+                <div class="help-block with-errors"></div>
+            </div>
+        </div>
+    </div>
+
+    {% block extra_extra_fields %}{% endblock %}
+
+    {% if not updating and not creating %}
+        <div class="row">
+            <div class="col-xs-12 col-sm-12">
+                <div class="container span6 offset3 well ">
+                    <div class="form-group">
+                        <table class="table table-striped">
+                            <thead>
+                            <tr>
+                                <th>Componente</th>
+                                <th>Tipo</th>
+                                <th>Nome do uso</th>
+                                {% if component.component_type == "sequence" and not component_configuration %}<th class="text-center" colspan="2">Ordem</th>{% endif %}
+                            </tr>
+                            </thead>
+                            <tbody>
+                            {% for configuration in configuration_list %}
+                                <tr>
+                                    <td class="col-md-4">
+                                        {% if component_configuration %}
+                                            {{ configuration.component.identification }}
+                                        {% else %}
+                                            <a class="btn glyphicon glyphicon-remove" data-toggle="tooltip" data-placement="right" title="Remover da lista" style="color: indianred; vertical-align: -5%; padding-left: 0;" onclick="show_modal_remove({{ configuration.id }});"></a>
+                                            {% if configuration.component.component_type == "sequence" or configuration.component.component_type == "parallel_block "%}
+                                                <a data-toggle="tooltip" data-placement="left" title="Editar" href="/experiment/component/{{ path_of_the_components }}-U{{ configuration.id }}">{{ configuration.component.identification }}</a>
+                                            {% else %}
+                                                <a data-toggle="tooltip" data-placement="left" title="Editar" href="/experiment/component/edit/{{ path_of_the_components }}-U{{ configuration.id }}">{{ configuration.component.identification }}</a>
+                                            {% endif %}
+                                        {% endif %}
+
+                                    </td>
+                                    <td class="col-md-2">
+                                        <span class="{{ configuration.component.icon_class }}"/>
+                                        {{ configuration.component.component_type }}
+                                    </td>
+                                    <td class="col-md-4">
+                                        {% if configuration.name != None %}
+                                            {{ configuration.name }}
+                                        {% endif %}
+                                    </td>
+                                    {% if not component_configuration %}
+                                        <td class="col-md-1">
+                                            {% ifnotequal configuration configuration_list.last %}
+                                                <a class="btn glyphicon glyphicon-arrow-down" href="/experiment/component/change_the_order/{% if path_of_the_components %}{{ path_of_the_components }}{% else %}{{ component.id }}{% endif %}-{{ configuration.id }}/down/"></a>
+                                            {% endifnotequal %}
+                                        </td>
+                                        <td class="col-md-1">
+                                            {% ifnotequal configuration configuration_list.first %}
+                                                <a class="btn glyphicon glyphicon-arrow-up" href="/experiment/component/change_the_order/{% if path_of_the_components %}{{ path_of_the_components }}{% else %}{{ component.id }}{% endif %}-{{ configuration.id }}/up/"></a>
+                                            {% endifnotequal %}
+                                        </td>
+                                    {% endif %}
+                                </tr>
+                            {% endfor %}
+
+                            </tbody>
+                        </table>
+                    </div>
+                    {% if not component_configuration %}
+                        <div class="dropdown">
+                            <button class="btn btn-primary dropdown-toggle" type="button" id="dropdownMenu1" data-toggle="dropdown" aria-expanded="true">
+                                Inserir componente à sequência
+                                <span class="caret"></span>
+                            </button>
+                            <ul class="dropdown-menu" role="menu" aria-labelledby="dropdownMenu1">
+                                {# component.id is the id of the sequence where a new component will be included. #}
+                                <li role="presentation"><a role="menuitem" tabindex="-1" class="{{ icon_class.task }}" href="/experiment/component/{% if path_of_the_components %}{{ path_of_the_components }}{% else %}{{ component.id }}{% endif %}/add_new/task"> Tarefa</a></li>
+                                <li role="presentation"><a role="menuitem" tabindex="-1" class="{{ icon_class.instruction }}" href="/experiment/component/{% if path_of_the_components %}{{ path_of_the_components }}{% else %}{{ component.id }}{% endif %}/add_new/instruction"> Instrução</a></li>
+                                <li role="presentation"><a role="menuitem" tabindex="-1" class="{{ icon_class.stimulus }}" href="/experiment/component/{% if path_of_the_components %}{{ path_of_the_components }}{% else %}{{ component.id }}{% endif %}/add_new/stimulus"> Estímulo</a></li>
+                                <li role="presentation"><a role="menuitem" tabindex="-1" class="{{ icon_class.pause }}" href="/experiment/component/{% if path_of_the_components %}{{ path_of_the_components }}{% else %}{{ component.id }}{% endif %}/add_new/pause"> Pausa</a></li>
+                                <li role="presentation"><a role="menuitem" tabindex="-1" class="{{ icon_class.questionnaire }}" href="/experiment/component/{% if path_of_the_components %}{{ path_of_the_components }}{% else %}{{ component.id }}{% endif %}/add_new/questionnaire"> Questionário</a></li>
+                                <li role="presentation"><a role="menuitem" tabindex="-1" class="{{ icon_class.sequence }}" href="/experiment/component/{% if path_of_the_components %}{{ path_of_the_components }}{% else %}{{ component.id }}{% endif %}/add_new/sequence"> Sequência</a></li>
+                                <li role="presentation"><a role="menuitem" tabindex="-1" class="{{ icon_class.parallel_block }}" href="/experiment/component/{% if path_of_the_components %}{{ path_of_the_components }}{% else %}{{ component.id }}{% endif %}/add_new/parallel_block"> Bloco paralelo</a></li>
+                            </ul>
+                        </div>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    {% endif %}
+
+
+    <div class="modal fade" id="modalComponentConfigurationRemove" tabindex="-1" role="dialog" aria-labelledby="myModalLabel"
+         aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-body">
+                    Tem certeza que deseja excluir este componente da lista?
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-default" data-dismiss="modal">Cancelar</button>
+
+                    <button class="btn btn-primary" type="submit" name="action" value="remove-" id="removeComponentConfiguration" style="background-color: indianred; color: #ffffff">
+                        Excluir
+                    </button>
+
+                </div>
+            </div>
+        </div>
+    </div>
+{% endblock %}

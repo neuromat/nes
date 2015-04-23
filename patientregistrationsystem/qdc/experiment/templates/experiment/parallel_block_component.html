@@ -1,0 +1,28 @@
+{% extends "experiment/block_template.html" %}
+
+{% block breadcrumb %}
+
+    {% if creating %}
+        <li class="active">Novo bloco paralelo</li>
+    {% else %}
+        {% if updating and component_configuration == None %}
+            <li class="active"> Edição </li>
+        {% endif %}
+    {% endif %}
+
+{% endblock %}
+
+{% block component_label %}o bloco paralelo{% endblock %}
+
+{% block component_add_new %}
+    <li role="presentation">
+        <a role="menuitem" tabindex="-1"
+           href="/experiment/component/{% if path_of_the_components %}{{ path_of_the_components }}{% else %}{{ sequence.id }}{% endif %}/add_new/parallel_block">
+            << Novo bloco paralelo >>
+        </a>
+    </li>
+{% endblock %}
+
+{% block component_button_label %}
+    Novo bloco paralelo
+{% endblock %}
