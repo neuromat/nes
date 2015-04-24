@@ -927,12 +927,15 @@ def get_origin(request):
 def patient_questionnaire_response_create(request, patient_id,
                                           template_name="experiment/subject_questionnaire_response_form.html"):
 
+    patient = get_object_or_404(Patient, pk=patient_id)
+
     questionnaires_list = Questionnaire.objects.filter(used_also_outside_an_experiment=True)
 
     surveys = Questionnaires()
 
     for questionnaire in questionnaires_list:
-        questionnaire.title = surveys.get_survey_title(questionnaire.lime_survey_id)
+        questionnaire.sid = questionnaire.lime_survey_id
+        questionnaire.surveyls_title = surveys.get_survey_title(questionnaire.lime_survey_id)
 
     surveys.release_session_key()
 
@@ -967,13 +970,14 @@ def patient_questionnaire_response_create(request, patient_id,
         "survey_title": None,
         # "survey_admin": survey_admin,
         "survey_active": None,
-        "questionnaire_responsible": request.user.get_full_name(),
+        "questionnaire_responsible": request.user.get_username(),
         "creating": True,
         # "subject": get_object_or_404(Subject, pk=subject_id),
         "subject": None,
         "group": None,
         "origin": origin,
-        "questionnaires_list": questionnaires_list
+        "questionnaires_list": questionnaires_list,
+        "patient": patient
     }
 
     return render(request, template_name, context)
