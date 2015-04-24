@@ -96,7 +96,7 @@ class Component(models.Model):
                                                ("pause", "Pause component"),
                                                ("stimulus", "Stimulus component"),
                                                ("questionnaire", "Questionnaire component"),
-                                               ("sequence", "Sequence component")))
+                                               ("block", "Block component")))
 
 
 class Task(Component):
@@ -136,9 +136,12 @@ class Questionnaire(Component):
         super(Component, self).save(*args, **kwargs)
 
 
-class Sequence(Component):
-    has_random_components = models.BooleanField(null=False, blank=False)
+class Block(Component):
     number_of_mandatory_components = models.IntegerField(null=True, blank=True)
+    type = models.CharField(null=False, max_length=20,
+                            choices=(("ordered_sequence", "Ordered sequence component"),
+                                     ("unordered_sequence", "Unordered sequence component"),
+                                     ("parallel_block", "Parallel block component")))
 
     def save(self, *args, **kwargs):
         super(Component, self).save(*args, **kwargs)
@@ -147,10 +150,16 @@ class Sequence(Component):
 class ComponentConfiguration(models.Model):
     name = models.CharField(max_length=50, null=True, blank=True)
     number_of_repetitions = models.IntegerField(null=True, blank=True, validators=[MinValueValidator(1)])
+
+    # These 2 interval fields are useful only when number_of_repetition is different from 1.
     interval_between_repetitions_value = models.IntegerField(null=True, blank=True, validators=[MinValueValidator(1)])
     interval_between_repetitions_unit = models.ForeignKey(TimeUnit, null=True, blank=True)
+
     component = models.ForeignKey(Component, null=False, related_name="configuration")
-    parent = models.ForeignKey(Component, null=True, related_name='children')
+    parent = models.ForeignKey(Block, null=True, related_name='children')
+
+    # This field is only useful for ordered and unordered sequence. However, we leave it as not null because we want
+    # the unique restriction of the pair (parent, order) to be applyed in a database level.
     order = models.IntegerField(null=False, blank=False, validators=[MinValueValidator(1)])
 
     class Meta:

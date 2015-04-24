@@ -11,7 +11,7 @@ from django.shortcuts import get_object_or_404
 import pyjsonrpc
 
 from experiment.models import Experiment, Group, QuestionnaireConfiguration, TimeUnit, Subject, \
-    QuestionnaireResponse, SubjectOfGroup, Sequence, ComponentConfiguration, ResearchProject, Keyword
+    QuestionnaireResponse, SubjectOfGroup, Block, ComponentConfiguration, ResearchProject, Keyword
 from patient.models import ClassificationOfDiseases
 from experiment.views import experiment_update, upload_file, research_project_update
 from experiment.abc_search_engine import Questionnaires
@@ -53,15 +53,15 @@ class ComponentConfigurationTest(TestCase):
         experiment = Experiment.objects.create(title="Experiment_title", description="Experiment_description")
         experiment.save()
         self.assertEqual(Experiment.objects.count(), 1)
-        component = Sequence.objects.create(
-            has_random_components=False,
+        component = Block.objects.create(
+            type="ordered_sequence",
             identification='Sequence_identification',
             description='Sequence_description',
             experiment=experiment,
-            component_type='sequence'
+            component_type='block'
         )
         component.save()
-        self.assertEqual(Sequence.objects.count(), 1)
+        self.assertEqual(Block.objects.count(), 1)
         component_configuration = ComponentConfiguration.objects.create(
             name='ComponentConfiguration_name',
             component=component
@@ -70,20 +70,20 @@ class ComponentConfigurationTest(TestCase):
         self.assertEqual(ComponentConfiguration.objects.count(), 1)
         self.assertEqual(component_configuration.order, 1)
 
-    def sequence_component_update_remove(self):
-        # TODO terminar a remoção do component sequence através da view sequence_component_update
+    def block_component_update_remove(self):
+        # TODO terminar a remoção do component block através da view block_component_update
         experiment = Experiment.objects.create(title="Experiment_title", description="Experiment_description")
         experiment.save()
         self.assertEqual(Experiment.objects.count(), 1)
-        component = Sequence.objects.create(
-            has_random_components=False,
+        component = Block.objects.create(
+            type="ordered_sequence",
             identification='Sequence_identification',
             description='Sequence_description',
             experiment=experiment,
             component_type='sequence'
         )
         component.save()
-        self.assertEqual(Sequence.objects.count(), 1)
+        self.assertEqual(Block.objects.count(), 1)
         component_configuration = ComponentConfiguration.objects.create(
             name='ComponentConfiguration_name',
             component=component

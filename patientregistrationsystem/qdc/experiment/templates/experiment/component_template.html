@@ -114,7 +114,7 @@
                                     <ul class="dropdown-menu" role="menu" aria-labelledby="dropdownMenu1">
 
                                         {% for existing_component in existing_component_list %}
-                                            <li role="presentation"><a role="menuitem" tabindex="-1" href="/experiment/component/{% if path_of_the_components %}{{ path_of_the_components }}{% else %}{{ sequence.id }}{% endif %}/add/{{ existing_component.id }}">{{ existing_component.identification }}</a></li>
+                                            <li role="presentation"><a role="menuitem" tabindex="-1" href="/experiment/component/{% if path_of_the_components %}{{ path_of_the_components }}{% else %}{{ component.id }}{% endif %}/add/{{ existing_component.id }}">{{ existing_component.identification }}</a></li>
                                         {% endfor %}
 
                                         {% if can_reuse or reusing %}
@@ -130,7 +130,7 @@
                     <br>
                 {% endif %}
 
-                {% if can_reuse %}
+                {% if not reusing %}
                     <div class="row">
                         <div class="col-xs-12 col-sm-6">
                             <div class="form-group ">
@@ -158,7 +158,7 @@
                     <div class="btn-group pull-left">
                         <a href=
                             {% if component_configuration %}
-                                {% if component_configuration.component.component_type == "sequence" %}
+                                {% if component_configuration.component.component_type == "block" %}
                                        "/experiment/component/{{ path_of_the_components }}-{{ component_configuration.component.id }}"
                                 {% else %}
                                        "/experiment/component/edit/{{ path_of_the_components }}-{{ component_configuration.component.id }}"
