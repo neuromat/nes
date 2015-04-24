@@ -96,6 +96,25 @@
             <div class="col-md-10">
                 <div class="row">
                     <div class="col-xs-12 col-sm-12">
+
+
+{# TODO: parei aqui                   #}
+                        <div class="form-group">
+                            <label for="questionnaire_selected" class="control-label">Questionário <b style="color: red;">*</b></label>
+                            <select class="form-control" required="" id="questionnaire_selected" name="questionnaire_selected" data-error="Por favor, selecione um questionário da lista." {% if updating %}disabled{% endif %}>
+                                {% if creating %}<option selected="selected" value="">---------</option>{% endif %}
+                                {% if updating %}<option selected="selected" value="{{ questionnaire_id }}">{{ questionnaire_title }} ({{ questionnaire_id }})</option>
+                                {% else %}
+                                    {% for survey in questionnaires_list %}
+                                        <option value="{{ survey.sid }}">{{ survey.surveyls_title }} ({{ survey.sid }})</option>
+                                    {% endfor %}
+                                {% endif %}
+                            </select>
+                            <div class="help-block with-errors"></div>
+                        </div>
+
+
+
                         <div class="form-group">
                             <label>Questionário</label>
 
@@ -105,36 +124,6 @@
                                 <input class="form-control" id="id_survey_title" name="survey_title"
                                        value="{{ survey_title }}"
                                        type="text" disabled>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-
-            <div class="col-md-10">
-                <div class="row">
-                    <div class="col-xs-3 col-sm-6">
-                        <div class="form-group">
-                            <label>Administrador</label>
-
-                            <div class="input-group input-group-sm">
-                                    <span class="input-group-addon"><span
-                                            class="glyphicon glyphicon-user"></span></span>
-                                <input class="form-control" id="id_survey_admin" name="survey_admin"
-                                       value="{{ survey_admin }}" type="text" disabled>
-                            </div>
-                        </div>
-                    </div>
-
-                    <div class="col-xs-3 col-sm-6">
-                        <div class="form-group">
-                            <label>Responsável</label>
-
-                            <div class="input-group input-group-sm">
-                                    <span class="input-group-addon"><span
-                                            class="glyphicon glyphicon-user"></span></span>
-                                <input class="form-control" id="id_responsible" name="responsible"
-                                       value="{{ questionnaire_responsible }}" type="text" disabled>
                             </div>
                         </div>
                     </div>
@@ -184,6 +173,36 @@
                     </div>
                 </div>
 
+            </div>
+
+            <div class="col-md-10">
+                <div class="row">
+{#                    <div class="col-xs-3 col-sm-6">#}
+{#                        <div class="form-group">#}
+{#                            <label>Administrador</label>#}
+{##}
+{#                            <div class="input-group input-group-sm">#}
+{#                                    <span class="input-group-addon"><span#}
+{#                                            class="glyphicon glyphicon-user"></span></span>#}
+{#                                <input class="form-control" id="id_survey_admin" name="survey_admin"#}
+{#                                       value="{{ survey_admin }}" type="text" disabled>#}
+{#                            </div>#}
+{#                        </div>#}
+{#                    </div>#}
+
+                    <div class="col-xs-3 col-sm-6">
+                        <div class="form-group">
+                            <label>Responsável pelo preenchimento</label>
+
+                            <div class="input-group input-group-sm">
+                                    <span class="input-group-addon"><span
+                                            class="glyphicon glyphicon-user"></span></span>
+                                <input class="form-control" id="id_responsible" name="responsible"
+                                       value="{{ questionnaire_responsible }}" type="text" disabled>
+                            </div>
+                        </div>
+                    </div>
+                </div>
             </div>
 
         </div>

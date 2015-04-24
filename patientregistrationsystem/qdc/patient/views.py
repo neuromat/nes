@@ -18,9 +18,9 @@ from patient.forms import PatientForm, TelephoneForm, SocialDemographicDataForm,
 from patient.quiz_widget import SelectBoxCountriesDisabled, SelectBoxStateDisabled
 
 from experiment.models import Subject, Experiment, Group, SubjectOfGroup, \
-    QuestionnaireConfiguration, QuestionnaireResponse
+    QuestionnaireConfiguration, QuestionnaireResponse, Questionnaire, PatientQuestionnaireResponse
 from experiment.abc_search_engine import Questionnaires
-
+from experiment.forms import QuestionnaireResponseForm
 
 # pylint: disable=E1101
 # pylint: disable=E1103
@@ -283,6 +283,20 @@ def patient_update_questionnaires(request, patient, context):
     # TODO Sort the questionnaires somehow.
 
     surveys = Questionnaires()
+
+    patient_questionnaires_data = []
+    patient_questionnaire_response_list = PatientQuestionnaireResponse.objects.filter(patient=patient)
+
+    for patient_questionnaire_response in patient_questionnaire_response_list:
+        patient_questionnaires_data.append(
+            {
+                'questionnaire_title':
+                surveys.get_survey_title(patient_questionnaire_response.questionnaire.lime_survey_id),
+                'questionnaire_response':
+                patient_questionnaire_response
+            }
+        )
+
     subject = Subject.objects.filter(patient=patient)
     subject_of_group_list = SubjectOfGroup.objects.filter(subject=subject)
 
@@ -306,7 +320,8 @@ def patient_update_questionnaires(request, patient, context):
     surveys.release_session_key()
 
     context.update({
-        'questionnaire_data': questionnaires_data})
+        'patient_questionnaires_data': patient_questionnaires_data,
+        'questionnaires_data': questionnaires_data})
 
     return render(request, "patient/register_questionnaires.html", context)
 
@@ -441,7 +456,22 @@ def patient_view_medical_record(request, patient, context):
 
 
 def patient_view_questionnaires(request, patient, context):
+
     surveys = Questionnaires()
+
+    patient_questionnaires_data = []
+    patient_questionnaire_response_list = PatientQuestionnaireResponse.objects.filter(patient=patient)
+
+    for patient_questionnaire_response in patient_questionnaire_response_list:
+        patient_questionnaires_data.append(
+            {
+                'questionnaire_title':
+                surveys.get_survey_title(patient_questionnaire_response.questionnaire.lime_survey_id),
+                'questionnaire_response':
+                patient_questionnaire_response
+            }
+        )
+
     questionnaires_data = []
     subject = Subject.objects.filter(patient=patient)
     subject_of_group_list = SubjectOfGroup.objects.filter(subject=subject)
@@ -465,8 +495,11 @@ def patient_view_questionnaires(request, patient, context):
                     }
                 )
 
+    surveys.release_session_key()
+
     context.update({
-        'questionnaire_data': questionnaires_data})
+        'patient_questionnaires_data': patient_questionnaires_data,
+        'questionnaires_data': questionnaires_data})
 
     return render(request, "patient/register_questionnaires.html", context)
 
@@ -873,3 +906,74 @@ def exam_file_delete(request, exam_file_id):
                                diagnosis.medical_record_data_id,
                                complementary_exam.pk))
     return HttpResponseRedirect(redirect_url + "?status=edit")
+
+
+def get_origin(request):
+    origin = '0'
+
+    if request.method == "POST":
+        if 'origin' in request.POST:
+            origin = request.POST['origin']
+    else:
+        if 'origin' in request.GET:
+            origin = request.GET['origin']
+
+    return origin
+
+
+@login_required
+# TODO: associate the right permission
+# @permission_required('patient.add_medicalrecorddata')
+def patient_questionnaire_response_create(request, patient_id,
+                                          template_name="experiment/subject_questionnaire_response_form.html"):
+
+    questionnaires_list = Questionnaire.objects.filter(used_also_outside_an_experiment=True)
+
+    surveys = Questionnaires()
+
+    for questionnaire in questionnaires_list:
+        questionnaire.title = surveys.get_survey_title(questionnaire.lime_survey_id)
+
+    surveys.release_session_key()
+
+    questionnaire_response_form = None
+    fail = None
+    redirect_url = None
+    questionnaire_response_id = None
+
+    if request.method == "GET":
+        questionnaire_response_form = QuestionnaireResponseForm(request.POST or None)
+
+    # if request.method == "POST":
+    #     questionnaire_response_form = QuestionnaireResponseForm(request.POST)
+    #
+    #     if request.POST['action'] == "save":
+    #         redirect_url, questionnaire_response_id = \
+    #             subject_questionnaire_response_start_fill_questionnaire(request, subject_id, questionnaire_id)
+    #         if not redirect_url:
+    #             fail = False
+    #         else:
+    #             fail = True
+    #             messages.info(request, 'Você será redirecionado para o questionário. Aguarde.')
+    #
+    origin = get_origin(request)
+
+    context = {
+        "FAIL": fail,
+        "URL": redirect_url,
+        "questionnaire_response_id": questionnaire_response_id,
+        "questionnaire_response_form": questionnaire_response_form,
+        "questionnaire_configuration": None,
+        "survey_title": None,
+        # "survey_admin": survey_admin,
+        "survey_active": None,
+        "questionnaire_responsible": request.user.get_full_name(),
+        "creating": True,
+        # "subject": get_object_or_404(Subject, pk=subject_id),
+        "subject": None,
+        "group": None,
+        "origin": origin,
+        "questionnaires_list": questionnaires_list
+    }
+
+    return render(request, template_name, context)

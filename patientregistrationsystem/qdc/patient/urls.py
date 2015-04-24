@@ -43,4 +43,9 @@ urlpatterns = patterns(
 
     # exam file (delete)
     url(r'^exam_file/delete/(?P<exam_file_id>\d+)/$', 'exam_file_delete', name='exam_file_delete'),
+
+    # questionnaire response
+    url(r'^(?P<patient_id>\d+)/new_questionnaire_response/$',
+        'patient_questionnaire_response_create', name='patient_questionnaire_response_create'),
+
 )

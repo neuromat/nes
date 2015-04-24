@@ -238,3 +238,21 @@ class QuestionnaireResponse(models.Model):
 
     def __unicode__(self):  # Python 3: def __str__(self):
         return "token id: " + str(self.token_id)
+
+
+class PatientQuestionnaireResponse(models.Model):
+    patient = models.ForeignKey(Patient, null=False)
+
+    questionnaire = models.ForeignKey(Questionnaire, null=False)
+
+    token_id = models.IntegerField(null=False)
+    date = models.DateField(default=datetime.date.today, null=False, validators=[validate_date_questionnaire_response])
+    questionnaire_responsible = models.ForeignKey(User, null=False, related_name="+")
+
+    class Meta:
+        permissions = (
+            ("view_patientquestionnaireresponse", "Can view patient questionnaire response"),
+        )
+
+    def __unicode__(self):  # Python 3: def __str__(self):
+        return "token id: " + str(self.token_id)

@@ -10,18 +10,6 @@ from django.contrib.auth.models import User
 from simple_history.models import HistoricalRecords
 
 from patient.validation import CPF
-# from experiment.models_questionnaire import Questionnaire
-# from experiment.models import validate_date_questionnaire_response
-
-# from django.db.models import get_model
-# from south.modelsinspector import add_introspection_rules
-
-# add_introspection_rules(rules=[],
-#                         patterns=["^asdadexperiment\.models\.Component", "^jjjexperiment\.models\.Questionnaire"])
-
-# add_introspection_rules(rules=[],
-#                         patterns=["^experiment\.models\.fields\.SomeNewField",])
-
 
 
 # Valida CPF
@@ -358,37 +346,3 @@ class ExamFile(models.Model):
     def delete(self, *args, **kwargs):
         self.content.delete()
         super(ExamFile, self).delete(*args, **kwargs)
-
-
-class PatientQuestionnaireResponse(models.Model):
-    patient = models.ForeignKey(Patient, null=False)
-
-    # questionnaire = models.ForeignKey(Questionnaire, null=False)
-    # questionnaire = models.ForeignKey(get_model('experiment', 'Questionnaire'), null=False)
-    questionnaire = models.ForeignKey('experiment.Questionnaire', null=False)
-
-    token_id = models.IntegerField(null=False)
-    date = models.DateField(default=datetime.date.today, null=False)
-    # date = models.DateField(default=datetime.date.today, null=False,
-    #                         validators=[validate_date_questionnaire_response])
-    questionnaire_responsible = models.ForeignKey(User, null=False, related_name="+")
-
-    # # Audit trail - Simple History
-    # history = HistoricalRecords()
-    # changed_by = models.ForeignKey('auth.User')
-
-    # @property
-    # def _history_user(self):
-    #     return self.changed_by
-
-    # @_history_user.setter
-    # def _history_user(self, value):
-    #     self.changed_by = value
-
-    class Meta:
-        permissions = (
-            ("view_patientquestionnaireresponse", "Can view patient questionnaire response"),
-        )
-
-    def __unicode__(self):  # Python 3: def __str__(self):
-        return "token id: " + str(self.token_id)
