@@ -1,7 +1,7 @@
 # coding=utf-8
 from experiment.models import Experiment, QuestionnaireConfiguration, QuestionnaireResponse, SubjectOfGroup, Group, \
     Component, Task, Stimulus, Pause, Block, Instruction, ComponentConfiguration, ResearchProject
-from django.forms import ModelForm, TextInput, Textarea, Select, DateInput
+from django.forms import ModelForm, TextInput, Textarea, Select, DateInput, TypedChoiceField, RadioSelect
 
 
 class ExperimentForm(ModelForm):
@@ -151,20 +151,22 @@ class PauseForm(ModelForm):
 
 
 class BlockForm(ModelForm):
+    type = TypedChoiceField(required=True,
+                            empty_value=None,
+                            choices=(('ordered_sequence', 'Sequência ordenada'),
+                                     ('unordered_sequence', 'Sequência aleatória'),
+                                     ('parallel_block', 'Bloco paralelo')),
+                            widget=RadioSelect(attrs={'id': 'id_type', 'required': "",
+                                                      'data-error': 'Tipo deve ser escolhido.'}))
+
     class Meta:
         model = Block
-        fields = ['number_of_mandatory_components']
+        fields = ['number_of_mandatory_components', 'type']
 
         widgets = {
             'number_of_mandatory_components': TextInput(attrs={'class': 'form-control', 'required': "",
                                                                'data-error': 'Quantidade deve ser preenchida.'}),
         }
-
-
-# class SequenceForm(ModelForm):
-#     class Meta:
-#         model = Sequence
-#         fields = ['has_random_components']
 
 
 class ResearchProjectForm(ModelForm):

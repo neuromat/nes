@@ -2,75 +2,78 @@
 
 {% block specific_header %}
 
-    <script type="text/javascript">
+    {% load static %}
+    <script src="{% static 'quiz/js/block_component.js' %}"></script>
 
-        $(document).ready(function () {
-            var id_number_of_mandatory_components = $("#id_number_of_mandatory_components");
-            var id_label_for_number_of_mandatory_components = $("#id_label_for_number_of_mandatory_components");
-            var mandatory_components = $("#mandatory_components");
+{% endblock %}
 
-            {% if specific_form.number_of_mandatory_components.value == None %}
-                id_number_of_mandatory_components.css("visibility", "hidden");
-                id_number_of_mandatory_components.prop('disabled', true);
-                id_label_for_number_of_mandatory_components.css("visibility", "hidden");
-            {% endif %}
+{% block breadcrumb %}
 
-            mandatory_components.click(function () {
-                var all_mandatory = mandatory_components.is(":checked");
+    {% if creating %}
+        <li class="active">Novo bloco</li>
+    {% else %}
+        {% if updating and component_configuration == None %}
+            <li class="active"> Edição </li>
+        {% endif %}
+    {% endif %}
 
-                if (all_mandatory) {
-                    id_number_of_mandatory_components.css("visibility", "hidden");
-                    id_number_of_mandatory_components.prop('disabled', true);
-                    id_label_for_number_of_mandatory_components.css("visibility", "hidden");
-                } else {
-                    id_number_of_mandatory_components.prop('value', "");
-                    id_number_of_mandatory_components.prop('disabled', false);
-                    id_number_of_mandatory_components.css("visibility", "visible");
-                    id_label_for_number_of_mandatory_components.css("visibility", "visible");
-                }
-            });
+{% endblock %}
 
-        });
+{% block component_label %}o bloco{% endblock %}
 
-    </script>
+{% block component_add_new %}
+    <li role="presentation">
+        <a role="menuitem" tabindex="-1" href="/experiment/component/{{ path_of_the_components }}/add_new/block">
+            << Novo bloco >>
+        </a>
+    </li>
+{% endblock %}
 
-    <script type="text/javascript">
-
-        $(function(){
-            $("[data-toggle=tooltip]").tooltip();
-        });
-        function show_modal_remove (component_configuration_id){
-            var  modal_remove = document.getElementById('removeComponentConfiguration');
-            modal_remove.setAttribute( "value", 'remove-' + component_configuration_id);
-            $('#modalComponentConfigurationRemove').modal('show');
-        }
-    </script>
-
+{% block component_button_label %}
+    Novo bloco
 {% endblock %}
 
 {% block extra_fields %}
     <div class="row">
-        <div class="col-xs-6 col-sm-6">
-            <div class="checkbox">
-                <label>
-                    <input id="mandatory_components" type="checkbox"
-                            {% if not updating and not creating or reusing %} disabled="True" {% endif %}
-                            {% if specific_form.number_of_mandatory_components.value == None %} checked {% endif %}
-                            >Todos os componentes são obrigatórios
-                </label>
-            </div>
-        </div>
-        <div class="col-xs-6 col-sm-6">
+        <div class="col-xs-12 col-sm-12">
             <div class="form-group">
-                <label class="control-label" id="id_label_for_number_of_mandatory_components"
-                       for="number_of_mandatory_components">Quantidade de componentes obrigatórios</label>
-                    {{ specific_form.number_of_mandatory_components }}
-                <div class="help-block with-errors"></div>
+                <label>Tipo <b style="color: red;">*</b></label>
+
+                <div class="input-group  input-group-sm">
+                    <div class="input-group  input-group-sm">
+                        {% for radio in specific_form.type %}
+                            <label class="radio-inline">{{ radio.choice_label }}{{ radio.tag }} </label>
+                        {% endfor %}
+                    </div>
+                </div>
             </div>
         </div>
     </div>
-
-    {% block extra_extra_fields %}{% endblock %}
+    <div class="row">
+        <div class="col-xs-12 col-sm-12">
+            <div class="form-group-inline">
+                <label class="control-label" id="id_label_for_number_of_mandatory_components"
+                       for="number_of_mandatory_components">Quantidade de componentes obrigatórios</label>
+            </div>
+        </div>
+        <div class="col-xs-5 col-sm-2">
+            <div class="form-group">
+                <div class="checkbox">
+                    <input id="mandatory_components" type="checkbox"
+                            {% if not updating and not creating or reusing %} disabled="True" {% endif %}
+                            ><label>Todos</label>
+                </div>
+            </div>
+        </div>
+        <div class="col-xs-6 col-sm-3">
+            <div class="form-group" id="div_form_number_of_mandatory_components">
+                {{ specific_form.number_of_mandatory_components }}
+                <div class="form-group">
+                    <div class="help-block with-errors" id="div_for_errors_in_number_of_mandatory_components"></div>
+                </div>
+            </div>
+        </div>
+    </div>
 
     {% if not updating and not creating %}
         <div class="row">
@@ -83,7 +86,7 @@
                                 <th>Componente</th>
                                 <th>Tipo</th>
                                 <th>Nome do uso</th>
-                                {% if component.component_type == "sequence" and not component_configuration %}<th class="text-center" colspan="2">Ordem</th>{% endif %}
+                                {% if component.type == "ordered_sequence" and not component_configuration %}<th class="text-center" colspan="2">Ordem</th>{% endif %}
                             </tr>
                             </thead>
                             <tbody>
@@ -94,7 +97,7 @@
                                             {{ configuration.component.identification }}
                                         {% else %}
                                             <a class="btn glyphicon glyphicon-remove" data-toggle="tooltip" data-placement="right" title="Remover da lista" style="color: indianred; vertical-align: -5%; padding-left: 0;" onclick="show_modal_remove({{ configuration.id }});"></a>
-                                            {% if configuration.component.component_type == "sequence" or configuration.component.component_type == "parallel_block "%}
+                                            {% if configuration.component.component_type == "block" %}
                                                 <a data-toggle="tooltip" data-placement="left" title="Editar" href="/experiment/component/{{ path_of_the_components }}-U{{ configuration.id }}">{{ configuration.component.identification }}</a>
                                             {% else %}
                                                 <a data-toggle="tooltip" data-placement="left" title="Editar" href="/experiment/component/edit/{{ path_of_the_components }}-U{{ configuration.id }}">{{ configuration.component.identification }}</a>
@@ -111,7 +114,7 @@
                                             {{ configuration.name }}
                                         {% endif %}
                                     </td>
-                                    {% if not component_configuration %}
+                                    {% if component.type == "ordered_sequence" and not component_configuration %}
                                         <td class="col-md-1">
                                             {% ifnotequal configuration configuration_list.last %}
                                                 <a class="btn glyphicon glyphicon-arrow-down" href="/experiment/component/change_the_order/{% if path_of_the_components %}{{ path_of_the_components }}{% else %}{{ component.id }}{% endif %}-{{ configuration.id }}/down/"></a>
@@ -136,14 +139,13 @@
                                 <span class="caret"></span>
                             </button>
                             <ul class="dropdown-menu" role="menu" aria-labelledby="dropdownMenu1">
-                                {# component.id is the id of the sequence where a new component will be included. #}
+                                {# component.id is the id of the block where a new component will be included. #}
                                 <li role="presentation"><a role="menuitem" tabindex="-1" class="{{ icon_class.task }}" href="/experiment/component/{% if path_of_the_components %}{{ path_of_the_components }}{% else %}{{ component.id }}{% endif %}/add_new/task"> Tarefa</a></li>
                                 <li role="presentation"><a role="menuitem" tabindex="-1" class="{{ icon_class.instruction }}" href="/experiment/component/{% if path_of_the_components %}{{ path_of_the_components }}{% else %}{{ component.id }}{% endif %}/add_new/instruction"> Instrução</a></li>
                                 <li role="presentation"><a role="menuitem" tabindex="-1" class="{{ icon_class.stimulus }}" href="/experiment/component/{% if path_of_the_components %}{{ path_of_the_components }}{% else %}{{ component.id }}{% endif %}/add_new/stimulus"> Estímulo</a></li>
                                 <li role="presentation"><a role="menuitem" tabindex="-1" class="{{ icon_class.pause }}" href="/experiment/component/{% if path_of_the_components %}{{ path_of_the_components }}{% else %}{{ component.id }}{% endif %}/add_new/pause"> Pausa</a></li>
                                 <li role="presentation"><a role="menuitem" tabindex="-1" class="{{ icon_class.questionnaire }}" href="/experiment/component/{% if path_of_the_components %}{{ path_of_the_components }}{% else %}{{ component.id }}{% endif %}/add_new/questionnaire"> Questionário</a></li>
-                                <li role="presentation"><a role="menuitem" tabindex="-1" class="{{ icon_class.sequence }}" href="/experiment/component/{% if path_of_the_components %}{{ path_of_the_components }}{% else %}{{ component.id }}{% endif %}/add_new/sequence"> Sequência</a></li>
-                                <li role="presentation"><a role="menuitem" tabindex="-1" class="{{ icon_class.parallel_block }}" href="/experiment/component/{% if path_of_the_components %}{{ path_of_the_components }}{% else %}{{ component.id }}{% endif %}/add_new/parallel_block"> Bloco paralelo</a></li>
+                                <li role="presentation"><a role="menuitem" tabindex="-1" class="{{ icon_class.block }}" href="/experiment/component/{% if path_of_the_components %}{{ path_of_the_components }}{% else %}{{ component.id }}{% endif %}/add_new/block"> Bloco</a></li>
                             </ul>
                         </div>
                     {% endif %}

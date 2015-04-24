@@ -12,8 +12,7 @@
 
 {% block component_add_new %}
     <li role="presentation">
-        <a role="menuitem" tabindex="-1"
-           href="/experiment/component/{% if path_of_the_components %}{{ path_of_the_components }}{% else %}{{ sequence.id }}{% endif %}/add_new/task">
+        <a role="menuitem" tabindex="-1" href="/experiment/component/{{ path_of_the_components }}/add_new/task">
             << Nova tarefa >>
         </a>
     </li>

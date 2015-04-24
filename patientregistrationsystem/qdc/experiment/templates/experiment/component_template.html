@@ -130,7 +130,7 @@
                     <br>
                 {% endif %}
 
-                {% if can_reuse %}
+                {% if not reusing %}
                     <div class="row">
                         <div class="col-xs-12 col-sm-6">
                             <div class="form-group ">
@@ -158,7 +158,7 @@
                     <div class="btn-group pull-left">
                         <a href=
                             {% if component_configuration %}
-                                {% if component_configuration.component.component_type == "sequence" or component_configuration.component.component_type == "parallel_block"%}
+                                {% if component_configuration.component.component_type == "block" %}
                                        "/experiment/component/{{ path_of_the_components }}-{{ component_configuration.component.id }}"
                                 {% else %}
                                        "/experiment/component/edit/{{ path_of_the_components }}-{{ component_configuration.component.id }}"

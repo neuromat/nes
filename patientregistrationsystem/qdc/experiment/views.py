@@ -17,9 +17,8 @@ from django.db.models import Q
 from django.conf import settings
 
 from experiment.models import Experiment, QuestionnaireConfiguration, Subject, TimeUnit, \
-    QuestionnaireResponse, SubjectOfGroup, Group, Component, ComponentConfiguration, SequenceConfiguration, \
-    Questionnaire, Task, Stimulus, Pause, Instruction, Block, ClassificationOfDiseases, ResearchProject,\
-    Keyword
+    QuestionnaireResponse, SubjectOfGroup, Group, Component, ComponentConfiguration, Questionnaire, Task, Stimulus, \
+    Pause, Instruction, Block, ClassificationOfDiseases, ResearchProject, Keyword
 from experiment.forms import ExperimentForm, QuestionnaireConfigurationForm, QuestionnaireResponseForm, \
     FileForm, GroupForm, TaskForm, InstructionForm, ComponentForm, StimulusForm, PauseForm, BlockForm, \
     ComponentConfigurationForm, ResearchProjectForm
@@ -35,8 +34,7 @@ icon_class = {
     u'stimulus': 'glyphicon glyphicon-headphones',
     u'pause': 'glyphicon glyphicon-time',
     u'questionnaire': 'glyphicon glyphicon-list-alt',
-    u'sequence': 'glyphicon glyphicon-list',
-    u'parallel_block': 'glyphicon glyphicon-th-large',
+    u'block': 'glyphicon glyphicon-th-large',
 }
 
 delimiter = "-"
@@ -48,7 +46,6 @@ delimiter = "-"
 @login_required
 @permission_required('experiment.view_researchproject')
 def research_project_list(request, template_name="experiment/research_project_list.html"):
-
     research_projects = ResearchProject.objects.order_by('start_date')
     context = {"research_projects": research_projects}
 
@@ -83,7 +80,6 @@ def research_project_create(request, template_name="experiment/research_project_
 @login_required
 @permission_required('experiment.change_researchproject')
 def research_project_view(request, research_project_id, template_name="experiment/research_project_register.html"):
-
     research_project = get_object_or_404(ResearchProject, pk=research_project_id)
     research_project_form = ResearchProjectForm(request.POST or None, instance=research_project)
 
@@ -112,7 +108,6 @@ def research_project_view(request, research_project_id, template_name="experimen
 @login_required
 @permission_required('experiment.change_researchproject')
 def research_project_update(request, research_project_id, template_name="experiment/research_project_register.html"):
-
     research_project = get_object_or_404(ResearchProject, pk=research_project_id)
     research_project_form = ResearchProjectForm(request.POST or None, instance=research_project)
 
@@ -178,7 +173,6 @@ def keyword_create_ajax(request, research_project_id, keyword_name):
 @login_required
 @permission_required('experiment.change_researchproject')
 def keyword_add_ajax(request, research_project_id, keyword_id):
-
     research_project = get_object_or_404(ResearchProject, pk=research_project_id)
     keyword = get_object_or_404(Keyword, pk=keyword_id)
     research_project.keywords.add(keyword)
@@ -200,7 +194,6 @@ def manage_keywords(keyword, research_projects):
 @login_required
 @permission_required('experiment.change_researchproject')
 def keyword_remove_ajax(request, research_project_id, keyword_id):
-
     research_project = get_object_or_404(ResearchProject, pk=research_project_id)
     keyword = get_object_or_404(Keyword, pk=keyword_id)
     research_project.keywords.remove(keyword)
@@ -247,7 +240,6 @@ def experiment_create(request, template_name="experiment/experiment_register.htm
 @login_required
 @permission_required('experiment.change_experiment')
 def experiment_view(request, experiment_id, template_name="experiment/experiment_register.html"):
-
     experiment = get_object_or_404(Experiment, pk=experiment_id)
     group_list = Group.objects.filter(experiment=experiment)
     experiment_form = ExperimentForm(request.POST or None, instance=experiment)
@@ -274,7 +266,6 @@ def experiment_view(request, experiment_id, template_name="experiment/experiment
 @login_required
 @permission_required('experiment.change_experiment')
 def experiment_update(request, experiment_id, template_name="experiment/experiment_register.html"):
-
     experiment = get_object_or_404(Experiment, pk=experiment_id)
     group_list = Group.objects.filter(experiment=experiment)
     experiment_form = ExperimentForm(request.POST or None, instance=experiment)
@@ -302,7 +293,6 @@ def experiment_update(request, experiment_id, template_name="experiment/experime
 
 @login_required
 def group_create(request, experiment_id, template_name="experiment/group_register.html"):
-
     experiment = get_object_or_404(Experiment, pk=experiment_id)
     group_form = GroupForm(request.POST or None)
 
@@ -330,7 +320,6 @@ def group_create(request, experiment_id, template_name="experiment/group_registe
 @login_required
 @permission_required('experiment.add_experiment')
 def group_view(request, group_id, template_name="experiment/group_register.html"):
-
     group = get_object_or_404(Group, pk=group_id)
     group_form = GroupForm(request.POST or None, instance=group)
 
@@ -361,11 +350,12 @@ def group_view(request, group_id, template_name="experiment/group_register.html"
             except ProtectedError:
                 messages.error(request, "Não foi possível excluir o grupo, pois há dependências.")
         elif request.POST['action'] == "remove_experimental_protocol":
-                component_configuration = get_object_or_404(ComponentConfiguration,
-                                                            pk=group.experimental_protocol_id)
-                group.experimental_protocol = None
-                group.save()
-                component_configuration.delete()
+            # TODO It is not a component configuration anymore!
+            component_configuration = get_object_or_404(ComponentConfiguration,
+                                                        pk=group.experimental_protocol_id)
+            group.experimental_protocol = None
+            group.save()
+            component_configuration.delete()
 
     context = {
         "classification_of_diseases_list": group.classification_of_diseases.all(),
@@ -383,7 +373,6 @@ def group_view(request, group_id, template_name="experiment/group_register.html"
 @login_required
 @permission_required('experiment.add_experiment')
 def group_update(request, group_id, template_name="experiment/group_register.html"):
-
     group = get_object_or_404(Group, pk=group_id)
     group_form = GroupForm(request.POST or None, instance=group)
 
@@ -468,7 +457,6 @@ def classification_of_diseases_remove(request, group_id, classification_of_disea
 @login_required
 @permission_required('experiment.add_questionnaireconfiguration')
 def questionnaire_create(request, group_id, template_name="experiment/questionnaire_register.html"):
-
     group = get_object_or_404(Group, pk=group_id)
 
     questionnaire_form = QuestionnaireConfigurationForm(
@@ -631,7 +619,6 @@ def questionnaire_update(request, questionnaire_configuration_id,
 @login_required
 @permission_required('experiment.add_subject')
 def subjects(request, group_id, template_name="experiment/subjects.html"):
-
     group = get_object_or_404(Group, id=group_id)
 
     subject_list_with_status = []
@@ -961,7 +948,6 @@ def check_required_fields(surveys, lime_survey_id):
 @permission_required('experiment.view_questionnaireresponse')
 def questionnaire_response_view(request, questionnaire_response_id,
                                 template_name="experiment/subject_questionnaire_response_view.html"):
-
     view = request.GET['view']
 
     status_mode = None
@@ -1375,33 +1361,34 @@ def component_create(request, experiment_id, component_type):
         specific_form = PauseForm(request.POST or None)
     elif component_type == 'questionnaire':
         questionnaires_list = Questionnaires().find_all_active_questionnaires()
-    elif component_type == 'sequence' or component_type == 'parallel_block':
+    elif component_type == 'block':
         specific_form = BlockForm(request.POST or None, initial={'number_of_mandatory_components': None})
 
     if request.method == "POST":
         new_specific_component = None
 
-        if component_type == 'questionnaire':
-            new_specific_component = Questionnaire()
-            new_specific_component.lime_survey_id = request.POST['questionnaire_selected']
-        elif specific_form.is_valid():
-            new_specific_component = specific_form.save(commit=False)
-
         if component_form.is_valid():
-            component = component_form.save(commit=False)
-            new_specific_component.description = component.description
-            new_specific_component.identification = component.identification
-            new_specific_component.component_type = component_type
-            new_specific_component.experiment = experiment
-            new_specific_component.save()
+            if component_type == 'questionnaire':
+                new_specific_component = Questionnaire()
+                new_specific_component.lime_survey_id = request.POST['questionnaire_selected']
+            elif specific_form.is_valid():
+                new_specific_component = specific_form.save(commit=False)
 
-            messages.success(request, 'Componente incluído com sucesso.')
+            if new_specific_component is not None:
+                component = component_form.save(commit=False)
+                new_specific_component.description = component.description
+                new_specific_component.identification = component.identification
+                new_specific_component.component_type = component_type
+                new_specific_component.experiment = experiment
+                new_specific_component.save()
 
-            if component_type == 'sequence' or component_type == 'parallel_block':
-                redirect_url = reverse("component_view", args=(new_specific_component.id,))
-            else:
-                redirect_url = reverse("component_list", args=(experiment_id,))
-            return HttpResponseRedirect(redirect_url)
+                messages.success(request, 'Componente incluído com sucesso.')
+
+                if component_type == 'block':
+                    redirect_url = reverse("component_view", args=(new_specific_component.id,))
+                else:
+                    redirect_url = reverse("component_list", args=(experiment_id,))
+                return HttpResponseRedirect(redirect_url)
 
     context = {
         "back_cancel_url": "/experiment/" + str(experiment.id) + "/components",
@@ -1442,8 +1429,8 @@ def create_list_of_breadcrumbs(list_of_ids_of_components_and_configurations):
 
 
 def create_back_cancel_url(component_type, component_configuration, path_of_the_components,
-                           list_of_ids_of_components_and_configurations, experiment):
-    if (component_type == "sequence" or component_type == 'parallel_block') and component_configuration is None:
+                           list_of_ids_of_components_and_configurations, experiment, updating):
+    if component_type == "block" and component_configuration is None and updating:
         # Return to the screen for viewing a block
         back_cancel_url = "/experiment/component/" + path_of_the_components
     elif len(list_of_ids_of_components_and_configurations) > 1:
@@ -1474,7 +1461,7 @@ def create_back_cancel_url(component_type, component_configuration, path_of_the_
     return back_cancel_url
 
 
-def access_objects_for_view_and_update(request, path_of_the_components):
+def access_objects_for_view_and_update(request, path_of_the_components, updating=False):
     list_of_ids_of_components_and_configurations = path_of_the_components.split(delimiter)
 
     # The last id of the list is the one that we want to show.
@@ -1512,7 +1499,7 @@ def access_objects_for_view_and_update(request, path_of_the_components):
         show_remove = False
 
     back_cancel_url = create_back_cancel_url(component_type, component_configuration, path_of_the_components,
-                                             list_of_ids_of_components_and_configurations, experiment)
+                                             list_of_ids_of_components_and_configurations, experiment, updating)
 
     return component, component_configuration, component_form, configuration_form, experiment, component_type,\
         template_name, list_of_ids_of_components_and_configurations, show_remove, list_of_breadcrumbs, group,\
@@ -1547,15 +1534,13 @@ def remove_component_and_related_configurations(component,
 
     # Remove the uses.
     for component_configuration_element in component_configuration_list:
-        # For all sequences where this component is used, adjust the order of the components that come after it.
-        if component_configuration_element.parent.component_type == "sequence":
-            configuration_list_of_the_parent = SequenceConfiguration.objects.filter(
-                parent_id=component_configuration_element.parent_id).order_by('order')
+        configuration_list_of_the_parent = ComponentConfiguration.objects.filter(
+            parent_id=component_configuration_element.parent_id).order_by('order')
 
-            for siblings in configuration_list_of_the_parent:
-                if siblings.order > component_configuration_element.order:
-                    siblings.order -= 1
-                    siblings.save()
+        for siblings in configuration_list_of_the_parent:
+            if siblings.order > component_configuration_element.order:
+                siblings.order -= 1
+                siblings.save()
 
         component_configuration_element.delete()
 
@@ -1574,7 +1559,13 @@ def component_view(request, path_of_the_components):
     # It will always be a block because we don't have a view screen for other components.
     block = get_object_or_404(Block, pk=component.id)
     block_form = BlockForm(request.POST or None, instance=block)
-    configuration_list = ComponentConfiguration.objects.filter(parent=block).order_by('order')
+
+    configuration_list = ComponentConfiguration.objects.filter(parent=block)
+
+    if block.type == "ordered_sequence":
+        configuration_list = configuration_list.order_by('order')
+    else:
+        configuration_list = configuration_list.order_by('name')
 
     for configuration in configuration_list:
         configuration.component.icon_class = icon_class[configuration.component.component_type]
@@ -1597,6 +1588,7 @@ def component_view(request, path_of_the_components):
                                                                        path_of_the_components)
             return HttpResponseRedirect(redirect_url)
         elif request.POST['action'][:7] == "remove-":
+            # TODO Check if id starts with U
             # If action starts with 'remove-' it means that a child is being removed.
             component_configuration_id_to_be_deleted = request.POST['action'].split("-")[-1]
             component_configuration = get_object_or_404(ComponentConfiguration,
@@ -1629,7 +1621,7 @@ def component_view(request, path_of_the_components):
 def component_update(request, path_of_the_components):
     component, component_configuration, component_form, configuration_form, experiment, component_type, template_name,\
         list_of_ids_of_components_and_configurations, show_remove, list_of_breadcrumbs, group, back_cancel_url =\
-        access_objects_for_view_and_update(request, path_of_the_components)
+        access_objects_for_view_and_update(request, path_of_the_components, updating=True)
 
     questionnaire_id = None
     questionnaire_title = None
@@ -1655,14 +1647,16 @@ def component_update(request, path_of_the_components):
         if questionnaire_details:
             questionnaire_id = questionnaire_details['sid'],
             questionnaire_title = questionnaire_details['surveyls_title']
-    elif component_type == 'sequence' or component_type == 'parallel_block':
+    elif component_type == 'block':
         block = get_object_or_404(Block, pk=component.id)
         specific_form = BlockForm(request.POST or None, instance=block)
 
-        if component_type == 'sequence':
-            configuration_list = SequenceConfiguration.objects.filter(parent=block).order_by('order')
+        configuration_list = ComponentConfiguration.objects.filter(parent=block)
+
+        if block.type == "ordered_sequence":
+            configuration_list = configuration_list.order_by('order')
         else:
-            configuration_list = ComponentConfiguration.objects.filter(parent=block).order_by('name')
+            configuration_list = configuration_list.order_by('name')
 
         for configuration in configuration_list:
             configuration.component.icon_class = icon_class[configuration.component.component_type]
@@ -1685,11 +1679,11 @@ def component_update(request, path_of_the_components):
                 elif specific_form.is_valid() and component_form.is_valid():
                     # Only save if there was a change.
                     if component_form.has_changed() or specific_form.has_changed():
-                        if component.component_type == 'sequence' or component.component_type == 'parallel_block':
+                        if component.component_type == 'block':
                             block = specific_form.save(commit=False)
 
-                            # When changing from some mandatory to all mandatory, we must set number to null, so that we
-                            # know that all components are mandatory
+                            # When changing from 'some mandatory' to 'all mandatory', we must set number to null, so
+                            # that we know that all components are mandatory.
                             if "number_of_mandatory_components" not in request.POST:
                                 block.number_of_mandatory_components = None
 
@@ -1758,7 +1752,7 @@ def access_objects_for_add_new_and_reuse(component_type, path_of_the_components)
     if len(list_of_ids_of_components_and_configurations) > 1 or path_of_the_components[0] != "G":
         # The last id of the list is the block where the new component will be added.
         block_id = list_of_ids_of_components_and_configurations[-1]
-        block = get_object_or_404(Component, pk=block_id)
+        block = get_object_or_404(Block, pk=block_id)
         experiment = block.experiment
     if path_of_the_components[0] == "G":
         # The id of the group comes after "G"
@@ -1791,7 +1785,7 @@ def component_add_new(request, path_of_the_components, component_type):
         specific_form = PauseForm(request.POST or None)
     elif component_type == 'questionnaire':
         questionnaires_list = Questionnaires().find_all_active_questionnaires()
-    elif component_type == 'sequence' or component_type == 'parallel_block':
+    elif component_type == 'block':
         specific_form = BlockForm(request.POST or None, initial={'number_of_mandatory_components': None})
 
     if request.method == "POST":
@@ -1882,9 +1876,9 @@ def component_reuse(request, path_of_the_components, component_id):
         if questionnaire_details:
             questionnaire_id = questionnaire_details['sid'],
             questionnaire_title = questionnaire_details['surveyls_title']
-    elif component_type == 'sequence' or component_type == 'parallel_block':
-            sub_block = get_object_or_404(Block, pk=component_id)
-            specific_form = BlockForm(request.POST or None, instance=sub_block)
+    elif component_type == 'block':
+        sub_block = get_object_or_404(Block, pk=component_id)
+        specific_form = BlockForm(request.POST or None, instance=sub_block)
 
     if component_type == 'questionnaire':
         for field in component_form.fields:
@@ -1895,16 +1889,16 @@ def component_reuse(request, path_of_the_components, component_id):
                 form_used.fields[field].widget.attrs['disabled'] = True
 
     if request.method == "POST":
-            new_configuration = ComponentConfiguration()
-            new_configuration.component = component_to_add
-            new_configuration.parent = block
-            new_configuration.save()
+        new_configuration = ComponentConfiguration()
+        new_configuration.component = component_to_add
+        new_configuration.parent = block
+        new_configuration.save()
 
-            messages.success(request, 'Componente incluído com sucesso.')
+        messages.success(request, 'Componente incluído com sucesso.')
 
-            redirect_url = reverse("component_edit",
-                                   args=(path_of_the_components + "-U" + str(new_configuration.id), ))
-            return HttpResponseRedirect(redirect_url)
+        redirect_url = reverse("component_edit",
+                               args=(path_of_the_components + "-U" + str(new_configuration.id), ))
+        return HttpResponseRedirect(redirect_url)
 
     context = {
         "back_cancel_url": "/experiment/component/" + path_of_the_components,

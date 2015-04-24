@@ -96,8 +96,7 @@ class Component(models.Model):
                                                ("pause", "Pause component"),
                                                ("stimulus", "Stimulus component"),
                                                ("questionnaire", "Questionnaire component"),
-                                               ("sequence", "Sequence component"),
-                                               ("parallel_block", "Parallel block component")))
+                                               ("block", "Block component")))
 
 
 class Task(Component):
@@ -139,40 +138,28 @@ class Questionnaire(Component):
 
 class Block(Component):
     number_of_mandatory_components = models.IntegerField(null=True, blank=True)
+    type = models.CharField(null=False, max_length=20,
+                            choices=(("ordered_sequence", "Ordered sequence component"),
+                                     ("unordered_sequence", "Unordered sequence component"),
+                                     ("parallel_block", "Parallel block component")))
 
     def save(self, *args, **kwargs):
         super(Component, self).save(*args, **kwargs)
 
 
-class Sequence(Block):
-    has_random_components = models.BooleanField(null=False, blank=False)
-
-    def save(self, *args, **kwargs):
-        super(Block, self).save(*args, **kwargs)
-
-
-# No need for this class. We simply use a Block with component_type = parallel_block
-# class ParallelBlock(Block):
-#     def save(self, *args, **kwargs):
-#         super(Block, self).save(*args, **kwargs)
-
-
 class ComponentConfiguration(models.Model):
     name = models.CharField(max_length=50, null=True, blank=True)
     number_of_repetitions = models.IntegerField(null=True, blank=True, validators=[MinValueValidator(1)])
+
+    # These 2 interval fields are useful only when number_of_repetition is different from 1.
     interval_between_repetitions_value = models.IntegerField(null=True, blank=True, validators=[MinValueValidator(1)])
     interval_between_repetitions_unit = models.ForeignKey(TimeUnit, null=True, blank=True)
-    # https://docs.djangoproject.com/en/1.7/topics/db/models/#be-careful-with-related-name
-    component = models.ForeignKey(Component, null=False, related_name="%(app_label)s_%(class)s_configuration")
-    parent = models.ForeignKey(Block, null=True, related_name='%(app_label)s_%(class)s_children')
 
-    class Meta:
-        abstract = True
+    component = models.ForeignKey(Component, null=False, related_name="configuration")
+    parent = models.ForeignKey(Block, null=True, related_name='children')
 
-class BlockConfiguration(ComponentConfiguration):
-    pass
-
-class SequenceConfiguration(ComponentConfiguration):
+    # This field is only useful for ordered and unordered sequence. However, we leave it as not null because we want
+    # the unique restriction of the pair (parent, order) to be applyed in a database level.
     order = models.IntegerField(null=False, blank=False, validators=[MinValueValidator(1)])
 
     class Meta:
@@ -182,7 +169,7 @@ class SequenceConfiguration(ComponentConfiguration):
         if not self.pk:
             top = ComponentConfiguration.objects.filter(parent=self.parent).order_by('-order').first()
             self.order = top.order + 1 if top else 1
-        super(SequenceConfiguration, self).save()
+        super(ComponentConfiguration, self).save()
 
 
 class Group(models.Model):

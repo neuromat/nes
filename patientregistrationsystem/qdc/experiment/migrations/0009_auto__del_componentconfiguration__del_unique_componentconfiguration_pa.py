@@ -1,131 +1,43 @@
 # -*- coding: utf-8 -*-
+from south.utils import datetime_utils as datetime
 from south.db import db
 from south.v2 import SchemaMigration
+from django.db import models
 
 
 class Migration(SchemaMigration):
 
     def forwards(self, orm):
-        # Removing unique constraint on 'ComponentConfiguration', fields ['parent', 'order']
-        db.delete_unique(u'experiment_componentconfiguration', ['parent_id', 'order'])
-
-        # Deleting model 'ComponentConfiguration'
-        db.delete_table(u'experiment_componentconfiguration')
-
-        # Adding model 'SequenceConfiguration'
-        db.create_table(u'experiment_sequenceconfiguration', (
-            (u'id', self.gf('django.db.models.fields.AutoField')(primary_key=True)),
-            ('name', self.gf('django.db.models.fields.CharField')(max_length=50, null=True, blank=True)),
-            ('number_of_repetitions', self.gf('django.db.models.fields.IntegerField')(null=True, blank=True)),
-            ('interval_between_repetitions_value', self.gf('django.db.models.fields.IntegerField')(null=True,
-                                                                                                   blank=True)),
-            ('interval_between_repetitions_unit',
-             self.gf('django.db.models.fields.related.ForeignKey')(to=orm['experiment.TimeUnit'], null=True,
-                                                                   blank=True)),
-            ('component', self.gf('django.db.models.fields.related.ForeignKey')(
-                related_name=u'experiment_sequenceconfiguration_configuration', to=orm['experiment.Component'])),
-            ('parent', self.gf('django.db.models.fields.related.ForeignKey')(
-                related_name=u'experiment_sequenceconfiguration_children', null=True, to=orm['experiment.Block'])),
-            ('order', self.gf('django.db.models.fields.IntegerField')()),
-        ))
-        db.send_create_signal(u'experiment', ['SequenceConfiguration'])
-
-        # Adding unique constraint on 'SequenceConfiguration', fields ['parent', 'order']
-        db.create_unique(u'experiment_sequenceconfiguration', ['parent_id', 'order'])
+        # Deleting model 'Sequence'
+        db.delete_table(u'experiment_sequence')
 
         # Adding model 'Block'
         db.create_table(u'experiment_block', (
-            (u'component_ptr', self.gf('django.db.models.fields.related.OneToOneField')(to=orm['experiment.Component'],
-                                                                                        unique=True, primary_key=True)),
+            (u'component_ptr', self.gf('django.db.models.fields.related.OneToOneField')(to=orm['experiment.Component'], unique=True, primary_key=True)),
             ('number_of_mandatory_components', self.gf('django.db.models.fields.IntegerField')(null=True, blank=True)),
+            ('type', self.gf('django.db.models.fields.CharField')(max_length=20)),
         ))
         db.send_create_signal(u'experiment', ['Block'])
 
-        # Adding model 'BlockConfiguration'
-        db.create_table(u'experiment_blockconfiguration', (
-            (u'id', self.gf('django.db.models.fields.AutoField')(primary_key=True)),
-            ('name', self.gf('django.db.models.fields.CharField')(max_length=50, null=True, blank=True)),
-            ('number_of_repetitions', self.gf('django.db.models.fields.IntegerField')(null=True, blank=True)),
-            ('interval_between_repetitions_value', self.gf('django.db.models.fields.IntegerField')(null=True,
-                                                                                                   blank=True)),
-            ('interval_between_repetitions_unit', self.gf('django.db.models.fields.related.ForeignKey')(
-                to=orm['experiment.TimeUnit'], null=True, blank=True)),
-            ('component', self.gf('django.db.models.fields.related.ForeignKey')(
-                related_name=u'experiment_blockconfiguration_configuration', to=orm['experiment.Component'])),
-            ('parent', self.gf('django.db.models.fields.related.ForeignKey')(
-                related_name=u'experiment_blockconfiguration_children', null=True, to=orm['experiment.Block'])),
-        ))
-        db.send_create_signal(u'experiment', ['BlockConfiguration'])
 
-        # Adding field 'Sequence.block_ptr'
-        # db.add_column(u'experiment_sequence', u'block_ptr',
-        #               self.gf('django.db.models.fields.related.OneToOneField')(default=98, to=orm['experiment.Block'], unique=True, primary_key=True),
-        #               keep_default=False)
-        db.add_column(u'experiment_sequence', u'block_ptr',
-                      self.gf('django.db.models.fields.related.OneToOneField')(to=orm['experiment.Block'], unique=True,
-                                                                               primary_key=True))
-
-        for seq in orm.Sequence.objects.all():
-            seq.block_ptr_id = seq.component_ptr_id
-
-        # Deleting field 'Sequence.component_ptr'
-        db.delete_column(u'experiment_sequence', u'component_ptr_id')
-
-        # Deleting field 'Sequence.number_of_mandatory_components'
-        db.delete_column(u'experiment_sequence', 'number_of_mandatory_components')
+        # Changing field 'ComponentConfiguration.parent'
+        db.alter_column(u'experiment_componentconfiguration', 'parent_id', self.gf('django.db.models.fields.related.ForeignKey')(null=True, to=orm['experiment.Block']))
 
     def backwards(self, orm):
-        # Removing unique constraint on 'SequenceConfiguration', fields ['parent', 'order']
-        db.delete_unique(u'experiment_sequenceconfiguration', ['parent_id', 'order'])
-
-        # Adding model 'ComponentConfiguration'
-        db.create_table(u'experiment_componentconfiguration', (
-            ('order', self.gf('django.db.models.fields.IntegerField')()),
-            ('name', self.gf('django.db.models.fields.CharField')(max_length=50, null=True, blank=True)),
-            ('parent', self.gf('django.db.models.fields.related.ForeignKey')(
-                related_name='children', null=True, to=orm['experiment.Component'])),
-            ('number_of_repetitions', self.gf('django.db.models.fields.IntegerField')(null=True, blank=True)),
-            ('interval_between_repetitions_value', self.gf('django.db.models.fields.IntegerField')(null=True,
-                                                                                                   blank=True)),
-            ('component', self.gf('django.db.models.fields.related.ForeignKey')(
-                related_name='configuration', to=orm['experiment.Component'])),
-            (u'id', self.gf('django.db.models.fields.AutoField')(primary_key=True)),
-            ('interval_between_repetitions_unit', self.gf('django.db.models.fields.related.ForeignKey')(
-                to=orm['experiment.TimeUnit'], null=True, blank=True)),
+        # Adding model 'Sequence'
+        db.create_table(u'experiment_sequence', (
+            (u'component_ptr', self.gf('django.db.models.fields.related.OneToOneField')(to=orm['experiment.Component'], unique=True, primary_key=True)),
+            ('has_random_components', self.gf('django.db.models.fields.BooleanField')()),
+            ('number_of_mandatory_components', self.gf('django.db.models.fields.IntegerField')(null=True, blank=True)),
         ))
-        db.send_create_signal(u'experiment', ['ComponentConfiguration'])
-
-        # Adding unique constraint on 'ComponentConfiguration', fields ['parent', 'order']
-        db.create_unique(u'experiment_componentconfiguration', ['parent_id', 'order'])
-
-        # Deleting model 'SequenceConfiguration'
-        db.delete_table(u'experiment_sequenceconfiguration')
+        db.send_create_signal(u'experiment', ['Sequence'])
 
         # Deleting model 'Block'
         db.delete_table(u'experiment_block')
 
-        # Deleting model 'BlockConfiguration'
-        db.delete_table(u'experiment_blockconfiguration')
 
-        # Adding field 'Sequence.component_ptr'
-        # db.add_column(u'experiment_sequence', u'component_ptr',
-        #               self.gf('django.db.models.fields.related.OneToOneField')(default=99, to=orm['experiment.Component'], unique=True, primary_key=True),
-        #               keep_default=False)
-        db.add_column(u'experiment_sequence', u'component_ptr',
-                      self.gf('django.db.models.fields.related.OneToOneField')(
-                          to=orm['experiment.Component'], unique=True, primary_key=True))
-
-        # Adding field 'Sequence.number_of_mandatory_components'
-        db.add_column(u'experiment_sequence', 'number_of_mandatory_components',
-                      self.gf('django.db.models.fields.IntegerField')(null=True, blank=True),
-                      keep_default=False)
-
-        for seq in orm.Sequence.objects.all():
-            seq.component_ptr_id = seq.block_ptr_id
-
-        # Deleting field 'Sequence.block_ptr'
-        db.delete_column(u'experiment_sequence', u'block_ptr_id')
-
+        # Changing field 'ComponentConfiguration.parent'
+        db.alter_column(u'experiment_componentconfiguration', 'parent_id', self.gf('django.db.models.fields.related.ForeignKey')(null=True, to=orm['experiment.Component']))
 
     models = {
         u'auth.group': {
@@ -167,17 +79,8 @@ class Migration(SchemaMigration):
         u'experiment.block': {
             'Meta': {'object_name': 'Block', '_ormbases': [u'experiment.Component']},
             u'component_ptr': ('django.db.models.fields.related.OneToOneField', [], {'to': u"orm['experiment.Component']", 'unique': 'True', 'primary_key': 'True'}),
-            'number_of_mandatory_components': ('django.db.models.fields.IntegerField', [], {'null': 'True', 'blank': 'True'})
-        },
-        u'experiment.blockconfiguration': {
-            'Meta': {'object_name': 'BlockConfiguration'},
-            'component': ('django.db.models.fields.related.ForeignKey', [], {'related_name': "u'experiment_blockconfiguration_configuration'", 'to': u"orm['experiment.Component']"}),
-            u'id': ('django.db.models.fields.AutoField', [], {'primary_key': 'True'}),
-            'interval_between_repetitions_unit': ('django.db.models.fields.related.ForeignKey', [], {'to': u"orm['experiment.TimeUnit']", 'null': 'True', 'blank': 'True'}),
-            'interval_between_repetitions_value': ('django.db.models.fields.IntegerField', [], {'null': 'True', 'blank': 'True'}),
-            'name': ('django.db.models.fields.CharField', [], {'max_length': '50', 'null': 'True', 'blank': 'True'}),
-            'number_of_repetitions': ('django.db.models.fields.IntegerField', [], {'null': 'True', 'blank': 'True'}),
-            'parent': ('django.db.models.fields.related.ForeignKey', [], {'related_name': "u'experiment_blockconfiguration_children'", 'null': 'True', 'to': u"orm['experiment.Block']"})
+            'number_of_mandatory_components': ('django.db.models.fields.IntegerField', [], {'null': 'True', 'blank': 'True'}),
+            'type': ('django.db.models.fields.CharField', [], {'max_length': '20'})
         },
         u'experiment.component': {
             'Meta': {'object_name': 'Component'},
@@ -186,6 +89,17 @@ class Migration(SchemaMigration):
             'experiment': ('django.db.models.fields.related.ForeignKey', [], {'to': u"orm['experiment.Experiment']"}),
             u'id': ('django.db.models.fields.AutoField', [], {'primary_key': 'True'}),
             'identification': ('django.db.models.fields.CharField', [], {'max_length': '50'})
+        },
+        u'experiment.componentconfiguration': {
+            'Meta': {'unique_together': "(('parent', 'order'),)", 'object_name': 'ComponentConfiguration'},
+            'component': ('django.db.models.fields.related.ForeignKey', [], {'related_name': "'configuration'", 'to': u"orm['experiment.Component']"}),
+            u'id': ('django.db.models.fields.AutoField', [], {'primary_key': 'True'}),
+            'interval_between_repetitions_unit': ('django.db.models.fields.related.ForeignKey', [], {'to': u"orm['experiment.TimeUnit']", 'null': 'True', 'blank': 'True'}),
+            'interval_between_repetitions_value': ('django.db.models.fields.IntegerField', [], {'null': 'True', 'blank': 'True'}),
+            'name': ('django.db.models.fields.CharField', [], {'max_length': '50', 'null': 'True', 'blank': 'True'}),
+            'number_of_repetitions': ('django.db.models.fields.IntegerField', [], {'null': 'True', 'blank': 'True'}),
+            'order': ('django.db.models.fields.IntegerField', [], {}),
+            'parent': ('django.db.models.fields.related.ForeignKey', [], {'related_name': "'children'", 'null': 'True', 'to': u"orm['experiment.Block']"})
         },
         u'experiment.experiment': {
             'Meta': {'object_name': 'Experiment'},
@@ -259,7 +173,8 @@ class Migration(SchemaMigration):
         u'experiment.questionnaire': {
             'Meta': {'object_name': 'Questionnaire', '_ormbases': [u'experiment.Component']},
             u'component_ptr': ('django.db.models.fields.related.OneToOneField', [], {'to': u"orm['experiment.Component']", 'unique': 'True', 'primary_key': 'True'}),
-            'lime_survey_id': ('django.db.models.fields.IntegerField', [], {})
+            'lime_survey_id': ('django.db.models.fields.IntegerField', [], {}),
+            'used_also_outside_an_experiment': ('django.db.models.fields.BooleanField', [], {'default': 'False'})
         },
         u'experiment.questionnaireconfiguration': {
             'Meta': {'unique_together': "(('lime_survey_id', 'group'),)", 'object_name': 'QuestionnaireConfiguration'},
@@ -287,22 +202,6 @@ class Migration(SchemaMigration):
             'keywords': ('django.db.models.fields.related.ManyToManyField', [], {'to': u"orm['experiment.Keyword']", 'symmetrical': 'False'}),
             'start_date': ('django.db.models.fields.DateField', [], {}),
             'title': ('django.db.models.fields.CharField', [], {'max_length': '150'})
-        },
-        u'experiment.sequence': {
-            'Meta': {'object_name': 'Sequence', '_ormbases': [u'experiment.Block']},
-            u'block_ptr': ('django.db.models.fields.related.OneToOneField', [], {'to': u"orm['experiment.Block']", 'unique': 'True', 'primary_key': 'True'}),
-            'has_random_components': ('django.db.models.fields.BooleanField', [], {})
-        },
-        u'experiment.sequenceconfiguration': {
-            'Meta': {'unique_together': "(('parent', 'order'),)", 'object_name': 'SequenceConfiguration'},
-            'component': ('django.db.models.fields.related.ForeignKey', [], {'related_name': "u'experiment_sequenceconfiguration_configuration'", 'to': u"orm['experiment.Component']"}),
-            u'id': ('django.db.models.fields.AutoField', [], {'primary_key': 'True'}),
-            'interval_between_repetitions_unit': ('django.db.models.fields.related.ForeignKey', [], {'to': u"orm['experiment.TimeUnit']", 'null': 'True', 'blank': 'True'}),
-            'interval_between_repetitions_value': ('django.db.models.fields.IntegerField', [], {'null': 'True', 'blank': 'True'}),
-            'name': ('django.db.models.fields.CharField', [], {'max_length': '50', 'null': 'True', 'blank': 'True'}),
-            'number_of_repetitions': ('django.db.models.fields.IntegerField', [], {'null': 'True', 'blank': 'True'}),
-            'order': ('django.db.models.fields.IntegerField', [], {}),
-            'parent': ('django.db.models.fields.related.ForeignKey', [], {'related_name': "u'experiment_sequenceconfiguration_children'", 'null': 'True', 'to': u"orm['experiment.Block']"})
         },
         u'experiment.stimulus': {
             'Meta': {'object_name': 'Stimulus', '_ormbases': [u'experiment.Component']},
