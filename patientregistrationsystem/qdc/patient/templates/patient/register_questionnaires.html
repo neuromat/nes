@@ -11,9 +11,62 @@
 {% block sub_content %}
 
     <div class="tab-pane {% if currentTab == '4' %}active{% endif %}" id="tab5">
+
         <div class="row">
             <div class="col-md-12">
                 <div class="container span6 offset3 well ">
+
+                    <div class="row">
+                        <div class="col-xs-12 col-sm-12">
+                            <h4>Respondidos fora de experimentos</h4>
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <table class="table table-striped">
+                            <thead>
+                            <tr>
+                                <th>Questionário</th>
+                                <th>Data</th>
+                                <th></th>
+                            </tr>
+                            </thead>
+                            <tbody>
+                            {% for patient_questionnaire in patient_questionnaires_data %}
+                                <tr>
+                                    <td>{{ patient_questionnaire.questionnaire_title }}</td>
+                                    <td>{{ patient_questionnaire.questionnaire_response.date }}</td>
+                                    <td><a class="glyphicon glyphicon-search"
+                                           href="/experiment/questionnaire_response/{{ patient_questionnaire.questionnaire_response.pk }}/?view=patient&status={% if editing %}edit{% else %}view{% endif %}"></a>
+                                    </td>
+                                </tr>
+                            {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+
+                    {% if not inserting and editing %}
+                        {%  if perms.patient.add_medicalrecorddata %}
+                            <div class="btn-group pull-left">
+                                <a href="/patient/{{ patient_id }}/new_questionnaire_response?origin=patient" class="btn btn-primary">Preencher Questionário</a>
+                            </div>
+                        {% endif %}
+                    {% endif %}
+
+                </div>
+            </div>
+        </div>
+
+        <div class="row">
+            <div class="col-md-12">
+                <div class="container span6 offset3 well ">
+
+                    <div class="row">
+                        <div class="col-xs-12 col-sm-12">
+                            <h4>Respondidos em experimentos</h4>
+                        </div>
+                    </div>
+
                     <div class="form-group">
                         <table class="table table-striped">
                             <thead>
@@ -26,7 +79,7 @@
                             </tr>
                             </thead>
                             <tbody>
-                            {% for questionnaire in questionnaire_data %}
+                            {% for questionnaire in questionnaires_data %}
                                 <tr>
                                     <td>{{ questionnaire.experiment_title }}</td>
                                     <td>{{ questionnaire.group_title }}</td>

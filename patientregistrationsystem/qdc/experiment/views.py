@@ -762,7 +762,7 @@ def subject_questionnaire_response_create(request, subject_id, questionnaire_id,
     surveys = Questionnaires()
     survey_title = surveys.get_survey_title(questionnaire_config.lime_survey_id)
     survey_active = surveys.get_survey_properties(questionnaire_config.lime_survey_id, 'active')
-    survey_admin = surveys.get_survey_properties(questionnaire_config.lime_survey_id, 'admin')
+    # survey_admin = surveys.get_survey_properties(questionnaire_config.lime_survey_id, 'admin')
     surveys.release_session_key()
 
     questionnaire_response_form = None
@@ -794,9 +794,9 @@ def subject_questionnaire_response_create(request, subject_id, questionnaire_id,
         "questionnaire_response_form": questionnaire_response_form,
         "questionnaire_configuration": questionnaire_config,
         "survey_title": survey_title,
-        "survey_admin": survey_admin,
+        # "survey_admin": survey_admin,
         "survey_active": survey_active,
-        "questionnaire_responsible": request.user.get_full_name(),
+        "questionnaire_responsible": request.user.get_username(),
         "creating": True,
         "subject": get_object_or_404(Subject, pk=subject_id),
         "group": questionnaire_config.group,
@@ -817,7 +817,7 @@ def questionnaire_response_update(request, questionnaire_response_id,
     surveys = Questionnaires()
     survey_title = surveys.get_survey_title(questionnaire_configuration.lime_survey_id)
     survey_active = surveys.get_survey_properties(questionnaire_configuration.lime_survey_id, 'active')
-    survey_admin = surveys.get_survey_properties(questionnaire_configuration.lime_survey_id, 'admin')
+    # survey_admin = surveys.get_survey_properties(questionnaire_configuration.lime_survey_id, 'admin')
     survey_completed = (surveys.get_participant_properties(questionnaire_configuration.lime_survey_id,
                                                            questionnaire_response.token_id,
                                                            "completed") != "N")
@@ -874,7 +874,7 @@ def questionnaire_response_update(request, questionnaire_response_id,
         "questionnaire_response_form": questionnaire_response_form,
         "questionnaire_configuration": questionnaire_configuration,
         "survey_title": survey_title,
-        "survey_admin": survey_admin,
+        # "survey_admin": survey_admin,
         "survey_active": survey_active,
         "questionnaire_response_id": questionnaire_response_id,
         "questionnaire_responsible": questionnaire_response.questionnaire_responsible,
