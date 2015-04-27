@@ -350,12 +350,8 @@ def group_view(request, group_id, template_name="experiment/group_register.html"
             except ProtectedError:
                 messages.error(request, "Não foi possível excluir o grupo, pois há dependências.")
         elif request.POST['action'] == "remove_experimental_protocol":
-            # TODO It is not a component configuration anymore!
-            component_configuration = get_object_or_404(ComponentConfiguration,
-                                                        pk=group.experimental_protocol_id)
             group.experimental_protocol = None
             group.save()
-            component_configuration.delete()
 
     context = {
         "classification_of_diseases_list": group.classification_of_diseases.all(),
@@ -1306,11 +1302,8 @@ def component_list(request, experiment_id, template_name="experiment/component_l
 
 @login_required
 @permission_required('experiment.change_experiment')
-def component_change_the_order(request, path_of_the_components, command):
-    list_of_ids_of_components_and_configurations = path_of_the_components.split(delimiter)
-    component_configuration_id = list_of_ids_of_components_and_configurations[-1]
-
-    component_configuration = get_object_or_404(ComponentConfiguration, pk=component_configuration_id)
+def component_change_the_order(request, path_of_the_components, configuration_id, command):
+    component_configuration = get_object_or_404(ComponentConfiguration, pk=configuration_id)
     component = get_object_or_404(Component, pk=component_configuration.parent_id)
 
     component_configuration_to_exchange = ComponentConfiguration.objects.filter(parent_id=component.id)
@@ -1336,7 +1329,7 @@ def component_change_the_order(request, path_of_the_components, command):
     component_configuration_to_exchange.order = configuration_order
     component_configuration_to_exchange.save()
 
-    redirect_url = reverse("component_view", args=(path_of_the_components))
+    redirect_url = reverse("component_view", args=(path_of_the_components,))
 
     return HttpResponseRedirect(redirect_url)
 
@@ -1588,7 +1581,6 @@ def component_view(request, path_of_the_components):
                                                                        path_of_the_components)
             return HttpResponseRedirect(redirect_url)
         elif request.POST['action'][:7] == "remove-":
-            # TODO Check if id starts with U
             # If action starts with 'remove-' it means that a child is being removed.
             component_configuration_id_to_be_deleted = request.POST['action'].split("-")[-1]
             component_configuration = get_object_or_404(ComponentConfiguration,
@@ -1599,7 +1591,7 @@ def component_view(request, path_of_the_components):
 
     context = {
         "back_cancel_url": back_cancel_url,
-        "component": component,
+        "component": block,
         "component_configuration": component_configuration,
         "component_form": component_form,
         "configuration_form": configuration_form,
@@ -1763,14 +1755,16 @@ def access_objects_for_add_new_and_reuse(component_type, path_of_the_components)
     existing_component_list = Component.objects.filter(experiment=experiment, component_type=component_type)
     specific_form = None
 
-    return existing_component_list, experiment, group, list_of_breadcrumbs, block, template_name, specific_form
+    return existing_component_list, experiment, group, list_of_breadcrumbs, block, template_name, specific_form, \
+           list_of_ids_of_components_and_configurations
 
 
 @login_required
 @permission_required('experiment.change_experiment')
 def component_add_new(request, path_of_the_components, component_type):
     existing_component_list, experiment, group, list_of_breadcrumbs, block, template_name,\
-        specific_form = access_objects_for_add_new_and_reuse(component_type, path_of_the_components)
+        specific_form, list_of_ids_of_components_and_configurations = \
+        access_objects_for_add_new_and_reuse(component_type, path_of_the_components)
 
     component_form = ComponentForm(request.POST or None)
     questionnaires_list = []
@@ -1850,7 +1844,8 @@ def component_reuse(request, path_of_the_components, component_id):
     component_type = component_to_add.component_type
 
     existing_component_list, experiment, group, list_of_breadcrumbs, block, template_name,\
-        specific_form = access_objects_for_add_new_and_reuse(component_type, path_of_the_components)
+        specific_form, list_of_ids_of_components_and_configurations = \
+        access_objects_for_add_new_and_reuse(component_type, path_of_the_components)
 
     component_form = ComponentForm(request.POST or None, instance=component_to_add)
 
@@ -1889,15 +1884,25 @@ def component_reuse(request, path_of_the_components, component_id):
                 form_used.fields[field].widget.attrs['disabled'] = True
 
     if request.method == "POST":
-        new_configuration = ComponentConfiguration()
-        new_configuration.component = component_to_add
-        new_configuration.parent = block
-        new_configuration.save()
+        if len(list_of_ids_of_components_and_configurations) == 1 and path_of_the_components[0] == "G":
+            # If this is a reuse for creating the root of a group's experimental protocol, no component_configuration
+            # has to be created.
+            group = Group.objects.get(id=path_of_the_components[1:])
+            group.experimental_protocol = component_to_add
+            group.save()
+
+            redirect_url = reverse("component_view",
+                                   args=(path_of_the_components + "-" + str(component_to_add.id), ))
+        else:
+            new_configuration = ComponentConfiguration()
+            new_configuration.component = component_to_add
+            new_configuration.parent = block
+            new_configuration.save()
+
+            redirect_url = reverse("component_edit",
+                                   args=(path_of_the_components + "-U" + str(new_configuration.id), ))
 
         messages.success(request, 'Componente incluído com sucesso.')
-
-        redirect_url = reverse("component_edit",
-                               args=(path_of_the_components + "-U" + str(new_configuration.id), ))
         return HttpResponseRedirect(redirect_url)
 
     context = {

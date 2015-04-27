@@ -31,14 +31,13 @@ $(document).ready(function () {
         }, 500);
     }
 
-
     $(function(){
         $("[data-toggle=tooltip]").tooltip();
     });
-    function show_modal_remove (component_configuration_id){
+});
+
+    function show_modal_remove(component_configuration_id) {
         var  modal_remove = document.getElementById('removeComponentConfiguration');
         modal_remove.setAttribute( "value", 'remove-' + component_configuration_id);
         $('#modalComponentConfigurationRemove').modal('show');
     }
-});
-

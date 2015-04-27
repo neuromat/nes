@@ -67,6 +67,6 @@ urlpatterns = patterns(
         'component_add_new', name='component_add_new'),
     url(r'^component/(?P<path_of_the_components>[0-9-UG]+)/add/(?P<component_id>\d+)/$',
         'component_reuse', name='component_reuse'),
-    url(r'^component/change_the_order/(?P<path_of_the_components>[0-9-UG]+)/(?P<command>\w+)/$',
+    url(r'^component/change_the_order/(?P<path_of_the_components>[0-9-UG]+)/(?P<configuration_id>[0-9]+)/(?P<command>\w+)/$',
         'component_change_the_order', name='component_change_the_order'),
 )

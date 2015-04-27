@@ -60,7 +60,7 @@
             <div class="form-group">
                 <div class="checkbox">
                     <input id="mandatory_components" type="checkbox"
-                            {% if not updating and not creating or reusing %} disabled="True" {% endif %}
+                            {% if not updating and not creating or reusing or component_configuration %} disabled="True" {% endif %}
                             ><label>Todos</label>
                 </div>
             </div>
@@ -86,7 +86,7 @@
                                 <th>Componente</th>
                                 <th>Tipo</th>
                                 <th>Nome do uso</th>
-                                {% if component.type == "ordered_sequence" and not component_configuration %}<th class="text-center" colspan="2">Ordem</th>{% endif %}
+                                {% if component.type == "ordered_sequence" %}<th class="text-center" colspan="2">Ordem</th>{% endif %}
                             </tr>
                             </thead>
                             <tbody>
@@ -114,15 +114,15 @@
                                             {{ configuration.name }}
                                         {% endif %}
                                     </td>
-                                    {% if component.type == "ordered_sequence" and not component_configuration %}
+                                    {% if component.type == "ordered_sequence" %}
                                         <td class="col-md-1">
                                             {% ifnotequal configuration configuration_list.last %}
-                                                <a class="btn glyphicon glyphicon-arrow-down" href="/experiment/component/change_the_order/{% if path_of_the_components %}{{ path_of_the_components }}{% else %}{{ component.id }}{% endif %}-{{ configuration.id }}/down/"></a>
+                                                <a class="btn glyphicon glyphicon-arrow-down" href="/experiment/component/change_the_order/{{ path_of_the_components }}/{{ configuration.id }}/down/"></a>
                                             {% endifnotequal %}
                                         </td>
                                         <td class="col-md-1">
                                             {% ifnotequal configuration configuration_list.first %}
-                                                <a class="btn glyphicon glyphicon-arrow-up" href="/experiment/component/change_the_order/{% if path_of_the_components %}{{ path_of_the_components }}{% else %}{{ component.id }}{% endif %}-{{ configuration.id }}/up/"></a>
+                                                <a class="btn glyphicon glyphicon-arrow-up" href="/experiment/component/change_the_order/{{ path_of_the_components }}/{{ configuration.id }}/up/"></a>
                                             {% endifnotequal %}
                                         </td>
                                     {% endif %}
@@ -160,7 +160,7 @@
         <div class="modal-dialog">
             <div class="modal-content">
                 <div class="modal-body">
-                    Tem certeza que deseja excluir este componente da lista?
+                    Tem certeza que deseja excluir o uso deste componente da lista?
                 </div>
                 <div class="modal-footer">
                     <button type="button" class="btn btn-default" data-dismiss="modal">Cancelar</button>
