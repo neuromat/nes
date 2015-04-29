@@ -1527,15 +1527,16 @@ def remove_component_and_related_configurations(component,
 
     # Remove the uses.
     for component_configuration_element in component_configuration_list:
-        configuration_list_of_the_parent = ComponentConfiguration.objects.filter(
-            parent_id=component_configuration_element.parent_id).order_by('order')
+        order_of_removed = component_configuration_element.order
+        parent_of_removed = component_configuration_element.parent_id
+        component_configuration_element.delete()
+
+        configuration_list_of_the_parent = ComponentConfiguration.objects.filter(parent_id=parent_of_removed)
 
         for siblings in configuration_list_of_the_parent:
-            if siblings.order > component_configuration_element.order:
+            if siblings.order > order_of_removed:
                 siblings.order -= 1
                 siblings.save()
-
-        component_configuration_element.delete()
 
     component.delete()
 
@@ -1700,7 +1701,9 @@ def component_update(request, path_of_the_components):
 
                 return HttpResponseRedirect(back_cancel_url)
         elif request.POST['action'] == "remove":
-            remove_component_and_related_configurations(component)
+            remove_component_and_related_configurations(component,
+                                                        list_of_ids_of_components_and_configurations,
+                                                        path_of_the_components)
             return HttpResponseRedirect(back_cancel_url)
 
     # It is not possible to edit the component fields while editing a component configuration.
