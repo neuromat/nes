@@ -1802,7 +1802,7 @@ def component_add_new(request, path_of_the_components, component_type):
             new_specific_component.experiment = experiment
             new_specific_component.save()
 
-            if group is None:
+            if group is None or len(list_of_ids_of_components_and_configurations) > 1:
                 new_configuration = ComponentConfiguration()
                 new_configuration.component = new_specific_component
                 new_configuration.parent = block
