@@ -955,6 +955,8 @@ def questionnaire_response_view(request, questionnaire_response_id,
     if 'status' in request.GET:
         status_mode = request.GET['status']
 
+    questionnaire_responses = []
+
     questionnaire_response = get_object_or_404(QuestionnaireResponse, id=questionnaire_response_id)
     questionnaire_configuration = questionnaire_response.questionnaire_configuration
     surveys = Questionnaires()
@@ -964,7 +966,6 @@ def questionnaire_response_view(request, questionnaire_response_id,
 
     question_properties = []
     groups = surveys.list_groups(questionnaire_configuration.lime_survey_id)
-    questionnaire_responses = []
 
     if not isinstance(groups, dict):
 
@@ -1065,11 +1066,6 @@ def questionnaire_response_view(request, questionnaire_response_id,
                                 answer += 'Sem resposta'
 
                         answer_list.append(answer)
-                        # questionnaire_responses.append({
-                        #     'question': question['question'],
-                        #     'answer': answer,
-                        #     'type': question['type']
-                        # })
 
                         if question['question_id']+"[2]" in responses_list[0]:
                             index = responses_list[0].index(question['question_id']+"[2]")
@@ -1106,7 +1102,8 @@ def questionnaire_response_view(request, questionnaire_response_id,
                             else:
                                 if question['type'] == 'D':
                                     if responses_list[1][index]:
-                                        answer = datetime.datetime.strptime(responses_list[1][index], '%Y-%m-%d %H:%M:%S')
+                                        answer = datetime.datetime.strptime(responses_list[1][index],
+                                                                            '%Y-%m-%d %H:%M:%S')
                                     else:
                                         answer = ''
                                 else:

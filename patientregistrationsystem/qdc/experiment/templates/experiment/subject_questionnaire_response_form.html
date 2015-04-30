@@ -1,5 +1,7 @@
 {% extends "quiz/template.html" %}
-{% block activeAdvancedExperiment %}class="active"{% endblock %}
+
+{% block activePatient %}{% if origin == 'patient' %}class="active"{% endif %}{% endblock %}
+{% block activeAdvancedExperiment %}{% if origin != 'patient' %}class="active"{% endif %}{% endblock %}
 
 {% block header %}
 
@@ -7,7 +9,7 @@
 
 {% block form %}
     <div class="row">
-    <form id="subject_form" method="post">
+    <form id="subject_form" method="post" data-toggle="validator">
     {% csrf_token %}
 {% endblock %}
 
@@ -21,17 +23,24 @@
         <div class="col-md-10">
 
             <ol class="breadcrumb">
+
                 <li><a href="/home">Home</a></li>
-                <li><a href="/experiment/list">Experimentos</a></li>
-                <li><a href="/experiment/{{ group.experiment.id }}">{{ group.experiment.title }}</a></li>
-                <li><a href="/experiment/group/{{ group.id }}">{{ group.title }}</a></li>
-                {% if origin == 'subject' %}
-                    <li><a href="/experiment/group/{{ group.id }}/subjects/">Participantes</a></li>
-                    <li><a href="/experiment/group/{{ group.id }}/subjects/{{ subject.id }}/questionnaire">{{ subject.patient.name }}</a></li>
-                    <li class="active">{{ survey_title }} - {% if creating %}Novo preenchimento{% else %}{{ questionnaire_response_form.date.value|date:"d-m-Y" }}{% endif %}</li>
+                {% if origin == 'patient' %}
+                    <li>Pacientes</li>
+                    <li><a href="/patient/edit/{{ patient.id }}/?currentTab=4">{{ patient.name }}</a></li>
+                    <li class="active">Preencher Questionário</li>
                 {% else %}
-                    <li><a href="/experiment/questionnaire/edit/{{ questionnaire_configuration.id }}">{{ survey_title }}</a></li>
-                    <li class="active">{% if creating %}Novo preenchimento{% else %}{{ questionnaire_response_form.date.value|date:"d-m-Y" }}{% endif %}</li>
+                    <li><a href="/experiment/list">Experimentos</a></li>
+                    <li><a href="/experiment/{{ group.experiment.id }}">{{ group.experiment.title }}</a></li>
+                    <li><a href="/experiment/group/{{ group.id }}">{{ group.title }}</a></li>
+                    {% if origin == 'subject' %}
+                        <li><a href="/experiment/group/{{ group.id }}/subjects/">Participantes</a></li>
+                        <li><a href="/experiment/group/{{ group.id }}/subjects/{{ subject.id }}/questionnaire">{{ subject.patient.name }}</a></li>
+                        <li class="active">{{ survey_title }} - {% if creating %}Novo preenchimento{% else %}{{ questionnaire_response_form.date.value|date:"d-m-Y" }}{% endif %}</li>
+                    {% else %}
+                        <li><a href="/experiment/questionnaire/edit/{{ questionnaire_configuration.id }}">{{ survey_title }}</a></li>
+                        <li class="active">{% if creating %}Novo preenchimento{% else %}{{ questionnaire_response_form.date.value|date:"d-m-Y" }}{% endif %}</li>
+                    {% endif %}
                 {% endif %}
             </ol>
 
@@ -101,15 +110,17 @@
 
                             <div class="form-group">
                                 <label for="questionnaire_selected" class="control-label">Questionário <b style="color: red;">*</b></label>
+
                                 <select class="form-control" required="" id="questionnaire_selected" name="questionnaire_selected" data-error="Por favor, selecione um questionário da lista." {% if updating %}disabled{% endif %}>
-                                    {% if creating %}<option selected="selected" value="">---------</option>{% endif %}
-                                    {% if updating %}<option selected="selected" value="{{ questionnaire_id }}">{{ questionnaire_title }} ({{ questionnaire_id }})</option>
+                                    {% if creating and not showing %}<option selected="selected" value="">---------</option>{% endif %}
+                                    {% if showing %}<option selected="selected" value="{{ questionnaire.id }}">{{ questionnaire_title }} ({{ questionnaire.id }})</option>
                                     {% else %}
                                         {% for survey in questionnaires_list %}
                                             <option value="{{ survey.sid }}">{{ survey.surveyls_title }} ({{ survey.sid }})</option>
                                         {% endfor %}
                                     {% endif %}
                                 </select>
+
                                 <div class="help-block with-errors"></div>
                             </div>
 
@@ -244,12 +255,17 @@
                 {% endif %}
             </div>
             <div class="btn-group pull-right">
-                {% if origin == 'subject' %}
-                    <a href="/experiment/group/{{ group.id }}/subjects/{{ subject.id }}/questionnaire" class="btn"
+                {% if origin == 'patient' %}
+                    <a href="/patient/edit/{{ patient.id }}/?currentTab=4" class="btn"
                        style="background-color: #f5f5f5">Voltar</a>
                 {% else %}
-                    <a href="/experiment/questionnaire/edit/{{ questionnaire_configuration.id }}" class="btn"
-                       style="background-color: #f5f5f5">Voltar</a>
+                    {% if origin == 'subject' %}
+                        <a href="/experiment/group/{{ group.id }}/subjects/{{ subject.id }}/questionnaire" class="btn"
+                           style="background-color: #f5f5f5">Voltar</a>
+                    {% else %}
+                        <a href="/experiment/questionnaire/edit/{{ questionnaire_configuration.id }}" class="btn"
+                           style="background-color: #f5f5f5">Voltar</a>
+                    {% endif %}
                 {% endif %}
             </div>
         </div>

@@ -11,6 +11,8 @@ from django.forms.models import inlineformset_factory
 from django.http import HttpResponseRedirect
 from django.shortcuts import render, render_to_response, get_object_or_404
 
+from django.conf import settings
+
 from patient.models import Patient, Telephone, SocialDemographicData, SocialHistoryData, MedicalRecordData, \
     ClassificationOfDiseases, Diagnosis, ExamFile, ComplementaryExam
 from patient.forms import PatientForm, TelephoneForm, SocialDemographicDataForm, SocialHistoryDataForm, \
@@ -20,7 +22,7 @@ from patient.quiz_widget import SelectBoxCountriesDisabled, SelectBoxStateDisabl
 from experiment.models import Subject, Experiment, Group, SubjectOfGroup, \
     QuestionnaireConfiguration, QuestionnaireResponse, Questionnaire, PatientQuestionnaireResponse
 from experiment.abc_search_engine import Questionnaires
-from experiment.forms import QuestionnaireResponseForm
+from experiment.forms import QuestionnaireResponseForm, PatientQuestionnaireResponseForm
 
 # pylint: disable=E1101
 # pylint: disable=E1103
@@ -70,7 +72,6 @@ def patient_create(request, template_name="patient/register_personal_data.html")
                         patient_form.errors['cpf'][0] = "Já existe paciente cadastrado com este CPF."
     else:
         telephone_formset = TelephoneFormSet()
-
 
     context = {
         'patient_form': patient_form,
@@ -284,16 +285,26 @@ def patient_update_questionnaires(request, patient, context):
 
     surveys = Questionnaires()
 
+    limesurvey_available = check_limesurvey_access(request, surveys)
+
     patient_questionnaires_data = []
     patient_questionnaire_response_list = PatientQuestionnaireResponse.objects.filter(patient=patient)
 
     for patient_questionnaire_response in patient_questionnaire_response_list:
+
+        response_result = surveys.get_participant_properties(
+            patient_questionnaire_response.questionnaire.lime_survey_id,
+            patient_questionnaire_response.token_id,
+            "completed")
+
         patient_questionnaires_data.append(
             {
                 'questionnaire_title':
                 surveys.get_survey_title(patient_questionnaire_response.questionnaire.lime_survey_id),
                 'questionnaire_response':
-                patient_questionnaire_response
+                patient_questionnaire_response,
+                'completed':
+                None if response_result is None else response_result != "N" and response_result != ""
             }
         )
 
@@ -310,18 +321,26 @@ def patient_update_questionnaires(request, patient, context):
                 filter(questionnaire_configuration=questionnaire_configuration)
 
             for questionnaire_response in questionnaire_response_list:
+
+                response_result = surveys.get_participant_properties(questionnaire_configuration.lime_survey_id,
+                                                                     questionnaire_response.token_id,
+                                                                     "completed")
                 questionnaires_data.append({
                     'experiment_title': experiment.title,
                     'group_title': group.title,
                     'questionnaire_title': surveys.get_survey_title(questionnaire_configuration.lime_survey_id),
-                    'questionnaire_response': questionnaire_response
+                    'questionnaire_response': questionnaire_response,
+                    'completed': None if response_result is None
+                    else response_result != "N" and response_result != ""
+
                 })
 
     surveys.release_session_key()
 
     context.update({
         'patient_questionnaires_data': patient_questionnaires_data,
-        'questionnaires_data': questionnaires_data})
+        'questionnaires_data': questionnaires_data,
+        'limesurvey_available': limesurvey_available})
 
     return render(request, "patient/register_questionnaires.html", context)
 
@@ -455,20 +474,41 @@ def patient_view_medical_record(request, patient, context):
     return render(request, "patient/register_medical_record.html", context)
 
 
+def check_limesurvey_access(request, surveys):
+    limesurvey_available = True
+    if not surveys.session_key:
+        limesurvey_available = False
+        messages.warning(request, "LimeSurvey indisponível. Sistema funcionando parcialmente.")
+
+    return limesurvey_available
+
+
 def patient_view_questionnaires(request, patient, context):
 
     surveys = Questionnaires()
+
+    limesurvey_available = check_limesurvey_access(request, surveys)
 
     patient_questionnaires_data = []
     patient_questionnaire_response_list = PatientQuestionnaireResponse.objects.filter(patient=patient)
 
     for patient_questionnaire_response in patient_questionnaire_response_list:
+
+        response_result = surveys.get_participant_properties(
+            patient_questionnaire_response.questionnaire.lime_survey_id,
+            patient_questionnaire_response.token_id,
+            "completed")
+
         patient_questionnaires_data.append(
             {
                 'questionnaire_title':
                 surveys.get_survey_title(patient_questionnaire_response.questionnaire.lime_survey_id),
+
                 'questionnaire_response':
-                patient_questionnaire_response
+                patient_questionnaire_response,
+
+                'completed':
+                None if response_result is None else response_result != "N" and response_result != ""
             }
         )
 
@@ -486,12 +526,18 @@ def patient_view_questionnaires(request, patient, context):
                 filter(questionnaire_configuration=questionnaire_configuration)
 
             for questionnaire_response in questionnaire_response_list:
+
+                response_result = surveys.get_participant_properties(questionnaire_configuration.lime_survey_id,
+                                                                     questionnaire_response.token_id,
+                                                                     "completed")
                 questionnaires_data.append(
                     {
                         'experiment_title': experiment.title,
                         'group_title': group.title,
                         'questionnaire_title': surveys.get_survey_title(questionnaire_configuration.lime_survey_id),
-                        'questionnaire_response': questionnaire_response
+                        'questionnaire_response': questionnaire_response,
+                        'completed': None if response_result is None
+                        else response_result != "N" and response_result != ""
                     }
                 )
 
@@ -499,7 +545,8 @@ def patient_view_questionnaires(request, patient, context):
 
     context.update({
         'patient_questionnaires_data': patient_questionnaires_data,
-        'questionnaires_data': questionnaires_data})
+        'questionnaires_data': questionnaires_data,
+        'limesurvey_available': limesurvey_available})
 
     return render(request, "patient/register_questionnaires.html", context)
 
@@ -911,12 +958,11 @@ def exam_file_delete(request, exam_file_id):
 def get_origin(request):
     origin = '0'
 
-    if request.method == "POST":
+    if 'origin' in request.GET:
+        origin = request.GET['origin']
+    else:
         if 'origin' in request.POST:
             origin = request.POST['origin']
-    else:
-        if 'origin' in request.GET:
-            origin = request.GET['origin']
 
     return origin
 
@@ -944,21 +990,36 @@ def patient_questionnaire_response_create(request, patient_id,
     redirect_url = None
     questionnaire_response_id = None
 
+    showing = False
+    questionnaire = None
+    questionnaire_title = None
+
     if request.method == "GET":
         questionnaire_response_form = QuestionnaireResponseForm(request.POST or None)
 
-    # if request.method == "POST":
-    #     questionnaire_response_form = QuestionnaireResponseForm(request.POST)
-    #
-    #     if request.POST['action'] == "save":
-    #         redirect_url, questionnaire_response_id = \
-    #             subject_questionnaire_response_start_fill_questionnaire(request, subject_id, questionnaire_id)
-    #         if not redirect_url:
-    #             fail = False
-    #         else:
-    #             fail = True
-    #             messages.info(request, 'Você será redirecionado para o questionário. Aguarde.')
-    #
+    if request.method == "POST":
+        questionnaire_response_form = QuestionnaireResponseForm(request.POST)
+
+        if request.POST['action'] == "save":
+
+            questionnaire = get_object_or_404(Questionnaire, lime_survey_id=request.POST['questionnaire_selected'])
+
+            surveys = Questionnaires()
+            questionnaire_title = surveys.get_survey_title(questionnaire.lime_survey_id)
+            surveys.release_session_key()
+
+            redirect_url, questionnaire_response_id = \
+                patient_questionnaire_response_start_fill_questionnaire(request, patient_id, questionnaire)
+            if not redirect_url:
+                fail = False
+            else:
+                fail = True
+                messages.info(request, 'Você será redirecionado para o questionário. Aguarde.')
+
+                showing = True
+                for field in questionnaire_response_form.fields:
+                    questionnaire_response_form.fields[field].widget.attrs['disabled'] = True
+
     origin = get_origin(request)
 
     context = {
@@ -977,7 +1038,119 @@ def patient_questionnaire_response_create(request, patient_id,
         "group": None,
         "origin": origin,
         "questionnaires_list": questionnaires_list,
-        "patient": patient
+        "patient": patient,
+        "questionnaire": questionnaire,
+        "questionnaire_title": questionnaire_title,
+        "showing": showing
     }
 
     return render(request, template_name, context)
+
+
+def patient_questionnaire_response_start_fill_questionnaire(request, patient_id, questionnaire):
+
+    patient_questionnaire_response_form = PatientQuestionnaireResponseForm(request.POST)
+
+    if patient_questionnaire_response_form.is_valid():
+
+        patient_questionnaire_response = patient_questionnaire_response_form.save(commit=False)
+
+        questionnaire_lime_survey = Questionnaires()
+
+        patient = get_object_or_404(Patient, pk=patient_id)
+
+        if not questionnaire_lime_survey.survey_has_token_table(questionnaire.lime_survey_id):
+            messages.warning(request,
+                             'Preenchimento não disponível - Tabela de tokens não iniciada')
+            return None, None
+
+        if questionnaire_lime_survey.get_survey_properties(questionnaire.lime_survey_id, 'active') == 'N':
+            messages.warning(request,
+                             'Preenchimento não disponível - Questionário não está ativo')
+            return None, None
+
+        if not check_required_fields(questionnaire_lime_survey, questionnaire.lime_survey_id):
+            messages.warning(request,
+                             'Preenchimento não disponível - Questionário não contém campos padronizados')
+            return None, None
+
+        result = questionnaire_lime_survey.add_participant(questionnaire.lime_survey_id, patient.name, '',
+                                                           patient.email)
+
+        questionnaire_lime_survey.release_session_key()
+
+        if not result:
+            messages.warning(request,
+                             'Falha ao gerar token para responder questionário. Verifique se o questionário está ativo')
+            return None, None
+
+        patient_questionnaire_response.patient = patient
+        patient_questionnaire_response.questionnaire = questionnaire
+        patient_questionnaire_response.token_id = result['token_id']
+        patient_questionnaire_response.date = datetime.datetime.strptime(request.POST['date'], '%d/%m/%Y')
+        patient_questionnaire_response.questionnaire_responsible = request.user
+        patient_questionnaire_response.save()
+
+        redirect_url = get_limesurvey_response_url(patient_questionnaire_response)
+
+        return redirect_url, patient_questionnaire_response.pk
+    else:
+        return None, None
+
+
+def check_required_fields(surveys, lime_survey_id):
+    """
+    método para verificar se o questionário tem as questões de identificação corretas
+    e se seus tipos também são corretos
+    """
+
+    fields_to_validate = {
+        'responsibleid': {'type': 'N', 'found': False},
+        'acquisitiondate': {'type': 'D', 'found': False},
+        'subjectid': {'type': 'N', 'found': False},
+    }
+
+    validated_quantity = 0
+    error = False
+
+    groups = surveys.list_groups(lime_survey_id)
+
+    if 'status' not in groups:
+
+        for group in groups:
+            question_list = surveys.list_questions(lime_survey_id, group['id'])
+            for question in question_list:
+                question_properties = surveys.get_question_properties(question, None)
+                if question_properties['title'] in fields_to_validate:
+                    field = fields_to_validate[question_properties['title']]
+                    if not field['found']:
+                        field['found'] = True
+                        if field['type'] == question_properties['type']:
+                            validated_quantity += 1
+                        else:
+                            error = True
+                if error or validated_quantity == len(fields_to_validate):
+                    break
+            if error or validated_quantity == len(fields_to_validate):
+                break
+
+    return validated_quantity == len(fields_to_validate)
+
+
+def get_limesurvey_response_url(patient_questionnaire_response):
+    questionnaire_lime_survey = Questionnaires()
+    token = questionnaire_lime_survey.get_participant_properties(
+        patient_questionnaire_response.questionnaire.lime_survey_id,
+        patient_questionnaire_response.token_id, "token")
+    questionnaire_lime_survey.release_session_key()
+
+    redirect_url = \
+        '%s/index.php/%s/token/%s/responsibleid/%s/acquisitiondate/%s/subjectid/%s/newtest/Y' % (
+            settings.LIMESURVEY['URL_WEB'],
+            patient_questionnaire_response.questionnaire.lime_survey_id,
+            token,
+            str(patient_questionnaire_response.questionnaire_responsible.id),
+            patient_questionnaire_response.date.strftime('%d-%m-%Y'),
+            str(patient_questionnaire_response.patient.id))
+
+    return redirect_url
