@@ -20,13 +20,11 @@
                                 <label>Tabagismo</label>
 
                                 <div class="input-group  input-group-sm">
-                                    <div class="input-group  input-group-sm">
-                                        {% for radio in social_history_form.smoker %}
-                                            <div class="radio-inline">
-                                                {{ radio }}
-                                            </div>
-                                        {% endfor %}
-                                    </div>
+                                    {% for radio in social_history_form.smoker %}
+                                        <div class="radio-inline">
+                                            {{ radio }}
+                                        </div>
+                                    {% endfor %}
                                 </div>
                             </div>
                         </div>
@@ -44,13 +42,11 @@
                                 <label>Ex-tabagista</label>
 
                                 <div class="input-group  input-group-sm">
-                                    <div class="input-group  input-group-sm">
-                                        {% for radio in social_history_form.ex_smoker %}
-                                            <div class="radio-inline">
-                                                {{ radio }}
-                                            </div>
-                                        {% endfor %}
-                                    </div>
+                                    {% for radio in social_history_form.ex_smoker %}
+                                        <div class="radio-inline">
+                                            {{ radio }}
+                                        </div>
+                                    {% endfor %}
                                 </div>
                             </div>
                         </div>

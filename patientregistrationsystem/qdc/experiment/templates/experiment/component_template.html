@@ -186,6 +186,20 @@
                                 <div class="help-block with-errors"></div>
                             </div>
                         </div>
+                        {% if type_of_the_parent_block == "sequence" %}
+                            <div class="col-xs-12 col-sm-5 col-sm-offset-1">
+                                <div class="form-group">
+                                    <label>Posição no bloco</label>
+                                    <div class="input-group  input-group-sm">
+                                        {% for radio in configuration_form.random_position %}
+                                            <div class="radio-inline">
+                                                {{ radio }}
+                                            </div>
+                                        {% endfor %}
+                                    </div>
+                                </div>
+                            </div>
+                        {% endif %}
                     </div>
                     <div class="row">
                         <div class="col-xs-4 col-sm-2">

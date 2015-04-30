@@ -1556,10 +1556,12 @@ def component_view(request, path_of_the_components):
 
     configuration_list = ComponentConfiguration.objects.filter(parent=block)
 
-    if block.type == "ordered_sequence":
+    if block.type == "sequence":
         configuration_list = configuration_list.order_by('order')
     else:
-        configuration_list = configuration_list.order_by('name')
+        configuration_list = configuration_list.order_by('component__component_type',
+                                                         'component__identification',
+                                                         'name')
 
     for configuration in configuration_list:
         configuration.component.icon_class = icon_class[configuration.component.component_type]
@@ -1604,6 +1606,7 @@ def component_view(request, path_of_the_components):
         "path_of_the_components": path_of_the_components,
         "show_remove": show_remove,
         "specific_form": block_form,
+        "type_of_the_parent_block": block.type,
     }
 
     return render(request, template_name, context)
@@ -1646,10 +1649,10 @@ def component_update(request, path_of_the_components):
 
         configuration_list = ComponentConfiguration.objects.filter(parent=block)
 
-        if block.type == "ordered_sequence":
+        if block.type == "sequence":
             configuration_list = configuration_list.order_by('order')
         else:
-            configuration_list = configuration_list.order_by('name')
+            configuration_list = configuration_list.order_by('type, component__identification, name')
 
         for configuration in configuration_list:
             configuration.component.icon_class = icon_class[configuration.component.component_type]
@@ -1731,6 +1734,7 @@ def component_update(request, path_of_the_components):
         "show_remove": show_remove,
         "specific_form": specific_form,
         "updating": True,
+        "type_of_the_parent_block": Block.objects.get(id=component_configuration.parent_id).type,
     }
 
     return render(request, template_name, context)
@@ -1806,6 +1810,10 @@ def component_add_new(request, path_of_the_components, component_type):
                 new_configuration = ComponentConfiguration()
                 new_configuration.component = new_specific_component
                 new_configuration.parent = block
+
+                if block.type == 'sequence':
+                    new_configuration.random_position = False
+
                 new_configuration.save()
 
                 messages.success(request, 'Componente incluído com sucesso.')
@@ -1900,6 +1908,10 @@ def component_reuse(request, path_of_the_components, component_id):
             new_configuration = ComponentConfiguration()
             new_configuration.component = component_to_add
             new_configuration.parent = block
+
+            if block.type == 'sequence':
+                new_configuration.random_position = False
+
             new_configuration.save()
 
             redirect_url = reverse("component_edit",

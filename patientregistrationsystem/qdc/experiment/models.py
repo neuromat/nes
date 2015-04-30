@@ -139,8 +139,7 @@ class Questionnaire(Component):
 class Block(Component):
     number_of_mandatory_components = models.IntegerField(null=True, blank=True)
     type = models.CharField(null=False, max_length=20,
-                            choices=(("ordered_sequence", "Ordered sequence component"),
-                                     ("unordered_sequence", "Unordered sequence component"),
+                            choices=(("sequence", "Sequence component"),
                                      ("parallel_block", "Parallel block component")))
 
     def save(self, *args, **kwargs):
@@ -158,9 +157,12 @@ class ComponentConfiguration(models.Model):
     component = models.ForeignKey(Component, null=False, related_name="configuration")
     parent = models.ForeignKey(Block, null=True, related_name='children')
 
-    # This field is only useful for ordered and unordered sequence. However, we leave it as not null because we want
-    # the unique restriction of the pair (parent, order) to be applyed in a database level.
+    # This field is only useful for component configurations marked as fixed and inside a sequence. However, we leave it
+    # as not null because we want the unique restriction of the pair (parent, order) to be applied in a database level.
     order = models.IntegerField(null=False, blank=False, validators=[MinValueValidator(1)])
+
+    # This is null when the parent is a parallel block.
+    random_position = models.NullBooleanField(blank=True)
 
     class Meta:
         unique_together = ('parent', 'order',)

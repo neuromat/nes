@@ -88,9 +88,15 @@ class ComponentForm(ModelForm):
 
 
 class ComponentConfigurationForm(ModelForm):
+    # This is required because will be included only when the parent is a sequence.
+    random_position = TypedChoiceField(required=False,
+                                       empty_value=None,
+                                       choices=((False, 'Fixa'), (True, 'Aleatória')),
+                                       widget=RadioSelect(attrs={'id': 'id_random_position'}))
+
     class Meta:
         model = ComponentConfiguration
-        fields = ['name', 'number_of_repetitions', 'interval_between_repetitions_value',
+        fields = ['name', 'random_position', 'number_of_repetitions', 'interval_between_repetitions_value',
                   'interval_between_repetitions_unit']
 
         widgets = {
@@ -153,8 +159,7 @@ class PauseForm(ModelForm):
 class BlockForm(ModelForm):
     type = TypedChoiceField(required=True,
                             empty_value=None,
-                            choices=(('ordered_sequence', 'Sequência ordenada'),
-                                     ('unordered_sequence', 'Sequência aleatória'),
+                            choices=(('sequence', 'Sequência'),
                                      ('parallel_block', 'Bloco paralelo')),
                             widget=RadioSelect(attrs={'id': 'id_type', 'required': "",
                                                       'data-error': 'Tipo deve ser escolhido.'}))

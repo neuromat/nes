@@ -83,20 +83,26 @@
                         <table class="table table-striped">
                             <thead>
                             <tr>
-                                <th>Componente</th>
                                 <th>Tipo</th>
+                                <th>Componente</th>
                                 <th>Nome do uso</th>
-                                {% if component.type == "ordered_sequence" %}<th class="text-center" colspan="2">Ordem</th>{% endif %}
+                                {% if component.type == "sequence" %}
+                                    <th class="text-center" colspan="2">Ordem</th>
+                                {% endif %}
+                                <th>Remover</th>
                             </tr>
                             </thead>
                             <tbody>
                             {% for configuration in configuration_list %}
                                 <tr>
-                                    <td class="col-md-4">
+                                    <td class="col-md-2">
+                                        <span class="{{ configuration.component.icon_class }}"/>
+                                        {{ configuration.component.component_type }}
+                                    </td>
+                                    <td class="col-md-3">
                                         {% if component_configuration %}
                                             {{ configuration.component.identification }}
                                         {% else %}
-                                            <a class="btn glyphicon glyphicon-remove" data-toggle="tooltip" data-placement="right" title="Remover da lista" style="color: indianred; vertical-align: -5%; padding-left: 0;" onclick="show_modal_remove({{ configuration.id }});"></a>
                                             {% if configuration.component.component_type == "block" %}
                                                 <a data-toggle="tooltip" data-placement="left" title="Editar" href="/experiment/component/{{ path_of_the_components }}-U{{ configuration.id }}">{{ configuration.component.identification }}</a>
                                             {% else %}
@@ -105,27 +111,32 @@
                                         {% endif %}
 
                                     </td>
-                                    <td class="col-md-2">
-                                        <span class="{{ configuration.component.icon_class }}"/>
-                                        {{ configuration.component.component_type }}
-                                    </td>
-                                    <td class="col-md-4">
+                                    <td class="col-md-3">
                                         {% if configuration.name != None %}
                                             {{ configuration.name }}
                                         {% endif %}
                                     </td>
-                                    {% if component.type == "ordered_sequence" %}
-                                        <td class="col-md-1">
-                                            {% ifnotequal configuration configuration_list.last %}
-                                                <a class="btn glyphicon glyphicon-arrow-down" href="/experiment/component/change_the_order/{{ path_of_the_components }}/{{ configuration.id }}/down/"></a>
-                                            {% endifnotequal %}
-                                        </td>
-                                        <td class="col-md-1">
-                                            {% ifnotequal configuration configuration_list.first %}
-                                                <a class="btn glyphicon glyphicon-arrow-up" href="/experiment/component/change_the_order/{{ path_of_the_components }}/{{ configuration.id }}/up/"></a>
-                                            {% endifnotequal %}
-                                        </td>
+                                    {% if component.type == "sequence" %}
+                                        {% if configuration.random_position %}
+                                            <td class="text-center col-md-2" colspan="2">
+                                                Aleatória
+                                            </td>
+                                        {% else %}
+                                            <td  class="text-right col-md-1">
+                                                {% if configuration != configuration_list.last %}
+                                                    <a class="btn glyphicon glyphicon-arrow-down" href="/experiment/component/change_the_order/{{ path_of_the_components }}/{{ configuration.id }}/down/"></a>
+                                                {% endif %}
+                                            </td>
+                                            <td class="col-md-1">
+                                                {% if configuration != configuration_list.first %}
+                                                    <a class="btn glyphicon glyphicon-arrow-up" href="/experiment/component/change_the_order/{{ path_of_the_components }}/{{ configuration.id }}/up/"></a>
+                                                {% endif %}
+                                            </td>
+                                        {% endif %}
                                     {% endif %}
+                                    <td class="text-center col-md-1">
+                                        <a class="btn glyphicon glyphicon-remove" data-toggle="tooltip" data-placement="right" title="Remover da lista" style="color: indianred; vertical-align: -5%; padding-left: 0;" onclick="show_modal_remove({{ configuration.id }});"></a>
+                                    </td>
                                 </tr>
                             {% endfor %}
 
@@ -140,12 +151,12 @@
                             </button>
                             <ul class="dropdown-menu" role="menu" aria-labelledby="dropdownMenu1">
                                 {# component.id is the id of the block where a new component will be included. #}
-                                <li role="presentation"><a role="menuitem" tabindex="-1" class="{{ icon_class.task }}" href="/experiment/component/{% if path_of_the_components %}{{ path_of_the_components }}{% else %}{{ component.id }}{% endif %}/add_new/task"> Tarefa</a></li>
-                                <li role="presentation"><a role="menuitem" tabindex="-1" class="{{ icon_class.instruction }}" href="/experiment/component/{% if path_of_the_components %}{{ path_of_the_components }}{% else %}{{ component.id }}{% endif %}/add_new/instruction"> Instrução</a></li>
-                                <li role="presentation"><a role="menuitem" tabindex="-1" class="{{ icon_class.stimulus }}" href="/experiment/component/{% if path_of_the_components %}{{ path_of_the_components }}{% else %}{{ component.id }}{% endif %}/add_new/stimulus"> Estímulo</a></li>
-                                <li role="presentation"><a role="menuitem" tabindex="-1" class="{{ icon_class.pause }}" href="/experiment/component/{% if path_of_the_components %}{{ path_of_the_components }}{% else %}{{ component.id }}{% endif %}/add_new/pause"> Pausa</a></li>
-                                <li role="presentation"><a role="menuitem" tabindex="-1" class="{{ icon_class.questionnaire }}" href="/experiment/component/{% if path_of_the_components %}{{ path_of_the_components }}{% else %}{{ component.id }}{% endif %}/add_new/questionnaire"> Questionário</a></li>
-                                <li role="presentation"><a role="menuitem" tabindex="-1" class="{{ icon_class.block }}" href="/experiment/component/{% if path_of_the_components %}{{ path_of_the_components }}{% else %}{{ component.id }}{% endif %}/add_new/block"> Bloco</a></li>
+                                <li role="presentation"><a role="menuitem" tabindex="-1" class="{{ icon_class.task }}" href="/experiment/component/{{ path_of_the_components }}/add_new/task"> Tarefa</a></li>
+                                <li role="presentation"><a role="menuitem" tabindex="-1" class="{{ icon_class.instruction }}" href="/experiment/component/{{ path_of_the_components }}/add_new/instruction"> Instrução</a></li>
+                                <li role="presentation"><a role="menuitem" tabindex="-1" class="{{ icon_class.stimulus }}" href="/experiment/component/{{ path_of_the_components }}/add_new/stimulus"> Estímulo</a></li>
+                                <li role="presentation"><a role="menuitem" tabindex="-1" class="{{ icon_class.pause }}" href="/experiment/component/{{ path_of_the_components }}/add_new/pause"> Pausa</a></li>
+                                <li role="presentation"><a role="menuitem" tabindex="-1" class="{{ icon_class.questionnaire }}" href="/experiment/component/{{ path_of_the_components }}/add_new/questionnaire"> Questionário</a></li>
+                                <li role="presentation"><a role="menuitem" tabindex="-1" class="{{ icon_class.block }}" href="/experiment/component/{{ path_of_the_components }}/add_new/block"> Bloco</a></li>
                             </ul>
                         </div>
                     {% endif %}

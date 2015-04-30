@@ -62,7 +62,7 @@ class ExperimentalProtocolTest(TestCase):
         self.assertNotContains(response, "<td>")
 
         component = Block.objects.create(
-            type="ordered_sequence",
+            type="sequence",
             identification='Sequence_identification',
             description='Sequence_description',
             experiment=Experiment.objects.first(),
@@ -139,7 +139,7 @@ class ExperimentalProtocolTest(TestCase):
             self.assertEqual(status, 'OK')
 
         self.data = {'action': 'save', 'identification': 'Block identification',
-                     'description': 'Block description', 'type': 'ordered_sequence'}
+                     'description': 'Block description', 'type': 'sequence'}
         response = self.client.post(reverse("component_new", args=(experiment.id, "block")), self.data)
         self.assertEqual(response.status_code, 302)
         block = Block.objects.filter(identification="Block identification").first()
@@ -151,12 +151,12 @@ class ExperimentalProtocolTest(TestCase):
                                      description='Parent block description',
                                      experiment=Experiment.objects.first(),
                                      component_type='block',
-                                     type="ordered_sequence")
+                                     type="sequence")
         block.save()
 
         # Add a new component to the parent
         self.data = {'action': 'save', 'identification': 'Block identification',
-                     'description': 'Block description', 'type': 'ordered_sequence'}
+                     'description': 'Block description', 'type': 'sequence'}
         response = self.client.post(reverse("component_add_new", args=(block.id, "block")), self.data)
         self.assertEqual(response.status_code, 302)
         component_configuration = ComponentConfiguration.objects.first()
@@ -172,7 +172,7 @@ class ExperimentalProtocolTest(TestCase):
         unit = TimeUnit.objects.create(name="Horas")
         unit.save()
         self.data = {'action': 'save', 'identification': 'Block identification', 'description': 'Block description',
-                     'type': 'ordered_sequence', 'name': 'Use of block in block',
+                     'type': 'sequence', 'name': 'Use of block in block',
                      'interval_between_repetitions_value': 2, 'interval_between_repetitions_unit': unit.id}
         response = self.client.post(reverse("component_edit", args=(block.id,)), self.data)
         self.assertEqual(response.status_code, 302)
@@ -204,7 +204,7 @@ class ExperimentalProtocolTest(TestCase):
             description='Block description',
             experiment=experiment,
             component_type='block',
-            type="ordered_sequence"
+            type="sequence"
         )
         block.save()
         self.assertEqual(Block.objects.count(), 1)
@@ -242,7 +242,7 @@ class ExperimentalProtocolTest(TestCase):
                                      description='Parent block description',
                                      experiment=experiment,
                                      component_type='block',
-                                     type="ordered_sequence")
+                                     type="sequence")
         block.save()
 
         task = Task.objects.create(
