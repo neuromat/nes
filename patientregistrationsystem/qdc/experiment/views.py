@@ -1400,7 +1400,7 @@ def create_list_of_breadcrumbs(list_of_ids_of_components_and_configurations):
             if id_item[0] == "U":  # If id_item starts with 'U' (from 'use'), it is a configuration.
                 cc = get_object_or_404(ComponentConfiguration, pk=id_item[1:])
 
-                if cc.name is not None:
+                if cc.name is not None and cc.name != "":
                     name = cc.name
                 else:
                     name = "Uso do componente " + cc.component.identification
@@ -1706,6 +1706,8 @@ def component_update(request, path_of_the_components):
                                                         path_of_the_components)
             return HttpResponseRedirect(back_cancel_url)
 
+    type_of_the_parent_block = None
+
     # It is not possible to edit the component fields while editing a component configuration.
     if component_configuration is not None:
         if component_type != "questionnaire":
@@ -1714,6 +1716,9 @@ def component_update(request, path_of_the_components):
 
         for field in component_form.fields:
             component_form.fields[field].widget.attrs['disabled'] = True
+
+        type_of_the_parent_block = Block.objects.get(id=component_configuration.parent_id).type
+
 
     context = {
         "back_cancel_url": back_cancel_url,
@@ -1731,7 +1736,7 @@ def component_update(request, path_of_the_components):
         "show_remove": show_remove,
         "specific_form": specific_form,
         "updating": True,
-        "type_of_the_parent_block": Block.objects.get(id=component_configuration.parent_id).type,
+        "type_of_the_parent_block": type_of_the_parent_block,
     }
 
     return render(request, template_name, context)
