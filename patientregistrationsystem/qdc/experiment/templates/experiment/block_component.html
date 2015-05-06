@@ -190,7 +190,7 @@
                                         {% endif %}
                                     </td>
                                     {% if not configuration.random_position %}
-                                        <td class="col-md-3">
+                                        <td class="col-md-4">
                                             {% if component_configuration %}
                                                 {{ configuration.component.identification }}
                                             {% else %}
@@ -207,7 +207,7 @@
                                             {% endif %}
                                         </td>
                                     {% else %}
-                                        <td class="col-md-6" colspan="2">
+                                        <td class="col-md-7" colspan="2">
 {#                                            Aleatório <span style="color: indianred"> (ver opções abaixo) </span>#}
                                             Posição para um dos <a href="#aleatorios">componentes aleatórios</a>
                                         </td>
@@ -265,9 +265,9 @@
                                 <th>Tipo</th>
                                 <th>Componente</th>
                                 <th>Nome do uso</th>
-                                {% if component.type == "sequence" %}
-                                    <th class="text-center" colspan="2">Ordem</th>
-                                {% endif %}
+{#                                {% if component.type == "sequence" %}#}
+{#                                    <th class="text-center" colspan="2">Ordem</th>#}
+{#                                {% endif %}#}
                                 <th>Remover</th>
                             </tr>
                             </thead>
@@ -279,7 +279,7 @@
                                             <span class="{{ configuration.component.icon_class }}"/>
                                             {{ configuration.component.component_type }}
                                         </td>
-                                        <td class="col-md-3">
+                                        <td class="col-md-4">
                                             {% if component_configuration %}
                                                 {{ configuration.component.identification }}
                                             {% else %}
@@ -291,29 +291,29 @@
                                             {% endif %}
 
                                         </td>
-                                        <td class="col-md-3">
+                                        <td class="col-md-5">
                                             {% if configuration.name != None %}
                                                 {{ configuration.name }}
                                             {% endif %}
                                         </td>
-                                        {% if component.type == "sequence" %}
-                                            {% if configuration.random_position %}
-                                                <td class="text-center col-md-2" colspan="2">
-                                                    Aleatória
-                                                </td>
-                                            {% else %}
-                                                <td  class="text-right col-md-1">
-                                                    {% if configuration != configuration_list.last %}
-                                                        <a class="btn glyphicon glyphicon-arrow-down" href="/experiment/component/change_the_order/{{ path_of_the_components }}/{{ configuration.id }}/down/"></a>
-                                                    {% endif %}
-                                                </td>
-                                                <td class="col-md-1">
-                                                    {% if configuration != configuration_list.first %}
-                                                        <a class="btn glyphicon glyphicon-arrow-up" href="/experiment/component/change_the_order/{{ path_of_the_components }}/{{ configuration.id }}/up/"></a>
-                                                    {% endif %}
-                                                </td>
-                                            {% endif %}
-                                        {% endif %}
+{#                                        {% if component.type == "sequence" %}#}
+{#                                            {% if configuration.random_position %}#}
+{#                                                <td class="text-center col-md-2" colspan="2">#}
+{#                                                    Aleatória#}
+{#                                                </td>#}
+{#                                            {% else %}#}
+{#                                                <td  class="text-right col-md-1">#}
+{#                                                    {% if configuration != configuration_list.last %}#}
+{#                                                        <a class="btn glyphicon glyphicon-arrow-down" href="/experiment/component/change_the_order/{{ path_of_the_components }}/{{ configuration.id }}/down/"></a>#}
+{#                                                    {% endif %}#}
+{#                                                </td>#}
+{#                                                <td class="col-md-1">#}
+{#                                                    {% if configuration != configuration_list.first %}#}
+{#                                                        <a class="btn glyphicon glyphicon-arrow-up" href="/experiment/component/change_the_order/{{ path_of_the_components }}/{{ configuration.id }}/up/"></a>#}
+{#                                                    {% endif %}#}
+{#                                                </td>#}
+{#                                            {% endif %}#}
+{#                                        {% endif %}#}
                                         <td class="text-center col-md-1">
                                             <a class="btn glyphicon glyphicon-remove" data-toggle="tooltip" data-placement="right" title="Remover da lista" style="color: indianred; vertical-align: -5%; padding-left: 0;" onclick="show_modal_remove({{ configuration.id }});"></a>
                                         </td>
