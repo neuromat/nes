@@ -87,16 +87,19 @@ class Experiment(models.Model):
 
 
 class Component(models.Model):
+    COMPONENT_TYPES = (
+        ("block", "Bloco"),
+        ("instruction", "Instrução"),
+        ("pause", "Pausa"),
+        ("questionnaire", "Questionário"),
+        ("stimulus", "Estímulo"),
+        ("task", "Tarefa"),
+    )
+
     identification = models.CharField(null=False, max_length=50, blank=False)
     description = models.CharField(max_length=1500, null=True, blank=True)
     experiment = models.ForeignKey(Experiment, null=False)
-    component_type = models.CharField(null=False, max_length=15,
-                                      choices=(("task", "Task component"),
-                                               ("instruction", "Instruction component"),
-                                               ("pause", "Pause component"),
-                                               ("stimulus", "Stimulus component"),
-                                               ("questionnaire", "Questionnaire component"),
-                                               ("block", "Block component")))
+    component_type = models.CharField(null=False, max_length=15, choices=COMPONENT_TYPES)
 
 
 class Task(Component):
@@ -148,7 +151,7 @@ class Block(Component):
 
 class ComponentConfiguration(models.Model):
     name = models.CharField(max_length=50, null=True, blank=True)
-    number_of_repetitions = models.IntegerField(null=True, blank=True, validators=[MinValueValidator(1)])
+    number_of_repetitions = models.IntegerField(null=True, blank=True, default=1, validators=[MinValueValidator(1)])
 
     # These 2 interval fields are useful only when number_of_repetition is different from 1.
     interval_between_repetitions_value = models.IntegerField(null=True, blank=True, validators=[MinValueValidator(1)])

@@ -37,14 +37,15 @@
     <div class="row">
         <div class="col-xs-12 col-sm-12">
             <div class="form-group">
-                <label>Tipo <b style="color: red;">*</b></label>
+                <label>Como organizar os subcomponentes? <b style="color: red;">*</b></label>
 
                 <div class="input-group  input-group-sm">
-                    <div class="input-group  input-group-sm">
-                        {% for radio in specific_form.type %}
-                            <label class="radio-inline">{{ radio.choice_label }}{{ radio.tag }} </label>
-                        {% endfor %}
-                    </div>
+                    {% for radio in specific_form.type %}
+                        <span style="margin-right: 15px;" data-toggle="tooltip" data-placement="bottom" title="
+                        {% cycle 'Os subcomponentes serão executados um após o outro' 'Os subcomponentes serão executados todos ao mesmo tempo' %}">
+                            <div class="radio-inline">{{ radio }}</div>
+                        </span>
+                    {% endfor %}
                 </div>
             </div>
         </div>
@@ -78,94 +79,11 @@
     {% if not updating and not creating %}
         <div class="row">
             <div class="col-xs-12 col-sm-12">
-
-{#                <div class="container span6 offset3 well ">#}
-{#                    <div class="form-group">#}
-{#                        <table class="table table-striped">#}
-{#                            <thead>#}
-{#                            <tr>#}
-{#                                <th>Tipo</th>#}
-{#                                <th>Componente</th>#}
-{#                                <th>Nome do uso</th>#}
-{#                                {% if component.type == "sequence" %}#}
-{#                                    <th class="text-center" colspan="2">Ordem</th>#}
-{#                                {% endif %}#}
-{#                                <th>Remover</th>#}
-{#                            </tr>#}
-{#                            </thead>#}
-{#                            <tbody>#}
-{#                            {% for configuration in configuration_list %}#}
-{#                                <tr>#}
-{#                                    <td class="col-md-2">#}
-{#                                        <span class="{{ configuration.component.icon_class }}"/>#}
-{#                                        {{ configuration.component.component_type }}#}
-{#                                    </td>#}
-{#                                    <td class="col-md-3">#}
-{#                                        {% if component_configuration %}#}
-{#                                            {{ configuration.component.identification }}#}
-{#                                        {% else %}#}
-{#                                            {% if configuration.component.component_type == "block" %}#}
-{#                                                <a data-toggle="tooltip" data-placement="left" title="Editar" href="/experiment/component/{{ path_of_the_components }}-U{{ configuration.id }}">{{ configuration.component.identification }}</a>#}
-{#                                            {% else %}#}
-{#                                                <a data-toggle="tooltip" data-placement="left" title="Editar" href="/experiment/component/edit/{{ path_of_the_components }}-U{{ configuration.id }}">{{ configuration.component.identification }}</a>#}
-{#                                            {% endif %}#}
-{#                                        {% endif %}#}
-{##}
-{#                                    </td>#}
-{#                                    <td class="col-md-3">#}
-{#                                        {% if configuration.name != None %}#}
-{#                                            {{ configuration.name }}#}
-{#                                        {% endif %}#}
-{#                                    </td>#}
-{#                                    {% if component.type == "sequence" %}#}
-{#                                        {% if configuration.random_position %}#}
-{#                                            <td class="text-center col-md-2" colspan="2">#}
-{#                                                Aleatória#}
-{#                                            </td>#}
-{#                                        {% else %}#}
-{#                                            <td  class="text-right col-md-1">#}
-{#                                                {% if configuration != configuration_list.last %}#}
-{#                                                    <a class="btn glyphicon glyphicon-arrow-down" href="/experiment/component/change_the_order/{{ path_of_the_components }}/{{ configuration.id }}/down/"></a>#}
-{#                                                {% endif %}#}
-{#                                            </td>#}
-{#                                            <td class="col-md-1">#}
-{#                                                {% if configuration != configuration_list.first %}#}
-{#                                                    <a class="btn glyphicon glyphicon-arrow-up" href="/experiment/component/change_the_order/{{ path_of_the_components }}/{{ configuration.id }}/up/"></a>#}
-{#                                                {% endif %}#}
-{#                                            </td>#}
-{#                                        {% endif %}#}
-{#                                    {% endif %}#}
-{#                                    <td class="text-center col-md-1">#}
-{#                                        <a class="btn glyphicon glyphicon-remove" data-toggle="tooltip" data-placement="right" title="Remover da lista" style="color: indianred; vertical-align: -5%; padding-left: 0;" onclick="show_modal_remove({{ configuration.id }});"></a>#}
-{#                                    </td>#}
-{#                                </tr>#}
-{#                            {% endfor %}#}
-{##}
-{#                            </tbody>#}
-{#                        </table>#}
-{#                    </div>#}
-{#                    {% if not component_configuration %}#}
-{#                        <div class="dropdown">#}
-{#                            <button class="btn btn-primary dropdown-toggle" type="button" id="dropdownMenu1" data-toggle="dropdown" aria-expanded="true">#}
-{#                                Inserir componente à sequência#}
-{#                                <span class="caret"></span>#}
-{#                            </button>#}
-{#                            <ul class="dropdown-menu" role="menu" aria-labelledby="dropdownMenu1">#}
-                                {# component.id is the id of the block where a new component will be included. #}
-{#                                <li role="presentation"><a role="menuitem" tabindex="-1" class="{{ icon_class.task }}" href="/experiment/component/{{ path_of_the_components }}/add_new/task"> Tarefa</a></li>#}
-{#                                <li role="presentation"><a role="menuitem" tabindex="-1" class="{{ icon_class.instruction }}" href="/experiment/component/{{ path_of_the_components }}/add_new/instruction"> Instrução</a></li>#}
-{#                                <li role="presentation"><a role="menuitem" tabindex="-1" class="{{ icon_class.stimulus }}" href="/experiment/component/{{ path_of_the_components }}/add_new/stimulus"> Estímulo</a></li>#}
-{#                                <li role="presentation"><a role="menuitem" tabindex="-1" class="{{ icon_class.pause }}" href="/experiment/component/{{ path_of_the_components }}/add_new/pause"> Pausa</a></li>#}
-{#                                <li role="presentation"><a role="menuitem" tabindex="-1" class="{{ icon_class.questionnaire }}" href="/experiment/component/{{ path_of_the_components }}/add_new/questionnaire"> Questionário</a></li>#}
-{#                                <li role="presentation"><a role="menuitem" tabindex="-1" class="{{ icon_class.block }}" href="/experiment/component/{{ path_of_the_components }}/add_new/block"> Bloco</a></li>#}
-{#                            </ul>#}
-{#                        </div>#}
-{#                    {% endif %}#}
-{#                </div>#}
-
                 <div class="container span6 offset3 well ">
 
-                    <h4>Componentes com posição fixa</h4>
+                    {% if component.type == "sequence" %}
+                        <h4>Componentes com posição fixa</h4>
+                    {% endif %}
 
                     <div class="form-group">
                         <table class="table table-striped">
@@ -183,13 +101,11 @@
                             <tbody>
                             {% for configuration in configuration_list %}
                                 <tr>
-                                    <td class="col-md-2">
-                                        {% if not configuration.random_position %}
-                                            <span class="{{ configuration.component.icon_class }}"/>
-                                            {{ configuration.component.component_type }}
-                                        {% endif %}
-                                    </td>
                                     {% if not configuration.random_position %}
+                                        <td class="col-md-2">
+                                            <span class="{{ configuration.component.icon_class }}"/>
+                                            {{ configuration.component.get_component_type_display }}
+                                        </td>
                                         <td class="col-md-4">
                                             {% if component_configuration %}
                                                 {{ configuration.component.identification }}
@@ -206,13 +122,7 @@
                                                 {{ configuration.name }}
                                             {% endif %}
                                         </td>
-                                    {% else %}
-                                        <td class="col-md-7" colspan="2">
-{#                                            Aleatório <span style="color: indianred"> (ver opções abaixo) </span>#}
-                                            Posição para <a href="#aleatorios">componente aleatório</a>
-                                        </td>
-                                    {% endif %}
-                                    {% if component.type == "sequence" %}
+                                        {% if component.type == "sequence" %}
                                             <td  class="text-right col-md-1">
                                                 {% if configuration != configuration_list.last %}
                                                     <a class="btn glyphicon glyphicon-arrow-down" href="/experiment/component/change_the_order/{{ path_of_the_components }}/{{ configuration.id }}/down/"></a>
@@ -223,108 +133,74 @@
                                                     <a class="btn glyphicon glyphicon-arrow-up" href="/experiment/component/change_the_order/{{ path_of_the_components }}/{{ configuration.id }}/up/"></a>
                                                 {% endif %}
                                             </td>
-                                    {% endif %}
-                                    <td class="text-center col-md-1">
-                                        {% if not configuration.random_position %}
-                                            <a class="btn glyphicon glyphicon-remove" data-toggle="tooltip" data-placement="right" title="Remover da lista" style="color: indianred; vertical-align: -5%; padding-left: 0;" onclick="show_modal_remove({{ configuration.id }});"></a>
                                         {% endif %}
-                                    </td>
+                                        <td class="text-center col-md-1">
+                                            <a class="btn glyphicon glyphicon-remove" data-toggle="tooltip" data-placement="right" title="Remover da lista" style="color: indianred; vertical-align: -5%; padding-left: 0;" onclick="show_modal_remove({{ configuration.id }});"></a>
+                                        </td>
+                                    {% else %}
+                                        <td class="text-center" colspan="6">
+                                            Posição para componente aleatório
+                                        </td>
+                                    {% endif %}
                                 </tr>
                             {% endfor %}
                             </tbody>
                         </table>
                     </div>
-{#                    {% if not component_configuration %}#}
-{#                        <div class="dropdown">#}
-{#                            <button class="btn btn-primary dropdown-toggle" type="button" id="dropdownMenu1" data-toggle="dropdown" aria-expanded="true">#}
-{#                                Inserir componente ao bloco#}
-{#                                <span class="caret"></span>#}
-{#                            </button>#}
-{#                            <ul class="dropdown-menu" role="menu" aria-labelledby="dropdownMenu1">#}
-{#                                component.id is the id of the block where a new component will be included.#}
-{#                                <li role="presentation"><a role="menuitem" tabindex="-1" class="{{ icon_class.task }}" href="/experiment/component/{{ path_of_the_components }}/add_new/task"> Tarefa</a></li>#}
-{#                                <li role="presentation"><a role="menuitem" tabindex="-1" class="{{ icon_class.instruction }}" href="/experiment/component/{{ path_of_the_components }}/add_new/instruction"> Instrução</a></li>#}
-{#                                <li role="presentation"><a role="menuitem" tabindex="-1" class="{{ icon_class.stimulus }}" href="/experiment/component/{{ path_of_the_components }}/add_new/stimulus"> Estímulo</a></li>#}
-{#                                <li role="presentation"><a role="menuitem" tabindex="-1" class="{{ icon_class.pause }}" href="/experiment/component/{{ path_of_the_components }}/add_new/pause"> Pausa</a></li>#}
-{#                                <li role="presentation"><a role="menuitem" tabindex="-1" class="{{ icon_class.questionnaire }}" href="/experiment/component/{{ path_of_the_components }}/add_new/questionnaire"> Questionário</a></li>#}
-{#                                <li role="presentation"><a role="menuitem" tabindex="-1" class="{{ icon_class.block }}" href="/experiment/component/{{ path_of_the_components }}/add_new/block"> Bloco</a></li>#}
-{#                            </ul>#}
-{#                        </div>#}
-{#                    {% endif %}#}
                 </div>
 
-                <a name="aleatorios"></a>
-                <div class="container span6 offset3 well ">
-                    <div class="form-group">
+                {% if component.type == "sequence" %}
+                    <div class="container span6 offset3 well ">
+                        <div class="form-group">
 
-                        <h4>Componentes com posição aleatória</h4>
+                            <h4>Componentes com posição aleatória</h4>
 
-                        <table class="table table-striped">
-                            <thead>
-                            <tr>
-                                <th>Tipo</th>
-                                <th>Componente</th>
-                                <th>Nome do uso</th>
-{#                                {% if component.type == "sequence" %}#}
-{#                                    <th class="text-center" colspan="2">Ordem</th>#}
-{#                                {% endif %}#}
-                                <th>Remover</th>
-                            </tr>
-                            </thead>
-                            <tbody>
-                            {% for configuration in configuration_list %}
-                                {% if configuration.random_position %}
-                                    <tr>
-                                        <td class="col-md-2">
-                                            <span class="{{ configuration.component.icon_class }}"/>
-                                            {{ configuration.component.component_type }}
-                                        </td>
-                                        <td class="col-md-4">
-                                            {% if component_configuration %}
-                                                {{ configuration.component.identification }}
-                                            {% else %}
-                                                {% if configuration.component.component_type == "block" %}
-                                                    <a data-toggle="tooltip" data-placement="left" title="Editar" href="/experiment/component/{{ path_of_the_components }}-U{{ configuration.id }}">{{ configuration.component.identification }}</a>
+                            <table class="table table-striped">
+                                <thead>
+                                <tr>
+                                    <th>Tipo</th>
+                                    <th>Componente</th>
+                                    <th>Nome do uso</th>
+                                    <th>Remover</th>
+                                </tr>
+                                </thead>
+                                <tbody>
+                                {% for configuration in configuration_list %}
+                                    {% if configuration.random_position %}
+                                        <tr>
+                                            <td class="col-md-2">
+                                                <span class="{{ configuration.component.icon_class }}"/>
+                                                {{ configuration.component.get_component_type_display }}
+                                            </td>
+                                            <td class="col-md-4">
+                                                {% if component_configuration %}
+                                                    {{ configuration.component.identification }}
                                                 {% else %}
-                                                    <a data-toggle="tooltip" data-placement="left" title="Editar" href="/experiment/component/edit/{{ path_of_the_components }}-U{{ configuration.id }}">{{ configuration.component.identification }}</a>
+                                                    {% if configuration.component.component_type == "block" %}
+                                                        <a data-toggle="tooltip" data-placement="left" title="Editar" href="/experiment/component/{{ path_of_the_components }}-U{{ configuration.id }}">{{ configuration.component.identification }}</a>
+                                                    {% else %}
+                                                        <a data-toggle="tooltip" data-placement="left" title="Editar" href="/experiment/component/edit/{{ path_of_the_components }}-U{{ configuration.id }}">{{ configuration.component.identification }}</a>
+                                                    {% endif %}
                                                 {% endif %}
-                                            {% endif %}
 
-                                        </td>
-                                        <td class="col-md-5">
-                                            {% if configuration.name != None %}
-                                                {{ configuration.name }}
-                                            {% endif %}
-                                        </td>
-{#                                        {% if component.type == "sequence" %}#}
-{#                                            {% if configuration.random_position %}#}
-{#                                                <td class="text-center col-md-2" colspan="2">#}
-{#                                                    Aleatória#}
-{#                                                </td>#}
-{#                                            {% else %}#}
-{#                                                <td  class="text-right col-md-1">#}
-{#                                                    {% if configuration != configuration_list.last %}#}
-{#                                                        <a class="btn glyphicon glyphicon-arrow-down" href="/experiment/component/change_the_order/{{ path_of_the_components }}/{{ configuration.id }}/down/"></a>#}
-{#                                                    {% endif %}#}
-{#                                                </td>#}
-{#                                                <td class="col-md-1">#}
-{#                                                    {% if configuration != configuration_list.first %}#}
-{#                                                        <a class="btn glyphicon glyphicon-arrow-up" href="/experiment/component/change_the_order/{{ path_of_the_components }}/{{ configuration.id }}/up/"></a>#}
-{#                                                    {% endif %}#}
-{#                                                </td>#}
-{#                                            {% endif %}#}
-{#                                        {% endif %}#}
-                                        <td class="text-center col-md-1">
-                                            <a class="btn glyphicon glyphicon-remove" data-toggle="tooltip" data-placement="right" title="Remover da lista" style="color: indianred; vertical-align: -5%; padding-left: 0;" onclick="show_modal_remove({{ configuration.id }});"></a>
-                                        </td>
-                                    </tr>
-                                {% endif %}
-                            {% endfor %}
+                                            </td>
+                                            <td class="col-md-5">
+                                                {% if configuration.name != None %}
+                                                    {{ configuration.name }}
+                                                {% endif %}
+                                            </td>
+                                            <td class="text-center col-md-1">
+                                                <a class="btn glyphicon glyphicon-remove" data-toggle="tooltip" data-placement="right" title="Remover da lista" style="color: indianred; vertical-align: -5%; padding-left: 0;" onclick="show_modal_remove({{ configuration.id }});"></a>
+                                            </td>
+                                        </tr>
+                                    {% endif %}
+                                {% endfor %}
 
-                            </tbody>
-                        </table>
+                                </tbody>
+                            </table>
+                        </div>
                     </div>
-                </div>
+                {% endif %}
 
                 {% if not component_configuration %}
                     <div class="dropdown">
@@ -333,13 +209,9 @@
                             <span class="caret"></span>
                         </button>
                         <ul class="dropdown-menu" role="menu" aria-labelledby="dropdownMenu1">
-                            {# component.id is the id of the block where a new component will be included. #}
-                            <li role="presentation"><a role="menuitem" tabindex="-1" class="{{ icon_class.task }}" href="/experiment/component/{{ path_of_the_components }}/add_new/task"> Tarefa</a></li>
-                            <li role="presentation"><a role="menuitem" tabindex="-1" class="{{ icon_class.instruction }}" href="/experiment/component/{{ path_of_the_components }}/add_new/instruction"> Instrução</a></li>
-                            <li role="presentation"><a role="menuitem" tabindex="-1" class="{{ icon_class.stimulus }}" href="/experiment/component/{{ path_of_the_components }}/add_new/stimulus"> Estímulo</a></li>
-                            <li role="presentation"><a role="menuitem" tabindex="-1" class="{{ icon_class.pause }}" href="/experiment/component/{{ path_of_the_components }}/add_new/pause"> Pausa</a></li>
-                            <li role="presentation"><a role="menuitem" tabindex="-1" class="{{ icon_class.questionnaire }}" href="/experiment/component/{{ path_of_the_components }}/add_new/questionnaire"> Questionário</a></li>
-                            <li role="presentation"><a role="menuitem" tabindex="-1" class="{{ icon_class.block }}" href="/experiment/component/{{ path_of_the_components }}/add_new/block"> Bloco</a></li>
+                            {% for type, type_name, icon in component_type_choices %}
+                                <li role="presentation"><a role="menuitem" tabindex="-1" class="{{ icon }}" href="/experiment/component/{{ path_of_the_components }}/add_new/{{ type }}"> {{ type_name }}</a></li>
+                            {% endfor %}
                         </ul>
                     </div>
                     </br>

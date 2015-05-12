@@ -192,52 +192,59 @@
                                     <label>Posição no bloco</label>
                                     <div class="input-group  input-group-sm">
                                         {% for radio in configuration_form.random_position %}
-                                            <div class="radio-inline">
-                                                {{ radio }}
-                                            </div>
+                                            <span style="margin-right: 15px;" data-toggle="tooltip" data-placement="bottom" title="
+                                            {% cycle 'A ordem de execução deste subcomponente não varia' 'Este subcomponente pode ser executado em qualquer posição do bloco pai onde não há compoentes fixos' %}">
+                                                <div class="radio-inline">{{ radio }}</div>
+                                            </span>
                                         {% endfor %}
                                     </div>
                                 </div>
                             </div>
                         {% endif %}
                     </div>
-                    <div class="row">
-                        <div class="col-xs-4 col-sm-2">
-                            <label for="unlimited_number_of_repetitions" class="control-label">Repetições</label>
-                            <div class="checkbox">
-                                <label>
-                                    <input id="unlimited_number_of_repetitions" type="checkbox">Ilimitada</input>
-                                </label>
+                   <div class="row">
+                        <div class="col-xs-12 col-sm-3">
+                            <label for="unlimited_number_of_repetitions" class="control-label">Quantidade de repetições</label>
+                            <div class="radio" style="margin-top: 0px">
+                                <input id="id_repetitions_0" name="unlimited_number_of_repetitions" type="radio" value="unlimited">
+                                    Ilimitada
+                                </input>
                             </div>
+                            <label class="radio">
+                                <input id="id_repetitions_1" name="unlimited_number_of_repetitions" type="radio" value="limited">
+                                    <div class="col-xs-9 col-sm-9" style="padding-left: 0px">
+                                        <div class="form-group" id="div_form_number_of_repetitions">
+                                            {{ configuration_form.number_of_repetitions }}
+                                            <div class="help-block with-errors" id="div_for_errors_in_number_of_repetitions"></div>
+                                        </div>
+                                    </div>
+                                </input>
+                            </label>
                         </div>
-                        <div class="col-xs-8 col-sm-2">
-                            <div class="form-group">
-                                <label for="number_of_repetitions" id="number_of_repetitions_label" class="control-label">Quantidade</label>
-                                    {{ configuration_form.number_of_repetitions }}
-                                <div class="help-block with-errors"></div>
+                        <div id="interval_div">
+                            <div class="col-xs-12 col-sm-6 col-sm-offset-1">
+                                <label for="undefined_interval" id="undefined_interval_label" class="control-label">Intervalo entre repetições</label>
+                            <div class="radio" style="margin-top: 0px">
+                                <input id="id_interval_0" name="undefined_interval" type="radio" value="undefined">
+                                    Indefinido
+                                </input>
                             </div>
-                        </div>
-                        <div class="col-xs-4 col-sm-2 col-sm-offset-1">
-                            <label for="undefined_interval" id="undefined_interval_label" class="control-label">Intervalo</label>
-                            <div class="checkbox" id="undefined_interval_div">
-                                <label>
-                                    <input id="undefined_interval" type="checkbox">Indefinido</input>
-                                </label>
-                            </div>
-                        </div>
-                        <div class="col-xs-4 col-sm-2">
-                            <div class="form-group" id="div_form_interval_between_repetitions_value">
-                                <label for="interval_between_repetitions_value" id="interval_between_repetitions_value_label" class="control-label">Tempo</label>
-                                    {{ configuration_form.interval_between_repetitions_value }}
-                                <div class="help-block with-errors" id="div_for_errors_in_interval_between_repetitions_value"></div>
-                            </div>
-                        </div>
-                        <div class="col-xs-4 col-sm-2">
-                            <div class="form-group" id="div_form_interval_between_repetitions_unit">
-                                <label for="interval_between_repetitions_unit" id="interval_between_repetitions_unit_label" class="control-label">Unidade</label>
-                                    {{ configuration_form.interval_between_repetitions_unit }}
-                                <div class="help-block with-errors" id="div_for_errors_in_interval_between_repetitions_unit"></div>
-                            </div>
+                            <label class="radio">
+                                <input id="id_interval_1" name="undefined_interval" type="radio" value="limited">
+                                    <div class="col-xs-4 col-sm-4" style="padding-left: 0px">
+                                        <div class="form-group" id="div_form_interval_between_repetitions_value">
+                                            {{ configuration_form.interval_between_repetitions_value }}
+                                            <div class="help-block with-errors" id="div_for_errors_in_interval_between_repetitions_value"></div>
+                                        </div>
+                                    </div>
+                                    <div class="col-xs-4 col-sm-5" style="padding-left: 0px">
+                                        <div class="form-group" id="div_form_interval_between_repetitions_unit">
+                                            {{ configuration_form.interval_between_repetitions_unit }}
+                                            <div class="help-block with-errors" id="div_for_errors_in_interval_between_repetitions_unit"></div>
+                                        </div>
+                                    </div>
+                                </input>
+                            </label>
                         </div>
                     </div>
                 </div>

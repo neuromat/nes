@@ -29,12 +29,12 @@ from experiment.abc_search_engine import Questionnaires
 permission_required = partial(permission_required, raise_exception=True)
 
 icon_class = {
-    u'task': 'glyphicon glyphicon-check',
+    u'block': 'glyphicon glyphicon-th-large',
     u'instruction': 'glyphicon glyphicon-comment',
-    u'stimulus': 'glyphicon glyphicon-headphones',
     u'pause': 'glyphicon glyphicon-time',
     u'questionnaire': 'glyphicon glyphicon-list-alt',
-    u'block': 'glyphicon glyphicon-th-large',
+    u'stimulus': 'glyphicon glyphicon-headphones',
+    u'task': 'glyphicon glyphicon-check',
 }
 
 delimiter = "-"
@@ -1289,10 +1289,15 @@ def component_list(request, experiment_id, template_name="experiment/component_l
     for component in components:
         component.icon_class = icon_class[component.component_type]
 
+    component_type_choices = []
+    for type, type_name in Component.COMPONENT_TYPES:
+        component_type_choices.append((type, type_name, icon_class.get(type)))
+
     context = {
         "experiment": experiment,
         "component_list": components,
-        "icon_class": icon_class}
+        "component_type_choices": component_type_choices
+    }
 
     return render(request, template_name, context)
 
@@ -1589,6 +1594,10 @@ def component_view(request, path_of_the_components):
             redirect_url = reverse("component_view", args=(path_of_the_components,))
             return HttpResponseRedirect(redirect_url)
 
+    component_type_choices = []
+    for type, type_name in Component.COMPONENT_TYPES:
+        component_type_choices.append((type, type_name, icon_class.get(type)))
+
     context = {
         "back_cancel_url": back_cancel_url,
         "component": block,
@@ -1604,6 +1613,7 @@ def component_view(request, path_of_the_components):
         "show_remove": show_remove,
         "specific_form": block_form,
         "type_of_the_parent_block": block.type,
+        "component_type_choices": component_type_choices,
     }
 
     return render(request, template_name, context)
@@ -1649,7 +1659,9 @@ def component_update(request, path_of_the_components):
         if block.type == "sequence":
             configuration_list = configuration_list.order_by('order')
         else:
-            configuration_list = configuration_list.order_by('type, component__identification, name')
+            configuration_list = configuration_list.order_by('component__component_type',
+                                                             'component__identification',
+                                                             'name')
 
         for configuration in configuration_list:
             configuration.component.icon_class = icon_class[configuration.component.component_type]
