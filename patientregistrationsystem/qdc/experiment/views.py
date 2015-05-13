@@ -25,6 +25,8 @@ from experiment.forms import ExperimentForm, QuestionnaireConfigurationForm, Que
 from patient.models import Patient
 from experiment.abc_search_engine import Questionnaires
 
+from operator import itemgetter
+
 
 permission_required = partial(permission_required, raise_exception=True)
 
@@ -1555,18 +1557,7 @@ def component_view(request, path_of_the_components):
     # It will always be a block because we don't have a view screen for other components.
     block = get_object_or_404(Block, pk=component.id)
     block_form = BlockForm(request.POST or None, instance=block)
-
-    configuration_list = ComponentConfiguration.objects.filter(parent=block)
-
-    if block.type == "sequence":
-        configuration_list = configuration_list.order_by('order')
-    else:
-        configuration_list = configuration_list.order_by('component__component_type',
-                                                         'component__identification',
-                                                         'name')
-
-    for configuration in configuration_list:
-        configuration.component.icon_class = icon_class[configuration.component.component_type]
+    configuration_list, configuration_list_of_random_components = create_configuration_lists(block)
 
     # It is not possible to edit fields while viewing a block.
     for form in {block_form, component_form}:
@@ -1590,7 +1581,20 @@ def component_view(request, path_of_the_components):
             component_configuration_id_to_be_deleted = request.POST['action'].split("-")[-1]
             component_configuration = get_object_or_404(ComponentConfiguration,
                                                         pk=int(component_configuration_id_to_be_deleted))
+
+            order_of_removed = component_configuration.order
+            parent_of_removed = component_configuration.parent_id
             component_configuration.delete()
+            last_component_configuration = ComponentConfiguration.objects.filter(
+                parent_id=parent_of_removed, random_position=True).order_by('order').last()
+
+            # If the order of the removed component is smaller than the order of the last random-positioned element,
+            # assign the order of the removed to the last random-positioned element. This way, for the user, it is like
+            # removing the last position for random components.
+            if last_component_configuration is not None and last_component_configuration.order > order_of_removed:
+                last_component_configuration.order = order_of_removed
+                last_component_configuration.save()
+
             redirect_url = reverse("component_view", args=(path_of_the_components,))
             return HttpResponseRedirect(redirect_url)
 
@@ -1605,6 +1609,7 @@ def component_view(request, path_of_the_components):
         "component_form": component_form,
         "configuration_form": configuration_form,
         "configuration_list": configuration_list,
+        "configuration_list_of_random_components": configuration_list_of_random_components,
         "experiment": experiment,
         "group": group,
         "icon_class": icon_class,
@@ -1619,6 +1624,45 @@ def component_view(request, path_of_the_components):
     return render(request, template_name, context)
 
 
+def sort_without_using_order(configuration_list_of_random_components):
+    for configuration in configuration_list_of_random_components:
+        configuration.component.icon_class = icon_class[configuration.component.component_type]
+
+    # Create a temporary list of tuples from the query_set to be able to sort by get_component_type_display,
+    # identification and name.
+    temp_list_of_tuples = []
+    for cc in configuration_list_of_random_components:
+        temp_list_of_tuples.append((cc,
+                                    cc.component.get_component_type_display(),
+                                    cc.component.identification,
+                                    cc.name))
+    temp_list_of_tuples.sort(key=itemgetter(1, 2, 3))
+    # Reduce the complexity by creating list of component configurations without having tuples.
+    configuration_list_of_random_components = []
+    for tuple in temp_list_of_tuples:
+        configuration_list_of_random_components.append(tuple[0])
+    return configuration_list_of_random_components
+
+
+def create_configuration_lists(block):
+    configuration_list = ComponentConfiguration.objects.filter(parent=block)
+
+    if block.type == "sequence":
+        configuration_list = configuration_list.order_by('order')
+
+        # As it is not possible to sort_by get_component_type_display, filter without sorting and sort later.
+        configuration_list_of_random_components = sort_without_using_order(
+            configuration_list.filter(random_position=True))
+    else:
+        configuration_list = sort_without_using_order(configuration_list)
+        configuration_list_of_random_components = None
+
+    for configuration in configuration_list:
+        configuration.component.icon_class = icon_class[configuration.component.component_type]
+
+    return configuration_list, configuration_list_of_random_components
+
+
 @login_required
 @permission_required('experiment.change_experiment')
 def component_update(request, path_of_the_components):
@@ -1629,6 +1673,7 @@ def component_update(request, path_of_the_components):
     questionnaire_id = None
     questionnaire_title = None
     configuration_list = []
+    configuration_list_of_random_components = []
     specific_form = None
 
     if component_type == 'task':
@@ -1653,18 +1698,7 @@ def component_update(request, path_of_the_components):
     elif component_type == 'block':
         block = get_object_or_404(Block, pk=component.id)
         specific_form = BlockForm(request.POST or None, instance=block)
-
-        configuration_list = ComponentConfiguration.objects.filter(parent=block)
-
-        if block.type == "sequence":
-            configuration_list = configuration_list.order_by('order')
-        else:
-            configuration_list = configuration_list.order_by('component__component_type',
-                                                             'component__identification',
-                                                             'name')
-
-        for configuration in configuration_list:
-            configuration.component.icon_class = icon_class[configuration.component.component_type]
+        configuration_list, configuration_list_of_random_components = create_configuration_lists(block)
 
     if request.method == "POST":
         if request.POST['action'] == "save":
@@ -1738,6 +1772,7 @@ def component_update(request, path_of_the_components):
         "component_form": component_form,
         "configuration_form": configuration_form,
         "configuration_list": configuration_list,
+        "configuration_list_of_random_components": configuration_list_of_random_components,
         "icon_class": icon_class,
         "experiment": experiment,
         "group": group,
@@ -1776,15 +1811,22 @@ def access_objects_for_add_new_and_reuse(component_type, path_of_the_components)
     existing_component_list = Component.objects.filter(experiment=experiment, component_type=component_type)
     specific_form = None
 
+    # If configuring a new experimental protocol for a group, return to the group. Otherwise, return to the parent
+    # block.
+    if len(list_of_ids_of_components_and_configurations) == 1 and path_of_the_components[0] == 'G':
+        back_cancel_url = "/experiment/group/" + str(group.id)
+    else:
+        back_cancel_url = "/experiment/component/" + path_of_the_components
+
     return existing_component_list, experiment, group, list_of_breadcrumbs, block, template_name, specific_form, \
-           list_of_ids_of_components_and_configurations
+           list_of_ids_of_components_and_configurations, back_cancel_url
 
 
 @login_required
 @permission_required('experiment.change_experiment')
 def component_add_new(request, path_of_the_components, component_type):
     existing_component_list, experiment, group, list_of_breadcrumbs, block, template_name,\
-        specific_form, list_of_ids_of_components_and_configurations = \
+        specific_form, list_of_ids_of_components_and_configurations, back_cancel_url = \
         access_objects_for_add_new_and_reuse(component_type, path_of_the_components)
 
     component_form = ComponentForm(request.POST or None)
@@ -1845,7 +1887,7 @@ def component_add_new(request, path_of_the_components, component_type):
             return HttpResponseRedirect(redirect_url)
 
     context = {
-        "back_cancel_url": "/experiment/component/" + path_of_the_components,
+        "back_cancel_url": back_cancel_url,
         "block": block,
         "can_reuse": True,
         "component_form": component_form,
@@ -1869,7 +1911,7 @@ def component_reuse(request, path_of_the_components, component_id):
     component_type = component_to_add.component_type
 
     existing_component_list, experiment, group, list_of_breadcrumbs, block, template_name,\
-        specific_form, list_of_ids_of_components_and_configurations = \
+        specific_form, list_of_ids_of_components_and_configurations, back_cancel_url = \
         access_objects_for_add_new_and_reuse(component_type, path_of_the_components)
 
     component_form = ComponentForm(request.POST or None, instance=component_to_add)
@@ -1935,7 +1977,7 @@ def component_reuse(request, path_of_the_components, component_id):
         return HttpResponseRedirect(redirect_url)
 
     context = {
-        "back_cancel_url": "/experiment/component/" + path_of_the_components,
+        "back_cancel_url": back_cancel_url,
         "block": block,
         "component_form": component_form,
         "creating": True, # So that the "Use" button is shown.
