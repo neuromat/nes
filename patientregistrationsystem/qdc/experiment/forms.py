@@ -1,8 +1,8 @@
 # coding=utf-8
 from experiment.models import Experiment, QuestionnaireConfiguration, QuestionnaireResponse, SubjectOfGroup, Group, \
     Component, Task, Stimulus, Pause, Block, Instruction, ComponentConfiguration, ResearchProject, \
-    PatientQuestionnaireResponse
-from django.forms import ModelForm, TextInput, Textarea, Select, DateInput, TypedChoiceField, RadioSelect
+    PatientQuestionnaireResponse, TimeUnit
+from django.forms import ModelForm, TextInput, Textarea, Select, DateInput, TypedChoiceField, RadioSelect, ModelChoiceField
 
 
 class ExperimentForm(ModelForm):
@@ -108,6 +108,13 @@ class ComponentConfigurationForm(ModelForm):
                                        choices=((False, 'Fixa'), (True, 'Aleatória')),
                                        widget=RadioSelect(attrs={'id': 'id_random_position'}))
 
+    # This is required because we want an empty_label different from "--------".
+    interval_between_repetitions_unit = ModelChoiceField(
+        queryset=TimeUnit.objects.all(),
+        required=False,
+        empty_label="Escolha unidade",
+        widget=Select(attrs={'class': 'form-control', 'required': "", 'data-error': "Unidade deve ser preenchida"}))
+
     class Meta:
         model = ComponentConfiguration
         fields = ['name', 'random_position', 'number_of_repetitions', 'interval_between_repetitions_value',
@@ -116,11 +123,10 @@ class ComponentConfigurationForm(ModelForm):
         widgets = {
             'name': TextInput(attrs={'class': 'form-control'}),
             'number_of_repetitions': TextInput(attrs={'class': 'form-control', 'required': "",
-                                                      'data-error': 'Número de repetições deve ser preenchida.'}),
+                                                      'data-error': 'Quantidade de repetições deve ser preenchida.'}),
             'interval_between_repetitions_value': TextInput(attrs={'class': 'form-control', 'required': "",
-                                                                   'data-error': 'Intervalo deve ser preenchido.'}),
-            'interval_between_repetitions_unit': Select(attrs={'class': 'form-control', 'required': "",
-                                                               'data-error': "Unidade deve ser preenchida"}),
+                                                                   'data-error': 'Intervalo deve ser preenchido.',
+                                                                   'placeholder': 'Tempo'}),
         }
 
 
@@ -173,10 +179,10 @@ class PauseForm(ModelForm):
 class BlockForm(ModelForm):
     type = TypedChoiceField(required=True,
                             empty_value=None,
-                            choices=(('sequence', 'Sequência'),
-                                     ('parallel_block', 'Bloco paralelo')),
+                            choices=(('sequence', 'Em uma sequência'),
+                                     ('parallel_block', 'De forma paralela')),
                             widget=RadioSelect(attrs={'id': 'id_type', 'required': "",
-                                                      'data-error': 'Tipo deve ser escolhido.'}))
+                                                      'data-error': 'Tipo de organização deve ser escolhido.'}))
 
     class Meta:
         model = Block
