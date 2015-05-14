@@ -1047,6 +1047,106 @@ def patient_questionnaire_response_create(request, patient_id,
     return render(request, template_name, context)
 
 
+@login_required
+# TODO: associate the right permission
+# @permission_required('patient.add_medicalrecorddata')
+def patient_questionnaire_response_update(request, patient_questionnaire_response_id,
+                                          template_name="experiment/subject_questionnaire_response_form.html"):
+
+    patient_questionnaire_response = get_object_or_404(PatientQuestionnaireResponse,
+                                                       pk=patient_questionnaire_response_id)
+
+    surveys = Questionnaires()
+    survey_title = surveys.get_survey_title(patient_questionnaire_response.questionnaire.lime_survey_id)
+    survey_active = surveys.get_survey_properties(patient_questionnaire_response.questionnaire.lime_survey_id, 'active')
+    survey_completed = (surveys.get_participant_properties(patient_questionnaire_response.questionnaire.lime_survey_id,
+                                                           patient_questionnaire_response.token_id,
+                                                           "completed") != "N")
+    surveys.release_session_key()
+
+    patient = get_object_or_404(Patient, pk=patient_questionnaire_response.patient_id)
+
+    questionnaire_response_form = PatientQuestionnaireResponseForm(None, instance=patient_questionnaire_response)
+
+    fail = None
+    redirect_url = None
+    questionnaire_response_id = None
+
+    showing = True
+    questionnaire = patient_questionnaire_response.questionnaire
+    questionnaire_title = survey_title
+
+    if request.method == "POST":
+        if request.POST['action'] == "save":
+            redirect_url = get_limesurvey_response_url(patient_questionnaire_response)
+
+            if not redirect_url:
+                fail = False
+            else:
+                fail = True
+                messages.info(request, 'Você será redirecionado para o questionário. Aguarde.')
+
+        elif request.POST['action'] == "remove":
+            surveys = Questionnaires()
+            result = surveys.delete_participant(
+                patient_questionnaire_response.questionnaire.lime_survey_id,
+                patient_questionnaire_response.token_id)
+            surveys.release_session_key()
+
+            can_delete = False
+
+            if str(patient_questionnaire_response.token_id) in result:
+                result = result[str(patient_questionnaire_response.token_id)]
+                if result == 'Deleted' or result == 'Invalid token ID':
+                    can_delete = True
+            else:
+                if 'status' in result and result['status'] == u'Error: Invalid survey ID':
+                    can_delete = True
+
+            if can_delete:
+                patient_questionnaire_response.delete()
+                messages.success(request, 'Preenchimento removido com sucesso')
+            else:
+                messages.error(request, "Erro ao deletar o preenchimento")
+
+            redirect_url = reverse("patient_edit", args=(patient.id,)) + "?currentTab=4"
+            return HttpResponseRedirect(redirect_url)
+
+    origin = get_origin(request)
+
+    context = {
+        "FAIL": fail,
+        "URL": redirect_url,
+        "questionnaire_response_id": questionnaire_response_id,
+        "questionnaire_response_form": questionnaire_response_form,
+        "questionnaire_configuration": None,
+        "survey_title": survey_title,
+        "survey_active": survey_active,
+        "questionnaire_responsible": request.user.get_username(),
+        "creating": False,
+        "subject": None,
+        "completed": survey_completed,
+        "group": None,
+        "origin": origin,
+        "questionnaires_list": None,
+        "patient": patient,
+        "questionnaire": questionnaire,
+        "questionnaire_title": questionnaire_title,
+        "showing": showing,
+        "updating": True
+    }
+
+    return render(request, template_name, context)
+
+
+@login_required
+# TODO: associate the right permission
+# @permission_required('patient.add_medicalrecorddata')
+def patient_questionnaire_response_view(request, patient_questionnaire_response_id,
+                                          template_name="experiment/subject_questionnaire_response_view.html"):
+    pass
+
+
 def patient_questionnaire_response_start_fill_questionnaire(request, patient_id, questionnaire):
 
     patient_questionnaire_response_form = PatientQuestionnaireResponseForm(request.POST)

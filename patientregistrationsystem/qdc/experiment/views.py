@@ -817,7 +817,6 @@ def questionnaire_response_update(request, questionnaire_response_id,
     surveys = Questionnaires()
     survey_title = surveys.get_survey_title(questionnaire_configuration.lime_survey_id)
     survey_active = surveys.get_survey_properties(questionnaire_configuration.lime_survey_id, 'active')
-    # survey_admin = surveys.get_survey_properties(questionnaire_configuration.lime_survey_id, 'admin')
     survey_completed = (surveys.get_participant_properties(questionnaire_configuration.lime_survey_id,
                                                            questionnaire_response.token_id,
                                                            "completed") != "N")
@@ -874,7 +873,6 @@ def questionnaire_response_update(request, questionnaire_response_id,
         "questionnaire_response_form": questionnaire_response_form,
         "questionnaire_configuration": questionnaire_configuration,
         "survey_title": survey_title,
-        # "survey_admin": survey_admin,
         "survey_active": survey_active,
         "questionnaire_response_id": questionnaire_response_id,
         "questionnaire_responsible": questionnaire_response.questionnaire_responsible,
@@ -940,41 +938,28 @@ def check_required_fields(surveys, lime_survey_id):
     return validated_quantity == len(fields_to_validate)
 
 
-@login_required
-@permission_required('experiment.view_questionnaireresponse')
-def questionnaire_response_view(request, questionnaire_response_id,
-                                template_name="experiment/subject_questionnaire_response_view.html"):
-    view = request.GET['view']
-
-    status_mode = None
-
-    if 'status' in request.GET:
-        status_mode = request.GET['status']
+def get_questionnaire_responses(language_code, lime_survey_id, token_id):
 
     questionnaire_responses = []
-
-    questionnaire_response = get_object_or_404(QuestionnaireResponse, id=questionnaire_response_id)
-    questionnaire_configuration = questionnaire_response.questionnaire_configuration
     surveys = Questionnaires()
-    survey_title = surveys.get_survey_title(questionnaire_configuration.lime_survey_id)
-    token = surveys.get_participant_properties(questionnaire_configuration.lime_survey_id,
-                                               questionnaire_response.token_id, "token")
-
+    token = surveys.get_participant_properties(lime_survey_id, token_id, "token")
     question_properties = []
-    groups = surveys.list_groups(questionnaire_configuration.lime_survey_id)
+    groups = surveys.list_groups(lime_survey_id)
+
+    survey_title = surveys.get_survey_title(lime_survey_id)
 
     if not isinstance(groups, dict):
 
         # defining language to be showed
-        languages = surveys.get_survey_languages(questionnaire_configuration.lime_survey_id)
+        languages = surveys.get_survey_languages(lime_survey_id)
         language = languages['language']
-        if request.LANGUAGE_CODE in languages['additional_languages'].split(' '):
-            language = request.LANGUAGE_CODE
+        if language_code in languages['additional_languages'].split(' '):
+            language = language_code
 
         for group in groups:
             if 'id' in group and group['id']['language'] == language:
 
-                question_list = surveys.list_questions(questionnaire_configuration.lime_survey_id, group['id'])
+                question_list = surveys.list_questions(lime_survey_id, group['id'])
                 question_list = sorted(question_list)
 
                 for question in question_list:
@@ -1021,10 +1006,10 @@ def questionnaire_response_view(request, questionnaire_response_id,
                             })
 
         # Reading from Limesurvey and...
-        responses_string = surveys.get_responses_by_token(questionnaire_configuration.lime_survey_id, token, language)
+        responses_string = surveys.get_responses_by_token(lime_survey_id, token, language)
 
         # ... transforming to a list:
-        #   response_list[0] has the questions
+        # response_list[0] has the questions
         #   response_list[1] has the answers
         reader = csv.reader(StringIO(responses_string), delimiter=',')
         responses_list = []
@@ -1035,7 +1020,8 @@ def questionnaire_response_view(request, questionnaire_response_id,
 
             if not question['hidden']:
 
-                if isinstance(question['answer_options'], basestring) and question['answer_options'] == "super_question":
+                if isinstance(question['answer_options'], basestring) and question[
+                    'answer_options'] == "super_question":
 
                     if question['question'] != '':
                         questionnaire_responses.append({
@@ -1051,8 +1037,8 @@ def questionnaire_response_view(request, questionnaire_response_id,
 
                         answer_list = []
 
-                        if question['question_id']+"[1]" in responses_list[0]:
-                            index = responses_list[0].index(question['question_id']+"[1]")
+                        if question['question_id'] + "[1]" in responses_list[0]:
+                            index = responses_list[0].index(question['question_id'] + "[1]")
                             answer_options = question['answer_options']
                             answer = question['attributes_lang']['dualscale_headerA'] + ": "
                             if responses_list[1][index] in answer_options:
@@ -1063,8 +1049,8 @@ def questionnaire_response_view(request, questionnaire_response_id,
 
                         answer_list.append(answer)
 
-                        if question['question_id']+"[2]" in responses_list[0]:
-                            index = responses_list[0].index(question['question_id']+"[2]")
+                        if question['question_id'] + "[2]" in responses_list[0]:
+                            index = responses_list[0].index(question['question_id'] + "[2]")
                             answer_options = question['answer_options']
                             answer = question['attributes_lang']['dualscale_headerB'] + ": "
                             if responses_list[1][index] in answer_options:
@@ -1112,6 +1098,29 @@ def questionnaire_response_view(request, questionnaire_response_id,
                         })
 
     surveys.release_session_key()
+
+    return survey_title, questionnaire_responses
+
+
+@login_required
+@permission_required('experiment.view_questionnaireresponse')
+def questionnaire_response_view(request, questionnaire_response_id,
+                                template_name="experiment/subject_questionnaire_response_view.html"):
+    view = request.GET['view']
+
+    status_mode = None
+
+    if 'status' in request.GET:
+        status_mode = request.GET['status']
+
+    questionnaire_response = get_object_or_404(QuestionnaireResponse, id=questionnaire_response_id)
+    questionnaire_configuration = questionnaire_response.questionnaire_configuration
+
+    lime_survey_id = questionnaire_configuration.lime_survey_id
+    token_id = questionnaire_response.token_id
+    language_code = request.LANGUAGE_CODE
+
+    survey_title, questionnaire_responses = get_questionnaire_responses(language_code, lime_survey_id, token_id)
 
     context = {
         "questionnaire_responses": questionnaire_responses,

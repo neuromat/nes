@@ -28,7 +28,11 @@
                 {% if origin == 'patient' %}
                     <li>Pacientes</li>
                     <li><a href="/patient/edit/{{ patient.id }}/?currentTab=4">{{ patient.name }}</a></li>
-                    <li class="active">Preencher Questionário</li>
+                    {% if creating %}
+                        <li class="active">Preencher Questionário</li>
+                    {% else %}
+                        <li class="active">Questionário: {{ questionnaire_title }}</li>
+                    {% endif %}
                 {% else %}
                     <li><a href="/experiment/list">Experimentos</a></li>
                     <li><a href="/experiment/{{ group.experiment.id }}">{{ group.experiment.title }}</a></li>
@@ -151,7 +155,7 @@
 
                             {% if origin == 'patient' %}
 
-                                <label>Participante</label>
+                                <label>Paciente</label>
 
                                 <div class="input-group input-group-sm">
                                         <span class="input-group-addon"><span
@@ -162,7 +166,7 @@
 
                             {% else %}
 
-                                <label>Paciente</label>
+                                <label>Participante</label>
 
                                 <div class="input-group input-group-sm">
                                         <span class="input-group-addon"><span
