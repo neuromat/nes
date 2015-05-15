@@ -37,7 +37,7 @@
                                     <td>{{ patient_questionnaire.questionnaire_title }}</td>
                                     <td>{{ patient_questionnaire.questionnaire_response.date }}</td>
                                     <td><a class="glyphicon glyphicon-search"
-                                           href="/experiment/questionnaire_response/{{ patient_questionnaire.questionnaire_response.pk }}/?view=patient&status={% if editing %}edit{% else %}view{% endif %}"></a>
+                                           href="/patient/questionnaire_response/edit/{{ patient_questionnaire.questionnaire_response.pk }}?origin=patient"></a>
 
                                         {% if limesurvey_available and patient_questionnaire.completed != None %}
                                             {% if patient_questionnaire.completed %}
