@@ -17,9 +17,12 @@ $(document).ready(function () {
     if (id_number_of_repetitions.val() == "") {
         id_number_of_repetitions.prop('disabled', true);
         unlimited_number_of_repetitions.prop('checked', true);
-    } else if (id_number_of_repetitions.val() == 1) {
-        interval_div.css('visibility', 'hidden');
+    } else {
         limited_number_of_repetitions.prop('checked', true);
+
+        if (id_number_of_repetitions.val() == 1) {
+            interval_div.css('visibility', 'hidden');
+        }
     }
 
     if (id_interval_between_repetitions_value.val() == "") {

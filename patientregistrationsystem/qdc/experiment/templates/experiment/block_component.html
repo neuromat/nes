@@ -100,9 +100,11 @@
                             </thead>
                             <tbody>
                                 {% if configuration_list|length == configuration_list_of_random_components|length %}
-                                    <td class="text-center" colspan="6">
-                                        Não possui
-                                    </td>
+                                    <tr>
+                                        <td class="text-center" colspan="6">
+                                            Não possui
+                                        </td>
+                                    </tr>
                                 {% else %}
                                     {% for configuration in configuration_list %}
                                         <tr>
@@ -203,9 +205,11 @@
                                             {% endif %}
                                         {% endfor %}
                                     {% else %}
-                                        <td class="text-center" colspan="4">
-                                            Não possui
-                                        </td>
+                                        <tr>
+                                            <td class="text-center" colspan="4">
+                                                Não possui
+                                            </td>
+                                        </tr>
                                     {% endif %}
                                 </tbody>
                             </table>

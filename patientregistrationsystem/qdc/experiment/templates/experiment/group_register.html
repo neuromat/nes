@@ -134,8 +134,9 @@
                                     <tbody>
                                     {% if not classification_of_diseases_list %}
                                         <tr>
-                                            <td>(sem diagnósticos)</td>
-                                            <td></td>
+                                            <td colspan="2">
+                                                Não há diagnósticos como critério de inclusão de participantes neste grupo
+                                            </td>
                                         </tr>
                                     {% else %}
                                         {% for classification_of_diseases in classification_of_diseases_list %}
@@ -161,42 +162,52 @@
                         <table class="table table-striped">
                             <thead>
                             <tr>
-                                <th>Questionário</th>
-                                <th>Quantidade de preenchimentos</th>
-                                <th>Intervalo entre preenchimentos</th>
+                                <th class="col-md-6">Questionário</th>
+{#                                <th class="col-md-2" data-toggle="tooltip" data-placement="top"#}
+                                <th class="col-md-2"
+                                    title="Quantidade de preenchimentos exigida para cada participante">
+                                    Preenchimentos necessários por participante</th>
+{#                                <th class="col-md-2" data-toggle="tooltip" data-placement="top"#}
+                                <th class="col-md-2"
+                                    title="Quantidade de preenchimentos necessários por participante vezes a quantidade de participantes deste grupo">
+                                    Total de preenchimentos necessários</th>
+{#                                <th class="col-md-2" data-toggle="tooltip" data-placement="top"#}
+                                <th class="col-md-2"
+                                    title="Soma da quantidade de preenchimentos já realizada por cada participante">
+                                    Total de preenchimentos já realizados</th>
                             </tr>
                             </thead>
                             <tbody>
-                            {% for questionnaire_configuration in questionnaires_configuration_list %}
-                                <tr>
-                                    <td>
-                                        <a data-toggle="tooltip" data-placement="left" title="Editar" href="/experiment/questionnaire/edit/{{ questionnaire_configuration.id }}">
-                                            {{ questionnaire_configuration.survey_title }}
-                                        </a>
-                                    </td>
-                                    <td>
-                                        {% if questionnaire_configuration.number_of_fills != None %}
-                                            {{ questionnaire_configuration.number_of_fills }}
-                                        {% else %}
-                                            Ilimitada
-                                        {% endif %}
-                                    </td>
-                                    <td>
-                                        {% if questionnaire_configuration.interval_between_fills_value != None and questionnaire_configuration.interval_between_fills_unit != None %}
-                                            {{ questionnaire_configuration.interval_between_fills_value }} {{ questionnaire_configuration.interval_between_fills_unit.name }}
-                                        {% else %}
-                                            Indefinido
-                                        {% endif %}
-                                    </td>
-                                </tr>
-                            {% endfor %}
+                                {% if questionnaires_configuration_list|length == 0 %}
+                                    <tr>
+                                        <td colspan="4">
+                                            Não há questionários no protocolo experimental deste grupo
+                                        </td>
+                                    </tr>
+                                {% else %}
+                                    {% for questionnaire_configuration in questionnaires_configuration_list %}
+                                        <tr>
+                                            <td>
+                                                <a data-toggle="tooltip" data-placement="left" title="Editar"
+                                                   href="/experiment/group/{{ group.id }}/questionnaire/{{ questionnaire_configuration.id }}">
+                                                    {{ questionnaire_configuration.survey_title }}
+                                                </a>
+                                            </td>
+                                            <td>
+                                                {{ questionnaire_configuration.fills_per_participant }}
+                                            </td>
+                                            <td>
+                                                {{ questionnaire_configuration.total_fills_needed }}
+                                            </td>
+                                            <td>
+                                                {{ questionnaire_configuration.total_fills_done }}
+                                            </td>
+                                        </tr>
+                                    {% endfor %}
+                                {% endif %}
                             </tbody>
                         </table>
                     </div>
-
-                    {% if perms.experiment.add_questionnaireconfiguration %}
-                        <a href="/experiment/group/{{ group.id }}/questionnaire/new" class="btn btn-primary {% if not limesurvey_available%} disabled{% endif %}">Inserir questionário</a>
-                    {% endif %}
                 </div>
 
                 {% if perms.experiment.add_subject %}

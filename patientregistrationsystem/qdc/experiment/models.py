@@ -228,6 +228,7 @@ class QuestionnaireConfiguration(models.Model):
 class QuestionnaireResponse(models.Model):
     subject_of_group = models.ForeignKey(SubjectOfGroup, null=False)
     questionnaire_configuration = models.ForeignKey(QuestionnaireConfiguration, null=False, on_delete=models.PROTECT)
+    component_configuration = models.ForeignKey(ComponentConfiguration, null=True, on_delete=models.PROTECT)
     token_id = models.IntegerField(null=False)
     date = models.DateField(default=datetime.date.today, null=False,
                             validators=[validate_date_questionnaire_response])

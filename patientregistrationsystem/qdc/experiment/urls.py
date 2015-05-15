@@ -37,21 +37,19 @@ urlpatterns = patterns(
     url(r'^diagnosis/delete/(?P<group_id>\d+)/(?P<classification_of_diseases_id>\d+)/$',
         'classification_of_diseases_remove', name='classification_of_diseases_remove'),
 
-    # questionnaire
-    url(r'^group/(?P<group_id>\d+)/questionnaire/new/$', 'questionnaire_create', name='questionnaire_new'),
-    url(r'^questionnaire/edit/(?P<questionnaire_configuration_id>\d+)/$',
-        'questionnaire_update', name='questionnaire_edit'),
-
     # subject
     url(r'^group/(?P<group_id>\d+)/subjects/$', 'subjects', name='subjects'),
     url(r'^subject/search/$', 'search_patients_ajax', name='subject_search'),
+    # TODO Rename subjects to subject
     url(r'^group/(?P<group_id>\d+)/subjects/(?P<patient_id>\d+)/$', 'subjects_insert', name='subject_insert'),
+    # TODO Rename subjects to subject
     url(r'^group/(?P<group_id>\d+)/subjects/(?P<subject_id>\d+)/upload_file/$', 'upload_file', name='upload_file'),
 
     # subject + questionnaire
+    # TODO Rename subjects to subject
     url(r'^group/(?P<group_id>\d+)/subjects/(?P<subject_id>\d+)/questionnaire/$',
         'subject_questionnaire_view', name='subject_questionnaire'),
-    url(r'^subjects/(?P<subject_id>\d+)/questionnaire/(?P<questionnaire_id>\d+)/response/$',
+    url(r'^group/(?P<group_id>\d+)/subject/(?P<subject_id>\d+)/questionnaire/(?P<questionnaire_id>\d+)/response/$',
         'subject_questionnaire_response_create', name='subject_questionnaire_response'),
     url(r'^questionnaire_response/edit/(?P<questionnaire_response_id>\d+)/$',
         'questionnaire_response_update', name='questionnaire_response_edit'),
@@ -69,4 +67,8 @@ urlpatterns = patterns(
         'component_reuse', name='component_reuse'),
     url(r'^component/change_the_order/(?P<path_of_the_components>[0-9-UG]+)/(?P<configuration_id>[0-9]+)/(?P<command>\w+)/$',
         'component_change_the_order', name='component_change_the_order'),
+
+    # Data collection
+    url(r'^group/(?P<group_id>\d+)/questionnaire/(?P<component_configuration_id>\d+)/$',
+        'questionnaire_view', name='questionnaire_view'),
 )

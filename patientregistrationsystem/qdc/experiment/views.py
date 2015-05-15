@@ -319,6 +319,50 @@ def group_create(request, experiment_id, template_name="experiment/group_registe
     return render(request, template_name, context)
 
 
+def recursively_create_list_of_questonaries(block_id, list_of_questionnaires_configuration, surveys, num_participants):
+    questionnaire_configurations = ComponentConfiguration.objects.filter(parent_id=block_id,
+                                                                         component__component_type="questionnaire")
+
+    for questionnaire_configuration in questionnaire_configurations:
+        if questionnaire_configuration.number_of_repetitions is not None:
+            fills_per_participant = questionnaire_configuration.number_of_repetitions
+            total_fills_needed = num_participants * fills_per_participant
+        else:
+            fills_per_participant = "Ilimitado"
+            total_fills_needed = "Ilimitado"
+
+        subject_responses = QuestionnaireResponse.objects.filter(component_configuration=questionnaire_configuration)
+        amount_of_completed_questionnaires = 0
+
+        for subject_response in subject_responses:
+            response_result = surveys.get_participant_properties(questionnaire_configuration.lime_survey_id,
+                                                                 subject_response.token_id, "completed")
+
+            if response_result != "N" and response_result != "":
+                amount_of_completed_questionnaires += 1
+
+        list_of_questionnaires_configuration.append({
+                "survey_title": surveys.get_survey_title(
+                    Questionnaire.objects.get(id=questionnaire_configuration.component.id).lime_survey_id),
+                "fills_per_participant": fills_per_participant,
+                "total_fills_needed": total_fills_needed,
+                "total_fills_done": amount_of_completed_questionnaires,
+                "id": questionnaire_configuration.id})
+
+    block_configurations = ComponentConfiguration.objects.filter(parent_id=block_id,
+                                                                 component__component_type="block")
+
+    for block_configuration in block_configurations:
+        list_of_questionnaires_configuration = recursively_create_list_of_questonaries(
+            Block.objects.get(id=block_configuration.component.id),
+            list_of_questionnaires_configuration,
+            surveys,
+            num_participants)
+
+    return list_of_questionnaires_configuration
+
+
+
 @login_required
 @permission_required('experiment.add_experiment')
 def group_view(request, group_id, template_name="experiment/group_register.html"):
@@ -330,18 +374,22 @@ def group_view(request, group_id, template_name="experiment/group_register.html"
 
     experiment = get_object_or_404(Experiment, pk=group.experiment_id)
 
-    list_of_questionnaires_configuration = QuestionnaireConfiguration.objects.filter(group=group)
-    surveys = Questionnaires()
-    limesurvey_available = check_limesurvey_access(request, surveys)
+    # Navigate the components of the experimental protocol from the root to see if there is any questionnaire component
+    # in this group.
+    if group.experimental_protocol is not None:
+        surveys = Questionnaires()
+        # This method shows a message to the user if limesurvey is not available.
+        check_limesurvey_access(request, surveys)
 
-    list_of_questionnaires_configuration = [
-        {"survey_title": surveys.get_survey_title(questionnaire_configuration.lime_survey_id),
-         "number_of_fills": questionnaire_configuration.number_of_fills,
-         "interval_between_fills_value": questionnaire_configuration.interval_between_fills_value,
-         "interval_between_fills_unit": questionnaire_configuration.interval_between_fills_unit,
-         "id": questionnaire_configuration.id}
-        for questionnaire_configuration in list_of_questionnaires_configuration]
-    surveys.release_session_key()
+        list_of_questionnaires_configuration =\
+            recursively_create_list_of_questonaries(group.experimental_protocol,
+                                                    [],
+                                                    surveys,
+                                                    SubjectOfGroup.objects.filter(group_id=group_id).count())
+
+        surveys.release_session_key()
+    else:
+        list_of_questionnaires_configuration = None
 
     if request.method == "POST":
         if request.POST['action'] == "remove":
@@ -362,8 +410,8 @@ def group_view(request, group_id, template_name="experiment/group_register.html"
         "experiment": experiment,
         "group": group,
         "editing": False,
-        "number_of_subjects": SubjectOfGroup.objects.all().filter(group=group).count(),
-        "limesurvey_available": limesurvey_available}
+        "number_of_subjects": SubjectOfGroup.objects.all().filter(group=group).count()
+    }
 
     return render(request, template_name, context)
 
@@ -453,110 +501,24 @@ def classification_of_diseases_remove(request, group_id, classification_of_disea
 
 
 @login_required
-@permission_required('experiment.add_questionnaireconfiguration')
-def questionnaire_create(request, group_id, template_name="experiment/questionnaire_register.html"):
+@permission_required('experiment.change_questionnaireconfiguration')
+def questionnaire_view(request, group_id, component_configuration_id,
+                         template_name="experiment/questionnaire_view.html"):
+    questionnaire_configuration = get_object_or_404(ComponentConfiguration, pk=component_configuration_id)
     group = get_object_or_404(Group, pk=group_id)
 
-    questionnaire_form = QuestionnaireConfigurationForm(
-        request.POST or None,
-        initial={'number_of_fills': 1, 'interval_between_fills_value': None})
-
-    questionnaires_list = []
-
-    if request.method == "GET":
-        questionnaires_of_group = QuestionnaireConfiguration.objects.filter(group=group)
-
-        if not questionnaires_of_group:
-            questionnaires_list = Questionnaires().find_all_active_questionnaires()
-        else:
-            active_questionnaires_list = Questionnaires().find_all_active_questionnaires()
-
-            for questionnaire in questionnaires_of_group:
-                for active_questionnaire in active_questionnaires_list:
-                    if active_questionnaire['sid'] == questionnaire.lime_survey_id:
-                        active_questionnaires_list.remove(active_questionnaire)
-
-            questionnaires_list = active_questionnaires_list
-
-    if request.method == "POST":
-        if request.POST['action'] == "save":
-            if questionnaire_form.is_valid():
-                lime_survey_id = request.POST['questionnaire_selected']
-
-                questionnaire = QuestionnaireConfiguration()
-                questionnaire.lime_survey_id = lime_survey_id
-                questionnaire.group = group
-
-                if "number_of_fills" in request.POST:
-                    questionnaire.number_of_fills = request.POST['number_of_fills']
-
-                if "interval_between_fills_value" in request.POST:
-                    questionnaire.interval_between_fills_value = request.POST['interval_between_fills_value']
-
-                if "interval_between_fills_unit" in request.POST:
-                    questionnaire.interval_between_fills_unit = \
-                        get_object_or_404(TimeUnit, pk=request.POST['interval_between_fills_unit'])
-
-                questionnaire.save()
-                messages.success(request, 'Questionário incluído com sucesso.')
-                redirect_url = reverse("group_view", args=(group_id,))
-                return HttpResponseRedirect(redirect_url)
-
-    context = {
-        "questionnaire_form": questionnaire_form,
-        "creating": True,
-        "updating": False,
-        "group": group,
-        "questionnaires_list": questionnaires_list}
-
-    return render(request, template_name, context)
-
-
-@login_required
-@permission_required('experiment.change_questionnaireconfiguration')
-def questionnaire_update(request, questionnaire_configuration_id,
-                         template_name="experiment/questionnaire_register.html"):
-    questionnaire_configuration = get_object_or_404(QuestionnaireConfiguration, pk=questionnaire_configuration_id)
-    group = get_object_or_404(Group, pk=questionnaire_configuration.group.id)
-    questionnaire_form = QuestionnaireConfigurationForm(request.POST or None, instance=questionnaire_configuration)
-
-    if request.method == "POST":
-        if request.POST['action'] == "save":
-            if questionnaire_form.is_valid():
-                if "number_of_fills" in request.POST:
-                    questionnaire_configuration.number_of_fills = request.POST['number_of_fills']
-
-                if "interval_between_fills_value" in request.POST:
-                    questionnaire_configuration.interval_between_fills_value = \
-                        request.POST['interval_between_fills_value']
-
-                if "interval_between_fills_unit" in request.POST:
-                    questionnaire_configuration.interval_between_fills_unit = \
-                        get_object_or_404(TimeUnit, pk=request.POST['interval_between_fills_unit'])
-
-                questionnaire_configuration.save()
-                messages.success(request, 'Questionário atualizado com sucesso.')
-                redirect_url = reverse("group_view", args=(group.id,))
-                return HttpResponseRedirect(redirect_url)
-        elif request.POST['action'] == "remove":
-            try:
-                questionnaire_configuration.delete()
-                redirect_url = reverse("group_view", args=(group.id,))
-                return HttpResponseRedirect(redirect_url)
-            except ProtectedError:
-                messages.error(request, "Não foi possível excluir o questionário, pois há respostas associadas")
-
     surveys = Questionnaires()
-    questionnaire_title = surveys.get_survey_title(questionnaire_configuration.lime_survey_id)
+    questionnaire_title = surveys.get_survey_title(
+        Questionnaire.objects.get(id=questionnaire_configuration.component_id).lime_survey_id)
 
     limesurvey_available = check_limesurvey_access(request, surveys)
 
     subject_list_with_status = []
 
-    for subject_of_group in SubjectOfGroup.objects.all().filter(group=group).order_by('subject__patient__name'):
+    for subject_of_group in SubjectOfGroup.objects.filter(group=group).order_by('subject__patient__name'):
         subject_responses = QuestionnaireResponse.objects.\
-            filter(subject_of_group=subject_of_group). \
-            filter(questionnaire_configuration=questionnaire_configuration)
+            filter(subject_of_group=subject_of_group,
+                   component_configuration=questionnaire_configuration)
         amount_of_completed_questionnaires = 0
         questionnaire_responses_with_status = []
 
@@ -575,7 +537,7 @@ def questionnaire_update(request, questionnaire_configuration_id,
             )
 
         # If unlimited fills, percentage is related to the number of completed questionnaires
-        if questionnaire_configuration.number_of_fills is None:
+        if questionnaire_configuration.number_of_repetitions is None:
             denominator = subject_responses.count()
 
             if subject_responses.count() > 0:
@@ -583,10 +545,10 @@ def questionnaire_update(request, questionnaire_configuration_id,
             else:
                 percentage = 0
         else:
-            denominator = questionnaire_configuration.number_of_fills
+            denominator = questionnaire_configuration.number_of_repetitions
 
             # Handle cases in which number of possible responses was reduced afterwords.
-            if questionnaire_configuration.number_of_fills < amount_of_completed_questionnaires:
+            if questionnaire_configuration.number_of_repetitions < amount_of_completed_questionnaires:
                 percentage = 100
             else:
                 percentage = 100 * amount_of_completed_questionnaires / denominator
@@ -601,9 +563,6 @@ def questionnaire_update(request, questionnaire_configuration_id,
     surveys.release_session_key()
 
     context = {
-        "questionnaire_form": questionnaire_form,
-        "creating": False,
-        "updating": True,
         "group": group,
         "questionnaire_title": questionnaire_title,
         "questionnaire_configuration": questionnaire_configuration,
@@ -681,39 +640,36 @@ def subjects(request, group_id, template_name="experiment/subjects.html"):
     return render(request, template_name, context)
 
 
-def subject_questionnaire_response_start_fill_questionnaire(request, subject_id, questionnaire_id):
+def subject_questionnaire_response_start_fill_questionnaire(request, subject_id, group_id, questionnaire_id):
     questionnaire_response_form = QuestionnaireResponseForm(request.POST)
 
     if questionnaire_response_form.is_valid():
 
         questionnaire_response = questionnaire_response_form.save(commit=False)
 
-        questionnaire_config = get_object_or_404(QuestionnaireConfiguration, id=questionnaire_id)
+        questionnaire_config = get_object_or_404(ComponentConfiguration, id=questionnaire_id)
 
         questionnaire_lime_survey = Questionnaires()
 
         subject = get_object_or_404(Subject, pk=subject_id)
         patient = subject.patient
 
-        subject_of_group = get_object_or_404(SubjectOfGroup, subject=subject, group=questionnaire_config.group)
+        subject_of_group = get_object_or_404(SubjectOfGroup, subject=subject, group_id=group_id)
+        lime_survey_id = Questionnaire.objects.get(id=questionnaire_config.component_id).lime_survey_id
 
-        if not questionnaire_lime_survey.survey_has_token_table(questionnaire_config.lime_survey_id):
-            messages.warning(request,
-                             'Preenchimento não disponível - Tabela de tokens não iniciada')
+        if not questionnaire_lime_survey.survey_has_token_table(lime_survey_id):
+            messages.warning(request, 'Preenchimento não disponível - Tabela de tokens não iniciada')
             return None, None
 
-        if questionnaire_lime_survey.get_survey_properties(questionnaire_config.lime_survey_id, 'active') == 'N':
-            messages.warning(request,
-                             'Preenchimento não disponível - Questionário não está ativo')
+        if questionnaire_lime_survey.get_survey_properties(lime_survey_id, 'active') == 'N':
+            messages.warning(request, 'Preenchimento não disponível - Questionário não está ativo')
             return None, None
 
-        if not check_required_fields(questionnaire_lime_survey, questionnaire_config.lime_survey_id):
-            messages.warning(request,
-                             'Preenchimento não disponível - Questionário não contém campos padronizados')
+        if not check_required_fields(questionnaire_lime_survey, lime_survey_id):
+            messages.warning(request, 'Preenchimento não disponível - Questionário não contém campos padronizados')
             return None, None
 
-        result = questionnaire_lime_survey.add_participant(questionnaire_config.lime_survey_id, patient.name, '',
-                                                           patient.email)
+        result = questionnaire_lime_survey.add_participant(lime_survey_id, patient.name, '', patient.email)
 
         questionnaire_lime_survey.release_session_key()
 
@@ -723,10 +679,13 @@ def subject_questionnaire_response_start_fill_questionnaire(request, subject_id,
             return None, None
 
         questionnaire_response.subject_of_group = subject_of_group
-        questionnaire_response.questionnaire_configuration = questionnaire_config
+        questionnaire_response.component_configuration = questionnaire_config
         questionnaire_response.token_id = result['token_id']
         questionnaire_response.date = datetime.datetime.strptime(request.POST['date'], '%d/%m/%Y')
         questionnaire_response.questionnaire_responsible = request.user
+
+        # TODO Fix bug caused by migration from QuestionnaireConfiguration to ComponentConfiguration.
+        # TODO Crash is caused because QuestionnaireConfiguration is null at this point.
         questionnaire_response.save()
 
         redirect_url = get_limesurvey_response_url(questionnaire_response)
@@ -757,13 +716,14 @@ def get_limesurvey_response_url(questionnaire_response):
 
 @login_required
 @permission_required('experiment.add_questionnaireresponse')
-def subject_questionnaire_response_create(request, subject_id, questionnaire_id,
+def subject_questionnaire_response_create(request, group_id, subject_id, questionnaire_id,
                                           template_name="experiment/subject_questionnaire_response_form.html"):
-    questionnaire_config = get_object_or_404(QuestionnaireConfiguration, id=questionnaire_id)
+    questionnaire_config = get_object_or_404(ComponentConfiguration, id=questionnaire_id)
 
     surveys = Questionnaires()
-    survey_title = surveys.get_survey_title(questionnaire_config.lime_survey_id)
-    survey_active = surveys.get_survey_properties(questionnaire_config.lime_survey_id, 'active')
+    lime_survey_id = Questionnaire.objects.get(id=questionnaire_config.component_id).lime_survey_id
+    survey_title = surveys.get_survey_title(lime_survey_id)
+    survey_active = surveys.get_survey_properties(lime_survey_id, 'active')
     # survey_admin = surveys.get_survey_properties(questionnaire_config.lime_survey_id, 'admin')
     surveys.release_session_key()
 
@@ -780,7 +740,7 @@ def subject_questionnaire_response_create(request, subject_id, questionnaire_id,
 
         if request.POST['action'] == "save":
             redirect_url, questionnaire_response_id = \
-                subject_questionnaire_response_start_fill_questionnaire(request, subject_id, questionnaire_id)
+                subject_questionnaire_response_start_fill_questionnaire(request, subject_id, group_id, questionnaire_id)
             if not redirect_url:
                 fail = False
             else:
@@ -801,7 +761,7 @@ def subject_questionnaire_response_create(request, subject_id, questionnaire_id,
         "questionnaire_responsible": request.user.get_username(),
         "creating": True,
         "subject": get_object_or_404(Subject, pk=subject_id),
-        "group": questionnaire_config.group,
+        "group": group_id,
         "origin": origin
     }
 

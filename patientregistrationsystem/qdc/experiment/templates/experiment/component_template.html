@@ -193,7 +193,7 @@
                                     <div class="input-group  input-group-sm">
                                         {% for radio in configuration_form.random_position %}
                                             <span style="margin-right: 15px;" data-toggle="tooltip" data-placement="bottom" title="
-                                            {% cycle 'A ordem de execução deste subcomponente não varia' 'Este subcomponente pode ser executado em qualquer posição do bloco pai onde não há compoentes fixos' %}">
+                                            {% cycle 'A ordem de execução deste subcomponente não varia' 'Este subcomponente pode ser executado em qualquer posição do bloco pai onde não há um componente fixo' %}">
                                                 <div class="radio-inline">{{ radio }}</div>
                                             </span>
                                         {% endfor %}
