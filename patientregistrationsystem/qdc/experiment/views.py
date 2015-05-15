@@ -719,6 +719,7 @@ def get_limesurvey_response_url(questionnaire_response):
 def subject_questionnaire_response_create(request, group_id, subject_id, questionnaire_id,
                                           template_name="experiment/subject_questionnaire_response_form.html"):
     questionnaire_config = get_object_or_404(ComponentConfiguration, id=questionnaire_id)
+    group = get_object_or_404(Group, id=group_id)
 
     surveys = Questionnaires()
     lime_survey_id = Questionnaire.objects.get(id=questionnaire_config.component_id).lime_survey_id
@@ -761,7 +762,7 @@ def subject_questionnaire_response_create(request, group_id, subject_id, questio
         "questionnaire_responsible": request.user.get_username(),
         "creating": True,
         "subject": get_object_or_404(Subject, pk=subject_id),
-        "group": group_id,
+        "group": group,
         "origin": origin
     }
 

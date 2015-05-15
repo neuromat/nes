@@ -130,9 +130,22 @@ class ExperimentalProtocolTest(TestCase):
                          'description': 'Questionnaire description', 'questionnaire_selected': survey_id}
             response = self.client.post(reverse("component_new", args=(experiment.id, "questionnaire")), self.data)
             self.assertEqual(response.status_code, 302)
-        # Check if redirected to list of components
+            # Check if redirected to list of components
             self.assertTrue("/experiment/" + str(experiment.id) + "/components" in response.url)
             self.assertTrue(Questionnaire.objects.filter(identification="Questionnaire identification").exists())
+
+            # TODO Adaptar esse teste antigo para cá e verificar o TODO de baixo.
+            # Criar um questionario com código do questionário invalido
+            # count_before_insert = QuestionnaireConfiguration.objects.all().count()
+            # self.data = {'action': 'save', 'number_of_fills': '1', 'questionnaire_selected': 0}
+            # response = self.client.post(reverse('questionnaire_new', args=(group.pk,)), self.data, follow=True)
+            # self.assertEqual(response.status_code, 200)
+
+            # TODO Verificar este teste, porque está permitindo codigo de questionario do Lime Survey invalido
+            # count_after_insert = QuestionnaireConfiguration.objects.all().count()
+            # self.assertEqual(count_after_insert,
+            #                  count_before_insert + 1)
+
         finally:
             # Deleta a survey gerada no Lime Survey
             status = lime_survey.delete_survey(survey_id)
@@ -286,7 +299,6 @@ class ExperimentalProtocolTest(TestCase):
         self.assertTrue("/experiment/component/" + str(block.id) in response.url)
         self.assertEqual(ComponentConfiguration.objects.get(name="ComponentConfiguration 1").order, 1)
         self.assertEqual(ComponentConfiguration.objects.get(name="ComponentConfiguration 2").order, 2)
-
 
 
 class GroupTest(TestCase):
@@ -516,7 +528,7 @@ class ExperimentTest(TestCase):
         self.assertEqual(Experiment.objects.all().count(), count - 1)
 
 
-class QuestionnaireConfigurationTest(TestCase):
+class ListOfQuestionnaireFromExperimentalProtocolOfAGroupTest(TestCase):
     lime_survey = None
 
     def setUp(self):
@@ -544,140 +556,109 @@ class QuestionnaireConfigurationTest(TestCase):
                 self.assertNotEqual(self.lime_survey.session_key['status'], 'Invalid user name or password')
                 print 'Failed to connect Lime Survey %s' % self.lime_survey.session_key['status']
 
-    def test_questionnaire_create(self):
-        """Testa a criacao de um questionario para um dado experimento"""
+    def test_questionnaire_list(self):
+        """Testa a criacao de um questionario para um dado grupo"""
 
         # Criar um experimento mock para ser utilizado no teste
         experiment = Experiment.objects.create(title="Experimento-Update",
                                                description="Descricao do Experimento-Update")
         experiment.save()
 
-        # Cria o TimeUnit para ser utilizado nos testes com intervalo de tempo
-        time_unit = TimeUnit.objects.create(name='Horas')
-        time_unit.save()
+        # Create the root of the experimental protocol
+        block = Block.objects.create(identification='Root',
+                                     description='Root description',
+                                     experiment=Experiment.objects.first(),
+                                     component_type='block',
+                                     type="sequence")
+        block.save()
 
-        # Criar um grupo mock para ser utilizado no teste
-        group = Group.objects.create(experiment=experiment,
-                                     title="Group-update",
-                                     description="Descricao do Group-update")
-        group.save()
-
-        # Abre tela de cadastro de questionario
-        response = self.client.get(reverse('questionnaire_new', args=(group.pk,)))
-        self.assertEqual(response.status_code, 200)
-
-        sid = self.lime_survey.add_survey(9999, 'Questionario de teste - DjangoTests', 'en', 'G')
+        # Create a quesitonnaire at LiveSurvey to use in this test.
+        survey_title = 'Questionario de teste - DjangoTests'
+        sid = self.lime_survey.add_survey(99999, survey_title, 'en', 'G')
 
         try:
-            # Cria um questionario com os dados default apresentados em tela
-            count_before_insert = QuestionnaireConfiguration.objects.all().count()
-            self.data = {'action': 'save', 'number_of_fills': '1', 'questionnaire_selected': sid}
-            response = self.client.post(reverse('questionnaire_new', args=(group.pk,)), self.data, follow=True)
+            # Create a questionnaire
+            questionnaire = Questionnaire.objects.create(identification='Questionnaire',
+                                                         description='Questionnaire description',
+                                                         experiment=Experiment.objects.first(),
+                                                         component_type='questionnaire',
+                                                         lime_survey_id=sid)
+            questionnaire.save()
+
+            # Include the questionnaire in the root.
+            component_configuration = ComponentConfiguration.objects.create(
+                name='ComponentConfiguration',
+                parent=block,
+                component=questionnaire
+            )
+            component_configuration.save()
+
+            # Criar um grupo mock para ser utilizado no teste
+            group = Group.objects.create(experiment=experiment,
+                                         title="Group-update",
+                                         description="Descricao do Group-update",
+                                         experimental_protocol_id=block.id)
+            group.save()
+
+            # Abre tela de grupo
+            response = self.client.get(reverse('group_view', args=(group.pk,)))
             self.assertEqual(response.status_code, 200)
-
-            count_after_insert = QuestionnaireConfiguration.objects.all().count()
-            self.assertEqual(count_after_insert, count_before_insert + 1)
-
-            # Remove o questionario criado
-            questionnaire_created = get_object_or_404(QuestionnaireConfiguration, group=group,
-                                                      lime_survey_id=sid)
-            if questionnaire_created:
-                questionnaire_created.delete()
-
-            # Criar um questionario com dados incompletos - Codigo Questionario invalido
-            count_before_insert = QuestionnaireConfiguration.objects.all().count()
-            self.data = {'action': 'save', 'number_of_fills': '1', 'questionnaire_selected': 0}
-            response = self.client.post(reverse('questionnaire_new', args=(group.pk,)), self.data, follow=True)
-            self.assertEqual(response.status_code, 200)
-
-            # TODO Verificar este teste, esta permitindo codigo de questionario do Lime Survey invalido
-            count_after_insert = QuestionnaireConfiguration.objects.all().count()
-            self.assertEqual(count_after_insert,
-                             count_before_insert + 1)
-
-            # Criar um questionario com intervalo de preenchimento
-            count_before_insert = QuestionnaireConfiguration.objects.all().count()
-            self.data = {'interval_between_fills_value': '12',
-                         'number_of_fills': '3',
-                         'questionnaire_selected': sid,
-                         'interval_between_fills_unit': str(time_unit.pk),
-                         'action': 'save'}
-
-            response = self.client.post(reverse('questionnaire_new', args=(group.pk,)), self.data, follow=True)
-            self.assertEqual(response.status_code, 200)
-
-            count_after_insert = QuestionnaireConfiguration.objects.all().count()
-            self.assertEqual(count_after_insert, count_before_insert + 1)
-
+            # Check if the survey is listed
+            self.assertContains(response, survey_title)
         finally:
             # Deleta a survey gerada no Lime Survey
             status = self.lime_survey.delete_survey(sid)
             self.assertEqual(status, 'OK')
 
-    def test_questionnaire_update(self):
-        """ Teste atualizacao de um questionario """
+    def test_questionnaire_view(self):
+        """Test exhibition of a questionnaire of a group"""
 
         # Criar um experimento mock para ser utilizado no teste
         experiment = Experiment.objects.create(title="Experimento-Update",
                                                description="Descricao do Experimento-Update")
         experiment.save()
 
-        # Criar um grupo mock para ser utilizado no teste
-        group = Group.objects.create(experiment=experiment,
-                                     title="Group-update",
-                                     description="Descricao do Group-update")
+        # Create the root of the experimental protocol
+        block = Block.objects.create(identification='Root',
+                                     description='Root description',
+                                     experiment=Experiment.objects.first(),
+                                     component_type='block',
+                                     type="sequence")
+        block.save()
 
-        # Cria uma survey no Lime Survey
-        sid = self.lime_survey.add_survey(9999, 'Questionario de teste - DjangoTests', 'en', 'G')
+        # Create a quesitonnaire at LiveSurvey to use in this test.
+        survey_title = 'Questionario de teste - DjangoTests'
+        sid = self.lime_survey.add_survey(99999, survey_title, 'en', 'G')
 
         try:
-            # Cria um questionario
-            questionnaire = QuestionnaireConfiguration.objects.create(lime_survey_id=sid, group=group,
-                                                                      number_of_fills=2)
+            # Create a questionnaire
+            questionnaire = Questionnaire.objects.create(identification='Questionnaire',
+                                                         description='Questionnaire description',
+                                                         experiment=Experiment.objects.first(),
+                                                         component_type='questionnaire',
+                                                         lime_survey_id=sid)
             questionnaire.save()
 
-            # Cria o TimeUnit para ser utilizado nos testes com intervalo de tempo
-            time_unit = TimeUnit.objects.create(name='Horas')
-            time_unit.save()
+            # Include the questionnaire in the root.
+            component_configuration = ComponentConfiguration.objects.create(
+                name='ComponentConfiguration',
+                parent=block,
+                component=questionnaire
+            )
+            component_configuration.save()
 
-            # Abre tela de cadastro de questionario
-            response = self.client.get(reverse('questionnaire_edit', args=(questionnaire.pk,)))
+            # Criar um grupo mock para ser utilizado no teste
+            group = Group.objects.create(experiment=experiment,
+                                         title="Group-update",
+                                         description="Descricao do Group-update",
+                                         experimental_protocol_id=block.id)
+            group.save()
+
+            # Show questionnaire screen
+            response = self.client.get(reverse('questionnaire_view', args=(group.pk, component_configuration.pk)))
             self.assertEqual(response.status_code, 200)
-
-            # Conta o numero de questionarios existentes antes da atualizacao
-            count_before_insert = QuestionnaireConfiguration.objects.all().count()
-
-            # Prepara dados POST para atualizacao
-            self.data = {'interval_between_fills_value': '12',
-                         'number_of_fills': '3',
-                         'questionnaire_selected': sid,
-                         'interval_between_fills_unit': str(time_unit.pk),
-                         'action': 'save'}
-
-            # Executa a operacao via metodo POST
-            response = self.client.post(reverse('questionnaire_edit', args=(questionnaire.pk,)), self.data, follow=True)
-
-            # Verifica se o retorno e valido
-            self.assertEqual(response.status_code, 200)
-
-            # Conta numero de questionarios existentes apos a atualizacao. Isso certifica que nao ira
-            # gerar uma adicao ao inves de atualizacao do questionario
-            count_after_insert = QuestionnaireConfiguration.objects.all().count()
-            self.assertEqual(count_after_insert, count_before_insert)
-
-            # Remove o questionario atualizado
-            self.data = {'interval_between_fills_value': '12',
-                         'number_of_fills': '3',
-                         'questionnaire_selected': sid,
-                         'interval_between_fills_unit': str(time_unit.pk),
-                         'action': 'remove'}
-
-            response = self.client.post(reverse('questionnaire_edit', args=(questionnaire.pk,)), self.data, follow=True)
-            self.assertEqual(response.status_code, 200)
-
-            count_after_remove = QuestionnaireConfiguration.objects.all().count()
-            self.assertEqual(count_after_remove, count_after_insert - 1)
-
+            # Check if the survey is listed
+            self.assertContains(response, survey_title)
         finally:
             # Deleta a survey gerada no Lime Survey
             status = self.lime_survey.delete_survey(sid)
