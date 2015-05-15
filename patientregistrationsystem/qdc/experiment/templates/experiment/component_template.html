@@ -53,7 +53,8 @@
 
             <ol class="breadcrumb">
                 <li><a href="/home">Home</a></li>
-                <li><a href="/experiment/list">Experimentos</a></li>
+                <li><a href="/experiment/research_project/list">Estudos</a></li>
+                <li><a href="/experiment/research_project/{{ experiment.research_project.id }}">{{ experiment.research_project.title }}</a></li>
                 <li><a href="/experiment/{{ experiment.id }}">{{ experiment.title }}</a></li>
 
                 {% if group != None %}
@@ -254,7 +255,7 @@
             <div class="btn-toolbar">
                 {# This div has to be out of the if so that the save and cancel buttons appear separated from each other. #}
                 <div class="btn-group pull-left">
-                    {% if show_remove and perms.experiment.change_experiment %}
+                    {% if show_remove and perms.experiment.change_research_project %}
                         <button type="button" class="btn btn-danger" onclick="$('#modalRemove').modal('show')">Excluir</button>
                     {% endif %}
                 </div>
@@ -280,7 +281,7 @@
         </div>
     </div>
 
-    {% if show_remove and perms.experiment.change_experiment %}
+    {% if show_remove and perms.experiment.change_research_project %}
         <div class="modal fade" id="modalRemove" tabindex="-1" role="dialog" aria-labelledby="myModalLabel"
              aria-hidden="true">
             <div class="modal-dialog">

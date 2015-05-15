@@ -34,7 +34,8 @@
                         <li class="active">Questionário: {{ questionnaire_title }}</li>
                     {% endif %}
                 {% else %}
-                    <li><a href="/experiment/list">Experimentos</a></li>
+                    <li><a href="/experiment/research_project/list">Estudos</a></li>
+                    <li><a href="/experiment/research_project/{{ group.experiment.research_project.id }}">{{ group.experiment.research_project.title }}</a></li>
                     <li><a href="/experiment/{{ group.experiment.id }}">{{ group.experiment.title }}</a></li>
                     <li><a href="/experiment/group/{{ group.id }}">{{ group.title }}</a></li>
                     {% if origin == 'subject' %}

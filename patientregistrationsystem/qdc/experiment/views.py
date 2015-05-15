@@ -102,7 +102,8 @@ def research_project_view(request, research_project_id, template_name="experimen
     context = {
         "research_project": research_project,
         "research_project_form": research_project_form,
-        "keywords": research_project.keywords.all()}
+        "keywords": research_project.keywords.order_by('name'),
+        "experiments": research_project.experiment_set.order_by('title')}
 
     return render(request, template_name, context)
 
@@ -207,19 +208,9 @@ def keyword_remove_ajax(request, research_project_id, keyword_id):
 
 
 @login_required
-@permission_required('experiment.view_experiment')
-def experiment_list(request, template_name="experiment/experiment_list.html"):
-
-    experiments = Experiment.objects.order_by('title')
-    context = {"experiments": experiments}
-
-    return render(request, template_name, context)
-
-
-@login_required
 @permission_required('experiment.add_experiment')
-def experiment_create(request, template_name="experiment/experiment_register.html"):
-    experiment_form = ExperimentForm(request.POST or None)
+def experiment_create(request, research_project_id, template_name="experiment/experiment_register.html"):
+    experiment_form = ExperimentForm(request.POST or None, initial={'research_project': research_project_id})
 
     if request.method == "POST":
         if request.POST['action'] == "save":
@@ -232,6 +223,7 @@ def experiment_create(request, template_name="experiment/experiment_register.htm
                 return HttpResponseRedirect(redirect_url)
 
     context = {
+        "research_project": ResearchProject.objects.get(id=research_project_id),
         "experiment_form": experiment_form,
         "creating": True,
         "editing": True}
@@ -258,6 +250,7 @@ def experiment_view(request, experiment_id, template_name="experiment/experiment
                 messages.error(request, "Não foi possível excluir o experimento, pois há grupos associados")
 
     context = {
+        "research_project": experiment.research_project,
         "experiment_form": experiment_form,
         "group_list": group_list,
         "experiment": experiment}
@@ -285,6 +278,7 @@ def experiment_update(request, experiment_id, template_name="experiment/experime
                 return HttpResponseRedirect(redirect_url)
 
     context = {
+        "research_project": experiment.research_project,
         "experiment_form": experiment_form,
         "editing": True,
         "group_list": group_list,

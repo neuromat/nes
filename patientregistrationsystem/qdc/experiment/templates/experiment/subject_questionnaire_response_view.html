@@ -23,7 +23,9 @@
                         <li><a href="/patient/{{ questionnaire_response.subject_of_group.subject.patient.id }}/?currentTab=4">{{ questionnaire_response.subject_of_group.subject.patient.name }}</a></li>
                     {% endif %}
                 {% else %}
-                    <li><a href="/experiment/list">Experimentos</a></li>
+                    <li><a href="/experiment/research_project/list">Estudos</a></li>
+                    <li><a href="/experiment/research_project/{{ questionnaire_response.questionnaire_configuration.group.experiment.research_project.id }}">
+                        {{ questionnaire_response.questionnaire_configuration.group.experiment.research_project.title }}</a></li>
                     <li>
                         <a href="/experiment/{{ questionnaire_response.questionnaire_configuration.group.experiment.id }}/">
                             {{ questionnaire_response.questionnaire_configuration.group.experiment.title }}
