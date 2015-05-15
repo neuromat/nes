@@ -18,7 +18,7 @@ from django.conf import settings
 
 from experiment.models import Experiment, QuestionnaireConfiguration, Subject, TimeUnit, \
     QuestionnaireResponse, SubjectOfGroup, Group, Component, ComponentConfiguration, Questionnaire, Task, Stimulus, \
-    Pause, Instruction, Block, ClassificationOfDiseases, ResearchProject, Keyword
+    Pause, Instruction, Block, ClassificationOfDiseases, ResearchProject, Keyword, PatientQuestionnaireResponse
 from experiment.forms import ExperimentForm, QuestionnaireConfigurationForm, QuestionnaireResponseForm, \
     FileForm, GroupForm, TaskForm, InstructionForm, ComponentForm, StimulusForm, PauseForm, BlockForm, \
     ComponentConfigurationForm, ResearchProjectForm
@@ -1089,6 +1089,39 @@ def questionnaire_response_view(request, questionnaire_response_id,
         "questionnaire_responses": questionnaire_responses,
         "survey_title": survey_title,
         "questionnaire_response": questionnaire_response,
+        "view": view,
+        "status_mode": status_mode
+    }
+
+    return render(request, template_name, context)
+
+
+@login_required
+# TODO: associate the right permission
+# @permission_required('patient.add_medicalrecorddata')
+def patient_questionnaire_response_view(request, patient_questionnaire_response_id,
+                                        template_name="experiment/subject_questionnaire_response_view.html"):
+
+    view = request.GET['view']
+
+    status_mode = None
+
+    if 'status' in request.GET:
+        status_mode = request.GET['status']
+
+    patient_questionnaire_response = get_object_or_404(PatientQuestionnaireResponse,
+                                                       id=patient_questionnaire_response_id)
+
+    lime_survey_id = patient_questionnaire_response.questionnaire.lime_survey_id
+    token_id = patient_questionnaire_response.token_id
+    language_code = request.LANGUAGE_CODE
+
+    survey_title, questionnaire_responses = get_questionnaire_responses(language_code, lime_survey_id, token_id)
+
+    context = {
+        "questionnaire_responses": questionnaire_responses,
+        "survey_title": survey_title,
+        "patient_questionnaire_response": patient_questionnaire_response,
         "view": view,
         "status_mode": status_mode
     }

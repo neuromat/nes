@@ -1120,6 +1120,7 @@ def patient_questionnaire_response_update(request, patient_questionnaire_respons
         "questionnaire_response_id": questionnaire_response_id,
         "questionnaire_response_form": questionnaire_response_form,
         "questionnaire_configuration": None,
+        "patient_questionnaire_response": patient_questionnaire_response,
         "survey_title": survey_title,
         "survey_active": survey_active,
         "questionnaire_responsible": request.user.get_username(),
@@ -1137,14 +1138,6 @@ def patient_questionnaire_response_update(request, patient_questionnaire_respons
     }
 
     return render(request, template_name, context)
-
-
-@login_required
-# TODO: associate the right permission
-# @permission_required('patient.add_medicalrecorddata')
-def patient_questionnaire_response_view(request, patient_questionnaire_response_id,
-                                          template_name="experiment/subject_questionnaire_response_view.html"):
-    pass
 
 
 def patient_questionnaire_response_start_fill_questionnaire(request, patient_id, questionnaire):

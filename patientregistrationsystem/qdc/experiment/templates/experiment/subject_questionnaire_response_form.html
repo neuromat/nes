@@ -254,7 +254,8 @@
                     {% if origin == 'subject' %}
                         <a href="/experiment/questionnaire_response/{{ questionnaire_response_id }}/?view=experiment_subject" class="btn btn-primary">Ver preenchimento</a>
                     {% else %}
-                        <a href="/experiment/questionnaire_response/{{ questionnaire_response_id }}/?view=experiment" class="btn btn-primary">Ver preenchimento</a>
+                        <a href="/experiment/patient_questionnaire_response/{{ patient_questionnaire_response.id }}?view=patient&status={% if editing %}edit{% else %}view{% endif %}" class="btn btn-primary">Ver preenchimento</a>
+
                     {% endif %}
                 {% endif %}
             </div>
