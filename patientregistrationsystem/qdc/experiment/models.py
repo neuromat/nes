@@ -61,9 +61,7 @@ class ResearchProject(models.Model):
 class Experiment(models.Model):
     title = models.CharField(null=False, max_length=50, blank=False)
     description = models.CharField(max_length=150, null=False, blank=False)
-
-    # ToDo: notice that it's been added as null=True; once it has data, we can alter it to be null=False
-    research_project = models.ForeignKey(ResearchProject, null=True, blank=True)
+    research_project = models.ForeignKey(ResearchProject, null=False, blank=False)
 
     # Audit trail - Simple History
     history = HistoricalRecords()

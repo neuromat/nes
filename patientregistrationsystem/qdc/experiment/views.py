@@ -210,12 +210,14 @@ def keyword_remove_ajax(request, research_project_id, keyword_id):
 @login_required
 @permission_required('experiment.add_experiment')
 def experiment_create(request, research_project_id, template_name="experiment/experiment_register.html"):
-    experiment_form = ExperimentForm(request.POST or None, initial={'research_project': research_project_id})
+    experiment_form = ExperimentForm(request.POST or None)
 
     if request.method == "POST":
         if request.POST['action'] == "save":
             if experiment_form.is_valid():
-                experiment_added = experiment_form.save()
+                experiment_added = experiment_form.save(commit=False)
+                experiment_added.research_project_id = research_project_id
+                experiment_added.save()
 
                 messages.success(request, 'Experimento criado com sucesso.')
 
@@ -244,8 +246,9 @@ def experiment_view(request, experiment_id, template_name="experiment/experiment
     if request.method == "POST":
         if request.POST['action'] == "remove":
             try:
+                research_project_id = experiment.research_project_id
                 experiment.delete()
-                return redirect('experiment_list')
+                return redirect('research_project_view', research_project_id=research_project_id)
             except ProtectedError:
                 messages.error(request, "Não foi possível excluir o experimento, pois há grupos associados")
 
