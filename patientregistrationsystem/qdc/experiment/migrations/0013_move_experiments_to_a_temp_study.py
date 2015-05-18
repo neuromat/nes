@@ -10,21 +10,22 @@ class Migration(DataMigration):
         # Note: Don't use "from appname.models import ModelName".
         # Use orm.ModelName to refer to models in this application,
         # and orm['appname.ModelName'] for models in other applications.
-        research_project = orm.ResearchProject()
-        research_project.title = "Temporary research project"
-        research_project.description = "This research project was created automatically during an update of the " \
-                                       "system from a version without research projects to the first version that " \
-                                       "uses research projects. All existing experiments were associated with this " \
-                                       "research project, because an experiment must be associated with a research " \
-                                       "project. You should move each experiment from this research project to its " \
-                                       "correct research project. When all experiments are moved this research " \
-                                       "project can be deleted."
-        research_project.start_date = datetime.date.today()
-        research_project.save()
+        if orm.Experiment.objects.filter(research_project=None).count() > 0:
+            research_project = orm.ResearchProject()
+            research_project.title = "Temporary research project"
+            research_project.description = "This research project was created automatically during an update of the " \
+                                           "system from a version without research projects to the first version that " \
+                                           "uses research projects. All existing experiments were associated with this " \
+                                           "research project, because an experiment must be associated with a research " \
+                                           "project. You should move each experiment from this research project to its " \
+                                           "correct research project. When all experiments are moved this research " \
+                                           "project can be deleted."
+            research_project.start_date = datetime.date.today()
+            research_project.save()
 
-        for experiment in orm.Experiment.objects.filter(research_project=None):
-            experiment.research_project = research_project
-            experiment.save()
+            for experiment in orm.Experiment.objects.filter(research_project=None):
+                experiment.research_project = research_project
+                experiment.save()
 
     def backwards(self, orm):
         # Nothing to be done.

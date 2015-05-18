@@ -49,7 +49,14 @@ class ExperimentalProtocolTest(TestCase):
         logged = self.client.login(username=USER_USERNAME, password=USER_PWD)
         self.assertEqual(logged, True)
 
-        experiment = Experiment.objects.create(title="Experiment_title", description="Experiment_description")
+        # Create a research project
+        research_project = ResearchProject.objects.create(title="Research project title",
+                                                          start_date=datetime.date.today(),
+                                                          description="Research project description")
+        research_project.save()
+
+        experiment = Experiment.objects.create(title="Experiment_title", description="Experiment_description",
+                                               research_project=research_project)
         experiment.save()
 
     def test_component_list(self):
@@ -316,8 +323,15 @@ class GroupTest(TestCase):
         logged = self.client.login(username=USER_USERNAME, password=USER_PWD)
         self.assertEqual(logged, True)
 
+        # Create a research project
+        research_project = ResearchProject.objects.create(title="Research project title",
+                                                          start_date=datetime.date.today(),
+                                                          description="Research project description")
+        research_project.save()
+
         # Crinando instancia de Experiment
-        experiment = Experiment.objects.create(title="Experimento-1", description="Descricao do Experimento-1")
+        experiment = Experiment.objects.create(title="Experimento-1", description="Descricao do Experimento-1",
+                                               research_project=research_project)
         experiment.save()
 
     def test_group_insert(self):
@@ -381,8 +395,15 @@ class ClassificationOfDiseasesTest(TestCase):
         """
         Testa a view classification_of_diseases_insert
         """
+        # Create a research project
+        research_project = ResearchProject.objects.create(title="Research project title",
+                                                          start_date=datetime.date.today(),
+                                                          description="Research project description")
+        research_project.save()
+
         # Crinando instancia de Experiment
-        experiment = Experiment.objects.create(title="Experimento-1", description="Descricao do Experimento-1")
+        experiment = Experiment.objects.create(title="Experimento-1", description="Descricao do Experimento-1",
+                                               research_project=research_project)
         experiment.save()
 
         # Criando instancia de Group
@@ -403,8 +424,15 @@ class ClassificationOfDiseasesTest(TestCase):
         """
         Testa a view classification_of_diseases_insert
         """
+        # Create a research project
+        research_project = ResearchProject.objects.create(title="Research project title",
+                                                          start_date=datetime.date.today(),
+                                                          description="Research project description")
+        research_project.save()
+
         # Crinando instancia de Experiment
-        experiment = Experiment.objects.create(title="Experimento-1", description="Descricao do Experimento-1")
+        experiment = Experiment.objects.create(title="Experimento-1", description="Descricao do Experimento-1",
+                                               research_project=research_project)
         experiment.save()
 
         # Criando instancia de Group
@@ -484,7 +512,7 @@ class ExperimentTest(TestCase):
     def test_experiment_create(self):
         """Testa a criacao de um experimento """
 
-        # Cria um estudo
+        # Create a research project
         research_project = ResearchProject.objects.create(title="Research project title",
                                                           start_date=datetime.date.today(),
                                                           description="Research project description")
@@ -495,7 +523,8 @@ class ExperimentTest(TestCase):
         self.assertEqual(response.status_code, 200)
 
         # Dados sobre o experimento
-        self.data = {'action': 'save', 'description': 'Experimento de Teste', 'title': 'Teste Experimento'}
+        self.data = {'action': 'save', 'description': 'Experimento de Teste', 'title': 'Teste Experimento',
+                     'research_project': research_project.id}
 
         # Obtem o total de experimentos existente na tabela
         count_before_insert = Experiment.objects.all().count()
@@ -584,9 +613,16 @@ class ListOfQuestionnaireFromExperimentalProtocolOfAGroupTest(TestCase):
     def test_questionnaire_list(self):
         """Testa a criacao de um questionario para um dado grupo"""
 
+        # Create a research project
+        research_project = ResearchProject.objects.create(title="Research project title",
+                                                          start_date=datetime.date.today(),
+                                                          description="Research project description")
+        research_project.save()
+
         # Criar um experimento mock para ser utilizado no teste
         experiment = Experiment.objects.create(title="Experimento-Update",
-                                               description="Descricao do Experimento-Update")
+                                               description="Descricao do Experimento-Update",
+                                               research_project=research_project)
         experiment.save()
 
         # Create the root of the experimental protocol
@@ -638,9 +674,16 @@ class ListOfQuestionnaireFromExperimentalProtocolOfAGroupTest(TestCase):
     def test_questionnaire_view(self):
         """Test exhibition of a questionnaire of a group"""
 
+        # Create a research project
+        research_project = ResearchProject.objects.create(title="Research project title",
+                                                          start_date=datetime.date.today(),
+                                                          description="Research project description")
+        research_project.save()
+
         # Criar um experimento mock para ser utilizado no teste
         experiment = Experiment.objects.create(title="Experimento-Update",
-                                               description="Descricao do Experimento-Update")
+                                               description="Descricao do Experimento-Update",
+                                               research_project=research_project)
         experiment.save()
 
         # Create the root of the experimental protocol
@@ -726,9 +769,16 @@ class SubjectTest(TestCase):
         Teste de visualizacao de paciente apos cadastro na base de dados
         """
 
+        # Create a research project
+        research_project = ResearchProject.objects.create(title="Research project title",
+                                                          start_date=datetime.date.today(),
+                                                          description="Research project description")
+        research_project.save()
+
         # Criar um experimento mock para ser utilizado no teste
         experiment = Experiment.objects.create(title="Experimento-Teste",
-                                               description="Descricao do Experimento-Update")
+                                               description="Descricao do Experimento-Update",
+                                               research_project=research_project)
         experiment.save()
 
         # Criar um grupo mock para ser utilizado no teste
@@ -904,9 +954,16 @@ class SubjectTest(TestCase):
     def test_questionaire_view(self):
         """ Testa a visualizacao completa do questionario respondido no Lime Survey"""
 
+        # Create a research project
+        research_project = ResearchProject.objects.create(title="Research project title",
+                                                          start_date=datetime.date.today(),
+                                                          description="Research project description")
+        research_project.save()
+
         # Criar um experimento mock para ser utilizado no teste
         experiment = Experiment.objects.create(title="Experimento-Teste-View",
-                                               description="Descricao do Experimento-View")
+                                               description="Descricao do Experimento-View",
+                                               research_project=research_project)
         experiment.save()
 
         # Criar um grupo mock para ser utilizado no teste
@@ -971,8 +1028,15 @@ class SubjectTest(TestCase):
         Testa o upload de arquivos que corresponde ao formulario de consentimento do participante no experimento
         """
 
+        # Create a research project
+        research_project = ResearchProject.objects.create(title="Research project title",
+                                                          start_date=datetime.date.today(),
+                                                          description="Research project description")
+        research_project.save()
+
         experiment = Experiment.objects.create(title="Experimento-Teste-Upload",
-                                                   description="Descricao do Experimento-Upload")
+                                               description="Descricao do Experimento-Upload",
+                                               research_project=research_project)
         experiment.save()
 
         group = Group.objects.create(experiment=experiment,
