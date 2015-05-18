@@ -54,6 +54,8 @@ urlpatterns = patterns(
         'questionnaire_response_update', name='questionnaire_response_edit'),
     url(r'^questionnaire_response/(?P<questionnaire_response_id>\d+)/$',
         'questionnaire_response_view', name='questionnaire_response_view'),
+    url(r'^patient_questionnaire_response/(?P<patient_questionnaire_response_id>\d+)/$',
+        'patient_questionnaire_response_view', name='patient_questionnaire_response_view'),
 
     # experimental protocol components
     url(r'^(?P<experiment_id>\d+)/components/$', 'component_list', name='component_list'),

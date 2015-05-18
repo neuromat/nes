@@ -35,10 +35,26 @@
                             {% for patient_questionnaire in patient_questionnaires_data %}
                                 <tr>
                                     <td>{{ patient_questionnaire.questionnaire_title }}</td>
-                                    <td>{{ patient_questionnaire.questionnaire_response.date }}</td>
-                                    <td><a class="glyphicon glyphicon-search"
-                                           href="/patient/questionnaire_response/edit/{{ patient_questionnaire.questionnaire_response.pk }}?origin=patient"></a>
-
+                                    <td>
+                                        {% if limesurvey_available and patient_questionnaire.completed != None %}
+                                            {% if patient_questionnaire.completed %}
+                                                <a href="/patient/questionnaire_response/edit/{{ patient_questionnaire.questionnaire_response.pk }}?origin=patient">
+                                                    {{ patient_questionnaire.questionnaire_response.date }}
+                                                </a>
+                                            {% else %}
+                                                {% if editing %}
+                                                    <a href="/patient/questionnaire_response/edit/{{ patient_questionnaire.questionnaire_response.pk }}?origin=patient">
+                                                        {{ patient_questionnaire.questionnaire_response.date }}
+                                                    </a>
+                                                {% else %}
+                                                    {{ patient_questionnaire.questionnaire_response.date }}
+                                                {% endif %}
+                                            {% endif %}
+                                        {% else %}
+                                            {{ patient_questionnaire.questionnaire_response.date }}
+                                        {% endif %}
+                                    </td>
+                                    <td>
                                         {% if limesurvey_available and patient_questionnaire.completed != None %}
                                             {% if patient_questionnaire.completed %}
                                                 <span class="label label-success">Completo</span>
@@ -48,9 +64,7 @@
                                         {% else %}
                                             <span class="label label-default">Sem status</span>
                                         {% endif %}
-
                                     </td>
-
                                 </tr>
                             {% endfor %}
                             </tbody>
@@ -96,16 +110,16 @@
                                     <td>{{ questionnaire.experiment_title }}</td>
                                     <td>{{ questionnaire.group_title }}</td>
                                     <td>{{ questionnaire.questionnaire_title }}</td>
-                                    <td>{{ questionnaire.questionnaire_response.date }}</td>
                                     <td>
-                                        {% if editing %}
-                                            <a class="glyphicon glyphicon-search"
-                                                   href="/experiment/questionnaire_response/{{ questionnaire.questionnaire_response.pk }}/?view=patient&status=edit"></a>
+                                        {% if limesurvey_available and questionnaire.completed != None and questionnaire.completed %}
+                                            <a href="/experiment/questionnaire_response/{{ questionnaire.questionnaire_response.pk }}/?view=patient&status={% if editing %}edit{% else %}view{% endif %}">
+                                                {{ questionnaire.questionnaire_response.date }}
+                                            </a>
                                         {% else %}
-                                            <a class="glyphicon glyphicon-search"
-                                                   href="/experiment/questionnaire_response/{{ questionnaire.questionnaire_response.pk }}/?view=patient&status=view"></a>
+                                            {{ questionnaire.questionnaire_response.date }}
                                         {% endif %}
-
+                                    </td>
+                                    <td>
                                         {% if limesurvey_available and questionnaire.completed != None %}
                                             {% if questionnaire.completed %}
                                                 <span class="label label-success">Completo</span>
@@ -115,7 +129,6 @@
                                         {% else %}
                                             <span class="label label-default">Sem status</span>
                                         {% endif %}
-
                                     </td>
                                 </tr>
                             {% endfor %}
