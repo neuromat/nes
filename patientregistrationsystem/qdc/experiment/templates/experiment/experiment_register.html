@@ -74,15 +74,17 @@
         <div class="col-md-10">
             <div class="container span6 offset3 well ">
                 <h4>Informações básicas do experimento</h4>
-                <div class="row" {% if creating %}style="display: none"{% endif %}>
-                    <div class="col-xs-6 col-sm-6">
-                        <div class="form-group">
-                            <label class="control-label">Estudo</label>
-                                {{ experiment_form.research_project }}
-                            <div class="help-block with-errors"></div>
+                {% if not creating %}
+                    <div class="row">
+                        <div class="col-xs-6 col-sm-6">
+                            <div class="form-group">
+                                <label class="control-label">Estudo</label>
+                                    {{ experiment_form.research_project }}
+                                <div class="help-block with-errors"></div>
+                            </div>
                         </div>
                     </div>
-                </div>
+                {% endif %}
                 <div class="row">
                     <div class="col-xs-6 col-sm-6">
                         <div class="form-group">
