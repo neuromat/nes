@@ -18,9 +18,10 @@ from django.conf import settings
 
 from experiment.models import Experiment, QuestionnaireConfiguration, Subject, TimeUnit, \
     QuestionnaireResponse, SubjectOfGroup, Group, Component, ComponentConfiguration, Questionnaire, Task, Stimulus, \
-    Pause, Instruction, Block, ClassificationOfDiseases, ResearchProject, Keyword, PatientQuestionnaireResponse
+    Pause, Instruction, Block, TaskForTheExperimenter, ClassificationOfDiseases, ResearchProject, Keyword, \
+    PatientQuestionnaireResponse
 from experiment.forms import ExperimentForm, QuestionnaireConfigurationForm, QuestionnaireResponseForm, \
-    FileForm, GroupForm, TaskForm, InstructionForm, ComponentForm, StimulusForm, PauseForm, BlockForm, \
+    FileForm, GroupForm, InstructionForm, ComponentForm, StimulusForm, PauseForm, BlockForm, \
     ComponentConfigurationForm, ResearchProjectForm
 from patient.models import Patient
 from experiment.abc_search_engine import Questionnaires
@@ -37,6 +38,7 @@ icon_class = {
     u'questionnaire': 'glyphicon glyphicon-list-alt',
     u'stimulus': 'glyphicon glyphicon-headphones',
     u'task': 'glyphicon glyphicon-check',
+    u'task_experiment': 'glyphicon glyphicon-wrench'
 }
 
 delimiter = "-"
@@ -1368,9 +1370,7 @@ def component_create(request, experiment_id, component_type):
     questionnaires_list = []
     specific_form = None
 
-    if component_type == 'task':
-        specific_form = TaskForm(request.POST or None)
-    elif component_type == 'instruction':
+    if component_type == 'instruction':
         specific_form = InstructionForm(request.POST or None)
     elif component_type == 'stimulus':
         specific_form = StimulusForm(request.POST or None)
@@ -1388,6 +1388,10 @@ def component_create(request, experiment_id, component_type):
             if component_type == 'questionnaire':
                 new_specific_component = Questionnaire()
                 new_specific_component.lime_survey_id = request.POST['questionnaire_selected']
+            elif component_type == 'task':
+                new_specific_component = Task()
+            elif component_type == 'task_experiment':
+                new_specific_component = TaskForTheExperimenter()
             elif specific_form.is_valid():
                 new_specific_component = specific_form.save(commit=False)
 
@@ -1701,10 +1705,7 @@ def component_update(request, path_of_the_components):
     configuration_list_of_random_components = []
     specific_form = None
 
-    if component_type == 'task':
-        task = get_object_or_404(Task, pk=component.id)
-        specific_form = TaskForm(request.POST or None, instance=task)
-    elif component_type == 'instruction':
+    if component_type == 'instruction':
         instruction = get_object_or_404(Instruction, pk=component.id)
         specific_form = InstructionForm(request.POST or None, instance=instruction)
     elif component_type == 'stimulus':
@@ -1729,7 +1730,8 @@ def component_update(request, path_of_the_components):
         if request.POST['action'] == "save":
             if configuration_form is None:
                 # There is no specific form for a questionnaire.
-                if component.component_type == "questionnaire":
+                if component.component_type == "questionnaire" or component.component_type == "task" or \
+                        component.component_type == "task_experiment":
                     if component_form.is_valid():
                         # Only save if there was a change.
                         if component_form.has_changed():
@@ -1781,7 +1783,7 @@ def component_update(request, path_of_the_components):
 
     # It is not possible to edit the component fields while editing a component configuration.
     if component_configuration is not None:
-        if component_type != "questionnaire":
+        if component_type != "questionnaire" and component_type != 'task' and component_type != 'task_experiment':
             for field in specific_form.fields:
                 specific_form.fields[field].widget.attrs['disabled'] = True
 
@@ -1856,10 +1858,9 @@ def component_add_new(request, path_of_the_components, component_type):
 
     component_form = ComponentForm(request.POST or None)
     questionnaires_list = []
+    specific_form = None
 
-    if component_type == 'task':
-        specific_form = TaskForm(request.POST or None)
-    elif component_type == 'instruction':
+    if component_type == 'instruction':
         specific_form = InstructionForm(request.POST or None)
     elif component_type == 'stimulus':
         specific_form = StimulusForm(request.POST or None)
@@ -1876,6 +1877,10 @@ def component_add_new(request, path_of_the_components, component_type):
         if component_type == 'questionnaire':
             new_specific_component = Questionnaire()
             new_specific_component.lime_survey_id = request.POST['questionnaire_selected']
+        elif component_type == 'task':
+            new_specific_component = Task()
+        elif component_type == 'task_experiment':
+            new_specific_component = TaskForTheExperimenter()
         elif specific_form.is_valid():
             new_specific_component = specific_form.save(commit=False)
 
@@ -1887,6 +1892,7 @@ def component_add_new(request, path_of_the_components, component_type):
             new_specific_component.experiment = experiment
             new_specific_component.save()
 
+            # Check if we are configuring a new experimental protocol, which does not have a component configuration.
             if group is None or len(list_of_ids_of_components_and_configurations) > 1:
                 new_configuration = ComponentConfiguration()
                 new_configuration.component = new_specific_component
@@ -1909,6 +1915,7 @@ def component_add_new(request, path_of_the_components, component_type):
 
                 redirect_url = reverse("component_view",
                                        args=(path_of_the_components + "-" + str(new_specific_component.id), ))
+
             return HttpResponseRedirect(redirect_url)
 
     context = {
@@ -1943,11 +1950,9 @@ def component_reuse(request, path_of_the_components, component_id):
 
     questionnaire_id = None
     questionnaire_title = None
+    specific_form = None
 
-    if component_type == 'task':
-        task = get_object_or_404(Task, pk=component_to_add.id)
-        specific_form = TaskForm(request.POST or None, instance=task)
-    elif component_type == 'instruction':
+    if component_type == 'instruction':
         instruction = get_object_or_404(Instruction, pk=component_to_add.id)
         specific_form = InstructionForm(request.POST or None, instance=instruction)
     elif component_type == 'stimulus':
@@ -1971,9 +1976,12 @@ def component_reuse(request, path_of_the_components, component_id):
         for field in component_form.fields:
             component_form.fields[field].widget.attrs['disabled'] = True
     else:
-        for form_used in {specific_form, component_form}:
-            for field in form_used.fields:
-                form_used.fields[field].widget.attrs['disabled'] = True
+        for field in component_form.fields:
+            component_form.fields[field].widget.attrs['disabled'] = True
+
+        if component_type != 'task' and component_type != 'task_experiment':
+            for field in specific_form.fields:
+                specific_form.fields[field].widget.attrs['disabled'] = True
 
     if request.method == "POST":
         if len(list_of_ids_of_components_and_configurations) == 1 and path_of_the_components[0] == "G":

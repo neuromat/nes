@@ -12,7 +12,7 @@ import pyjsonrpc
 
 from experiment.models import Experiment, Group, QuestionnaireConfiguration, TimeUnit, Subject, \
     QuestionnaireResponse, SubjectOfGroup, ComponentConfiguration, ResearchProject, Keyword, StimulusType, \
-    Component, Task, Stimulus, Instruction, Pause, Questionnaire, Block
+    Component, Task, TaskForTheExperimenter, Stimulus, Instruction, Pause, Questionnaire, Block
 from patient.models import ClassificationOfDiseases
 from experiment.views import experiment_update, upload_file, research_project_update
 from experiment.abc_search_engine import Questionnaires
@@ -84,13 +84,25 @@ class ExperimentalProtocolTest(TestCase):
     def test_component_create(self):
         experiment = Experiment.objects.first()
 
-        self.data = {'action': 'save', 'identification': 'Task identification', 'description': 'Task description',
-                     'instruction_text': 'Task instruction'}
+        identification = 'Task for the subject identification'
+        description = 'Task for the subject description'
+        self.data = {'action': 'save', 'identification': identification, 'description': description}
         response = self.client.post(reverse("component_new", args=(experiment.id, "task")), self.data)
         self.assertEqual(response.status_code, 302)
         # Check if redirected to list of components
         self.assertTrue("/experiment/" + str(experiment.id) + "/components" in response.url)
-        self.assertTrue(Task.objects.filter(instruction_text="Task instruction").exists())
+        self.assertTrue(Task.objects.filter(description=description,
+                                            identification=identification).exists())
+
+        identification = 'Task for the experimenter identification'
+        description = 'Task for the experimenter description'
+        self.data = {'action': 'save', 'identification': identification, 'description': description}
+        response = self.client.post(reverse("component_new", args=(experiment.id, "task_experiment")), self.data)
+        self.assertEqual(response.status_code, 302)
+        # Check if redirected to list of components
+        self.assertTrue("/experiment/" + str(experiment.id) + "/components" in response.url)
+        self.assertTrue(TaskForTheExperimenter.objects.filter(description=description,
+                                                               identification=identification).exists())
 
         self.data = {'action': 'save', 'identification': 'Instruction identification',
                      'description': 'Instruction description', 'text': 'Instruction text'}

@@ -1,6 +1,6 @@
 # coding=utf-8
 from experiment.models import Experiment, QuestionnaireConfiguration, QuestionnaireResponse, SubjectOfGroup, Group, \
-    Component, Task, Stimulus, Pause, Block, Instruction, ComponentConfiguration, ResearchProject, \
+    Component, Stimulus, Pause, Block, Instruction, ComponentConfiguration, ResearchProject, \
     PatientQuestionnaireResponse, TimeUnit
 from django.forms import ModelForm, TextInput, Textarea, Select, DateInput, TypedChoiceField, RadioSelect, ModelChoiceField
 
@@ -127,17 +127,6 @@ class ComponentConfigurationForm(ModelForm):
             'interval_between_repetitions_value': TextInput(attrs={'class': 'form-control', 'required': "",
                                                                    'data-error': 'Intervalo deve ser preenchido.',
                                                                    'placeholder': 'Tempo'}),
-        }
-
-
-class TaskForm(ModelForm):
-    class Meta:
-        model = Task
-        fields = ['instruction_text']
-
-        widgets = {
-            'instruction_text': TextInput(attrs={'class': 'form-control', 'required': "",
-                                                 'data-error': 'Instrução deve ser preenchida.'})
         }
 
 

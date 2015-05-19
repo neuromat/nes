@@ -91,7 +91,8 @@ class Component(models.Model):
         ("pause", "Pausa"),
         ("questionnaire", "Questionário"),
         ("stimulus", "Estímulo"),
-        ("task", "Tarefa"),
+        ("task", "Tarefa para o sujeito"),
+        ("task_experiment", "Tarefa para o experimentador"),
     )
 
     identification = models.CharField(null=False, max_length=50, blank=False)
@@ -101,8 +102,11 @@ class Component(models.Model):
 
 
 class Task(Component):
-    instruction_text = models.CharField(max_length=150, null=False, blank=False)
+    def save(self, *args, **kwargs):
+        super(Component, self).save(*args, **kwargs)
 
+
+class TaskForTheExperimenter(Component):
     def save(self, *args, **kwargs):
         super(Component, self).save(*args, **kwargs)
 
