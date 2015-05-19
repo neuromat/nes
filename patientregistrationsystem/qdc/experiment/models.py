@@ -86,7 +86,7 @@ class Experiment(models.Model):
 
 class Component(models.Model):
     COMPONENT_TYPES = (
-        ("block", "Bloco"),
+        ("block", "Conjunto de passos"),
         ("instruction", "Instrução"),
         ("pause", "Pausa"),
         ("questionnaire", "Questionário"),

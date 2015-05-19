@@ -10,7 +10,7 @@
 {% block breadcrumb %}
 
     {% if creating %}
-        <li class="active">Novo bloco</li>
+        <li class="active">Novo conjunto de passos</li>
     {% else %}
         {% if updating and component_configuration == None %}
             <li class="active"> Edição </li>
@@ -19,30 +19,30 @@
 
 {% endblock %}
 
-{% block component_label %}o bloco{% endblock %}
+{% block component_label %}o conjunto de passos{% endblock %}
 
 {% block component_add_new %}
     <li role="presentation">
         <a role="menuitem" tabindex="-1" href="/experiment/component/{{ path_of_the_components }}/add_new/block">
-            << Novo bloco >>
+            << Novo conjunto de passos >>
         </a>
     </li>
 {% endblock %}
 
 {% block component_button_label %}
-    Novo bloco
+    Novo conjunto de passos
 {% endblock %}
 
 {% block extra_fields %}
     <div class="row">
         <div class="col-xs-12 col-sm-6">
             <div class="form-group">
-                <label>Organização dos subcomponentes <b style="color: red;">*</b></label>
+                <label>Organização dos subpassos <b style="color: red;">*</b></label>
 
                 <div class="input-group  input-group-sm">
                     {% for radio in specific_form.type %}
                         <span style="margin-right: 15px;" data-toggle="tooltip" data-placement="bottom" title="
-                        {% cycle 'Os subcomponentes serão executados um após o outro' 'Os subcomponentes serão executados todos ao mesmo tempo' %}">
+                        {% cycle 'Os subpassos serão executados um após o outro' 'Os subpassos serão executados todos ao mesmo tempo' %}">
                             <div class="radio-inline">{{ radio }}</div>
                         </span>
                     {% endfor %}
@@ -50,7 +50,7 @@
             </div>
         </div>
         <div class="col-xs-12 col-sm-6">
-            <label for="unlimited_number_of_repetitions" class="control-label">Quantidade de componentes obrigatórios <b style="color: red;">*</b></label>
+            <label for="unlimited_number_of_repetitions" class="control-label">Quantidade de passos obrigatórios <b style="color: red;">*</b></label>
             <div>
                 <div class="radio-inline" style="vertical-align: top">
                     <input id="id_all_mandatory" name="radio_number_of_mandatory_components" type="radio" value="all"
@@ -80,7 +80,7 @@
                 <div class="container span6 offset3 well ">
 
                     {% if component.type == "sequence" %}
-                        <h4>Componentes com posição fixa</h4>
+                        <h4>Passos com posição fixa</h4>
                     {% endif %}
 
                     <div class="form-group">
@@ -88,7 +88,7 @@
                             <thead>
                             <tr>
                                 <th class="col-md-2">Tipo</th>
-                                <th class="col-md-4">Componente</th>
+                                <th class="col-md-4">Passo</th>
                                 {% if component.type == "sequence" %}
                                     <th class="col-md-3">Nome do uso</th>
                                     <th class="text-center col-md-2" colspan="2">Ordem</th>
@@ -146,7 +146,7 @@
                                                 </td>
                                             {% else %}
                                                 <td class="text-center" colspan="6">
-                                                    Posição para componente aleatório
+                                                    Posição para passo aleatório
                                                 </td>
                                             {% endif %}
                                         </tr>
@@ -161,13 +161,13 @@
                     <div class="container span6 offset3 well ">
                         <div class="form-group">
 
-                            <h4>Componentes com posição aleatória</h4>
+                            <h4>Passos com posição aleatória</h4>
 
                             <table class="table table-striped">
                                 <thead>
                                 <tr>
                                     <th class="col-md-2">Tipo</th>
-                                    <th class="col-md-4">Componente</th>
+                                    <th class="col-md-4">Passo</th>
                                     <th class="col-md-5">Nome do uso</th>
                                     <th class="col-md-1">Remover</th>
                                 </tr>
@@ -220,7 +220,7 @@
                 {% if not component_configuration %}
                     <div class="dropdown">
                         <button class="btn btn-primary dropdown-toggle" type="button" id="dropdownMenu1" data-toggle="dropdown" aria-expanded="true">
-                            Inserir componente ao bloco
+                            Inserir passo ao conjunto
                             <span class="caret"></span>
                         </button>
                         <ul class="dropdown-menu" role="menu" aria-labelledby="dropdownMenu1">
@@ -241,7 +241,7 @@
         <div class="modal-dialog">
             <div class="modal-content">
                 <div class="modal-body">
-                    Tem certeza que deseja excluir o uso deste componente da lista?
+                    Tem certeza que deseja excluir o uso deste passo da lista?
                 </div>
                 <div class="modal-footer">
                     <button type="button" class="btn btn-default" data-dismiss="modal">Cancelar</button>

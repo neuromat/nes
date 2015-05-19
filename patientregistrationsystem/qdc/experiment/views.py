@@ -1286,12 +1286,32 @@ def upload_file(request, subject_id, group_id, template_name="experiment/upload_
 @permission_required('experiment.view_experiment')
 def component_list(request, experiment_id, template_name="experiment/component_list.html"):
     experiment = get_object_or_404(Experiment, pk=experiment_id)
-    components = Component.objects.filter(experiment=experiment).order_by("component_type", "identification")
+
+    # As it is not possible to sort_by get_component_type_display, filter without sorting and sort later.
+    components = Component.objects.filter(experiment=experiment)
+
+    # Create a temporary list of tuples from the query_set to be able to sort by get_component_type_display,
+    # identification and name.
+    temp_list_of_tuples = []
+
+    for component in components:
+        temp_list_of_tuples.append((component,
+                                    component.get_component_type_display(),
+                                    component.identification))
+
+    temp_list_of_tuples.sort(key=itemgetter(1, 2))
+
+    # Reduce the complexity by creating list of component configurations without having tuples.
+    components = []
+
+    for tuple in temp_list_of_tuples:
+        components.append(tuple[0])
 
     for component in components:
         component.icon_class = icon_class[component.component_type]
 
     component_type_choices = []
+
     for type, type_name in Component.COMPONENT_TYPES:
         component_type_choices.append((type, type_name, icon_class.get(type)))
 
@@ -1379,7 +1399,7 @@ def component_create(request, experiment_id, component_type):
                 new_specific_component.experiment = experiment
                 new_specific_component.save()
 
-                messages.success(request, 'Componente incluído com sucesso.')
+                messages.success(request, 'Passo incluído com sucesso.')
 
                 if component_type == 'block':
                     redirect_url = reverse("component_view", args=(new_specific_component.id,))
@@ -1410,7 +1430,7 @@ def create_list_of_breadcrumbs(list_of_ids_of_components_and_configurations):
                 if cc.name is not None and cc.name != "":
                     name = cc.name
                 else:
-                    name = "Uso do componente " + cc.component.identification
+                    name = "Uso do passo " + cc.component.identification
 
                 view_name = "component_edit"
             else:
@@ -1569,7 +1589,7 @@ def component_view(request, path_of_the_components):
             if configuration_form is not None:
                 if configuration_form.is_valid():
                     configuration_form.save()
-                    messages.success(request, 'Uso do componente atualizado com sucesso.')
+                    messages.success(request, 'Uso do passo atualizado com sucesso.')
                     return HttpResponseRedirect(back_cancel_url)
         elif request.POST['action'] == "remove":
             redirect_url = remove_component_and_related_configurations(component,
@@ -1631,16 +1651,21 @@ def sort_without_using_order(configuration_list_of_random_components):
     # Create a temporary list of tuples from the query_set to be able to sort by get_component_type_display,
     # identification and name.
     temp_list_of_tuples = []
+
     for cc in configuration_list_of_random_components:
         temp_list_of_tuples.append((cc,
                                     cc.component.get_component_type_display(),
                                     cc.component.identification,
                                     cc.name))
+
     temp_list_of_tuples.sort(key=itemgetter(1, 2, 3))
+
     # Reduce the complexity by creating list of component configurations without having tuples.
     configuration_list_of_random_components = []
+
     for tuple in temp_list_of_tuples:
         configuration_list_of_random_components.append(tuple[0])
+
     return configuration_list_of_random_components
 
 
@@ -1709,7 +1734,7 @@ def component_update(request, path_of_the_components):
                         # Only save if there was a change.
                         if component_form.has_changed():
                             component_form.save()
-                            messages.success(request, 'Componente alterado com sucesso.')
+                            messages.success(request, 'Passo alterado com sucesso.')
                         else:
                             messages.success(request, 'Não há alterações para salvar.')
 
@@ -1731,7 +1756,7 @@ def component_update(request, path_of_the_components):
                             specific_form.save()
 
                         component_form.save()
-                        messages.success(request, 'Componente alterado com sucesso.')
+                        messages.success(request, 'Passo alterado com sucesso.')
                     else:
                         messages.success(request, 'Não há alterações para salvar.')
 
@@ -1741,7 +1766,7 @@ def component_update(request, path_of_the_components):
                 # Only save if there was a change.
                 if configuration_form.has_changed():
                     configuration_form.save()
-                    messages.success(request, 'Uso do componente atualizado com sucesso.')
+                    messages.success(request, 'Uso do passo atualizado com sucesso.')
                 else:
                     messages.success(request, 'Não há alterações para salvar.')
 
@@ -1872,7 +1897,7 @@ def component_add_new(request, path_of_the_components, component_type):
 
                 new_configuration.save()
 
-                messages.success(request, 'Componente incluído com sucesso.')
+                messages.success(request, 'Passo incluído com sucesso.')
 
                 redirect_url = reverse("component_edit",
                                        args=(path_of_the_components + "-U" + str(new_configuration.id), ))
@@ -1973,7 +1998,7 @@ def component_reuse(request, path_of_the_components, component_id):
             redirect_url = reverse("component_edit",
                                    args=(path_of_the_components + "-U" + str(new_configuration.id), ))
 
-        messages.success(request, 'Componente incluído com sucesso.')
+        messages.success(request, 'Passo incluído com sucesso.')
         return HttpResponseRedirect(redirect_url)
 
     context = {
