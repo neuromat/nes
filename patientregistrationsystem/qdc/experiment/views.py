@@ -1532,8 +1532,8 @@ def remove_component_and_related_configurations(component,
                                                 path_of_the_components):
     # Before removing anything, we need to know where we should redirect to.
 
-    # If the list has more than one, it has to have more than two, because the last but one element is a component
-    # configuration, which has also to be removed from the path.
+    # If the list has more than one element, it has to have more than two, because the last but one element is a
+    # component configuration, which has also to be removed from the path.
     if len(list_of_ids_of_components_and_configurations) > 1:
         path_without_last = path_of_the_components[:path_of_the_components.rfind("-")]
         path_without_last_two = path_without_last[:path_without_last.rfind("-")]
@@ -1542,29 +1542,6 @@ def remove_component_and_related_configurations(component,
     else:
         # Return to the list of components
         redirect_url = "/experiment/" + str(component.experiment.id) + "/components"
-
-
-    # If component is a block, remove the relation with its children
-    component_configuration_list = ComponentConfiguration.objects.filter(parent=component)
-
-    for component_configuration_element in component_configuration_list:
-        component_configuration_element.delete()
-
-    # Get all the uses of the component that is being removed.
-    component_configuration_list = ComponentConfiguration.objects.filter(component=component)
-
-    # Remove the uses.
-    for component_configuration_element in component_configuration_list:
-        order_of_removed = component_configuration_element.order
-        parent_of_removed = component_configuration_element.parent_id
-        component_configuration_element.delete()
-
-        configuration_list_of_the_parent = ComponentConfiguration.objects.filter(parent_id=parent_of_removed)
-
-        for siblings in configuration_list_of_the_parent:
-            if siblings.order > order_of_removed:
-                siblings.order -= 1
-                siblings.save()
 
     component.delete()
 
@@ -1774,10 +1751,10 @@ def component_update(request, path_of_the_components):
 
                 return HttpResponseRedirect(back_cancel_url)
         elif request.POST['action'] == "remove":
-            remove_component_and_related_configurations(component,
-                                                        list_of_ids_of_components_and_configurations,
-                                                        path_of_the_components)
-            return HttpResponseRedirect(back_cancel_url)
+            redirect_url = remove_component_and_related_configurations(component,
+                                                                       list_of_ids_of_components_and_configurations,
+                                                                       path_of_the_components)
+            return HttpResponseRedirect(redirect_url)
 
     type_of_the_parent_block = None
 
