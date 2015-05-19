@@ -88,14 +88,19 @@
                             <thead>
                             <tr>
                                 <th class="col-md-2">Tipo</th>
-                                <th class="col-md-4">Passo</th>
-                                {% if component.type == "sequence" %}
-                                    <th class="col-md-3">Nome do uso</th>
-                                    <th class="text-center col-md-2" colspan="2">Ordem</th>
+                                {% if not component_configuration %}
+                                    <th class="col-md-4">Passo</th>
+                                    {% if component.type == "sequence" %}
+                                        <th class="col-md-3">Nome do uso</th>
+                                        <th class="text-center col-md-2" colspan="2">Ordem</th>
+                                    {% else %}
+                                        <th class="col-md-5">Nome do uso</th>
+                                    {% endif %}
+                                    <th class="col-md-1">Remover</th>
                                 {% else %}
+                                    <th class="col-md-5">Passo</th>
                                     <th class="col-md-5">Nome do uso</th>
                                 {% endif %}
-                                <th class="col-md-1">Remover</th>
                             </tr>
                             </thead>
                             <tbody>
@@ -129,7 +134,7 @@
                                                         {{ configuration.name }}
                                                     {% endif %}
                                                 </td>
-                                                {% if component.type == "sequence" %}
+                                                {% if component.type == "sequence" and not component_configuration%}
                                                     <td  class="text-right">
                                                         {% if configuration != configuration_list.last %}
                                                             <a class="btn glyphicon glyphicon-arrow-down" href="/experiment/component/change_the_order/{{ path_of_the_components }}/{{ configuration.id }}/down/"></a>
@@ -141,11 +146,13 @@
                                                         {% endif %}
                                                     </td>
                                                 {% endif %}
-                                                <td class="text-center">
-                                                    <a class="btn glyphicon glyphicon-remove" data-toggle="tooltip" data-placement="right" title="Remover da lista" style="color: indianred; vertical-align: -5%; padding-left: 0;" onclick="show_modal_remove({{ configuration.id }});"></a>
-                                                </td>
+                                                {% if not component_configuration%}
+                                                    <td class="text-center">
+                                                        <a class="btn glyphicon glyphicon-remove" data-toggle="tooltip" data-placement="right" title="Remover da lista" style="color: indianred; vertical-align: -5%; padding-left: 0;" onclick="show_modal_remove({{ configuration.id }});"></a>
+                                                    </td>
+                                                {% endif %}
                                             {% else %}
-                                                <td class="text-center" colspan="6">
+                                                <td class="text-center" colspan="{% if not component_configuration %}6{% else %}3{% endif %}">
                                                     Posição para passo aleatório
                                                 </td>
                                             {% endif %}
@@ -167,9 +174,14 @@
                                 <thead>
                                 <tr>
                                     <th class="col-md-2">Tipo</th>
-                                    <th class="col-md-4">Passo</th>
-                                    <th class="col-md-5">Nome do uso</th>
-                                    <th class="col-md-1">Remover</th>
+                                    {% if not component_configuration %}
+                                        <th class="col-md-4">Passo</th>
+                                        <th class="col-md-5">Nome do uso</th>
+                                        <th class="col-md-1">Remover</th>
+                                    {% else %}
+                                        <th class="col-md-5">Passo</th>
+                                        <th class="col-md-5">Nome do uso</th>
+                                    {% endif %}
                                 </tr>
                                 </thead>
                                 <tbody>
@@ -198,15 +210,17 @@
                                                             {{ configuration.name }}
                                                         {% endif %}
                                                     </td>
-                                                    <td class="text-center">
-                                                        <a class="btn glyphicon glyphicon-remove" data-toggle="tooltip" data-placement="right" title="Remover da lista" style="color: indianred; vertical-align: -5%; padding-left: 0;" onclick="show_modal_remove({{ configuration.id }});"></a>
-                                                    </td>
+                                                    {% if not component_configuration %}
+                                                        <td class="text-center">
+                                                            <a class="btn glyphicon glyphicon-remove" data-toggle="tooltip" data-placement="right" title="Remover da lista" style="color: indianred; vertical-align: -5%; padding-left: 0;" onclick="show_modal_remove({{ configuration.id }});"></a>
+                                                        </td>
+                                                    {% endif %}
                                                 </tr>
                                             {% endif %}
                                         {% endfor %}
                                     {% else %}
                                         <tr>
-                                            <td class="text-center" colspan="4">
+                                            <td class="text-center" colspan="{% if not component_configuration %}4{% else %}3{% endif %}">
                                                 Não possui
                                             </td>
                                         </tr>
