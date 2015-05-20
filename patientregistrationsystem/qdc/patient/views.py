@@ -976,10 +976,17 @@ def patient_questionnaire_response_create(request, patient_id,
     patient = get_object_or_404(Patient, pk=patient_id)
 
     questionnaires_list = Questionnaire.objects.filter(used_also_outside_an_experiment=True)
+    unused_questionnaires_list = Questionnaire.objects.filter(used_also_outside_an_experiment=False)
+
+    added_questionnaire = []
 
     surveys = Questionnaires()
 
     for questionnaire in questionnaires_list:
+        questionnaire.sid = questionnaire.lime_survey_id
+        questionnaire.surveyls_title = surveys.get_survey_title(questionnaire.lime_survey_id)
+
+    for questionnaire in unused_questionnaires_list:
         questionnaire.sid = questionnaire.lime_survey_id
         questionnaire.surveyls_title = surveys.get_survey_title(questionnaire.lime_survey_id)
 
@@ -1020,6 +1027,19 @@ def patient_questionnaire_response_create(request, patient_id,
                 for field in questionnaire_response_form.fields:
                     questionnaire_response_form.fields[field].widget.attrs['disabled'] = True
 
+        if request.POST['action'] == "add_questionnaire":
+
+            questionnaire = \
+                get_object_or_404(Questionnaire, lime_survey_id=request.POST['unused_questionnaire_selected'])
+
+            surveys = Questionnaires()
+
+            added_questionnaire = {
+                'sid': questionnaire.lime_survey_id,
+                'surveyls_title': surveys.get_survey_title(questionnaire.lime_survey_id)
+            }
+            surveys.release_session_key()
+
     origin = get_origin(request)
 
     context = {
@@ -1038,6 +1058,8 @@ def patient_questionnaire_response_create(request, patient_id,
         "group": None,
         "origin": origin,
         "questionnaires_list": questionnaires_list,
+        "unused_questionnaires_list": unused_questionnaires_list,
+        "added_questionnaire": added_questionnaire,
         "patient": patient,
         "questionnaire": questionnaire,
         "questionnaire_title": questionnaire_title,
