@@ -76,6 +76,7 @@
     <div class="tab-pane fade in active" id="menuUserTab">
         <div class="col-md-10">
             <div class="container span6 offset3 well ">
+                <h4>Informações básicas do estudo</h4>
                 <div class="row">
                     <div class="col-xs-12 col-sm-12">
                         <div class="form-group">
@@ -128,11 +129,11 @@
             </div>
             {% if not editing %}
                 <div class="container span6 offset3 well ">
+                    <h4>Palavras-chave</h4>
                     <div class="row">
                         <div class="col-xs-12 col-sm-12">
                             <div class="form-group">
                                 <input id="research_project_id" value="{{ research_project.id }}" style="display: none;">
-                                <label class="control-label">Palavras-chave</label>
                                 <div class="form-group">
                                     {% for keyword in keywords %}
                                         <button type="button" class="btn btn-default unbuttonmize">
@@ -149,7 +150,7 @@
                                         <span class="input-group-addon"><span class="glyphicon glyphicon-search"></span></span>
                                         <input class="form-control" placeholder=
                                                 "Digite uma palavra-chave para acrescentar uma existente ou uma nova"
-                                               id="keywords" type="text" autocomplete="off">
+                                               id="keywords" type="text" autocomplete="off" maxlength="50">
                                     </div>
                                     {% csrf_token %}
                                     <ul id="search-results-keywords" style="list-style: none;">
@@ -158,6 +159,37 @@
                              </div>
                         </div>
                     </div>
+                </div>
+
+                <div class="container span6 offset3 well ">
+                    <h4>Experimentos</h4>
+                    <div class="form-group">
+                        <table class="table table-striped">
+                            <thead>
+                                <tr>
+                                    <th>Título</th>
+                                    <th>Descrição</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                            {% for experiment in experiments %}
+                                <tr>
+                                    <td>{% if perms.experiment.change_experiment %}
+                                        <a data-toggle="tooltip" data-placement="left" title="Visualizar" href="/experiment/{{ experiment.id }}">{{ experiment.title }}</a></td>
+                                        {% else %}
+                                        {{ experiment.title }}
+                                        {% endif %}
+                                    <td>{{ experiment.description }}</td>
+                                </tr>
+                            {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                    {% if perms.experiment.add_experiment %}
+                        <div class="btn-group pull-left">
+                            <a href="/experiment/research_project/{{ research_project.id }}/new_experiment/" class="btn btn-primary">Inserir novo</a>
+                        </div>
+                    {% endif %}
                 </div>
             {% endif %}
 

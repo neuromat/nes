@@ -48,7 +48,8 @@
 
             <ol class="breadcrumb">
                 <li><a href="/home">Home</a></li>
-                <li><a href="/experiment/list">Experimentos</a></li>
+                <li><a href="/experiment/research_project/list">Estudos</a></li>
+                <li><a href="/experiment/research_project/{{ group.experiment.research_project.id }}">{{ group.experiment.research_project.title }}</a></li>
                 <li><a href="/experiment/{{ group.experiment.id }}">{{ group.experiment.title }}</a></li>
                 <li><a href="/experiment/group/{{ group.id }}">{{ group.title }}</a></li>
                 <li class="active">{{ questionnaire_title }}</li>
@@ -188,7 +189,7 @@
                                                         {% if questionnaire_configuration.number_of_fills == None or item.questionnaire_responses|length < questionnaire_configuration.number_of_fills %}
                                                             <td>
                                                                 {% if perms.experiment.add_questionnaireresponse %}
-                                                                    <a href="/experiment/group/{{ group.id }}/subject/{{ item.subject.id }}/questionnaire/{{ questionnaire_configuration.id }}/response"
+                                                                    <a href="/experiment/group/{{ goup }}subjects/{{ item.subject.id }}/questionnaire/{{ questionnaire_configuration.id }}/response"
                                                                         class="btn btn-primary {% if not limesurvey_available %} disabled {% endif %}">Novo preenchimento</a>
                                                                 {% endif %}
                                                             </td>

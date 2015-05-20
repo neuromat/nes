@@ -48,9 +48,10 @@
 
             <ol class="breadcrumb">
                 <li><a href="/home">Home</a></li>
-                <li><a href="/experiment/list">Experimentos</a></li>
+                <li><a href="/experiment/research_project/list">Estudos</a></li>
+                <li><a href="/experiment/research_project/{{ experiment.research_project.id }}">{{ experiment.research_project.title }}</a></li>
                 <li><a href="/experiment/{{ experiment.id }}">{{ experiment.title }}</a></li>
-                <li class="active">Componentes de Protocolo Experimental</li>
+                <li class="active">Passos de Protocolo Experimental</li>
             </ol>
 
         </div>
@@ -64,7 +65,7 @@
             <div class="container span6 offset3 well ">
                 <div class="row">
                     <div class="col-xs-6 col-sm-6">
-                        <label class="control-label">Lista de Componentes:</label>
+                        <label class="control-label">Lista de Passos:</label>
                     </div>
                 </div>
                 <br>
@@ -82,7 +83,7 @@
                             <tr>
                                 <td>
                                     <span class="{{ component.icon_class }}"></span>
-                                    {{ component.component_type }}
+                                    {{ component.get_component_type_display }}
                                 </td>
                                 {% if component.component_type == "block" %}
                                     <td><a data-toggle="tooltip" data-placement="left" title="Editar" href="/experiment/component/{{ component.id }}">{{ component.identification }}</a></td>
@@ -97,7 +98,7 @@
                 </div>
                 <div class="dropdown">
                     <button class="btn btn-primary dropdown-toggle" type="button" id="dropdownMenu1" data-toggle="dropdown" aria-expanded="true">
-                        Inserir novo componente
+                        Inserir novo passo
                         <span class="caret"></span>
                     </button>
                     <ul class="dropdown-menu" role="menu" aria-labelledby="dropdownMenu1">

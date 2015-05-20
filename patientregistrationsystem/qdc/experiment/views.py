@@ -18,9 +18,10 @@ from django.conf import settings
 
 from experiment.models import Experiment, QuestionnaireConfiguration, Subject, TimeUnit, \
     QuestionnaireResponse, SubjectOfGroup, Group, Component, ComponentConfiguration, Questionnaire, Task, Stimulus, \
-    Pause, Instruction, Block, ClassificationOfDiseases, ResearchProject, Keyword, PatientQuestionnaireResponse
+    Pause, Instruction, Block, TaskForTheExperimenter, ClassificationOfDiseases, ResearchProject, Keyword, \
+    PatientQuestionnaireResponse
 from experiment.forms import ExperimentForm, QuestionnaireConfigurationForm, QuestionnaireResponseForm, \
-    FileForm, GroupForm, TaskForm, InstructionForm, ComponentForm, StimulusForm, PauseForm, BlockForm, \
+    FileForm, GroupForm, InstructionForm, ComponentForm, StimulusForm, PauseForm, BlockForm, \
     ComponentConfigurationForm, ResearchProjectForm
 from patient.models import Patient
 from experiment.abc_search_engine import Questionnaires
@@ -37,6 +38,7 @@ icon_class = {
     u'questionnaire': 'glyphicon glyphicon-list-alt',
     u'stimulus': 'glyphicon glyphicon-headphones',
     u'task': 'glyphicon glyphicon-check',
+    u'task_experiment': 'glyphicon glyphicon-wrench'
 }
 
 delimiter = "-"
@@ -102,7 +104,8 @@ def research_project_view(request, research_project_id, template_name="experimen
     context = {
         "research_project": research_project,
         "research_project_form": research_project_form,
-        "keywords": research_project.keywords.all()}
+        "keywords": research_project.keywords.order_by('name'),
+        "experiments": research_project.experiment_set.order_by('title')}
 
     return render(request, template_name, context)
 
@@ -207,24 +210,16 @@ def keyword_remove_ajax(request, research_project_id, keyword_id):
 
 
 @login_required
-@permission_required('experiment.view_experiment')
-def experiment_list(request, template_name="experiment/experiment_list.html"):
-
-    experiments = Experiment.objects.order_by('title')
-    context = {"experiments": experiments}
-
-    return render(request, template_name, context)
-
-
-@login_required
 @permission_required('experiment.add_experiment')
-def experiment_create(request, template_name="experiment/experiment_register.html"):
+def experiment_create(request, research_project_id, template_name="experiment/experiment_register.html"):
     experiment_form = ExperimentForm(request.POST or None)
 
     if request.method == "POST":
         if request.POST['action'] == "save":
             if experiment_form.is_valid():
-                experiment_added = experiment_form.save()
+                experiment_added = experiment_form.save(commit=False)
+                experiment_added.research_project_id = research_project_id
+                experiment_added.save()
 
                 messages.success(request, 'Experimento criado com sucesso.')
 
@@ -232,6 +227,7 @@ def experiment_create(request, template_name="experiment/experiment_register.htm
                 return HttpResponseRedirect(redirect_url)
 
     context = {
+        "research_project": ResearchProject.objects.get(id=research_project_id),
         "experiment_form": experiment_form,
         "creating": True,
         "editing": True}
@@ -252,12 +248,14 @@ def experiment_view(request, experiment_id, template_name="experiment/experiment
     if request.method == "POST":
         if request.POST['action'] == "remove":
             try:
+                research_project_id = experiment.research_project_id
                 experiment.delete()
-                return redirect('experiment_list')
+                return redirect('research_project_view', research_project_id=research_project_id)
             except ProtectedError:
                 messages.error(request, "Não foi possível excluir o experimento, pois há grupos associados")
 
     context = {
+        "research_project": experiment.research_project,
         "experiment_form": experiment_form,
         "group_list": group_list,
         "experiment": experiment}
@@ -285,6 +283,7 @@ def experiment_update(request, experiment_id, template_name="experiment/experime
                 return HttpResponseRedirect(redirect_url)
 
     context = {
+        "research_project": experiment.research_project,
         "experiment_form": experiment_form,
         "editing": True,
         "group_list": group_list,
@@ -1289,12 +1288,32 @@ def upload_file(request, subject_id, group_id, template_name="experiment/upload_
 @permission_required('experiment.view_experiment')
 def component_list(request, experiment_id, template_name="experiment/component_list.html"):
     experiment = get_object_or_404(Experiment, pk=experiment_id)
-    components = Component.objects.filter(experiment=experiment).order_by("component_type", "identification")
+
+    # As it is not possible to sort_by get_component_type_display, filter without sorting and sort later.
+    components = Component.objects.filter(experiment=experiment)
+
+    # Create a temporary list of tuples from the query_set to be able to sort by get_component_type_display,
+    # identification and name.
+    temp_list_of_tuples = []
+
+    for component in components:
+        temp_list_of_tuples.append((component,
+                                    component.get_component_type_display(),
+                                    component.identification))
+
+    temp_list_of_tuples.sort(key=itemgetter(1, 2))
+
+    # Reduce the complexity by creating list of component configurations without having tuples.
+    components = []
+
+    for tuple in temp_list_of_tuples:
+        components.append(tuple[0])
 
     for component in components:
         component.icon_class = icon_class[component.component_type]
 
     component_type_choices = []
+
     for type, type_name in Component.COMPONENT_TYPES:
         component_type_choices.append((type, type_name, icon_class.get(type)))
 
@@ -1351,9 +1370,7 @@ def component_create(request, experiment_id, component_type):
     questionnaires_list = []
     specific_form = None
 
-    if component_type == 'task':
-        specific_form = TaskForm(request.POST or None)
-    elif component_type == 'instruction':
+    if component_type == 'instruction':
         specific_form = InstructionForm(request.POST or None)
     elif component_type == 'stimulus':
         specific_form = StimulusForm(request.POST or None)
@@ -1371,6 +1388,10 @@ def component_create(request, experiment_id, component_type):
             if component_type == 'questionnaire':
                 new_specific_component = Questionnaire()
                 new_specific_component.lime_survey_id = request.POST['questionnaire_selected']
+            elif component_type == 'task':
+                new_specific_component = Task()
+            elif component_type == 'task_experiment':
+                new_specific_component = TaskForTheExperimenter()
             elif specific_form.is_valid():
                 new_specific_component = specific_form.save(commit=False)
 
@@ -1382,7 +1403,7 @@ def component_create(request, experiment_id, component_type):
                 new_specific_component.experiment = experiment
                 new_specific_component.save()
 
-                messages.success(request, 'Componente incluído com sucesso.')
+                messages.success(request, 'Passo incluído com sucesso.')
 
                 if component_type == 'block':
                     redirect_url = reverse("component_view", args=(new_specific_component.id,))
@@ -1413,7 +1434,7 @@ def create_list_of_breadcrumbs(list_of_ids_of_components_and_configurations):
                 if cc.name is not None and cc.name != "":
                     name = cc.name
                 else:
-                    name = "Uso do componente " + cc.component.identification
+                    name = "Uso do passo " + cc.component.identification
 
                 view_name = "component_edit"
             else:
@@ -1511,8 +1532,8 @@ def remove_component_and_related_configurations(component,
                                                 path_of_the_components):
     # Before removing anything, we need to know where we should redirect to.
 
-    # If the list has more than one, it has to have more than two, because the last but one element is a component
-    # configuration, which has also to be removed from the path.
+    # If the list has more than one element, it has to have more than two, because the last but one element is a
+    # component configuration, which has also to be removed from the path.
     if len(list_of_ids_of_components_and_configurations) > 1:
         path_without_last = path_of_the_components[:path_of_the_components.rfind("-")]
         path_without_last_two = path_without_last[:path_without_last.rfind("-")]
@@ -1521,29 +1542,6 @@ def remove_component_and_related_configurations(component,
     else:
         # Return to the list of components
         redirect_url = "/experiment/" + str(component.experiment.id) + "/components"
-
-
-    # If component is a block, remove the relation with its children
-    component_configuration_list = ComponentConfiguration.objects.filter(parent=component)
-
-    for component_configuration_element in component_configuration_list:
-        component_configuration_element.delete()
-
-    # Get all the uses of the component that is being removed.
-    component_configuration_list = ComponentConfiguration.objects.filter(component=component)
-
-    # Remove the uses.
-    for component_configuration_element in component_configuration_list:
-        order_of_removed = component_configuration_element.order
-        parent_of_removed = component_configuration_element.parent_id
-        component_configuration_element.delete()
-
-        configuration_list_of_the_parent = ComponentConfiguration.objects.filter(parent_id=parent_of_removed)
-
-        for siblings in configuration_list_of_the_parent:
-            if siblings.order > order_of_removed:
-                siblings.order -= 1
-                siblings.save()
 
     component.delete()
 
@@ -1572,7 +1570,7 @@ def component_view(request, path_of_the_components):
             if configuration_form is not None:
                 if configuration_form.is_valid():
                     configuration_form.save()
-                    messages.success(request, 'Uso do componente atualizado com sucesso.')
+                    messages.success(request, 'Uso do passo atualizado com sucesso.')
                     return HttpResponseRedirect(back_cancel_url)
         elif request.POST['action'] == "remove":
             redirect_url = remove_component_and_related_configurations(component,
@@ -1634,16 +1632,21 @@ def sort_without_using_order(configuration_list_of_random_components):
     # Create a temporary list of tuples from the query_set to be able to sort by get_component_type_display,
     # identification and name.
     temp_list_of_tuples = []
+
     for cc in configuration_list_of_random_components:
         temp_list_of_tuples.append((cc,
                                     cc.component.get_component_type_display(),
                                     cc.component.identification,
                                     cc.name))
+
     temp_list_of_tuples.sort(key=itemgetter(1, 2, 3))
+
     # Reduce the complexity by creating list of component configurations without having tuples.
     configuration_list_of_random_components = []
+
     for tuple in temp_list_of_tuples:
         configuration_list_of_random_components.append(tuple[0])
+
     return configuration_list_of_random_components
 
 
@@ -1679,10 +1682,7 @@ def component_update(request, path_of_the_components):
     configuration_list_of_random_components = []
     specific_form = None
 
-    if component_type == 'task':
-        task = get_object_or_404(Task, pk=component.id)
-        specific_form = TaskForm(request.POST or None, instance=task)
-    elif component_type == 'instruction':
+    if component_type == 'instruction':
         instruction = get_object_or_404(Instruction, pk=component.id)
         specific_form = InstructionForm(request.POST or None, instance=instruction)
     elif component_type == 'stimulus':
@@ -1707,12 +1707,13 @@ def component_update(request, path_of_the_components):
         if request.POST['action'] == "save":
             if configuration_form is None:
                 # There is no specific form for a questionnaire.
-                if component.component_type == "questionnaire":
+                if component.component_type == "questionnaire" or component.component_type == "task" or \
+                        component.component_type == "task_experiment":
                     if component_form.is_valid():
                         # Only save if there was a change.
                         if component_form.has_changed():
                             component_form.save()
-                            messages.success(request, 'Componente alterado com sucesso.')
+                            messages.success(request, 'Passo alterado com sucesso.')
                         else:
                             messages.success(request, 'Não há alterações para salvar.')
 
@@ -1734,7 +1735,7 @@ def component_update(request, path_of_the_components):
                             specific_form.save()
 
                         component_form.save()
-                        messages.success(request, 'Componente alterado com sucesso.')
+                        messages.success(request, 'Passo alterado com sucesso.')
                     else:
                         messages.success(request, 'Não há alterações para salvar.')
 
@@ -1744,22 +1745,22 @@ def component_update(request, path_of_the_components):
                 # Only save if there was a change.
                 if configuration_form.has_changed():
                     configuration_form.save()
-                    messages.success(request, 'Uso do componente atualizado com sucesso.')
+                    messages.success(request, 'Uso do passo atualizado com sucesso.')
                 else:
                     messages.success(request, 'Não há alterações para salvar.')
 
                 return HttpResponseRedirect(back_cancel_url)
         elif request.POST['action'] == "remove":
-            remove_component_and_related_configurations(component,
-                                                        list_of_ids_of_components_and_configurations,
-                                                        path_of_the_components)
-            return HttpResponseRedirect(back_cancel_url)
+            redirect_url = remove_component_and_related_configurations(component,
+                                                                       list_of_ids_of_components_and_configurations,
+                                                                       path_of_the_components)
+            return HttpResponseRedirect(redirect_url)
 
     type_of_the_parent_block = None
 
     # It is not possible to edit the component fields while editing a component configuration.
     if component_configuration is not None:
-        if component_type != "questionnaire":
+        if component_type != "questionnaire" and component_type != 'task' and component_type != 'task_experiment':
             for field in specific_form.fields:
                 specific_form.fields[field].widget.attrs['disabled'] = True
 
@@ -1834,10 +1835,9 @@ def component_add_new(request, path_of_the_components, component_type):
 
     component_form = ComponentForm(request.POST or None)
     questionnaires_list = []
+    specific_form = None
 
-    if component_type == 'task':
-        specific_form = TaskForm(request.POST or None)
-    elif component_type == 'instruction':
+    if component_type == 'instruction':
         specific_form = InstructionForm(request.POST or None)
     elif component_type == 'stimulus':
         specific_form = StimulusForm(request.POST or None)
@@ -1854,6 +1854,10 @@ def component_add_new(request, path_of_the_components, component_type):
         if component_type == 'questionnaire':
             new_specific_component = Questionnaire()
             new_specific_component.lime_survey_id = request.POST['questionnaire_selected']
+        elif component_type == 'task':
+            new_specific_component = Task()
+        elif component_type == 'task_experiment':
+            new_specific_component = TaskForTheExperimenter()
         elif specific_form.is_valid():
             new_specific_component = specific_form.save(commit=False)
 
@@ -1865,6 +1869,7 @@ def component_add_new(request, path_of_the_components, component_type):
             new_specific_component.experiment = experiment
             new_specific_component.save()
 
+            # Check if we are configuring a new experimental protocol, which does not have a component configuration.
             if group is None or len(list_of_ids_of_components_and_configurations) > 1:
                 new_configuration = ComponentConfiguration()
                 new_configuration.component = new_specific_component
@@ -1875,7 +1880,7 @@ def component_add_new(request, path_of_the_components, component_type):
 
                 new_configuration.save()
 
-                messages.success(request, 'Componente incluído com sucesso.')
+                messages.success(request, 'Passo incluído com sucesso.')
 
                 redirect_url = reverse("component_edit",
                                        args=(path_of_the_components + "-U" + str(new_configuration.id), ))
@@ -1887,6 +1892,7 @@ def component_add_new(request, path_of_the_components, component_type):
 
                 redirect_url = reverse("component_view",
                                        args=(path_of_the_components + "-" + str(new_specific_component.id), ))
+
             return HttpResponseRedirect(redirect_url)
 
     context = {
@@ -1921,11 +1927,9 @@ def component_reuse(request, path_of_the_components, component_id):
 
     questionnaire_id = None
     questionnaire_title = None
+    specific_form = None
 
-    if component_type == 'task':
-        task = get_object_or_404(Task, pk=component_to_add.id)
-        specific_form = TaskForm(request.POST or None, instance=task)
-    elif component_type == 'instruction':
+    if component_type == 'instruction':
         instruction = get_object_or_404(Instruction, pk=component_to_add.id)
         specific_form = InstructionForm(request.POST or None, instance=instruction)
     elif component_type == 'stimulus':
@@ -1949,9 +1953,12 @@ def component_reuse(request, path_of_the_components, component_id):
         for field in component_form.fields:
             component_form.fields[field].widget.attrs['disabled'] = True
     else:
-        for form_used in {specific_form, component_form}:
-            for field in form_used.fields:
-                form_used.fields[field].widget.attrs['disabled'] = True
+        for field in component_form.fields:
+            component_form.fields[field].widget.attrs['disabled'] = True
+
+        if component_type != 'task' and component_type != 'task_experiment':
+            for field in specific_form.fields:
+                specific_form.fields[field].widget.attrs['disabled'] = True
 
     if request.method == "POST":
         if len(list_of_ids_of_components_and_configurations) == 1 and path_of_the_components[0] == "G":
@@ -1976,7 +1983,7 @@ def component_reuse(request, path_of_the_components, component_id):
             redirect_url = reverse("component_edit",
                                    args=(path_of_the_components + "-U" + str(new_configuration.id), ))
 
-        messages.success(request, 'Componente incluído com sucesso.')
+        messages.success(request, 'Passo incluído com sucesso.')
         return HttpResponseRedirect(redirect_url)
 
     context = {

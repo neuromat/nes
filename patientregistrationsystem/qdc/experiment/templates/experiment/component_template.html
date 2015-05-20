@@ -53,13 +53,14 @@
 
             <ol class="breadcrumb">
                 <li><a href="/home">Home</a></li>
-                <li><a href="/experiment/list">Experimentos</a></li>
+                <li><a href="/experiment/research_project/list">Estudos</a></li>
+                <li><a href="/experiment/research_project/{{ experiment.research_project.id }}">{{ experiment.research_project.title }}</a></li>
                 <li><a href="/experiment/{{ experiment.id }}">{{ experiment.title }}</a></li>
 
                 {% if group != None %}
                     <li><a href="/experiment/group/{{ group.id }}">{{ group.title }}</a></li>
                 {% else %}
-                    <li><a href="/experiment/{{ experiment.id }}/components">Componentes de protocolo experimental</a></li>
+                    <li><a href="/experiment/{{ experiment.id }}/components">Passos de protocolo experimental</a></li>
                 {% endif %}
 
                 {% for url_and_name in list_of_breadcrumbs %}
@@ -175,7 +176,7 @@
                 <div class="container span6 offset3 well ">
                     <div class="row">
                         <div class="col-xs-12 col-sm-12">
-                            <h4>Informações sobre esse uso do componente</h4>
+                            <h4>Informações sobre esse uso do passo</h4>
                         </div>
                     </div>
                     <div class="row">
@@ -189,11 +190,11 @@
                         {% if type_of_the_parent_block == "sequence" %}
                             <div class="col-xs-12 col-sm-5 col-sm-offset-1">
                                 <div class="form-group">
-                                    <label>Posição no bloco</label>
+                                    <label>Posição no conjunto de passos</label>
                                     <div class="input-group  input-group-sm">
                                         {% for radio in configuration_form.random_position %}
                                             <span style="margin-right: 15px;" data-toggle="tooltip" data-placement="bottom" title="
-                                            {% cycle 'A ordem de execução deste subcomponente não varia' 'Este subcomponente pode ser executado em qualquer posição do bloco pai onde não há um componente fixo' %}">
+                                            {% cycle 'A ordem de execução deste subpasso não varia' 'Este subpasso pode ser executado em qualquer posição do conjunto pai onde não há um passo fixo' %}">
                                                 <div class="radio-inline">{{ radio }}</div>
                                             </span>
                                         {% endfor %}
@@ -254,7 +255,7 @@
             <div class="btn-toolbar">
                 {# This div has to be out of the if so that the save and cancel buttons appear separated from each other. #}
                 <div class="btn-group pull-left">
-                    {% if show_remove and perms.experiment.change_experiment %}
+                    {% if show_remove and perms.experiment.change_research_project %}
                         <button type="button" class="btn btn-danger" onclick="$('#modalRemove').modal('show')">Excluir</button>
                     {% endif %}
                 </div>
@@ -269,7 +270,12 @@
                         </button>
                     </div>
                     <div class="btn-group pull-right">
-                        <a href="{{ back_cancel_url }}" class="btn" style="background-color: #f5f5f5">Cancelar</a>
+                        {# As the user is directed to edit the component configuration as soon as a component is inserted in the block, it is better to use the term back, so that the user doesn't think that he can cancel the creation of the component configuration. #}
+                        {% if component_configuration %}
+                            <a href="{{ back_cancel_url }}" class="btn" style="background-color: #f5f5f5">Voltar</a>
+                        {% else %}
+                            <a href="{{ back_cancel_url }}" class="btn" style="background-color: #f5f5f5">Cancelar</a>
+                        {% endif %}
                     </div>
                 {% else %}
                     <div class="btn-group pull-right">
@@ -280,13 +286,13 @@
         </div>
     </div>
 
-    {% if show_remove and perms.experiment.change_experiment %}
+    {% if show_remove and perms.experiment.change_research_project %}
         <div class="modal fade" id="modalRemove" tabindex="-1" role="dialog" aria-labelledby="myModalLabel"
              aria-hidden="true">
             <div class="modal-dialog">
                 <div class="modal-content">
                     <div class="modal-body">
-                        Tem certeza que deseja excluir o componente?
+                        Tem certeza que deseja excluir o passo?
                     </div>
                     <div class="modal-footer">
                         <button type="button" class="btn btn-default" data-dismiss="modal">Cancelar</button>

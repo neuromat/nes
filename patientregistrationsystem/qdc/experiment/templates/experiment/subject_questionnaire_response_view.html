@@ -31,7 +31,9 @@
                         {% endif %}
                     {% endif %}
                 {% else %}
-                    <li><a href="/experiment/list">Experimentos</a></li>
+                    <li><a href="/experiment/research_project/list">Estudos</a></li>
+                    <li><a href="/experiment/research_project/{{ questionnaire_response.questionnaire_configuration.group.experiment.research_project.id }}">
+                        {{ questionnaire_response.questionnaire_configuration.group.experiment.research_project.title }}</a></li>
                     <li>
                         <a href="/experiment/{{ questionnaire_response.questionnaire_configuration.group.experiment.id }}/">
                             {{ questionnaire_response.questionnaire_configuration.group.experiment.title }}

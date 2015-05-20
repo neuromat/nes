@@ -134,7 +134,7 @@
 
                 <li {% block activePatient %}{% endblock %} >
                     {% if perms.patient.view_patient %}
-                        <a href="/patient/find/">Paciente</a>
+                        <a href="/patient/find/">Pacientes</a>
                     {% endif %}
                 </li>
 
@@ -147,12 +147,6 @@
                 {% if perms.experiment.view_researchproject %}
                     <li {% block activeAdvancedResearchProject %}{% endblock %}>
                         <a href="/experiment/research_project/list/">Estudos</a>
-                    </li>
-                {% endif %}
-
-                {% if perms.experiment.view_experiment %}
-                    <li {% block activeAdvancedExperiment %}{% endblock %}>
-                        <a href="/experiment/list/">Experimentos</a>
                     </li>
                 {% endif %}
 

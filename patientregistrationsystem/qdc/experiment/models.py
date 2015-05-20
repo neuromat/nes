@@ -61,9 +61,7 @@ class ResearchProject(models.Model):
 class Experiment(models.Model):
     title = models.CharField(null=False, max_length=50, blank=False)
     description = models.CharField(max_length=150, null=False, blank=False)
-
-    # ToDo: notice that it's been added as null=True; once it has data, we can alter it to be null=False
-    research_project = models.ForeignKey(ResearchProject, null=True, blank=True)
+    research_project = models.ForeignKey(ResearchProject, null=False, blank=False)
 
     # Audit trail - Simple History
     history = HistoricalRecords()
@@ -88,12 +86,13 @@ class Experiment(models.Model):
 
 class Component(models.Model):
     COMPONENT_TYPES = (
-        ("block", "Bloco"),
+        ("block", "Conjunto de passos"),
         ("instruction", "Instrução"),
         ("pause", "Pausa"),
         ("questionnaire", "Questionário"),
         ("stimulus", "Estímulo"),
-        ("task", "Tarefa"),
+        ("task", "Tarefa para o sujeito"),
+        ("task_experiment", "Tarefa para o experimentador"),
     )
 
     identification = models.CharField(null=False, max_length=50, blank=False)
@@ -103,8 +102,11 @@ class Component(models.Model):
 
 
 class Task(Component):
-    instruction_text = models.CharField(max_length=150, null=False, blank=False)
+    def save(self, *args, **kwargs):
+        super(Component, self).save(*args, **kwargs)
 
+
+class TaskForTheExperimenter(Component):
     def save(self, *args, **kwargs):
         super(Component, self).save(*args, **kwargs)
 

@@ -3,33 +3,24 @@
 {% block breadcrumb %}
 
     {% if creating %}
-        <li class="active">Nova tarefa</li>
+        <li class="active">Nova tarefa para o sujeito</li>
     {% endif %}
 
 {% endblock %}
 
-{% block component_label %}a tarefa{% endblock %}
+{% block component_label %}a tarefa para o sujeito{% endblock %}
 
 {% block component_add_new %}
     <li role="presentation">
         <a role="menuitem" tabindex="-1" href="/experiment/component/{{ path_of_the_components }}/add_new/task">
-            << Nova tarefa >>
+            << Nova tarefa para o sujeito >>
         </a>
     </li>
 {% endblock %}
 
 {% block component_button_label %}
-    Nova tafefa
+    Nova tafefa para o sujeito
 {% endblock %}
 
 {% block extra_fields %}
-    <div class="row">
-        <div class="col-xs-6 col-sm-12">
-            <div class="form-group">
-                <label class="control-label">Instrução <b style="color: red;">*</b></label>
-                    {{ specific_form.instruction_text }}
-                <div class="help-block with-errors"></div>
-            </div>
-        </div>
-    </div>
 {% endblock %}

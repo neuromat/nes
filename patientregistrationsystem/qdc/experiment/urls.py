@@ -18,8 +18,7 @@ urlpatterns = patterns(
         name='research_project_edit'),
 
     # experiment
-    url(r'^list/$', 'experiment_list', name='experiment_list'),
-    url(r'^new/$', 'experiment_create', name='experiment_new'),
+    url(r'^research_project/(?P<research_project_id>\d+)/new_experiment/$', 'experiment_create', name='experiment_new'),
     url(r'^(?P<experiment_id>\d+)/$', 'experiment_view', name='experiment_view'),
     url(r'^edit/(?P<experiment_id>\d+)/$', 'experiment_update', name='experiment_edit'),
 
