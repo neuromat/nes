@@ -125,12 +125,12 @@ class ExperimentalProtocolTest(TestCase):
         unit = TimeUnit.objects.create(name="Horas")
         unit.save()
         self.data = {'action': 'save', 'identification': 'Pause identification',
-                     'description': 'Pause description', 'duration': 2, 'duration_unit': unit.id}
+                     'description': 'Pause description', 'duration_value': 2, 'duration_unit': unit.id}
         response = self.client.post(reverse("component_new", args=(experiment.id, "pause")), self.data)
         self.assertEqual(response.status_code, 302)
         # Check if redirected to list of components
         self.assertTrue("/experiment/" + str(experiment.id) + "/components" in response.url)
-        self.assertTrue(Pause.objects.filter(identification="Pause identification", duration=2).exists())
+        self.assertTrue(Pause.objects.filter(identification="Pause identification", duration_value=2).exists())
 
         # Conecta no Lime Survey
         lime_survey = Questionnaires()

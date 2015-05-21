@@ -6,23 +6,21 @@ import csv
 
 from StringIO import StringIO
 
-from django.shortcuts import render, get_object_or_404, redirect
-from django.contrib.auth.decorators import login_required, permission_required
-from django.contrib import messages
-from django.http import HttpResponseRedirect
-from django.core.urlresolvers import reverse
-from django.shortcuts import render_to_response
-from django.db.models.deletion import ProtectedError
-from django.db.models import Q
 from django.conf import settings
+from django.contrib import messages
+from django.contrib.auth.decorators import login_required, permission_required
+from django.core.urlresolvers import reverse
+from django.db.models import Q
+from django.db.models.deletion import ProtectedError
+# from django.forms import HiddenInput
+from django.http import HttpResponseRedirect
+from django.shortcuts import get_object_or_404, redirect, render, render_to_response
 
-from experiment.models import Experiment, QuestionnaireConfiguration, Subject, TimeUnit, \
-    QuestionnaireResponse, SubjectOfGroup, Group, Component, ComponentConfiguration, Questionnaire, Task, Stimulus, \
-    Pause, Instruction, Block, TaskForTheExperimenter, ClassificationOfDiseases, ResearchProject, Keyword, \
-    PatientQuestionnaireResponse
-from experiment.forms import ExperimentForm, QuestionnaireConfigurationForm, QuestionnaireResponseForm, \
-    FileForm, GroupForm, InstructionForm, ComponentForm, StimulusForm, PauseForm, BlockForm, \
-    ComponentConfigurationForm, ResearchProjectForm
+from experiment.models import Experiment, QuestionnaireConfiguration, Subject, QuestionnaireResponse, SubjectOfGroup, \
+    Group, Component, ComponentConfiguration, Questionnaire, Task, Stimulus, Pause, Instruction, Block, \
+    TaskForTheExperimenter, ClassificationOfDiseases, ResearchProject, Keyword, PatientQuestionnaireResponse
+from experiment.forms import ExperimentForm, QuestionnaireResponseForm, FileForm, GroupForm, InstructionForm, \
+    ComponentForm, StimulusForm, BlockForm, ComponentConfigurationForm, ResearchProjectForm
 from patient.models import Patient
 from experiment.abc_search_engine import Questionnaires
 
@@ -1367,6 +1365,8 @@ def component_create(request, experiment_id, component_type):
 
     experiment = get_object_or_404(Experiment, pk=experiment_id)
     component_form = ComponentForm(request.POST or None)
+    # This is needed for the form to be able to validate the presence of a duration in a pause component only.
+    component_form.component_type = component_type
     questionnaires_list = []
     specific_form = None
 
@@ -1374,12 +1374,12 @@ def component_create(request, experiment_id, component_type):
         specific_form = InstructionForm(request.POST or None)
     elif component_type == 'stimulus':
         specific_form = StimulusForm(request.POST or None)
-    elif component_type == 'pause':
-        specific_form = PauseForm(request.POST or None)
     elif component_type == 'questionnaire':
         questionnaires_list = Questionnaires().find_all_active_questionnaires()
     elif component_type == 'block':
         specific_form = BlockForm(request.POST or None, initial={'number_of_mandatory_components': None})
+        # component_form.fields['duration_value'].widget.attrs['disabled'] = True
+        # component_form.fields['duration_unit'].widget.attrs['disabled'] = True
 
     if request.method == "POST":
         new_specific_component = None
@@ -1388,6 +1388,8 @@ def component_create(request, experiment_id, component_type):
             if component_type == 'questionnaire':
                 new_specific_component = Questionnaire()
                 new_specific_component.lime_survey_id = request.POST['questionnaire_selected']
+            elif component_type == 'pause':
+                new_specific_component = Pause()
             elif component_type == 'task':
                 new_specific_component = Task()
             elif component_type == 'task_experiment':
@@ -1401,6 +1403,8 @@ def component_create(request, experiment_id, component_type):
                 new_specific_component.identification = component.identification
                 new_specific_component.component_type = component_type
                 new_specific_component.experiment = experiment
+                new_specific_component.duration_value = component.duration_value
+                new_specific_component.duration_unit = component.duration_unit
                 new_specific_component.save()
 
                 messages.success(request, 'Passo incluído com sucesso.')
@@ -1513,6 +1517,9 @@ def access_objects_for_view_and_update(request, path_of_the_components, updating
 
     component_type = component.component_type
     template_name = "experiment/" + component_type + "_component.html"
+
+    # This is needed for the form to be able to validate the presence of a duration in a pause component only.
+    component_form.component_type = component_type
 
     if component_configuration is None:
         show_remove = True
@@ -1688,9 +1695,6 @@ def component_update(request, path_of_the_components):
     elif component_type == 'stimulus':
         stimulus = get_object_or_404(Stimulus, pk=component.id)
         specific_form = StimulusForm(request.POST or None, instance=stimulus)
-    elif component_type == 'pause':
-        pause = get_object_or_404(Pause, pk=component.id)
-        specific_form = PauseForm(request.POST or None, instance=pause)
     elif component_type == 'questionnaire':
         questionnaire = get_object_or_404(Questionnaire, pk=component.id)
         questionnaire_details = Questionnaires().find_questionnaire_by_id(questionnaire.lime_survey_id)
@@ -1706,9 +1710,9 @@ def component_update(request, path_of_the_components):
     if request.method == "POST":
         if request.POST['action'] == "save":
             if configuration_form is None:
-                # There is no specific form for a questionnaire.
+                # There is no specific form for a these component types.
                 if component.component_type == "questionnaire" or component.component_type == "task" or \
-                        component.component_type == "task_experiment":
+                        component.component_type == "task_experiment" or component.component_type == 'pause':
                     if component_form.is_valid():
                         # Only save if there was a change.
                         if component_form.has_changed():
@@ -1834,6 +1838,9 @@ def component_add_new(request, path_of_the_components, component_type):
         access_objects_for_add_new_and_reuse(component_type, path_of_the_components)
 
     component_form = ComponentForm(request.POST or None)
+    # This is needed for the form to be able to validate the presence of a duration in a pause component only.
+    component_form.component_type = component_type
+
     questionnaires_list = []
     specific_form = None
 
@@ -1841,8 +1848,6 @@ def component_add_new(request, path_of_the_components, component_type):
         specific_form = InstructionForm(request.POST or None)
     elif component_type == 'stimulus':
         specific_form = StimulusForm(request.POST or None)
-    elif component_type == 'pause':
-        specific_form = PauseForm(request.POST or None)
     elif component_type == 'questionnaire':
         questionnaires_list = Questionnaires().find_all_active_questionnaires()
     elif component_type == 'block':
@@ -1854,6 +1859,8 @@ def component_add_new(request, path_of_the_components, component_type):
         if component_type == 'questionnaire':
             new_specific_component = Questionnaire()
             new_specific_component.lime_survey_id = request.POST['questionnaire_selected']
+        elif component_type == 'pause':
+            new_specific_component = Pause()
         elif component_type == 'task':
             new_specific_component = Task()
         elif component_type == 'task_experiment':
@@ -1924,6 +1931,8 @@ def component_reuse(request, path_of_the_components, component_id):
         access_objects_for_add_new_and_reuse(component_type, path_of_the_components)
 
     component_form = ComponentForm(request.POST or None, instance=component_to_add)
+    # This is needed for the form to be able to validate the presence of a duration in a pause component only.
+    component_form.component_type = component_type
 
     questionnaire_id = None
     questionnaire_title = None
@@ -1935,9 +1944,6 @@ def component_reuse(request, path_of_the_components, component_id):
     elif component_type == 'stimulus':
         stimulus = get_object_or_404(Stimulus, pk=component_to_add.id)
         specific_form = StimulusForm(request.POST or None, instance=stimulus)
-    elif component_type == 'pause':
-        pause = get_object_or_404(Pause, pk=component_to_add.id)
-        specific_form = PauseForm(request.POST or None, instance=pause)
     elif component_type == 'questionnaire':
         questionnaire = get_object_or_404(Questionnaire, pk=component_to_add.id)
         questionnaire_details = Questionnaires().find_questionnaire_by_id(questionnaire.lime_survey_id)
@@ -1956,7 +1962,7 @@ def component_reuse(request, path_of_the_components, component_id):
         for field in component_form.fields:
             component_form.fields[field].widget.attrs['disabled'] = True
 
-        if component_type != 'task' and component_type != 'task_experiment':
+        if component_type != 'pause' and component_type != 'task' and component_type != 'task_experiment':
             for field in specific_form.fields:
                 specific_form.fields[field].widget.attrs['disabled'] = True
 

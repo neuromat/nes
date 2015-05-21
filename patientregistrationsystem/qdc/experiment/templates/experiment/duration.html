@@ -1,0 +1,27 @@
+{% if component_form.component_type != 'block' %}
+    <div class="col-xs-12 col-sm-5 col-sm-offset-1">
+        <div class="col-xs-12 col-sm-12">
+            <label for="duration" class="control-label">Duração {% if component_form.component_type == 'pause' %}<b style="color: red;">*</b>{% endif %}</label>
+        </div>
+        <div class="col-xs-4 col-sm-4">
+            <div class="form-group {% if component_form.errors.duration_value %}has-error{% endif %}">
+                {{ component_form.duration_value }}
+                <div class="help-block with-errors">
+                    {% for error in component_form.duration_value.errors %}
+                        {{ error }}
+                    {% endfor %}
+                </div>
+            </div>
+        </div>
+        <div class="col-xs-8 col-sm-6">
+            <div class="form-group {% if component_form.errors.duration_unit %}has-error{% endif %}">
+                {{ component_form.duration_unit }}
+                <div class="help-block with-errors">
+                    {% for error in component_form.duration_unit.errors %}
+                        {{ error }}
+                    {% endfor %}
+                </div>
+            </div>
+        </div>
+    </div>
+{% endif %}

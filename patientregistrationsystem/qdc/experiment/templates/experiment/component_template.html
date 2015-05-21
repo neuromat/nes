@@ -91,15 +91,11 @@
                     </div>
                 </div>
                 {% if can_reuse or reusing %}
-                    {% if reusing %}
-                        <div class="row">
-                            <div class="col-xs-6 col-sm-6">
-                                <label class="control-label">Identificação <b style="color: red;">*</b></label>
-                            </div>
-                        </div>
-                    {% endif %}
                     <div class="row">
-                        <div class="col-xs-6 col-sm-6">
+                        <div class="col-xs-12 col-sm-6">
+                            {% if reusing %}
+                                <label class="control-label">Identificação <b style="color: red;">*</b></label>
+                            {% endif %}
                             <div class="dropdown">
                                 <button class="btn btn-default dropdown-toggle" type="button" id="dropdownMenu1" data-toggle="dropdown" aria-expanded="true">
                                     {% if component_form.identification.value %}
@@ -113,20 +109,20 @@
 
                                 {% if existing_component_list %}
                                     <ul class="dropdown-menu" role="menu" aria-labelledby="dropdownMenu1">
-
                                         {% for existing_component in existing_component_list %}
                                             <li role="presentation"><a role="menuitem" tabindex="-1" href="/experiment/component/{% if path_of_the_components %}{{ path_of_the_components }}{% else %}{{ component.id }}{% endif %}/add/{{ existing_component.id }}">{{ existing_component.identification }}</a></li>
                                         {% endfor %}
 
-                                        {% if can_reuse or reusing %}
-                                            <li role="presentation" class="divider"></li>
-                                            {% block component_add_new %}
-                                            {% endblock %}
-                                        {% endif %}
+                                        <li role="presentation" class="divider"></li>
+                                        {% block component_add_new %}
+                                        {% endblock %}
                                     </ul>
                                 {% endif %}
                             </div>
                         </div>
+                        {% if reusing %}
+                            {% include "experiment/duration.html" %}
+                        {% endif %}
                     </div>
                     <br>
                 {% endif %}
@@ -134,12 +130,13 @@
                 {% if not reusing %}
                     <div class="row">
                         <div class="col-xs-12 col-sm-6">
-                            <div class="form-group ">
+                            <div class="form-group">
                                 <label class="control-label" for="identification">Identificação <b style="color: red;">*</b></label>
-                                    {{ component_form.identification }}
+                                {{ component_form.identification }}
                                 <div class="help-block with-errors"></div>
                             </div>
                         </div>
+                        {% include "experiment/duration.html" %}
                     </div>
                 {% endif %}
                 <div class="row">

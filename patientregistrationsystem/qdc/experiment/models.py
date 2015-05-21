@@ -97,6 +97,8 @@ class Component(models.Model):
 
     identification = models.CharField(null=False, max_length=50, blank=False)
     description = models.CharField(max_length=1500, null=True, blank=True)
+    duration_value = models.IntegerField(null=True, blank=True, validators=[MinValueValidator(1)])
+    duration_unit = models.ForeignKey(TimeUnit, null=True, blank=True)
     experiment = models.ForeignKey(Experiment, null=False)
     component_type = models.CharField(null=False, max_length=15, choices=COMPONENT_TYPES)
 
@@ -119,9 +121,6 @@ class Instruction(Component):
 
 
 class Pause(Component):
-    duration = models.IntegerField(null=False, blank=False)
-    duration_unit = models.ForeignKey(TimeUnit, null=True, blank=True)
-
     def save(self, *args, **kwargs):
         super(Component, self).save(*args, **kwargs)
 

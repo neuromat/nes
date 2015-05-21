@@ -1,8 +1,9 @@
 # coding=utf-8
 from experiment.models import Experiment, QuestionnaireConfiguration, QuestionnaireResponse, SubjectOfGroup, Group, \
-    Component, Stimulus, Pause, Block, Instruction, ComponentConfiguration, ResearchProject, \
-    PatientQuestionnaireResponse, TimeUnit
-from django.forms import ModelForm, TextInput, Textarea, Select, DateInput, TypedChoiceField, RadioSelect, ModelChoiceField
+    Component, Stimulus, Block, Instruction, ComponentConfiguration, ResearchProject, PatientQuestionnaireResponse, \
+    TimeUnit
+from django.forms import ModelForm, TextInput, Textarea, Select, DateInput, TypedChoiceField, RadioSelect,\
+    ModelChoiceField, ValidationError
 
 
 class ExperimentForm(ModelForm):
@@ -88,9 +89,15 @@ class FileForm(ModelForm):
 
 
 class ComponentForm(ModelForm):
+    duration_unit = ModelChoiceField(
+        queryset=TimeUnit.objects.all(),
+        required=False,
+        empty_label="Escolha unidade",
+        widget=Select(attrs={'class': 'form-control'}))
+
     class Meta:
         model = Component
-        fields = ['identification', 'description']
+        fields = ['identification', 'description', 'duration_value', 'duration_unit']
 
         widgets = {
             'identification': TextInput(attrs={'class': 'form-control', 'required': "",
@@ -98,22 +105,40 @@ class ComponentForm(ModelForm):
             # Even though maxlength is already set in the model, it has be be repeated here, because the form dos not
             # respect that information.
             'description': Textarea(attrs={'class': 'form-control', 'rows': '4', 'maxlength': '1500'}),
+            'duration_value': TextInput(attrs={'class': 'form-control', 'placeholder': 'Tempo'}),
         }
+
+    def clean_duration_value(self):
+        duration_value = self.cleaned_data['duration_value']
+
+        if self.component_type == "pause" and duration_value is None:
+            raise ValidationError("Tempo da duração deve ser preenchido")
+
+        return duration_value
+
+    def clean_duration_unit(self):
+        duration_unit = self.cleaned_data['duration_unit']
+
+        if self.component_type == "pause" and duration_unit is None:
+            raise ValidationError("Unidade da duração deve ser preenchida")
+
+        return duration_unit
 
 
 class ComponentConfigurationForm(ModelForm):
-    # This is required because will be included only when the parent is a sequence.
+    # This is needed because it will be included only when the parent is a sequence.
     random_position = TypedChoiceField(required=False,
                                        empty_value=None,
                                        choices=((False, 'Fixa'), (True, 'Aleatória')),
                                        widget=RadioSelect(attrs={'id': 'id_random_position'}))
 
-    # This is required because we want an empty_label different from "--------".
+    # This is needed because we want an empty_label different from "--------".
     interval_between_repetitions_unit = ModelChoiceField(
         queryset=TimeUnit.objects.all(),
         required=False,
         empty_label="Escolha unidade",
-        widget=Select(attrs={'class': 'form-control', 'required': "", 'data-error': "Unidade deve ser preenchida"}))
+        widget=Select(attrs={'class': 'form-control', 'required': "",
+                             'data-error': "Unidade do intervalo deve ser preenchida"}))
 
     class Meta:
         model = ComponentConfiguration
@@ -149,19 +174,6 @@ class StimulusForm(ModelForm):
         widgets = {
             'stimulus_type': Select(attrs={'class': 'form-control', 'required': "",
                                            'data-error': 'Tipo do estímulo deve ser preenchido.'})
-        }
-
-
-class PauseForm(ModelForm):
-    class Meta:
-        model = Pause
-        fields = ['duration', 'duration_unit']
-
-        widgets = {
-            'duration': TextInput(attrs={'class': 'form-control', 'required': "",
-                                         'data-error': 'Duração da pausa deve ser preenchida.'}),
-            'duration_unit': Select(attrs={'class': 'form-control', 'required': "",
-                                           'data-error': "Unidade deve ser preenchida"}),
         }
 
 
