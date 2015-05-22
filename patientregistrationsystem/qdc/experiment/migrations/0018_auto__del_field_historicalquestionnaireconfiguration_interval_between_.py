@@ -8,47 +8,138 @@ from django.db import models
 class Migration(SchemaMigration):
 
     def forwards(self, orm):
+        # Deleting model 'TimeUnit'
+        db.delete_table(u'experiment_timeunit')
+
+        # HistoricalQuestionnaireConfiguration
+        # Deleting field 'HistoricalQuestionnaireConfiguration.interval_between_fills_unit2'
+        db.delete_column(u'experiment_historicalquestionnaireconfiguration', 'interval_between_fills_unit2')
+        # Deleting field 'HistoricalQuestionnaireConfiguration.interval_between_fills_unit_id'
+        db.delete_column(u'experiment_historicalquestionnaireconfiguration', 'interval_between_fills_unit_id')
+        # Adding field 'HistoricalQuestionnaireConfiguration.interval_between_fills_unit'
+        db.add_column(u'experiment_historicalquestionnaireconfiguration', 'interval_between_fills_unit',
+                      self.gf('django.db.models.fields.CharField')(max_length=15, null=True, blank=True),
+                      keep_default=False)
+
+        # ComponentConfiguration
+        # Deleting field 'ComponentConfiguration.interval_between_repetitions_unit2'
+        db.delete_column(u'experiment_componentconfiguration', 'interval_between_repetitions_unit2')
+        # Renaming column for 'ComponentConfiguration.interval_between_repetitions_unit' to match new field type.
+        db.rename_column(u'experiment_componentconfiguration', 'interval_between_repetitions_unit_id', 'interval_between_repetitions_unit')
+        # Changing field 'ComponentConfiguration.interval_between_repetitions_unit'
+        db.alter_column(u'experiment_componentconfiguration', 'interval_between_repetitions_unit', self.gf('django.db.models.fields.CharField')(max_length=15, null=True))
+        # Removing index on 'ComponentConfiguration', fields ['interval_between_repetitions_unit']
+        db.delete_index(u'experiment_componentconfiguration', ['interval_between_repetitions_unit_id'])
+
+        # Component
+        # Deleting field 'Component.duration_unit2'
+        db.delete_column(u'experiment_component', 'duration_unit2')
+        # Adding field 'Component.duration_unit'
+        db.add_column(u'experiment_component', 'duration_unit',
+                      self.gf('django.db.models.fields.CharField')(max_length=15, null=True, blank=True),
+                      keep_default=False)
+
+        # Pause
+        # Deleting field 'Pause.duration'
+        db.delete_column(u'experiment_pause', 'duration')
+        # Deleting field 'Pause.duration_unit'
+        db.delete_column(u'experiment_pause', 'duration_unit_id')
+        # Deleting field 'QuestionnaireConfiguration.interval_between_fills_unit2'
+        db.delete_column(u'experiment_questionnaireconfiguration', 'interval_between_fills_unit2')
+
+        # QuestionnaireConfiguration
+        # Renaming column for 'QuestionnaireConfiguration.interval_between_fills_unit' to match new field type.
+        db.rename_column(u'experiment_questionnaireconfiguration', 'interval_between_fills_unit_id', 'interval_between_fills_unit')
+        # Changing field 'QuestionnaireConfiguration.interval_between_fills_unit'
+        db.alter_column(u'experiment_questionnaireconfiguration', 'interval_between_fills_unit', self.gf('django.db.models.fields.CharField')(max_length=15, null=True))
+        # Removing index on 'QuestionnaireConfiguration', fields ['interval_between_fills_unit']
+        db.delete_index(u'experiment_questionnaireconfiguration', ['interval_between_fills_unit_id'])
+
+
+    def backwards(self, orm):
+        # Adding model 'TimeUnit'
+        db.create_table(u'experiment_timeunit', (
+            (u'id', self.gf('django.db.models.fields.AutoField')(primary_key=True)),
+            ('name', self.gf('django.db.models.fields.CharField')(max_length=30)),
+        ))
+        db.send_create_signal(u'experiment', ['TimeUnit'])
+
+        # HistoricalQuestionnaireConfiguration
         # Adding field 'HistoricalQuestionnaireConfiguration.interval_between_fills_unit2'
         db.add_column(u'experiment_historicalquestionnaireconfiguration', 'interval_between_fills_unit2',
                       self.gf('django.db.models.fields.CharField')(max_length=15, null=True, blank=True),
                       keep_default=False)
+        # Adding field 'HistoricalQuestionnaireConfiguration.interval_between_fills_unit_id'
+        db.add_column(u'experiment_historicalquestionnaireconfiguration', 'interval_between_fills_unit_id',
+                      self.gf('django.db.models.fields.IntegerField')(blank=True, null=True, db_index=True),
+                      keep_default=False)
+        # Deleting field 'HistoricalQuestionnaireConfiguration.interval_between_fills_unit'
+        db.delete_column(u'experiment_historicalquestionnaireconfiguration', 'interval_between_fills_unit')
 
-        # Adding field 'ComponentConfiguration.interval_between_repetitions_unit2'
-        db.add_column(u'experiment_componentconfiguration', 'interval_between_repetitions_unit2',
-                      self.gf('django.db.models.fields.CharField')(max_length=15, null=True, blank=True),
+        # ComponentConfiguration
+        # Renaming column for 'ComponentConfiguration.interval_between_repetitions_unit' to match new field type.
+        db.rename_column(u'experiment_componentconfiguration', 'interval_between_repetitions_unit', 'interval_between_repetitions_unit2')
+        # Adding field 'ComponentConfiguration.interval_between_repetitions_unit_id'
+        # '_id' is added automatically and this command also adds the index.
+        db.add_column(u'experiment_componentconfiguration', 'interval_between_repetitions_unit',
+                      self.gf('django.db.models.fields.related.ForeignKey')(to=orm['experiment.TimeUnit'], null=True),
                       keep_default=False)
 
-        # Adding field 'Component.duration_value'
-        db.add_column(u'experiment_component', 'duration_value',
-                      self.gf('django.db.models.fields.IntegerField')(null=True, blank=True),
-                      keep_default=False)
-
+        # Component
         # Adding field 'Component.duration_unit2'
         db.add_column(u'experiment_component', 'duration_unit2',
                       self.gf('django.db.models.fields.CharField')(max_length=15, null=True, blank=True),
                       keep_default=False)
+        # Deleting field 'Component.duration_unit'
+        db.delete_column(u'experiment_component', 'duration_unit')
 
-        # Adding field 'QuestionnaireConfiguration.interval_between_fills_unit2'
-        db.add_column(u'experiment_questionnaireconfiguration', 'interval_between_fills_unit2',
-                      self.gf('django.db.models.fields.CharField')(max_length=15, null=True, blank=True),
+        # Pause
+        # Adding field 'Pause.duration'
+        db.add_column(u'experiment_pause', 'duration',
+                      self.gf('django.db.models.fields.IntegerField')(default=0),
+                      keep_default=False)
+        # Adding field 'Pause.duration_unit'
+        db.add_column(u'experiment_pause', 'duration_unit',
+                      self.gf('django.db.models.fields.related.ForeignKey')(to=orm['experiment.TimeUnit'], null=True, blank=True),
                       keep_default=False)
 
+        # QuestionnaireConfiguration
+        # Renaming column for 'QuestionnaireConfiguration.interval_between_fills_unit' to match new field type.
+        db.rename_column(u'experiment_questionnaireconfiguration', 'interval_between_fills_unit', 'interval_between_fills_unit2')
+        # Adding field 'QuestionnaireConfiguration.interval_between_fills_unit_id'
+        # '_id' is added automatically and this command also adds the index.
+        db.add_column(u'experiment_questionnaireconfiguration', 'interval_between_fills_unit',
+                      self.gf('django.db.models.fields.related.ForeignKey')(to=orm['experiment.TimeUnit'], null=True),
+                      keep_default=False)
 
-    def backwards(self, orm):
-        # Deleting field 'HistoricalQuestionnaireConfiguration.interval_between_fills_unit2'
-        db.delete_column(u'experiment_historicalquestionnaireconfiguration', 'interval_between_fills_unit2')
+        # Adding values to table TimeUnit
+        unit = orm.TimeUnit()
+        unit.name = 'milissegundo(s)'
+        unit.save()
 
-        # Deleting field 'ComponentConfiguration.interval_between_repetitions_unit2'
-        db.delete_column(u'experiment_componentconfiguration', 'interval_between_repetitions_unit2')
+        unit = orm.TimeUnit()
+        unit.name = 'segundo(s)'
+        unit.save()
 
-        # Deleting field 'Component.duration_value'
-        db.delete_column(u'experiment_component', 'duration_value')
+        unit = orm.TimeUnit()
+        unit.name = 'minuto(s)'
+        unit.save()
 
-        # Deleting field 'Component.duration_unit2'
-        db.delete_column(u'experiment_component', 'duration_unit2')
+        unit = orm.TimeUnit()
+        unit.name = 'hora(s)'
+        unit.save()
 
-        # Deleting field 'QuestionnaireConfiguration.interval_between_fills_unit2'
-        db.delete_column(u'experiment_questionnaireconfiguration', 'interval_between_fills_unit2')
+        unit = orm.TimeUnit()
+        unit.name = 'dia(s)'
+        unit.save()
+
+        unit = orm.TimeUnit()
+        unit.name = 'semana(s)'
+        unit.save()
+
+        unit = orm.TimeUnit()
+        unit.name = 'mes(es)'
+        unit.save()
 
 
     models = {
@@ -98,7 +189,7 @@ class Migration(SchemaMigration):
             'Meta': {'object_name': 'Component'},
             'component_type': ('django.db.models.fields.CharField', [], {'max_length': '15'}),
             'description': ('django.db.models.fields.CharField', [], {'max_length': '1500', 'null': 'True', 'blank': 'True'}),
-            'duration_unit2': ('django.db.models.fields.CharField', [], {'max_length': '15', 'null': 'True', 'blank': 'True'}),
+            'duration_unit': ('django.db.models.fields.CharField', [], {'max_length': '15', 'null': 'True', 'blank': 'True'}),
             'duration_value': ('django.db.models.fields.IntegerField', [], {'null': 'True', 'blank': 'True'}),
             'experiment': ('django.db.models.fields.related.ForeignKey', [], {'to': u"orm['experiment.Experiment']"}),
             u'id': ('django.db.models.fields.AutoField', [], {'primary_key': 'True'}),
@@ -108,8 +199,7 @@ class Migration(SchemaMigration):
             'Meta': {'unique_together': "(('parent', 'order'),)", 'object_name': 'ComponentConfiguration'},
             'component': ('django.db.models.fields.related.ForeignKey', [], {'related_name': "'configuration'", 'to': u"orm['experiment.Component']"}),
             u'id': ('django.db.models.fields.AutoField', [], {'primary_key': 'True'}),
-            'interval_between_repetitions_unit': ('django.db.models.fields.related.ForeignKey', [], {'to': u"orm['experiment.TimeUnit']", 'null': 'True', 'blank': 'True'}),
-            'interval_between_repetitions_unit2': ('django.db.models.fields.CharField', [], {'max_length': '15', 'null': 'True', 'blank': 'True'}),
+            'interval_between_repetitions_unit': ('django.db.models.fields.CharField', [], {'max_length': '15', 'null': 'True', 'blank': 'True'}),
             'interval_between_repetitions_value': ('django.db.models.fields.IntegerField', [], {'null': 'True', 'blank': 'True'}),
             'name': ('django.db.models.fields.CharField', [], {'max_length': '50', 'null': 'True', 'blank': 'True'}),
             'number_of_repetitions': ('django.db.models.fields.IntegerField', [], {'default': '1', 'null': 'True', 'blank': 'True'}),
@@ -152,8 +242,7 @@ class Migration(SchemaMigration):
             u'history_type': ('django.db.models.fields.CharField', [], {'max_length': '1'}),
             u'history_user': ('django.db.models.fields.related.ForeignKey', [], {'to': u"orm['auth.User']", 'null': 'True'}),
             u'id': ('django.db.models.fields.IntegerField', [], {'db_index': 'True', 'blank': 'True'}),
-            'interval_between_fills_unit2': ('django.db.models.fields.CharField', [], {'max_length': '15', 'null': 'True', 'blank': 'True'}),
-            'interval_between_fills_unit_id': ('django.db.models.fields.IntegerField', [], {'db_index': 'True', 'null': 'True', 'blank': 'True'}),
+            'interval_between_fills_unit': ('django.db.models.fields.CharField', [], {'max_length': '15', 'null': 'True', 'blank': 'True'}),
             'interval_between_fills_value': ('django.db.models.fields.IntegerField', [], {'null': 'True', 'blank': 'True'}),
             'lime_survey_id': ('django.db.models.fields.IntegerField', [], {}),
             'number_of_fills': ('django.db.models.fields.IntegerField', [], {'null': 'True', 'blank': 'True'})
@@ -193,9 +282,7 @@ class Migration(SchemaMigration):
         },
         u'experiment.pause': {
             'Meta': {'object_name': 'Pause', '_ormbases': [u'experiment.Component']},
-            u'component_ptr': ('django.db.models.fields.related.OneToOneField', [], {'to': u"orm['experiment.Component']", 'unique': 'True', 'primary_key': 'True'}),
-            'duration': ('django.db.models.fields.IntegerField', [], {}),
-            'duration_unit': ('django.db.models.fields.related.ForeignKey', [], {'to': u"orm['experiment.TimeUnit']", 'null': 'True', 'blank': 'True'})
+            u'component_ptr': ('django.db.models.fields.related.OneToOneField', [], {'to': u"orm['experiment.Component']", 'unique': 'True', 'primary_key': 'True'})
         },
         u'experiment.questionnaire': {
             'Meta': {'object_name': 'Questionnaire', '_ormbases': [u'experiment.Component']},
@@ -207,8 +294,7 @@ class Migration(SchemaMigration):
             'Meta': {'unique_together': "(('lime_survey_id', 'group'),)", 'object_name': 'QuestionnaireConfiguration'},
             'group': ('django.db.models.fields.related.ForeignKey', [], {'to': u"orm['experiment.Group']", 'on_delete': 'models.PROTECT'}),
             u'id': ('django.db.models.fields.AutoField', [], {'primary_key': 'True'}),
-            'interval_between_fills_unit': ('django.db.models.fields.related.ForeignKey', [], {'to': u"orm['experiment.TimeUnit']", 'null': 'True', 'blank': 'True'}),
-            'interval_between_fills_unit2': ('django.db.models.fields.CharField', [], {'max_length': '15', 'null': 'True', 'blank': 'True'}),
+            'interval_between_fills_unit': ('django.db.models.fields.CharField', [], {'max_length': '15', 'null': 'True', 'blank': 'True'}),
             'interval_between_fills_value': ('django.db.models.fields.IntegerField', [], {'null': 'True', 'blank': 'True'}),
             'lime_survey_id': ('django.db.models.fields.IntegerField', [], {}),
             'number_of_fills': ('django.db.models.fields.IntegerField', [], {'null': 'True', 'blank': 'True'})
@@ -261,11 +347,6 @@ class Migration(SchemaMigration):
         u'experiment.taskfortheexperimenter': {
             'Meta': {'object_name': 'TaskForTheExperimenter', '_ormbases': [u'experiment.Component']},
             u'component_ptr': ('django.db.models.fields.related.OneToOneField', [], {'to': u"orm['experiment.Component']", 'unique': 'True', 'primary_key': 'True'})
-        },
-        u'experiment.timeunit': {
-            'Meta': {'ordering': "['id']", 'object_name': 'TimeUnit'},
-            u'id': ('django.db.models.fields.AutoField', [], {'primary_key': 'True'}),
-            'name': ('django.db.models.fields.CharField', [], {'max_length': '30'})
         },
         u'patient.classificationofdiseases': {
             'Meta': {'object_name': 'ClassificationOfDiseases'},

@@ -1,55 +1,92 @@
 # -*- coding: utf-8 -*-
 from south.utils import datetime_utils as datetime
 from south.db import db
-from south.v2 import SchemaMigration
+from south.v2 import DataMigration
 from django.db import models
 
+class Migration(DataMigration):
 
-class Migration(SchemaMigration):
+    @staticmethod
+    def convert_forwards(unit):
+        """
+        Convert a reference to an entry from the TimeUnit table to a value from experiment.models.TIME_UNITS
+
+        :param unit: reference to an entry from the TimeUnit table
+        :return: a value from experiment.models.TIME_UNITS
+        """
+        if unit is None:
+            return None
+        if unit.name == 'milissegundo(s)':
+            return 'ms'
+        if unit.name == 'segundo(s)':
+            return 's'
+        if unit.name == 'minuto(s)':
+            return 'min'
+        if unit.name == 'hora(s)':
+            return 'h'
+        if unit.name == 'dia(s)':
+            return 'd'
+        if unit.name == 'semana(s)':
+            return 'w'
+        if unit.name == 'mes(es)':
+            return 'mon'
 
     def forwards(self, orm):
-        # Adding field 'HistoricalQuestionnaireConfiguration.interval_between_fills_unit2'
-        db.add_column(u'experiment_historicalquestionnaireconfiguration', 'interval_between_fills_unit2',
-                      self.gf('django.db.models.fields.CharField')(max_length=15, null=True, blank=True),
-                      keep_default=False)
+        # Note: Don't use "from appname.models import ModelName".
+        # Use orm.ModelName to refer to models in this application,
+        # and orm['appname.ModelName'] for models in other applications.
+        for pause in orm.Pause.objects.all():
+            pause.duration_value = pause.duration
+            pause.duration_unit2 = self.convert_forwards(pause.duration_unit)
+            pause.save()
 
-        # Adding field 'ComponentConfiguration.interval_between_repetitions_unit2'
-        db.add_column(u'experiment_componentconfiguration', 'interval_between_repetitions_unit2',
-                      self.gf('django.db.models.fields.CharField')(max_length=15, null=True, blank=True),
-                      keep_default=False)
+        for qc in orm.QuestionnaireConfiguration.objects.all():
+            qc.interval_between_fills_unit2 = self.convert_forwards(qc.interval_between_fills_unit)
+            qc.save()
 
-        # Adding field 'Component.duration_value'
-        db.add_column(u'experiment_component', 'duration_value',
-                      self.gf('django.db.models.fields.IntegerField')(null=True, blank=True),
-                      keep_default=False)
+        for cc in orm.ComponentConfiguration.objects.all():
+            cc.interval_between_repetitions_unit2 = self.convert_forwards(cc.interval_between_repetitions_unit)
+            cc.save()
 
-        # Adding field 'Component.duration_unit2'
-        db.add_column(u'experiment_component', 'duration_unit2',
-                      self.gf('django.db.models.fields.CharField')(max_length=15, null=True, blank=True),
-                      keep_default=False)
+    @staticmethod
+    def convert_backwards(orm, unit):
+        """
+        Convert a value from experiment.models.TIME_UNITS to a reference to an entry from the TimeUnit table
 
-        # Adding field 'QuestionnaireConfiguration.interval_between_fills_unit2'
-        db.add_column(u'experiment_questionnaireconfiguration', 'interval_between_fills_unit2',
-                      self.gf('django.db.models.fields.CharField')(max_length=15, null=True, blank=True),
-                      keep_default=False)
-
+        :param orm:
+        :param unit: reference to an entry from the TimeUnit table
+        :return: a value from experiment.models.TIME_UNITS
+        """
+        if unit is None or unit == '':
+            return None
+        if unit == 'ms':
+            return orm.TimeUnit.objects.get(name='milissegundo(s)')
+        if unit == 's':
+            return orm.TimeUnit.objects.get(name='segundo(s)')
+        if unit == 'min':
+            return orm.TimeUnit.objects.get(name='minuto(s)')
+        if unit == 'h':
+            return orm.TimeUnit.objects.get(name='hora(s)')
+        if unit == 'd':
+            return orm.TimeUnit.objects.get(name='dia(s)')
+        if unit == 'w':
+            return orm.TimeUnit.objects.get(name='semana(s)')
+        if unit == 'mon':
+            return orm.TimeUnit.objects.get(name='mes(es)')
 
     def backwards(self, orm):
-        # Deleting field 'HistoricalQuestionnaireConfiguration.interval_between_fills_unit2'
-        db.delete_column(u'experiment_historicalquestionnaireconfiguration', 'interval_between_fills_unit2')
+        for pause in orm.Pause.objects.all():
+            pause.duration = pause.duration_value
+            pause.duration_unit = self.convert_backwards(orm, pause.duration_unit2)
+            pause.save()
 
-        # Deleting field 'ComponentConfiguration.interval_between_repetitions_unit2'
-        db.delete_column(u'experiment_componentconfiguration', 'interval_between_repetitions_unit2')
+        for qc in orm.QuestionnaireConfiguration.objects.all():
+            qc.interval_between_fills_unit = self.convert_backwards(orm, qc.interval_between_fills_unit2)
+            qc.save()
 
-        # Deleting field 'Component.duration_value'
-        db.delete_column(u'experiment_component', 'duration_value')
-
-        # Deleting field 'Component.duration_unit2'
-        db.delete_column(u'experiment_component', 'duration_unit2')
-
-        # Deleting field 'QuestionnaireConfiguration.interval_between_fills_unit2'
-        db.delete_column(u'experiment_questionnaireconfiguration', 'interval_between_fills_unit2')
-
+        for cc in orm.ComponentConfiguration.objects.all():
+            cc.interval_between_repetitions_unit = self.convert_backwards(orm, cc.interval_between_repetitions_unit2)
+            cc.save()
 
     models = {
         u'auth.group': {
@@ -311,3 +348,4 @@ class Migration(SchemaMigration):
     }
 
     complete_apps = ['experiment']
+    symmetrical = True

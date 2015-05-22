@@ -8,6 +8,16 @@ from simple_history.models import HistoricalRecords
 
 from patient.models import Patient, User, ClassificationOfDiseases
 
+TIME_UNITS = (
+    ("ms", "milesegundo(s)"),
+    ("s", "segundo(s)"),
+    ("min", "minuto(s)"),
+    ("h", "hora(s)"),
+    ("d", "dia(s)"),
+    ("w", "semana(s)"),
+    ("mon", "mês (meses)"),
+    ("y", "ano(s)"),
+)
 
 def validate_date_questionnaire_response(value):
     if value > datetime.date.today():
@@ -16,16 +26,6 @@ def validate_date_questionnaire_response(value):
 
 class Subject(models.Model):
     patient = models.ForeignKey(Patient)
-
-
-class TimeUnit(models.Model):
-    name = models.CharField(max_length=30, null=False, blank=False)
-
-    def __unicode__(self):
-        return self.name
-
-    class Meta:
-        ordering = ["id"]
 
 
 class StimulusType(models.Model):
@@ -98,7 +98,7 @@ class Component(models.Model):
     identification = models.CharField(null=False, max_length=50, blank=False)
     description = models.CharField(max_length=1500, null=True, blank=True)
     duration_value = models.IntegerField(null=True, blank=True, validators=[MinValueValidator(1)])
-    duration_unit = models.ForeignKey(TimeUnit, null=True, blank=True)
+    duration_unit = models.CharField(null=True, blank=True, max_length=15, choices=TIME_UNITS)
     experiment = models.ForeignKey(Experiment, null=False)
     component_type = models.CharField(null=False, max_length=15, choices=COMPONENT_TYPES)
 
@@ -156,7 +156,7 @@ class ComponentConfiguration(models.Model):
 
     # These 2 interval fields are useful only when number_of_repetition is different from 1.
     interval_between_repetitions_value = models.IntegerField(null=True, blank=True, validators=[MinValueValidator(1)])
-    interval_between_repetitions_unit = models.ForeignKey(TimeUnit, null=True, blank=True)
+    interval_between_repetitions_unit = models.CharField(null=True, blank=True, max_length=15, choices=TIME_UNITS)
 
     component = models.ForeignKey(Component, null=False, related_name="configuration")
     parent = models.ForeignKey(Block, null=True, related_name='children')
@@ -205,7 +205,7 @@ class QuestionnaireConfiguration(models.Model):
     group = models.ForeignKey(Group, null=False, on_delete=models.PROTECT)
     number_of_fills = models.IntegerField(null=True, blank=True, validators=[MinValueValidator(1)])
     interval_between_fills_value = models.IntegerField(null=True, blank=True, validators=[MinValueValidator(1)])
-    interval_between_fills_unit = models.ForeignKey(TimeUnit, null=True, blank=True)
+    interval_between_fills_unit = models.CharField(null=True, blank=True, max_length=15, choices=TIME_UNITS)
 
     # Audit trail - Simple History
     history = HistoricalRecords()

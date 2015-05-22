@@ -1,9 +1,8 @@
 # coding=utf-8
 from experiment.models import Experiment, QuestionnaireConfiguration, QuestionnaireResponse, SubjectOfGroup, Group, \
-    Component, Stimulus, Block, Instruction, ComponentConfiguration, ResearchProject, PatientQuestionnaireResponse, \
-    TimeUnit
+    Component, Stimulus, Block, Instruction, ComponentConfiguration, ResearchProject, PatientQuestionnaireResponse
 from django.forms import ModelForm, TextInput, Textarea, Select, DateInput, TypedChoiceField, RadioSelect,\
-    ModelChoiceField, ValidationError
+    ValidationError
 
 
 class ExperimentForm(ModelForm):
@@ -89,11 +88,13 @@ class FileForm(ModelForm):
 
 
 class ComponentForm(ModelForm):
-    duration_unit = ModelChoiceField(
-        queryset=TimeUnit.objects.all(),
-        required=False,
-        empty_label="Escolha unidade",
-        widget=Select(attrs={'class': 'form-control'}))
+    # TODO Replace "--------" by "Escolha unidade". The old code does not work because ModelChoiceField requires a
+    # TODO queryset.
+    # This is needed because we want an empty_label different from "--------".
+    # duration_unit = ModelChoiceField(
+    #     required=False,
+    #     empty_label="Escolha unidade",
+    #     widget=Select(attrs={'class': 'form-control'}))
 
     class Meta:
         model = Component
@@ -106,6 +107,7 @@ class ComponentForm(ModelForm):
             # respect that information.
             'description': Textarea(attrs={'class': 'form-control', 'rows': '4', 'maxlength': '1500'}),
             'duration_value': TextInput(attrs={'class': 'form-control', 'placeholder': 'Tempo'}),
+            'duration_unit': Select(attrs={'class': 'form-control'}),
         }
 
     def clean_duration_value(self):
@@ -132,13 +134,14 @@ class ComponentConfigurationForm(ModelForm):
                                        choices=((False, 'Fixa'), (True, 'Aleatória')),
                                        widget=RadioSelect(attrs={'id': 'id_random_position'}))
 
+    # TODO Replace "--------" by "Escolha unidade". The old code does not work because ModelChoiceField requires a
+    # TODO queryset.
     # This is needed because we want an empty_label different from "--------".
-    interval_between_repetitions_unit = ModelChoiceField(
-        queryset=TimeUnit.objects.all(),
-        required=False,
-        empty_label="Escolha unidade",
-        widget=Select(attrs={'class': 'form-control', 'required': "",
-                             'data-error': "Unidade do intervalo deve ser preenchida"}))
+    # interval_between_repetitions_unit = ModelChoiceField(
+    #     required=False,
+    #     empty_label="Escolha unidade",
+    #     widget=Select(attrs={'class': 'form-control', 'required': "",
+    #                          'data-error': "Unidade do intervalo deve ser preenchida"}))
 
     class Meta:
         model = ComponentConfiguration
@@ -150,8 +153,10 @@ class ComponentConfigurationForm(ModelForm):
             'number_of_repetitions': TextInput(attrs={'class': 'form-control', 'required': "",
                                                       'data-error': 'Quantidade de repetições deve ser preenchida.'}),
             'interval_between_repetitions_value': TextInput(attrs={'class': 'form-control', 'required': "",
-                                                                   'data-error': 'Intervalo deve ser preenchido.',
+                                                                   'data-error': 'Intervalo deve ser preenchido',
                                                                    'placeholder': 'Tempo'}),
+            'interval_between_repetitions_unit': Select(attrs={'class': 'form-control', 'required': "",
+                                                               'data-error': 'Unidade do intervalo deve ser preenchida'}),
         }
 
 

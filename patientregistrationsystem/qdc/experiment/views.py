@@ -23,6 +23,7 @@ from experiment.forms import ExperimentForm, QuestionnaireResponseForm, FileForm
     ComponentForm, StimulusForm, BlockForm, ComponentConfigurationForm, ResearchProjectForm
 from patient.models import Patient
 from experiment.abc_search_engine import Questionnaires
+from math import floor
 
 from operator import itemgetter
 
@@ -1486,6 +1487,109 @@ def create_back_cancel_url(component_type, component_configuration, path_of_the_
     return back_cancel_url
 
 
+second_in_milliseconds = 1000
+minute_in_milliseconds = 60 * second_in_milliseconds
+hour_in_milliseconds = 60 * minute_in_milliseconds
+day_in_milliseconds = 24 * hour_in_milliseconds
+week_in_milliseconds = 7 * day_in_milliseconds
+month_in_milliseconds = 30 * day_in_milliseconds
+year_in_milliseconds = 365 * day_in_milliseconds
+
+def convert_to_milliseconds(value, unit):
+    if value is None:
+        return 0
+    else:
+        if unit == 'y':
+            return value * year_in_milliseconds
+        if unit == 'mon':
+            return value * month_in_milliseconds
+        if unit == 'w':
+            return value * week_in_milliseconds
+        if unit == 'd':
+            return value * day_in_milliseconds
+        if unit == 'h':
+            return value * hour_in_milliseconds
+        if unit == 'min':
+            return value * minute_in_milliseconds
+        if unit == 's':
+            return value * second_in_milliseconds
+        if unit == 'ms':
+            return value
+
+
+def convert_to_string(duration_in_milliseconds):
+    string = ""
+
+    duration_in_years = int(duration_in_milliseconds / year_in_milliseconds)
+    if duration_in_years >= 1:
+        string += str(duration_in_years) + (" anos " if duration_in_years > 1 else " ano ")
+        duration_in_milliseconds -= duration_in_years * year_in_milliseconds
+
+    duration_in_months = int(duration_in_milliseconds / month_in_milliseconds)
+    if duration_in_months >= 1:
+        string += str(duration_in_months) + (" meses " if duration_in_months > 1 else " mês ")
+        duration_in_milliseconds -= duration_in_months * month_in_milliseconds
+
+    duration_in_weeks = int(duration_in_milliseconds / week_in_milliseconds)
+    if duration_in_weeks >= 1:
+        string += str(duration_in_weeks) + (" semanas " if duration_in_weeks > 1 else " semana ")
+        duration_in_milliseconds -= duration_in_weeks * week_in_milliseconds
+
+    duration_in_days = int(duration_in_milliseconds / day_in_milliseconds)
+    if duration_in_days >= 1:
+        string += str(duration_in_days) + (" dias " if duration_in_days > 1 else " dia ")
+        duration_in_milliseconds -= duration_in_days * day_in_milliseconds
+
+    duration_in_hours = int(duration_in_milliseconds / hour_in_milliseconds)
+    if duration_in_hours >= 1:
+        string += str(duration_in_hours) + (" horas " if duration_in_hours > 1 else " hora ")
+        duration_in_milliseconds -= duration_in_hours * hour_in_milliseconds
+
+    duration_in_minutes = int(duration_in_milliseconds / minute_in_milliseconds)
+    if duration_in_minutes >= 1:
+        string += str(duration_in_minutes) + (" minutos " if duration_in_minutes > 1 else " minuto ")
+        duration_in_milliseconds -= duration_in_minutes * minute_in_milliseconds
+
+    duration_in_seconds = int(duration_in_milliseconds / second_in_milliseconds)
+    if duration_in_seconds >= 1:
+        string += str(duration_in_seconds) + (" segundos " if duration_in_seconds > 1 else " segundo ")
+        duration_in_milliseconds -= duration_in_seconds * second_in_milliseconds
+
+    if duration_in_milliseconds >= 1:
+        string += str(duration_in_milliseconds) +\
+                  (" milissegundos " if duration_in_milliseconds > 1 else " milissegundo ")
+
+    if string == "":
+        string = "0"
+    else:
+        # Add commas and 'and' to the string
+        list_of_words = string.split(" ")
+        values = list_of_words[::2]
+        units =  list_of_words[1::2]
+        list_of_values_with_units = [value + " " + unit for value, unit in zip(values, units)]
+        before_and = ", ".join(list_of_values_with_units[0:-1])
+
+        if before_and == "":
+            string = list_of_values_with_units[-1]
+        else:
+            string = before_and + " e " + list_of_values_with_units[-1]
+
+    return string
+
+def calculate_block_duration(block):
+    duration_value_in_milliseconds = 0
+
+    for component_configuration in block.children.all():
+        component = component_configuration.component
+
+        if component.component_type == 'block':
+            duration_value_in_milliseconds += calculate_block_duration(Block.objects.get(id=component.id))
+        else:
+            duration_value_in_milliseconds += convert_to_milliseconds(component.duration_value, component.duration_unit)
+
+    return duration_value_in_milliseconds
+
+
 def access_objects_for_view_and_update(request, path_of_the_components, updating=False):
     list_of_ids_of_components_and_configurations = path_of_the_components.split(delimiter)
 
@@ -1567,6 +1671,10 @@ def component_view(request, path_of_the_components):
     block_form = BlockForm(request.POST or None, instance=block)
     configuration_list, configuration_list_of_random_components = create_configuration_lists(block)
 
+    duration_value = calculate_block_duration(block)
+    # Criate a string converting to appropriate units
+    duration_string = convert_to_string(duration_value)
+
     # It is not possible to edit fields while viewing a block.
     for form in {block_form, component_form}:
         for field in form.fields:
@@ -1612,6 +1720,7 @@ def component_view(request, path_of_the_components):
 
     context = {
         "back_cancel_url": back_cancel_url,
+        "block_duration": duration_string,
         "component": block,
         "component_configuration": component_configuration,
         "component_form": component_form,
@@ -1688,6 +1797,7 @@ def component_update(request, path_of_the_components):
     configuration_list = []
     configuration_list_of_random_components = []
     specific_form = None
+    duration_string = ""
 
     if component_type == 'instruction':
         instruction = get_object_or_404(Instruction, pk=component.id)
@@ -1706,6 +1816,9 @@ def component_update(request, path_of_the_components):
         block = get_object_or_404(Block, pk=component.id)
         specific_form = BlockForm(request.POST or None, instance=block)
         configuration_list, configuration_list_of_random_components = create_configuration_lists(block)
+        duration_value = calculate_block_duration(block)
+        # Criate a string converting to appropriate units
+        duration_string = convert_to_string(duration_value)
 
     if request.method == "POST":
         if request.POST['action'] == "save":
@@ -1776,6 +1889,7 @@ def component_update(request, path_of_the_components):
 
     context = {
         "back_cancel_url": back_cancel_url,
+        "block_duration": duration_string,
         "component_configuration": component_configuration,
         "component_form": component_form,
         "configuration_form": configuration_form,
@@ -1852,6 +1966,7 @@ def component_add_new(request, path_of_the_components, component_type):
         questionnaires_list = Questionnaires().find_all_active_questionnaires()
     elif component_type == 'block':
         specific_form = BlockForm(request.POST or None, initial={'number_of_mandatory_components': None})
+        duration_string = "0"
 
     if request.method == "POST":
         new_specific_component = None
@@ -1905,6 +2020,7 @@ def component_add_new(request, path_of_the_components, component_type):
     context = {
         "back_cancel_url": back_cancel_url,
         "block": block,
+        "block_duration": duration_string,
         "can_reuse": True,
         "component_form": component_form,
         "creating": True,
@@ -1954,6 +2070,9 @@ def component_reuse(request, path_of_the_components, component_id):
     elif component_type == 'block':
         sub_block = get_object_or_404(Block, pk=component_id)
         specific_form = BlockForm(request.POST or None, instance=sub_block)
+        duration_value = calculate_block_duration(sub_block)
+        # Create a string converting to appropriate units
+        duration_string = convert_to_string(duration_value)
 
     if component_type == 'questionnaire':
         for field in component_form.fields:
@@ -1995,6 +2114,7 @@ def component_reuse(request, path_of_the_components, component_id):
     context = {
         "back_cancel_url": back_cancel_url,
         "block": block,
+        "block_duration": duration_string,
         "component_form": component_form,
         "creating": True, # So that the "Use" button is shown.
         "existing_component_list": existing_component_list,

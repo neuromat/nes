@@ -10,7 +10,7 @@ from django.core.files.uploadedfile import SimpleUploadedFile
 from django.shortcuts import get_object_or_404
 import pyjsonrpc
 
-from experiment.models import Experiment, Group, QuestionnaireConfiguration, TimeUnit, Subject, \
+from experiment.models import Experiment, Group, QuestionnaireConfiguration, Subject, \
     QuestionnaireResponse, SubjectOfGroup, ComponentConfiguration, ResearchProject, Keyword, StimulusType, \
     Component, Task, TaskForTheExperimenter, Stimulus, Instruction, Pause, Questionnaire, Block
 from patient.models import ClassificationOfDiseases
@@ -122,10 +122,8 @@ class ExperimentalProtocolTest(TestCase):
         self.assertTrue("/experiment/" + str(experiment.id) + "/components" in response.url)
         self.assertTrue(Stimulus.objects.filter(identification="Stimulus identification", stimulus_type=1).exists())
 
-        unit = TimeUnit.objects.create(name="Horas")
-        unit.save()
         self.data = {'action': 'save', 'identification': 'Pause identification',
-                     'description': 'Pause description', 'duration_value': 2, 'duration_unit': unit.id}
+                     'description': 'Pause description', 'duration_value': 2, 'duration_unit': 'h'}
         response = self.client.post(reverse("component_new", args=(experiment.id, "pause")), self.data)
         self.assertEqual(response.status_code, 302)
         # Check if redirected to list of components
@@ -200,11 +198,9 @@ class ExperimentalProtocolTest(TestCase):
         self.assertEqual(component_configuration.name, None)
 
         # Update the component configuration of the recently added component.
-        unit = TimeUnit.objects.create(name="Horas")
-        unit.save()
         self.data = {'action': 'save', 'identification': 'Block identification', 'description': 'Block description',
                      'type': 'sequence', 'name': 'Use of block in block',
-                     'interval_between_repetitions_value': 2, 'interval_between_repetitions_unit': unit.id}
+                     'interval_between_repetitions_value': 2, 'interval_between_repetitions_unit': 'min'}
         response = self.client.post(reverse("component_edit", args=(block.id,)), self.data)
         self.assertEqual(response.status_code, 302)
         # Check if redirected to view block
