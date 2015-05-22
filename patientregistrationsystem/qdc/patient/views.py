@@ -326,6 +326,7 @@ def patient_update_questionnaires(request, patient, context):
                                                                      questionnaire_response.token_id,
                                                                      "completed")
                 questionnaires_data.append({
+                    'research_project_title': experiment.research_project.title,
                     'experiment_title': experiment.title,
                     'group_title': group.title,
                     'questionnaire_title': surveys.get_survey_title(questionnaire_configuration.lime_survey_id),
@@ -532,6 +533,7 @@ def patient_view_questionnaires(request, patient, context):
                                                                      "completed")
                 questionnaires_data.append(
                     {
+                        'research_project_title': experiment.research_project.title,
                         'experiment_title': experiment.title,
                         'group_title': group.title,
                         'questionnaire_title': surveys.get_survey_title(questionnaire_configuration.lime_survey_id),

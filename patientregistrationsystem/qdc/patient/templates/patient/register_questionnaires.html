@@ -97,6 +97,7 @@
                         <table class="table table-striped">
                             <thead>
                             <tr>
+                                <th>Estudo</th>
                                 <th>Experimento</th>
                                 <th>Grupo</th>
                                 <th>Questionário</th>
@@ -107,6 +108,7 @@
                             <tbody>
                             {% for questionnaire in questionnaires_data %}
                                 <tr>
+                                    <td>{{ questionnaire.research_project_title }}</td>
                                     <td>{{ questionnaire.experiment_title }}</td>
                                     <td>{{ questionnaire.group_title }}</td>
                                     <td>{{ questionnaire.questionnaire_title }}</td>
