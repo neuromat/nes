@@ -116,14 +116,39 @@
                             <div class="form-group">
                                 <label for="questionnaire_selected" class="control-label">Questionário <b style="color: red;">*</b></label>
 
-                                <select class="form-control" required="" id="questionnaire_selected" name="questionnaire_selected" data-error="Por favor, selecione um questionário da lista." {% if updating %}disabled{% endif %}>
-                                    {% if creating and not showing %}<option selected="selected" value="">---------</option>{% endif %}
-                                    {% if showing %}<option selected="selected" value="{{ questionnaire.id }}">{{ questionnaire_title }} ({{ questionnaire.id }})</option>
+                                <select class="form-control" required="" id="questionnaire_selected" name="questionnaire_selected"
+                                        data-error="Por favor, selecione um questionário da lista." {% if updating %}disabled{% endif %}
+                                        onchange="
+                                            if(this.value == 'new') {
+                                                $('#unused_questionnaire_selected').prop('disabled', false);
+                                                $('#modalAddQuestionnaire').modal('show');
+                                            }
+                                            "
+                                >
+
+                                    {% if creating and not showing %}
+                                        <option selected="selected" value=""> ---------- </option>
+                                    {% endif %}
+
+                                    {% if showing %}
+                                        <option selected="selected" value="{{ questionnaire.id }}">{{ questionnaire_title }} ({{ questionnaire.id }})</option>
                                     {% else %}
                                         {% for survey in questionnaires_list %}
                                             <option value="{{ survey.sid }}">{{ survey.surveyls_title }} ({{ survey.sid }})</option>
                                         {% endfor %}
                                     {% endif %}
+
+                                    {% if added_questionnaire %}
+                                        <option selected="selected" value="{{ added_questionnaire.sid }}">{{ added_questionnaire.surveyls_title }} ({{ added_questionnaire.sid }})</option>
+                                    {% endif %}
+
+                                    {% if creating and not showing %}
+                                        <option disabled> ---------- </option>
+                                        <option value="new">
+                                            -- Escolher questionário não listado --
+                                        </option>
+                                    {% endif %}
+
                                 </select>
 
                                 <div class="help-block with-errors"></div>
@@ -212,19 +237,6 @@
 
             <div class="col-md-10">
                 <div class="row">
-{#                    <div class="col-xs-3 col-sm-6">#}
-{#                        <div class="form-group">#}
-{#                            <label>Administrador</label>#}
-{##}
-{#                            <div class="input-group input-group-sm">#}
-{#                                    <span class="input-group-addon"><span#}
-{#                                            class="glyphicon glyphicon-user"></span></span>#}
-{#                                <input class="form-control" id="id_survey_admin" name="survey_admin"#}
-{#                                       value="{{ survey_admin }}" type="text" disabled>#}
-{#                            </div>#}
-{#                        </div>#}
-{#                    </div>#}
-
                     <div class="col-xs-3 col-sm-6">
                         <div class="form-group">
                             <label>Responsável pelo preenchimento</label>
@@ -293,6 +305,33 @@
         </div>
     </div>
 
+
+    <div class="modal fade" id="modalAddQuestionnaire" tabindex="-1" role="dialog" aria-labelledby="myModalLabel"
+         aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+
+                <div class="modal-header">
+                    <h5 class="modal-title">Escolha questionário para preencher</h5>
+                </div>
+
+                <div class="modal-body">
+                    <select disabled class="form-control" required="" id="unused_questionnaire_selected" name="unused_questionnaire_selected">
+                        <option selected="selected" value="">---------</option>
+                        {% for survey in unused_questionnaires_list %}
+                            <option value="{{ survey.sid }}">{{ survey.surveyls_title }} ({{ survey.sid }})</option>
+                        {% endfor %}
+                    </select>
+                </div>
+
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-default" data-dismiss="modal">Cancelar</button>
+                    <button type="submit" class="btn btn-danger" value="add_questionnaire" name="action">Incluir</button>
+                </div>
+
+            </div>
+        </div>
+    </div>
 
 {% endblock %}
 
