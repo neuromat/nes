@@ -34,9 +34,8 @@ class GroupForm(ModelForm):
                                       'required': "",
                                       'data-error': 'Título deve ser preenchido.'}),
             'description': Textarea(attrs={'class': 'form-control',
-                                           'rows': '2', 'required': "",
-                                           'data-error': 'Descrição deve ser preenchida.',
-                                           'maxlength': '150'})
+                                           'rows': '4', 'required': "",
+                                           'data-error': 'Descrição deve ser preenchida.'})
         }
 
 
@@ -105,7 +104,7 @@ class ComponentForm(ModelForm):
                                                'data-error': 'Identificação deve ser preenchida.'}),
             # Even though maxlength is already set in the model, it has be be repeated here, because the form dos not
             # respect that information.
-            'description': Textarea(attrs={'class': 'form-control', 'rows': '4', 'maxlength': '1500'}),
+            'description': Textarea(attrs={'class': 'form-control', 'rows': '4'}),
             'duration_value': TextInput(attrs={'class': 'form-control', 'placeholder': 'Tempo'}),
             'duration_unit': Select(attrs={'class': 'form-control'}),
         }
@@ -211,7 +210,6 @@ class ResearchProjectForm(ModelForm):
             # Even though maxlength is already set in the model, it has be be repeated here, because the form dos not
             # respect that information.
             'description': Textarea(attrs={'class': 'form-control', 'rows': '4', 'required': "",
-                                           'maxlength': '1500',
                                            'data-error': 'Descrição deve ser preenchida.'}),
             'start_date': DateInput(attrs={'class': 'form-control datepicker', 'placeholder': 'dd/mm/aaaa',
                                            'required': "", 'data-error': "Data de início deve ser preenchida"},),

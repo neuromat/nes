@@ -44,7 +44,7 @@ class Keyword(models.Model):
 
 class ResearchProject(models.Model):
     title = models.CharField(max_length=150, null=False, blank=False)
-    description = models.CharField(max_length=1500, null=False, blank=False)
+    description = models.TextField(null=False, blank=False)
     start_date = models.DateField()
     end_date = models.DateField(null=True, blank=True)
     keywords = models.ManyToManyField(Keyword)
@@ -59,8 +59,8 @@ class ResearchProject(models.Model):
 
 
 class Experiment(models.Model):
-    title = models.CharField(null=False, max_length=50, blank=False)
-    description = models.CharField(max_length=150, null=False, blank=False)
+    title = models.CharField(null=False, max_length=150, blank=False)
+    description = models.TextField(null=False, blank=False)
     research_project = models.ForeignKey(ResearchProject, null=False, blank=False)
 
     # Audit trail - Simple History
@@ -96,7 +96,7 @@ class Component(models.Model):
     )
 
     identification = models.CharField(null=False, max_length=50, blank=False)
-    description = models.CharField(max_length=1500, null=True, blank=True)
+    description = models.TextField(null=True, blank=True)
     duration_value = models.IntegerField(null=True, blank=True, validators=[MinValueValidator(1)])
     duration_unit = models.CharField(null=True, blank=True, max_length=15, choices=TIME_UNITS)
     experiment = models.ForeignKey(Experiment, null=False)
@@ -181,7 +181,7 @@ class ComponentConfiguration(models.Model):
 class Group(models.Model):
     experiment = models.ForeignKey(Experiment, null=False, blank=False)
     title = models.CharField(null=False, max_length=50, blank=False)
-    description = models.CharField(max_length=150, null=False, blank=False)
+    description = models.TextField(null=False, blank=False)
     classification_of_diseases = models.ManyToManyField(ClassificationOfDiseases, null=True)
     experimental_protocol = models.ForeignKey(Component, null=True)
 

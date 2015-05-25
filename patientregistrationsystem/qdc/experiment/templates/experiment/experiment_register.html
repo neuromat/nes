@@ -78,8 +78,8 @@
                     <div class="row">
                         <div class="col-xs-6 col-sm-6">
                             <div class="form-group">
-                                <label class="control-label">Estudo</label>
-                                    {{ experiment_form.research_project }}
+                                <label class="control-label">Estudo <b style="color: red;">*</b></label>
+                                {{ experiment_form.research_project }}
                                 <div class="help-block with-errors"></div>
                             </div>
                         </div>
@@ -89,7 +89,7 @@
                     <div class="col-xs-6 col-sm-6">
                         <div class="form-group">
                             <label class="control-label">Título <b style="color: red;">*</b></label>
-                                {{ experiment_form.title }}
+                            {{ experiment_form.title }}
                             <div class="help-block with-errors"></div>
                         </div>
                     </div>
@@ -98,7 +98,7 @@
                     <div class="col-xs-6 col-sm-12">
                         <div class="form-group">
                             <label class="control-label">Descrição <b style="color: red;">*</b></label>
-                                {{ experiment_form.description }}
+                            {{ experiment_form.description }}
                             <div class="help-block with-errors"></div>
                         </div>
                     </div>
