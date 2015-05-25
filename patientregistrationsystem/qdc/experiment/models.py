@@ -141,10 +141,12 @@ class Questionnaire(Component):
 
 
 class Block(Component):
+    SEQUENCE = 'sequence'
+    PARALLEL_BLOCK = 'parallel_block'
     number_of_mandatory_components = models.IntegerField(null=True, blank=True)
     type = models.CharField(null=False, max_length=20,
-                            choices=(("sequence", "Sequence component"),
-                                     ("parallel_block", "Parallel block component")))
+                            choices=((SEQUENCE, "Sequence component"),
+                                     (PARALLEL_BLOCK, "Parallel block component")))
 
     def save(self, *args, **kwargs):
         super(Component, self).save(*args, **kwargs)

@@ -1515,6 +1515,8 @@ def convert_to_milliseconds(value, unit):
             return value * second_in_milliseconds
         if unit == 'ms':
             return value
+        else:  # Unit is None or unknown
+            return 0
 
 
 def convert_to_string(duration_in_milliseconds):
@@ -1583,9 +1585,18 @@ def calculate_block_duration(block):
         component = component_configuration.component
 
         if component.component_type == 'block':
-            duration_value_in_milliseconds += calculate_block_duration(Block.objects.get(id=component.id))
+            component_duration = calculate_block_duration(Block.objects.get(id=component.id))
         else:
-            duration_value_in_milliseconds += convert_to_milliseconds(component.duration_value, component.duration_unit)
+            component_duration = convert_to_milliseconds(component.duration_value, component.duration_unit)
+
+        if block.type == Block.SEQUENCE:
+            # Add duration of the children
+            duration_value_in_milliseconds += component_duration
+        elif block.type == Block.PARALLEL_BLOCK:
+            # Duration of the block is the duration of the longest child.
+            if component_duration > duration_value_in_milliseconds:
+                duration_value_in_milliseconds = component_duration
+
 
     return duration_value_in_milliseconds
 
