@@ -1808,7 +1808,7 @@ def component_update(request, path_of_the_components):
     configuration_list = []
     configuration_list_of_random_components = []
     specific_form = None
-    duration_string = ""
+    duration_string = None
 
     if component_type == 'instruction':
         instruction = get_object_or_404(Instruction, pk=component.id)
@@ -1968,6 +1968,7 @@ def component_add_new(request, path_of_the_components, component_type):
 
     questionnaires_list = []
     specific_form = None
+    duration_string = None
 
     if component_type == 'instruction':
         specific_form = InstructionForm(request.POST or None)
@@ -2064,6 +2065,7 @@ def component_reuse(request, path_of_the_components, component_id):
     questionnaire_id = None
     questionnaire_title = None
     specific_form = None
+    duration_string = None
 
     if component_type == 'instruction':
         instruction = get_object_or_404(Instruction, pk=component_to_add.id)
