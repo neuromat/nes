@@ -43,10 +43,9 @@
         </div>
 
         <div class="col-md-10">
-
             <ol class="breadcrumb">
-
-                <li>Pacientes</li>
+                <li><a href="/home">Home</a></li>
+                <li><a href="/patient/find/">Participantes</a></li>
 
                 {% if status_mode == "edit" %}
                     <li><a href="/patient/edit/{{ patient_id }}/?currentTab=3">{{ name_patient }}</a></li>

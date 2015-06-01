@@ -16,7 +16,7 @@
             <ol class="breadcrumb">
                 <li><a href="/home">Home</a></li>
                 {% if view == "patient" %}
-                    <li>Pacientes</li>
+                    <li><a href="/patient/find/">Participantes</a></li>
                     {% if questionnaire_response %}
                         {% if status_mode == "edit"%}
                             <li><a href="/patient/edit/{{ questionnaire_response.subject_of_group.subject.patient.id }}/?currentTab=4">{{ questionnaire_response.subject_of_group.subject.patient.name }}</a></li>

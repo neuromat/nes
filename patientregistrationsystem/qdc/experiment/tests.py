@@ -774,7 +774,7 @@ class SubjectTest(TestCase):
 
     def test_subject_view_and_search(self):
         """
-        Teste de visualizacao de paciente apos cadastro na base de dados
+        Teste de visualizacao de participante após cadastro na base de dados
         """
 
         # Create a research project

@@ -1183,7 +1183,7 @@ def subject_questionnaire_view(request, group_id, subject_id,
                 redirect_url = reverse("subjects", args=(group_id,))
                 return HttpResponseRedirect(redirect_url)
             else:
-                messages.error(request, "Não foi possível excluir o paciente, pois há respostas associadas")
+                messages.error(request, "Não foi possível excluir o participante, pois há respostas associadas")
                 redirect_url = reverse("subject_questionnaire", args=(group_id, subject_id,))
                 return HttpResponseRedirect(redirect_url)
 

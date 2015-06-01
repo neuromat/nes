@@ -67,9 +67,9 @@ def patient_create(request, template_name="patient/register_personal_data.html")
 
                 if patient_found:
                     if patient_found[0].removed:
-                        patient_form.errors['cpf'][0] = "Já existe paciente removido com este CPF."
+                        patient_form.errors['cpf'][0] = "Já existe participante removido com este CPF."
                     else:
-                        patient_form.errors['cpf'][0] = "Já existe paciente cadastrado com este CPF."
+                        patient_form.errors['cpf'][0] = "Já existe participante cadastrado com este CPF."
     else:
         telephone_formset = TelephoneFormSet()
 

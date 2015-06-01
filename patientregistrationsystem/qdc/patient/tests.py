@@ -21,7 +21,7 @@ USER_USERNAME = 'myadmin'
 USER_PWD = 'mypassword'
 USER_NEW = 'user_new'
 
-# Constantes para testes paciente
+# Constantes para testes participante
 ACTION = 'action'
 CPF_ID = 'cpf'
 SEARCH_TEXT = 'search_text'
@@ -35,7 +35,7 @@ PATIENT_EDIT = 'patient_edit'
 class UtilTests():
 
     def create_patient_mock(self, name='Pacient Test', user=None):
-        """ Cria um paciente para ser utilizado durante os testes """
+        """ Cria um participante para ser utilizado durante os testes """
         gender = Gender.objects.create(name='Masculino')
         gender.save()
 
@@ -211,7 +211,7 @@ class PatientFormValidation(TestCase):
 
     def test_patient_invalid_cpf(self):
         """
-        Testa inclusao de paciente com cpf invalido
+        Testa inclusao de participante com cpf invalido
         """
 
         # CPF invalido
@@ -228,7 +228,7 @@ class PatientFormValidation(TestCase):
 
     def test_patient_empty_cpf(self):
         """
-        Testa inclusao de paciente com cpf invalido
+        Testa inclusao de participante com cpf invalido
         """
 
         # CPF vazio
@@ -246,7 +246,7 @@ class PatientFormValidation(TestCase):
 
     def test_patient_future_date_birth(self):
         """
-        Testa inclusao de paciente com data de nascimento futura
+        Testa inclusao de participante com data de nascimento futura
         """
         name = self._testMethodName
         self.data['name'] = name
@@ -271,7 +271,7 @@ class PatientFormValidation(TestCase):
 
     def test_patient_date_birth_now(self):
         """
-        Testa inclusao de paciente com data de nascimento futura
+        Testa inclusao de participante com data de nascimento futura
         """
 
         date_birth = self.get_current_date()
@@ -296,7 +296,7 @@ class PatientFormValidation(TestCase):
 
     def test_patient_create(self):
         """
-        Testa inclusao de paciente com campos obrigatorios
+        Testa inclusao de participante com campos obrigatorios
         """
         name = self._testMethodName
         self.data['name'] = name
@@ -451,7 +451,7 @@ class PatientFormValidation(TestCase):
 
     def test_patient_view_and_search(self):
         """
-        Teste de visualizacao de paciente apos cadastro na base de dados
+        Teste de visualizacao de participante apos cadastro na base de dados
         """
 
         patient_mock = self.util.create_patient_mock(user=self.user)
@@ -483,7 +483,7 @@ class PatientFormValidation(TestCase):
 
     def test_patient_list(self):
         """
-        Teste a visualizacao de paciente
+        Teste a visualizacao de participante
         """
         patient_mock = self.util.create_patient_mock(user=self.user)
 
@@ -494,7 +494,7 @@ class PatientFormValidation(TestCase):
         self.assertEqual(response.status_code, 200)
 
     def test_patient_update_and_remove(self):
-        """Teste de paciente existente na base de dados """
+        """Teste de participante existente na base de dados """
 
         patient_mock = self.util.create_patient_mock(name='Pacient Test Update', user=self.user)
 
@@ -563,9 +563,9 @@ class PatientFormValidation(TestCase):
         self.assertEqual(patient_mock.removed, False)
 
     def test_update_patient_not_exist(self):
-        """Teste de paciente nao existente na base de dados """
+        """Teste de participante nao existente na base de dados """
 
-        # ID de paciente nao existente na base
+        # ID de participante nao existente na base
         id_patient = 99999
 
         # Create an instance of a GET request.
@@ -579,9 +579,9 @@ class PatientFormValidation(TestCase):
             pass
 
     def test_patient_restore(self):
-        """Testa a recuperaracao de paciente removido """
+        """Testa a recuperaracao de participante removido """
 
-        # Cria um paciente ja removido no BD
+        # Cria um participante ja removido no BD
         patient_mock = self.util.create_patient_mock(user=self.user)
         patient_mock.removed = True
         patient_mock.save()
