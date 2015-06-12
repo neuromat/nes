@@ -167,14 +167,17 @@
                             <thead>
                             <tr>
                                 <th class="col-md-6">Nome</th>
+{#                                Can't use this type of tooltip here, because it hurts the format of the table. #}
 {#                                <th class="col-md-2" data-toggle="tooltip" data-placement="top"#}
                                 <th class="col-md-2"
                                     title="Quantidade de preenchimentos exigida para cada participante">
                                     Preenchimentos necessários por participante</th>
+{#                                Can't use this type of tooltip here, because it hurts the format of the table. #}
 {#                                <th class="col-md-2" data-toggle="tooltip" data-placement="top"#}
                                 <th class="col-md-2"
                                     title="Quantidade de preenchimentos necessários por participante vezes a quantidade de participantes deste grupo">
                                     Total de preenchimentos necessários</th>
+{#                                Can't use this type of tooltip here, because it hurts the format of the table. #}
 {#                                <th class="col-md-2" data-toggle="tooltip" data-placement="top"#}
                                 <th class="col-md-2"
                                     title="Soma da quantidade de preenchimentos já realizada por cada participante">
@@ -214,30 +217,30 @@
                     </div>
                 </div>
 
-                {% if perms.experiment.add_subject %}
-                    <div class="container span6 offset3 well ">
-                        <h4>Participantes</h4>
-                        <div class="row">
-                            <div class="col-xs-12 col-sm-12">
-                                {% if number_of_subjects > 0 %}
-                                    <div class="form-group">
-                                        <a data-toggle="tooltip" data-placement="left" title="Ver / Editar"
-                                           href="/experiment/group/{{ group.id }}/subjects">
-                                            {% if number_of_subjects == 1 %}
-                                                Há {{ number_of_subjects }} participante cadastrado
-                                            {% else %}
-                                                Há {{ number_of_subjects }} participantes cadastrados
-                                            {% endif %}
-                                        </a>
-                                    </div>
-                                {% else %}
+                <div class="container span6 offset3 well ">
+                    <h4>Participantes</h4>
+                    <div class="row">
+                        <div class="col-xs-12 col-sm-12">
+                            {% if number_of_subjects > 0 %}
+                                <div class="form-group">
+                                    <a data-toggle="tooltip" data-placement="left" title="Ver / Editar"
+                                       href="/experiment/group/{{ group.id }}/subjects">
+                                        {% if number_of_subjects == 1 %}
+                                            Há {{ number_of_subjects }} participante cadastrado
+                                        {% else %}
+                                            Há {{ number_of_subjects }} participantes cadastrados
+                                        {% endif %}
+                                    </a>
+                                </div>
+                            {% else %}
+                                {% if perms.experiment.add_subject %}
                                     <a href="/experiment/group/{{ group.id }}/subjects" class="btn btn-primary">
                                         Cadastrar</a>
                                 {% endif %}
-                            </div>
+                            {% endif %}
                         </div>
                     </div>
-                {% endif %}
+                </div>
 
                 <div class="container span6 offset3 well ">
                     <h4>Protocolo Experimental</h4>

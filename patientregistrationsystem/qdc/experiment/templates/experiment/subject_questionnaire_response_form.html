@@ -77,30 +77,43 @@
         {% endfor %}
     {% endif %}
 
-    {% if FAIL == True %}
+    {% if FAIL == False %}
+{#    {% if not FAIL %}#}
         <script>
             $(document).ready(function () {
-                var elem1 = undefined;
-                var elem2;
+                var elem_remove_button = undefined;
+                var elem_fill_button;
 
-                if (document.getElementById('button1') != undefined)
-                    elem1 = document.getElementById('button1');
+                // Remove button may not exist.
+                if (document.getElementById('button1') != undefined) {
+                    elem_remove_button = document.getElementById('id_remove_button');
+                }
 
-                elem2 = document.getElementById('button2');
+                elem_fill_button = document.getElementById('id_fill_button');
                 var new_window = window.open("{{ URL }}", "");
 
                 if (new_window) {
+                    if (elem_remove_button != undefined) {
+                        elem_remove_button.style.display = 'none';
+                    }
 
-                    if (elem1 != undefined)
-                        elem1.style.display = 'none';
-
-                    elem2.style.display = 'none';
+                    elem_fill_button.style.display = 'none';
                     new_window.focus();
                 } else {
-                    window.open("/experiment/questionnaire_response/edit/{{ questionnaire_response_id }}", "_self");
                     showErrorMessage("Não foi possível abrir o questionário. Habilite pop-ups para esse site.");
+
+                    {# If already in the edit response page, there is no need to redirect #}
+                    if (window.location.href.indexOf('edit') == -1) {
+                        {# Wait 3 seconds before redirecting, so that the user can read the message. #}
+                        window.setTimeout(redirect, 3000);
+                    }
                 }
             });
+
+            function redirect() {
+                window.open("/experiment/questionnaire_response/edit/{{ questionnaire_response_id }}", "_self");
+            }
+
         </script>
     {% endif %}
 
@@ -245,12 +258,12 @@
         <div class="btn-toolbar">
             <div class="btn-group pull-left">
                 {% if not creating and perms.experiment.delete_questionnaireresponse %}
-                    <button type="button" id="button1" class="btn btn-danger" onclick="$('#modalRemove').modal('show')">Excluir</button>
+                    <button type="button" id="id_remove_button" class="btn btn-danger" onclick="$('#modalRemove').modal('show')">Excluir</button>
                 {% endif %}
             </div>
             <div class="btn-group pull-right">
                 {% if not completed %}
-                    <button type="submit" id="button2" name="action" value="save" class="btn btn-primary">{% if creating %}Novo preenchimento{% else %}Continuar preenchimento{% endif %}</button>
+                    <button type="submit" id="id_fill_button" name="action" value="save" class="btn btn-primary">{% if creating %}Novo preenchimento{% else %}Continuar preenchimento{% endif %}</button>
                 {% else %}
                     {% if origin == 'subject' %}
                         <a href="/experiment/questionnaire_response/{{ questionnaire_response_id }}/?view=experiment_subject" class="btn btn-primary">Ver preenchimento</a>

@@ -202,36 +202,9 @@ class SubjectOfGroup(models.Model):
         unique_together = ('subject', 'group',)
 
 
-class QuestionnaireConfiguration(models.Model):
-    lime_survey_id = models.IntegerField(null=False, blank=False)
-    group = models.ForeignKey(Group, null=False, on_delete=models.PROTECT)
-    number_of_fills = models.IntegerField(null=True, blank=True, validators=[MinValueValidator(1)])
-    interval_between_fills_value = models.IntegerField(null=True, blank=True, validators=[MinValueValidator(1)])
-    interval_between_fills_unit = models.CharField(null=True, blank=True, max_length=15, choices=TIME_UNITS)
-
-    # Audit trail - Simple History
-    history = HistoricalRecords()
-    # changed_by = models.ForeignKey('auth.User')
-
-    @property
-    def _history_user(self):
-        return self.changed_by
-
-    @_history_user.setter
-    def _history_user(self, value):
-        self.changed_by = value
-
-    def __unicode__(self):  # Python 3: def __str__(self):
-        return self.experiment.title + " - " + str(self.lime_survey_id)
-
-    class Meta:
-        unique_together = ('lime_survey_id', 'group',)
-
-
 class QuestionnaireResponse(models.Model):
     subject_of_group = models.ForeignKey(SubjectOfGroup, null=False)
-    questionnaire_configuration = models.ForeignKey(QuestionnaireConfiguration, null=False, on_delete=models.PROTECT)
-    component_configuration = models.ForeignKey(ComponentConfiguration, null=True, on_delete=models.PROTECT)
+    component_configuration = models.ForeignKey(ComponentConfiguration, null=False, on_delete=models.PROTECT)
     token_id = models.IntegerField(null=False)
     date = models.DateField(default=datetime.date.today, null=False,
                             validators=[validate_date_questionnaire_response])

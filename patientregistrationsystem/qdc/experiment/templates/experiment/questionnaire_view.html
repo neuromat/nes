@@ -88,10 +88,22 @@
                 </div>
                 <div class="row form-group">
                     <div class="col-xs-12 col-sm-2">
+                        <strong>Duração:</strong>
+                    </div>
+                    <div class="col-xs-12 col-sm-10">
+                        {% if questionnaire_configuration.component.duration_value %}
+                            {{ questionnaire_configuration.component.duration_value }} {{ questionnaire_configuration.component.get_duration_unit_display }}
+                        {% endif %}
+                    </div>
+                </div>
+                <div class="row form-group">
+                    <div class="col-xs-12 col-sm-2">
                         <strong>Nome do uso:</strong>
                     </div>
                     <div class="col-xs-12 col-sm-10">
-                        {{ questionnaire_configuration.name }}
+                        {% if questionnaire_configuration.name %}
+                            {{ questionnaire_configuration.name }}
+                        {% endif %}
                     </div>
                 </div>
                 <div class="row form-group">
@@ -111,7 +123,7 @@
                         </div>
                         <div class="col-xs-3 col-sm-3">
                             {% if questionnaire_configuration.interval_between_repetitions_value != None %}
-                                {{ questionnaire_configuration.interval_between_repetitions_value }} {{ questionnaire_configuration.interval_between_repetitions_unit }}
+                                {{ questionnaire_configuration.interval_between_repetitions_value }} {{ questionnaire_configuration.get_interval_between_repetitions_unit_display }}
                             {% else %}
                                 Indefinido
                             {% endif %}
@@ -189,7 +201,7 @@
                                                         {% if questionnaire_configuration.number_of_fills == None or item.questionnaire_responses|length < questionnaire_configuration.number_of_fills %}
                                                             <td>
                                                                 {% if perms.experiment.add_questionnaireresponse %}
-                                                                    <a href="/experiment/group/{{ goup }}subjects/{{ item.subject.id }}/questionnaire/{{ questionnaire_configuration.id }}/response"
+                                                                    <a href="/experiment/group/{{ group.id }}/subject/{{ item.subject.id }}/questionnaire/{{ questionnaire_configuration.id }}/response"
                                                                         class="btn btn-primary {% if not limesurvey_available %} disabled {% endif %}">Novo preenchimento</a>
                                                                 {% endif %}
                                                             </td>

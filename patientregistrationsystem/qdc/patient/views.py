@@ -19,8 +19,7 @@ from patient.forms import PatientForm, TelephoneForm, SocialDemographicDataForm,
     ComplementaryExamForm, ExamFileForm
 from patient.quiz_widget import SelectBoxCountriesDisabled, SelectBoxStateDisabled
 
-from experiment.models import Subject, Experiment, Group, SubjectOfGroup, \
-    QuestionnaireConfiguration, QuestionnaireResponse, Questionnaire, PatientQuestionnaireResponse
+from experiment.models import Questionnaire, PatientQuestionnaireResponse
 from experiment.abc_search_engine import Questionnaires
 from experiment.forms import QuestionnaireResponseForm, PatientQuestionnaireResponseForm
 
@@ -104,7 +103,7 @@ def patient_update(request, patient_id):
             return patient_update_social_history(request, patient, context)
         elif current_tab == '3':
             return patient_update_medical_record(request, patient, context)
-        else: # current_tab == '4':
+        else:  # current_tab == '4':
             return patient_update_questionnaires(request, patient, context)
 
 
@@ -308,33 +307,33 @@ def patient_update_questionnaires(request, patient, context):
             }
         )
 
-    subject = Subject.objects.filter(patient=patient)
-    subject_of_group_list = SubjectOfGroup.objects.filter(subject=subject)
-
-    for subject_of_group in subject_of_group_list:
-        group = get_object_or_404(Group, id=subject_of_group.group.id)
-        experiment = get_object_or_404(Experiment, id=group.experiment.id)
-        questionnaire_configuration_list = QuestionnaireConfiguration.objects.filter(group=group)
-
-        for questionnaire_configuration in questionnaire_configuration_list:
-            questionnaire_response_list = QuestionnaireResponse.objects.filter(subject_of_group=subject_of_group).\
-                filter(questionnaire_configuration=questionnaire_configuration)
-
-            for questionnaire_response in questionnaire_response_list:
-
-                response_result = surveys.get_participant_properties(questionnaire_configuration.lime_survey_id,
-                                                                     questionnaire_response.token_id,
-                                                                     "completed")
-                questionnaires_data.append({
-                    'research_project_title': experiment.research_project.title,
-                    'experiment_title': experiment.title,
-                    'group_title': group.title,
-                    'questionnaire_title': surveys.get_survey_title(questionnaire_configuration.lime_survey_id),
-                    'questionnaire_response': questionnaire_response,
-                    'completed': None if response_result is None
-                    else response_result != "N" and response_result != ""
-
-                })
+    # subject = Subject.objects.filter(patient=patient)
+    # subject_of_group_list = SubjectOfGroup.objects.filter(subject=subject)
+    #
+    # for subject_of_group in subject_of_group_list:
+    #     group = get_object_or_404(Group, id=subject_of_group.group.id)
+    #     experiment = get_object_or_404(Experiment, id=group.experiment.id)
+    #     questionnaire_configuration_list = QuestionnaireConfiguration.objects.filter(group=group)
+    #
+    #     for questionnaire_configuration in questionnaire_configuration_list:
+    #         questionnaire_response_list = QuestionnaireResponse.objects.filter(subject_of_group=subject_of_group).\
+    #             filter(questionnaire_configuration=questionnaire_configuration)
+    #
+    #         for questionnaire_response in questionnaire_response_list:
+    #
+    #             response_result = surveys.get_participant_properties(questionnaire_configuration.lime_survey_id,
+    #                                                                  questionnaire_response.token_id,
+    #                                                                  "completed")
+    #             questionnaires_data.append({
+    #                 'research_project_title': experiment.research_project.title,
+    #                 'experiment_title': experiment.title,
+    #                 'group_title': group.title,
+    #                 'questionnaire_title': surveys.get_survey_title(questionnaire_configuration.lime_survey_id),
+    #                 'questionnaire_response': questionnaire_response,
+    #                 'completed': None if response_result is None
+    #                 else response_result != "N" and response_result != ""
+    #
+    #             })
 
     surveys.release_session_key()
 
@@ -514,34 +513,34 @@ def patient_view_questionnaires(request, patient, context):
         )
 
     questionnaires_data = []
-    subject = Subject.objects.filter(patient=patient)
-    subject_of_group_list = SubjectOfGroup.objects.filter(subject=subject)
-
-    for subject_of_group in subject_of_group_list:
-        group = get_object_or_404(Group, id=subject_of_group.group.id)
-        experiment = get_object_or_404(Experiment, id=group.experiment.id)
-        questionnaire_configuration_list = QuestionnaireConfiguration.objects.filter(group=group)
-
-        for questionnaire_configuration in questionnaire_configuration_list:
-            questionnaire_response_list = QuestionnaireResponse.objects.filter(subject_of_group=subject_of_group). \
-                filter(questionnaire_configuration=questionnaire_configuration)
-
-            for questionnaire_response in questionnaire_response_list:
-
-                response_result = surveys.get_participant_properties(questionnaire_configuration.lime_survey_id,
-                                                                     questionnaire_response.token_id,
-                                                                     "completed")
-                questionnaires_data.append(
-                    {
-                        'research_project_title': experiment.research_project.title,
-                        'experiment_title': experiment.title,
-                        'group_title': group.title,
-                        'questionnaire_title': surveys.get_survey_title(questionnaire_configuration.lime_survey_id),
-                        'questionnaire_response': questionnaire_response,
-                        'completed': None if response_result is None
-                        else response_result != "N" and response_result != ""
-                    }
-                )
+    # subject = Subject.objects.filter(patient=patient)
+    # subject_of_group_list = SubjectOfGroup.objects.filter(subject=subject)
+    #
+    # for subject_of_group in subject_of_group_list:
+    #     group = get_object_or_404(Group, id=subject_of_group.group.id)
+    #     experiment = get_object_or_404(Experiment, id=group.experiment.id)
+    #     questionnaire_configuration_list = QuestionnaireConfiguration.objects.filter(group=group)
+    #
+    #     for questionnaire_configuration in questionnaire_configuration_list:
+    #         questionnaire_response_list = QuestionnaireResponse.objects.filter(subject_of_group=subject_of_group). \
+    #             filter(questionnaire_configuration=questionnaire_configuration)
+    #
+    #         for questionnaire_response in questionnaire_response_list:
+    #
+    #             response_result = surveys.get_participant_properties(questionnaire_configuration.lime_survey_id,
+    #                                                                  questionnaire_response.token_id,
+    #                                                                  "completed")
+    #             questionnaires_data.append(
+    #                 {
+    #                     'research_project_title': experiment.research_project.title,
+    #                     'experiment_title': experiment.title,
+    #                     'group_title': group.title,
+    #                     'questionnaire_title': surveys.get_survey_title(questionnaire_configuration.lime_survey_id),
+    #                     'questionnaire_response': questionnaire_response,
+    #                     'completed': None if response_result is None
+    #                     else response_result != "N" and response_result != ""
+    #                 }
+    #             )
 
     surveys.release_session_key()
 

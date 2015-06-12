@@ -84,8 +84,18 @@
                                                 <br/>
                                                  <blockquote>
                                                     <i><h6>
-                                                    Quantidade de preenchimentos: {% if subject_questionnaire.questionnaire_configuration.number_of_fills != None %}{{ subject_questionnaire.questionnaire_configuration.number_of_fills }}{% else %}ilimitada{% endif %} <br/>
-                                                    Intervalo entre preenchimentos: {% if subject_questionnaire.questionnaire_configuration.interval_between_fills_value != None %}{{ subject_questionnaire.questionnaire_configuration.interval_between_fills_value }} {{ subject_questionnaire.questionnaire_configuration.interval_between_fills_unit }}{% else %}indefinido{% endif %} <br/>
+                                                    Quantidade de preenchimentos:
+                                                    {% if subject_questionnaire.questionnaire_configuration.number_of_repetitions != None %}
+                                                        {{ subject_questionnaire.questionnaire_configuration.number_of_repetitions }}
+                                                    {% else %}
+                                                        ilimitada
+                                                    {% endif %} <br/>
+                                                    Intervalo entre preenchimentos:
+                                                    {% if subject_questionnaire.questionnaire_configuration.interval_between_repetitions_value != None %}
+                                                        {{ subject_questionnaire.questionnaire_configuration.interval_between_repetitions_value }} {{ subject_questionnaire.questionnaire_configuration.get_interval_between_repetitions_unit_display }}
+                                                    {% else %}
+                                                        indefinido
+                                                    {% endif %} <br/>
                                                     </h6></i>
                                                  </blockquote>
                                             </td>
@@ -117,10 +127,10 @@
                                                         </tr>
                                                     {% endfor %}
                                                     <tr>
-                                                        {% if subject_questionnaire.questionnaire_configuration.number_of_fills == None or subject_questionnaire.questionnaire_responses|length < subject_questionnaire.questionnaire_configuration.number_of_fills %}
+                                                        {% if subject_questionnaire.questionnaire_configuration.number_of_repetitions == None or subject_questionnaire.questionnaire_responses|length < subject_questionnaire.questionnaire_configuration.number_of_repetitions %}
                                                             <td>
                                                                 {% if perms.experiment.add_questionnaireresponse %}
-                                                                    <a href="/experiment/subjects/{{ subject.id }}/questionnaire/{{ subject_questionnaire.questionnaire_configuration.id }}/response/?origin=subject"
+                                                                    <a href="/experiment/group/{{ group.id }}/subject/{{ subject.id }}/questionnaire/{{ subject_questionnaire.questionnaire_configuration.id }}/response/?origin=subject"
                                                                         class="btn btn-primary {% if not limesurvey_available %} disabled {% endif %}">Novo preenchimento</a>
                                                                 {% endif %}
                                                             </td>
