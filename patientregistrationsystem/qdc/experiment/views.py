@@ -21,6 +21,7 @@ from experiment.forms import ExperimentForm, QuestionnaireResponseForm, FileForm
 from patient.models import Patient
 from experiment.abc_search_engine import Questionnaires
 
+from survey.models import Survey
 from survey.views import get_questionnaire_responses
 
 from operator import itemgetter
@@ -913,7 +914,7 @@ def questionnaire_response_view(request, questionnaire_response_id,
     questionnaire_response = get_object_or_404(QuestionnaireResponse, id=questionnaire_response_id)
     questionnaire_configuration = questionnaire_response.component_configuration
     questionnaire = Questionnaire.objects.get(id=questionnaire_configuration.component.id)
-    lime_survey_id = questionnaire.lime_survey_id
+    lime_survey_id = questionnaire.survey.lime_survey_id
     token_id = questionnaire_response.token_id
     language_code = request.LANGUAGE_CODE
 
@@ -1198,7 +1199,8 @@ def component_create(request, experiment_id, component_type):
         if component_form.is_valid():
             if component_type == 'questionnaire':
                 new_specific_component = Questionnaire()
-                new_specific_component.survey.lime_survey_id = request.POST['questionnaire_selected']
+                survey, created = Survey.objects.get_or_create(lime_survey_id=request.POST['questionnaire_selected'])
+                new_specific_component.survey = survey
             elif component_type == 'pause':
                 new_specific_component = Pause()
             elif component_type == 'task':

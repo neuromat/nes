@@ -23,8 +23,8 @@ from experiment.models import Questionnaire
 from experiment.abc_search_engine import Questionnaires
 from experiment.forms import QuestionnaireResponseForm
 
-from patient.models import PatientQuestionnaireResponse
-from patient.forms import PatientQuestionnaireResponseForm
+from patient.models import QuestionnaireResponse
+from patient.forms import QuestionnaireResponseForm
 
 from survey.views import get_questionnaire_responses
 
@@ -292,7 +292,7 @@ def patient_update_questionnaires(request, patient, context):
     limesurvey_available = check_limesurvey_access(request, surveys)
 
     patient_questionnaires_data = []
-    patient_questionnaire_response_list = PatientQuestionnaireResponse.objects.filter(patient=patient)
+    patient_questionnaire_response_list = QuestionnaireResponse.objects.filter(patient=patient)
 
     for patient_questionnaire_response in patient_questionnaire_response_list:
 
@@ -497,7 +497,7 @@ def patient_view_questionnaires(request, patient, context):
     patient_questionnaires_data = {}
 
     patient_questionnaire_response_list = \
-        PatientQuestionnaireResponse.objects.filter(patient=patient).order_by('questionnaire__survey__lime_survey_id')
+        QuestionnaireResponse.objects.filter(patient=patient).order_by('questionnaire__survey__lime_survey_id')
 
     for patient_questionnaire_response in patient_questionnaire_response_list:
 
@@ -1092,7 +1092,7 @@ def patient_questionnaire_response_create(request, patient_id,
 def patient_questionnaire_response_update(request, patient_questionnaire_response_id,
                                           template_name="experiment/subject_questionnaire_response_form.html"):
 
-    patient_questionnaire_response = get_object_or_404(PatientQuestionnaireResponse,
+    patient_questionnaire_response = get_object_or_404(QuestionnaireResponse,
                                                        pk=patient_questionnaire_response_id)
 
     surveys = Questionnaires()
@@ -1108,7 +1108,7 @@ def patient_questionnaire_response_update(request, patient_questionnaire_respons
 
     patient = get_object_or_404(Patient, pk=patient_questionnaire_response.patient_id)
 
-    questionnaire_response_form = PatientQuestionnaireResponseForm(None, instance=patient_questionnaire_response)
+    questionnaire_response_form = QuestionnaireResponseForm(None, instance=patient_questionnaire_response)
 
     fail = None
     redirect_url = None
@@ -1184,7 +1184,7 @@ def patient_questionnaire_response_update(request, patient_questionnaire_respons
 
 def patient_questionnaire_response_start_fill_questionnaire(request, patient_id, questionnaire):
 
-    patient_questionnaire_response_form = PatientQuestionnaireResponseForm(request.POST)
+    patient_questionnaire_response_form = QuestionnaireResponseForm(request.POST)
 
     if patient_questionnaire_response_form.is_valid():
 
@@ -1304,7 +1304,7 @@ def patient_questionnaire_response_view(request, patient_questionnaire_response_
     if 'status' in request.GET:
         status_mode = request.GET['status']
 
-    patient_questionnaire_response = get_object_or_404(PatientQuestionnaireResponse,
+    patient_questionnaire_response = get_object_or_404(QuestionnaireResponse,
                                                        id=patient_questionnaire_response_id)
 
     lime_survey_id = patient_questionnaire_response.questionnaire.lime_survey_id

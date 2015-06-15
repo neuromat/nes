@@ -5,7 +5,7 @@ from cep.widgets import CEPInput
 from django.utils.translation import ugettext_lazy as _
 
 from patient.models import Patient, Telephone, SocialDemographicData, SocialHistoryData, ComplementaryExam, ExamFile, \
-    PatientQuestionnaireResponse
+    QuestionnaireResponse
 from patient.quiz_widget import SelectBoxCountries, SelectBoxState
 
 # pylint: disable=E1101
@@ -148,9 +148,9 @@ class ExamFileForm(ModelForm):
         fields = ['content']
 
 
-class PatientQuestionnaireResponseForm(ModelForm):
+class QuestionnaireResponseForm(ModelForm):
     class Meta:
-        model = PatientQuestionnaireResponse
+        model = QuestionnaireResponse
         fields = [
             'date',
         ]
