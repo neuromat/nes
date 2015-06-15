@@ -1297,7 +1297,7 @@ def get_limesurvey_response_url(patient_questionnaire_response):
 def patient_questionnaire_response_view(request, patient_questionnaire_response_id,
                                         template_name="experiment/subject_questionnaire_response_view.html"):
 
-    view = request.GET['view']
+    origin = get_origin(request)
 
     status_mode = None
 
@@ -1307,7 +1307,7 @@ def patient_questionnaire_response_view(request, patient_questionnaire_response_
     patient_questionnaire_response = get_object_or_404(PatientQuestionnaireResponse,
                                                        id=patient_questionnaire_response_id)
 
-    lime_survey_id = patient_questionnaire_response.questionnaire.survey.lime_survey_id
+    lime_survey_id = patient_questionnaire_response.questionnaire.lime_survey_id
     token_id = patient_questionnaire_response.token_id
     language_code = request.LANGUAGE_CODE
 
@@ -1317,7 +1317,7 @@ def patient_questionnaire_response_view(request, patient_questionnaire_response_
         "questionnaire_responses": questionnaire_responses,
         "survey_title": survey_title,
         "patient_questionnaire_response": patient_questionnaire_response,
-        "view": view,
+        "origin": origin,
         "status_mode": status_mode
     }
 
