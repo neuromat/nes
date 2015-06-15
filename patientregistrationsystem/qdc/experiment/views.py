@@ -1897,7 +1897,7 @@ def component_update(request, path_of_the_components):
 
     # It is not possible to edit the component fields while editing a component configuration.
     if component_configuration is not None:
-        if component_type != "questionnaire" and component_type != 'task' and component_type != 'task_experiment':
+        if specific_form is not None:
             for field in specific_form.fields:
                 specific_form.fields[field].widget.attrs['disabled'] = True
 
