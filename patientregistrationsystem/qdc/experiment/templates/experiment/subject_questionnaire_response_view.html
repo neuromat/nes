@@ -3,8 +3,9 @@
 {% block header %}
 {% endblock %}
 
-{% block activePatient %}{% if view == "patient" %}class="active"{% endif %}{% endblock %}
-{% block activeAdvancedExperiment %}{% if view == "experiment" %}class="active"{% endif %}{% endblock %}
+{% block activePatient %}{% if origin == "subject" %}class="active"{% endif %}{% endblock %}
+{# origin == "experiment_subject" or origin == "experiment_questionnaire" #}
+{% block activeAdvancedExperiment %}{% if origin != "subject" %}class="active"{% endif %}{% endblock %}
 
 {% block content %}
 
@@ -15,13 +16,13 @@
 
             <ol class="breadcrumb">
                 <li><a href="/home">Home</a></li>
-                {% if view == "patient" %}
+                {% if origin == "subject" %}
                     <li><a href="/patient/find/">Participantes</a></li>
                     {% if questionnaire_response %}
                         {% if status_mode == "edit"%}
-                            <li><a href="/patient/edit/{{ questionnaire_response.subject_of_group.subject.patient.id }}/?currentTab=4">{{ questionnaire_response.subject_of_group.subject.patient.name }}</a></li>
+                            <li><a href="/patient/edit/{{ subject.patient.id }}/?currentTab=4">{{ subject.patient.name }}</a></li>
                         {% else %}
-                            <li><a href="/patient/{{ questionnaire_response.subject_of_group.subject.patient.id }}/?currentTab=4">{{ questionnaire_response.subject_of_group.subject.patient.name }}</a></li>
+                            <li><a href="/patient/{{ subject.patient.id }}/?currentTab=4">{{ subject.patient.name }}</a></li>
                         {% endif %}
                     {% else %}
                         {% if status_mode == "edit"%}
@@ -32,32 +33,38 @@
                     {% endif %}
                 {% else %}
                     <li><a href="/experiment/research_project/list">Estudos</a></li>
-                    <li><a href="/experiment/research_project/{{ questionnaire_response.questionnaire_configuration.group.experiment.research_project.id }}">
-                        {{ questionnaire_response.questionnaire_configuration.group.experiment.research_project.title }}</a></li>
                     <li>
-                        <a href="/experiment/{{ questionnaire_response.questionnaire_configuration.group.experiment.id }}/">
-                            {{ questionnaire_response.questionnaire_configuration.group.experiment.title }}
+                        <a href="/experiment/research_project/{{ group.experiment.research_project.id }}">
+                            {{ group.experiment.research_project.title }}
                         </a>
                     </li>
-                    <li><a href="/experiment/group/{{ questionnaire_response.questionnaire_configuration.group.id }}">{{ questionnaire_response.questionnaire_configuration.group.title }}</a></li>
+                    <li><a href="/experiment/{{ group.experiment.id }}/">{{ group.experiment.title }}</a></li>
+                    <li><a href="/experiment/group/{{ group.id }}">{{ group.title }}</a></li>
 
-                    {% if view == "experiment_subject" %}
-                        <li><a href="/experiment/group/{{ questionnaire_response.questionnaire_configuration.group.id }}/subjects/">Participantes</a></li>
+                    {% if origin == "experiment_subject" %}
+                        <li><a href="/experiment/group/{{ group.id }}/subjects/">Participantes</a></li>
+                        <li><a href="/experiment/group/{{ group.id }}/subjects/{{ subject.id }}/questionnaire">{{ subject.patient.name }}</a></li>
                         <li>
-                            <a href="/experiment/group/{{ questionnaire_response.questionnaire_configuration.group.id }}/subjects/{{ questionnaire_response.subject_of_group.subject.id }}/questionnaire">
-                                {{ questionnaire_response.subject_of_group.subject.patient.name }}
+                            <a href="/experiment/questionnaire_response/edit/{{ questionnaire_response.id }}?origin={{ origin }}">
+                                {{ survey_title }} - {{ questionnaire_response.date|date:"d-m-Y" }}
+                            </a>
+                        </li>
+                    {% else %} {# origin == "experiment_questionnaire" #}
+                        <li>
+                            <a href="/experiment/questionnaire_response/edit/{{ questionnaire_response.id }}?origin={{ origin }}">
+                                {{ survey_title }}
                             </a>
                         </li>
                         <li>
-                            {{ survey_title }}
+                            <a href="/experiment/questionnaire_response/edit/{{ questionnaire_response.id }}?origin={{ origin }}">
+                                {{ questionnaire_response.date|date:"d-m-Y" }}
+                            </a>
                         </li>
-                    {% else %}
-                        <li><a href="/experiment/questionnaire/edit/{{ questionnaire_response.questionnaire_configuration.id }}">{{ survey_title }}</a></li>
                     {% endif %}
 
-                    <li>{{ questionnaire_response.date|date:"d-m-Y" }}</li>
                 {% endif %}
-                <li class="active">Visualização de preenchimento de questionário</li>
+
+                <li class="active">Respostas</li>
             </ol>
         </div>
         <div class="col-md-1">
@@ -108,12 +115,12 @@
 
         <div class="btn-toolbar">
             <div class="btn-group pull-right">
-                {% if view == "patient" %}
+                {% if origin == "subject" %}
                     {% if questionnaire_response %}
                         {% if status_mode == "edit"%}
-                            <a href="/patient/edit/{{ questionnaire_response.subject_of_group.subject.patient.id }}/?currentTab=4" class="btn" style="background-color: #f5f5f5">Voltar</a>
+                            <a href="/patient/edit/{{ subject.patient.id }}/?currentTab=4" class="btn" style="background-color: #f5f5f5">Voltar</a>
                         {% else %}
-                            <a href="/patient/{{ questionnaire_response.subject_of_group.subject.patient.id }}/?currentTab=4" class="btn" style="background-color: #f5f5f5">Voltar</a>
+                            <a href="/patient/{{ subject.patient.id }}/?currentTab=4" class="btn" style="background-color: #f5f5f5">Voltar</a>
                         {% endif %}
                     {% else %}
                         {% if status_mode == "edit"%}
@@ -123,7 +130,7 @@
                         {% endif %}
                     {% endif %}
                 {% else %}
-                    <a href="/experiment/questionnaire_response/edit/{{ questionnaire_response.id }}{% if view == "experiment_subject" %}/?origin=subject{% endif %}" class="btn" style="background-color: #f5f5f5">Voltar</a>
+                    <a href="/experiment/questionnaire_response/edit/{{ questionnaire_response.id }}/?origin={{ origin }}" class="btn" style="background-color: #f5f5f5">Voltar</a>
                 {% endif %}
             </div>
         </div>

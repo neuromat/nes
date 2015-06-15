@@ -1,7 +1,8 @@
 {% extends "quiz/template.html" %}
 
-{% block activePatient %}{% if origin == 'patient' %}class="active"{% endif %}{% endblock %}
-{% block activeAdvancedExperiment %}{% if origin != 'patient' %}class="active"{% endif %}{% endblock %}
+{% block activePatient %}{% if origin == 'subject' %}class="active"{% endif %}{% endblock %}
+{# origin == "experiment_subject" or origin == "experiment_questionnaire" #}
+{% block activeAdvancedExperiment %}{% if origin != 'subject' %}class="active"{% endif %}{% endblock %}
 
 {% block header %}
 
@@ -25,7 +26,7 @@
             <ol class="breadcrumb">
 
                 <li><a href="/home">Home</a></li>
-                {% if origin == 'patient' %}
+                {% if origin == 'subject' %}
                     <li><a href="/patient/find/">Participantes</a></li>
                     <li><a href="/patient/edit/{{ patient.id }}/?currentTab=4">{{ patient.name }}</a></li>
                     {% if creating %}
@@ -38,7 +39,7 @@
                     <li><a href="/experiment/research_project/{{ group.experiment.research_project.id }}">{{ group.experiment.research_project.title }}</a></li>
                     <li><a href="/experiment/{{ group.experiment.id }}">{{ group.experiment.title }}</a></li>
                     <li><a href="/experiment/group/{{ group.id }}">{{ group.title }}</a></li>
-                    {% if origin == 'subject' %}
+                    {% if origin == 'experiment_subject' %}
                         <li><a href="/experiment/group/{{ group.id }}/subjects/">Participantes</a></li>
                         <li><a href="/experiment/group/{{ group.id }}/subjects/{{ subject.id }}/questionnaire">{{ subject.patient.name }}</a></li>
                         <li class="active">{{ survey_title }} - {% if creating %}Novo preenchimento{% else %}{{ questionnaire_response_form.date.value|date:"d-m-Y" }}{% endif %}</li>
@@ -124,7 +125,7 @@
                 <div class="row">
                     <div class="col-xs-12 col-sm-12">
 
-                        {% if origin == 'patient' %}
+                        {% if origin == 'subject' %}
 
                             <div class="form-group">
                                 <label for="questionnaire_selected" class="control-label">Questionário <b style="color: red;">*</b></label>
@@ -195,7 +196,7 @@
 
                             <div class="input-group input-group-sm">
                                 <span class="input-group-addon"><span class="glyphicon glyphicon-user"></span></span>
-                                {% if origin == 'patient' %}
+                                {% if origin == 'subject' %}
                                     <input class="form-control" id="id_subject" name="subject"
                                            value="{{ patient.name }}" type="text" disabled>
                                 {% else %}
@@ -266,22 +267,21 @@
                     <button type="submit" id="id_fill_button" name="action" value="save" class="btn btn-primary">{% if creating %}Novo preenchimento{% else %}Continuar preenchimento{% endif %}</button>
                 {% else %}
                     {% if origin == 'subject' %}
-                        <a href="/experiment/questionnaire_response/{{ questionnaire_response_id }}/?view=experiment_subject" class="btn btn-primary">Ver preenchimento</a>
+                        <a href="/experiment/patient_questionnaire_response/{{ patient_questionnaire_response.id }}?origin={{ origin }}&status={% if editing %}edit{% else %}view{% endif %}" class="btn btn-primary">Ver preenchimento</a>
                     {% else %}
-                        <a href="/experiment/patient_questionnaire_response/{{ patient_questionnaire_response.id }}?view=patient&status={% if editing %}edit{% else %}view{% endif %}" class="btn btn-primary">Ver preenchimento</a>
-
+                        <a href="/experiment/questionnaire_response/{{ questionnaire_response_id }}/?origin={{ origin }}" class="btn btn-primary">Ver preenchimento</a>
                     {% endif %}
                 {% endif %}
             </div>
             <div class="btn-group pull-right">
-                {% if origin == 'patient' %}
+                {% if origin == 'subject' %}
                     <a href="/patient/edit/{{ patient.id }}/?currentTab=4" class="btn"
                        style="background-color: #f5f5f5">Voltar</a>
                 {% else %}
-                    {% if origin == 'subject' %}
+                    {% if origin == 'experiment_subject' %}
                         <a href="/experiment/group/{{ group.id }}/subjects/{{ subject.id }}/questionnaire" class="btn"
                            style="background-color: #f5f5f5">Voltar</a>
-                    {% else %}
+                    {% else %} {# origin == 'experiment_questionnaire' #}
                         <a href="/experiment/group/{{ group.id }}/questionnaire/{{ questionnaire_configuration.id }}"
                            class="btn" style="background-color: #f5f5f5">Voltar</a>
                     {% endif %}

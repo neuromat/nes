@@ -1069,7 +1069,7 @@ def get_questionnaire_responses(language_code, lime_survey_id, token_id):
 @permission_required('experiment.view_questionnaireresponse')
 def questionnaire_response_view(request, questionnaire_response_id,
                                 template_name="experiment/subject_questionnaire_response_view.html"):
-    view = request.GET['view']
+    origin = get_origin(request)
 
     status_mode = None
 
@@ -1077,20 +1077,23 @@ def questionnaire_response_view(request, questionnaire_response_id,
         status_mode = request.GET['status']
 
     questionnaire_response = get_object_or_404(QuestionnaireResponse, id=questionnaire_response_id)
-    questionnaire_configuration = questionnaire_response.questionnaire_configuration
-
-    lime_survey_id = questionnaire_configuration.lime_survey_id
+    questionnaire_configuration = questionnaire_response.component_configuration
+    questionnaire = Questionnaire.objects.get(id=questionnaire_configuration.component.id)
+    lime_survey_id = questionnaire.lime_survey_id
     token_id = questionnaire_response.token_id
     language_code = request.LANGUAGE_CODE
 
+    # Get the responses for each question of the questionnaire.
     survey_title, questionnaire_responses = get_questionnaire_responses(language_code, lime_survey_id, token_id)
 
     context = {
-        "questionnaire_responses": questionnaire_responses,
-        "survey_title": survey_title,
+        "group": questionnaire_response.subject_of_group.group,
         "questionnaire_response": questionnaire_response,
-        "view": view,
-        "status_mode": status_mode
+        "questionnaire_responses": questionnaire_responses,
+        "status_mode": status_mode,
+        "subject": questionnaire_response.subject_of_group.subject,
+        "survey_title": survey_title,
+        "origin": origin,
     }
 
     return render(request, template_name, context)
@@ -1102,7 +1105,7 @@ def questionnaire_response_view(request, questionnaire_response_id,
 def patient_questionnaire_response_view(request, patient_questionnaire_response_id,
                                         template_name="experiment/subject_questionnaire_response_view.html"):
 
-    view = request.GET['view']
+    origin = get_origin(request)
 
     status_mode = None
 
@@ -1122,7 +1125,7 @@ def patient_questionnaire_response_view(request, patient_questionnaire_response_
         "questionnaire_responses": questionnaire_responses,
         "survey_title": survey_title,
         "patient_questionnaire_response": patient_questionnaire_response,
-        "view": view,
+        "origin": origin,
         "status_mode": status_mode
     }
 

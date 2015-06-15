@@ -10,7 +10,7 @@ from django.core.files.uploadedfile import SimpleUploadedFile
 from django.shortcuts import get_object_or_404
 import pyjsonrpc
 
-from experiment.models import Experiment, Group, QuestionnaireConfiguration, Subject, \
+from experiment.models import Experiment, Group, Subject, \
     QuestionnaireResponse, SubjectOfGroup, ComponentConfiguration, ResearchProject, Keyword, StimulusType, \
     Component, Task, TaskForTheExperimenter, Stimulus, Instruction, Pause, Questionnaire, Block
 from patient.models import ClassificationOfDiseases
@@ -618,7 +618,7 @@ class ListOfQuestionnaireFromExperimentalProtocolOfAGroupTest(TestCase):
                 self.assertNotEqual(self.lime_survey.session_key['status'], 'Invalid user name or password')
                 print 'Failed to connect Lime Survey %s' % self.lime_survey.session_key['status']
 
-    def test_questionnaire_list(self):
+    def test_create_questionnaire_for_a_group(self):
         """Testa a criacao de um questionario para um dado grupo"""
 
         # Create a research project
@@ -679,7 +679,7 @@ class ListOfQuestionnaireFromExperimentalProtocolOfAGroupTest(TestCase):
             status = self.lime_survey.delete_survey(sid)
             self.assertEqual(status, 'OK')
 
-    def test_questionnaire_view(self):
+    def test_list_questionnaire_of_a_group(self):
         """Test exhibition of a questionnaire of a group"""
 
         # Create a research project
@@ -735,6 +735,91 @@ class ListOfQuestionnaireFromExperimentalProtocolOfAGroupTest(TestCase):
             self.assertEqual(response.status_code, 200)
             # Check if the survey is listed
             self.assertContains(response, survey_title)
+        finally:
+            # Deleta a survey gerada no Lime Survey
+            status = self.lime_survey.delete_survey(sid)
+            self.assertEqual(status, 'OK')
+
+    def test_questionnaire_response_view(self):
+        """ Testa a visualizacao completa do questionario respondido no Lime Survey"""
+
+        # Create a research project
+        research_project = ResearchProject.objects.create(title="Research project title",
+                                                          start_date=datetime.date.today(),
+                                                          description="Research project description")
+        research_project.save()
+
+        # Criar um experimento mock para ser utilizado no teste
+        experiment = Experiment.objects.create(title="Experimento-Update",
+                                               description="Descricao do Experimento-Update",
+                                               research_project=research_project)
+        experiment.save()
+
+        # Create the root of the experimental protocol
+        block = Block.objects.create(identification='Root',
+                                     description='Root description',
+                                     experiment=Experiment.objects.first(),
+                                     component_type='block',
+                                     type="sequence")
+        block.save()
+
+        # Create a quesitonnaire at LiveSurvey to use in this test.
+        survey_title = 'Questionario de teste - DjangoTests'
+        sid = self.lime_survey.add_survey(99999, survey_title, 'en', 'G')
+
+        try:
+            # Create a questionnaire
+            questionnaire = Questionnaire.objects.create(identification='Questionnaire',
+                                                         description='Questionnaire description',
+                                                         experiment=Experiment.objects.first(),
+                                                         component_type='questionnaire',
+                                                         lime_survey_id=sid)
+            questionnaire.save()
+
+            # Include the questionnaire in the root.
+            component_configuration = ComponentConfiguration.objects.create(
+                name='ComponentConfiguration',
+                parent=block,
+                component=questionnaire
+            )
+            component_configuration.save()
+
+            # Criar um grupo mock para ser utilizado no teste
+            group = Group.objects.create(experiment=experiment,
+                                         title="Group-update",
+                                         description="Descricao do Group-update",
+                                         experimental_protocol_id=block.id)
+            group.save()
+
+            # Criar um Subject para o experimento
+            util = UtilTests()
+            patient_mock = util.create_patient_mock(user=self.user)
+
+            subject_mock = Subject(patient=patient_mock)
+            subject_mock.save()
+
+            subject_group = SubjectOfGroup(subject=subject_mock, group=group)
+            subject_group.save()
+
+            group.subjectofgroup_set.add(subject_group)
+            experiment.save()
+
+            # Pretend we have a response
+            questionnaire_response = QuestionnaireResponse()
+            questionnaire_response.component_configuration = component_configuration
+            questionnaire_response.subject_of_group = subject_group
+            questionnaire_response.token_id = LIME_SURVEY_TOKEN_ID_1
+            questionnaire_response.questionnaire_responsible = self.user
+            questionnaire_response.date = datetime.datetime.now()
+            questionnaire_response.save()
+
+            # Visualiza preenchimento da Survey
+            get_data = {'origin': "experiment_questionnaire"}
+            response = self.client.get(reverse('questionnaire_response_view',
+                                               args=[questionnaire_response.pk, ]), data=get_data)
+            # We don't get any error, because the method get_questionnaire_responses called by
+            # questionnaire_response_view simply returns an empty list of responses.
+            self.assertEqual(response.status_code, 200)
         finally:
             # Deleta a survey gerada no Lime Survey
             status = self.lime_survey.delete_survey(sid)
@@ -959,77 +1044,77 @@ class SubjectTest(TestCase):
     #         status = self.lime_survey.delete_survey(sid)
     #         self.assertEqual(status, 'OK')
 
-    def test_questionaire_view(self):
-        """ Testa a visualizacao completa do questionario respondido no Lime Survey"""
-
-        # Create a research project
-        research_project = ResearchProject.objects.create(title="Research project title",
-                                                          start_date=datetime.date.today(),
-                                                          description="Research project description")
-        research_project.save()
-
-        # Criar um experimento mock para ser utilizado no teste
-        experiment = Experiment.objects.create(title="Experimento-Teste-View",
-                                               description="Descricao do Experimento-View",
-                                               research_project=research_project)
-        experiment.save()
-
-        # Criar um grupo mock para ser utilizado no teste
-        group = Group.objects.create(experiment=experiment,
-                                     title="Group-update",
-                                     description="Descricao do Group-update")
-        group.save()
-
-        # Criar um Subject para o experimento
-        patient_mock = self.util.create_patient_mock(user=self.user)
-
-        subject_mock = Subject(patient=patient_mock)
-        subject_mock.save()
-
-        subject_group = SubjectOfGroup(subject=subject_mock, group=group)
-        subject_group.save()
-
-        group.subjectofgroup_set.add(subject_group)
-        experiment.save()
-
-        # Cria um questionario
-        questionnaire_configuration = QuestionnaireConfiguration(lime_survey_id=LIME_SURVEY_CODE_ID_TEST,
-                                                                 group=group,
-                                                                 number_of_fills=2)
-        questionnaire_configuration.save()
-
-        questionnaire_response = QuestionnaireResponse()
-        questionnaire_response.questionnaire_configuration = questionnaire_configuration
-        questionnaire_response.subject_of_group = subject_group
-        questionnaire_response.token_id = LIME_SURVEY_TOKEN_ID_1
-        questionnaire_response.questionnaire_responsible = self.user
-        questionnaire_response.date = datetime.datetime.now()
-        questionnaire_response.save()
-
-        # Visualiza preenchimento da Survey
-        get_data = {'view': "experiment", 'status': "view"}
-
-        response = self.client.get(reverse('questionnaire_response_view',
-                                           args=[questionnaire_response.pk, ]), data=get_data)
-        self.assertEqual(response.status_code, 200)
-
-        questionnaire_response = QuestionnaireResponse()
-        questionnaire_response.questionnaire_configuration = questionnaire_configuration
-        questionnaire_response.subject_of_group = subject_group
-        questionnaire_response.token_id = LIME_SURVEY_TOKEN_ID_2
-        questionnaire_response.questionnaire_responsible = self.user
-        questionnaire_response.date = datetime.datetime.now()
-        questionnaire_response.save()
-
-        # Visualiza preenchimento da Survey
-        response = self.client.get(reverse('questionnaire_response_view',
-                                           args=[questionnaire_response.pk, ]), data=get_data)
-        self.assertEqual(response.status_code, 200)
-
-        # Abre tela de cadastro de participantes com nenhum participante cadastrado a priori
-        response = self.client.get(reverse('subjects', args=(group.pk,)))
-        self.assertEqual(response.status_code, 200)
-        self.assertEqual(len(response.context['subject_list']), 1)
+    # def test_questionaire_view(self):
+    #     """ Testa a visualizacao completa do questionario respondido no Lime Survey"""
+    #
+    #     # Create a research project
+    #     research_project = ResearchProject.objects.create(title="Research project title",
+    #                                                       start_date=datetime.date.today(),
+    #                                                       description="Research project description")
+    #     research_project.save()
+    #
+    #     # Criar um experimento mock para ser utilizado no teste
+    #     experiment = Experiment.objects.create(title="Experimento-Teste-View",
+    #                                            description="Descricao do Experimento-View",
+    #                                            research_project=research_project)
+    #     experiment.save()
+    #
+    #     # Criar um grupo mock para ser utilizado no teste
+    #     group = Group.objects.create(experiment=experiment,
+    #                                  title="Group-update",
+    #                                  description="Descricao do Group-update")
+    #     group.save()
+    #
+    #     # Criar um Subject para o experimento
+    #     patient_mock = self.util.create_patient_mock(user=self.user)
+    #
+    #     subject_mock = Subject(patient=patient_mock)
+    #     subject_mock.save()
+    #
+    #     subject_group = SubjectOfGroup(subject=subject_mock, group=group)
+    #     subject_group.save()
+    #
+    #     group.subjectofgroup_set.add(subject_group)
+    #     experiment.save()
+    #
+    #     # Cria um questionario
+    #     questionnaire_configuration = QuestionnaireConfiguration(lime_survey_id=LIME_SURVEY_CODE_ID_TEST,
+    #                                                              group=group,
+    #                                                              number_of_fills=2)
+    #     questionnaire_configuration.save()
+    #
+    #     questionnaire_response = QuestionnaireResponse()
+    #     questionnaire_response.questionnaire_configuration = questionnaire_configuration
+    #     questionnaire_response.subject_of_group = subject_group
+    #     questionnaire_response.token_id = LIME_SURVEY_TOKEN_ID_1
+    #     questionnaire_response.questionnaire_responsible = self.user
+    #     questionnaire_response.date = datetime.datetime.now()
+    #     questionnaire_response.save()
+    #
+    #     # Visualiza preenchimento da Survey
+    #     get_data = {'view': "experiment", 'status': "view"}
+    #
+    #     response = self.client.get(reverse('questionnaire_response_view',
+    #                                        args=[questionnaire_response.pk, ]), data=get_data)
+    #     self.assertEqual(response.status_code, 200)
+    #
+    #     questionnaire_response = QuestionnaireResponse()
+    #     questionnaire_response.questionnaire_configuration = questionnaire_configuration
+    #     questionnaire_response.subject_of_group = subject_group
+    #     questionnaire_response.token_id = LIME_SURVEY_TOKEN_ID_2
+    #     questionnaire_response.questionnaire_responsible = self.user
+    #     questionnaire_response.date = datetime.datetime.now()
+    #     questionnaire_response.save()
+    #
+    #     # Visualiza preenchimento da Survey
+    #     response = self.client.get(reverse('questionnaire_response_view',
+    #                                        args=[questionnaire_response.pk, ]), data=get_data)
+    #     self.assertEqual(response.status_code, 200)
+    #
+    #     # Abre tela de cadastro de participantes com nenhum participante cadastrado a priori
+    #     response = self.client.get(reverse('subjects', args=(group.pk,)))
+    #     self.assertEqual(response.status_code, 200)
+    #     self.assertEqual(len(response.context['subject_list']), 1)
 
     def test_subject_upload_consent_file(self):
         """
