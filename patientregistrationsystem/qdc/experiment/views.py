@@ -2,9 +2,6 @@
 from functools import partial
 import re
 import datetime
-import csv
-
-from StringIO import StringIO
 
 from django.conf import settings
 from django.contrib import messages
@@ -18,11 +15,13 @@ from django.shortcuts import get_object_or_404, redirect, render, render_to_resp
 
 from experiment.models import Experiment, Subject, QuestionnaireResponse, SubjectOfGroup, Group, Component, \
     ComponentConfiguration, Questionnaire, Task, Stimulus, Pause, Instruction, Block, \
-    TaskForTheExperimenter, ClassificationOfDiseases, ResearchProject, Keyword, PatientQuestionnaireResponse
+    TaskForTheExperimenter, ClassificationOfDiseases, ResearchProject, Keyword
 from experiment.forms import ExperimentForm, QuestionnaireResponseForm, FileForm, GroupForm, InstructionForm, \
     ComponentForm, StimulusForm, BlockForm, ComponentConfigurationForm, ResearchProjectForm
 from patient.models import Patient
 from experiment.abc_search_engine import Questionnaires
+
+from survey.views import get_questionnaire_responses
 
 from operator import itemgetter
 
@@ -335,14 +334,14 @@ def recursively_create_list_of_questionnaires_and_statistics(block_id,
         questionnaire = Questionnaire.objects.get(id=questionnaire_configuration.component.id)
 
         for subject_response in subject_responses:
-            response_result = surveys.get_participant_properties(questionnaire.lime_survey_id,
+            response_result = surveys.get_participant_properties(questionnaire.survey.lime_survey_id,
                                                                  subject_response.token_id, "completed")
 
             if response_result != "N" and response_result != "":
                 amount_of_completed_questionnaires += 1
 
         list_of_questionnaires_configuration.append({
-            "survey_title": surveys.get_survey_title(questionnaire.lime_survey_id),
+            "survey_title": surveys.get_survey_title(questionnaire.survey.lime_survey_id),
             "fills_per_participant": fills_per_participant,
             "total_fills_needed": total_fills_needed,
             "total_fills_done": amount_of_completed_questionnaires,
@@ -359,7 +358,6 @@ def recursively_create_list_of_questionnaires_and_statistics(block_id,
             num_participants)
 
     return list_of_questionnaires_configuration
-
 
 
 @login_required
@@ -484,14 +482,14 @@ def classification_of_diseases_remove(request, group_id, classification_of_disea
 @login_required
 @permission_required('experiment.change_questionnaireconfiguration')
 def questionnaire_view(request, group_id, component_configuration_id,
-                         template_name="experiment/questionnaire_view.html"):
+                       template_name="experiment/questionnaire_view.html"):
     questionnaire_configuration = get_object_or_404(ComponentConfiguration, pk=component_configuration_id)
     group = get_object_or_404(Group, pk=group_id)
     questionnaire = Questionnaire.objects.get(id=questionnaire_configuration.component.id)
 
     surveys = Questionnaires()
     questionnaire_title = surveys.get_survey_title(
-        Questionnaire.objects.get(id=questionnaire_configuration.component_id).lime_survey_id)
+        Questionnaire.objects.get(id=questionnaire_configuration.component_id).survey.lime_survey_id)
 
     limesurvey_available = check_limesurvey_access(request, surveys)
 
@@ -505,7 +503,7 @@ def questionnaire_view(request, group_id, component_configuration_id,
         questionnaire_responses_with_status = []
 
         for subject_response in subject_responses:
-            response_result = surveys.get_participant_properties(questionnaire.lime_survey_id,
+            response_result = surveys.get_participant_properties(questionnaire.survey.lime_survey_id,
                                                                  subject_response.token_id, "completed")
             completed = False
 
@@ -609,7 +607,8 @@ def subjects(request, group_id, template_name="experiment/subjects.html"):
                     for subject_response in subject_responses:
                         # Check if completed
                         response_result = surveys.get_participant_properties(
-                            Questionnaire.objects.get(id=questionnaire_configuration.component.id).lime_survey_id,
+                            Questionnaire.objects.get(
+                                id=questionnaire_configuration.component.id).survey.lime_survey_id,
                             subject_response.token_id, "completed")
 
                         if response_result == "N" or response_result == "":
@@ -662,7 +661,7 @@ def subject_questionnaire_response_start_fill_questionnaire(request, subject_id,
         subject = get_object_or_404(Subject, pk=subject_id)
         patient = subject.patient
         subject_of_group = get_object_or_404(SubjectOfGroup, subject=subject, group_id=group_id)
-        lime_survey_id = Questionnaire.objects.get(id=questionnaire_config.component_id).lime_survey_id
+        lime_survey_id = Questionnaire.objects.get(id=questionnaire_config.component_id).survey.lime_survey_id
 
         if not questionnaire_lime_survey.survey_has_token_table(lime_survey_id):
             messages.warning(request, 'Preenchimento não disponível - Tabela de tokens não iniciada')
@@ -703,14 +702,14 @@ def get_limesurvey_response_url(questionnaire_response):
     questionnaire = Questionnaire.objects.get(id=questionnaire_response.component_configuration.component.id)
 
     questionnaire_lime_survey = Questionnaires()
-    token = questionnaire_lime_survey.get_participant_properties(questionnaire.lime_survey_id,
+    token = questionnaire_lime_survey.get_participant_properties(questionnaire.survey.lime_survey_id,
                                                                  questionnaire_response.token_id, "token")
     questionnaire_lime_survey.release_session_key()
 
     redirect_url = \
         '%s/index.php/%s/token/%s/responsibleid/%s/acquisitiondate/%s/subjectid/%s/newtest/Y' % (
             settings.LIMESURVEY['URL_WEB'],
-            questionnaire.lime_survey_id,
+            questionnaire.survey.lime_survey_id,
             token,
             str(questionnaire_response.questionnaire_responsible.id),
             questionnaire_response.date.strftime('%d-%m-%Y'),
@@ -727,13 +726,12 @@ def subject_questionnaire_response_create(request, group_id, subject_id, questio
     group = get_object_or_404(Group, id=group_id)
 
     surveys = Questionnaires()
-    lime_survey_id = Questionnaire.objects.get(id=questionnaire_config.component_id).lime_survey_id
+    lime_survey_id = Questionnaire.objects.get(id=questionnaire_config.component_id).survey.lime_survey_id
     survey_title = surveys.get_survey_title(lime_survey_id)
     survey_active = surveys.get_survey_properties(lime_survey_id, 'active')
-    # survey_admin = surveys.get_survey_properties(questionnaire_config.lime_survey_id, 'admin')
+    # survey_admin = surveys.get_survey_properties(questionnaire_config.survey.lime_survey_id, 'admin')
     surveys.release_session_key()
 
-    questionnaire_response_form = None
     fail = None
     redirect_url = None
     questionnaire_response_id = None
@@ -781,9 +779,9 @@ def questionnaire_response_update(request, questionnaire_response_id,
     group = Group.objects.get(id=questionnaire_response.subject_of_group.group_id)
 
     surveys = Questionnaires()
-    survey_title = surveys.get_survey_title(questionnaire.lime_survey_id)
-    survey_active = surveys.get_survey_properties(questionnaire.lime_survey_id, 'active')
-    survey_completed = (surveys.get_participant_properties(questionnaire.lime_survey_id,
+    survey_title = surveys.get_survey_title(questionnaire.survey.lime_survey_id)
+    survey_active = surveys.get_survey_properties(questionnaire.survey.lime_survey_id, 'active')
+    survey_completed = (surveys.get_participant_properties(questionnaire.survey.lime_survey_id,
                                                            questionnaire_response.token_id,
                                                            "completed") != "N")
     surveys.release_session_key()
@@ -808,7 +806,7 @@ def questionnaire_response_update(request, questionnaire_response_id,
         elif request.POST['action'] == "remove":
             surveys = Questionnaires()
             result = surveys.delete_participant(
-                questionnaire.lime_survey_id,
+                questionnaire.survey.lime_survey_id,
                 questionnaire_response.token_id)
             surveys.release_session_key()
 
@@ -901,170 +899,6 @@ def check_required_fields(surveys, lime_survey_id):
     return validated_quantity == len(fields_to_validate)
 
 
-def get_questionnaire_responses(language_code, lime_survey_id, token_id):
-
-    questionnaire_responses = []
-    surveys = Questionnaires()
-    token = surveys.get_participant_properties(lime_survey_id, token_id, "token")
-    question_properties = []
-    groups = surveys.list_groups(lime_survey_id)
-
-    survey_title = surveys.get_survey_title(lime_survey_id)
-
-    if not isinstance(groups, dict):
-
-        # defining language to be showed
-        languages = surveys.get_survey_languages(lime_survey_id)
-        language = languages['language']
-        if language_code in languages['additional_languages'].split(' '):
-            language = language_code
-
-        for group in groups:
-            if 'id' in group and group['id']['language'] == language:
-
-                question_list = surveys.list_questions(lime_survey_id, group['id'])
-                question_list = sorted(question_list)
-
-                for question in question_list:
-
-                    properties = surveys.get_question_properties(question, group['id']['language'])
-
-                    # cleaning the question field
-                    properties['question'] = re.sub('{.*?}', '', re.sub('<.*?>', '', properties['question']))
-                    properties['question'] = properties['question'].replace('&nbsp;', '').strip()
-
-                    is_purely_formula = (properties['type'] == '*') and (properties['question'] == '')
-
-                    if not is_purely_formula and properties['question'] != '':
-
-                        if isinstance(properties['subquestions'], dict):
-                            question_properties.append({
-                                'question': properties['question'],
-                                'question_id': properties['title'],
-                                'answer_options': 'super_question',
-                                'type': properties['type'],
-                                'attributes_lang': properties['attributes_lang'],
-                                'hidden': 'hidden' in properties['attributes'] and
-                                          properties['attributes']['hidden'] == '1'
-                            })
-                            for key, value in sorted(properties['subquestions'].iteritems()):
-                                question_properties.append({
-                                    'question': value['question'],
-                                    'question_id': properties['title'] + '[' + value['title'] + ']',
-                                    'answer_options': properties['answeroptions'],
-                                    'type': properties['type'],
-                                    'attributes_lang': properties['attributes_lang'],
-                                    'hidden': 'hidden' in properties['attributes'] and
-                                              properties['attributes']['hidden'] == '1'
-                                })
-                        else:
-                            question_properties.append({
-                                'question': properties['question'],
-                                'question_id': properties['title'],
-                                'answer_options': properties['answeroptions'],
-                                'type': properties['type'],
-                                'attributes_lang': properties['attributes_lang'],
-                                'hidden': 'hidden' in properties['attributes'] and
-                                          properties['attributes']['hidden'] == '1'
-                            })
-
-        # Reading from Limesurvey and...
-        responses_string = surveys.get_responses_by_token(lime_survey_id, token, language)
-
-        # ... transforming to a list:
-        # response_list[0] has the questions
-        #   response_list[1] has the answers
-        reader = csv.reader(StringIO(responses_string), delimiter=',')
-        responses_list = []
-        for row in reader:
-            responses_list.append(row)
-
-        for question in question_properties:
-
-            if not question['hidden']:
-
-                if isinstance(question['answer_options'], basestring) and question[
-                    'answer_options'] == "super_question":
-
-                    if question['question'] != '':
-                        questionnaire_responses.append({
-                            'question': question['question'],
-                            'answer': '',
-                            'type': question['type']
-                        })
-                else:
-
-                    answer = ''
-
-                    if question['type'] == '1':
-
-                        answer_list = []
-
-                        if question['question_id'] + "[1]" in responses_list[0]:
-                            index = responses_list[0].index(question['question_id'] + "[1]")
-                            answer_options = question['answer_options']
-                            answer = question['attributes_lang']['dualscale_headerA'] + ": "
-                            if responses_list[1][index] in answer_options:
-                                answer_option = answer_options[responses_list[1][index]]
-                                answer += answer_option['answer']
-                            else:
-                                answer += 'Sem resposta'
-
-                        answer_list.append(answer)
-
-                        if question['question_id'] + "[2]" in responses_list[0]:
-                            index = responses_list[0].index(question['question_id'] + "[2]")
-                            answer_options = question['answer_options']
-                            answer = question['attributes_lang']['dualscale_headerB'] + ": "
-                            if responses_list[1][index] in answer_options:
-                                answer_option = answer_options[responses_list[1][index]]
-                                answer += answer_option['answer']
-                            else:
-                                answer += 'Sem resposta'
-
-                        answer_list.append(answer)
-
-                        questionnaire_responses.append({
-                            'question': question['question'],
-                            'answer': answer_list,
-                            'type': question['type']
-                        })
-                    else:
-
-                        if question['question_id'] in responses_list[0]:
-
-                            index = responses_list[0].index(question['question_id'])
-
-                            answer_options = question['answer_options']
-
-                            if isinstance(answer_options, dict):
-
-                                if responses_list[1][index] in answer_options:
-                                    answer_option = answer_options[responses_list[1][index]]
-                                    answer = answer_option['answer']
-                                else:
-                                    answer = 'Sem resposta'
-                            else:
-                                if question['type'] == 'D':
-                                    if responses_list[1][index]:
-                                        answer = datetime.datetime.strptime(responses_list[1][index],
-                                                                            '%Y-%m-%d %H:%M:%S')
-                                    else:
-                                        answer = ''
-                                else:
-                                    answer = responses_list[1][index]
-
-                        questionnaire_responses.append({
-                            'question': question['question'],
-                            'answer': answer,
-                            'type': question['type']
-                        })
-
-    surveys.release_session_key()
-
-    return survey_title, questionnaire_responses
-
-
 @login_required
 @permission_required('experiment.view_questionnaireresponse')
 def questionnaire_response_view(request, questionnaire_response_id,
@@ -1089,39 +923,6 @@ def questionnaire_response_view(request, questionnaire_response_id,
         "questionnaire_responses": questionnaire_responses,
         "survey_title": survey_title,
         "questionnaire_response": questionnaire_response,
-        "view": view,
-        "status_mode": status_mode
-    }
-
-    return render(request, template_name, context)
-
-
-@login_required
-# TODO: associate the right permission
-# @permission_required('patient.add_medicalrecorddata')
-def patient_questionnaire_response_view(request, patient_questionnaire_response_id,
-                                        template_name="experiment/subject_questionnaire_response_view.html"):
-
-    view = request.GET['view']
-
-    status_mode = None
-
-    if 'status' in request.GET:
-        status_mode = request.GET['status']
-
-    patient_questionnaire_response = get_object_or_404(PatientQuestionnaireResponse,
-                                                       id=patient_questionnaire_response_id)
-
-    lime_survey_id = patient_questionnaire_response.questionnaire.lime_survey_id
-    token_id = patient_questionnaire_response.token_id
-    language_code = request.LANGUAGE_CODE
-
-    survey_title, questionnaire_responses = get_questionnaire_responses(language_code, lime_survey_id, token_id)
-
-    context = {
-        "questionnaire_responses": questionnaire_responses,
-        "survey_title": survey_title,
-        "patient_questionnaire_response": patient_questionnaire_response,
         "view": view,
         "status_mode": status_mode
     }
@@ -1168,7 +969,7 @@ def subject_questionnaire_view(request, group_id, subject_id,
         questionnaire = Questionnaire.objects.get(id=questionnaire_configuration.component.id)
 
         for questionnaire_response in questionnaire_responses:
-            response_result = surveys.get_participant_properties(questionnaire.lime_survey_id,
+            response_result = surveys.get_participant_properties(questionnaire.survey.lime_survey_id,
                                                                  questionnaire_response.token_id,
                                                                  "completed")
             questionnaire_responses_with_status.append(
@@ -1178,7 +979,7 @@ def subject_questionnaire_view(request, group_id, subject_id,
 
         subject_questionnaires.append(
             {'questionnaire_configuration': questionnaire_configuration,
-             'title': surveys.get_survey_title(questionnaire.lime_survey_id),
+             'title': surveys.get_survey_title(questionnaire.survey.lime_survey_id),
              'questionnaire_responses': questionnaire_responses_with_status}
         )
 
@@ -1311,16 +1112,16 @@ def component_list(request, experiment_id, template_name="experiment/component_l
     # Reduce the complexity by creating list of component configurations without having tuples.
     components = []
 
-    for tuple in temp_list_of_tuples:
-        components.append(tuple[0])
+    for element in temp_list_of_tuples:
+        components.append(element[0])
 
     for component in components:
         component.icon_class = icon_class[component.component_type]
 
     component_type_choices = []
 
-    for type, type_name in Component.COMPONENT_TYPES:
-        component_type_choices.append((type, type_name, icon_class.get(type)))
+    for type_element, type_name in Component.COMPONENT_TYPES:
+        component_type_choices.append((type_element, type_name, icon_class.get(type_element)))
 
     context = {
         "experiment": experiment,
@@ -1394,7 +1195,7 @@ def component_create(request, experiment_id, component_type):
         if component_form.is_valid():
             if component_type == 'questionnaire':
                 new_specific_component = Questionnaire()
-                new_specific_component.lime_survey_id = request.POST['questionnaire_selected']
+                new_specific_component.survey.lime_survey_id = request.POST['questionnaire_selected']
             elif component_type == 'pause':
                 new_specific_component = Pause()
             elif component_type == 'task':
@@ -1501,6 +1302,7 @@ week_in_milliseconds = 7 * day_in_milliseconds
 month_in_milliseconds = 30 * day_in_milliseconds
 year_in_milliseconds = 365 * day_in_milliseconds
 
+
 def convert_to_milliseconds(value, unit):
     if value is None:
         return 0
@@ -1564,8 +1366,8 @@ def convert_to_string(duration_in_milliseconds):
         duration_in_milliseconds -= duration_in_seconds * second_in_milliseconds
 
     if duration_in_milliseconds >= 1:
-        string += str(duration_in_milliseconds) +\
-                  (" milissegundos " if duration_in_milliseconds > 1 else " milissegundo ")
+        string += str(duration_in_milliseconds) + \
+            (" milissegundos " if duration_in_milliseconds > 1 else " milissegundo ")
 
     if string == "":
         string = "0"
@@ -1573,7 +1375,7 @@ def convert_to_string(duration_in_milliseconds):
         # Add commas and 'and' to the string
         list_of_words = string.split(" ")
         values = list_of_words[::2]
-        units =  list_of_words[1::2]
+        units = list_of_words[1::2]
         list_of_values_with_units = [value + " " + unit for value, unit in zip(values, units)]
         before_and = ", ".join(list_of_values_with_units[0:-1])
 
@@ -1583,6 +1385,7 @@ def convert_to_string(duration_in_milliseconds):
             string = before_and + " e " + list_of_values_with_units[-1]
 
     return string
+
 
 def calculate_block_duration(block):
     duration_value_in_milliseconds = 0
@@ -1603,7 +1406,6 @@ def calculate_block_duration(block):
             if component_duration > duration_value_in_milliseconds:
                 duration_value_in_milliseconds = component_duration
 
-
     return duration_value_in_milliseconds
 
 
@@ -1611,7 +1413,7 @@ def access_objects_for_view_and_update(request, path_of_the_components, updating
     list_of_ids_of_components_and_configurations = path_of_the_components.split(delimiter)
 
     # The last id of the list is the one that we want to show.
-    id = list_of_ids_of_components_and_configurations[-1]
+    identification = list_of_ids_of_components_and_configurations[-1]
 
     group = None
 
@@ -1623,12 +1425,12 @@ def access_objects_for_view_and_update(request, path_of_the_components, updating
     component_configuration = None
     configuration_form = None
 
-    if id[0] == "U":  # If id starts with 'U' (from 'use'), it is a configuration.
-        component_configuration = get_object_or_404(ComponentConfiguration, pk=id[1:])
+    if identification[0] == "U":  # If id starts with 'U' (from 'use'), it is a configuration.
+        component_configuration = get_object_or_404(ComponentConfiguration, pk=identification[1:])
         configuration_form = ComponentConfigurationForm(request.POST or None, instance=component_configuration)
         component = component_configuration.component
     else:
-        component = get_object_or_404(Component, pk=id)
+        component = get_object_or_404(Component, pk=identification)
 
     component_form = ComponentForm(request.POST or None, instance=component)
 
@@ -1732,8 +1534,8 @@ def component_view(request, path_of_the_components):
             return HttpResponseRedirect(redirect_url)
 
     component_type_choices = []
-    for type, type_name in Component.COMPONENT_TYPES:
-        component_type_choices.append((type, type_name, icon_class.get(type)))
+    for type_element, type_name in Component.COMPONENT_TYPES:
+        component_type_choices.append((type_element, type_name, icon_class.get(type_element)))
 
     context = {
         "back_cancel_url": back_cancel_url,
@@ -1777,8 +1579,8 @@ def sort_without_using_order(configuration_list_of_random_components):
     # Reduce the complexity by creating list of component configurations without having tuples.
     configuration_list_of_random_components = []
 
-    for tuple in temp_list_of_tuples:
-        configuration_list_of_random_components.append(tuple[0])
+    for element in temp_list_of_tuples:
+        configuration_list_of_random_components.append(element[0])
 
     return configuration_list_of_random_components
 
@@ -1824,7 +1626,7 @@ def component_update(request, path_of_the_components):
         specific_form = StimulusForm(request.POST or None, instance=stimulus)
     elif component_type == 'questionnaire':
         questionnaire = get_object_or_404(Questionnaire, pk=component.id)
-        questionnaire_details = Questionnaires().find_questionnaire_by_id(questionnaire.lime_survey_id)
+        questionnaire_details = Questionnaires().find_questionnaire_by_id(questionnaire.survey.lime_survey_id)
 
         if questionnaire_details:
             questionnaire_id = questionnaire_details['sid'],
@@ -1903,7 +1705,6 @@ def component_update(request, path_of_the_components):
 
         type_of_the_parent_block = Block.objects.get(id=component_configuration.parent_id).type
 
-
     context = {
         "back_cancel_url": back_cancel_url,
         "block_duration": duration_string,
@@ -1936,6 +1737,8 @@ def access_objects_for_add_new_and_reuse(component_type, path_of_the_components)
     block = None
     group = None
 
+    experiment = None
+
     if len(list_of_ids_of_components_and_configurations) > 1 or path_of_the_components[0] != "G":
         # The last id of the list is the block where the new component will be added.
         block_id = list_of_ids_of_components_and_configurations[-1]
@@ -1957,8 +1760,9 @@ def access_objects_for_add_new_and_reuse(component_type, path_of_the_components)
     else:
         back_cancel_url = "/experiment/component/" + path_of_the_components
 
-    return existing_component_list, experiment, group, list_of_breadcrumbs, block, template_name, specific_form, \
-           list_of_ids_of_components_and_configurations, back_cancel_url
+    return \
+        existing_component_list, experiment, group, list_of_breadcrumbs, \
+        block, template_name, specific_form, list_of_ids_of_components_and_configurations, back_cancel_url
 
 
 @login_required
@@ -1991,7 +1795,7 @@ def component_add_new(request, path_of_the_components, component_type):
 
         if component_type == 'questionnaire':
             new_specific_component = Questionnaire()
-            new_specific_component.lime_survey_id = request.POST['questionnaire_selected']
+            new_specific_component.survey.lime_survey_id = request.POST['questionnaire_selected']
         elif component_type == 'pause':
             new_specific_component = Pause()
         elif component_type == 'task':
@@ -2081,7 +1885,7 @@ def component_reuse(request, path_of_the_components, component_id):
         specific_form = StimulusForm(request.POST or None, instance=stimulus)
     elif component_type == 'questionnaire':
         questionnaire = get_object_or_404(Questionnaire, pk=component_to_add.id)
-        questionnaire_details = Questionnaires().find_questionnaire_by_id(questionnaire.lime_survey_id)
+        questionnaire_details = Questionnaires().find_questionnaire_by_id(questionnaire.survey.lime_survey_id)
 
         if questionnaire_details:
             questionnaire_id = questionnaire_details['sid'],
@@ -2135,7 +1939,7 @@ def component_reuse(request, path_of_the_components, component_id):
         "block": block,
         "block_duration": duration_string,
         "component_form": component_form,
-        "creating": True, # So that the "Use" button is shown.
+        "creating": True,  # So that the "Use" button is shown.
         "existing_component_list": existing_component_list,
         "experiment": experiment,
         "group": group,

@@ -52,6 +52,7 @@ PROJECT_APPS = (
     'patient',
     'custom_user',
     'experiment',
+    'survey',
 )
 
 INSTALLED_APPS += PROJECT_APPS

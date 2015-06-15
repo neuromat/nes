@@ -19,9 +19,14 @@ from patient.forms import PatientForm, TelephoneForm, SocialDemographicDataForm,
     ComplementaryExamForm, ExamFileForm
 from patient.quiz_widget import SelectBoxCountriesDisabled, SelectBoxStateDisabled
 
-from experiment.models import Questionnaire, PatientQuestionnaireResponse
+from experiment.models import Questionnaire
 from experiment.abc_search_engine import Questionnaires
-from experiment.forms import QuestionnaireResponseForm, PatientQuestionnaireResponseForm
+from experiment.forms import QuestionnaireResponseForm
+
+from patient.models import PatientQuestionnaireResponse
+from patient.forms import PatientQuestionnaireResponseForm
+
+from survey.views import get_questionnaire_responses
 
 # pylint: disable=E1101
 # pylint: disable=E1103
@@ -34,12 +39,12 @@ permission_required = partial(permission_required, raise_exception=True)
 def patient_create(request, template_name="patient/register_personal_data.html"):
     patient_form = PatientForm(request.POST or None)
 
-    TelephoneFormSet = inlineformset_factory(Patient, Telephone, form=TelephoneForm)
+    telephone_inlineformset = inlineformset_factory(Patient, Telephone, form=TelephoneForm)
 
     if request.method == "POST":
         patient_form_is_valid = patient_form.is_valid()
 
-        telephone_formset = TelephoneFormSet(request.POST, request.FILES)
+        telephone_formset = telephone_inlineformset(request.POST, request.FILES)
         telephone_formset_is_valid = telephone_formset.is_valid()
 
         if patient_form_is_valid and telephone_formset_is_valid:
@@ -70,7 +75,7 @@ def patient_create(request, template_name="patient/register_personal_data.html")
                     else:
                         patient_form.errors['cpf'][0] = "Já existe participante cadastrado com este CPF."
     else:
-        telephone_formset = TelephoneFormSet()
+        telephone_formset = telephone_inlineformset()
 
     context = {
         'patient_form': patient_form,
@@ -123,12 +128,12 @@ def get_current_tab(request):
 def patient_update_personal_data(request, patient, context):
     patient_form = PatientForm(request.POST or None, instance=patient)
 
-    TelephoneFormSet = inlineformset_factory(Patient, Telephone, form=TelephoneForm)
+    telephone_inlineformset = inlineformset_factory(Patient, Telephone, form=TelephoneForm)
 
     if request.method == "POST":
         patient_form_is_valid = patient_form.is_valid()
 
-        telephone_formset = TelephoneFormSet(request.POST, request.FILES, instance=patient)
+        telephone_formset = telephone_inlineformset(request.POST, request.FILES, instance=patient)
         telephone_formset_is_valid = telephone_formset.is_valid()
 
         if patient_form_is_valid and telephone_formset_is_valid:
@@ -156,7 +161,7 @@ def patient_update_personal_data(request, patient, context):
 
             return finish_handling_post(request, patient.id, 0)
     else:
-        telephone_formset = TelephoneFormSet(instance=patient)
+        telephone_formset = telephone_inlineformset(instance=patient)
 
     context.update({
         'patient_form': patient_form,
@@ -202,7 +207,7 @@ def patient_update_social_demographic_data(request, patient, context):
                         refrigerator=new_social_demographic_data.refrigerator,
                         freezer=new_social_demographic_data.freezer,
                         # If we use the object, the parameter will have the names registered in the admin interface.
-                        # To avoid that, we use post data, which is a string (hopefully) containing a number from 1 to 5.
+                        # To avoid that, we use post data, which is a string (hopefully) containing a number from 1 to 5
                         # schooling=new_social_demographic_data.schooling)
                         schooling=request.POST['schooling'])
 
@@ -292,14 +297,14 @@ def patient_update_questionnaires(request, patient, context):
     for patient_questionnaire_response in patient_questionnaire_response_list:
 
         response_result = surveys.get_participant_properties(
-            patient_questionnaire_response.questionnaire.lime_survey_id,
+            patient_questionnaire_response.questionnaire.survey.lime_survey_id,
             patient_questionnaire_response.token_id,
             "completed")
 
         patient_questionnaires_data.append(
             {
                 'questionnaire_title':
-                surveys.get_survey_title(patient_questionnaire_response.questionnaire.lime_survey_id),
+                surveys.get_survey_title(patient_questionnaire_response.questionnaire.survey.lime_survey_id),
                 'questionnaire_response':
                 patient_questionnaire_response,
                 'completed':
@@ -345,21 +350,21 @@ def patient_update_questionnaires(request, patient, context):
     return render(request, "patient/register_questionnaires.html", context)
 
 
-def finish_handling_post(request, patient_id, currentTab):
+def finish_handling_post(request, patient_id, current_tab):
     if 'action' in request.POST:
         redirect_url = reverse("patient_edit", args=(patient_id,))
 
         if request.POST['action'] == "show_previous":
-            return HttpResponseRedirect(redirect_url + "?currentTab=" + str(currentTab - 1))
+            return HttpResponseRedirect(redirect_url + "?currentTab=" + str(current_tab - 1))
         elif request.POST['action'] == "show_next":
-            return HttpResponseRedirect(redirect_url + "?currentTab=" + str(currentTab + 1))
+            return HttpResponseRedirect(redirect_url + "?currentTab=" + str(current_tab + 1))
         elif request.POST['action'] == "change_tab":
             return HttpResponseRedirect(redirect_url + "?currentTab=" + request.POST['nextTab'])
         elif request.POST['action'] == "more_phones":
             return HttpResponseRedirect(redirect_url + "?currentTab=0")
 
     redirect_url = reverse("patient_view", args=(patient_id,))
-    return HttpResponseRedirect(redirect_url + "?currentTab=" + str(currentTab))
+    return HttpResponseRedirect(redirect_url + "?currentTab=" + str(current_tab))
 
 
 @login_required
@@ -401,15 +406,15 @@ def patient_view(request, patient_id):
             return patient_view_social_history(request, patient, context)
         elif current_tab == '3':
             return patient_view_medical_record(request, patient, context)
-        else: # current_tab == '4':
+        else:  # current_tab == '4':
             return patient_view_questionnaires(request, patient, context)
 
 
 def patient_view_personal_data(request, patient, context):
     patient_form = PatientForm(instance=patient)
 
-    TelephoneFormSet = inlineformset_factory(Patient, Telephone, form=TelephoneForm, extra=1)
-    telephone_formset = TelephoneFormSet(instance=patient)
+    telephone_inlineformset = inlineformset_factory(Patient, Telephone, form=TelephoneForm, extra=1)
+    telephone_formset = telephone_inlineformset(instance=patient)
 
     for field in patient_form.fields:
         patient_form.fields[field].widget.attrs['disabled'] = True
@@ -489,21 +494,27 @@ def patient_view_questionnaires(request, patient, context):
 
     limesurvey_available = check_limesurvey_access(request, surveys)
 
-    patient_questionnaires_data = []
-    patient_questionnaire_response_list = PatientQuestionnaireResponse.objects.filter(patient=patient)
+    patient_questionnaires_data = {}
+
+    patient_questionnaire_response_list = \
+        PatientQuestionnaireResponse.objects.filter(patient=patient).order_by('questionnaire__survey__lime_survey_id')
 
     for patient_questionnaire_response in patient_questionnaire_response_list:
 
+        limesurvey_id = patient_questionnaire_response.questionnaire.survey.lime_survey_id
+
         response_result = surveys.get_participant_properties(
-            patient_questionnaire_response.questionnaire.lime_survey_id,
-            patient_questionnaire_response.token_id,
-            "completed")
+            limesurvey_id, patient_questionnaire_response.token_id, "completed")
 
-        patient_questionnaires_data.append(
+        if not limesurvey_id in patient_questionnaires_data:
+            patient_questionnaires_data[limesurvey_id] = \
+                {
+                    'questionnaire_title': surveys.get_survey_title(limesurvey_id),
+                    'questionnaire_responses': []
+                }
+
+        patient_questionnaires_data[limesurvey_id]['questionnaire_responses'].append(
             {
-                'questionnaire_title':
-                surveys.get_survey_title(patient_questionnaire_response.questionnaire.lime_survey_id),
-
                 'questionnaire_response':
                 patient_questionnaire_response,
 
@@ -551,6 +562,7 @@ def patient_view_questionnaires(request, patient, context):
 
     return render(request, "patient/register_questionnaires.html", context)
 
+
 @login_required
 @permission_required('patient.view_patient')
 def search_patient(request):
@@ -582,9 +594,11 @@ def search_patients_ajax(request):
         search_text = request.POST['search_text']
         if search_text:
             if re.match('[a-zA-Z ]+', search_text):
-                patient_list = Patient.objects.filter(name__icontains=search_text).exclude(removed=True).order_by('name')
+                patient_list = \
+                    Patient.objects.filter(name__icontains=search_text).exclude(removed=True).order_by('name')
             else:
-                patient_list = Patient.objects.filter(cpf__icontains=search_text).exclude(removed=True).order_by('name')
+                patient_list = \
+                    Patient.objects.filter(cpf__icontains=search_text).exclude(removed=True).order_by('name')
 
     return render_to_response('patient/ajax_search.html', {'patients': patient_list})
 
@@ -592,6 +606,7 @@ def search_patients_ajax(request):
 @login_required
 @permission_required('patient.view_patient')
 def patients_verify_homonym(request):
+    patient_homonym = None
     if request.method == "POST":
         search_text = request.POST['search_text']
         if search_text:
@@ -608,6 +623,7 @@ def patients_verify_homonym(request):
 @login_required
 @permission_required('patient.view_patient')
 def patients_verify_homonym_excluded(request):
+    patient_homonym_excluded = None
     if request.method == "POST":
         search_text = request.POST['search_text']
         if search_text:
@@ -984,12 +1000,12 @@ def patient_questionnaire_response_create(request, patient_id,
     surveys = Questionnaires()
 
     for questionnaire in questionnaires_list:
-        questionnaire.sid = questionnaire.lime_survey_id
-        questionnaire.surveyls_title = surveys.get_survey_title(questionnaire.lime_survey_id)
+        questionnaire.sid = questionnaire.survey.lime_survey_id
+        questionnaire.surveyls_title = surveys.get_survey_title(questionnaire.survey.lime_survey_id)
 
     for questionnaire in unused_questionnaires_list:
-        questionnaire.sid = questionnaire.lime_survey_id
-        questionnaire.surveyls_title = surveys.get_survey_title(questionnaire.lime_survey_id)
+        questionnaire.sid = questionnaire.survey.lime_survey_id
+        questionnaire.surveyls_title = surveys.get_survey_title(questionnaire.survey.lime_survey_id)
 
     surveys.release_session_key()
 
@@ -1013,7 +1029,7 @@ def patient_questionnaire_response_create(request, patient_id,
             questionnaire = get_object_or_404(Questionnaire, lime_survey_id=request.POST['questionnaire_selected'])
 
             surveys = Questionnaires()
-            questionnaire_title = surveys.get_survey_title(questionnaire.lime_survey_id)
+            questionnaire_title = surveys.get_survey_title(questionnaire.survey.lime_survey_id)
             surveys.release_session_key()
 
             redirect_url, questionnaire_response_id = \
@@ -1036,8 +1052,8 @@ def patient_questionnaire_response_create(request, patient_id,
             surveys = Questionnaires()
 
             added_questionnaire = {
-                'sid': questionnaire.lime_survey_id,
-                'surveyls_title': surveys.get_survey_title(questionnaire.lime_survey_id)
+                'sid': questionnaire.survey.lime_survey_id,
+                'surveyls_title': surveys.get_survey_title(questionnaire.survey.lime_survey_id)
             }
             surveys.release_session_key()
 
@@ -1080,11 +1096,14 @@ def patient_questionnaire_response_update(request, patient_questionnaire_respons
                                                        pk=patient_questionnaire_response_id)
 
     surveys = Questionnaires()
-    survey_title = surveys.get_survey_title(patient_questionnaire_response.questionnaire.lime_survey_id)
-    survey_active = surveys.get_survey_properties(patient_questionnaire_response.questionnaire.lime_survey_id, 'active')
-    survey_completed = (surveys.get_participant_properties(patient_questionnaire_response.questionnaire.lime_survey_id,
-                                                           patient_questionnaire_response.token_id,
-                                                           "completed") != "N")
+    survey_title = surveys.get_survey_title(patient_questionnaire_response.questionnaire.survey.lime_survey_id)
+    survey_active = surveys.get_survey_properties(
+        patient_questionnaire_response.questionnaire.survey.lime_survey_id,
+        'active')
+    survey_completed = (surveys.get_participant_properties(
+        patient_questionnaire_response.questionnaire.survey.lime_survey_id,
+        patient_questionnaire_response.token_id,
+        "completed") != "N")
     surveys.release_session_key()
 
     patient = get_object_or_404(Patient, pk=patient_questionnaire_response.patient_id)
@@ -1112,7 +1131,7 @@ def patient_questionnaire_response_update(request, patient_questionnaire_respons
         elif request.POST['action'] == "remove":
             surveys = Questionnaires()
             result = surveys.delete_participant(
-                patient_questionnaire_response.questionnaire.lime_survey_id,
+                patient_questionnaire_response.questionnaire.survey.lime_survey_id,
                 patient_questionnaire_response.token_id)
             surveys.release_session_key()
 
@@ -1175,22 +1194,22 @@ def patient_questionnaire_response_start_fill_questionnaire(request, patient_id,
 
         patient = get_object_or_404(Patient, pk=patient_id)
 
-        if not questionnaire_lime_survey.survey_has_token_table(questionnaire.lime_survey_id):
+        if not questionnaire_lime_survey.survey_has_token_table(questionnaire.survey.lime_survey_id):
             messages.warning(request,
                              'Preenchimento não disponível - Tabela de tokens não iniciada')
             return None, None
 
-        if questionnaire_lime_survey.get_survey_properties(questionnaire.lime_survey_id, 'active') == 'N':
+        if questionnaire_lime_survey.get_survey_properties(questionnaire.survey.lime_survey_id, 'active') == 'N':
             messages.warning(request,
                              'Preenchimento não disponível - Questionário não está ativo')
             return None, None
 
-        if not check_required_fields(questionnaire_lime_survey, questionnaire.lime_survey_id):
+        if not check_required_fields(questionnaire_lime_survey, questionnaire.survey.lime_survey_id):
             messages.warning(request,
                              'Preenchimento não disponível - Questionário não contém campos padronizados')
             return None, None
 
-        result = questionnaire_lime_survey.add_participant(questionnaire.lime_survey_id, patient.name, '',
+        result = questionnaire_lime_survey.add_participant(questionnaire.survey.lime_survey_id, patient.name, '',
                                                            patient.email)
 
         questionnaire_lime_survey.release_session_key()
@@ -1256,17 +1275,50 @@ def check_required_fields(surveys, lime_survey_id):
 def get_limesurvey_response_url(patient_questionnaire_response):
     questionnaire_lime_survey = Questionnaires()
     token = questionnaire_lime_survey.get_participant_properties(
-        patient_questionnaire_response.questionnaire.lime_survey_id,
+        patient_questionnaire_response.questionnaire.survey.lime_survey_id,
         patient_questionnaire_response.token_id, "token")
     questionnaire_lime_survey.release_session_key()
 
     redirect_url = \
         '%s/index.php/%s/token/%s/responsibleid/%s/acquisitiondate/%s/subjectid/%s/newtest/Y' % (
             settings.LIMESURVEY['URL_WEB'],
-            patient_questionnaire_response.questionnaire.lime_survey_id,
+            patient_questionnaire_response.questionnaire.survey.lime_survey_id,
             token,
             str(patient_questionnaire_response.questionnaire_responsible.id),
             patient_questionnaire_response.date.strftime('%d-%m-%Y'),
             str(patient_questionnaire_response.patient.id))
 
     return redirect_url
+
+
+@login_required
+# TODO: associate the right permission
+# @permission_required('patient.add_medicalrecorddata')
+def patient_questionnaire_response_view(request, patient_questionnaire_response_id,
+                                        template_name="experiment/subject_questionnaire_response_view.html"):
+
+    view = request.GET['view']
+
+    status_mode = None
+
+    if 'status' in request.GET:
+        status_mode = request.GET['status']
+
+    patient_questionnaire_response = get_object_or_404(PatientQuestionnaireResponse,
+                                                       id=patient_questionnaire_response_id)
+
+    lime_survey_id = patient_questionnaire_response.questionnaire.survey.lime_survey_id
+    token_id = patient_questionnaire_response.token_id
+    language_code = request.LANGUAGE_CODE
+
+    survey_title, questionnaire_responses = get_questionnaire_responses(language_code, lime_survey_id, token_id)
+
+    context = {
+        "questionnaire_responses": questionnaire_responses,
+        "survey_title": survey_title,
+        "patient_questionnaire_response": patient_questionnaire_response,
+        "view": view,
+        "status_mode": status_mode
+    }
+
+    return render(request, template_name, context)

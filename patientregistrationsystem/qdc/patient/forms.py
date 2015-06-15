@@ -4,7 +4,8 @@ from django.forms.widgets import Textarea
 from cep.widgets import CEPInput
 from django.utils.translation import ugettext_lazy as _
 
-from patient.models import Patient, Telephone, SocialDemographicData, SocialHistoryData, ComplementaryExam, ExamFile
+from patient.models import Patient, Telephone, SocialDemographicData, SocialHistoryData, ComplementaryExam, ExamFile, \
+    PatientQuestionnaireResponse
 from patient.quiz_widget import SelectBoxCountries, SelectBoxState
 
 # pylint: disable=E1101
@@ -145,3 +146,16 @@ class ExamFileForm(ModelForm):
     class Meta:
         model = ExamFile
         fields = ['content']
+
+
+class PatientQuestionnaireResponseForm(ModelForm):
+    class Meta:
+        model = PatientQuestionnaireResponse
+        fields = [
+            'date',
+        ]
+
+        widgets = {
+            'date': DateInput(attrs={'class': 'form-control datepicker', 'placeholder': 'dd/mm/aaaa', 'required': "",
+                                     'data-error': "Data de preenchimento deve ser preenchida"}, )
+        }
