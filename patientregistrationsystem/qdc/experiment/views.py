@@ -903,7 +903,7 @@ def check_required_fields(surveys, lime_survey_id):
 @permission_required('experiment.view_questionnaireresponse')
 def questionnaire_response_view(request, questionnaire_response_id,
                                 template_name="experiment/subject_questionnaire_response_view.html"):
-    view = request.GET['view']
+    origin = get_origin(request)
 
     status_mode = None
 
@@ -911,20 +911,23 @@ def questionnaire_response_view(request, questionnaire_response_id,
         status_mode = request.GET['status']
 
     questionnaire_response = get_object_or_404(QuestionnaireResponse, id=questionnaire_response_id)
-    questionnaire_configuration = questionnaire_response.questionnaire_configuration
-
-    lime_survey_id = questionnaire_configuration.lime_survey_id
+    questionnaire_configuration = questionnaire_response.component_configuration
+    questionnaire = Questionnaire.objects.get(id=questionnaire_configuration.component.id)
+    lime_survey_id = questionnaire.lime_survey_id
     token_id = questionnaire_response.token_id
     language_code = request.LANGUAGE_CODE
 
+    # Get the responses for each question of the questionnaire.
     survey_title, questionnaire_responses = get_questionnaire_responses(language_code, lime_survey_id, token_id)
 
     context = {
-        "questionnaire_responses": questionnaire_responses,
-        "survey_title": survey_title,
+        "group": questionnaire_response.subject_of_group.group,
         "questionnaire_response": questionnaire_response,
-        "view": view,
-        "status_mode": status_mode
+        "questionnaire_responses": questionnaire_responses,
+        "status_mode": status_mode,
+        "subject": questionnaire_response.subject_of_group.subject,
+        "survey_title": survey_title,
+        "origin": origin,
     }
 
     return render(request, template_name, context)
@@ -1696,7 +1699,7 @@ def component_update(request, path_of_the_components):
 
     # It is not possible to edit the component fields while editing a component configuration.
     if component_configuration is not None:
-        if component_type != "questionnaire" and component_type != 'task' and component_type != 'task_experiment':
+        if specific_form is not None:
             for field in specific_form.fields:
                 specific_form.fields[field].widget.attrs['disabled'] = True
 
