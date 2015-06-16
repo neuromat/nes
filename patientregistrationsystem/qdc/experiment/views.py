@@ -1394,25 +1394,29 @@ def convert_to_string(duration_in_milliseconds):
 
 def calculate_block_duration(block):
     duration_value_in_milliseconds = 0
+    has_unlimited = False
 
     for component_configuration in block.children.all():
         component = component_configuration.component
 
         if component.component_type == 'block':
-            component_duration = calculate_block_duration(Block.objects.get(id=component.id))
+            component_duration, child_has_unlimited = calculate_block_duration(Block.objects.get(id=component.id))
+
+            if child_has_unlimited:
+                has_unlimited = True
         else:
             component_duration = convert_to_milliseconds(component.duration_value, component.duration_unit)
 
         if component_configuration.number_of_repetitions is None:
-            # TODO What to do with unlimited repetitions?
-            pass
+            # Considers the duration of only one execution of the component, but notifies parent about this.
+            has_unlimited = True
         else:
             interval_in_milliseconds = 0
 
-            if component_configuration.intervall_between_repetions_value is not None:
+            if component_configuration.interval_between_repetitions_value is not None:
                 interval_in_milliseconds = convert_to_milliseconds(
-                    component_configuration.intervall_between_repetions_value,
-                    component_configuration.intervall_between_repetions_unit)
+                    component_configuration.interval_between_repetitions_value,
+                    component_configuration.interval_between_repetitions_unit)
 
             component_duration = component_duration * component_configuration.number_of_repetitions + \
                 interval_in_milliseconds * (component_configuration.number_of_repetitions - 1)
@@ -1425,7 +1429,7 @@ def calculate_block_duration(block):
             if component_duration > duration_value_in_milliseconds:
                 duration_value_in_milliseconds = component_duration
 
-    return duration_value_in_milliseconds
+    return duration_value_in_milliseconds, has_unlimited
 
 
 def access_objects_for_view_and_update(request, path_of_the_components, updating=False):
@@ -1509,7 +1513,7 @@ def component_view(request, path_of_the_components):
     block_form = BlockForm(request.POST or None, instance=block)
     configuration_list, configuration_list_of_random_components = create_configuration_lists(block)
 
-    duration_value = calculate_block_duration(block)
+    duration_value, has_unlimited = calculate_block_duration(block)
     # Criate a string converting to appropriate units
     duration_string = convert_to_string(duration_value)
 
@@ -1567,6 +1571,7 @@ def component_view(request, path_of_the_components):
         "configuration_list_of_random_components": configuration_list_of_random_components,
         "experiment": experiment,
         "group": group,
+        "has_unlimited": has_unlimited,
         "icon_class": icon_class,
         "list_of_breadcrumbs": list_of_breadcrumbs,
         "path_of_the_components": path_of_the_components,
@@ -1636,6 +1641,7 @@ def component_update(request, path_of_the_components):
     configuration_list_of_random_components = []
     specific_form = None
     duration_string = None
+    has_unlimited = None
 
     if component_type == 'instruction':
         instruction = get_object_or_404(Instruction, pk=component.id)
@@ -1654,7 +1660,7 @@ def component_update(request, path_of_the_components):
         block = get_object_or_404(Block, pk=component.id)
         specific_form = BlockForm(request.POST or None, instance=block)
         configuration_list, configuration_list_of_random_components = create_configuration_lists(block)
-        duration_value = calculate_block_duration(block)
+        duration_value, has_unlimited = calculate_block_duration(block)
         # Criate a string converting to appropriate units
         duration_string = convert_to_string(duration_value)
 
@@ -1735,6 +1741,7 @@ def component_update(request, path_of_the_components):
         "icon_class": icon_class,
         "experiment": experiment,
         "group": group,
+        "has_unlimited": has_unlimited,
         "list_of_breadcrumbs": list_of_breadcrumbs,
         "path_of_the_components": path_of_the_components,
         "questionnaire_id": questionnaire_id,
@@ -1895,6 +1902,7 @@ def component_reuse(request, path_of_the_components, component_id):
     questionnaire_title = None
     specific_form = None
     duration_string = None
+    has_unlimited = None
 
     if component_type == 'instruction':
         instruction = get_object_or_404(Instruction, pk=component_to_add.id)
@@ -1912,7 +1920,7 @@ def component_reuse(request, path_of_the_components, component_id):
     elif component_type == 'block':
         sub_block = get_object_or_404(Block, pk=component_id)
         specific_form = BlockForm(request.POST or None, instance=sub_block)
-        duration_value = calculate_block_duration(sub_block)
+        duration_value, has_unlimited = calculate_block_duration(sub_block)
         # Create a string converting to appropriate units
         duration_string = convert_to_string(duration_value)
 
@@ -1962,6 +1970,7 @@ def component_reuse(request, path_of_the_components, component_id):
         "existing_component_list": existing_component_list,
         "experiment": experiment,
         "group": group,
+        "has_unlimited": has_unlimited,
         "list_of_breadcrumbs": list_of_breadcrumbs,
         "path_of_the_components": path_of_the_components,
         "questionnaire_id": questionnaire_id,

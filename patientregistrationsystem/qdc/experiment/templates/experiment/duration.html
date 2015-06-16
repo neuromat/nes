@@ -1,6 +1,11 @@
 <div class="col-xs-12 col-sm-5 col-sm-offset-1">
     {% if component_form.component_type == 'block' %}
-        <div data-toggle="tooltip" data-placement="left" title="Calculada a partir dos subpassos">
+        <div data-toggle="tooltip" data-placement="left"
+             {% if has_unlimited %}
+                title="Calculada a partir dos subpassos. Esse conjunto possui pelo menos um uso que permite repetições ilimitadas. Está sendo considerado apenas uma execução nesses casos."
+             {% else %}
+                title="Calculada a partir dos subpassos"
+             {% endif %}>
             <div class="col-xs-12 col-sm-12">
                 <label class="control-label">Duração</label>
             </div>
