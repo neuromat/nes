@@ -19,6 +19,7 @@ from experiment.abc_search_engine import Questionnaires
 from patient.tests import UtilTests
 from custom_user.views import User
 
+from survey.models import Survey
 
 LIME_SURVEY_TOKEN_ID_2 = 2
 
@@ -102,7 +103,7 @@ class ExperimentalProtocolTest(TestCase):
         # Check if redirected to list of components
         self.assertTrue("/experiment/" + str(experiment.id) + "/components" in response.url)
         self.assertTrue(TaskForTheExperimenter.objects.filter(description=description,
-                                                               identification=identification).exists())
+                                                              identification=identification).exists())
 
         self.data = {'action': 'save', 'identification': 'Instruction identification',
                      'description': 'Instruction description', 'text': 'Instruction text'}
@@ -211,7 +212,6 @@ class ExperimentalProtocolTest(TestCase):
             identification="Block identification").first().id)))
         self.assertEqual(response.status_code, 302)
         self.assertEqual(ComponentConfiguration.objects.count(), 2)
-
 
     def test_block_component_remove(self):
         experiment = Experiment.objects.first()
@@ -502,7 +502,7 @@ class ExperimentTest(TestCase):
         self.assertEqual(len(response.context['experiments']), 0)
 
         # cria um experimento
-        experiment_title="Experimento-1"
+        experiment_title = "Experimento-1"
         experiment = Experiment.objects.create(research_project_id=research_project.id,
                                                title=experiment_title,
                                                description="Descricao do Experimento-1")
@@ -646,12 +646,14 @@ class ListOfQuestionnaireFromExperimentalProtocolOfAGroupTest(TestCase):
         sid = self.lime_survey.add_survey(99999, survey_title, 'en', 'G')
 
         try:
+            new_survey, created = Survey.objects.get_or_create(lime_survey_id=sid)
+
             # Create a questionnaire
             questionnaire = Questionnaire.objects.create(identification='Questionnaire',
                                                          description='Questionnaire description',
                                                          experiment=Experiment.objects.first(),
                                                          component_type='questionnaire',
-                                                         lime_survey_id=sid)
+                                                         survey=new_survey)
             questionnaire.save()
 
             # Include the questionnaire in the root.
@@ -707,12 +709,14 @@ class ListOfQuestionnaireFromExperimentalProtocolOfAGroupTest(TestCase):
         sid = self.lime_survey.add_survey(99999, survey_title, 'en', 'G')
 
         try:
+            new_survey, created = Survey.objects.get_or_create(lime_survey_id=sid)
+
             # Create a questionnaire
             questionnaire = Questionnaire.objects.create(identification='Questionnaire',
                                                          description='Questionnaire description',
                                                          experiment=Experiment.objects.first(),
                                                          component_type='questionnaire',
-                                                         lime_survey_id=sid)
+                                                         survey = new_survey)
             questionnaire.save()
 
             # Include the questionnaire in the root.
@@ -768,12 +772,14 @@ class ListOfQuestionnaireFromExperimentalProtocolOfAGroupTest(TestCase):
         sid = self.lime_survey.add_survey(99999, survey_title, 'en', 'G')
 
         try:
+            new_survey, created = Survey.objects.get_or_create(lime_survey_id=sid)
+
             # Create a questionnaire
             questionnaire = Questionnaire.objects.create(identification='Questionnaire',
                                                          description='Questionnaire description',
                                                          experiment=Experiment.objects.first(),
                                                          component_type='questionnaire',
-                                                         lime_survey_id=sid)
+                                                         survey=new_survey)
             questionnaire.save()
 
             # Include the questionnaire in the root.
@@ -1324,8 +1330,7 @@ class ABCSearchEngineTest(TestCase):
 
         # token_id = participant_data_result[0]['tid']
         token_id = participant_data_result['token_id']
-        tokens_to_delete = []
-        tokens_to_delete.append(token_id)
+        tokens_to_delete = [token_id]
 
         # remover participante do questionario
         result = self.server.delete_participants(self.session_key, sid, [token_id])
@@ -1424,8 +1429,7 @@ class ABCSearchEngineTest(TestCase):
 
         # token_id = participant_data_result[0]['tid']
         token_id = participant_data_result['token_id']
-        tokens_to_delete = []
-        tokens_to_delete.append(token_id)
+        tokens_to_delete = [token_id]
 
         # remover participante do questionario
         result = surveys.delete_participant(sid, token_id)
@@ -1523,7 +1527,8 @@ class ResearchProjectTest(TestCase):
 
         self.data = {'action': 'remove', 'title': 'Research project title',
                      'description': 'Research project description'}
-        response = self.client.post(reverse('research_project_view', args=(research_project.pk,)), self.data, follow=True)
+        response = self.client.post(reverse('research_project_view', args=(research_project.pk,)),
+                                    self.data, follow=True)
         self.assertEqual(response.status_code, 200)
 
         # Check if numeber of reserch projets decreased by 1
@@ -1556,12 +1561,13 @@ class ResearchProjectTest(TestCase):
 
         # Create a second research project to be used in the test
         research_project2 = ResearchProject.objects.create(title="Research project 2",
-                                                          start_date=datetime.date.today(),
-                                                          description="Research project description")
+                                                           start_date=datetime.date.today(),
+                                                           description="Research project description")
         research_project2.save()
 
         # Insert keyword
-        response = self.client.get(reverse('keyword_new', args=(research_project2.pk, "third_test_keyword")), follow=True)
+        response = self.client.get(reverse('keyword_new', args=(research_project2.pk, "third_test_keyword")),
+                                   follow=True)
         self.assertEqual(response.status_code, 200)
         self.assertEqual(Keyword.objects.all().count(), 3)
         self.assertEqual(research_project2.keywords.count(), 1)
@@ -1588,7 +1594,6 @@ class ResearchProjectTest(TestCase):
         response = self.client.get(url)
         self.assertEqual(response.status_code, 302)
         self.assertEqual(research_project2.keywords.count(), 3)
-
 
         # Remove keyword that is also in another research project
         response = self.client.get(reverse('keyword_remove', args=(research_project2.pk, keyword.id)), follow=True)

@@ -9,7 +9,13 @@ from django.utils.translation import ugettext as _
 from django.contrib.auth.models import User
 from simple_history.models import HistoricalRecords
 
+from survey.models import Survey
 from patient.validation import CPF
+
+
+def validate_date_questionnaire_response(value):
+    if value > datetime.date.today():
+        raise ValidationError('Data de preenchimento não pode ser maior que a data de hoje.')
 
 
 # Valida CPF
@@ -346,3 +352,21 @@ class ExamFile(models.Model):
     def delete(self, *args, **kwargs):
         self.content.delete()
         super(ExamFile, self).delete(*args, **kwargs)
+
+
+class QuestionnaireResponse(models.Model):
+    patient = models.ForeignKey(Patient, null=False)
+
+    survey = models.ForeignKey(Survey, null=False)
+
+    token_id = models.IntegerField(null=False)
+    date = models.DateField(default=datetime.date.today, null=False, validators=[validate_date_questionnaire_response])
+    questionnaire_responsible = models.ForeignKey(User, null=False, related_name="+")
+
+    class Meta:
+        permissions = (
+            ("view_questionnaireresponse", "Can view questionnaire response"),
+        )
+
+    def __unicode__(self):  # Python 3: def __str__(self):
+        return "token id: " + str(self.token_id)

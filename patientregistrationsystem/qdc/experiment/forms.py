@@ -1,6 +1,6 @@
 # coding=utf-8
 from experiment.models import Experiment, QuestionnaireResponse, SubjectOfGroup, Group, \
-    Component, Stimulus, Block, Instruction, ComponentConfiguration, ResearchProject, PatientQuestionnaireResponse
+    Component, Stimulus, Block, Instruction, ComponentConfiguration, ResearchProject
 from django.forms import ModelForm, TextInput, Textarea, Select, DateInput, TypedChoiceField, RadioSelect,\
     ValidationError
 
@@ -42,19 +42,6 @@ class GroupForm(ModelForm):
 class QuestionnaireResponseForm(ModelForm):
     class Meta:
         model = QuestionnaireResponse
-        fields = [
-            'date',
-        ]
-
-        widgets = {
-            'date': DateInput(attrs={'class': 'form-control datepicker', 'placeholder': 'dd/mm/aaaa', 'required': "",
-                                     'data-error': "Data de preenchimento deve ser preenchida"}, )
-        }
-
-
-class PatientQuestionnaireResponseForm(ModelForm):
-    class Meta:
-        model = PatientQuestionnaireResponse
         fields = [
             'date',
         ]
