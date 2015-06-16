@@ -23,7 +23,7 @@
 
 {% block component_add_new %}
     <li role="presentation">
-        <a role="menuitem" tabindex="-1" href="/experiment/component/{{ path_of_the_components }}/add_new/block">
+        <a role="menuitem" tabindex="-1" href="/experiment/component/{{ path_of_the_components }}/add_new/block?position={{ position }}">
             << Novo conjunto de passos >>
         </a>
     </li>
@@ -162,6 +162,22 @@
                             </tbody>
                         </table>
                     </div>
+
+                    {% if not component_configuration %}
+                        <div class="dropdown">
+                            <button class="btn btn-primary dropdown-toggle" type="button" id="dropdownMenu1" data-toggle="dropdown" aria-expanded="true">
+                                Inserir passo
+                                <span class="caret"></span>
+                            </button>
+                            <ul class="dropdown-menu" role="menu" aria-labelledby="dropdownMenu1">
+                                {% for type, type_name, icon in component_type_choices %}
+                                    <li role="presentation"><a role="menuitem" tabindex="-1" class="{{ icon }}" href="/experiment/component/{{ path_of_the_components }}/add_new/{{ type }}{% if component.type == "sequence" %}?position=fixed{% endif %}"> {{ type_name }}</a></li>
+                                {% endfor %}
+                            </ul>
+                        </div>
+                        </br>
+                    {% endif %}
+
                 </div>
 
                 {% if component.type == "sequence" %}
@@ -228,22 +244,23 @@
                                 </tbody>
                             </table>
                         </div>
-                    </div>
-                {% endif %}
 
-                {% if not component_configuration %}
-                    <div class="dropdown">
-                        <button class="btn btn-primary dropdown-toggle" type="button" id="dropdownMenu1" data-toggle="dropdown" aria-expanded="true">
-                            Inserir passo ao conjunto
-                            <span class="caret"></span>
-                        </button>
-                        <ul class="dropdown-menu" role="menu" aria-labelledby="dropdownMenu1">
-                            {% for type, type_name, icon in component_type_choices %}
-                                <li role="presentation"><a role="menuitem" tabindex="-1" class="{{ icon }}" href="/experiment/component/{{ path_of_the_components }}/add_new/{{ type }}"> {{ type_name }}</a></li>
-                            {% endfor %}
-                        </ul>
+                        {% if not component_configuration %}
+                            <div class="dropdown">
+                                <button class="btn btn-primary dropdown-toggle" type="button" id="dropdownMenu1" data-toggle="dropdown" aria-expanded="true">
+                                    Inserir passo
+                                    <span class="caret"></span>
+                                </button>
+                                <ul class="dropdown-menu" role="menu" aria-labelledby="dropdownMenu1">
+                                    {% for type, type_name, icon in component_type_choices %}
+                                        <li role="presentation"><a role="menuitem" tabindex="-1" class="{{ icon }}" href="/experiment/component/{{ path_of_the_components }}/add_new/{{ type }}?position=random"> {{ type_name }}</a></li>
+                                    {% endfor %}
+                                </ul>
+                            </div>
+                            </br>
+                        {% endif %}
+
                     </div>
-                    </br>
                 {% endif %}
             </div>
         </div>

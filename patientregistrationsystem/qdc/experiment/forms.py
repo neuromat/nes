@@ -2,7 +2,7 @@
 from experiment.models import Experiment, QuestionnaireResponse, SubjectOfGroup, Group, \
     Component, Stimulus, Block, Instruction, ComponentConfiguration, ResearchProject
 from django.forms import ModelForm, TextInput, Textarea, Select, DateInput, TypedChoiceField, RadioSelect,\
-    ValidationError
+    ValidationError, Form, IntegerField, NumberInput
 
 
 class ExperimentForm(ModelForm):
@@ -203,3 +203,9 @@ class ResearchProjectForm(ModelForm):
             del cleaned_data["start_date"]
 
         return cleaned_data
+
+
+class NumberOfUsesToInsertForm(Form):
+    number_of_uses_to_insert = IntegerField(label='Number of uses to insert', min_value=1, initial=1,
+                                            widget=NumberInput(attrs={'class': 'form-control', 'required': "",
+                                                                      'data-error': 'Quantidade deve ser preenchida.'}))

@@ -110,7 +110,7 @@
                                 {% if existing_component_list %}
                                     <ul class="dropdown-menu" role="menu" aria-labelledby="dropdownMenu1">
                                         {% for existing_component in existing_component_list %}
-                                            <li role="presentation"><a role="menuitem" tabindex="-1" href="/experiment/component/{% if path_of_the_components %}{{ path_of_the_components }}{% else %}{{ component.id }}{% endif %}/add/{{ existing_component.id }}">{{ existing_component.identification }}</a></li>
+                                            <li role="presentation"><a role="menuitem" tabindex="-1" href="/experiment/component/{% if path_of_the_components %}{{ path_of_the_components }}{% else %}{{ component.id }}{% endif %}/add/{{ existing_component.id }}{% if position%}?position={{ position }}{% endif %}">{{ existing_component.identification }}</a></li>
                                         {% endfor %}
 
                                         <li role="presentation" class="divider"></li>
@@ -143,7 +143,7 @@
                     <div class="col-xs-12 col-sm-12">
                         <div class="form-group">
                             <label class="control-label" for="description">Descrição</label>
-                                {{ component_form.description }}
+                            {{ component_form.description }}
                             <div class="help-block with-errors"></div>
                         </div>
                     </div>
@@ -170,14 +170,22 @@
             </div>
 
             {% if can_reuse or reusing %}
-                <div class="container span6 offset3 well ">
-                    <div class="row">
-                        <div class="col-xs-12 col-sm-12">
-                            <h4>Quantidade de usos a inserir</h4>
-{#                            TODO Include a integer field #}
+                {% if not is_configuring_new_experimental_protocol %}
+                    <div class="container span6 offset3 well ">
+                        <div class="row">
+                            <div class="col-xs-12 col-sm-12">
+                                <h4>Quantidade de usos a inserir <b style="color: red;">*</b></h4>
+                            </div>
+                            <div class="col-xs-6 col-sm-2">
+                                <div class="form-group">
+{#                                    <label class="control-label" for="number_of_uses_to_insert">Quantidade de usos a inserir <b style="color: red;">*</b></label>#}
+                                    {{ number_of_uses_form.number_of_uses_to_insert }}
+                                    <div class="help-block with-errors"></div>
+                                </div>
+                            </div>
                         </div>
                     </div>
-                </div>
+                {% endif %}
             {% endif %}
 
 

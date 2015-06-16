@@ -185,14 +185,16 @@ class ExperimentalProtocolTest(TestCase):
         block.save()
 
         # Add a new component to the parent
-        self.data = {'action': 'save', 'identification': 'Block identification',
-                     'description': 'Block description', 'type': 'sequence'}
+        self.data = {'action': 'save',
+                     'identification': 'Block identification',
+                     'description': 'Block description',
+                     'type': 'sequence',
+                     'number_of_uses_to_insert': 1}
         response = self.client.post(reverse("component_add_new", args=(block.id, "block")), self.data)
         self.assertEqual(response.status_code, 302)
         component_configuration = ComponentConfiguration.objects.first()
-        # Check if redirected to edit configuration
-        self.assertTrue("/experiment/component/edit/" + str(block.id) + "-U" + str(component_configuration.id) in
-                        response.url)
+        # Check if redirected to view parent set of steps
+        self.assertTrue("/experiment/component/" + str(block.id) in response.url)
         self.assertTrue(Block.objects.filter(identification="Block identification").exists())
         self.assertEqual(component_configuration.parent.id, block.id)
         self.assertEqual(component_configuration.order, 1)
@@ -207,11 +209,12 @@ class ExperimentalProtocolTest(TestCase):
         # Check if redirected to view block
         self.assertTrue("/experiment/component/" + str(block.id) in response.url)
 
-        # Add an existing component to the parent
+        # Add 3 uses of an existing component to the parent
+        self.data = {'number_of_uses_to_insert': 3}
         response = self.client.post(reverse("component_reuse", args=(block.id, Block.objects.filter(
-            identification="Block identification").first().id)))
+            identification="Block identification").first().id)), self.data)
         self.assertEqual(response.status_code, 302)
-        self.assertEqual(ComponentConfiguration.objects.count(), 2)
+        self.assertEqual(ComponentConfiguration.objects.count(), 4)
 
     def test_block_component_remove(self):
         experiment = Experiment.objects.first()

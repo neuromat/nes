@@ -17,7 +17,7 @@ from experiment.models import Experiment, Subject, QuestionnaireResponse, Subjec
     ComponentConfiguration, Questionnaire, Task, Stimulus, Pause, Instruction, Block, \
     TaskForTheExperimenter, ClassificationOfDiseases, ResearchProject, Keyword
 from experiment.forms import ExperimentForm, QuestionnaireResponseForm, FileForm, GroupForm, InstructionForm, \
-    ComponentForm, StimulusForm, BlockForm, ComponentConfigurationForm, ResearchProjectForm
+    ComponentForm, StimulusForm, BlockForm, ComponentConfigurationForm, ResearchProjectForm, NumberOfUsesToInsertForm
 from patient.models import Patient
 from experiment.abc_search_engine import Questionnaires
 
@@ -861,6 +861,16 @@ def get_origin(request):
     return origin
 
 
+def get_position(request):
+    position = None
+
+    # position is in request.GET also when the request is a post!
+    if 'position' in request.GET:
+        position = request.GET['position']
+
+    return position
+
+
 def check_required_fields(surveys, lime_survey_id):
     """
     método para verificar se o questionário tem as questões de identificação corretas
@@ -1560,6 +1570,11 @@ def component_view(request, path_of_the_components):
     for type_element, type_name in Component.COMPONENT_TYPES:
         component_type_choices.append((type_element, type_name, icon_class.get(type_element)))
 
+    # This value is used to define if the options Fixed/Radon should be shown.
+    type_of_the_parent_block = None
+    if component_configuration is not None:
+        type_of_the_parent_block = Block.objects.get(id=component_configuration.parent_id).type
+
     context = {
         "back_cancel_url": back_cancel_url,
         "block_duration": duration_string,
@@ -1577,7 +1592,7 @@ def component_view(request, path_of_the_components):
         "path_of_the_components": path_of_the_components,
         "show_remove": show_remove,
         "specific_form": block_form,
-        "type_of_the_parent_block": block.type,
+        "type_of_the_parent_block": type_of_the_parent_block,
         "component_type_choices": component_type_choices,
     }
 
@@ -1787,8 +1802,8 @@ def access_objects_for_add_new_and_reuse(component_type, path_of_the_components)
         back_cancel_url = "/experiment/component/" + path_of_the_components
 
     return \
-        existing_component_list, experiment, group, list_of_breadcrumbs, \
-        block, template_name, specific_form, list_of_ids_of_components_and_configurations, back_cancel_url
+        existing_component_list, experiment, group, list_of_breadcrumbs, block, template_name, specific_form, \
+        list_of_ids_of_components_and_configurations, back_cancel_url
 
 
 @login_required
@@ -1798,9 +1813,21 @@ def component_add_new(request, path_of_the_components, component_type):
         specific_form, list_of_ids_of_components_and_configurations, back_cancel_url = \
         access_objects_for_add_new_and_reuse(component_type, path_of_the_components)
 
+    # Fixed or random
+    position = get_position(request)
+
     component_form = ComponentForm(request.POST or None)
     # This is needed for the form to be able to validate the presence of a duration in a pause component only.
     component_form.component_type = component_type
+
+    # Check if we are configuring a new experimental protocol
+    is_configuring_new_experimental_protocol =\
+        group is not None and len(list_of_ids_of_components_and_configurations) == 1
+
+    number_of_uses_form = None
+
+    if not is_configuring_new_experimental_protocol:
+        number_of_uses_form = NumberOfUsesToInsertForm(request.POST or None)
 
     questionnaires_list = []
     specific_form = None
@@ -1833,28 +1860,18 @@ def component_add_new(request, path_of_the_components, component_type):
 
         if component_form.is_valid():
             component = component_form.save(commit=False)
-            new_specific_component.description = component.description
-            new_specific_component.identification = component.identification
-            new_specific_component.component_type = component_type
             new_specific_component.experiment = experiment
-            new_specific_component.save()
+            new_specific_component.component_type = component_type
+            new_specific_component.identification = component.identification
+            new_specific_component.description = component.description
+            new_specific_component.duration_value = component.duration_value
+            new_specific_component.duration_unit = component.duration_unit
+            # new_specific_component is not saved until later.
 
-            # Check if we are configuring a new experimental protocol, which does not have a component configuration.
-            if group is None or len(list_of_ids_of_components_and_configurations) > 1:
-                new_configuration = ComponentConfiguration()
-                new_configuration.component = new_specific_component
-                new_configuration.parent = block
-
-                if block.type == 'sequence':
-                    new_configuration.random_position = False
-
-                new_configuration.save()
-
-                messages.success(request, 'Passo incluído com sucesso.')
-
-                redirect_url = reverse("component_edit",
-                                       args=(path_of_the_components + "-U" + str(new_configuration.id), ))
-            else:
+            # If this is a new component for creating the root of a group's experimental protocol, no
+            # component_configuration has to be created.
+            if is_configuring_new_experimental_protocol:
+                new_specific_component.save()
                 group.experimental_protocol = new_specific_component
                 group.save()
 
@@ -1862,8 +1879,33 @@ def component_add_new(request, path_of_the_components, component_type):
 
                 redirect_url = reverse("component_view",
                                        args=(path_of_the_components + "-" + str(new_specific_component.id), ))
+                return HttpResponseRedirect(redirect_url)
+            else:
+                if number_of_uses_form.is_valid():
+                    new_specific_component.save()
+                    number_of_uses = number_of_uses_form.cleaned_data['number_of_uses_to_insert']
 
-            return HttpResponseRedirect(redirect_url)
+                    for i in range(number_of_uses):
+                        new_configuration = ComponentConfiguration()
+                        new_configuration.component = new_specific_component
+                        new_configuration.parent = block
+
+                        if position is not None:
+                            if position == 'random':
+                                new_configuration.random_position = True
+                            else:  # position == 'fixed'
+                                new_configuration.random_position = False
+
+                        new_configuration.save()
+
+                    if number_of_uses > 1:
+                        messages.success(request, 'Passos incluídos com sucesso.')
+                    else:
+                        messages.success(request, 'Passo incluído com sucesso.')
+
+                    redirect_url = reverse("component_view", args=(path_of_the_components, ))
+
+                    return HttpResponseRedirect(redirect_url)
 
     context = {
         "back_cancel_url": back_cancel_url,
@@ -1875,7 +1917,10 @@ def component_add_new(request, path_of_the_components, component_type):
         "existing_component_list": existing_component_list,
         "experiment": experiment,
         "group": group,
+        "is_configuring_new_experimental_protocol": is_configuring_new_experimental_protocol,
         "list_of_breadcrumbs": list_of_breadcrumbs,
+        "number_of_uses_form": number_of_uses_form,
+        "position": position,
         "questionnaires_list": questionnaires_list,
         "path_of_the_components": path_of_the_components,
         "specific_form": specific_form,
@@ -1890,13 +1935,25 @@ def component_reuse(request, path_of_the_components, component_id):
     component_to_add = get_object_or_404(Component, pk=component_id)
     component_type = component_to_add.component_type
 
-    existing_component_list, experiment, group, list_of_breadcrumbs, block, template_name,\
-        specific_form, list_of_ids_of_components_and_configurations, back_cancel_url = \
+    existing_component_list, experiment, group, list_of_breadcrumbs, block, template_name, specific_form, \
+    list_of_ids_of_components_and_configurations, back_cancel_url = \
         access_objects_for_add_new_and_reuse(component_type, path_of_the_components)
+
+    # Fixed or random
+    position = get_position(request)
 
     component_form = ComponentForm(request.POST or None, instance=component_to_add)
     # This is needed for the form to be able to validate the presence of a duration in a pause component only.
     component_form.component_type = component_type
+
+    # Check if we are configuring a new experimental protocol
+    is_configuring_new_experimental_protocol =\
+        group is not None and len(list_of_ids_of_components_and_configurations) == 1
+
+    number_of_uses_form = None
+
+    if not is_configuring_new_experimental_protocol:
+        number_of_uses_form = NumberOfUsesToInsertForm(request.POST or None)
 
     questionnaire_id = None
     questionnaire_title = None
@@ -1936,30 +1993,43 @@ def component_reuse(request, path_of_the_components, component_id):
                 specific_form.fields[field].widget.attrs['disabled'] = True
 
     if request.method == "POST":
-        if len(list_of_ids_of_components_and_configurations) == 1 and path_of_the_components[0] == "G":
-            # If this is a reuse for creating the root of a group's experimental protocol, no component_configuration
-            # has to be created.
+        # If this is a reuse for creating the root of a group's experimental protocol, no component_configuration
+        # has to be created.
+        if is_configuring_new_experimental_protocol:
             group = Group.objects.get(id=path_of_the_components[1:])
             group.experimental_protocol = component_to_add
             group.save()
 
             redirect_url = reverse("component_view",
                                    args=(path_of_the_components + "-" + str(component_to_add.id), ))
+
+            messages.success(request, 'Passo incluído com sucesso.')
+            return HttpResponseRedirect(redirect_url)
         else:
-            new_configuration = ComponentConfiguration()
-            new_configuration.component = component_to_add
-            new_configuration.parent = block
+            if number_of_uses_form.is_valid():
+                number_of_uses = number_of_uses_form.cleaned_data['number_of_uses_to_insert']
 
-            if block.type == 'sequence':
-                new_configuration.random_position = False
+                for i in range(number_of_uses):
+                    new_configuration = ComponentConfiguration()
+                    new_configuration.component = component_to_add
+                    new_configuration.parent = block
 
-            new_configuration.save()
+                    if position is not None:
+                        if position == 'random':
+                            new_configuration.random_position = True
+                        else:  # position == 'fixed'
+                            new_configuration.random_position = False
 
-            redirect_url = reverse("component_edit",
-                                   args=(path_of_the_components + "-U" + str(new_configuration.id), ))
+                    new_configuration.save()
 
-        messages.success(request, 'Passo incluído com sucesso.')
-        return HttpResponseRedirect(redirect_url)
+                redirect_url = reverse("component_view", args=(path_of_the_components, ))
+
+                if number_of_uses > 1:
+                    messages.success(request, 'Passos incluídos com sucesso.')
+                else:
+                    messages.success(request, 'Passo incluído com sucesso.')
+
+                return HttpResponseRedirect(redirect_url)
 
     context = {
         "back_cancel_url": back_cancel_url,
@@ -1971,8 +2041,11 @@ def component_reuse(request, path_of_the_components, component_id):
         "experiment": experiment,
         "group": group,
         "has_unlimited": has_unlimited,
+        "is_configuring_new_experimental_protocol": is_configuring_new_experimental_protocol,
         "list_of_breadcrumbs": list_of_breadcrumbs,
+        "number_of_uses_form": number_of_uses_form,
         "path_of_the_components": path_of_the_components,
+        "position": position,
         "questionnaire_id": questionnaire_id,
         "questionnaire_title": questionnaire_title,
         "reusing": True,
