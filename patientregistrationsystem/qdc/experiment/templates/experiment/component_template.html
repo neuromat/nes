@@ -169,6 +169,18 @@
                 {% endif %}
             </div>
 
+            {% if can_reuse or reusing %}
+                <div class="container span6 offset3 well ">
+                    <div class="row">
+                        <div class="col-xs-12 col-sm-12">
+                            <h4>Quantidade de usos a inserir</h4>
+{#                            TODO Include a integer field #}
+                        </div>
+                    </div>
+                </div>
+            {% endif %}
+
+
             {% if component_configuration %}
                 <div class="container span6 offset3 well ">
                     <div class="row">
@@ -259,8 +271,8 @@
                 {% if updating or creating or component_configuration %}
                     <div class="btn-group pull-right">
                         <button type="submit" name="action" value="save" class="btn btn-primary" id="submit_button">
-                            {% if reusing %}
-                                Usar
+                            {% if reusing or can_reuse %}
+                                Inserir
                             {% else %}
                                 Salvar
                             {% endif %}

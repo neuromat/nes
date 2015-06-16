@@ -1598,6 +1598,20 @@ def calculate_block_duration(block):
         else:
             component_duration = convert_to_milliseconds(component.duration_value, component.duration_unit)
 
+        if component_configuration.number_of_repetitions is None:
+            # TODO What to do with unlimited repetitions?
+            pass
+        else:
+            interval_in_milliseconds = 0
+
+            if component_configuration.intervall_between_repetions_value is not None:
+                interval_in_milliseconds = convert_to_milliseconds(
+                    component_configuration.intervall_between_repetions_value,
+                    component_configuration.intervall_between_repetions_unit)
+
+            component_duration = component_duration * component_configuration.number_of_repetitions + \
+                interval_in_milliseconds * (component_configuration.number_of_repetitions - 1)
+
         if block.type == Block.SEQUENCE:
             # Add duration of the children
             duration_value_in_milliseconds += component_duration
