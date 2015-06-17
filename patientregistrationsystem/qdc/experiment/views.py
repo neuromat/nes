@@ -1936,7 +1936,7 @@ def component_reuse(request, path_of_the_components, component_id):
     component_type = component_to_add.component_type
 
     existing_component_list, experiment, group, list_of_breadcrumbs, block, template_name, specific_form, \
-    list_of_ids_of_components_and_configurations, back_cancel_url = \
+        list_of_ids_of_components_and_configurations, back_cancel_url = \
         access_objects_for_add_new_and_reuse(component_type, path_of_the_components)
 
     # Fixed or random

@@ -126,8 +126,10 @@ class ComponentConfigurationForm(ModelForm):
             'interval_between_repetitions_value': TextInput(attrs={'class': 'form-control', 'required': "",
                                                                    'data-error': 'Intervalo deve ser preenchido',
                                                                    'placeholder': 'Tempo'}),
-            'interval_between_repetitions_unit': Select(attrs={'class': 'form-control', 'required': "",
-                                                               'data-error': 'Unidade do intervalo deve ser preenchida'}),
+            'interval_between_repetitions_unit': Select(
+                attrs={'class': 'form-control',
+                       'required': "",
+                       'data-error': 'Unidade do intervalo deve ser preenchida'}),
         }
 
 

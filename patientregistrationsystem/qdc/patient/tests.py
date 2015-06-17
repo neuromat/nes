@@ -287,12 +287,10 @@ class PatientFormValidation(TestCase):
 
         self.assertEqual(Patient.objects.filter(name=name).count(), 1)
 
-
     def fill_management_form(self):
         self.data['telephone_set-TOTAL_FORMS'] = '3'
         self.data['telephone_set-INITIAL_FORMS'] = '0'
         self.data['telephone_set-MAX_NUM_FORMS'] = ''
-
 
     def test_patient_create(self):
         """
@@ -311,7 +309,6 @@ class PatientFormValidation(TestCase):
         self.data['currentTab'] = 0
         self.client.post(reverse(PATIENT_NEW), self.data, follow=True)
         self.assertEqual(Patient.objects.filter(name=name).count(), 1)
-
 
     def fill_social_demographic_data(self):
         """ Criar uma opcao de Schooling """
@@ -333,7 +330,6 @@ class PatientFormValidation(TestCase):
         self.data['bath'] = '1'
         self.data['radio'] = '1'
         self.data['automobile'] = '1'
-
 
     def test_patient_social_demographic_data(self):
         """
@@ -373,7 +369,6 @@ class PatientFormValidation(TestCase):
         self.assertEqual(Patient.objects.filter(name=name).count(), 1)
         self.assertContains(response, u'Classe Social não calculada')
 
-
     def fill_social_history_data(self):
         amount_cigarettes = AmountCigarettes.objects.create(name='Menos de 1 maço')
         amount_cigarettes.save()
@@ -391,7 +386,6 @@ class PatientFormValidation(TestCase):
         self.data['alcohol_frequency'] = alcohol_frequency.pk
         self.data['alcohol_period'] = alcohol_period.pk
         self.data['drugs'] = 'ja_fez'
-
 
     def test_patient_social_history_data(self):
         """
@@ -417,7 +411,6 @@ class PatientFormValidation(TestCase):
             reverse('patient_edit', args=(patient_to_update.pk,)), self.data, follow=True)
         self.assertEqual(Patient.objects.filter(name=name).count(), 1)
         self.assertContains(response, u'História social gravada com sucesso.')
-
 
     def test_patient_valid_email(self):
         """
