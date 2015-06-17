@@ -19,13 +19,14 @@ from patient.forms import PatientForm, TelephoneForm, SocialDemographicDataForm,
     ComplementaryExamForm, ExamFileForm
 from patient.quiz_widget import SelectBoxCountriesDisabled, SelectBoxStateDisabled
 
-from experiment.models import Questionnaire
+from experiment.models import Questionnaire, \
+    Subject, SubjectOfGroup, QuestionnaireResponse as ExperimentQuestionnaireResponse
 from experiment.abc_search_engine import Questionnaires
-from experiment.forms import QuestionnaireResponseForm
 
 from patient.models import QuestionnaireResponse
 from patient.forms import QuestionnaireResponseForm
 
+from survey.models import Survey
 from survey.views import get_questionnaire_responses
 
 # pylint: disable=E1101
@@ -496,22 +497,37 @@ def patient_view_questionnaires(request, patient, context):
 
     patient_questionnaires_data = {}
 
+    initial_evaluation_list = Survey.objects.filter(is_initial_evaluation=True)
+
+    # first, add initial evaluation...
+
+    for initial_evaluation in initial_evaluation_list:
+        patient_questionnaires_data[initial_evaluation.lime_survey_id] = \
+            {
+                'is_initial_evaluation': True,
+                'questionnaire_title': surveys.get_survey_title(initial_evaluation.lime_survey_id),
+                'questionnaire_responses': []
+            }
+
+    # ...after, add questionnaire responses
+
     patient_questionnaire_response_list = \
-        QuestionnaireResponse.objects.filter(patient=patient).order_by('questionnaire__survey__lime_survey_id')
+        QuestionnaireResponse.objects.filter(patient=patient).order_by('survey__lime_survey_id')
 
     for patient_questionnaire_response in patient_questionnaire_response_list:
 
-        limesurvey_id = patient_questionnaire_response.questionnaire.survey.lime_survey_id
-
-        response_result = surveys.get_participant_properties(
-            limesurvey_id, patient_questionnaire_response.token_id, "completed")
+        limesurvey_id = patient_questionnaire_response.survey.lime_survey_id
 
         if limesurvey_id not in patient_questionnaires_data:
             patient_questionnaires_data[limesurvey_id] = \
                 {
+                    'is_initial_evaluation': False,
                     'questionnaire_title': surveys.get_survey_title(limesurvey_id),
                     'questionnaire_responses': []
                 }
+
+        response_result = surveys.get_participant_properties(
+            limesurvey_id, patient_questionnaire_response.token_id, "completed")
 
         patient_questionnaires_data[limesurvey_id]['questionnaire_responses'].append(
             {
@@ -523,35 +539,37 @@ def patient_view_questionnaires(request, patient, context):
             }
         )
 
+    # Questionnaires filled in an experimental group
+
     questionnaires_data = []
-    # subject = Subject.objects.filter(patient=patient)
-    # subject_of_group_list = SubjectOfGroup.objects.filter(subject=subject)
-    #
-    # for subject_of_group in subject_of_group_list:
-    #     group = get_object_or_404(Group, id=subject_of_group.group.id)
-    #     experiment = get_object_or_404(Experiment, id=group.experiment.id)
-    #     questionnaire_configuration_list = QuestionnaireConfiguration.objects.filter(group=group)
-    #
-    #     for questionnaire_configuration in questionnaire_configuration_list:
-    #         questionnaire_response_list = QuestionnaireResponse.objects.filter(subject_of_group=subject_of_group). \
-    #             filter(questionnaire_configuration=questionnaire_configuration)
-    #
-    #         for questionnaire_response in questionnaire_response_list:
-    #
-    #             response_result = surveys.get_participant_properties(questionnaire_configuration.lime_survey_id,
-    #                                                                  questionnaire_response.token_id,
-    #                                                                  "completed")
-    #             questionnaires_data.append(
-    #                 {
-    #                     'research_project_title': experiment.research_project.title,
-    #                     'experiment_title': experiment.title,
-    #                     'group_title': group.title,
-    #                     'questionnaire_title': surveys.get_survey_title(questionnaire_configuration.lime_survey_id),
-    #                     'questionnaire_response': questionnaire_response,
-    #                     'completed': None if response_result is None
-    #                     else response_result != "N" and response_result != ""
-    #                 }
-    #             )
+
+    subject = Subject.objects.filter(patient=patient)
+    subject_of_group_list = SubjectOfGroup.objects.filter(subject=subject)
+
+    for subject_of_group in subject_of_group_list:
+
+        experiment_questionnaire_response_list = \
+            ExperimentQuestionnaireResponse.objects.filter(subject_of_group=subject_of_group)
+
+        for questionnaire_response in experiment_questionnaire_response_list:
+
+            limesurvey_id = \
+                questionnaire_response.component_configuration.component.questionnaire.survey.lime_survey_id
+
+            response_result = surveys.get_participant_properties(limesurvey_id,
+                                                                 questionnaire_response.token_id, "completed")
+
+            questionnaires_data.append(
+                {
+                    'research_project_title': subject_of_group.group.experiment.research_project.title,
+                    'experiment_title': subject_of_group.group.experiment.title,
+                    'group_title': subject_of_group.group.title,
+                    'questionnaire_title': surveys.get_survey_title(limesurvey_id),
+                    'questionnaire_response': questionnaire_response,
+                    'completed': None if response_result is None
+                    else response_result != "N" and response_result != ""
+                }
+            )
 
     surveys.release_session_key()
 
@@ -1096,12 +1114,12 @@ def patient_questionnaire_response_update(request, patient_questionnaire_respons
                                                        pk=patient_questionnaire_response_id)
 
     surveys = Questionnaires()
-    survey_title = surveys.get_survey_title(patient_questionnaire_response.questionnaire.survey.lime_survey_id)
+    survey_title = surveys.get_survey_title(patient_questionnaire_response.survey.lime_survey_id)
     survey_active = surveys.get_survey_properties(
-        patient_questionnaire_response.questionnaire.survey.lime_survey_id,
+        patient_questionnaire_response.survey.lime_survey_id,
         'active')
     survey_completed = (surveys.get_participant_properties(
-        patient_questionnaire_response.questionnaire.survey.lime_survey_id,
+        patient_questionnaire_response.survey.lime_survey_id,
         patient_questionnaire_response.token_id,
         "completed") != "N")
     surveys.release_session_key()
@@ -1115,7 +1133,7 @@ def patient_questionnaire_response_update(request, patient_questionnaire_respons
     questionnaire_response_id = None
 
     showing = True
-    questionnaire = patient_questionnaire_response.questionnaire
+    questionnaire = patient_questionnaire_response.survey
     questionnaire_title = survey_title
 
     if request.method == "POST":
@@ -1307,7 +1325,7 @@ def patient_questionnaire_response_view(request, patient_questionnaire_response_
     patient_questionnaire_response = get_object_or_404(QuestionnaireResponse,
                                                        id=patient_questionnaire_response_id)
 
-    lime_survey_id = patient_questionnaire_response.questionnaire.lime_survey_id
+    lime_survey_id = patient_questionnaire_response.survey.lime_survey_id
     token_id = patient_questionnaire_response.token_id
     language_code = request.LANGUAGE_CODE
 

@@ -267,7 +267,7 @@
                     <button type="submit" id="id_fill_button" name="action" value="save" class="btn btn-primary">{% if creating %}Novo preenchimento{% else %}Continuar preenchimento{% endif %}</button>
                 {% else %}
                     {% if origin == 'subject' %}
-                        <a href="/experiment/patient_questionnaire_response/{{ patient_questionnaire_response.id }}?origin={{ origin }}&status={% if editing %}edit{% else %}view{% endif %}" class="btn btn-primary">Ver preenchimento</a>
+                        <a href="/patient/patient_questionnaire_response/{{ patient_questionnaire_response.id }}?origin={{ origin }}&status={% if editing %}edit{% else %}view{% endif %}" class="btn btn-primary">Ver preenchimento</a>
                     {% else %}
                         <a href="/experiment/questionnaire_response/{{ questionnaire_response_id }}/?origin={{ origin }}" class="btn btn-primary">Ver preenchimento</a>
                     {% endif %}
