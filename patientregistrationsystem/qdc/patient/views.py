@@ -506,7 +506,7 @@ def patient_view_questionnaires(request, patient, context):
         response_result = surveys.get_participant_properties(
             limesurvey_id, patient_questionnaire_response.token_id, "completed")
 
-        if not limesurvey_id in patient_questionnaires_data:
+        if limesurvey_id not in patient_questionnaires_data:
             patient_questionnaires_data[limesurvey_id] = \
                 {
                     'questionnaire_title': surveys.get_survey_title(limesurvey_id),

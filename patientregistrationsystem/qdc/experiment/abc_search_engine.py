@@ -121,7 +121,6 @@ class ABCSearchEngine:
 
         return result.get(prop)
 
-
     @abstractmethod
     def get_survey_languages(self, sid):
         """Retorna o idioma base e os idiomas adicionais"""

@@ -719,7 +719,7 @@ class ListOfQuestionnaireFromExperimentalProtocolOfAGroupTest(TestCase):
                                                          description='Questionnaire description',
                                                          experiment=Experiment.objects.first(),
                                                          component_type='questionnaire',
-                                                         survey = new_survey)
+                                                         survey=new_survey)
             questionnaire.save()
 
             # Include the questionnaire in the root.
