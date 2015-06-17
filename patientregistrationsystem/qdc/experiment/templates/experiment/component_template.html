@@ -272,7 +272,7 @@
             <div class="btn-toolbar">
                 {# This div has to be out of the if so that the save and cancel buttons appear separated from each other. #}
                 <div class="btn-group pull-left">
-                    {% if show_remove and perms.experiment.change_research_project %}
+                    {% if show_remove and perms.experiment.change_researchproject %}
                         <button type="button" class="btn btn-danger" onclick="$('#modalRemove').modal('show')">Excluir</button>
                     {% endif %}
                 </div>
@@ -303,7 +303,7 @@
         </div>
     </div>
 
-    {% if show_remove and perms.experiment.change_research_project %}
+    {% if show_remove and perms.experiment.change_researchproject %}
         <div class="modal fade" id="modalRemove" tabindex="-1" role="dialog" aria-labelledby="myModalLabel"
              aria-hidden="true">
             <div class="modal-dialog">
