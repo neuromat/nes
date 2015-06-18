@@ -111,52 +111,85 @@
                                         </td>
                                     </tr>
                                 {% else %}
-                                    {% for configuration in configuration_list %}
-                                        <tr>
-                                            {% if not configuration.random_position %}
-                                                <td>
-                                                    <span class="{{ configuration.component.icon_class }}"></span>
-                                                    {{ configuration.component.get_component_type_display }}
+                                    {% for accordion in configuration_list %}
+                                        {% if accordion|length > 1 %}
+                                            <tr>
+                                                <td colspan="6" style="padding: 0px;">
+                                                    <div class="panel panel-default collapsed" style="margin: 0px;">
+                                                        <div class="panel-heading" role="tab" id="heading{{ forloop.counter }}" style="padding: 0px;" data-toggle="tooltip" data-placement="left" title="Expandir">
+                                                            <table class="table" style="margin: 0px;" role="button" data-toggle="collapse" href="#collapse{{ forloop.counter }}" aria-expanded="false" aria-controls="collapse{{ forloop.counter }}">
+                                                                <tbody>
+                                                                    {% if not accordion.0.random_position %}
+                                                                        <tr>
+                                                                            <td class="col-md-2">
+                                                                                <span class="{{ accordion.0.component.icon_class }}"></span>
+                                                                                {{ accordion.0.component.get_component_type_display }}
+                                                                            </td>
+                                                                            {% if not component_configuration %}
+                                                                                <td class="col-md-4">
+                                                                                    {{ accordion.0.component.identification }}
+                                                                                </td>
+                                                                                {% if component.type == "sequence" %}
+                                                                                    <td class="col-md-3">
+                                                                                        <a class="glyphicon glyphicon-chevron-right"></a>
+                                                                                        {{ accordion|length }} usos agrupados
+                                                                                    </td>
+                                                                                    <td class="text-right col-md-1">
+{#                                                                                        TODO Allow moving an accordion down #}
+                                                                                    </td>
+                                                                                    <td class="col-md-1">
+{#                                                                                        TODO Allow moving an accordion up #}
+                                                                                    </td>
+                                                                                {% else %}
+                                                                                    <td class="col-md-5">
+                                                                                        <a class="glyphicon glyphicon-chevron-right"></a>
+                                                                                        {{ accordion|length }} usos agrupados
+                                                                                    </td>
+                                                                                {% endif %}
+                                                                                {% if not component_configuration %}
+                                                                                    <td class="text-center col-md-1">
+{#                                                                                       TODO Allow removing an accordion #}
+{#                                                                                    <a class="btn glyphicon glyphicon-remove" data-toggle="tooltip" data-placement="right" title="Remover da lista" style="color: indianred;" onclick="show_modal_remove({{ configuration.id }});"></a>#}
+                                                                                    </td>
+                                                                                {% endif %}
+                                                                            {% else %}
+                                                                                <td class="col-md-5">
+                                                                                    {{ accordion.0.component.identification }}
+                                                                                </td>
+                                                                                <th class="col-md-5">Nome do uso</th>
+                                                                            {% endif %}
+                                                                        </tr>
+                                                                    {% else %}
+                                                                        <td class="text-center" colspan="{% if not component_configuration %}6{% else %}3{% endif %}">
+                                                                            <a class="glyphicon glyphicon-chevron-right"></a>
+                                                                            {{ accordion|length }} posições para passo aleatório agrupadas
+                                                                        </td>
+                                                                    {% endif %}
+                                                                </tbody>
+                                                            </table>
+                                                        </div>
+
+
+                                                        <div id="collapse{{ forloop.counter }}" class="panel-collapse collapse" role="tabpanel" aria-labelledby="heading{{ forloop.counter }}">
+                                                            <div class="panel-body">
+                                                                <table class="table table-striped" style="margin: 0px;">
+                                                                    <tbody>
+                                                                        {% for configuration in accordion %}
+                                                                            {% include "experiment/configuration_line.html" %}
+                                                                        {% endfor %}
+                                                                    </tbody>
+                                                                </table>
+                                                            </div>
+                                                        </div>
+                                                    </div>
                                                 </td>
-                                                <td>
-                                                    {% if component_configuration %}
-                                                        {{ configuration.component.identification }}
-                                                    {% else %}
-                                                        {% if configuration.component.component_type == "block" %}
-                                                            <a data-toggle="tooltip" data-placement="left" title="Editar" href="/experiment/component/{{ path_of_the_components }}-U{{ configuration.id }}">{{ configuration.component.identification }}</a>
-                                                        {% else %}
-                                                            <a data-toggle="tooltip" data-placement="left" title="Editar" href="/experiment/component/edit/{{ path_of_the_components }}-U{{ configuration.id }}">{{ configuration.component.identification }}</a>
-                                                        {% endif %}
-                                                    {% endif %}
-                                                </td>
-                                                <td>
-                                                    {% if configuration.name != None %}
-                                                        {{ configuration.name }}
-                                                    {% endif %}
-                                                </td>
-                                                {% if component.type == "sequence" and not component_configuration%}
-                                                    <td  class="text-right">
-                                                        {% if configuration != configuration_list.last %}
-                                                            <a class="btn glyphicon glyphicon-arrow-down" href="/experiment/component/change_the_order/{{ path_of_the_components }}/{{ configuration.id }}/down/"></a>
-                                                        {% endif %}
-                                                    </td>
-                                                    <td>
-                                                        {% if configuration != configuration_list.first %}
-                                                            <a class="btn glyphicon glyphicon-arrow-up" href="/experiment/component/change_the_order/{{ path_of_the_components }}/{{ configuration.id }}/up/"></a>
-                                                        {% endif %}
-                                                    </td>
-                                                {% endif %}
-                                                {% if not component_configuration%}
-                                                    <td class="text-center">
-                                                        <a class="btn glyphicon glyphicon-remove" data-toggle="tooltip" data-placement="right" title="Remover da lista" style="color: indianred;" onclick="show_modal_remove({{ configuration.id }});"></a>
-                                                    </td>
-                                                {% endif %}
-                                            {% else %}
-                                                <td class="text-center" colspan="{% if not component_configuration %}6{% else %}3{% endif %}">
-                                                    Posição para passo aleatório
-                                                </td>
-                                            {% endif %}
-                                        </tr>
+                                            </tr>
+
+                                        {% else %}
+                                            {% for configuration in accordion %}  {# There will be only one #}
+                                                {% include "experiment/configuration_line.html" %}
+                                            {% endfor %}
+                                        {% endif %}
                                     {% endfor %}
                                 {% endif %}
                             </tbody>
@@ -202,35 +235,57 @@
                                 </thead>
                                 <tbody>
                                     {% if configuration_list_of_random_components|length > 0 %}
-                                        {% for configuration in configuration_list_of_random_components %}
-                                            <tr>
-                                                <td>
-                                                    <span class="{{ configuration.component.icon_class }}"></span>
-                                                    {{ configuration.component.get_component_type_display }}
-                                                </td>
-                                                <td>
-                                                    {% if component_configuration %}
-                                                        {{ configuration.component.identification }}
-                                                    {% else %}
-                                                        {% if configuration.component.component_type == "block" %}
-                                                            <a data-toggle="tooltip" data-placement="left" title="Editar" href="/experiment/component/{{ path_of_the_components }}-U{{ configuration.id }}">{{ configuration.component.identification }}</a>
-                                                        {% else %}
-                                                            <a data-toggle="tooltip" data-placement="left" title="Editar" href="/experiment/component/edit/{{ path_of_the_components }}-U{{ configuration.id }}">{{ configuration.component.identification }}</a>
-                                                        {% endif %}
-                                                    {% endif %}
+                                        {% for accordion in configuration_list_of_random_components %}
+                                            {% if accordion|length > 1 %}
+                                                <tr>
+                                                    <td colspan="4" style="padding: 0px;">
+                                                        <div class="panel panel-default collapsed" style="margin: 0px;">
+                                                            <div class="panel-heading" role="tab" id="heading{{ forloop.counter }}" style="padding: 0px;" data-toggle="tooltip" data-placement="left" title="Expandir">
+                                                                <table class="table" style="margin: 0px;" role="button" data-toggle="collapse" href="#collapse{{ forloop.counter }}" aria-expanded="false" aria-controls="collapse{{ forloop.counter }}">
+                                                                    <tbody>
+                                                                        <tr>
+                                                                            <td class="col-md-2">
+                                                                                <span class="{{ accordion.0.component.icon_class }}"></span>
+                                                                                {{ accordion.0.component.get_component_type_display }}
+                                                                            </td>
+                                                                            <td class="col-md-4">
+                                                                                {{ accordion.0.component.identification }}
+                                                                            </td>
+                                                                            <td class="col-md-5">
+                                                                                <a class="glyphicon glyphicon-chevron-right"></a>
+                                                                                {{ accordion|length }} usos agrupados
+                                                                            </td>
+                                                                            {% if not component_configuration %}
+                                                                                <td class="text-center col-md-1">
+{#                                                                                    <a class="btn glyphicon glyphicon-remove" data-toggle="tooltip" data-placement="right" title="Remover da lista" style="color: indianred;" onclick="show_modal_remove({{ configuration.id }});"></a>#}
+                                                                                </td>
+                                                                            {% endif %}
+                                                                        </tr>
+                                                                    </tbody>
+                                                                </table>
+                                                            </div>
 
-                                                </td>
-                                                <td>
-                                                    {% if configuration.name != None %}
-                                                        {{ configuration.name }}
-                                                    {% endif %}
-                                                </td>
-                                                {% if not component_configuration %}
-                                                    <td class="text-center">
-                                                        <a class="btn glyphicon glyphicon-remove" data-toggle="tooltip" data-placement="right" title="Remover da lista" style="color: indianred;" onclick="show_modal_remove({{ configuration.id }});"></a>
+
+                                                            <div id="collapse{{ forloop.counter }}" class="panel-collapse collapse" role="tabpanel" aria-labelledby="heading{{ forloop.counter }}">
+                                                                <div class="panel-body">
+                                                                    <table class="table table-striped" style="margin: 0px;">
+                                                                        <tbody>
+                                                                            {% for configuration in accordion %}
+                                                                                {% include "experiment/randon_configuration_line.html" %}
+                                                                            {% endfor %}
+                                                                        </tbody>
+                                                                    </table>
+                                                                </div>
+                                                            </div>
+                                                        </div>
                                                     </td>
-                                                {% endif %}
-                                            </tr>
+                                                </tr>
+
+                                            {% else %}
+                                                {% for configuration in accordion %}  {# There will be only one #}
+                                                    {% include "experiment/randon_configuration_line.html" %}
+                                                {% endfor %}
+                                            {% endif %}
                                         {% endfor %}
                                     {% else %}
                                         <tr>
@@ -239,78 +294,6 @@
                                             </td>
                                         </tr>
                                     {% endif %}
-
-
-{#                                    TODO Acordeão que deve ser usado como base #}
-                                    <tr>
-                                        <td colspan="4" style="padding: 0px;">
-                                            <div class="panel panel-default collapsed">
-                                                <div class="panel-heading" role="tab" id="heading1" style="padding: 0px;" data-toggle="tooltip" data-placement="left" title="Expandir">
-                                                    <table class="table" style="margin: 0px;" role="button" data-toggle="collapse" href="#collapse1" aria-expanded="false" aria-controls="collapse1">
-                                                        <tbody>
-                                                            <tr>
-                                                                <td class="col-md-2">
-                                                                    <span class="glyphicon glyphicon-wrench"></span>
-                                                                    Tarefa para o experimentador
-                                                                </td>
-                                                                <td class="col-md-4">Pular</td>
-                                                                <td class="col-md-5">
-                                                                    <a class="glyphicon glyphicon-chevron-right"></a>
-                                                                    3 usos agrupados
-                                                                </td>
-                                                                <td class="text-center col-md-1">
-                                                                    <a class="btn glyphicon glyphicon-remove" data-toggle="tooltip" data-placement="right" title="Remover da lista" style="color: indianred;" onclick="show_modal_remove({{ configuration.id }});"></a>
-                                                                </td>
-                                                            </tr>
-                                                        </tbody>
-                                                    </table>
-                                                </div>
-
-
-                                                <div id="collapse1" class="panel-collapse collapse" role="tabpanel" aria-labelledby="heading1">
-                                                    <div class="panel-body">
-                                                        <table class="table table-striped" style="margin: 0px;">
-                                                            <tbody>
-                                                                <tr>
-                                                                    <td class="col-md-2">
-                                                                        <span class="glyphicon glyphicon-wrench"></span>
-                                                                        Tarefa para o experimentador
-                                                                    </td>
-                                                                    <td class="col-md-4"><a href="">Pular</a></td>
-                                                                    <td class="col-md-5"></td>
-                                                                    <td class="text-center col-md-1">
-                                                                        <a class="btn glyphicon glyphicon-remove" data-toggle="tooltip" data-placement="right" title="Remover da lista" style="color: indianred;" onclick="show_modal_remove({{ configuration.id }});"></a>
-                                                                    </td>
-                                                                </tr>
-                                                                <tr>
-                                                                    <td class="col-md-2">
-                                                                        <span class="glyphicon glyphicon-wrench"></span>
-                                                                        Tarefa para o experimentador
-                                                                    </td>
-                                                                    <td class="col-md-4"><a href="">Pular</a></td>
-                                                                    <td class="col-md-5">Nome do uso</td>
-                                                                    <td class="text-center col-md-1">
-                                                                        <a class="btn glyphicon glyphicon-remove" data-toggle="tooltip" data-placement="right" title="Remover da lista" style="color: indianred;" onclick="show_modal_remove({{ configuration.id }});"></a>
-                                                                    </td>
-                                                                </tr>
-                                                                <tr>
-                                                                    <td class="col-md-2">
-                                                                        <span class="glyphicon glyphicon-wrench"></span>
-                                                                        Tarefa para o experimentador
-                                                                    </td>
-                                                                    <td class="col-md-4"><a href="">Pular</a></td>
-                                                                    <td class="col-md-5"></td>
-                                                                    <td class="text-center col-md-1">
-                                                                        <a class="btn glyphicon glyphicon-remove" data-toggle="tooltip" data-placement="right" title="Remover da lista" style="color: indianred;" onclick="show_modal_remove({{ configuration.id }});"></a>
-                                                                    </td>
-                                                                </tr>
-                                                            </tbody>
-                                                        </table>
-                                                    </div>
-                                                </div>
-                                            </div>
-                                        </td>
-                                    </tr>
 
                                 </tbody>
                             </table>

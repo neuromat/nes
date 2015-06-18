@@ -1,0 +1,28 @@
+<tr>
+    <td class="col-md-2">
+        <span class="{{ configuration.component.icon_class }}"></span>
+        {{ configuration.component.get_component_type_display }}
+    </td>
+    <td class="col-md-4">
+        {% if component_configuration %}
+            {{ configuration.component.identification }}
+        {% else %}
+            {% if configuration.component.component_type == "block" %}
+                <a data-toggle="tooltip" data-placement="left" title="Editar" href="/experiment/component/{{ path_of_the_components }}-U{{ configuration.id }}">{{ configuration.component.identification }}</a>
+            {% else %}
+                <a data-toggle="tooltip" data-placement="left" title="Editar" href="/experiment/component/edit/{{ path_of_the_components }}-U{{ configuration.id }}">{{ configuration.component.identification }}</a>
+            {% endif %}
+        {% endif %}
+
+    </td>
+    <td class="col-md-5">
+        {% if configuration.name != None %}
+            {{ configuration.name }}
+        {% endif %}
+    </td>
+    {% if not component_configuration %}
+        <td class="text-center col-md-1">
+            <a class="btn glyphicon glyphicon-remove" data-toggle="tooltip" data-placement="right" title="Remover da lista" style="color: indianred;" onclick="show_modal_remove({{ configuration.id }});"></a>
+        </td>
+    {% endif %}
+</tr>

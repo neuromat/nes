@@ -1640,7 +1640,39 @@ def create_configuration_lists(block):
     for configuration in configuration_list:
         configuration.component.icon_class = icon_class[configuration.component.component_type]
 
-    return configuration_list, configuration_list_of_random_components
+    # Transform configuration_list into a list of lists, to show them in accordions.
+    i = 0
+    new_list = []
+    while i < len(configuration_list):
+        accordion = [configuration_list[i]]
+        i += 1
+
+        # Group if same component or if both are random_position
+        while i < len(configuration_list) and \
+                (configuration_list[i-1].component == configuration_list[i].component or
+                     (configuration_list[i-1].random_position == configuration_list[i].random_position and
+                      configuration_list[i].random_position is True)):
+            accordion.append(configuration_list[i])
+            i += 1
+
+        new_list.append(accordion)
+
+    # Transform configuration_list_of_random_components into a list of lists, to show them in accordions.
+    i = 0
+    new_random_list = []
+    while i < len(configuration_list_of_random_components):
+        accordion = [configuration_list_of_random_components[i]]
+        i += 1
+
+        while i < len(configuration_list_of_random_components) and \
+                configuration_list_of_random_components[i-1].component == \
+                configuration_list_of_random_components[i].component:
+            accordion.append(configuration_list_of_random_components[i])
+            i += 1
+
+        new_random_list.append(accordion)
+
+    return new_list, new_random_list
 
 
 @login_required
