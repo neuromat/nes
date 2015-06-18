@@ -115,7 +115,7 @@
                                         <tr>
                                             {% if not configuration.random_position %}
                                                 <td>
-                                                    <span class="{{ configuration.component.icon_class }}"/>
+                                                    <span class="{{ configuration.component.icon_class }}"></span>
                                                     {{ configuration.component.get_component_type_display }}
                                                 </td>
                                                 <td>
@@ -148,7 +148,7 @@
                                                 {% endif %}
                                                 {% if not component_configuration%}
                                                     <td class="text-center">
-                                                        <a class="btn glyphicon glyphicon-remove" data-toggle="tooltip" data-placement="right" title="Remover da lista" style="color: indianred; vertical-align: -5%; padding-left: 0;" onclick="show_modal_remove({{ configuration.id }});"></a>
+                                                        <a class="btn glyphicon glyphicon-remove" data-toggle="tooltip" data-placement="right" title="Remover da lista" style="color: indianred;" onclick="show_modal_remove({{ configuration.id }});"></a>
                                                     </td>
                                                 {% endif %}
                                             {% else %}
@@ -203,36 +203,34 @@
                                 <tbody>
                                     {% if configuration_list_of_random_components|length > 0 %}
                                         {% for configuration in configuration_list_of_random_components %}
-                                            {% if configuration.random_position %}
-                                                <tr>
-                                                    <td>
-                                                        <span class="{{ configuration.component.icon_class }}"/>
-                                                        {{ configuration.component.get_component_type_display }}
-                                                    </td>
-                                                    <td>
-                                                        {% if component_configuration %}
-                                                            {{ configuration.component.identification }}
+                                            <tr>
+                                                <td>
+                                                    <span class="{{ configuration.component.icon_class }}"></span>
+                                                    {{ configuration.component.get_component_type_display }}
+                                                </td>
+                                                <td>
+                                                    {% if component_configuration %}
+                                                        {{ configuration.component.identification }}
+                                                    {% else %}
+                                                        {% if configuration.component.component_type == "block" %}
+                                                            <a data-toggle="tooltip" data-placement="left" title="Editar" href="/experiment/component/{{ path_of_the_components }}-U{{ configuration.id }}">{{ configuration.component.identification }}</a>
                                                         {% else %}
-                                                            {% if configuration.component.component_type == "block" %}
-                                                                <a data-toggle="tooltip" data-placement="left" title="Editar" href="/experiment/component/{{ path_of_the_components }}-U{{ configuration.id }}">{{ configuration.component.identification }}</a>
-                                                            {% else %}
-                                                                <a data-toggle="tooltip" data-placement="left" title="Editar" href="/experiment/component/edit/{{ path_of_the_components }}-U{{ configuration.id }}">{{ configuration.component.identification }}</a>
-                                                            {% endif %}
+                                                            <a data-toggle="tooltip" data-placement="left" title="Editar" href="/experiment/component/edit/{{ path_of_the_components }}-U{{ configuration.id }}">{{ configuration.component.identification }}</a>
                                                         {% endif %}
-
-                                                    </td>
-                                                    <td>
-                                                        {% if configuration.name != None %}
-                                                            {{ configuration.name }}
-                                                        {% endif %}
-                                                    </td>
-                                                    {% if not component_configuration %}
-                                                        <td class="text-center">
-                                                            <a class="btn glyphicon glyphicon-remove" data-toggle="tooltip" data-placement="right" title="Remover da lista" style="color: indianred; vertical-align: -5%; padding-left: 0;" onclick="show_modal_remove({{ configuration.id }});"></a>
-                                                        </td>
                                                     {% endif %}
-                                                </tr>
-                                            {% endif %}
+
+                                                </td>
+                                                <td>
+                                                    {% if configuration.name != None %}
+                                                        {{ configuration.name }}
+                                                    {% endif %}
+                                                </td>
+                                                {% if not component_configuration %}
+                                                    <td class="text-center">
+                                                        <a class="btn glyphicon glyphicon-remove" data-toggle="tooltip" data-placement="right" title="Remover da lista" style="color: indianred;" onclick="show_modal_remove({{ configuration.id }});"></a>
+                                                    </td>
+                                                {% endif %}
+                                            </tr>
                                         {% endfor %}
                                     {% else %}
                                         <tr>
@@ -241,6 +239,79 @@
                                             </td>
                                         </tr>
                                     {% endif %}
+
+
+{#                                    TODO Acordeão que deve ser usado como base #}
+                                    <tr>
+                                        <td colspan="4" style="padding: 0px;">
+                                            <div class="panel panel-default collapsed">
+                                                <div class="panel-heading" role="tab" id="heading1" style="padding: 0px;" data-toggle="tooltip" data-placement="left" title="Expandir">
+                                                    <table class="table" style="margin: 0px;" role="button" data-toggle="collapse" href="#collapse1" aria-expanded="false" aria-controls="collapse1">
+                                                        <tbody>
+                                                            <tr>
+                                                                <td class="col-md-2">
+                                                                    <span class="glyphicon glyphicon-wrench"></span>
+                                                                    Tarefa para o experimentador
+                                                                </td>
+                                                                <td class="col-md-4">Pular</td>
+                                                                <td class="col-md-5">
+                                                                    <a class="glyphicon glyphicon-chevron-right"></a>
+                                                                    3 usos agrupados
+                                                                </td>
+                                                                <td class="text-center col-md-1">
+                                                                    <a class="btn glyphicon glyphicon-remove" data-toggle="tooltip" data-placement="right" title="Remover da lista" style="color: indianred;" onclick="show_modal_remove({{ configuration.id }});"></a>
+                                                                </td>
+                                                            </tr>
+                                                        </tbody>
+                                                    </table>
+                                                </div>
+
+
+                                                <div id="collapse1" class="panel-collapse collapse" role="tabpanel" aria-labelledby="heading1">
+                                                    <div class="panel-body">
+                                                        <table class="table table-striped" style="margin: 0px;">
+                                                            <tbody>
+                                                                <tr>
+                                                                    <td class="col-md-2">
+                                                                        <span class="glyphicon glyphicon-wrench"></span>
+                                                                        Tarefa para o experimentador
+                                                                    </td>
+                                                                    <td class="col-md-4"><a href="">Pular</a></td>
+                                                                    <td class="col-md-5"></td>
+                                                                    <td class="text-center col-md-1">
+                                                                        <a class="btn glyphicon glyphicon-remove" data-toggle="tooltip" data-placement="right" title="Remover da lista" style="color: indianred;" onclick="show_modal_remove({{ configuration.id }});"></a>
+                                                                    </td>
+                                                                </tr>
+                                                                <tr>
+                                                                    <td class="col-md-2">
+                                                                        <span class="glyphicon glyphicon-wrench"></span>
+                                                                        Tarefa para o experimentador
+                                                                    </td>
+                                                                    <td class="col-md-4"><a href="">Pular</a></td>
+                                                                    <td class="col-md-5">Nome do uso</td>
+                                                                    <td class="text-center col-md-1">
+                                                                        <a class="btn glyphicon glyphicon-remove" data-toggle="tooltip" data-placement="right" title="Remover da lista" style="color: indianred;" onclick="show_modal_remove({{ configuration.id }});"></a>
+                                                                    </td>
+                                                                </tr>
+                                                                <tr>
+                                                                    <td class="col-md-2">
+                                                                        <span class="glyphicon glyphicon-wrench"></span>
+                                                                        Tarefa para o experimentador
+                                                                    </td>
+                                                                    <td class="col-md-4"><a href="">Pular</a></td>
+                                                                    <td class="col-md-5"></td>
+                                                                    <td class="text-center col-md-1">
+                                                                        <a class="btn glyphicon glyphicon-remove" data-toggle="tooltip" data-placement="right" title="Remover da lista" style="color: indianred;" onclick="show_modal_remove({{ configuration.id }});"></a>
+                                                                    </td>
+                                                                </tr>
+                                                            </tbody>
+                                                        </table>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </td>
+                                    </tr>
+
                                 </tbody>
                             </table>
                         </div>
