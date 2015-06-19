@@ -1,7 +1,6 @@
 {% extends "quiz/template.html" %}
 
 {% block activePatient %}{% if origin == 'subject' %}class="active"{% endif %}{% endblock %}
-{# origin == "experiment_subject" or origin == "experiment_questionnaire" #}
 {% block activeAdvancedExperiment %}{% if origin != 'subject' %}class="active"{% endif %}{% endblock %}
 
 {% block header %}
@@ -29,11 +28,7 @@
                 {% if origin == 'subject' %}
                     <li><a href="/patient/find/">Participantes</a></li>
                     <li><a href="/patient/edit/{{ patient.id }}/?currentTab=4">{{ patient.name }}</a></li>
-                    {% if creating %}
-                        <li class="active">Preencher Questionário</li>
-                    {% else %}
-                        <li class="active">Questionário: {{ questionnaire_title }}</li>
-                    {% endif %}
+                    <li class="active">Questionário: {{ survey_title }}</li>
                 {% else %}
                     <li><a href="/experiment/research_project/list">Estudos</a></li>
                     <li><a href="/experiment/research_project/{{ group.experiment.research_project.id }}">{{ group.experiment.research_project.title }}</a></li>
@@ -79,7 +74,6 @@
     {% endif %}
 
     {% if FAIL == False %}
-{#    {% if not FAIL %}#}
         <script>
             $(document).ready(function () {
                 var elem_remove_button = undefined;
@@ -125,51 +119,6 @@
                 <div class="row">
                     <div class="col-xs-12 col-sm-12">
 
-                        {% if origin == 'subject' %}
-
-                            <div class="form-group">
-                                <label for="questionnaire_selected" class="control-label">Questionário <b style="color: red;">*</b></label>
-
-                                <select class="form-control" required="" id="questionnaire_selected" name="questionnaire_selected"
-                                        data-error="Por favor, selecione um questionário da lista." {% if updating %}disabled{% endif %}
-                                        onchange="
-                                            if(this.value == 'new') {
-                                                $('#unused_questionnaire_selected').prop('disabled', false);
-                                                $('#modalAddQuestionnaire').modal('show');
-                                            }
-                                            "
-                                >
-
-                                    {% if creating and not showing %}
-                                        <option selected="selected" value=""> ---------- </option>
-                                    {% endif %}
-
-                                    {% if showing %}
-                                        <option selected="selected" value="{{ questionnaire.id }}">{{ questionnaire_title }} ({{ questionnaire.id }})</option>
-                                    {% else %}
-                                        {% for survey in questionnaires_list %}
-                                            <option value="{{ survey.sid }}">{{ survey.surveyls_title }} ({{ survey.sid }})</option>
-                                        {% endfor %}
-                                    {% endif %}
-
-                                    {% if added_questionnaire %}
-                                        <option selected="selected" value="{{ added_questionnaire.sid }}">{{ added_questionnaire.surveyls_title }} ({{ added_questionnaire.sid }})</option>
-                                    {% endif %}
-
-                                    {% if creating and not showing %}
-                                        <option disabled> ---------- </option>
-                                        <option value="new">
-                                            -- Escolher questionário não listado --
-                                        </option>
-                                    {% endif %}
-
-                                </select>
-
-                                <div class="help-block with-errors"></div>
-                            </div>
-
-                        {% else %}
-
                             <div class="form-group">
                                 <label>Questionário</label>
 
@@ -181,8 +130,6 @@
                                            type="text" disabled>
                                 </div>
                             </div>
-
-                        {% endif %}
 
                     </div>
                 </div>
@@ -302,34 +249,6 @@
                     <button type="button" class="btn btn-default" data-dismiss="modal">Cancelar</button>
                     <button type="submit" class="btn btn-danger" value="remove" name="action">Excluir</button>
                 </div>
-            </div>
-        </div>
-    </div>
-
-
-    <div class="modal fade" id="modalAddQuestionnaire" tabindex="-1" role="dialog" aria-labelledby="myModalLabel"
-         aria-hidden="true">
-        <div class="modal-dialog">
-            <div class="modal-content">
-
-                <div class="modal-header">
-                    <h5 class="modal-title">Escolha questionário para preencher</h5>
-                </div>
-
-                <div class="modal-body">
-                    <select disabled class="form-control" required="" id="unused_questionnaire_selected" name="unused_questionnaire_selected">
-                        <option selected="selected" value="">---------</option>
-                        {% for survey in unused_questionnaires_list %}
-                            <option value="{{ survey.sid }}">{{ survey.surveyls_title }} ({{ survey.sid }})</option>
-                        {% endfor %}
-                    </select>
-                </div>
-
-                <div class="modal-footer">
-                    <button type="button" class="btn btn-default" data-dismiss="modal">Cancelar</button>
-                    <button type="submit" class="btn btn-danger" value="add_questionnaire" name="action">Incluir</button>
-                </div>
-
             </div>
         </div>
     </div>
