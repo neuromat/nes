@@ -68,8 +68,20 @@ $(document).ready(function () {
     }
 });
 
-    function show_modal_remove(component_configuration_id) {
-        var  modal_remove = document.getElementById('removeComponentConfiguration');
-        modal_remove.setAttribute( "value", 'remove-' + component_configuration_id);
-        $('#modalComponentConfigurationRemove').modal('show');
-    }
+function show_modal_remove(list_name, accordion_position, conf_position) {
+    var  modal_remove = document.getElementById('removeComponentConfiguration');
+    modal_remove.setAttribute( "value", 'remove-' + list_name + '-' + accordion_position + '-' + conf_position);
+
+    $("#modalRemoveMessage").html("Tem certeza que deseja excluir este uso de passo da lista?");
+
+    $('#modalComponentConfigurationRemove').modal('show');
+}
+
+function show_modal_remove_many(list_name, accordion_position, length) {
+    var  modal_remove = document.getElementById('removeComponentConfiguration');
+    modal_remove.setAttribute( "value", 'remove-' + list_name + '-' + accordion_position);
+
+    $("#modalRemoveMessage").html("Tem certeza que deseja excluir estes " + length + " usos de passo da lista?");
+
+    $('#modalComponentConfigurationRemove').modal('show');
+}

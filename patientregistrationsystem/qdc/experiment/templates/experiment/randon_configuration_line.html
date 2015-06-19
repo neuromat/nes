@@ -22,7 +22,7 @@
     </td>
     {% if not component_configuration %}
         <td class="text-center col-md-1">
-            <a class="btn glyphicon glyphicon-remove" data-toggle="tooltip" data-placement="right" title="Remover da lista" style="color: indianred;" onclick="show_modal_remove({{ configuration.id }});"></a>
+            <a class="btn glyphicon glyphicon-remove" data-toggle="tooltip" data-placement="right" title="Remover da lista" style="color: indianred;" onclick="show_modal_remove('random', {{ forloop.parentloop.counter0 }}, {{ forloop.counter0 }});"></a>
         </td>
     {% endif %}
 </tr>
