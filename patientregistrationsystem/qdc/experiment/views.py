@@ -1511,6 +1511,23 @@ def remove_component_and_related_configurations(component,
     return redirect_url
 
 
+def remove_component_configuration(conf):
+    order_of_removed = conf.order
+    parent_of_removed = conf.parent_id
+    conf.delete()
+
+    if conf.random_position:
+        last_conf = ComponentConfiguration.objects.filter(
+            parent_id=parent_of_removed, random_position=True).order_by('order').last()
+
+        # If the order of the removed component is smaller than the order of the last random-positioned
+        # element, assign the order of the removed to the last random-positioned element. This way, for
+        # the user, it is like removing the last position for random components.
+        if last_conf is not None and last_conf.order > order_of_removed:
+            last_conf.order = order_of_removed
+            last_conf.save()
+
+
 @login_required
 @permission_required('experiment.change_experiment')
 def component_view(request, path_of_the_components):
@@ -1545,23 +1562,24 @@ def component_view(request, path_of_the_components):
                                                                        path_of_the_components)
             return HttpResponseRedirect(redirect_url)
         elif request.POST['action'][:7] == "remove-":
-            # If action starts with 'remove-' it means that a child is being removed.
-            component_configuration_id_to_be_deleted = request.POST['action'].split("-")[-1]
-            component_configuration = get_object_or_404(ComponentConfiguration,
-                                                        pk=int(component_configuration_id_to_be_deleted))
+            # If action starts with 'remove-' it means that a child or some children should be removed.
+            action_parts = request.POST['action'].split("-")
 
-            order_of_removed = component_configuration.order
-            parent_of_removed = component_configuration.parent_id
-            component_configuration.delete()
-            last_component_configuration = ComponentConfiguration.objects.filter(
-                parent_id=parent_of_removed, random_position=True).order_by('order').last()
+            if action_parts[1] == "random":
+                list_from_which_to_deleted = configuration_list_of_random_components
+            else:  # "fixed"
+                list_from_which_to_deleted = configuration_list
 
-            # If the order of the removed component is smaller than the order of the last random-positioned element,
-            # assign the order of the removed to the last random-positioned element. This way, for the user, it is like
-            # removing the last position for random components.
-            if last_component_configuration is not None and last_component_configuration.order > order_of_removed:
-                last_component_configuration.order = order_of_removed
-                last_component_configuration.save()
+            position_of_the_accordion_to_be_deleted = int(action_parts[2])
+
+            if len(action_parts) == 4:  # Check the existence of an extra parameter
+                # It means that a single component configuration should be removed
+                position_in_accordion_of_the_conf_to_be_deleted = int(action_parts[3])
+                remove_component_configuration(list_from_which_to_deleted[position_of_the_accordion_to_be_deleted]
+                        [position_in_accordion_of_the_conf_to_be_deleted])
+            else:
+                for conf in list_from_which_to_deleted[position_of_the_accordion_to_be_deleted]:
+                    remove_component_configuration(conf)
 
             redirect_url = reverse("component_view", args=(path_of_the_components,))
             return HttpResponseRedirect(redirect_url)
@@ -1640,7 +1658,47 @@ def create_configuration_lists(block):
     for configuration in configuration_list:
         configuration.component.icon_class = icon_class[configuration.component.component_type]
 
-    return configuration_list, configuration_list_of_random_components
+    # Transform configuration_list into a list of lists, to show them in accordions.
+    i = 0
+    new_list = []
+    all_random = True
+    while i < len(configuration_list):
+        accordion = [configuration_list[i]]
+        i += 1
+
+        # Group if same component or if both are random_position
+        while i < len(configuration_list) and \
+                (configuration_list[i-1].component == configuration_list[i].component or
+                     (configuration_list[i-1].random_position == configuration_list[i].random_position and
+                      configuration_list[i].random_position is True)):
+            accordion.append(configuration_list[i])
+            i += 1
+
+        new_list.append(accordion)
+
+        if not accordion[0].random_position:
+            all_random = False
+
+    # If all items of this list are random, set the list to be empty.
+    if all_random:
+        new_list = []
+
+    # Transform configuration_list_of_random_components into a list of lists, to show them in accordions.
+    i = 0
+    new_random_list = []
+    while i < len(configuration_list_of_random_components):
+        accordion = [configuration_list_of_random_components[i]]
+        i += 1
+
+        while i < len(configuration_list_of_random_components) and \
+                configuration_list_of_random_components[i-1].component == \
+                configuration_list_of_random_components[i].component:
+            accordion.append(configuration_list_of_random_components[i])
+            i += 1
+
+        new_random_list.append(accordion)
+
+    return new_list, new_random_list
 
 
 @login_required

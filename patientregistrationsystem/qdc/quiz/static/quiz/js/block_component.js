@@ -36,10 +36,52 @@ $(document).ready(function () {
     $(function(){
         $("[data-toggle=tooltip]").tooltip();
     });
+
+
+    // Change icon while collapsing or expanding an accordion
+    $(".collapsed").click(expand)
+
+    function expand() {
+        // Replace right arrow by the down arrow
+        $(this).find(".glyphicon-chevron-right").switchClass('glyphicon-chevron-right', 'glyphicon-chevron-down');
+
+        // Change the listener of the click event
+        $(this).unbind("click");
+        $(this).click(collapse)
+
+        // Replace the title of the tootip
+        $(this).children(".panel-heading").attr("data-original-title", "Colapsar");
+    }
+
+    $(".expanded").click(collapse)
+
+    function collapse() {
+        // Replace down arrow by the right arrow
+        $(this).find(".glyphicon-chevron-down").switchClass('glyphicon-chevron-down', 'glyphicon-chevron-right');
+
+        // Change the listener of the click event
+        $(this).unbind("click");
+        $(this).click(expand)
+
+        // Replace the title of the tootip
+        $(this).children(".panel-heading").attr("data-original-title", "Expandir");
+    }
 });
 
-    function show_modal_remove(component_configuration_id) {
-        var  modal_remove = document.getElementById('removeComponentConfiguration');
-        modal_remove.setAttribute( "value", 'remove-' + component_configuration_id);
-        $('#modalComponentConfigurationRemove').modal('show');
-    }
+function show_modal_remove(list_name, accordion_position, conf_position) {
+    var  modal_remove = document.getElementById('removeComponentConfiguration');
+    modal_remove.setAttribute( "value", 'remove-' + list_name + '-' + accordion_position + '-' + conf_position);
+
+    $("#modalRemoveMessage").html("Tem certeza que deseja excluir este uso de passo da lista?");
+
+    $('#modalComponentConfigurationRemove').modal('show');
+}
+
+function show_modal_remove_many(list_name, accordion_position, length) {
+    var  modal_remove = document.getElementById('removeComponentConfiguration');
+    modal_remove.setAttribute( "value", 'remove-' + list_name + '-' + accordion_position);
+
+    $("#modalRemoveMessage").html("Tem certeza que deseja excluir estes " + length + " usos de passo da lista?");
+
+    $('#modalComponentConfigurationRemove').modal('show');
+}
