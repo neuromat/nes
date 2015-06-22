@@ -871,6 +871,16 @@ def get_position(request):
     return position
 
 
+def get_number_of_uses(request):
+    number_of_uses = 1
+
+    # number_of_uses is in request.GET also when the request is a post!
+    if 'number_of_uses' in request.GET:
+        number_of_uses = request.GET['number_of_uses']
+
+    return number_of_uses
+
+
 def check_required_fields(surveys, lime_survey_id):
     """
     método para verificar se o questionário tem as questões de identificação corretas
@@ -1931,6 +1941,9 @@ def component_add_new(request, path_of_the_components, component_type):
     # Fixed or random
     position = get_position(request)
 
+    # Number of uses to insert
+    number_of_uses = get_number_of_uses(request)
+
     component_form = ComponentForm(request.POST or None)
     # This is needed for the form to be able to validate the presence of a duration in a pause component only.
     component_form.component_type = component_type
@@ -1942,7 +1955,8 @@ def component_add_new(request, path_of_the_components, component_type):
     number_of_uses_form = None
 
     if not is_configuring_new_experimental_protocol:
-        number_of_uses_form = NumberOfUsesToInsertForm(request.POST or None)
+        number_of_uses_form = NumberOfUsesToInsertForm(request.POST or None,
+                                                       initial={'number_of_uses_to_insert': number_of_uses})
 
     questionnaires_list = []
     specific_form = None
@@ -2057,6 +2071,9 @@ def component_reuse(request, path_of_the_components, component_id):
     # Fixed or random
     position = get_position(request)
 
+    # Number of uses to insert
+    number_of_uses = get_number_of_uses(request)
+
     component_form = ComponentForm(request.POST or None, instance=component_to_add)
     # This is needed for the form to be able to validate the presence of a duration in a pause component only.
     component_form.component_type = component_type
@@ -2068,7 +2085,8 @@ def component_reuse(request, path_of_the_components, component_id):
     number_of_uses_form = None
 
     if not is_configuring_new_experimental_protocol:
-        number_of_uses_form = NumberOfUsesToInsertForm(request.POST or None)
+        number_of_uses_form = NumberOfUsesToInsertForm(request.POST or None,
+                                                       initial={'number_of_uses_to_insert': number_of_uses})
 
     questionnaire_id = None
     questionnaire_title = None

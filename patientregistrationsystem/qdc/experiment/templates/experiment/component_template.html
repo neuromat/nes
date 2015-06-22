@@ -110,7 +110,7 @@
                                 {% if existing_component_list %}
                                     <ul class="dropdown-menu" role="menu" aria-labelledby="dropdownMenu1">
                                         {% for existing_component in existing_component_list %}
-                                            <li role="presentation"><a role="menuitem" tabindex="-1" href="/experiment/component/{% if path_of_the_components %}{{ path_of_the_components }}{% else %}{{ component.id }}{% endif %}/add/{{ existing_component.id }}{% if position%}?position={{ position }}{% endif %}">{{ existing_component.identification }}</a></li>
+                                            <li role="presentation"><a role="menuitem" tabindex="-1" onclick="redirect_with_number_of_uses('/experiment/component/{% if path_of_the_components %}{{ path_of_the_components }}{% else %}{{ component.id }}{% endif %}/add/{{ existing_component.id }}{% if position%}?position={{ position }}{% endif %}')">{{ existing_component.identification }}</a></li>
                                         {% endfor %}
 
                                         <li role="presentation" class="divider"></li>
