@@ -37,7 +37,6 @@ $(document).ready(function () {
         $("[data-toggle=tooltip]").tooltip();
     });
 
-
     // Change icon while collapsing or expanding an accordion
     $(".collapsed").click(expand)
 
@@ -50,7 +49,7 @@ $(document).ready(function () {
         $(this).click(collapse)
 
         // Replace the title of the tootip
-        $(this).children(".panel-heading").attr("data-original-title", "Colapsar");
+        $(this).children(".panel-heading").attr("data-original-title", "Recolher");
     }
 
     $(".expanded").click(collapse)
@@ -66,7 +65,22 @@ $(document).ready(function () {
         // Replace the title of the tootip
         $(this).children(".panel-heading").attr("data-original-title", "Expandir");
     }
+
+    // Following two handlers avoid expanding and collapsing an accordion while clicking to move or remove a line.
+    $(".collapsed a").click(function(e) {
+        e.stopPropagation();
+    });
+
+    $(".expanded a").click(function(e) {
+        e.stopPropagation();
+    });
 });
+
+// This method is needed because if we use href in the <a> element directly nothing happens, because of the collapse and
+// expand actions of the accordion.
+function move_accordion(url) {
+    window.location.assign(url);
+}
 
 function show_modal_remove(list_name, accordion_position, conf_position) {
     var  modal_remove = document.getElementById('removeComponentConfiguration');
