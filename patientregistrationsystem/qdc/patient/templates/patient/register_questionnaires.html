@@ -32,15 +32,20 @@
                             </thead>
                             <tbody>
                             {% for limesurvey_id, patient_questionnaire in patient_questionnaires_data.items %}
-                                <tr>
+                                <tr {% if not patient_questionnaire.is_initial_evaluation %} data-toggle="tooltip" data-placement="left" title="Não é mais avaliação de entrada" {% endif %}>
                                     <td>
                                         {{ patient_questionnaire.questionnaire_title }}
+
+                                        {% if patient_questionnaire.questionnaire_responses|length == 0 %}
+                                            <br/><span class="label label-warning">Falta preencher</span>
+                                        {% endif %}
                                     </td>
                                     <td>
-                                        <table>
+                                        <table class="col-md-12">
+
                                             {% for response in patient_questionnaire.questionnaire_responses %}
                                                 <tr>
-                                                    <td>
+                                                    <td class="col-md-8">
                                                         {% if limesurvey_available and response.completed != None %}
                                                             {% if response.completed %}
                                                                 <a href="/patient/questionnaire_response/edit/{{ response.questionnaire_response.pk }}?origin=subject">
@@ -59,7 +64,7 @@
                                                             {{ response.questionnaire_response.date }}
                                                         {% endif %}
                                                     </td>
-                                                    <td>
+                                                    <td class="col-md-4">
                                                         {% if limesurvey_available and response.completed != None %}
                                                             {% if response.completed %}
                                                                 <span class="label label-success">Completo</span>
@@ -72,20 +77,19 @@
                                                     </td>
                                                 </tr>
                                             {% endfor %}
-                                            <tr>
-                                                {% if patient_questionnaire.is_initial_evaluation %}
-                                                    <td>
-                                                        {% if perms.experiment.add_questionnaireresponse %}
-                                                            <a href="/experiment/group/{{ group.id }}/subject/{{ subject.id }}/questionnaire/{{ subject_questionnaire.questionnaire_configuration.id }}/response/?origin=experiment_subject"
-                                                                class="btn btn-primary {% if not limesurvey_available %} disabled {% endif %}">Novo preenchimento</a>
-                                                        {% endif %}
+
+                                            {% if editing and patient_questionnaire.is_initial_evaluation and perms.experiment.add_questionnaireresponse %}
+                                                <tr>
+                                                    <td colspan="2" class="col-md-12">
+                                                        <a href="/patient/{{ patient_id }}/questionnaire/{{ patient_questionnaire.survey_id }}/response/?origin=subject"
+                                                            class="btn btn-primary {% if not limesurvey_available %} disabled {% endif %}">Novo preenchimento</a>
                                                     </td>
-                                                    <td></td>
-                                                    <td></td>
-                                                {% endif %}
-                                            </tr>
+                                                </tr>
+                                            {% endif %}
 
                                         </table>
+
+
                                     </td>
                                 </tr>
                             {% endfor %}
@@ -93,13 +97,13 @@
                         </table>
                     </div>
 
-                    {% if not inserting and editing %}
-                        {%  if perms.patient.add_medicalrecorddata %}
-                            <div class="btn-group pull-left">
-                                <a href="/patient/{{ patient_id }}/new_questionnaire_response?origin=subject" class="btn btn-primary">Preencher Questionário</a>
-                            </div>
-                        {% endif %}
-                    {% endif %}
+{#                    {% if not inserting and editing %}#}
+{#                        {%  if perms.patient.add_medicalrecorddata %}#}
+{#                            <div class="btn-group pull-left">#}
+{#                                <a href="/patient/{{ patient_id }}/new_questionnaire_response?origin=subject" class="btn btn-primary">Preencher Questionário</a>#}
+{#                            </div>#}
+{#                        {% endif %}#}
+{#                    {% endif %}#}
 
                 </div>
             </div>
