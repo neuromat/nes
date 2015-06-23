@@ -444,7 +444,7 @@ def patient_view_questionnaires(request, patient, context, is_update):
     # ...after, add questionnaire responses
 
     patient_questionnaire_response_list = \
-        QuestionnaireResponse.objects.filter(patient=patient).order_by('survey__lime_survey_id')
+        QuestionnaireResponse.objects.filter(patient=patient).order_by('date')
 
     for patient_questionnaire_response in patient_questionnaire_response_list:
 
@@ -479,30 +479,30 @@ def patient_view_questionnaires(request, patient, context, is_update):
     subject = Subject.objects.filter(patient=patient)
     subject_of_group_list = SubjectOfGroup.objects.filter(subject=subject)
 
-    for subject_of_group in subject_of_group_list:
-
-        experiment_questionnaire_response_list = \
-            ExperimentQuestionnaireResponse.objects.filter(subject_of_group=subject_of_group)
-
-        for questionnaire_response in experiment_questionnaire_response_list:
-
-            limesurvey_id = \
-                questionnaire_response.component_configuration.component.questionnaire.survey.lime_survey_id
-
-            response_result = surveys.get_participant_properties(limesurvey_id,
-                                                                 questionnaire_response.token_id, "completed")
-
-            questionnaires_data.append(
-                {
-                    'research_project_title': subject_of_group.group.experiment.research_project.title,
-                    'experiment_title': subject_of_group.group.experiment.title,
-                    'group_title': subject_of_group.group.title,
-                    'questionnaire_title': surveys.get_survey_title(limesurvey_id),
-                    'questionnaire_response': questionnaire_response,
-                    'completed': None if response_result is None
-                    else response_result != "N" and response_result != ""
-                }
-            )
+    # for subject_of_group in subject_of_group_list:
+    #
+    #     experiment_questionnaire_response_list = \
+    #         ExperimentQuestionnaireResponse.objects.filter(subject_of_group=subject_of_group)
+    #
+    #     for questionnaire_response in experiment_questionnaire_response_list:
+    #
+    #         limesurvey_id = \
+    #             questionnaire_response.component_configuration.component.questionnaire.survey.lime_survey_id
+    #
+    #         response_result = surveys.get_participant_properties(limesurvey_id,
+    #                                                              questionnaire_response.token_id, "completed")
+    #
+    #         questionnaires_data.append(
+    #             {
+    #                 'research_project_title': subject_of_group.group.experiment.research_project.title,
+    #                 'experiment_title': subject_of_group.group.experiment.title,
+    #                 'group_title': subject_of_group.group.title,
+    #                 'questionnaire_title': surveys.get_survey_title(limesurvey_id),
+    #                 'questionnaire_response': questionnaire_response,
+    #                 'completed': None if response_result is None
+    #                 else response_result != "N" and response_result != ""
+    #             }
+    #         )
 
     surveys.release_session_key()
 
@@ -991,7 +991,8 @@ def patient_questionnaire_response_create(request, patient_id, survey_id,
         "group": None,
         "origin": origin,
         "patient": patient,
-        "showing": showing
+        "showing": showing,
+        "status": "edit"
     }
 
     return render(request, template_name, context)
@@ -1034,15 +1035,15 @@ def patient_questionnaire_response_update(request, patient_questionnaire_respons
             redirect_url = get_limesurvey_response_url(patient_questionnaire_response)
 
             if not redirect_url:
-                fail = False
-            else:
                 fail = True
+            else:
+                fail = False
                 messages.info(request, 'Você será redirecionado para o questionário. Aguarde.')
 
         elif request.POST['action'] == "remove":
             surveys = Questionnaires()
             result = surveys.delete_participant(
-                patient_questionnaire_response.questionnaire.survey.lime_survey_id,
+                patient_questionnaire_response.survey.lime_survey_id,
                 patient_questionnaire_response.token_id)
             surveys.release_session_key()
 
@@ -1067,6 +1068,13 @@ def patient_questionnaire_response_update(request, patient_questionnaire_respons
 
     origin = get_origin(request)
 
+    status = ""
+    if 'status' in request.GET:
+        status = request.GET['status']
+    else:
+        if 'status' in request.POST:
+            status = request.POST['status']
+
     context = {
         "FAIL": fail,
         "URL": redirect_url,
@@ -1087,7 +1095,8 @@ def patient_questionnaire_response_update(request, patient_questionnaire_respons
         "questionnaire": questionnaire,
         "questionnaire_title": questionnaire_title,
         "showing": showing,
-        "updating": True
+        "updating": True,
+        "status": status
     }
 
     return render(request, template_name, context)
