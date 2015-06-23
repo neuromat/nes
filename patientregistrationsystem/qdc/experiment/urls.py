@@ -60,13 +60,12 @@ urlpatterns = patterns(
     url(r'^(?P<experiment_id>\d+)/new_component/(?P<component_type>\w+)/$', 'component_create', name='component_new'),
     url(r'^component/(?P<path_of_the_components>[0-9-UG]+)/$', 'component_view', name='component_view'),
     url(r'^component/edit/(?P<path_of_the_components>[0-9-UG]+)/$', 'component_update', name='component_edit'),
-    url(r'^component/(?P<path_of_the_components>[0-9-UG]+)/add_new/(?P<component_type>\w+)/$',
-        'component_add_new', name='component_add_new'),
-    url(r'^component/(?P<path_of_the_components>[0-9-UG]+)/add/(?P<component_id>\d+)/$',
-        'component_reuse', name='component_reuse'),
-    url(r'^component/change_the_order/' +
-        r'(?P<path_of_the_components>[0-9-UG]+)/(?P<configuration_id>[0-9]+)/(?P<command>\w+)/$',
-        'component_change_the_order', name='component_change_the_order'),
+    url(r'^component/(?P<path_of_the_components>[0-9-UG]+)/add_new/(?P<component_type>\w+)/$', 'component_add_new',
+        name='component_add_new'),
+    url(r'^component/(?P<path_of_the_components>[0-9-UG]+)/add/(?P<component_id>\d+)/$', 'component_reuse',
+        name='component_reuse'),
+    url(r'^component/change_the_order/(?P<path_of_the_components>[0-9-UG]+)/(?P<component_configuration_index>[0-9-]+)/'
+        r'(?P<command>\w+)/$', 'component_change_the_order', name='component_change_the_order'),
 
     # Data collection
     url(r'^group/(?P<group_id>\d+)/questionnaire/(?P<component_configuration_id>\d+)/$',

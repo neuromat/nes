@@ -23,7 +23,7 @@
 
 {% block component_add_new %}
     <li role="presentation">
-        <a role="menuitem" tabindex="-1" href="/experiment/component/{{ path_of_the_components }}/add_new/block?position={{ position }}">
+        <a role="menuitem" tabindex="-1" onclick="redirect_with_number_of_uses('/experiment/component/{{ path_of_the_components }}/add_new/block?position={{ position }}')">
             << Novo conjunto de passos >>
         </a>
     </li>
@@ -71,9 +71,10 @@
                 </div>
             </div>
         </div>
-
     </div>
+{% endblock %}
 
+{% block extra_fields_bellow_edit %}
     {% if not updating and not creating %}
         <div class="row">
             <div class="col-xs-12 col-sm-12">
@@ -128,11 +129,17 @@
                                                                                         <a class="glyphicon glyphicon-chevron-right"></a>
                                                                                         {{ accordion|length }} usos agrupados
                                                                                     </td>
-                                                                                    <td class="text-right col-md-1">
-{#                                                                                        TODO Allow moving an accordion down #}
+                                                                                    <td  class="text-right col-md-1">
+                                                                                        {% if accordion != configuration_list|last %}
+                                                                                            {# onclick is needed because if we use href nothing happens, because of the collapse and expand actions of the accordion. #}
+                                                                                            <a class="btn glyphicon glyphicon-arrow-down" onclick="move_accordion('/experiment/component/change_the_order/{{ path_of_the_components }}/{{ forloop.counter0 }}/down/');"></a>
+                                                                                        {% endif %}
                                                                                     </td>
                                                                                     <td class="col-md-1">
-{#                                                                                        TODO Allow moving an accordion up #}
+                                                                                        {% if accordion != configuration_list|first %}
+                                                                                            {# onclick is needed because if we use href nothing happens, because of the collapse and expand actions of the accordion. #}
+                                                                                            <a class="btn glyphicon glyphicon-arrow-up" onclick="move_accordion('/experiment/component/change_the_order/{{ path_of_the_components }}/{{ forloop.counter0 }}/up/');"></a>
+                                                                                        {% endif %}
                                                                                     </td>
                                                                                 {% else %}
                                                                                     <td class="col-md-5">
@@ -212,7 +219,6 @@
                                 {% endfor %}
                             </ul>
                         </div>
-                        </br>
                     {% endif %}
 
                 </div>
@@ -317,7 +323,6 @@
                                     {% endfor %}
                                 </ul>
                             </div>
-                            </br>
                         {% endif %}
 
                     </div>

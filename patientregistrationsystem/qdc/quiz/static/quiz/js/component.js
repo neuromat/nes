@@ -112,3 +112,7 @@ $(document).ready(function () {
         $("[data-toggle=tooltip]").tooltip();
     });
 });
+
+function redirect_with_number_of_uses(url) {
+    window.location.assign(url + "&number_of_uses=" + $("#id_number_of_uses_to_insert").val());
+}

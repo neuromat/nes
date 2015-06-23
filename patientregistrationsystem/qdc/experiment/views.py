@@ -871,6 +871,16 @@ def get_position(request):
     return position
 
 
+def get_number_of_uses(request):
+    number_of_uses = 1
+
+    # number_of_uses is in request.GET also when the request is a post!
+    if 'number_of_uses' in request.GET:
+        number_of_uses = request.GET['number_of_uses']
+
+    return number_of_uses
+
+
 def check_required_fields(surveys, lime_survey_id):
     """
     método para verificar se o questionário tem as questões de identificação corretas
@@ -1148,32 +1158,80 @@ def component_list(request, experiment_id, template_name="experiment/component_l
 
 @login_required
 @permission_required('experiment.change_experiment')
-def component_change_the_order(request, path_of_the_components, configuration_id, command):
-    component_configuration = get_object_or_404(ComponentConfiguration, pk=configuration_id)
-    component = get_object_or_404(Component, pk=component_configuration.parent_id)
+def component_change_the_order(request, path_of_the_components, component_configuration_index, command):
+    # The last id of the list is the one for the current block.
+    list_of_ids_of_components_and_configurations = path_of_the_components.split(delimiter)
+    parent_block = get_object_or_404(Block, pk=list_of_ids_of_components_and_configurations[-1])
 
-    component_configuration_to_exchange = ComponentConfiguration.objects.filter(parent_id=component.id)
-    if command == "down":
-        component_configuration_to_exchange = component_configuration_to_exchange.filter(
-            order__gt=component_configuration.order).order_by('order')
+    configuration_list = create_configuration_list(parent_block)
+
+    index_parts = component_configuration_index.split("-")
+
+    position_of_the_accordion_to_be_moved = int(index_parts[0])
+
+    if len(index_parts) == 2:  # Check the existence of an extra parameter
+        # It means that a single component configuration should be moved
+        position_in_accordion_of_the_conf_to_be_moved = int(index_parts[1])
+        conf_to_move1 = configuration_list[position_of_the_accordion_to_be_moved][
+            position_in_accordion_of_the_conf_to_be_moved]
+        conf_to_move1_order = conf_to_move1.order
+
+        if command == "down":
+            # First configuration that has an order greater than mine.
+            conf_to_move2 = ComponentConfiguration.objects.filter(parent=parent_block).filter(
+                order__gt=conf_to_move1_order).order_by('order')[0]
+        else:
+            # Last configuration that has an order less than mine.
+            conf_to_move2 = ComponentConfiguration.objects.filter(parent=parent_block).filter(
+                order__lt=conf_to_move1_order).order_by('-order')[0]
+
+        conf_to_move2_order = conf_to_move2.order
+
+        # Due to unique and not null restrictions, set a temporary value to conf_to_move order.
+        last_conf_order = configuration_list[-1][-1].order
+        conf_to_move1.order = last_conf_order + 1
+        conf_to_move1.save()
+
+        conf_to_move2.order = conf_to_move1_order
+        conf_to_move2.save()
+
+        conf_to_move1.order = conf_to_move2_order
+        conf_to_move1.save()
+
     else:
-        component_configuration_to_exchange = component_configuration_to_exchange.filter(
-            order__lt=component_configuration.order).order_by('-order')
-    component_configuration_to_exchange = component_configuration_to_exchange[0]
+        # The whole accordion should be moved
+        if command == "down":
+            last = configuration_list[position_of_the_accordion_to_be_moved][-1].order
 
-    configuration_order = component_configuration.order
-    configuration_to_exchange_order = component_configuration_to_exchange.order
-    last_configuration = ComponentConfiguration.objects.filter(
-        parent=component_configuration.parent).order_by('-order').first()
+            # First configuration that has an order greater than last conf of the accordion.
+            conf_to_move2 = ComponentConfiguration.objects.filter(parent=parent_block).filter(
+                order__gt=last).order_by('order')[0]
 
-    component_configuration_to_exchange.order = last_configuration.order + 1
-    component_configuration_to_exchange.save()
+            accordion = reversed(configuration_list[position_of_the_accordion_to_be_moved])
+        else:
+            first = configuration_list[position_of_the_accordion_to_be_moved][0].order
 
-    component_configuration.order = configuration_to_exchange_order
-    component_configuration.save()
+            # Last configuration that has an order less than first conf of the accordion.
+            conf_to_move2 = ComponentConfiguration.objects.filter(parent=parent_block).filter(
+                order__lt=first).order_by('-order')[0]
 
-    component_configuration_to_exchange.order = configuration_order
-    component_configuration_to_exchange.save()
+            accordion = configuration_list[position_of_the_accordion_to_be_moved]
+
+        next_order = conf_to_move2.order
+
+        # Due to unique and not null restrictions, set a temporary value to conf_to_move2 order.
+        last_conf_order = configuration_list[-1][-1].order
+        conf_to_move2.order = last_conf_order + 1
+        conf_to_move2.save()
+
+        for conf in accordion:
+            temp = conf.order
+            conf.order = next_order
+            conf.save()
+            next_order = temp
+
+        conf_to_move2.order = next_order
+        conf_to_move2.save()
 
     redirect_url = reverse("component_view", args=(path_of_the_components,))
 
@@ -1283,8 +1341,8 @@ def create_back_cancel_url(component_type, component_configuration, path_of_the_
         back_cancel_url = "/experiment/component/" + path_of_the_components
     elif len(list_of_ids_of_components_and_configurations) > 1:
         # There is a parent. Remove the current element from the path so that the parent is shown.
-        path_without_last = path_of_the_components[:path_of_the_components.rfind("-")]
-        last_hyphen_index = path_without_last.rfind("-")
+        path_without_last = path_of_the_components[:path_of_the_components.rfind(delimiter)]
+        last_hyphen_index = path_without_last.rfind(delimiter)
 
         if last_hyphen_index == -1:
             parent = path_without_last
@@ -1446,7 +1504,7 @@ def access_objects_for_view_and_update(request, path_of_the_components, updating
     list_of_ids_of_components_and_configurations = path_of_the_components.split(delimiter)
 
     # The last id of the list is the one that we want to show.
-    identification = list_of_ids_of_components_and_configurations[-1]
+    id = list_of_ids_of_components_and_configurations[-1]
 
     group = None
 
@@ -1458,12 +1516,12 @@ def access_objects_for_view_and_update(request, path_of_the_components, updating
     component_configuration = None
     configuration_form = None
 
-    if identification[0] == "U":  # If id starts with 'U' (from 'use'), it is a configuration.
-        component_configuration = get_object_or_404(ComponentConfiguration, pk=identification[1:])
+    if id[0] == "U":  # If id starts with 'U' (from 'use'), it is a configuration.
+        component_configuration = get_object_or_404(ComponentConfiguration, pk=id[1:])
         configuration_form = ComponentConfigurationForm(request.POST or None, instance=component_configuration)
         component = component_configuration.component
     else:
-        component = get_object_or_404(Component, pk=identification)
+        component = get_object_or_404(Component, pk=id)
 
     component_form = ComponentForm(request.POST or None, instance=component)
 
@@ -1498,8 +1556,8 @@ def remove_component_and_related_configurations(component,
     # If the list has more than one element, it has to have more than two, because the last but one element is a
     # component configuration, which has also to be removed from the path.
     if len(list_of_ids_of_components_and_configurations) > 1:
-        path_without_last = path_of_the_components[:path_of_the_components.rfind("-")]
-        path_without_last_two = path_without_last[:path_without_last.rfind("-")]
+        path_without_last = path_of_the_components[:path_of_the_components.rfind(delimiter)]
+        path_without_last_two = path_without_last[:path_without_last.rfind(delimiter)]
         # The parent of the component configuration has to be a block. Then, redirect_url has no "edit" part.
         redirect_url = "/experiment/component/" + path_without_last_two
     else:
@@ -1538,7 +1596,8 @@ def component_view(request, path_of_the_components):
     # It will always be a block because we don't have a view screen for other components.
     block = get_object_or_404(Block, pk=component.id)
     block_form = BlockForm(request.POST or None, instance=block)
-    configuration_list, configuration_list_of_random_components = create_configuration_lists(block)
+    configuration_list = create_configuration_list(block)
+    configuration_list_of_random_components = create_configuration_list_of_random_components(block)
 
     duration_value, has_unlimited = calculate_block_duration(block)
     # Criate a string converting to appropriate units
@@ -1563,7 +1622,7 @@ def component_view(request, path_of_the_components):
             return HttpResponseRedirect(redirect_url)
         elif request.POST['action'][:7] == "remove-":
             # If action starts with 'remove-' it means that a child or some children should be removed.
-            action_parts = request.POST['action'].split("-")
+            action_parts = request.POST['action'].split(delimiter)
 
             if action_parts[1] == "random":
                 list_from_which_to_deleted = configuration_list_of_random_components
@@ -1642,18 +1701,13 @@ def sort_without_using_order(configuration_list_of_random_components):
     return configuration_list_of_random_components
 
 
-def create_configuration_lists(block):
+def create_configuration_list(block):
     configuration_list = ComponentConfiguration.objects.filter(parent=block)
 
     if block.type == "sequence":
         configuration_list = configuration_list.order_by('order')
-
-        # As it is not possible to sort_by get_component_type_display, filter without sorting and sort later.
-        configuration_list_of_random_components = sort_without_using_order(
-            configuration_list.filter(random_position=True))
     else:
         configuration_list = sort_without_using_order(configuration_list)
-        configuration_list_of_random_components = None
 
     for configuration in configuration_list:
         configuration.component.icon_class = icon_class[configuration.component.component_type]
@@ -1668,7 +1722,8 @@ def create_configuration_lists(block):
 
         # Group if same component or if both are random_position
         while i < len(configuration_list) and \
-                (configuration_list[i-1].component == configuration_list[i].component or
+                ((configuration_list[i-1].component == configuration_list[i].component and
+                  configuration_list[i-1].random_position == configuration_list[i].random_position) or
                      (configuration_list[i-1].random_position == configuration_list[i].random_position and
                       configuration_list[i].random_position is True)):
             accordion.append(configuration_list[i])
@@ -1682,6 +1737,17 @@ def create_configuration_lists(block):
     # If all items of this list are random, set the list to be empty.
     if all_random:
         new_list = []
+
+    return new_list
+
+
+def create_configuration_list_of_random_components(block):
+    if block.type == "sequence":
+        # As it is not possible to sort_by get_component_type_display, filter without sorting and sort later.
+        configuration_list_of_random_components = sort_without_using_order(
+            ComponentConfiguration.objects.filter(parent=block, random_position=True))
+    else:
+        configuration_list_of_random_components = None
 
     # Transform configuration_list_of_random_components into a list of lists, to show them in accordions.
     i = 0
@@ -1698,7 +1764,7 @@ def create_configuration_lists(block):
 
         new_random_list.append(accordion)
 
-    return new_list, new_random_list
+    return new_random_list
 
 
 @login_required
@@ -1732,7 +1798,8 @@ def component_update(request, path_of_the_components):
     elif component_type == 'block':
         block = get_object_or_404(Block, pk=component.id)
         specific_form = BlockForm(request.POST or None, instance=block)
-        configuration_list, configuration_list_of_random_components = create_configuration_lists(block)
+        configuration_list = create_configuration_list(block)
+        configuration_list_of_random_components = create_configuration_list_of_random_components(block)
         duration_value, has_unlimited = calculate_block_duration(block)
         # Criate a string converting to appropriate units
         duration_string = convert_to_string(duration_value)
@@ -1874,6 +1941,9 @@ def component_add_new(request, path_of_the_components, component_type):
     # Fixed or random
     position = get_position(request)
 
+    # Number of uses to insert
+    number_of_uses = get_number_of_uses(request)
+
     component_form = ComponentForm(request.POST or None)
     # This is needed for the form to be able to validate the presence of a duration in a pause component only.
     component_form.component_type = component_type
@@ -1885,7 +1955,8 @@ def component_add_new(request, path_of_the_components, component_type):
     number_of_uses_form = None
 
     if not is_configuring_new_experimental_protocol:
-        number_of_uses_form = NumberOfUsesToInsertForm(request.POST or None)
+        number_of_uses_form = NumberOfUsesToInsertForm(request.POST or None,
+                                                       initial={'number_of_uses_to_insert': number_of_uses})
 
     questionnaires_list = []
     specific_form = None
@@ -1936,7 +2007,7 @@ def component_add_new(request, path_of_the_components, component_type):
                 messages.success(request, 'Protocolo experimental incluído com sucesso.')
 
                 redirect_url = reverse("component_view",
-                                       args=(path_of_the_components + "-" + str(new_specific_component.id), ))
+                                       args=(path_of_the_components + delimiter + str(new_specific_component.id), ))
                 return HttpResponseRedirect(redirect_url)
             else:
                 if number_of_uses_form.is_valid():
@@ -2000,6 +2071,9 @@ def component_reuse(request, path_of_the_components, component_id):
     # Fixed or random
     position = get_position(request)
 
+    # Number of uses to insert
+    number_of_uses = get_number_of_uses(request)
+
     component_form = ComponentForm(request.POST or None, instance=component_to_add)
     # This is needed for the form to be able to validate the presence of a duration in a pause component only.
     component_form.component_type = component_type
@@ -2011,7 +2085,8 @@ def component_reuse(request, path_of_the_components, component_id):
     number_of_uses_form = None
 
     if not is_configuring_new_experimental_protocol:
-        number_of_uses_form = NumberOfUsesToInsertForm(request.POST or None)
+        number_of_uses_form = NumberOfUsesToInsertForm(request.POST or None,
+                                                       initial={'number_of_uses_to_insert': number_of_uses})
 
     questionnaire_id = None
     questionnaire_title = None
@@ -2059,7 +2134,7 @@ def component_reuse(request, path_of_the_components, component_id):
             group.save()
 
             redirect_url = reverse("component_view",
-                                   args=(path_of_the_components + "-" + str(component_to_add.id), ))
+                                   args=(path_of_the_components + delimiter + str(component_to_add.id), ))
 
             messages.success(request, 'Passo incluído com sucesso.')
             return HttpResponseRedirect(redirect_url)

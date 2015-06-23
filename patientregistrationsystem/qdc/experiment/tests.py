@@ -265,7 +265,7 @@ class ExperimentalProtocolTest(TestCase):
         self.assertEqual(Task.objects.count(), 0)
         self.assertEqual(Component.objects.count(), 0)
 
-    def test_component_configuration_change_order(self):
+    def test_component_configuration_change_order_single_use(self):
         experiment = Experiment.objects.first()
 
         block = Block.objects.create(identification='Parent block',
@@ -300,7 +300,7 @@ class ExperimentalProtocolTest(TestCase):
         self.assertEqual(component_configuration2.order, 2)
 
         response = self.client.get(reverse("component_change_the_order", args=(block.id,
-                                                                               component_configuration2.id,
+                                                                               "0-1",
                                                                                "up")))
         self.assertEqual(response.status_code, 302)
         # Check if redirected to view block
@@ -309,7 +309,7 @@ class ExperimentalProtocolTest(TestCase):
         self.assertEqual(ComponentConfiguration.objects.get(name="ComponentConfiguration 2").order, 1)
 
         response = self.client.get(reverse("component_change_the_order", args=(block.id,
-                                                                               component_configuration2.id,
+                                                                               "0-0",
                                                                                "down")))
         self.assertEqual(response.status_code, 302)
         # Check if redirected to view block
@@ -317,6 +317,75 @@ class ExperimentalProtocolTest(TestCase):
         self.assertEqual(ComponentConfiguration.objects.get(name="ComponentConfiguration 1").order, 1)
         self.assertEqual(ComponentConfiguration.objects.get(name="ComponentConfiguration 2").order, 2)
 
+    def test_component_configuration_change_order_accordion(self):
+        experiment = Experiment.objects.first()
+
+        block = Block.objects.create(identification='Parent block',
+                                     description='Parent block description',
+                                     experiment=experiment,
+                                     component_type='block',
+                                     type="sequence")
+        block.save()
+
+        task = Task.objects.create(
+            identification='Task identification',
+            description='Task description',
+            experiment=experiment,
+            component_type='task'
+        )
+        task.save()
+
+        component_configuration1 = ComponentConfiguration.objects.create(
+            name='ComponentConfiguration 1',
+            parent=block,
+            component=task
+        )
+        component_configuration1.save()
+        self.assertEqual(component_configuration1.order, 1)
+
+        component_configuration2 = ComponentConfiguration.objects.create(
+            name='ComponentConfiguration 2',
+            parent=block,
+            component=task
+        )
+        component_configuration2.save()
+        self.assertEqual(component_configuration2.order, 2)
+
+        instruction = Instruction.objects.create(
+            identification='Instruction identification',
+            description='Instruction description',
+            experiment=experiment,
+            component_type='instruction'
+        )
+        instruction.save()
+
+        component_configuration3 = ComponentConfiguration.objects.create(
+            name='ComponentConfiguration 3',
+            parent=block,
+            component=instruction
+        )
+        component_configuration3.save()
+        self.assertEqual(component_configuration3.order, 3)
+
+        response = self.client.get(reverse("component_change_the_order", args=(block.id,
+                                                                               "0",
+                                                                               "down")))
+        self.assertEqual(response.status_code, 302)
+        # Check if redirected to view block
+        self.assertTrue("/experiment/component/" + str(block.id) in response.url)
+        self.assertEqual(ComponentConfiguration.objects.get(name="ComponentConfiguration 1").order, 2)
+        self.assertEqual(ComponentConfiguration.objects.get(name="ComponentConfiguration 2").order, 3)
+        self.assertEqual(ComponentConfiguration.objects.get(name="ComponentConfiguration 3").order, 1)
+
+        response = self.client.get(reverse("component_change_the_order", args=(block.id,
+                                                                               "1",
+                                                                               "up")))
+        self.assertEqual(response.status_code, 302)
+        # Check if redirected to view block
+        self.assertTrue("/experiment/component/" + str(block.id) in response.url)
+        self.assertEqual(ComponentConfiguration.objects.get(name="ComponentConfiguration 1").order, 1)
+        self.assertEqual(ComponentConfiguration.objects.get(name="ComponentConfiguration 2").order, 2)
+        self.assertEqual(ComponentConfiguration.objects.get(name="ComponentConfiguration 3").order, 3)
 
 class GroupTest(TestCase):
     def setUp(self):

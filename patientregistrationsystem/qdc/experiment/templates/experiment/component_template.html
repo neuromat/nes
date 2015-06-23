@@ -110,7 +110,7 @@
                                 {% if existing_component_list %}
                                     <ul class="dropdown-menu" role="menu" aria-labelledby="dropdownMenu1">
                                         {% for existing_component in existing_component_list %}
-                                            <li role="presentation"><a role="menuitem" tabindex="-1" href="/experiment/component/{% if path_of_the_components %}{{ path_of_the_components }}{% else %}{{ component.id }}{% endif %}/add/{{ existing_component.id }}{% if position%}?position={{ position }}{% endif %}">{{ existing_component.identification }}</a></li>
+                                            <li role="presentation"><a role="menuitem" tabindex="-1" onclick="redirect_with_number_of_uses('/experiment/component/{% if path_of_the_components %}{{ path_of_the_components }}{% else %}{{ component.id }}{% endif %}/add/{{ existing_component.id }}{% if position%}?position={{ position }}{% endif %}')">{{ existing_component.identification }}</a></li>
                                         {% endfor %}
 
                                         <li role="presentation" class="divider"></li>
@@ -153,20 +153,25 @@
                 {% endblock %}
 
                 {% if component_configuration or not creating and not updating %}
-                    <div class="btn-group pull-left">
-                        <a href=
-                            {% if component_configuration %}
-                                {% if component_configuration.component.component_type == "block" %}
-                                       "/experiment/component/{{ path_of_the_components }}-{{ component_configuration.component.id }}"
+                    <div class="row" style="padding-bottom: 1em">
+                        <div class="col-xs-12 col-sm-12">
+                            <a href=
+                                {% if component_configuration %}
+                                    {% if component_configuration.component.component_type == "block" %}
+                                           "/experiment/component/{{ path_of_the_components }}-{{ component_configuration.component.id }}"
+                                    {% else %}
+                                           "/experiment/component/edit/{{ path_of_the_components }}-{{ component_configuration.component.id }}"
+                                    {% endif %}
                                 {% else %}
-                                       "/experiment/component/edit/{{ path_of_the_components }}-{{ component_configuration.component.id }}"
+                                       "/experiment/component/edit/{{ path_of_the_components }}"
                                 {% endif %}
-                            {% else %}
-                                   "/experiment/component/edit/{{ path_of_the_components }}"
-                            {% endif %}
-                           class="btn btn-primary">Editar</a>
+                               class="btn btn-primary">Editar</a>
+                        </div>
                     </div>
                 {% endif %}
+
+                {% block extra_fields_bellow_edit %}
+                {% endblock %}
             </div>
 
             {% if can_reuse or reusing %}
