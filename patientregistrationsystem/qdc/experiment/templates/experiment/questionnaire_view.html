@@ -2,7 +2,13 @@
 {% load static %}
 {% block activeAdvancedExperiment %}class="active"{% endblock %}
 
-{% block header %}{% endblock %}
+{% block header %}
+    <script>
+        $(function(){
+            $("[data-toggle=tooltip]").tooltip();
+        });
+    </script>
+{% endblock %}
 
 {% block form %}
     <div class="row">
@@ -175,13 +181,9 @@
                                                     {% for response in item.questionnaire_responses %}
                                                         <tr>
                                                             <td>
-                                                                {% if perms.experiment.change_questionnaireresponse and limesurvey_available %}
-                                                                    <a href="/experiment/questionnaire_response/edit/{{ response.questionnaire_response.id }}" data-toggle="tooltip" data-placement="right" title="Completar">
-                                                                        {{ response.questionnaire_response.date }}
-                                                                    </a>
-                                                                {% else %}
+                                                                <a href="/experiment/questionnaire_response/edit/{{ response.questionnaire_response.id }}" data-toggle="tooltip" data-placement="left" title="Ver detalhes">
                                                                     {{ response.questionnaire_response.date }}
-                                                                {% endif %}
+                                                                </a>
                                                             </td>
                                                             <td>
                                                                 {% if limesurvey_available and response.completed != None %}
@@ -199,14 +201,13 @@
                                                     {% endfor %}
                                                     <tr>
                                                         {% if questionnaire_configuration.number_of_fills == None or item.questionnaire_responses|length < questionnaire_configuration.number_of_fills %}
-                                                            <td>
-                                                                {% if perms.experiment.add_questionnaireresponse %}
-                                                                    <a href="/experiment/group/{{ group.id }}/subject/{{ item.subject.id }}/questionnaire/{{ questionnaire_configuration.id }}/response"
-                                                                        class="btn btn-primary {% if not limesurvey_available %} disabled {% endif %}">Novo preenchimento</a>
-                                                                {% endif %}
-                                                            </td>
-                                                            <td></td>
-                                                            <td></td>
+                                                            {% if perms.experiment.add_questionnaireresponse and can_change %}
+                                                                <td colspan="2">
+                                                                    <a href="/experiment/group/{{ group.id }}/subject/{{ item.subject.id }}/questionnaire/{{ questionnaire_configuration.id }}/response" class="btn btn-primary {% if not limesurvey_available %} disabled {% endif %}">
+                                                                        Novo preenchimento
+                                                                    </a>
+                                                                </td>
+                                                            {% endif %}
                                                         {% endif %}
                                                     </tr>
                                                 </table>

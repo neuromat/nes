@@ -152,7 +152,7 @@
                 {% block extra_fields %}
                 {% endblock %}
 
-                {% if component_configuration or not creating and not updating %}
+                {% if component_configuration or not creating and not updating and can_change %}
                     <div class="row" style="padding-bottom: 1em">
                         <div class="col-xs-12 col-sm-12">
                             <a href=
@@ -277,7 +277,7 @@
             <div class="btn-toolbar">
                 {# This div has to be out of the if so that the save and cancel buttons appear separated from each other. #}
                 <div class="btn-group pull-left">
-                    {% if show_remove and perms.experiment.change_researchproject %}
+                    {% if not component_configuration and can_change %}
                         <button type="button" class="btn btn-danger" onclick="$('#modalRemove').modal('show')">Excluir</button>
                     {% endif %}
                 </div>
@@ -292,12 +292,7 @@
                         </button>
                     </div>
                     <div class="btn-group pull-right">
-                        {# As the user is directed to edit the component configuration as soon as a component is inserted in the block, it is better to use the term back, so that the user doesn't think that he can cancel the creation of the component configuration. #}
-                        {% if component_configuration %}
-                            <a href="{{ back_cancel_url }}" class="btn" style="background-color: #f5f5f5">Voltar</a>
-                        {% else %}
-                            <a href="{{ back_cancel_url }}" class="btn" style="background-color: #f5f5f5">Cancelar</a>
-                        {% endif %}
+                        <a href="{{ back_cancel_url }}" class="btn" style="background-color: #f5f5f5">Cancelar</a>
                     </div>
                 {% else %}
                     <div class="btn-group pull-right">
@@ -308,7 +303,7 @@
         </div>
     </div>
 
-    {% if show_remove and perms.experiment.change_researchproject %}
+    {% if not component_configuration and can_change %}
         <div class="modal fade" id="modalRemove" tabindex="-1" role="dialog" aria-labelledby="myModalLabel"
              aria-hidden="true">
             <div class="modal-dialog">

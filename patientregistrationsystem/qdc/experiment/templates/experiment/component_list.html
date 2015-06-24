@@ -96,17 +96,19 @@
                         </tbody>
                     </table>
                 </div>
-                <div class="dropdown">
-                    <button class="btn btn-primary dropdown-toggle" type="button" id="dropdownMenu1" data-toggle="dropdown" aria-expanded="true">
-                        Inserir novo passo
-                        <span class="caret"></span>
-                    </button>
-                    <ul class="dropdown-menu" role="menu" aria-labelledby="dropdownMenu1">
-                        {% for type, type_name, icon in component_type_choices %}
-                            <li role="presentation"><a role="menuitem" tabindex="-1" class="{{ icon }}" href="/experiment/{{ experiment.id }}/new_component/{{ type }}"> {{ type_name }}</a></li>
-                        {% endfor %}
-                    </ul>
-                </div>
+                {% if can_change %}
+                    <div class="dropdown">
+                        <button class="btn btn-primary dropdown-toggle" type="button" id="dropdownMenu1" data-toggle="dropdown" aria-expanded="true">
+                            Inserir novo passo
+                            <span class="caret"></span>
+                        </button>
+                        <ul class="dropdown-menu" role="menu" aria-labelledby="dropdownMenu1">
+                            {% for type, type_name, icon in component_type_choices %}
+                                <li role="presentation"><a role="menuitem" tabindex="-1" class="{{ icon }}" href="/experiment/{{ experiment.id }}/new_component/{{ type }}"> {{ type_name }}</a></li>
+                            {% endfor %}
+                        </ul>
+                    </div>
+                {% endif %}
             </div>
 
             <div class="btn-toolbar">

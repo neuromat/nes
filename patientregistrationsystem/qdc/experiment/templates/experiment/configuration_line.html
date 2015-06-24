@@ -4,7 +4,7 @@
             <span class="{{ configuration.component.icon_class }}"></span>
             {{ configuration.component.get_component_type_display }}
         </td>
-        {% if not component_configuration %}
+        {% if not component_configuration and can_change %}
             <td class="col-md-4">
                 {% if configuration.component.component_type == "block" %}
                     <a data-toggle="tooltip" data-placement="left" title="Editar" href="/experiment/component/{{ path_of_the_components }}-U{{ configuration.id }}">{{ configuration.component.identification }}</a>
@@ -49,7 +49,7 @@
             </td>
         {% endif %}
     {% else %}
-        <td class="text-center" colspan="{% if not component_configuration %}6{% else %}3{% endif %}">
+        <td class="text-center" colspan="{% if not component_configuration and can_change %}6{% else %}3{% endif %}">
             Posição para passo aleatório
         </td>
     {% endif %}

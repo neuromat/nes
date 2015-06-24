@@ -2,6 +2,11 @@
 {% block activeAdvancedExperiment %}class="active"{% endblock %}
 
 {% block header %}
+    <script>
+        $(function(){
+            $("[data-toggle=tooltip]").tooltip();
+        });
+    </script>
 {% endblock %}
 
 {% block form %}
@@ -60,7 +65,7 @@
     <div class="tab-pane fade in active" id="menuUserTab">
         <div class="col-md-10">
             <div class="row">
-                <div class="col-xs-6 col-sm-12">
+                <div class="col-xs-12 col-sm-12">
                     <div class="form-group">
                         <table class="table table-striped">
                             <thead>
@@ -104,13 +109,9 @@
                                                     {% for response in subject_questionnaire.questionnaire_responses %}
                                                         <tr>
                                                             <td>
-                                                                {% if perms.experiment.change_questionnaireresponse and limesurvey_available %}
-                                                                    <a href="/experiment/questionnaire_response/edit/{{ response.questionnaire_response.id }}?origin=experiment_subject" data-toggle="tooltip" data-placement="right" title="Completar">
-                                                                        {{ response.questionnaire_response.date }}
-                                                                    </a>
-                                                                {% else %}
+                                                                <a href="/experiment/questionnaire_response/edit/{{ response.questionnaire_response.id }}?origin=experiment_subject" data-toggle="tooltip" data-placement="left" title="Ver detalhes">
                                                                     {{ response.questionnaire_response.date }}
-                                                                {% endif %}
+                                                                </a>
                                                             </td>
                                                             <td>
                                                                 {% if limesurvey_available and response.completed != None %}
@@ -123,19 +124,17 @@
                                                                     <span class="label label-default">Sem status</span>
                                                                 {% endif %}
                                                             </td>
-
                                                         </tr>
                                                     {% endfor %}
                                                     <tr>
                                                         {% if subject_questionnaire.questionnaire_configuration.number_of_repetitions == None or subject_questionnaire.questionnaire_responses|length < subject_questionnaire.questionnaire_configuration.number_of_repetitions %}
-                                                            <td>
-                                                                {% if perms.experiment.add_questionnaireresponse %}
-                                                                    <a href="/experiment/group/{{ group.id }}/subject/{{ subject.id }}/questionnaire/{{ subject_questionnaire.questionnaire_configuration.id }}/response/?origin=experiment_subject"
-                                                                        class="btn btn-primary {% if not limesurvey_available %} disabled {% endif %}">Novo preenchimento</a>
-                                                                {% endif %}
-                                                            </td>
-                                                            <td></td>
-                                                            <td></td>
+                                                            {% if perms.experiment.add_questionnaireresponse and can_change %}
+                                                                <td colspan="2">
+                                                                    <a href="/experiment/group/{{ group.id }}/subject/{{ subject.id }}/questionnaire/{{ subject_questionnaire.questionnaire_configuration.id }}/response/?origin=experiment_subject" class="btn btn-primary {% if not limesurvey_available %} disabled {% endif %}">
+                                                                        Novo preenchimento
+                                                                    </a>
+                                                                </td>
+                                                            {% endif %}
                                                         {% endif %}
                                                     </tr>
                                                 </table>
@@ -152,7 +151,7 @@
             </div>
             <div class="btn-toolbar">
                 <div class="btn-group pull-left">
-                    {% if not creating and perms.experiment.delete_subject %}
+                    {% if not creating and perms.experiment.delete_subject and can_change %}
                         <button type="button" class="btn btn-danger" onclick="$('#modalRemove').modal('show')">Excluir</button>
                     {% endif %}
                 </div>
@@ -165,20 +164,22 @@
 
     </div>
 
-    <div class="modal fade" id="modalRemove" tabindex="-1" role="dialog" aria-labelledby="myModalLabel"
-         aria-hidden="true">
-        <div class="modal-dialog">
-            <div class="modal-content">
-                <div class="modal-body">
-                    Tem certeza que deseja excluir o participante?
-                </div>
-                <div class="modal-footer">
-                    <button type="button" class="btn btn-default" data-dismiss="modal">Cancelar</button>
-                    <button type="submit" class="btn btn-danger" value="remove" name="action">Excluir</button>
+    {% if not creating and perms.experiment.delete_subject and can_change %}
+        <div class="modal fade" id="modalRemove" tabindex="-1" role="dialog" aria-labelledby="myModalLabel"
+             aria-hidden="true">
+            <div class="modal-dialog">
+                <div class="modal-content">
+                    <div class="modal-body">
+                        Tem certeza que deseja excluir o participante?
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-default" data-dismiss="modal">Cancelar</button>
+                        <button type="submit" class="btn btn-danger" value="remove" name="action">Excluir</button>
+                    </div>
                 </div>
             </div>
         </div>
-    </div>
+    {% endif %}
 
 {% endblock %}
 

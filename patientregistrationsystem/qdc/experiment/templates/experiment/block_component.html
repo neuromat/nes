@@ -12,7 +12,7 @@
     {% if creating %}
         <li class="active">Novo conjunto de passos</li>
     {% else %}
-        {% if updating and component_configuration == None %}
+        {% if updating and not component_configuration %}
             <li class="active"> Edição </li>
         {% endif %}
     {% endif %}
@@ -89,7 +89,7 @@
                             <thead>
                             <tr>
                                 <th class="col-md-2">Tipo</th>
-                                {% if not component_configuration %}
+                                {% if not component_configuration and can_change %}
                                     <th class="col-md-4">Passo</th>
                                     {% if component.type == "sequence" %}
                                         <th class="col-md-3">Nome do uso</th>
@@ -120,7 +120,7 @@
                                                                                 <span class="{{ accordion.0.component.icon_class }}"></span>
                                                                                 {{ accordion.0.component.get_component_type_display }}
                                                                             </td>
-                                                                            {% if not component_configuration %}
+                                                                            {% if not component_configuration and can_change %}
                                                                                 <td class="col-md-4">
                                                                                     {{ accordion.0.component.identification }}
                                                                                 </td>
@@ -147,13 +147,11 @@
                                                                                         {{ accordion|length }} usos agrupados
                                                                                     </td>
                                                                                 {% endif %}
-                                                                                {% if not component_configuration %}
-                                                                                    <td class="text-center col-md-1">
-                                                                                        <a class="btn glyphicon glyphicon-remove" style="color: indianred;"
-                                                                                           data-toggle="tooltip" data-placement="right" title="Remover usos da lista"
-                                                                                        onclick="show_modal_remove_many('fixed', {{ forloop.counter0 }}, {{ accordion|length }});"></a>
-                                                                                    </td>
-                                                                                {% endif %}
+                                                                                <td class="text-center col-md-1">
+                                                                                    <a class="btn glyphicon glyphicon-remove" style="color: indianred;"
+                                                                                       data-toggle="tooltip" data-placement="right" title="Remover usos da lista"
+                                                                                    onclick="show_modal_remove_many('fixed', {{ forloop.counter0 }}, {{ accordion|length }});"></a>
+                                                                                </td>
                                                                             {% else %}
                                                                                 <td class="col-md-5">
                                                                                     {{ accordion.0.component.identification }}
@@ -165,7 +163,7 @@
                                                                             {% endif %}
                                                                         </tr>
                                                                     {% else %}
-                                                                        <td class="text-center" colspan="{% if not component_configuration %}6{% else %}3{% endif %}">
+                                                                        <td class="text-center" colspan="{% if not component_configuration and can_change %}6{% else %}3{% endif %}">
                                                                             <a class="glyphicon glyphicon-chevron-right"></a>
                                                                             {{ accordion|length }} posições para passo aleatório agrupadas
                                                                         </td>
@@ -207,7 +205,7 @@
                         </table>
                     </div>
 
-                    {% if not component_configuration %}
+                    {% if not component_configuration and can_change %}
                         <div class="dropdown">
                             <button class="btn btn-primary dropdown-toggle" type="button" id="dropdownMenu1" data-toggle="dropdown" aria-expanded="true">
                                 Inserir passo
@@ -233,7 +231,7 @@
                                 <thead>
                                 <tr>
                                     <th class="col-md-2">Tipo</th>
-                                    {% if not component_configuration %}
+                                    {% if not component_configuration and can_change %}
                                         <th class="col-md-4">Passo</th>
                                         <th class="col-md-5">Nome do uso</th>
                                         <th class="col-md-1">Remover</th>
@@ -265,7 +263,7 @@
                                                                                 <a class="glyphicon glyphicon-chevron-right"></a>
                                                                                 {{ accordion|length }} usos agrupados
                                                                             </td>
-                                                                            {% if not component_configuration %}
+                                                                            {% if not component_configuration and can_change %}
                                                                                 <td class="text-center col-md-1">
                                                                                     <a class="btn glyphicon glyphicon-remove" style="color: indianred;"
                                                                                        data-toggle="tooltip" data-placement="right" title="Remover usos da lista"
@@ -301,7 +299,7 @@
                                         {% endfor %}
                                     {% else %}
                                         <tr>
-                                            <td class="text-center" colspan="{% if not component_configuration %}4{% else %}3{% endif %}">
+                                            <td class="text-center" colspan="{% if not component_configuration and can_change %}4{% else %}3{% endif %}">
                                                 Não possui
                                             </td>
                                         </tr>
@@ -311,7 +309,7 @@
                             </table>
                         </div>
 
-                        {% if not component_configuration %}
+                        {% if not component_configuration and can_change %}
                             <div class="dropdown">
                                 <button class="btn btn-primary dropdown-toggle" type="button" id="dropdownMenu1" data-toggle="dropdown" aria-expanded="true">
                                     Inserir passo

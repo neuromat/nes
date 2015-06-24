@@ -4,7 +4,7 @@
         {{ configuration.component.get_component_type_display }}
     </td>
     <td class="col-md-4">
-        {% if component_configuration %}
+        {% if component_configuration or not can_change %}
             {{ configuration.component.identification }}
         {% else %}
             {% if configuration.component.component_type == "block" %}
@@ -20,7 +20,7 @@
             {{ configuration.name }}
         {% endif %}
     </td>
-    {% if not component_configuration %}
+    {% if not component_configuration and can_change %}
         <td class="text-center col-md-1">
             <a class="btn glyphicon glyphicon-remove" data-toggle="tooltip" data-placement="right" title="Remover da lista" style="color: indianred;" onclick="show_modal_remove('random', {{ forloop.parentloop.counter0 }}, {{ forloop.counter0 }});"></a>
         </td>

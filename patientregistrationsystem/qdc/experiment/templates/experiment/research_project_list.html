@@ -42,12 +42,13 @@
                             <tr>
                                 <th>Título</th>
                                 <th>Vigência</th>
+                                <th>Responsável</th>
                             </tr>
                         </thead>
                         <tbody>
                         {% for research_project in research_projects %}
                             <tr>
-                                <td>{% if perms.experiment.change_researchproject %}
+                                <td>{% if perms.experiment.view_researchproject %}
                                         <a data-toggle="tooltip" data-placement="left" title="Visualizar"
                                            href="/experiment/research_project/{{ research_project.id }}">
                                             {{ research_project.title }}
@@ -57,6 +58,7 @@
                                     {% endif %}
                                 </td>
                                 <td>{{ research_project.start_date }}<br>a<br>{{ research_project.end_date }}</td>
+                                <td>{{ research_project.owner.first_name }} {{ research_project.owner.last_name }}</td>
                             </tr>
                         {% endfor %}
                         </tbody>

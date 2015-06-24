@@ -80,8 +80,13 @@ def research_project_create(request, template_name="experiment/research_project_
     return render(request, template_name, context)
 
 
+def get_can_change(user, research_project):
+    return (user.has_perm('experiment.change_researchproject') and user == research_project.owner) \
+        or user.has_perm('experiment.change_researchproject_from_others')
+
+
 @login_required
-@permission_required('experiment.change_researchproject')
+@permission_required('experiment.view_researchproject')
 def research_project_view(request, research_project_id, template_name="experiment/research_project_register.html"):
     research_project = get_object_or_404(ResearchProject, pk=research_project_id)
     research_project_form = ResearchProjectForm(request.POST or None, instance=research_project)
@@ -101,10 +106,12 @@ def research_project_view(request, research_project_id, template_name="experimen
                 messages.error(request, "Erro ao tentar excluir o estudo.")
 
     context = {
+        "can_change": get_can_change(request.user, research_project),
+        "experiments": research_project.experiment_set.order_by('title'),
+        "keywords": research_project.keywords.order_by('name'),
         "research_project": research_project,
         "research_project_form": research_project_form,
-        "keywords": research_project.keywords.order_by('name'),
-        "experiments": research_project.experiment_set.order_by('title')}
+        }
 
     return render(request, template_name, context)
 
@@ -283,10 +290,12 @@ def experiment_view(request, experiment_id, template_name="experiment/experiment
                 raise PermissionDenied
 
     context = {
-        "research_project": experiment.research_project,
+        "can_change": get_can_change(request.user, experiment.research_project),
+        "experiment": experiment,
         "experiment_form": experiment_form,
         "group_list": group_list,
-        "experiment": experiment}
+        "research_project": experiment.research_project,
+    }
 
     return render(request, template_name, context)
 
@@ -413,8 +422,6 @@ def group_view(request, group_id, template_name="experiment/group_register.html"
     for field in group_form.fields:
         group_form.fields[field].widget.attrs['disabled'] = True
 
-    experiment = get_object_or_404(Experiment, pk=group.experiment_id)
-
     # Navigate the components of the experimental protocol from the root to see if there is any questionnaire component
     # in this group.
     if group.experimental_protocol is not None:
@@ -432,14 +439,14 @@ def group_view(request, group_id, template_name="experiment/group_register.html"
     else:
         list_of_questionnaires_configuration = None
 
+    can_change = get_can_change(request.user, group.experiment.research_project)
+
     if request.method == "POST":
-        if request.user.has_perm('experiment.change_researchproject_from_others') or \
-                (experiment.research_project.owner == request.user and
-                 request.user.has_perm('experiment.change_experiment')):
+        if can_change:
             if request.POST['action'] == "remove":
                 try:
                     group.delete()
-                    redirect_url = reverse("experiment_view", args=(experiment.id,))
+                    redirect_url = reverse("experiment_view", args=(group.experiment.id,))
                     return HttpResponseRedirect(redirect_url)
                 except ProtectedError:
                     messages.error(request, "Não foi possível excluir o grupo, pois há dependências.")
@@ -450,10 +457,11 @@ def group_view(request, group_id, template_name="experiment/group_register.html"
             raise PermissionDenied
 
     context = {
+        "can_change": can_change,
         "classification_of_diseases_list": group.classification_of_diseases.all(),
         "group_form": group_form,
         "questionnaires_configuration_list": list_of_questionnaires_configuration,
-        "experiment": experiment,
+        "experiment": group.experiment,
         "group": group,
         "editing": False,
         "number_of_subjects": SubjectOfGroup.objects.all().filter(group=group).count()
@@ -606,6 +614,7 @@ def questionnaire_view(request, group_id, component_configuration_id,
     surveys.release_session_key()
 
     context = {
+        "can_change": get_can_change(request.user, group.experiment.research_project),
         "group": group,
         "questionnaire_title": questionnaire_title,
         "questionnaire_configuration": questionnaire_configuration,
@@ -638,6 +647,7 @@ def recursively_create_list_of_questionnaires(block_id, list_of_questionnaires_c
 @permission_required('experiment.view_experiment')
 def subjects(request, group_id, template_name="experiment/subjects.html"):
     group = get_object_or_404(Group, id=group_id)
+    subject_list = SubjectOfGroup.objects.filter(group=group).order_by('subject__patient__name')
     subject_list_with_status = []
     surveys = Questionnaires()
     limesurvey_available = check_limesurvey_access(request, surveys)
@@ -649,7 +659,7 @@ def subjects(request, group_id, template_name="experiment/subjects.html"):
                                                                                          [])
 
         # For each subject of the group...
-        for subject_of_group in SubjectOfGroup.objects.filter(group=group).order_by('subject__patient__name'):
+        for subject_of_group in subject_list:
             number_of_questionnaires_filled = 0
 
             # For each questionnaire in the experimental protocol of the group...
@@ -701,10 +711,20 @@ def subjects(request, group_id, template_name="experiment/subjects.html"):
                  'total_of_questionnaires': len(list_of_questionnaires_configuration),
                  'percentage': percentage,
                  'consent': subject_of_group.consent_form})
+    else:
+        for subject_of_group in subject_list:
+            subject_list_with_status.append(
+                {'subject': subject_of_group.subject,
+                 'number_of_questionnaires_filled': 0,
+                 'total_of_questionnaires': 0,
+                 'percentage': 0,
+                 'consent': subject_of_group.consent_form})
+
 
     surveys.release_session_key()
 
     context = {
+        "can_change": get_can_change(request.user, group.experiment.research_project),
         'group': group,
         'subject_list': subject_list_with_status,
         "limesurvey_available": limesurvey_available
@@ -804,8 +824,8 @@ def subject_questionnaire_response_create(request, group_id, subject_id, questio
 
         if request.method == "POST":
             if request.POST['action'] == "save":
-                redirect_url, questionnaire_response_id = \
-                    subject_questionnaire_response_start_fill_questionnaire(request, subject_id, group_id, questionnaire_id)
+                redirect_url, questionnaire_response_id = subject_questionnaire_response_start_fill_questionnaire(
+                    request, subject_id, group_id, questionnaire_id)
                 if not redirect_url:
                     fail = True
                 else:
@@ -905,19 +925,20 @@ def questionnaire_response_view(request, questionnaire_response_id,
     origin = get_origin(request)
 
     context = {
+        "can_change": get_can_change(request.user, group.experiment.research_project),
+        "completed": survey_completed,
+        "creating": False,
         "FAIL": fail,
-        "URL": redirect_url,
-        "questionnaire_response_form": questionnaire_response_form,
+        "group": group,
+        "origin": origin,
         "questionnaire_configuration": questionnaire_response.component_configuration,
-        "survey_title": survey_title,
-        "survey_active": survey_active,
+        "questionnaire_response_form": questionnaire_response_form,
         "questionnaire_response_id": questionnaire_response_id,
         "questionnaire_responsible": questionnaire_response.questionnaire_responsible,
-        "creating": False,
         "subject": subject,
-        "completed": survey_completed,
-        "group": group,
-        "origin": origin
+        "survey_active": survey_active,
+        "survey_title": survey_title,
+        "URL": redirect_url,
     }
 
     return render(request, template_name, context)
@@ -1079,6 +1100,8 @@ def subject_questionnaire_view(request, group_id, subject_id,
              'questionnaire_responses': questionnaire_responses_with_status}
         )
 
+    surveys.release_session_key()
+
     if request.method == "POST":
         if request.POST['action'] == "remove":
             if can_remove:
@@ -1093,13 +1116,12 @@ def subject_questionnaire_view(request, group_id, subject_id,
                 return HttpResponseRedirect(redirect_url)
 
     context = {
-        'subject': subject,
+        "can_change": get_can_change(request.user, group.experiment.research_project),
         'group': group,
+        'limesurvey_available': limesurvey_available,
+        'subject': subject,
         'subject_questionnaires': subject_questionnaires,
-        'limesurvey_available': limesurvey_available
     }
-
-    surveys.release_session_key()
 
     return render(request, template_name, context)
 
@@ -1233,9 +1255,10 @@ def component_list(request, experiment_id, template_name="experiment/component_l
         component_type_choices.append((type_element, type_name, icon_class.get(type_element)))
 
     context = {
-        "experiment": experiment,
+        "can_change": get_can_change(request.user, experiment.research_project),
         "component_list": components,
-        "component_type_choices": component_type_choices
+        "component_type_choices": component_type_choices,
+        "experiment": experiment,
     }
 
     return render(request, template_name, context)
@@ -1626,16 +1649,11 @@ def access_objects_for_view_and_update(request, path_of_the_components, updating
     # This is needed for the form to be able to validate the presence of a duration in a pause component only.
     component_form.component_type = component_type
 
-    if component_configuration is None:
-        show_remove = True
-    else:
-        show_remove = False
-
     back_cancel_url = create_back_cancel_url(component_type, component_configuration, path_of_the_components,
                                              list_of_ids_of_components_and_configurations, experiment, updating)
 
     return component, component_configuration, component_form, configuration_form, experiment, component_type,\
-        template_name, list_of_ids_of_components_and_configurations, show_remove, list_of_breadcrumbs, group,\
+        template_name, list_of_ids_of_components_and_configurations, list_of_breadcrumbs, group,\
         back_cancel_url
 
 
@@ -1681,7 +1699,7 @@ def remove_component_configuration(conf):
 @permission_required('experiment.view_experiment')
 def component_view(request, path_of_the_components):
     component, component_configuration, component_form, configuration_form, experiment, component_type, template_name,\
-        list_of_ids_of_components_and_configurations, show_remove, list_of_breadcrumbs, group, back_cancel_url =\
+        list_of_ids_of_components_and_configurations, list_of_breadcrumbs, group, back_cancel_url =\
         access_objects_for_view_and_update(request, path_of_the_components)
 
     # It will always be a block because we don't have a view screen for other components.
@@ -1751,6 +1769,7 @@ def component_view(request, path_of_the_components):
     context = {
         "back_cancel_url": back_cancel_url,
         "block_duration": duration_string,
+        "can_change": get_can_change(request.user, experiment.research_project),
         "component": block,
         "component_configuration": component_configuration,
         "component_form": component_form,
@@ -1763,7 +1782,6 @@ def component_view(request, path_of_the_components):
         "icon_class": icon_class,
         "list_of_breadcrumbs": list_of_breadcrumbs,
         "path_of_the_components": path_of_the_components,
-        "show_remove": show_remove,
         "specific_form": block_form,
         "type_of_the_parent_block": type_of_the_parent_block,
         "component_type_choices": component_type_choices,
@@ -1867,7 +1885,7 @@ def create_configuration_list_of_random_components(block):
 @permission_required('experiment.change_experiment')
 def component_update(request, path_of_the_components):
     component, component_configuration, component_form, configuration_form, experiment, component_type, template_name,\
-        list_of_ids_of_components_and_configurations, show_remove, list_of_breadcrumbs, group, back_cancel_url =\
+        list_of_ids_of_components_and_configurations, list_of_breadcrumbs, group, back_cancel_url =\
         access_objects_for_view_and_update(request, path_of_the_components, updating=True)
 
     if request.user.has_perm('experiment.change_researchproject_from_others') or experiment.research_project.owner == \
@@ -1984,7 +2002,6 @@ def component_update(request, path_of_the_components):
             "path_of_the_components": path_of_the_components,
             "questionnaire_id": questionnaire_id,
             "questionnaire_title": questionnaire_title,
-            "show_remove": show_remove,
             "specific_form": specific_form,
             "updating": True,
             "type_of_the_parent_block": type_of_the_parent_block,
