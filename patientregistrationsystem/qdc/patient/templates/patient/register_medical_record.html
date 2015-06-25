@@ -45,10 +45,9 @@
                         </table>
                     </div>
                     {% if not inserting and editing %}
-                        {%  if perms.patient.add_medicalrecorddata %}
+                        {% if perms.patient.add_medicalrecorddata %}
                             <div class="btn-group pull-left">
-                                <a href="/patient/{{ patient_id }}/medical_record/new/" class="btn btn-primary">Inserir
-                                    avaliação médica</a>
+                                <a href="/patient/{{ patient_id }}/medical_record/new/" class="btn btn-primary">Inserir avaliação médica</a>
                             </div>
                         {% endif %}
                     {% endif %}

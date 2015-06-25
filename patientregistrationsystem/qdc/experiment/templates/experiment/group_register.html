@@ -44,12 +44,7 @@
 
 
     <div class="tab-pane fade in active" id="experimentBreadCrumb">
-
-        <div class="col-md-1">
-        </div>
-
         <div class="col-md-10">
-
             <ol class="breadcrumb">
                 <li><a href="/home">Home</a></li>
                 <li><a href="/experiment/research_project/list">Estudos</a></li>
@@ -66,12 +61,7 @@
                         <li class="active"> {{ group_form.title.value }} </li>
                     {% endif %}
                 {% endif %}
-
             </ol>
-
-        </div>
-
-        <div class="col-md-1">
         </div>
     </div>
 
@@ -306,7 +296,7 @@
 
             <div class="btn-toolbar">
                 <div class="btn-group pull-left">
-                    {% if not editing and perms.experiment.delete_experiment %}
+                    {% if not editing and perms.experiment.delete_experiment and can_change %}
                         <button type="button" class="btn btn-danger" onclick="$('#modalRemove').modal('show')">Excluir</button>
                     {% endif %}
                 </div>

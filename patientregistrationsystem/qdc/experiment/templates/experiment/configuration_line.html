@@ -40,7 +40,11 @@
             </td>
         {% else %}
             <td class="col-md-5">
-                {{ configuration.component.identification }}
+                {% if configuration.component.component_type == "block" %}
+                    <a data-toggle="tooltip" data-placement="left" title="Editar" href="/experiment/component/{{ path_of_the_components }}-U{{ configuration.id }}">{{ configuration.component.identification }}</a>
+                {% else %}
+                    <a data-toggle="tooltip" data-placement="left" title="Editar" href="/experiment/component/edit/{{ path_of_the_components }}-U{{ configuration.id }}">{{ configuration.component.identification }}</a>
+                {% endif %}
             </td>
             <td class="col-md-3">
                 {% if configuration.name != None %}

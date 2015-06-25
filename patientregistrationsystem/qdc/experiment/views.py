@@ -121,8 +121,7 @@ def research_project_view(request, research_project_id, template_name="experimen
 def research_project_update(request, research_project_id, template_name="experiment/research_project_register.html"):
     research_project = get_object_or_404(ResearchProject, pk=research_project_id)
 
-    if request.user.has_perm('experiment.change_researchproject_from_others') or research_project.owner == \
-            request.user:
+    if get_can_change(request.user, research_project):
         research_project_form = ResearchProjectForm(request.POST or None, instance=research_project)
 
         if request.method == "POST":
@@ -178,8 +177,7 @@ def keyword_search_ajax(request):
 def keyword_create_ajax(request, research_project_id, keyword_name):
     research_project = get_object_or_404(ResearchProject, pk=research_project_id)
 
-    if request.user.has_perm('experiment.change_researchproject_from_others') or research_project.owner == \
-            request.user:
+    if get_can_change(request.user, research_project):
         keyword = Keyword.objects.create(name=keyword_name)
         keyword.save()
 
@@ -196,8 +194,7 @@ def keyword_create_ajax(request, research_project_id, keyword_name):
 def keyword_add_ajax(request, research_project_id, keyword_id):
     research_project = get_object_or_404(ResearchProject, pk=research_project_id)
 
-    if request.user.has_perm('experiment.change_researchproject_from_others') or research_project.owner == \
-            request.user:
+    if get_can_change(request.user, research_project):
         keyword = get_object_or_404(Keyword, pk=keyword_id)
         research_project.keywords.add(keyword)
 
@@ -222,8 +219,7 @@ def manage_keywords(keyword, research_projects):
 def keyword_remove_ajax(request, research_project_id, keyword_id):
     research_project = get_object_or_404(ResearchProject, pk=research_project_id)
 
-    if request.user.has_perm('experiment.change_researchproject_from_others') or research_project.owner == \
-            request.user:
+    if get_can_change(request.user, research_project):
         keyword = get_object_or_404(Keyword, pk=keyword_id)
         research_project.keywords.remove(keyword)
 
@@ -240,8 +236,7 @@ def keyword_remove_ajax(request, research_project_id, keyword_id):
 def experiment_create(request, research_project_id, template_name="experiment/experiment_register.html"):
     research_project = get_object_or_404(ResearchProject, pk=research_project_id)
 
-    if request.user.has_perm('experiment.change_researchproject_from_others') or research_project.owner == \
-            request.user:
+    if get_can_change(request.user, research_project):
         experiment_form = ExperimentForm(request.POST or None, initial={'research_project': research_project_id})
 
         if request.method == "POST":
@@ -279,8 +274,7 @@ def experiment_view(request, experiment_id, template_name="experiment/experiment
         if request.POST['action'] == "remove":
             research_project = experiment.research_project
 
-            if request.user.has_perm('experiment.change_researchproject_from_others') or research_project.owner == \
-                    request.user:
+            if get_can_change(request.user, research_project):
                 try:
                     experiment.delete()
                     return redirect('research_project_view', research_project_id=research_project.id)
@@ -305,8 +299,7 @@ def experiment_view(request, experiment_id, template_name="experiment/experiment
 def experiment_update(request, experiment_id, template_name="experiment/experiment_register.html"):
     experiment = get_object_or_404(Experiment, pk=experiment_id)
 
-    if request.user.has_perm('experiment.change_researchproject_from_others') or experiment.research_project.owner == \
-            request.user:
+    if get_can_change(request.user, experiment.research_project):
         group_list = Group.objects.filter(experiment=experiment)
         experiment_form = ExperimentForm(request.POST or None, instance=experiment)
 
@@ -339,8 +332,7 @@ def experiment_update(request, experiment_id, template_name="experiment/experime
 def group_create(request, experiment_id, template_name="experiment/group_register.html"):
     experiment = get_object_or_404(Experiment, pk=experiment_id)
 
-    if request.user.has_perm('experiment.change_researchproject_from_others') or experiment.research_project.owner == \
-            request.user:
+    if get_can_change(request.user, experiment.research_project):
         group_form = GroupForm(request.POST or None)
 
         if request.method == "POST":
@@ -474,10 +466,8 @@ def group_view(request, group_id, template_name="experiment/group_register.html"
 @permission_required('experiment.change_experiment')
 def group_update(request, group_id, template_name="experiment/group_register.html"):
     group = get_object_or_404(Group, pk=group_id)
-    experiment = get_object_or_404(Experiment, pk=group.experiment_id)
 
-    if request.user.has_perm('experiment.change_researchproject_from_others') or experiment.research_project.owner == \
-            request.user:
+    if get_can_change(request.user, group.experiment.research_project):
         group_form = GroupForm(request.POST or None, instance=group)
 
         if request.method == "POST":
@@ -495,7 +485,7 @@ def group_update(request, group_id, template_name="experiment/group_register.htm
         context = {
             "group_form": group_form,
             "editing": True,
-            "experiment": experiment,
+            "experiment": group.experiment,
             "group": group,
         }
 
@@ -524,8 +514,7 @@ def classification_of_diseases_insert(request, group_id, classification_of_disea
     """Add group disease"""
     group = get_object_or_404(Group, pk=group_id)
 
-    if request.user.has_perm('experiment.change_researchproject_from_others') or \
-            group.experiment.research_project.owner == request.user:
+    if get_can_change(request.user, group.experiment.research_project):
         classification_of_diseases = get_object_or_404(ClassificationOfDiseases, pk=classification_of_diseases_id)
         group.classification_of_diseases.add(classification_of_diseases)
         redirect_url = reverse("group_view", args=(group_id,))
@@ -540,8 +529,7 @@ def classification_of_diseases_remove(request, group_id, classification_of_disea
     """Remove group disease"""
     group = get_object_or_404(Group, pk=group_id)
 
-    if request.user.has_perm('experiment.change_researchproject_from_others') or \
-            group.experiment.research_project.owner == request.user:
+    if get_can_change(request.user, group.experiment.research_project):
         classification_of_diseases = get_object_or_404(ClassificationOfDiseases, pk=classification_of_diseases_id)
         classification_of_diseases.group_set.remove(group)
         redirect_url = reverse("group_view", args=(group_id,))
@@ -806,8 +794,7 @@ def subject_questionnaire_response_create(request, group_id, subject_id, questio
                                           template_name="experiment/subject_questionnaire_response_form.html"):
     group = get_object_or_404(Group, id=group_id)
 
-    if request.user.has_perm('experiment.change_researchproject_from_others') or \
-            group.experiment.research_project.owner == request.user:
+    if get_can_change(request.user, group.experiment.research_project):
         questionnaire_config = get_object_or_404(ComponentConfiguration, id=questionnaire_id)
         surveys = Questionnaires()
         lime_survey_id = Questionnaire.objects.get(id=questionnaire_config.component_id).survey.lime_survey_id
@@ -880,8 +867,7 @@ def questionnaire_response_view(request, questionnaire_response_id,
     redirect_url = None
 
     if request.method == "POST":
-        if request.user.has_perm('experiment.change_researchproject_from_others') or \
-                group.experiment.research_project.owner == request.user:
+        if get_can_change(request.user, group.experiment.research_project):
             if request.POST['action'] == "save":
                 redirect_url = get_limesurvey_response_url(questionnaire_response)
 
@@ -1131,8 +1117,7 @@ def subject_questionnaire_view(request, group_id, subject_id,
 def subjects_insert(request, group_id, patient_id):
     group = get_object_or_404(Group, id=group_id)
 
-    if request.user.has_perm('experiment.change_researchproject_from_others') or \
-            group.experiment.research_project.owner == request.user:
+    if get_can_change(request.user, group.experiment.research_project):
         patient = get_object_or_404(Patient, pk=patient_id)
 
         subject = Subject()
@@ -1180,8 +1165,7 @@ def search_patients_ajax(request):
 def upload_file(request, subject_id, group_id, template_name="experiment/upload_consent_form.html"):
     group = get_object_or_404(Group, pk=group_id)
 
-    if request.user.has_perm('experiment.change_researchproject_from_others') or \
-            group.experiment.research_project.owner == request.user:
+    if get_can_change(request.user, group.experiment.research_project):
         subject = get_object_or_404(Subject, pk=subject_id)
         subject_of_group = get_object_or_404(SubjectOfGroup, subject=subject, group=group)
 
@@ -1271,8 +1255,7 @@ def component_change_the_order(request, path_of_the_components, component_config
     list_of_ids_of_components_and_configurations = path_of_the_components.split(delimiter)
     parent_block = get_object_or_404(Block, pk=list_of_ids_of_components_and_configurations[-1])
 
-    if request.user.has_perm('experiment.change_researchproject_from_others') or \
-            parent_block.experiment.research_project.owner == request.user:
+    if get_can_change(request.user, parent_block.experiment.research_project):
         configuration_list = create_configuration_list(parent_block)
         index_parts = component_configuration_index.split("-")
         position_of_the_accordion_to_be_moved = int(index_parts[0])
@@ -1353,8 +1336,7 @@ def component_change_the_order(request, path_of_the_components, component_config
 def component_create(request, experiment_id, component_type):
     experiment = get_object_or_404(Experiment, pk=experiment_id)
 
-    if request.user.has_perm('experiment.change_researchproject_from_others') or \
-            experiment.research_project.owner == request.user:
+    if get_can_change(request.user, experiment.research_project):
         template_name = "experiment/" + component_type + "_component.html"
         component_form = ComponentForm(request.POST or None)
         # This is needed for the form to be able to validate the presence of a duration in a pause component only.
@@ -1698,11 +1680,13 @@ def remove_component_configuration(conf):
 @login_required
 @permission_required('experiment.view_experiment')
 def component_view(request, path_of_the_components):
+    # It will always be a block because we don't have a view screen for other components.
+    # This view is also use to show the use of a set of steps (component configuration of a block).
+
     component, component_configuration, component_form, configuration_form, experiment, component_type, template_name,\
         list_of_ids_of_components_and_configurations, list_of_breadcrumbs, group, back_cancel_url =\
         access_objects_for_view_and_update(request, path_of_the_components)
 
-    # It will always be a block because we don't have a view screen for other components.
     block = get_object_or_404(Block, pk=component.id)
     block_form = BlockForm(request.POST or None, instance=block)
     configuration_list = create_configuration_list(block)
@@ -1718,9 +1702,7 @@ def component_view(request, path_of_the_components):
             form.fields[field].widget.attrs['disabled'] = True
 
     if request.method == "POST":
-        if request.user.has_perm('experiment.change_researchproject_from_others') or \
-                (experiment.research_project.owner == request.user and
-                 request.user.has_perm('experiment.change_experiment')):
+        if get_can_change(request.user, experiment.research_project):
             if request.POST['action'] == "save":
                 if configuration_form is not None:
                     if configuration_form.is_valid():
@@ -1761,15 +1743,23 @@ def component_view(request, path_of_the_components):
     for type_element, type_name in Component.COMPONENT_TYPES:
         component_type_choices.append((type_element, type_name, icon_class.get(type_element)))
 
+    can_change = get_can_change(request.user, experiment.research_project)
+
     # This value is used to define if the options Fixed/Radon should be shown.
     type_of_the_parent_block = None
-    if component_configuration is not None:
+    if component_configuration:
         type_of_the_parent_block = Block.objects.get(id=component_configuration.parent_id).type
+
+        # If the user is not the owner of the research_project, not event the fields of the component configuration
+        # can be edited.
+        if not can_change:
+            for field in configuration_form.fields:
+                configuration_form.fields[field].widget.attrs['disabled'] = True
 
     context = {
         "back_cancel_url": back_cancel_url,
         "block_duration": duration_string,
-        "can_change": get_can_change(request.user, experiment.research_project),
+        "can_change": can_change,
         "component": block,
         "component_configuration": component_configuration,
         "component_form": component_form,
@@ -1888,39 +1878,40 @@ def component_update(request, path_of_the_components):
         list_of_ids_of_components_and_configurations, list_of_breadcrumbs, group, back_cancel_url =\
         access_objects_for_view_and_update(request, path_of_the_components, updating=True)
 
-    if request.user.has_perm('experiment.change_researchproject_from_others') or experiment.research_project.owner == \
-            request.user:
-        questionnaire_id = None
-        questionnaire_title = None
-        configuration_list = []
-        configuration_list_of_random_components = []
-        specific_form = None
-        duration_string = None
-        has_unlimited = None
+    questionnaire_id = None
+    questionnaire_title = None
+    configuration_list = []
+    configuration_list_of_random_components = []
+    specific_form = None
+    duration_string = None
+    has_unlimited = None
 
-        if component_type == 'instruction':
-            instruction = get_object_or_404(Instruction, pk=component.id)
-            specific_form = InstructionForm(request.POST or None, instance=instruction)
-        elif component_type == 'stimulus':
-            stimulus = get_object_or_404(Stimulus, pk=component.id)
-            specific_form = StimulusForm(request.POST or None, instance=stimulus)
-        elif component_type == 'questionnaire':
-            questionnaire = get_object_or_404(Questionnaire, pk=component.id)
-            questionnaire_details = Questionnaires().find_questionnaire_by_id(questionnaire.survey.lime_survey_id)
+    if component_type == 'instruction':
+        instruction = get_object_or_404(Instruction, pk=component.id)
+        specific_form = InstructionForm(request.POST or None, instance=instruction)
+    elif component_type == 'stimulus':
+        stimulus = get_object_or_404(Stimulus, pk=component.id)
+        specific_form = StimulusForm(request.POST or None, instance=stimulus)
+    elif component_type == 'questionnaire':
+        questionnaire = get_object_or_404(Questionnaire, pk=component.id)
+        questionnaire_details = Questionnaires().find_questionnaire_by_id(questionnaire.survey.lime_survey_id)
 
-            if questionnaire_details:
-                questionnaire_id = questionnaire_details['sid'],
-                questionnaire_title = questionnaire_details['surveyls_title']
-        elif component_type == 'block':
-            block = get_object_or_404(Block, pk=component.id)
-            specific_form = BlockForm(request.POST or None, instance=block)
-            configuration_list = create_configuration_list(block)
-            configuration_list_of_random_components = create_configuration_list_of_random_components(block)
-            duration_value, has_unlimited = calculate_block_duration(block)
-            # Criate a string converting to appropriate units
-            duration_string = convert_to_string(duration_value)
+        if questionnaire_details:
+            questionnaire_id = questionnaire_details['sid'],
+            questionnaire_title = questionnaire_details['surveyls_title']
+    elif component_type == 'block':
+        block = get_object_or_404(Block, pk=component.id)
+        specific_form = BlockForm(request.POST or None, instance=block)
+        configuration_list = create_configuration_list(block)
+        configuration_list_of_random_components = create_configuration_list_of_random_components(block)
+        duration_value, has_unlimited = calculate_block_duration(block)
+        # Criate a string converting to appropriate units
+        duration_string = convert_to_string(duration_value)
 
-        if request.method == "POST":
+    can_change = get_can_change(request.user, experiment.research_project)
+
+    if request.method == "POST":
+        if can_change:
             if request.POST['action'] == "save":
                 if configuration_form is None:
                     # There is no specific form for a these component types.
@@ -1973,43 +1964,49 @@ def component_update(request, path_of_the_components):
                                                                            path_of_the_components)
                 return HttpResponseRedirect(redirect_url)
 
-        type_of_the_parent_block = None
+    type_of_the_parent_block = None
 
-        # It is not possible to edit the component fields while editing a component configuration.
-        if component_configuration is not None:
-            if specific_form is not None:
-                for field in specific_form.fields:
-                    specific_form.fields[field].widget.attrs['disabled'] = True
+    # It is not possible to edit the component fields while editing a component configuration.
+    if component_configuration or not can_change:
+        if specific_form is not None:
+            for field in specific_form.fields:
+                specific_form.fields[field].widget.attrs['disabled'] = True
 
-            for field in component_form.fields:
-                component_form.fields[field].widget.attrs['disabled'] = True
+        for field in component_form.fields:
+            component_form.fields[field].widget.attrs['disabled'] = True
 
+        if component_configuration:
             type_of_the_parent_block = Block.objects.get(id=component_configuration.parent_id).type
 
-        context = {
-            "back_cancel_url": back_cancel_url,
-            "block_duration": duration_string,
-            "component_configuration": component_configuration,
-            "component_form": component_form,
-            "configuration_form": configuration_form,
-            "configuration_list": configuration_list,
-            "configuration_list_of_random_components": configuration_list_of_random_components,
-            "icon_class": icon_class,
-            "experiment": experiment,
-            "group": group,
-            "has_unlimited": has_unlimited,
-            "list_of_breadcrumbs": list_of_breadcrumbs,
-            "path_of_the_components": path_of_the_components,
-            "questionnaire_id": questionnaire_id,
-            "questionnaire_title": questionnaire_title,
-            "specific_form": specific_form,
-            "updating": True,
-            "type_of_the_parent_block": type_of_the_parent_block,
-        }
+            # If the user is not the owner of the research_project, not event the fields of the component configuration
+            # can be edited.
+            if not can_change:
+                for field in configuration_form.fields:
+                    configuration_form.fields[field].widget.attrs['disabled'] = True
 
-        return render(request, template_name, context)
-    else:
-        raise PermissionDenied
+    context = {
+        "back_cancel_url": back_cancel_url,
+        "block_duration": duration_string,
+        "can_change": can_change,
+        "component_configuration": component_configuration,
+        "component_form": component_form,
+        "configuration_form": configuration_form,
+        "configuration_list": configuration_list,
+        "configuration_list_of_random_components": configuration_list_of_random_components,
+        "icon_class": icon_class,
+        "experiment": experiment,
+        "group": group,
+        "has_unlimited": has_unlimited,
+        "list_of_breadcrumbs": list_of_breadcrumbs,
+        "path_of_the_components": path_of_the_components,
+        "questionnaire_id": questionnaire_id,
+        "questionnaire_title": questionnaire_title,
+        "specific_form": specific_form,
+        "updating": True,
+        "type_of_the_parent_block": type_of_the_parent_block,
+    }
+
+    return render(request, template_name, context)
 
 
 def access_objects_for_add_new_and_reuse(component_type, path_of_the_components):
@@ -2055,8 +2052,7 @@ def component_add_new(request, path_of_the_components, component_type):
         specific_form, list_of_ids_of_components_and_configurations, back_cancel_url = \
         access_objects_for_add_new_and_reuse(component_type, path_of_the_components)
 
-    if request.user.has_perm('experiment.change_researchproject_from_others') or experiment.research_project.owner == \
-            request.user:
+    if get_can_change(request.user, experiment.research_project):
         # Fixed or random
         position = get_position(request)
 
@@ -2188,8 +2184,7 @@ def component_reuse(request, path_of_the_components, component_id):
         list_of_ids_of_components_and_configurations, back_cancel_url = \
         access_objects_for_add_new_and_reuse(component_type, path_of_the_components)
 
-    if request.user.has_perm('experiment.change_researchproject_from_others') or experiment.research_project.owner == \
-            request.user:
+    if get_can_change(request.user, experiment.research_project):
         # Fixed or random
         position = get_position(request)
 

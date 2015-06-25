@@ -45,12 +45,7 @@
 
 
     <div class="tab-pane fade in active" id="experimentBreadCrumb">
-
-        <div class="col-md-1">
-        </div>
-
         <div class="col-md-10">
-
             <ol class="breadcrumb">
                 <li><a href="/home">Home</a></li>
                 <li><a href="/experiment/research_project/list">Estudos</a></li>
@@ -75,10 +70,6 @@
                 {% block breadcrumb %}
                 {% endblock %}
             </ol>
-
-        </div>
-
-        <div class="col-md-1">
         </div>
     </div>
 
@@ -152,26 +143,31 @@
                 {% block extra_fields %}
                 {% endblock %}
 
-                {% if component_configuration or not creating and not updating and can_change %}
+                {# If component_configuration, buttom is shown further bellow #}
+                {% if not component_configuration and not creating and not updating and can_change %}
                     <div class="row" style="padding-bottom: 1em">
                         <div class="col-xs-12 col-sm-12">
-                            <a href=
-                                {% if component_configuration %}
-                                    {% if component_configuration.component.component_type == "block" %}
-                                           "/experiment/component/{{ path_of_the_components }}-{{ component_configuration.component.id }}"
-                                    {% else %}
-                                           "/experiment/component/edit/{{ path_of_the_components }}-{{ component_configuration.component.id }}"
-                                    {% endif %}
-                                {% else %}
-                                       "/experiment/component/edit/{{ path_of_the_components }}"
-                                {% endif %}
-                               class="btn btn-primary">Editar</a>
+                            <a href="/experiment/component/edit/{{ path_of_the_components }}" class="btn btn-primary">Editar</a>
                         </div>
                     </div>
                 {% endif %}
 
                 {% block extra_fields_bellow_edit %}
                 {% endblock %}
+
+                {% if component_configuration %}
+                    <div class="row" style="padding-bottom: 1em">
+                        <div class="col-xs-12 col-sm-12">
+                            <a href=
+                                    {% if component_configuration.component.component_type == "block" %}
+                                           "/experiment/component/{{ path_of_the_components }}-{{ component_configuration.component.id }}"
+                                    {% else %}
+                                           "/experiment/component/edit/{{ path_of_the_components }}-{{ component_configuration.component.id }}"
+                                    {% endif %}
+                               class="btn btn-primary">Editar</a>
+                        </div>
+                    </div>
+                {% endif %}
             </div>
 
             {% if can_reuse or reusing %}
@@ -192,7 +188,6 @@
                     </div>
                 {% endif %}
             {% endif %}
-
 
             {% if component_configuration %}
                 <div class="container span6 offset3 well ">
