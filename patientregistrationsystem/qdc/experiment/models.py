@@ -4,9 +4,10 @@ import datetime
 from django.db import models
 from django.core.exceptions import ValidationError
 from django.core.validators import MinValueValidator
+from django.contrib.auth.models import User
 from simple_history.models import HistoricalRecords
 
-from patient.models import Patient, User, ClassificationOfDiseases
+from patient.models import Patient, ClassificationOfDiseases
 from survey.models import Survey
 
 TIME_UNITS = (
@@ -45,11 +46,12 @@ class Keyword(models.Model):
 
 
 class ResearchProject(models.Model):
-    title = models.CharField(max_length=150, null=False, blank=False)
-    description = models.TextField(null=False, blank=False)
+    title = models.CharField(max_length=150)
+    description = models.TextField()
     start_date = models.DateField()
     end_date = models.DateField(null=True, blank=True)
     keywords = models.ManyToManyField(Keyword)
+    owner = models.ForeignKey(User, null=True, blank=True)
 
     def __unicode__(self):
         return self.title
@@ -57,6 +59,7 @@ class ResearchProject(models.Model):
     class Meta:
         permissions = (
             ("view_researchproject", "Can view research project"),
+            ("change_researchproject_from_others", "Can change research project created by others"),
         )
 
 

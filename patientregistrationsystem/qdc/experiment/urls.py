@@ -51,9 +51,9 @@ urlpatterns = patterns(
     url(r'^group/(?P<group_id>\d+)/subject/(?P<subject_id>\d+)/questionnaire/(?P<questionnaire_id>\d+)/response/$',
         'subject_questionnaire_response_create', name='subject_questionnaire_response'),
     url(r'^questionnaire_response/edit/(?P<questionnaire_response_id>\d+)/$',
-        'questionnaire_response_update', name='questionnaire_response_edit'),
-    url(r'^questionnaire_response/(?P<questionnaire_response_id>\d+)/$',
         'questionnaire_response_view', name='questionnaire_response_view'),
+    url(r'^questionnaire_response/(?P<questionnaire_response_id>\d+)/$',
+        'questionnaire_response_view_response', name='questionnaire_response_view_response'),
 
     # experimental protocol components
     url(r'^(?P<experiment_id>\d+)/components/$', 'component_list', name='component_list'),

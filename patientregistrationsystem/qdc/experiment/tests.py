@@ -816,7 +816,7 @@ class ListOfQuestionnaireFromExperimentalProtocolOfAGroupTest(TestCase):
             status = self.lime_survey.delete_survey(sid)
             self.assertEqual(status, 'OK')
 
-    def test_questionnaire_response_view(self):
+    def test_questionnaire_response_view_response(self):
         """ Testa a visualizacao completa do questionario respondido no Lime Survey"""
 
         # Create a research project
@@ -893,7 +893,7 @@ class ListOfQuestionnaireFromExperimentalProtocolOfAGroupTest(TestCase):
 
             # Visualiza preenchimento da Survey
             get_data = {'origin': "experiment_questionnaire"}
-            response = self.client.get(reverse('questionnaire_response_view',
+            response = self.client.get(reverse('questionnaire_response_view_response',
                                                args=[questionnaire_response.pk, ]), data=get_data)
             # We don't get any error, because the method get_questionnaire_responses called by
             # questionnaire_response_view simply returns an empty list of responses.
