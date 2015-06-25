@@ -31,7 +31,7 @@
                             </tr>
                             </thead>
                             <tbody>
-                            {% for limesurvey_id, patient_questionnaire in patient_questionnaires_data.items %}
+                            {% for patient_questionnaire in patient_questionnaires_data_list %}
                                 <tr {% if not patient_questionnaire.is_initial_evaluation %} data-toggle="tooltip" data-placement="left" title="Não é mais avaliação de entrada" {% endif %}>
                                     <td>
                                         {{ patient_questionnaire.questionnaire_title }}
