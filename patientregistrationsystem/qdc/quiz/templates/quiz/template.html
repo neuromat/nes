@@ -150,6 +150,12 @@
                     </li>
                 {% endif %}
 
+                {% if perms.survey.view_survey %}
+                    <li {% block activeAdvancedSurvey %}{% endblock %}>
+                        <a href="/survey/list/">Questionários</a>
+                    </li>
+                {% endif %}
+
                 <li {% block activeContact %}{% endblock %}>
                     <a href="/home/">Contato</a>
                 </li>

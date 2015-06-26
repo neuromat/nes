@@ -5,8 +5,80 @@ import csv
 import datetime
 
 from StringIO import StringIO
+from operator import itemgetter
+
+from django.shortcuts import render, redirect, get_object_or_404
+from django.contrib.auth.decorators import login_required, permission_required
+
+from models import Survey
+from forms import SurveyForm
 
 from experiment.abc_search_engine import Questionnaires
+
+
+@login_required
+@permission_required('auth.view_survey')
+def survey_list(request, template_name='survey/survey_list.html'):
+
+    surveys = Questionnaires()
+
+    questionnaires_list = []
+
+    for survey in Survey.objects.all():
+        questionnaires_list.append(
+            {
+                'id': survey.id,
+                'lime_survey_id': survey.lime_survey_id,
+                'title': surveys.get_survey_title(survey.lime_survey_id),
+                'is_initial_evaluation': survey.is_initial_evaluation
+            }
+        )
+
+    surveys.release_session_key()
+
+    questionnaires_list = sorted(questionnaires_list, key=itemgetter('title'), reverse=False)
+
+    data = {'questionnaires_list': questionnaires_list}
+    return render(request, template_name, data)
+
+
+@login_required
+@permission_required('survey.view_survey')
+def survey_view(request, survey_id, template_name="survey/survey_register.html"):
+    survey = get_object_or_404(Survey, pk=survey_id)
+
+    surveys = Questionnaires()
+    survey_title = surveys.get_survey_title(survey.lime_survey_id)
+    surveys.release_session_key()
+
+    survey_form = SurveyForm(request.POST or None, instance=survey,
+                             initial={'title': str(survey.lime_survey_id) + ' - ' + survey_title})
+
+    for field in survey_form.fields:
+        survey_form.fields[field].widget.attrs['disabled'] = True
+
+    # if request.method == "POST":
+    #     if request.POST['action'] == "remove":
+    #         try:
+    #             for keyword in research_project.keywords.all():
+    #                 manage_keywords(keyword, ResearchProject.objects.exclude(id=research_project.id))
+    #
+    #             research_project.delete()
+    #             return redirect('research_project_list')
+    #         except ProtectedError:
+    #             messages.error(request, "Erro ao tentar excluir o estudo.")
+
+    # TODO: if it is an initial evaluation, list of patients
+    # TODO: list of experiments that use this survey
+    # TODO: control functionalities of remove, back, bread crumb etc.
+
+    context = {
+        "survey": survey,
+        "survey_form": survey_form,
+        "survey_title": survey_title
+    }
+
+    return render(request, template_name, context)
 
 
 def get_questionnaire_responses(language_code, lime_survey_id, token_id):
