@@ -16,14 +16,8 @@
 {% block content %}
 
     <div class="tab-pane fade in active" id="subjectBreadCrumb">
-
-        <div class="col-md-1">
-        </div>
-
         <div class="col-md-10">
-
             <ol class="breadcrumb">
-
                 <li><a href="/home">Home</a></li>
                 {% if origin == 'subject' %}
                     <li><a href="/patient/find/">Participantes</a></li>
@@ -44,10 +38,6 @@
                     {% endif %}
                 {% endif %}
             </ol>
-
-        </div>
-
-        <div class="col-md-1">
         </div>
     </div>
 
@@ -205,13 +195,23 @@
 
         <div class="btn-toolbar">
             <div class="btn-group pull-left">
-                {% if not creating and perms.experiment.delete_questionnaireresponse %}
+                {% if not creating and perms.experiment.delete_questionnaireresponse and can_change %}
                     <button type="button" id="id_remove_button" class="btn btn-danger" onclick="$('#modalRemove').modal('show')">Excluir</button>
                 {% endif %}
             </div>
             <div class="btn-group pull-right">
                 {% if not completed %}
-                    <button type="submit" id="id_fill_button" name="action" value="save" class="btn btn-primary">{% if creating %}Novo preenchimento{% else %}Continuar preenchimento{% endif %}</button>
+                    {% if can_change %}
+                        {% if creating %}
+                            {% if perms.experiment.add_questionnaireresponse %}
+                                <button type="submit" id="id_fill_button" name="action" value="save" class="btn btn-primary">Novo preenchimento</button>
+                            {% endif %}
+                        {% else %}
+                            {% if perms.experiment.change_questionnaireresponse %}
+                                <button type="submit" id="id_fill_button" name="action" value="save" class="btn btn-primary">Continuar preenchimento</button>
+                            {% endif %}
+                        {% endif %}
+                    {% endif %}
                 {% else %}
                     {% if origin == 'subject' %}
                         <a href="/patient/patient_questionnaire_response/{{ patient_questionnaire_response.id }}?origin={{ origin }}&status={% if editing %}edit{% else %}view{% endif %}" class="btn btn-primary">Ver preenchimento</a>
@@ -237,20 +237,22 @@
 
     </div>
 
-    <div class="modal fade" id="modalRemove" tabindex="-1" role="dialog" aria-labelledby="myModalLabel"
-         aria-hidden="true">
-        <div class="modal-dialog">
-            <div class="modal-content">
-                <div class="modal-body">
-                    Tem certeza que deseja excluir o preenchimento deste questionário?
-                </div>
-                <div class="modal-footer">
-                    <button type="button" class="btn btn-default" data-dismiss="modal">Cancelar</button>
-                    <button type="submit" class="btn btn-danger" value="remove" name="action">Excluir</button>
+    {% if not creating and perms.experiment.delete_questionnaireresponse and can_change %}
+        <div class="modal fade" id="modalRemove" tabindex="-1" role="dialog" aria-labelledby="myModalLabel"
+             aria-hidden="true">
+            <div class="modal-dialog">
+                <div class="modal-content">
+                    <div class="modal-body">
+                        Tem certeza que deseja excluir o preenchimento deste questionário?
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-default" data-dismiss="modal">Cancelar</button>
+                        <button type="submit" class="btn btn-danger" value="remove" name="action">Excluir</button>
+                    </div>
                 </div>
             </div>
         </div>
-    </div>
+    {% endif %}
 
 {% endblock %}
 

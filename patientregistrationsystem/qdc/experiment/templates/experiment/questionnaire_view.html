@@ -2,7 +2,13 @@
 {% load static %}
 {% block activeAdvancedExperiment %}class="active"{% endblock %}
 
-{% block header %}{% endblock %}
+{% block header %}
+    <script>
+        $(function(){
+            $("[data-toggle=tooltip]").tooltip();
+        });
+    </script>
+{% endblock %}
 
 {% block form %}
     <div class="row">
@@ -40,12 +46,7 @@
 
 
     <div class="tab-pane fade in active" id="questionnaireBreadCrumb">
-
-        <div class="col-md-1">
-        </div>
-
         <div class="col-md-10">
-
             <ol class="breadcrumb">
                 <li><a href="/home">Home</a></li>
                 <li><a href="/experiment/research_project/list">Estudos</a></li>
@@ -54,10 +55,6 @@
                 <li><a href="/experiment/group/{{ group.id }}">{{ group.title }}</a></li>
                 <li class="active">{{ questionnaire_title }}</li>
             </ol>
-
-        </div>
-
-        <div class="col-md-1">
         </div>
     </div>
 
@@ -175,13 +172,9 @@
                                                     {% for response in item.questionnaire_responses %}
                                                         <tr>
                                                             <td>
-                                                                {% if perms.experiment.change_questionnaireresponse and limesurvey_available %}
-                                                                    <a href="/experiment/questionnaire_response/edit/{{ response.questionnaire_response.id }}" data-toggle="tooltip" data-placement="right" title="Completar">
-                                                                        {{ response.questionnaire_response.date }}
-                                                                    </a>
-                                                                {% else %}
+                                                                <a href="/experiment/questionnaire_response/edit/{{ response.questionnaire_response.id }}" data-toggle="tooltip" data-placement="left" title="Ver detalhes">
                                                                     {{ response.questionnaire_response.date }}
-                                                                {% endif %}
+                                                                </a>
                                                             </td>
                                                             <td>
                                                                 {% if limesurvey_available and response.completed != None %}
@@ -199,14 +192,13 @@
                                                     {% endfor %}
                                                     <tr>
                                                         {% if questionnaire_configuration.number_of_fills == None or item.questionnaire_responses|length < questionnaire_configuration.number_of_fills %}
-                                                            <td>
-                                                                {% if perms.experiment.add_questionnaireresponse %}
-                                                                    <a href="/experiment/group/{{ group.id }}/subject/{{ item.subject.id }}/questionnaire/{{ questionnaire_configuration.id }}/response"
-                                                                        class="btn btn-primary {% if not limesurvey_available %} disabled {% endif %}">Novo preenchimento</a>
-                                                                {% endif %}
-                                                            </td>
-                                                            <td></td>
-                                                            <td></td>
+                                                            {% if perms.experiment.add_questionnaireresponse and can_change %}
+                                                                <td colspan="2">
+                                                                    <a href="/experiment/group/{{ group.id }}/subject/{{ item.subject.id }}/questionnaire/{{ questionnaire_configuration.id }}/response" class="btn btn-primary {% if not limesurvey_available %} disabled {% endif %}">
+                                                                        Novo preenchimento
+                                                                    </a>
+                                                                </td>
+                                                            {% endif %}
                                                         {% endif %}
                                                     </tr>
                                                 </table>

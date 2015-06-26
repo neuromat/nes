@@ -40,12 +40,7 @@
 
 
     <div class="tab-pane fade in active" id="experimentBreadCrumb">
-
-        <div class="col-md-1">
-        </div>
-
         <div class="col-md-10">
-
             <ol class="breadcrumb">
                 <li><a href="/home">Home</a></li>
                 <li><a href="/experiment/research_project/list">Estudos</a></li>
@@ -53,10 +48,6 @@
                 <li><a href="/experiment/{{ experiment.id }}">{{ experiment.title }}</a></li>
                 <li class="active">Passos de Protocolo Experimental</li>
             </ol>
-
-        </div>
-
-        <div class="col-md-1">
         </div>
     </div>
 
@@ -96,17 +87,19 @@
                         </tbody>
                     </table>
                 </div>
-                <div class="dropdown">
-                    <button class="btn btn-primary dropdown-toggle" type="button" id="dropdownMenu1" data-toggle="dropdown" aria-expanded="true">
-                        Inserir novo passo
-                        <span class="caret"></span>
-                    </button>
-                    <ul class="dropdown-menu" role="menu" aria-labelledby="dropdownMenu1">
-                        {% for type, type_name, icon in component_type_choices %}
-                            <li role="presentation"><a role="menuitem" tabindex="-1" class="{{ icon }}" href="/experiment/{{ experiment.id }}/new_component/{{ type }}"> {{ type_name }}</a></li>
-                        {% endfor %}
-                    </ul>
-                </div>
+                {% if can_change %}
+                    <div class="dropdown">
+                        <button class="btn btn-primary dropdown-toggle" type="button" id="dropdownMenu1" data-toggle="dropdown" aria-expanded="true">
+                            Inserir novo passo
+                            <span class="caret"></span>
+                        </button>
+                        <ul class="dropdown-menu" role="menu" aria-labelledby="dropdownMenu1">
+                            {% for type, type_name, icon in component_type_choices %}
+                                <li role="presentation"><a role="menuitem" tabindex="-1" class="{{ icon }}" href="/experiment/{{ experiment.id }}/new_component/{{ type }}"> {{ type_name }}</a></li>
+                            {% endfor %}
+                        </ul>
+                    </div>
+                {% endif %}
             </div>
 
             <div class="btn-toolbar">

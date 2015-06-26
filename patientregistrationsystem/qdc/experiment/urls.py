@@ -39,19 +39,23 @@ urlpatterns = patterns(
     # subject
     url(r'^group/(?P<group_id>\d+)/subjects/$', 'subjects', name='subjects'),
     url(r'^subject/search/$', 'search_patients_ajax', name='subject_search'),
-    # TODO Rename subjects to subject
+    # TODO Rename 'subjects' to 'add_subject'
     url(r'^group/(?P<group_id>\d+)/subjects/(?P<patient_id>\d+)/$', 'subjects_insert', name='subject_insert'),
-    # TODO Rename subjects to subject
+    # TODO Rename 'subjects' to 'subject'
     url(r'^group/(?P<group_id>\d+)/subjects/(?P<subject_id>\d+)/upload_file/$', 'upload_file', name='upload_file'),
 
     # subject + questionnaire
-    # TODO Rename subjects to subject
+    # TODO Rename 'subjects' to 'subject' and remove '/questionnaire'
     url(r'^group/(?P<group_id>\d+)/subjects/(?P<subject_id>\d+)/questionnaire/$',
         'subject_questionnaire_view', name='subject_questionnaire'),
+    # TODO Rename 'response' to 'add_response'
     url(r'^group/(?P<group_id>\d+)/subject/(?P<subject_id>\d+)/questionnaire/(?P<questionnaire_id>\d+)/response/$',
         'subject_questionnaire_response_create', name='subject_questionnaire_response'),
+    # TODO This url should not be called for viewing a response, only for finishing a response
     url(r'^questionnaire_response/edit/(?P<questionnaire_response_id>\d+)/$',
         'questionnaire_response_view', name='questionnaire_response_view'),
+    # TODO This url should also show subject_questionnaire_response_form.html with disabled fields before the responses
+    # TODO to give the context.
     url(r'^questionnaire_response/(?P<questionnaire_response_id>\d+)/$',
         'questionnaire_response_view_response', name='questionnaire_response_view_response'),
 

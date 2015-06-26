@@ -44,12 +44,7 @@
 
 
     <div class="tab-pane fade in active" id="experimentBreadCrumb">
-
-        <div class="col-md-1">
-        </div>
-
         <div class="col-md-10">
-
             <ol class="breadcrumb">
                 <li><a href="/home">Home</a></li>
                 <li><a href="/experiment/research_project/list">Estudos</a></li>
@@ -66,12 +61,7 @@
                         <li class="active"> {{ group_form.title.value }} </li>
                     {% endif %}
                 {% endif %}
-
             </ol>
-
-        </div>
-
-        <div class="col-md-1">
         </div>
     </div>
 
@@ -98,7 +88,7 @@
                     </div>
                 </div>
 
-                {% if not editing %}
+                {% if not editing and can_change %}
                     <div class="btn-group pull-left">
                         <a href="/experiment/group/edit/{{ group.id }}" class="btn btn-primary">Editar</a>
                     </div>
@@ -108,22 +98,22 @@
             {% if not editing %}
                 <div class="container span6 offset3 well ">
                     <h4>Critério de inclusão</h4>
-                    <div class="row">
-                        <div class="col-xs-6 col-sm-12">
-                            <div class="form-group">
-                                <input id="group_id" value="{{ group.id }}" style="display: none;">
-                                <div class="input-group  input-group-sm "><span class="input-group-addon">
-                                        <span class="glyphicon glyphicon-edit"></span></span>
-                                    <input class="form-control" id="get_diseases" type="text"
-                                           placeholder="Especificar o diagnóstico da doença ou o código da doença (CID-10)">
+                    {% if can_change %}
+                        <div class="row">
+                            <div class="col-xs-6 col-sm-12">
+                                <div class="form-group">
+                                    <input id="group_id" value="{{ group.id }}" style="display: none;">
+                                    <div class="input-group  input-group-sm "><span class="input-group-addon">
+                                            <span class="glyphicon glyphicon-edit"></span></span>
+                                        <input class="form-control" id="get_diseases" type="text"
+                                               placeholder="Especificar o diagnóstico da doença ou o código da doença (CID-10)">
+                                    </div>
+                                    {% csrf_token %}
+                                    <ul id="search-results-diseases" style="list-style: none;"></ul>
                                 </div>
-                                {% csrf_token %}
-                                <ul id="search-results-diseases" style="list-style: none;"></ul>
                             </div>
                         </div>
-                    </div>
-                    <div class="col-md-1">
-                    </div>
+                    {% endif %}
                     <div class="row">
                         <div class="col-xs-6 col-sm-12">
                             <div class="form-group">
@@ -145,11 +135,15 @@
                                         {% for classification_of_diseases in classification_of_diseases_list %}
                                             <tr>
                                                 <td>{{ classification_of_diseases.code }}</td>
-                                                <td>{{ classification_of_diseases.abbreviated_description }}
-                                                    <a class="btn glyphicon glyphicon-remove" data-toggle="tooltip"
-                                                       data-placement="right" title="Remover" style="color: indianred;
-                                                   position: relative; float: right; padding: 0"
-                                                       onclick="show_modal_remove({{ group.id }}, {{ classification_of_diseases.id }});"></a></td>
+                                                <td>
+                                                    {{ classification_of_diseases.abbreviated_description }}
+                                                    {% if can_change %}
+                                                        <a class="btn glyphicon glyphicon-remove" data-toggle="tooltip"
+                                                           data-placement="right" title="Remover" style="color: indianred;
+                                                       position: relative; float: right; padding: 0"
+                                                           onclick="show_modal_remove({{ group.id }}, {{ classification_of_diseases.id }});"></a>
+                                                    {% endif %}
+                                                </td>
                                             </tr>
                                         {% endfor %}
                                     {% endif %}
@@ -233,9 +227,13 @@
                                     </a>
                                 </div>
                             {% else %}
-                                {% if perms.experiment.add_subject %}
+                                <div style="margin-bottom: 1em">
+                                    Não há participantes cadastrados
+                                </div>
+                                {% if perms.experiment.add_subject and can_change %}
                                     <a href="/experiment/group/{{ group.id }}/subjects" class="btn btn-primary">
-                                        Cadastrar</a>
+                                        Cadastrar
+                                    </a>
                                 {% endif %}
                             {% endif %}
                         </div>
@@ -266,23 +264,30 @@
                                                 <td>
                                                     {{ group.experimental_protocol.description }}
 
-                                                    <a class="btn glyphicon glyphicon-remove" data-toggle="tooltip"
-                                                       data-placement="right" title="Desconfigurar protocolo experimental"
-                                                       style="color: indianred; position: relative; float: right; padding: 0"
-                                                       onclick="show_modal_remove_experimental_protocol();"></a>
+                                                    {% if can_change %}
+                                                        <a class="btn glyphicon glyphicon-remove" data-toggle="tooltip"
+                                                           data-placement="right" title="Desconfigurar protocolo experimental"
+                                                           style="color: indianred; position: relative; float: right; padding: 0"
+                                                           onclick="show_modal_remove_experimental_protocol();">
+                                                        </a>
+                                                    {% endif %}
                                                 </td>
                                             </tr>
                                         </tbody>
                                     </table>
                                 </div>
                             {% else %}
-                                <div class="form-group">
-                                    <a href="/experiment/component/G{{ group.id }}/add_new/block" class="btn btn-primary"
-                                            data-toggle="tooltip" data-placement="right"
-                                            title="A raiz de um protocolo experimental é sempre um conjunto de passos. Você poderá criar um conjunto novo ou reusar algum que já tenha sido criado para este experimento.">
-                                        Criar</a>
+                                <div style="margin-bottom: 1em">
+                                    Não há protocolo experimental configurado
                                 </div>
-
+                                {% if can_change %}
+                                    <div class="form-group">
+                                        <a href="/experiment/component/G{{ group.id }}/add_new/block" class="btn btn-primary"
+                                                data-toggle="tooltip" data-placement="right"
+                                                title="A raiz de um protocolo experimental é sempre um conjunto de passos. Você poderá criar um conjunto novo ou reusar algum que já tenha sido criado para este experimento.">
+                                            Configurar / Criar</a>
+                                    </div>
+                                {% endif %}
                             {% endif %}
                         </div>
                     </div>
@@ -291,7 +296,7 @@
 
             <div class="btn-toolbar">
                 <div class="btn-group pull-left">
-                    {% if not editing and perms.experiment.delete_experiment %}
+                    {% if not editing and perms.experiment.delete_experiment and can_change %}
                         <button type="button" class="btn btn-danger" onclick="$('#modalRemove').modal('show')">Excluir</button>
                     {% endif %}
                 </div>
