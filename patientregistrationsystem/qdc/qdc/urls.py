@@ -16,6 +16,7 @@ urlpatterns = patterns(
     url(r'^patient/', include('patient.urls')),
     url(r'^user/', include('custom_user.urls')),
     url(r'^experiment/', include('experiment.urls')),
+    url(r'^survey/', include('survey.urls')),
     url(r'^home/$', 'qdc.views.contact', name='contact'),
     url(r'^accounts/login/$', 'django.contrib.auth.views.login'),
     url(r'^account/', include('django.contrib.auth.urls')),
