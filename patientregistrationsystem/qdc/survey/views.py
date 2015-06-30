@@ -1,3 +1,4 @@
+# coding=utf-8
 # from django.shortcuts import render
 
 import re
@@ -7,11 +8,16 @@ import datetime
 from StringIO import StringIO
 from operator import itemgetter
 
+from django.contrib import messages
 from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib.auth.decorators import login_required, permission_required
 
 from models import Survey
 from forms import SurveyForm
+
+from patient.models import Patient, QuestionnaireResponse as PatientQuestionnaireResponse
+
+from experiment.models import Questionnaire
 
 from experiment.abc_search_engine import Questionnaires
 
@@ -48,8 +54,10 @@ def survey_view(request, survey_id, template_name="survey/survey_register.html")
     survey = get_object_or_404(Survey, pk=survey_id)
 
     surveys = Questionnaires()
+
+    limesurvey_available = check_limesurvey_access(request, surveys)
+
     survey_title = surveys.get_survey_title(survey.lime_survey_id)
-    surveys.release_session_key()
 
     survey_form = SurveyForm(request.POST or None, instance=survey,
                              initial={'title': str(survey.lime_survey_id) + ' - ' + survey_title})
@@ -68,14 +76,67 @@ def survey_view(request, survey_id, template_name="survey/survey_register.html")
     #         except ProtectedError:
     #             messages.error(request, "Erro ao tentar excluir o estudo.")
 
-    # TODO: if it is an initial evaluation, list of patients
+    # list of patients
+    patients_questionnaire_data_dictionary = {}
+
+    responses = PatientQuestionnaireResponse.objects.all().filter(survey=survey).order_by('patient__id')
+
+    for response in responses:
+
+        if response.patient.id not in patients_questionnaire_data_dictionary:
+            patients_questionnaire_data_dictionary[response.patient.id] = \
+                {
+                    'patient_name': response.patient.name,
+                    'questionnaire_responses': []
+                }
+
+        response_result = surveys.get_participant_properties(
+            response.survey.lime_survey_id, response.token_id, "completed")
+
+        patients_questionnaire_data_dictionary[response.patient.id]['questionnaire_responses'].append(
+            {
+                'questionnaire_response':
+                response,
+
+                'completed':
+                None if response_result is None else response_result != "N" and response_result != ""
+            }
+        )
+
+    patients = Patient.objects.all().filter(removed=False)
+
+    for patient in patients:
+        if patient.id not in patients_questionnaire_data_dictionary:
+            patients_questionnaire_data_dictionary[patient.id] = \
+                {
+                    'patient_name': patient.name,
+                    'questionnaire_responses': []
+                }
+
+    patients_questionnaire_data_list = []
+
+    # adjusting and sorting
+    for key, dictionary in patients_questionnaire_data_dictionary.items():
+        dictionary['patient_id'] = key
+        patients_questionnaire_data_list.append(dictionary)
+
+    patients_questionnaire_data_list = \
+        sorted(patients_questionnaire_data_list, key=itemgetter('patient_name'), reverse=False)
+
     # TODO: list of experiments that use this survey
+    questionnaires = Questionnaire.objects.filter(survey=survey).distinct('experiment')
+
     # TODO: control functionalities of remove, back, bread crumb etc.
+
+    surveys.release_session_key()
 
     context = {
         "survey": survey,
         "survey_form": survey_form,
-        "survey_title": survey_title
+        "survey_title": survey_title,
+        "limesurvey_available": limesurvey_available,
+        "patients_questionnaire_data_list": patients_questionnaire_data_list,
+        "questionnaires": questionnaires
     }
 
     return render(request, template_name, context)
@@ -243,3 +304,12 @@ def get_questionnaire_responses(language_code, lime_survey_id, token_id):
     surveys.release_session_key()
 
     return survey_title, questionnaire_responses
+
+
+def check_limesurvey_access(request, surveys):
+    limesurvey_available = True
+    if not surveys.session_key:
+        limesurvey_available = False
+        messages.warning(request, "LimeSurvey indisponível. Sistema funcionando parcialmente.")
+
+    return limesurvey_available

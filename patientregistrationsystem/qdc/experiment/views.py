@@ -23,7 +23,7 @@ from patient.models import Patient
 from experiment.abc_search_engine import Questionnaires
 
 from survey.models import Survey
-from survey.views import get_questionnaire_responses
+from survey.views import get_questionnaire_responses, check_limesurvey_access
 
 from operator import itemgetter
 
@@ -708,7 +708,6 @@ def subjects(request, group_id, template_name="experiment/subjects.html"):
                  'percentage': 0,
                  'consent': subject_of_group.consent_form})
 
-
     surveys.release_session_key()
 
     context = {
@@ -1033,15 +1032,6 @@ def questionnaire_response_view_response(request, questionnaire_response_id,
     return render(request, template_name, context)
 
 
-def check_limesurvey_access(request, surveys):
-    limesurvey_available = True
-    if not surveys.session_key:
-        limesurvey_available = False
-        messages.warning(request, "LimeSurvey indisponível. Sistema funcionando parcialmente.")
-
-    return limesurvey_available
-
-
 @login_required
 @permission_required('experiment.view_experiment')
 def subject_questionnaire_view(request, group_id, subject_id,
@@ -1361,7 +1351,8 @@ def component_create(request, experiment_id, component_type):
             if component_form.is_valid():
                 if component_type == 'questionnaire':
                     new_specific_component = Questionnaire()
-                    survey, created = Survey.objects.get_or_create(lime_survey_id=request.POST['questionnaire_selected'])
+                    survey, created = Survey.objects.get_or_create(
+                        lime_survey_id=request.POST['questionnaire_selected'])
                     new_specific_component.survey = survey
                 elif component_type == 'pause':
                     new_specific_component = Pause()
@@ -1728,8 +1719,9 @@ def component_view(request, path_of_the_components):
                 if len(action_parts) == 4:  # Check the existence of an extra parameter
                     # It means that a single component configuration should be removed
                     position_in_accordion_of_the_conf_to_be_deleted = int(action_parts[3])
-                    remove_component_configuration(list_from_which_to_deleted[position_of_the_accordion_to_be_deleted]
-                            [position_in_accordion_of_the_conf_to_be_deleted])
+                    remove_component_configuration(
+                        list_from_which_to_deleted[position_of_the_accordion_to_be_deleted]
+                        [position_in_accordion_of_the_conf_to_be_deleted])
                 else:
                     for conf in list_from_which_to_deleted[position_of_the_accordion_to_be_deleted]:
                         remove_component_configuration(conf)
@@ -1827,9 +1819,9 @@ def create_configuration_list(block):
         # Group if same component or if both are random_position
         while i < len(configuration_list) and \
                 ((configuration_list[i-1].component == configuration_list[i].component and
-                  configuration_list[i-1].random_position == configuration_list[i].random_position) or
-                     (configuration_list[i-1].random_position == configuration_list[i].random_position and
-                      configuration_list[i].random_position is True)):
+                    configuration_list[i-1].random_position == configuration_list[i].random_position) or
+                    (configuration_list[i-1].random_position == configuration_list[i].random_position and
+                        configuration_list[i].random_position is True)):
             accordion.append(configuration_list[i])
             i += 1
 

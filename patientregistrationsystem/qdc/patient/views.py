@@ -27,7 +27,7 @@ from patient.models import QuestionnaireResponse
 from patient.forms import QuestionnaireResponseForm
 
 from survey.models import Survey
-from survey.views import get_questionnaire_responses
+from survey.views import get_questionnaire_responses, check_limesurvey_access
 
 # pylint: disable=E1101
 # pylint: disable=E1103
@@ -407,15 +407,6 @@ def patient_view_medical_record(request, patient, context):
         'medical_record': medical_record})
 
     return render(request, "patient/register_medical_record.html", context)
-
-
-def check_limesurvey_access(request, surveys):
-    limesurvey_available = True
-    if not surveys.session_key:
-        limesurvey_available = False
-        messages.warning(request, "LimeSurvey indisponível. Sistema funcionando parcialmente.")
-
-    return limesurvey_available
 
 
 def patient_view_questionnaires(request, patient, context, is_update):
@@ -1007,7 +998,9 @@ def patient_questionnaire_response_create(request, patient_id, survey_id,
         "origin": origin,
         "patient": patient,
         "showing": showing,
-        "status": "edit"
+        "status": "edit",
+        "completed": False,
+        "can_change": True
     }
 
     return render(request, template_name, context)
@@ -1111,7 +1104,8 @@ def patient_questionnaire_response_update(request, patient_questionnaire_respons
         "questionnaire_title": questionnaire_title,
         "showing": showing,
         "updating": True,
-        "status": status
+        "status": status,
+        "can_change": True
     }
 
     return render(request, template_name, context)
