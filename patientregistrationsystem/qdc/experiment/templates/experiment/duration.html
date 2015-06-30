@@ -6,12 +6,8 @@
              {% else %}
                 title="Calculada a partir dos subpassos"
              {% endif %}>
-            <div class="col-xs-12 col-sm-12">
-                <label class="control-label">Duração</label>
-            </div>
-            <div class="col-xs-12 col-sm-12">
-                {{ block_duration }}
-            </div>
+            <label class="control-label">Duração</label>
+            <p>{{ block_duration }}</p>
         </div>
     {% else %}
         <div class="col-xs-12 col-sm-12">

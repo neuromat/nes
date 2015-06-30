@@ -2,7 +2,7 @@
 
 {% load i18n admin_static %}
 
-{% block activeAdvancedExperiment %}class="active"{% endblock %}
+{% block activeAdvancedResearchProject %}class="active"{% endblock %}
 
 {% block header %}
     <script src="{% static 'quiz/js/subjects.js' %}"></script>
@@ -56,7 +56,7 @@
             {% if perms.experiment.add_subject and can_change %}
                 <div class="container span6 offset3 well ">
                     <div class="row">
-                        <div class="col-xs-6 col-sm-10">
+                        <div class="col-xs-12 col-sm-12">
                             <div class="form-group">
                                 <input id="group_id" value="{{ group.id }}" style="display: none;">
                                 <label>Inserir participante</label>
@@ -75,7 +75,7 @@
                 </div>
             {% endif %}
             <div class="row">
-                <div class="col-xs-6 col-sm-12">
+                <div class="col-xs-12 col-sm-12">
                     <div class="form-group">
                         <table class="table table-striped">
                             <thead>
@@ -100,17 +100,15 @@
                                         </td>
                                         <td>
                                             {% if can_change %}
-                                                <div class="col-md-2">
+                                                <span>
                                                     <a href='/experiment/group/{{ group.id }}/subjects/{{ item.subject.id }}/upload_file' class="glyphicon glyphicon-paperclip"></a>
-                                                </div>
+                                                </span>
                                             {% endif %}
-                                            <div>
-                                                {% if item.consent %}
-                                                    <span class="label label-success">Anexado</span>
-                                                {% else %}
-                                                    <span class="label label-warning">Sem anexo</span>
-                                                {% endif %}
-                                            </div>
+                                            {% if item.consent %}
+                                                <span class="label label-success">Anexado</span>
+                                            {% else %}
+                                                <span class="label label-warning">Sem anexo</span>
+                                            {% endif %}
                                         </td>
                                         <td>
                                             {% if limesurvey_available %}

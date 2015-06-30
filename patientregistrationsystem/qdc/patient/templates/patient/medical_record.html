@@ -39,18 +39,18 @@
 
     {% if not creating %}
         <div class="row">
-            <div class="col-md-1">
+            <div class="col-xs-1 col-md-1">
             </div>
-            <div class="col-md-4">
+            <div class="col-xs-11 col-md-4">
                 <div class="input-group  input-group-sm ">
                     <div class="form-group">
                         <label>Data:</label> {{ record_date|date:'' }}
                     </div>
                 </div>
             </div>
-            <div class="col-md-1">
+            <div class="col-xs-1 col-md-1">
             </div>
-            <div class="col-md-6">
+            <div class="col-xs-11 col-md-6">
                 <div class="input-group  input-group-sm ">
                     <div class="form-group">
                         <label>Responsável:</label> {{ record_responsible }}
@@ -92,7 +92,7 @@
                 <div class="container span6 offset3 well ">
                     {% if editing %}
                     <div class="row">
-                        <div class="col-xs-6 col-sm-12">
+                        <div class="col-xs-12 col-sm-12">
                             <div class="form-group">
                                 <input id="patient_id" value="{{ patient_id }}" style="display: none;">
                                 <input id="medical_record_id" value="{{ record_id }}" style="display: none;">
@@ -110,7 +110,7 @@
                     <div class="col-md-1">
                     </div>
                     <div class="row">
-                        <div class="col-xs-6 col-sm-12">
+                        <div class="col-xs-12 col-sm-12">
                             <div class="form-group">
                                 <table class="table table-striped">
                                     <thead>
