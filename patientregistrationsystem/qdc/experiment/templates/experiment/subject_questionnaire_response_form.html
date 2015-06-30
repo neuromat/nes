@@ -1,7 +1,7 @@
 {% extends "quiz/template.html" %}
 
 {% block activePatient %}{% if origin == 'subject' %}class="active"{% endif %}{% endblock %}
-{% block activeAdvancedExperiment %}{% if origin != 'subject' %}class="active"{% endif %}{% endblock %}
+{% block activeAdvancedResearchProject %}{% if origin != 'subject' %}class="active"{% endif %}{% endblock %}
 
 {% block header %}
 
@@ -105,92 +105,73 @@
     <div class="tab-pane fade in active" id="menuUserTab">
     <div class="col-md-10">
         <div class="container span6 offset3 well ">
-            <div class="col-md-10">
-                <div class="row">
-                    <div class="col-xs-12 col-sm-12">
+            <div class="row">
+                <div class="col-xs-12 col-sm-6">
+                    <div class="form-group">
+                        <label>Questionário</label>
 
-                            <div class="form-group">
-                                <label>Questionário</label>
-
-                                <div class="input-group input-group-sm">
-                                    <span class="input-group-addon"><span
-                                            class="glyphicon glyphicon-folder-open"></span></span>
-                                    <input class="form-control" id="id_survey_title" name="survey_title"
-                                           value="{{ survey_title }}"
-                                           type="text" disabled>
-                                </div>
-                            </div>
-
-                    </div>
-                </div>
-            </div>
-
-            <div class="col-md-10">
-                <div class="row">
-                    <div class="col-xs-3 col-sm-6">
-                        <div class="form-group">
-                            <label>Participante</label>
-
-                            <div class="input-group input-group-sm">
-                                <span class="input-group-addon"><span class="glyphicon glyphicon-user"></span></span>
-                                {% if origin == 'subject' %}
-                                    <input class="form-control" id="id_subject" name="subject"
-                                           value="{{ patient.name }}" type="text" disabled>
-                                {% else %}
-                                    <input class="form-control" id="id_subject" name="subject"
-                                           value="{{ subject.patient.name }}" type="text" disabled>
-                                {% endif %}
-                            </div>
-                        </div>
-                    </div>
-
-                    <div class="col-xs-3 col-sm-6">
-
-                        <div class="form-group {% if questionnaire_response_form.errors.date %}has-error{% endif %}">
-                            <label for="fill_date" class="control-label">Data de preenchimento<b
-                                    style="color: red;">*</b></label>
-
-                            <div class="input-group input-group-sm">
-                                <span class="input-group-addon"> <span class="glyphicon glyphicon-th"></span></span>
-                                {% if completed or not creating %}
-                                    <input class="form-control" id="fill_date"
-                                           value="{{ questionnaire_response_form.date.value|date:"d/m/Y" }}" type="text"
-                                           disabled>
-                                {% else %}
-                                    {{ questionnaire_response_form.date }}
-                                {% endif %}
-                            </div>
-                            <div class="help-block with-errors">
-                                {% if questionnaire_response_form.date.errors %}
-                                    <span>
-                                        {% for error in questionnaire_response_form.date.errors %}
-                                            {{ error }}{% endfor %}
-                                    </span>
-                                {% endif %}
-                            </div>
+                        <div class="input-group input-group-sm">
+                            <span class="input-group-addon"><span
+                                    class="glyphicon glyphicon-folder-open"></span></span>
+                            <input class="form-control" id="id_survey_title" name="survey_title"
+                                   value="{{ survey_title }}"
+                                   type="text" disabled>
                         </div>
                     </div>
                 </div>
+                <div class="col-xs-12 col-sm-6">
+                    <div class="form-group">
+                        <label>Participante</label>
+                        <div class="input-group input-group-sm">
+                            <span class="input-group-addon"><span class="glyphicon glyphicon-user"></span></span>
+                            {% if origin == 'subject' %}
+                                <input class="form-control" id="id_subject" name="subject"
+                                       value="{{ patient.name }}" type="text" disabled>
+                            {% else %}
+                                <input class="form-control" id="id_subject" name="subject"
+                                       value="{{ subject.patient.name }}" type="text" disabled>
+                            {% endif %}
+                        </div>
+                    </div>
+                </div>
+                <div class="col-xs-12 col-sm-6">
+                    <div class="form-group">
+                        <label>Responsável pelo preenchimento</label>
 
-            </div>
+                        <div class="input-group input-group-sm">
+                                <span class="input-group-addon"><span
+                                        class="glyphicon glyphicon-user"></span></span>
+                            <input class="form-control" id="id_responsible" name="responsible"
+                                   value="{{ questionnaire_responsible }}" type="text" disabled>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-xs-12 col-sm-6">
+                    <div class="form-group {% if questionnaire_response_form.errors.date %}has-error{% endif %}">
+                        <label for="fill_date" class="control-label">Data de preenchimento<b
+                                style="color: red;">*</b></label>
 
-            <div class="col-md-10">
-                <div class="row">
-                    <div class="col-xs-3 col-sm-6">
-                        <div class="form-group">
-                            <label>Responsável pelo preenchimento</label>
-
-                            <div class="input-group input-group-sm">
-                                    <span class="input-group-addon"><span
-                                            class="glyphicon glyphicon-user"></span></span>
-                                <input class="form-control" id="id_responsible" name="responsible"
-                                       value="{{ questionnaire_responsible }}" type="text" disabled>
-                            </div>
+                        <div class="input-group input-group-sm">
+                            <span class="input-group-addon"> <span class="glyphicon glyphicon-th"></span></span>
+                            {% if completed or not creating %}
+                                <input class="form-control" id="fill_date"
+                                       value="{{ questionnaire_response_form.date.value|date:"d/m/Y" }}" type="text"
+                                       disabled>
+                            {% else %}
+                                {{ questionnaire_response_form.date }}
+                            {% endif %}
+                        </div>
+                        <div class="help-block with-errors">
+                            {% if questionnaire_response_form.date.errors %}
+                                <span>
+                                    {% for error in questionnaire_response_form.date.errors %}
+                                        {{ error }}{% endfor %}
+                                </span>
+                            {% endif %}
                         </div>
                     </div>
                 </div>
             </div>
-
         </div>
 
         <div class="btn-toolbar">

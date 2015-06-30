@@ -2,7 +2,7 @@
 from experiment.models import Experiment, QuestionnaireResponse, SubjectOfGroup, Group, \
     Component, Stimulus, Block, Instruction, ComponentConfiguration, ResearchProject
 from django.forms import ModelForm, TextInput, Textarea, Select, DateInput, TypedChoiceField, RadioSelect,\
-    ValidationError, Form, IntegerField, NumberInput
+    ValidationError, Form, IntegerField, NumberInput, CharField
 
 
 class ExperimentForm(ModelForm):
@@ -174,6 +174,10 @@ class BlockForm(ModelForm):
 
 
 class ResearchProjectForm(ModelForm):
+    owners_full_name = CharField(label='Responsável',
+                                 widget=TextInput(attrs={'class': 'form-control', 'disabled': 'True'}),
+                                 required=False)
+
     class Meta:
         model = ResearchProject
         fields = ['start_date', 'end_date', 'title', 'description']
@@ -188,7 +192,6 @@ class ResearchProjectForm(ModelForm):
             'start_date': DateInput(attrs={'class': 'form-control datepicker', 'placeholder': 'dd/mm/aaaa',
                                            'required': "", 'data-error': "Data de início deve ser preenchida"},),
             'end_date': DateInput(attrs={'class': 'form-control datepicker', 'placeholder': 'dd/mm/aaaa'}),
-
         }
 
     def clean(self):

@@ -71,16 +71,16 @@
                     <div class="col-xs-12 col-sm-12">
                         <div class="form-group">
                             <label class="control-label">Título <b style="color: red;">*</b></label>
-                                {{ research_project_form.title }}
+                            {{ research_project_form.title }}
                             <div class="help-block with-errors"></div>
                         </div>
                     </div>
                 </div>
                 <div class="row">
-                    <div class="col-xs-12 col-sm-6">
+                    <div class="col-xs-6 col-sm-6">
                         <div class="form-group {% if research_project_form.errors.start_date %}has-error{% endif %}">
                             <label class="control-label">Data de início <b style="color: red;">*</b></label>
-                                {{ research_project_form.start_date }}
+                            {{ research_project_form.start_date }}
                             <div class="help-block with-errors">
                                 {% for error in research_project_form.start_date.errors %}
                                     {{ error }}
@@ -88,10 +88,10 @@
                             </div>
                         </div>
                     </div>
-                    <div class="col-xs-12 col-sm-6">
+                    <div class="col-xs-6 col-sm-6">
                         <div class="form-group {% if research_project_form.errors.end_date %}has-error{% endif %}">
                             <label class="control-label">Data de fim</label>
-                                {{ research_project_form.end_date }}
+                            {{ research_project_form.end_date }}
                             <div class="help-block with-errors">
                                 {% for error in research_project_form.end_date.errors %}
                                     {{ error }}
@@ -104,9 +104,16 @@
                     <div class="col-xs-12 col-sm-12">
                         <div class="form-group">
                             <label class="control-label">Descrição <b style="color: red;">*</b></label>
-                                {{ research_project_form.description }}
+                            {{ research_project_form.description }}
                             <div class="help-block with-errors"></div>
                         </div>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-xs-12 col-sm-12">
+                        <label class="control-label">Responsável</label>
+                        {{ research_project_form.owners_full_name }}
+                        <div class="help-block with-errors"></div>
                     </div>
                 </div>
 

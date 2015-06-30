@@ -58,17 +58,17 @@ def research_project_list(request, template_name="experiment/research_project_li
 @login_required
 @permission_required('experiment.add_researchproject')
 def research_project_create(request, template_name="experiment/research_project_register.html"):
-    research_project_form = ResearchProjectForm(request.POST or None)
+    research_project_form = ResearchProjectForm(request.POST or None,
+                                                initial={'owners_full_name': request.user.get_full_name()})
 
     if request.method == "POST":
-
         if request.POST['action'] == "save":
-
             if research_project_form.is_valid():
-                research_project_added = research_project_form.save()
+                research_project_added = research_project_form.save(commit=False)
+                research_project_added.owner = request.user
+                research_project_added.save()
 
                 messages.success(request, 'Estudo criado com sucesso.')
-
                 redirect_url = reverse("research_project_view", args=(research_project_added.id,))
                 return HttpResponseRedirect(redirect_url)
 
@@ -89,7 +89,13 @@ def get_can_change(user, research_project):
 @permission_required('experiment.view_researchproject')
 def research_project_view(request, research_project_id, template_name="experiment/research_project_register.html"):
     research_project = get_object_or_404(ResearchProject, pk=research_project_id)
-    research_project_form = ResearchProjectForm(request.POST or None, instance=research_project)
+
+    owners_full_name = ""
+    if research_project.owner:
+        owners_full_name = research_project.owner.get_full_name()
+
+    research_project_form = ResearchProjectForm(request.POST or None, instance=research_project,
+                                                initial={'owners_full_name': owners_full_name})
 
     for field in research_project_form.fields:
         research_project_form.fields[field].widget.attrs['disabled'] = True
@@ -122,7 +128,12 @@ def research_project_update(request, research_project_id, template_name="experim
     research_project = get_object_or_404(ResearchProject, pk=research_project_id)
 
     if get_can_change(request.user, research_project):
-        research_project_form = ResearchProjectForm(request.POST or None, instance=research_project)
+        owners_full_name = ""
+        if research_project.owner:
+            owners_full_name = research_project.owner.get_full_name()
+
+        research_project_form = ResearchProjectForm(request.POST or None, instance=research_project,
+                                                    initial={'owners_full_name': owners_full_name})
 
         if request.method == "POST":
             if request.POST['action'] == "save":

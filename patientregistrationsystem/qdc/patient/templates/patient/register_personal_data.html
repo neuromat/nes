@@ -30,7 +30,7 @@
                     {% endif %}
 
                     <div class="row">
-                        <div class="col-xs-6 col-sm-6">
+                        <div class="col-xs-12 col-sm-6">
                             <div class="form-group {% if patient_form.errors.name %}has-error{% endif %}">
                                 <label for="name" class="control-label">Nome completo <b style="color: red;">*</b></label>
 
@@ -41,7 +41,7 @@
                                 <div class="help-block with-errors"></div>
                             </div>
                         </div>
-                        <div class="col-xs-6 col-sm-6">
+                        <div class="col-xs-12 col-sm-6">
                             <div class="form-group {% if patient_form.errors.cpf %}has-error{% endif %}">
                                 <label for="cpf" class="control-label">CPF</label>
                                 <div class="input-group input-group-sm">
@@ -160,7 +160,7 @@
                         </div>
                     </div>
                     <div class="row">
-                        <div class="col-xs-6 col-sm-6">
+                        <div class="col-xs-12 col-sm-6">
                             <div class="form-group">
                                 <label>Endereço</label>
 
@@ -171,7 +171,7 @@
 
                             </div>
                         </div>
-                        <div class="col-xs-6 col-sm-6">
+                        <div class="col-xs-6 col-sm-3">
                             <div class="form-group">
                                 <label>Número</label>
 
@@ -182,9 +182,7 @@
 
                             </div>
                         </div>
-                    </div>
-                    <div class="row">
-                        <div class="col-xs-6 col-sm-6">
+                        <div class="col-xs-6 col-sm-3">
                             <div class="form-group">
                                 <label>Complemento</label>
 
@@ -195,7 +193,9 @@
                                 <div class="help-block with-errors"></div>
                             </div>
                         </div>
-                        <div class="col-xs-6 col-sm-6">
+                    </div>
+                    <div class="row">
+                        <div class="col-xs-12 col-sm-6">
                             <div class="form-group">
                                 <label>Bairro</label>
 
@@ -206,8 +206,6 @@
 
                             </div>
                         </div>
-                    </div>
-                    <div class="row">
                         <div class="col-xs-6 col-sm-6">
                             <div class="form-group">
                                 <label>Cidade</label>
@@ -228,9 +226,7 @@
                                 </div>
                             </div>
                         </div>
-                    </div>
-                    <div class="row">
-                        <div class="col-xs-6 col-sm-6">
+                        <div class="col-xs-12 col-sm-6">
                             <div class="form-group">
                                 <label for="email" class="control-label">E-mail</label>
 
@@ -252,28 +248,28 @@
                         </div>
                     </div>
 
-                        <div class="row">
-                            <div class="col-xs-6 col-sm-3">
-                                <div class="form-group">
-                                    <label>Número</label>
-                                </div>
-                            </div>
-                            <div class="col-xs-6 col-sm-3">
-                                <div class="form-group">
-                                    <label>Tipo</label>
-                                </div>
-                            </div>
-                            <div class="col-xs-6 col-sm-4">
-                                <div class="form-group">
-                                    <label>Observação</label>
-                                </div>
-                            </div>
-                            <div class="col-xs-6 col-sm-2">
-                                <div class="form-group">
-                                    <label>Apagar</label>
-                                </div>
+                    <div class="row">
+                        <div class="col-xs-6 col-sm-3">
+                            <div class="form-group">
+                                <label>Número</label>
                             </div>
                         </div>
+                        <div class="col-xs-6 col-sm-3">
+                            <div class="form-group">
+                                <label>Tipo</label>
+                            </div>
+                        </div>
+                        <div class="col-xs-8 col-sm-4">
+                            <div class="form-group">
+                                <label>Observação</label>
+                            </div>
+                        </div>
+                        <div class="col-xs-4 col-sm-2">
+                            <div class="form-group">
+                                <label>Apagar</label>
+                            </div>
+                        </div>
+                    </div>
 
                     {{ telephone_formset.management_form }}
                     {% for telephone_form in telephone_formset %}
@@ -299,7 +295,7 @@
                                     <div class="help-block with-errors"></div>
                                 </div>
                             </div>
-                            <div class="col-xs-6 col-sm-4">
+                            <div class="col-xs-8 col-sm-4">
                                 <div class="form-group">
                                     <div class="input-group  input-group-sm">
                                         <span class="input-group-addon"> <span class="glyphicon glyphicon-pencil"></span></span>
@@ -308,7 +304,7 @@
                                     <div class="help-block with-errors"></div>
                                 </div>
                             </div>
-                            <div class="col-xs-6 col-sm-2">
+                            <div class="col-xs-4 col-sm-2">
                                 <div class="form-group">
                                     <div>
                                         {{ telephone_form.DELETE }}
