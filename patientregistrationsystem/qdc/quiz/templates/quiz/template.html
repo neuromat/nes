@@ -1,5 +1,6 @@
-<!DOCTYPE html>
-<html lang="en">
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xml:lang="en" xmlns="http://www.w3.org/1999/xhtml" lang="en">
+
 <head>
     {% load static %}
     {% load l10n %}
@@ -9,7 +10,7 @@
     <title>Neuroscience Experiments System - NES</title>
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="description" content="">
-    <meta name="author" content="">
+    <meta name="author" content="NeuroMat">
 
     <script src="{% static 'quiz/jquery/jquery-2.0.0.min.js' %}"></script>
     <link rel="stylesheet" href="{% static 'quiz/jquery-ui-1.11.2/jquery-ui.css' %}">
@@ -41,27 +42,32 @@
 
     <style type="text/css">
 
-        /* Sticky footer styles
-        -------------------------------------------------- */
+        /* Layout based on http://mystrd.at/modern-clean-css-sticky-footer/ */
+        html {
+            position: relative;
+            min-height: 100%;
+        }
         body {
-            overflow-x: hidden;
+            margin: 0 0 30px; /* bottom = footer height */
+        }
+        .footer {
+            position: absolute;
+            left: 0;
+            bottom: 0;
+            height: 30px;
+            width: 100%;
         }
 
-        {##}
-        .footer /*rodapé do sistema */
-                                              {
-            background-color: transparent;
-            height: 30px;
-            text-align: left;
-            border: transparent;
+        .version_number {
+            float:right;
+            margin-right: 10px;
+        }
+
+        /* Theme */
+        .footer {
             font-size: 8pt;
             font-family: Verdana;
             font-weight: bold;
-            width: 30%;
-            color: Black;
-            position: fixed;
-            bottom: 0px;
-            left: 0px;
         }
 
         .thumbnail {
@@ -89,7 +95,7 @@
 </head>
 <body>
 <div class="container">
-    <nav class="navbar navbar-default navbar-fixed-top  navbar-inverse" role="navigation">
+    <nav class="navbar navbar-default navbar-fixed-top navbar-inverse" role="navigation">
         <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-ex1-collapse">
             <span class="sr-only">Toggle navigation</span>
             <span class="icon-bar"></span>
@@ -168,12 +174,13 @@
 {% block end_form %}
 {% endblock %}
 
-<div class="footer" style="display: inherit">
-    <p><a href="http://ccsl.ime.usp.br"><img src="{% static 'quiz/imgs/logo-ccsl-sm.png' %}" alt="" height="34px"
-                                             width="96px"></a>
+<div class="footer">
+    <a href="http://ccsl.ime.usp.br">
+        <img src="{% static 'quiz/imgs/logo-ccsl-sm.png' %}" alt="Logo do Centro de Competência em Software Livre"
+             height="34px" width="96px">
+    </a>
 
-        <span class="credit" style="position: fixed;right: 10px">V: {% settings_value "VERSION" %}</span></p>
-
+    <span class="version_number">V: {% settings_value "VERSION" %}</span>
 </div>
 
 </body>

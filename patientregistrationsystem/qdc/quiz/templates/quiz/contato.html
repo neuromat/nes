@@ -6,55 +6,63 @@
         <div class="col-md-1">
         </div>
         <div class="col-md-10">
-            <h3>Instituto de Neurologia Deolindo Couto</h3>
+            <h3>{{ contact_institution }}</h3>
 
             <h5>Sistema de Cadastro e Consulta de Dados Sociodemográficos e Clínicos</h5>
-            <!-- <h5>Av. Venceslau Brás, 95 - Botafogo - Campus da Praia Vermelha.</h5>-->
-            <h5>Dúvidas e Sugestões: claudiadvargas at gmail dot com </h5>
+            <h5>Dúvidas e Sugestões: {{ contact_email }}</h5>
             <br/>
 
 
             <div class="col-lg-3 col-md-4 col-xs-6 thumb">
                 <a class="thumbnail" href="http://ccsl.ime.usp.br/">
-                    <img class="img-responsive" src="{% static 'quiz/imgs/logo-ccsl.jpg' %}" alt="">
+                    <img class="img-responsive" src="{% static 'quiz/imgs/logo-ccsl.jpg' %}"
+                         alt="Logo do CCSL">
                 </a>
             </div>
             <div class="col-lg-3 col-md-4 col-xs-6 thumb" >
                 <a class="thumbnail" href="http://www.ime.usp.br">
-                    <img class="img-responsive" src="{% static 'quiz/imgs/logo-ime.jpg' %}" alt="">
+                    <img class="img-responsive" src="{% static 'quiz/imgs/logo-ime.jpg' %}"
+                         alt="Logo do IME">
                 </a>
             </div>
             <div class="col-lg-3 col-md-4 col-xs-6 thumb">
                 <a class="thumbnail" href="http://www.usp.br">
-                    <img class="img-responsive" src="{% static 'quiz/imgs/logo-usp.jpg' %}" alt="">
+                    <img class="img-responsive" src="{% static 'quiz/imgs/logo-usp.jpg' %}"
+                         alt="Logo da USP">
                 </a>
             </div>
             <div class="col-lg-3 col-md-4 col-xs-6 thumb">
                 <a class="thumbnail"  href="http://www.ufrj.br">
-                    <img class="img-responsive" src="{% static 'quiz/imgs/logo-ufrj.jpg' %}" alt="">
+                    <img class="img-responsive" src="{% static 'quiz/imgs/logo-ufrj.jpg' %}"
+                         alt="Logo da UFRJ">
                 </a>
             </div>
             <div class="col-lg-3 col-md-4 col-xs-6 thumb">
                 <a class="thumbnail" href="http://numec.prp.usp.br">
-                    <img class="img-responsive" src="{% static 'quiz/imgs/logo-numec.jpg' %}" alt="">
+                    <img class="img-responsive" src="{% static 'quiz/imgs/logo-numec.jpg' %}"
+                         alt="Logo do NUMEC">
                 </a>
             </div>
             <div class="col-lg-3 col-md-4 col-xs-6 thumb">
                 <a class="thumbnail" href="http://neuromat.numec.prp.usp.br">
-                    <img class="img-responsive" src="{% static 'quiz/imgs/logo-neuromat.jpg' %}" alt="">
+                    <img class="img-responsive" src="{% static 'quiz/imgs/logo-neuromat.jpg' %}"
+                         alt="Logo do NeuroMat">
                 </a>
             </div>
             <div class="col-lg-3 col-md-4 col-xs-6 thumb">
                 <a class="thumbnail" href="http://www.fapesp.br">
-                    <img class="img-responsive" src="{% static 'quiz/imgs/logo-fapesp.jpg' %}" alt="">
+                    <img class="img-responsive" src="{% static 'quiz/imgs/logo-fapesp.jpg' %}"
+                         alt="Logo da FAPESP">
                 </a>
             </div>
-            <div class="col-lg-3 col-md-4 col-xs-6 thumb">
-                <a class="thumbnail" href="http://www.indc.ufrj.br">
-                    <img class="img-responsive" src="{% static 'quiz/imgs/logo-indc.jpg' %}" alt="">
-                </a>
-            </div>
-
+            {% if contact_url %}
+                <div class="col-lg-3 col-md-4 col-xs-6 thumb">
+                    <a class="thumbnail" href="{{ contact_url }}">
+                        <img class="img-responsive" src="{% static 'quiz/imgs/logo-institution.png' %}"
+                             alt="Logo do {{ contact_institution }}">
+                    </a>
+                </div>
+            {% endif %}
         </div>
     </div>
 {% endblock %}
