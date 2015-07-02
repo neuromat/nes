@@ -23,7 +23,7 @@ from patient.models import Patient
 from experiment.abc_search_engine import Questionnaires
 
 from survey.models import Survey
-from survey.views import get_questionnaire_responses, check_limesurvey_access
+from survey.views import get_questionnaire_responses, check_limesurvey_access, recursively_create_list_of_questionnaires
 
 from operator import itemgetter
 
@@ -622,24 +622,6 @@ def questionnaire_view(request, group_id, component_configuration_id,
     }
 
     return render(request, template_name, context)
-
-
-def recursively_create_list_of_questionnaires(block_id, list_of_questionnaires_configuration):
-    # Include questionnaires of this block to the list.
-    questionnaire_configurations = ComponentConfiguration.objects.filter(parent_id=block_id,
-                                                                         component__component_type="questionnaire")
-    list_of_questionnaires_configuration += list(questionnaire_configurations)
-
-    # Look for questionnaires in descendant blocks.
-    block_configurations = ComponentConfiguration.objects.filter(parent_id=block_id,
-                                                                 component__component_type="block")
-
-    for block_configuration in block_configurations:
-        list_of_questionnaires_configuration = recursively_create_list_of_questionnaires(
-            Block.objects.get(id=block_configuration.component.id),
-            list_of_questionnaires_configuration)
-
-    return list_of_questionnaires_configuration
 
 
 @login_required

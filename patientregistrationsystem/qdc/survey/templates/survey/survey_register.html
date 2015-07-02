@@ -198,30 +198,30 @@
                             <h4>Uso em experimentos</h4>
                         </div>
                     </div>
-                    {% for key, use in experiments_questionnaire_data_dictionary.items %}
+                    {% for dict in experiments_questionnaire_data_list %}
                         <div class="container span6 offset3 well ">
                             <div class="row" style="margin-bottom: 5px">
                                 <div class="col-xs-12 col-md-8">
                                     <strong>Experimento:</strong><br/>
-                                    {{ use.experiment_title }}
+                                    {{ dict.experiment_title }}
                                 </div>
                                 <div class="col-xs-12 col-md-4">
                                     <strong>Grupo:</strong><br/>
-                                    {{ use.group_title }}
+                                    {{ dict.group_title }}
                                 </div>
                             </div>
                             <div class="row">
                                 <div class="col-xs-12 col-md-4">
                                     <strong>Conjunto de passos pai:</strong><br/>
-                                    {{ use.parent_identification }}
+                                    {{ dict.parent_identification }}
                                 </div>
                                 <div class="col-xs-12 col-md-4">
                                     <strong>Passo:</strong><br/>
-                                    {{ use.component_identification }}
+                                    {{ dict.component_identification }}
                                 </div>
                                 <div class="col-xs-12 col-md-4">
                                     <strong>Nome do uso:</strong><br/>
-                                    {% if use.use_name %}{{ use.use_name }}{% endif %}
+                                    {% if dict.use_name %}{{ dict.use_name }}{% endif %}
                                 </div>
                             </div>
 
@@ -234,7 +234,7 @@
                                         </tr>
                                     </thead>
                                     <tbody>
-                                        {% for key, patient_questionnaire in use.patients.items %}
+                                        {% for key, patient_questionnaire in dict.patients.items %}
                                             <tr>
                                                 <td>
                                                     {{ patient_questionnaire.patient_name }}
