@@ -17,7 +17,7 @@ from forms import SurveyForm
 
 from patient.models import Patient, QuestionnaireResponse as PatientQuestionnaireResponse
 
-from experiment.models import Questionnaire
+from experiment.models import ComponentConfiguration, QuestionnaireResponse, Questionnaire
 
 from experiment.abc_search_engine import Questionnaires
 
@@ -54,9 +54,7 @@ def survey_view(request, survey_id, template_name="survey/survey_register.html")
     survey = get_object_or_404(Survey, pk=survey_id)
 
     surveys = Questionnaires()
-
     limesurvey_available = check_limesurvey_access(request, surveys)
-
     survey_title = surveys.get_survey_title(survey.lime_survey_id)
 
     survey_form = SurveyForm(request.POST or None, instance=survey,
@@ -76,67 +74,114 @@ def survey_view(request, survey_id, template_name="survey/survey_register.html")
     #         except ProtectedError:
     #             messages.error(request, "Erro ao tentar excluir o estudo.")
 
-    # list of patients
+    # Create a list of patients by looking to the answers of this questionnaire. We do this way instead of looking for
+    # patients and then looking for answers of each patient to reduce the number of access to the data base.
+    # We use a dictionary because it is useful for filtering out duplicate patients from the list.
     patients_questionnaire_data_dictionary = {}
 
-    responses = PatientQuestionnaireResponse.objects.all().filter(survey=survey).order_by('patient__id')
-
-    for response in responses:
-
+    for response in PatientQuestionnaireResponse.objects.filter(survey=survey):
         if response.patient.id not in patients_questionnaire_data_dictionary:
-            patients_questionnaire_data_dictionary[response.patient.id] = \
-                {
-                    'patient_name': response.patient.name,
-                    'questionnaire_responses': []
-                }
-
-        response_result = surveys.get_participant_properties(
-            response.survey.lime_survey_id, response.token_id, "completed")
-
-        patients_questionnaire_data_dictionary[response.patient.id]['questionnaire_responses'].append(
-            {
-                'questionnaire_response':
-                response,
-
-                'completed':
-                None if response_result is None else response_result != "N" and response_result != ""
+            patients_questionnaire_data_dictionary[response.patient.id] = {
+                'patient_name': response.patient.name,
+                'questionnaire_responses': []
             }
-        )
 
-    patients = Patient.objects.all().filter(removed=False)
+        response_result = surveys.get_participant_properties(response.survey.lime_survey_id,
+                                                             response.token_id,
+                                                             "completed")
 
-    for patient in patients:
-        if patient.id not in patients_questionnaire_data_dictionary:
-            patients_questionnaire_data_dictionary[patient.id] = \
-                {
+        patients_questionnaire_data_dictionary[response.patient.id]['questionnaire_responses'].append({
+            'questionnaire_response': response,
+            'completed': None if response_result is None else response_result != "N" and response_result != ""
+        })
+
+    # Add to the dictionary patients that have not answered any questionnaire yet.
+    if survey.is_initial_evaluation:
+        patients = Patient.objects.filter(removed=False)
+
+        for patient in patients:
+            if patient.id not in patients_questionnaire_data_dictionary:
+                patients_questionnaire_data_dictionary[patient.id] = {
                     'patient_name': patient.name,
                     'questionnaire_responses': []
                 }
 
+    # Transform the dictionary into a list, so that we can sort it by patient name.
     patients_questionnaire_data_list = []
 
-    # adjusting and sorting
     for key, dictionary in patients_questionnaire_data_dictionary.items():
         dictionary['patient_id'] = key
         patients_questionnaire_data_list.append(dictionary)
 
-    patients_questionnaire_data_list = \
-        sorted(patients_questionnaire_data_list, key=itemgetter('patient_name'), reverse=False)
+    patients_questionnaire_data_list = sorted(patients_questionnaire_data_list, key=itemgetter('patient_name'))
 
-    # TODO: list of experiments that use this survey
-    questionnaires = Questionnaire.objects.filter(survey=survey).distinct('experiment')
+    # Create a list of questionnaires used in experiments by looking at questionnaires responses. We use a
+    # dictionary because it is useful for filtering out duplicate component configurations from the list.
+    experiments_questionnaire_data_dictionary = {}
 
-    # TODO: control functionalities of remove, back, bread crumb etc.
+    for qr in QuestionnaireResponse.objects.all():
+        q = Questionnaire.objects.get(id=qr.component_configuration.component_id)
+
+        if q.survey == survey:
+            use = qr.component_configuration
+            group = qr.subject_of_group.group
+
+            if use.id not in experiments_questionnaire_data_dictionary:
+                experiments_questionnaire_data_dictionary[use.id] = {
+                    'experiment_title': group.experiment.title,
+                    'group_title': group.title,
+                    'component_identification': use.component.identification,
+                    'parent_identification': use.parent.identification,
+                    'use_name': use.name,
+                    'patients': {}
+                }
+
+            patient = qr.subject_of_group.subject.patient
+
+            if patient.id not in experiments_questionnaire_data_dictionary[use.id]['patients']:
+                experiments_questionnaire_data_dictionary[use.id]['patients'][patient.id] = {
+                    'patient_name': qr.subject_of_group.subject.patient.name,
+                    'questionnaire_responses': []
+                }
+
+            response_result = surveys.get_participant_properties(q.survey.lime_survey_id,
+                                                                 response.token_id,
+                                                                 "completed")
+
+            experiments_questionnaire_data_dictionary[use.id]['patients'][patient.id]['questionnaire_responses'].append({
+                'questionnaire_response': response,
+                'completed': None if response_result is None else response_result != "N" and response_result != ""
+            })
 
     surveys.release_session_key()
 
+    # Add questionnaires from the experiments that are not yet in this list.
+    for use in ComponentConfiguration.objects.all():
+        if use.component.component_type == 'questionnaire':
+            q = Questionnaire.objects.get(id=use.component_id)
+
+            if q.survey == survey:
+                if use.id not in experiments_questionnaire_data_dictionary:
+                    experiments_questionnaire_data_dictionary[use.id] = {
+                        'experiment_title': '',# TODO group.experiment.title,
+                        'group_title': '',# TODO group.title,
+                        'component_identification': use.component.identification,
+                        'parent_identification': use.parent.identification,
+                        'use_name': use.name,
+                        'patients': {}
+                }
+
+    # TODO Sort by experiment title, group title, step identification, and name of the use of step
+
+    # TODO: control functionalities of remove, back, bread crumb etc.
+
     context = {
+        "limesurvey_available": limesurvey_available,
+        "patients_questionnaire_data_list": patients_questionnaire_data_list,
+        "experiments_questionnaire_data_dictionary": experiments_questionnaire_data_dictionary,
         "survey": survey,
         "survey_form": survey_form,
         "survey_title": survey_title,
-        "limesurvey_available": limesurvey_available,
-        "patients_questionnaire_data_list": patients_questionnaire_data_list,
-        "questionnaires": questionnaires
     }
 
     return render(request, template_name, context)
