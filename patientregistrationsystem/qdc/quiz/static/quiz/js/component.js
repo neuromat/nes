@@ -114,5 +114,9 @@ $(document).ready(function () {
 });
 
 function redirect_with_number_of_uses(url) {
-    window.location.assign(url + "&number_of_uses=" + $("#id_number_of_uses_to_insert").val());
+    if (url.indexOf('?') === -1) {
+        window.location.assign(url + "?number_of_uses=" + $("#id_number_of_uses_to_insert").val());
+    } else {
+        window.location.assign(url + "&number_of_uses=" + $("#id_number_of_uses_to_insert").val());
+    }
 }

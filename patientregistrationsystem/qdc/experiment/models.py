@@ -165,6 +165,7 @@ class ComponentConfiguration(models.Model):
     interval_between_repetitions_unit = models.CharField(null=True, blank=True, max_length=15, choices=TIME_UNITS)
 
     component = models.ForeignKey(Component, null=False, related_name="configuration")
+    # TODO Change to not null.
     parent = models.ForeignKey(Block, null=True, related_name='children')
 
     # This field is only useful for component configurations marked as fixed and inside a sequence. However, we leave it
