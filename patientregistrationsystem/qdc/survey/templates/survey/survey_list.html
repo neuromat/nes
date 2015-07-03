@@ -28,12 +28,17 @@
                         {% for questionnaire in questionnaires_list %}
                             <tr>
                                 <td><a data-toggle="tooltip" data-placement="left" title="Visualizar" href="/survey/{{ questionnaire.id }}">{{ questionnaire.lime_survey_id }} - {{ questionnaire.title }}</a></td>
-                                <td style="text-align: center">{% if questionnaire.is_initial_evaluation %}<span class="glyphicon glyphicon-ok" style="color: royalblue">{% endif %}</td>
+                                <td style="text-align: center">{% if questionnaire.is_initial_evaluation %}<span class="glyphicon glyphicon-ok" style="color: royalblue"></span> {% endif %}</td>
                             </tr>
                         {% endfor %}
                         </tbody>
                     </table>
                 </div>
+                {% if perms.survey.add_survey %}
+                    <div class="btn-group pull-left">
+                        <a href="/survey/new/" class="btn btn-primary">Inserir novo questionário</a>
+                    </div>
+                {% endif %}
             </div>
         </div>
     </div>

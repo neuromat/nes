@@ -117,7 +117,7 @@ def research_project_view(request, research_project_id, template_name="experimen
         "keywords": research_project.keywords.order_by('name'),
         "research_project": research_project,
         "research_project_form": research_project_form,
-        }
+    }
 
     return render(request, template_name, context)
 

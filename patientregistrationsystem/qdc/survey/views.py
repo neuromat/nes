@@ -9,8 +9,10 @@ from StringIO import StringIO
 from operator import itemgetter
 
 from django.contrib import messages
-from django.shortcuts import render, redirect, get_object_or_404
+from django.shortcuts import render, get_object_or_404
 from django.contrib.auth.decorators import login_required, permission_required
+from django.core.urlresolvers import reverse
+from django.http import HttpResponseRedirect
 
 from models import Survey
 from forms import SurveyForm
@@ -42,10 +44,51 @@ def survey_list(request, template_name='survey/survey_list.html'):
 
     surveys.release_session_key()
 
-    questionnaires_list = sorted(questionnaires_list, key=itemgetter('title'), reverse=False)
+    questionnaires_list = sorted(questionnaires_list, key=itemgetter('title'))
 
     data = {'questionnaires_list': questionnaires_list}
     return render(request, template_name, data)
+
+
+@login_required
+@permission_required('survey.add_survey')
+def survey_create(request, template_name="survey/survey_register.html"):
+    survey_form = SurveyForm(request.POST or None, initial={'title': 'title'})
+
+    surveys = Questionnaires()
+    questionnaires_list = surveys.find_all_active_questionnaires()
+    surveys.release_session_key()
+
+    # removing surveys already registered
+    used_surveys = Survey.objects.all()
+    for used_survey in used_surveys:
+        for questionnaire in questionnaires_list:
+            if used_survey.lime_survey_id == questionnaire['sid']:
+                questionnaires_list.remove(questionnaire)
+                break
+
+    if request.method == "POST":
+        if request.POST['action'] == "save":
+            if survey_form.is_valid():
+
+                survey_added = survey_form.save(commit=False)
+
+                survey, created = Survey.objects.get_or_create(
+                    lime_survey_id=request.POST['questionnaire_selected'],
+                    is_initial_evaluation=survey_added.is_initial_evaluation)
+
+                if created:
+                    messages.success(request, 'Questionário criado com sucesso.')
+                    redirect_url = reverse("survey_list")
+                    return HttpResponseRedirect(redirect_url)
+
+    context = {
+        "survey_form": survey_form,
+        "creating": True,
+        "editing": True,
+        "questionnaires_list": questionnaires_list}
+
+    return render(request, template_name, context)
 
 
 @login_required
