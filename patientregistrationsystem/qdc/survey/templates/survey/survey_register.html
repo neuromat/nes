@@ -45,9 +45,7 @@
 
 
     <div class="tab-pane fade in active" id="surveyBreadCrumb">
-
         <div class="col-md-10">
-
             <ol class="breadcrumb">
                 <li><a href="/home">Home</a></li>
                 <li><a href="/survey/list">Questionários</a></li>
@@ -62,11 +60,8 @@
                         <li class="active"> {{ survey_title }} </li>
                     {% endif %}
                 {% endif %}
-
             </ol>
-
         </div>
-
     </div>
 
     <div class="tab-pane fade in active" id="menuUserTab">
@@ -108,7 +103,6 @@
             </div>
 
             {% if not creating %}
-
                 <div class="container span6 offset3 well ">
                     <div class="row">
                         <div class="col-xs-12 col-md-12">
@@ -255,6 +249,7 @@
                         </div>
                     {% endfor %}
                 </div>
+            {% endif %}
 
                 <div class="btn-toolbar">
                     <div class="btn-group pull-left">
