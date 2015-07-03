@@ -66,7 +66,7 @@ def recursively_create_list_of_questionnaires(block_id, list_of_questionnaires_c
     return list_of_questionnaires_configuration
 
 
-def create_experiments_questionnaire_data_dictionary(survey, surveys):
+def create_experiments_questionnaire_data_list(survey, surveys):
     # Create a list of questionnaires used in experiments by looking at questionnaires responses. We use a
     # dictionary because it is useful for filtering out duplicate component configurations from the list.
     experiments_questionnaire_data_dictionary = {}
@@ -84,7 +84,9 @@ def create_experiments_questionnaire_data_dictionary(survey, surveys):
                     'group_title': group.title,
                     'parent_identification': use.parent.identification,
                     'component_identification': use.component.identification,
-                    'use_name': use.name,
+                    # TODO After update to Django 1.8, override from_db to avoid this if.
+                    # https://docs.djangoproject.com/en/1.8/ref/models/instances/#customizing-model-loading
+                    'use_name': use.name if use.name is not None else "",
                     'patients': {}
                 }
 
@@ -124,7 +126,9 @@ def create_experiments_questionnaire_data_dictionary(survey, surveys):
                             'group_title': g.title,
                             'parent_identification': use.parent.identification,
                             'component_identification': use.component.identification,
-                            'use_name': use.name,
+                            # TODO After update to Django 1.8, override from_db to avoid this if.
+                            # https://docs.djangoproject.com/en/1.8/ref/models/instances/#customizing-model-loading
+                            'use_name': use.name if use.name is not None else "",
                             'patients': {}  # There is no answers.
                         }
 
@@ -139,7 +143,9 @@ def create_experiments_questionnaire_data_dictionary(survey, surveys):
                     'group_title': '',  # It is not in use in any group.
                     'parent_identification': use.parent.identification,
                     'component_identification': use.component.identification,
-                    'use_name': use.name,
+                    # TODO After update to Django 1.8, override from_db to avoid this if.
+                    # https://docs.djangoproject.com/en/1.8/ref/models/instances/#customizing-model-loading
+                    'use_name': use.name if use.name is not None else "",
                     'patients': {}  # There is no answers.
                 }
 
@@ -258,7 +264,7 @@ def survey_view(request, survey_id, template_name="survey/survey_register.html")
     #             messages.error(request, "Erro ao tentar excluir o estudo.")
 
     patients_questionnaire_data_list = create_patients_questionnaire_data_list(survey, surveys)
-    experiments_questionnaire_data_list = create_experiments_questionnaire_data_dictionary(survey, surveys)
+    experiments_questionnaire_data_list = create_experiments_questionnaire_data_list(survey, surveys)
 
     # TODO: control functionalities of remove, back, bread crumb etc.
 
