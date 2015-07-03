@@ -10,8 +10,8 @@ environ['DJANGO_SETTINGS_MODULE'] = 'qdc.settings'
 
 from django.contrib.auth.models import Group, Permission
 from django.contrib.contenttypes.models import ContentType
-from patient.models import AlcoholFrequency, AlcoholPeriod, AmountCigarettes, ClassificationOfDiseases, FleshTone, \
-    Gender, MaritalStatus, Payment, Religion, Schooling
+from patient.models import AlcoholFrequency, AlcoholPeriod, AmountCigarettes, FleshTone, Gender, MaritalStatus, \
+    Payment, Religion, Schooling
 
 g = Group(name='Administrador')
 g.save()
@@ -32,11 +32,25 @@ for p in attendant_permission_list:
 g = Group(name='Fisioterapeuta')
 g.save()
 medicalrecorddata_content_type = ContentType.objects.get(app_label='patient', model='medicalrecorddata')
+survey_content_type = ContentType.objects.get(app_label='survey', model='survey')
+patient_quest_response_content_type = ContentType.objects.get(app_label='patient', model='questionnaireresponse')
 # Can do what a attendant does
 physiotherapist_permission_list = attendant_permission_list
 # Plus
-physiotherapist_permission_list.append(Permission.objects.get(codename='view_medicalrecorddata',
-                                                              content_type=medicalrecorddata_content_type))
+physiotherapist_permission_list += [
+    # Medical record data
+    Permission.objects.get(codename='view_medicalrecorddata', content_type=medicalrecorddata_content_type),
+    # Survey
+    Permission.objects.get(codename='view_survey', content_type=survey_content_type),
+    Permission.objects.get(codename='add_survey', content_type=survey_content_type),
+    Permission.objects.get(codename='change_survey', content_type=survey_content_type),
+    Permission.objects.get(codename='delete_survey', content_type=survey_content_type),
+    # Questionnaire response
+    Permission.objects.get(codename='add_questionnaireresponse', content_type=patient_quest_response_content_type),
+    Permission.objects.get(codename='change_questionnaireresponse', content_type=patient_quest_response_content_type),
+    Permission.objects.get(codename='view_questionnaireresponse', content_type=patient_quest_response_content_type),
+    Permission.objects.get(codename='delete_questionnaireresponse', content_type=patient_quest_response_content_type)
+]
 for p in physiotherapist_permission_list:
     g.permissions.add(p)
 
@@ -68,9 +82,8 @@ junior_researcher_permission_list += [
     # Experiment
     Permission.objects.get(codename='add_experiment', content_type=experiment_content_type),
     Permission.objects.get(codename='change_experiment', content_type=experiment_content_type),
-    Permission.objects.get(codename='view_experiment', content_type=experiment_content_type),
     Permission.objects.get(codename='delete_experiment', content_type=experiment_content_type),
-    # Questionnaire response
+    # Experiment questionnaire response
     Permission.objects.get(codename='add_questionnaireresponse', content_type=questionnaireresponse_content_type),
     Permission.objects.get(codename='change_questionnaireresponse', content_type=questionnaireresponse_content_type),
     Permission.objects.get(codename='view_questionnaireresponse', content_type=questionnaireresponse_content_type),
@@ -78,7 +91,7 @@ junior_researcher_permission_list += [
     # Subject
     Permission.objects.get(codename='add_subject', content_type=subject_content_type),
     Permission.objects.get(codename='change_subject', content_type=subject_content_type),
-    Permission.objects.get(codename='delete_subject', content_type=subject_content_type)
+    Permission.objects.get(codename='delete_subject', content_type=subject_content_type),
 ]
 
 for p in junior_researcher_permission_list:

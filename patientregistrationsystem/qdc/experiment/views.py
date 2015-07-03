@@ -417,7 +417,7 @@ def recursively_create_list_of_questionnaires_and_statistics(block_id,
 
 
 @login_required
-@permission_required('experiment.view_experiment')
+@permission_required('experiment.view_researchproject')
 def group_view(request, group_id, template_name="experiment/group_register.html"):
     group = get_object_or_404(Group, pk=group_id)
     group_form = GroupForm(request.POST or None, instance=group)
@@ -550,7 +550,7 @@ def classification_of_diseases_remove(request, group_id, classification_of_disea
 
 
 @login_required
-@permission_required('experiment.view_experiment')
+@permission_required('experiment.view_researchproject')
 def questionnaire_view(request, group_id, component_configuration_id,
                        template_name="experiment/questionnaire_view.html"):
     questionnaire_configuration = get_object_or_404(ComponentConfiguration, pk=component_configuration_id)
@@ -625,7 +625,7 @@ def questionnaire_view(request, group_id, component_configuration_id,
 
 
 @login_required
-@permission_required('experiment.view_experiment')
+@permission_required('experiment.view_researchproject')
 def subjects(request, group_id, template_name="experiment/subjects.html"):
     group = get_object_or_404(Group, id=group_id)
     subject_list = SubjectOfGroup.objects.filter(group=group).order_by('subject__patient__name')
@@ -1026,7 +1026,7 @@ def questionnaire_response_view_response(request, questionnaire_response_id,
 
 
 @login_required
-@permission_required('experiment.view_experiment')
+@permission_required('experiment.view_researchproject')
 def subject_questionnaire_view(request, group_id, subject_id,
                                template_name="experiment/subject_questionnaire_response_list.html"):
     group = get_object_or_404(Group, id=group_id)
@@ -1123,7 +1123,7 @@ def subjects_insert(request, group_id, patient_id):
 
 
 @login_required
-@permission_required('experiment.view_experiment')
+@permission_required('experiment.view_researchproject')
 def search_patients_ajax(request):
     patient_list = ''
 
@@ -1189,7 +1189,7 @@ def upload_file(request, subject_id, group_id, template_name="experiment/upload_
 
 
 @login_required
-@permission_required('experiment.view_experiment')
+@permission_required('experiment.view_researchproject')
 def component_list(request, experiment_id, template_name="experiment/component_list.html"):
     experiment = get_object_or_404(Experiment, pk=experiment_id)
 
@@ -1662,7 +1662,7 @@ def remove_component_configuration(conf):
 
 
 @login_required
-@permission_required('experiment.view_experiment')
+@permission_required('experiment.view_researchproject')
 def component_view(request, path_of_the_components):
     # It will always be a block because we don't have a view screen for other components.
     # This view is also use to show the use of a set of steps (component configuration of a block).

@@ -9,8 +9,9 @@ from StringIO import StringIO
 from operator import itemgetter
 
 from django.contrib import messages
-from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib.auth.decorators import login_required, permission_required
+from django.db.models.deletion import ProtectedError
+from django.shortcuts import render, redirect, get_object_or_404
 
 from models import Survey
 from forms import SurveyForm
@@ -246,27 +247,29 @@ def survey_view(request, survey_id, template_name="survey/survey_register.html")
     limesurvey_available = check_limesurvey_access(request, surveys)
     survey_title = surveys.get_survey_title(survey.lime_survey_id)
 
-    survey_form = SurveyForm(request.POST or None, instance=survey,
+    # There is no need to use "request.POST or None" because the data will never be changed here. In fact we have to
+    # use "None" only, because request.POST does not contain any value because the fields are disabled, and this results
+    # in the form being created without considering the initial value.
+    survey_form = SurveyForm(None,
+                             instance=survey,
                              initial={'title': str(survey.lime_survey_id) + ' - ' + survey_title})
 
     for field in survey_form.fields:
         survey_form.fields[field].widget.attrs['disabled'] = True
 
-    # if request.method == "POST":
-    #     if request.POST['action'] == "remove":
-    #         try:
-    #             for keyword in research_project.keywords.all():
-    #                 manage_keywords(keyword, ResearchProject.objects.exclude(id=research_project.id))
-    #
-    #             research_project.delete()
-    #             return redirect('research_project_list')
-    #         except ProtectedError:
-    #             messages.error(request, "Erro ao tentar excluir o estudo.")
+    if request.method == "POST":
+        if request.POST['action'] == "remove":
+            try:
+                survey.delete()
+                return redirect('survey_list')
+            except ProtectedError:
+                messages.error(request, "Não foi possível excluir o questionário, pois há respostas ou passos de experimento associados.")
 
     patients_questionnaire_data_list = create_patients_questionnaire_data_list(survey, surveys)
-    experiments_questionnaire_data_list = create_experiments_questionnaire_data_list(survey, surveys)
-
-    # TODO: control functionalities of remove, back, bread crumb etc.
+    if request.user.has_perm("experiment.view_researchproject"):
+        experiments_questionnaire_data_list = create_experiments_questionnaire_data_list(survey, surveys)
+    else:
+        experiments_questionnaire_data_list = []
 
     context = {
         "limesurvey_available": limesurvey_available,

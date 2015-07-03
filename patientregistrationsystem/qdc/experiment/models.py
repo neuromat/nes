@@ -72,11 +72,6 @@ class Experiment(models.Model):
     history = HistoricalRecords()
     # changed_by = models.ForeignKey('auth.User')
 
-    class Meta:
-        permissions = (
-            ("view_experiment", "Can view experiment"),
-        )
-
     def __unicode__(self):  # Python 3: def __str__(self):
         return self.title
 
@@ -138,7 +133,7 @@ class Stimulus(Component):
 
 
 class Questionnaire(Component):
-    survey = models.ForeignKey(Survey, null=False, blank=False)
+    survey = models.ForeignKey(Survey, null=False, blank=False, on_delete=models.PROTECT)
 
     def save(self, *args, **kwargs):
         super(Component, self).save(*args, **kwargs)

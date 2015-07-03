@@ -5,6 +5,7 @@
 {% block activeAdvancedSurvey %}class="active"{% endblock %}
 
 {% block header %}
+    <script src="{% static 'quiz/js/survey.js' %}"></script>
 {% endblock %}
 
 {% block form %}
@@ -272,8 +273,13 @@
 
                 <div class="btn-toolbar">
                     <div class="btn-group pull-left">
-                        {% if not editing and perms.experiment.delete_researchproject %}
-                            <button type="button" class="btn btn-danger" onclick="showDialogAndEnableRemoveButton()">Excluir</button>
+                        {% if not editing and perms.experiment.delete_survey %}
+                            <button type="button" class="btn btn-danger" onclick="showRemoveDialog()"
+                                    {% if patients_questionnaire_data_list|length > 0 or experiments_questionnaire_data_list|length > 0 %}
+                                        disabled
+                                    {% endif %}>
+                                Excluir
+                            </button>
                         {% endif %}
                     </div>
                     {% if editing %}
@@ -302,8 +308,8 @@
                         Tem certeza que deseja excluir o questionário?
                     </div>
                     <div class="modal-footer">
-                        <button type="button" class="btn btn-default" data-dismiss="modal" onclick="disableRemoveButton()">Cancelar</button>
-                        <button type="submit" class="btn btn-danger" id="remove_button" value="remove" disabled name="action">Excluir</button>
+                        <button type="button" class="btn btn-default" data-dismiss="modal">Cancelar</button>
+                        <button type="submit" class="btn btn-danger" id="remove_button" value="remove" name="action">Excluir</button>
                     </div>
                 </div>
             </div>
