@@ -6,7 +6,7 @@ from models import Survey
 
 class SurveyForm(ModelForm):
 
-    title = CharField(widget=TextInput(attrs={'class': 'form-control', 'disabled': ''}))
+    title = CharField(required=False, widget=TextInput(attrs={'class': 'form-control', 'disabled': ''}))
 
     class Meta:
         model = Survey

@@ -466,17 +466,17 @@ def patient_view_questionnaires(request, patient, context, is_update):
 
     patient_questionnaires_data_list = []
 
-    # adjusting and sorting
+    # transforming the dictionary to a list in order to sort
     for key, dictionary in patient_questionnaires_data_dictionary.items():
         dictionary['limesurvey_id'] = key
         patient_questionnaires_data_list.append(dictionary)
 
+    # sorting by questionnaire_title and is_initial_evaluation (reversed),
+    # where is_initial_evaluation is more relevant.
     patient_questionnaires_data_list = \
-        sorted(patient_questionnaires_data_list, key=itemgetter('questionnaire_title'), reverse=False)
-
+        sorted(patient_questionnaires_data_list, key=itemgetter('questionnaire_title'))
     patient_questionnaires_data_list = \
         sorted(patient_questionnaires_data_list, key=itemgetter('is_initial_evaluation'), reverse=True)
-
 
     # Questionnaires filled in an experimental group
 
