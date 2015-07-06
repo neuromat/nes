@@ -814,19 +814,20 @@ def subject_questionnaire_response_create(request, group_id, subject_id, questio
         origin = get_origin(request)
 
         context = {
-            "FAIL": fail,
-            "URL": redirect_url,
-            "questionnaire_response_id": questionnaire_response_id,
-            "questionnaire_response_form": questionnaire_response_form,
-            "questionnaire_configuration": questionnaire_config,
-            "survey_title": survey_title,
-            # "survey_admin": survey_admin,
-            "survey_active": survey_active,
-            "questionnaire_responsible": request.user.get_username(),
+            "can_change": True,
             "creating": True,
-            "subject": get_object_or_404(Subject, pk=subject_id),
+            "FAIL": fail,
             "group": group,
-            "origin": origin
+            "origin": origin,
+            "questionnaire_configuration": questionnaire_config,
+            "questionnaire_response_form": questionnaire_response_form,
+            "questionnaire_response_id": questionnaire_response_id,
+            "questionnaire_responsible": request.user.get_username(),
+            "subject": get_object_or_404(Subject, pk=subject_id),
+            "survey_active": survey_active,
+            # "survey_admin": survey_admin,
+            "survey_title": survey_title,
+            "URL": redirect_url,
         }
 
         return render(request, template_name, context)

@@ -81,7 +81,7 @@
                                             {% if editing and patient_questionnaire.is_initial_evaluation and perms.experiment.add_questionnaireresponse %}
                                                 <tr>
                                                     <td colspan="2" class="col-md-12">
-                                                        <a href="/patient/{{ patient_id }}/questionnaire/{{ patient_questionnaire.survey_id }}/response/?origin=subject"
+                                                        <a href="/patient/{{ patient_id }}/questionnaire/{{ patient_questionnaire.survey_id }}/add_response/?origin=subject"
                                                             class="btn btn-primary {% if not limesurvey_available %} disabled {% endif %}">Novo preenchimento</a>
                                                     </td>
                                                 </tr>

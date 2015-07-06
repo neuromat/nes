@@ -96,12 +96,12 @@
                                 {% for item in subject_list %}
                                     <tr>
                                         <td>
-                                            <a href='/experiment/group/{{ group.id }}/subjects/{{ item.subject.id }}/questionnaire/'>{{ item.subject.patient.name }}</a>
+                                            <a href='/experiment/group/{{ group.id }}/subject/{{ item.subject.id }}/'>{{ item.subject.patient.name }}</a>
                                         </td>
                                         <td>
                                             {% if can_change %}
                                                 <span>
-                                                    <a href='/experiment/group/{{ group.id }}/subjects/{{ item.subject.id }}/upload_file' class="glyphicon glyphicon-paperclip"></a>
+                                                    <a href='/experiment/group/{{ group.id }}/subject/{{ item.subject.id }}/upload_file' class="glyphicon glyphicon-paperclip"></a>
                                                 </span>
                                             {% endif %}
                                             {% if item.consent %}

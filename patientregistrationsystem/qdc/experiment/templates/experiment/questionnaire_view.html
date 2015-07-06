@@ -194,7 +194,7 @@
                                                         {% if questionnaire_configuration.number_of_fills == None or item.questionnaire_responses|length < questionnaire_configuration.number_of_fills %}
                                                             {% if perms.experiment.add_questionnaireresponse and can_change %}
                                                                 <td colspan="2">
-                                                                    <a href="/experiment/group/{{ group.id }}/subject/{{ item.subject.id }}/questionnaire/{{ questionnaire_configuration.id }}/response" class="btn btn-primary {% if not limesurvey_available %} disabled {% endif %}">
+                                                                    <a href="/experiment/group/{{ group.id }}/subject/{{ item.subject.id }}/questionnaire/{{ questionnaire_configuration.id }}/add_response" class="btn btn-primary {% if not limesurvey_available %} disabled {% endif %}">
                                                                         Novo preenchimento
                                                                     </a>
                                                                 </td>

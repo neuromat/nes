@@ -47,7 +47,7 @@ urlpatterns = patterns(
     # questionnaire response
     url(r'^patient_questionnaire_response/(?P<patient_questionnaire_response_id>\d+)/$',
         'patient_questionnaire_response_view', name='patient_questionnaire_response_view'),
-    url(r'^(?P<patient_id>\d+)/questionnaire/(?P<survey_id>\d+)/response/$',
+    url(r'^(?P<patient_id>\d+)/questionnaire/(?P<survey_id>\d+)/add_response/$',
         'patient_questionnaire_response_create', name='patient_questionnaire_response_create'),
     url(r'^questionnaire_response/edit/(?P<patient_questionnaire_response_id>\d+)/$',
         'patient_questionnaire_response_update', name='patient_questionnaire_response_edit'),

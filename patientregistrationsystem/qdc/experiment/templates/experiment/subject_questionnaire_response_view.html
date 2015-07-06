@@ -41,7 +41,7 @@
 
                     {% if origin == "experiment_subject" %}
                         <li><a href="/experiment/group/{{ group.id }}/subjects/">Participantes</a></li>
-                        <li><a href="/experiment/group/{{ group.id }}/subjects/{{ subject.id }}/questionnaire">{{ subject.patient.name }}</a></li>
+                        <li><a href="/experiment/group/{{ group.id }}/subject/{{ subject.id }}">{{ subject.patient.name }}</a></li>
                         <li>
                             <a href="/experiment/questionnaire_response/edit/{{ questionnaire_response.id }}?origin={{ origin }}">
                                 {{ survey_title }} - {{ questionnaire_response.date|date:"d-m-Y" }}

@@ -30,7 +30,7 @@
                     <li><a href="/experiment/group/{{ group.id }}">{{ group.title }}</a></li>
                     {% if origin == 'experiment_subject' %}
                         <li><a href="/experiment/group/{{ group.id }}/subjects/">Participantes</a></li>
-                        <li><a href="/experiment/group/{{ group.id }}/subjects/{{ subject.id }}/questionnaire">{{ subject.patient.name }}</a></li>
+                        <li><a href="/experiment/group/{{ group.id }}/subject/{{ subject.id }}">{{ subject.patient.name }}</a></li>
                         <li class="active">{{ survey_title }} - {% if creating %}Novo preenchimento{% else %}{{ questionnaire_response_form.date.value|date:"d-m-Y" }}{% endif %}</li>
                     {% else %}
                         <li><a href="/experiment/group/{{ group.id }}/questionnaire/{{ questionnaire_configuration.id }}">{{ survey_title }}</a></li>
@@ -207,7 +207,7 @@
                     <a href="/patient{% if status == 'edit' %}/edit{% endif %}/{{ patient.id }}/?currentTab=4" class="btn" style="background-color: #f5f5f5">Voltar</a>
                 {% else %}
                     {% if origin == 'experiment_subject' %}
-                        <a href="/experiment/group/{{ group.id }}/subjects/{{ subject.id }}/questionnaire" class="btn"
+                        <a href="/experiment/group/{{ group.id }}/subject/{{ subject.id }}" class="btn"
                            style="background-color: #f5f5f5">Voltar</a>
                     {% else %} {# origin == 'experiment_questionnaire' #}
                         <a href="/experiment/group/{{ group.id }}/questionnaire/{{ questionnaire_configuration.id }}"
