@@ -13,7 +13,7 @@ from django.contrib.auth.decorators import login_required, permission_required
 from django.core.urlresolvers import reverse
 from django.db.models.deletion import ProtectedError
 from django.http import HttpResponseRedirect
-from django.shortcuts import render, get_object_or_404
+from django.shortcuts import get_object_or_404, redirect, render
 
 from models import Survey
 from forms import SurveyForm
@@ -242,6 +242,7 @@ def create_patients_questionnaire_data_list(survey, surveys):
     # patients and then looking for answers of each patient to reduce the number of access to the data base.
     # We use a dictionary because it is useful for filtering out duplicate patients from the list.
     patients_questionnaire_data_dictionary = {}
+
     for response in PatientQuestionnaireResponse.objects.filter(survey=survey):
         if response.patient.id not in patients_questionnaire_data_dictionary:
             patients_questionnaire_data_dictionary[response.patient.id] = {
@@ -306,9 +307,11 @@ def survey_view(request, survey_id, template_name="survey/survey_register.html")
                 survey.delete()
                 return redirect('survey_list')
             except ProtectedError:
-                messages.error(request, "Não foi possível excluir o questionário, pois há respostas ou passos de experimento associados.")
+                messages.error(request, "Não foi possível excluir o questionário, pois há respostas ou passos de "
+                                        "experimento associados.")
 
     patients_questionnaire_data_list = create_patients_questionnaire_data_list(survey, surveys)
+
     if request.user.has_perm("experiment.view_researchproject"):
         experiments_questionnaire_data_list = create_experiments_questionnaire_data_list(survey, surveys)
     else:

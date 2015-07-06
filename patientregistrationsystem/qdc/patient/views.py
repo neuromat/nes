@@ -5,6 +5,7 @@ from operator import itemgetter
 import re
 
 from django.contrib import messages
+from django.contrib.auth import PermissionDenied
 from django.contrib.auth.decorators import login_required, permission_required
 from django.core.urlresolvers import reverse
 from django.db.models import Q
@@ -110,7 +111,10 @@ def patient_update(request, patient_id):
         elif current_tab == '3':
             return patient_update_medical_record(request, patient, context)
         else:  # current_tab == '4':
-            return patient_view_questionnaires(request, patient, context, True)
+            if request.user.has_perm('survey.view_survey'):
+                return patient_view_questionnaires(request, patient, context, True)
+            else:
+                raise PermissionDenied
 
 
 def get_current_tab(request):
@@ -337,7 +341,10 @@ def patient_view(request, patient_id):
         elif current_tab == '3':
             return patient_view_medical_record(request, patient, context)
         else:  # current_tab == '4':
-            return patient_view_questionnaires(request, patient, context, False)
+            if request.user.has_perm('survey.view_survey'):
+                return patient_view_questionnaires(request, patient, context, False)
+            else:
+                raise PermissionDenied
 
 
 def patient_view_personal_data(request, patient, context):

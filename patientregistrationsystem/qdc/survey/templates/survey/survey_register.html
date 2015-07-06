@@ -172,92 +172,91 @@
                     </div>
                 </div>
 
-                <div class="container span6 offset3 well ">
-                    <div class="row">
-                        <div class="col-xs-12 col-md-12">
-                            <h4>Uso em experimentos</h4>
+                {% if perms.experiment.view_research_project %}
+                    <div class="container span6 offset3 well ">
+                        <div class="row">
+                            <div class="col-xs-12 col-md-12">
+                                <h4>Uso em experimentos</h4>
+                            </div>
                         </div>
-                    </div>
-                    {% for dict in experiments_questionnaire_data_list %}
-                        <div class="container span6 offset3 well ">
-                            <div class="row" style="margin-bottom: 5px">
-                                <div class="col-xs-12 col-md-8">
-                                    <strong>Experimento:</strong><br/>
-                                    {{ dict.experiment_title }}
+                        {% for dict in experiments_questionnaire_data_list %}
+                            <div class="container span6 offset3 well ">
+                                <div class="row" style="margin-bottom: 5px">
+                                    <div class="col-xs-12 col-md-8">
+                                        <strong>Experimento:</strong><br/>
+                                        {{ dict.experiment_title }}
+                                    </div>
+                                    <div class="col-xs-12 col-md-4">
+                                        <strong>Grupo:</strong><br/>
+                                        {{ dict.group_title }}
+                                    </div>
                                 </div>
-                                <div class="col-xs-12 col-md-4">
-                                    <strong>Grupo:</strong><br/>
-                                    {{ dict.group_title }}
+                                <div class="row">
+                                    <div class="col-xs-12 col-md-4">
+                                        <strong>Conjunto de passos pai:</strong><br/>
+                                        {{ dict.parent_identification }}
+                                    </div>
+                                    <div class="col-xs-12 col-md-4">
+                                        <strong>Passo:</strong><br/>
+                                        {{ dict.component_identification }}
+                                    </div>
+                                    <div class="col-xs-12 col-md-4">
+                                        <strong>Nome do uso:</strong><br/>
+                                        {{ dict.use_name }}
+                                    </div>
                                 </div>
-                            </div>
-                            <div class="row">
-                                <div class="col-xs-12 col-md-4">
-                                    <strong>Conjunto de passos pai:</strong><br/>
-                                    {{ dict.parent_identification }}
-                                </div>
-                                <div class="col-xs-12 col-md-4">
-                                    <strong>Passo:</strong><br/>
-                                    {{ dict.component_identification }}
-                                </div>
-                                <div class="col-xs-12 col-md-4">
-                                    <strong>Nome do uso:</strong><br/>
-                                    {{ dict.use_name }}
-                                </div>
-                            </div>
 
-                            <div class="form-group">
-                                <table class="table table-striped col-xs-12 col-md-12">
-                                    <thead>
-                                        <tr>
-                                            <th class="col-xs-6 col-md-6">Participante</th>
-                                            <th class="col-xs-6 col-md-6">Preenchimentos</th>
-                                        </tr>
-                                    </thead>
-                                    <tbody>
-                                        {% for key, patient_questionnaire in dict.patients.items %}
+                                <div class="form-group">
+                                    <table class="table table-striped col-xs-12 col-md-12">
+                                        <thead>
                                             <tr>
-                                                <td>
-                                                    {{ patient_questionnaire.patient_name }}
-                                                </td>
-                                                <td>
-                                                    <table class="col-xs-12 col-md-12">
-                                                        {% for response in patient_questionnaire.questionnaire_responses %}
-                                                            <tr>
-                                                                <td class="col-xs-8 col-md-8">
-                                                                    {{ response.questionnaire_response.date }}
-                                                                </td>
-                                                                <td class="col-xs-4 col-md-4">
-                                                                    {% if limesurvey_available and response.completed != None %}
-                                                                        {% if response.completed %}
-                                                                            <span class="label label-success">Completo</span>
-                                                                        {% else %}
-                                                                            <span class="label label-warning">Incompleto</span>
-                                                                        {% endif %}
-                                                                    {% else %}
-                                                                        <span class="label label-default">Sem status</span>
-                                                                    {% endif %}
-                                                                </td>
-                                                            </tr>
-                                                        {% endfor %}
-                                                    </table>
-                                                </td>
+                                                <th class="col-xs-6 col-md-6">Participante</th>
+                                                <th class="col-xs-6 col-md-6">Preenchimentos</th>
                                             </tr>
-                                        {% endfor %}
-                                    </tbody>
-                                </table>
+                                        </thead>
+                                        <tbody>
+                                            {% for key, patient_questionnaire in dict.patients.items %}
+                                                <tr>
+                                                    <td>
+                                                        {{ patient_questionnaire.patient_name }}
+                                                    </td>
+                                                    <td>
+                                                        <table class="col-xs-12 col-md-12">
+                                                            {% for response in patient_questionnaire.questionnaire_responses %}
+                                                                <tr>
+                                                                    <td class="col-xs-8 col-md-8">
+                                                                        {{ response.questionnaire_response.date }}
+                                                                    </td>
+                                                                    <td class="col-xs-4 col-md-4">
+                                                                        {% if limesurvey_available and response.completed != None %}
+                                                                            {% if response.completed %}
+                                                                                <span class="label label-success">Completo</span>
+                                                                            {% else %}
+                                                                                <span class="label label-warning">Incompleto</span>
+                                                                            {% endif %}
+                                                                        {% else %}
+                                                                            <span class="label label-default">Sem status</span>
+                                                                        {% endif %}
+                                                                    </td>
+                                                                </tr>
+                                                            {% endfor %}
+                                                        </table>
+                                                    </td>
+                                                </tr>
+                                            {% endfor %}
+                                        </tbody>
+                                    </table>
+                                </div>
                             </div>
-                        </div>
-                    {% endfor %}
-                </div>
+                        {% endfor %}
+                    </div>
+                {% endif %}
             {% endif %}
 
                 <div class="btn-toolbar">
                     <div class="btn-group pull-left">
-                        {% if not editing and perms.experiment.delete_survey %}
-                            <button type="button" class="btn btn-danger" onclick="showRemoveDialog()"
-                                    {% if patients_questionnaire_data_list|length > 0 or experiments_questionnaire_data_list|length > 0 %}
-                                        disabled
-                                    {% endif %}>
+                        {% if not editing and perms.survey.delete_survey %}
+                            <button type="button" class="btn btn-danger" onclick="showRemoveDialog()">
                                 Excluir
                             </button>
                         {% endif %}
