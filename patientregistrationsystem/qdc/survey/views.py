@@ -13,7 +13,7 @@ from django.contrib.auth.decorators import login_required, permission_required
 from django.core.urlresolvers import reverse
 from django.db.models.deletion import ProtectedError
 from django.http import HttpResponseRedirect
-from django.shortcuts import render, get_object_or_404
+from django.shortcuts import render, get_object_or_404, redirect
 
 from models import Survey
 from forms import SurveyForm
@@ -88,6 +88,43 @@ def survey_create(request, template_name="survey/survey_register.html"):
         "creating": True,
         "editing": True,
         "questionnaires_list": questionnaires_list}
+
+    return render(request, template_name, context)
+
+
+@login_required
+@permission_required('survey.change_survey')
+def survey_update(request, survey_id, template_name="survey/survey_register.html"):
+    survey = get_object_or_404(Survey, pk=survey_id)
+
+    surveys = Questionnaires()
+    survey_title = surveys.get_survey_title(survey.lime_survey_id)
+    limesurvey_available = check_limesurvey_access(request, surveys)
+
+    surveys.release_session_key()
+
+    survey_form = SurveyForm(request.POST or None, instance=survey,
+                             initial={'title': str(survey.lime_survey_id) + ' - ' + survey_title})
+
+    if request.method == "POST":
+        if request.POST['action'] == "save":
+            if survey_form.is_valid():
+                if survey_form.has_changed():
+                    survey_form.save()
+                    messages.success(request, 'Questionário atualizado com sucesso.')
+                else:
+                    messages.success(request, 'Não há alterações para salvar.')
+
+                redirect_url = reverse("survey_view", args=(survey.id,))
+                return HttpResponseRedirect(redirect_url)
+
+    context = {
+        "limesurvey_available": limesurvey_available,
+        "survey": survey,
+        "survey_form": survey_form,
+        "survey_title": survey_title,
+        "editing": True,
+        "creating": False}
 
     return render(request, template_name, context)
 
@@ -304,6 +341,7 @@ def survey_view(request, survey_id, template_name="survey/survey_register.html")
         if request.POST['action'] == "remove":
             try:
                 survey.delete()
+                messages.success(request, 'Questionário removido com sucesso.')
                 return redirect('survey_list')
             except ProtectedError:
                 messages.error(request, "Não foi possível excluir o questionário, pois há respostas ou passos de experimento associados.")
