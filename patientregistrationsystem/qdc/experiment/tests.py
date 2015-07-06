@@ -387,6 +387,7 @@ class ExperimentalProtocolTest(TestCase):
         self.assertEqual(ComponentConfiguration.objects.get(name="ComponentConfiguration 2").order, 2)
         self.assertEqual(ComponentConfiguration.objects.get(name="ComponentConfiguration 3").order, 3)
 
+
 class GroupTest(TestCase):
     def setUp(self):
         """
