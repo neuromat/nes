@@ -47,13 +47,10 @@ urlpatterns = patterns(
         name='subject_questionnaire'),
     url(r'^group/(?P<group_id>\d+)/subject/(?P<subject_id>\d+)/questionnaire/(?P<questionnaire_id>\d+)/add_response/$',
         'subject_questionnaire_response_create', name='subject_questionnaire_response'),
-    # TODO This url should not be called for viewing a response, only for finishing a response
-    url(r'^questionnaire_response/edit/(?P<questionnaire_response_id>\d+)/$',
-        'questionnaire_response_view', name='questionnaire_response_view'),
-    # TODO This url should also show subject_questionnaire_response_form.html with disabled fields before the responses
-    # TODO to give the context.
-    url(r'^questionnaire_response/(?P<questionnaire_response_id>\d+)/$',
-        'questionnaire_response_view_response', name='questionnaire_response_view_response'),
+    url(r'^questionnaire_response/edit/(?P<questionnaire_response_id>\d+)/$', 'questionnaire_response_edit',
+        name='questionnaire_response_edit'),
+    url(r'^questionnaire_response/(?P<questionnaire_response_id>\d+)/$', 'questionnaire_response_view',
+        name='questionnaire_response_view'),
 
     # experimental protocol components
     url(r'^(?P<experiment_id>\d+)/components/$', 'component_list', name='component_list'),
@@ -68,6 +65,6 @@ urlpatterns = patterns(
         r'(?P<command>\w+)/$', 'component_change_the_order', name='component_change_the_order'),
 
     # Data collection
-    url(r'^group/(?P<group_id>\d+)/questionnaire/(?P<component_configuration_id>\d+)/$',
-        'questionnaire_view', name='questionnaire_view'),
+    url(r'^group/(?P<group_id>\d+)/questionnaire/(?P<component_configuration_id>\d+)/$', 'questionnaire_view',
+        name='questionnaire_view'),
 )

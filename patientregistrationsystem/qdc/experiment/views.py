@@ -837,12 +837,12 @@ def subject_questionnaire_response_create(request, group_id, subject_id, questio
 
 @login_required
 @permission_required('experiment.view_questionnaireresponse')
-def questionnaire_response_view(request, questionnaire_response_id,
+def questionnaire_response_edit(request, questionnaire_response_id,
                                 template_name="experiment/subject_questionnaire_response_form.html"):
     questionnaire_response = get_object_or_404(QuestionnaireResponse, id=questionnaire_response_id)
-
     questionnaire = Questionnaire.objects.get(id=questionnaire_response.component_configuration.component.id)
-    group = Group.objects.get(id=questionnaire_response.subject_of_group.group_id)
+    group = questionnaire_response.subject_of_group.group
+    subject = questionnaire_response.subject_of_group.subject
 
     surveys = Questionnaires()
     survey_title = surveys.get_survey_title(questionnaire.survey.lime_survey_id)
@@ -851,8 +851,6 @@ def questionnaire_response_view(request, questionnaire_response_id,
                                                            questionnaire_response.token_id,
                                                            "completed") != "N")
     surveys.release_session_key()
-
-    subject = questionnaire_response.subject_of_group.subject
 
     questionnaire_response_form = QuestionnaireResponseForm(None, instance=questionnaire_response)
 
@@ -994,18 +992,23 @@ def check_required_fields(surveys, lime_survey_id):
 
 @login_required
 @permission_required('experiment.view_questionnaireresponse')
-def questionnaire_response_view_response(request, questionnaire_response_id,
-                                         template_name="experiment/subject_questionnaire_response_view.html"):
-    origin = get_origin(request)
-
-    status_mode = None
-
-    if 'status' in request.GET:
-        status_mode = request.GET['status']
-
+def questionnaire_response_view(request, questionnaire_response_id,
+                                template_name="experiment/subject_questionnaire_response_form.html"):
     questionnaire_response = get_object_or_404(QuestionnaireResponse, id=questionnaire_response_id)
-    questionnaire_configuration = questionnaire_response.component_configuration
-    questionnaire = Questionnaire.objects.get(id=questionnaire_configuration.component.id)
+    questionnaire = Questionnaire.objects.get(id=questionnaire_response.component_configuration.component.id)
+    group = questionnaire_response.subject_of_group.group
+    subject = questionnaire_response.subject_of_group.subject
+
+    surveys = Questionnaires()
+    survey_title = surveys.get_survey_title(questionnaire.survey.lime_survey_id)
+    survey_active = surveys.get_survey_properties(questionnaire.survey.lime_survey_id, 'active')
+    survey_completed = (surveys.get_participant_properties(questionnaire.survey.lime_survey_id,
+                                                           questionnaire_response.token_id,
+                                                           "completed") != "N")
+    surveys.release_session_key()
+
+    questionnaire_response_form = QuestionnaireResponseForm(None, instance=questionnaire_response)
+
     lime_survey_id = questionnaire.survey.lime_survey_id
     token_id = questionnaire_response.token_id
     language_code = request.LANGUAGE_CODE
@@ -1013,14 +1016,62 @@ def questionnaire_response_view_response(request, questionnaire_response_id,
     # Get the responses for each question of the questionnaire.
     survey_title, questionnaire_responses = get_questionnaire_responses(language_code, lime_survey_id, token_id)
 
+    if request.method == "POST":
+        if get_can_change(request.user, group.experiment.research_project):
+            if request.POST['action'] == "remove":
+                if request.user.has_perm('experiment.delete_questionnaireresponse'):
+                    surveys = Questionnaires()
+                    result = surveys.delete_participant(
+                        questionnaire.survey.lime_survey_id,
+                        questionnaire_response.token_id)
+                    surveys.release_session_key()
+
+                    can_delete = False
+
+                    if str(questionnaire_response.token_id) in result:
+                        result = result[str(questionnaire_response.token_id)]
+                        if result == 'Deleted' or result == 'Invalid token ID':
+                            can_delete = True
+                    else:
+                        if 'status' in result and result['status'] == u'Error: Invalid survey ID':
+                            can_delete = True
+
+                    if can_delete:
+                        questionnaire_response.delete()
+                        messages.success(request, 'Preenchimento removido com sucesso')
+                    else:
+                        messages.error(request, "Erro ao deletar o preenchimento")
+
+                    redirect_url = reverse("subject_questionnaire", args=(group.id, subject.id,))
+                    return HttpResponseRedirect(redirect_url)
+                else:
+                    raise PermissionDenied
+        else:
+            raise PermissionDenied
+
+    origin = get_origin(request)
+
+    status = ""
+    if 'status' in request.GET:
+        status = request.GET['status']
+
     context = {
-        "group": questionnaire_response.subject_of_group.group,
-        "questionnaire_response": questionnaire_response,
-        "questionnaire_responses": questionnaire_responses,
-        "status_mode": status_mode,
-        "subject": questionnaire_response.subject_of_group.subject,
-        "survey_title": survey_title,
+        "can_change": get_can_change(request.user, group.experiment.research_project),
+        "completed": survey_completed,
+        "creating": False,
+        "group": group,
         "origin": origin,
+        "questionnaire_configuration": questionnaire_response.component_configuration,
+        "questionnaire_response": questionnaire_response,
+        "questionnaire_response_form": questionnaire_response_form,
+        "questionnaire_response_id": questionnaire_response_id,
+        "questionnaire_responses": questionnaire_responses,
+        "questionnaire_responsible": questionnaire_response.questionnaire_responsible,
+        "patient": subject.patient,  # This is needed when origin=subject
+        "status": status,
+        "subject": subject,
+        "survey_active": survey_active,
+        "survey_title": survey_title,
     }
 
     return render(request, template_name, context)

@@ -21,21 +21,28 @@
                 <li><a href="/home">Home</a></li>
                 {% if origin == 'subject' %}
                     <li><a href="/patient/find/">Participantes</a></li>
-                    <li><a href="/patient/edit/{{ patient.id }}/?currentTab=4">{{ patient.name }}</a></li>
-                    <li class="active">Questionário: {{ survey_title }}</li>
+
+                    {% if status == "edit"%}
+                        <li><a href="/patient/edit/{{ patient.id }}/?currentTab=4">{{ patient.name }}</a></li>
+                    {% else %}
+                        <li><a href="/patient/{{ patient.id }}/?currentTab=4">{{ patient.name }}</a></li>
+                    {% endif %}
+
+                    <li class="active">{% if creating %}Novo preenchimento{% elif completed %}Respostas{% else %}Continuar preenchimento{% endif %}</li>
                 {% else %}
                     <li><a href="/experiment/research_project/list">Estudos</a></li>
                     <li><a href="/experiment/research_project/{{ group.experiment.research_project.id }}">{{ group.experiment.research_project.title }}</a></li>
                     <li><a href="/experiment/{{ group.experiment.id }}">{{ group.experiment.title }}</a></li>
                     <li><a href="/experiment/group/{{ group.id }}">{{ group.title }}</a></li>
+
                     {% if origin == 'experiment_subject' %}
                         <li><a href="/experiment/group/{{ group.id }}/subjects/">Participantes</a></li>
                         <li><a href="/experiment/group/{{ group.id }}/subject/{{ subject.id }}">{{ subject.patient.name }}</a></li>
-                        <li class="active">{{ survey_title }} - {% if creating %}Novo preenchimento{% else %}{{ questionnaire_response_form.date.value|date:"d-m-Y" }}{% endif %}</li>
-                    {% else %}
+                    {% else %}  {# origin == "experiment_questionnaire" #}
                         <li><a href="/experiment/group/{{ group.id }}/questionnaire/{{ questionnaire_configuration.id }}">{{ survey_title }}</a></li>
-                        <li class="active">{% if creating %}Novo preenchimento{% else %}{{ questionnaire_response_form.date.value|date:"d-m-Y" }}{% endif %}</li>
                     {% endif %}
+
+                    <li class="active">{% if creating %}Novo preenchimento{% elif completed %}Respostas{% else %}Continuar preenchimento{% endif %}</li>
                 {% endif %}
             </ol>
         </div>
@@ -174,6 +181,47 @@
             </div>
         </div>
 
+        {% if completed %}
+            <div class="container span6 offset3 well ">
+                <div class="col-md-10">
+                    {% for question_response in questionnaire_responses %}
+                        <div class="row">
+                            <div class="col-xs-12 col-sm-12">
+                                <div class="form-group">
+                                    <div class="input-group input-group-sm">
+                                        <label>{{ question_response.question }}</label>
+                                        {% if question_response.type == 'M' %}
+                                            {% if question_response.answer == 'Y'%}
+                                                <br/><input type="checkbox" value="answer" checked disabled>
+                                            {% else %}
+                                                <br/><input type="checkbox" value="answer" disabled>
+                                            {% endif %}
+                                        {% else %}
+                                            {% if question_response.type == 'D' %}
+                                                <input class="form-control" value="{{ question_response.answer|date:"d/m/Y" }}" type="text" disabled>
+                                            {% else %}
+                                                {% if question_response.type == '1' %}
+                                                    {% for answer in question_response.answer %}
+                                                        {% if answer != '' %}
+                                                            <input class="form-control" value="{{ answer }}" type="text" disabled>
+                                                        {% endif %}
+                                                    {% endfor %}
+                                                {% else %}
+                                                    {% if question_response.answer != '' %}
+                                                        <input class="form-control" value="{{ question_response.answer }}" type="text" disabled>
+                                                    {% endif %}
+                                                {% endif %}
+                                            {% endif %}
+                                        {% endif %}
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    {% endfor %}
+                </div>
+            </div>
+        {% endif %}
+
         <div class="btn-toolbar">
             <div class="btn-group pull-left">
                 {% if not creating and perms.experiment.delete_questionnaireresponse and can_change %}
@@ -193,12 +241,6 @@
                                 <button type="submit" id="id_fill_button" name="action" value="save" class="btn btn-primary">Continuar preenchimento</button>
                             {% endif %}
                         {% endif %}
-                    {% endif %}
-                {% else %}
-                    {% if origin == 'subject' %}
-                        <a href="/patient/patient_questionnaire_response/{{ patient_questionnaire_response.id }}?origin={{ origin }}&status={% if editing %}edit{% else %}view{% endif %}" class="btn btn-primary">Ver preenchimento</a>
-                    {% else %}
-                        <a href="/experiment/questionnaire_response/{{ questionnaire_response_id }}/?origin={{ origin }}" class="btn btn-primary">Ver preenchimento</a>
                     {% endif %}
                 {% endif %}
             </div>
