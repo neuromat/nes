@@ -92,6 +92,43 @@ def survey_create(request, template_name="survey/survey_register.html"):
     return render(request, template_name, context)
 
 
+@login_required
+@permission_required('survey.change_survey')
+def survey_update(request, survey_id, template_name="survey/survey_register.html"):
+    survey = get_object_or_404(Survey, pk=survey_id)
+
+    surveys = Questionnaires()
+    survey_title = surveys.get_survey_title(survey.lime_survey_id)
+    limesurvey_available = check_limesurvey_access(request, surveys)
+
+    surveys.release_session_key()
+
+    survey_form = SurveyForm(request.POST or None, instance=survey,
+                             initial={'title': str(survey.lime_survey_id) + ' - ' + survey_title})
+
+    if request.method == "POST":
+        if request.POST['action'] == "save":
+            if survey_form.is_valid():
+                if survey_form.has_changed():
+                    survey_form.save()
+                    messages.success(request, 'Questionário atualizado com sucesso.')
+                else:
+                    messages.success(request, 'Não há alterações para salvar.')
+
+                redirect_url = reverse("survey_view", args=(survey.id,))
+                return HttpResponseRedirect(redirect_url)
+
+    context = {
+        "limesurvey_available": limesurvey_available,
+        "survey": survey,
+        "survey_form": survey_form,
+        "survey_title": survey_title,
+        "editing": True,
+        "creating": False}
+
+    return render(request, template_name, context)
+
+
 def recursively_create_list_of_questionnaires(block_id, list_of_questionnaires_configuration):
     # Include questionnaires of this block to the list.
     questionnaire_configurations = ComponentConfiguration.objects.filter(parent_id=block_id,
@@ -305,6 +342,7 @@ def survey_view(request, survey_id, template_name="survey/survey_register.html")
         if request.POST['action'] == "remove":
             try:
                 survey.delete()
+                messages.success(request, 'Questionário removido com sucesso.')
                 return redirect('survey_list')
             except ProtectedError:
                 messages.error(request, "Não foi possível excluir o questionário, pois há respostas ou passos de "
