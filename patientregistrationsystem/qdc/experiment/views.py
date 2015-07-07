@@ -19,7 +19,7 @@ from experiment.models import Experiment, Subject, QuestionnaireResponse, Subjec
     TaskForTheExperimenter, ClassificationOfDiseases, ResearchProject, Keyword
 from experiment.forms import ExperimentForm, QuestionnaireResponseForm, FileForm, GroupForm, InstructionForm, \
     ComponentForm, StimulusForm, BlockForm, ComponentConfigurationForm, ResearchProjectForm, NumberOfUsesToInsertForm
-from patient.models import Patient
+from patient.models import Patient, QuestionnaireResponse as PatientQuestionnaireResponse
 from experiment.abc_search_engine import Questionnaires
 
 from survey.models import Survey
@@ -1219,12 +1219,12 @@ def upload_file(request, subject_id, group_id, template_name="experiment/upload_
                 else:
                     messages.error(request, 'Não existem anexos para salvar')
             elif request.POST['action'] == "remove":
-                    subject_of_group.consent_form.delete()
-                    subject_of_group.save()
-                    messages.success(request, 'Anexo removido com sucesso.')
+                subject_of_group.consent_form.delete()
+                subject_of_group.save()
+                messages.success(request, 'Anexo removido com sucesso.')
 
-                    redirect_url = reverse("subjects", args=(group_id,))
-                    return HttpResponseRedirect(redirect_url)
+                redirect_url = reverse("subjects", args=(group_id,))
+                return HttpResponseRedirect(redirect_url)
 
         else:
             file_form = FileForm(request.POST or None)
@@ -1691,7 +1691,21 @@ def remove_component_and_related_configurations(component,
         # Return to the list of components
         redirect_url = "/experiment/" + str(component.experiment.id) + "/components"
 
+    # if the questionnaire is a questionnaire, it would be the only usage of this survey.
+    # If it is the case, the survey could be also removed.
+    survey_to_check = None
+    if component.component_type == "questionnaire":
+        questionnaire = get_object_or_404(Questionnaire, pk=component.id)
+        if not questionnaire.survey.is_initial_evaluation:
+            survey_to_check = questionnaire.survey
+
     component.delete()
+
+    # Checking if there is not use
+    if survey_to_check and \
+            len(Questionnaire.objects.filter(survey=survey_to_check)) == 0 and \
+            len(PatientQuestionnaireResponse.objects.filter(survey=survey_to_check)) == 0:
+        survey_to_check.delete()
 
     return redirect_url
 
@@ -1749,6 +1763,7 @@ def component_view(request, path_of_the_components):
                 redirect_url = remove_component_and_related_configurations(component,
                                                                            list_of_ids_of_components_and_configurations,
                                                                            path_of_the_components)
+                messages.success(request, 'Componente removido com sucesso.')
                 return HttpResponseRedirect(redirect_url)
             elif request.POST['action'][:7] == "remove-":
                 # If action starts with 'remove-' it means that a child or some children should be removed.
@@ -1999,6 +2014,7 @@ def component_update(request, path_of_the_components):
                 redirect_url = remove_component_and_related_configurations(component,
                                                                            list_of_ids_of_components_and_configurations,
                                                                            path_of_the_components)
+                messages.success(request, 'Componente removido com sucesso.')
                 return HttpResponseRedirect(redirect_url)
 
     type_of_the_parent_block = None
