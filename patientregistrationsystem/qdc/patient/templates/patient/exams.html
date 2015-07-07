@@ -43,7 +43,7 @@
                 <li><a href="/home">Home</a></li>
                 <li><a href="/patient/find/">Participantes</a></li>
 
-                {% if status_mode == "edit" %}
+                {% if status == "edit" %}
                     <li><a href="/patient/edit/{{ patient_id }}/?currentTab=3">{{ name_patient }}</a></li>
                 {% else %}
                     <li><a href="/patient/{{ patient_id }}/?currentTab=3">{{ name_patient }}</a></li>

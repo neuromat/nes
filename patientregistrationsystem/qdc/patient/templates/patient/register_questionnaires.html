@@ -48,7 +48,7 @@
                                                     <td class="col-md-8">
                                                         {% if limesurvey_available and response.completed != None %}
                                                             {% if response.completed %}
-                                                                <a href="/patient/questionnaire_response/edit/{{ response.questionnaire_response.pk }}?origin=subject&status={% if editing %}edit{% else %}view{% endif %}">
+                                                                <a href="/patient/questionnaire_response/{{ response.questionnaire_response.pk }}?origin=subject&status={% if editing %}edit{% else %}view{% endif %}">
                                                                     {{ response.questionnaire_response.date }}
                                                                 </a>
                                                             {% else %}
@@ -81,7 +81,7 @@
                                             {% if editing and patient_questionnaire.is_initial_evaluation and perms.experiment.add_questionnaireresponse %}
                                                 <tr>
                                                     <td colspan="2" class="col-md-12">
-                                                        <a href="/patient/{{ patient_id }}/questionnaire/{{ patient_questionnaire.survey_id }}/response/?origin=subject"
+                                                        <a href="/patient/{{ patient_id }}/questionnaire/{{ patient_questionnaire.survey_id }}/add_response/?origin=subject"
                                                             class="btn btn-primary {% if not limesurvey_available %} disabled {% endif %}">Novo preenchimento</a>
                                                     </td>
                                                 </tr>

@@ -357,7 +357,7 @@ class ExamFile(models.Model):
 class QuestionnaireResponse(models.Model):
     patient = models.ForeignKey(Patient, null=False)
 
-    survey = models.ForeignKey(Survey, null=False)
+    survey = models.ForeignKey(Survey, null=False, on_delete=models.PROTECT)
 
     token_id = models.IntegerField(null=False)
     date = models.DateField(default=datetime.date.today, null=False, validators=[validate_date_questionnaire_response])

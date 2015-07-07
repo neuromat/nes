@@ -9,8 +9,11 @@ from StringIO import StringIO
 from operator import itemgetter
 
 from django.contrib import messages
-from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib.auth.decorators import login_required, permission_required
+from django.core.urlresolvers import reverse
+from django.db.models.deletion import ProtectedError
+from django.http import HttpResponseRedirect
+from django.shortcuts import get_object_or_404, redirect, render
 
 from models import Survey
 from forms import SurveyForm
@@ -23,7 +26,7 @@ from experiment.abc_search_engine import Questionnaires
 
 
 @login_required
-@permission_required('auth.view_survey')
+@permission_required('survey.view_survey')
 def survey_list(request, template_name='survey/survey_list.html'):
 
     surveys = Questionnaires()
@@ -48,6 +51,84 @@ def survey_list(request, template_name='survey/survey_list.html'):
     return render(request, template_name, data)
 
 
+@login_required
+@permission_required('survey.add_survey')
+def survey_create(request, template_name="survey/survey_register.html"):
+    survey_form = SurveyForm(request.POST or None, initial={'title': 'title'})
+
+    surveys = Questionnaires()
+    questionnaires_list = surveys.find_all_active_questionnaires()
+    surveys.release_session_key()
+
+    # removing surveys already registered
+    used_surveys = Survey.objects.all()
+    for used_survey in used_surveys:
+        for questionnaire in questionnaires_list:
+            if used_survey.lime_survey_id == questionnaire['sid']:
+                questionnaires_list.remove(questionnaire)
+                break
+
+    if request.method == "POST":
+        if request.POST['action'] == "save":
+            if survey_form.is_valid():
+
+                survey_added = survey_form.save(commit=False)
+
+                survey, created = Survey.objects.get_or_create(
+                    lime_survey_id=request.POST['questionnaire_selected'],
+                    is_initial_evaluation=survey_added.is_initial_evaluation)
+
+                if created:
+                    messages.success(request, 'Questionário criado com sucesso.')
+                    redirect_url = reverse("survey_list")
+                    return HttpResponseRedirect(redirect_url)
+
+    context = {
+        "survey_form": survey_form,
+        "creating": True,
+        "editing": True,
+        "questionnaires_list": questionnaires_list}
+
+    return render(request, template_name, context)
+
+
+@login_required
+@permission_required('survey.change_survey')
+def survey_update(request, survey_id, template_name="survey/survey_register.html"):
+    survey = get_object_or_404(Survey, pk=survey_id)
+
+    surveys = Questionnaires()
+    survey_title = surveys.get_survey_title(survey.lime_survey_id)
+    limesurvey_available = check_limesurvey_access(request, surveys)
+
+    surveys.release_session_key()
+
+    survey_form = SurveyForm(request.POST or None, instance=survey,
+                             initial={'title': str(survey.lime_survey_id) + ' - ' + survey_title})
+
+    if request.method == "POST":
+        if request.POST['action'] == "save":
+            if survey_form.is_valid():
+                if survey_form.has_changed():
+                    survey_form.save()
+                    messages.success(request, 'Questionário atualizado com sucesso.')
+                else:
+                    messages.success(request, 'Não há alterações para salvar.')
+
+                redirect_url = reverse("survey_view", args=(survey.id,))
+                return HttpResponseRedirect(redirect_url)
+
+    context = {
+        "limesurvey_available": limesurvey_available,
+        "survey": survey,
+        "survey_form": survey_form,
+        "survey_title": survey_title,
+        "editing": True,
+        "creating": False}
+
+    return render(request, template_name, context)
+
+
 def recursively_create_list_of_questionnaires(block_id, list_of_questionnaires_configuration):
     # Include questionnaires of this block to the list.
     questionnaire_configurations = ComponentConfiguration.objects.filter(parent_id=block_id,
@@ -66,7 +147,7 @@ def recursively_create_list_of_questionnaires(block_id, list_of_questionnaires_c
     return list_of_questionnaires_configuration
 
 
-def create_experiments_questionnaire_data_dictionary(survey, surveys):
+def create_experiments_questionnaire_data_list(survey, surveys):
     # Create a list of questionnaires used in experiments by looking at questionnaires responses. We use a
     # dictionary because it is useful for filtering out duplicate component configurations from the list.
     experiments_questionnaire_data_dictionary = {}
@@ -84,7 +165,9 @@ def create_experiments_questionnaire_data_dictionary(survey, surveys):
                     'group_title': group.title,
                     'parent_identification': use.parent.identification,
                     'component_identification': use.component.identification,
-                    'use_name': use.name,
+                    # TODO After update to Django 1.8, override from_db to avoid this if.
+                    # https://docs.djangoproject.com/en/1.8/ref/models/instances/#customizing-model-loading
+                    'use_name': use.name if use.name is not None else "",
                     'patients': {}
                 }
 
@@ -124,7 +207,9 @@ def create_experiments_questionnaire_data_dictionary(survey, surveys):
                             'group_title': g.title,
                             'parent_identification': use.parent.identification,
                             'component_identification': use.component.identification,
-                            'use_name': use.name,
+                            # TODO After update to Django 1.8, override from_db to avoid this if.
+                            # https://docs.djangoproject.com/en/1.8/ref/models/instances/#customizing-model-loading
+                            'use_name': use.name if use.name is not None else "",
                             'patients': {}  # There is no answers.
                         }
 
@@ -139,7 +224,9 @@ def create_experiments_questionnaire_data_dictionary(survey, surveys):
                     'group_title': '',  # It is not in use in any group.
                     'parent_identification': use.parent.identification,
                     'component_identification': use.component.identification,
-                    'use_name': use.name,
+                    # TODO After update to Django 1.8, override from_db to avoid this if.
+                    # https://docs.djangoproject.com/en/1.8/ref/models/instances/#customizing-model-loading
+                    'use_name': use.name if use.name is not None else "",
                     'patients': {}  # There is no answers.
                 }
 
@@ -192,6 +279,7 @@ def create_patients_questionnaire_data_list(survey, surveys):
     # patients and then looking for answers of each patient to reduce the number of access to the data base.
     # We use a dictionary because it is useful for filtering out duplicate patients from the list.
     patients_questionnaire_data_dictionary = {}
+
     for response in PatientQuestionnaireResponse.objects.filter(survey=survey):
         if response.patient.id not in patients_questionnaire_data_dictionary:
             patients_questionnaire_data_dictionary[response.patient.id] = {
@@ -240,27 +328,32 @@ def survey_view(request, survey_id, template_name="survey/survey_register.html")
     limesurvey_available = check_limesurvey_access(request, surveys)
     survey_title = surveys.get_survey_title(survey.lime_survey_id)
 
-    survey_form = SurveyForm(request.POST or None, instance=survey,
+    # There is no need to use "request.POST or None" because the data will never be changed here. In fact we have to
+    # use "None" only, because request.POST does not contain any value because the fields are disabled, and this results
+    # in the form being created without considering the initial value.
+    survey_form = SurveyForm(None,
+                             instance=survey,
                              initial={'title': str(survey.lime_survey_id) + ' - ' + survey_title})
 
     for field in survey_form.fields:
         survey_form.fields[field].widget.attrs['disabled'] = True
 
-    # if request.method == "POST":
-    #     if request.POST['action'] == "remove":
-    #         try:
-    #             for keyword in research_project.keywords.all():
-    #                 manage_keywords(keyword, ResearchProject.objects.exclude(id=research_project.id))
-    #
-    #             research_project.delete()
-    #             return redirect('research_project_list')
-    #         except ProtectedError:
-    #             messages.error(request, "Erro ao tentar excluir o estudo.")
+    if request.method == "POST":
+        if request.POST['action'] == "remove":
+            try:
+                survey.delete()
+                messages.success(request, 'Questionário removido com sucesso.')
+                return redirect('survey_list')
+            except ProtectedError:
+                messages.error(request, "Não foi possível excluir o questionário, pois há respostas ou passos de "
+                                        "experimento associados.")
 
     patients_questionnaire_data_list = create_patients_questionnaire_data_list(survey, surveys)
-    experiments_questionnaire_data_list = create_experiments_questionnaire_data_dictionary(survey, surveys)
 
-    # TODO: control functionalities of remove, back, bread crumb etc.
+    if request.user.has_perm("experiment.view_researchproject"):
+        experiments_questionnaire_data_list = create_experiments_questionnaire_data_list(survey, surveys)
+    else:
+        experiments_questionnaire_data_list = []
 
     context = {
         "limesurvey_available": limesurvey_available,

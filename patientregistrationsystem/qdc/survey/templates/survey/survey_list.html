@@ -11,6 +11,29 @@
 {% block activeAdvancedSurvey %}class="active"{% endblock %}
 
 {% block content %}
+
+    {% if messages %}
+        {% for message in messages %}
+
+            {% if message.tags == "success" %}
+                <script>showSuccessMessage('{{ message }}')</script>
+            {% endif %}
+
+            {% if message.tags == "warning" %}
+                <script>showWarningMessage('{{ message }}')</script>
+            {% endif %}
+
+            {% if message.tags == "error" %}
+                <script>showErrorMessage('{{ message }}')</script>
+            {% endif %}
+
+            {% if message.tags == "info" %}
+                <script>showInfoMessage('{{ message }}')</script>
+            {% endif %}
+
+        {% endfor %}
+    {% endif %}
+
     <input type="text" id="action" name="action" style="visibility: hidden"/>
     <div class="tab-pane fade in active" id="mainMenuUserTab">
         <div class="col-md-10">
@@ -28,12 +51,17 @@
                         {% for questionnaire in questionnaires_list %}
                             <tr>
                                 <td><a data-toggle="tooltip" data-placement="left" title="Visualizar" href="/survey/{{ questionnaire.id }}">{{ questionnaire.lime_survey_id }} - {{ questionnaire.title }}</a></td>
-                                <td style="text-align: center">{% if questionnaire.is_initial_evaluation %}<span class="glyphicon glyphicon-ok" style="color: royalblue">{% endif %}</td>
+                                <td style="text-align: center">{% if questionnaire.is_initial_evaluation %}<span class="glyphicon glyphicon-ok" style="color: royalblue"></span> {% endif %}</td>
                             </tr>
                         {% endfor %}
                         </tbody>
                     </table>
                 </div>
+                {% if perms.survey.add_survey %}
+                    <div class="btn-group pull-left">
+                        <a href="/survey/new/" class="btn btn-primary">Inserir novo questionário</a>
+                    </div>
+                {% endif %}
             </div>
         </div>
     </div>

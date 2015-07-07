@@ -172,9 +172,13 @@
                                                     {% for response in item.questionnaire_responses %}
                                                         <tr>
                                                             <td>
-                                                                <a href="/experiment/questionnaire_response/edit/{{ response.questionnaire_response.id }}" data-toggle="tooltip" data-placement="left" title="Ver detalhes">
+                                                                {% if limesurvey_available and response.completed != None %}
+                                                                    <a href="/experiment/questionnaire_response/{% if response.completed == False %}edit/{% endif %}{{ response.questionnaire_response.id }}" data-toggle="tooltip" data-placement="left" title="Ver detalhes">
+                                                                        {{ response.questionnaire_response.date }}
+                                                                    </a>
+                                                                {% else %}
                                                                     {{ response.questionnaire_response.date }}
-                                                                </a>
+                                                                {% endif %}
                                                             </td>
                                                             <td>
                                                                 {% if limesurvey_available and response.completed != None %}
@@ -194,7 +198,7 @@
                                                         {% if questionnaire_configuration.number_of_fills == None or item.questionnaire_responses|length < questionnaire_configuration.number_of_fills %}
                                                             {% if perms.experiment.add_questionnaireresponse and can_change %}
                                                                 <td colspan="2">
-                                                                    <a href="/experiment/group/{{ group.id }}/subject/{{ item.subject.id }}/questionnaire/{{ questionnaire_configuration.id }}/response" class="btn btn-primary {% if not limesurvey_available %} disabled {% endif %}">
+                                                                    <a href="/experiment/group/{{ group.id }}/subject/{{ item.subject.id }}/questionnaire/{{ questionnaire_configuration.id }}/add_response" class="btn btn-primary {% if not limesurvey_available %} disabled {% endif %}">
                                                                         Novo preenchimento
                                                                     </a>
                                                                 </td>

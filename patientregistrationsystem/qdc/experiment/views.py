@@ -19,7 +19,7 @@ from experiment.models import Experiment, Subject, QuestionnaireResponse, Subjec
     TaskForTheExperimenter, ClassificationOfDiseases, ResearchProject, Keyword
 from experiment.forms import ExperimentForm, QuestionnaireResponseForm, FileForm, GroupForm, InstructionForm, \
     ComponentForm, StimulusForm, BlockForm, ComponentConfigurationForm, ResearchProjectForm, NumberOfUsesToInsertForm
-from patient.models import Patient
+from patient.models import Patient, QuestionnaireResponse as PatientQuestionnaireResponse
 from experiment.abc_search_engine import Questionnaires
 
 from survey.models import Survey
@@ -117,7 +117,7 @@ def research_project_view(request, research_project_id, template_name="experimen
         "keywords": research_project.keywords.order_by('name'),
         "research_project": research_project,
         "research_project_form": research_project_form,
-        }
+    }
 
     return render(request, template_name, context)
 
@@ -417,7 +417,7 @@ def recursively_create_list_of_questionnaires_and_statistics(block_id,
 
 
 @login_required
-@permission_required('experiment.view_experiment')
+@permission_required('experiment.view_researchproject')
 def group_view(request, group_id, template_name="experiment/group_register.html"):
     group = get_object_or_404(Group, pk=group_id)
     group_form = GroupForm(request.POST or None, instance=group)
@@ -550,7 +550,7 @@ def classification_of_diseases_remove(request, group_id, classification_of_disea
 
 
 @login_required
-@permission_required('experiment.view_experiment')
+@permission_required('experiment.view_researchproject')
 def questionnaire_view(request, group_id, component_configuration_id,
                        template_name="experiment/questionnaire_view.html"):
     questionnaire_configuration = get_object_or_404(ComponentConfiguration, pk=component_configuration_id)
@@ -625,7 +625,7 @@ def questionnaire_view(request, group_id, component_configuration_id,
 
 
 @login_required
-@permission_required('experiment.view_experiment')
+@permission_required('experiment.view_researchproject')
 def subjects(request, group_id, template_name="experiment/subjects.html"):
     group = get_object_or_404(Group, id=group_id)
     subject_list = SubjectOfGroup.objects.filter(group=group).order_by('subject__patient__name')
@@ -814,19 +814,20 @@ def subject_questionnaire_response_create(request, group_id, subject_id, questio
         origin = get_origin(request)
 
         context = {
-            "FAIL": fail,
-            "URL": redirect_url,
-            "questionnaire_response_id": questionnaire_response_id,
-            "questionnaire_response_form": questionnaire_response_form,
-            "questionnaire_configuration": questionnaire_config,
-            "survey_title": survey_title,
-            # "survey_admin": survey_admin,
-            "survey_active": survey_active,
-            "questionnaire_responsible": request.user.get_username(),
+            "can_change": True,
             "creating": True,
-            "subject": get_object_or_404(Subject, pk=subject_id),
+            "FAIL": fail,
             "group": group,
-            "origin": origin
+            "origin": origin,
+            "questionnaire_configuration": questionnaire_config,
+            "questionnaire_response_form": questionnaire_response_form,
+            "questionnaire_response_id": questionnaire_response_id,
+            "questionnaire_responsible": request.user.get_username(),
+            "subject": get_object_or_404(Subject, pk=subject_id),
+            "survey_active": survey_active,
+            # "survey_admin": survey_admin,
+            "survey_title": survey_title,
+            "URL": redirect_url,
         }
 
         return render(request, template_name, context)
@@ -836,12 +837,12 @@ def subject_questionnaire_response_create(request, group_id, subject_id, questio
 
 @login_required
 @permission_required('experiment.view_questionnaireresponse')
-def questionnaire_response_view(request, questionnaire_response_id,
+def questionnaire_response_edit(request, questionnaire_response_id,
                                 template_name="experiment/subject_questionnaire_response_form.html"):
     questionnaire_response = get_object_or_404(QuestionnaireResponse, id=questionnaire_response_id)
-
     questionnaire = Questionnaire.objects.get(id=questionnaire_response.component_configuration.component.id)
-    group = Group.objects.get(id=questionnaire_response.subject_of_group.group_id)
+    group = questionnaire_response.subject_of_group.group
+    subject = questionnaire_response.subject_of_group.subject
 
     surveys = Questionnaires()
     survey_title = surveys.get_survey_title(questionnaire.survey.lime_survey_id)
@@ -850,8 +851,6 @@ def questionnaire_response_view(request, questionnaire_response_id,
                                                            questionnaire_response.token_id,
                                                            "completed") != "N")
     surveys.release_session_key()
-
-    subject = questionnaire_response.subject_of_group.subject
 
     questionnaire_response_form = QuestionnaireResponseForm(None, instance=questionnaire_response)
 
@@ -993,18 +992,23 @@ def check_required_fields(surveys, lime_survey_id):
 
 @login_required
 @permission_required('experiment.view_questionnaireresponse')
-def questionnaire_response_view_response(request, questionnaire_response_id,
-                                         template_name="experiment/subject_questionnaire_response_view.html"):
-    origin = get_origin(request)
-
-    status_mode = None
-
-    if 'status' in request.GET:
-        status_mode = request.GET['status']
-
+def questionnaire_response_view(request, questionnaire_response_id,
+                                template_name="experiment/subject_questionnaire_response_form.html"):
     questionnaire_response = get_object_or_404(QuestionnaireResponse, id=questionnaire_response_id)
-    questionnaire_configuration = questionnaire_response.component_configuration
-    questionnaire = Questionnaire.objects.get(id=questionnaire_configuration.component.id)
+    questionnaire = Questionnaire.objects.get(id=questionnaire_response.component_configuration.component.id)
+    group = questionnaire_response.subject_of_group.group
+    subject = questionnaire_response.subject_of_group.subject
+
+    surveys = Questionnaires()
+    survey_title = surveys.get_survey_title(questionnaire.survey.lime_survey_id)
+    survey_active = surveys.get_survey_properties(questionnaire.survey.lime_survey_id, 'active')
+    survey_completed = (surveys.get_participant_properties(questionnaire.survey.lime_survey_id,
+                                                           questionnaire_response.token_id,
+                                                           "completed") != "N")
+    surveys.release_session_key()
+
+    questionnaire_response_form = QuestionnaireResponseForm(None, instance=questionnaire_response)
+
     lime_survey_id = questionnaire.survey.lime_survey_id
     token_id = questionnaire_response.token_id
     language_code = request.LANGUAGE_CODE
@@ -1012,21 +1016,69 @@ def questionnaire_response_view_response(request, questionnaire_response_id,
     # Get the responses for each question of the questionnaire.
     survey_title, questionnaire_responses = get_questionnaire_responses(language_code, lime_survey_id, token_id)
 
+    if request.method == "POST":
+        if get_can_change(request.user, group.experiment.research_project):
+            if request.POST['action'] == "remove":
+                if request.user.has_perm('experiment.delete_questionnaireresponse'):
+                    surveys = Questionnaires()
+                    result = surveys.delete_participant(
+                        questionnaire.survey.lime_survey_id,
+                        questionnaire_response.token_id)
+                    surveys.release_session_key()
+
+                    can_delete = False
+
+                    if str(questionnaire_response.token_id) in result:
+                        result = result[str(questionnaire_response.token_id)]
+                        if result == 'Deleted' or result == 'Invalid token ID':
+                            can_delete = True
+                    else:
+                        if 'status' in result and result['status'] == u'Error: Invalid survey ID':
+                            can_delete = True
+
+                    if can_delete:
+                        questionnaire_response.delete()
+                        messages.success(request, 'Preenchimento removido com sucesso')
+                    else:
+                        messages.error(request, "Erro ao deletar o preenchimento")
+
+                    redirect_url = reverse("subject_questionnaire", args=(group.id, subject.id,))
+                    return HttpResponseRedirect(redirect_url)
+                else:
+                    raise PermissionDenied
+        else:
+            raise PermissionDenied
+
+    origin = get_origin(request)
+
+    status = ""
+    if 'status' in request.GET:
+        status = request.GET['status']
+
     context = {
-        "group": questionnaire_response.subject_of_group.group,
-        "questionnaire_response": questionnaire_response,
-        "questionnaire_responses": questionnaire_responses,
-        "status_mode": status_mode,
-        "subject": questionnaire_response.subject_of_group.subject,
-        "survey_title": survey_title,
+        "can_change": get_can_change(request.user, group.experiment.research_project),
+        "completed": survey_completed,
+        "creating": False,
+        "group": group,
         "origin": origin,
+        "questionnaire_configuration": questionnaire_response.component_configuration,
+        "questionnaire_response": questionnaire_response,
+        "questionnaire_response_form": questionnaire_response_form,
+        "questionnaire_response_id": questionnaire_response_id,
+        "questionnaire_responses": questionnaire_responses,
+        "questionnaire_responsible": questionnaire_response.questionnaire_responsible,
+        "patient": subject.patient,  # This is needed when origin=subject
+        "status": status,
+        "subject": subject,
+        "survey_active": survey_active,
+        "survey_title": survey_title,
     }
 
     return render(request, template_name, context)
 
 
 @login_required
-@permission_required('experiment.view_experiment')
+@permission_required('experiment.view_researchproject')
 def subject_questionnaire_view(request, group_id, subject_id,
                                template_name="experiment/subject_questionnaire_response_list.html"):
     group = get_object_or_404(Group, id=group_id)
@@ -1123,7 +1175,7 @@ def subjects_insert(request, group_id, patient_id):
 
 
 @login_required
-@permission_required('experiment.view_experiment')
+@permission_required('experiment.view_researchproject')
 def search_patients_ajax(request):
     patient_list = ''
 
@@ -1167,12 +1219,12 @@ def upload_file(request, subject_id, group_id, template_name="experiment/upload_
                 else:
                     messages.error(request, 'Não existem anexos para salvar')
             elif request.POST['action'] == "remove":
-                    subject_of_group.consent_form.delete()
-                    subject_of_group.save()
-                    messages.success(request, 'Anexo removido com sucesso.')
+                subject_of_group.consent_form.delete()
+                subject_of_group.save()
+                messages.success(request, 'Anexo removido com sucesso.')
 
-                    redirect_url = reverse("subjects", args=(group_id,))
-                    return HttpResponseRedirect(redirect_url)
+                redirect_url = reverse("subjects", args=(group_id,))
+                return HttpResponseRedirect(redirect_url)
 
         else:
             file_form = FileForm(request.POST or None)
@@ -1189,7 +1241,7 @@ def upload_file(request, subject_id, group_id, template_name="experiment/upload_
 
 
 @login_required
-@permission_required('experiment.view_experiment')
+@permission_required('experiment.view_researchproject')
 def component_list(request, experiment_id, template_name="experiment/component_list.html"):
     experiment = get_object_or_404(Experiment, pk=experiment_id)
 
@@ -1639,7 +1691,21 @@ def remove_component_and_related_configurations(component,
         # Return to the list of components
         redirect_url = "/experiment/" + str(component.experiment.id) + "/components"
 
+    # if the questionnaire is a questionnaire, it would be the only usage of this survey.
+    # If it is the case, the survey could be also removed.
+    survey_to_check = None
+    if component.component_type == "questionnaire":
+        questionnaire = get_object_or_404(Questionnaire, pk=component.id)
+        if not questionnaire.survey.is_initial_evaluation:
+            survey_to_check = questionnaire.survey
+
     component.delete()
+
+    # Checking if there is not use
+    if survey_to_check and \
+            len(Questionnaire.objects.filter(survey=survey_to_check)) == 0 and \
+            len(PatientQuestionnaireResponse.objects.filter(survey=survey_to_check)) == 0:
+        survey_to_check.delete()
 
     return redirect_url
 
@@ -1662,7 +1728,7 @@ def remove_component_configuration(conf):
 
 
 @login_required
-@permission_required('experiment.view_experiment')
+@permission_required('experiment.view_researchproject')
 def component_view(request, path_of_the_components):
     # It will always be a block because we don't have a view screen for other components.
     # This view is also use to show the use of a set of steps (component configuration of a block).
@@ -1697,6 +1763,7 @@ def component_view(request, path_of_the_components):
                 redirect_url = remove_component_and_related_configurations(component,
                                                                            list_of_ids_of_components_and_configurations,
                                                                            path_of_the_components)
+                messages.success(request, 'Componente removido com sucesso.')
                 return HttpResponseRedirect(redirect_url)
             elif request.POST['action'][:7] == "remove-":
                 # If action starts with 'remove-' it means that a child or some children should be removed.
@@ -1947,6 +2014,7 @@ def component_update(request, path_of_the_components):
                 redirect_url = remove_component_and_related_configurations(component,
                                                                            list_of_ids_of_components_and_configurations,
                                                                            path_of_the_components)
+                messages.success(request, 'Componente removido com sucesso.')
                 return HttpResponseRedirect(redirect_url)
 
     type_of_the_parent_block = None
