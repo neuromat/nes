@@ -956,8 +956,7 @@ def get_origin(request):
 
 
 @login_required
-# TODO: associate the right permission
-# @permission_required('patient.add_medicalrecorddata')
+@permission_required('patient.add_questionnaireresponse')
 def questionnaire_response_create(request, patient_id, survey_id,
                                   template_name="experiment/subject_questionnaire_response_form.html"):
 
@@ -1013,8 +1012,7 @@ def questionnaire_response_create(request, patient_id, survey_id,
 
 
 @login_required
-# TODO: associate the right permission
-# @permission_required('patient.add_medicalrecorddata')
+@permission_required('patient.change_questionnaireresponse')
 def questionnaire_response_update(request, questionnaire_response_id,
                                   template_name="experiment/subject_questionnaire_response_form.html"):
 
@@ -1022,13 +1020,9 @@ def questionnaire_response_update(request, questionnaire_response_id,
 
     surveys = Questionnaires()
     survey_title = surveys.get_survey_title(questionnaire_response.survey.lime_survey_id)
-    survey_active = surveys.get_survey_properties(
-        questionnaire_response.survey.lime_survey_id,
-        'active')
-    survey_completed = (surveys.get_participant_properties(
-        questionnaire_response.survey.lime_survey_id,
-        questionnaire_response.token_id,
-        "completed") != "N")
+    survey_completed = (surveys.get_participant_properties(questionnaire_response.survey.lime_survey_id,
+                                                           questionnaire_response.token_id,
+                                                           "completed") != "N")
     surveys.release_session_key()
 
     patient = get_object_or_404(Patient, pk=questionnaire_response.patient_id)
@@ -1054,30 +1048,33 @@ def questionnaire_response_update(request, questionnaire_response_id,
                 messages.info(request, 'Você será redirecionado para o questionário. Aguarde.')
 
         elif request.POST['action'] == "remove":
-            surveys = Questionnaires()
-            result = surveys.delete_participant(
-                questionnaire_response.survey.lime_survey_id,
-                questionnaire_response.token_id)
-            surveys.release_session_key()
+            if request.user.has_perm('patient.delete_questionnaireresponse'):
+                surveys = Questionnaires()
+                result = surveys.delete_participant(
+                    questionnaire_response.survey.lime_survey_id,
+                    questionnaire_response.token_id)
+                surveys.release_session_key()
 
-            can_delete = False
+                can_delete = False
 
-            if str(questionnaire_response.token_id) in result:
-                result = result[str(questionnaire_response.token_id)]
-                if result == 'Deleted' or result == 'Invalid token ID':
-                    can_delete = True
+                if str(questionnaire_response.token_id) in result:
+                    result = result[str(questionnaire_response.token_id)]
+                    if result == 'Deleted' or result == 'Invalid token ID':
+                        can_delete = True
+                else:
+                    if 'status' in result and result['status'] == u'Error: Invalid survey ID':
+                        can_delete = True
+
+                if can_delete:
+                    questionnaire_response.delete()
+                    messages.success(request, 'Preenchimento removido com sucesso')
+                else:
+                    messages.error(request, "Erro ao deletar o preenchimento")
+
+                redirect_url = reverse("patient_edit", args=(patient.id,)) + "?currentTab=4"
+                return HttpResponseRedirect(redirect_url)
             else:
-                if 'status' in result and result['status'] == u'Error: Invalid survey ID':
-                    can_delete = True
-
-            if can_delete:
-                questionnaire_response.delete()
-                messages.success(request, 'Preenchimento removido com sucesso')
-            else:
-                messages.error(request, "Erro ao deletar o preenchimento")
-
-            redirect_url = reverse("patient_edit", args=(patient.id,)) + "?currentTab=4"
-            return HttpResponseRedirect(redirect_url)
+                raise PermissionDenied
 
     origin = get_origin(request)
 
@@ -1093,7 +1090,6 @@ def questionnaire_response_update(request, questionnaire_response_id,
         "questionnaire_configuration": None,
         "questionnaire_response": questionnaire_response,
         "survey_title": survey_title,
-        "survey_active": survey_active,
         "questionnaire_responsible": request.user.get_username(),
         "creating": False,
         "subject": None,
@@ -1223,17 +1219,13 @@ def get_limesurvey_response_url(questionnaire_response):
 
 
 @login_required
-# TODO: associate the right permission
-# @permission_required('patient.add_medicalrecorddata')
+@permission_required('patient.view_questionnaireresponse')
 def questionnaire_response_view(request, questionnaire_response_id,
                                 template_name="experiment/subject_questionnaire_response_form.html"):
     questionnaire_response = get_object_or_404(QuestionnaireResponse,
                                                pk=questionnaire_response_id)
 
     surveys = Questionnaires()
-    # TODO Remove this if it is not being used.
-    survey_active = surveys.get_survey_properties(questionnaire_response.survey.lime_survey_id,
-                                                  'active')
     survey_completed = (surveys.get_participant_properties(questionnaire_response.survey.lime_survey_id,
                                                            questionnaire_response.token_id,
                                                            "completed") != "N")
@@ -1245,29 +1237,32 @@ def questionnaire_response_view(request, questionnaire_response_id,
 
     if request.method == "POST":
         if request.POST['action'] == "remove":
-            surveys = Questionnaires()
-            result = surveys.delete_participant(questionnaire_response.survey.lime_survey_id,
-                                                questionnaire_response.token_id)
-            surveys.release_session_key()
+            if request.user.has_perm('patient.delete_questionnaireresponse'):
+                surveys = Questionnaires()
+                result = surveys.delete_participant(questionnaire_response.survey.lime_survey_id,
+                                                    questionnaire_response.token_id)
+                surveys.release_session_key()
 
-            can_delete = False
+                can_delete = False
 
-            if str(questionnaire_response.token_id) in result:
-                result = result[str(questionnaire_response.token_id)]
-                if result == 'Deleted' or result == 'Invalid token ID':
-                    can_delete = True
+                if str(questionnaire_response.token_id) in result:
+                    result = result[str(questionnaire_response.token_id)]
+                    if result == 'Deleted' or result == 'Invalid token ID':
+                        can_delete = True
+                else:
+                    if 'status' in result and result['status'] == u'Error: Invalid survey ID':
+                        can_delete = True
+
+                if can_delete:
+                    questionnaire_response.delete()
+                    messages.success(request, 'Preenchimento removido com sucesso')
+                else:
+                    messages.error(request, "Erro ao deletar o preenchimento")
+
+                redirect_url = reverse("patient_edit", args=(questionnaire_response.patient.id,)) + "?currentTab=4"
+                return HttpResponseRedirect(redirect_url)
             else:
-                if 'status' in result and result['status'] == u'Error: Invalid survey ID':
-                    can_delete = True
-
-            if can_delete:
-                questionnaire_response.delete()
-                messages.success(request, 'Preenchimento removido com sucesso')
-            else:
-                messages.error(request, "Erro ao deletar o preenchimento")
-
-            redirect_url = reverse("patient_edit", args=(questionnaire_response.patient.id,)) + "?currentTab=4"
-            return HttpResponseRedirect(redirect_url)
+                raise PermissionDenied
 
     origin = get_origin(request)
 
@@ -1286,11 +1281,9 @@ def questionnaire_response_view(request, questionnaire_response_id,
         "questionnaire_configuration": None,
         "questionnaire_response": questionnaire_response,
         "survey_title": survey_title,
-        "survey_active": survey_active,
         "questionnaire_responsible": request.user.get_username(),
         "creating": False,
         "completed": survey_completed,
-        "completed": True,
         "origin": origin,
         "patient": questionnaire_response.patient,
         "questionnaire": questionnaire_response.survey,

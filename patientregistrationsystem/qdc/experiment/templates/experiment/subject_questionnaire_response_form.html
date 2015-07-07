@@ -224,8 +224,17 @@
 
         <div class="btn-toolbar">
             <div class="btn-group pull-left">
-                {% if not creating and perms.experiment.delete_questionnaireresponse and can_change %}
-                    <button type="button" id="id_remove_button" class="btn btn-danger" onclick="$('#modalRemove').modal('show')">Excluir</button>
+                {% if not creating %}
+                    {# As it is not possible to create complex boolean experssions, the code to create a remove button had to be duplicated. #}
+                    {% if origin == 'subject' %}
+                        {% if perms.patient.delete_questionnaireresponse %}
+                            <button type="button" id="id_remove_button" class="btn btn-danger" onclick="$('#modalRemove').modal('show')">Excluir</button>
+                        {% endif %}
+                    {% else %}
+                        {% if perms.experiment.delete_questionnaireresponse and can_change %}
+                            <button type="button" id="id_remove_button" class="btn btn-danger" onclick="$('#modalRemove').modal('show')">Excluir</button>
+                        {% endif %}
+                    {% endif %}
                 {% endif %}
             </div>
 
@@ -233,12 +242,26 @@
                 {% if not completed %}
                     {% if can_change %}
                         {% if creating %}
-                            {% if perms.experiment.add_questionnaireresponse %}
-                                <button type="submit" id="id_fill_button" name="action" value="save" class="btn btn-primary">Novo preenchimento</button>
+                            {# As it is not possible to create complex boolean experssions, the code to create a new fill button had to be duplicated. #}
+                            {% if origin == 'subject' %}
+                                {% if perms.patient.add_questionnaireresponse %}
+                                    <button type="submit" id="id_fill_button" name="action" value="save" class="btn btn-primary">Novo preenchimento</button>
+                                {% endif %}
+                            {% else %}
+                                {% if perms.experiment.add_questionnaireresponse %}
+                                    <button type="submit" id="id_fill_button" name="action" value="save" class="btn btn-primary">Novo preenchimento</button>
+                                {% endif %}
                             {% endif %}
                         {% else %}
-                            {% if perms.experiment.change_questionnaireresponse %}
-                                <button type="submit" id="id_fill_button" name="action" value="save" class="btn btn-primary">Continuar preenchimento</button>
+                            {# As it is not possible to create complex boolean experssions, the code to create an update fill button had to be duplicated. #}
+                            {% if origin == 'subject' %}
+                                {% if perms.patient.change_questionnaireresponse %}
+                                    <button type="submit" id="id_fill_button" name="action" value="save" class="btn btn-primary">Continuar preenchimento</button>
+                                {% endif %}
+                            {% else %}
+                                {% if perms.experiment.change_questionnaireresponse %}
+                                    <button type="submit" id="id_fill_button" name="action" value="save" class="btn btn-primary">Continuar preenchimento</button>
+                                {% endif %}
                             {% endif %}
                         {% endif %}
                     {% endif %}
@@ -261,21 +284,43 @@
 
     </div>
 
-    {% if not creating and perms.experiment.delete_questionnaireresponse and can_change %}
-        <div class="modal fade" id="modalRemove" tabindex="-1" role="dialog" aria-labelledby="myModalLabel"
-             aria-hidden="true">
-            <div class="modal-dialog">
-                <div class="modal-content">
-                    <div class="modal-body">
-                        Tem certeza que deseja excluir o preenchimento deste questionário?
-                    </div>
-                    <div class="modal-footer">
-                        <button type="button" class="btn btn-default" data-dismiss="modal">Cancelar</button>
-                        <button type="submit" class="btn btn-danger" value="remove" name="action">Excluir</button>
+    {# As it is not possible to create complex boolean experssions, the code of the modalRemove had to be duplicated. #}
+    {% if not creating %}
+        {% if origin == 'subject' %}
+            {% if perms.patient.delete_questionnaireresponse %}
+                <div class="modal fade" id="modalRemove" tabindex="-1" role="dialog" aria-labelledby="myModalLabel"
+                     aria-hidden="true">
+                    <div class="modal-dialog">
+                        <div class="modal-content">
+                            <div class="modal-body">
+                                Tem certeza que deseja excluir o preenchimento deste questionário?
+                            </div>
+                            <div class="modal-footer">
+                                <button type="button" class="btn btn-default" data-dismiss="modal">Cancelar</button>
+                                <button type="submit" class="btn btn-danger" value="remove" name="action">Excluir</button>
+                            </div>
+                        </div>
                     </div>
                 </div>
-            </div>
-        </div>
+            {% endif %}
+        {% else %}
+            {% if perms.experiment.delete_questionnaireresponse and can_change %}
+                <div class="modal fade" id="modalRemove" tabindex="-1" role="dialog" aria-labelledby="myModalLabel"
+                     aria-hidden="true">
+                    <div class="modal-dialog">
+                        <div class="modal-content">
+                            <div class="modal-body">
+                                Tem certeza que deseja excluir o preenchimento deste questionário?
+                            </div>
+                            <div class="modal-footer">
+                                <button type="button" class="btn btn-default" data-dismiss="modal">Cancelar</button>
+                                <button type="submit" class="btn btn-danger" value="remove" name="action">Excluir</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            {% endif %}
+        {% endif %}
     {% endif %}
 
 {% endblock %}

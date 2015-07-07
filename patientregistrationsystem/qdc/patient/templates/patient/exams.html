@@ -42,23 +42,12 @@
             <ol class="breadcrumb">
                 <li><a href="/home">Home</a></li>
                 <li><a href="/patient/find/">Participantes</a></li>
-
-                {% if status == "edit" %}
-                    <li><a href="/patient/edit/{{ patient_id }}/?currentTab=3">{{ name_patient }}</a></li>
-                {% else %}
-                    <li><a href="/patient/{{ patient_id }}/?currentTab=3">{{ name_patient }}</a></li>
-                {% endif %}
-
-                <li>Avaliação médica</li>
+                <li><a href="/patient/edit/{{ patient_id }}/?currentTab=3">{{ name_patient }}</a></li>
 
                 {% if length == 0 %}
                     <li><a onclick="show_modal_remove_exam()">Diagnóstico e Exames</a></li>
                 {% else %}
-                    {% if viewing %}
-                        <li><a href="/patient/{{ patient_id }}/medical_record/{{ record_id }}/?status=view&currentTab=3">Diagnóstico e Exames</a></li>
-                    {% else %}
-                        <li><a href="/patient/{{ patient_id }}/medical_record/edit/{{ record_id }}/?status=view&currentTab=3">Diagnóstico e Exames</a></li>
-                    {% endif %}
+                    <li><a href="/patient/{{ patient_id }}/medical_record/edit/{{ record_id }}/?status=view&currentTab=3">Diagnóstico e Exames</a></li>
                 {% endif %}
 
                 {% if viewing %}
