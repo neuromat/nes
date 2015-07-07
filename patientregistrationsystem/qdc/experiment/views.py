@@ -791,8 +791,6 @@ def subject_questionnaire_response_create(request, group_id, subject_id, questio
         surveys = Questionnaires()
         lime_survey_id = Questionnaire.objects.get(id=questionnaire_config.component_id).survey.lime_survey_id
         survey_title = surveys.get_survey_title(lime_survey_id)
-        survey_active = surveys.get_survey_properties(lime_survey_id, 'active')
-        # survey_admin = surveys.get_survey_properties(questionnaire_config.survey.lime_survey_id, 'admin')
         surveys.release_session_key()
 
         fail = None
@@ -824,8 +822,6 @@ def subject_questionnaire_response_create(request, group_id, subject_id, questio
             "questionnaire_response_id": questionnaire_response_id,
             "questionnaire_responsible": request.user.get_username(),
             "subject": get_object_or_404(Subject, pk=subject_id),
-            "survey_active": survey_active,
-            # "survey_admin": survey_admin,
             "survey_title": survey_title,
             "URL": redirect_url,
         }
@@ -836,7 +832,7 @@ def subject_questionnaire_response_create(request, group_id, subject_id, questio
 
 
 @login_required
-@permission_required('experiment.view_questionnaireresponse')
+@permission_required('experiment.change_questionnaireresponse')
 def questionnaire_response_edit(request, questionnaire_response_id,
                                 template_name="experiment/subject_questionnaire_response_form.html"):
     questionnaire_response = get_object_or_404(QuestionnaireResponse, id=questionnaire_response_id)
@@ -846,7 +842,6 @@ def questionnaire_response_edit(request, questionnaire_response_id,
 
     surveys = Questionnaires()
     survey_title = surveys.get_survey_title(questionnaire.survey.lime_survey_id)
-    survey_active = surveys.get_survey_properties(questionnaire.survey.lime_survey_id, 'active')
     survey_completed = (surveys.get_participant_properties(questionnaire.survey.lime_survey_id,
                                                            questionnaire_response.token_id,
                                                            "completed") != "N")
@@ -913,7 +908,6 @@ def questionnaire_response_edit(request, questionnaire_response_id,
         "questionnaire_response_id": questionnaire_response_id,
         "questionnaire_responsible": questionnaire_response.questionnaire_responsible,
         "subject": subject,
-        "survey_active": survey_active,
         "survey_title": survey_title,
         "URL": redirect_url,
     }
@@ -1000,8 +994,6 @@ def questionnaire_response_view(request, questionnaire_response_id,
     subject = questionnaire_response.subject_of_group.subject
 
     surveys = Questionnaires()
-    survey_title = surveys.get_survey_title(questionnaire.survey.lime_survey_id)
-    survey_active = surveys.get_survey_properties(questionnaire.survey.lime_survey_id, 'active')
     survey_completed = (surveys.get_participant_properties(questionnaire.survey.lime_survey_id,
                                                            questionnaire_response.token_id,
                                                            "completed") != "N")
@@ -1070,7 +1062,6 @@ def questionnaire_response_view(request, questionnaire_response_id,
         "patient": subject.patient,  # This is needed when origin=subject
         "status": status,
         "subject": subject,
-        "survey_active": survey_active,
         "survey_title": survey_title,
     }
 
