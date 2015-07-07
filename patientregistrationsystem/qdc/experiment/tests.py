@@ -894,10 +894,10 @@ class ListOfQuestionnaireFromExperimentalProtocolOfAGroupTest(TestCase):
 
             # Visualiza preenchimento da Survey
             get_data = {'origin': "experiment_questionnaire"}
-            response = self.client.get(reverse('questionnaire_response_view_response',
+            response = self.client.get(reverse('questionnaire_response_view',
                                                args=[questionnaire_response.pk, ]), data=get_data)
             # We don't get any error, because the method get_questionnaire_responses called by
-            # questionnaire_response_view simply returns an empty list of responses.
+            # questionnaire_response_edit simply returns an empty list of responses.
             self.assertEqual(response.status_code, 200)
         finally:
             # Deleta a survey gerada no Lime Survey
@@ -1173,7 +1173,7 @@ class SubjectTest(TestCase):
     #     # Visualiza preenchimento da Survey
     #     get_data = {'view': "experiment", 'status': "view"}
     #
-    #     response = self.client.get(reverse('questionnaire_response_view',
+    #     response = self.client.get(reverse('questionnaire_response_edit',
     #                                        args=[questionnaire_response.pk, ]), data=get_data)
     #     self.assertEqual(response.status_code, 200)
     #
@@ -1186,7 +1186,7 @@ class SubjectTest(TestCase):
     #     questionnaire_response.save()
     #
     #     # Visualiza preenchimento da Survey
-    #     response = self.client.get(reverse('questionnaire_response_view',
+    #     response = self.client.get(reverse('questionnaire_response_edit',
     #                                        args=[questionnaire_response.pk, ]), data=get_data)
     #     self.assertEqual(response.status_code, 200)
     #

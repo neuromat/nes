@@ -26,7 +26,7 @@ from experiment.abc_search_engine import Questionnaires
 
 
 @login_required
-@permission_required('auth.view_survey')
+@permission_required('survey.view_survey')
 def survey_list(request, template_name='survey/survey_list.html'):
 
     surveys = Questionnaires()

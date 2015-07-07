@@ -65,39 +65,35 @@ $(document).ready(function () {
     });
 
     function searchSuccessHomonym(data, textStatus, jqXHR) {
-        $('#search-results-homonym').html(data);
+        if ($('#search-results-homonym').html() == "") {
+            $('#search-results-homonym').html(data);
 
-        var myElem = document.getElementById('patient_homonym');
+            var myElem = document.getElementById('patient_homonym');
 
-        if (myElem != null) {
-            $('#modalHomonym').modal('show');
+            if (myElem != null) {
+                $('#modalHomonym').modal('show');
+            }
         }
     }
 
     function searchSuccessHomonymExcluded(data, textStatus, jqXHR) {
-        $('#search-results-homonym-excluded').html(data);
+        if ($('#search-results-homonym-excluded').html() == "") {
+            $('#search-results-homonym-excluded').html(data);
 
-        var myElemExcluded = document.getElementById('patient_homonym_excluded');
+            var myElemExcluded = document.getElementById('patient_homonym_excluded');
 
-        if (myElemExcluded != null) {
-            $('#modalHomonymExcluded').modal('show');
+            if (myElemExcluded != null) {
+                $('#modalHomonymExcluded').modal('show');
+            }
         }
     }
 
     $("#modalHomonymCancel").click(function () {
-        var myElem = document.getElementById('patient_homonym');
-
-        if (myElem != null) {
-            myElem.parentNode.removeChild(myElem);
-        }
+        $('#search-results-homonym').html("")
     });
 
     $("#modalHomonymExcludedCancel").click(function () {
-        var myElemExcluded = document.getElementById('patient_homonym_excluded');
-
-        if (myElemExcluded != null) {
-            myElemExcluded.parentNode.removeChild(myElemExcluded);
-        }
+        $('#search-results-homonym-excluded').html("")
     });
 
     $("#id_cpf").mask("999.999.999-99");

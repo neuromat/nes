@@ -45,11 +45,10 @@ urlpatterns = patterns(
     url(r'^exam_file/delete/(?P<exam_file_id>\d+)/$', 'exam_file_delete', name='exam_file_delete'),
 
     # questionnaire response
-    url(r'^patient_questionnaire_response/(?P<patient_questionnaire_response_id>\d+)/$',
-        'patient_questionnaire_response_view', name='patient_questionnaire_response_view'),
-    url(r'^(?P<patient_id>\d+)/questionnaire/(?P<survey_id>\d+)/response/$',
-        'patient_questionnaire_response_create', name='patient_questionnaire_response_create'),
-    url(r'^questionnaire_response/edit/(?P<patient_questionnaire_response_id>\d+)/$',
-        'patient_questionnaire_response_update', name='patient_questionnaire_response_edit'),
-
+    url(r'^(?P<patient_id>\d+)/questionnaire/(?P<survey_id>\d+)/add_response/$', 'questionnaire_response_create',
+        name='questionnaire_response_create'),
+    url(r'^questionnaire_response/(?P<questionnaire_response_id>\d+)/$', 'questionnaire_response_view',
+        name='questionnaire_response_view'),
+    url(r'^questionnaire_response/edit/(?P<questionnaire_response_id>\d+)/$', 'questionnaire_response_update',
+        name='questionnaire_response_edit'),
 )
