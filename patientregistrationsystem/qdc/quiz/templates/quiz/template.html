@@ -79,7 +79,7 @@
             <span class="icon-bar"></span>
             <span class="icon-bar"></span>
         </button>
-        <a class="navbar-brand" href="#">Dados Sociodemográficos e Clínicos</a>
+        <a class="navbar-brand" href="/home/">Neuroscience Experiments System</a>
 
         <div class="navbar-header">
         </div>
@@ -117,17 +117,19 @@
 
                 <li {% block activePatient %}{% endblock %} >
                     {% if perms.quiz.view_patient %}
-                        <a href="/quiz/busca/">Paciente</a>
+                        <a href="/patient/find/">Paciente</a>
                     {% endif %}
                 </li>
-
-                {#                <li {% block activeAdvancedSearch %}{% endblock %}>#}
-                {#                    <a href="/quiz/busca_avancada/">Busca avançada</a>#}
-                {#                </li>#}
 
                 {% if perms.auth.add_user and perms.auth.change_user %}
                     <li {% block activeUser %}{% endblock %}>
                         <a href="/user/search/">Usuários</a>
+                    </li>
+                {% endif %}
+
+                {% if perms.experiment.view_researchproject %}
+                    <li {% block activeAdvancedResearchProject %}{% endblock %}>
+                        <a href="/experiment/research_project/list/">Estudos</a>
                     </li>
                 {% endif %}
 
@@ -138,7 +140,7 @@
                 {% endif %}
 
                 <li {% block activeContact %}{% endblock %}>
-                    <a href="/quiz/contato/">Contato</a>
+                    <a href="/home/">Contato</a>
                 </li>
 
             </ul>

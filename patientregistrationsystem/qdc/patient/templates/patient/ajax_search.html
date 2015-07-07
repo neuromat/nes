@@ -2,7 +2,7 @@
 {% if patients.count > 0 %}
 
     {% for patient in patients %}
-        <li><a href="/experiment/group/{{ group_id }}/subjects/{{ patient.id }}">
+        <li><a href="/patient/{{ patient.id }}">
             {% if patient.cpf %} {{ patient.cpf }} - {% endif %} {{ patient.name }}</a></li>
     {% endfor %}
 

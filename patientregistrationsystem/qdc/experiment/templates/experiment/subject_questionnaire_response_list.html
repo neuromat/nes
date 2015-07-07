@@ -22,8 +22,9 @@
             <ol class="breadcrumb">
                 <li>Home</li>
                 <li><a href="/experiment/list">Experimentos</a></li>
-                <li><a href="/experiment/edit/{{ experiment.id }}">{{ experiment.title }}</a></li>
-                <li><a href="/experiment/{{ experiment.id }}/subjects/">Participantes</a></li>
+                <li><a href="/experiment/edit/{{ group.experiment.id }}">{{ group.experiment.title }}</a></li>
+                <li><a href="/experiment/group/edit/{{ group.id }}">{{ group.title }}</a></li>
+                <li><a href="/experiment/group/{{ group.id }}/subjects/">Participantes</a></li>
                 <li class="active">{{ subject.patient.name }}</li>
             </ol>
 
@@ -101,7 +102,7 @@
                                                                 {% endif %}
                                                             </td>
                                                             <td>
-                                                                {% if limesurvey_available %}
+                                                                {% if limesurvey_available and response.completed != None %}
                                                                     {% if response.completed %}
                                                                         <span class="label label-success">Completo</span>
                                                                     {% else %}
@@ -118,7 +119,7 @@
                                                         {% if subject_questionnaire.questionnaire_configuration.number_of_fills == None or subject_questionnaire.questionnaire_responses|length < subject_questionnaire.questionnaire_configuration.number_of_fills %}
                                                             <td>
                                                                 {% if perms.experiment.add_questionnaireresponse %}
-                                                                    <a href="/experiment/{{ experiment.id }}/subjects/{{ subject.id }}/questionnaire/{{ subject_questionnaire.questionnaire_configuration.id }}/response/?action=create"
+                                                                    <a href="/experiment/subjects/{{ subject.id }}/questionnaire/{{ subject_questionnaire.questionnaire_configuration.id }}/response/?action=create"
                                                                         class="btn btn-primary {% if not limesurvey_available %} disabled {% endif %}">Novo preenchimento</a>
                                                                 {% endif %}
                                                             </td>
@@ -145,7 +146,7 @@
                     {% endif %}
                 </div>
                 <div class="btn-group pull-right">
-                    <a href="/experiment/{{ experiment.id }}/subjects" class="btn" style="background-color: #f5f5f5">Voltar</a>
+                    <a href="/experiment/group/{{ group.id }}/subjects" class="btn" style="background-color: #f5f5f5">Voltar</a>
                 </div>
             </div>
 

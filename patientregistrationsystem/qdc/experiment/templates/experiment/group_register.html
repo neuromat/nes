@@ -1,0 +1,290 @@
+{% extends "quiz/template.html" %}
+{% block activeAdvancedExperiment %}class="active"{% endblock %}
+
+{% block header %}
+    <script type="text/javascript">
+        $(function(){
+            $("[data-toggle=tooltip]").tooltip();
+        });
+        function show_modal_remove (group_id, classification_of_diseases_id){
+            var  modal_remove = document.getElementById('removeClassificationOfDiseases');
+            modal_remove.setAttribute( "href", '/experiment/diagnosis/delete/' + group_id + '/' + classification_of_diseases_id);
+            $('#modalRemoveClassificationOfDiseases').modal('show');
+        }
+    </script>
+{% endblock %}
+
+{% block form %}
+    <div class="row">
+    <form id="user_form" method="post" data-toggle="validator">
+    {% csrf_token %}
+{% endblock %}
+
+{% block content %}
+
+    {% if messages %}
+        {% for message in messages %}
+
+            {% if message.tags == "success" %}
+                <script>showSuccessMessage('{{ message }}')</script>
+            {% endif %}
+
+            {% if message.tags == "warning" %}
+                <script>showWarningMessage('{{ message }}')</script>
+            {% endif %}
+
+            {% if message.tags == "error" %}
+                <script>showErrorMessage('{{ message }}')</script>
+            {% endif %}
+
+            {% if message.tags == "info" %}
+                <script>showInfoMessage('{{ message }}')</script>
+            {% endif %}
+
+        {% endfor %}
+    {% endif %}
+
+    {% if experiment_form.errors %}
+        <script>showErrorMessage('Por favor, corrija os campos em destaque.')</script>
+    {% endif %}
+
+
+    <div class="tab-pane fade in active" id="experimentBreadCrumb">
+
+        <div class="col-md-1">
+        </div>
+
+        <div class="col-md-10">
+
+            <ol class="breadcrumb">
+                <li>Home</li>
+                <li><a href="/experiment/list">Experimentos</a></li>
+                <li><a href="/experiment/edit/{{ experiment.id }}">{{ experiment.title }}</a></li>
+
+                {% if creating %}
+                    <li class="active">Novo grupo</li>
+                {% else %}
+                    <li class="active"> {{ group_form.title.value }} </li>
+                {% endif %}
+
+            </ol>
+
+        </div>
+
+        <div class="col-md-1">
+        </div>
+    </div>
+
+    <div class="tab-pane fade in active" id="menuUserTab">
+        <div class="col-md-10">
+            <div class="container span6 offset3 well ">
+                <div class="row">
+                    <div class="col-xs-6 col-sm-6">
+                        <div class="form-group">
+                            <label class="control-label">Título <b style="color: red;">*</b></label>
+                            {{ group_form.title }}
+                            <div class="help-block with-errors"></div>
+                        </div>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-xs-6 col-sm-12">
+                        <div class="form-group">
+                            <label class="control-label">Descrição <b style="color: red;">*</b></label>
+                            {{ group_form.description }}
+                            <div class="help-block with-errors"></div>
+                        </div>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-xs-6 col-sm-12">
+                        <div class="form-group">
+                            <label class="control-label">Instrução</label>
+                            {{ group_form.instruction }}
+                            <div class="help-block with-errors"></div>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+
+            <div class="container span6 offset3 well ">
+                <div class="row">
+                    <div class="col-xs-6 col-sm-12">
+                        <div class="form-group">
+                            <input id="group_id" value="{{ group_id }}" style="display: none;">
+                            <div class="input-group  input-group-sm "><span class="input-group-addon">
+                                    <span class="glyphicon glyphicon-edit"></span></span>
+                                {#                                {{ group_form.classification_of_diseases }}#}
+                                <input class="form-control"
+                                       placeholder="Especificar o diagnóstico da doença ou o código da doença (CID-10)"
+                                       id="get_diseases" type="text" {% if creating %}disabled{% endif %}>
+                            </div>
+                            {% csrf_token %}
+                            <ul id="search-results" style="list-style: none;"></ul>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-1">
+                </div>
+                <div class="row">
+                    <div class="col-xs-6 col-sm-12">
+                        <div class="form-group">
+                            <table class="table table-striped">
+                                <thead>
+                                <tr>
+                                    <th>CID</th>
+                                    <th>Descrição</th>
+                                </tr>
+                                </thead>
+                                <tbody>
+                                {% if not classification_of_diseases_list %}
+                                    <tr>
+                                        <td>(sem diagnósticos)</td>
+                                        <td></td>
+                                    </tr>
+                                {% else %}
+                                    {% for classification_of_diseases in classification_of_diseases_list %}
+                                        <tr>
+                                            <td>{{ classification_of_diseases.code }}</td>
+                                            <td>{{ classification_of_diseases.abbreviated_description }}
+                                                <a class="btn glyphicon glyphicon-remove" data-toggle="tooltip"
+                                                   data-placement="right" title="Remover" style="color: indianred;
+                                               position: relative; float: right; padding: 0"
+                                                   onclick="show_modal_remove({{ group_id }},
+                                                           {{ classification_of_diseases.id }});"></a></td>
+                                        </tr>
+                                    {% endfor %}
+                                {% endif %}
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="container span6 offset3 well ">
+                {% if not creating and questionnaires_configuration_list %}
+                    <div class="form-group">
+
+                        <table class="table table-striped">
+                            <thead>
+                            <tr>
+                                <th>Questionário</th>
+                                <th>Quantidade de preenchimentos</th>
+                                <th>Intervalo entre preenchimentos</th>
+                            </tr>
+                            </thead>
+                            <tbody>
+                            {% for questionnaire_configuration in questionnaires_configuration_list %}
+                                <tr>
+                                    <td>
+                                        <a data-toggle="tooltip" data-placement="left" title="Editar" href="/experiment/questionnaire/edit/{{ questionnaire_configuration.id }}">
+                                            {{ questionnaire_configuration.survey_title }}
+                                        </a>
+                                    </td>
+                                    <td>
+                                        {% if questionnaire_configuration.number_of_fills != None %}
+                                            {{ questionnaire_configuration.number_of_fills }}
+                                        {% else %}
+                                            Ilimitada
+                                        {% endif %}
+                                    </td>
+                                    <td>
+                                        {% if questionnaire_configuration.interval_between_fills_value != None and questionnaire_configuration.interval_between_fills_unit != None %}
+                                            {{ questionnaire_configuration.interval_between_fills_value }} {{ questionnaire_configuration.interval_between_fills_unit.name }}
+                                        {% else %}
+                                            Indefinido
+                                        {% endif %}
+                                    </td>
+                                </tr>
+                            {% endfor %}
+                            </tbody>
+                        </table>
+
+                    </div>
+                {% endif %}
+                {% if perms.experiment.add_questionnaireconfiguration %}
+                    <a href="/experiment/group/{{ group.id }}/questionnaire/new" class="btn btn-primary {% if creating or not limesurvey_available%} disabled{% endif %}">Inserir questionário</a>
+                {% endif %}
+            </div>
+
+            {% if perms.experiment.add_subject %}
+                <div class="container span6 offset3 well ">
+                    <div class="row">
+                        <div class="col-xs-6 col-sm-12">
+                            <a href="/experiment/group/{{ group.id }}/subjects" class="btn btn-primary {% if creating %} disabled{% endif %}" >Participantes</a>
+                        </div>
+                    </div>
+                </div>
+            {% endif %}
+
+            <div class="container span6 offset3 well ">
+                <div class="row">
+                    <div class="col-xs-6 col-sm-12">
+                        <a href="/experiment/group/{{ group.id }}/experimental_protocol" class="btn btn-primary {% if creating %} disabled{% endif %}" >{% if group.experimental_protocol %}Editar{% else %}Criar{% endif %} Protocolo Experimental</a>
+                    </div>
+                </div>
+            </div>
+
+            <div class="btn-toolbar">
+                <div class="btn-group pull-left">
+                    {% if not creating and perms.experiment.delete_experiment %}
+                        <button type="button" class="btn btn-danger" onclick="$('#modalRemove').modal('show')">Excluir</button>
+                    {% endif %}
+                </div>
+                <div class="btn-group pull-right">
+                    {% if perms.experiment.change_experiment %}
+                        <button type="submit" name="action" value="save" class="btn btn-primary">Salvar</button>
+                    {% endif %}
+                </div>
+                <div class="btn-group pull-right">
+                    {% if creating %}
+                        {#                        <input value="Cancelar" class="btn"/>#}
+                        <a href="/experiment/edit/{{ experiment.id }}" class="btn" style="background-color: #f5f5f5">Cancelar</a>
+                    {% else %}
+                        <a href="/experiment/edit/{{ experiment.id }}" class="btn" style="background-color: #f5f5f5">Voltar</a>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="modal fade" id="modalRemove" tabindex="-1" role="dialog" aria-labelledby="myModalLabel"
+         aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-body">
+                    Tem certeza que deseja excluir o experimento?
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-default" data-dismiss="modal">Cancelar</button>
+                    <button type="submit" class="btn btn-primary" value="remove" name="action"
+                            style="background-color: indianred; color: #ffffff">Excluir
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="modal fade" id="modalRemoveClassificationOfDiseases" tabindex="-1" role="dialog" aria-labelledby="myModalLabel"
+         aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-body">
+                    Tem certeza que deseja excluir o diagnóstico?
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-default" data-dismiss="modal">Cancelar</button>
+                    <a type="button" class="btn btn-primary" id="removeClassificationOfDiseases" style="background-color: indianred; color: #ffffff" href="">Excluir</a>
+                </div>
+            </div>
+        </div>
+    </div>
+
+{% endblock %}
+
+{% block end_form %}
+    </form>
+    </div>
+{% endblock %}

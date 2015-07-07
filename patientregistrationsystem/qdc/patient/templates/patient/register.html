@@ -1,0 +1,879 @@
+{% extends "quiz/template.html" %}
+
+{% block header %}
+
+    <style>
+        div.alert-overflow {
+            display: none; /* O alerta deve iniciar oculto */
+            overflow: hidden;
+            position: fixed;
+            z-index: 999999;
+        }
+
+        div.top-buffer {
+            margin-top: 20px;
+        }
+    </style>
+
+    <script type="text/javascript">
+
+        $(document).ready(function () {
+            $("#idTabs li:eq( {{ currentTab }} ) a").tab('show');
+        });
+
+        {% if editing or inserting %}
+            $(document).ready(function () {
+                $('a[data-toggle="tab"]').on('shown.bs.tab', function (e) {
+                    if ($(e.relatedTarget).attr('href') == '#tab1') {
+                        $("#savetab").click();
+                    } else {
+                        $("#form_id").submit();
+                    }
+                });
+
+                var smoke_option = document.querySelector('input[name = "smoker"]:checked').value;
+                if (smoke_option == 1){
+                    $("#id_amount_cigarettes").prop('disabled', false);
+                } else {
+                    $("#id_amount_cigarettes").prop('disabled', true);
+                }
+
+                var alcoholic_option = document.querySelector('input[name = "alcoholic"]:checked').value;
+                if (alcoholic_option == 1){
+                    $("#id_alcohol_frequency").prop('disabled', false);
+                    $("#id_alcohol_period").prop('disabled', false);
+                } else {
+                    $("#id_alcohol_frequency").prop('disabled', true);
+                    $("#id_alcohol_period").prop('disabled', true);
+                }
+            });
+        {% endif %}
+    </script>
+
+{% endblock %}
+
+{% block activePatient %}class="active"{% endblock %}
+
+{% block form %}
+    <div class="row">
+
+    <form id="form_id" role="form" method="post" data-toggle="validator">
+    {% csrf_token %}
+
+{% endblock %}
+
+{% block content %}
+
+    <div class="tab-pane fade in active" id="mainMenuAddTab">
+
+    <div class="col-md-10">
+    <div class="tabbable" id="myTabs">
+
+    <ul class="nav nav-tabs nav-justified" id="idTabs">
+        <li class="active"><a href="#tab1" data-toggle="tab" id="0">Dados pessoais</a></li>
+        <li><a href="#tab2" data-toggle="tab" id="1">Dados sociodemográficos</a></li>
+        <li><a href="#tab3" data-toggle="tab" id="2">História social</a></li>
+        <li><a href="#tab4" data-toggle="tab" id="3">Avaliações médicas</a></li>
+        <li><a href="#tab5" data-toggle="tab" id="4">Questionários</a></li>
+    </ul>
+
+    <input type="text" id="currentTab" name="currentTab" value="{{ currentTab }}" style="visibility: hidden"/>
+    <input type="text" id="action" name="action" style="visibility: hidden"/>
+
+    <div id="fix-for-tab-content-spacing" style="height: 22px;">&nbsp;</div>
+
+    <div class="tab-content">
+
+    <div class="tab-pane active" id="tab1">
+    <div class="row">
+    <div class="col-md-12">
+    <div class="container span6 offset3 well ">
+
+        {% if messages %}
+            {% for message in messages %}
+
+                {% if message.tags == "success" %}
+                    <script>showSuccessMessage('{{ message }}')</script>
+                {% endif %}
+
+                {% if message.tags == "warning" %}
+                    <script>showWarningMessage('{{ message }}')</script>
+                {% endif %}
+
+                {% if message.tags == "error" %}
+                    <script>showErrorMessage('{{ message }}')</script>
+                {% endif %}
+
+                {% if message.tags == "info" %}
+                    <script>showInfoMessage('{{ message }}')</script>
+                {% endif %}
+
+            {% endfor %}
+        {% endif %}
+
+        {% if patient_form.errors %}
+            {% for field in patient_form %}
+                {% if field.errors %}
+                    <script>showErrorMessage('{{ field.errors|striptags }}')</script>
+                {% endif %}
+            {% endfor %}
+
+            <script>showErrorMessage('Paciente não salvo. Por favor, corrija os campos em destaque.')</script>
+
+        {% endif %}
+
+        <div class="row">
+            <div class="col-xs-6 col-sm-6">
+                <div class="form-group {% if patient_form.errors.name %}has-error{% endif %}">
+                    <label for="name" class="control-label">Nome completo <b style="color: red;">*</b></label>
+
+                    <div class="input-group input-group-sm">
+                        <span class="input-group-addon"> <span class="glyphicon glyphicon-user"></span></span>
+                        {{ patient_form.name }}
+                    </div>
+                    <div class="help-block with-errors"></div>
+                </div>
+            </div>
+            <div class="col-xs-6 col-sm-6">
+                <div class="form-group">
+                    <label>Número do prontuário</label>
+
+                    <div class="input-group input-group-sm">
+                        <span class="input-group-addon"> <span class="glyphicon glyphicon-list-alt"></span></span>
+                        {{ patient_form.medical_record }}
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-xs-6 col-sm-6">
+                <div class="form-group {% if patient_form.errors.cpf %}has-error{% endif %}">
+                    <label for="cpf" class="control-label">CPF</label>
+                    <div class="input-group input-group-sm">
+                        <span class="input-group-addon"> <span class="glyphicon glyphicon-asterisk"></span></span>
+                        {{ patient_form.cpf }}
+                    </div>
+                    <div class="help-block with-errors">
+                        {% if patient_form.cpf.errors %}
+                            <span>
+                        {% for error in patient_form.cpf.errors %}{{ error }}{% endfor %}
+                    </span>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+            <div class="col-xs-6 col-sm-6">
+                <div class="form-group">
+                    <label>RG</label>
+                    <div class="input-group input-group-sm">
+                        <span class="input-group-addon"><span class="glyphicon glyphicon-user"></span></span>
+                        {{ patient_form.rg }}
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-xs-6 col-sm-6">
+                <div class="form-group {% if patient_form.errors.date_birth %}has-error{% endif %}">
+                    <label for="date_birth" class="control-label">Data de nascimento <b
+                            style="color: red;">*</b></label>
+
+                    <div class="input-group input-group-sm">
+                        <span class="input-group-addon"> <span class="glyphicon glyphicon-th"></span></span>
+                        {{ patient_form.date_birth }}
+                    </div>
+                    <div class="help-block with-errors">
+                        {% if patient_form.date_birth.errors %}
+                            <span>
+                            {% for error in patient_form.date_birth.errors %}{{ error }}{% endfor %}
+                        </span>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+            <div class="col-xs-6 col-sm-6">
+                <div class="form-group">
+                    <label for="id_gender" class="control-label">Sexo <b style="color: red;">*</b></label>
+
+                    <div class="input-group input-group-sm">
+                        <span class="input-group-addon"> <span class="glyphicon"></span></span>
+                        {{ patient_form.gender }}
+                    </div>
+                    <div class="help-block with-errors"></div>
+                </div>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-xs-6 col-sm-6">
+                <div class="form-group">
+                    <label>Estado civil</label>
+
+                    <div class="input-group  input-group-sm">
+                        <span class="input-group-addon"> <span class="glyphicon"></span></span>
+                        {{ patient_form.marital_status }}
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-1"></div>
+    </div>
+    <div class="container span6 offset3 well ">
+        <div class="row">
+            <div class="col-xs-6 col-sm-6">
+                <div class="form-group">
+                    <label>País</label>
+
+                    <div class="input-group  input-group-sm">
+                        <span class="input-group-addon"> <span class="glyphicon glyphicon-home"></span></span>
+                        {{ patient_form.country }}
+                    </div>
+                </div>
+            </div>
+            <div class="col-xs-6 col-sm-6">
+                <div class="form-group">
+                    <label>CEP</label>
+
+                    <div class="input-group  input-group-sm">
+                        <span class="input-group-addon"> <span class="glyphicon glyphicon-home"></span></span>
+                        {{ patient_form.zipcode }}
+                    </div>
+                    <div class="help-block with-errors"></div>
+                </div>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-xs-6 col-sm-6">
+                <div class="form-group">
+                    <label>Endereço</label>
+
+                    <div class="input-group  input-group-sm ">
+                        <span class="input-group-addon"> <span class="glyphicon glyphicon-home"></span></span>
+                        {{ patient_form.street }}
+                    </div>
+
+                </div>
+            </div>
+            <div class="col-xs-6 col-sm-6">
+                <div class="form-group">
+                    <label>Número</label>
+
+                    <div class="input-group  input-group-sm ">
+                        <span class="input-group-addon"> <span class="glyphicon glyphicon-home"></span></span>
+                        {{ patient_form.address_number }}
+                    </div>
+
+                </div>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-xs-6 col-sm-6">
+                <div class="form-group">
+                    <label>Complemento</label>
+
+                    <div class="input-group  input-group-sm">
+                        <span class="input-group-addon"> <span class="glyphicon glyphicon-home"></span></span>
+                        {{ patient_form.address_complement }}
+                    </div>
+                    <div class="help-block with-errors"></div>
+                </div>
+            </div>
+            <div class="col-xs-6 col-sm-6">
+                <div class="form-group">
+                    <label>Bairro</label>
+
+                    <div class="input-group  input-group-sm ">
+                        <span class="input-group-addon"> <span class="glyphicon glyphicon-home"></span></span>
+                        {{ patient_form.district }}
+                    </div>
+
+                </div>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-xs-6 col-sm-6">
+                <div class="form-group">
+                    <label>Cidade</label>
+
+                    <div class="input-group  input-group-sm ">
+                        <span class="input-group-addon"> <span class="glyphicon glyphicon-home"></span></span>
+                        {{ patient_form.city }}
+                    </div>
+                </div>
+            </div>
+            <div class="col-xs-6 col-sm-6">
+                <div class="form-group">
+                    <label>Estado</label>
+
+                    <div class="input-group  input-group-sm">
+                        <span class="input-group-addon"> <span class="glyphicon glyphicon-home"></span></span>
+                        {{ patient_form.state }}
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-xs-6 col-sm-6">
+                <div class="form-group">
+                    <label>Telefone fixo</label>
+
+                    <div class="input-group  input-group-sm">
+                        <span class="input-group-addon"> <span class="glyphicon glyphicon-earphone"></span></span>
+                        {{ patient_form.phone }}
+                    </div>
+                    <div class="help-block with-errors"></div>
+                </div>
+            </div>
+            <div class="col-xs-6 col-sm-6">
+                <div class="form-group">
+                    <label>Telefone celular</label>
+
+                    <div class="input-group input-group-sm">
+                        <span class="input-group-addon"> <span class="glyphicon glyphicon-earphone"></span></span>
+                        {{ patient_form.cellphone }}
+                    </div>
+                    <div class="help-block with-errors"></div>
+                </div>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-xs-6 col-sm-6">
+                <div class="form-group">
+                    <label for="email" class="control-label">E-mail</label>
+
+                    <div class="input-group input-group-sm">
+                        <span class="input-group-addon"> <span class="glyphicon glyphicon-envelope"></span></span>
+                        {{ patient_form.email }}
+                    </div>
+                    <div class="help-block with-errors"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+    </div>
+    </div>
+    </div>
+    <div class="tab-pane" id="tab2">
+    <div class="row">
+    <div class="col-md-12">
+    <div class="container span6 offset3 well ">
+        <div class="row">
+            <div class="col-xs-6 col-sm-6">
+                <div class="form-group">
+                    <label>Natural de</label>
+
+                    <div class="input-group input-group-sm">
+                        <span class="input-group-addon"> <span class="glyphicon glyphicon-flag"></span></span>
+                        {{ patient_form.natural_of }}
+                    </div>
+                </div>
+            </div>
+            <div class="col-xs-6 col-sm-6">
+                <div class="form-group">
+                    <label>País de nascimento</label>
+
+                    <div class="input-group input-group-sm">
+                        <span class="input-group-addon"> <span class="glyphicon glyphicon-home"></span></span>
+                        {{ patient_form.citizenship }}
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-xs-6 col-sm-6">
+                <div class="form-group">
+                    <label>Profissão</label>
+
+                    <div class="input-group  input-group-sm ">
+                        <span class="input-group-addon"> <span class="glyphicon"></span></span>
+                        {{ social_demographic_form.profession }}
+                    </div>
+                </div>
+            </div>
+            <div class="col-xs-6 col-sm-6">
+                <div class="form-group">
+                    <label for="occupation">Ocupação</label>
+
+                    <div class="input-group  input-group-sm">
+                        <span class="input-group-addon"> <span class="glyphicon"></span></span>
+                        {{ social_demographic_form.occupation }}
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-xs-6 col-sm-12">
+                <div class="form-group">
+                    <label>Recebe algum benefício de escala municipal, estadual ou federal de governo?</label>
+
+                    <div class="input-group  input-group-sm">
+                        {% for radio in social_demographic_form.benefit_government %}
+                            <div class="radio-inline">
+                                {{ radio }}
+                            </div>
+                        {% endfor %}
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-xs-6 col-sm-12">
+                <div class="form-group">
+                    <label>Qual a forma de pagamento do tratamento realizado?</label>
+
+                    <div class="input-group  input-group-sm">
+                        {{ social_demographic_form.payment }}
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-xs-6 col-sm-6">
+                <div class="form-group">
+                    <label>Religião (IBGE)</label>
+
+                    <div class="input-group  input-group-sm">
+                        {{ social_demographic_form.religion }}
+                    </div>
+                </div>
+            </div>
+            <div class="col-xs-6 col-sm-6">
+                <div class="form-group">
+                    <label for="skin_color">Cor da pele (IBGE)</label>
+
+                    <div class="input-group  input-group-sm">
+                        {{ social_demographic_form.flesh_tone }}
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="container span6 offset3 well ">
+        <div class="row">
+            <div class="col-xs-6 col-sm-12">
+                <label>
+                    <h4>Classe social</h4>
+                    <br/>
+                </label>
+
+                <div class="form-group">
+                    <label>Grau de instrução do chefe de família - Critério Brasil 2013</label>
+
+                    <div class="input-group input-group-sm">
+                        {{ social_demographic_form.schooling }}
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-xs-6 col-sm-12">
+                <div class="form-group">
+                    <label>Quantidade de itens de conforto familiar - Critério Brasil 2013</label>
+
+                    <div class="form-group">
+                        <label class="col-sm-5 control-label">Televisores em cores</label>
+
+                        <div class="col-sm-7">
+                            {% for radio in social_demographic_form.tv %}
+                                <div class="radio-inline">
+                                    {{ radio }}
+                                </div>
+                            {% endfor %}
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label class="col-sm-5 control-label">Videocassete/DVD</label>
+
+                        <div class="col-sm-7">
+                            {% for radio in social_demographic_form.dvd %}
+                                <div class="radio-inline">
+                                    {{ radio }}
+                                </div>
+                            {% endfor %}
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label class="col-sm-5 control-label">Rádios</label>
+
+                        <div class="col-sm-7">
+                            {% for radio in social_demographic_form.radio %}
+                                <div class="radio-inline">
+                                    {{ radio }}
+                                </div>
+                            {% endfor %}
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label class="col-sm-5 control-label">Banheiros</label>
+
+                        <div class="col-sm-7">
+                            {% for radio in social_demographic_form.bath %}
+                                <div class="radio-inline">
+                                    {{ radio }}
+                                </div>
+                            {% endfor %}
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label class="col-sm-5 control-label">Automóveis</label>
+
+                        <div class="col-sm-7">
+                            {% for radio in social_demographic_form.automobile %}
+                                <div class="radio-inline">
+                                    {{ radio }}
+                                </div>
+                            {% endfor %}
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label class="col-sm-5 control-label">Empregadas mensalistas</label>
+
+                        <div class="col-sm-7">
+                            {% for radio in social_demographic_form.house_maid %}
+                                <div class="radio-inline">
+                                    {{ radio }}
+                                </div>
+                            {% endfor %}
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label class="col-sm-5 control-label">Máquinas de lavar</label>
+
+                        <div class="col-sm-7">
+                            {% for radio in social_demographic_form.wash_machine %}
+                                <div class="radio-inline">
+                                    {{ radio }}
+                                </div>
+                            {% endfor %}
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label class="col-sm-5 control-label">Geladeiras</label>
+
+                        <div class="col-sm-7">
+                            {% for radio in social_demographic_form.refrigerator %}
+                                <div class="radio-inline">
+                                    {{ radio }}
+                                </div>
+                            {% endfor %}
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label class="col-sm-5 control-label">Freezer*</label>
+
+                        <div class="col-sm-7">
+                            {% for radio in social_demographic_form.freezer %}
+                                <div class="radio-inline">
+                                    {{ radio }}
+                                </div>
+                            {% endfor %}
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-sm-12">
+                <h6>*Aparelho independente ou parte da geladeira duplex.</h6>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-xs-6 col-sm-12">
+                <div class="form-group">
+                    <br/>
+                    <label>Classe social calculada</label>
+                    <div class="input-group input-group-sm">
+                        {{ social_demographic_form.social_class }}
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    </div>
+    </div>
+    </div>
+    <div class="tab-pane" id="tab3">
+        <div class="row">
+            <div class="col-md-12">
+                <div class="container span6 offset3 well ">
+                    <div class="row">
+                        <div class="col-xs-6 col-sm-4">
+                            <div class="form-group">
+                                <label>Tabagismo</label>
+
+                                <div class="input-group  input-group-sm">
+                                    <div class="input-group  input-group-sm">
+                                        {% for radio in social_history_form.smoker %}
+                                            <div class="radio-inline">
+                                                {{ radio }}
+                                            </div>
+                                        {% endfor %}
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-xs-6 col-sm-4">
+                            <div class="form-group">
+                                <label>Cigarros/Dia</label>
+
+                                <div class="input-group  input-group-sm">
+                                    {{ social_history_form.amount_cigarettes }}
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-xs-6 col-sm-4">
+                            <div class="form-group">
+                                <label>Ex-tabagista</label>
+
+                                <div class="input-group  input-group-sm">
+                                    <div class="input-group  input-group-sm">
+                                        {% for radio in social_history_form.ex_smoker %}
+                                            <div class="radio-inline">
+                                                {{ radio }}
+                                            </div>
+                                        {% endfor %}
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-xs-6 col-sm-4">
+                            <div class="form-group">
+                                <label>Etilismo</label>
+
+                                <div class="input-group  input-group-sm">
+                                    {% for radio in social_history_form.alcoholic %}
+                                        <div class="radio-inline">
+                                            {{ radio }}
+                                        </div>
+                                    {% endfor %}
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-xs-6 col-sm-4">
+                            <div class="form-group">
+                                <label>Frequência</label>
+
+                                <div class="input-group  input-group-sm">
+                                    {{ social_history_form.alcohol_frequency }}
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-xs-6 col-sm-4">
+                            <div class="form-group">
+                                <label>Tempo</label>
+
+                                <div class="input-group  input-group-sm">
+                                    {{ social_history_form.alcohol_period}}
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-xs-6 col-sm-12">
+                            <div class="form-group">
+                                <label>Uso de drogas ilícitas</label>
+
+                                <div class="input-group  input-group-sm">
+                                    {% for radio in social_history_form.drugs %}
+                                        <div class="radio-inline">
+                                            {{ radio }}
+                                        </div>
+                                    {% endfor %}
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-1"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="tab-pane" id="tab4">
+        <div class="row">
+            <div class="col-md-12">
+                <div class="container span6 offset3 well ">
+                    <div class="form-group">
+                        <table class="table table-striped">
+                            <thead>
+                            <tr>
+                                <th>Data</th>
+                                <th>Responsável</th>
+                                <th></th>
+                            </tr>
+                            </thead>
+                            <tbody>
+                            {% for record in object_list %}
+                                <tr>
+                                    <td>{{ record.record_date }}</td>
+                                    <td>{{ record.record_responsible }}</td>
+                                    {% if perms.patient.view_medicalrecorddata %}
+                                        {% if editing %}
+                                            <td><a class="glyphicon glyphicon-search"
+                                                   href="/patient/{{ patient_id }}/medical_record/{{ record.pk }}/?status=edit"></a>
+                                            </td>
+                                        {% else %}
+                                            <td><a class="glyphicon glyphicon-search"
+                                                   href="/patient/{{ patient_id }}/medical_record/{{ record.pk }}/?status=view"></a>
+                                            </td>
+                                        {% endif %}
+                                    {% endif %}
+                                </tr>
+                            {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                    {% if not inserting and editing %}
+                        {%  if perms.patient.add_medicalrecorddata %}
+                            <div class="btn-group pull-left">
+                                <a href="/patient/{{ patient_id }}/medical_record/new/" class="btn btn-primary">Inserir
+                                    avaliação médica</a>
+                            </div>
+                        {% endif %}
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+    <!-- Esta div finaliza a quarta aba do formulário, #tab4 -->
+
+    <div class="tab-pane" id="tab5">
+        <div class="row">
+            <div class="col-md-12">
+                <div class="container span6 offset3 well ">
+                    <div class="form-group">
+                        <table class="table table-striped">
+                            <thead>
+                            <tr>
+                                <th>Experimento</th>
+                                <th>Grupo</th>
+                                <th>Questionário</th>
+                                <th>Data</th>
+                                <th></th>
+                            </tr>
+                            </thead>
+                            <tbody>
+                            {% for questionnaire in questionnaire_data %}
+                                <tr>
+                                    <td>{{ questionnaire.experiment_title }}</td>
+                                    <td>{{ questionnaire.group_title }}</td>
+                                    <td>{{ questionnaire.questionnaire_title }}</td>
+                                    <td>{{ questionnaire.questionnaire_response.date }}</td>
+                                    {% if editing %}
+                                        <td><a class="glyphicon glyphicon-search"
+                                               href="/experiment/questionnaire_response/{{ questionnaire.questionnaire_response.pk }}/?view=patient&status=edit"></a>
+                                        </td>
+                                    {% else %}
+                                        <td><a class="glyphicon glyphicon-search"
+                                               href="/experiment/questionnaire_response/{{ questionnaire.questionnaire_response.pk }}/?view=patient&status=view"></a>
+                                        </td>
+                                    {% endif %}
+                                </tr>
+                            {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+        <div class="btn-toolbar">
+            <div class="btn-group pull-left">
+                {% if not editing %}
+                    {% if perms.patient.delete_patient %}
+                        <button type="button" class="btn btn-secondary"
+                                style="background-color: indianred; color: #ffffff"
+                                onclick="$('#modalRemove').modal('show')">Excluir
+                        </button>
+                    {% endif %}
+                {% endif %}
+            </div>
+            <div class="btn-group pull-right">
+                <button type="button" class="btn btn-default" id="prevtab">Anterior</button>
+                <button type="button" class="btn btn-default" id="nexttab">Próximo</button>
+                {% if editing %}
+                    <button type="button" class="btn btn-primary" id="savetab">Salvar</button>
+                {% else %}
+                    {% if perms.patient.change_patient %}
+                        <button type="button" class="btn btn-primary" id="editPatient">Editar</button>
+                    {% endif %}
+                {% endif %}
+            </div>
+        </div>
+    </div>
+    </div>
+    </div>
+    </div>
+
+    <div class="modal fade" id="myModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-body">
+                    CPF não foi preenchido. Deseja salvar?
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-default" data-dismiss="modal">Cancelar</button>
+                    <button type="button" class="btn btn-primary" id="savetab2">Salvar</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="modal fade" id="modalRemove" tabindex="-1" role="dialog" aria-labelledby="myModalLabel"
+         aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-body">
+                    Tem certeza que deseja excluir o paciente?
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-default" data-dismiss="modal">Cancelar</button>
+                    <button type="button" class="btn btn-primary" id="removePatient"
+                            style="background-color: indianred; color: #ffffff">Excluir
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    {# Modal para paciente homônimo #}
+    <div class="modal fade" id="modalHomonym" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-body">
+                    Paciente já cadastrado.
+                    Clique para visualizar registro ou "Cancelar" para voltar ao formulário.
+                </div>
+                {% csrf_token %}
+                <ul id="search-results" style="list-style: none;"></ul>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-default" data-dismiss="modal">Cancelar</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    {# Modal para paciente homônimo excluido #}
+    <div class="modal fade" id="modalHomonymExcluded" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-body">
+{#                    {% csrf_token %}  #}
+                    Paciente já foi excluído anteriormente. Clique para restaurar cadastro ou "Cancelar" para cadastrar
+                    com mesmo nome.
+                </div>
+                {% csrf_token %}
+                <ul id="search-results1" style="list-style: none;"></ul>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-default" data-dismiss="modal">Cancelar</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+{% endblock %}
+{% block end_form %}
+    </form>
+    </div>
+{% endblock %}

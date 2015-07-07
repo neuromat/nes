@@ -13,7 +13,6 @@ from django.contrib.sites.models import get_current_site
 from django.template import loader
 from django.utils.http import int_to_base36
 from django.core.urlresolvers import reverse
-from django.http import Http404
 
 import re
 
@@ -25,6 +24,7 @@ USER_NEW = 'user_new'
 
 
 class FormUserValidation(TestCase):
+
     user = ''
 
     def setUp(self):
@@ -59,6 +59,7 @@ class FormUserValidation(TestCase):
     def reset(self, user_added=None, request=None, domain_override=None,
               email_template_name='registration/password_reset_email.html',
               use_https=False, token_generator=default_token_generator):
+
         """Reset users password"""
         if not user_added.email:
             raise ValueError('Email address is required to send an email')
@@ -69,8 +70,10 @@ class FormUserValidation(TestCase):
             domain = current_site.domain
         else:
             site_name = domain = domain_override
-        t = loader.get_template(email_template_name)
-        c = {
+
+        loader.get_template(email_template_name)
+
+        context = {
             'email': user_added.email,
             'domain': domain,
             'site_name': site_name,
@@ -79,14 +82,17 @@ class FormUserValidation(TestCase):
             'token': token_generator.make_token(user_added),
             'protocol': use_https and 'https' or 'http',
         }
+
         # send_mail(_("Your account for %s") % site_name, t.render(Context(c)), None, [user_added.email])
         subject_template_name = 'registration/password_reset_subject.txt'
-        subject = loader.render_to_string(subject_template_name, c)
+        subject = loader.render_to_string(subject_template_name, context)
+
         # Email subject *must not* contain newlines
         subject = ''.join(subject.splitlines())
+
         # CHANGES START HERE!
-        plain_text_content = loader.render_to_string(email_template_name.replace('with_html', 'plaintext'), c)
-        html_content = loader.render_to_string(email_template_name, c)
+        plain_text_content = loader.render_to_string(email_template_name.replace('with_html', 'plaintext'), context)
+        html_content = loader.render_to_string(email_template_name, context)
 
         from django.core.mail import EmailMultiAlternatives
 
@@ -111,8 +117,7 @@ class FormUserValidation(TestCase):
         self.assertTrue(self.confirm_password(pattern, password), True)
 
     def confirm_password(self, pattern, password):
-        a = re.compile(pattern)
-        return a.match(password)
+        return re.compile(pattern).match(password)
 
     def test_user_invalid_username(self):
         """ Teste de inclusao de usuario com nome de usuario invalido"""

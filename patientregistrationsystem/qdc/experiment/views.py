@@ -1,4 +1,8 @@
 # coding=utf-8
+from functools import partial
+import re
+import datetime
+
 from django.shortcuts import render, get_object_or_404, redirect
 from django.contrib.auth.decorators import login_required, permission_required
 from django.contrib import messages
@@ -6,32 +10,113 @@ from django.http import HttpResponseRedirect
 from django.core.urlresolvers import reverse
 from django.shortcuts import render_to_response
 from django.db.models.deletion import ProtectedError
-
-from experiment.models import Experiment, QuestionnaireConfiguration, Subject, TimeUnit, \
-    QuestionnaireResponse, SubjectOfExperiment
-from experiment.forms import ExperimentForm, QuestionnaireConfigurationForm, QuestionnaireResponseForm, FileForm
-
-from quiz.models import Patient
-from quiz.abc_search_engine import Questionnaires
-
+from django.db.models import Q
 from django.conf import settings
 
-from functools import partial
+from experiment.models import Experiment, QuestionnaireConfiguration, Subject, TimeUnit, \
+    QuestionnaireResponse, SubjectOfGroup, Group, Component, ComponentConfiguration, Questionnaire, Task, Stimulus, \
+    Pause, Sequence, Instruction, ClassificationOfDiseases, ResearchProject
+from experiment.forms import ExperimentForm, QuestionnaireConfigurationForm, QuestionnaireResponseForm, \
+    FileForm, GroupForm, TaskForm, InstructionForm, ComponentForm, StimulusForm, PauseForm, SequenceForm, \
+    ComponentConfigurationForm, ResearchProjectForm
+from patient.models import Patient
+from experiment.abc_search_engine import Questionnaires
 
-import re
-
-import datetime
 
 permission_required = partial(permission_required, raise_exception=True)
+
+icon_class = {
+    u'task': 'glyphicon glyphicon-check',
+    u'instruction': 'glyphicon glyphicon-comment',
+    u'stimulus': 'glyphicon glyphicon-headphones',
+    u'pause': 'glyphicon glyphicon-time',
+    u'questionnaire': 'glyphicon glyphicon-list-alt',
+    u'sequence': 'glyphicon glyphicon-list',
+}
+
+delimiter = "-"
 
 # pylint: disable=E1101
 # pylint: disable=E1103
 
+
+@login_required
+@permission_required('experiment.view_researchproject')
+def research_project_list(request, template_name="experiment/research_project_list.html"):
+
+    research_projects = ResearchProject.objects.order_by('title')
+    context = {"research_projects": research_projects}
+
+    return render(request, template_name, context)
+
+
+@login_required
+@permission_required('experiment.add_researchproject')
+def research_project_create(request, template_name="experiment/research_project_register.html"):
+    research_project_form = ResearchProjectForm(request.POST or None)
+
+    if request.method == "POST":
+
+        if request.POST['action'] == "save":
+
+            if research_project_form.is_valid():
+                research_project_added = research_project_form.save()
+
+                messages.success(request, 'Estudo criado com sucesso.')
+
+                redirect_url = reverse("research_project_edit", args=(research_project_added.id,))
+                return HttpResponseRedirect(redirect_url)
+
+    context = {
+        "research_project_form": research_project_form,
+        "creating": True}
+
+    return render(request, template_name, context)
+
+
+@login_required
+@permission_required('experiment.change_researchproject')
+def research_project_update(request, research_project_id, template_name="experiment/research_project_register.html"):
+
+    research_project = get_object_or_404(ResearchProject, pk=research_project_id)
+
+    if research_project:
+
+        research_project_form = ResearchProjectForm(request.POST or None, instance=research_project)
+
+        if request.method == "POST":
+
+            if request.POST['action'] == "save":
+
+                if research_project_form.is_valid():
+
+                    if research_project_form.has_changed():
+                        research_project_form.save()
+                        messages.success(request, 'Estudo atualizado com sucesso.')
+
+            else:
+                if request.POST['action'] == "remove":
+                    try:
+                        research_project.delete()
+                    except ProtectedError:
+                        messages.error(request, "Erro ao tentar excluir o estudo.")
+                        redirect_url = reverse("research_project_edit", args=(research_project.id,))
+                        return HttpResponseRedirect(redirect_url)
+                    return redirect('experiment_list')
+
+        context = {
+            "research_project_form": research_project_form,
+            "creating": False,
+            "research_project": research_project}
+
+        return render(request, template_name, context)
+
+
 @login_required
 @permission_required('experiment.view_experiment')
 def experiment_list(request, template_name="experiment/experiment_list.html"):
-    experiments = Experiment.objects.order_by('title')
 
+    experiments = Experiment.objects.order_by('title')
     context = {"experiments": experiments}
 
     return render(request, template_name, context)
@@ -64,25 +149,12 @@ def experiment_create(request, template_name="experiment/experiment_register.htm
 @login_required
 @permission_required('experiment.view_experiment')
 def experiment_update(request, experiment_id, template_name="experiment/experiment_register.html"):
+
     experiment = get_object_or_404(Experiment, pk=experiment_id)
 
     if experiment:
 
-        questionnaires_configuration_list = QuestionnaireConfiguration.objects.filter(experiment=experiment)
-
-        surveys = Questionnaires()
-
-
-        limesurvey_available = check_limesurvey_access(request, surveys)
-
-        questionnaires_configuration_list = [
-            {"survey_title": surveys.get_survey_title(questionnaire_configuration.lime_survey_id),
-             "number_of_fills": questionnaire_configuration.number_of_fills,
-             "interval_between_fills_value": questionnaire_configuration.interval_between_fills_value,
-             "interval_between_fills_unit": questionnaire_configuration.interval_between_fills_unit,
-             "id": questionnaire_configuration.id}
-            for questionnaire_configuration in questionnaires_configuration_list]
-        surveys.release_session_key()
+        group_list = Group.objects.filter(experiment=experiment)
 
         experiment_form = ExperimentForm(request.POST or None, instance=experiment)
 
@@ -102,40 +174,167 @@ def experiment_update(request, experiment_id, template_name="experiment/experime
                     try:
                         experiment.delete()
                     except ProtectedError:
-                        messages.error(request, "Não foi possível excluir o experimento, pois há questões associadas")
+                        messages.error(request, "Não foi possível excluir o experimento, pois há grupos associados")
                         redirect_url = reverse("experiment_edit", args=(experiment.id,))
                         return HttpResponseRedirect(redirect_url)
                     return redirect('experiment_list')
 
+        context = {
+            "experiment_form": experiment_form,
+            "creating": False,
+            "group_list": group_list,
+            "experiment": experiment}
+
+        return render(request, template_name, context)
+
+
+@login_required
+def group_create(request, experiment_id, template_name="experiment/group_register.html"):
+
+    experiment = get_object_or_404(Experiment, pk=experiment_id)
+
+    group_form = GroupForm(request.POST or None)
+
+    if request.method == "POST":
+        if request.POST['action'] == "save":
+            if group_form.is_valid():
+                group_added = group_form.save(commit=False)
+                group_added.experiment_id = experiment_id
+                group_added.save()
+
+                messages.success(request, 'Grupo incluído com sucesso.')
+
+                redirect_url = reverse("group_edit", args=(group_added.id,))
+                return HttpResponseRedirect(redirect_url)
+
     context = {
-        "experiment_form": experiment_form,
-        "creating": False,
-        "questionnaires_configuration_list": questionnaires_configuration_list,
-        "experiment": experiment,
-        "limesurvey_available": limesurvey_available}
+        "group_form": group_form,
+        "creating": True,
+        "updating": False,
+        "experiment": experiment}
 
     return render(request, template_name, context)
 
 
 @login_required
-@permission_required('experiment.add_questionnaireconfiguration')
-def questionnaire_create(request, experiment_id, template_name="experiment/questionnaire_register.html"):
+@permission_required('experiment.add_experiment')
+def group_update(request, group_id, template_name="experiment/group_register.html"):
 
-    experiment = get_object_or_404(Experiment, pk=experiment_id)
+    group = get_object_or_404(Group, pk=group_id)
+    experiment = get_object_or_404(Experiment, pk=group.experiment_id)
+
+    if group:
+
+        group_form = GroupForm(request.POST or None, instance=group)
+
+        list_of_questionnaires_configuration = QuestionnaireConfiguration.objects.filter(group=group)
+
+        surveys = Questionnaires()
+
+        limesurvey_available = check_limesurvey_access(request, surveys)
+
+        list_of_questionnaires_configuration = [
+            {"survey_title": surveys.get_survey_title(questionnaire_configuration.lime_survey_id),
+             "number_of_fills": questionnaire_configuration.number_of_fills,
+             "interval_between_fills_value": questionnaire_configuration.interval_between_fills_value,
+             "interval_between_fills_unit": questionnaire_configuration.interval_between_fills_unit,
+             "id": questionnaire_configuration.id}
+            for questionnaire_configuration in list_of_questionnaires_configuration]
+        surveys.release_session_key()
+
+        if request.method == "POST":
+
+            if request.POST['action'] == "save":
+
+                if group_form.is_valid():
+                    if group_form.has_changed():
+                        group_form.save()
+
+                    redirect_url = reverse("group_edit", args=(group_id,))
+                    return HttpResponseRedirect(redirect_url)
+
+            else:
+                if request.POST['action'] == "remove":
+                    try:
+                        group.delete()
+                    except ProtectedError:
+                        messages.error(request, "Não foi possível excluir o grupo, pois há dependências.")
+                        redirect_url = reverse("group_edit", args=(group.id,))
+                        return HttpResponseRedirect(redirect_url)
+                    redirect_url = reverse("experiment_edit", args=(experiment.id,))
+                    return HttpResponseRedirect(redirect_url)
+
+        context = {
+            "classification_of_diseases_list": group.classification_of_diseases.all(),
+            "group_id": group_id,
+            "group_form": group_form,
+            "creating": False,
+            "questionnaires_configuration_list": list_of_questionnaires_configuration,
+            "experiment": experiment,
+            "group": group,
+            "limesurvey_available": limesurvey_available}
+
+        return render(request, template_name, context)
+
+
+@permission_required('experiment.add_subject')
+def search_cid10_ajax(request):
+    cid_10_list = ''
+
+    if request.method == "POST":
+        search_text = request.POST['search_text']
+        group_id = request.POST['group_id']
+
+        if search_text:
+            cid_10_list = ClassificationOfDiseases.objects.filter(Q(abbreviated_description__icontains=search_text) |
+                                                                  Q(description__icontains=search_text))
+
+        return render_to_response('experiment/ajax_cid10.html', {'cid_10_list': cid_10_list, 'group_id': group_id})
+
+
+@login_required
+@permission_required('experiment.add_experiment')
+def classification_of_diseases_insert(request, group_id, classification_of_diseases_id):
+    """Add group disease"""
+    group = get_object_or_404(Group, pk=group_id)
+    classification_of_diseases = get_object_or_404(ClassificationOfDiseases, pk=classification_of_diseases_id)
+    group.classification_of_diseases.add(classification_of_diseases)
+    redirect_url = reverse("group_edit", args=(group_id,))
+    return HttpResponseRedirect(redirect_url)
+
+
+@login_required
+@permission_required('experiment.add_experiment')
+def classification_of_diseases_remove(request, group_id, classification_of_diseases_id):
+    """Remove group disease"""
+    group = get_object_or_404(Group, pk=group_id)
+    classification_of_diseases = get_object_or_404(ClassificationOfDiseases, pk=classification_of_diseases_id)
+    classification_of_diseases.group_set.remove(group)
+    redirect_url = reverse("group_edit", args=(group_id,))
+    return HttpResponseRedirect(redirect_url)
+
+
+@login_required
+@permission_required('experiment.add_questionnaireconfiguration')
+def questionnaire_create(request, group_id, template_name="experiment/questionnaire_register.html"):
+
+    group = get_object_or_404(Group, pk=group_id)
 
     questionnaire_form = QuestionnaireConfigurationForm(
         request.POST or None,
         initial={'number_of_fills': 1, 'interval_between_fills_value': None})
 
+    questionnaires_list = []
+
     if request.method == "GET":
 
-        questionnaires_of_experiment = QuestionnaireConfiguration.objects.filter(experiment=experiment)
+        questionnaires_of_group = QuestionnaireConfiguration.objects.filter(group=group)
 
-        if not questionnaires_of_experiment:
+        if not questionnaires_of_group:
             questionnaires_list = Questionnaires().find_all_active_questionnaires()
         else:
             active_questionnaires_list = Questionnaires().find_all_active_questionnaires()
-            for questionnaire in questionnaires_of_experiment:
+            for questionnaire in questionnaires_of_group:
                 for active_questionnaire in active_questionnaires_list:
                     if active_questionnaire['sid'] == questionnaire.lime_survey_id:
                         active_questionnaires_list.remove(active_questionnaire)
@@ -151,7 +350,7 @@ def questionnaire_create(request, experiment_id, template_name="experiment/quest
 
                 questionnaire = QuestionnaireConfiguration()
                 questionnaire.lime_survey_id = lime_survey_id
-                questionnaire.experiment = experiment
+                questionnaire.group = group
 
                 if "number_of_fills" in request.POST:
                     questionnaire.number_of_fills = request.POST['number_of_fills']
@@ -167,14 +366,14 @@ def questionnaire_create(request, experiment_id, template_name="experiment/quest
 
                 messages.success(request, 'Questionário incluído com sucesso.')
 
-                redirect_url = reverse("experiment_edit", args=(experiment_id,))
+                redirect_url = reverse("group_edit", args=(group_id,))
                 return HttpResponseRedirect(redirect_url)
 
     context = {
         "questionnaire_form": questionnaire_form,
         "creating": True,
         "updating": False,
-        "experiment": experiment,
+        "group": group,
         "questionnaires_list": questionnaires_list}
 
     return render(request, template_name, context)
@@ -185,7 +384,7 @@ def questionnaire_create(request, experiment_id, template_name="experiment/quest
 def questionnaire_update(request, questionnaire_configuration_id,
                          template_name="experiment/questionnaire_register.html"):
     questionnaire_configuration = get_object_or_404(QuestionnaireConfiguration, pk=questionnaire_configuration_id)
-    experiment = get_object_or_404(Experiment, pk=questionnaire_configuration.experiment.id)
+    group = get_object_or_404(Group, pk=questionnaire_configuration.group.id)
     questionnaire_form = QuestionnaireConfigurationForm(request.POST or None, instance=questionnaire_configuration)
 
     surveys = Questionnaires()
@@ -212,7 +411,7 @@ def questionnaire_update(request, questionnaire_configuration_id,
 
                 messages.success(request, 'Questionário atualizado com sucesso.')
 
-                redirect_url = reverse("experiment_edit", args=(experiment.id,))
+                redirect_url = reverse("group_edit", args=(group.id,))
                 return HttpResponseRedirect(redirect_url)
         else:
             if request.POST['action'] == "remove":
@@ -223,14 +422,14 @@ def questionnaire_update(request, questionnaire_configuration_id,
                     redirect_url = reverse("questionnaire_edit", args=(questionnaire_configuration_id,))
                     return HttpResponseRedirect(redirect_url)
 
-                redirect_url = reverse("experiment_edit", args=(experiment.id,))
+                redirect_url = reverse("group_edit", args=(group.id,))
                 return HttpResponseRedirect(redirect_url)
 
     context = {
         "questionnaire_form": questionnaire_form,
         "creating": False,
         "updating": True,
-        "experiment": experiment,
+        "group": group,
         "questionnaire_title": questionnaire_title,
         "questionnaire_id": questionnaire_configuration.lime_survey_id}
 
@@ -239,27 +438,26 @@ def questionnaire_update(request, questionnaire_configuration_id,
 
 @login_required
 @permission_required('experiment.add_subject')
-def subjects(request, experiment_id, template_name="experiment/subjects.html"):
-    experiment = get_object_or_404(Experiment, id=experiment_id)
+def subjects(request, group_id, template_name="experiment/subjects.html"):
 
-    subject_of_experiment_list = SubjectOfExperiment.objects.all().filter(experiment=experiment)
+    group = get_object_or_404(Group, id=group_id)
 
     subject_list_with_status = []
 
-    questionnaires_configuration_list = QuestionnaireConfiguration.objects.filter(experiment=experiment)
+    list_of_questionnaires_configuration = QuestionnaireConfiguration.objects.filter(group=group)
 
     surveys = Questionnaires()
 
     limesurvey_available = check_limesurvey_access(request, surveys)
 
-    for subject_of_experiment in subject_of_experiment_list:
+    for subject_of_group in SubjectOfGroup.objects.all().filter(group=group):
 
         number_of_questionnaires_filled = 0
 
-        for questionnaire_configuration in questionnaires_configuration_list:
+        for questionnaire_configuration in list_of_questionnaires_configuration:
 
             subject_responses = QuestionnaireResponse.objects. \
-                filter(subject_of_experiment=subject_of_experiment). \
+                filter(subject_of_group=subject_of_group). \
                 filter(questionnaire_configuration=questionnaire_configuration)
 
             if subject_responses:
@@ -267,7 +465,7 @@ def subjects(request, experiment_id, template_name="experiment/subjects.html"):
                         (questionnaire_configuration.number_of_fills is not None and
                             questionnaire_configuration.number_of_fills == subject_responses.count()):
 
-                    number_of_questionnaires_completed = 0
+                    amount_of_completed_questionnaires = 0
 
                     for subject_response in subject_responses:
 
@@ -277,30 +475,30 @@ def subjects(request, experiment_id, template_name="experiment/subjects.html"):
                         if response_result == "N" or response_result == "":
                             break
                         else:
-                            number_of_questionnaires_completed += 1
+                            amount_of_completed_questionnaires += 1
 
                     if (questionnaire_configuration.number_of_fills is None and
-                            number_of_questionnaires_completed > 0) or \
+                            amount_of_completed_questionnaires >= subject_responses.count()) or \
                             (questionnaire_configuration.number_of_fills is not None and
-                                number_of_questionnaires_completed >= questionnaire_configuration.number_of_fills):
+                                amount_of_completed_questionnaires >= questionnaire_configuration.number_of_fills):
                         number_of_questionnaires_filled += 1
 
         percentage = 0
 
-        if questionnaires_configuration_list.count() > 0:
-            percentage = 100 * number_of_questionnaires_filled / questionnaires_configuration_list.count()
+        if list_of_questionnaires_configuration.count() > 0:
+            percentage = 100 * number_of_questionnaires_filled / list_of_questionnaires_configuration.count()
 
         subject_list_with_status.append(
-            {'subject': subject_of_experiment.subject,
+            {'subject': subject_of_group.subject,
              'number_of_questionnaires_filled': number_of_questionnaires_filled,
-             'total_of_questionnaires': questionnaires_configuration_list.count(),
+             'total_of_questionnaires': list_of_questionnaires_configuration.count(),
              'percentage': percentage,
-             'consent': subject_of_experiment.consent_form})
+             'consent': subject_of_group.consent_form})
 
     context = {
-        'experiment_id': experiment_id,
+        'group': group,
+        "group_id": group_id,
         'subject_list': subject_list_with_status,
-        'experiment_title': experiment.title,
         "limesurvey_available": limesurvey_available
     }
 
@@ -323,8 +521,7 @@ def subject_questionnaire_response_start_fill_questionnaire(request, subject_id,
         subject = get_object_or_404(Subject, pk=subject_id)
         patient = subject.patient
 
-        subject_of_experiment = get_object_or_404(SubjectOfExperiment, subject=subject,
-                                                  experiment=questionnaire_config.experiment)
+        subject_of_group = get_object_or_404(SubjectOfGroup, subject=subject, group=questionnaire_config.group)
 
         if not questionnaire_lime_survey.survey_has_token_table(questionnaire_config.lime_survey_id):
             messages.warning(request,
@@ -334,6 +531,11 @@ def subject_questionnaire_response_start_fill_questionnaire(request, subject_id,
         if questionnaire_lime_survey.get_survey_properties(questionnaire_config.lime_survey_id, 'active') == 'N':
             messages.warning(request,
                              'Preenchimento não disponível - Questionário não está ativo')
+            return None, None
+
+        if not check_required_fields(questionnaire_lime_survey, questionnaire_config.lime_survey_id):
+            messages.warning(request,
+                             'Preenchimento não disponível - Questionário não contém campos padronizados')
             return None, None
 
         result = questionnaire_lime_survey.add_participant(questionnaire_config.lime_survey_id, patient.name, '',
@@ -346,7 +548,7 @@ def subject_questionnaire_response_start_fill_questionnaire(request, subject_id,
                              'Falha ao gerar token para responder questionário. Verifique se o questionário está ativo')
             return None, None
 
-        questionnaire_response.subject_of_experiment = subject_of_experiment
+        questionnaire_response.subject_of_group = subject_of_group
         questionnaire_response.questionnaire_configuration = questionnaire_config
         questionnaire_response.token_id = result['token_id']
         questionnaire_response.date = datetime.datetime.strptime(request.POST['date'], '%d/%m/%Y')
@@ -368,29 +570,20 @@ def get_limesurvey_response_url(questionnaire_response):
     questionnaire_lime_survey.release_session_key()
 
     redirect_url = \
-        '%s/index.php/%s/token/%s/idavaliador/%s/datdataaquisicao/%s/idparticipante/%s/newtest/Y' % (
-            settings.LIMESURVEY['URL'],
+        '%s/index.php/%s/token/%s/responsibleid/%s/acquisitiondate/%s/subjectid/%s/newtest/Y' % (
+            settings.LIMESURVEY['URL_WEB'],
             questionnaire_response.questionnaire_configuration.lime_survey_id,
             token,
             str(questionnaire_response.questionnaire_responsible.id),
             questionnaire_response.date.strftime('%d-%m-%Y'),
-            str(questionnaire_response.subject_of_experiment.subject.id))
-
-    # redirect_url = \
-    # '%s/index.php/survey/index/sid/%s/token/%s/lang/pt-BR/idavaliador/%s/datdataaquisicao/%s/idparticipante/%s' % (
-    # settings.LIMESURVEY['URL'],
-    # questionnaire_response.questionnaire_configuration.lime_survey_id,
-    # token,
-    #     questionnaire_response.questionnaire_responsible.id,
-    #     questionnaire_response.date.strftime('%d-%m-%Y'),
-    #     questionnaire_response.subject.id)
+            str(questionnaire_response.subject_of_group.subject.id))
 
     return redirect_url
 
 
 @login_required
 @permission_required('experiment.add_questionnaireresponse')
-def subject_questionnaire_response_create(request, experiment_id, subject_id, questionnaire_id,
+def subject_questionnaire_response_create(request, subject_id, questionnaire_id,
                                           template_name="experiment/subject_questionnaire_response_form.html"):
     questionnaire_config = get_object_or_404(QuestionnaireConfiguration, id=questionnaire_id)
 
@@ -400,21 +593,20 @@ def subject_questionnaire_response_create(request, experiment_id, subject_id, qu
     survey_admin = surveys.get_survey_properties(questionnaire_config.lime_survey_id, 'admin')
     surveys.release_session_key()
 
-    questionnaire_responsible = request.user.get_full_name()
-    subject = get_object_or_404(Subject, pk=subject_id)
+    questionnaire_response_form = None
+    fail = None
+    redirect_url = None
+    questionnaire_response_id = None
 
     if request.method == "GET":
         questionnaire_response_form = QuestionnaireResponseForm(request.POST or None)
-        fail = None
-        redirect_url = None
-        questionnaire_response_id = None
 
     if request.method == "POST":
         questionnaire_response_form = QuestionnaireResponseForm(request.POST)
 
         if request.POST['action'] == "save":
-            redirect_url, questionnaire_response_id = subject_questionnaire_response_start_fill_questionnaire(request, subject_id,
-                                                                                   questionnaire_id)
+            redirect_url, questionnaire_response_id = \
+                subject_questionnaire_response_start_fill_questionnaire(request, subject_id, questionnaire_id)
             if not redirect_url:
                 fail = False
             else:
@@ -430,9 +622,10 @@ def subject_questionnaire_response_create(request, experiment_id, subject_id, qu
         "survey_title": survey_title,
         "survey_admin": survey_admin,
         "survey_active": survey_active,
-        "questionnaire_responsible": questionnaire_responsible,
+        "questionnaire_responsible": request.user.get_full_name(),
         "creating": True,
-        "subject": subject
+        "subject": get_object_or_404(Subject, pk=subject_id),
+        "group": questionnaire_config.group
     }
 
     return render(request, template_name, context)
@@ -455,14 +648,12 @@ def questionnaire_response_update(request, questionnaire_response_id,
                                                            "completed") != "N")
     surveys.release_session_key()
 
-    questionnaire_responsible = questionnaire_response.questionnaire_responsible
-    subject = questionnaire_response.subject_of_experiment.subject
+    subject = questionnaire_response.subject_of_group.subject
 
     questionnaire_response_form = QuestionnaireResponseForm(None, instance=questionnaire_response)
 
-    if request.method == "GET":
-        fail = None
-        redirect_url = None
+    fail = None
+    redirect_url = None
 
     if request.method == "POST":
 
@@ -483,14 +674,24 @@ def questionnaire_response_update(request, questionnaire_response_id,
                     questionnaire_configuration.lime_survey_id,
                     questionnaire_response.token_id)
                 surveys.release_session_key()
-                result = result[str(questionnaire_response.token_id)]
-                if result == 'Deleted' or result == 'Invalid token ID':
+
+                can_delete = False
+
+                if str(questionnaire_response.token_id) in result:
+                    result = result[str(questionnaire_response.token_id)]
+                    if result == 'Deleted' or result == 'Invalid token ID':
+                        can_delete = True
+                else:
+                    if 'status' in result and result['status'] == u'Error: Invalid survey ID':
+                        can_delete = True
+
+                if can_delete:
                     questionnaire_response.delete()
                     messages.success(request, 'Preenchimento removido com sucesso')
                 else:
                     messages.error(request, "Erro ao deletar o preenchimento")
                 redirect_url = reverse("subject_questionnaire",
-                                       args=(questionnaire_configuration.experiment.id, subject.id,))
+                                       args=(questionnaire_configuration.group.id, subject.id,))
                 return HttpResponseRedirect(redirect_url)
 
     context = {
@@ -502,19 +703,63 @@ def questionnaire_response_update(request, questionnaire_response_id,
         "survey_admin": survey_admin,
         "survey_active": survey_active,
         "questionnaire_response_id": questionnaire_response_id,
-        "questionnaire_responsible": questionnaire_responsible,
+        "questionnaire_responsible": questionnaire_response.questionnaire_responsible,
         "creating": False,
         "subject": subject,
-        "completed": survey_completed
+        "completed": survey_completed,
+        "group": questionnaire_configuration.group
     }
 
     return render(request, template_name, context)
+
+
+def check_required_fields(surveys, lime_survey_id):
+    """
+    método para verificar se o questionário tem as questões de identificação corretas
+    e se seus tipos também são corretos
+    """
+
+    fields_to_validate = {
+        'responsibleid': {'type': 'N', 'found': False},
+        'acquisitiondate': {'type': 'D', 'found': False},
+        'subjectid': {'type': 'N', 'found': False},
+    }
+
+    validated_quantity = 0
+    error = False
+
+    groups = surveys.list_groups(lime_survey_id)
+
+    if 'status' not in groups:
+
+        for group in groups:
+            question_list = surveys.list_questions(lime_survey_id, group['id'])
+            for question in question_list:
+                question_properties = surveys.get_question_properties(question)
+                if question_properties['title'] in fields_to_validate:
+                    field = fields_to_validate[question_properties['title']]
+                    if not field['found']:
+                        field['found'] = True
+                        if field['type'] == question_properties['type']:
+                            validated_quantity += 1
+                        else:
+                            error = True
+                if error or validated_quantity == len(fields_to_validate):
+                    break
+            if error or validated_quantity == len(fields_to_validate):
+                break
+
+    return validated_quantity == len(fields_to_validate)
 
 
 @login_required
 @permission_required('experiment.view_questionnaireresponse')
 def questionnaire_response_view(request, questionnaire_response_id,
                                 template_name="experiment/subject_questionnaire_response_view.html"):
+
+    view = request.GET['view']
+    status_mode = request.GET['status']
+
     questionnaire_response = get_object_or_404(QuestionnaireResponse, id=questionnaire_response_id)
     questionnaire_configuration = questionnaire_response.questionnaire_configuration
     surveys = Questionnaires()
@@ -555,7 +800,7 @@ def questionnaire_response_view(request, questionnaire_response_id,
                             question_properties.append({
                                 'question': properties['question'],
                                 'question_id': properties['title'],
-                                'answer_options': '',
+                                'answer_options': properties['answeroptions'],
                                 'type': properties['type']
                             })
 
@@ -612,7 +857,9 @@ def questionnaire_response_view(request, questionnaire_response_id,
     context = {
         "questionnaire_responses": questionnaire_responses,
         "survey_title": survey_title,
-        "questionnaire_response": questionnaire_response
+        "questionnaire_response": questionnaire_response,
+        "view": view,
+        "status_mode": status_mode
     }
 
     return render(request, template_name, context)
@@ -629,12 +876,10 @@ def check_limesurvey_access(request, surveys):
 
 @login_required
 @permission_required('experiment.view_questionnaireresponse')
-def subject_questionnaire_view(request, experiment_id, subject_id,
+def subject_questionnaire_view(request, group_id, subject_id,
                                template_name="experiment/subject_questionnaire_response_list.html"):
-    experiment = get_object_or_404(Experiment, id=experiment_id)
+    group = get_object_or_404(Group, id=group_id)
     subject = get_object_or_404(Subject, id=subject_id)
-
-    questionnaires_configuration_list = QuestionnaireConfiguration.objects.filter(experiment=experiment)
 
     subject_questionnaires = []
     can_remove = True
@@ -643,12 +888,10 @@ def subject_questionnaire_view(request, experiment_id, subject_id,
 
     limesurvey_available = check_limesurvey_access(request, surveys)
 
-    for questionnaire_configuration in questionnaires_configuration_list:
-
-        subject_of_experiment = get_object_or_404(SubjectOfExperiment, experiment=experiment, subject=subject)
+    for questionnaire_configuration in QuestionnaireConfiguration.objects.filter(group=group):
 
         questionnaire_responses = QuestionnaireResponse.objects. \
-            filter(subject_of_experiment=subject_of_experiment). \
+            filter(subject_of_group=get_object_or_404(SubjectOfGroup, group=group, subject=subject)). \
             filter(questionnaire_configuration=questionnaire_configuration)
 
         questionnaire_responses_with_status = []
@@ -662,7 +905,7 @@ def subject_questionnaire_view(request, experiment_id, subject_id,
                                                                  "completed")
             questionnaire_responses_with_status.append(
                 {'questionnaire_response': questionnaire_response,
-                 'completed': response_result != "N" and response_result != ""}
+                 'completed': None if response_result is None else response_result != "N" and response_result != ""}
             )
 
         subject_questionnaires.append(
@@ -675,20 +918,19 @@ def subject_questionnaire_view(request, experiment_id, subject_id,
 
         if request.POST['action'] == "remove":
             if can_remove:
-                subject_of_experiment = get_object_or_404(SubjectOfExperiment, experiment=experiment, subject=subject)
-                subject_of_experiment.delete()
+                get_object_or_404(SubjectOfGroup, group=group, subject=subject).delete()
 
                 messages.info(request, 'Participante removido do experimento.')
-                redirect_url = reverse("subjects", args=(experiment_id,))
+                redirect_url = reverse("subjects", args=(group_id,))
                 return HttpResponseRedirect(redirect_url)
             else:
                 messages.error(request, "Não foi possível excluir o paciente, pois há respostas associadas")
-                redirect_url = reverse("subject_questionnaire", args=(experiment_id, subject_id,))
+                redirect_url = reverse("subject_questionnaire", args=(group_id, subject_id,))
                 return HttpResponseRedirect(redirect_url)
 
     context = {
         'subject': subject,
-        'experiment': experiment,
+        'group': group,
         'subject_questionnaires': subject_questionnaires,
         'limesurvey_available': limesurvey_available
     }
@@ -700,7 +942,7 @@ def subject_questionnaire_view(request, experiment_id, subject_id,
 
 @login_required
 @permission_required('experiment.add_subject')
-def subjects_insert(request, experiment_id, patient_id):
+def subjects_insert(request, group_id, patient_id):
     patient = get_object_or_404(Patient, pk=patient_id)
 
     subject = Subject()
@@ -711,14 +953,14 @@ def subjects_insert(request, experiment_id, patient_id):
         subject.patient = patient
         subject.save()
 
-    experiment = get_object_or_404(Experiment, id=experiment_id)
+    group = get_object_or_404(Group, id=group_id)
 
-    if not SubjectOfExperiment.objects.all().filter(experiment=experiment, subject=subject):
-        SubjectOfExperiment(subject=subject, experiment=experiment).save()
+    if not SubjectOfGroup.objects.all().filter(group=group, subject=subject):
+        SubjectOfGroup(subject=subject, group=group).save()
     else:
-        messages.warning(request, 'Participante já inserido para este experimento.')
+        messages.warning(request, 'Participante já inserido para este grupo.')
 
-    redirect_url = reverse("subjects", args=(experiment_id,))
+    redirect_url = reverse("subjects", args=(group_id,))
     return HttpResponseRedirect(redirect_url)
 
 
@@ -728,43 +970,44 @@ def search_patients_ajax(request):
     patient_list = ''
     if request.method == "POST":
         search_text = request.POST['search_text']
-        experiment_id = request.POST['experiment_id']
+        group_id = request.POST['group_id']
         if search_text:
             if re.match('[a-zA-Z ]+', search_text):
                 patient_list = Patient.objects.filter(name__icontains=search_text).exclude(removed=True)
             else:
                 patient_list = Patient.objects.filter(cpf__icontains=search_text).exclude(removed=True)
 
-    return render_to_response('experiment/ajax_search_patients.html',
-                              {'patients': patient_list, 'experiment_id': experiment_id})
+        return render_to_response('experiment/ajax_search_patients.html',
+                                  {'patients': patient_list, 'group_id': group_id})
 
 
-def upload_file(request, subject_id, experiment_id, template_name="experiment/upload_consent_form.html"):
+def upload_file(request, subject_id, group_id, template_name="experiment/upload_consent_form.html"):
     subject = get_object_or_404(Subject, pk=subject_id)
-    experiment = get_object_or_404(Experiment, pk=experiment_id)
-    subject_of_experiment = get_object_or_404(SubjectOfExperiment, subject=subject, experiment=experiment)
+    group = get_object_or_404(Group, pk=group_id)
+    subject_of_group = get_object_or_404(SubjectOfGroup, subject=subject, group=group)
+
+    file_form = None
 
     if request.method == "POST":
 
         if request.POST['action'] == "upload":
-            file_form = FileForm(request.POST, request.FILES, instance=subject_of_experiment)
+            file_form = FileForm(request.POST, request.FILES, instance=subject_of_group)
             if 'consent_form' in request.FILES:
                 if file_form.is_valid():
                     file_form.save()
                     messages.success(request, 'Termo salvo com sucesso.')
 
-                redirect_url = reverse("subjects", args=(experiment_id, ))
+                redirect_url = reverse("subjects", args=(group_id, ))
                 return HttpResponseRedirect(redirect_url)
             else:
                 messages.error(request, 'Não existem anexos para salvar')
         else:
             if request.POST['action'] == "remove":
-                # subject_of_experiment.consent_form = ''
-                subject_of_experiment.consent_form.delete()
-                subject_of_experiment.save()
+                subject_of_group.consent_form.delete()
+                subject_of_group.save()
                 messages.success(request, 'Anexo removido com sucesso.')
 
-                redirect_url = reverse("subjects", args=(experiment_id,))
+                redirect_url = reverse("subjects", args=(group_id,))
                 return HttpResponseRedirect(redirect_url)
 
     else:
@@ -772,8 +1015,936 @@ def upload_file(request, subject_id, experiment_id, template_name="experiment/up
 
     context = {
         'subject': subject,
-        'experiment': experiment,
+        'group': group,
         'file_form': file_form,
-        'file_list': subject_of_experiment.consent_form
+        'file_list': subject_of_group.consent_form
     }
     return render(request, template_name, context)
+
+
+@login_required
+@permission_required('experiment.view_experiment')
+def component_list(request, experiment_id, template_name="experiment/component_list.html"):
+    experiment = get_object_or_404(Experiment, pk=experiment_id)
+    components = Component.objects.filter(experiment=experiment)
+
+    for component in components:
+        component.icon_class = icon_class[component.component_type]
+
+    context = {
+        "experiment": experiment,
+        "component_list": components,
+        "icon_class": icon_class}
+    return render(request, template_name, context)
+
+
+@login_required
+@permission_required('experiment.change_experiment')
+def component_configuration_change_the_order(request, path_of_the_sub_components, command):
+
+    list_of_component_configuration_id = path_of_the_sub_components.split(delimiter)
+    component_configuration_id = list_of_component_configuration_id[-1]
+
+    component_configuration = get_object_or_404(ComponentConfiguration, pk=component_configuration_id)
+    component = get_object_or_404(Component, pk=component_configuration.parent_id)
+
+    component_configuration_to_exchange = ComponentConfiguration.objects.filter(parent_id=component.id)
+    if command == "down":
+        component_configuration_to_exchange = \
+            component_configuration_to_exchange.filter(order__gt=component_configuration.order).order_by('order')
+    else:
+        component_configuration_to_exchange = \
+            component_configuration_to_exchange.filter(order__lt=component_configuration.order).order_by('-order')
+    component_configuration_to_exchange = component_configuration_to_exchange[0]
+
+    configuration_order = component_configuration.order
+    configuration_to_exchange_order = component_configuration_to_exchange.order
+    last_configuration = \
+        ComponentConfiguration.objects.filter(parent=component_configuration.parent).order_by('-order').first()
+
+    component_configuration_to_exchange.order = last_configuration.order + 1
+    component_configuration_to_exchange.save()
+
+    component_configuration.order = configuration_to_exchange_order
+    component_configuration.save()
+
+    component_configuration_to_exchange.order = configuration_order
+    component_configuration_to_exchange.save()
+
+    if len(list_of_component_configuration_id) > 2:
+        redirect_url = \
+            reverse("component_configuration_update", args=(delimiter.join(list_of_component_configuration_id[:-1]),))
+    else:
+        redirect_url = \
+            reverse("component_edit", args=(component.id,))
+
+    return HttpResponseRedirect(redirect_url)
+
+
+@login_required
+@permission_required('experiment.change_experiment')
+def component_create(request, experiment_id, component_type):
+
+    template_name = "experiment/" + component_type + "_component.html"
+
+    experiment = get_object_or_404(Experiment, pk=experiment_id)
+    component_form = ComponentForm(request.POST or None)
+    questionnaires_list = []
+    form = None
+
+    if component_type == 'task':
+        form = TaskForm(request.POST or None)
+    else:
+        if component_type == 'instruction':
+            form = InstructionForm(request.POST or None)
+        else:
+            if component_type == 'stimulus':
+                form = StimulusForm(request.POST or None)
+            else:
+                if component_type == 'pause':
+                    form = PauseForm(request.POST or None)
+                else:
+                    if component_type == 'questionnaire':
+                        questionnaires_list = Questionnaires().find_all_active_questionnaires()
+                    else:
+                        if component_type == 'sequence':
+                            form = SequenceForm(request.POST or None,
+                                                initial={'number_of_mandatory_components': None})
+
+    if request.method == "POST":
+        new_component = None
+        if component_type == 'questionnaire':
+            new_component = Questionnaire()
+            new_component.lime_survey_id = request.POST['questionnaire_selected']
+        else:
+            if form.is_valid():
+                new_component = form.save(commit=False)
+                if component_type == 'sequence':
+                    if "number_of_mandatory_components" in request.POST:
+                        new_component.number_of_mandatory_components = request.POST['number_of_mandatory_components']
+                    if "has_random_components" in request.POST:
+                        new_component.has_random_components = True
+                    else:
+                        new_component.has_random_components = False
+
+        if component_form.is_valid():
+            component = component_form.save(commit=False)
+            new_component.description = component.description
+            new_component.identification = component.identification
+            new_component.component_type = component_type
+            new_component.experiment = experiment
+            new_component.save()
+
+            messages.success(request, 'Componente incluído com sucesso.')
+
+            if component_type == 'sequence':
+                redirect_url = reverse("component_edit", args=(new_component.id,))
+            else:
+                redirect_url = reverse("component_list", args=(experiment_id,))
+            return HttpResponseRedirect(redirect_url)
+
+    context = {
+        "creating_workflow": False,
+        "form": form,
+        "experiment": experiment,
+        "component_form": component_form,
+        "creating": True,
+        "updating": False,
+        "questionnaires_list": questionnaires_list,
+    }
+    return render(request, template_name, context)
+
+
+@login_required
+@permission_required('experiment.change_experiment')
+def component_update(request, component_id):
+
+    component = get_object_or_404(Component, pk=component_id)
+
+    template_name = "experiment/" + component.component_type + "_component.html"
+
+    experiment = get_object_or_404(Experiment, pk=component.experiment.id)
+
+    questionnaire_id = None
+    questionnaire_title = None
+    component_form = None
+    form = None
+    sequence = None
+    configuration_list = []
+
+    if component:
+        component_form = ComponentForm(request.POST or None, instance=component)
+        form = None
+
+        if component.component_type == 'task':
+            task = get_object_or_404(Task, pk=component.id)
+            form = TaskForm(request.POST or None, instance=task)
+        else:
+            if component.component_type == 'instruction':
+                instruction = get_object_or_404(Instruction, pk=component.id)
+                form = InstructionForm(request.POST or None, instance=instruction)
+            else:
+                if component.component_type == 'stimulus':
+                    stimulus = get_object_or_404(Stimulus, pk=component.id)
+                    form = StimulusForm(request.POST or None, instance=stimulus)
+                else:
+                    if component.component_type == 'pause':
+                        pause = get_object_or_404(Pause, pk=component.id)
+                        form = PauseForm(request.POST or None, instance=pause)
+                    else:
+                        if component.component_type == 'questionnaire':
+                            questionnaire = get_object_or_404(Questionnaire, pk=component.id)
+                            questionnaire_details = Questionnaires().\
+                                find_questionnaire_by_id(questionnaire.lime_survey_id)
+                            if questionnaire_details:
+                                questionnaire_id = questionnaire_details['sid'],
+                                questionnaire_title = questionnaire_details['surveyls_title']
+                        else:
+                            if component.component_type == 'sequence':
+                                sequence = get_object_or_404(Sequence, pk=component_id)
+                                form = SequenceForm(request.POST or None, instance=sequence)
+                                configuration_list = ComponentConfiguration.objects.filter(parent=sequence)\
+                                    .order_by('order')
+
+                                for configuration in configuration_list:
+                                    configuration.component.icon_class = \
+                                        icon_class[configuration.component.component_type]
+
+    if request.method == "POST":
+        if request.POST['action'] == "save":
+            if component.component_type == "questionnaire" or form.is_valid():
+
+                if component.component_type != "questionnaire":
+                    form.save()
+
+                if component_form.is_valid():
+                    component_form.save()
+
+                    messages.success(request, 'Componente alterado com sucesso.')
+
+                    if component.component_type == 'sequence':
+                        redirect_url = reverse("component_edit", args=(sequence.id,))
+                    else:
+                        redirect_url = reverse("component_list", args=(experiment.id,))
+                    return HttpResponseRedirect(redirect_url)
+        else:
+            if request.POST['action'] == "remove":
+                dependent_components = ComponentConfiguration.objects.filter(parent=component)
+                if dependent_components:
+                    messages.error(request,
+                                   'Componente não pode ser removido pois contém outros componentes dependentes.')
+                    redirect_url = reverse("component_edit", args=(component.id,))
+                else:
+                    component.delete()
+                    redirect_url = reverse("component_list", args=(experiment.id,))
+                return HttpResponseRedirect(redirect_url)
+            else:
+                if request.POST['action'][:7] == "remove-":
+                    component_configuration_id_to_be_deleted = request.POST['action'].split("-")[-1]
+                    component_configutation = get_object_or_404(
+                        ComponentConfiguration, pk=int(component_configuration_id_to_be_deleted))
+                    component_configutation.delete()
+                    redirect_url = reverse("component_edit", args=(sequence.id,))
+                    return HttpResponseRedirect(redirect_url)
+
+    context = {
+        "creating_workflow": False,
+        "form": form,
+        "experiment": experiment,
+        "component_form": component_form,
+        "creating": False,
+        "updating": True,
+        "sequence": sequence,
+        "questionnaire_id": questionnaire_id,
+        "questionnaire_title": questionnaire_title,
+        "configuration_list": configuration_list,
+        "icon_class": icon_class,
+    }
+    return render(request, template_name, context)
+
+
+# @login_required
+# @permission_required('experiment.change_experiment')
+# def sequence_component_create(request, sequence_id, component_type):
+#
+#     template_name = "experiment/" + component_type + "_component.html"
+#
+#     sequence = get_object_or_404(Sequence, pk=sequence_id)
+#     experiment = get_object_or_404(Experiment, pk=sequence.experiment_id)
+#
+#     component_form = ComponentForm(request.POST or None)
+#     configuration_form = ComponentConfigurationForm(request.POST or None,
+#                                                     initial={'number_of_repetitions': 1,
+#                                                              'interval_between_repetitions_value': None})
+#     questionnaires_list = []
+#     form = None
+#
+#     existing_component_list = Component.objects.filter(experiment=experiment, component_type=component_type)
+#
+#     if component_type == 'task':
+#         form = TaskForm(request.POST or None)
+#     else:
+#         if component_type == 'instruction':
+#             form = InstructionForm(request.POST or None)
+#         else:
+#             if component_type == 'stimulus':
+#                 form = StimulusForm(request.POST or None)
+#             else:
+#                 if component_type == 'pause':
+#                     form = PauseForm(request.POST or None)
+#                 else:
+#                     if component_type == 'questionnaire':
+#                         questionnaires_list = Questionnaires().find_all_active_questionnaires()
+#                     else:
+#                         if component_type == 'sequence':
+#                             form = SequenceForm(request.POST or None,
+#                                                 initial={'number_of_mandatory_components': None})
+#
+#     if request.method == "POST":
+#
+#         new_component = None
+#
+#         if component_type == 'questionnaire':
+#             new_component = Questionnaire()
+#             new_component.lime_survey_id = request.POST['questionnaire_selected']
+#         else:
+#             if form.is_valid():
+#
+#                 new_component = form.save(commit=False)
+#
+#                 if component_type == 'sequence':
+#
+#                     if "number_of_mandatory_components" in request.POST:
+#                         new_component.number_of_mandatory_components = request.POST['number_of_mandatory_components']
+#                     if "has_random_components" in request.POST:
+#                         new_component.has_random_components = True
+#                     else:
+#                         new_component.has_random_components = False
+#
+#         if component_form.is_valid() and configuration_form.is_valid():
+#
+#             component = component_form.save(commit=False)
+#
+#             new_component.description = component.description
+#             new_component.identification = component.identification
+#             new_component.component_type = component_type
+#             new_component.experiment = experiment
+#             new_component.save()
+#
+#             configuration = configuration_form.save(commit=False)
+#             configuration.component = new_component
+#             configuration.parent = sequence
+#
+#             if "number_of_fills" in request.POST:
+#                 configuration.number_of_repetitions = request.POST['number_of_repetitions']
+#
+#             if "interval_between_fills_value" in request.POST:
+#                 configuration.interval_between_repetitions_value = request.POST['interval_between_repetitions_value']
+#
+#             if "interval_between_fills_unit" in request.POST:
+#                 configuration.interval_between_repetitions_unit = \
+#                     get_object_or_404(TimeUnit, pk=request.POST['interval_between_repetitions_unit'])
+#
+#             configuration.save()
+#
+#             messages.success(request, 'Componente incluído com sucesso.')
+#
+#             if component_type == "sequence":
+#                 redirect_url = reverse("component_configuration_update", args=(configuration.id, ))
+#             else:
+#                 redirect_url = reverse("component_edit", args=(sequence_id,))
+#
+#             return HttpResponseRedirect(redirect_url)
+#
+#     context = {
+#         "creating_workflow": True,
+#         "form": form,
+#         "experiment": experiment,
+#         "component_form": component_form,
+#         "configuration_form": configuration_form,
+#         "creating": True,
+#         "updating": False,
+#         "questionnaires_list": questionnaires_list,
+#         "existing_component_list": existing_component_list,
+#         "sequence": sequence,
+#         "reusing_component": False
+#     }
+#     return render(request, template_name, context)
+
+
+@login_required
+@permission_required('experiment.change_experiment')
+def component_configuration_add_new_component(request, path_of_the_sub_components, component_type):
+
+    template_name = "experiment/" + component_type + "_component.html"
+
+    list_of_identifiers = path_of_the_sub_components.split(delimiter)
+
+    if len(list_of_identifiers) == 1:
+        component_id = int(list_of_identifiers[0])
+    else:
+        component_id = get_object_or_404(ComponentConfiguration, pk=int(list_of_identifiers[-1])).component.id
+
+    sequence = get_object_or_404(Sequence, pk=component_id)
+    experiment = get_object_or_404(Experiment, pk=sequence.experiment_id)
+
+    component_form = ComponentForm(request.POST or None)
+    configuration_form = ComponentConfigurationForm(request.POST or None,
+                                                    initial={'number_of_repetitions': 1,
+                                                             'interval_between_repetitions_value': None})
+    questionnaires_list = []
+    form = None
+
+    existing_component_list = Component.objects.filter(experiment=experiment, component_type=component_type)
+
+    if component_type == 'task':
+        form = TaskForm(request.POST or None)
+    else:
+        if component_type == 'instruction':
+            form = InstructionForm(request.POST or None)
+        else:
+            if component_type == 'stimulus':
+                form = StimulusForm(request.POST or None)
+            else:
+                if component_type == 'pause':
+                    form = PauseForm(request.POST or None)
+                else:
+                    if component_type == 'questionnaire':
+                        questionnaires_list = Questionnaires().find_all_active_questionnaires()
+                    else:
+                        if component_type == 'sequence':
+                            form = SequenceForm(request.POST or None,
+                                                initial={'number_of_mandatory_components': None})
+
+    if request.method == "POST":
+
+        new_component = None
+
+        if component_type == 'questionnaire':
+            new_component = Questionnaire()
+            new_component.lime_survey_id = request.POST['questionnaire_selected']
+        else:
+            if form.is_valid():
+
+                new_component = form.save(commit=False)
+
+                if component_type == 'sequence':
+
+                    if "number_of_mandatory_components" in request.POST:
+                        new_component.number_of_mandatory_components = request.POST['number_of_mandatory_components']
+                    if "has_random_components" in request.POST:
+                        new_component.has_random_components = True
+                    else:
+                        new_component.has_random_components = False
+
+        if component_form.is_valid() and configuration_form.is_valid():
+
+            component = component_form.save(commit=False)
+
+            new_component.description = component.description
+            new_component.identification = component.identification
+            new_component.component_type = component_type
+            new_component.experiment = experiment
+            new_component.save()
+
+            configuration = configuration_form.save(commit=False)
+            configuration.component = new_component
+            configuration.parent = sequence
+
+            if "number_of_fills" in request.POST:
+                configuration.number_of_repetitions = request.POST['number_of_repetitions']
+
+            if "interval_between_fills_value" in request.POST:
+                configuration.interval_between_repetitions_value = request.POST['interval_between_repetitions_value']
+
+            if "interval_between_fills_unit" in request.POST:
+                configuration.interval_between_repetitions_unit = \
+                    get_object_or_404(TimeUnit, pk=request.POST['interval_between_repetitions_unit'])
+
+            configuration.save()
+
+            messages.success(request, 'Componente incluído com sucesso.')
+
+            if component_type == "sequence":
+                redirect_url = reverse("component_configuration_update",
+                                       args=(path_of_the_sub_components + "-" + str(configuration.id), ))
+            else:
+                if len(list_of_identifiers) == 1:
+                    redirect_url = reverse("component_edit", args=(component_id,))
+                else:
+                    redirect_url = reverse("component_configuration_update", args=(path_of_the_sub_components,))
+
+            return HttpResponseRedirect(redirect_url)
+
+    context = {
+        "creating_workflow": True,
+        "form": form,
+        "experiment": experiment,
+        "component_form": component_form,
+        "configuration_form": configuration_form,
+        "creating": True,
+        "updating": False,
+        "questionnaires_list": questionnaires_list,
+        "existing_component_list": existing_component_list,
+        "sequence": sequence,
+        "reusing_component": False,
+        "path_of_the_sub_components": path_of_the_sub_components,
+    }
+    return render(request, template_name, context)
+
+
+@login_required
+@permission_required('experiment.change_experiment')
+def component_configuration_reuse_component(request, path_of_the_sub_components, component_id):
+
+    component = get_object_or_404(Component, pk=component_id)
+    component_type = component.component_type
+
+    template_name = "experiment/" + component_type + "_component.html"
+
+    list_of_identifiers = path_of_the_sub_components.split(delimiter)
+
+    if len(list_of_identifiers) == 1:
+        component_id = int(list_of_identifiers[0])
+    else:
+        component_id = get_object_or_404(ComponentConfiguration, pk=int(list_of_identifiers[-1])).component.id
+
+    experiment = get_object_or_404(Experiment, pk=component.experiment.id)
+    sequence = get_object_or_404(Sequence, pk=component_id)
+
+    component_form = ComponentForm(request.POST or None, instance=component)
+    configuration_form = ComponentConfigurationForm(request.POST or None,
+                                                    initial={'number_of_repetitions': 1,
+                                                             'interval_between_repetitions_value': None})
+
+    existing_component_list = Component.objects.filter(component_type=component_type, experiment=experiment)
+
+    questionnaire_id = None
+    questionnaire_title = None
+
+    form = None
+
+    if component_type == 'task':
+        task = get_object_or_404(Task, pk=component.id)
+        form = TaskForm(request.POST or None, instance=task)
+    else:
+        if component_type == 'instruction':
+            instruction = get_object_or_404(Instruction, pk=component.id)
+            form = InstructionForm(request.POST or None, instance=instruction)
+        else:
+            if component_type == 'stimulus':
+                stimulus = get_object_or_404(Stimulus, pk=component.id)
+                form = StimulusForm(request.POST or None, instance=stimulus)
+            else:
+                if component_type == 'pause':
+                    pause = get_object_or_404(Pause, pk=component.id)
+                    form = PauseForm(request.POST or None, instance=pause)
+                else:
+                    if component_type == 'questionnaire':
+                        questionnaire = get_object_or_404(Questionnaire, pk=component.id)
+                        questionnaire_details = Questionnaires().\
+                            find_questionnaire_by_id(questionnaire.lime_survey_id)
+                        if questionnaire_details:
+                            questionnaire_id = questionnaire_details['sid'],
+                            questionnaire_title = questionnaire_details['surveyls_title']
+                    else:
+                        if component_type == 'sequence':
+                            sub_sequence = get_object_or_404(Sequence, pk=component_id)
+                            form = SequenceForm(request.POST or None, instance=sub_sequence)
+
+    if component_type == 'questionnaire':
+        for field in component_form.fields:
+            component_form.fields[field].widget.attrs['disabled'] = True
+    else:
+        for form_used in {form, component_form}:
+            for field in form_used.fields:
+                form_used.fields[field].widget.attrs['disabled'] = True
+
+    if request.method == "POST":
+
+        if configuration_form.is_valid():
+
+            configuration = configuration_form.save(commit=False)
+            configuration.component = component
+            configuration.parent = sequence
+            if "number_of_fills" in request.POST:
+                configuration.number_of_repetitions = request.POST['number_of_repetitions']
+            if "interval_between_fills_value" in request.POST:
+                configuration.interval_between_repetitions_value = request.POST['interval_between_repetitions_value']
+
+            if "interval_between_fills_unit" in request.POST:
+                configuration.interval_between_repetitions_unit = \
+                    get_object_or_404(TimeUnit, pk=request.POST['interval_between_repetitions_unit'])
+
+            configuration.save()
+
+            messages.success(request, 'Componente incluído com sucesso.')
+
+            if component_type == "sequence":
+                redirect_url = reverse("component_configuration_update",
+                                       args=(path_of_the_sub_components + "-" + str(configuration.id),))
+            else:
+                if len(list_of_identifiers) == 1:
+                    redirect_url = reverse("component_edit", args=(component_id,))
+                else:
+                    redirect_url = reverse("component_configuration_update", args=(path_of_the_sub_components,))
+
+            return HttpResponseRedirect(redirect_url)
+
+    context = {
+        "creating_workflow": True,
+        "form": form,
+        "experiment": experiment,
+        "component_form": component_form,
+        "configuration_form": configuration_form,
+        "creating": True,
+        "updating": False,
+        "existing_component_list": existing_component_list,
+        "sequence": sequence,
+        "questionnaire_id": questionnaire_id,
+        "questionnaire_title": questionnaire_title,
+        "reusing_component": True,
+        "path_of_the_sub_components": path_of_the_sub_components,
+    }
+    return render(request, template_name, context)
+
+
+@login_required
+@permission_required('experiment.change_experiment')
+def component_configuration_update(request, path_of_the_sub_components):
+
+    list_of_component_configuration_id = path_of_the_sub_components.split(delimiter)
+
+    component_configuration_id = list_of_component_configuration_id[-1]
+    component_configuration = get_object_or_404(ComponentConfiguration, pk=component_configuration_id)
+
+    previous_component_configuration = \
+        delimiter.join(list_of_component_configuration_id[:-1]) if len(list_of_component_configuration_id) > 2 else None
+
+    component = get_object_or_404(Component, pk=component_configuration.component.id)
+    experiment = get_object_or_404(Experiment, pk=component.experiment.id)
+
+    component_type = component.component_type
+
+    template_name = "experiment/" + component_type + "_component.html"
+
+    questionnaire_id = None
+    questionnaire_title = None
+    component_form = None
+    form = None
+    sequence = None
+
+    configuration_form = ComponentConfigurationForm(request.POST or None, instance=component_configuration)
+
+    configuration_list = []
+
+    if component:
+        component_form = ComponentForm(request.POST or None, instance=component)
+        form = None
+        if component_type == 'task':
+            task = get_object_or_404(Task, pk=component.id)
+            form = TaskForm(request.POST or None, instance=task)
+        else:
+            if component_type == 'instruction':
+                instruction = get_object_or_404(Instruction, pk=component.id)
+                form = InstructionForm(request.POST or None, instance=instruction)
+            else:
+                if component_type == 'stimulus':
+                    stimulus = get_object_or_404(Stimulus, pk=component.id)
+                    form = StimulusForm(request.POST or None, instance=stimulus)
+                else:
+                    if component_type == 'pause':
+                        pause = get_object_or_404(Pause, pk=component.id)
+                        form = PauseForm(request.POST or None, instance=pause)
+                    else:
+                        if component_type == 'questionnaire':
+                            questionnaire = get_object_or_404(Questionnaire, pk=component.id)
+                            questionnaire_details = Questionnaires().\
+                                find_questionnaire_by_id(questionnaire.lime_survey_id)
+                            if questionnaire_details:
+                                questionnaire_id = questionnaire_details['sid'],
+                                questionnaire_title = questionnaire_details['surveyls_title']
+                        else:
+                            if component_type == 'sequence':
+                                sequence = get_object_or_404(Sequence, pk=component.id)
+                                form = SequenceForm(request.POST or None, instance=sequence)
+                                configuration_list = ComponentConfiguration.objects.filter(parent=sequence)\
+                                    .order_by('order')
+
+                                for configuration in configuration_list:
+                                    configuration.component.icon_class = \
+                                        icon_class[configuration.component.component_type]
+
+    if request.method == "POST":
+        if request.POST['action'] == "save":
+
+            if configuration_form.is_valid():
+
+                configuration = configuration_form.save(commit=False)
+                configuration.save()
+
+                messages.success(request, 'Componente atualizado com sucesso.')
+
+                redirect_url = reverse("component_edit", args=(component_configuration.parent.id,))
+                return HttpResponseRedirect(redirect_url)
+
+        else:
+            if request.POST['action'] == "remove":
+                component_configuration_list = ComponentConfiguration.objects.filter(
+                    parent_id=component_configuration.parent_id).order_by('order')
+                for component_configuration_element in component_configuration_list:
+                    if component_configuration_element.order > component_configuration.order:
+                        component_configuration_element.order -= 1
+                        component_configuration_element.save()
+                component.delete()
+                redirect_url = reverse("component_list", args=(experiment.id,))
+                return HttpResponseRedirect(redirect_url)
+            else:
+                if request.POST['action'][:7] == "remove-":
+                    component_configuration_id_to_be_deleted = request.POST['action'].split("-")[-1]
+                    component_configutation = get_object_or_404(
+                        ComponentConfiguration, pk=int(component_configuration_id_to_be_deleted))
+                    component_configutation.delete()
+                    redirect_url = reverse("component_configuration_update", args=(path_of_the_sub_components,))
+                    return HttpResponseRedirect(redirect_url)
+
+    if component_type == 'questionnaire':
+        for field in component_form.fields:
+            component_form.fields[field].widget.attrs['disabled'] = True
+    else:
+        for form_used in {form, component_form}:
+            for field in form_used.fields:
+                form_used.fields[field].widget.attrs['disabled'] = True
+
+    context = {
+        "creating_workflow": True,
+        "form": form,
+        "experiment": experiment,
+        "component_form": component_form,
+        "configuration_form": configuration_form,
+        "creating": False,
+        "updating": True,
+        "existing_component_list": [],
+        "sequence": sequence,
+        "questionnaire_id": questionnaire_id,
+        "questionnaire_title": questionnaire_title,
+        "reusing_component": True,
+        "sequence_id": component_configuration.parent_id,
+        "configuration_list": configuration_list,
+        "icon_class": icon_class,
+        "path_of_the_sub_components": path_of_the_sub_components,
+        "previous_component_configuration": previous_component_configuration
+    }
+
+    return render(request, template_name, context)
+
+
+@login_required
+@permission_required('experiment.change_experiment')
+def experimental_protocol_create(request, group_id):
+
+    component_type = "sequence"
+    template_name = "experiment/" + component_type + "_component.html"
+
+    group = get_object_or_404(Group, pk=group_id)
+    experiment = get_object_or_404(Experiment, pk=group.experiment_id)
+
+    component_form = ComponentForm(request.POST or None)
+    configuration_form = ComponentConfigurationForm(request.POST or None,
+                                                    initial={'number_of_repetitions': 1,
+                                                             'interval_between_repetitions_value': None})
+    questionnaires_list = []
+
+    existing_component_list = Component.objects.filter(experiment=experiment, component_type=component_type)
+
+    form = SequenceForm(request.POST or None,
+                        initial={'number_of_mandatory_components': None})
+
+    if request.method == "POST":
+
+        new_component = None
+
+        if form.is_valid():
+
+            new_component = form.save(commit=False)
+
+            if "number_of_mandatory_components" in request.POST:
+                new_component.number_of_mandatory_components = request.POST['number_of_mandatory_components']
+            if "has_random_components" in request.POST:
+                new_component.has_random_components = True
+            else:
+                new_component.has_random_components = False
+
+        if component_form.is_valid() and configuration_form.is_valid():
+            component = component_form.save(commit=False)
+            new_component.description = component.description
+            new_component.identification = component.identification
+            new_component.component_type = component_type
+            new_component.experiment = experiment
+            new_component.save()
+
+            configuration = configuration_form.save(commit=False)
+            configuration.component = new_component
+            configuration.parent = None
+            if "number_of_fills" in request.POST:
+                configuration.number_of_repetitions = request.POST['number_of_repetitions']
+            if "interval_between_fills_value" in request.POST:
+                configuration.interval_between_repetitions_value = request.POST['interval_between_repetitions_value']
+
+            if "interval_between_fills_unit" in request.POST:
+                configuration.interval_between_repetitions_unit = \
+                    get_object_or_404(TimeUnit, pk=request.POST['interval_between_repetitions_unit'])
+            configuration.save()
+
+            group.experimental_protocol = configuration
+            group.save()
+
+            messages.success(request, 'Protocolo experimental incluído com sucesso.')
+
+            redirect_url = reverse("group_edit", args=(group.id, ))
+
+            return HttpResponseRedirect(redirect_url)
+
+    context = {
+        "creating_workflow": True,
+        "form": form,
+        "experiment": experiment,
+        "component_form": component_form,
+        "configuration_form": configuration_form,
+        "creating": True,
+        "updating": False,
+        "questionnaires_list": questionnaires_list,
+        "existing_component_list": existing_component_list,
+        "sequence": None,
+        "reusing_component": False
+    }
+    return render(request, template_name, context)
+
+
+@login_required
+@permission_required('experiment.change_experiment')
+def experimental_protocol(request, group_id):
+
+    """
+    consulto o group pelo group_id.
+
+    if o group tem experimental_protocol
+        consulto o component_configuration
+        encaminho como se fosse "atualizar um componente configuration"
+            - tenho que, de alguma forma, indicar que essa configuracao é um experimental_protocol
+            - tem que alterar o html para contemplar essa opcao
+
+    else
+        encaminho como se fosse "criar um componente configuration"
+            - tb tenho que indicar que é um experimental_protocol
+            - tb tem que alterar o html para contemplar essa opcao
+
+    - no html
+        .tenho que contemplar a opcao de ser um protocolo_experimental
+        .ao reutilizar um componente, tem que atualizar o protocolo_experimental
+        .tem que possibilitar desconfigurar um protocolo experimental
+    """
+
+    group = get_object_or_404(Group, pk=group_id)
+
+    if group:
+        if group.experimental_protocol:
+
+            component_configuration = group.experimental_protocol
+
+    list_of_component_configuration_id = []
+
+    component_configuration_id = group.experimental_protocol.id
+    component_configuration = get_object_or_404(ComponentConfiguration, pk=component_configuration_id)
+
+    previous_component_configuration = \
+        None if len(list_of_component_configuration_id) <= 1 else \
+        delimiter.join(list_of_component_configuration_id[:-1])
+
+    component = get_object_or_404(Component, pk=component_configuration.component.id)
+    experiment = get_object_or_404(Experiment, pk=component.experiment.id)
+
+    component_type = component.component_type
+
+    template_name = "experiment/" + component_type + "_component.html"
+
+    questionnaire_id = None
+    questionnaire_title = None
+    component_form = None
+    form = None
+    sequence = None
+
+    configuration_form = ComponentConfigurationForm(request.POST or None, instance=component_configuration)
+
+    configuration_list = []
+
+    if component:
+        component_form = ComponentForm(request.POST or None, instance=component)
+        sequence = get_object_or_404(Sequence, pk=component.id)
+        form = SequenceForm(request.POST or None, instance=sequence)
+        configuration_list = ComponentConfiguration.objects.filter(parent=sequence)\
+            .order_by('order')
+
+    if request.method == "POST":
+        if request.POST['action'] == "save":
+
+            if configuration_form.is_valid():
+
+                configuration = configuration_form.save(commit=False)
+                configuration.save()
+
+                messages.success(request, 'Componente atualizado com sucesso.')
+
+                redirect_url = reverse("component_edit", args=(component_configuration.parent.id,))
+                return HttpResponseRedirect(redirect_url)
+
+        else:
+            if request.POST['action'] == "remove":
+                component_configuration_list = ComponentConfiguration.objects.filter(
+                    parent_id=component_configuration.parent_id).order_by('order')
+                for component_configuration_element in component_configuration_list:
+                    if component_configuration_element.order > component_configuration.order:
+                        component_configuration_element.order -= 1
+                        component_configuration_element.save()
+                component.delete()
+                redirect_url = reverse("component_list", args=(experiment.id,))
+                return HttpResponseRedirect(redirect_url)
+
+    for form_used in {form, component_form}:
+        for field in form_used.fields:
+            form_used.fields[field].widget.attrs['disabled'] = True
+
+    context = {
+        "creating_workflow": True,
+        "form": form,
+        "experiment": experiment,
+        "component_form": component_form,
+        "configuration_form": configuration_form,
+        "creating": False,
+        "updating": True,
+        "existing_component_list": [],
+        "sequence": sequence,
+        "questionnaire_id": questionnaire_id,
+        "questionnaire_title": questionnaire_title,
+        "reusing_component": True,
+        "sequence_id": component_configuration.parent_id,
+        "configuration_list": configuration_list,
+        "icon_class": icon_class,
+        "path_of_the_sub_components": "",
+        "previous_component_configuration": previous_component_configuration
+    }
+
+    return render(request, template_name, context)
+
+
+# @login_required
+# @permission_required('experiment.change_experiment')
+# def experimental_protocol_create(request, group_id, component_configuration_id):
+#
+#     group = get_object_or_404(Group, pk=group_id)
+#     component_configuration = get_object_or_404(ComponentConfiguration, pk=component_configuration_id)
+#     group.experimental_protocol = component_configuration
+#
+#     redirect_url = reverse("group_edit", args=(group.id, ))
+#
+#     return HttpResponseRedirect(redirect_url)

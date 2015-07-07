@@ -1,0 +1,44 @@
+{% extends "experiment/component_template.html" %}
+
+{% block breadcrumb %}
+
+    {% if creating %}
+        <li class="active">Nova pausa</li>
+    {% else %}
+        <li class="active"> Pausa: {{ component_form.identification.value }} </li>
+    {% endif %}
+
+{% endblock %}
+
+{% block component_label %}
+    <label class="control-label">Pausa </label>
+{% endblock %}
+
+{% block component_add_new %}
+    <li role="presentation"><a role="menuitem" tabindex="-1" href="/experiment/component_configuration/{% if path_of_the_sub_components %}{{ path_of_the_sub_components }}{% else %}{{ sequence.id }}{% endif %}/add_new_component/pause"><< Nova pausa >></a></li>
+{% endblock %}
+
+{% block component_button_label %}
+    Nova pausa
+{% endblock %}
+
+{% block extra_fields %}
+    <div class="container span6 offset3 well ">
+        <div class="row">
+            <div class="col-xs-6 col-sm-2">
+                <div class="form-group">
+                    <label class="control-label">Duração <b style="color: red;">*</b></label>
+                        {{ form.duration }}
+                    <div class="help-block with-errors"></div>
+                </div>
+            </div>
+            <div class="col-xs-6 col-sm-2">
+                <div class="form-group">
+                    <label for="interval_between_repetitions_unit" class="control-label">Unidade</label>
+                        {{ form.duration_unit }}
+                    <div class="help-block with-errors"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+{% endblock %}

@@ -50,6 +50,7 @@ INSTALLED_APPS = (
 
 PROJECT_APPS = (
     'quiz',
+    'patient',
     'custom_user',
     'experiment',
 )
@@ -86,7 +87,8 @@ DATABASES = {
 
 # LimeSurvey configuration
 LIMESURVEY = {
-    'URL': '',
+    'URL_API': '',
+    'URL_WEB': '',
     'USER': '',
     'PASSWORD': '',
 }

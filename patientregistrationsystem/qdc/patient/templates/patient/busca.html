@@ -1,0 +1,31 @@
+{% extends "quiz/template.html" %}
+
+{% block activePatient %}class="active"{% endblock %}
+
+{% block content %}
+
+    <div class="tab-pane fade in active" id="mainMenuSearchTab">
+        <div class="col-md-10">
+            <div class="container span6 offset3 well ">
+                <div class="form-group">
+                    <label>Buscar paciente</label>
+                    <div class="input-group input-group-sm">
+                        <span class="input-group-addon"> <span class="glyphicon glyphicon-search"></span></span>
+                        <input class="form-control" placeholder="Digite o nome ou o CPF para buscar um paciente" id="nameKey" type="text">
+                    </div>
+                    {% csrf_token %}
+                    <ul id="search-results" style="list-style: none;">
+                    </ul>
+                </div>
+                <div class="btn-group pull-left">
+
+                    {% if perms.quiz.add_patient %}
+                        <a href="/patient/new/" class="btn btn-primary">Inserir novo paciente</a>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+
+
+{% endblock %}

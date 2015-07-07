@@ -22,7 +22,8 @@
             <ol class="breadcrumb">
                 <li>Home</li>
                 <li><a href="/experiment/list">Experimentos</a></li>
-                <li><a href="/experiment/edit/{{ experiment_id }}">{{ experiment_title }}</a></li>
+                <li><a href="/experiment/edit/{{ group.experiment.id }}">{{ group.experiment.title }}</a></li>
+                <li><a href="/experiment/group/edit/{{ group.id }}">{{ group.title }}</a></li>
                 <li class="active">Participantes</li>
             </ol>
 
@@ -60,7 +61,7 @@
                 <div class="row">
                     <div class="col-xs-6 col-sm-10">
                         <div class="form-group">
-                            <input id="experiment_id" value="{{ experiment_id }}" style="display: none;">
+                            <input id="group_id" value="{{ group_id }}" style="display: none;">
                             <label>Inserir participante</label>
 
                             <div class="input-group input-group-sm">
@@ -101,7 +102,7 @@
                                             </td>
                                             <td>
                                                 <div class="col-md-2">
-                                                    <a href='/experiment/{{ experiment_id }}/subjects/{{ item.subject.id }}/upload_file' class="glyphicon glyphicon-paperclip"></a>
+                                                    <a href='/experiment/group/{{ group_id }}/subjects/{{ item.subject.id }}/upload_file' class="glyphicon glyphicon-paperclip"></a>
                                                 </div>
                                                 <div>
                                                     {% if item.consent %}
@@ -114,7 +115,7 @@
                                             <td>
                                                 {% if perms.experiment.change_subject %}
                                                     <div class="col-md-2">
-                                                        <a href='/experiment/{{ experiment_id }}/subjects/{{ item.subject.id }}/questionnaire/' class="glyphicon glyphicon-edit"></a>
+                                                        <a href='/experiment/group/{{ group_id }}/subjects/{{ item.subject.id }}/questionnaire/' class="glyphicon glyphicon-edit"></a>
                                                     </div>
                                                 {% endif %}
                                                 {% if limesurvey_available %}
@@ -138,12 +139,11 @@
             </div>
             <div class="btn-toolbar">
                 <div class="btn-group pull-right">
-                    <a href="/experiment/edit/{{ experiment_id }}" class="btn" style="background-color: #f5f5f5">Voltar</a>
+                    <a href="/experiment/group/edit/{{ group_id }}" class="btn" style="background-color: #f5f5f5">Voltar</a>
                 </div>
             </div>
 
         </div>
-
 
     </div>
 
