@@ -83,18 +83,18 @@ class SocialDemographicDataForm(ModelForm):
             'schooling': Select(attrs={'class': 'form-control'}),
             'flesh_tone': Select(attrs={'class': 'form-control'}),
             'religion': Select(attrs={'class': 'form-control'}),
-            'profession': TextInput(attrs={'class': 'form-control', 'placeholder': 'Entrar profissão'}),
-            'occupation': TextInput(attrs={'class': 'form-control', 'placeholder': 'Entrar ocupação'}),
+            'profession': TextInput(attrs={'class': 'form-control', 'placeholder': _('Entrar profissão')}),
+            'occupation': TextInput(attrs={'class': 'form-control', 'placeholder': _('Entrar ocupação')}),
             'payment': Select(attrs={'class': 'form-control'}),
-            'tv': RadioSelect(choices=((0, '0'), (1, '1'), (2, '2'), (3, '3'), (4, '4 ou +'))),
-            'dvd': RadioSelect(choices=((0, '0'), (1, '1'), (2, '2'), (3, '3'), (4, '4 ou +'))),
-            'radio': RadioSelect(choices=((0, '0'), (1, '1'), (2, '2'), (3, '3'), (4, '4 ou +'))),
-            'bath': RadioSelect(choices=((0, '0'), (1, '1'), (2, '2'), (3, '3'), (4, '4 ou +'))),
-            'automobile': RadioSelect(choices=((0, '0'), (1, '1'), (2, '2'), (3, '3'), (4, '4 ou +'))),
-            'house_maid': RadioSelect(choices=((0, '0'), (1, '1'), (2, '2'), (3, '3'), (4, '4 ou +'))),
-            'wash_machine': RadioSelect(choices=((0, '0'), (1, '1'), (2, '2'), (3, '3'), (4, '4 ou +'))),
-            'refrigerator': RadioSelect(choices=((0, '0'), (1, '1'), (2, '2'), (3, '3'), (4, '4 ou +'))),
-            'freezer': RadioSelect(choices=((0, '0'), (1, '1'), (2, '2'), (3, '3'), (4, '4 ou +'))),
+            'tv': RadioSelect(choices=((0, '0'), (1, '1'), (2, '2'), (3, '3'), (4, _('4 ou +')))),
+            'dvd': RadioSelect(choices=((0, '0'), (1, '1'), (2, '2'), (3, '3'), (4, _('4 ou +')))),
+            'radio': RadioSelect(choices=((0, '0'), (1, '1'), (2, '2'), (3, '3'), (4, _('4 ou +')))),
+            'bath': RadioSelect(choices=((0, '0'), (1, '1'), (2, '2'), (3, '3'), (4, _('4 ou +')))),
+            'automobile': RadioSelect(choices=((0, '0'), (1, '1'), (2, '2'), (3, '3'), (4, _('4 ou +')))),
+            'house_maid': RadioSelect(choices=((0, '0'), (1, '1'), (2, '2'), (3, '3'), (4, _('4 ou +')))),
+            'wash_machine': RadioSelect(choices=((0, '0'), (1, '1'), (2, '2'), (3, '3'), (4, _('4 ou +')))),
+            'refrigerator': RadioSelect(choices=((0, '0'), (1, '1'), (2, '2'), (3, '3'), (4, _('4 ou +')))),
+            'freezer': RadioSelect(choices=((0, '0'), (1, '1'), (2, '2'), (3, '3'), (4, _('4 ou +')))),
             'social_class': TextInput(attrs={'class': 'form-control', 'readonly': ""})
         }
 
@@ -133,12 +133,12 @@ class ComplementaryExamForm(ModelForm):
 
         widgets = {
             'date': DateInput(attrs={'class': 'form-control datepicker', 'placeholder': 'dd/mm/aaaa',
-                                     'required': "", 'data-error': "Data deve ser preenchida"}),
-            'description': Textarea(attrs={'class': 'form-control', 'placeholder': 'Descrição', 'rows': '4',
-                                           'required': "", 'data-error': "Descrição deve ser preenchida"}),
-            'doctor': TextInput(attrs={'class': 'form-control', 'placeholder': 'Médico'}),
-            'doctor_register': TextInput(attrs={'class': 'form-control', 'placeholder': 'CRM'}),
-            'exam_site': TextInput(attrs={'class': 'form-control', 'placeholder': 'Local de realização'}),
+                                     'required': "", 'data-error': _("Data deve ser preenchida")}),
+            'description': Textarea(attrs={'class': 'form-control', 'placeholder': _('Descrição'), 'rows': '4',
+                                           'required': "", 'data-error': _("Descrição deve ser preenchida")}),
+            'doctor': TextInput(attrs={'class': 'form-control', 'placeholder': _('Médico')}),
+            'doctor_register': TextInput(attrs={'class': 'form-control', 'placeholder': _('CRM')}),
+            'exam_site': TextInput(attrs={'class': 'form-control', 'placeholder': _('Local de realização')}),
         }
 
 
@@ -157,5 +157,5 @@ class QuestionnaireResponseForm(ModelForm):
 
         widgets = {
             'date': DateInput(attrs={'class': 'form-control datepicker', 'placeholder': 'dd/mm/aaaa', 'required': "",
-                                     'data-error': "Data de preenchimento deve ser preenchida"}, )
+                                     'data-error': _("Data de preenchimento deve ser preenchida")}, )
         }

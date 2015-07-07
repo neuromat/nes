@@ -17,7 +17,7 @@
                     <div class="row">
                         <div class="col-xs-6 col-sm-4">
                             <div class="form-group">
-                                <label>Tabagismo</label>
+                                <label>{% trans "Tabagismo" %}</label>
 
                                 <div class="input-group  input-group-sm">
                                     {% for radio in social_history_form.smoker %}
@@ -30,7 +30,7 @@
                         </div>
                         <div class="col-xs-6 col-sm-4">
                             <div class="form-group">
-                                <label>Cigarros/Dia</label>
+                                <label>{% trans "Cigarros/Dia" %}</label>
 
                                 <div class="input-group  input-group-sm">
                                     {{ social_history_form.amount_cigarettes }}
@@ -39,7 +39,7 @@
                         </div>
                         <div class="col-xs-6 col-sm-4">
                             <div class="form-group">
-                                <label>Ex-tabagista</label>
+                                <label>{% trans "Ex-tabagista" %}</label>
 
                                 <div class="input-group  input-group-sm">
                                     {% for radio in social_history_form.ex_smoker %}
@@ -54,7 +54,7 @@
                     <div class="row">
                         <div class="col-xs-6 col-sm-4">
                             <div class="form-group">
-                                <label>Etilismo</label>
+                                <label>{% trans "Etilismo" %}</label>
 
                                 <div class="input-group  input-group-sm">
                                     {% for radio in social_history_form.alcoholic %}
@@ -67,7 +67,7 @@
                         </div>
                         <div class="col-xs-6 col-sm-4">
                             <div class="form-group">
-                                <label>Frequência</label>
+                                <label>{% trans "Frequência" %}</label>
 
                                 <div class="input-group  input-group-sm">
                                     {{ social_history_form.alcohol_frequency }}
@@ -76,7 +76,7 @@
                         </div>
                         <div class="col-xs-6 col-sm-4">
                             <div class="form-group">
-                                <label>Tempo</label>
+                                <label>{% trans "Tempo" %}</label>
 
                                 <div class="input-group  input-group-sm">
                                     {{ social_history_form.alcohol_period}}
@@ -87,7 +87,7 @@
                     <div class="row">
                         <div class="col-xs-12 col-sm-12">
                             <div class="form-group">
-                                <label>Uso de drogas ilícitas</label>
+                                <label>{% trans "Uso de drogas ilícitas" %}</label>
 
                                 <div class="input-group  input-group-sm">
                                     {% for radio in social_history_form.drugs %}

@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2014-08-15 16:22-0300\n"
+"POT-Creation-Date: 2015-07-06 14:22-0300\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -17,51 +17,120 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 
-#: models.py:18
+#: forms.py:26
+msgid "Nome deve ser preenchido"
+msgstr ""
+
+#: forms.py:32
+msgid "Data de nascimento deve ser preenchida"
+msgstr ""
+
+#: forms.py:35
+msgid "Sexo deve ser preenchido"
+msgstr ""
+
+#: forms.py:50
+msgid "E-mail incorreto"
+msgstr ""
+
+#: forms.py:86
+msgid "Entrar profissão"
+msgstr ""
+
+#: forms.py:87
+msgid "Entrar ocupação"
+msgstr ""
+
+#: forms.py:89 forms.py:90 forms.py:91 forms.py:92 forms.py:93 forms.py:94
+#: forms.py:95 forms.py:96 forms.py:97
+msgid "4 ou +"
+msgstr ""
+
+#: forms.py:126
+msgid "Já fez"
+msgstr ""
+
+#: forms.py:137
+msgid "Data deve ser preenchida"
+msgstr ""
+
+#: forms.py:138
+msgid "Descrição"
+msgstr ""
+
+#: forms.py:139
+msgid "Descrição deve ser preenchida"
+msgstr ""
+
+#: forms.py:140
+msgid "Médico"
+msgstr ""
+
+#: forms.py:141
+msgid "CRM"
+msgstr ""
+
+#: forms.py:142
+msgid "Local de realização"
+msgstr ""
+
+#: forms.py:161
+msgid "Data de preenchimento deve ser preenchida"
+msgstr ""
+
+#: models.py:26
 #, python-format
 msgid "CPF %s não é válido"
 msgstr "CPF %s invalid"
 
-#: views.py:437
-msgid "Definir senha"
+#: models.py:33
+msgid "Data de nascimento não pode ser maior que a data de hoje."
 msgstr ""
 
-#: templates/quiz/ajax_cid10.html:17
+#: templates/patient/ajax_cid10.html:17
 #, fuzzy
 msgid "Nenhuma doença encontrada!"
 msgstr "No patient found!"
 
-#: templates/quiz/ajax_search.html:11
-msgid "Nenhum paciente encontrado!"
+#: templates/patient/ajax_search.html:11
+#, fuzzy
+msgid "Nenhum participante encontrado!"
 msgstr "No patient found!"
 
-msgid "Can add user"
-msgstr "Pode adicionar usuário"
+#: templates/patient/register_social_history.html:20
+msgid "Tabagismo"
+msgstr ""
 
-msgid "Can change user"
-msgstr "Pode alterar usuário"
+#: templates/patient/register_social_history.html:33
+msgid "Cigarros/Dia"
+msgstr ""
 
-msgid "Can delete user"
-msgstr "Pode remover usuário"
+#~ msgid "Can add user"
+#~ msgstr "Pode adicionar usuário"
 
-msgid "Can add patient"
-msgstr "Pode adicionar paciente"
+#~ msgid "Can change user"
+#~ msgstr "Pode alterar usuário"
 
-msgid "Can change patient"
-msgstr "Pode alterar paciente"
+#~ msgid "Can delete user"
+#~ msgstr "Pode remover usuário"
 
-msgid "Can delete patient"
-msgstr "Pode remover paciente"
+#~ msgid "Can add patient"
+#~ msgstr "Pode adicionar paciente"
 
-msgid "Can view patient"
-msgstr "Pode ver paciente"
+#~ msgid "Can change patient"
+#~ msgstr "Pode alterar paciente"
 
-msgid "Can add medical record data"
-msgstr "Pode adicionar dados de prontuário"
+#~ msgid "Can delete patient"
+#~ msgstr "Pode remover paciente"
 
-msgid "Can delete medical record data"
-msgstr "Pode remover dados de prontuário"
+#~ msgid "Can view patient"
+#~ msgstr "Pode ver paciente"
 
-msgid "Can view medical record"
-msgstr "Pode ver dados de prontuário"
+#~ msgid "Can add medical record data"
+#~ msgstr "Pode adicionar dados de prontuário"
 
+#~ msgid "Can delete medical record data"
+#~ msgstr "Pode remover dados de prontuário"
+
+#~ msgid "Can view medical record"
+#~ msgstr "Pode ver dados de prontuário"
