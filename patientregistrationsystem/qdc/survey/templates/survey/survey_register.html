@@ -15,34 +15,31 @@
 {% endblock %}
 
 {% block content %}
-    <div class="tab-content">
-        {% if messages %}
-            {% for message in messages %}
+    {% if messages %}
+        {% for message in messages %}
 
-                {% if message.tags == "success" %}
-                    <script>showSuccessMessage('{{ message }}')</script>
-                {% endif %}
+            {% if message.tags == "success" %}
+                <script>showSuccessMessage('{{ message }}')</script>
+            {% endif %}
 
-                {% if message.tags == "warning" %}
-                    <script>showWarningMessage('{{ message }}')</script>
-                {% endif %}
+            {% if message.tags == "warning" %}
+                <script>showWarningMessage('{{ message }}')</script>
+            {% endif %}
 
-                {% if message.tags == "error" %}
-                    <script>showErrorMessage('{{ message }}')</script>
-                {% endif %}
+            {% if message.tags == "error" %}
+                <script>showErrorMessage('{{ message }}')</script>
+            {% endif %}
 
-                {% if message.tags == "info" %}
-                    <script>showInfoMessage('{{ message }}')</script>
-                {% endif %}
+            {% if message.tags == "info" %}
+                <script>showInfoMessage('{{ message }}')</script>
+            {% endif %}
 
-            {% endfor %}
-        {% endif %}
+        {% endfor %}
+    {% endif %}
 
-        {% if survey_form.errors %}
-            <script>showErrorMessage('Por favor, corrija os campos em destaque.')</script>
-        {% endif %}
-
-
+    {% if survey_form.errors %}
+        <script>showErrorMessage('Por favor, corrija os campos em destaque.')</script>
+    {% endif %}
 
     <div class="tab-pane fade in active" id="surveyBreadCrumb">
         <div class="col-md-10">
@@ -156,7 +153,7 @@
                     </div>
                 </div>
 
-                {% if perms.experiment.view_research_project %}
+                {% if perms.experiment.view_researchproject %}
                     <div class="container span6 offset3 well ">
                         <div class="row">
                             <div class="col-xs-12 col-md-12">
@@ -237,14 +234,14 @@
                 {% endif %}
             {% endif %}
 
-                <div class="btn-toolbar">
-                    <div class="btn-group pull-left">
-                        {% if not editing and perms.survey.delete_survey %}
-                            <button type="button" class="btn btn-danger" onclick="showRemoveDialog()">
-                                Excluir
-                            </button>
-                        {% endif %}
-                    </div>
+            <div class="btn-toolbar">
+                <div class="btn-group pull-left">
+                    {% if not editing and perms.survey.delete_survey %}
+                        <button type="button" class="btn btn-danger" onclick="showRemoveDialog()">
+                            Excluir
+                        </button>
+                    {% endif %}
+                </div>
                 {% if editing %}
                     <div class="btn-group pull-right">
                         <button type="submit" name="action" value="save" class="btn btn-primary">Salvar</button>
@@ -258,22 +255,20 @@
                         <a href="/survey/list" class="btn" style="background-color: #f5f5f5">Voltar</a>
                     </div>
                 {% endif %}
-                </div>
-
             </div>
         </div>
+    </div>
 
-        <div class="modal fade" id="modalRemove" tabindex="-1" role="dialog" aria-labelledby="myModalLabel"
-             aria-hidden="true">
-            <div class="modal-dialog">
-                <div class="modal-content">
-                    <div class="modal-body">
-                        Tem certeza que deseja excluir o questionário?
-                    </div>
-                    <div class="modal-footer">
-                        <button type="button" class="btn btn-default" data-dismiss="modal">Cancelar</button>
-                        <button type="submit" class="btn btn-danger" id="remove_button" value="remove" name="action">Excluir</button>
-                    </div>
+    <div class="modal fade" id="modalRemove" tabindex="-1" role="dialog" aria-labelledby="myModalLabel"
+         aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-body">
+                    Tem certeza que deseja excluir o questionário?
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-default" data-dismiss="modal">Cancelar</button>
+                    <button type="submit" class="btn btn-danger" id="remove_button" value="remove" name="action">Excluir</button>
                 </div>
             </div>
         </div>
