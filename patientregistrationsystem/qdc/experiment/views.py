@@ -1701,22 +1701,25 @@ def remove_component_and_related_configurations(component,
     return redirect_url
 
 
-def remove_component_configuration(conf):
+def remove_component_configuration(request, conf):
     order_of_removed = conf.order
     parent_of_removed = conf.parent_id
-    conf.delete()
 
-    if conf.random_position:
-        last_conf = ComponentConfiguration.objects.filter(
-            parent_id=parent_of_removed, random_position=True).order_by('order').last()
+    try:
+        conf.delete()
 
-        # If the order of the removed component is smaller than the order of the last random-positioned
-        # element, assign the order of the removed to the last random-positioned element. This way, for
-        # the user, it is like removing the last position for random components.
-        if last_conf is not None and last_conf.order > order_of_removed:
-            last_conf.order = order_of_removed
-            last_conf.save()
+        if conf.random_position:
+            last_conf = ComponentConfiguration.objects.filter(
+                parent_id=parent_of_removed, random_position=True).order_by('order').last()
 
+            # If the order of the removed component is smaller than the order of the last random-positioned
+            # element, assign the order of the removed to the last random-positioned element. This way, for
+            # the user, it is like removing the last position for random components.
+            if last_conf is not None and last_conf.order > order_of_removed:
+                last_conf.order = order_of_removed
+                last_conf.save()
+    except ProtectedError:
+        messages.error(request, "Não foi possível excluir o uso, pois há dados associados")
 
 @login_required
 @permission_required('experiment.view_researchproject')
@@ -1770,12 +1773,13 @@ def component_view(request, path_of_the_components):
                 if len(action_parts) == 4:  # Check the existence of an extra parameter
                     # It means that a single component configuration should be removed
                     position_in_accordion_of_the_conf_to_be_deleted = int(action_parts[3])
-                    remove_component_configuration(
+                    remove_component_configuration(request,
                         list_from_which_to_deleted[position_of_the_accordion_to_be_deleted]
                         [position_in_accordion_of_the_conf_to_be_deleted])
                 else:
                     for conf in list_from_which_to_deleted[position_of_the_accordion_to_be_deleted]:
-                        remove_component_configuration(conf)
+                        # Only uses that do not have associated data will be excluded.
+                        remove_component_configuration(request, conf)
 
                 redirect_url = reverse("component_view", args=(path_of_the_components,))
                 return HttpResponseRedirect(redirect_url)
