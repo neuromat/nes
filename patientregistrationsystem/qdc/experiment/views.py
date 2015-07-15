@@ -2137,10 +2137,17 @@ def component_add_new(request, path_of_the_components, component_type):
 
         if request.method == "POST":
             new_specific_component = None
+            survey = None
 
             if component_type == 'questionnaire':
                 new_specific_component = Questionnaire()
-                new_specific_component.survey.lime_survey_id = request.POST['questionnaire_selected']
+
+                try:
+                    survey = Survey.objects.get(lime_survey_id=request.POST['questionnaire_selected'])
+                except Survey.DoesNotExist:
+                    survey = Survey()
+                    survey.lime_survey_id = request.POST['questionnaire_selected']
+
             elif component_type == 'pause':
                 new_specific_component = Pause()
             elif component_type == 'task':
@@ -2174,6 +2181,10 @@ def component_add_new(request, path_of_the_components, component_type):
                     return HttpResponseRedirect(redirect_url)
                 else:
                     if number_of_uses_form.is_valid():
+                        if component_type == 'questionnaire':
+                            survey.save()
+                            new_specific_component.survey = survey
+
                         new_specific_component.save()
                         number_of_uses = number_of_uses_form.cleaned_data['number_of_uses_to_insert']
 
