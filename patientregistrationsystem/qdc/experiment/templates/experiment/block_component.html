@@ -111,8 +111,8 @@
                                             <tr>
                                                 <td colspan="6" style="padding: 0px;">
                                                     <div class="panel panel-default collapsed" style="margin: 0px;">
-                                                        <div class="panel-heading" role="tab" id="heading{{ forloop.counter }}" style="padding: 0px;" data-toggle="tooltip" data-placement="left" title="Expandir">
-                                                            <table class="table" style="margin: 0px;" role="button" data-toggle="collapse" href="#collapse{{ forloop.counter }}" aria-expanded="false" aria-controls="collapse{{ forloop.counter }}">
+                                                        <div class="panel-heading" role="tab" id="fixed_heading{{ forloop.counter }}" style="padding: 0px;" data-toggle="tooltip" data-placement="left" title="Expandir">
+                                                            <table class="table" style="margin: 0px;" role="button" data-toggle="collapse" href="#fixed_collapse{{ forloop.counter }}" aria-expanded="false" aria-controls="fixed_collapse{{ forloop.counter }}">
                                                                 <tbody>
                                                                     {% if not accordion.0.random_position %}  {# If the first is random, all confs from this accordeon will be random. #}
                                                                         <tr>
@@ -173,7 +173,7 @@
                                                         </div>
 
 
-                                                        <div id="collapse{{ forloop.counter }}" class="panel-collapse collapse" role="tabpanel" aria-labelledby="heading{{ forloop.counter }}">
+                                                        <div id="fixed_collapse{{ forloop.counter }}" class="panel-collapse collapse" role="tabpanel" aria-labelledby="fixed_heading{{ forloop.counter }}">
                                                             <div class="panel-body">
                                                                 <table class="table table-striped" style="margin: 0px;">
                                                                     <tbody>
@@ -248,8 +248,8 @@
                                                 <tr>
                                                     <td colspan="4" style="padding: 0px;">
                                                         <div class="panel panel-default collapsed" style="margin: 0px;">
-                                                            <div class="panel-heading" role="tab" id="heading{{ forloop.counter }}" style="padding: 0px;" data-toggle="tooltip" data-placement="left" title="Expandir">
-                                                                <table class="table" style="margin: 0px;" role="button" data-toggle="collapse" href="#collapse{{ forloop.counter }}" aria-expanded="false" aria-controls="collapse{{ forloop.counter }}">
+                                                            <div class="panel-heading" role="tab" id="random_heading{{ forloop.counter }}" style="padding: 0px;" data-toggle="tooltip" data-placement="left" title="Expandir">
+                                                                <table class="table" style="margin: 0px;" role="button" data-toggle="collapse" href="#random_collapse{{ forloop.counter }}" aria-expanded="false" aria-controls="random_collapse{{ forloop.counter }}">
                                                                     <tbody>
                                                                         <tr>
                                                                             <td class="col-md-2">
@@ -276,7 +276,7 @@
                                                             </div>
 
 
-                                                            <div id="collapse{{ forloop.counter }}" class="panel-collapse collapse" role="tabpanel" aria-labelledby="heading{{ forloop.counter }}">
+                                                            <div id="random_collapse{{ forloop.counter }}" class="panel-collapse collapse" role="tabpanel" aria-labelledby="random_heading{{ forloop.counter }}">
                                                                 <div class="panel-body">
                                                                     <table class="table table-striped" style="margin: 0px;">
                                                                         <tbody>
