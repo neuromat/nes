@@ -9,6 +9,7 @@ class Migration(SchemaMigration):
 
     depends_on = (
         ("patient", "0002_load_data_from_quiz.py"),
+        ("experiment", "0001_initial.py"),
     )
 
     def forwards(self, orm):
