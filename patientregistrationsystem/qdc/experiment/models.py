@@ -4,9 +4,22 @@ import datetime
 from django.db import models
 from django.core.exceptions import ValidationError
 from django.core.validators import MinValueValidator
+from django.contrib.auth.models import User
 from simple_history.models import HistoricalRecords
 
-from patient.models import Patient, User, ClassificationOfDiseases
+from patient.models import Patient, ClassificationOfDiseases
+from survey.models import Survey
+
+TIME_UNITS = (
+    ("ms", "milesegundo(s)"),
+    ("s", "segundo(s)"),
+    ("min", "minuto(s)"),
+    ("h", "hora(s)"),
+    ("d", "dia(s)"),
+    ("w", "semana(s)"),
+    ("mon", "mês (meses)"),
+    ("y", "ano(s)"),
+)
 
 
 def validate_date_questionnaire_response(value):
@@ -18,16 +31,6 @@ class Subject(models.Model):
     patient = models.ForeignKey(Patient)
 
 
-class TimeUnit(models.Model):
-    name = models.CharField(max_length=30, null=False, blank=False)
-
-    def __unicode__(self):
-        return self.name
-
-    class Meta:
-        ordering = ["id"]
-
-
 class StimulusType(models.Model):
     name = models.CharField(max_length=30, null=False, blank=False)
 
@@ -35,31 +38,39 @@ class StimulusType(models.Model):
         return self.name
 
 
+class Keyword(models.Model):
+    name = models.CharField(max_length=50, null=False, blank=False)
+
+    def __unicode__(self):
+        return self.name
+
+
 class ResearchProject(models.Model):
-    title = models.CharField(max_length=150, null=False, blank=False)
-    description = models.CharField(max_length=1500, null=False, blank=False)
+    title = models.CharField(max_length=150)
+    description = models.TextField()
+    start_date = models.DateField()
+    end_date = models.DateField(null=True, blank=True)
+    keywords = models.ManyToManyField(Keyword)
+    owner = models.ForeignKey(User, null=True, blank=True)
+
+    def __unicode__(self):
+        return self.title
 
     class Meta:
         permissions = (
             ("view_researchproject", "Can view research project"),
+            ("change_researchproject_from_others", "Can change research project created by others"),
         )
 
 
 class Experiment(models.Model):
-    title = models.CharField(null=False, max_length=50, blank=False)
-    description = models.CharField(max_length=150, null=False, blank=False)
-
-    # TODO: migrar o banco de dados
-    # research_project = models.ForeignKey(ResearchProject, null=True)
+    title = models.CharField(null=False, max_length=150, blank=False)
+    description = models.TextField(null=False, blank=False)
+    research_project = models.ForeignKey(ResearchProject, null=False, blank=False)
 
     # Audit trail - Simple History
     history = HistoricalRecords()
     # changed_by = models.ForeignKey('auth.User')
-
-    class Meta:
-        permissions = (
-            ("view_experiment", "Can view experiment"),
-        )
 
     def __unicode__(self):  # Python 3: def __str__(self):
         return self.title
@@ -74,36 +85,42 @@ class Experiment(models.Model):
 
 
 class Component(models.Model):
+    COMPONENT_TYPES = (
+        ("block", "Conjunto de passos"),
+        ("instruction", "Instrução"),
+        ("pause", "Pausa"),
+        ("questionnaire", "Questionário"),
+        ("stimulus", "Estímulo"),
+        ("task", "Tarefa para o sujeito"),
+        ("task_experiment", "Tarefa para o experimentador"),
+    )
+
     identification = models.CharField(null=False, max_length=50, blank=False)
-    description = models.CharField(max_length=150, null=False, blank=False)
+    description = models.TextField(null=True, blank=True)
+    duration_value = models.IntegerField(null=True, blank=True, validators=[MinValueValidator(1)])
+    duration_unit = models.CharField(null=True, blank=True, max_length=15, choices=TIME_UNITS)
     experiment = models.ForeignKey(Experiment, null=False)
-    component_type = models.CharField(null=False, max_length=15,
-                                      choices=(("task", "Task component"),
-                                               ("instruction", "Instruction component"),
-                                               ("pause", "Pause component"),
-                                               ("stimulus", "Stimulus component"),
-                                               ("questionnaire", "Questionnaire component"),
-                                               ("sequence", "Sequence component")))
+    component_type = models.CharField(null=False, max_length=15, choices=COMPONENT_TYPES)
 
 
 class Task(Component):
-    instruction_text = models.CharField(max_length=150, null=False, blank=False)
+    def save(self, *args, **kwargs):
+        super(Component, self).save(*args, **kwargs)
 
+
+class TaskForTheExperimenter(Component):
     def save(self, *args, **kwargs):
         super(Component, self).save(*args, **kwargs)
 
 
 class Instruction(Component):
-    text = models.CharField(max_length=150, null=False, blank=False)
+    text = models.TextField(null=False, blank=False)
 
     def save(self, *args, **kwargs):
         super(Component, self).save(*args, **kwargs)
 
 
 class Pause(Component):
-    duration = models.IntegerField(null=False, blank=False)
-    duration_unit = models.ForeignKey(TimeUnit, null=True, blank=True)
-
     def save(self, *args, **kwargs):
         super(Component, self).save(*args, **kwargs)
 
@@ -116,28 +133,42 @@ class Stimulus(Component):
 
 
 class Questionnaire(Component):
-    lime_survey_id = models.IntegerField(null=False, blank=False)
+    survey = models.ForeignKey(Survey, null=False, blank=False, on_delete=models.PROTECT)
 
     def save(self, *args, **kwargs):
         super(Component, self).save(*args, **kwargs)
 
 
-class Sequence(Component):
-    has_random_components = models.BooleanField(null=False, blank=False)
+class Block(Component):
+    SEQUENCE = 'sequence'
+    PARALLEL_BLOCK = 'parallel_block'
     number_of_mandatory_components = models.IntegerField(null=True, blank=True)
+    type = models.CharField(null=False, max_length=20,
+                            choices=((SEQUENCE, "Sequence component"),
+                                     (PARALLEL_BLOCK, "Parallel block component")))
 
     def save(self, *args, **kwargs):
         super(Component, self).save(*args, **kwargs)
 
 
 class ComponentConfiguration(models.Model):
-    name = models.CharField(max_length=50, null=False, blank=False)
-    number_of_repetitions = models.IntegerField(null=True, blank=True, validators=[MinValueValidator(1)])
+    name = models.CharField(max_length=50, null=True, blank=True)
+    number_of_repetitions = models.IntegerField(null=True, blank=True, default=1, validators=[MinValueValidator(1)])
+
+    # These 2 interval fields are useful only when number_of_repetition is different from 1.
     interval_between_repetitions_value = models.IntegerField(null=True, blank=True, validators=[MinValueValidator(1)])
-    interval_between_repetitions_unit = models.ForeignKey(TimeUnit, null=True, blank=True)
+    interval_between_repetitions_unit = models.CharField(null=True, blank=True, max_length=15, choices=TIME_UNITS)
+
     component = models.ForeignKey(Component, null=False, related_name="configuration")
-    parent = models.ForeignKey(Component, null=True, related_name='children')
+    # TODO Change to not null.
+    parent = models.ForeignKey(Block, null=True, related_name='children')
+
+    # This field is only useful for component configurations marked as fixed and inside a sequence. However, we leave it
+    # as not null because we want the unique restriction of the pair (parent, order) to be applied in a database level.
     order = models.IntegerField(null=False, blank=False, validators=[MinValueValidator(1)])
+
+    # This is null when the parent is a parallel block.
+    random_position = models.NullBooleanField(blank=True)
 
     class Meta:
         unique_together = ('parent', 'order',)
@@ -152,10 +183,9 @@ class ComponentConfiguration(models.Model):
 class Group(models.Model):
     experiment = models.ForeignKey(Experiment, null=False, blank=False)
     title = models.CharField(null=False, max_length=50, blank=False)
-    description = models.CharField(max_length=150, null=False, blank=False)
-    instruction = models.CharField(max_length=150, null=True, blank=True)
+    description = models.TextField(null=False, blank=False)
     classification_of_diseases = models.ManyToManyField(ClassificationOfDiseases, null=True)
-    experimental_protocol = models.ForeignKey(ComponentConfiguration, null=True)
+    experimental_protocol = models.ForeignKey(Component, null=True)
 
 
 def get_dir(instance, filename):
@@ -172,35 +202,9 @@ class SubjectOfGroup(models.Model):
         unique_together = ('subject', 'group',)
 
 
-class QuestionnaireConfiguration(models.Model):
-    lime_survey_id = models.IntegerField(null=False, blank=False)
-    group = models.ForeignKey(Group, null=False, on_delete=models.PROTECT)
-    number_of_fills = models.IntegerField(null=True, blank=True, validators=[MinValueValidator(1)])
-    interval_between_fills_value = models.IntegerField(null=True, blank=True, validators=[MinValueValidator(1)])
-    interval_between_fills_unit = models.ForeignKey(TimeUnit, null=True, blank=True)
-
-    # Audit trail - Simple History
-    history = HistoricalRecords()
-    # changed_by = models.ForeignKey('auth.User')
-
-    @property
-    def _history_user(self):
-        return self.changed_by
-
-    @_history_user.setter
-    def _history_user(self, value):
-        self.changed_by = value
-
-    def __unicode__(self):  # Python 3: def __str__(self):
-        return self.experiment.title + " - " + str(self.lime_survey_id)
-
-    class Meta:
-        unique_together = ('lime_survey_id', 'group',)
-
-
 class QuestionnaireResponse(models.Model):
     subject_of_group = models.ForeignKey(SubjectOfGroup, null=False)
-    questionnaire_configuration = models.ForeignKey(QuestionnaireConfiguration, null=False, on_delete=models.PROTECT)
+    component_configuration = models.ForeignKey(ComponentConfiguration, null=False, on_delete=models.PROTECT)
     token_id = models.IntegerField(null=False)
     date = models.DateField(default=datetime.date.today, null=False,
                             validators=[validate_date_questionnaire_response])

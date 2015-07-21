@@ -8,10 +8,10 @@ from django.core.files.uploadedfile import SimpleUploadedFile
 from django.test.client import RequestFactory
 
 from patient.models import ClassificationOfDiseases, MedicalRecordData, Diagnosis, ComplementaryExam, ExamFile, \
-    Gender, Schooling, Patient
+    Gender, Schooling, Patient, AlcoholFrequency, AlcoholPeriod, AmountCigarettes
 from patient.views import medical_record_view, medical_record_update, diagnosis_create, \
     medical_record_create_diagnosis_create, exam_create, exam_view, \
-    patient_update, patient, restore_patient, reverse
+    patient_update, patient_view, restore_patient, reverse
 from custom_user.models import User
 from patient.validation import CPF
 
@@ -21,7 +21,7 @@ USER_USERNAME = 'myadmin'
 USER_PWD = 'mypassword'
 USER_NEW = 'user_new'
 
-# Constantes para testes paciente
+# Constantes para testes participante
 ACTION = 'action'
 CPF_ID = 'cpf'
 SEARCH_TEXT = 'search_text'
@@ -35,7 +35,7 @@ PATIENT_EDIT = 'patient_edit'
 class UtilTests():
 
     def create_patient_mock(self, name='Pacient Test', user=None):
-        """ Cria um paciente para ser utilizado durante os testes """
+        """ Cria um participante para ser utilizado durante os testes """
         gender = Gender.objects.create(name='Masculino')
         gender.save()
 
@@ -211,12 +211,16 @@ class PatientFormValidation(TestCase):
 
     def test_patient_invalid_cpf(self):
         """
-        Testa inclusao de paciente com cpf invalido
+        Testa inclusao de participante com cpf invalido
         """
 
         # CPF invalido
         cpf = '100.913.651-81'
         self.data['cpf'] = cpf
+
+        # "This data is required for the ManagementForm. This form is used by the formset to manage the collection of
+        # forms contained in the formset."
+        self.fill_management_form()
 
         response = self.client.post(reverse(PATIENT_NEW), self.data)
         self.assertEqual(response.status_code, 200)
@@ -224,7 +228,7 @@ class PatientFormValidation(TestCase):
 
     def test_patient_empty_cpf(self):
         """
-        Testa inclusao de paciente com cpf invalido
+        Testa inclusao de participante com cpf invalido
         """
 
         # CPF vazio
@@ -232,17 +236,25 @@ class PatientFormValidation(TestCase):
         self.data['name'] = name
         self.data[CPF_ID] = ''
 
+        # "This data is required for the ManagementForm. This form is used by the formset to manage the collection of
+        # forms contained in the formset."
+        self.fill_management_form()
+
         response = self.client.post(reverse(PATIENT_NEW), self.data)
         self.assertEqual(response.status_code, 302)
         self.assertEqual(Patient.objects.filter(name=name).count(), 1)
 
     def test_patient_future_date_birth(self):
         """
-        Testa inclusao de paciente com data de nascimento futura
+        Testa inclusao de participante com data de nascimento futura
         """
         name = self._testMethodName
         self.data['name'] = name
         self.data['date_birth'] = '15/05/2201'
+
+        # "This data is required for the ManagementForm. This form is used by the formset to manage the collection of
+        # forms contained in the formset."
+        self.fill_management_form()
 
         self.client.post(reverse(PATIENT_NEW), self.data)
 
@@ -259,7 +271,7 @@ class PatientFormValidation(TestCase):
 
     def test_patient_date_birth_now(self):
         """
-        Testa inclusao de paciente com data de nascimento futura
+        Testa inclusao de participante com data de nascimento futura
         """
 
         date_birth = self.get_current_date()
@@ -267,16 +279,29 @@ class PatientFormValidation(TestCase):
         self.data['date_birth'] = date_birth
         self.data['name'] = name
 
+        # "This data is required for the ManagementForm. This form is used by the formset to manage the collection of
+        # forms contained in the formset."
+        self.fill_management_form()
+
         self.client.post(reverse(PATIENT_NEW), self.data)
 
         self.assertEqual(Patient.objects.filter(name=name).count(), 1)
 
+    def fill_management_form(self):
+        self.data['telephone_set-TOTAL_FORMS'] = '3'
+        self.data['telephone_set-INITIAL_FORMS'] = '0'
+        self.data['telephone_set-MAX_NUM_FORMS'] = ''
+
     def test_patient_create(self):
         """
-        Testa inclusao de paciente com campos obrigatorios
+        Testa inclusao de participante com campos obrigatorios
         """
         name = self._testMethodName
         self.data['name'] = name
+
+        # "This data is required for the ManagementForm. This form is used by the formset to manage the collection of
+        # forms contained in the formset."
+        self.fill_management_form()
 
         self.client.post(reverse(PATIENT_NEW), self.data, follow=True)
         self.assertEqual(Patient.objects.filter(name=name).count(), 1)
@@ -291,13 +316,14 @@ class PatientFormValidation(TestCase):
         school = Schooling.objects.create(name='Fundamental Completo')
         school.save()
 
+        self.data['citizenship'] = ''
+        self.data['natural_of'] = ''
         self.data['house_maid'] = '0'
         self.data['religion'] = '',
         self.data['amount_cigarettes'] = ''
         self.data['dvd'] = '1'
         self.data['wash_machine'] = '1'
         self.data['refrigerator'] = '1'
-        self.data['alcohol_frequency'] = ''
         self.data['schooling'] = school.pk
         self.data['freezer'] = '0'
         self.data['tv'] = '1'
@@ -307,30 +333,84 @@ class PatientFormValidation(TestCase):
 
     def test_patient_social_demographic_data(self):
         """
-        Testa a inclusao de paciente com campos obrigatorios e dados sociais preenchidos
+        Test the inclusion of a patient with required fields and update of social demographic data
         """
         name = self._testMethodName
         self.data['name'] = name
-        self.fill_social_demographic_data()
+
+        # "This data is required for the ManagementForm. This form is used by the formset to manage the collection of
+        # forms contained in the formset."
+        self.fill_management_form()
 
         response = self.client.post(reverse(PATIENT_NEW), self.data, follow=True)
         self.assertEqual(Patient.objects.filter(name=name).count(), 1)
         self.assertNotContains(response, u'Classe Social não calculada')
 
+        # Prepare to test social demographic data tab
         patient_to_update = Patient.objects.filter(name=name).first()
+        self.fill_social_demographic_data()
+        self.data['currentTab'] = 1
 
+        # Success case
         response = self.client.post(
             reverse('patient_edit', args=(patient_to_update.pk,)), self.data, follow=True)
         self.assertEqual(Patient.objects.filter(name=name).count(), 1)
+        self.assertContains(response, u'Dados sociodemográficos gravados com sucesso.')
         self.assertNotContains(response, u'Classe Social não calculada')
 
+        # Error case
         self.data.pop('wash_machine')
-        name = 'test_patient_social_demographic_data_1'
-        self.data['name'] = name
-        self.data[CPF_ID] = ''
-        response = self.client.post(reverse(PATIENT_NEW), self.data, follow=True)
+        # name = 'test_patient_social_demographic_data_1'
+        # self.data['name'] = name
+        # self.data[CPF_ID] = ''
+        # response = self.client.post(reverse(PATIENT_NEW), self.data, follow=True)
+        response = self.client.post(
+            reverse('patient_edit', args=(patient_to_update.pk,)), self.data, follow=True)
         self.assertEqual(Patient.objects.filter(name=name).count(), 1)
         self.assertContains(response, u'Classe Social não calculada')
+
+    def fill_social_history_data(self):
+        amount_cigarettes = AmountCigarettes.objects.create(name='Menos de 1 maço')
+        amount_cigarettes.save()
+
+        alcohol_frequency = AlcoholFrequency.objects.create(name='Esporadicamente')
+        alcohol_frequency.save()
+
+        alcohol_period = AlcoholPeriod.objects.create(name='Menos de 1 ano')
+        alcohol_period.save()
+
+        self.data['smoker'] = True
+        self.data['amount_cigarettes'] = amount_cigarettes.pk
+        self.data['ex_smoker'] = False
+        self.data['alcoholic'] = True,
+        self.data['alcohol_frequency'] = alcohol_frequency.pk
+        self.data['alcohol_period'] = alcohol_period.pk
+        self.data['drugs'] = 'ja_fez'
+
+    def test_patient_social_history_data(self):
+        """
+        Test the inclusion of a patient with required fields and update of social history data
+        """
+        name = self._testMethodName
+        self.data['name'] = name
+
+        # "This data is required for the ManagementForm. This form is used by the formset to manage the collection of
+        # forms contained in the formset."
+        self.fill_management_form()
+
+        response = self.client.post(reverse(PATIENT_NEW), self.data, follow=True)
+        self.assertEqual(Patient.objects.filter(name=name).count(), 1)
+
+        # Prepare to test social history data tab
+        patient_to_update = Patient.objects.filter(name=name).first()
+        self.fill_social_history_data()
+        self.data['currentTab'] = 2
+
+        # Success case
+        response = self.client.post(
+            reverse('patient_edit', args=(patient_to_update.pk,)), self.data, follow=True)
+        self.assertEqual(Patient.objects.filter(name=name).count(), 1)
+        self.assertContains(response, u'História social gravada com sucesso.')
 
     def test_patient_valid_email(self):
         """
@@ -338,6 +418,10 @@ class PatientFormValidation(TestCase):
         """
 
         self.data['email'] = 'mail@invalid.'
+
+        # "This data is required for the ManagementForm. This form is used by the formset to manage the collection of
+        # forms contained in the formset."
+        self.fill_management_form()
 
         response = self.client.post(reverse(PATIENT_NEW), self.data)
 
@@ -350,13 +434,17 @@ class PatientFormValidation(TestCase):
 
         self.data['name'] = ''
 
+        # "This data is required for the ManagementForm. This form is used by the formset to manage the collection of
+        # forms contained in the formset."
+        self.fill_management_form()
+
         response = self.client.post(reverse(PATIENT_NEW), self.data)
 
         self.assertContains(response, 'Nome deve ser preenchido')
 
     def test_patient_view_and_search(self):
         """
-        Teste de visualizacao de paciente apos cadastro na base de dados
+        Teste de visualizacao de participante apos cadastro na base de dados
         """
 
         patient_mock = self.util.create_patient_mock(user=self.user)
@@ -366,7 +454,7 @@ class PatientFormValidation(TestCase):
         request.user = self.user
 
         # Test view() as if it were deployed at /quiz/patient/%id
-        response = patient(request, patient_id=patient_mock.pk)
+        response = patient_view(request, patient_id=patient_mock.pk)
         self.assertEqual(response.status_code, 200)
 
         self.data[SEARCH_TEXT] = 'Pacient'
@@ -388,24 +476,28 @@ class PatientFormValidation(TestCase):
 
     def test_patient_list(self):
         """
-        Teste a visualizacao de paciente
+        Teste a visualizacao de participante
         """
         patient_mock = self.util.create_patient_mock(user=self.user)
 
         request = self.factory.get(reverse(PATIENT_VIEW, args=[patient_mock.pk]))
         request.user = self.user
 
-        response = patient(request, patient_mock.pk)
+        response = patient_view(request, patient_mock.pk)
         self.assertEqual(response.status_code, 200)
 
     def test_patient_update_and_remove(self):
-        """Teste de paciente existente na base de dados """
+        """Teste de participante existente na base de dados """
 
         patient_mock = self.util.create_patient_mock(name='Pacient Test Update', user=self.user)
 
         # Create an instance of a GET request.
         request = self.factory.get(reverse(PATIENT_VIEW, args=[patient_mock.pk]))
         request.user = self.user
+
+        # "This data is required for the ManagementForm. This form is used by the formset to manage the collection of
+        # forms contained in the formset."
+        self.fill_management_form()
 
         response = patient_update(request, patient_id=patient_mock.pk)
         self.assertEqual(response.status_code, 200)
@@ -464,9 +556,9 @@ class PatientFormValidation(TestCase):
         self.assertEqual(patient_mock.removed, False)
 
     def test_update_patient_not_exist(self):
-        """Teste de paciente nao existente na base de dados """
+        """Teste de participante nao existente na base de dados """
 
-        # ID de paciente nao existente na base
+        # ID de participante nao existente na base
         id_patient = 99999
 
         # Create an instance of a GET request.
@@ -480,9 +572,9 @@ class PatientFormValidation(TestCase):
             pass
 
     def test_patient_restore(self):
-        """Testa a recuperaracao de paciente removido """
+        """Testa a recuperaracao de participante removido """
 
-        # Cria um paciente ja removido no BD
+        # Cria um participante ja removido no BD
         patient_mock = self.util.create_patient_mock(user=self.user)
         patient_mock.removed = True
         patient_mock.save()
@@ -527,15 +619,22 @@ class PatientFormValidation(TestCase):
         self.data[SEARCH_TEXT] = patient_mock.name
         response = self.client.post(reverse('patients_verify_homonym'), self.data)
         self.assertEqual(response.status_code, 200)
-        self.assertEqual(response.context['patient_homonym_excluded'].count(), 0)
         self.assertEqual(response.context['patient_homonym'].count(), 1)
+
+        response = self.client.post(reverse('patients_verify_homonym_excluded'), self.data)
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(response.context['patient_homonym_excluded'].count(), 0)
 
         self.data[SEARCH_TEXT] = patient_mock.cpf
         response = self.client.post(reverse('patients_verify_homonym'), self.data)
         self.assertEqual(response.status_code, 200)
-        self.assertEqual(response.context['patient_homonym_excluded'].count(), 0)
         self.assertEqual(response.context['patient_homonym'].count(), 1)
 
+        response = self.client.post(reverse('patients_verify_homonym_excluded'), self.data)
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(response.context['patient_homonym_excluded'].count(), 0)
+
+        # A search for an empty name returns no list, instead of an empty list.
         self.data[SEARCH_TEXT] = ''
         response = self.client.post(reverse('patients_verify_homonym'), self.data)
         self.assertEqual(response.status_code, 200)
@@ -554,14 +653,21 @@ class PatientFormValidation(TestCase):
 
         response = self.client.post(reverse('patients_verify_homonym'), self.data)
         self.assertEqual(response.status_code, 200)
-        self.assertEqual(response.context['patient_homonym_excluded'].count(), 1)
         self.assertEqual(response.context['patient_homonym'].count(), 0)
 
-        self.data[SEARCH_TEXT] = patient_mock.cpf
-        response = self.client.post(reverse('patients_verify_homonym'), self.data)
+        response = self.client.post(reverse('patients_verify_homonym_excluded'), self.data)
         self.assertEqual(response.status_code, 200)
         self.assertEqual(response.context['patient_homonym_excluded'].count(), 1)
+
+        self.data[SEARCH_TEXT] = patient_mock.cpf
+
+        response = self.client.post(reverse('patients_verify_homonym'), self.data)
+        self.assertEqual(response.status_code, 200)
         self.assertEqual(response.context['patient_homonym'].count(), 0)
+
+        response = self.client.post(reverse('patients_verify_homonym_excluded'), self.data)
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(response.context['patient_homonym_excluded'].count(), 1)
 
 
 class MedicalRecordFormValidation(TestCase):

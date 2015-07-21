@@ -1,6 +1,6 @@
 {% extends "quiz/template.html" %}
 
-{% load i18n %}
+{% load i18n admin_static %}
 
 {% block activeUser %}class="active"{% endblock %}
 
@@ -19,6 +19,8 @@
             pointer-events: none;
         }
     </style>
+
+    <script src="{% static 'quiz/js/password.js' %}"></script>
 
     <script type="text/javascript">
         function Validate(){
@@ -40,33 +42,11 @@
            return false;
         }
 
-        var beginCheckPassword1 = false;
-        function checkPass(){
-            var password1 = $('#id_password').val();
-            var password2 = $('#id_password2').val();
-            var confirmation = $('#confirmation');
-            if(password1){
-                if(password1 == password2){
-                    confirmation.attr('class', 'has-success');
-                    $('#div_password').removeClass('has-error');
-                    $("#message").text("Senhas combinam");
-                    return false;
-                }else{
-                    confirmation.attr('class', 'has-error');
-                    $("#message").text("Senhas não combinam");
-                    return true;
-                }
-            }
-        }
         $(function(){
             $("[data-toggle=tooltip]").tooltip();
             $( "form" ).submit(function( event ) {
                 if(checkPass())
                     event.preventDefault();
-                if(password_strong() < 60 && $('#id_password').val()){
-                    showErrorMessageTemporary("Senha incompatível com o padrão definido.");
-                    event.preventDefault();
-                }
                 if(!$('#email').val()){
                     showErrorMessage("Email deve ser preenchido!");
                     $('#mailDivId').addClass('has-error');
@@ -74,59 +54,6 @@
                 }
             })
         });
-        function password_strong(){
-            var password = document.getElementById("id_password").value;
-            var force = 0;
-            if(password){
-                if((password.length >= 4) && (password.length <= 7)){
-                    force += 10;
-                }else if(password.length>7){
-                    force += 25;
-                }
-                if(password.match(/[a-z]+/)){
-                    force += 10;
-                }
-                if(password.match(/[A-Z]+/)){
-                    force += 20;
-                }
-                if(password.match(/d+/)){
-                    force += 20;
-                }
-                if(password.match(/[!@#$%ˆ*()]+/)){
-                    force += 25;
-                }
-                show_res(force);
-            }
-            return force;
-        }
-        function show_res(force){
-            var show = $("#show");
-            if(force < 30){
-                show.text("Fraca");
-                show.removeClass(function() {
-                    return $(this).attr("class");
-                });
-                show.addClass("text-danger");
-            }else if((force >= 30) && (force < 60)){
-                show.text("Justa");
-                show.removeClass(function() {
-                    return $(this).attr("class");
-                });
-                show.addClass("text-warning");
-            }else if((force >= 60) && (force < 85)){
-                show.text("Forte");
-                show.removeClass(function() {
-                    return $(this).attr("class");
-                });
-                show.addClass("text-success");
-            }else{
-                show.text("Excelente");
-                show.removeClass(function() {
-                    return $(this).attr("class");
-                });
-                show.addClass("text-primary");
-            }
-        }
     </script>
 {% endblock %}
 
@@ -167,6 +94,7 @@
     <div class="tab-pane fade in active" id="menuUserTab">
         <div class="col-md-10">
             <div class="container span6 offset3 well ">
+                <h4>Informações básicas</h4>
                 <div class="row">
                     <div class="col-xs-6 col-sm-6">
                         <div class="form-group">
@@ -222,9 +150,10 @@
                     </div>
                 </div>
                 <div class="row">
-                    <div class="col-xs-6 col-sm-6" data-toggle="tooltip" data-placement="left" title="Senha deve conter pelo menos 4 caracteres e ao menos uma letra maiúscula e minúscula, dígito e caractere especial">
-                        <div class="form-group {% if form.errors.password %}has-error{% endif %}" id="div_password">
-                            <label for="id_password" class="control-label">Senha<b style="color: red;">*</b></label>
+                    <div class="col-xs-6 col-sm-6" data-toggle="tooltip" data-placement="left"
+                            title="Senha deve conter pelo menos 8 caracteres, incluindo ao menos uma letra maiúscula, dígito ou caractere especial." >
+                        <div class="form-group {% if form.errors.password %}has-error{% endif %}" id="id_new_password1_form_group">
+                            <label for="id_new_password1" class="control-label">Senha<b style="color: red;">*</b></label>
                             <div class="input-group input-group-sm right-inner-addon">
                                 <span class="input-group-addon"> <span class="glyphicon glyphicon-user"></span></span>
                                 <div id="show"></div>
@@ -238,11 +167,12 @@
                         </div>
                     </div>
                     <div class="col-xs-6 col-sm-6">
-                        <div class="form-group {% if form.errors.password %}has-error{% endif %}" id="confirmation">
+                        <div class="form-group {% if form.errors.password %}has-error{% endif %}" id="id_new_password2_form_group">
                             <label for="name" class="control-label">Confirmar senha<b style="color: red;">*</b></label>
                             <div class="input-group input-group-sm has-feedback">
                                 <span class="input-group-addon"> <span class="glyphicon glyphicon-user"></span></span>
-                                <input class="form-control" id="id_password2" maxlength="128" name="password2" placeholder="Entrar senha" type="password" onkeyup="checkPass(); beginCheckPassword1=true;">
+                                <input class="form-control" id="id_new_password2" maxlength="128" name="password2"
+                                       placeholder="Entrar senha" type="password" onkeyup="checkPass(); beginCheckPassword1=true;">
                             </div>
                             <div class="help-block with-errors">
                                 {% for error in form.errors.password %}
@@ -257,7 +187,8 @@
             </div>
             <div class="container span6 offset3 well ">
                 <div class="row">
-                    <div class="col-xs-6 col-sm-12">
+                    <div class="col-xs-12 col-sm-12">
+                        <h4>Perfis</h4>
                         <div class="form-group">
                             <label class="control-label">Em quais desses perfis o usuário se indentifica? <b style="color: red;">*</b></label>
                             <div class="input-group  input-group-sm">

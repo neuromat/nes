@@ -58,9 +58,7 @@ def user_update(request, user_id, template_name="custom_user/register_users.html
     user = get_object_or_404(User, pk=user_id)
 
     if user and user.is_active:
-
         form = UserFormUpdate(request.POST or None, instance=user)
-        # form = UserFormUpdate(request.POST or None, instance=User.objects.get(id=user_id))
         user_groups = User.objects.get(id=user_id).groups.all()
         group_permissions = []
         groups = Group.objects.all()

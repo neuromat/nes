@@ -2,10 +2,12 @@ from django.db import models
 from django.db.models import signals
 from django.contrib.auth.models import User
 
-# Create your models here.
-
 
 class UserProfile(models.Model):
+    # This is almost the same as
+    # user = models.OneToOneField(User)
+    # See: http://stackoverflow.com/questions/5870537/whats-the-difference-between-django-onetoonefield-and-foreignkey
+    # As we never use the "reverse" side of the relation, this does not make any difference.
     user = models.ForeignKey(User, unique=True)
     force_password_change = models.BooleanField(default=True)
 

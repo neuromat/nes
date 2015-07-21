@@ -1,0 +1,108 @@
+{% extends "patient/register.html" %}
+
+{% load i18n admin_static %}
+
+{% block header_continuation %}
+
+    <script src="{% static 'quiz/js/patient_social_history.js' %}"></script>
+
+{% endblock %}
+
+{% block sub_content %}
+
+    <div class="tab-pane {% if currentTab == '2' %}active{% endif %}" id="tab3">
+        <div class="row">
+            <div class="col-md-12">
+                <div class="container span6 offset3 well ">
+                    <div class="row">
+                        <div class="col-xs-6 col-sm-4">
+                            <div class="form-group">
+                                <label>Tabagismo</label>
+
+                                <div class="input-group  input-group-sm">
+                                    {% for radio in social_history_form.smoker %}
+                                        <div class="radio-inline">
+                                            {{ radio }}
+                                        </div>
+                                    {% endfor %}
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-xs-6 col-sm-4">
+                            <div class="form-group">
+                                <label>Cigarros/Dia</label>
+
+                                <div class="input-group  input-group-sm">
+                                    {{ social_history_form.amount_cigarettes }}
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-xs-6 col-sm-4">
+                            <div class="form-group">
+                                <label>Ex-tabagista</label>
+
+                                <div class="input-group  input-group-sm">
+                                    {% for radio in social_history_form.ex_smoker %}
+                                        <div class="radio-inline">
+                                            {{ radio }}
+                                        </div>
+                                    {% endfor %}
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-xs-6 col-sm-4">
+                            <div class="form-group">
+                                <label>Etilismo</label>
+
+                                <div class="input-group  input-group-sm">
+                                    {% for radio in social_history_form.alcoholic %}
+                                        <div class="radio-inline">
+                                            {{ radio }}
+                                        </div>
+                                    {% endfor %}
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-xs-6 col-sm-4">
+                            <div class="form-group">
+                                <label>Frequência</label>
+
+                                <div class="input-group  input-group-sm">
+                                    {{ social_history_form.alcohol_frequency }}
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-xs-6 col-sm-4">
+                            <div class="form-group">
+                                <label>Tempo</label>
+
+                                <div class="input-group  input-group-sm">
+                                    {{ social_history_form.alcohol_period}}
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-xs-12 col-sm-12">
+                            <div class="form-group">
+                                <label>Uso de drogas ilícitas</label>
+
+                                <div class="input-group  input-group-sm">
+                                    {% for radio in social_history_form.drugs %}
+                                        <div class="radio-inline">
+                                            {{ radio }}
+                                        </div>
+                                    {% endfor %}
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-1"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+{% endblock %}

@@ -1,0 +1,26 @@
+{% extends "experiment/component_template.html" %}
+
+{% block breadcrumb %}
+
+    {% if creating %}
+        <li class="active">Nova tarefa para o experimentador</li>
+    {% endif %}
+
+{% endblock %}
+
+{% block component_label %}a tarefa para o experimentador{% endblock %}
+
+{% block component_add_new %}
+    <li role="presentation">
+        <a role="menuitem" tabindex="-1" onclick="redirect_with_number_of_uses('/experiment/component/{{ path_of_the_components }}/add_new/task_experiment{% if position %}?position={{ position }}{% endif %}')">
+            << Nova tarefa para o experimentador >>
+        </a>
+    </li>
+{% endblock %}
+
+{% block component_button_label %}
+    Nova tafefa para o experimentador
+{% endblock %}
+
+{% block extra_fields %}
+{% endblock %}

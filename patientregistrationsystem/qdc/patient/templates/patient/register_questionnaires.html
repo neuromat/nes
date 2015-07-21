@@ -1,0 +1,164 @@
+{% extends "patient/register.html" %}
+
+{% load i18n admin_static %}
+
+{% block header_continuation %}
+
+    <script src="{% static 'quiz/js/patient_questinonaires.js' %}"></script>
+
+{% endblock %}
+
+{% block sub_content %}
+
+    <div class="tab-pane {% if currentTab == '4' %}active{% endif %}" id="tab5">
+
+        <div class="row">
+            <div class="col-md-12">
+                <div class="container span6 offset3 well ">
+
+                    <div class="row">
+                        <div class="col-xs-12 col-sm-12">
+                            <h4>Avaliações de entrada</h4>
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <table class="table table-striped">
+                            <thead>
+                            <tr>
+                                <th>Questionário</th>
+                                <th>Preenchimentos</th>
+                            </tr>
+                            </thead>
+                            <tbody>
+                            {% for patient_questionnaire in patient_questionnaires_data_list %}
+                                <tr {% if not patient_questionnaire.is_initial_evaluation %} data-toggle="tooltip" data-placement="left" title="Não é mais avaliação de entrada" {% endif %}>
+                                    <td>
+                                        {{ patient_questionnaire.questionnaire_title }}
+
+                                        {% if patient_questionnaire.questionnaire_responses|length == 0 %}
+                                            <br/><span class="label label-warning">Falta preencher</span>
+                                        {% endif %}
+                                    </td>
+                                    <td>
+                                        <table class="col-md-12">
+
+                                            {% for response in patient_questionnaire.questionnaire_responses %}
+                                                <tr>
+                                                    <td class="col-md-8">
+                                                        {% if limesurvey_available and response.completed != None %}
+                                                            {% if response.completed %}
+                                                                <a href="/patient/questionnaire_response/{{ response.questionnaire_response.pk }}?origin=subject&status={% if editing %}edit{% else %}view{% endif %}">
+                                                                    {{ response.questionnaire_response.date }}
+                                                                </a>
+                                                            {% else %}
+                                                                {% if editing %}
+                                                                    <a href="/patient/questionnaire_response/edit/{{ response.questionnaire_response.pk }}?origin=subject&status={% if editing %}edit{% else %}view{% endif %}">
+                                                                        {{ response.questionnaire_response.date }}
+                                                                    </a>
+                                                                {% else %}
+                                                                    {{ response.questionnaire_response.date }}
+                                                                {% endif %}
+                                                            {% endif %}
+                                                        {% else %}
+                                                            {{ response.questionnaire_response.date }}
+                                                        {% endif %}
+                                                    </td>
+                                                    <td class="col-md-4">
+                                                        {% if limesurvey_available and response.completed != None %}
+                                                            {% if response.completed %}
+                                                                <span class="label label-success">Completo</span>
+                                                            {% else %}
+                                                                <span class="label label-warning">Incompleto</span>
+                                                            {% endif %}
+                                                        {% else %}
+                                                            <span class="label label-default">Sem status</span>
+                                                        {% endif %}
+                                                    </td>
+                                                </tr>
+                                            {% endfor %}
+
+                                            {% if editing and patient_questionnaire.is_initial_evaluation and perms.experiment.add_questionnaireresponse %}
+                                                <tr>
+                                                    <td colspan="2" class="col-md-12">
+                                                        <a href="/patient/{{ patient_id }}/questionnaire/{{ patient_questionnaire.survey_id }}/add_response/?origin=subject"
+                                                            class="btn btn-primary {% if not limesurvey_available %} disabled {% endif %}">Novo preenchimento</a>
+                                                    </td>
+                                                </tr>
+                                            {% endif %}
+
+                                        </table>
+
+
+                                    </td>
+                                </tr>
+                            {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+
+                </div>
+            </div>
+        </div>
+
+        <div class="row">
+            <div class="col-md-12">
+                <div class="container span6 offset3 well ">
+
+                    <div class="row">
+                        <div class="col-xs-12 col-sm-12">
+                            <h4>Questionários de experimentos</h4>
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <table class="table table-striped">
+                            <thead>
+                            <tr>
+                                <th>Estudo</th>
+                                <th>Experimento</th>
+                                <th>Grupo</th>
+                                <th>Questionário</th>
+                                <th>Data</th>
+                                <th></th>
+                            </tr>
+                            </thead>
+                            <tbody>
+                            {% for questionnaire in questionnaires_data %}
+                                <tr>
+                                    <td>{{ questionnaire.research_project_title }}</td>
+                                    <td>{{ questionnaire.experiment_title }}</td>
+                                    <td>{{ questionnaire.group_title }}</td>
+                                    <td>{{ questionnaire.questionnaire_title }}</td>
+                                    <td>
+                                        {% if limesurvey_available and questionnaire.completed != None and questionnaire.completed %}
+                                            <a href="/experiment/questionnaire_response/{{ questionnaire.questionnaire_response.pk }}/?origin=subject&status={% if editing %}edit{% else %}view{% endif %}">
+                                                {{ questionnaire.questionnaire_response.date }}
+                                            </a>
+                                        {% else %}
+                                            {{ questionnaire.questionnaire_response.date }}
+                                        {% endif %}
+                                    </td>
+                                    <td>
+                                        {% if limesurvey_available and questionnaire.completed != None %}
+                                            {% if questionnaire.completed %}
+                                                <span class="label label-success">Completo</span>
+                                            {% else %}
+                                                <span class="label label-warning">Incompleto</span>
+                                            {% endif %}
+                                        {% else %}
+                                            <span class="label label-default">Sem status</span>
+                                        {% endif %}
+                                    </td>
+                                </tr>
+                            {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+
+{% endblock %}

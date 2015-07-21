@@ -1,5 +1,5 @@
 {% extends "quiz/template.html" %}
-{% block activeAdvancedExperiment %}class="active"{% endblock %}
+{% block activeAdvancedResearchProject %}class="active"{% endblock %}
 
 {% block header %}
 {% endblock %}
@@ -40,22 +40,14 @@
 
 
     <div class="tab-pane fade in active" id="experimentBreadCrumb">
-
-        <div class="col-md-1">
-        </div>
-
         <div class="col-md-10">
-
             <ol class="breadcrumb">
-                <li>Home</li>
-                <li><a href="/experiment/list">Experimentos</a></li>
-                <li><a href="/experiment/edit/{{ experiment.id }}">{{ experiment.title }}</a></li>
-                <li class="active">Componentes de Protocolo Experimental</li>
+                <li><a href="/home">Home</a></li>
+                <li><a href="/experiment/research_project/list">Estudos</a></li>
+                <li><a href="/experiment/research_project/{{ experiment.research_project.id }}">{{ experiment.research_project.title }}</a></li>
+                <li><a href="/experiment/{{ experiment.id }}">{{ experiment.title }}</a></li>
+                <li class="active">Passos de Protocolo Experimental</li>
             </ol>
-
-        </div>
-
-        <div class="col-md-1">
         </div>
     </div>
 
@@ -64,7 +56,7 @@
             <div class="container span6 offset3 well ">
                 <div class="row">
                     <div class="col-xs-6 col-sm-6">
-                        <label class="control-label">Lista de Componentes:</label>
+                        <label class="control-label">Lista de Passos:</label>
                     </div>
                 </div>
                 <br>
@@ -72,44 +64,47 @@
                     <table class="table table-striped">
                         <thead>
                             <tr>
+                                <th>Tipo</th>
                                 <th>Identificação</th>
                                 <th>Descrição</th>
-                                <th>Tipo</th>
                             </tr>
                         </thead>
                         <tbody>
                             {% for component in component_list %}
                             <tr>
-                                <td><a data-toggle="tooltip" data-placement="left" title="Editar" href="/experiment/component/{{ component.id }}">{{ component.identification }}</a></td>
-                                <td>{{ component.description }}</td>
                                 <td>
-                                    <span class="{{ component.icon_class }}"/>
-                                    {{ component.component_type }}
+                                    <span class="{{ component.icon_class }}"></span>
+                                    {{ component.get_component_type_display }}
                                 </td>
+                                {% if component.component_type == "block" %}
+                                    <td><a data-toggle="tooltip" data-placement="left" title="Editar" href="/experiment/component/{{ component.id }}">{{ component.identification }}</a></td>
+                                {% else %}
+                                    <td><a data-toggle="tooltip" data-placement="left" title="Editar" href="/experiment/component/edit/{{ component.id }}">{{ component.identification }}</a></td>
+                                {% endif %}
+                                <td>{{ component.description }}</td>
                             </tr>
                             {% endfor %}
                         </tbody>
                     </table>
                 </div>
-                <div class="dropdown">
-                    <button class="btn btn-primary dropdown-toggle" type="button" id="dropdownMenu1" data-toggle="dropdown" aria-expanded="true">
-                        Inserir novo componente
-                        <span class="caret"></span>
-                    </button>
-                    <ul class="dropdown-menu" role="menu" aria-labelledby="dropdownMenu1">
-                        <li role="presentation"><a role="menuitem" tabindex="-1" class="{{ icon_class.task }}" href="/experiment/{{ experiment.id }}/new_component/task"> Tarefa</a></li>
-                        <li role="presentation"><a role="menuitem" tabindex="-1" class="{{ icon_class.instruction }}" href="/experiment/{{ experiment.id }}/new_component/instruction"> Instruction</a></li>
-                        <li role="presentation"><a role="menuitem" tabindex="-1" class="{{ icon_class.stimulus }}" href="/experiment/{{ experiment.id }}/new_component/stimulus"> Estímulo</a></li>
-                        <li role="presentation"><a role="menuitem" tabindex="-1" class="{{ icon_class.pause }}" href="/experiment/{{ experiment.id }}/new_component/pause"> Pausa</a></li>
-                        <li role="presentation"><a role="menuitem" tabindex="-1" class="{{ icon_class.questionnaire }}" href="/experiment/{{ experiment.id }}/new_component/questionnaire"> Questionário</a></li>
-                        <li role="presentation"><a role="menuitem" tabindex="-1" class="{{ icon_class.sequence }}" href="/experiment/{{ experiment.id }}/new_component/sequence"> Sequência</a></li>
-                    </ul>
-                </div>
+                {% if can_change %}
+                    <div class="dropdown">
+                        <button class="btn btn-primary dropdown-toggle" type="button" id="dropdownMenu1" data-toggle="dropdown" aria-expanded="true">
+                            Inserir novo passo
+                            <span class="caret"></span>
+                        </button>
+                        <ul class="dropdown-menu" role="menu" aria-labelledby="dropdownMenu1">
+                            {% for type, type_name, icon in component_type_choices %}
+                                <li role="presentation"><a role="menuitem" tabindex="-1" class="{{ icon }}" href="/experiment/{{ experiment.id }}/new_component/{{ type }}"> {{ type_name }}</a></li>
+                            {% endfor %}
+                        </ul>
+                    </div>
+                {% endif %}
             </div>
 
             <div class="btn-toolbar">
                 <div class="btn-group pull-right">
-                    <a href="/experiment/edit/{{ experiment.id }}" class="btn" style="background-color: #f5f5f5">Voltar</a>
+                    <a href="/experiment/{{ experiment.id }}" class="btn" style="background-color: #f5f5f5">Voltar</a>
                 </div>
             </div>
         </div>

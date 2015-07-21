@@ -2,12 +2,12 @@
 {% if patients.count > 0 %}
 
     {% for patient in patients %}
-        <li><a href="/experiment/group/{{ group_id }}/subjects/{{ patient.id }}">
+        <li><a href="/experiment/group/{{ group_id }}/add_subject/{{ patient.id }}">
             {% if patient.cpf %} {{ patient.cpf }} - {% endif %} {{ patient.name }}</a></li>
     {% endfor %}
 
 {% else %}
 
-    <li>{% trans "Nenhum paciente encontrado!" %}</li>
+    <li>{% trans "Nenhum participante encontrado!" %}</li>
 
 {% endif %}

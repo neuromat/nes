@@ -1,24 +1,11 @@
 {% extends "quiz/template.html" %}
+
+{% load i18n admin_static %}
+
 {% block activePatient %}class="active"{% endblock %}
 
 {% block header %}
-
-    <script type="text/javascript">
-
-        $(function(){
-            $("[data-toggle=tooltip]").tooltip();
-        });
-        function show_modal_remove (patient_id, diagnosis_id){
-            var  modal_remove = document.getElementById('removeDiagnosis');
-            modal_remove.setAttribute( "href", '/patient/diagnosis/delete/' + patient_id + '/' + diagnosis_id);
-            $('#modalRemove').modal('show');
-        }
-        function show_modal_detail(diagnosis_id){
-            $("#diagnosis_date-" + diagnosis_id).mask("99/99/9999");
-            $('#modalDetail' + diagnosis_id).modal('show');
-        }
-    </script>
-
+    <script src="{% static 'quiz/js/medical_record.js' %}"></script>
 {% endblock %}
 
 {% block form %}
@@ -40,29 +27,30 @@
     <div class="col-md-10">
 
     <ol class="breadcrumb">
-        <li>Pacientes</li>
-        {% if status_mode == "edit" or creating %}
+        <li><a href="/home">Home</a></li>
+        <li><a href="/patient/find/">Participantes</a></li>
+        {% if status == "edit" or creating %}
             <li><a href="/patient/edit/{{ patient_id }}/?currentTab=3">{{ name_patient }}</a></li>
         {% else %}
             <li><a href="/patient/{{ patient_id }}/?currentTab=3">{{ name_patient }}</a></li>
         {% endif %}
-        <li class="active">Avaliação médica</li>
+        <li class="active">Diagnóstico e Exames</li>
     </ol>
 
     {% if not creating %}
         <div class="row">
-            <div class="col-md-1">
+            <div class="col-xs-1 col-md-1">
             </div>
-            <div class="col-md-4">
+            <div class="col-xs-11 col-md-4">
                 <div class="input-group  input-group-sm ">
                     <div class="form-group">
                         <label>Data:</label> {{ record_date|date:'' }}
                     </div>
                 </div>
             </div>
-            <div class="col-md-1">
+            <div class="col-xs-1 col-md-1">
             </div>
-            <div class="col-md-6">
+            <div class="col-xs-11 col-md-6">
                 <div class="input-group  input-group-sm ">
                     <div class="form-group">
                         <label>Responsável:</label> {{ record_responsible }}
@@ -104,7 +92,7 @@
                 <div class="container span6 offset3 well ">
                     {% if editing %}
                     <div class="row">
-                        <div class="col-xs-6 col-sm-12">
+                        <div class="col-xs-12 col-sm-12">
                             <div class="form-group">
                                 <input id="patient_id" value="{{ patient_id }}" style="display: none;">
                                 <input id="medical_record_id" value="{{ record_id }}" style="display: none;">
@@ -114,7 +102,7 @@
                                            id="id_whichComplementaryExam" type="text">
                                 </div>
                                 {% csrf_token %}
-                                <ul id="search-results" style="list-style: none;"></ul>
+                                <ul id="search-results-diseases" style="list-style: none;"></ul>
                             </div>
                         </div>
                     </div>
@@ -122,7 +110,7 @@
                     <div class="col-md-1">
                     </div>
                     <div class="row">
-                        <div class="col-xs-6 col-sm-12">
+                        <div class="col-xs-12 col-sm-12">
                             <div class="form-group">
                                 <table class="table table-striped">
                                     <thead>
@@ -199,9 +187,9 @@
                                                                 <tr>
                                                                     <td>
                                                                         {% if editing %}
-                                                                            <a href="exam/edit/{{ exams.id }}/?status={{ status_mode }}">{{ exams.description }}</a>
+                                                                            <a href="exam/edit/{{ exams.id }}/?status={{ status }}">{{ exams.description }}</a>
                                                                         {% else %}
-                                                                            <a href="exam/{{ exams.id }}/?status={{ status_mode }}">{{ exams.description }}</a>
+                                                                            <a href="exam/{{ exams.id }}/?status={{ status }}">{{ exams.description }}</a>
                                                                         {% endif %}
                                                                     </td>
                                                                 </tr>
@@ -237,7 +225,7 @@
                 {% if creating %}
                     <a href="/patient/edit/{{ patient_id }}/?currentTab=3" class="btn" style="background-color: #f5f5f5">Cancelar</a>
                 {% else %}
-                    {% if status_mode == "edit" %}
+                    {% if status == "edit" %}
                         <a href="/patient/edit/{{ patient_id }}/?currentTab=3" class="btn" style="background-color: #f5f5f5">Voltar</a>
                     {% else %}
                         <a href="/patient/{{ patient_id }}/?currentTab=3" class="btn" style="background-color: #f5f5f5">Voltar</a>

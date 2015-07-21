@@ -1,5 +1,13 @@
 {% extends "quiz/template.html" %}
 
+{% load i18n admin_static %}
+
+{% block header %}
+
+    <script src="{% static 'quiz/js/patient_search.js' %}"></script>
+
+{% endblock %}
+
 {% block activePatient %}class="active"{% endblock %}
 
 {% block content %}
@@ -7,20 +15,21 @@
     <div class="tab-pane fade in active" id="mainMenuSearchTab">
         <div class="col-md-10">
             <div class="container span6 offset3 well ">
+                <h4>Buscar participante</h4>
                 <div class="form-group">
-                    <label>Buscar paciente</label>
+                    <div class="text-right">{{ number_of_patients }} participantes cadastrados</div>
                     <div class="input-group input-group-sm">
                         <span class="input-group-addon"> <span class="glyphicon glyphicon-search"></span></span>
-                        <input class="form-control" placeholder="Digite o nome ou o CPF para buscar um paciente" id="nameKey" type="text">
+                        <input class="form-control" placeholder="Digite o nome ou o CPF para buscar um participante" id="nameKey" type="text">
                     </div>
                     {% csrf_token %}
-                    <ul id="search-results" style="list-style: none;">
+                    <ul id="search-results-patients" style="list-style: none;">
                     </ul>
                 </div>
                 <div class="btn-group pull-left">
 
-                    {% if perms.quiz.add_patient %}
-                        <a href="/patient/new/" class="btn btn-primary">Inserir novo paciente</a>
+                    {% if perms.patient.add_patient %}
+                        <a href="/patient/new/" class="btn btn-primary">Inserir novo</a>
                     {% endif %}
                 </div>
             </div>

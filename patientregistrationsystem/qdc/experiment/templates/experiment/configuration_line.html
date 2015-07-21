@@ -1,0 +1,60 @@
+<tr>
+    {% if not configuration.random_position %}
+        <td class="col-md-2">
+            <span class="{{ configuration.component.icon_class }}"></span>
+            {{ configuration.component.get_component_type_display }}
+        </td>
+        {% if not component_configuration and can_change %}
+            <td class="col-md-4">
+                {% if configuration.component.component_type == "block" %}
+                    <a data-toggle="tooltip" data-placement="left" title="Editar" href="/experiment/component/{{ path_of_the_components }}-U{{ configuration.id }}">{{ configuration.component.identification }}</a>
+                {% else %}
+                    <a data-toggle="tooltip" data-placement="left" title="Editar" href="/experiment/component/edit/{{ path_of_the_components }}-U{{ configuration.id }}">{{ configuration.component.identification }}</a>
+                {% endif %}
+            </td>
+            {% if component.type == "sequence" %}
+                <td class="col-md-3">
+                    {% if configuration.name != None %}
+                        {{ configuration.name }}
+                    {% endif %}
+                </td>
+                <td  class="text-right col-md-1">
+                    {% if configuration != configuration_list|last|last %}
+                        <a class="btn glyphicon glyphicon-arrow-down" href="/experiment/component/change_the_order/{{ path_of_the_components }}/{{ forloop.parentloop.counter0 }}-{{ forloop.counter0 }}/down/"></a>
+                    {% endif %}
+                </td>
+                <td class="col-md-1">
+                    {% if configuration != configuration_list|first|first %}
+                        <a class="btn glyphicon glyphicon-arrow-up" href="/experiment/component/change_the_order/{{ path_of_the_components }}/{{ forloop.parentloop.counter0 }}-{{ forloop.counter0 }}/up/"></a>
+                    {% endif %}
+                </td>
+            {% else %}
+                <td class="col-md-5">
+                    {% if configuration.name != None %}
+                        {{ configuration.name }}
+                    {% endif %}
+                </td>
+            {% endif %}
+            <td class="text-center col-md-1">
+                <a class="btn glyphicon glyphicon-remove" data-toggle="tooltip" data-placement="right" title="Remover da lista" style="color: indianred;" onclick="show_modal_remove('fixed', {{ forloop.parentloop.counter0 }}, {{ forloop.counter0 }});"></a>
+            </td>
+        {% else %}
+            <td class="col-md-5">
+                {% if configuration.component.component_type == "block" %}
+                    <a data-toggle="tooltip" data-placement="left" title="Editar" href="/experiment/component/{{ path_of_the_components }}-U{{ configuration.id }}">{{ configuration.component.identification }}</a>
+                {% else %}
+                    <a data-toggle="tooltip" data-placement="left" title="Editar" href="/experiment/component/edit/{{ path_of_the_components }}-U{{ configuration.id }}">{{ configuration.component.identification }}</a>
+                {% endif %}
+            </td>
+            <td class="col-md-3">
+                {% if configuration.name != None %}
+                    {{ configuration.name }}
+                {% endif %}
+            </td>
+        {% endif %}
+    {% else %}
+        <td class="text-center" colspan="{% if not component_configuration and can_change %}6{% else %}3{% endif %}">
+            Posição para passo aleatório
+        </td>
+    {% endif %}
+</tr>

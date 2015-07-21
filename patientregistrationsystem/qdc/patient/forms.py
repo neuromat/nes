@@ -4,7 +4,8 @@ from django.forms.widgets import Textarea
 from cep.widgets import CEPInput
 from django.utils.translation import ugettext_lazy as _
 
-from patient.models import Patient, SocialDemographicData, SocialHistoryData, ComplementaryExam, ExamFile
+from patient.models import Patient, Telephone, SocialDemographicData, SocialHistoryData, ComplementaryExam, ExamFile, \
+    QuestionnaireResponse
 from patient.quiz_widget import SelectBoxCountries, SelectBoxState
 
 # pylint: disable=E1101
@@ -16,12 +17,26 @@ class PatientForm(ModelForm):
         model = Patient
 
         fields = [
-            'cpf', 'name', 'rg', 'medical_record', 'natural_of', 'citizenship', 'zipcode', 'street', 'city', 'state',
-            'country', 'phone', 'cellphone', 'email', 'date_birth', 'gender', 'marital_status', 'district',
-            'address_complement', 'address_number'
+            'name', 'cpf', 'origin', 'medical_record',  'date_birth', 'gender', 'rg', 'marital_status',
+            'country', 'zipcode', 'street', 'address_number', 'address_complement', 'district', 'city', 'state', 'email'
         ]
 
         widgets = {
+            'name': TextInput(attrs={'class': 'form-control', 'autofocus': "true", 'required': "",
+                                     'data-error': _('Nome deve ser preenchido')}),
+            'cpf': TextInput(attrs={'class': 'form-control',
+                                    'placeholder': 'xxx.xxx.xxx-xx'}),
+            'origin': TextInput(attrs={'class': 'form-control'}),
+            'medical_record': TextInput(attrs={'class': 'form-control'}),
+            'date_birth': DateInput(attrs={'class': 'form-control datepicker', 'required': "",
+                                           'data-error': _('Data de nascimento deve ser preenchida'),
+                                           'placeholder': 'dd/mm/aaaa'}),
+            'gender': Select(attrs={'class': 'form-control', 'required': "",
+                                    'data-error': _('Sexo deve ser preenchido')}),
+            'rg': TextInput(attrs={'class': 'form-control'}),
+            'marital_status': Select(attrs={'class': 'form-control'}),
+
+            'country': SelectBoxCountries(attrs={'data-flags': 'true'}),
             'zipcode': CEPInput(address={'street': 'id_street', 'district': 'id_district', 'city': 'id_city',
                                          'state': 'id_state'},
                                 attrs={'class': 'form-control', 'pattern': '\d{5}-?\d{3}'}),
@@ -31,26 +46,22 @@ class PatientForm(ModelForm):
             'district': TextInput(attrs={'class': 'form-control'}),
             'city': TextInput(attrs={'class': 'form-control'}),
             'state': SelectBoxState(attrs={'data-country': 'id_country'}),
-            'country': SelectBoxCountries(attrs={'data-flags': 'true'}),
-            'name': TextInput(attrs={'class': 'form-control', 'autofocus': "true", 'required': "",
-                                     'data-error': _('Nome deve ser preenchido')}),
-            'cpf': TextInput(attrs={'class': 'form-control',
-                                    'placeholder': 'xxx.xxx.xxx-xx'}),
-            'rg': TextInput(attrs={'class': 'form-control'}),
-            'natural_of': TextInput(attrs={'class': 'form-control'}),
-            'phone': TextInput(attrs={'class': 'form-control'}),
-            'cellphone': TextInput(attrs={'class': 'form-control'}),
             'email': TextInput(attrs={
                 'class': 'form-control', 'type': 'email', 'data-error': _('E-mail incorreto'),
                 'pattern': '^[_A-Za-z0-9-\+]+(\.[_A-Za-z0-9-]+)*@[A-Za-z0-9-]+(\.[A-Za-z0-9]+)*(\.[A-Za-z]{2,})$'}),
-            'medical_record': TextInput(attrs={'class': 'form-control'}),
-            'citizenship': SelectBoxCountries(attrs={'data-flags': 'true'}),
-            'gender': Select(attrs={'class': 'form-control', 'required': "",
-                                    'data-error': _('Sexo deve ser preenchido')}),
-            'marital_status': Select(attrs={'class': 'form-control'}),
-            'date_birth': DateInput(attrs={'class': 'form-control', 'required': "",
-                                           'data-error': _('Data de nascimento deve ser preenchida'),
-                                           'placeholder': 'dd/mm/aaaa'})
+        }
+
+
+class TelephoneForm(ModelForm):
+    class Meta:
+        model = Telephone
+
+        fields = ['number', 'type', 'note']
+
+        widgets = {
+            'number': TextInput(attrs={'class': 'form-control telephone_number', 'pattern': '^[- ()0-9]+'}),
+            'type': Select(attrs={'class': 'form-control'}),
+            'note': TextInput(attrs={'class': 'form-control'})
         }
 
 
@@ -62,11 +73,13 @@ class SocialDemographicDataForm(ModelForm):
 
     class Meta:
         model = SocialDemographicData
-        fields = ['profession', 'occupation', 'tv', 'dvd', 'radio', 'bath',
+        fields = ['natural_of', 'citizenship', 'profession', 'occupation', 'tv', 'dvd', 'radio', 'bath',
                   'automobile', 'wash_machine', 'refrigerator', 'freezer', 'house_maid',
                   'religion', 'payment', 'flesh_tone', 'schooling', 'benefit_government',
                   'social_class']
         widgets = {
+            'natural_of': TextInput(attrs={'class': 'form-control'}),
+            'citizenship': SelectBoxCountries(attrs={'data-flags': 'true'}),
             'schooling': Select(attrs={'class': 'form-control'}),
             'flesh_tone': Select(attrs={'class': 'form-control'}),
             'religion': Select(attrs={'class': 'form-control'}),
@@ -119,7 +132,7 @@ class ComplementaryExamForm(ModelForm):
         fields = ['date', 'description', 'doctor', 'doctor_register', 'exam_site']
 
         widgets = {
-            'date': DateInput(attrs={'class': 'form-control', 'placeholder': 'dd/mm/aaaa',
+            'date': DateInput(attrs={'class': 'form-control datepicker', 'placeholder': 'dd/mm/aaaa',
                                      'required': "", 'data-error': "Data deve ser preenchida"}),
             'description': Textarea(attrs={'class': 'form-control', 'placeholder': 'Descrição', 'rows': '4',
                                            'required': "", 'data-error': "Descrição deve ser preenchida"}),
@@ -133,3 +146,16 @@ class ExamFileForm(ModelForm):
     class Meta:
         model = ExamFile
         fields = ['content']
+
+
+class QuestionnaireResponseForm(ModelForm):
+    class Meta:
+        model = QuestionnaireResponse
+        fields = [
+            'date',
+        ]
+
+        widgets = {
+            'date': DateInput(attrs={'class': 'form-control datepicker', 'placeholder': 'dd/mm/aaaa', 'required': "",
+                                     'data-error': "Data de preenchimento deve ser preenchida"}, )
+        }

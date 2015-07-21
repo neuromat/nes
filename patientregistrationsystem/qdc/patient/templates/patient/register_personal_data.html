@@ -1,0 +1,374 @@
+{% extends "patient/register.html" %}
+
+{% load i18n admin_static %}
+
+{% block header_continuation %}
+
+    <script src="{% static 'quiz/js/phone.js' %}"></script>
+    <script src="{% static 'quiz/js/cep.js' %}"></script>
+    <script src="{% static 'quiz/js/patient_personal_data.js' %}"></script>
+
+{% endblock %}
+
+{% block sub_content %}
+
+    <div class="tab-pane {% if currentTab == '0' %}active{% endif %}" id="tab1">
+        <div class="row">
+            <div class="col-md-12">
+                <div class="container span6 offset3 well ">
+                    <h4>Informações básicas</h4>
+
+                    {% if patient_form.errors %}
+                        {% for field in patient_form %}
+                            {% if field.errors %}
+                                <script>showErrorMessage('{{ field.errors|striptags }}')</script>
+                            {% endif %}
+                        {% endfor %}
+
+                        <script>showErrorMessage('Participante não salvo. Por favor, corrija os campos em destaque.')</script>
+
+                    {% endif %}
+
+                    <div class="row">
+                        <div class="col-xs-12 col-sm-6">
+                            <div class="form-group {% if patient_form.errors.name %}has-error{% endif %}">
+                                <label for="name" class="control-label">Nome completo <b style="color: red;">*</b></label>
+
+                                <div class="input-group input-group-sm">
+                                    <span class="input-group-addon"> <span class="glyphicon glyphicon-user"></span></span>
+                                    {{ patient_form.name }}
+                                </div>
+                                <div class="help-block with-errors"></div>
+                            </div>
+                        </div>
+                        <div class="col-xs-12 col-sm-6">
+                            <div class="form-group {% if patient_form.errors.cpf %}has-error{% endif %}">
+                                <label for="cpf" class="control-label">CPF</label>
+                                <div class="input-group input-group-sm">
+                                    <span class="input-group-addon"> <span class="glyphicon glyphicon-asterisk"></span></span>
+                                    {{ patient_form.cpf }}
+                                </div>
+                                <div class="help-block with-errors">
+                                    {% if patient_form.cpf.errors %}
+                                        <span>
+                                    {% for error in patient_form.cpf.errors %}{{ error }}{% endfor %}
+                                </span>
+                                    {% endif %}
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-xs-6 col-sm-6">
+                            <div class="form-group">
+                                <label>Origem</label>
+
+                                <div class="input-group input-group-sm">
+                                    <span class="input-group-addon"> <span class="glyphicon glyphicon-import"></span></span>
+                                    {{ patient_form.origin }}
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-xs-6 col-sm-6">
+                            <div class="form-group">
+                                <label>Número do prontuário</label>
+
+                                <div class="input-group input-group-sm">
+                                    <span class="input-group-addon"> <span class="glyphicon glyphicon-list-alt"></span></span>
+                                    {{ patient_form.medical_record }}
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-xs-6 col-sm-6">
+                            <div class="form-group {% if patient_form.errors.date_birth %}has-error{% endif %}">
+                                <label for="date_birth" class="control-label">Data de nascimento <b
+                                        style="color: red;">*</b></label>
+
+                                <div class="input-group input-group-sm">
+                                    <span class="input-group-addon"> <span class="glyphicon glyphicon-th"></span></span>
+                                    {{ patient_form.date_birth }}
+                                </div>
+                                <div class="help-block with-errors">
+                                    {% if patient_form.date_birth.errors %}
+                                        <span>
+                                        {% for error in patient_form.date_birth.errors %}{{ error }}{% endfor %}
+                                    </span>
+                                    {% endif %}
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-xs-6 col-sm-6">
+                            <div class="form-group">
+                                <label for="id_gender" class="control-label">Sexo <b style="color: red;">*</b></label>
+
+                                <div class="input-group input-group-sm">
+                                    <span class="input-group-addon"> <span class="glyphicon"></span></span>
+                                    {{ patient_form.gender }}
+                                </div>
+                                <div class="help-block with-errors"></div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-xs-6 col-sm-6">
+                            <div class="form-group">
+                                <label>RG</label>
+                                <div class="input-group input-group-sm">
+                                    <span class="input-group-addon"><span class="glyphicon glyphicon-user"></span></span>
+                                    {{ patient_form.rg }}
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-xs-6 col-sm-6">
+                            <div class="form-group">
+                                <label>Estado civil</label>
+
+                                <div class="input-group  input-group-sm">
+                                    <span class="input-group-addon"> <span class="glyphicon"></span></span>
+                                    {{ patient_form.marital_status }}
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-1"></div>
+                </div>
+                <div class="container span6 offset3 well ">
+                    <h4>Endereço</h4>
+                    <div class="row">
+                        <div class="col-xs-6 col-sm-6">
+                            <div class="form-group">
+                                <label>País</label>
+
+                                <div class="input-group  input-group-sm">
+                                    <span class="input-group-addon"> <span class="glyphicon glyphicon-home"></span></span>
+                                    {{ patient_form.country }}
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-xs-6 col-sm-6">
+                            <div class="form-group">
+                                <label>CEP</label>
+
+                                <div class="input-group  input-group-sm">
+                                    <span class="input-group-addon"> <span class="glyphicon glyphicon-home"></span></span>
+                                    {{ patient_form.zipcode }}
+                                </div>
+                                <div class="help-block with-errors"></div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-xs-12 col-sm-6">
+                            <div class="form-group">
+                                <label>Endereço</label>
+
+                                <div class="input-group  input-group-sm ">
+                                    <span class="input-group-addon"> <span class="glyphicon glyphicon-home"></span></span>
+                                    {{ patient_form.street }}
+                                </div>
+
+                            </div>
+                        </div>
+                        <div class="col-xs-6 col-sm-3">
+                            <div class="form-group">
+                                <label>Número</label>
+
+                                <div class="input-group  input-group-sm ">
+                                    <span class="input-group-addon"> <span class="glyphicon glyphicon-home"></span></span>
+                                    {{ patient_form.address_number }}
+                                </div>
+
+                            </div>
+                        </div>
+                        <div class="col-xs-6 col-sm-3">
+                            <div class="form-group">
+                                <label>Complemento</label>
+
+                                <div class="input-group  input-group-sm">
+                                    <span class="input-group-addon"> <span class="glyphicon glyphicon-home"></span></span>
+                                    {{ patient_form.address_complement }}
+                                </div>
+                                <div class="help-block with-errors"></div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-xs-12 col-sm-6">
+                            <div class="form-group">
+                                <label>Bairro</label>
+
+                                <div class="input-group  input-group-sm ">
+                                    <span class="input-group-addon"> <span class="glyphicon glyphicon-home"></span></span>
+                                    {{ patient_form.district }}
+                                </div>
+
+                            </div>
+                        </div>
+                        <div class="col-xs-6 col-sm-6">
+                            <div class="form-group">
+                                <label>Cidade</label>
+
+                                <div class="input-group  input-group-sm ">
+                                    <span class="input-group-addon"> <span class="glyphicon glyphicon-home"></span></span>
+                                    {{ patient_form.city }}
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-xs-6 col-sm-6">
+                            <div class="form-group">
+                                <label>Estado</label>
+
+                                <div class="input-group  input-group-sm">
+                                    <span class="input-group-addon"> <span class="glyphicon glyphicon-home"></span></span>
+                                    {{ patient_form.state }}
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-xs-12 col-sm-6">
+                            <div class="form-group">
+                                <label for="email" class="control-label">E-mail</label>
+
+                                <div class="input-group input-group-sm">
+                                    <span class="input-group-addon"> <span class="glyphicon glyphicon-envelope"></span></span>
+                                    {{ patient_form.email }}
+                                </div>
+                                <div class="help-block with-errors"></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="container span6 offset3 well ">
+                    <div class="row">
+                        <div class="col-xs-6 col-sm-6">
+                            <label>
+                                <h4>Telefones</h4>
+                            </label>
+                        </div>
+                    </div>
+
+                    <div class="row">
+                        <div class="col-xs-6 col-sm-3">
+                            <div class="form-group">
+                                <label>Número</label>
+                            </div>
+                        </div>
+                        <div class="col-xs-6 col-sm-3">
+                            <div class="form-group">
+                                <label>Tipo</label>
+                            </div>
+                        </div>
+                        <div class="col-xs-8 col-sm-4">
+                            <div class="form-group">
+                                <label>Observação</label>
+                            </div>
+                        </div>
+                        <div class="col-xs-4 col-sm-2">
+                            <div class="form-group">
+                                <label>Apagar</label>
+                            </div>
+                        </div>
+                    </div>
+
+                    {{ telephone_formset.management_form }}
+                    {% for telephone_form in telephone_formset %}
+                        {% for hidden in telephone_form.hidden_fields %}
+                            {{ hidden }}
+                        {% endfor %}
+
+                        <div class="row">
+                            <div class="col-xs-6 col-sm-3">
+                                <div class="form-group">
+                                    <div class="input-group  input-group-sm">
+                                        <span class="input-group-addon"> <span class="glyphicon glyphicon-earphone"></span></span>
+                                        {{ telephone_form.number }}
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-xs-6 col-sm-3">
+                                <div class="form-group">
+                                    <div class="input-group  input-group-sm">
+                                        <span class="input-group-addon"> <span class="glyphicon glyphicon-tag"></span></span>
+                                        {{ telephone_form.type }}
+                                    </div>
+                                    <div class="help-block with-errors"></div>
+                                </div>
+                            </div>
+                            <div class="col-xs-8 col-sm-4">
+                                <div class="form-group">
+                                    <div class="input-group  input-group-sm">
+                                        <span class="input-group-addon"> <span class="glyphicon glyphicon-pencil"></span></span>
+                                        {{ telephone_form.note }}
+                                    </div>
+                                    <div class="help-block with-errors"></div>
+                                </div>
+                            </div>
+                            <div class="col-xs-4 col-sm-2">
+                                <div class="form-group">
+                                    <div>
+                                        {{ telephone_form.DELETE }}
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    {% endfor %}
+
+                    {% if editing %}
+                        <button type="button" class="btn btn-default" id="more_phones">Salvar e incluir mais telefones</button>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+
+    {# Modal for CPF not filled #}
+    <div class="modal fade" id="modalNoCPF" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-body">
+                    CPF não foi preenchido. Deseja salvar?
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-default" data-dismiss="modal">Cancelar</button>
+                    <button type="button" class="btn btn-primary" id="noCPF_modal">Salvar</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    {# Modal for patient homonym #}
+    <div class="modal fade" id="modalHomonym" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-body">
+                    Participante já cadastrado.
+                    Clique para visualizar registro ou "Cancelar" para voltar ao formulário.
+                </div>
+                {% csrf_token %}
+                <ul id="search-results-homonym" style="list-style: none;"></ul>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-default" data-dismiss="modal" id="modalHomonymCancel">Cancelar</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    {# Modal for excluded patient homonym #}
+    <div class="modal fade" id="modalHomonymExcluded" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-body">
+                    Participante já foi excluído anteriormente. Clique para restaurar cadastro ou "Cancelar" para cadastrar
+                    com mesmo nome.
+                </div>
+                {% csrf_token %}
+                <ul id="search-results-homonym-excluded" style="list-style: none;"></ul>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-default" data-dismiss="modal" id="modalHomonymExcludedCancel">Cancelar</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+{% endblock %}

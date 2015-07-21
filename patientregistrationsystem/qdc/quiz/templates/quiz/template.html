@@ -1,29 +1,36 @@
-<!DOCTYPE html>
-<html lang="en">
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xml:lang="en" xmlns="http://www.w3.org/1999/xhtml" lang="en">
+
 <head>
     {% load static %}
     {% load l10n %}
     {% load qdc_tags %}
     <meta charset="utf-8">
-    <title>Cadastro: Dados Sociodemográficos e Clínicos</title>
+
+    <title>Neuroscience Experiments System - NES</title>
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="description" content="">
-    <meta name="author" content="">
+    <meta name="author" content="NeuroMat">
 
     <script src="{% static 'quiz/jquery/jquery-2.0.0.min.js' %}"></script>
-    <script src="{% static 'quiz/js/ajax.js' %}"></script>
+    <link rel="stylesheet" href="{% static 'quiz/jquery-ui-1.11.2/jquery-ui.css' %}">
+    <script src="{% static 'quiz/jquery-ui-1.11.2/jquery-ui.js' %}"></script>
+
+    {# Apply a date picker and a mask to every field that has the class "datepicker".   #}
+    <script>
+        $(document).ready(function() {
+            $('.datepicker').datepicker({dateFormat: "dd/mm/yy"}).
+                mask("99/99/9999");
+        });
+    </script>
 
     <link href="{% static 'quiz/bootstrap-3.0.0-dist/css/bootstrap.min.css' %}" rel="stylesheet">
-    {#    <link href="{% static 'quiz/dist/css/bootstrap.min.css' %}" rel="stylesheet">#}
-    {#    <link href="http://netdna.bootstrapcdn.com/bootstrap/3.0.0/css/bootstrap.min.css" rel="stylesheet">#}
-
     <link href="{% static 'quiz/BootstrapFormHelpers-master/dist/css/bootstrap-formhelpers.min.css' %}"
           rel="stylesheet">
 
-    {#    <script src="{% static 'quiz/dist/js/bootstrap.min.js' %}"></script>#}
     <script src="{% static 'quiz/bootstrap-3.0.0-dist/js/bootstrap.min.js' %}"></script>
 
-    <script src="{% static 'quiz/masked_input/jquery.maskedinput.min.js' %}"></script>
+    <script src="{% static 'quiz/masked_input/jquery.maskedinput.js' %}"></script>
     <script src="{% static 'quiz/BootstrapFormHelpers-master/dist/js/bootstrap-formhelpers.min.js' %}"></script>
 
     <link href="{% static 'quiz/toastr/toastr.css' %}" rel="stylesheet"/>
@@ -32,36 +39,52 @@
     <script src="{% static 'quiz/Bootstrap-Validator-Master/dist/validator.min.js' %}" type="text/javascript"></script>
 
     <script src="{% static 'quiz/js/quiz.js' %}"></script>
-    <script type="text/javascript" src="{% static 'quiz/js/register.js' %}"></script>
 
-    <script src="{% static 'quiz/js/cep.js' %}"></script>
     <style type="text/css">
 
-        /* Sticky footer styles
-        -------------------------------------------------- */
+        /* Layout based on http://mystrd.at/modern-clean-css-sticky-footer/ */
+        html {
+            position: relative;
+            min-height: 100%;
+        }
         body {
-            overflow-x: hidden;
+            margin: 0 0 30px; /* bottom = footer height */
+        }
+        .footer {
+            position: absolute;
+            left: 0;
+            bottom: 0;
+            height: 30px;
+            width: 100%;
         }
 
-        {##}
-        .footer /*rodapé do sistema */
-                                              {
-            background-color: transparent;
-            height: 30px;
-            text-align: left;
-            border: transparent;
+        .version_number {
+            float:right;
+            margin-right: 10px;
+        }
+
+        /* Theme */
+        .footer {
             font-size: 8pt;
             font-family: Verdana;
             font-weight: bold;
-            width: 30%;
-            color: Black;
-            position: fixed;
-            bottom: 0px;
-            left: 0px;
         }
 
         .thumbnail {
             border: 0 none;
+            box-shadow: none;
+        }
+
+        .unbuttonmize:hover, .unbuttonmize:focus {
+            background-color: white;
+            border-color: #ccc;
+            cursor: default;
+        }
+        .unbuttonmize:focus {
+            outline-style: none;
+        }
+
+        .unbuttonmize:active {
             box-shadow: none;
         }
     </style>
@@ -72,14 +95,14 @@
 </head>
 <body>
 <div class="container">
-    <nav class="navbar navbar-default navbar-fixed-top  navbar-inverse" role="navigation">
+    <nav class="navbar navbar-default navbar-fixed-top navbar-inverse" role="navigation">
         <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-ex1-collapse">
             <span class="sr-only">Toggle navigation</span>
             <span class="icon-bar"></span>
             <span class="icon-bar"></span>
             <span class="icon-bar"></span>
         </button>
-        <a class="navbar-brand" href="/home/">Neuroscience Experiments System</a>
+        <a class="navbar-brand" href="/home/">NES</a>
 
         <div class="navbar-header">
         </div>
@@ -108,18 +131,14 @@
 
 <div class="container">
     <div class="row">
-        <div class="col-md-12">
-        </div>
-    </div>
-    <div class="row">
         <div class="col-md-2">
             <ul id="myMenu" class="nav nav-pills nav-stacked">
 
-                <li {% block activePatient %}{% endblock %} >
-                    {% if perms.quiz.view_patient %}
-                        <a href="/patient/find/">Paciente</a>
-                    {% endif %}
-                </li>
+                {% if perms.patient.view_patient %}
+                    <li {% block activePatient %}{% endblock %} >
+                        <a href="/patient/find/">Participantes</a>
+                    </li>
+                {% endif %}
 
                 {% if perms.auth.add_user and perms.auth.change_user %}
                     <li {% block activeUser %}{% endblock %}>
@@ -133,9 +152,9 @@
                     </li>
                 {% endif %}
 
-                {% if perms.experiment.view_experiment %}
-                    <li {% block activeAdvancedExperiment %}{% endblock %}>
-                        <a href="/experiment/list/">Experimentos</a>
+                {% if perms.survey.view_survey %}
+                    <li {% block activeAdvancedSurvey %}{% endblock %}>
+                        <a href="/survey/list/">Questionários</a>
                     </li>
                 {% endif %}
 
@@ -157,12 +176,13 @@
 {% block end_form %}
 {% endblock %}
 
-<div class="footer" style="display: inherit">
-    <p><a href="http://ccsl.ime.usp.br"><img src="{% static 'quiz/imgs/logo-ccsl-sm.png' %}" alt="" height="34px"
-                                             width="96px"></a>
+<div class="footer">
+    <a href="http://ccsl.ime.usp.br">
+        <img src="{% static 'quiz/imgs/logo-ccsl-sm.png' %}" alt="Logo do Centro de Competência em Software Livre"
+             height="34px" width="96px">
+    </a>
 
-        <span class="credit" style="position: fixed;right: 10px">V: {% settings_value "VERSION" %}</span></p>
-
+    <span class="version_number">V: {% settings_value "VERSION" %}</span>
 </div>
 
 </body>
