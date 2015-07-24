@@ -27,14 +27,14 @@
     <div class="col-md-10">
 
     <ol class="breadcrumb">
-        <li><a href="/home">Home</a></li>
-        <li><a href="/patient/find/">Participantes</a></li>
+        <li><a href="/home">{% trans "Home" %}</a></li>
+        <li><a href="/patient/find/">{% trans "Participantes" %}</a></li>
         {% if status == "edit" or creating %}
             <li><a href="/patient/edit/{{ patient_id }}/?currentTab=3">{{ name_patient }}</a></li>
         {% else %}
             <li><a href="/patient/{{ patient_id }}/?currentTab=3">{{ name_patient }}</a></li>
         {% endif %}
-        <li class="active">Avaliação médica</li>
+        <li class="active">{% trans "Avaliação médica" %}</li>
     </ol>
 
     {% if not creating %}
@@ -44,7 +44,7 @@
             <div class="col-xs-11 col-md-4">
                 <div class="input-group  input-group-sm ">
                     <div class="form-group">
-                        <label>Data:</label> {{ record_date|date:'' }}
+                        <label>{% trans "Data:" %}</label> {{ record_date|date:'' }}
                     </div>
                 </div>
             </div>
@@ -53,7 +53,7 @@
             <div class="col-xs-11 col-md-6">
                 <div class="input-group  input-group-sm ">
                     <div class="form-group">
-                        <label>Responsável:</label> {{ record_responsible }}
+                        <label>{% trans "Responsável:" %}</label> {{ record_responsible }}
                     </div>
                 </div>
             </div>
@@ -115,14 +115,14 @@
                                 <table class="table table-striped">
                                     <thead>
                                         <tr>
-                                            <th>Diagnóstico</th>
-                                            <th>Exames</th>
+                                            <th>{% trans "Diagnóstico" %}</th>
+                                            <th>{% trans "Exames" %}</th>
                                         </tr>
                                     </thead>
                                     <tbody>
                                     {% if not object_list %}
                                         <tr>
-                                            <td>(sem diagnósticos)</td>
+                                            <td>{% trans "(sem diagnósticos)" %}</td>
                                             <td></td>
                                         </tr>
                                     {% else %}
@@ -143,7 +143,7 @@
 
                                                         {% if editing %}
                                                             <a class="btn" data-toggle="tooltip" data-placement="left" title="Editar detalhes" style="font-size-adjust: 0.47; font-style: italic;"
-                                                               onclick="show_modal_detail({{ diagnosis.id }});">Detalhes
+                                                               onclick="show_modal_detail({{ diagnosis.id }});">{% trans "Detalhes" %}
                                                             </a>
 
                                                             <div class="modal fade" id="modalDetail{{ diagnosis.id }}" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
@@ -157,13 +157,13 @@
                                                                         <div class="modal-body">
                                                                             <div class="row">
                                                                                 <div class="form-group">
-                                                                                    <label id="description-label-{{ diagnosis.id }}">Observações</label>
+                                                                                    <label id="description-label-{{ diagnosis.id }}">{% trans "Observações" %}</label>
                                                                                         <textarea class="form-control" cols="100" rows="3" id="diagnosis_description" name="description-{{ diagnosis.id }}" placeholder="Observação">{% if diagnosis.description %}{{ diagnosis.description }}{% endif %}</textarea>
                                                                                 </div>
                                                                             </div>
                                                                             <div class="row">
                                                                                 <div class="form-group">
-                                                                                    <label id="date-label-{{ diagnosis.id }}">Data</label>
+                                                                                    <label id="date-label-{{ diagnosis.id }}">{% trans "Data" %}</label>
                                                                                     <div class="input-group  input-group-sm">
                                                                                         <input value="{{ diagnosis.date|date:'d/m/Y' }}" class="form-control" id="diagnosis_date-{{ diagnosis.id }}" name="date-{{ diagnosis.id }}" placeholder="Data" type="text">
                                                                                     </div>
@@ -171,8 +171,8 @@
                                                                             </div>
                                                                         </div>
                                                                         <div class="modal-footer">
-                                                                            <button type="button" class="btn btn-default" data-dismiss="modal">Cancelar</button>
-                                                                            <button class="btn btn-primary" style="background-color: blue; color: #ffffff" id="confirm-{{ diagnosis.id }}" type="submit" name="action" value="detail-{{ diagnosis.id }}">Salvar</button>
+                                                                            <button type="button" class="btn btn-default" data-dismiss="modal">{% trans "Cancelar" %}</button>
+                                                                            <button class="btn btn-primary" style="background-color: blue; color: #ffffff" id="confirm-{{ diagnosis.id }}" type="submit" name="action" value="detail-{{ diagnosis.id }}">{% trans "Salvar" %}</button>
                                                                         </div>
                                                                     </div>
                                                                 </div>
@@ -197,7 +197,7 @@
                                                         {% endif %}
                                                         {% if editing %}
                                                             <tr><td>
-                                                                <a href="diagnosis/{{ diagnosis.id }}/exam/new/" class="btn btn-primary">Inserir exame</a>
+                                                                <a href="diagnosis/{{ diagnosis.id }}/exam/new/" class="btn btn-primary">{% trans "Inserir exame" %}</a>
                                                             </td></tr>
                                                         {% endif %}
                                                     </table>
@@ -218,17 +218,17 @@
         <div class="btn-toolbar">
             <div class="btn-group pull-right">
                 {% if creating or editing %}
-                    <button type="submit" name="action" value="finish" class="btn btn-primary">Finalizar avaliação</button>
+                    <button type="submit" name="action" value="finish" class="btn btn-primary">{% trans "Finalizar avaliação" %}</button>
                 {% endif %}
             </div>
             <div class="btn-group pull-right">
                 {% if creating %}
-                    <a href="/patient/edit/{{ patient_id }}/?currentTab=3" class="btn" style="background-color: #f5f5f5">Cancelar</a>
+                    <a href="/patient/edit/{{ patient_id }}/?currentTab=3" class="btn" style="background-color: #f5f5f5">{% trans "Cancelar" %}</a>
                 {% else %}
                     {% if status == "edit" %}
-                        <a href="/patient/edit/{{ patient_id }}/?currentTab=3" class="btn" style="background-color: #f5f5f5">Voltar</a>
+                        <a href="/patient/edit/{{ patient_id }}/?currentTab=3" class="btn" style="background-color: #f5f5f5">{% trans "Voltar" %}</a>
                     {% else %}
-                        <a href="/patient/{{ patient_id }}/?currentTab=3" class="btn" style="background-color: #f5f5f5">Voltar</a>
+                        <a href="/patient/{{ patient_id }}/?currentTab=3" class="btn" style="background-color: #f5f5f5">{% trans "Voltar" %}</a>
                     {% endif %}
                 {% endif %}
             </div>
@@ -244,11 +244,11 @@
         <div class="modal-dialog">
             <div class="modal-content">
                 <div class="modal-body">
-                    Tem certeza que deseja excluir o diagnóstico?
+                    {% trans "Tem certeza que deseja excluir o diagnóstico?" %}
                 </div>
                 <div class="modal-footer">
-                    <button type="button" class="btn btn-default" data-dismiss="modal">Cancelar</button>
-                    <a type="button" class="btn btn-primary" id="removeDiagnosis" style="background-color: indianred; color: #ffffff" href="">Excluir</a>
+                    <button type="button" class="btn btn-default" data-dismiss="modal">{% trans "Cancelar" %}</button>
+                    <a type="button" class="btn btn-primary" id="removeDiagnosis" style="background-color: indianred; color: #ffffff" href="">{% trans "Excluir" %}</a>
                 </div>
             </div>
         </div>

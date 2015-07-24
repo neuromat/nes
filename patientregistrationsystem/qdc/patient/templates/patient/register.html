@@ -2,6 +2,8 @@
 
 {% load i18n admin_static %}
 
+{% load l10n admin_static %}
+
 {% block header %}
     <script type="text/javascript" src="{% static 'quiz/js/register.js' %}"></script>
     <script type="text/javascript">$(function(){$("[data-toggle=tooltip]").tooltip();})</script>
@@ -41,20 +43,20 @@
                             {# Ids are included only when editing, so that javascript can act. #}
                             <li {% if currentTab == '0' %}class="active"{% endif %}>
                                 <a href="/patient/{% if editing %}edit/{% endif %}{{ patient_id }}/?currentTab=0"
-                                        {% if editing %} id="linkToTab0"{% endif %}>Dados pessoais</a></li>
+                                        {% if editing %} id="linkToTab0"{% endif %}>{% trans "Dados pessoais" %}</a></li>
                             <li {% if currentTab == '1' %}class="active"{% endif %}>
                                 <a href="/patient/{% if editing %}edit/{% endif %}{{ patient_id }}/?currentTab=1"
-                                        {% if editing %} id="linkToTab1"{% endif %}>Dados sociodemográficos</a></li>
+                                        {% if editing %} id="linkToTab1"{% endif %}>{% trans "Dados sociodemográficos" %}</a></li>
                             <li {% if currentTab == '2' %}class="active"{% endif %}>
                                 <a href="/patient/{% if editing %}edit/{% endif %}{{ patient_id }}/?currentTab=2"
-                                        {% if editing %} id="linkToTab2"{% endif %}>História social</a></li>
+                                        {% if editing %} id="linkToTab2"{% endif %}>{% trans "História social" %}</a></li>
                             <li {% if currentTab == '3' %}class="active"{% endif %}>
                                 <a href="/patient/{% if editing %}edit/{% endif %}{{ patient_id }}/?currentTab=3"
-                                        {% if editing %} id="linkToTab3"{% endif %}>Avaliações médicas</a></li>
+                                        {% if editing %} id="linkToTab3"{% endif %}>{% trans "Avaliações médicas" %}</a></li>
                             {% if perms.survey.view_survey %}
                                 <li {% if currentTab == '4' %}class="active"{% endif %}>
                                     <a href="/patient/{% if editing %}edit/{% endif %}{{ patient_id }}/?currentTab=4"
-                                            {% if editing %} id="linkToTab4"{% endif %}>Questionários</a></li>
+                                            {% if editing %} id="linkToTab4"{% endif %}>{% trans "Questionários" %}</a></li>
                             {% endif %}
                         </ul>
 
@@ -96,25 +98,25 @@
                                         {% if perms.patient.delete_patient %}
                                             <button type="button" class="btn btn-secondary"
                                                     style="background-color: indianred; color: #ffffff"
-                                                    onclick="$('#modalRemove').modal('show')">Excluir participante
+                                                    onclick="$('#modalRemove').modal('show')">{% trans "Excluir participante" %}
                                             </button>
                                         {% endif %}
                                     {% endif %}
                                 </div>
                                 <div class="btn-group pull-right">
                                     {% if editing %}
-                                        <button type="button" class="btn btn-default{% if currentTab == '0' %} disabled{% endif %}" id="prevtab">Salvar e mostrar anterior</button>
-                                        <button type="button" class="btn btn-default{% if currentTab == '4' %} disabled{% elif currentTab == '3' and not perms.survey.view_survey %} disabled{% endif %}" id="nexttab">Salvar e mostrar próxima</button>
+                                        <button type="button" class="btn btn-default{% if currentTab == '0' %} disabled{% endif %}" id="prevtab">{% trans "Salvar e mostrar anterior" %}</button>
+                                        <button type="button" class="btn btn-default{% if currentTab == '4' %} disabled{% elif currentTab == '3' and not perms.survey.view_survey %} disabled{% endif %}" id="nexttab">{% trans "Salvar e mostrar próxima" %}</button>
                                         {% if currentTab == '0' %}
-                                            <button type="button" class="btn btn-primary" id="savetab">Salvar</button>
+                                            <button type="button" class="btn btn-primary" id="savetab">{% trans "Salvar" %}</button>
                                         {% else %}
-                                            <button type="submit" name="action" value="save" class="btn btn-primary" id="save_submit_button">Salvar</button>
+                                            <button type="submit" name="action" value="save" class="btn btn-primary" id="save_submit_button">{% trans "Salvar" %}</button>
                                         {% endif %}
                                     {% else %}
-                                        <button type="button" class="btn btn-default{% if currentTab == '0' %} disabled{% endif %}" id="prevtab">Mostrar anterior</button>
-                                        <button type="button" class="btn btn-default{% if currentTab == '4' %} disabled{% elif currentTab == '3' and not perms.survey.view_survey %} disabled{% endif %}" id="nexttab">Mostrar próxima</button>
+                                        <button type="button" class="btn btn-default{% if currentTab == '0' %} disabled{% endif %}" id="prevtab">{% trans "Mostrar anterior" %}</button>
+                                        <button type="button" class="btn btn-default{% if currentTab == '4' %} disabled{% elif currentTab == '3' and not perms.survey.view_survey %} disabled{% endif %}" id="nexttab">{% trans "Mostrar próxima" %}</button>
                                         {% if perms.patient.change_patient %}
-                                            <button type="button" class="btn btn-primary" id="editPatient">Editar</button>
+                                            <button type="button" class="btn btn-primary" id="editPatient">{% trans "Editar" %}</button>
                                         {% endif %}
                                     {% endif %}
                                 </div>
@@ -129,12 +131,12 @@
                 <div class="modal-dialog">
                     <div class="modal-content">
                         <div class="modal-body">
-                            Deseja salvar?
+                            {% trans "Deseja salvar?" %}
                         </div>
                         <div class="modal-footer">
-                            <button type="button" class="btn btn-default" data-dismiss="modal">Cancelar</button>
-                            <button type="button" class="btn btn-default" id="savetab_modal_dont_save">Não salvar</button>
-                            <button type="button" class="btn btn-primary" id="savetab_modal_save">Salvar</button>
+                            <button type="button" class="btn btn-default" data-dismiss="modal">{% trans "Cancelar" %}</button>
+                            <button type="button" class="btn btn-default" id="savetab_modal_dont_save">{% trans "Não salvar" %}</button>
+                            <button type="button" class="btn btn-primary" id="savetab_modal_save">{% trans "Salvar" %}</button>
                         </div>
                     </div>
                 </div>
@@ -145,12 +147,12 @@
                 <div class="modal-dialog">
                     <div class="modal-content">
                         <div class="modal-body">
-                            Tem certeza que deseja excluir o participante?
+                            {% trans "Tem certeza que deseja excluir o participante?" %}
                         </div>
                         <div class="modal-footer">
-                            <button type="button" class="btn btn-default" data-dismiss="modal">Cancelar</button>
+                            <button type="button" class="btn btn-default" data-dismiss="modal">{% trans "Cancelar" %}</button>
                             <button type="button" class="btn btn-primary" id="removePatient"
-                                    style="background-color: indianred; color: #ffffff">Excluir
+                                    style="background-color: indianred; color: #ffffff">{% trans "Excluir" %}
                             </button>
                         </div>
                     </div>

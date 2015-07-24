@@ -5,7 +5,7 @@ import datetime
 
 from django.db import models
 from django.core.exceptions import ValidationError
-from django.utils.translation import ugettext as _
+from django.utils.translation import ugettext_lazy as _
 from django.contrib.auth.models import User
 from simple_history.models import HistoricalRecords
 
@@ -15,7 +15,7 @@ from patient.validation import CPF
 
 def validate_date_questionnaire_response(value):
     if value > datetime.date.today():
-        raise ValidationError('Data de preenchimento não pode ser maior que a data de hoje.')
+        raise ValidationError(_(u'Data de preenchimento não pode ser maior que a data de hoje.'))
 
 
 # Valida CPF
@@ -23,14 +23,14 @@ def validate_cpf(value):
     validation = CPF(value)
     if not validation.isValid():
         # raise ValidationError(u'CPF %s não é válido' % value)
-        raise ValidationError(_('CPF %s não é válido') % value)
+        raise ValidationError(_(u'CPF %(CPF)s não é válido') % {"CPF": value})
 
 
 # Valida data de nascimento:
 # data de nascimento maior que a data atual
 def validate_date_birth(value):
     if value > datetime.date.today():
-        raise ValidationError(_('Data de nascimento não pode ser maior que a data de hoje.'))
+        raise ValidationError(_(u'Data de nascimento não pode ser maior que a data de hoje.'))
 
 
 class Payment(models.Model):
@@ -132,7 +132,7 @@ class Patient(models.Model):
 
     class Meta:
         permissions = (
-            ("view_patient", "Can view patient"),
+            ("view_patient", _("Can view patient")),
         )
 
     def get_absolute_url(self):
@@ -155,14 +155,14 @@ class Telephone(models.Model):
     FAX_HOME = 'FH'
     PAGER = 'PA'
     OTHER = 'OT'
-    TYPE_CHOICES = ((MOBILE, "Celular"),
-                    (HOME, "Residencial"),
-                    (WORK, "Comercial"),
-                    (MAIN, "Principal"),
-                    (FAX_WORK, "Fax comercial"),
-                    (FAX_HOME, "Fax residencial"),
-                    (PAGER, "Pager"),
-                    (OTHER, "Outros"))
+    TYPE_CHOICES = ((MOBILE, _("Celular")),
+                    (HOME, _("Residencial")),
+                    (WORK, _("Comercial")),
+                    (MAIN, _("Principal")),
+                    (FAX_WORK, _("Fax comercial")),
+                    (FAX_HOME, _("Fax residencial")),
+                    (PAGER, _("Pager")),
+                    (OTHER, _("Outros")))
 
     type = models.CharField(max_length=15, choices=TYPE_CHOICES, blank=True)
     note = models.CharField(max_length=50, blank=True)
@@ -298,7 +298,7 @@ class MedicalRecordData(models.Model):
 
     class Meta:
         permissions = (
-            ("view_medicalrecorddata", "Can view medical record"),
+            ("view_medicalrecorddata", _("Can view medical record")),
         )
 
     def __unicode__(self):
@@ -342,7 +342,9 @@ class ComplementaryExam(models.Model):
 
 
 def get_user_dir(instance, filename):
-    return "exams/%s/%s/%s" % (instance.exam.diagnosis.medical_record_data.patient.pk, instance.exam.pk, filename)
+    return _("exams/%(patient)s/%(exam)s/%(filename)s") % \
+        {'patient': instance.exam.diagnosis.medical_record_data.patient.pk,
+         'exam': instance.exam.pk, 'filename': filename}
 
 
 class ExamFile(models.Model):
@@ -365,8 +367,8 @@ class QuestionnaireResponse(models.Model):
 
     class Meta:
         permissions = (
-            ("view_questionnaireresponse", "Can view questionnaire response"),
+            ("view_questionnaireresponse", _("Can view questionnaire response")),
         )
 
     def __unicode__(self):  # Python 3: def __str__(self):
-        return "token id: " + str(self.token_id)
+        return _("token id: ") + str(self.token_id)
