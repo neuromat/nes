@@ -1,33 +1,30 @@
 # -*- coding: utf-8 -*-
 from south.utils import datetime_utils as datetime
 from south.db import db
-from south.v2 import DataMigration
+from south.v2 import SchemaMigration
 from django.db import models
 
-class Migration(DataMigration):
 
-    depends_on = (
-        ("survey", "0001_initial.py"),
-    )
+class Migration(SchemaMigration):
 
     def forwards(self, orm):
-        # Note: Don't use "from appname.models import ModelName".
-        # Use orm.ModelName to refer to models in this application,
-        # and orm['appname.ModelName'] for models in other applications.
+        # Deleting model 'Sequence'
+        db.delete_table(u'experiment_sequence')
 
-        for questionnaire in orm.Questionnaire.objects.all():
-            survey = orm['survey.Survey']()
-            try:
-                survey = orm['survey.Survey'].objects.get(lime_survey_id=questionnaire.lime_survey_id)
-            except survey.DoesNotExist:
-                survey.lime_survey_id = questionnaire.lime_survey_id
-                survey.is_initial_evaluation = False
-                survey.save()
-            questionnaire.survey = survey
-            questionnaire.save()
+        # Changing field 'ComponentConfiguration.parent'
+        db.alter_column(u'experiment_componentconfiguration', 'parent_id', self.gf('django.db.models.fields.related.ForeignKey')(null=True, to=orm['experiment.Block']))
 
     def backwards(self, orm):
-        "Write your backwards methods here."
+        # Adding model 'Sequence'
+        db.create_table(u'experiment_sequence', (
+            (u'component_ptr', self.gf('django.db.models.fields.related.OneToOneField')(to=orm['experiment.Component'], unique=True, primary_key=True)),
+            ('has_random_components', self.gf('django.db.models.fields.BooleanField')()),
+            ('number_of_mandatory_components', self.gf('django.db.models.fields.IntegerField')(null=True, blank=True)),
+        ))
+        db.send_create_signal(u'experiment', ['Sequence'])
+
+        # Changing field 'ComponentConfiguration.parent'
+        db.alter_column(u'experiment_componentconfiguration', 'parent_id', self.gf('django.db.models.fields.related.ForeignKey')(null=True, to=orm['experiment.Component']))
 
     models = {
         u'auth.group': {
@@ -75,9 +72,7 @@ class Migration(DataMigration):
         u'experiment.component': {
             'Meta': {'object_name': 'Component'},
             'component_type': ('django.db.models.fields.CharField', [], {'max_length': '15'}),
-            'description': ('django.db.models.fields.TextField', [], {'null': 'True', 'blank': 'True'}),
-            'duration_unit': ('django.db.models.fields.CharField', [], {'max_length': '15', 'null': 'True', 'blank': 'True'}),
-            'duration_value': ('django.db.models.fields.IntegerField', [], {'null': 'True', 'blank': 'True'}),
+            'description': ('django.db.models.fields.CharField', [], {'max_length': '1500', 'null': 'True', 'blank': 'True'}),
             'experiment': ('django.db.models.fields.related.ForeignKey', [], {'to': u"orm['experiment.Experiment']"}),
             u'id': ('django.db.models.fields.AutoField', [], {'primary_key': 'True'}),
             'identification': ('django.db.models.fields.CharField', [], {'max_length': '50'})
@@ -86,25 +81,24 @@ class Migration(DataMigration):
             'Meta': {'unique_together': "(('parent', 'order'),)", 'object_name': 'ComponentConfiguration'},
             'component': ('django.db.models.fields.related.ForeignKey', [], {'related_name': "'configuration'", 'to': u"orm['experiment.Component']"}),
             u'id': ('django.db.models.fields.AutoField', [], {'primary_key': 'True'}),
-            'interval_between_repetitions_unit': ('django.db.models.fields.CharField', [], {'max_length': '15', 'null': 'True', 'blank': 'True'}),
+            'interval_between_repetitions_unit': ('django.db.models.fields.related.ForeignKey', [], {'to': u"orm['experiment.TimeUnit']", 'null': 'True', 'blank': 'True'}),
             'interval_between_repetitions_value': ('django.db.models.fields.IntegerField', [], {'null': 'True', 'blank': 'True'}),
             'name': ('django.db.models.fields.CharField', [], {'max_length': '50', 'null': 'True', 'blank': 'True'}),
-            'number_of_repetitions': ('django.db.models.fields.IntegerField', [], {'default': '1', 'null': 'True', 'blank': 'True'}),
+            'number_of_repetitions': ('django.db.models.fields.IntegerField', [], {'null': 'True', 'blank': 'True'}),
             'order': ('django.db.models.fields.IntegerField', [], {}),
-            'parent': ('django.db.models.fields.related.ForeignKey', [], {'related_name': "'children'", 'null': 'True', 'to': u"orm['experiment.Block']"}),
-            'random_position': ('django.db.models.fields.NullBooleanField', [], {'null': 'True', 'blank': 'True'})
+            'parent': ('django.db.models.fields.related.ForeignKey', [], {'related_name': "'children'", 'null': 'True', 'to': u"orm['experiment.Block']"})
         },
         u'experiment.experiment': {
             'Meta': {'object_name': 'Experiment'},
-            'description': ('django.db.models.fields.TextField', [], {}),
+            'description': ('django.db.models.fields.CharField', [], {'max_length': '150'}),
             u'id': ('django.db.models.fields.AutoField', [], {'primary_key': 'True'}),
-            'research_project': ('django.db.models.fields.related.ForeignKey', [], {'to': u"orm['experiment.ResearchProject']"}),
-            'title': ('django.db.models.fields.CharField', [], {'max_length': '150'})
+            'research_project': ('django.db.models.fields.related.ForeignKey', [], {'to': u"orm['experiment.ResearchProject']", 'null': 'True', 'blank': 'True'}),
+            'title': ('django.db.models.fields.CharField', [], {'max_length': '50'})
         },
         u'experiment.group': {
             'Meta': {'object_name': 'Group'},
             'classification_of_diseases': ('django.db.models.fields.related.ManyToManyField', [], {'to': u"orm['patient.ClassificationOfDiseases']", 'null': 'True', 'symmetrical': 'False'}),
-            'description': ('django.db.models.fields.TextField', [], {}),
+            'description': ('django.db.models.fields.CharField', [], {'max_length': '150'}),
             'experiment': ('django.db.models.fields.related.ForeignKey', [], {'to': u"orm['experiment.Experiment']"}),
             'experimental_protocol': ('django.db.models.fields.related.ForeignKey', [], {'to': u"orm['experiment.Component']", 'null': 'True'}),
             u'id': ('django.db.models.fields.AutoField', [], {'primary_key': 'True'}),
@@ -112,24 +106,37 @@ class Migration(DataMigration):
         },
         u'experiment.historicalexperiment': {
             'Meta': {'ordering': "(u'-history_date', u'-history_id')", 'object_name': 'HistoricalExperiment'},
-            'description': ('django.db.models.fields.TextField', [], {}),
+            'description': ('django.db.models.fields.CharField', [], {'max_length': '150'}),
             u'history_date': ('django.db.models.fields.DateTimeField', [], {}),
             u'history_id': ('django.db.models.fields.AutoField', [], {'primary_key': 'True'}),
             u'history_type': ('django.db.models.fields.CharField', [], {'max_length': '1'}),
             u'history_user': ('django.db.models.fields.related.ForeignKey', [], {'to': u"orm['auth.User']", 'null': 'True'}),
             u'id': ('django.db.models.fields.IntegerField', [], {'db_index': 'True', 'blank': 'True'}),
             'research_project_id': ('django.db.models.fields.IntegerField', [], {'db_index': 'True', 'null': 'True', 'blank': 'True'}),
-            'title': ('django.db.models.fields.CharField', [], {'max_length': '150'})
+            'title': ('django.db.models.fields.CharField', [], {'max_length': '50'})
+        },
+        u'experiment.historicalquestionnaireconfiguration': {
+            'Meta': {'ordering': "(u'-history_date', u'-history_id')", 'object_name': 'HistoricalQuestionnaireConfiguration'},
+            'group_id': ('django.db.models.fields.IntegerField', [], {'db_index': 'True', 'null': 'True', 'blank': 'True'}),
+            u'history_date': ('django.db.models.fields.DateTimeField', [], {}),
+            u'history_id': ('django.db.models.fields.AutoField', [], {'primary_key': 'True'}),
+            u'history_type': ('django.db.models.fields.CharField', [], {'max_length': '1'}),
+            u'history_user': ('django.db.models.fields.related.ForeignKey', [], {'to': u"orm['auth.User']", 'null': 'True'}),
+            u'id': ('django.db.models.fields.IntegerField', [], {'db_index': 'True', 'blank': 'True'}),
+            'interval_between_fills_unit_id': ('django.db.models.fields.IntegerField', [], {'db_index': 'True', 'null': 'True', 'blank': 'True'}),
+            'interval_between_fills_value': ('django.db.models.fields.IntegerField', [], {'null': 'True', 'blank': 'True'}),
+            'lime_survey_id': ('django.db.models.fields.IntegerField', [], {}),
+            'number_of_fills': ('django.db.models.fields.IntegerField', [], {'null': 'True', 'blank': 'True'})
         },
         u'experiment.historicalquestionnaireresponse': {
             'Meta': {'ordering': "(u'-history_date', u'-history_id')", 'object_name': 'HistoricalQuestionnaireResponse'},
-            'component_configuration_id': ('django.db.models.fields.IntegerField', [], {'db_index': 'True', 'null': 'True', 'blank': 'True'}),
             'date': ('django.db.models.fields.DateField', [], {'default': 'datetime.date.today'}),
             u'history_date': ('django.db.models.fields.DateTimeField', [], {}),
             u'history_id': ('django.db.models.fields.AutoField', [], {'primary_key': 'True'}),
             u'history_type': ('django.db.models.fields.CharField', [], {'max_length': '1'}),
             u'history_user': ('django.db.models.fields.related.ForeignKey', [], {'to': u"orm['auth.User']", 'null': 'True'}),
             u'id': ('django.db.models.fields.IntegerField', [], {'db_index': 'True', 'blank': 'True'}),
+            'questionnaire_configuration_id': ('django.db.models.fields.IntegerField', [], {'db_index': 'True', 'null': 'True', 'blank': 'True'}),
             'questionnaire_responsible_id': ('django.db.models.fields.IntegerField', [], {'db_index': 'True', 'null': 'True', 'blank': 'True'}),
             'subject_of_group_id': ('django.db.models.fields.IntegerField', [], {'db_index': 'True', 'null': 'True', 'blank': 'True'}),
             'token_id': ('django.db.models.fields.IntegerField', [], {})
@@ -146,26 +153,37 @@ class Migration(DataMigration):
         },
         u'experiment.pause': {
             'Meta': {'object_name': 'Pause', '_ormbases': [u'experiment.Component']},
-            u'component_ptr': ('django.db.models.fields.related.OneToOneField', [], {'to': u"orm['experiment.Component']", 'unique': 'True', 'primary_key': 'True'})
+            u'component_ptr': ('django.db.models.fields.related.OneToOneField', [], {'to': u"orm['experiment.Component']", 'unique': 'True', 'primary_key': 'True'}),
+            'duration': ('django.db.models.fields.IntegerField', [], {}),
+            'duration_unit': ('django.db.models.fields.related.ForeignKey', [], {'to': u"orm['experiment.TimeUnit']", 'null': 'True', 'blank': 'True'})
         },
         u'experiment.questionnaire': {
             'Meta': {'object_name': 'Questionnaire', '_ormbases': [u'experiment.Component']},
             u'component_ptr': ('django.db.models.fields.related.OneToOneField', [], {'to': u"orm['experiment.Component']", 'unique': 'True', 'primary_key': 'True'}),
-            'lime_survey_id': ('django.db.models.fields.IntegerField', [], {'null': 'True', 'blank': 'True'}),
-            'survey': ('django.db.models.fields.related.ForeignKey', [], {'to': u"orm['survey.Survey']", 'null': 'True', 'blank': 'True'})
+            'lime_survey_id': ('django.db.models.fields.IntegerField', [], {}),
+            'used_also_outside_an_experiment': ('django.db.models.fields.BooleanField', [], {'default': 'False'})
+        },
+        u'experiment.questionnaireconfiguration': {
+            'Meta': {'unique_together': "(('lime_survey_id', 'group'),)", 'object_name': 'QuestionnaireConfiguration'},
+            'group': ('django.db.models.fields.related.ForeignKey', [], {'to': u"orm['experiment.Group']", 'on_delete': 'models.PROTECT'}),
+            u'id': ('django.db.models.fields.AutoField', [], {'primary_key': 'True'}),
+            'interval_between_fills_unit': ('django.db.models.fields.related.ForeignKey', [], {'to': u"orm['experiment.TimeUnit']", 'null': 'True', 'blank': 'True'}),
+            'interval_between_fills_value': ('django.db.models.fields.IntegerField', [], {'null': 'True', 'blank': 'True'}),
+            'lime_survey_id': ('django.db.models.fields.IntegerField', [], {}),
+            'number_of_fills': ('django.db.models.fields.IntegerField', [], {'null': 'True', 'blank': 'True'})
         },
         u'experiment.questionnaireresponse': {
             'Meta': {'object_name': 'QuestionnaireResponse'},
-            'component_configuration': ('django.db.models.fields.related.ForeignKey', [], {'to': u"orm['experiment.ComponentConfiguration']", 'on_delete': 'models.PROTECT'}),
             'date': ('django.db.models.fields.DateField', [], {'default': 'datetime.date.today'}),
             u'id': ('django.db.models.fields.AutoField', [], {'primary_key': 'True'}),
+            'questionnaire_configuration': ('django.db.models.fields.related.ForeignKey', [], {'to': u"orm['experiment.QuestionnaireConfiguration']", 'on_delete': 'models.PROTECT'}),
             'questionnaire_responsible': ('django.db.models.fields.related.ForeignKey', [], {'related_name': "'+'", 'to': u"orm['auth.User']"}),
             'subject_of_group': ('django.db.models.fields.related.ForeignKey', [], {'to': u"orm['experiment.SubjectOfGroup']"}),
             'token_id': ('django.db.models.fields.IntegerField', [], {})
         },
         u'experiment.researchproject': {
             'Meta': {'object_name': 'ResearchProject'},
-            'description': ('django.db.models.fields.TextField', [], {}),
+            'description': ('django.db.models.fields.CharField', [], {'max_length': '1500'}),
             'end_date': ('django.db.models.fields.DateField', [], {'null': 'True', 'blank': 'True'}),
             u'id': ('django.db.models.fields.AutoField', [], {'primary_key': 'True'}),
             'keywords': ('django.db.models.fields.related.ManyToManyField', [], {'to': u"orm['experiment.Keyword']", 'symmetrical': 'False'}),
@@ -196,11 +214,13 @@ class Migration(DataMigration):
         },
         u'experiment.task': {
             'Meta': {'object_name': 'Task', '_ormbases': [u'experiment.Component']},
-            u'component_ptr': ('django.db.models.fields.related.OneToOneField', [], {'to': u"orm['experiment.Component']", 'unique': 'True', 'primary_key': 'True'})
+            u'component_ptr': ('django.db.models.fields.related.OneToOneField', [], {'to': u"orm['experiment.Component']", 'unique': 'True', 'primary_key': 'True'}),
+            'instruction_text': ('django.db.models.fields.CharField', [], {'max_length': '150'})
         },
-        u'experiment.taskfortheexperimenter': {
-            'Meta': {'object_name': 'TaskForTheExperimenter', '_ormbases': [u'experiment.Component']},
-            u'component_ptr': ('django.db.models.fields.related.OneToOneField', [], {'to': u"orm['experiment.Component']", 'unique': 'True', 'primary_key': 'True'})
+        u'experiment.timeunit': {
+            'Meta': {'ordering': "['id']", 'object_name': 'TimeUnit'},
+            u'id': ('django.db.models.fields.AutoField', [], {'primary_key': 'True'}),
+            'name': ('django.db.models.fields.CharField', [], {'max_length': '30'})
         },
         u'patient.classificationofdiseases': {
             'Meta': {'object_name': 'ClassificationOfDiseases'},
@@ -242,14 +262,7 @@ class Migration(DataMigration):
             'state': ('django.db.models.fields.CharField', [], {'max_length': '30', 'null': 'True', 'blank': 'True'}),
             'street': ('django.db.models.fields.CharField', [], {'max_length': '50', 'null': 'True', 'blank': 'True'}),
             'zipcode': ('django.db.models.fields.CharField', [], {'max_length': '12', 'null': 'True', 'blank': 'True'})
-        },
-        u'survey.survey': {
-            'Meta': {'object_name': 'Survey'},
-            u'id': ('django.db.models.fields.AutoField', [], {'primary_key': 'True'}),
-            'is_initial_evaluation': ('django.db.models.fields.BooleanField', [], {'default': 'False'}),
-            'lime_survey_id': ('django.db.models.fields.IntegerField', [], {'unique': 'True'})
         }
     }
 
     complete_apps = ['experiment']
-    symmetrical = True

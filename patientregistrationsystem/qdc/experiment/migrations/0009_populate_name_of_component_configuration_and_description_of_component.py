@@ -1,43 +1,26 @@
 # -*- coding: utf-8 -*-
 from south.utils import datetime_utils as datetime
 from south.db import db
-from south.v2 import SchemaMigration
+from south.v2 import DataMigration
 from django.db import models
 
-
-class Migration(SchemaMigration):
+class Migration(DataMigration):
 
     def forwards(self, orm):
-        # Deleting model 'Sequence'
-        db.delete_table(u'experiment_sequence')
-
-        # Adding model 'Block'
-        db.create_table(u'experiment_block', (
-            (u'component_ptr', self.gf('django.db.models.fields.related.OneToOneField')(to=orm['experiment.Component'], unique=True, primary_key=True)),
-            ('number_of_mandatory_components', self.gf('django.db.models.fields.IntegerField')(null=True, blank=True)),
-            ('type', self.gf('django.db.models.fields.CharField')(max_length=20)),
-        ))
-        db.send_create_signal(u'experiment', ['Block'])
-
-
-        # Changing field 'ComponentConfiguration.parent'
-        db.alter_column(u'experiment_componentconfiguration', 'parent_id', self.gf('django.db.models.fields.related.ForeignKey')(null=True, to=orm['experiment.Block']))
+        # Note: Don't use "from appname.models import ModelName".
+        # Use orm.ModelName to refer to models in this application,
+        # and orm['appname.ModelName'] for models in other applications.
+        # No need to do anythig. The important part of this migration is the backwards.
+        pass
 
     def backwards(self, orm):
-        # Adding model 'Sequence'
-        db.create_table(u'experiment_sequence', (
-            (u'component_ptr', self.gf('django.db.models.fields.related.OneToOneField')(to=orm['experiment.Component'], unique=True, primary_key=True)),
-            ('has_random_components', self.gf('django.db.models.fields.BooleanField')()),
-            ('number_of_mandatory_components', self.gf('django.db.models.fields.IntegerField')(null=True, blank=True)),
-        ))
-        db.send_create_signal(u'experiment', ['Sequence'])
+        for component in orm.Component.objects.filter(description=None):
+            component.description = 'Description of the component'
+            component.save()
 
-        # Deleting model 'Block'
-        db.delete_table(u'experiment_block')
-
-
-        # Changing field 'ComponentConfiguration.parent'
-        db.alter_column(u'experiment_componentconfiguration', 'parent_id', self.gf('django.db.models.fields.related.ForeignKey')(null=True, to=orm['experiment.Component']))
+        for component_configuration in orm.ComponentConfiguration.objects.filter(name=None):
+            component_configuration.name = 'Name of the use of the component'
+            component_configuration.save()
 
     models = {
         u'auth.group': {
@@ -76,12 +59,6 @@ class Migration(SchemaMigration):
             'model': ('django.db.models.fields.CharField', [], {'max_length': '100'}),
             'name': ('django.db.models.fields.CharField', [], {'max_length': '100'})
         },
-        u'experiment.block': {
-            'Meta': {'object_name': 'Block', '_ormbases': [u'experiment.Component']},
-            u'component_ptr': ('django.db.models.fields.related.OneToOneField', [], {'to': u"orm['experiment.Component']", 'unique': 'True', 'primary_key': 'True'}),
-            'number_of_mandatory_components': ('django.db.models.fields.IntegerField', [], {'null': 'True', 'blank': 'True'}),
-            'type': ('django.db.models.fields.CharField', [], {'max_length': '20'})
-        },
         u'experiment.component': {
             'Meta': {'object_name': 'Component'},
             'component_type': ('django.db.models.fields.CharField', [], {'max_length': '15'}),
@@ -99,7 +76,7 @@ class Migration(SchemaMigration):
             'name': ('django.db.models.fields.CharField', [], {'max_length': '50', 'null': 'True', 'blank': 'True'}),
             'number_of_repetitions': ('django.db.models.fields.IntegerField', [], {'null': 'True', 'blank': 'True'}),
             'order': ('django.db.models.fields.IntegerField', [], {}),
-            'parent': ('django.db.models.fields.related.ForeignKey', [], {'related_name': "'children'", 'null': 'True', 'to': u"orm['experiment.Block']"})
+            'parent': ('django.db.models.fields.related.ForeignKey', [], {'related_name': "'children'", 'null': 'True', 'to': u"orm['experiment.Component']"})
         },
         u'experiment.experiment': {
             'Meta': {'object_name': 'Experiment'},
@@ -113,8 +90,9 @@ class Migration(SchemaMigration):
             'classification_of_diseases': ('django.db.models.fields.related.ManyToManyField', [], {'to': u"orm['patient.ClassificationOfDiseases']", 'null': 'True', 'symmetrical': 'False'}),
             'description': ('django.db.models.fields.CharField', [], {'max_length': '150'}),
             'experiment': ('django.db.models.fields.related.ForeignKey', [], {'to': u"orm['experiment.Experiment']"}),
-            'experimental_protocol': ('django.db.models.fields.related.ForeignKey', [], {'to': u"orm['experiment.Component']", 'null': 'True'}),
+            'experimental_protocol': ('django.db.models.fields.related.ForeignKey', [], {'to': u"orm['experiment.ComponentConfiguration']", 'null': 'True'}),
             u'id': ('django.db.models.fields.AutoField', [], {'primary_key': 'True'}),
+            'instruction': ('django.db.models.fields.CharField', [], {'max_length': '150', 'null': 'True', 'blank': 'True'}),
             'title': ('django.db.models.fields.CharField', [], {'max_length': '50'})
         },
         u'experiment.historicalexperiment': {
@@ -173,8 +151,7 @@ class Migration(SchemaMigration):
         u'experiment.questionnaire': {
             'Meta': {'object_name': 'Questionnaire', '_ormbases': [u'experiment.Component']},
             u'component_ptr': ('django.db.models.fields.related.OneToOneField', [], {'to': u"orm['experiment.Component']", 'unique': 'True', 'primary_key': 'True'}),
-            'lime_survey_id': ('django.db.models.fields.IntegerField', [], {}),
-            'used_also_outside_an_experiment': ('django.db.models.fields.BooleanField', [], {'default': 'False'})
+            'lime_survey_id': ('django.db.models.fields.IntegerField', [], {})
         },
         u'experiment.questionnaireconfiguration': {
             'Meta': {'unique_together': "(('lime_survey_id', 'group'),)", 'object_name': 'QuestionnaireConfiguration'},
@@ -202,6 +179,12 @@ class Migration(SchemaMigration):
             'keywords': ('django.db.models.fields.related.ManyToManyField', [], {'to': u"orm['experiment.Keyword']", 'symmetrical': 'False'}),
             'start_date': ('django.db.models.fields.DateField', [], {}),
             'title': ('django.db.models.fields.CharField', [], {'max_length': '150'})
+        },
+        u'experiment.sequence': {
+            'Meta': {'object_name': 'Sequence', '_ormbases': [u'experiment.Component']},
+            u'component_ptr': ('django.db.models.fields.related.OneToOneField', [], {'to': u"orm['experiment.Component']", 'unique': 'True', 'primary_key': 'True'}),
+            'has_random_components': ('django.db.models.fields.BooleanField', [], {}),
+            'number_of_mandatory_components': ('django.db.models.fields.IntegerField', [], {'null': 'True', 'blank': 'True'})
         },
         u'experiment.stimulus': {
             'Meta': {'object_name': 'Stimulus', '_ormbases': [u'experiment.Component']},
@@ -279,3 +262,4 @@ class Migration(SchemaMigration):
     }
 
     complete_apps = ['experiment']
+    symmetrical = True

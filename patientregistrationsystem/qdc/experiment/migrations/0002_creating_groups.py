@@ -8,7 +8,7 @@ from django.db import models
 class Migration(SchemaMigration):
 
     depends_on = (
-        ("patient", "0001_initial.py"),
+        ("patient", "0002_load_data_from_quiz.py"),
     )
 
     def forwards(self, orm):
@@ -222,11 +222,11 @@ class Migration(SchemaMigration):
         db.delete_column(u'experiment_questionnaireresponse', 'subject_of_group_id')
 
         # Changing field 'QuestionnaireConfiguration.experiment' to be not null
-        db.alter_column(u'experiment_questionnaireconfiguration', 'experiment',
+        db.alter_column(u'experiment_questionnaireconfiguration', 'experiment_id',
                       self.gf('django.db.models.fields.related.ForeignKey')(default=0, to=orm['experiment.Experiment'], on_delete=models.PROTECT))
 
         # Changing field 'experiment_questionnaireresponse' to be not null
-        db.alter_column(u'experiment_questionnaireresponse', 'subject_of_experiment',
+        db.alter_column(u'experiment_questionnaireresponse', 'subject_of_experiment_id',
                       self.gf('django.db.models.fields.related.ForeignKey')(default=0, to=orm['experiment.SubjectOfExperiment']))
 
 

@@ -5,62 +5,63 @@ from south.v2 import DataMigration
 from django.db import models
 
 class Migration(DataMigration):
-
     depends_on = (
-        ("quiz", "0001_initial.py"),
+        ("patient", "0002_load_data_from_quiz.py"),
     )
 
     def forwards(self, orm):
         # Note: Don't use "from appname.models import ModelName".
         # Use orm.ModelName to refer to models in this application,
         # and orm['appname.ModelName'] for models in other applications.
+        pass
 
-        for old in orm['quiz.AlcoholFrequency'].objects.all():
+    def backwards(self, orm):
+        for old in orm['patient.AlcoholFrequency'].objects.all():
             new = orm.AlcoholFrequency(id=old.id,
                                        name=old.name)
             new.save()
 
-        for old in orm['quiz.AlcoholPeriod'].objects.all():
+        for old in orm['patient.AlcoholPeriod'].objects.all():
             new = orm.AlcoholPeriod(id=old.id,
                                     name=old.name)
             new.save()
 
-        for old in orm['quiz.AmountCigarettes'].objects.all():
+        for old in orm['patient.AmountCigarettes'].objects.all():
             new = orm.AmountCigarettes(id=old.id,
                                        name=old.name)
             new.save()
 
-        for old in orm['quiz.Fleshtone'].objects.all():
+        for old in orm['patient.Fleshtone'].objects.all():
             new = orm.Fleshtone(id=old.id,
                                 name=old.name)
             new.save()
 
-        for old in orm['quiz.Gender'].objects.all():
+        for old in orm['patient.Gender'].objects.all():
             new = orm.Gender(id=old.id,
                              name=old.name)
             new.save()
 
-        for old in orm['quiz.MaritalStatus'].objects.all():
+        for old in orm['patient.MaritalStatus'].objects.all():
             new = orm.MaritalStatus(id=old.id,
                                     name=old.name)
             new.save()
 
-        for old in orm['quiz.Payment'].objects.all():
+        for old in orm['patient.Payment'].objects.all():
             new = orm.Payment(id=old.id,
                               name=old.name)
             new.save()
 
-        for old in orm['quiz.Religion'].objects.all():
+        for old in orm['patient.Religion'].objects.all():
             new = orm.Religion(id=old.id,
                                name=old.name)
             new.save()
 
-        for old in orm['quiz.Schooling'].objects.all():
+        for old in orm['patient.Schooling'].objects.all():
             new = orm.Schooling(id=old.id,
                                 name=old.name)
             new.save()
 
-        for old in orm['quiz.ClassificationOfDiseases'].objects.all():
+        for old in orm['patient.ClassificationOfDiseases'].objects.all():
             new = orm.ClassificationOfDiseases(id=old.id,
                                                code=old.code,
                                                description=old.description,
@@ -68,7 +69,7 @@ class Migration(DataMigration):
                                                parent_id=old.parent_id)
             new.save()
 
-        for old in orm['quiz.Patient'].objects.all():
+        for old in orm['patient.Patient'].objects.all():
             new = orm.Patient(id=old.id,
                               cpf=old.cpf,
                               rg=old.rg,
@@ -94,7 +95,7 @@ class Migration(DataMigration):
                               changed_by_id=old.changed_by_id)
             new.save()
 
-        for old in orm['quiz.SocialDemographicData'].objects.all():
+        for old in orm['patient.SocialDemographicData'].objects.all():
             new = orm.SocialDemographicData(id=old.id,
                                             patient_id=old.patient_id,
                                             religion_id=old.religion_id,
@@ -117,7 +118,7 @@ class Migration(DataMigration):
                                             changed_by_id=old.changed_by_id)
             new.save()
 
-        for old in orm['quiz.HistoricalPatient'].objects.all():
+        for old in orm['patient.HistoricalPatient'].objects.all():
             new = orm.HistoricalPatient(id=old.id,
                                         cpf=old.cpf,
                                         rg=old.rg,
@@ -147,7 +148,7 @@ class Migration(DataMigration):
                                         history_type=old.history_type)
             new.save()
 
-        for old in orm['quiz.HistoricalSocialDemographicData'].objects.all():
+        for old in orm['patient.HistoricalSocialDemographicData'].objects.all():
             new = orm.HistoricalSocialDemographicData(id=old.id,
                                                       patient_id=old.patient_id,
                                                       religion_id=old.religion_id,
@@ -174,7 +175,7 @@ class Migration(DataMigration):
                                                       history_type=old.history_type)
             new.save()
 
-        for old in orm['quiz.HistoricalSocialHistoryData'].objects.all():
+        for old in orm['patient.HistoricalSocialHistoryData'].objects.all():
             new = orm.HistoricalSocialHistoryData(id=old.id,
                                                   patient_id=old.patient_id,
                                                   smoker=old.smoker,
@@ -191,7 +192,7 @@ class Migration(DataMigration):
                                                   history_type=old.history_type)
             new.save()
 
-        for old in orm['quiz.SocialHistoryData'].objects.all():
+        for old in orm['patient.SocialHistoryData'].objects.all():
             new = orm.SocialHistoryData(id=old.id,
                                         patient_id=old.patient_id,
                                         smoker=old.smoker,
@@ -204,14 +205,14 @@ class Migration(DataMigration):
                                         changed_by_id=old.changed_by_id)
             new.save()
 
-        for old in orm['quiz.MedicalRecordData'].objects.all():
+        for old in orm['patient.MedicalRecordData'].objects.all():
             new = orm.MedicalRecordData(id=old.id,
                                         patient_id=old.patient_id,
                                         record_date=old.record_date,
                                         record_responsible_id=old.record_responsible_id)
             new.save()
 
-        for old in orm['quiz.Diagnosis'].objects.all():
+        for old in orm['patient.Diagnosis'].objects.all():
             new = orm.Diagnosis(id=old.id,
                                 medical_record_data_id=old.medical_record_data_id,
                                 classification_of_diseases_id=old.classification_of_diseases_id,
@@ -220,7 +221,7 @@ class Migration(DataMigration):
             new.save()
 
 
-        for old in orm['quiz.ComplementaryExam'].objects.all():
+        for old in orm['patient.ComplementaryExam'].objects.all():
             new = orm.ComplementaryExam(id=old.id,
                                         diagnosis_id=old.diagnosis_id,
                                         date=old.date,
@@ -231,14 +232,14 @@ class Migration(DataMigration):
             new.save()
 
 
-        for old in orm['quiz.ExamFile'].objects.all():
+        for old in orm['patient.ExamFile'].objects.all():
             new = orm.ExamFile(id=old.id,
                                exam_id=old.exam_id,
                                content=old.content)
             new.save()
 
-    def backwards(self, orm):
-        pass
+
+
 
     models = {
         u'auth.group': {

@@ -8,77 +8,17 @@ from django.db import models
 class Migration(SchemaMigration):
 
     def forwards(self, orm):
-        # Removing unique constraint on 'QuestionnaireConfiguration', fields ['lime_survey_id', 'experiment']
-        db.delete_unique(u'experiment_questionnaireconfiguration', ['lime_survey_id', 'experiment_id'])
-
-        # Removing unique constraint on 'SubjectOfExperiment', fields ['subject', 'experiment']
-        db.delete_unique(u'experiment_subjectofexperiment', ['subject_id', 'experiment_id'])
-
-        # Deleting model 'SubjectOfExperiment'
-        db.delete_table(u'experiment_subjectofexperiment')
-
-        # Deleting field 'HistoricalQuestionnaireConfiguration.experiment_id'
-        db.delete_column(u'experiment_historicalquestionnaireconfiguration', 'experiment_id')
-
-        # Deleting field 'QuestionnaireConfiguration.experiment'
-        db.delete_column(u'experiment_questionnaireconfiguration', 'experiment_id')
-
-        # Deleting field 'HistoricalQuestionnaireResponse.subject_of_experiment_id'
-        db.delete_column(u'experiment_historicalquestionnaireresponse', 'subject_of_experiment_id')
-
-        # Deleting field 'QuestionnaireResponse.subject_of_experiment'
-        db.delete_column(u'experiment_questionnaireresponse', 'subject_of_experiment_id')
-
-        # Changing field 'QuestionnaireConfiguration.group' to be not null
-        db.alter_column(u'experiment_questionnaireconfiguration', 'group_id',
-                      self.gf('django.db.models.fields.related.ForeignKey')(default=0, to=orm['experiment.Group'], on_delete=models.PROTECT))
-
-        # Changing field 'QuestionnaireResponse.subject_of_group' to be not null
-        db.alter_column(u'experiment_questionnaireresponse', 'subject_of_group_id',
-                      self.gf('django.db.models.fields.related.ForeignKey')(default=0, to=orm['experiment.SubjectOfGroup']))
+        # Adding model 'Block'
+        db.create_table(u'experiment_block', (
+            (u'component_ptr', self.gf('django.db.models.fields.related.OneToOneField')(to=orm['experiment.Component'], unique=True, primary_key=True)),
+            ('number_of_mandatory_components', self.gf('django.db.models.fields.IntegerField')(null=True, blank=True)),
+            ('type', self.gf('django.db.models.fields.CharField')(max_length=20)),
+        ))
+        db.send_create_signal(u'experiment', ['Block'])
 
     def backwards(self, orm):
-
-        # Adding model 'SubjectOfExperiment'
-        db.create_table(u'experiment_subjectofexperiment', (
-            ('consent_form', self.gf('django.db.models.fields.files.FileField')(max_length=100, null=True)),
-            ('subject', self.gf('django.db.models.fields.related.ForeignKey')(to=orm['experiment.Subject'])),
-            ('experiment', self.gf('django.db.models.fields.related.ForeignKey')(to=orm['experiment.Experiment'])),
-            (u'id', self.gf('django.db.models.fields.AutoField')(primary_key=True)),
-        ))
-        db.send_create_signal(u'experiment', ['SubjectOfExperiment'])
-
-        # Adding unique constraint on 'SubjectOfExperiment', fields ['subject', 'experiment']
-        db.create_unique(u'experiment_subjectofexperiment', ['subject_id', 'experiment_id'])
-
-        # Adding field 'HistoricalQuestionnaireConfiguration.experiment_id'
-        db.add_column(u'experiment_historicalquestionnaireconfiguration', 'experiment_id',
-                      self.gf('django.db.models.fields.IntegerField')(blank=True, null=True, db_index=True),
-                      keep_default=False)
-
-        # Adding field 'QuestionnaireConfiguration.experiment'
-        db.add_column(u'experiment_questionnaireconfiguration', 'experiment',
-                      self.gf('django.db.models.fields.related.ForeignKey')(blank=True, null=True, to=orm['experiment.Experiment'], on_delete=models.PROTECT),
-                      keep_default=False)
-
-        # Adding unique constraint on 'QuestionnaireConfiguration', fields ['lime_survey_id', 'experiment']
-        db.create_unique(u'experiment_questionnaireconfiguration', ['lime_survey_id', 'experiment_id'])
-
-        # Adding field 'HistoricalQuestionnaireResponse.subject_of_experiment_id'
-        db.add_column(u'experiment_historicalquestionnaireresponse', 'subject_of_experiment_id',
-                      self.gf('django.db.models.fields.IntegerField')(blank=True, null=True, db_index=True),
-                      keep_default=False)
-
-        # Adding field 'QuestionnaireResponse.subject_of_experiment'
-        db.add_column(u'experiment_questionnaireresponse', 'subject_of_experiment',
-                      self.gf('django.db.models.fields.related.ForeignKey')(blank=True, null=True, to=orm['experiment.SubjectOfExperiment']),
-                      keep_default=False)
-
-        # Changing field 'QuestionnaireConfiguration.group' to be nullable
-        db.alter_column(u'experiment_questionnaireconfiguration', 'group_id',
-                      self.gf('django.db.models.fields.related.ForeignKey')(to=orm['experiment.Group'],
-                                                                            null=True,
-                                                                            on_delete=models.PROTECT))
+        # Deleting model 'Block'
+        db.delete_table(u'experiment_block')
 
     models = {
         u'auth.group': {
@@ -117,10 +57,16 @@ class Migration(SchemaMigration):
             'model': ('django.db.models.fields.CharField', [], {'max_length': '100'}),
             'name': ('django.db.models.fields.CharField', [], {'max_length': '100'})
         },
+        u'experiment.block': {
+            'Meta': {'object_name': 'Block', '_ormbases': [u'experiment.Component']},
+            u'component_ptr': ('django.db.models.fields.related.OneToOneField', [], {'to': u"orm['experiment.Component']", 'unique': 'True', 'primary_key': 'True'}),
+            'number_of_mandatory_components': ('django.db.models.fields.IntegerField', [], {'null': 'True', 'blank': 'True'}),
+            'type': ('django.db.models.fields.CharField', [], {'max_length': '20'})
+        },
         u'experiment.component': {
             'Meta': {'object_name': 'Component'},
             'component_type': ('django.db.models.fields.CharField', [], {'max_length': '15'}),
-            'description': ('django.db.models.fields.CharField', [], {'max_length': '150'}),
+            'description': ('django.db.models.fields.CharField', [], {'max_length': '1500', 'null': 'True', 'blank': 'True'}),
             'experiment': ('django.db.models.fields.related.ForeignKey', [], {'to': u"orm['experiment.Experiment']"}),
             u'id': ('django.db.models.fields.AutoField', [], {'primary_key': 'True'}),
             'identification': ('django.db.models.fields.CharField', [], {'max_length': '50'})
@@ -131,15 +77,16 @@ class Migration(SchemaMigration):
             u'id': ('django.db.models.fields.AutoField', [], {'primary_key': 'True'}),
             'interval_between_repetitions_unit': ('django.db.models.fields.related.ForeignKey', [], {'to': u"orm['experiment.TimeUnit']", 'null': 'True', 'blank': 'True'}),
             'interval_between_repetitions_value': ('django.db.models.fields.IntegerField', [], {'null': 'True', 'blank': 'True'}),
-            'name': ('django.db.models.fields.CharField', [], {'max_length': '50'}),
+            'name': ('django.db.models.fields.CharField', [], {'max_length': '50', 'null': 'True', 'blank': 'True'}),
             'number_of_repetitions': ('django.db.models.fields.IntegerField', [], {'null': 'True', 'blank': 'True'}),
             'order': ('django.db.models.fields.IntegerField', [], {}),
-            'parent': ('django.db.models.fields.related.ForeignKey', [], {'related_name': "'children'", 'null': 'True', 'to': u"orm['experiment.Component']"})
+            'parent': ('django.db.models.fields.related.ForeignKey', [], {'related_name': "'children'", 'null': 'True', 'to': u"orm['experiment.Sequence']"})
         },
         u'experiment.experiment': {
             'Meta': {'object_name': 'Experiment'},
             'description': ('django.db.models.fields.CharField', [], {'max_length': '150'}),
             u'id': ('django.db.models.fields.AutoField', [], {'primary_key': 'True'}),
+            'research_project': ('django.db.models.fields.related.ForeignKey', [], {'to': u"orm['experiment.ResearchProject']", 'null': 'True', 'blank': 'True'}),
             'title': ('django.db.models.fields.CharField', [], {'max_length': '50'})
         },
         u'experiment.group': {
@@ -147,9 +94,8 @@ class Migration(SchemaMigration):
             'classification_of_diseases': ('django.db.models.fields.related.ManyToManyField', [], {'to': u"orm['patient.ClassificationOfDiseases']", 'null': 'True', 'symmetrical': 'False'}),
             'description': ('django.db.models.fields.CharField', [], {'max_length': '150'}),
             'experiment': ('django.db.models.fields.related.ForeignKey', [], {'to': u"orm['experiment.Experiment']"}),
-            'experimental_protocol': ('django.db.models.fields.related.ForeignKey', [], {'to': u"orm['experiment.ComponentConfiguration']", 'null': 'True'}),
+            'experimental_protocol': ('django.db.models.fields.related.ForeignKey', [], {'to': u"orm['experiment.Component']", 'null': 'True'}),
             u'id': ('django.db.models.fields.AutoField', [], {'primary_key': 'True'}),
-            'instruction': ('django.db.models.fields.CharField', [], {'max_length': '150', 'null': 'True', 'blank': 'True'}),
             'title': ('django.db.models.fields.CharField', [], {'max_length': '50'})
         },
         u'experiment.historicalexperiment': {
@@ -160,6 +106,7 @@ class Migration(SchemaMigration):
             u'history_type': ('django.db.models.fields.CharField', [], {'max_length': '1'}),
             u'history_user': ('django.db.models.fields.related.ForeignKey', [], {'to': u"orm['auth.User']", 'null': 'True'}),
             u'id': ('django.db.models.fields.IntegerField', [], {'db_index': 'True', 'blank': 'True'}),
+            'research_project_id': ('django.db.models.fields.IntegerField', [], {'db_index': 'True', 'null': 'True', 'blank': 'True'}),
             'title': ('django.db.models.fields.CharField', [], {'max_length': '50'})
         },
         u'experiment.historicalquestionnaireconfiguration': {
@@ -191,7 +138,12 @@ class Migration(SchemaMigration):
         u'experiment.instruction': {
             'Meta': {'object_name': 'Instruction', '_ormbases': [u'experiment.Component']},
             u'component_ptr': ('django.db.models.fields.related.OneToOneField', [], {'to': u"orm['experiment.Component']", 'unique': 'True', 'primary_key': 'True'}),
-            'text': ('django.db.models.fields.CharField', [], {'max_length': '150'})
+            'text': ('django.db.models.fields.TextField', [], {})
+        },
+        u'experiment.keyword': {
+            'Meta': {'object_name': 'Keyword'},
+            u'id': ('django.db.models.fields.AutoField', [], {'primary_key': 'True'}),
+            'name': ('django.db.models.fields.CharField', [], {'max_length': '50'})
         },
         u'experiment.pause': {
             'Meta': {'object_name': 'Pause', '_ormbases': [u'experiment.Component']},
@@ -202,7 +154,8 @@ class Migration(SchemaMigration):
         u'experiment.questionnaire': {
             'Meta': {'object_name': 'Questionnaire', '_ormbases': [u'experiment.Component']},
             u'component_ptr': ('django.db.models.fields.related.OneToOneField', [], {'to': u"orm['experiment.Component']", 'unique': 'True', 'primary_key': 'True'}),
-            'lime_survey_id': ('django.db.models.fields.IntegerField', [], {})
+            'lime_survey_id': ('django.db.models.fields.IntegerField', [], {}),
+            'used_also_outside_an_experiment': ('django.db.models.fields.BooleanField', [], {'default': 'False'})
         },
         u'experiment.questionnaireconfiguration': {
             'Meta': {'unique_together': "(('lime_survey_id', 'group'),)", 'object_name': 'QuestionnaireConfiguration'},
@@ -225,7 +178,10 @@ class Migration(SchemaMigration):
         u'experiment.researchproject': {
             'Meta': {'object_name': 'ResearchProject'},
             'description': ('django.db.models.fields.CharField', [], {'max_length': '1500'}),
+            'end_date': ('django.db.models.fields.DateField', [], {'null': 'True', 'blank': 'True'}),
             u'id': ('django.db.models.fields.AutoField', [], {'primary_key': 'True'}),
+            'keywords': ('django.db.models.fields.related.ManyToManyField', [], {'to': u"orm['experiment.Keyword']", 'symmetrical': 'False'}),
+            'start_date': ('django.db.models.fields.DateField', [], {}),
             'title': ('django.db.models.fields.CharField', [], {'max_length': '150'})
         },
         u'experiment.sequence': {
@@ -288,9 +244,7 @@ class Migration(SchemaMigration):
             'Meta': {'object_name': 'Patient'},
             'address_complement': ('django.db.models.fields.CharField', [], {'max_length': '50', 'null': 'True', 'blank': 'True'}),
             'address_number': ('django.db.models.fields.IntegerField', [], {'max_length': '6', 'null': 'True', 'blank': 'True'}),
-            'cellphone': ('django.db.models.fields.CharField', [], {'max_length': '15', 'null': 'True', 'blank': 'True'}),
             'changed_by': ('django.db.models.fields.related.ForeignKey', [], {'to': u"orm['auth.User']"}),
-            'citizenship': ('django.db.models.fields.CharField', [], {'max_length': '50', 'null': 'True', 'blank': 'True'}),
             'city': ('django.db.models.fields.CharField', [], {'max_length': '30', 'null': 'True', 'blank': 'True'}),
             'country': ('django.db.models.fields.CharField', [], {'max_length': '30', 'null': 'True', 'blank': 'True'}),
             'cpf': ('django.db.models.fields.CharField', [], {'max_length': '15', 'unique': 'True', 'null': 'True', 'blank': 'True'}),
@@ -302,8 +256,7 @@ class Migration(SchemaMigration):
             'marital_status': ('django.db.models.fields.related.ForeignKey', [], {'to': u"orm['patient.MaritalStatus']", 'null': 'True', 'blank': 'True'}),
             'medical_record': ('django.db.models.fields.CharField', [], {'max_length': '25', 'null': 'True', 'blank': 'True'}),
             'name': ('django.db.models.fields.CharField', [], {'max_length': '50'}),
-            'natural_of': ('django.db.models.fields.CharField', [], {'max_length': '50', 'null': 'True', 'blank': 'True'}),
-            'phone': ('django.db.models.fields.CharField', [], {'max_length': '15', 'null': 'True', 'blank': 'True'}),
+            'origin': ('django.db.models.fields.CharField', [], {'max_length': '50', 'null': 'True', 'blank': 'True'}),
             'removed': ('django.db.models.fields.BooleanField', [], {'default': 'False'}),
             'rg': ('django.db.models.fields.CharField', [], {'max_length': '15', 'null': 'True', 'blank': 'True'}),
             'state': ('django.db.models.fields.CharField', [], {'max_length': '30', 'null': 'True', 'blank': 'True'}),

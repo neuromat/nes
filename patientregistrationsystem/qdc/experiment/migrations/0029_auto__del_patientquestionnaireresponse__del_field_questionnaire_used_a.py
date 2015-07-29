@@ -7,6 +7,10 @@ from django.db import models
 
 class Migration(SchemaMigration):
 
+    depends_on = (
+        ("survey", "0001_initial.py"),
+    )
+
     def forwards(self, orm):
         # Deleting model 'PatientQuestionnaireResponse'
         db.delete_table(u'experiment_patientquestionnaireresponse')

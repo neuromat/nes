@@ -7,6 +7,10 @@ from django.db import models
 
 class Migration(SchemaMigration):
 
+    depends_on = (
+        ("quiz", "0001_initial.py"),
+    )
+
     def forwards(self, orm):
         # Adding model 'Subject'
         db.create_table(u'experiment_subject', (
