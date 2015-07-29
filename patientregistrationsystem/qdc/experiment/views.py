@@ -339,7 +339,7 @@ def experiment_update(request, experiment_id, template_name="experiment/experime
 
 
 @login_required
-@permission_required('experiment.add_group')
+@permission_required('experiment.add_subject')
 def group_create(request, experiment_id, template_name="experiment/group_register.html"):
     experiment = get_object_or_404(Experiment, pk=experiment_id)
 
