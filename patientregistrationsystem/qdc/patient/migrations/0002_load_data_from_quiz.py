@@ -4,6 +4,17 @@ from south.db import db
 from south.v2 import DataMigration
 from django.db import models
 
+
+def convert_from_string_to_boolnull(original_value):
+    new_value = None
+
+    if original_value == "1":
+        new_value = True
+    elif original_value == "0":
+        new_value = False
+
+    return new_value
+
 class Migration(DataMigration):
 
     depends_on = (
@@ -100,7 +111,7 @@ class Migration(DataMigration):
                                             religion_id=old.religion_id,
                                             profession=old.profession,
                                             occupation=old.occupation,
-                                            benefit_government=old.benefit_government,
+                                            benefit_government=convert_from_string_to_boolnull(old.benefit_government),
                                             payment_id=old.payment_id,
                                             flesh_tone_id=old.flesh_tone_id,
                                             schooling_id=old.schooling_id,
@@ -148,39 +159,40 @@ class Migration(DataMigration):
             new.save()
 
         for old in orm['quiz.HistoricalSocialDemographicData'].objects.all():
-            new = orm.HistoricalSocialDemographicData(id=old.id,
-                                                      patient_id=old.patient_id,
-                                                      religion_id=old.religion_id,
-                                                      profession=old.profession,
-                                                      occupation=old.occupation,
-                                                      benefit_government=old.benefit_government,
-                                                      payment_id=old.payment_id,
-                                                      flesh_tone_id=old.flesh_tone_id,
-                                                      schooling_id=old.schooling_id,
-                                                      tv=old.tv,
-                                                      dvd=old.dvd,
-                                                      radio=old.radio,
-                                                      bath=old.bath,
-                                                      automobile=old.automobile,
-                                                      wash_machine=old.wash_machine,
-                                                      refrigerator=old.refrigerator,
-                                                      freezer=old.freezer,
-                                                      house_maid=old.house_maid,
-                                                      social_class=old.social_class,
-                                                      changed_by_id=old.changed_by_id,
-                                                      history_id=old.history_id,
-                                                      history_date=old.history_date,
-                                                      history_user_id=old.history_user_id,
-                                                      history_type=old.history_type)
+            new = orm.HistoricalSocialDemographicData(
+                id=old.id,
+                patient_id=old.patient_id,
+                religion_id=old.religion_id,
+                profession=old.profession,
+                occupation=old.occupation,
+                benefit_government=convert_from_string_to_boolnull(old.benefit_government),
+                payment_id=old.payment_id,
+                flesh_tone_id=old.flesh_tone_id,
+                schooling_id=old.schooling_id,
+                tv=old.tv,
+                dvd=old.dvd,
+                radio=old.radio,
+                bath=old.bath,
+                automobile=old.automobile,
+                wash_machine=old.wash_machine,
+                refrigerator=old.refrigerator,
+                freezer=old.freezer,
+                house_maid=old.house_maid,
+                social_class=old.social_class,
+                changed_by_id=old.changed_by_id,
+                history_id=old.history_id,
+                history_date=old.history_date,
+                history_user_id=old.history_user_id,
+                history_type=old.history_type)
             new.save()
 
         for old in orm['quiz.HistoricalSocialHistoryData'].objects.all():
             new = orm.HistoricalSocialHistoryData(id=old.id,
                                                   patient_id=old.patient_id,
-                                                  smoker=old.smoker,
+                                                  smoker=convert_from_string_to_boolnull(old.smoker),
                                                   amount_cigarettes_id=old.amount_cigarettes_id,
-                                                  ex_smoker=old.ex_smoker,
-                                                  alcoholic=old.alcoholic,
+                                                  ex_smoker=convert_from_string_to_boolnull(old.ex_smoker),
+                                                  alcoholic=convert_from_string_to_boolnull(old.alcoholic),
                                                   alcohol_frequency_id=old.alcohol_frequency_id,
                                                   alcohol_period_id=old.alcohol_period_id,
                                                   drugs=old.drugs,
@@ -194,10 +206,10 @@ class Migration(DataMigration):
         for old in orm['quiz.SocialHistoryData'].objects.all():
             new = orm.SocialHistoryData(id=old.id,
                                         patient_id=old.patient_id,
-                                        smoker=old.smoker,
+                                        smoker=convert_from_string_to_boolnull(old.smoker),
                                         amount_cigarettes_id=old.amount_cigarettes_id,
-                                        ex_smoker=old.ex_smoker,
-                                        alcoholic=old.alcoholic,
+                                        ex_smoker=convert_from_string_to_boolnull(old.ex_smoker),
+                                        alcoholic=convert_from_string_to_boolnull(old.alcoholic),
                                         alcohol_frequency_id=old.alcohol_frequency_id,
                                         alcohol_period_id=old.alcohol_period_id,
                                         drugs=old.drugs,
