@@ -111,6 +111,12 @@ class Migration(DataMigration):
                 qr.questionnaire_configuration = qc
                 qr.save()
 
+        # To avoid problems in migration 0010_auto__chg_field_group_experimental_protocol, we delete the experimental
+        # protocol of all groups.
+        for group in orm.Group.objects.all():
+            group.experimental_protocol = None
+            group.save()
+
     models = {
         u'auth.group': {
             'Meta': {'object_name': 'Group'},

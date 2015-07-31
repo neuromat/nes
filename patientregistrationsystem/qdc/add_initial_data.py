@@ -12,6 +12,7 @@ from django.contrib.auth.models import Group, Permission
 from django.contrib.contenttypes.models import ContentType
 from patient.models import AlcoholFrequency, AlcoholPeriod, AmountCigarettes, FleshTone, Gender, MaritalStatus, \
     Payment, Religion, Schooling
+from experiment.models import StimulusType
 
 g = Group(name='Administrador')
 g.save()
@@ -207,4 +208,18 @@ s.save()
 s = Schooling(name="5º Ano Fundamental")
 s.save()
 s = Schooling(name="Analfabeto / até 4º Ano Fundamental")
+s.save()
+
+# Stimulus type
+s = StimulusType(name="Auditivo")
+s.save()
+s = StimulusType(name="Gustativo")
+s.save()
+s = StimulusType(name="Interoceptivo")
+s.save()
+s = StimulusType(name="Olfativo")
+s.save()
+s = StimulusType(name="Somatosensorial")
+s.save()
+s = StimulusType(name="Visual")
 s.save()
