@@ -15,10 +15,9 @@ def convert_from_boolnull_to_string(original_value):
     return new_value
 
 
-def correct_last_value_of_sequence_used_in_auto_increment(orm, model, table_name, primary_key,
-                                                          should_remove_after_each_insert,
+def correct_last_value_of_sequence_used_in_auto_increment(orm, model, table_name, should_remove_after_each_insert,
                                                           **kwargs):
-    last = orm[table_name].objects.order_by(primary_key).last()
+    last = orm[table_name].objects.order_by("pk").last()
 
     if last is not None:
         for i in range(last.pk):
@@ -51,14 +50,14 @@ class Migration(DataMigration):
         # delete what we included.
 
         correct_last_value_of_sequence_used_in_auto_increment(orm, orm.AlcoholFrequency, 'patient.AlcoholFrequency',
-                                                              'id', False, name="")
+                                                              False, name="")
 
         for old in orm['patient.AlcoholFrequency'].objects.all():
             new = orm.AlcoholFrequency(id=old.id,
                                        name=old.name)
             new.save()
 
-        correct_last_value_of_sequence_used_in_auto_increment(orm, orm.AlcoholPeriod, 'patient.AlcoholPeriod', 'id',
+        correct_last_value_of_sequence_used_in_auto_increment(orm, orm.AlcoholPeriod, 'patient.AlcoholPeriod',
                                                               False, name="")
 
         for old in orm['patient.AlcoholPeriod'].objects.all():
@@ -67,14 +66,14 @@ class Migration(DataMigration):
             new.save()
 
         correct_last_value_of_sequence_used_in_auto_increment(orm, orm.AmountCigarettes, 'patient.AmountCigarettes',
-                                                              'id', False, name="")
+                                                              False, name="")
 
         for old in orm['patient.AmountCigarettes'].objects.all():
             new = orm.AmountCigarettes(id=old.id,
                                        name=old.name)
             new.save()
 
-        correct_last_value_of_sequence_used_in_auto_increment(orm, orm.Fleshtone, 'patient.Fleshtone', 'id', False,
+        correct_last_value_of_sequence_used_in_auto_increment(orm, orm.Fleshtone, 'patient.Fleshtone', False,
                                                               name="")
 
         for old in orm['patient.Fleshtone'].objects.all():
@@ -82,7 +81,7 @@ class Migration(DataMigration):
                                 name=old.name)
             new.save()
 
-        correct_last_value_of_sequence_used_in_auto_increment(orm, orm.Gender, 'patient.Gender', 'id', False,
+        correct_last_value_of_sequence_used_in_auto_increment(orm, orm.Gender, 'patient.Gender', False,
                                                               name="")
 
         for old in orm['patient.Gender'].objects.all():
@@ -90,7 +89,7 @@ class Migration(DataMigration):
                              name=old.name)
             new.save()
 
-        correct_last_value_of_sequence_used_in_auto_increment(orm, orm.MaritalStatus, 'patient.MaritalStatus', 'id',
+        correct_last_value_of_sequence_used_in_auto_increment(orm, orm.MaritalStatus, 'patient.MaritalStatus',
                                                               False, name="")
 
         for old in orm['patient.MaritalStatus'].objects.all():
@@ -98,7 +97,7 @@ class Migration(DataMigration):
                                     name=old.name)
             new.save()
 
-        correct_last_value_of_sequence_used_in_auto_increment(orm, orm.Payment, 'patient.Payment', 'id', False,
+        correct_last_value_of_sequence_used_in_auto_increment(orm, orm.Payment, 'patient.Payment', False,
                                                               name="")
 
         for old in orm['patient.Payment'].objects.all():
@@ -106,7 +105,7 @@ class Migration(DataMigration):
                               name=old.name)
             new.save()
 
-        correct_last_value_of_sequence_used_in_auto_increment(orm, orm.Religion, 'patient.Religion', 'id', False,
+        correct_last_value_of_sequence_used_in_auto_increment(orm, orm.Religion, 'patient.Religion', False,
                                                               name="")
 
         for old in orm['patient.Religion'].objects.all():
@@ -114,7 +113,7 @@ class Migration(DataMigration):
                                name=old.name)
             new.save()
 
-        correct_last_value_of_sequence_used_in_auto_increment(orm, orm.Schooling, 'patient.Schooling', 'id', False,
+        correct_last_value_of_sequence_used_in_auto_increment(orm, orm.Schooling, 'patient.Schooling', False,
                                                               name="")
 
         for old in orm['patient.Schooling'].objects.all():
@@ -123,7 +122,7 @@ class Migration(DataMigration):
             new.save()
 
         correct_last_value_of_sequence_used_in_auto_increment(orm, orm.ClassificationOfDiseases,
-                                                              'patient.ClassificationOfDiseases', 'id', False,
+                                                              'patient.ClassificationOfDiseases', False,
                                                               code="",
                                                               description="",
                                                               abbreviated_description="")
@@ -139,7 +138,7 @@ class Migration(DataMigration):
         gender = orm.Gender.objects.first()
         user = orm['auth.user'].objects.first()
 
-        correct_last_value_of_sequence_used_in_auto_increment(orm, orm.Patient, 'patient.Patient', 'id', False,
+        correct_last_value_of_sequence_used_in_auto_increment(orm, orm.Patient, 'patient.Patient', False,
                                                               name="",
                                                               date_birth="2015-07-30",
                                                               gender=gender,
@@ -176,7 +175,7 @@ class Migration(DataMigration):
         # There is no HistoricalPatient if there is no Patient, so we don't need to correct the seq.
         if patient is not None:
             correct_last_value_of_sequence_used_in_auto_increment(orm, orm.HistoricalPatient,
-                                                                  'patient.HistoricalPatient', 'history_id', False,
+                                                                  'patient.HistoricalPatient', False,
                                                                   id=patient.id,
                                                                   name=patient.name,
                                                                   date_birth=patient.date_birth,
@@ -215,7 +214,7 @@ class Migration(DataMigration):
             new.save()
 
         correct_last_value_of_sequence_used_in_auto_increment(orm, orm.SocialDemographicData,
-                                                              'patient.SocialDemographicData', 'id', False,
+                                                              'patient.SocialDemographicData', False,
                                                               patient=patient,
                                                               changed_by=user)
 
@@ -247,7 +246,7 @@ class Migration(DataMigration):
         if sdd is not None:
             correct_last_value_of_sequence_used_in_auto_increment(orm, orm.HistoricalSocialDemographicData,
                                                                   'patient.HistoricalSocialDemographicData',
-                                                                  'history_id', False,
+                                                                  False,
                                                                   id=sdd.id,
                                                                   history_date=date,
                                                                   history_type="+")
@@ -281,7 +280,7 @@ class Migration(DataMigration):
             new.save()
 
         correct_last_value_of_sequence_used_in_auto_increment(orm, orm.SocialHistoryData,
-                                                              'patient.SocialHistoryData', 'id', False,
+                                                              'patient.SocialHistoryData', False,
                                                               patient=patient,
                                                               changed_by=user)
 
@@ -302,8 +301,7 @@ class Migration(DataMigration):
 
         if shd is not None:
             correct_last_value_of_sequence_used_in_auto_increment(orm, orm.HistoricalSocialHistoryData,
-                                                                  'patient.HistoricalSocialHistoryData', 'history_id',
-                                                                  False,
+                                                                  'patient.HistoricalSocialHistoryData', False,
                                                                   id=shd.id,
                                                                   history_date=date,
                                                                   history_type="+")
@@ -326,7 +324,7 @@ class Migration(DataMigration):
             new.save()
 
         correct_last_value_of_sequence_used_in_auto_increment(orm, orm.MedicalRecordData,
-                                                              'patient.MedicalRecordData', 'id', False,
+                                                              'patient.MedicalRecordData', False,
                                                               patient=patient,
                                                               record_responsible=user)
 
@@ -340,7 +338,7 @@ class Migration(DataMigration):
         medical_record = orm.MedicalRecordData.objects.first()
         classification_of_diseases = orm.ClassificationOfDiseases.objects.first()
         correct_last_value_of_sequence_used_in_auto_increment(
-            orm, orm.Diagnosis, 'patient.Diagnosis', 'id', True,
+            orm, orm.Diagnosis, 'patient.Diagnosis', True,
             medical_record_data=medical_record,
             classification_of_diseases=classification_of_diseases)
 
@@ -353,7 +351,7 @@ class Migration(DataMigration):
             new.save()
 
         correct_last_value_of_sequence_used_in_auto_increment(orm, orm.ComplementaryExam,
-                                                              'patient.ComplementaryExam', 'id', False,
+                                                              'patient.ComplementaryExam', False,
                                                               diagnosis=orm.Diagnosis.objects.first(),
                                                               date=date,
                                                               description="")
@@ -368,7 +366,7 @@ class Migration(DataMigration):
                                         exam_site=old.exam_site)
             new.save()
 
-        correct_last_value_of_sequence_used_in_auto_increment(orm, orm.ExamFile, 'patient.ExamFile', 'id', False,
+        correct_last_value_of_sequence_used_in_auto_increment(orm, orm.ExamFile, 'patient.ExamFile', False,
                                                               exam=orm.ComplementaryExam.objects.first(),
                                                               content="")
 
