@@ -1,5 +1,10 @@
 $(document).ready(function () {
 
+    $(".invalidLink").click(function (e) {
+        e.preventDefault();
+        $('#modalInvalidLink').modal('show');
+    });
+
     // The following 5 handlers prepare to show a confirmation modal by storing the future tab number.
     $("#linkToTab0").click(function (e) {
         document.getElementById('nextTab').value = '0';
