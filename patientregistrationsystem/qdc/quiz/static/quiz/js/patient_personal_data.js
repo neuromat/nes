@@ -72,6 +72,8 @@ $(document).ready(function () {
 
             if (myElem != null) {
                 $('#modalHomonym').modal('show');
+            } else {
+                $('#search-results-homonym').html("")
             }
         }
     }
@@ -84,6 +86,8 @@ $(document).ready(function () {
 
             if (myElemExcluded != null) {
                 $('#modalHomonymExcluded').modal('show');
+            } else {
+                $('#search-results-homonym-excluded').html("")
             }
         }
     }
