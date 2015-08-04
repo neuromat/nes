@@ -36,7 +36,7 @@ medicalrecorddata_content_type = ContentType.objects.get(app_label='patient', mo
 survey_content_type = ContentType.objects.get(app_label='survey', model='survey')
 patient_quest_response_content_type = ContentType.objects.get(app_label='patient', model='questionnaireresponse')
 # Can do what a attendant does
-physiotherapist_permission_list = attendant_permission_list
+physiotherapist_permission_list = list(attendant_permission_list)
 # Plus
 physiotherapist_permission_list += [
     # Medical record data
@@ -58,7 +58,7 @@ for p in physiotherapist_permission_list:
 g = Group(name='Médico')
 g.save()
 # Can do what a physiotherapist does
-doctor_permission_list = physiotherapist_permission_list
+doctor_permission_list = list(physiotherapist_permission_list)
 # Plus
 doctor_permission_list.append(Permission.objects.get(codename='add_medicalrecorddata',
                                                      content_type=medicalrecorddata_content_type))
@@ -72,7 +72,7 @@ experiment_content_type = ContentType.objects.get(app_label='experiment', model=
 questionnaireresponse_content_type = ContentType.objects.get(app_label='experiment', model='questionnaireresponse')
 subject_content_type = ContentType.objects.get(app_label='experiment', model='subject')
 # Can do what a physiotherapist does
-junior_researcher_permission_list = physiotherapist_permission_list
+junior_researcher_permission_list = list(physiotherapist_permission_list)
 # Plus
 junior_researcher_permission_list += [
     # Research project
@@ -101,7 +101,7 @@ for p in junior_researcher_permission_list:
 g = Group(name='Pesquisador sênior')
 g.save()
 # Can do what a junior researcher does
-senior_researcher_permission_list = junior_researcher_permission_list
+senior_researcher_permission_list = list(junior_researcher_permission_list)
 # Plus
 senior_researcher_permission_list.append(Permission.objects.get(codename='change_researchproject_from_others',
                                                                 content_type=researchproject_content_type))
