@@ -5,6 +5,7 @@ django-simple-history==1.5.0
 psycopg2==2.5.3
 python-jsonrpc==0.4.1
 pyflakes==0.8.1
+pyjsonrpc==0.0.2
 pylint==1.1.0
 pep8==1.5.7
 South==1.0.2
