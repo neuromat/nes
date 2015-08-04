@@ -52,6 +52,9 @@ def patient_create(request, template_name="patient/register_personal_data.html")
         if patient_form_is_valid and telephone_formset_is_valid:
             new_patient = patient_form.save(commit=False)
 
+            # Remove leading and trailing white spaces to avoid problems with homonym search.
+            new_patient.name = new_patient.name.strip()
+
             if not new_patient.cpf:
                 new_patient.cpf = None
 
@@ -572,7 +575,7 @@ def search_patients_ajax(request):
 def patients_verify_homonym(request):
     patient_homonym = None
     if request.method == "POST":
-        search_text = request.POST['search_text']
+        search_text = request.POST['search_text'].strip()
         if search_text:
             if re.match('[a-zA-Z ]+', search_text):
                 patient_homonym = Patient.objects.filter(name=search_text).exclude(removed=True)
