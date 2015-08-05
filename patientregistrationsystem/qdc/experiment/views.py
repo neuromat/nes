@@ -1671,19 +1671,25 @@ def remove_component_and_related_configurations(component,
                                                 path_of_the_components):
     # Before removing anything, we need to know where we should redirect to.
 
-    # If the list has more than one element, it has to have more than two, because the last but one element is a
-    # component configuration, which has also to be removed from the path.
-    if len(list_of_ids_of_components_and_configurations) > 1:
-        path_without_last = path_of_the_components[:path_of_the_components.rfind(delimiter)]
-        path_without_last_two = path_without_last[:path_without_last.rfind(delimiter)]
-        # The parent of the component configuration has to be a block. Then, redirect_url has no "edit" part.
-        redirect_url = "/experiment/component/" + path_without_last_two
-    else:
-        # Return to the list of components
+    if len(list_of_ids_of_components_and_configurations) == 1:
+        # User is editing a component selected from the list of component of an exepriment.
+        # Return to the list of components.
         redirect_url = "/experiment/" + str(component.experiment.id) + "/components"
+    else:
+        path_without_last = path_of_the_components[:path_of_the_components.rfind(delimiter)]
 
-    # if the questionnaire is a questionnaire, it would be the only usage of this survey.
-    # If it is the case, the survey could be also removed.
+        if len(list_of_ids_of_components_and_configurations) == 2:
+            # User is viewing the block that is the root of an experimental protocol.
+            # Return to the group.
+            redirect_url = "/experiment/group/" + path_without_last[1:]
+        else:
+            # The user is viewing/editing a component that is a child of a block. Remove the child and the component
+            # configuration that binds it to the block.
+            path_without_last_two = path_without_last[:path_without_last.rfind(delimiter)]
+            # The parent of the component configuration has to be a block. Then, redirect_url has no "edit" part.
+            redirect_url = "/experiment/component/" + path_without_last_two
+
+    # if the questionnaire is a questionnaire and it is the only usage of a survey, the survey should also be removed.
     survey_to_check = None
     if component.component_type == "questionnaire":
         questionnaire = get_object_or_404(Questionnaire, pk=component.id)
@@ -1692,7 +1698,7 @@ def remove_component_and_related_configurations(component,
 
     component.delete()
 
-    # Checking if there is not use
+    # Checking if there is no other use
     if survey_to_check and \
             len(Questionnaire.objects.filter(survey=survey_to_check)) == 0 and \
             len(PatientQuestionnaireResponse.objects.filter(survey=survey_to_check)) == 0:
