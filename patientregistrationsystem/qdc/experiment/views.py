@@ -807,7 +807,6 @@ def subject_questionnaire_response_create(request, group_id, subject_id, questio
                     fail = True
                 else:
                     fail = False
-                    messages.info(request, 'Você será redirecionado para o questionário. Aguarde.')
 
         origin = get_origin(request)
 
@@ -852,6 +851,8 @@ def questionnaire_response_edit(request, questionnaire_response_id,
     fail = None
     redirect_url = None
 
+    origin = get_origin(request)
+
     if request.method == "POST":
         if get_can_change(request.user, group.experiment.research_project):
             if request.POST['action'] == "save":
@@ -861,7 +862,6 @@ def questionnaire_response_edit(request, questionnaire_response_id,
                     fail = True
                 else:
                     fail = False
-                    messages.info(request, 'Você será redirecionado para o questionário. Aguarde.')
 
             elif request.POST['action'] == "remove":
                 if request.user.has_perm('experiment.delete_questionnaireresponse'):
@@ -887,14 +887,17 @@ def questionnaire_response_edit(request, questionnaire_response_id,
                     else:
                         messages.error(request, "Erro ao deletar o preenchimento")
 
-                    redirect_url = reverse("subject_questionnaire", args=(group.id, subject.id,))
+                    if origin == "experiment_subject":
+                        redirect_url = reverse("subject_questionnaire", args=(group.id, subject.id,))
+                    else:
+                        redirect_url = reverse("questionnaire_view",
+                                               args=(group.id, questionnaire_response.component_configuration.id,))
+
                     return HttpResponseRedirect(redirect_url)
                 else:
                     raise PermissionDenied
         else:
             raise PermissionDenied
-
-    origin = get_origin(request)
 
     context = {
         "can_change": get_can_change(request.user, group.experiment.research_project),
@@ -1008,6 +1011,8 @@ def questionnaire_response_view(request, questionnaire_response_id,
     # Get the responses for each question of the questionnaire.
     survey_title, questionnaire_responses = get_questionnaire_responses(language_code, lime_survey_id, token_id)
 
+    origin = get_origin(request)
+
     if request.method == "POST":
         if get_can_change(request.user, group.experiment.research_project):
             if request.POST['action'] == "remove":
@@ -1034,14 +1039,17 @@ def questionnaire_response_view(request, questionnaire_response_id,
                     else:
                         messages.error(request, "Erro ao deletar o preenchimento")
 
-                    redirect_url = reverse("subject_questionnaire", args=(group.id, subject.id,))
+                    if origin == "experiment_subject":
+                        redirect_url = reverse("subject_questionnaire", args=(group.id, subject.id,))
+                    else:
+                        redirect_url = reverse("questionnaire_view",
+                                               args=(group.id, questionnaire_response.component_configuration.id,))
+
                     return HttpResponseRedirect(redirect_url)
                 else:
                     raise PermissionDenied
         else:
             raise PermissionDenied
-
-    origin = get_origin(request)
 
     status = ""
     if 'status' in request.GET:

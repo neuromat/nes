@@ -987,7 +987,6 @@ def questionnaire_response_create(request, patient_id, survey_id,
                 fail = True
             else:
                 fail = False
-                messages.info(request, 'Você será redirecionado para o questionário. Aguarde.')
 
                 showing = True
                 for field in questionnaire_response_form.fields:
@@ -1048,7 +1047,6 @@ def questionnaire_response_update(request, questionnaire_response_id,
                 fail = True
             else:
                 fail = False
-                messages.info(request, 'Você será redirecionado para o questionário. Aguarde.')
 
         elif request.POST['action'] == "remove":
             if request.user.has_perm('patient.delete_questionnaireresponse'):

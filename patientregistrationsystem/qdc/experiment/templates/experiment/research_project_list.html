@@ -48,7 +48,15 @@
                                         {{ research_project.title }}
                                     {% endif %}
                                 </td>
-                                <td>{{ research_project.start_date }}<br>a<br>{{ research_project.end_date }}</td>
+                                <td>
+                                    {% if research_project.end_date %}
+                                        {{ research_project.start_date }}
+                                        <br>a<br>
+                                        {{ research_project.end_date }}
+                                    {% else %}
+                                        A partir de<br>{{ research_project.start_date }}
+                                    {% endif %}
+                                </td>
                                 <td>{{ research_project.owner.first_name }} {{ research_project.owner.last_name }}</td>
                             </tr>
                         {% endfor %}
