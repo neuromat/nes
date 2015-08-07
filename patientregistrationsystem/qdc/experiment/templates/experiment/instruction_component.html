@@ -1,32 +1,34 @@
 {% extends "experiment/component_template.html" %}
 
+{% load i18n admin_static %}
+
 {% block breadcrumb %}
 
     {% if creating %}
-        <li class="active">Nova instrução</li>
+        <li class="active">{% trans "Nova instrução" %}</li>
     {% endif %}
 
 {% endblock %}
 
-{% block component_label %}a instrução{% endblock %}
+{% block component_label %}{% trans "a instrução" %}{% endblock %}
 
 {% block component_add_new %}
     <li role="presentation">
         <a role="menuitem" tabindex="-1" onclick="redirect_with_number_of_uses('/experiment/component/{{ path_of_the_components }}/add_new/instruction{% if position %}?position={{ position }}{% endif %}')">
-            << Nova instrução >>
+            << {% trans "Nova instrução" %} >>
         </a>
     </li>
 {% endblock %}
 
 {% block component_button_label %}
-    Nova instrução
+    {% trans "Nova instrução" %}
 {% endblock %}
 
 {% block extra_fields %}
     <div class="row">
         <div class="col-xs-6 col-sm-12">
             <div class="form-group">
-                <label class="control-label">Texto da instrução <b style="color: red;">*</b></label>
+                <label class="control-label">{% trans "Texto da instrução" %} <b style="color: red;">*</b></label>
                     {{ specific_form.text }}
                 <div class="help-block with-errors"></div>
             </div>

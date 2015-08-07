@@ -1,17 +1,21 @@
+
+{% load i18n admin_static %}
+
+
 <div class="col-xs-12 col-sm-5 col-sm-offset-1">
     {% if component_form.component_type == 'block' %}
         <div data-toggle="tooltip" data-placement="left"
              {% if has_unlimited %}
-                title="Calculada a partir dos subpassos. Esse conjunto possui pelo menos um uso que permite repetições ilimitadas. Está sendo considerado apenas uma execução nesses casos."
+                title={% trans "Calculada a partir dos subpassos. Esse conjunto possui pelo menos um uso que permite repetições ilimitadas. Está sendo considerado apenas uma execução nesses casos." %}
              {% else %}
-                title="Calculada a partir dos subpassos"
+                title={% trans "Calculada a partir dos subpassos" %}
              {% endif %}>
-            <label class="control-label">Duração</label>
+            <label class="control-label">{% trans "Duração" %}</label>
             <p>{{ block_duration }}</p>
         </div>
     {% else %}
         <div class="col-xs-12 col-sm-12">
-            <label for="duration" class="control-label">Duração {% if component_form.component_type == 'pause' %}<b style="color: red;">*</b>{% endif %}</label>
+            <label for="duration" class="control-label">{% trans "Duração" %} {% if component_form.component_type == 'pause' %}<b style="color: red;">*</b>{% endif %}</label>
         </div>
         <div class="col-xs-4 col-sm-4">
             <div class="form-group {% if component_form.errors.duration_value %}has-error{% endif %}">

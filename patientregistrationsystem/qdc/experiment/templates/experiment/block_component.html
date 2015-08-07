@@ -1,5 +1,7 @@
 {% extends "experiment/component_template.html" %}
 
+{% load i18n admin_static %}
+
 {% block specific_header %}
 
     {% load static %}
@@ -10,34 +12,34 @@
 {% block breadcrumb %}
 
     {% if creating %}
-        <li class="active">Novo conjunto de passos</li>
+        <li class="active">{% trans "Novo conjunto de passos" %}</li>
     {% else %}
         {% if updating and not component_configuration %}
-            <li class="active"> Edição </li>
+            <li class="active"> {% trans "Edição" %} </li>
         {% endif %}
     {% endif %}
 
 {% endblock %}
 
-{% block component_label %}o conjunto de passos{% endblock %}
+{% block component_label %}{% trans "o conjunto de passos" %}{% endblock %}
 
 {% block component_add_new %}
     <li role="presentation">
         <a role="menuitem" tabindex="-1" onclick="redirect_with_number_of_uses('/experiment/component/{{ path_of_the_components }}/add_new/block?position={{ position }}')">
-            << Novo conjunto de passos >>
+            << {% trans "Novo conjunto de passos" %} >>
         </a>
     </li>
 {% endblock %}
 
 {% block component_button_label %}
-    Novo conjunto de passos
+    {% trans "Novo conjunto de passos" %}
 {% endblock %}
 
 {% block extra_fields %}
     <div class="row">
         <div class="col-xs-12 col-sm-6">
             <div class="form-group">
-                <label>Organização dos subpassos <b style="color: red;">*</b></label>
+                <label>{% trans "Organização dos subpassos" %} <b style="color: red;">*</b></label>
 
                 <div class="input-group  input-group-sm">
                     {% for radio in specific_form.type %}
@@ -50,12 +52,12 @@
             </div>
         </div>
         <div class="col-xs-12 col-sm-6">
-            <label for="unlimited_number_of_repetitions" class="control-label">Quantidade de passos obrigatórios <b style="color: red;">*</b></label>
+            <label for="unlimited_number_of_repetitions" class="control-label">{% trans "Quantidade de passos obrigatórios" %} <b style="color: red;">*</b></label>
             <div>
                 <div class="radio-inline" style="vertical-align: top">
                     <input id="id_all_mandatory" name="radio_number_of_mandatory_components" type="radio" value="all"
                             {% if not updating and not creating or reusing or component_configuration %} disabled="True" {% endif %}>
-                        Todos
+                        {% trans "Todos" %}
                     </input>
                 </div>
                 <div class="radio-inline">
@@ -81,26 +83,26 @@
                 <div class="container span6 offset3 well ">
 
                     {% if component.type == "sequence" %}
-                        <h4>Passos com posição fixa</h4>
+                        <h4>{% trans "Passos com posição fixa" %}</h4>
                     {% endif %}
 
                     <div class="form-group">
                         <table class="table table-striped">
                             <thead>
                             <tr>
-                                <th class="col-md-2">Tipo</th>
+                                <th class="col-md-2">{% trans "Tipo" %}</th>
                                 {% if not component_configuration and can_change %}
-                                    <th class="col-md-4">Passo</th>
+                                    <th class="col-md-4">{% trans "Passo" %}</th>
                                     {% if component.type == "sequence" %}
-                                        <th class="col-md-3">Nome do uso</th>
-                                        <th class="text-center col-md-2" colspan="2">Ordem</th>
+                                        <th class="col-md-3">{% trans "Nome do uso" %}</th>
+                                        <th class="text-center col-md-2" colspan="2">{% trans "Ordem" %}</th>
                                     {% else %}
-                                        <th class="col-md-5">Nome do uso</th>
+                                        <th class="col-md-5">{% trans "Nome do uso" %}</th>
                                     {% endif %}
-                                    <th class="col-md-1">Remover</th>
+                                    <th class="col-md-1">{% trans "Remover" %}</th>
                                 {% else %}
-                                    <th class="col-md-5">Passo</th>
-                                    <th class="col-md-5">Nome do uso</th>
+                                    <th class="col-md-5">{% trans "Passo" %}</th>
+                                    <th class="col-md-5">{% trans "Nome do uso" %}</th>
                                 {% endif %}
                             </tr>
                             </thead>
@@ -111,7 +113,7 @@
                                             <tr>
                                                 <td colspan="6" style="padding: 0px;">
                                                     <div class="panel panel-default collapsed" style="margin: 0px;">
-                                                        <div class="panel-heading" role="tab" id="heading{{ forloop.counter }}" style="padding: 0px;" data-toggle="tooltip" data-placement="left" title="Expandir">
+                                                        <div class="panel-heading" role="tab" id="heading{{ forloop.counter }}" style="padding: 0px;" data-toggle="tooltip" data-placement="left" title={% trans "Expandir" %}>
                                                             <table class="table" style="margin: 0px;" role="button" data-toggle="collapse" href="#collapse{{ forloop.counter }}" aria-expanded="false" aria-controls="collapse{{ forloop.counter }}">
                                                                 <tbody>
                                                                     {% if not accordion.0.random_position %}  {# If the first is random, all confs from this accordeon will be random. #}
@@ -127,7 +129,7 @@
                                                                                 {% if component.type == "sequence" %}
                                                                                     <td class="col-md-3">
                                                                                         <a class="glyphicon glyphicon-chevron-right"></a>
-                                                                                        {{ accordion|length }} usos agrupados
+                                                                                        {{ accordion|length }} {% trans "usos agrupados" %}
                                                                                     </td>
                                                                                     <td  class="text-right col-md-1">
                                                                                         {% if accordion != configuration_list|last %}
@@ -144,13 +146,14 @@
                                                                                 {% else %}
                                                                                     <td class="col-md-5">
                                                                                         <a class="glyphicon glyphicon-chevron-right"></a>
-                                                                                        {{ accordion|length }} usos agrupados
+                                                                                        {{ accordion|length }} {% trans "usos agrupados" %}
                                                                                     </td>
                                                                                 {% endif %}
                                                                                 <td class="text-center col-md-1">
                                                                                     <a class="btn glyphicon glyphicon-remove" style="color: indianred;"
-                                                                                       data-toggle="tooltip" data-placement="right" title="Remover usos da lista"
-                                                                                    onclick="show_modal_remove_many('fixed', {{ forloop.counter0 }}, {{ accordion|length }});"></a>
+                                                                                       data-toggle="tooltip" data-placement="right"
+                                                                                    onclick="show_modal_remove_many('fixed', {{ forloop.counter0 }}, {{ accordion|length }});"
+                                                                                    title={% trans "Remover usos da lista" %}></a>
                                                                                 </td>
                                                                             {% else %}
                                                                                 <td class="col-md-5">
@@ -158,14 +161,14 @@
                                                                                 </td>
                                                                                 <td class="col-md-5">
                                                                                     <a class="glyphicon glyphicon-chevron-right"></a>
-                                                                                    {{ accordion|length }} usos agrupados
+                                                                                    {{ accordion|length }} {% trans "usos agrupados" %}
                                                                                 </td>
                                                                             {% endif %}
                                                                         </tr>
                                                                     {% else %}
                                                                         <td class="text-center" colspan="{% if not component_configuration and can_change %}6{% else %}3{% endif %}">
                                                                             <a class="glyphicon glyphicon-chevron-right"></a>
-                                                                            {{ accordion|length }} posições para passo aleatório agrupadas
+                                                                            {{ accordion|length }} {% trans "posições para passo aleatório agrupadas" %}
                                                                         </td>
                                                                     {% endif %}
                                                                 </tbody>
@@ -197,7 +200,7 @@
                                 {% else %}
                                     <tr>
                                         <td class="text-center" colspan="6">
-                                            Não possui
+                                            {% trans "Não possui" %}
                                         </td>
                                     </tr>
                                 {% endif %}
@@ -208,7 +211,7 @@
                     {% if not component_configuration and can_change %}
                         <div class="dropdown">
                             <button class="btn btn-primary dropdown-toggle" type="button" id="dropdownMenu1" data-toggle="dropdown" aria-expanded="true">
-                                Inserir passo
+                                {% trans "Inserir passo" %}
                                 <span class="caret"></span>
                             </button>
                             <ul class="dropdown-menu" role="menu" aria-labelledby="dropdownMenu1">
@@ -225,19 +228,19 @@
                     <div class="container span6 offset3 well ">
                         <div class="form-group">
 
-                            <h4>Passos com posição aleatória</h4>
+                            <h4>{% trans "Passos com posição aleatória" %}</h4>
 
                             <table class="table table-striped">
                                 <thead>
                                 <tr>
-                                    <th class="col-md-2">Tipo</th>
+                                    <th class="col-md-2">{% trans "Tipo" %}</th>
                                     {% if not component_configuration and can_change %}
-                                        <th class="col-md-4">Passo</th>
-                                        <th class="col-md-5">Nome do uso</th>
-                                        <th class="col-md-1">Remover</th>
+                                        <th class="col-md-4">{% trans "Passo" %}</th>
+                                        <th class="col-md-5">{% trans "Nome do uso" %}</th>
+                                        <th class="col-md-1">{% trans "Remover" %}</th>
                                     {% else %}
-                                        <th class="col-md-5">Passo</th>
-                                        <th class="col-md-5">Nome do uso</th>
+                                        <th class="col-md-5">{% trans "Passo" %}</th>
+                                        <th class="col-md-5">{% trans "Nome do uso" %}</th>
                                     {% endif %}
                                 </tr>
                                 </thead>
@@ -261,13 +264,14 @@
                                                                             </td>
                                                                             <td class="col-md-5">
                                                                                 <a class="glyphicon glyphicon-chevron-right"></a>
-                                                                                {{ accordion|length }} usos agrupados
+                                                                                {{ accordion|length }} {% trans "usos agrupados" %}
                                                                             </td>
                                                                             {% if not component_configuration and can_change %}
                                                                                 <td class="text-center col-md-1">
                                                                                     <a class="btn glyphicon glyphicon-remove" style="color: indianred;"
-                                                                                       data-toggle="tooltip" data-placement="right" title="Remover usos da lista"
-                                                                                    onclick="show_modal_remove_many('random', {{ forloop.counter0 }}, {{ accordion|length }});"></a>
+                                                                                       data-toggle="tooltip" data-placement="right"
+                                                                                    onclick="show_modal_remove_many('random', {{ forloop.counter0 }}, {{ accordion|length }});"
+                                                                                    title={% trans "Remover usos da lista" %}></a>
                                                                                 </td>
                                                                             {% endif %}
                                                                         </tr>
@@ -300,7 +304,7 @@
                                     {% else %}
                                         <tr>
                                             <td class="text-center" colspan="{% if not component_configuration and can_change %}4{% else %}3{% endif %}">
-                                                Não possui
+                                                {% trans "Não possui" %}
                                             </td>
                                         </tr>
                                     {% endif %}
@@ -312,7 +316,7 @@
                         {% if not component_configuration and can_change %}
                             <div class="dropdown">
                                 <button class="btn btn-primary dropdown-toggle" type="button" id="dropdownMenu1" data-toggle="dropdown" aria-expanded="true">
-                                    Inserir passo
+                                    {% trans "Inserir passo" %}
                                     <span class="caret"></span>
                                 </button>
                                 <ul class="dropdown-menu" role="menu" aria-labelledby="dropdownMenu1">
@@ -341,7 +345,7 @@
                     <button type="button" class="btn btn-default" data-dismiss="modal">Cancelar</button>
 
                     <button class="btn btn-primary" type="submit" name="action" value="remove-" id="removeComponentConfiguration" style="background-color: indianred; color: #ffffff">
-                        Excluir
+                        {% trans "Excluir" %}
                     </button>
 
                 </div>

@@ -1,32 +1,34 @@
 {% extends "experiment/component_template.html" %}
 
+{% load i18n admin_static %}
+
 {% block breadcrumb %}
 
     {% if creating %}
-        <li class="active">Novo questionário</li>
+        <li class="active">{% trans "Novo questionário" %}</li>
     {% endif %}
 
 {% endblock %}
 
-{% block component_label %}o questionário{% endblock %}
+{% block component_label %}{% trans "o questionário" %}{% endblock %}
 
 {% block component_add_new %}
     <li role="presentation">
         <a role="menuitem" tabindex="-1" onclick="redirect_with_number_of_uses('/experiment/component/{{ path_of_the_components }}/add_new/questionnaire{% if position %}?position={{ position }}{% endif %}')">
-            << Novo questionário >>
+            << {% trans "Novo questionário" %} >>
         </a>
     </li>
 {% endblock %}
 
 {% block component_button_label %}
-    Novo questionário
+    {% trans "Novo questionário" %}
 {% endblock %}
 
 {% block extra_fields %}
     <div class="row">
         <div class="col-xs-6 col-sm-12">
             <div class="form-group">
-                <label for="questionnaire_selected" class="control-label">Nome do questionário no LimeSurvey<b style="color: red;">*</b></label>
+                <label for="questionnaire_selected" class="control-label">{% trans "Nome do questionário no LimeSurvey" %}<b style="color: red;">*</b></label>
                 <select class="form-control" required="" id="questionnaire_selected" name="questionnaire_selected" data-error="Por favor, selecione um questionário da lista." {% if updating or reusing %}disabled{% endif %}>
                     {% if reusing %}
                         <option selected="selected" value="{{ questionnaire_id }}">{{ questionnaire_title }} ({{ questionnaire_id }})

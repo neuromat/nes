@@ -1,3 +1,6 @@
+
+{% load i18n admin_static %}
+
 <tr>
     {% if not configuration.random_position %}
         <td class="col-md-2">
@@ -7,9 +10,9 @@
         {% if not component_configuration and can_change %}
             <td class="col-md-4">
                 {% if configuration.component.component_type == "block" %}
-                    <a data-toggle="tooltip" data-placement="left" title="Editar" href="/experiment/component/{{ path_of_the_components }}-U{{ configuration.id }}">{{ configuration.component.identification }}</a>
+                    <a data-toggle="tooltip" data-placement="left" title={% trans "Editar" %} href="/experiment/component/{{ path_of_the_components }}-U{{ configuration.id }}">{{ configuration.component.identification }}</a>
                 {% else %}
-                    <a data-toggle="tooltip" data-placement="left" title="Editar" href="/experiment/component/edit/{{ path_of_the_components }}-U{{ configuration.id }}">{{ configuration.component.identification }}</a>
+                    <a data-toggle="tooltip" data-placement="left" title={% trans "Editar" %} href="/experiment/component/edit/{{ path_of_the_components }}-U{{ configuration.id }}">{{ configuration.component.identification }}</a>
                 {% endif %}
             </td>
             {% if component.type == "sequence" %}
@@ -36,14 +39,14 @@
                 </td>
             {% endif %}
             <td class="text-center col-md-1">
-                <a class="btn glyphicon glyphicon-remove" data-toggle="tooltip" data-placement="right" title="Remover da lista" style="color: indianred;" onclick="show_modal_remove('fixed', {{ forloop.parentloop.counter0 }}, {{ forloop.counter0 }});"></a>
+                <a class="btn glyphicon glyphicon-remove" data-toggle="tooltip" data-placement="right" style="color: indianred;" onclick="show_modal_remove('fixed', {{ forloop.parentloop.counter0 }}, {{ forloop.counter0 }});" title={% trans "Remover da lista" %}></a>
             </td>
         {% else %}
             <td class="col-md-5">
                 {% if configuration.component.component_type == "block" %}
-                    <a data-toggle="tooltip" data-placement="left" title="Editar" href="/experiment/component/{{ path_of_the_components }}-U{{ configuration.id }}">{{ configuration.component.identification }}</a>
+                    <a data-toggle="tooltip" data-placement="left" title={% trans "Editar" %} href="/experiment/component/{{ path_of_the_components }}-U{{ configuration.id }}">{{ configuration.component.identification }}</a>
                 {% else %}
-                    <a data-toggle="tooltip" data-placement="left" title="Editar" href="/experiment/component/edit/{{ path_of_the_components }}-U{{ configuration.id }}">{{ configuration.component.identification }}</a>
+                    <a data-toggle="tooltip" data-placement="left" title={% trans "Editar" %} href="/experiment/component/edit/{{ path_of_the_components }}-U{{ configuration.id }}">{{ configuration.component.identification }}</a>
                 {% endif %}
             </td>
             <td class="col-md-3">
@@ -54,7 +57,7 @@
         {% endif %}
     {% else %}
         <td class="text-center" colspan="{% if not component_configuration and can_change %}6{% else %}3{% endif %}">
-            Posição para passo aleatório
+            {% trans "Posição para passo aleatório" %}
         </td>
     {% endif %}
 </tr>
