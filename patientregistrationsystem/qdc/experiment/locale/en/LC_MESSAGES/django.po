@@ -1,0 +1,1071 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) YEAR THE PACKAGE'S COPYRIGHT HOLDER
+# This file is distributed under the same license as the PACKAGE package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
+#
+#, fuzzy
+msgid ""
+msgstr ""
+"Project-Id-Version: PACKAGE VERSION\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2015-08-07 17:33-0300\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language-Team: LANGUAGE <LL@li.org>\n"
+"Language: \n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+
+#: forms.py:19 forms.py:36 forms.py:190
+msgid "Título deve ser preenchido."
+msgstr "Title must be filled."
+
+#: forms.py:22 forms.py:39 forms.py:194
+msgid "Descrição deve ser preenchida."
+msgstr "Description must be filled."
+
+#: forms.py:51 forms.py:195 forms.py:197
+msgid "dd/mm/aaaa"
+msgstr "mm/dd/yyyy"
+
+#: forms.py:53
+msgid "Data de preenchimento deve ser preenchida"
+msgstr "Fill date must be filled."
+
+#: forms.py:78
+msgid "Identificação deve ser preenchida."
+msgstr "Identification must be filled."
+
+#: forms.py:82 forms.py:131
+msgid "Tempo"
+msgstr "Time"
+
+#: forms.py:90
+msgid "Tempo da duração deve ser preenchido"
+msgstr "Duration time must be filled in."
+
+#: forms.py:98
+msgid "Unidade da duração deve ser preenchida"
+msgstr "Duration unit must be filled in."
+
+#: forms.py:127
+msgid "Quantidade de repetições deve ser preenchida."
+msgstr "Quantity of repetitions must be filled."
+
+#: forms.py:130
+msgid "Intervalo deve ser preenchido"
+msgstr "Interval must be filled."
+
+#: forms.py:135
+msgid "Unidade do intervalo deve ser preenchida"
+msgstr "Interval unit must be filled."
+
+#: forms.py:146
+msgid "Instrução deve ser preenchida."
+msgstr "Instruction must be filled."
+
+#: forms.py:157
+msgid "Tipo do estímulo deve ser preenchido."
+msgstr "Stimulus type must be filled."
+
+#: forms.py:164
+msgid "Em uma sequência"
+msgstr "Sequence"
+
+#: forms.py:165
+msgid "De forma paralela"
+msgstr "Parallel"
+
+#: forms.py:167
+msgid "Tipo de organização deve ser escolhido."
+msgstr "Organization type must be filled in."
+
+#: forms.py:175 forms.py:219
+msgid "Quantidade deve ser preenchida."
+msgstr "Quantity must be filled."
+
+#: forms.py:196
+msgid "Data de início deve ser preenchida"
+msgstr "Initial date must be filled."
+
+#: models.py:28
+msgid "Data de preenchimento não pode ser maior que a data de hoje."
+msgstr "Fill date cannot be greater than today."
+
+#: views.py:72
+msgid "Estudo criado com sucesso."
+msgstr "Study created successfully."
+
+#: views.py:113
+msgid "Erro ao tentar excluir o estudo."
+msgstr "Error trying to delete research."
+
+#: views.py:144
+msgid "Estudo atualizado com sucesso."
+msgstr "Research updated successfully."
+
+#: views.py:146 views.py:325 views.py:492 views.py:1985 views.py:2007
+#: views.py:2017
+msgid "Não há alterações para salvar."
+msgstr "There is no changes to save."
+
+#: views.py:259
+msgid "Experimento criado com sucesso."
+msgstr "Experiment created successfully."
+
+#: views.py:294
+msgid "Não foi possível excluir o experimento, pois há grupos associados"
+msgstr ""
+"It was not possible to delete experiment, because there are groups connected."
+
+#: views.py:323
+msgid "Experimento atualizado com sucesso."
+msgstr "Experiment updated successfully."
+
+#: views.py:357
+msgid "Grupo incluído com sucesso."
+msgstr "Group included successfully."
+
+#: views.py:456
+msgid "Não foi possível excluir o grupo, pois há dependências."
+msgstr "Impossible to delete group, because there are dependencies."
+
+#: views.py:490
+msgid "Grupo atualizado com sucesso."
+msgstr "Group updated successfully."
+
+#: views.py:730
+msgid "Preenchimento não disponível - Tabela de tokens não iniciada"
+msgstr "Fill not available - Table of tokens was not started."
+
+#: views.py:734
+msgid "Preenchimento não disponível - Questionário não está ativo"
+msgstr "Fill not available - Questionnaire is not activated."
+
+#: views.py:738
+msgid ""
+"Preenchimento não disponível - Questionário não contém campos padronizados"
+msgstr "Fill not available - Questionnaire does not contain standard fields."
+
+#: views.py:747
+msgid ""
+"Falha ao gerar token para responder questionário. Verifique se o "
+"questionário está ativo"
+msgstr ""
+"Fail trying to generate token to answer questionnaire. Check if "
+"questionnaire is active."
+
+#: views.py:814 views.py:871
+msgid "Você será redirecionado para o questionário. Aguarde."
+msgstr "You will be redirected to questionnaire. Please wait."
+
+#: views.py:893 views.py:1043
+msgid "Preenchimento removido com sucesso"
+msgstr "Fill deleted successfully."
+
+#: views.py:895 views.py:1045
+msgid "Erro ao deletar o preenchimento"
+msgstr "Error trying to delete fill"
+
+#: views.py:1133
+msgid "Participante removido do experimento."
+msgstr "Participant deleted from experiment."
+
+#: views.py:1137
+msgid "Não foi possível excluir o participante, pois há respostas associadas"
+msgstr ""
+"It was not possible to delete participante, becacuse there are answers "
+"connected"
+
+#: views.py:1171
+msgid "Participante já inserido para este grupo."
+msgstr "Participant has already been inserted in this group."
+
+#: views.py:1217
+msgid "Termo salvo com sucesso."
+msgstr "<> saved successfully."
+
+#: views.py:1222
+msgid "Não existem anexos para salvar"
+msgstr "There aren't attachments to save"
+
+#: views.py:1226
+msgid "Anexo removido com sucesso."
+msgstr "Attachment deleted successfully."
+
+#: views.py:1423 views.py:2208 views.py:2316 views.py:2340
+msgid "Passo incluído com sucesso."
+msgstr "Step included successfully."
+
+#: views.py:1544
+msgid " %(duration_in_years) ano "
+msgid_plural " %(duration_in_years) anos "
+msgstr[0] ""
+msgstr[1] ""
+
+#: views.py:1552
+msgid " meses "
+msgstr " months "
+
+#: views.py:1552
+msgid " mês "
+msgstr " month "
+
+#: views.py:1557
+msgid " semanas "
+msgstr " weeks "
+
+#: views.py:1557
+msgid " semana "
+msgstr " week"
+
+#: views.py:1562
+msgid " dias "
+msgstr " days "
+
+#: views.py:1562
+msgid " dia "
+msgstr " day"
+
+#: views.py:1567
+msgid " horas "
+msgstr " hours "
+
+#: views.py:1567
+msgid " hora "
+msgstr " hour "
+
+#: views.py:1572
+msgid " minutos "
+msgstr " minutes "
+
+#: views.py:1572
+msgid " minuto "
+msgstr " minute "
+
+#: views.py:1577
+msgid " segundos "
+msgstr " seconds "
+
+#: views.py:1577
+msgid " segundo "
+msgstr " second "
+
+#: views.py:1582
+msgid " milissegundos "
+msgstr " miliseconds "
+
+#: views.py:1582
+msgid " milissegundo "
+msgstr " milisecond "
+
+#: views.py:1767 views.py:2015
+msgid "Uso do passo atualizado com sucesso."
+msgstr "Step use updated successfully."
+
+#: views.py:1773 views.py:2024
+msgid "Componente removido com sucesso."
+msgstr "Component deleted successfully."
+
+#: views.py:1983 views.py:2005
+msgid "Passo alterado com sucesso."
+msgstr "Step updated successfully."
+
+#: views.py:2182
+msgid "Protocolo experimental incluído com sucesso."
+msgstr "Experimental protocol included successfully."
+
+#: views.py:2206 views.py:2338
+msgid "Passos incluídos com sucesso."
+msgstr "Steps included successfully."
+
+#: templates/experiment/ajax_cid10.html:8
+msgid "Nenhuma doença encontrada!"
+msgstr "No diseases found!"
+
+#: templates/experiment/ajax_search_patients.html:11
+msgid "Nenhum participante encontrado!"
+msgstr "No participants found!"
+
+#: templates/experiment/block_component.html:15
+#: templates/experiment/block_component.html:29
+#: templates/experiment/block_component.html:35
+msgid "Novo conjunto de passos"
+msgstr "New set of steps"
+
+#: templates/experiment/block_component.html:18
+#: templates/experiment/experiment_register.html:56
+#: templates/experiment/group_register.html:59
+#: templates/experiment/research_project_register.html:57
+msgid "Edição"
+msgstr "Edition"
+
+#: templates/experiment/block_component.html:24
+msgid "o conjunto de passos"
+msgstr "the set of steps"
+
+#: templates/experiment/block_component.html:42
+msgid "Organização dos subpassos"
+msgstr "Organization of sub-steps"
+
+#: templates/experiment/block_component.html:55
+msgid "Quantidade de passos obrigatórios"
+msgstr "Quantity of steps obligatory."
+
+#: templates/experiment/block_component.html:60
+msgid "Todos"
+msgstr "All"
+
+#: templates/experiment/block_component.html:86
+msgid "Passos com posição fixa"
+msgstr "Steps with fixed position"
+
+#: templates/experiment/block_component.html:93
+#: templates/experiment/block_component.html:236
+#: templates/experiment/component_list.html:69
+msgid "Tipo"
+msgstr "Type"
+
+#: templates/experiment/block_component.html:95
+#: templates/experiment/block_component.html:104
+#: templates/experiment/block_component.html:238
+#: templates/experiment/block_component.html:242
+msgid "Passo"
+msgstr "Step"
+
+#: templates/experiment/block_component.html:97
+#: templates/experiment/block_component.html:100
+#: templates/experiment/block_component.html:105
+#: templates/experiment/block_component.html:239
+#: templates/experiment/block_component.html:243
+msgid "Nome do uso"
+msgstr "Name of use"
+
+#: templates/experiment/block_component.html:98
+msgid "Ordem"
+msgstr "Order"
+
+#: templates/experiment/block_component.html:102
+#: templates/experiment/block_component.html:240
+#: templates/experiment/research_project_register.html:141
+#: templates/experiment/upload_consent_form.html:111
+msgid "Remover"
+msgstr "Delete"
+
+#: templates/experiment/block_component.html:116
+msgid "Expandir"
+msgstr "Expand"
+
+#: templates/experiment/block_component.html:132
+#: templates/experiment/block_component.html:149
+#: templates/experiment/block_component.html:164
+#: templates/experiment/block_component.html:267
+msgid "usos agrupados"
+msgstr "uses grouped"
+
+#: templates/experiment/block_component.html:156
+#: templates/experiment/block_component.html:274
+msgid "Remover usos da lista"
+msgstr "Delete uses from list"
+
+#: templates/experiment/block_component.html:171
+msgid "posições para passo aleatório agrupadas"
+msgstr "positions for random step grouped"
+
+#: templates/experiment/block_component.html:203
+#: templates/experiment/block_component.html:307
+msgid "Não possui"
+msgstr "It does not have"
+
+#: templates/experiment/block_component.html:214
+#: templates/experiment/block_component.html:319
+msgid "Inserir passo"
+msgstr "Insert step"
+
+#: templates/experiment/block_component.html:231
+msgid "Passos com posição aleatória"
+msgstr "Steps with random position"
+
+#: templates/experiment/block_component.html:348
+#: templates/experiment/component_template.html:278
+#: templates/experiment/component_template.html:314
+#: templates/experiment/experiment_register.html:151
+#: templates/experiment/experiment_register.html:181
+#: templates/experiment/group_register.html:309
+#: templates/experiment/group_register.html:339
+#: templates/experiment/group_register.html:354
+#: templates/experiment/research_project_register.html:200
+#: templates/experiment/research_project_register.html:229
+#: templates/experiment/subject_questionnaire_response_form.html:230
+#: templates/experiment/subject_questionnaire_response_form.html:276
+#: templates/experiment/subject_questionnaire_response_list.html:152
+#: templates/experiment/subject_questionnaire_response_list.html:174
+msgid "Excluir"
+msgstr "Delete"
+
+#: templates/experiment/component_list.html:47
+#: templates/experiment/component_template.html:52
+#: templates/experiment/experiment_register.html:47
+#: templates/experiment/group_register.html:49
+#: templates/experiment/questionnaire_view.html:53
+#: templates/experiment/research_project_list.html:20
+#: templates/experiment/research_project_register.html:49
+#: templates/experiment/subject_questionnaire_response_form.html:23
+#: templates/experiment/subject_questionnaire_response_list.html:25
+#: templates/experiment/subjects.html:22
+#: templates/experiment/upload_consent_form.html:20
+msgid "Home"
+msgstr ""
+
+#: templates/experiment/component_list.html:48
+#: templates/experiment/component_template.html:53
+#: templates/experiment/experiment_register.html:48
+#: templates/experiment/group_register.html:50
+#: templates/experiment/questionnaire_view.html:54
+#: templates/experiment/research_project_list.html:21
+#: templates/experiment/research_project_register.html:50
+#: templates/experiment/subject_questionnaire_response_form.html:35
+#: templates/experiment/subject_questionnaire_response_list.html:26
+#: templates/experiment/subjects.html:23
+#: templates/experiment/upload_consent_form.html:21
+msgid "Estudos"
+msgstr "Studies"
+
+#: templates/experiment/component_list.html:51
+msgid "Passos de Protocolo Experimental"
+msgstr "Steps of experimental protocol"
+
+#: templates/experiment/component_list.html:61
+msgid "Lista de Passos:"
+msgstr "list of steps:"
+
+#: templates/experiment/component_list.html:70
+#: templates/experiment/component_template.html:90
+#: templates/experiment/component_template.html:127
+msgid "Identificação"
+msgstr "Identification"
+
+#: templates/experiment/component_list.html:71
+#: templates/experiment/component_template.html:138
+#: templates/experiment/experiment_register.html:90
+#: templates/experiment/experiment_register.html:113
+#: templates/experiment/group_register.html:84
+#: templates/experiment/group_register.html:124
+#: templates/experiment/group_register.html:261
+#: templates/experiment/research_project_register.html:106
+#: templates/experiment/research_project_register.html:172
+msgid "Descrição"
+msgstr "Description"
+
+#: templates/experiment/component_list.html:82
+#: templates/experiment/component_list.html:84
+#: templates/experiment/component_template.html:152
+#: templates/experiment/configuration_line.html:13
+#: templates/experiment/configuration_line.html:15
+#: templates/experiment/configuration_line.html:47
+#: templates/experiment/configuration_line.html:49
+#: templates/experiment/experiment_register.html:99
+#: templates/experiment/group_register.html:93
+#: templates/experiment/group_register.html:197
+#: templates/experiment/group_register.html:267
+#: templates/experiment/randon_configuration_line.html:10
+#: templates/experiment/randon_configuration_line.html:12
+#: templates/experiment/research_project_register.html:122
+msgid "Editar"
+msgstr "Edit"
+
+#: templates/experiment/component_list.html:95
+msgid "Inserir novo passo"
+msgstr "Insert new step"
+
+#: templates/experiment/component_list.html:109
+#: templates/experiment/component_template.html:296
+#: templates/experiment/experiment_register.html:164
+#: templates/experiment/group_register.html:322
+#: templates/experiment/questionnaire_view.html:225
+#: templates/experiment/research_project_register.html:213
+#: templates/experiment/subject_questionnaire_response_form.html:251
+#: templates/experiment/subject_questionnaire_response_form.html:255
+#: templates/experiment/subject_questionnaire_response_form.html:258
+#: templates/experiment/subject_questionnaire_response_list.html:156
+#: templates/experiment/subjects.html:134
+#: templates/experiment/upload_consent_form.html:95
+msgid "Voltar"
+msgstr "Back"
+
+#: templates/experiment/component_template.html:60
+#: templates/experiment/experiment_register.html:139
+msgid "Passos de protocolo experimental"
+msgstr "Steps of experimental protocol"
+
+#: templates/experiment/component_template.html:83
+msgid "Informações sobre"
+msgstr "Information about"
+
+#: templates/experiment/component_template.html:180
+msgid "Quantidade de usos a inserir"
+msgstr "Quantity of uses to be inserted"
+
+#: templates/experiment/component_template.html:198
+msgid "Informações sobre esse uso do passo"
+msgstr "Information about this use of step"
+
+#: templates/experiment/component_template.html:212
+msgid "Posição no conjunto de passos"
+msgstr "Position in the set of steps"
+
+#: templates/experiment/component_template.html:227
+msgid "Quantidade de repetições"
+msgstr "Quantity of repetitions"
+
+#: templates/experiment/component_template.html:230
+#: templates/experiment/questionnaire_view.html:116
+msgid "Ilimitada"
+msgstr "Unlimited"
+
+#: templates/experiment/component_template.html:246
+msgid "Intervalo entre repetições"
+msgstr "Interval among repetitions"
+
+#: templates/experiment/component_template.html:249
+#: templates/experiment/questionnaire_view.html:127
+msgid "Indefinido"
+msgstr "Undefined"
+
+#: templates/experiment/component_template.html:285
+msgid "Inserir"
+msgstr "Insert"
+
+#: templates/experiment/component_template.html:287
+#: templates/experiment/experiment_register.html:156
+#: templates/experiment/group_register.html:314
+#: templates/experiment/research_project_register.html:205
+msgid "Salvar"
+msgstr "Save"
+
+#: templates/experiment/component_template.html:292
+#: templates/experiment/component_template.html:312
+#: templates/experiment/experiment_register.html:160
+#: templates/experiment/experiment_register.html:179
+#: templates/experiment/group_register.html:318
+#: templates/experiment/group_register.html:337
+#: templates/experiment/group_register.html:353
+#: templates/experiment/group_register.html:367
+#: templates/experiment/research_project_register.html:209
+#: templates/experiment/research_project_register.html:228
+#: templates/experiment/subject_questionnaire_response_form.html:275
+#: templates/experiment/subject_questionnaire_response_list.html:173
+#: templates/experiment/upload_consent_form.html:109
+msgid "Cancelar"
+msgstr "Cancel"
+
+#: templates/experiment/component_template.html:309
+msgid "Tem certeza que deseja excluir o passo?"
+msgstr "Are you sure you want to delete step?"
+
+#: templates/experiment/configuration_line.html:42
+#: templates/experiment/randon_configuration_line.html:22
+msgid "Remover da lista"
+msgstr "Delete uses from list"
+
+#: templates/experiment/configuration_line.html:60
+msgid "Posição para passo aleatório"
+msgstr "Position for random step"
+
+#: templates/experiment/duration.html:9
+msgid ""
+"Calculada a partir dos subpassos. Esse conjunto possui pelo menos um uso que "
+"permite repetições ilimitadas. Está sendo considerado apenas uma execução "
+"nesses casos."
+msgstr ""
+
+#: templates/experiment/duration.html:11
+msgid "Calculada a partir dos subpassos"
+msgstr "Calculated by sub-steps"
+
+#: templates/experiment/duration.html:13 templates/experiment/duration.html:18
+msgid "Duração"
+msgstr "Duration"
+
+#: templates/experiment/experiment_register.html:52
+msgid "Novo experimento"
+msgstr "New experiment"
+
+#: templates/experiment/experiment_register.html:68
+msgid "Informações básicas do experimento"
+msgstr "Basic experiment information"
+
+#: templates/experiment/experiment_register.html:72
+msgid "Estudo"
+msgstr "Study"
+
+#: templates/experiment/experiment_register.html:81
+#: templates/experiment/group_register.html:75
+#: templates/experiment/research_project_list.html:34
+#: templates/experiment/research_project_register.html:73
+#: templates/experiment/research_project_register.html:171
+msgid "Título"
+msgstr "Title"
+
+#: templates/experiment/experiment_register.html:106
+msgid "Grupos"
+msgstr "Groups"
+
+#: templates/experiment/experiment_register.html:112
+#: templates/experiment/group_register.html:163
+msgid "Nome"
+msgstr "Name"
+
+#: templates/experiment/experiment_register.html:134
+#: templates/experiment/research_project_register.html:191
+msgid "Inserir novo"
+msgstr "Insert new"
+
+#: templates/experiment/experiment_register.html:142
+msgid "Gerenciar"
+msgstr "Manage"
+
+#: templates/experiment/experiment_register.html:176
+msgid "Tem certeza que deseja excluir o experimento?"
+msgstr "Are you sure you want to delete experiment?"
+
+#: templates/experiment/group_register.html:55
+msgid "Novo grupo"
+msgstr "New group"
+
+#: templates/experiment/group_register.html:71
+msgid "Informações básicas do grupo"
+msgstr "Group basic information"
+
+#: templates/experiment/group_register.html:100
+msgid "Critério de inclusão"
+msgstr "Inclusion criteria"
+
+#: templates/experiment/group_register.html:131
+msgid ""
+"Não há diagnósticos como critério de inclusão de participantes neste grupo"
+msgstr ""
+"There are no diagnosis as inclusion criteria of participants in this group"
+
+#: templates/experiment/group_register.html:158
+msgid "Questionários do protocolo experimental"
+msgstr "Questionnaires of experimental protocol"
+
+#: templates/experiment/group_register.html:167
+#: templates/experiment/group_register.html:176
+msgid "Quantidade de preenchimentos exigida para cada participante"
+msgstr "Quantity of fills for each participant"
+
+#: templates/experiment/group_register.html:168
+#: templates/experiment/group_register.html:216
+msgid "Preenchimentos necessários por participante"
+msgstr "Needed fills by participant"
+
+#: templates/experiment/group_register.html:170
+#: templates/experiment/group_register.html:179
+msgid ""
+"Quantidade de preenchimentos necessários por participante vezes a quantidade "
+"de participantes deste grupo"
+msgstr ""
+"Quantity of fills needed by pariticipant multiplied by quantity of "
+"participants in this group"
+
+#: templates/experiment/group_register.html:171
+#: templates/experiment/group_register.html:217
+msgid "Total de preenchimentos necessários"
+msgstr "Total fills needed"
+
+#: templates/experiment/group_register.html:173
+#: templates/experiment/group_register.html:182
+msgid "Soma da quantidade de preenchimentos já realizada por cada participante"
+msgstr "Sum of fills quantity already made by each participant"
+
+#: templates/experiment/group_register.html:174
+#: templates/experiment/group_register.html:218
+msgid "Total de preenchimentos já realizados"
+msgstr "Total fills already made"
+
+#: templates/experiment/group_register.html:177
+msgid "PNP"
+msgstr ""
+
+#: templates/experiment/group_register.html:180
+msgid "TPN"
+msgstr ""
+
+#: templates/experiment/group_register.html:183
+msgid "TPR"
+msgstr ""
+
+#: templates/experiment/group_register.html:190
+msgid "Não há questionários no protocolo experimental deste grupo"
+msgstr "There are no questionnaires in the experimental protocol in this group"
+
+#: templates/experiment/group_register.html:223
+#: templates/experiment/subject_questionnaire_response_form.html:25
+#: templates/experiment/subject_questionnaire_response_form.html:41
+#: templates/experiment/subject_questionnaire_response_list.html:30
+#: templates/experiment/subjects.html:27
+#: templates/experiment/upload_consent_form.html:25
+msgid "Participantes"
+msgstr "Participant"
+
+#: templates/experiment/group_register.html:231
+#, python-format
+msgid "Há %(number_of_subjects)s participante cadastrado"
+msgstr "There is %(number_of_subjects)s participant recorded"
+
+#: templates/experiment/group_register.html:233
+#, python-format
+msgid "Há %(number_of_subjects)s participantes cadastrados"
+msgstr "There are %(number_of_subjects)s participants recorded"
+
+#: templates/experiment/group_register.html:239
+msgid "Não há participantes cadastrados"
+msgstr "No participants recorded"
+
+#: templates/experiment/group_register.html:243
+msgid "Cadastrar"
+msgstr ""
+
+#: templates/experiment/group_register.html:252
+msgid "Protocolo Experimental"
+msgstr "Experimental protocol"
+
+#: templates/experiment/group_register.html:260
+msgid "Conjunto de passos raiz"
+msgstr "Set of root steps"
+
+#: templates/experiment/group_register.html:279
+msgid "Desconfigurar protocolo experimental"
+msgstr "UnConfigure experimental protocol"
+
+#: templates/experiment/group_register.html:290
+msgid "Não há protocolo experimental configurado"
+msgstr "There is no experimental protocol configured"
+
+#: templates/experiment/group_register.html:296
+msgid ""
+"A raiz de um protocolo experimental é sempre um conjunto de passos. Você "
+"poderá criar um conjunto novo ou reusar algum que já tenha sido criado para "
+"este experimento."
+msgstr ""
+"The experimental protocol root is always a set of steps. You can create a "
+"new set or reuse some that have already been created for this experiment."
+
+#: templates/experiment/group_register.html:297
+msgid "Configurar / Criar"
+msgstr "Configure / Create"
+
+#: templates/experiment/group_register.html:334
+msgid "Tem certeza que deseja excluir o grupo?"
+msgstr "Are you sure you want to delete group?"
+
+#: templates/experiment/group_register.html:350
+msgid "Tem certeza que deseja excluir o diagnóstico?"
+msgstr "Are you sure you want to delete diagnosis?"
+
+#: templates/experiment/group_register.html:364
+msgid "Tem certeza que deseja desconfigurar o protocolo experimental?"
+msgstr "Are you sure you want to unprovision experimental protocol?"
+
+#: templates/experiment/group_register.html:369
+msgid "Desconfigurar"
+msgstr "Unset"
+
+#: templates/experiment/instruction_component.html:8
+#: templates/experiment/instruction_component.html:18
+#: templates/experiment/instruction_component.html:24
+msgid "Nova instrução"
+msgstr "New instruction"
+
+#: templates/experiment/instruction_component.html:13
+msgid "a instrução"
+msgstr "the instruction"
+
+#: templates/experiment/instruction_component.html:31
+msgid "Texto da instrução"
+msgstr "Instrution text"
+
+#: templates/experiment/keyword_ajax_search.html:8
+msgid "Adicionar nova palavra-chave"
+msgstr "Add a new keyword"
+
+#: templates/experiment/pause_component.html:8
+#: templates/experiment/pause_component.html:18
+#: templates/experiment/pause_component.html:24
+msgid "Nova pausa"
+msgstr "New pause"
+
+#: templates/experiment/pause_component.html:13
+msgid "a pausa"
+msgstr "the pause"
+
+#: templates/experiment/questionnaire_component.html:8
+#: templates/experiment/questionnaire_component.html:18
+#: templates/experiment/questionnaire_component.html:24
+msgid "Novo questionário"
+msgstr "New questionnaire"
+
+#: templates/experiment/questionnaire_component.html:13
+msgid "o questionário"
+msgstr "the questionnaire"
+
+#: templates/experiment/questionnaire_component.html:31
+msgid "Nome do questionário no LimeSurvey"
+msgstr "Questionnaire name at LimeSurvey"
+
+#: templates/experiment/questionnaire_view.html:74
+msgid "Identificação:"
+msgstr "Identificatioin:"
+
+#: templates/experiment/questionnaire_view.html:82
+msgid "Descrição:"
+msgstr "Description:"
+
+#: templates/experiment/questionnaire_view.html:90
+msgid "Duração:"
+msgstr "Duration:"
+
+#: templates/experiment/questionnaire_view.html:100
+msgid "Nome do uso:"
+msgstr "Use name:"
+
+#: templates/experiment/questionnaire_view.html:110
+msgid "Quantidade de repetições:"
+msgstr "Quantity of repetitions:"
+
+#: templates/experiment/questionnaire_view.html:121
+msgid "Intervalo entre repetições:"
+msgstr "Interval among repetitions:"
+
+#: templates/experiment/questionnaire_view.html:140
+#: templates/experiment/subject_questionnaire_response_form.html:133
+#: templates/experiment/subjects.html:83
+msgid "Participante"
+msgstr "Participant"
+
+#: templates/experiment/questionnaire_view.html:141
+#: templates/experiment/subjects.html:85
+msgid "Questionários concluídos"
+msgstr "Questionnaires concluded"
+
+#: templates/experiment/questionnaire_view.html:142
+#: templates/experiment/subject_questionnaire_response_list.html:67
+msgid "Preenchimentos"
+msgstr "Fills"
+
+#: templates/experiment/questionnaire_view.html:148
+#: templates/experiment/subjects.html:91
+msgid "(Nenhum participante inserido)"
+msgstr "(No participants inserted)"
+
+#: templates/experiment/questionnaire_view.html:169
+#: templates/experiment/questionnaire_view.html:193
+#: templates/experiment/subject_questionnaire_response_list.html:121
+#: templates/experiment/subjects.html:121
+msgid "Sem status"
+msgstr "No status"
+
+#: templates/experiment/questionnaire_view.html:188
+#: templates/experiment/subject_questionnaire_response_list.html:116
+msgid "Completo"
+msgstr "Complete"
+
+#: templates/experiment/questionnaire_view.html:190
+#: templates/experiment/subject_questionnaire_response_list.html:118
+msgid "Incompleto"
+msgstr "Incomplete"
+
+#: templates/experiment/questionnaire_view.html:204
+#: templates/experiment/subject_questionnaire_response_form.html:33
+#: templates/experiment/subject_questionnaire_response_form.html:47
+#: templates/experiment/subject_questionnaire_response_form.html:239
+#: templates/experiment/subject_questionnaire_response_list.html:131
+msgid "Novo preenchimento"
+msgstr "New fill"
+
+#: templates/experiment/research_project_list.html:29
+msgid "Lista de estudos"
+msgstr "Studies List"
+
+#: templates/experiment/research_project_list.html:35
+msgid "Vigência"
+msgstr "Term"
+
+#: templates/experiment/research_project_list.html:36
+#: templates/experiment/research_project_register.html:114
+msgid "Responsável"
+msgstr "Responsiblex"
+
+#: templates/experiment/research_project_list.html:43
+#: templates/experiment/research_project_register.html:179
+msgid "Visualizar"
+msgstr "Visualize"
+
+#: templates/experiment/research_project_list.html:51
+msgid "a"
+msgstr "to"
+
+#: templates/experiment/research_project_list.html:60
+msgid "Inserir novo estudo"
+msgstr "Insert new study"
+
+#: templates/experiment/research_project_register.html:53
+msgid "Novo"
+msgstr "New"
+
+#: templates/experiment/research_project_register.html:69
+msgid "Informações básicas do estudo"
+msgstr "Study basic information"
+
+#: templates/experiment/research_project_register.html:82
+msgid "Data de início "
+msgstr "Initial date"
+
+#: templates/experiment/research_project_register.html:93
+msgid "Data de fim"
+msgstr "End date"
+
+#: templates/experiment/research_project_register.html:129
+msgid "Palavras-chave"
+msgstr "Keywords"
+
+#: templates/experiment/research_project_register.html:152
+msgid "Digite uma palavra-chave para acrescentar uma existente ou uma nova"
+msgstr "Type a keyword to include an existent or new"
+
+#: templates/experiment/research_project_register.html:166
+msgid "Experimentos"
+msgstr "Experiments"
+
+#: templates/experiment/research_project_register.html:225
+msgid "Tem certeza que deseja excluir o estudo?"
+msgstr "Are you sure you want to delete study?"
+
+#: templates/experiment/stimulus_component.html:8
+#: templates/experiment/stimulus_component.html:18
+#: templates/experiment/stimulus_component.html:24
+msgid "Novo estímulo"
+msgstr "New stimulus"
+
+#: templates/experiment/stimulus_component.html:13
+msgid "o estímulo"
+msgstr "the stimulus"
+
+#: templates/experiment/stimulus_component.html:31
+msgid "Tipo do estímulo "
+msgstr "Stimulus type"
+
+#: templates/experiment/subject_questionnaire_response_form.html:33
+#: templates/experiment/subject_questionnaire_response_form.html:47
+msgid "Respostas"
+msgstr "Answers"
+
+#: templates/experiment/subject_questionnaire_response_form.html:33
+#: templates/experiment/subject_questionnaire_response_form.html:47
+#: templates/experiment/subject_questionnaire_response_form.html:243
+msgid "Continuar preenchimento"
+msgstr "Keep filling"
+
+#: templates/experiment/subject_questionnaire_response_form.html:120
+#: templates/experiment/subject_questionnaire_response_list.html:66
+msgid "Questionário"
+msgstr "Questionnaire"
+
+#: templates/experiment/subject_questionnaire_response_form.html:148
+msgid "Responsável pelo preenchimento"
+msgstr "Responsible for fill"
+
+#: templates/experiment/subject_questionnaire_response_form.html:160
+msgid "Data de preenchimento"
+msgstr "Fill date"
+
+#: templates/experiment/subject_questionnaire_response_form.html:272
+msgid "Tem certeza que deseja excluir o preenchimento deste questionário?"
+msgstr "Are you sure you want to delete this questionnaire's fill?"
+
+#: templates/experiment/subject_questionnaire_response_list.html:73
+msgid "(Nenhum questionário para preenchimento)"
+msgstr "(No questinnaire for fill)"
+
+#: templates/experiment/subject_questionnaire_response_list.html:85
+msgid "Quantidade de preenchimentos:"
+msgstr "Quantity of fills"
+
+#: templates/experiment/subject_questionnaire_response_list.html:89
+msgid "ilimitada"
+msgstr "unlimited"
+
+#: templates/experiment/subject_questionnaire_response_list.html:91
+msgid "Intervalo entre preenchimentos:"
+msgstr "Interval among fills"
+
+#: templates/experiment/subject_questionnaire_response_list.html:95
+msgid "indefinido"
+msgstr "undefined"
+
+#: templates/experiment/subject_questionnaire_response_list.html:106
+msgid "Ver detalhes"
+msgstr "See details"
+
+#: templates/experiment/subject_questionnaire_response_list.html:170
+msgid "Tem certeza que deseja excluir o participante?"
+msgstr "Are you sure you want to delete participant?"
+
+#: templates/experiment/subjects.html:62
+msgid "Inserir participante"
+msgstr "Insert participant"
+
+#: templates/experiment/subjects.html:84
+#: templates/experiment/upload_consent_form.html:26
+#: templates/experiment/upload_consent_form.html:58
+msgid "Termo de consentimento"
+msgstr ""
+
+#: templates/experiment/subjects.html:108
+msgid "Anexado"
+msgstr "Attached"
+
+#: templates/experiment/subjects.html:110
+msgid "Sem anexo"
+msgstr "No attachments"
+
+#: templates/experiment/task_component.html:8
+#: templates/experiment/task_component.html:18
+msgid "Nova tarefa para o sujeito"
+msgstr "New task for subject"
+
+#: templates/experiment/task_component.html:13
+msgid "a tarefa para o sujeito"
+msgstr "the task for subject"
+
+#: templates/experiment/task_component.html:24
+msgid "Nova tafefa para o sujeito"
+msgstr "New task for subject"
+
+#: templates/experiment/task_experiment_component.html:8
+#: templates/experiment/task_experiment_component.html:18
+msgid "Nova tarefa para o experimentador"
+msgstr "New task for experimenter"
+
+#: templates/experiment/task_experiment_component.html:24
+msgid "Nova tafefa para o experimentador"
+msgstr "New task for experimenter"
+
+#: templates/experiment/upload_consent_form.html:106
+msgid "Tem certeza que deseja remover o anexo?"
+msgstr "Are you sure you want to delete attachment?"
+
+#~ msgid "Especificar o diagnóstico da doença"
+#~ msgstr "Inform disease diagnosis or disease code"
+
+#~ msgid "Entre com o nome ou CPF do participante"
+#~ msgstr "Type name or CPF participant"
+
+#~ msgid " anos "
+#~ msgstr " years "
+
+#~ msgid " ano "
+#~ msgstr " year "
