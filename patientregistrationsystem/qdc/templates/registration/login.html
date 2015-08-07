@@ -1,4 +1,7 @@
 {% load static %}
+
+{% load i18n admin_static %}
+
 {% block extrahead %}
 
 {#    <script src="http://code.jquery.com/jquery-1.9.1.min.js"></script>#}
@@ -78,20 +81,20 @@
             {% csrf_token %}
 
 
-            <h2 class="form-signin-heading">Login</h2>
-            <input id="id_username" type="text" class="form-control" placeholder="Usuario" name="username" required=""
+            <h2 class="form-signin-heading">{% trans "Login" %}</h2>
+            <input id="id_username" type="text" class="form-control" placeholder={% trans "Usuario" %} name="username" required=""
                    autofocus="">
             <br/>
 
-            <input type="password" class="form-control" name="password" placeholder="Senha" required="">
+            <input type="password" class="form-control" name="password" placeholder={% trans "Senha" %} required="">
 
 
-            <button class="btn btn-lg btn-primary btn-block" type="submit" value="login">Confirmar</button>
+            <button class="btn btn-lg btn-primary btn-block" type="submit" value="login">{% trans "Confirmar" %}</button>
             <input type="hidden" name="next" value="{{ next }}"/>
 
             <div class="checkbox">
                 <label>
-                    <a href="/user/password/reset">Esqueci minha senha</a>
+                    <a href="/user/password/reset">{% trans "Esqueci minha senha" %}</a>
                 </label>
             </div>
         </form>
