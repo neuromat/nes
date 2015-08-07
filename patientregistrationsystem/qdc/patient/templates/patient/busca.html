@@ -20,7 +20,8 @@
                     <div class="text-right">{% blocktrans %} {{ number_of_patients }} participantes cadastrados{% endblocktrans %}</div>
                     <div class="input-group input-group-sm">
                         <span class="input-group-addon"> <span class="glyphicon glyphicon-search"></span></span>
-                        <input class="form-control" placeholder="Digite o nome ou o CPF para buscar um participante" id="nameKey" type="text">
+                        <input class="form-control" id="nameKey" type="text"
+                               placeholder={% trans "Digite o nome ou o CPF para buscar um participante" %}>
                     </div>
                     {% csrf_token %}
                     <ul id="search-results-patients" style="list-style: none;">

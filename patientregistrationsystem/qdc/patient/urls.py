@@ -52,3 +52,13 @@ urlpatterns = patterns(
     url(r'^questionnaire_response/edit/(?P<questionnaire_response_id>\d+)/$', 'questionnaire_response_update',
         name='questionnaire_response_edit'),
 )
+
+# internationalization
+# js_info_dict = {
+#     'domain': 'djangojs',
+#     'packages': ('patient',),
+# }
+#
+# urlpatterns += patterns('',
+#     url(r'^jsi18n/$', 'django.views.i18n.javascript_catalog', js_info_dict),
+# )

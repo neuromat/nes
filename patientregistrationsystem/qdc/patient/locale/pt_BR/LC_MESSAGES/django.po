@@ -9,7 +9,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2015-07-22 16:17-0300\n"
+"POT-Creation-Date: 2015-07-29 18:14-0300\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -114,7 +114,7 @@ msgstr "Descrição deve ser preenchida"
 msgid "Médico"
 msgstr "Médico"
 
-#: forms.py:139 templates/patient/exams.html:137
+#: forms.py:139 templates/patient/exams.html:145
 msgid "CRM"
 msgstr ""
 
@@ -307,84 +307,94 @@ msgstr ""
 msgid " %(number_of_patients)s participantes cadastrados"
 msgstr ""
 
-#: templates/patient/busca.html:32
+#: templates/patient/busca.html:24
+msgid "Digite o nome ou o CPF para buscar um participante"
+msgstr ""
+
+#: templates/patient/busca.html:33
 msgid "Inserir novo"
 msgstr ""
 
-#: templates/patient/exams.html:46 templates/patient/medical_record.html:30
+#: templates/patient/exams.html:51 templates/patient/medical_record.html:30
 msgid "Home"
 msgstr ""
 
-#: templates/patient/exams.html:47 templates/patient/medical_record.html:31
+#: templates/patient/exams.html:52 templates/patient/medical_record.html:31
 msgid "Participantes"
 msgstr ""
 
-#: templates/patient/exams.html:55 templates/patient/medical_record.html:37
+#: templates/patient/exams.html:60 templates/patient/medical_record.html:37
 msgid "Avaliação médica"
 msgstr "Avaliação médica"
 
-#: templates/patient/exams.html:58 templates/patient/exams.html.py:61
-#: templates/patient/exams.html:63
+#: templates/patient/exams.html:63 templates/patient/exams.html.py:66
+#: templates/patient/exams.html:68
 #, fuzzy
 msgid "Diagnóstico e Exames"
 msgstr "Diagnóstico e Exames"
 
-#: templates/patient/exams.html:68
+#: templates/patient/exams.html:73
 msgid "Exame"
 msgstr ""
 
-#: templates/patient/exams.html:70
+#: templates/patient/exams.html:75
 msgid "Novo Exame"
 msgstr ""
 
-#: templates/patient/exams.html:120
-msgid "Realizado em"
+#: templates/patient/exams.html:115 templates/patient/medical_record.html:166
+#: templates/patient/register_medical_record.html:21
+#: templates/patient/register_questionnaires.html:122
+msgid "Data"
 msgstr ""
 
 #: templates/patient/exams.html:128
+msgid "Realizado em"
+msgstr ""
+
+#: templates/patient/exams.html:136
 msgid "Descrição "
 msgstr "Descrição"
 
-#: templates/patient/exams.html:143
+#: templates/patient/exams.html:151
 msgid "Nome do médico"
 msgstr ""
 
-#: templates/patient/exams.html:154
+#: templates/patient/exams.html:162
 msgid "Anexos"
 msgstr ""
 
-#: templates/patient/exams.html:160
+#: templates/patient/exams.html:168
 msgid "(sem anexos)"
 msgstr ""
 
-#: templates/patient/exams.html:191
+#: templates/patient/exams.html:199
 msgid "Upload"
 msgstr ""
 
-#: templates/patient/exams.html:202 templates/patient/exams.html.py:233
-#: templates/patient/exams.html:248 templates/patient/medical_record.html:251
+#: templates/patient/exams.html:210 templates/patient/exams.html.py:241
+#: templates/patient/exams.html:256 templates/patient/medical_record.html:251
 #: templates/patient/register.html:155
 msgid "Excluir"
 msgstr ""
 
-#: templates/patient/exams.html:207 templates/patient/exams.html.py:210
-#: templates/patient/exams.html:212 templates/patient/medical_record.html:229
+#: templates/patient/exams.html:215 templates/patient/exams.html.py:218
+#: templates/patient/exams.html:220 templates/patient/medical_record.html:229
 #: templates/patient/medical_record.html:231
 msgid "Voltar"
 msgstr ""
 
-#: templates/patient/exams.html:216 templates/patient/medical_record.html:175
+#: templates/patient/exams.html:224 templates/patient/medical_record.html:175
 #: templates/patient/register.html:111 templates/patient/register.html:113
 #: templates/patient/register.html:139
 #: templates/patient/register_personal_data.html:336
 msgid "Salvar"
 msgstr ""
 
-#: templates/patient/exams.html:229
+#: templates/patient/exams.html:237
 msgid "Tem certeza que deseja excluir o exame?"
 msgstr ""
 
-#: templates/patient/exams.html:232 templates/patient/exams.html.py:247
+#: templates/patient/exams.html:240 templates/patient/exams.html.py:255
 #: templates/patient/medical_record.html:174
 #: templates/patient/medical_record.html:226
 #: templates/patient/medical_record.html:250
@@ -395,7 +405,7 @@ msgstr ""
 msgid "Cancelar"
 msgstr ""
 
-#: templates/patient/exams.html:244
+#: templates/patient/exams.html:252
 msgid ""
 "Como não existem anexos, o exame será excluído totalmente. Confirma exclusão?"
 msgstr ""
@@ -422,6 +432,10 @@ msgstr ""
 msgid "(sem diagnósticos)"
 msgstr "(sem diagnósticos)"
 
+#: templates/patient/medical_record.html:145
+msgid "Editar detalhes"
+msgstr ""
+
 #: templates/patient/medical_record.html:146
 msgid "Detalhes"
 msgstr ""
@@ -430,12 +444,6 @@ msgstr ""
 #, fuzzy
 msgid "Observações"
 msgstr "Observações"
-
-#: templates/patient/medical_record.html:166
-#: templates/patient/register_medical_record.html:21
-#: templates/patient/register_questionnaires.html:122
-msgid "Data"
-msgstr ""
 
 #: templates/patient/medical_record.html:200
 msgid "Inserir exame"

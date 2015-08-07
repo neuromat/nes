@@ -83,7 +83,12 @@
     {% endif %}
 
     {% if medical_record_form.errors %}
-        <script>showErrorMessage('Avaliação médica não salva. Os campos marcados com (*) são obrigatórios')</script>
+        <!--this next script is a workaround in order to work internationalization. With Django newer than 1.6,
+        it must be tested to see if works without it and be removed in this case. -->
+        <script>gettext('')</script>
+        <script>
+            showErrorMessage(gettext('Avaliação médica não salva. Os campos com (*) são obrigatórios.'))
+        </script>
     {% endif %}
 
     <div class="tab-content">
@@ -142,7 +147,7 @@
                                                         </h6></i>
 
                                                         {% if editing %}
-                                                            <a class="btn" data-toggle="tooltip" data-placement="left" title="Editar detalhes" style="font-size-adjust: 0.47; font-style: italic;"
+                                                            <a class="btn" data-toggle="tooltip" data-placement="left" style="font-size-adjust: 0.47; font-style: italic;" title={% trans "Editar detalhes" %}
                                                                onclick="show_modal_detail({{ diagnosis.id }});">{% trans "Detalhes" %}
                                                             </a>
 

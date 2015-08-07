@@ -94,7 +94,10 @@
                         <script>showErrorMessage('{{ field.errors|striptags }}')</script>
                     {% endif %}
                 {% endfor %}
-                <script>showErrorMessage('Exame não salvo. Por favor, corrija os campos em destaque')</script>
+
+                <script>
+                    showErrorMessage(gettext('Exame não salvo. Por favor, corrija os campos em destaque.'))
+                </script>
             {% endif %}
 
             <div class="tab-content">
@@ -104,7 +107,7 @@
                             <div class="row">
                                 <div class="col-xs-5 col-sm-4">
                                     <div class="form-group {% if complementary_exam_form.errors.date %}has-error{% endif %}">
-                                        <label>Data <b style="color: red;">*</b></label>
+                                        <label>{% trans "Data" %} <b style="color: red;">*</b></label>
                                         {{ complementary_exam_form.date }}
                                         <div class="help-block with-errors">
                                             {% if complementary_exam_form.date.errors %}
