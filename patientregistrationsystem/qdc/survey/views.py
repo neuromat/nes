@@ -15,6 +15,8 @@ from django.db.models.deletion import ProtectedError
 from django.http import HttpResponseRedirect
 from django.shortcuts import get_object_or_404, redirect, render
 
+from django.utils.translation import ugettext as _
+
 from models import Survey
 from forms import SurveyForm
 
@@ -79,7 +81,7 @@ def survey_create(request, template_name="survey/survey_register.html"):
                     is_initial_evaluation=survey_added.is_initial_evaluation)
 
                 if created:
-                    messages.success(request, 'Questionário criado com sucesso.')
+                    messages.success(request, _(u'Questionário criado com sucesso.'))
                     redirect_url = reverse("survey_list")
                     return HttpResponseRedirect(redirect_url)
 
@@ -111,9 +113,9 @@ def survey_update(request, survey_id, template_name="survey/survey_register.html
             if survey_form.is_valid():
                 if survey_form.has_changed():
                     survey_form.save()
-                    messages.success(request, 'Questionário atualizado com sucesso.')
+                    messages.success(request, _(u'Questionário atualizado com sucesso.'))
                 else:
-                    messages.success(request, 'Não há alterações para salvar.')
+                    messages.success(request, _(u'Não há alterações para salvar.'))
 
                 redirect_url = reverse("survey_view", args=(survey.id,))
                 return HttpResponseRedirect(redirect_url)
@@ -342,11 +344,11 @@ def survey_view(request, survey_id, template_name="survey/survey_register.html")
         if request.POST['action'] == "remove":
             try:
                 survey.delete()
-                messages.success(request, 'Questionário removido com sucesso.')
+                messages.success(request, _(u'Questionário removido com sucesso.'))
                 return redirect('survey_list')
             except ProtectedError:
-                messages.error(request, "Não foi possível excluir o questionário, pois há respostas ou passos de "
-                                        "experimento associados.")
+                messages.error(request, _(u"Não foi possível excluir o questionário, pois há respostas ou passos de "
+                                        "experimento associados."))
 
     patients_questionnaire_data_list = create_patients_questionnaire_data_list(survey, surveys)
 
@@ -535,6 +537,6 @@ def check_limesurvey_access(request, surveys):
     limesurvey_available = True
     if not surveys.session_key:
         limesurvey_available = False
-        messages.warning(request, "LimeSurvey indisponível. Sistema funcionando parcialmente.")
+        messages.warning(request, _(u"LimeSurvey indisponível. Sistema funcionando parcialmente."))
 
     return limesurvey_available
