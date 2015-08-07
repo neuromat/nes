@@ -3,7 +3,7 @@ from django.forms import ModelForm, TextInput, PasswordInput, CheckboxSelectMult
     CharField, ValidationError
 from django.contrib.auth.hashers import make_password
 from django.contrib.auth.models import User
-
+from django.utils.translation import ugettext_lazy as _
 
 class UserForm(ModelForm):
     class Meta:
@@ -11,13 +11,13 @@ class UserForm(ModelForm):
         fields = ['first_name', 'last_name', 'username', 'password', 'email', 'groups']
 
         widgets = {
-            'first_name': TextInput(attrs={'class': 'form-control', 'placeholder': 'Entrar primeiro nome'}),
-            'last_name': TextInput(attrs={'class': 'form-control', 'placeholder': 'Entrar último nome'}),
-            'username': TextInput(attrs={'class': 'form-control', 'placeholder': 'Entrar nome de usuário'}),
+            'first_name': TextInput(attrs={'class': 'form-control', 'placeholder': _(u'Entrar primeiro nome')}),
+            'last_name': TextInput(attrs={'class': 'form-control', 'placeholder': _(u'Entrar último nome')}),
+            'username': TextInput(attrs={'class': 'form-control', 'placeholder': _(u'Entrar nome de usuário')}),
             'password': PasswordInput(attrs={'id': 'id_new_password1', 'class': 'form-control',
-                                             'placeholder': 'Entrar senha',
+                                             'placeholder': _(u'Entrar senha'),
                                              'onkeyup': "passwordForce(); if(beginCheckPassword1)checkPass();"}),
-            'email': TextInput(attrs={'class': 'form-control', 'placeholder': 'Entrar e-mail', 'id': "email",
+            'email': TextInput(attrs={'class': 'form-control', 'placeholder': _(u'Entrar e-mail'), 'id': "email",
                                       'type': 'email', 'data-error': "E-mail inválido",
                                       'pattern': '^[_A-Za-z0-9-\+]+(\.[_A-Za-z0-9-]+)*@[A-Za-z0-9-]' +
                                                  '+(\.[A-Za-z0-9]+)*(\.[A-Za-z]{2,})$'}),
@@ -37,7 +37,7 @@ class UserForm(ModelForm):
 class UserFormUpdate(UserForm):
     password = CharField(required=False,
                          widget=PasswordInput(attrs={'id': 'id_new_password1', 'class': 'form-control',
-                                                     'placeholder': 'Entrar senha',
+                                                     'placeholder': _(u'Entrar senha'),
                                                      'onkeyup': "passwordForce(); "
                                                                 "if(beginCheckPassword1) checkPass();"}))
 
