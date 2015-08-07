@@ -3,11 +3,12 @@
 
 <head>
     {% load static %}
+    {% load i18n %}
     {% load l10n %}
     {% load qdc_tags %}
     <meta charset="utf-8">
 
-    <title>Neuroscience Experiments System - NES</title>
+    <title>{% trans "Neuroscience Experiments System - NES" %}</title>
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="description" content="">
     <meta name="author" content="NeuroMat">
@@ -19,7 +20,10 @@
     {# Apply a date picker and a mask to every field that has the class "datepicker".   #}
     <script>
         $(document).ready(function() {
-            $('.datepicker').datepicker({dateFormat: "dd/mm/yy"}).
+{#            $('.datepicker').datepicker({dateFormat: "dd/mm/yy"}).#}
+{#                mask("99/99/9999");#}
+
+            $('.datepicker').datepicker().
                 mask("99/99/9999");
         });
     </script>
@@ -39,6 +43,8 @@
     <script src="{% static 'quiz/Bootstrap-Validator-Master/dist/validator.min.js' %}" type="text/javascript"></script>
 
     <script src="{% static 'quiz/js/quiz.js' %}"></script>
+
+    <script type="text/javascript" src="{% url 'django.views.i18n.javascript_catalog' %}"></script>
 
     <style type="text/css">
 
@@ -102,7 +108,7 @@
             <span class="icon-bar"></span>
             <span class="icon-bar"></span>
         </button>
-        <a class="navbar-brand" href="/home/">NES</a>
+        <a class="navbar-brand" href="/home/">{% trans "NES" %}</a>
 
         <div class="navbar-header">
         </div>
@@ -112,12 +118,25 @@
                 <li>
                     <a class="btn-default dropdown-toggle navbar-inverse"
                        data-toggle="dropdown" href="#">
+                        <span style="font-size: 0.85em;" class="glyphicon glyphicon-globe"></span> {{ LANGUAGE_CODE|language_name_local }}
+                        <span class="caret"></span>
+                    </a>
+                    <ul class="dropdown dropdown-user dropdown-menu" role="menu">
+                        {% for lang in LANGUAGES %}
+                            <li><a href="/language/change/{{ lang.0 }}">{{ lang.1 }}</a></li>
+                        {% endfor %}
+                    </ul>
+
+                </li>
+                <li>
+                    <a class="btn-default dropdown-toggle navbar-inverse"
+                       data-toggle="dropdown" href="#">
                         <span style="font-size: 0.85em;" class="glyphicon glyphicon-user"></span> {{ user.username }}
                         <span class="caret"></span>
                     </a>
                     <ul class="dropdown dropdown-user dropdown-menu" role="menu">
-                        <li><a href="/password_change">Alterar senha</a></li>
-                        <li><a href="/logout">Sair</a></li>
+                        <li><a href="/password_change">{% trans "Alterar senha" %}</a></li>
+                        <li><a href="/logout">{% trans "Sair" %}</a></li>
                     </ul>
 
                 </li>
@@ -136,30 +155,30 @@
 
                 {% if perms.patient.view_patient %}
                     <li {% block activePatient %}{% endblock %} >
-                        <a href="/patient/find/">Participantes</a>
+                        <a href="/patient/find/">{% trans "Participantes" %}</a>
                     </li>
                 {% endif %}
 
                 {% if perms.auth.add_user and perms.auth.change_user %}
                     <li {% block activeUser %}{% endblock %}>
-                        <a href="/user/search/">Usuários</a>
+                        <a href="/user/search/">{% trans "Usuários" %}</a>
                     </li>
                 {% endif %}
 
                 {% if perms.experiment.view_researchproject %}
                     <li {% block activeAdvancedResearchProject %}{% endblock %}>
-                        <a href="/experiment/research_project/list/">Estudos</a>
+                        <a href="/experiment/research_project/list/">{% trans "Estudos" %}</a>
                     </li>
                 {% endif %}
 
                 {% if perms.survey.view_survey %}
                     <li {% block activeAdvancedSurvey %}{% endblock %}>
-                        <a href="/survey/list/">Questionários</a>
+                        <a href="/survey/list/">{% trans "Questionários" %}</a>
                     </li>
                 {% endif %}
 
                 <li {% block activeContact %}{% endblock %}>
-                    <a href="/home/">Contato</a>
+                    <a href="/home/">{% trans "Contato" %}</a>
                 </li>
 
             </ul>
