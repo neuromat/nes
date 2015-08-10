@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2015-08-07 17:19-0300\n"
+"POT-Creation-Date: 2015-08-10 11:42-0300\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -36,3 +36,31 @@ msgstr "Are you sure you want to delete these "
 #: static/quiz/js/block_component.js:98
 msgid " usos de passo da lista?"
 msgstr " uses of step from list?"
+
+#: static/quiz/js/password.js:19
+msgid "Senhas não combinam"
+msgstr "Passwords don't match"
+
+#: static/quiz/js/password.js:31
+msgid ""
+"Senha deve conter pelo menos 8 caracteres, incluindo ao menos uma letra "
+"maiúscula, dígito ou caractere especial."
+msgstr ""
+"Password must have at least 8 characters, including at least one lower "
+"case letter, upper case letter, digit or special character."
+
+#: static/quiz/js/password.js:66
+msgid "Fraca"
+msgstr "Weak"
+
+#: static/quiz/js/password.js:72
+msgid "Justa"
+msgstr "Fair"
+
+#: static/quiz/js/password.js:78
+msgid "Forte"
+msgstr "Strong"
+
+#: static/quiz/js/password.js:84
+msgid "Excelente"
+msgstr "Excellent"

@@ -42,7 +42,9 @@
     {% endif %}
 
     {% if component_form.errors %}
-        <script>showErrorMessage('Por favor, corrija os campos em destaque.')</script>
+        <script>
+            showErrorMessage(gettext('Por favor, corrija os campos em destaque.'))
+        </script>
     {% endif %}
 
 
@@ -166,7 +168,7 @@
                                     {% else %}
                                            "/experiment/component/edit/{{ path_of_the_components }}-{{ component_configuration.component.id }}"
                                     {% endif %}
-                               class="btn btn-primary">Editar</a>
+                               class="btn btn-primary">{% trans "Editar" %} </a>
                         </div>
                     </div>
                 {% endif %}
@@ -201,7 +203,7 @@
                     <div class="row">
                         <div class="col-xs-12 col-sm-6">
                             <div class="form-group">
-                                <label class="control-label" for="name" class="control-label">Nome</label>
+                                <label class="control-label" for="name" class="control-label">{% trans "Nome" %}</label>
                                     {{ configuration_form.name }}
                                 <div class="help-block with-errors"></div>
                             </div>

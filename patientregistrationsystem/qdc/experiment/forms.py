@@ -104,7 +104,7 @@ class ComponentConfigurationForm(ModelForm):
     # This is needed because it will be included only when the parent is a sequence.
     random_position = TypedChoiceField(required=False,
                                        empty_value=None,
-                                       choices=((False, 'Fixa'), (True, 'Aleatória')),
+                                       choices=((False, _(u'Fixa')), (True, _(u'Aleatória'))),
                                        widget=RadioSelect(attrs={'id': 'id_random_position'}))
 
     # TODO Replace "--------" by "Escolha unidade". The old code does not work because ModelChoiceField requires a
@@ -177,7 +177,7 @@ class BlockForm(ModelForm):
 
 
 class ResearchProjectForm(ModelForm):
-    owners_full_name = CharField(label='Responsável',
+    owners_full_name = CharField(label=_(u'Responsável'),
                                  widget=TextInput(attrs={'class': 'form-control', 'disabled': 'True'}),
                                  required=False)
 

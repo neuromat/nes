@@ -39,7 +39,9 @@
         {% endif %}
 
         {% if survey_form.errors %}
-            <script>showErrorMessage('Por favor, corrija os campos em destaque.')</script>
+        <script>
+            showErrorMessage(gettext('Por favor, corrija os campos em destaque.'))
+        </script>
         {% endif %}
 
 

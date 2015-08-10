@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2015-08-07 17:33-0300\n"
+"POT-Creation-Date: 2015-08-10 15:33-0300\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -50,6 +50,14 @@ msgstr ""
 msgid "Unidade da duração deve ser preenchida"
 msgstr ""
 
+#: forms.py:107
+msgid "Fixa"
+msgstr ""
+
+#: forms.py:107
+msgid "Aleatória"
+msgstr ""
+
 #: forms.py:127
 msgid "Quantidade de repetições deve ser preenchida."
 msgstr ""
@@ -84,6 +92,11 @@ msgstr ""
 
 #: forms.py:175 forms.py:219
 msgid "Quantidade deve ser preenchida."
+msgstr ""
+
+#: forms.py:180 templates/experiment/research_project_list.html:36
+#: templates/experiment/research_project_register.html:114
+msgid "Responsável"
 msgstr ""
 
 #: forms.py:196
@@ -383,6 +396,23 @@ msgstr ""
 msgid "Passos com posição aleatória"
 msgstr ""
 
+#: templates/experiment/block_component.html:345
+#: templates/experiment/component_template.html:292
+#: templates/experiment/component_template.html:312
+#: templates/experiment/experiment_register.html:160
+#: templates/experiment/experiment_register.html:179
+#: templates/experiment/group_register.html:318
+#: templates/experiment/group_register.html:337
+#: templates/experiment/group_register.html:353
+#: templates/experiment/group_register.html:367
+#: templates/experiment/research_project_register.html:209
+#: templates/experiment/research_project_register.html:228
+#: templates/experiment/subject_questionnaire_response_form.html:275
+#: templates/experiment/subject_questionnaire_response_list.html:173
+#: templates/experiment/upload_consent_form.html:109
+msgid "Cancelar"
+msgstr ""
+
 #: templates/experiment/block_component.html:348
 #: templates/experiment/component_template.html:278
 #: templates/experiment/component_template.html:314
@@ -538,22 +568,6 @@ msgstr ""
 #: templates/experiment/group_register.html:314
 #: templates/experiment/research_project_register.html:205
 msgid "Salvar"
-msgstr ""
-
-#: templates/experiment/component_template.html:292
-#: templates/experiment/component_template.html:312
-#: templates/experiment/experiment_register.html:160
-#: templates/experiment/experiment_register.html:179
-#: templates/experiment/group_register.html:318
-#: templates/experiment/group_register.html:337
-#: templates/experiment/group_register.html:353
-#: templates/experiment/group_register.html:367
-#: templates/experiment/research_project_register.html:209
-#: templates/experiment/research_project_register.html:228
-#: templates/experiment/subject_questionnaire_response_form.html:275
-#: templates/experiment/subject_questionnaire_response_list.html:173
-#: templates/experiment/upload_consent_form.html:109
-msgid "Cancelar"
 msgstr ""
 
 #: templates/experiment/component_template.html:309
@@ -883,11 +897,6 @@ msgstr ""
 
 #: templates/experiment/research_project_list.html:35
 msgid "Vigência"
-msgstr ""
-
-#: templates/experiment/research_project_list.html:36
-#: templates/experiment/research_project_register.html:114
-msgid "Responsável"
 msgstr ""
 
 #: templates/experiment/research_project_list.html:43

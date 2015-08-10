@@ -26,11 +26,10 @@
                                 <script>showErrorMessage('{{ field.errors|striptags }}')</script>
                             {% endif %}
                         {% endfor %}
-
-                        <script>showErrorMessage(gettext('Participante não salvo. Por favor, corrija os campos em destaque.'))</script>
-
+                        <script>
+                            showErrorMessage(gettext('Participante não salvo. Por favor, corrija os campos em destaque.'))
+                        </script>
                     {% endif %}
-
                     <div class="row">
                         <div class="col-xs-12 col-sm-6">
                             <div class="form-group {% if patient_form.errors.name %}has-error{% endif %}">

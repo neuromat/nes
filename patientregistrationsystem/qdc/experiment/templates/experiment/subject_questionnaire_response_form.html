@@ -94,7 +94,7 @@
                     elem_fill_button.style.display = 'none';
                     new_window.focus();
                 } else {
-                    showErrorMessage("Não foi possível abrir o questionário. Habilite pop-ups para esse site.");
+                    showErrorMessage(gettext("Não foi possível abrir o questionário. Habilite pop-ups para esse site."));
 
                     {# If already in the edit response page, there is no need to redirect #}
                     if (window.location.href.indexOf('edit') == -1) {
