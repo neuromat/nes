@@ -39,24 +39,26 @@
     {% endif %}
 
     {% if experiment_form.errors %}
-        <script>showErrorMessage('Por favor, corrija os campos em destaque.')</script>
+        <script>
+            showErrorMessage(gettext('Por favor, corrija os campos em destaque.'))
+        </script>
     {% endif %}
 
 
     <div class="tab-pane fade in active" id="experimentBreadCrumb">
         <div class="col-md-10">
             <ol class="breadcrumb">
-                <li><a href="/home">Home</a></li>
-                <li><a href="/experiment/research_project/list">Estudos</a></li>
+                <li><a href="/home">{% trans "Home" %}</a></li>
+                <li><a href="/experiment/research_project/list">{% trans "Estudos" %}</a></li>
                 <li><a href="/experiment/research_project/{{ experiment.research_project.id }}">{{ experiment.research_project.title }}</a></li>
                 <li><a href="/experiment/{{ experiment.id }}">{{ experiment.title }}</a></li>
 
                 {% if creating %}
-                    <li class="active">Novo grupo</li>
+                    <li class="active">{% trans "Novo grupo" %}</li>
                 {% else %}
                     {% if editing %}
                         <li><a href="/experiment/group/{{ group.id }}">{{ group_form.title.value }}</a></li>
-                        <li class="active">Edição</li>
+                        <li class="active">{% trans "Edição" %}</li>
                     {% else %}
                         <li class="active"> {{ group_form.title.value }} </li>
                     {% endif %}
@@ -68,11 +70,11 @@
     <div class="tab-pane fade in active" id="menuUserTab">
         <div class="col-md-10">
             <div class="container span6 offset3 well ">
-                <h4>Informações básicas do grupo</h4>
+                <h4>{% trans "Informações básicas do grupo" %}</h4>
                 <div class="row">
                     <div class="col-xs-12 col-sm-12">
                         <div class="form-group">
-                            <label class="control-label">Título <b style="color: red;">*</b></label>
+                            <label class="control-label">{% trans "Título" %} <b style="color: red;">*</b></label>
                             {{ group_form.title }}
                             <div class="help-block with-errors"></div>
                         </div>
@@ -81,7 +83,7 @@
                 <div class="row">
                     <div class="col-xs-12 col-sm-12">
                         <div class="form-group">
-                            <label class="control-label">Descrição <b style="color: red;">*</b></label>
+                            <label class="control-label">{% trans "Descrição" %} <b style="color: red;">*</b></label>
                             {{ group_form.description }}
                             <div class="help-block with-errors"></div>
                         </div>
@@ -90,14 +92,14 @@
 
                 {% if not editing and can_change %}
                     <div class="btn-group pull-left">
-                        <a href="/experiment/group/edit/{{ group.id }}" class="btn btn-primary">Editar</a>
+                        <a href="/experiment/group/edit/{{ group.id }}" class="btn btn-primary">{% trans "Editar" %}</a>
                     </div>
                 {% endif %}
             </div>
 
             {% if not editing %}
                 <div class="container span6 offset3 well ">
-                    <h4>Critério de inclusão</h4>
+                    <h4>{% trans "Critério de inclusão" %}</h4>
                     {% if can_change %}
                         <div class="row">
                             <div class="col-xs-12 col-sm-12">
@@ -121,14 +123,14 @@
                                     <thead>
                                     <tr>
                                         <th>CID</th>
-                                        <th>Descrição</th>
+                                        <th>{% trans "Descrição" %}</th>
                                     </tr>
                                     </thead>
                                     <tbody>
                                     {% if not classification_of_diseases_list %}
                                         <tr>
                                             <td colspan="2">
-                                                Não há diagnósticos como critério de inclusão de participantes neste grupo
+                                                {% trans "Não há diagnósticos como critério de inclusão de participantes neste grupo" %}
                                             </td>
                                         </tr>
                                     {% else %}
@@ -155,46 +157,46 @@
                 </div>
 
                 <div class="container span6 offset3 well ">
-                    <h4>Questionários do protocolo experimental</h4>
+                    <h4>{% trans "Questionários do protocolo experimental" %}</h4>
                     <div class="form-group">
                         <table class="table table-striped col-xs-12 col-md-12">
                             <thead>
                             <tr>
-                                <th class="col-md-6">Nome</th>
+                                <th class="col-md-6">{% trans "Nome" %}</th>
                                 {# Can't use bootstrap tooltip in the columns, because it hurts the format of the table. #}
                                 {# data-toggle="tooltip" data-placement="top" #}
                                 <th class="col-md-2 hidden-xs"
-                                    title="Quantidade de preenchimentos exigida para cada participante">
-                                    Preenchimentos necessários por participante</th>
+                                    title={% trans "Quantidade de preenchimentos exigida para cada participante" %}>
+                                    {% trans "Preenchimentos necessários por participante" %}</th>
                                 <th class="col-md-2 hidden-xs"
-                                    title="Quantidade de preenchimentos necessários por participante vezes a quantidade de participantes deste grupo">
-                                    Total de preenchimentos necessários</th>
+                                    title={% trans "Quantidade de preenchimentos necessários por participante vezes a quantidade de participantes deste grupo" %}>
+                                    {% trans "Total de preenchimentos necessários" %}</th>
                                 <th class="col-md-2 hidden-xs"
-                                    title="Soma da quantidade de preenchimentos já realizada por cada participante">
-                                    Total de preenchimentos já realizados</th>
+                                    title={% trans "Soma da quantidade de preenchimentos já realizada por cada participante" %}>
+                                    {% trans "Total de preenchimentos já realizados" %}</th>
                                 <th class="visible-xs"
-                                    title="Quantidade de preenchimentos exigida para cada participante">
-                                    PNP<sup>1</sup></th>
+                                    title={% trans "Quantidade de preenchimentos exigida para cada participante" %}>
+                                    {% trans "PNP" %}<sup>1</sup></th>
                                 <th class="visible-xs"
-                                    title="Quantidade de preenchimentos necessários por participante vezes a quantidade de participantes deste grupo">
-                                    TPN<sup>2</sup></th>
+                                    title={% trans "Quantidade de preenchimentos necessários por participante vezes a quantidade de participantes deste grupo" %}>
+                                    {% trans "TPN" %}<sup>2</sup></th>
                                 <th class="visible-xs"
-                                    title="Soma da quantidade de preenchimentos já realizada por cada participante">
-                                    TPR<sup>3</sup></th>
+                                    title={% trans "Soma da quantidade de preenchimentos já realizada por cada participante" %}>
+                                    {% trans "TPR" %}<sup>3</sup></th>
                             </tr>
                             </thead>
                             <tbody>
                                 {% if questionnaires_configuration_list|length == 0 %}
                                     <tr>
                                         <td colspan="4">
-                                            Não há questionários no protocolo experimental deste grupo
+                                            {% trans "Não há questionários no protocolo experimental deste grupo" %}
                                         </td>
                                     </tr>
                                 {% else %}
                                     {% for questionnaire_configuration in questionnaires_configuration_list %}
                                         <tr>
                                             <td>
-                                                <a data-toggle="tooltip" data-placement="left" title="Editar"
+                                                <a data-toggle="tooltip" data-placement="left" title={% trans "Editar" %}
                                                    href="/experiment/group/{{ group.id }}/questionnaire/{{ questionnaire_configuration.id }}">
                                                     {{ questionnaire_configuration.survey_title }}
                                                 </a>
@@ -213,14 +215,14 @@
                                 {% endif %}
                             </tbody>
                         </table>
-                        <p class="col-xp-12 visible-xs"><sup>1</sup> Preenchimentos necessários por participante</p>
-                        <p class="col-xp-12 visible-xs"><sup>2</sup> Total de preenchimentos necessários</p>
-                        <p class="col-xp-12 visible-xs"><sup>3</sup> Total de preenchimentos já realizados</p>
+                        <p class="col-xp-12 visible-xs"><sup>1</sup> {% trans "Preenchimentos necessários por participante" %}</p>
+                        <p class="col-xp-12 visible-xs"><sup>2</sup> {% trans "Total de preenchimentos necessários" %}</p>
+                        <p class="col-xp-12 visible-xs"><sup>3</sup> {% trans "Total de preenchimentos já realizados" %}</p>
                     </div>
                 </div>
 
                 <div class="container span6 offset3 well ">
-                    <h4>Participantes</h4>
+                    <h4>{% trans "Participantes" %}</h4>
                     <div class="row">
                         <div class="col-xs-12 col-sm-12">
                             {% if number_of_subjects > 0 %}
@@ -228,19 +230,19 @@
                                     <a data-toggle="tooltip" data-placement="left" title="Ver / Editar"
                                        href="/experiment/group/{{ group.id }}/subjects">
                                         {% if number_of_subjects == 1 %}
-                                            Há {{ number_of_subjects }} participante cadastrado
+                                            {% blocktrans %}Há {{ number_of_subjects }} participante cadastrado{% endblocktrans %}
                                         {% else %}
-                                            Há {{ number_of_subjects }} participantes cadastrados
+                                            {% blocktrans %}Há {{ number_of_subjects }} participantes cadastrados{% endblocktrans %}
                                         {% endif %}
                                     </a>
                                 </div>
                             {% else %}
                                 <div style="margin-bottom: 1em">
-                                    Não há participantes cadastrados
+                                    {% trans "Não há participantes cadastrados" %}
                                 </div>
                                 {% if perms.experiment.add_subject and can_change %}
                                     <a href="/experiment/group/{{ group.id }}/subjects" class="btn btn-primary">
-                                        Cadastrar
+                                        {% trans "Cadastrar" %}
                                     </a>
                                 {% endif %}
                             {% endif %}
@@ -249,7 +251,7 @@
                 </div>
 
                 <div class="container span6 offset3 well ">
-                    <h4>Protocolo Experimental</h4>
+                    <h4>{% trans "Protocolo Experimental" %}</h4>
                     <div class="row">
                         <div class="col-xs-12 col-sm-12">
                             {% if group.experimental_protocol %}
@@ -257,14 +259,14 @@
                                     <table class="table table-striped">
                                         <thead>
                                             <tr>
-                                                <th>Conjunto de passos raiz</th>
-                                                <th>Descrição</th>
+                                                <th>{% trans "Conjunto de passos raiz" %}</th>
+                                                <th>{% trans "Descrição" %}</th>
                                             </tr>
                                         </thead>
                                         <tbody>
                                             <tr>
                                                 <td>
-                                                    <a data-toggle="tooltip" data-placement="left" title="Editar"
+                                                    <a data-toggle="tooltip" data-placement="left" title={% trans "Editar" %}
                                                        href="/experiment/component/G{{ group.id }}-{{ group.experimental_protocol.id}}">
                                                         {{ group.experimental_protocol.identification }}
                                                     </a>
@@ -274,8 +276,9 @@
 
                                                     {% if can_change %}
                                                         <a class="btn glyphicon glyphicon-remove" data-toggle="tooltip"
-                                                           data-placement="right" title="Desconfigurar protocolo experimental"
+                                                           data-placement="right"
                                                            style="color: indianred; position: relative; float: right; padding: 0"
+                                                           title={% trans "Desconfigurar protocolo experimental" %}
                                                            onclick="show_modal_remove_experimental_protocol();">
                                                         </a>
                                                     {% endif %}
@@ -286,14 +289,14 @@
                                 </div>
                             {% else %}
                                 <div style="margin-bottom: 1em">
-                                    Não há protocolo experimental configurado
+                                    {% trans "Não há protocolo experimental configurado" %}
                                 </div>
                                 {% if can_change %}
                                     <div class="form-group">
                                         <a href="/experiment/component/G{{ group.id }}/add_new/block" class="btn btn-primary"
                                                 data-toggle="tooltip" data-placement="right"
-                                                title="A raiz de um protocolo experimental é sempre um conjunto de passos. Você poderá criar um conjunto novo ou reusar algum que já tenha sido criado para este experimento.">
-                                            Configurar / Criar</a>
+                                                title={% trans "A raiz de um protocolo experimental é sempre um conjunto de passos. Você poderá criar um conjunto novo ou reusar algum que já tenha sido criado para este experimento." %}>
+                                            {% trans "Configurar / Criar" %}</a>
                                     </div>
                                 {% endif %}
                             {% endif %}
@@ -305,20 +308,20 @@
             <div class="btn-toolbar">
                 <div class="btn-group pull-left">
                     {% if not editing and perms.experiment.delete_experiment and can_change %}
-                        <button type="button" class="btn btn-danger" onclick="$('#modalRemove').modal('show')">Excluir</button>
+                        <button type="button" class="btn btn-danger" onclick="$('#modalRemove').modal('show')">{% trans "Excluir" %}</button>
                     {% endif %}
                 </div>
                 {% if editing %}
                     <div class="btn-group pull-right">
-                        <button type="submit" name="action" value="save" class="btn btn-primary">Salvar</button>
+                        <button type="submit" name="action" value="save" class="btn btn-primary">{% trans "Salvar" %}</button>
                     </div>
                     <div class="btn-group pull-right">
                         <a href="/experiment/{% if creating %}{{ experiment.id }}{% else %}group/{{ group.id }}{% endif %}"
-                           class="btn" style="background-color: #f5f5f5">Cancelar</a>
+                           class="btn" style="background-color: #f5f5f5">{% trans "Cancelar" %}</a>
                     </div>
                 {% else %}
                     <div class="btn-group pull-right">
-                        <a href="/experiment/{{ experiment.id }}" class="btn" style="background-color: #f5f5f5">Voltar</a>
+                        <a href="/experiment/{{ experiment.id }}" class="btn" style="background-color: #f5f5f5">{% trans "Voltar" %}</a>
                     </div>
                 {% endif %}
             </div>
@@ -330,12 +333,12 @@
         <div class="modal-dialog">
             <div class="modal-content">
                 <div class="modal-body">
-                    Tem certeza que deseja excluir o grupo?
+                    {% trans "Tem certeza que deseja excluir o grupo?" %}
                 </div>
                 <div class="modal-footer">
-                    <button type="button" class="btn btn-default" data-dismiss="modal">Cancelar</button>
+                    <button type="button" class="btn btn-default" data-dismiss="modal">{% trans "Cancelar" %}</button>
                     <button type="submit" class="btn btn-primary" value="remove" name="action"
-                            style="background-color: indianred; color: #ffffff">Excluir
+                            style="background-color: indianred; color: #ffffff">{% trans "Excluir" %}
                     </button>
                 </div>
             </div>
@@ -346,11 +349,11 @@
         <div class="modal-dialog">
             <div class="modal-content">
                 <div class="modal-body">
-                    Tem certeza que deseja excluir o diagnóstico?
+                    {% trans "Tem certeza que deseja excluir o diagnóstico?" %}
                 </div>
                 <div class="modal-footer">
-                    <button type="button" class="btn btn-default" data-dismiss="modal">Cancelar</button>
-                    <a type="button" class="btn btn-primary" id="removeClassificationOfDiseases" style="background-color: indianred; color: #ffffff" href="">Excluir</a>
+                    <button type="button" class="btn btn-default" data-dismiss="modal">{% trans "Cancelar" %}</button>
+                    <a type="button" class="btn btn-primary" id="removeClassificationOfDiseases" style="background-color: indianred; color: #ffffff" href="">{% trans "Excluir" %}</a>
                 </div>
             </div>
         </div>
@@ -360,12 +363,12 @@
         <div class="modal-dialog">
             <div class="modal-content">
                 <div class="modal-body">
-                    Tem certeza que deseja desconfigurar o protocolo experimental?
+                    {% trans "Tem certeza que deseja desconfigurar o protocolo experimental?" %}
                 </div>
                 <div class="modal-footer">
-                    <button type="button" class="btn btn-default" data-dismiss="modal">Cancelar</button>
+                    <button type="button" class="btn btn-default" data-dismiss="modal">{% trans "Cancelar" %}</button>
                     <button type="submit" class="btn btn-primary" value="remove_experimental_protocol" name="action"
-                            style="background-color: indianred; color: #ffffff">Desconfigurar
+                            style="background-color: indianred; color: #ffffff">{% trans "Desconfigurar" %}
                     </button>
                 </div>
             </div>

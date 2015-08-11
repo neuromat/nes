@@ -5,6 +5,7 @@ from django.db import models
 from django.core.exceptions import ValidationError
 from django.core.validators import MinValueValidator
 from django.contrib.auth.models import User
+from django.utils.translation import ugettext_lazy as _
 from simple_history.models import HistoricalRecords
 
 from patient.models import Patient, ClassificationOfDiseases
@@ -24,7 +25,7 @@ TIME_UNITS = (
 
 def validate_date_questionnaire_response(value):
     if value > datetime.date.today():
-        raise ValidationError('Data de preenchimento não pode ser maior que a data de hoje.')
+        raise ValidationError(_(u'Data de preenchimento não pode ser maior que a data de hoje.'))
 
 
 class Subject(models.Model):

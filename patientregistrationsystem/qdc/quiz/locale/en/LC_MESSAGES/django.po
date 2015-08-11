@@ -1,0 +1,70 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) YEAR THE PACKAGE'S COPYRIGHT HOLDER
+# This file is distributed under the same license as the PACKAGE package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
+#
+#, fuzzy
+msgid ""
+msgstr ""
+"Project-Id-Version: PACKAGE VERSION\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2015-07-27 11:34-0300\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language-Team: LANGUAGE <LL@li.org>\n"
+"Language: \n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+
+#: templates/quiz/contato.html:12 templates/quiz/template.html:11
+msgid "Neuroscience Experiments System - NES"
+msgstr ""
+
+#: templates/quiz/contato.html:14
+msgid "Sistema de Cadastro e Consulta de Dados Sociodemográficos e Clínicos"
+msgstr "System Registration and Socio-Demographic and Clinical Data Query"
+
+#: templates/quiz/contato.html:15
+msgid "Dúvidas e Sugestões"
+msgstr "Doubts and Suggestions"
+
+#: templates/quiz/template.html:108
+msgid "NES"
+msgstr ""
+
+#: templates/quiz/template.html:122
+msgid "English"
+msgstr ""
+
+#: templates/quiz/template.html:123
+msgid "Português"
+msgstr ""
+
+#: templates/quiz/template.html:135
+msgid "Alterar senha"
+msgstr "Change password"
+
+#: templates/quiz/template.html:136
+msgid "Sair"
+msgstr "Logout"
+
+#: templates/quiz/template.html:155
+msgid "Participantes"
+msgstr "Participants"
+
+#: templates/quiz/template.html:161
+msgid "Usuários"
+msgstr "Users"
+
+#: templates/quiz/template.html:167
+msgid "Estudos"
+msgstr "Studies"
+
+#: templates/quiz/template.html:173
+msgid "Questionários"
+msgstr "Questionnaires"
+
+#: templates/quiz/template.html:178
+msgid "Contato"
+msgstr "Contact"

@@ -1,32 +1,34 @@
 {% extends "experiment/component_template.html" %}
 
+{% load i18n admin_static %}
+
 {% block breadcrumb %}
 
     {% if creating %}
-        <li class="active">Novo estímulo</li>
+        <li class="active">{% trans "Novo estímulo" %}</li>
     {% endif %}
 
 {% endblock %}
 
-{% block component_label %}o estímulo{% endblock %}
+{% block component_label %}{% trans "o estímulo" %}{% endblock %}
 
 {% block component_add_new %}
     <li role="presentation">
         <a role="menuitem" tabindex="-1" onclick="redirect_with_number_of_uses('/experiment/component/{{ path_of_the_components }}/add_new/stimulus{% if position %}?position={{ position }}{% endif %}')">
-            << Novo estímulo >>
+            << {% trans "Novo estímulo" %} >>
         </a>
     </li>
 {% endblock %}
 
 {% block component_button_label %}
-    Novo estímulo
+    {% trans "Novo estímulo" %}
 {% endblock %}
 
 {% block extra_fields %}
     <div class="row">
         <div class="col-xs-6 col-sm-6">
             <div class="form-group">
-                <label class="control-label">Tipo do estímulo <b style="color: red;">*</b></label>
+                <label class="control-label">{% trans "Tipo do estímulo " %}<b style="color: red;">*</b></label>
                     {{ specific_form.stimulus_type }}
                 <div class="help-block with-errors"></div>
             </div>

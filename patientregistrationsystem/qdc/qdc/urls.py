@@ -41,6 +41,20 @@ urlpatterns = patterns(
      'django.contrib.auth.views.password_reset_complete'),
     url(r'^cep/', include('cep.urls')),
     url(r'^$', 'qdc.views.contact', name='contact'),
+    url(r'^language/change/(?P<language_code>(?:(?:\w{2})|(?:\w{2}\-\w{2})))$', 'qdc.views.language_change', name='language_change'),
+    url(r'^i18n/', include('django.conf.urls.i18n')),
+
 ) + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
+
+# internationalization
+js_info_dict = {
+    'packages': ('patient',
+    'experiment',
+    'survey',),
+}
+
+urlpatterns += patterns('',
+    (r'^jsi18n/$', 'django.views.i18n.javascript_catalog', js_info_dict),
+)
 
 handler403 = 'qdc.views.qdc_permission_denied_view'

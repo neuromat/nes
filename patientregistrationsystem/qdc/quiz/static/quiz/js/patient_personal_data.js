@@ -110,7 +110,7 @@ $(document).ready(function () {
         var cpf_value = $.trim($("#id_cpf").val());
 
         if (name_value.length == 0 || date_birth_value.length == 0 || gender_value.length == 0) {
-            showErrorMessageTemporary("Campos obrigatórios devem ser preenchidos.");
+            showErrorMessageTemporary(gettext("Campos obrigatórios devem ser preenchidos."));
             jumpToElement('id_name');
             document.getElementById('id_date_birth').focus();
             document.getElementById('id_gender').focus();
@@ -119,7 +119,7 @@ $(document).ready(function () {
             var email_value = $.trim($('#id_email').val());
 
             if (email_value.length != 0 && !validateEmail(email_value)) {
-                showErrorMessageTemporary("Preencha os campos corretamente. Campo de e-mail inválido");
+                showErrorMessageTemporary(gettext("Preencha os campos corretamente. Campo de e-mail inválido"));
             } else {
                 if (cpf_value.length == 0) {
                     $("#modalNoCPF").modal('show');

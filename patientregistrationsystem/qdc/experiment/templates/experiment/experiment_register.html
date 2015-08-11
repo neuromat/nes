@@ -1,6 +1,8 @@
 {% extends "quiz/template.html" %}
 {% block activeAdvancedResearchProject %}class="active"{% endblock %}
 
+{% load i18n admin_static %}
+
 {% block header %}
 {% endblock %}
 
@@ -35,23 +37,25 @@
     {% endif %}
 
     {% if experiment_form.errors %}
-        <script>showErrorMessage('Por favor, corrija os campos em destaque.')</script>
+        <script>
+            showErrorMessage(gettext('Por favor, corrija os campos em destaque.'))
+        </script>
     {% endif %}
 
 
     <div class="tab-pane fade in active" id="experimentBreadCrumb">
         <div class="col-md-10">
             <ol class="breadcrumb">
-                <li><a href="/home">Home</a></li>
-                <li><a href="/experiment/research_project/list">Estudos</a></li>
+                <li><a href="/home">{% trans "Home" %}</a></li>
+                <li><a href="/experiment/research_project/list">{% trans "Estudos" %}</a></li>
                 <li><a href="/experiment/research_project/{{ research_project.id }}">{{ research_project.title }}</a></li>
 
                 {% if creating %}
-                    <li class="active">Novo experimento</li>
+                    <li class="active">{% trans "Novo experimento" %}</li>
                 {% else %}
                     {% if editing %}
                         <li><a href="/experiment/{{ experiment.id }}">{{ experiment_form.title.value }}</a></li>
-                        <li class="active">Edição</li>
+                        <li class="active">{% trans "Edição" %}</li>
                     {% else %}
                         <li class="active"> {{ experiment_form.title.value }} </li>
                     {% endif %}
@@ -63,11 +67,11 @@
     <div class="tab-pane fade in active" id="menuUserTab">
         <div class="col-md-10">
             <div class="container span6 offset3 well ">
-                <h4>Informações básicas do experimento</h4>
+                <h4>{% trans "Informações básicas do experimento" %}</h4>
                 <div class="row" {% if creating %}style="display: none;"{% endif %}>
                     <div class="col-xs-12 col-sm-12">
                         <div class="form-group">
-                            <label class="control-label">Estudo <b style="color: red;">*</b></label>
+                            <label class="control-label">{% trans "Estudo" %} <b style="color: red;">*</b></label>
                             {{ experiment_form.research_project }}
                             <div class="help-block with-errors"></div>
                         </div>
@@ -76,7 +80,7 @@
                 <div class="row">
                     <div class="col-xs-12 col-sm-12">
                         <div class="form-group">
-                            <label class="control-label">Título <b style="color: red;">*</b></label>
+                            <label class="control-label">{% trans "Título" %} <b style="color: red;">*</b></label>
                             {{ experiment_form.title }}
                             <div class="help-block with-errors"></div>
                         </div>
@@ -85,7 +89,7 @@
                 <div class="row">
                     <div class="col-xs-12 col-sm-12">
                         <div class="form-group">
-                            <label class="control-label">Descrição <b style="color: red;">*</b></label>
+                            <label class="control-label">{% trans "Descrição" %} <b style="color: red;">*</b></label>
                             {{ experiment_form.description }}
                             <div class="help-block with-errors"></div>
                         </div>
@@ -94,21 +98,21 @@
 
                 {% if not editing and can_change %}
                     <div class="btn-group pull-left">
-                        <a href="/experiment/edit/{{ experiment.id }}" class="btn btn-primary">Editar</a>
+                        <a href="/experiment/edit/{{ experiment.id }}" class="btn btn-primary">{% trans "Editar" %}</a>
                     </div>
                 {% endif %}
             </div>
 
             {% if not editing %}
                 <div class="container span6 offset3 well ">
-                <h4>Grupos</h4>
+                <h4>{% trans "Grupos" %}</h4>
                     {% if group_list %}
                         <div class="form-group">
                             <table class="table table-striped">
                                 <thead>
                                 <tr>
-                                    <th>Nome</th>
-                                    <th>Descrição</th>
+                                    <th>{% trans "Nome" %}</th>
+                                    <th>{% trans "Descrição" %}</th>
                                 </tr>
                                 </thead>
                                 <tbody>
@@ -129,15 +133,15 @@
                         </div>
                     {% endif %}
                     {% if perms.experiment.add_subject and can_change %}
-                        <a href="/experiment/{{ experiment.id }}/group/new" class="btn btn-primary">Inserir novo</a>
+                        <a href="/experiment/{{ experiment.id }}/group/new" class="btn btn-primary">{% trans "Inserir novo" %}</a>
                     {% endif %}
                 </div>
 
                 <div class="container span6 offset3 well ">
-                    <h4>Passos de protocolo experimental</h4>
+                    <h4>{% trans "Passos de protocolo experimental" %}</h4>
                     <div class="row">
                         <div class="col-xs-6 col-sm-12">
-                            <a href="/experiment/{{ experiment.id }}/components" class="btn btn-primary">Gerenciar</a>
+                            <a href="/experiment/{{ experiment.id }}/components" class="btn btn-primary">{% trans "Gerenciar" %}</a>
                         </div>
                     </div>
                 </div>
@@ -146,20 +150,20 @@
             <div class="btn-toolbar">
                 <div class="btn-group pull-left">
                     {% if not editing and perms.experiment.delete_experiment and can_change %}
-                        <button type="button" class="btn btn-danger" onclick="$('#modalRemove').modal('show')">Excluir</button>
+                        <button type="button" class="btn btn-danger" onclick="$('#modalRemove').modal('show')">{% trans "Excluir" %}</button>
                     {% endif %}
                 </div>
                 {% if editing %}
                     <div class="btn-group pull-right">
-                        <button type="submit" name="action" value="save" class="btn btn-primary">Salvar</button>
+                        <button type="submit" name="action" value="save" class="btn btn-primary">{% trans "Salvar" %}</button>
                     </div>
                     <div class="btn-group pull-right">
                         <a href="/experiment/{% if creating %}research_project/{{ research_project.id }}{% else %}{{ experiment.id }}{% endif %}"
-                           class="btn" style="background-color: #f5f5f5">Cancelar</a>
+                           class="btn" style="background-color: #f5f5f5">{% trans "Cancelar" %}</a>
                     </div>
                 {% else %}
                     <div class="btn-group pull-right">
-                        <a href="/experiment/research_project/{{ research_project.id }}" class="btn" style="background-color: #f5f5f5">Voltar</a>
+                        <a href="/experiment/research_project/{{ research_project.id }}" class="btn" style="background-color: #f5f5f5">{% trans "Voltar" %}</a>
                     </div>
                 {% endif %}
             </div>
@@ -171,12 +175,12 @@
         <div class="modal-dialog">
             <div class="modal-content">
                 <div class="modal-body">
-                    Tem certeza que deseja excluir o experimento?
+                    {% trans "Tem certeza que deseja excluir o experimento?" %}
                 </div>
                 <div class="modal-footer">
-                    <button type="button" class="btn btn-default" data-dismiss="modal">Cancelar</button>
+                    <button type="button" class="btn btn-default" data-dismiss="modal">{% trans "Cancelar" %}</button>
                     <button type="submit" class="btn btn-primary" value="remove" name="action"
-                            style="background-color: indianred; color: #ffffff">Excluir</button>
+                            style="background-color: indianred; color: #ffffff">{% trans "Excluir" %}</button>
                 </div>
             </div>
         </div>

@@ -1,4 +1,7 @@
 {% extends "quiz/template.html" %}
+
+{% load i18n admin_static %}
+
 {% block activePatient %}class="active"{% endblock %}
 
 {% block header %}
@@ -40,20 +43,31 @@
     <div class="tab-pane fade in active" id="examTab">
         <div class="col-md-10">
             <ol class="breadcrumb">
-                <li><a href="/home">Home</a></li>
-                <li><a href="/patient/find/">Participantes</a></li>
-                <li><a href="/patient/edit/{{ patient_id }}/?currentTab=3">{{ name_patient }}</a></li>
+                <li><a href="/home">{% trans "Home" %}</a></li>
+                <li><a href="/patient/find/">{% trans "Participantes" %}</a></li>
+
+                {% if status == "edit" %}
+                    <li><a href="/patient/edit/{{ patient_id }}/?currentTab=3">{{ name_patient }}</a></li>
+                {% else %}
+                    <li><a href="/patient/{{ patient_id }}/?currentTab=3">{{ name_patient }}</a></li>
+                {% endif %}
+
+                <li>{% trans "Avaliação médica" %}</li>
 
                 {% if length == 0 %}
-                    <li><a onclick="show_modal_remove_exam()">Diagnóstico e Exames</a></li>
+                    <li><a onclick="show_modal_remove_exam()">{% trans "Diagnóstico e Exames" %}</a></li>
                 {% else %}
-                    <li><a href="/patient/{{ patient_id }}/medical_record/edit/{{ record_id }}/?status=view&currentTab=3">Diagnóstico e Exames</a></li>
+                    {% if viewing %}
+                        <li><a href="/patient/{{ patient_id }}/medical_record/{{ record_id }}/?status=view&currentTab=3">{% trans "Diagnóstico e Exames" %}</a></li>
+                    {% else %}
+                        <li><a href="/patient/{{ patient_id }}/medical_record/edit/{{ record_id }}/?status=view&currentTab=3">{% trans "Diagnóstico e Exames" %}</a></li>
+                    {% endif %}
                 {% endif %}
 
                 {% if viewing %}
-                    <li class="active">Exame</li>
+                    <li class="active">{% trans "Exame" %}</li>
                 {% else %}
-                    <li class="active">Novo Exame</li>
+                    <li class="active">{% trans "Novo Exame" %}</li>
                 {% endif %}
             </ol>
 
@@ -80,7 +94,10 @@
                         <script>showErrorMessage('{{ field.errors|striptags }}')</script>
                     {% endif %}
                 {% endfor %}
-                <script>showErrorMessage('Exame não salvo. Por favor, corrija os campos em destaque')</script>
+
+                <script>
+                    showErrorMessage(gettext('Exame não salvo. Por favor, corrija os campos em destaque.'))
+                </script>
             {% endif %}
 
             <div class="tab-content">
@@ -90,7 +107,7 @@
                             <div class="row">
                                 <div class="col-xs-5 col-sm-4">
                                     <div class="form-group {% if complementary_exam_form.errors.date %}has-error{% endif %}">
-                                        <label>Data <b style="color: red;">*</b></label>
+                                        <label>{% trans "Data" %} <b style="color: red;">*</b></label>
                                         {{ complementary_exam_form.date }}
                                         <div class="help-block with-errors">
                                             {% if complementary_exam_form.date.errors %}
@@ -103,7 +120,7 @@
                                 </div>
                                 <div class="col-xs-7 col-sm-8">
                                     <div class="form-group">
-                                        <label>Realizado em</label>
+                                        <label>{% trans "Realizado em" %}</label>
                                         {{ complementary_exam_form.exam_site }}
                                     </div>
                                 </div>
@@ -111,7 +128,7 @@
                             <div class="row">
                                 <div class="col-xs-12 col-sm-12">
                                     <div class="form-group">
-                                        <label>Descrição <b style="color: red;">*</b></label>
+                                        <label>{% trans "Descrição " %}<b style="color: red;">*</b></label>
                                         {{ complementary_exam_form.description }}
                                         <div class="help-block with-errors"></div>
                                     </div>
@@ -120,13 +137,13 @@
                             <div class="row">
                                 <div class="col-xs-5 col-sm-4">
                                     <div class="form-group">
-                                        <label>CRM</label>
+                                        <label>{% trans "CRM" %}</label>
                                         {{ complementary_exam_form.doctor_register }}
                                     </div>
                                 </div>
                                 <div class="col-xs-7 col-sm-8">
                                     <div class="form-group">
-                                        <label>Nome do médico</label>
+                                        <label>{% trans "Nome do médico" %}</label>
                                         {{ complementary_exam_form.doctor }}
                                     </div>
                                 </div>
@@ -137,13 +154,13 @@
                                         <table class="table table-bordered">
                                             <thead>
                                             <tr>
-                                                <th>Anexos <b style="color: red;">*</b></th>
+                                                <th>{% trans "Anexos" %} <b style="color: red;">*</b></th>
                                             </tr>
                                             </thead>
                                             <tbody>
                                             {% if not exam_file_list %}
                                                 <tr>
-                                                    <td>(sem anexos)</td>
+                                                    <td>{% trans "(sem anexos)" %}</td>
                                                 </tr>
                                             {% else %}
                                                 {% for exam_file in exam_file_list %}
@@ -174,7 +191,7 @@
                                     </div>
                                     <div class="col-xs-6 col-sm-6">
                                         <div class="form-group">
-                                            <button type="submit" name="action" value="upload" class="btn btn-primary">Upload</button>
+                                            <button type="submit" name="action" value="upload" class="btn btn-primary">{% trans "Upload" %}</button>
                                         </div>
                                     </div>
                                 </div>
@@ -185,21 +202,21 @@
                 <div class="btn-toolbar">
                     <div class="btn-group pull-left">
                     {% if not creating and not viewing %}
-                        <button type="button" class="btn btn-secondary" style="background-color: indianred; color: #ffffff" onclick="show_modal_remove_for_complementary_exam();">Excluir</button>
+                        <button type="button" class="btn btn-secondary" style="background-color: indianred; color: #ffffff" onclick="show_modal_remove_for_complementary_exam();">{% trans "Excluir" %}</button>
                     {% endif %}
                 </div>
                 <div class="btn-group pull-right">
                     {% if length == 0 %}
-                        <button type="button" class="btn" style="background-color: #f5f5f5" onclick="show_modal_remove_exam()">Voltar</button>
+                        <button type="button" class="btn" style="background-color: #f5f5f5" onclick="show_modal_remove_exam()">{% trans "Voltar" %}</button>
                     {% else %}
                         {% if viewing %}
-                            <a href="/patient/{{ patient_id }}/medical_record/{{ record_id }}/?status=view&currentTab=3" class="btn" style="background-color: #f5f5f5">Voltar</a>
+                            <a href="/patient/{{ patient_id }}/medical_record/{{ record_id }}/?status=view&currentTab=3" class="btn" style="background-color: #f5f5f5">{% trans "Voltar" %}</a>
                         {% else %}
-                            <a href="/patient/{{ patient_id }}/medical_record/edit/{{ record_id }}/?status=view&currentTab=3" class="btn" style="background-color: #f5f5f5">Voltar</a>
+                            <a href="/patient/{{ patient_id }}/medical_record/edit/{{ record_id }}/?status=view&currentTab=3" class="btn" style="background-color: #f5f5f5">{% trans "Voltar" %}</a>
                         {% endif %}
                     {% endif %}
                     {% if not viewing %}
-                        <button type="submit" name="action" value="save" id="save_exam" class="btn btn-primary">Salvar</button>
+                        <button type="submit" name="action" value="save" id="save_exam" class="btn btn-primary">{% trans "Salvar" %}</button>
                     {% endif %}
                 </div>
                 </div>
@@ -212,11 +229,11 @@
         <div class="modal-dialog">
             <div class="modal-content">
                 <div class="modal-body">
-                    Tem certeza que deseja excluir o exame?
+                    {% trans "Tem certeza que deseja excluir o exame?" %}
                 </div>
                 <div class="modal-footer">
-                    <button type="button" class="btn btn-default" data-dismiss="modal">Cancelar</button>
-                    <a type="button" class="btn btn-primary" id="removeExam" style="background-color: indianred; color: #ffffff" href="">Excluir</a>
+                    <button type="button" class="btn btn-default" data-dismiss="modal">{% trans "Cancelar" %}</button>
+                    <a type="button" class="btn btn-primary" id="removeExam" style="background-color: indianred; color: #ffffff" href="">{% trans "Excluir" %}</a>
                 </div>
             </div>
         </div>
@@ -227,11 +244,11 @@
         <div class="modal-dialog">
             <div class="modal-content">
                 <div class="modal-body">
-                    Como não existem anexos, o exame será excluído totalmente. Confirma exclusão?
+                    {% trans "Como não existem anexos, o exame será excluído totalmente. Confirma exclusão?" %}
                 </div>
                 <div class="modal-footer">
-                    <button type="button" class="btn btn-default" data-dismiss="modal">Cancelar</button>
-                    <a type="button" class="btn btn-primary" id="removeExam2" style="background-color: indianred; color: #ffffff" href="">Excluir</a>
+                    <button type="button" class="btn btn-default" data-dismiss="modal">{% trans "Cancelar" %}</button>
+                    <a type="button" class="btn btn-primary" id="removeExam2" style="background-color: indianred; color: #ffffff" href="">{% trans "Excluir" %}</a>
                 </div>
             </div>
         </div>

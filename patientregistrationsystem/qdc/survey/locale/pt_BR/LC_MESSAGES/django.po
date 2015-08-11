@@ -1,0 +1,174 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) YEAR THE PACKAGE'S COPYRIGHT HOLDER
+# This file is distributed under the same license as the PACKAGE package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
+#
+#, fuzzy
+msgid ""
+msgstr ""
+"Project-Id-Version: PACKAGE VERSION\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2015-07-27 11:08-0300\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language-Team: LANGUAGE <LL@li.org>\n"
+"Language: \n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=2; plural=(n > 1);\n"
+
+#: views.py:84
+msgid "Questionário criado com sucesso."
+msgstr ""
+
+#: views.py:116
+msgid "Questionário atualizado com sucesso."
+msgstr ""
+
+#: views.py:118
+msgid "Não há alterações para salvar."
+msgstr ""
+
+#: views.py:347
+msgid "Questionário removido com sucesso."
+msgstr ""
+
+#: views.py:350
+msgid ""
+"Não foi possível excluir o questionário, pois há respostas ou passos de "
+"experimento associados."
+msgstr ""
+
+#: views.py:540
+msgid "LimeSurvey indisponível. Sistema funcionando parcialmente."
+msgstr ""
+
+#: templates/survey/survey_list.html:43
+msgid "Lista de questionários"
+msgstr ""
+
+#: templates/survey/survey_list.html:48
+#: templates/survey/survey_register.html:74
+msgid "Questionário"
+msgstr ""
+
+#: templates/survey/survey_list.html:49
+#: templates/survey/survey_register.html:91
+msgid "Avaliação de Entrada"
+msgstr ""
+
+#: templates/survey/survey_list.html:55
+msgid "Visualizar"
+msgstr ""
+
+#: templates/survey/survey_list.html:64
+msgid "Inserir novo questionário"
+msgstr ""
+
+#: templates/survey/survey_register.html:50
+msgid "Home"
+msgstr ""
+
+#: templates/survey/survey_register.html:51
+msgid "Questionários"
+msgstr ""
+
+#: templates/survey/survey_register.html:54
+msgid "Novo"
+msgstr ""
+
+#: templates/survey/survey_register.html:58
+msgid "Edição"
+msgstr ""
+
+#: templates/survey/survey_register.html:70
+msgid "Informações do questionário"
+msgstr ""
+
+#: templates/survey/survey_register.html:75
+msgid "Por favor, selecione um questionário da lista."
+msgstr ""
+
+#: templates/survey/survey_register.html:99
+msgid "Editar"
+msgstr ""
+
+#: templates/survey/survey_register.html:109
+msgid "Respondido como avaliação de entrada"
+msgstr ""
+
+#: templates/survey/survey_register.html:116
+#: templates/survey/survey_register.html:197
+msgid "Participante"
+msgstr ""
+
+#: templates/survey/survey_register.html:117
+#: templates/survey/survey_register.html:198
+msgid "Preenchimentos"
+msgstr ""
+
+#: templates/survey/survey_register.html:127
+msgid "Falta preencher"
+msgstr ""
+
+#: templates/survey/survey_register.html:140
+#: templates/survey/survey_register.html:217
+msgid "Completo"
+msgstr ""
+
+#: templates/survey/survey_register.html:142
+#: templates/survey/survey_register.html:219
+msgid "Incompleto"
+msgstr ""
+
+#: templates/survey/survey_register.html:145
+#: templates/survey/survey_register.html:222
+msgid "Sem status"
+msgstr ""
+
+#: templates/survey/survey_register.html:163
+msgid "Uso em experimentos"
+msgstr ""
+
+#: templates/survey/survey_register.html:170
+msgid "Experimento:"
+msgstr ""
+
+#: templates/survey/survey_register.html:174
+msgid "Grupo:"
+msgstr ""
+
+#: templates/survey/survey_register.html:180
+msgid "Conjunto de passos pai:"
+msgstr ""
+
+#: templates/survey/survey_register.html:184
+msgid "Passo:"
+msgstr ""
+
+#: templates/survey/survey_register.html:188
+msgid "Nome do uso:"
+msgstr ""
+
+#: templates/survey/survey_register.html:244
+#: templates/survey/survey_register.html:275
+msgid "Excluir"
+msgstr ""
+
+#: templates/survey/survey_register.html:250
+msgid "Salvar"
+msgstr ""
+
+#: templates/survey/survey_register.html:254
+#: templates/survey/survey_register.html:274
+msgid "Cancelar"
+msgstr ""
+
+#: templates/survey/survey_register.html:258
+msgid "Voltar"
+msgstr ""
+
+#: templates/survey/survey_register.html:271
+msgid "Tem certeza que deseja excluir o questionário?"
+msgstr ""

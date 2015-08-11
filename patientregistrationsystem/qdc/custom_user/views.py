@@ -7,6 +7,9 @@ from custom_user.forms import UserForm, UserFormUpdate
 from django.contrib import messages
 
 from django.contrib.auth.models import User, Group
+
+from django.utils.translation import ugettext as _
+
 from custom_user.models import UserProfile
 
 
@@ -35,17 +38,17 @@ def user_create(request, template_name='custom_user/register_users.html'):
         if request.POST['action'] == "save":
             if form.is_valid():
                 form.save()
-                messages.success(request, 'Usuário criado com sucesso.')
+                messages.success(request, _(u'Usuário criado com sucesso.'))
                 return redirect('user_list')
             else:
-                messages.error(request, 'Não foi possível criar usuário.')
+                messages.error(request, _(u'Não foi possível criar usuário.'))
                 if 'username' in form.errors:
                     try:
                         form.errors['username'].remove(u'Usuário com este Usuário já existe.')
                         if User.objects.get_by_natural_key(request.POST['username']).is_active:
-                            form.errors['username'] = ['Este nome de usuário já existe.']
+                            form.errors['username'] = [_(u'Este nome de usuário já existe.')]
                         else:
-                            form.errors['username'] = ['Este nome de usuário já existe em um usuário desabilitado.']
+                            form.errors['username'] = [_(u'Este nome de usuário já existe em um usuário desabilitado.')]
                     except ValueError:
                         None
     return render(request, template_name, {'form': form, 'group_permissions': group_permissions, 'creating': True})
@@ -87,7 +90,7 @@ def user_update(request, user_id, template_name="custom_user/register_users.html
                         profile.force_password_change = True
                         profile.save()
 
-                    messages.success(request, 'Usuário atualizado com sucesso.')
+                    messages.success(request, _(u'Usuário atualizado com sucesso.'))
                     return redirect('user_list')
 
             else:
@@ -95,7 +98,7 @@ def user_update(request, user_id, template_name="custom_user/register_users.html
                     user = get_object_or_404(User, id=user_id)
                     user.is_active = False
                     user.save()
-                    messages.success(request, 'Usuário removido com sucesso.')
+                    messages.success(request, _(u'Usuário removido com sucesso.'))
 
                     return redirect('user_list')
 

@@ -1,8 +1,8 @@
-# coding=utf-8
+# -*- coding: UTF-8 -*-
+from django.utils.translation import ugettext_lazy as _
 from django.forms import ModelForm, TextInput, DateInput, Select, RadioSelect, TypedChoiceField
 from django.forms.widgets import Textarea
 from cep.widgets import CEPInput
-from django.utils.translation import ugettext_lazy as _
 
 from patient.models import Patient, Telephone, SocialDemographicData, SocialHistoryData, ComplementaryExam, ExamFile, \
     QuestionnaireResponse
@@ -29,8 +29,8 @@ class PatientForm(ModelForm):
             'origin': TextInput(attrs={'class': 'form-control'}),
             'medical_record': TextInput(attrs={'class': 'form-control'}),
             'date_birth': DateInput(attrs={'class': 'form-control datepicker', 'required': "",
-                                           'data-error': _('Data de nascimento deve ser preenchida'),
-                                           'placeholder': 'dd/mm/aaaa'}),
+                                           'placeholder': _(u'dd/mm/aaaa'),
+                                           'data-error': _('Data de nascimento deve ser preenchida')}),
             'gender': Select(attrs={'class': 'form-control', 'required': "",
                                     'data-error': _('Sexo deve ser preenchido')}),
             'rg': TextInput(attrs={'class': 'form-control'}),
@@ -68,7 +68,7 @@ class TelephoneForm(ModelForm):
 class SocialDemographicDataForm(ModelForm):
     benefit_government = TypedChoiceField(required=False,
                                           empty_value=None,
-                                          choices=((True, 'Sim'), (False, 'Não')),
+                                          choices=((True, _("Sim")), (False, _("Nao"))),
                                           widget=RadioSelect)
 
     class Meta:
@@ -83,18 +83,18 @@ class SocialDemographicDataForm(ModelForm):
             'schooling': Select(attrs={'class': 'form-control'}),
             'flesh_tone': Select(attrs={'class': 'form-control'}),
             'religion': Select(attrs={'class': 'form-control'}),
-            'profession': TextInput(attrs={'class': 'form-control', 'placeholder': 'Entrar profissão'}),
-            'occupation': TextInput(attrs={'class': 'form-control', 'placeholder': 'Entrar ocupação'}),
+            'profession': TextInput(attrs={'class': 'form-control', 'placeholder': _(u'Entrar profissão')}),
+            'occupation': TextInput(attrs={'class': 'form-control', 'placeholder': _(u'Entrar ocupação')}),
             'payment': Select(attrs={'class': 'form-control'}),
-            'tv': RadioSelect(choices=((0, '0'), (1, '1'), (2, '2'), (3, '3'), (4, '4 ou +'))),
-            'dvd': RadioSelect(choices=((0, '0'), (1, '1'), (2, '2'), (3, '3'), (4, '4 ou +'))),
-            'radio': RadioSelect(choices=((0, '0'), (1, '1'), (2, '2'), (3, '3'), (4, '4 ou +'))),
-            'bath': RadioSelect(choices=((0, '0'), (1, '1'), (2, '2'), (3, '3'), (4, '4 ou +'))),
-            'automobile': RadioSelect(choices=((0, '0'), (1, '1'), (2, '2'), (3, '3'), (4, '4 ou +'))),
-            'house_maid': RadioSelect(choices=((0, '0'), (1, '1'), (2, '2'), (3, '3'), (4, '4 ou +'))),
-            'wash_machine': RadioSelect(choices=((0, '0'), (1, '1'), (2, '2'), (3, '3'), (4, '4 ou +'))),
-            'refrigerator': RadioSelect(choices=((0, '0'), (1, '1'), (2, '2'), (3, '3'), (4, '4 ou +'))),
-            'freezer': RadioSelect(choices=((0, '0'), (1, '1'), (2, '2'), (3, '3'), (4, '4 ou +'))),
+            'tv': RadioSelect(choices=((0, _('0')), (1, _('1')), (2, _('2')), (3, _('3')), (4, _('4 ou +')))),
+            'dvd': RadioSelect(choices=((0, _('0')), (1, _('1')), (2, _('2')), (3, _('3')), (4, _('4 ou +')))),
+            'radio': RadioSelect(choices=((0, _('0')), (1, _('1')), (2, _('2')), (3, _('3')), (4, _('4 ou +')))),
+            'bath': RadioSelect(choices=((0, _('0')), (1, _('1')), (2, _('2')), (3, _('3')), (4, _('4 ou +')))),
+            'automobile': RadioSelect(choices=((0, _('0')), (1, _('1')), (2, _('2')), (3, _('3')), (4, _('4 ou +')))),
+            'house_maid': RadioSelect(choices=((0, _('0')), (1, _('1')), (2, _('2')), (3, _('3')), (4, _('4 ou +')))),
+            'wash_machine': RadioSelect(choices=((0, _('0')), (1, _('1')), (2, _('2')), (3, _('3')), (4, _('4 ou +')))),
+            'refrigerator': RadioSelect(choices=((0, _('0')), (1, _('1')), (2, _('2')), (3, _('3')), (4, _('4 ou +')))),
+            'freezer': RadioSelect(choices=((0, _('0')), (1, _('1')), (2, _('2')), (3, _('3')), (4, _('4 ou +')))),
             'social_class': TextInput(attrs={'class': 'form-control', 'readonly': ""})
         }
 
@@ -102,15 +102,15 @@ class SocialDemographicDataForm(ModelForm):
 class SocialHistoryDataForm(ModelForm):
     smoker = TypedChoiceField(required=False,
                               empty_value=None,
-                              choices=((True, 'Sim'), (False, 'Não')),
+                              choices=((True, _("Sim")), (False, _("Nao"))),
                               widget=RadioSelect(attrs={'id': 'id_smoker'}))
     ex_smoker = TypedChoiceField(required=False,
                                  empty_value=None,
-                                 choices=((True, 'Sim'), (False, 'Não')),
+                                 choices=((True, _("Sim")), (False, _("Nao"))),
                                  widget=RadioSelect)
     alcoholic = TypedChoiceField(required=False,
                                  empty_value=None,
-                                 choices=((True, 'Sim'), (False, 'Não')),
+                                 choices=((True, _("Sim")), (False, _("Nao"))),
                                  widget=RadioSelect(attrs={'id': 'id_alcoholic'}))
 
     class Meta:
@@ -118,12 +118,11 @@ class SocialHistoryDataForm(ModelForm):
         fields = ['smoker', 'amount_cigarettes', 'ex_smoker', 'alcoholic', 'alcohol_frequency',
                   'alcohol_period', 'drugs', ]
 
-        widgets = {
-            'amount_cigarettes': Select(attrs={'class': 'form-control'}),
-            'alcohol_frequency': Select(attrs={'class': 'form-control'}),
-            'alcohol_period': Select(attrs={'class': 'form-control'}),
-            'drugs': RadioSelect(choices=(('ja_fez', 'Já fez'), ('faz', 'Faz'), ('nunca_fez', 'Nunca fez'))),
-        }
+        widgets = dict(amount_cigarettes=Select(attrs={'class': 'form-control'}),
+                       alcohol_frequency=Select(attrs={'class': 'form-control'}),
+                       alcohol_period=Select(attrs={'class': 'form-control'}),
+                       drugs=RadioSelect(choices=(('ja_fez', _(u"Já fez")), ('faz', _(u'Faz')),
+                                                  ('nunca_fez', _(u'Nunca fez')))))
 
 
 class ComplementaryExamForm(ModelForm):
@@ -132,13 +131,13 @@ class ComplementaryExamForm(ModelForm):
         fields = ['date', 'description', 'doctor', 'doctor_register', 'exam_site']
 
         widgets = {
-            'date': DateInput(attrs={'class': 'form-control datepicker', 'placeholder': 'dd/mm/aaaa',
-                                     'required': "", 'data-error': "Data deve ser preenchida"}),
-            'description': Textarea(attrs={'class': 'form-control', 'placeholder': 'Descrição', 'rows': '4',
-                                           'required': "", 'data-error': "Descrição deve ser preenchida"}),
-            'doctor': TextInput(attrs={'class': 'form-control', 'placeholder': 'Médico'}),
-            'doctor_register': TextInput(attrs={'class': 'form-control', 'placeholder': 'CRM'}),
-            'exam_site': TextInput(attrs={'class': 'form-control', 'placeholder': 'Local de realização'}),
+            'date': DateInput(attrs={'class': 'form-control datepicker', 'placeholder': _(u'dd/mm/aaaa'),
+                                     'required': "", 'data-error': _(u"Data deve ser preenchida")}),
+            'description': Textarea(attrs={'class': 'form-control', 'placeholder': _(u'Descricao'), 'rows': '4',
+                                           'required': "", 'data-error': _(u"Descrição deve ser preenchida")}),
+            'doctor': TextInput(attrs={'class': 'form-control', 'placeholder': _(u'Médico')}),
+            'doctor_register': TextInput(attrs={'class': 'form-control', 'placeholder': _(u'CRM')}),
+            'exam_site': TextInput(attrs={'class': 'form-control', 'placeholder': _(u'Local de realização')}),
         }
 
 
@@ -156,6 +155,7 @@ class QuestionnaireResponseForm(ModelForm):
         ]
 
         widgets = {
-            'date': DateInput(attrs={'class': 'form-control datepicker', 'placeholder': 'dd/mm/aaaa', 'required': "",
-                                     'data-error': "Data de preenchimento deve ser preenchida"}, )
+            'date': DateInput(attrs={'class': 'form-control datepicker', 'placeholder': _(u'dd/mm/aaaa'),
+                                     'required': "",
+                                     'data-error': _(u"Data de preenchimento deve ser preenchida")}, )
         }

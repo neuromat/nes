@@ -104,13 +104,23 @@ TEMPLATE_DIRS = [os.path.join(BASE_DIR, 'templates')]
 # https://docs.djangoproject.com/en/1.6/topics/i18n/
 
 LANGUAGE_CODE = 'pt-br'
+#LANGUAGE_CODE = 'en'
 
 LANGUAGES = (
     ('pt-br', u'Português'),
-    # ('en', u'English'),
+    ('en', u'English'),
 )
 
-LOCALE_PATHS = [os.path.join(BASE_DIR, 'locale')]
+#os.path.join(BASE_DIR, 'locale'),
+#LOCALE_PATHS = [os.path.join(BASE_DIR, 'locale'),]
+LOCALE_PATHS = (os.path.join(BASE_DIR, 'locale'),
+                os.path.join(BASE_DIR, 'patient/locale'),
+                os.path.join(BASE_DIR, 'experiment/locale'),
+                os.path.join(BASE_DIR, 'survey/locale'),
+                os.path.join(BASE_DIR, 'custom_user/locale'),
+                os.path.join(BASE_DIR, 'quiz/locale'),
+                os.path.join(BASE_DIR, 'qdc/locale'),
+)
 
 TIME_ZONE = 'America/Sao_Paulo'
 
