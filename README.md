@@ -3,8 +3,8 @@ nes - neuroscience experiments system
 
 
 Demonstration environment: 
-  http://200.144.254.136:8001/quiz/
+  https://nes.numec.prp.usp.br/
   (please, contact us for access credential - neuromat@numec.prp.usp.br)
   
-Screenshots: 
-  http://neuromat.numec.prp.usp.br/relatorio/screenshots
+Documentation: 
+  https://github.com/neuromat/nes/wiki
