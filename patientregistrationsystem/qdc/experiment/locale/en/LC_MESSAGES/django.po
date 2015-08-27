@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2015-08-10 15:33-0300\n"
+"POT-Creation-Date: 2015-08-14 15:23-0300\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -94,7 +94,7 @@ msgid "Quantidade deve ser preenchida."
 msgstr "Quantity must be filled."
 
 #: forms.py:180 templates/experiment/research_project_list.html:36
-#: templates/experiment/research_project_register.html:114
+#: templates/experiment/research_project_register.html:116
 msgid "Responsável"
 msgstr "Responsiblex"
 
@@ -118,8 +118,8 @@ msgstr "Error trying to delete research."
 msgid "Estudo atualizado com sucesso."
 msgstr "Research updated successfully."
 
-#: views.py:146 views.py:325 views.py:492 views.py:1985 views.py:2007
-#: views.py:2017
+#: views.py:146 views.py:325 views.py:492 views.py:1995 views.py:2017
+#: views.py:2027
 msgid "Não há alterações para salvar."
 msgstr "There is no changes to save."
 
@@ -169,15 +169,15 @@ msgstr ""
 "Fail trying to generate token to answer questionnaire. Check if "
 "questionnaire is active."
 
-#: views.py:814 views.py:871
+#: views.py:867
 msgid "Você será redirecionado para o questionário. Aguarde."
 msgstr "You will be redirected to questionnaire. Please wait."
 
-#: views.py:893 views.py:1043
+#: views.py:889 views.py:1041
 msgid "Preenchimento removido com sucesso"
 msgstr "Fill deleted successfully."
 
-#: views.py:895 views.py:1045
+#: views.py:891 views.py:1043
 msgid "Erro ao deletar o preenchimento"
 msgstr "Error trying to delete fill"
 
@@ -207,7 +207,7 @@ msgstr "There aren't attachments to save"
 msgid "Anexo removido com sucesso."
 msgstr "Attachment deleted successfully."
 
-#: views.py:1423 views.py:2208 views.py:2316 views.py:2340
+#: views.py:1423 views.py:2229 views.py:2337 views.py:2361
 msgid "Passo incluído com sucesso."
 msgstr "Step included successfully."
 
@@ -273,23 +273,23 @@ msgstr " miliseconds "
 msgid " milissegundo "
 msgstr " milisecond "
 
-#: views.py:1767 views.py:2015
+#: views.py:1776 views.py:2025
 msgid "Uso do passo atualizado com sucesso."
 msgstr "Step use updated successfully."
 
-#: views.py:1773 views.py:2024
+#: views.py:1782 views.py:2034
 msgid "Componente removido com sucesso."
 msgstr "Component deleted successfully."
 
-#: views.py:1983 views.py:2005
+#: views.py:1993 views.py:2015
 msgid "Passo alterado com sucesso."
 msgstr "Step updated successfully."
 
-#: views.py:2182
+#: views.py:2199
 msgid "Protocolo experimental incluído com sucesso."
 msgstr "Experimental protocol included successfully."
 
-#: views.py:2206 views.py:2338
+#: views.py:2227 views.py:2359
 msgid "Passos incluídos com sucesso."
 msgstr "Steps included successfully."
 
@@ -308,9 +308,9 @@ msgid "Novo conjunto de passos"
 msgstr "New set of steps"
 
 #: templates/experiment/block_component.html:18
-#: templates/experiment/experiment_register.html:56
-#: templates/experiment/group_register.html:59
-#: templates/experiment/research_project_register.html:57
+#: templates/experiment/experiment_register.html:58
+#: templates/experiment/group_register.html:61
+#: templates/experiment/research_project_register.html:59
 msgid "Edição"
 msgstr "Edition"
 
@@ -318,115 +318,111 @@ msgstr "Edition"
 msgid "o conjunto de passos"
 msgstr "the set of steps"
 
-#: templates/experiment/block_component.html:42
-msgid "Organização dos subpassos"
-msgstr "Organization of sub-steps"
-
-#: templates/experiment/block_component.html:55
+#: templates/experiment/block_component.html:57
 msgid "Quantidade de passos obrigatórios"
 msgstr "Quantity of steps obligatory."
 
-#: templates/experiment/block_component.html:60
+#: templates/experiment/block_component.html:62
 msgid "Todos"
 msgstr "All"
 
-#: templates/experiment/block_component.html:86
+#: templates/experiment/block_component.html:88
 msgid "Passos com posição fixa"
 msgstr "Steps with fixed position"
 
-#: templates/experiment/block_component.html:93
-#: templates/experiment/block_component.html:236
-#: templates/experiment/component_list.html:69
+#: templates/experiment/block_component.html:95
+#: templates/experiment/block_component.html:238
+#: templates/experiment/component_list.html:71
 msgid "Tipo"
 msgstr "Type"
 
-#: templates/experiment/block_component.html:95
-#: templates/experiment/block_component.html:104
-#: templates/experiment/block_component.html:238
-#: templates/experiment/block_component.html:242
+#: templates/experiment/block_component.html:97
+#: templates/experiment/block_component.html:106
+#: templates/experiment/block_component.html:240
+#: templates/experiment/block_component.html:244
 msgid "Passo"
 msgstr "Step"
 
-#: templates/experiment/block_component.html:97
-#: templates/experiment/block_component.html:100
-#: templates/experiment/block_component.html:105
-#: templates/experiment/block_component.html:239
-#: templates/experiment/block_component.html:243
+#: templates/experiment/block_component.html:99
+#: templates/experiment/block_component.html:102
+#: templates/experiment/block_component.html:107
+#: templates/experiment/block_component.html:241
+#: templates/experiment/block_component.html:245
 msgid "Nome do uso"
 msgstr "Name of use"
 
-#: templates/experiment/block_component.html:98
+#: templates/experiment/block_component.html:100
 msgid "Ordem"
 msgstr "Order"
 
-#: templates/experiment/block_component.html:102
-#: templates/experiment/block_component.html:240
-#: templates/experiment/research_project_register.html:141
+#: templates/experiment/block_component.html:104
+#: templates/experiment/block_component.html:242
+#: templates/experiment/research_project_register.html:143
 #: templates/experiment/upload_consent_form.html:111
 msgid "Remover"
 msgstr "Delete"
 
-#: templates/experiment/block_component.html:116
+#: templates/experiment/block_component.html:118
 msgid "Expandir"
 msgstr "Expand"
 
-#: templates/experiment/block_component.html:132
-#: templates/experiment/block_component.html:149
-#: templates/experiment/block_component.html:164
-#: templates/experiment/block_component.html:267
+#: templates/experiment/block_component.html:134
+#: templates/experiment/block_component.html:151
+#: templates/experiment/block_component.html:166
+#: templates/experiment/block_component.html:269
 msgid "usos agrupados"
 msgstr "uses grouped"
 
-#: templates/experiment/block_component.html:156
-#: templates/experiment/block_component.html:274
+#: templates/experiment/block_component.html:158
+#: templates/experiment/block_component.html:276
 msgid "Remover usos da lista"
 msgstr "Delete uses from list"
 
-#: templates/experiment/block_component.html:171
+#: templates/experiment/block_component.html:173
 msgid "posições para passo aleatório agrupadas"
 msgstr "positions for random step grouped"
 
-#: templates/experiment/block_component.html:203
-#: templates/experiment/block_component.html:307
+#: templates/experiment/block_component.html:205
+#: templates/experiment/block_component.html:309
 msgid "Não possui"
 msgstr "It does not have"
 
-#: templates/experiment/block_component.html:214
-#: templates/experiment/block_component.html:319
+#: templates/experiment/block_component.html:216
+#: templates/experiment/block_component.html:321
 msgid "Inserir passo"
 msgstr "Insert step"
 
-#: templates/experiment/block_component.html:231
+#: templates/experiment/block_component.html:233
 msgid "Passos com posição aleatória"
 msgstr "Steps with random position"
 
-#: templates/experiment/block_component.html:345
-#: templates/experiment/component_template.html:292
-#: templates/experiment/component_template.html:312
-#: templates/experiment/experiment_register.html:160
-#: templates/experiment/experiment_register.html:179
-#: templates/experiment/group_register.html:318
-#: templates/experiment/group_register.html:337
-#: templates/experiment/group_register.html:353
-#: templates/experiment/group_register.html:367
-#: templates/experiment/research_project_register.html:209
-#: templates/experiment/research_project_register.html:228
+#: templates/experiment/block_component.html:347
+#: templates/experiment/component_template.html:294
+#: templates/experiment/component_template.html:314
+#: templates/experiment/experiment_register.html:162
+#: templates/experiment/experiment_register.html:181
+#: templates/experiment/group_register.html:320
+#: templates/experiment/group_register.html:339
+#: templates/experiment/group_register.html:355
+#: templates/experiment/group_register.html:369
+#: templates/experiment/research_project_register.html:211
+#: templates/experiment/research_project_register.html:230
 #: templates/experiment/subject_questionnaire_response_form.html:275
 #: templates/experiment/subject_questionnaire_response_list.html:173
 #: templates/experiment/upload_consent_form.html:109
 msgid "Cancelar"
 msgstr "Cancel"
 
-#: templates/experiment/block_component.html:348
-#: templates/experiment/component_template.html:278
-#: templates/experiment/component_template.html:314
-#: templates/experiment/experiment_register.html:151
-#: templates/experiment/experiment_register.html:181
-#: templates/experiment/group_register.html:309
-#: templates/experiment/group_register.html:339
-#: templates/experiment/group_register.html:354
-#: templates/experiment/research_project_register.html:200
-#: templates/experiment/research_project_register.html:229
+#: templates/experiment/block_component.html:350
+#: templates/experiment/component_template.html:280
+#: templates/experiment/component_template.html:316
+#: templates/experiment/experiment_register.html:153
+#: templates/experiment/experiment_register.html:183
+#: templates/experiment/group_register.html:311
+#: templates/experiment/group_register.html:341
+#: templates/experiment/group_register.html:356
+#: templates/experiment/research_project_register.html:202
+#: templates/experiment/research_project_register.html:231
 #: templates/experiment/subject_questionnaire_response_form.html:230
 #: templates/experiment/subject_questionnaire_response_form.html:276
 #: templates/experiment/subject_questionnaire_response_list.html:152
@@ -434,13 +430,13 @@ msgstr "Cancel"
 msgid "Excluir"
 msgstr "Delete"
 
-#: templates/experiment/component_list.html:47
-#: templates/experiment/component_template.html:52
-#: templates/experiment/experiment_register.html:47
-#: templates/experiment/group_register.html:49
-#: templates/experiment/questionnaire_view.html:53
+#: templates/experiment/component_list.html:49
+#: templates/experiment/component_template.html:54
+#: templates/experiment/experiment_register.html:49
+#: templates/experiment/group_register.html:51
+#: templates/experiment/questionnaire_view.html:55
 #: templates/experiment/research_project_list.html:20
-#: templates/experiment/research_project_register.html:49
+#: templates/experiment/research_project_register.html:51
 #: templates/experiment/subject_questionnaire_response_form.html:23
 #: templates/experiment/subject_questionnaire_response_list.html:25
 #: templates/experiment/subjects.html:22
@@ -448,13 +444,13 @@ msgstr "Delete"
 msgid "Home"
 msgstr ""
 
-#: templates/experiment/component_list.html:48
-#: templates/experiment/component_template.html:53
-#: templates/experiment/experiment_register.html:48
-#: templates/experiment/group_register.html:50
-#: templates/experiment/questionnaire_view.html:54
+#: templates/experiment/component_list.html:50
+#: templates/experiment/component_template.html:55
+#: templates/experiment/experiment_register.html:50
+#: templates/experiment/group_register.html:52
+#: templates/experiment/questionnaire_view.html:56
 #: templates/experiment/research_project_list.html:21
-#: templates/experiment/research_project_register.html:50
+#: templates/experiment/research_project_register.html:52
 #: templates/experiment/subject_questionnaire_response_form.html:35
 #: templates/experiment/subject_questionnaire_response_list.html:26
 #: templates/experiment/subjects.html:23
@@ -462,59 +458,60 @@ msgstr ""
 msgid "Estudos"
 msgstr "Studies"
 
-#: templates/experiment/component_list.html:51
+#: templates/experiment/component_list.html:53
 msgid "Passos de Protocolo Experimental"
 msgstr "Steps of experimental protocol"
 
-#: templates/experiment/component_list.html:61
+#: templates/experiment/component_list.html:63
 msgid "Lista de Passos:"
 msgstr "list of steps:"
 
-#: templates/experiment/component_list.html:70
-#: templates/experiment/component_template.html:90
-#: templates/experiment/component_template.html:127
+#: templates/experiment/component_list.html:72
+#: templates/experiment/component_template.html:92
+#: templates/experiment/component_template.html:129
 msgid "Identificação"
 msgstr "Identification"
 
-#: templates/experiment/component_list.html:71
-#: templates/experiment/component_template.html:138
-#: templates/experiment/experiment_register.html:90
-#: templates/experiment/experiment_register.html:113
-#: templates/experiment/group_register.html:84
-#: templates/experiment/group_register.html:124
-#: templates/experiment/group_register.html:261
-#: templates/experiment/research_project_register.html:106
-#: templates/experiment/research_project_register.html:172
+#: templates/experiment/component_list.html:73
+#: templates/experiment/component_template.html:140
+#: templates/experiment/experiment_register.html:92
+#: templates/experiment/experiment_register.html:115
+#: templates/experiment/group_register.html:86
+#: templates/experiment/group_register.html:126
+#: templates/experiment/group_register.html:263
+#: templates/experiment/research_project_register.html:108
+#: templates/experiment/research_project_register.html:174
 msgid "Descrição"
 msgstr "Description"
 
-#: templates/experiment/component_list.html:82
 #: templates/experiment/component_list.html:84
-#: templates/experiment/component_template.html:152
+#: templates/experiment/component_list.html:86
+#: templates/experiment/component_template.html:154
+#: templates/experiment/component_template.html:171
 #: templates/experiment/configuration_line.html:13
 #: templates/experiment/configuration_line.html:15
 #: templates/experiment/configuration_line.html:47
 #: templates/experiment/configuration_line.html:49
-#: templates/experiment/experiment_register.html:99
-#: templates/experiment/group_register.html:93
-#: templates/experiment/group_register.html:197
-#: templates/experiment/group_register.html:267
+#: templates/experiment/experiment_register.html:101
+#: templates/experiment/group_register.html:95
+#: templates/experiment/group_register.html:199
+#: templates/experiment/group_register.html:269
 #: templates/experiment/randon_configuration_line.html:10
 #: templates/experiment/randon_configuration_line.html:12
-#: templates/experiment/research_project_register.html:122
+#: templates/experiment/research_project_register.html:124
 msgid "Editar"
 msgstr "Edit"
 
-#: templates/experiment/component_list.html:95
+#: templates/experiment/component_list.html:97
 msgid "Inserir novo passo"
 msgstr "Insert new step"
 
-#: templates/experiment/component_list.html:109
-#: templates/experiment/component_template.html:296
-#: templates/experiment/experiment_register.html:164
-#: templates/experiment/group_register.html:322
-#: templates/experiment/questionnaire_view.html:225
-#: templates/experiment/research_project_register.html:213
+#: templates/experiment/component_list.html:111
+#: templates/experiment/component_template.html:298
+#: templates/experiment/experiment_register.html:166
+#: templates/experiment/group_register.html:324
+#: templates/experiment/questionnaire_view.html:227
+#: templates/experiment/research_project_register.html:215
 #: templates/experiment/subject_questionnaire_response_form.html:251
 #: templates/experiment/subject_questionnaire_response_form.html:255
 #: templates/experiment/subject_questionnaire_response_form.html:258
@@ -524,57 +521,63 @@ msgstr "Insert new step"
 msgid "Voltar"
 msgstr "Back"
 
-#: templates/experiment/component_template.html:60
-#: templates/experiment/experiment_register.html:139
+#: templates/experiment/component_template.html:62
+#: templates/experiment/experiment_register.html:141
 msgid "Passos de protocolo experimental"
 msgstr "Steps of experimental protocol"
 
-#: templates/experiment/component_template.html:83
+#: templates/experiment/component_template.html:85
 msgid "Informações sobre"
 msgstr "Information about"
 
-#: templates/experiment/component_template.html:180
+#: templates/experiment/component_template.html:182
 msgid "Quantidade de usos a inserir"
 msgstr "Quantity of uses to be inserted"
 
-#: templates/experiment/component_template.html:198
+#: templates/experiment/component_template.html:200
 msgid "Informações sobre esse uso do passo"
 msgstr "Information about this use of step"
 
-#: templates/experiment/component_template.html:212
+#: templates/experiment/component_template.html:206
+#: templates/experiment/experiment_register.html:114
+#: templates/experiment/group_register.html:165
+msgid "Nome"
+msgstr "Name"
+
+#: templates/experiment/component_template.html:214
 msgid "Posição no conjunto de passos"
 msgstr "Position in the set of steps"
 
-#: templates/experiment/component_template.html:227
+#: templates/experiment/component_template.html:229
 msgid "Quantidade de repetições"
 msgstr "Quantity of repetitions"
 
-#: templates/experiment/component_template.html:230
-#: templates/experiment/questionnaire_view.html:116
+#: templates/experiment/component_template.html:232
+#: templates/experiment/questionnaire_view.html:118
 msgid "Ilimitada"
 msgstr "Unlimited"
 
-#: templates/experiment/component_template.html:246
+#: templates/experiment/component_template.html:248
 msgid "Intervalo entre repetições"
 msgstr "Interval among repetitions"
 
-#: templates/experiment/component_template.html:249
-#: templates/experiment/questionnaire_view.html:127
+#: templates/experiment/component_template.html:251
+#: templates/experiment/questionnaire_view.html:129
 msgid "Indefinido"
 msgstr "Undefined"
 
-#: templates/experiment/component_template.html:285
+#: templates/experiment/component_template.html:287
 msgid "Inserir"
 msgstr "Insert"
 
-#: templates/experiment/component_template.html:287
-#: templates/experiment/experiment_register.html:156
-#: templates/experiment/group_register.html:314
-#: templates/experiment/research_project_register.html:205
+#: templates/experiment/component_template.html:289
+#: templates/experiment/experiment_register.html:158
+#: templates/experiment/group_register.html:316
+#: templates/experiment/research_project_register.html:207
 msgid "Salvar"
 msgstr "Save"
 
-#: templates/experiment/component_template.html:309
+#: templates/experiment/component_template.html:311
 msgid "Tem certeza que deseja excluir o passo?"
 msgstr "Are you sure you want to delete step?"
 
@@ -602,82 +605,77 @@ msgstr "Calculated by sub-steps"
 msgid "Duração"
 msgstr "Duration"
 
-#: templates/experiment/experiment_register.html:52
+#: templates/experiment/experiment_register.html:54
 msgid "Novo experimento"
 msgstr "New experiment"
 
-#: templates/experiment/experiment_register.html:68
+#: templates/experiment/experiment_register.html:70
 msgid "Informações básicas do experimento"
 msgstr "Basic experiment information"
 
-#: templates/experiment/experiment_register.html:72
+#: templates/experiment/experiment_register.html:74
 msgid "Estudo"
 msgstr "Study"
 
-#: templates/experiment/experiment_register.html:81
-#: templates/experiment/group_register.html:75
+#: templates/experiment/experiment_register.html:83
+#: templates/experiment/group_register.html:77
 #: templates/experiment/research_project_list.html:34
-#: templates/experiment/research_project_register.html:73
-#: templates/experiment/research_project_register.html:171
+#: templates/experiment/research_project_register.html:75
+#: templates/experiment/research_project_register.html:173
 msgid "Título"
 msgstr "Title"
 
-#: templates/experiment/experiment_register.html:106
+#: templates/experiment/experiment_register.html:108
 msgid "Grupos"
 msgstr "Groups"
 
-#: templates/experiment/experiment_register.html:112
-#: templates/experiment/group_register.html:163
-msgid "Nome"
-msgstr "Name"
-
-#: templates/experiment/experiment_register.html:134
-#: templates/experiment/research_project_register.html:191
+#: templates/experiment/experiment_register.html:136
+#: templates/experiment/research_project_register.html:193
 msgid "Inserir novo"
 msgstr "Insert new"
 
-#: templates/experiment/experiment_register.html:142
+#: templates/experiment/experiment_register.html:144
 msgid "Gerenciar"
 msgstr "Manage"
 
-#: templates/experiment/experiment_register.html:176
+#: templates/experiment/experiment_register.html:178
 msgid "Tem certeza que deseja excluir o experimento?"
 msgstr "Are you sure you want to delete experiment?"
 
-#: templates/experiment/group_register.html:55
+#: templates/experiment/group_register.html:57
 msgid "Novo grupo"
 msgstr "New group"
 
-#: templates/experiment/group_register.html:71
+#: templates/experiment/group_register.html:73
 msgid "Informações básicas do grupo"
 msgstr "Group basic information"
 
-#: templates/experiment/group_register.html:100
+#: templates/experiment/group_register.html:102
 msgid "Critério de inclusão"
 msgstr "Inclusion criteria"
 
-#: templates/experiment/group_register.html:131
+#: templates/experiment/group_register.html:133
 msgid ""
 "Não há diagnósticos como critério de inclusão de participantes neste grupo"
 msgstr ""
 "There are no diagnosis as inclusion criteria of participants in this group"
 
-#: templates/experiment/group_register.html:158
+#: templates/experiment/group_register.html:160
 msgid "Questionários do protocolo experimental"
 msgstr "Questionnaires of experimental protocol"
 
-#: templates/experiment/group_register.html:167
-#: templates/experiment/group_register.html:176
+#: templates/experiment/group_register.html:169
+#: templates/experiment/group_register.html:178
 msgid "Quantidade de preenchimentos exigida para cada participante"
 msgstr "Quantity of fills for each participant"
 
-#: templates/experiment/group_register.html:168
-#: templates/experiment/group_register.html:216
+#: templates/experiment/group_register.html:170
+#: templates/experiment/group_register.html:218
 msgid "Preenchimentos necessários por participante"
 msgstr "Needed fills by participant"
 
-#: templates/experiment/group_register.html:170
-#: templates/experiment/group_register.html:179
+#: templates/experiment/group_register.html:172
+#: templates/experiment/group_register.html:181
 msgid ""
 "Quantidade de preenchimentos necessários por participante vezes a quantidade "
 "de participantes deste grupo"
@@ -685,38 +683,38 @@ msgstr ""
 "Quantity of fills needed by pariticipant multiplied by quantity of "
 "participants in this group"
 
-#: templates/experiment/group_register.html:171
-#: templates/experiment/group_register.html:217
+#: templates/experiment/group_register.html:173
+#: templates/experiment/group_register.html:219
 msgid "Total de preenchimentos necessários"
 msgstr "Total fills needed"
 
-#: templates/experiment/group_register.html:173
-#: templates/experiment/group_register.html:182
+#: templates/experiment/group_register.html:175
+#: templates/experiment/group_register.html:184
 msgid "Soma da quantidade de preenchimentos já realizada por cada participante"
 msgstr "Sum of fills quantity already made by each participant"
 
-#: templates/experiment/group_register.html:174
-#: templates/experiment/group_register.html:218
+#: templates/experiment/group_register.html:176
+#: templates/experiment/group_register.html:220
 msgid "Total de preenchimentos já realizados"
 msgstr "Total fills already made"
 
-#: templates/experiment/group_register.html:177
+#: templates/experiment/group_register.html:179
 msgid "PNP"
 msgstr ""
 
-#: templates/experiment/group_register.html:180
+#: templates/experiment/group_register.html:182
 msgid "TPN"
 msgstr ""
 
-#: templates/experiment/group_register.html:183
+#: templates/experiment/group_register.html:185
 msgid "TPR"
 msgstr ""
 
-#: templates/experiment/group_register.html:190
+#: templates/experiment/group_register.html:192
 msgid "Não há questionários no protocolo experimental deste grupo"
 msgstr "There are no questionnaires in the experimental protocol in this group"
 
-#: templates/experiment/group_register.html:223
+#: templates/experiment/group_register.html:225
 #: templates/experiment/subject_questionnaire_response_form.html:25
 #: templates/experiment/subject_questionnaire_response_form.html:41
 #: templates/experiment/subject_questionnaire_response_list.html:30
@@ -725,41 +723,41 @@ msgstr "There are no questionnaires in the experimental protocol in this group"
 msgid "Participantes"
 msgstr "Participant"
 
-#: templates/experiment/group_register.html:231
+#: templates/experiment/group_register.html:233
 #, python-format
 msgid "Há %(number_of_subjects)s participante cadastrado"
 msgstr "There is %(number_of_subjects)s participant recorded"
 
-#: templates/experiment/group_register.html:233
+#: templates/experiment/group_register.html:235
 #, python-format
 msgid "Há %(number_of_subjects)s participantes cadastrados"
 msgstr "There are %(number_of_subjects)s participants recorded"
 
-#: templates/experiment/group_register.html:239
+#: templates/experiment/group_register.html:241
 msgid "Não há participantes cadastrados"
 msgstr "No participants recorded"
 
-#: templates/experiment/group_register.html:243
+#: templates/experiment/group_register.html:245
 msgid "Cadastrar"
 msgstr ""
 
-#: templates/experiment/group_register.html:252
+#: templates/experiment/group_register.html:254
 msgid "Protocolo Experimental"
 msgstr "Experimental protocol"
 
-#: templates/experiment/group_register.html:260
+#: templates/experiment/group_register.html:262
 msgid "Conjunto de passos raiz"
 msgstr "Set of root steps"
 
-#: templates/experiment/group_register.html:279
+#: templates/experiment/group_register.html:281
 msgid "Desconfigurar protocolo experimental"
 msgstr "UnConfigure experimental protocol"
 
-#: templates/experiment/group_register.html:290
+#: templates/experiment/group_register.html:292
 msgid "Não há protocolo experimental configurado"
 msgstr "There is no experimental protocol configured"
 
-#: templates/experiment/group_register.html:296
+#: templates/experiment/group_register.html:298
 msgid ""
 "A raiz de um protocolo experimental é sempre um conjunto de passos. Você "
 "poderá criar um conjunto novo ou reusar algum que já tenha sido criado para "
@@ -768,23 +766,23 @@ msgstr ""
 "The experimental protocol root is always a set of steps. You can create a "
 "new set or reuse some that have already been created for this experiment."
 
-#: templates/experiment/group_register.html:297
+#: templates/experiment/group_register.html:299
 msgid "Configurar / Criar"
 msgstr "Configure / Create"
 
-#: templates/experiment/group_register.html:334
+#: templates/experiment/group_register.html:336
 msgid "Tem certeza que deseja excluir o grupo?"
 msgstr "Are you sure you want to delete group?"
 
-#: templates/experiment/group_register.html:350
+#: templates/experiment/group_register.html:352
 msgid "Tem certeza que deseja excluir o diagnóstico?"
 msgstr "Are you sure you want to delete diagnosis?"
 
-#: templates/experiment/group_register.html:364
+#: templates/experiment/group_register.html:366
 msgid "Tem certeza que deseja desconfigurar o protocolo experimental?"
 msgstr "Are you sure you want to unprovision experimental protocol?"
 
-#: templates/experiment/group_register.html:369
+#: templates/experiment/group_register.html:371
 msgid "Desconfigurar"
 msgstr "Unset"
 
@@ -830,69 +828,68 @@ msgstr "the questionnaire"
 msgid "Nome do questionário no LimeSurvey"
 msgstr "Questionnaire name at LimeSurvey"
 
-#: templates/experiment/questionnaire_view.html:74
+#: templates/experiment/questionnaire_view.html:76
 msgid "Identificação:"
 msgstr "Identificatioin:"
 
-#: templates/experiment/questionnaire_view.html:82
+#: templates/experiment/questionnaire_view.html:84
 msgid "Descrição:"
 msgstr "Description:"
 
-#: templates/experiment/questionnaire_view.html:90
+#: templates/experiment/questionnaire_view.html:92
 msgid "Duração:"
 msgstr "Duration:"
 
-#: templates/experiment/questionnaire_view.html:100
+#: templates/experiment/questionnaire_view.html:102
 msgid "Nome do uso:"
 msgstr "Use name:"
 
-#: templates/experiment/questionnaire_view.html:110
+#: templates/experiment/questionnaire_view.html:112
 msgid "Quantidade de repetições:"
 msgstr "Quantity of repetitions:"
 
-#: templates/experiment/questionnaire_view.html:121
+#: templates/experiment/questionnaire_view.html:123
 msgid "Intervalo entre repetições:"
 msgstr "Interval among repetitions:"
 
-#: templates/experiment/questionnaire_view.html:140
+#: templates/experiment/questionnaire_view.html:142
 #: templates/experiment/subject_questionnaire_response_form.html:133
 #: templates/experiment/subjects.html:83
 msgid "Participante"
 msgstr "Participant"
 
-#: templates/experiment/questionnaire_view.html:141
-#: templates/experiment/subjects.html:85
-msgid "Questionários concluídos"
-msgstr "Questionnaires concluded"
+#: templates/experiment/questionnaire_view.html:143
+msgid "Preenchimentos concluídos"
+msgstr "Completed fills"
 
-#: templates/experiment/questionnaire_view.html:142
+#: templates/experiment/questionnaire_view.html:144
 #: templates/experiment/subject_questionnaire_response_list.html:67
 msgid "Preenchimentos"
 msgstr "Fills"
 
-#: templates/experiment/questionnaire_view.html:148
+#: templates/experiment/questionnaire_view.html:150
 #: templates/experiment/subjects.html:91
 msgid "(Nenhum participante inserido)"
-msgstr "(No participants inserted)"
+msgstr "(No participant inserted)"
 
-#: templates/experiment/questionnaire_view.html:169
-#: templates/experiment/questionnaire_view.html:193
+#: templates/experiment/questionnaire_view.html:171
+#: templates/experiment/questionnaire_view.html:195
 #: templates/experiment/subject_questionnaire_response_list.html:121
 #: templates/experiment/subjects.html:121
 msgid "Sem status"
 msgstr "No status"
 
-#: templates/experiment/questionnaire_view.html:188
+#: templates/experiment/questionnaire_view.html:190
 #: templates/experiment/subject_questionnaire_response_list.html:116
 msgid "Completo"
 msgstr "Complete"
 
-#: templates/experiment/questionnaire_view.html:190
+#: templates/experiment/questionnaire_view.html:192
 #: templates/experiment/subject_questionnaire_response_list.html:118
 msgid "Incompleto"
 msgstr "Incomplete"
 
-#: templates/experiment/questionnaire_view.html:204
+#: templates/experiment/questionnaire_view.html:206
 #: templates/experiment/subject_questionnaire_response_form.html:33
 #: templates/experiment/subject_questionnaire_response_form.html:47
 #: templates/experiment/subject_questionnaire_response_form.html:239
@@ -909,47 +906,51 @@ msgid "Vigência"
 msgstr "Term"
 
 #: templates/experiment/research_project_list.html:43
-#: templates/experiment/research_project_register.html:179
+#: templates/experiment/research_project_register.html:181
 msgid "Visualizar"
 msgstr "Visualize"
 
-#: templates/experiment/research_project_list.html:51
+#: templates/experiment/research_project_list.html:54
 msgid "a"
 msgstr "to"
 
-#: templates/experiment/research_project_list.html:60
+#: templates/experiment/research_project_list.html:57
+msgid "A partir de"
+msgstr "From"
+
+#: templates/experiment/research_project_list.html:68
 msgid "Inserir novo estudo"
 msgstr "Insert new study"
 
-#: templates/experiment/research_project_register.html:53
+#: templates/experiment/research_project_register.html:55
 msgid "Novo"
 msgstr "New"
 
-#: templates/experiment/research_project_register.html:69
+#: templates/experiment/research_project_register.html:71
 msgid "Informações básicas do estudo"
 msgstr "Study basic information"
 
-#: templates/experiment/research_project_register.html:82
+#: templates/experiment/research_project_register.html:84
 msgid "Data de início "
 msgstr "Initial date"
 
-#: templates/experiment/research_project_register.html:93
+#: templates/experiment/research_project_register.html:95
 msgid "Data de fim"
 msgstr "End date"
 
-#: templates/experiment/research_project_register.html:129
+#: templates/experiment/research_project_register.html:131
 msgid "Palavras-chave"
 msgstr "Keywords"
 
-#: templates/experiment/research_project_register.html:152
+#: templates/experiment/research_project_register.html:154
 msgid "Digite uma palavra-chave para acrescentar uma existente ou uma nova"
 msgstr "Type a keyword to include an existent or new"
 
-#: templates/experiment/research_project_register.html:166
+#: templates/experiment/research_project_register.html:168
 msgid "Experimentos"
 msgstr "Experiments"
 
-#: templates/experiment/research_project_register.html:225
+#: templates/experiment/research_project_register.html:227
 msgid "Tem certeza que deseja excluir o estudo?"
 msgstr "Are you sure you want to delete study?"
 
@@ -1033,6 +1034,10 @@ msgstr "Insert participant"
 msgid "Termo de consentimento"
 msgstr ""
 
+#: templates/experiment/subjects.html:85
+msgid "Questionários concluídos"
+msgstr "Completed questionnaires"
+
 #: templates/experiment/subjects.html:108
 msgid "Anexado"
 msgstr "Attached"
@@ -1063,9 +1068,16 @@ msgstr "New task for experimenter"
 msgid "Nova tafefa para o experimentador"
 msgstr "New task for experimenter"
 
+#: templates/experiment/upload_consent_form.html:91
+msgid "Upload"
+msgstr ""
+
 #: templates/experiment/upload_consent_form.html:106
 msgid "Tem certeza que deseja remover o anexo?"
 msgstr "Are you sure you want to delete attachment?"
+
+#~ msgid "Organização dos subpassos"
+#~ msgstr "Organization of sub-steps"
 
 #~ msgid "Especificar o diagnóstico da doença"
 #~ msgstr "Inform disease diagnosis or disease code"
