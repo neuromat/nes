@@ -33,7 +33,6 @@ SEARCH_TEXT = 'search_text'
 SUBJECT_SEARCH = 'subject_search'
 
 
-
 class ExperimentalProtocolTest(TestCase):
     def setUp(self):
         self.user = User.objects.create_user(username=USER_USERNAME, email='test@dummy.com', password=USER_PWD)

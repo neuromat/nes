@@ -1,21 +1,32 @@
+from django.core.urlresolvers import reverse
 from django.test import TestCase
-from experiment.abc_search_engine import Questionnaires
-# import pyjsonrpc
+from django.test.client import RequestFactory
+
 from jsonrpc_requests import Server
+
+from experiment.abc_search_engine import Questionnaires
+from custom_user.views import User
+
+from .models import Survey
+from .views import survey_update
+
+USER_USERNAME = 'myadmin'
+USER_PWD = 'mypassword'
+
 
 # @unittest.skip("Don't want to test")
 class ABCSearchEngineTest(TestCase):
+
     session_key = None
     server = None
 
     def setUp(self):
-        # self.server = pyjsonrpc.HttpClient("http://survey.numec.prp.usp.br/index.php/admin/remotecontrol")
-
         self.server = Server('http://survey.numec.prp.usp.br/index.php/admin/remotecontrol')
 
         username = "jenkins"
         password = "numecusp"
         self.session_key = self.server.get_session_key(username, password)
+
         # Checa se conseguiu conectar no lime Survey com as credenciais fornecidas no settings.py
         if isinstance(self.session_key, dict):
             if 'status' in self.session_key:
@@ -44,8 +55,7 @@ class ABCSearchEngineTest(TestCase):
             self.assertEqual(survey_admin, None)
 
             # Criar grupo de questoes
-            group_id = lime_survey.add_group_questions(sid, "Group Question",
-                                                       'Test for create group question on lime survey')
+            lime_survey.add_group_questions(sid, "Group Question", 'Test for create group question on lime survey')
 
             handle_file_import = open('quiz/static/quiz/tests/limesurvey_groups.lsg', 'r')
             questions_data = handle_file_import.read()
@@ -142,7 +152,7 @@ class ABCSearchEngineTest(TestCase):
 
         # token_id = participant_data_result[0]['tid']
         token_id = participant_data_result['token_id']
-        tokens_to_delete = [token_id]
+        # tokens_to_delete = [token_id]
 
         # remover participante do questionario
         result = self.server.delete_participants(self.session_key, sid, [token_id])
@@ -241,7 +251,7 @@ class ABCSearchEngineTest(TestCase):
 
         # token_id = participant_data_result[0]['tid']
         token_id = participant_data_result['token_id']
-        tokens_to_delete = [token_id]
+        # tokens_to_delete = [token_id]
 
         # remover participante do questionario
         result = surveys.delete_participant(sid, token_id)
@@ -249,3 +259,77 @@ class ABCSearchEngineTest(TestCase):
         self.assertEqual(result[str(token_id)], 'Deleted')
 
         surveys.release_session_key()
+
+
+class SurveyTest(TestCase):
+
+    def setUp(self):
+
+        self.user = User.objects.create_user(username=USER_USERNAME, email='test@dummy.com', password=USER_PWD)
+        self.user.is_staff = True
+        self.user.is_superuser = True
+        self.user.save()
+
+        self.factory = RequestFactory()
+
+        logged = self.client.login(username=USER_USERNAME, password=USER_PWD)
+        self.assertEqual(logged, True)
+
+    def test_survey_list(self):
+
+        # Check if list of survey is empty before inserting anything
+        response = self.client.get(reverse('survey_list'))
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(len(response.context['questionnaires_list']), 0)
+
+        # Check if list of surveys returns one item after inserting one
+        survey = Survey.objects.create(lime_survey_id=1)
+        survey.save()
+        response = self.client.get(reverse('survey_list'))
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(len(response.context['questionnaires_list']), 1)
+
+    def test_survey_create(self):
+
+        # Request the survey register screen
+        response = self.client.get(reverse('survey_create'))
+        self.assertEqual(response.status_code, 200)
+
+        # Set survey data
+        # self.data = {'action': 'save', 'title': 'Survey title'}
+        self.data = {'action': 'save', 'questionnaire_selected': response.context['questionnaires_list'][0]['sid']}
+
+        # Count the number of surveys currently in database
+        count_before_insert = Survey.objects.all().count()
+
+        # Add the new survey
+        response = self.client.post(reverse('survey_create'), self.data)
+        self.assertEqual(response.status_code, 302)
+
+        # Count the number of surveys currently in database
+        count_after_insert = Survey.objects.all().count()
+
+        # Check if it has increased
+        self.assertEqual(count_after_insert, count_before_insert + 1)
+
+    def test_survey_update(self):
+
+        # Create a survey to be used in the test
+        survey = Survey.objects.create(lime_survey_id=1)
+        survey.save()
+
+        # Create an instance of a GET request.
+        request = self.factory.get(reverse('survey_edit', args=[survey.pk, ]))
+        request.user = self.user
+
+        response = survey_update(request, survey_id=survey.pk)
+        self.assertEqual(response.status_code, 200)
+
+        # Update with changes
+        self.data = {'action': 'save', 'is_initial_evaluation': True, 'Title': '1 - 1'}
+        response = self.client.post(reverse('survey_edit', args=(survey.pk,)), self.data, follow=True)
+        self.assertEqual(response.status_code, 200)
+
+        # Update without changes
+        response = self.client.post(reverse('survey_edit', args=(survey.pk,)), self.data, follow=True)
+        self.assertEqual(response.status_code, 200)
