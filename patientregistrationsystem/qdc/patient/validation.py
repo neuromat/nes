@@ -60,7 +60,7 @@ class CPF(object):
 
         """
 
-        if isinstance(cpf, basestring):
+        if isinstance(cpf, str):
             if not cpf.isdigit():
                 cpf = self._translate(cpf)
 

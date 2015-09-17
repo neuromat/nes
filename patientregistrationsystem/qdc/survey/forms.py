@@ -1,7 +1,7 @@
 # coding=utf-8
 from django.forms import ModelForm, Form, TextInput, CharField
 
-from models import Survey
+from .models import Survey
 
 
 class SurveyForm(ModelForm):

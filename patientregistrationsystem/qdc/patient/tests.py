@@ -224,7 +224,7 @@ class PatientFormValidation(TestCase):
 
         response = self.client.post(reverse(PATIENT_NEW), self.data)
         self.assertEqual(response.status_code, 200)
-        self.assertFormError(response, "patient_form", "cpf", u'CPF ' + cpf + u' n\xe3o \xe9 v\xe1lido')
+        self.assertFormError(response, "patient_form", "cpf", 'CPF ' + cpf + ' n\xe3o \xe9 v\xe1lido')
 
     def test_patient_empty_cpf(self):
         """
@@ -344,7 +344,7 @@ class PatientFormValidation(TestCase):
 
         response = self.client.post(reverse(PATIENT_NEW), self.data, follow=True)
         self.assertEqual(Patient.objects.filter(name=name).count(), 1)
-        self.assertNotContains(response, u'Classe Social não calculada')
+        self.assertNotContains(response, 'Classe Social não calculada')
 
         # Prepare to test social demographic data tab
         patient_to_update = Patient.objects.filter(name=name).first()
@@ -355,8 +355,8 @@ class PatientFormValidation(TestCase):
         response = self.client.post(
             reverse('patient_edit', args=(patient_to_update.pk,)), self.data, follow=True)
         self.assertEqual(Patient.objects.filter(name=name).count(), 1)
-        self.assertContains(response, u'Dados sociodemográficos gravados com sucesso.')
-        self.assertNotContains(response, u'Classe Social não calculada')
+        self.assertContains(response, 'Dados sociodemográficos gravados com sucesso.')
+        self.assertNotContains(response, 'Classe Social não calculada')
 
         # Error case
         self.data.pop('wash_machine')
@@ -367,7 +367,7 @@ class PatientFormValidation(TestCase):
         response = self.client.post(
             reverse('patient_edit', args=(patient_to_update.pk,)), self.data, follow=True)
         self.assertEqual(Patient.objects.filter(name=name).count(), 1)
-        self.assertContains(response, u'Classe Social não calculada')
+        self.assertContains(response, 'Classe Social não calculada')
 
     def fill_social_history_data(self):
         amount_cigarettes = AmountCigarettes.objects.create(name='Menos de 1 maço')
@@ -410,7 +410,7 @@ class PatientFormValidation(TestCase):
         response = self.client.post(
             reverse('patient_edit', args=(patient_to_update.pk,)), self.data, follow=True)
         self.assertEqual(Patient.objects.filter(name=name).count(), 1)
-        self.assertContains(response, u'História social gravada com sucesso.')
+        self.assertContains(response, 'História social gravada com sucesso.')
 
     def test_patient_valid_email(self):
         """
@@ -701,7 +701,7 @@ class MedicalRecordFormValidation(TestCase):
         self.data['date'] = '10/05/2005'
 
         if test_file:
-            file_to_test = SimpleUploadedFile('patient/exam_file.txt', 'rb')
+            file_to_test = SimpleUploadedFile('patient/exam_file.txt', b'rb')
             self.data['content'] = file_to_test
 
     def test_diagnosis_create_and_delete(self):
