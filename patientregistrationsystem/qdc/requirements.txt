@@ -1,7 +1,7 @@
 Django==1.8.4
-django-cep==1.0.9
 django-jenkins==0.17.0
 django-simple-history==1.6.3
+jsonrpc-requests==0.2
 psycopg2==2.6.1
 pyflakes==0.9.2
 pylint==1.4.4
