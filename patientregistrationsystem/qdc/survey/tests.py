@@ -1,9 +1,7 @@
 from django.test import TestCase
 from experiment.abc_search_engine import Questionnaires
-
 # import pyjsonrpc
 from jsonrpc_requests import Server
-
 
 # @unittest.skip("Don't want to test")
 class ABCSearchEngineTest(TestCase):

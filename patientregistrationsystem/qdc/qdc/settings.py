@@ -43,7 +43,7 @@ INSTALLED_APPS = (
     'django.contrib.staticfiles',
     'django_jenkins',
     'simple_history',
-    'cep',
+    #'cep',
     'quiz.templatetags.qdc_tags',
     'jsonrpc_requests',
     # 'south'
@@ -55,6 +55,7 @@ PROJECT_APPS = (
     'custom_user',
     'experiment',
     'survey',
+    'cep',
 )
 
 INSTALLED_APPS += PROJECT_APPS
