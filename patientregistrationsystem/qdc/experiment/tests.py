@@ -133,7 +133,7 @@ class ExperimentalProtocolTest(TestCase):
         if isinstance(lime_survey.session_key, dict):
             if 'status' in lime_survey.session_key:
                 self.assertNotEqual(lime_survey.session_key['status'], 'Invalid user name or password')
-                print 'Failed to connect Lime Survey %s' % lime_survey.session_key['status']
+                print('Failed to connect Lime Survey %s' % lime_survey.session_key['status'])
 
         # Cria uma survey no Lime Survey
         survey_id = lime_survey.add_survey(9999, 'Questionario de teste - DjangoTests', 'en', 'G')
@@ -685,7 +685,7 @@ class ListOfQuestionnaireFromExperimentalProtocolOfAGroupTest(TestCase):
         if isinstance(self.lime_survey.session_key, dict):
             if 'status' in self.lime_survey.session_key:
                 self.assertNotEqual(self.lime_survey.session_key['status'], 'Invalid user name or password')
-                print 'Failed to connect Lime Survey %s' % self.lime_survey.session_key['status']
+                print('Failed to connect Lime Survey %s' % self.lime_survey.session_key['status'])
 
     def test_create_questionnaire_for_a_group(self):
         """Testa a criacao de um questionario para um dado grupo"""
@@ -909,7 +909,7 @@ class SubjectTest(TestCase):
         Configura autenticacao e variaveis para iniciar cada teste
 
         """
-        print 'Set up for', self._testMethodName
+        print('Set up for', self._testMethodName)
 
         # self.user = User.objects.all().first()
         # if self.user:
@@ -930,7 +930,7 @@ class SubjectTest(TestCase):
         if isinstance(self.lime_survey.session_key, dict):
             if 'status' in self.lime_survey.session_key:
                 self.assertNotEqual(self.lime_survey.session_key['status'], 'Invalid user name or password')
-                print 'Failed to connect Lime Survey %s' % self.lime_survey.session_key['status']
+                print('Failed to connect Lime Survey %s' % self.lime_survey.session_key['status'])
 
     def test_subject_view_and_search(self):
         """

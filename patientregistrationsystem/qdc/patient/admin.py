@@ -1,6 +1,6 @@
 from django.contrib import admin
 from simple_history.admin import SimpleHistoryAdmin
-from models import Schooling, Payment, Religion, FleshTone, MaritalStatus, \
+from .models import Schooling, Payment, Religion, FleshTone, MaritalStatus, \
     Gender, AmountCigarettes, AlcoholFrequency, AlcoholPeriod, Patient, MedicalRecordData, \
     SocialDemographicData, SocialHistoryData
 

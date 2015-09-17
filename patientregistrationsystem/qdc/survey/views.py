@@ -5,7 +5,7 @@ import re
 import csv
 import datetime
 
-from StringIO import StringIO
+from io import StringIO
 from operator import itemgetter
 
 from django.contrib import messages
@@ -17,8 +17,8 @@ from django.shortcuts import get_object_or_404, redirect, render
 
 from django.utils.translation import ugettext as _
 
-from models import Survey
-from forms import SurveyForm
+from .models import Survey
+from .forms import SurveyForm
 
 from patient.models import Patient, QuestionnaireResponse as PatientQuestionnaireResponse
 
@@ -81,7 +81,7 @@ def survey_create(request, template_name="survey/survey_register.html"):
                     is_initial_evaluation=survey_added.is_initial_evaluation)
 
                 if created:
-                    messages.success(request, _(u'Questionário criado com sucesso.'))
+                    messages.success(request, _('Questionário criado com sucesso.'))
                     redirect_url = reverse("survey_list")
                     return HttpResponseRedirect(redirect_url)
 
@@ -113,9 +113,9 @@ def survey_update(request, survey_id, template_name="survey/survey_register.html
             if survey_form.is_valid():
                 if survey_form.has_changed():
                     survey_form.save()
-                    messages.success(request, _(u'Questionário atualizado com sucesso.'))
+                    messages.success(request, _('Questionário atualizado com sucesso.'))
                 else:
-                    messages.success(request, _(u'Não há alterações para salvar.'))
+                    messages.success(request, _('Não há alterações para salvar.'))
 
                 redirect_url = reverse("survey_view", args=(survey.id,))
                 return HttpResponseRedirect(redirect_url)
@@ -235,7 +235,7 @@ def create_experiments_questionnaire_data_list(survey, surveys):
     # Transform dictionary into a list to include questionnaire components that are not in use and to sort.
     experiments_questionnaire_data_list = []
 
-    for key, value in experiments_questionnaire_data_dictionary.items():
+    for key, value in list(experiments_questionnaire_data_dictionary.items()):
         value['component_id'] = ComponentConfiguration.objects.get(id=key).component_id
         experiments_questionnaire_data_list.append(value)
 
@@ -312,7 +312,7 @@ def create_patients_questionnaire_data_list(survey, surveys):
     # Transform the dictionary into a list, so that we can sort it by patient name.
     patients_questionnaire_data_list = []
 
-    for key, dictionary in patients_questionnaire_data_dictionary.items():
+    for key, dictionary in list(patients_questionnaire_data_dictionary.items()):
         dictionary['patient_id'] = key
         patients_questionnaire_data_list.append(dictionary)
 
@@ -344,10 +344,10 @@ def survey_view(request, survey_id, template_name="survey/survey_register.html")
         if request.POST['action'] == "remove":
             try:
                 survey.delete()
-                messages.success(request, _(u'Questionário removido com sucesso.'))
+                messages.success(request, _('Questionário removido com sucesso.'))
                 return redirect('survey_list')
             except ProtectedError:
-                messages.error(request, _(u"Não foi possível excluir o questionário, pois há respostas ou passos de "
+                messages.error(request, _("Não foi possível excluir o questionário, pois há respostas ou passos de "
                                         "experimento associados."))
 
     patients_questionnaire_data_list = create_patients_questionnaire_data_list(survey, surveys)
@@ -415,7 +415,7 @@ def get_questionnaire_responses(language_code, lime_survey_id, token_id):
                                 'hidden': 'hidden' in properties['attributes'] and
                                           properties['attributes']['hidden'] == '1'
                             })
-                            for key, value in sorted(properties['subquestions'].iteritems()):
+                            for key, value in sorted(properties['subquestions'].items()):
                                 question_properties.append({
                                     'question': value['question'],
                                     'question_id': properties['title'] + '[' + value['title'] + ']',
@@ -451,7 +451,7 @@ def get_questionnaire_responses(language_code, lime_survey_id, token_id):
 
             if not question['hidden']:
 
-                if isinstance(question['answer_options'], basestring) and \
+                if isinstance(question['answer_options'], str) and \
                         question['answer_options'] == "super_question":
 
                     if question['question'] != '':
@@ -537,6 +537,6 @@ def check_limesurvey_access(request, surveys):
     limesurvey_available = True
     if not surveys.session_key:
         limesurvey_available = False
-        messages.warning(request, _(u"LimeSurvey indisponível. Sistema funcionando parcialmente."))
+        messages.warning(request, _("LimeSurvey indisponível. Sistema funcionando parcialmente."))
 
     return limesurvey_available

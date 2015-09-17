@@ -1,14 +1,14 @@
 __author__ = ''
 
-import pyjsonrpc
+#import pyjsonrpc
+
+from jsonrpc_requests import Server
 from django.conf import settings
 from abc import ABCMeta, abstractmethod
 import base64
 
 
-class ABCSearchEngine:
-    __metaclass__ = ABCMeta
-
+class ABCSearchEngine(metaclass=ABCMeta):
     session_key = None
     server = None
 
@@ -16,7 +16,7 @@ class ABCSearchEngine:
         self.get_session_key()
 
     def get_session_key(self):
-        self.server = pyjsonrpc.HttpClient(settings.LIMESURVEY['URL_API'] + "/index.php/admin/remotecontrol")
+        self.server = Server(settings.LIMESURVEY['URL_API'] + "/index.php/admin/remotecontrol")
         try:
             self.session_key = self.server.get_session_key(settings.LIMESURVEY['USER'], settings.LIMESURVEY['PASSWORD'])
         except:
@@ -55,7 +55,7 @@ class ABCSearchEngine:
         list_survey = self.server.list_surveys(self.session_key, None)
 
         try:
-            survey = (survey for survey in list_survey if survey['sid'] == sid).next()
+            survey = next((survey for survey in list_survey if survey['sid'] == sid))
         except StopIteration:
             survey = None
         return survey

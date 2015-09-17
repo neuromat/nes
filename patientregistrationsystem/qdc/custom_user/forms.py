@@ -11,13 +11,13 @@ class UserForm(ModelForm):
         fields = ['first_name', 'last_name', 'username', 'password', 'email', 'groups']
 
         widgets = {
-            'first_name': TextInput(attrs={'class': 'form-control', 'placeholder': _(u'Entrar primeiro nome')}),
-            'last_name': TextInput(attrs={'class': 'form-control', 'placeholder': _(u'Entrar último nome')}),
-            'username': TextInput(attrs={'class': 'form-control', 'placeholder': _(u'Entrar nome de usuário')}),
+            'first_name': TextInput(attrs={'class': 'form-control', 'placeholder': _('Entrar primeiro nome')}),
+            'last_name': TextInput(attrs={'class': 'form-control', 'placeholder': _('Entrar último nome')}),
+            'username': TextInput(attrs={'class': 'form-control', 'placeholder': _('Entrar nome de usuário')}),
             'password': PasswordInput(attrs={'id': 'id_new_password1', 'class': 'form-control',
-                                             'placeholder': _(u'Entrar senha'),
+                                             'placeholder': _('Entrar senha'),
                                              'onkeyup': "passwordForce(); if(beginCheckPassword1)checkPass();"}),
-            'email': TextInput(attrs={'class': 'form-control', 'placeholder': _(u'Entrar e-mail'), 'id': "email",
+            'email': TextInput(attrs={'class': 'form-control', 'placeholder': _('Entrar e-mail'), 'id': "email",
                                       'type': 'email', 'data-error': "E-mail inválido",
                                       'pattern': '^[_A-Za-z0-9-\+]+(\.[_A-Za-z0-9-]+)*@[A-Za-z0-9-]' +
                                                  '+(\.[A-Za-z0-9]+)*(\.[A-Za-z]{2,})$'}),
@@ -30,14 +30,14 @@ class UserForm(ModelForm):
     def clean_email(self):
         email = self.cleaned_data.get('email')
         if email and User.objects.filter(email=email, is_active=True).exclude(id=self.instance.id).count():
-            raise ValidationError(u'Este email já existe.')
+            raise ValidationError('Este email já existe.')
         return email
 
 
 class UserFormUpdate(UserForm):
     password = CharField(required=False,
                          widget=PasswordInput(attrs={'id': 'id_new_password1', 'class': 'form-control',
-                                                     'placeholder': _(u'Entrar senha'),
+                                                     'placeholder': _('Entrar senha'),
                                                      'onkeyup': "passwordForce(); "
                                                                 "if(beginCheckPassword1) checkPass();"}))
 

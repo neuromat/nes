@@ -25,7 +25,7 @@ TIME_UNITS = (
 
 def validate_date_questionnaire_response(value):
     if value > datetime.date.today():
-        raise ValidationError(_(u'Data de preenchimento não pode ser maior que a data de hoje.'))
+        raise ValidationError(_('Data de preenchimento não pode ser maior que a data de hoje.'))
 
 
 class Subject(models.Model):
