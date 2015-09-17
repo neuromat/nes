@@ -1247,7 +1247,7 @@ class SubjectTest(TestCase):
         self.assertEqual(response.status_code, 200)
 
         # Anexar arquivo
-        consent_form_file = SimpleUploadedFile('quiz/consent_form.txt', 'rb')
+        consent_form_file = SimpleUploadedFile('quiz/consent_form.txt', b'rb')
         self.data = {'action': 'upload', 'consent_form': consent_form_file}
         # url = reverse('upload_file', args=[group.pk, subject_mock.pk])
         # request = self.factory.post(url, self.data)d
@@ -1412,9 +1412,9 @@ class ResearchProjectTest(TestCase):
         self.assertContains(response, "test_keyword")  # Should be suggested
 
         # Add the suggested keyword
-        first_quote_index = response.content.index('"')
-        second_quote_index = response.content.index('"', first_quote_index + 1)
-        url = response.content[first_quote_index+1:second_quote_index] + "/"
+        first_quote_index = response.content.index(b'"')
+        second_quote_index = response.content.index(b'"', first_quote_index + 1)
+        url = response.content[first_quote_index+1:second_quote_index] + b"/"
         response = self.client.get(url)
         self.assertEqual(response.status_code, 302)
         self.assertEqual(research_project2.keywords.count(), 3)

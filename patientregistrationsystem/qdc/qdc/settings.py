@@ -19,7 +19,7 @@ BASE_DIR = os.path.dirname(os.path.dirname(__file__))
 # See https://docs.djangoproject.com/en/1.6/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
-#SECRET_KEY = ''
+SECRET_KEY = ''
 
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
@@ -46,7 +46,7 @@ INSTALLED_APPS = (
     #'cep',
     'quiz.templatetags.qdc_tags',
     'jsonrpc_requests',
-    #'south'
+    # 'south'
 )
 
 PROJECT_APPS = (
@@ -78,15 +78,15 @@ WSGI_APPLICATION = 'qdc.wsgi.application'
 
 # Database
 # https://docs.djangoproject.com/en/1.6/ref/settings/#databases
-# DATABASES = {
-#     'default': {
-#         'ENGINE': 'django.db.backends.postgresql_psycopg2',
-#         'NAME': '',
-#         'USER': '',
-#         'PASSWORD': '',
-#         'HOST': '',
-#     }
-# }
+DATABASES = {
+    'default': {
+        'ENGINE': 'django.db.backends.postgresql_psycopg2',
+        'NAME': '',
+        'USER': '',
+        'PASSWORD': '',
+        'HOST': '',
+    }
+}
 
 # LimeSurvey configuration
 LIMESURVEY = {

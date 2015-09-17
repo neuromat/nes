@@ -1,8 +1,8 @@
 __author__ = ''
 
-#import pyjsonrpc
-
+# import pyjsonrpc
 from jsonrpc_requests import Server
+
 from django.conf import settings
 from abc import ABCMeta, abstractmethod
 import base64
@@ -16,7 +16,10 @@ class ABCSearchEngine(metaclass=ABCMeta):
         self.get_session_key()
 
     def get_session_key(self):
-        self.server = Server(settings.LIMESURVEY['URL_API'] + "/index.php/admin/remotecontrol")
+
+        # self.server = pyjsonrpc.HttpClient(settings.LIMESURVEY['URL_API'] + "/index.php/admin/remotecontrol")
+        self.server = Server(settings.LIMESURVEY['URL_API'] + '/index.php/admin/remotecontrol')
+
         try:
             self.session_key = self.server.get_session_key(settings.LIMESURVEY['USER'], settings.LIMESURVEY['PASSWORD'])
         except:
@@ -218,8 +221,8 @@ class ABCSearchEngine(metaclass=ABCMeta):
             return result
 
     def insert_questions(self, sid, questions_data, format_import_file):
-        questions_data_b64 = base64.b64encode(questions_data)
-        result = self.server.import_group(self.session_key, sid, questions_data_b64,
+        questions_data_b64 = base64.b64encode(questions_data.encode('utf-8'))
+        result = self.server.import_group(self.session_key, sid, questions_data_b64.decode('utf-8'),
                                           format_import_file)  # format_import_file (lsg | csv)
 
         if isinstance(result, dict):

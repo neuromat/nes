@@ -2,41 +2,41 @@
 from __future__ import unicode_literals
 
 from django.db import models, migrations
-import django.core.validators
-import experiment.models
-import datetime
 import django.db.models.deletion
+import django.core.validators
 from django.conf import settings
+import datetime
+import experiment.models
 
 
 class Migration(migrations.Migration):
 
     dependencies = [
-        migrations.swappable_dependency(settings.AUTH_USER_MODEL),
         ('patient', '0001_initial'),
         ('survey', '0001_initial'),
+        migrations.swappable_dependency(settings.AUTH_USER_MODEL),
     ]
 
     operations = [
         migrations.CreateModel(
             name='Component',
             fields=[
-                ('id', models.AutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
+                ('id', models.AutoField(verbose_name='ID', serialize=False, primary_key=True, auto_created=True)),
                 ('identification', models.CharField(max_length=50)),
-                ('description', models.TextField(null=True, blank=True)),
-                ('duration_value', models.IntegerField(validators=[django.core.validators.MinValueValidator(1)], null=True, blank=True)),
-                ('duration_unit', models.CharField(choices=[('ms', 'milesegundo(s)'), ('s', 'segundo(s)'), ('min', 'minuto(s)'), ('h', 'hora(s)'), ('d', 'dia(s)'), ('w', 'semana(s)'), ('mon', 'mês (meses)'), ('y', 'ano(s)')], max_length=15, null=True, blank=True)),
+                ('description', models.TextField(blank=True, null=True)),
+                ('duration_value', models.IntegerField(blank=True, validators=[django.core.validators.MinValueValidator(1)], null=True)),
+                ('duration_unit', models.CharField(blank=True, choices=[('ms', 'milesegundo(s)'), ('s', 'segundo(s)'), ('min', 'minuto(s)'), ('h', 'hora(s)'), ('d', 'dia(s)'), ('w', 'semana(s)'), ('mon', 'mês (meses)'), ('y', 'ano(s)')], max_length=15, null=True)),
                 ('component_type', models.CharField(choices=[('block', 'Conjunto de passos'), ('instruction', 'Instrução'), ('pause', 'Pausa'), ('questionnaire', 'Questionário'), ('stimulus', 'Estímulo'), ('task', 'Tarefa para o sujeito'), ('task_experiment', 'Tarefa para o experimentador')], max_length=15)),
             ],
         ),
         migrations.CreateModel(
             name='ComponentConfiguration',
             fields=[
-                ('id', models.AutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-                ('name', models.CharField(max_length=50, null=True, blank=True)),
-                ('number_of_repetitions', models.IntegerField(validators=[django.core.validators.MinValueValidator(1)], default=1, null=True, blank=True)),
-                ('interval_between_repetitions_value', models.IntegerField(validators=[django.core.validators.MinValueValidator(1)], null=True, blank=True)),
-                ('interval_between_repetitions_unit', models.CharField(choices=[('ms', 'milesegundo(s)'), ('s', 'segundo(s)'), ('min', 'minuto(s)'), ('h', 'hora(s)'), ('d', 'dia(s)'), ('w', 'semana(s)'), ('mon', 'mês (meses)'), ('y', 'ano(s)')], max_length=15, null=True, blank=True)),
+                ('id', models.AutoField(verbose_name='ID', serialize=False, primary_key=True, auto_created=True)),
+                ('name', models.CharField(blank=True, max_length=50, null=True)),
+                ('number_of_repetitions', models.IntegerField(blank=True, null=True, validators=[django.core.validators.MinValueValidator(1)], default=1)),
+                ('interval_between_repetitions_value', models.IntegerField(blank=True, validators=[django.core.validators.MinValueValidator(1)], null=True)),
+                ('interval_between_repetitions_unit', models.CharField(blank=True, choices=[('ms', 'milesegundo(s)'), ('s', 'segundo(s)'), ('min', 'minuto(s)'), ('h', 'hora(s)'), ('d', 'dia(s)'), ('w', 'semana(s)'), ('mon', 'mês (meses)'), ('y', 'ano(s)')], max_length=15, null=True)),
                 ('order', models.IntegerField(validators=[django.core.validators.MinValueValidator(1)])),
                 ('random_position', models.NullBooleanField()),
             ],
@@ -44,7 +44,7 @@ class Migration(migrations.Migration):
         migrations.CreateModel(
             name='Experiment',
             fields=[
-                ('id', models.AutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
+                ('id', models.AutoField(verbose_name='ID', serialize=False, primary_key=True, auto_created=True)),
                 ('title', models.CharField(max_length=150)),
                 ('description', models.TextField()),
             ],
@@ -52,7 +52,7 @@ class Migration(migrations.Migration):
         migrations.CreateModel(
             name='Group',
             fields=[
-                ('id', models.AutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
+                ('id', models.AutoField(verbose_name='ID', serialize=False, primary_key=True, auto_created=True)),
                 ('title', models.CharField(max_length=50)),
                 ('description', models.TextField()),
                 ('classification_of_diseases', models.ManyToManyField(to='patient.ClassificationOfDiseases', null=True)),
@@ -62,54 +62,54 @@ class Migration(migrations.Migration):
         migrations.CreateModel(
             name='HistoricalExperiment',
             fields=[
-                ('id', models.IntegerField(auto_created=True, verbose_name='ID', db_index=True, blank=True)),
+                ('id', models.IntegerField(verbose_name='ID', blank=True, db_index=True, auto_created=True)),
                 ('title', models.CharField(max_length=150)),
                 ('description', models.TextField()),
-                ('history_id', models.AutoField(primary_key=True, serialize=False)),
+                ('history_id', models.AutoField(serialize=False, primary_key=True)),
                 ('history_date', models.DateTimeField()),
                 ('history_type', models.CharField(choices=[('+', 'Created'), ('~', 'Changed'), ('-', 'Deleted')], max_length=1)),
-                ('history_user', models.ForeignKey(null=True, on_delete=django.db.models.deletion.SET_NULL, related_name='+', to=settings.AUTH_USER_MODEL)),
+                ('history_user', models.ForeignKey(on_delete=django.db.models.deletion.SET_NULL, null=True, related_name='+', to=settings.AUTH_USER_MODEL)),
             ],
             options={
+                'verbose_name': 'historical experiment',
                 'get_latest_by': 'history_date',
                 'ordering': ('-history_date', '-history_id'),
-                'verbose_name': 'historical experiment',
             },
         ),
         migrations.CreateModel(
             name='HistoricalQuestionnaireResponse',
             fields=[
-                ('id', models.IntegerField(auto_created=True, verbose_name='ID', db_index=True, blank=True)),
+                ('id', models.IntegerField(verbose_name='ID', blank=True, db_index=True, auto_created=True)),
                 ('token_id', models.IntegerField()),
                 ('date', models.DateField(validators=[experiment.models.validate_date_questionnaire_response], default=datetime.date.today)),
-                ('history_id', models.AutoField(primary_key=True, serialize=False)),
+                ('history_id', models.AutoField(serialize=False, primary_key=True)),
                 ('history_date', models.DateTimeField()),
                 ('history_type', models.CharField(choices=[('+', 'Created'), ('~', 'Changed'), ('-', 'Deleted')], max_length=1)),
-                ('component_configuration', models.ForeignKey(null=True, on_delete=django.db.models.deletion.DO_NOTHING, to='experiment.ComponentConfiguration', db_constraint=False, related_name='+', blank=True)),
-                ('history_user', models.ForeignKey(null=True, on_delete=django.db.models.deletion.SET_NULL, related_name='+', to=settings.AUTH_USER_MODEL)),
-                ('questionnaire_responsible', models.ForeignKey(null=True, on_delete=django.db.models.deletion.DO_NOTHING, to=settings.AUTH_USER_MODEL, db_constraint=False, related_name='+', blank=True)),
+                ('component_configuration', models.ForeignKey(related_name='+', db_constraint=False, null=True, on_delete=django.db.models.deletion.DO_NOTHING, blank=True, to='experiment.ComponentConfiguration')),
+                ('history_user', models.ForeignKey(on_delete=django.db.models.deletion.SET_NULL, null=True, related_name='+', to=settings.AUTH_USER_MODEL)),
+                ('questionnaire_responsible', models.ForeignKey(related_name='+', db_constraint=False, null=True, on_delete=django.db.models.deletion.DO_NOTHING, blank=True, to=settings.AUTH_USER_MODEL)),
             ],
             options={
+                'verbose_name': 'historical questionnaire response',
                 'get_latest_by': 'history_date',
                 'ordering': ('-history_date', '-history_id'),
-                'verbose_name': 'historical questionnaire response',
             },
         ),
         migrations.CreateModel(
             name='Keyword',
             fields=[
-                ('id', models.AutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
+                ('id', models.AutoField(verbose_name='ID', serialize=False, primary_key=True, auto_created=True)),
                 ('name', models.CharField(max_length=50)),
             ],
         ),
         migrations.CreateModel(
             name='QuestionnaireResponse',
             fields=[
-                ('id', models.AutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
+                ('id', models.AutoField(verbose_name='ID', serialize=False, primary_key=True, auto_created=True)),
                 ('token_id', models.IntegerField()),
                 ('date', models.DateField(validators=[experiment.models.validate_date_questionnaire_response], default=datetime.date.today)),
-                ('component_configuration', models.ForeignKey(on_delete=django.db.models.deletion.PROTECT, to='experiment.ComponentConfiguration')),
-                ('questionnaire_responsible', models.ForeignKey(related_name='+', to=settings.AUTH_USER_MODEL)),
+                ('component_configuration', models.ForeignKey(to='experiment.ComponentConfiguration', on_delete=django.db.models.deletion.PROTECT)),
+                ('questionnaire_responsible', models.ForeignKey(to=settings.AUTH_USER_MODEL, related_name='+')),
             ],
             options={
                 'permissions': (('view_questionnaireresponse', 'Can view questionnaire response'),),
@@ -118,13 +118,13 @@ class Migration(migrations.Migration):
         migrations.CreateModel(
             name='ResearchProject',
             fields=[
-                ('id', models.AutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
+                ('id', models.AutoField(verbose_name='ID', serialize=False, primary_key=True, auto_created=True)),
                 ('title', models.CharField(max_length=150)),
                 ('description', models.TextField()),
                 ('start_date', models.DateField()),
-                ('end_date', models.DateField(null=True, blank=True)),
+                ('end_date', models.DateField(blank=True, null=True)),
                 ('keywords', models.ManyToManyField(to='experiment.Keyword')),
-                ('owner', models.ForeignKey(null=True, to=settings.AUTH_USER_MODEL, blank=True)),
+                ('owner', models.ForeignKey(null=True, blank=True, to=settings.AUTH_USER_MODEL)),
             ],
             options={
                 'permissions': (('view_researchproject', 'Can view research project'), ('change_researchproject_from_others', 'Can change research project created by others')),
@@ -133,21 +133,21 @@ class Migration(migrations.Migration):
         migrations.CreateModel(
             name='StimulusType',
             fields=[
-                ('id', models.AutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
+                ('id', models.AutoField(verbose_name='ID', serialize=False, primary_key=True, auto_created=True)),
                 ('name', models.CharField(max_length=30)),
             ],
         ),
         migrations.CreateModel(
             name='Subject',
             fields=[
-                ('id', models.AutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
+                ('id', models.AutoField(verbose_name='ID', serialize=False, primary_key=True, auto_created=True)),
                 ('patient', models.ForeignKey(to='patient.Patient')),
             ],
         ),
         migrations.CreateModel(
             name='SubjectOfGroup',
             fields=[
-                ('id', models.AutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
+                ('id', models.AutoField(verbose_name='ID', serialize=False, primary_key=True, auto_created=True)),
                 ('consent_form', models.FileField(upload_to=experiment.models.get_dir, null=True)),
                 ('group', models.ForeignKey(to='experiment.Group')),
                 ('subject', models.ForeignKey(to='experiment.Subject')),
@@ -156,8 +156,8 @@ class Migration(migrations.Migration):
         migrations.CreateModel(
             name='Block',
             fields=[
-                ('component_ptr', models.OneToOneField(primary_key=True, serialize=False, auto_created=True, to='experiment.Component', parent_link=True)),
-                ('number_of_mandatory_components', models.IntegerField(null=True, blank=True)),
+                ('component_ptr', models.OneToOneField(parent_link=True, to='experiment.Component', serialize=False, primary_key=True, auto_created=True)),
+                ('number_of_mandatory_components', models.IntegerField(blank=True, null=True)),
                 ('type', models.CharField(choices=[('sequence', 'Sequence component'), ('parallel_block', 'Parallel block component')], max_length=20)),
             ],
             bases=('experiment.component',),
@@ -165,7 +165,7 @@ class Migration(migrations.Migration):
         migrations.CreateModel(
             name='Instruction',
             fields=[
-                ('component_ptr', models.OneToOneField(primary_key=True, serialize=False, auto_created=True, to='experiment.Component', parent_link=True)),
+                ('component_ptr', models.OneToOneField(parent_link=True, to='experiment.Component', serialize=False, primary_key=True, auto_created=True)),
                 ('text', models.TextField()),
             ],
             bases=('experiment.component',),
@@ -173,22 +173,22 @@ class Migration(migrations.Migration):
         migrations.CreateModel(
             name='Pause',
             fields=[
-                ('component_ptr', models.OneToOneField(primary_key=True, serialize=False, auto_created=True, to='experiment.Component', parent_link=True)),
+                ('component_ptr', models.OneToOneField(parent_link=True, to='experiment.Component', serialize=False, primary_key=True, auto_created=True)),
             ],
             bases=('experiment.component',),
         ),
         migrations.CreateModel(
             name='Questionnaire',
             fields=[
-                ('component_ptr', models.OneToOneField(primary_key=True, serialize=False, auto_created=True, to='experiment.Component', parent_link=True)),
-                ('survey', models.ForeignKey(on_delete=django.db.models.deletion.PROTECT, to='survey.Survey')),
+                ('component_ptr', models.OneToOneField(parent_link=True, to='experiment.Component', serialize=False, primary_key=True, auto_created=True)),
+                ('survey', models.ForeignKey(to='survey.Survey', on_delete=django.db.models.deletion.PROTECT)),
             ],
             bases=('experiment.component',),
         ),
         migrations.CreateModel(
             name='Stimulus',
             fields=[
-                ('component_ptr', models.OneToOneField(primary_key=True, serialize=False, auto_created=True, to='experiment.Component', parent_link=True)),
+                ('component_ptr', models.OneToOneField(parent_link=True, to='experiment.Component', serialize=False, primary_key=True, auto_created=True)),
                 ('stimulus_type', models.ForeignKey(to='experiment.StimulusType')),
             ],
             bases=('experiment.component',),
@@ -196,14 +196,14 @@ class Migration(migrations.Migration):
         migrations.CreateModel(
             name='Task',
             fields=[
-                ('component_ptr', models.OneToOneField(primary_key=True, serialize=False, auto_created=True, to='experiment.Component', parent_link=True)),
+                ('component_ptr', models.OneToOneField(parent_link=True, to='experiment.Component', serialize=False, primary_key=True, auto_created=True)),
             ],
             bases=('experiment.component',),
         ),
         migrations.CreateModel(
             name='TaskForTheExperimenter',
             fields=[
-                ('component_ptr', models.OneToOneField(primary_key=True, serialize=False, auto_created=True, to='experiment.Component', parent_link=True)),
+                ('component_ptr', models.OneToOneField(parent_link=True, to='experiment.Component', serialize=False, primary_key=True, auto_created=True)),
             ],
             bases=('experiment.component',),
         ),
@@ -215,12 +215,12 @@ class Migration(migrations.Migration):
         migrations.AddField(
             model_name='historicalquestionnaireresponse',
             name='subject_of_group',
-            field=models.ForeignKey(null=True, on_delete=django.db.models.deletion.DO_NOTHING, to='experiment.SubjectOfGroup', db_constraint=False, related_name='+', blank=True),
+            field=models.ForeignKey(related_name='+', db_constraint=False, null=True, on_delete=django.db.models.deletion.DO_NOTHING, blank=True, to='experiment.SubjectOfGroup'),
         ),
         migrations.AddField(
             model_name='historicalexperiment',
             name='research_project',
-            field=models.ForeignKey(null=True, on_delete=django.db.models.deletion.DO_NOTHING, to='experiment.ResearchProject', db_constraint=False, related_name='+', blank=True),
+            field=models.ForeignKey(related_name='+', db_constraint=False, null=True, on_delete=django.db.models.deletion.DO_NOTHING, blank=True, to='experiment.ResearchProject'),
         ),
         migrations.AddField(
             model_name='group',
@@ -235,7 +235,7 @@ class Migration(migrations.Migration):
         migrations.AddField(
             model_name='componentconfiguration',
             name='component',
-            field=models.ForeignKey(related_name='configuration', to='experiment.Component'),
+            field=models.ForeignKey(to='experiment.Component', related_name='configuration'),
         ),
         migrations.AddField(
             model_name='component',

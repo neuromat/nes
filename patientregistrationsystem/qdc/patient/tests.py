@@ -701,7 +701,7 @@ class MedicalRecordFormValidation(TestCase):
         self.data['date'] = '10/05/2005'
 
         if test_file:
-            file_to_test = SimpleUploadedFile('patient/exam_file.txt', 'rb')
+            file_to_test = SimpleUploadedFile('patient/exam_file.txt', b'rb')
             self.data['content'] = file_to_test
 
     def test_diagnosis_create_and_delete(self):

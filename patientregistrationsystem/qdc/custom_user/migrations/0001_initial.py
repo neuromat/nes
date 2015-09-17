@@ -15,9 +15,9 @@ class Migration(migrations.Migration):
         migrations.CreateModel(
             name='UserProfile',
             fields=[
-                ('id', models.AutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
+                ('id', models.AutoField(verbose_name='ID', serialize=False, primary_key=True, auto_created=True)),
                 ('force_password_change', models.BooleanField(default=True)),
-                ('user', models.ForeignKey(to=settings.AUTH_USER_MODEL, unique=True)),
+                ('user', models.ForeignKey(unique=True, to=settings.AUTH_USER_MODEL)),
             ],
         ),
     ]

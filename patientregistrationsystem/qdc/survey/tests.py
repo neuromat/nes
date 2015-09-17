@@ -1,7 +1,6 @@
 from django.test import TestCase
 from experiment.abc_search_engine import Questionnaires
-#import pyjsonrpc
-
+# import pyjsonrpc
 from jsonrpc_requests import Server
 
 # @unittest.skip("Don't want to test")
@@ -10,7 +9,10 @@ class ABCSearchEngineTest(TestCase):
     server = None
 
     def setUp(self):
-        self.server = Server("http://survey.numec.prp.usp.br/index.php/admin/remotecontrol")
+        # self.server = pyjsonrpc.HttpClient("http://survey.numec.prp.usp.br/index.php/admin/remotecontrol")
+
+        self.server = Server('http://survey.numec.prp.usp.br/index.php/admin/remotecontrol')
+
         username = "jenkins"
         password = "numecusp"
         self.session_key = self.server.get_session_key(username, password)
