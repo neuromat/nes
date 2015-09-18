@@ -442,7 +442,7 @@ def get_questionnaire_responses(language_code, lime_survey_id, token_id):
         # ... transforming to a list:
         # response_list[0] has the questions
         #   response_list[1] has the answers
-        reader = csv.reader(StringIO(responses_string), delimiter=',')
+        reader = csv.reader(StringIO(responses_string.decode()), delimiter=',')
         responses_list = []
         for row in reader:
             responses_list.append(row)
@@ -471,24 +471,34 @@ def get_questionnaire_responses(language_code, lime_survey_id, token_id):
                         if question['question_id'] + "[1]" in responses_list[0]:
                             index = responses_list[0].index(question['question_id'] + "[1]")
                             answer_options = question['answer_options']
+
+                            # if 'dualscale_headerA' in question['attributes_lang']:
+
                             answer = question['attributes_lang']['dualscale_headerA'] + ": "
                             if responses_list[1][index] in answer_options:
                                 answer_option = answer_options[responses_list[1][index]]
                                 answer += answer_option['answer']
                             else:
                                 answer += 'Sem resposta'
+                            # else:
+                            #     answer += 'Sem resposta'
 
                         answer_list.append(answer)
 
                         if question['question_id'] + "[2]" in responses_list[0]:
                             index = responses_list[0].index(question['question_id'] + "[2]")
                             answer_options = question['answer_options']
+
+                            # if 'dualscale_headerB' in question['attributes_lang']:
+
                             answer = question['attributes_lang']['dualscale_headerB'] + ": "
                             if responses_list[1][index] in answer_options:
                                 answer_option = answer_options[responses_list[1][index]]
                                 answer += answer_option['answer']
                             else:
                                 answer += 'Sem resposta'
+                            # else:
+                            #     answer += 'Sem resposta'
 
                         answer_list.append(answer)
 
