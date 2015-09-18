@@ -1210,45 +1210,44 @@ class SubjectTest(TestCase):
         self.assertEqual(response.status_code, 200)
         self.assertEqual(response.context['FAIL'], True)
 
+        questionnaire_response = QuestionnaireResponse.objects.all().first()
 
-        # questionnaire_response = QuestionnaireResponse.objects.all().first()
+        # Acessa tela de atualizacao do preenchimento da Survey
+        response = self.client.get(reverse('questionnaire_response_edit',
+                                           args=[questionnaire_response.pk, ]), self.data)
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(response.context['FAIL'], None)
 
-        # # Acessa tela de atualizacao do preenchimento da Survey
-        # response = self.client.get(reverse('questionnaire_response_edit',
-        #                                    args=[questionnaire_response.pk, ]), self.data)
-        # self.assertEqual(response.status_code, 200)
-        # self.assertEqual(response.context['FAIL'], None)
+        # Atualiza o preenchimento da survey
+        response = self.client.post(reverse('questionnaire_response_edit',
+                                            args=[questionnaire_response.pk, ]), self.data)
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(response.context['FAIL'], False)
 
-        # # Atualiza o preenchimento da survey
-        # response = self.client.post(reverse('questionnaire_response_edit',
-        #                                     args=[questionnaire_response.pk, ]), self.data)
-        # self.assertEqual(response.status_code, 200)
-        # self.assertEqual(response.context['FAIL'], True)
-        #
-        # response = self.client.get(reverse('questionnaire_response_edit',
-        #                                    args=[questionnaire_response.pk, ]), self.data)
-        # self.assertEqual(response.status_code, 200)
+        response = self.client.get(reverse('questionnaire_response_edit',
+                                           args=[questionnaire_response.pk, ]), self.data)
+        self.assertEqual(response.status_code, 200)
 
-        # # Remove preenchimento da Survey
-        # count_before_delete_questionnaire_response = QuestionnaireResponse.objects.all().count()
-        #
-        # self.data['action'] = 'remove'
-        # response = self.client.post(reverse('questionnaire_response_edit',
-        #                                     args=[questionnaire_response.pk, ]), self.data)
-        # self.assertEqual(response.status_code, 302)
-        #
-        # count_after_delete_questionnaire_response = QuestionnaireResponse.objects.all().count()
-        # self.assertEqual(count_before_delete_questionnaire_response - 1,
-        #                  count_after_delete_questionnaire_response)
+        # Remove preenchimento da Survey
+        count_before_delete_questionnaire_response = QuestionnaireResponse.objects.all().count()
 
-        # # Remover participante associado a survey
-        # self.data = {'action': 'remove'}
-        # count_before_delete_subject = SubjectOfGroup.objects.all().filter(group=group).count()
-        # response = self.client.post(reverse('subject_questionnaire', args=(group.pk, subject.pk)),
-        #                             self.data)
-        # self.assertEqual(response.status_code, 302)
-        # count_after_delete_subject = SubjectOfGroup.objects.all().filter(group=group).count()
-        # self.assertEqual(count_before_delete_subject - 1, count_after_delete_subject)
+        self.data['action'] = 'remove'
+        response = self.client.post(reverse('questionnaire_response_edit',
+                                            args=[questionnaire_response.pk, ]), self.data)
+        self.assertEqual(response.status_code, 302)
+
+        count_after_delete_questionnaire_response = QuestionnaireResponse.objects.all().count()
+        self.assertEqual(count_before_delete_questionnaire_response - 1,
+                         count_after_delete_questionnaire_response)
+
+        # Remover participante associado a survey
+        self.data = {'action': 'remove'}
+        count_before_delete_subject = SubjectOfGroup.objects.all().filter(group=group).count()
+        response = self.client.post(reverse('subject_questionnaire', args=(group.pk, subject_mock.pk)),
+                                    self.data)
+        self.assertEqual(response.status_code, 302)
+        count_after_delete_subject = SubjectOfGroup.objects.all().filter(group=group).count()
+        self.assertEqual(count_before_delete_subject - 1, count_after_delete_subject)
 
     # def test_questionaire_view(self):
     #     """ Testa a visualizacao completa do questionario respondido no Lime Survey"""
