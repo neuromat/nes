@@ -1,17 +1,25 @@
+import datetime
+
+from django.conf import settings
 from django.core.urlresolvers import reverse
 from django.test import TestCase
 from django.test.client import RequestFactory
-
 from jsonrpc_requests import Server
 
-from experiment.abc_search_engine import Questionnaires
+from survey.abc_search_engine import Questionnaires
 from custom_user.views import User
-
 from .models import Survey
 from .views import survey_update
 
+from experiment.models import QuestionnaireResponse, Questionnaire, Experiment, ComponentConfiguration, \
+    Block, Group, Subject, SubjectOfGroup, ResearchProject
+from experiment.tests import UtilTests
+
 USER_USERNAME = 'myadmin'
 USER_PWD = 'mypassword'
+
+LIME_SURVEY_ID = 828636
+LIME_SURVEY_TOKEN_ID_1 = 1
 
 
 # @unittest.skip("Don't want to test")
@@ -21,17 +29,12 @@ class ABCSearchEngineTest(TestCase):
     server = None
 
     def setUp(self):
+
         self.server = Server('http://survey.numec.prp.usp.br/index.php/admin/remotecontrol')
+        self.session_key = self.server.get_session_key(settings.LIMESURVEY['USER'], settings.LIMESURVEY['PASSWORD'])
 
-        username = "jenkins"
-        password = "numecusp"
-        self.session_key = self.server.get_session_key(username, password)
-
-        # Checa se conseguiu conectar no lime Survey com as credenciais fornecidas no settings.py
-        if isinstance(self.session_key, dict):
-            if 'status' in self.session_key:
-                self.assertNotEqual(self.session_key['status'], 'Invalid user name or password')
-                print('Failed to connect Lime Survey %s' % self.session_key['status'])
+        # Checks if connected in the LimeSurvey with the settings.py credentials
+        self.assertNotIsInstance(self.session_key, dict)
 
     def test_complete_survey(self):
         lime_survey = Questionnaires()
@@ -54,9 +57,7 @@ class ABCSearchEngineTest(TestCase):
             survey_admin = lime_survey.get_survey_properties(sid, 'admin')
             self.assertEqual(survey_admin, None)
 
-            # Criar grupo de questoes
-            lime_survey.add_group_questions(sid, "Group Question", 'Test for create group question on lime survey')
-
+            # Importar grupo de questoes
             handle_file_import = open('quiz/static/quiz/tests/limesurvey_groups.lsg', 'r')
             questions_data = handle_file_import.read()
             questions_id = lime_survey.insert_questions(sid, questions_data, 'lsg')
@@ -332,4 +333,82 @@ class SurveyTest(TestCase):
 
         # Update without changes
         response = self.client.post(reverse('survey_edit', args=(survey.pk,)), self.data, follow=True)
+        self.assertEqual(response.status_code, 200)
+
+    def test_survey_view(self):
+
+        # Create a survey to be used in the test
+        # survey = Survey.objects.create(lime_survey_id=1)
+        # survey.save()
+
+        # Create a research project
+        research_project = ResearchProject.objects.create(title="Research project title",
+                                                          start_date=datetime.date.today(),
+                                                          description="Research project description")
+        research_project.save()
+
+        # Criar um experimento mock para ser utilizado no teste
+        experiment = Experiment.objects.create(title="Experimento-Update",
+                                               description="Descricao do Experimento-Update",
+                                               research_project=research_project)
+        experiment.save()
+
+        # Create the root of the experimental protocol
+        block = Block.objects.create(identification='Root',
+                                     description='Root description',
+                                     experiment=Experiment.objects.first(),
+                                     component_type='block',
+                                     type="sequence")
+        block.save()
+
+
+        # Using a known questionnaire at LiveSurvey to use in this test.
+        survey, created = Survey.objects.get_or_create(lime_survey_id=LIME_SURVEY_ID)
+
+        # Create a questionnaire
+        questionnaire = Questionnaire.objects.create(identification='Questionnaire',
+                                                     description='Questionnaire description',
+                                                     experiment=Experiment.objects.first(),
+                                                     component_type='questionnaire',
+                                                     survey=survey)
+        questionnaire.save()
+
+        # Include the questionnaire in the root.
+        component_configuration = ComponentConfiguration.objects.create(
+            name='ComponentConfiguration',
+            parent=block,
+            component=questionnaire
+        )
+        component_configuration.save()
+
+        # Create a mock group
+        group = Group.objects.create(experiment=experiment,
+                                     title="Group-update",
+                                     description="Description of the Group-update",
+                                     experimental_protocol_id=block.id)
+        group.save()
+
+        # Insert subject in the group
+        util = UtilTests()
+        patient_mock = util.create_patient_mock(user=self.user)
+
+        subject_mock = Subject(patient=patient_mock)
+        subject_mock.save()
+
+        subject_group = SubjectOfGroup(subject=subject_mock, group=group)
+        subject_group.save()
+
+        group.subjectofgroup_set.add(subject_group)
+        experiment.save()
+
+        # Setting the response
+        questionnaire_response = QuestionnaireResponse()
+        questionnaire_response.component_configuration = component_configuration
+        questionnaire_response.subject_of_group = subject_group
+        questionnaire_response.token_id = LIME_SURVEY_TOKEN_ID_1
+        questionnaire_response.questionnaire_responsible = self.user
+        questionnaire_response.date = datetime.datetime.now()
+        questionnaire_response.save()
+
+        response = self.client.get(reverse('survey_view', args=(survey.pk,)))
         self.assertEqual(response.status_code, 200)

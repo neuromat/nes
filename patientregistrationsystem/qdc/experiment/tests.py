@@ -6,7 +6,6 @@ from django.test import TestCase
 from django.test.client import RequestFactory
 from django.core.urlresolvers import reverse
 from django.core.files.uploadedfile import SimpleUploadedFile
-
 from django.shortcuts import get_object_or_404
 
 from experiment.models import Experiment, Group, Subject, \
@@ -14,10 +13,9 @@ from experiment.models import Experiment, Group, Subject, \
     Component, Task, TaskForTheExperimenter, Stimulus, Instruction, Pause, Questionnaire, Block
 from patient.models import ClassificationOfDiseases
 from experiment.views import experiment_update, upload_file, research_project_update
-from experiment.abc_search_engine import Questionnaires
+from survey.abc_search_engine import Questionnaires
 from patient.tests import UtilTests
 from custom_user.views import User
-
 from survey.models import Survey
 
 LIME_SURVEY_ID = 828636

@@ -4,7 +4,6 @@
 import re
 import csv
 import datetime
-
 from io import StringIO
 from operator import itemgetter
 
@@ -14,17 +13,13 @@ from django.core.urlresolvers import reverse
 from django.db.models.deletion import ProtectedError
 from django.http import HttpResponseRedirect
 from django.shortcuts import get_object_or_404, redirect, render
-
 from django.utils.translation import ugettext as _
 
 from .models import Survey
 from .forms import SurveyForm
-
 from patient.models import Patient, QuestionnaireResponse as PatientQuestionnaireResponse
-
 from experiment.models import ComponentConfiguration, Block, QuestionnaireResponse, Questionnaire, Group
-
-from experiment.abc_search_engine import Questionnaires
+from survey.abc_search_engine import Questionnaires
 
 
 @login_required
@@ -348,7 +343,7 @@ def survey_view(request, survey_id, template_name="survey/survey_register.html")
                 return redirect('survey_list')
             except ProtectedError:
                 messages.error(request, _("Não foi possível excluir o questionário, pois há respostas ou passos de "
-                                        "experimento associados."))
+                                          "experimento associados."))
 
     patients_questionnaire_data_list = create_patients_questionnaire_data_list(survey, surveys)
 
