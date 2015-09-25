@@ -22,7 +22,7 @@ from patient.validation import CPF
 from survey.models import Survey
 
 from django.conf import settings
-from experiment.abc_search_engine import Questionnaires
+from survey.abc_search_engine import Questionnaires
 
 from django.contrib.messages.storage.fallback import FallbackStorage
 
@@ -57,6 +57,7 @@ LIME_SURVEY_TOKEN_ID_1 = 1
 
 
 class UtilTests:
+
     def create_patient_mock(self, name='Pacient Test', user=None):
         """ Cria um participante para ser utilizado durante os testes """
         gender = Gender.objects.create(name='Masculino')
@@ -774,7 +775,7 @@ class MedicalRecordFormValidation(TestCase):
 
         """
 
-        print('Set up for', self._testMethodName)
+        # print('Set up for', self._testMethodName)
 
         self.user = User.objects.create_user(username=USER_USERNAME, email='test@dummy.com', password=USER_PWD)
         self.user.is_staff = True
@@ -1170,7 +1171,7 @@ class QuestionnaireFormValidation(TestCase):
         # Configure authentication and variables to start each test
         #
         # """
-        print('Set up for', self._testMethodName)
+        # print('Set up for', self._testMethodName)
 
         self.user = User.objects.create_user(username=USER_USERNAME, email='test@dummy.com', password=USER_PWD)
         self.user.is_staff = True
