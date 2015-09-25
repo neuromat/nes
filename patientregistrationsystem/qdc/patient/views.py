@@ -1069,16 +1069,16 @@ def questionnaire_response_update(request, questionnaire_response_id,
                     if 'status' in result and result['status'] == 'Error: Invalid survey ID':
                         can_delete = True
 
-            if can_delete:
-                questionnaire_response.delete()
-                messages.success(request, _('Preenchimento removido com sucesso'))
-            else:
-                messages.error(request, _("Erro ao deletar o preenchimento"))
+                if can_delete:
+                    questionnaire_response.delete()
+                    messages.success(request, _('Preenchimento removido com sucesso'))
+                else:
+                    messages.error(request, _("Erro ao deletar o preenchimento"))
 
-            redirect_url = reverse("patient_edit", args=(patient.id,)) + "?currentTab=4"
-            return HttpResponseRedirect(redirect_url)
-        else:
-            raise PermissionDenied
+                redirect_url = reverse("patient_edit", args=(patient.id,)) + "?currentTab=4"
+                return HttpResponseRedirect(redirect_url)
+            else:
+                raise PermissionDenied
 
     origin = get_origin(request)
 
