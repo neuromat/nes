@@ -61,7 +61,7 @@ class ABCSearchEngine(metaclass=ABCMeta):
     def add_participant(self, sid, firstname, lastname, email):
         """adiciona participante ao questionario e retorna informacao do mesmo incluindo o sid"""
 
-        participant_data = {'email': email, 'firstname': firstname, 'lastname': lastname}
+        participant_data = {'email': '', 'firstname': '', 'lastname': ''}
 
         participant_data_result = self.server.add_participants(
             self.session_key,

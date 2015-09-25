@@ -379,7 +379,8 @@ def get_questionnaire_responses(language_code, lime_survey_id, token_id):
         # defining language to be showed
         languages = surveys.get_survey_languages(lime_survey_id)
         language = languages['language']
-        if language_code in languages['additional_languages'].split(' '):
+        if languages['additional_languages'] and \
+                language_code.lower() in [item.lower() for item in languages['additional_languages'].split(' ')]:
             language = language_code
 
         for group in groups:
