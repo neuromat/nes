@@ -16,6 +16,7 @@ def contact(request):
         'contact_email': settings.CONTACT_EMAIL,
         'contact_institution': settings.CONTACT_INSTITUTION,
         'contact_url': settings.CONTACT_URL,
+        'logo_institution': settings.LOGO_INSTITUTION,
     }
 
     return render(request, 'quiz/contato.html', context)
