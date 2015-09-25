@@ -12,9 +12,7 @@ from django.db.models import Q
 from django.forms.models import inlineformset_factory
 from django.http import HttpResponseRedirect
 from django.shortcuts import render, render_to_response, get_object_or_404
-
 from django.conf import settings
-
 from django.utils.translation import ugettext as _
 
 from patient.models import Patient, Telephone, SocialDemographicData, SocialHistoryData, MedicalRecordData, \
@@ -22,15 +20,13 @@ from patient.models import Patient, Telephone, SocialDemographicData, SocialHist
 from patient.forms import PatientForm, TelephoneForm, SocialDemographicDataForm, SocialHistoryDataForm, \
     ComplementaryExamForm, ExamFileForm
 from patient.quiz_widget import SelectBoxCountriesDisabled, SelectBoxStateDisabled
-
 from experiment.models import Subject, SubjectOfGroup, QuestionnaireResponse as ExperimentQuestionnaireResponse
-from experiment.abc_search_engine import Questionnaires
-
+from survey.abc_search_engine import Questionnaires
 from patient.models import QuestionnaireResponse
 from patient.forms import QuestionnaireResponseForm
-
 from survey.models import Survey
 from survey.views import get_questionnaire_responses, check_limesurvey_access
+
 
 # pylint: disable=E1101
 # pylint: disable=E1103

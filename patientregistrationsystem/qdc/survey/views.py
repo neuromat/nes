@@ -4,7 +4,6 @@
 import re
 import csv
 import datetime
-
 from io import StringIO
 from operator import itemgetter
 
@@ -14,17 +13,13 @@ from django.core.urlresolvers import reverse
 from django.db.models.deletion import ProtectedError
 from django.http import HttpResponseRedirect
 from django.shortcuts import get_object_or_404, redirect, render
-
 from django.utils.translation import ugettext as _
 
 from .models import Survey
 from .forms import SurveyForm
-
 from patient.models import Patient, QuestionnaireResponse as PatientQuestionnaireResponse
-
 from experiment.models import ComponentConfiguration, Block, QuestionnaireResponse, Questionnaire, Group
-
-from experiment.abc_search_engine import Questionnaires
+from survey.abc_search_engine import Questionnaires
 
 
 @login_required
@@ -348,7 +343,7 @@ def survey_view(request, survey_id, template_name="survey/survey_register.html")
                 return redirect('survey_list')
             except ProtectedError:
                 messages.error(request, _("Não foi possível excluir o questionário, pois há respostas ou passos de "
-                                        "experimento associados."))
+                                          "experimento associados."))
 
     patients_questionnaire_data_list = create_patients_questionnaire_data_list(survey, surveys)
 
@@ -384,7 +379,8 @@ def get_questionnaire_responses(language_code, lime_survey_id, token_id):
         # defining language to be showed
         languages = surveys.get_survey_languages(lime_survey_id)
         language = languages['language']
-        if language_code in languages['additional_languages'].split(' '):
+        if languages['additional_languages'] and \
+                language_code.lower() in [item.lower() for item in languages['additional_languages'].split(' ')]:
             language = language_code
 
         for group in groups:
@@ -471,24 +467,34 @@ def get_questionnaire_responses(language_code, lime_survey_id, token_id):
                         if question['question_id'] + "[1]" in responses_list[0]:
                             index = responses_list[0].index(question['question_id'] + "[1]")
                             answer_options = question['answer_options']
+
+                            # if 'dualscale_headerA' in question['attributes_lang']:
+
                             answer = question['attributes_lang']['dualscale_headerA'] + ": "
                             if responses_list[1][index] in answer_options:
                                 answer_option = answer_options[responses_list[1][index]]
                                 answer += answer_option['answer']
                             else:
                                 answer += 'Sem resposta'
+                            # else:
+                            #     answer += 'Sem resposta'
 
                         answer_list.append(answer)
 
                         if question['question_id'] + "[2]" in responses_list[0]:
                             index = responses_list[0].index(question['question_id'] + "[2]")
                             answer_options = question['answer_options']
+
+                            # if 'dualscale_headerB' in question['attributes_lang']:
+
                             answer = question['attributes_lang']['dualscale_headerB'] + ": "
                             if responses_list[1][index] in answer_options:
                                 answer_option = answer_options[responses_list[1][index]]
                                 answer += answer_option['answer']
                             else:
                                 answer += 'Sem resposta'
+                            # else:
+                            #     answer += 'Sem resposta'
 
                         answer_list.append(answer)
 

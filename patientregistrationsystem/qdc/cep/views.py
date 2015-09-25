@@ -1,6 +1,8 @@
 # -*- coding: utf-8 -*-
 from django.http import HttpResponse
-import urllib.request, urllib.error, urllib.parse
+import urllib.request
+import urllib.error
+import urllib.parse
 import re
 
 
@@ -13,6 +15,6 @@ def addressGet(request, zipcode):
     zipcode = re.sub('[^\d]+', '', zipcode)
     url = "http://viavirtual.com.br/webservicecep.php?cep=" + zipcode
     page = urllib.request.urlopen(url)
-    text = page.read().decode('iso-8859-1') #.encode('utf8')
+    text = page.read().decode('iso-8859-1')
     splitted = text.split('||')
     return HttpResponse('{"street":"%s","district":"%s","city":"%s","state":"%s"}' % (splitted[0], splitted[1], splitted[2], splitted[4]))
