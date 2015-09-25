@@ -442,7 +442,7 @@ def get_questionnaire_responses(language_code, lime_survey_id, token_id):
         # ... transforming to a list:
         # response_list[0] has the questions
         #   response_list[1] has the answers
-        reader = csv.reader(StringIO(responses_string), delimiter=',')
+        reader = csv.reader(StringIO(responses_string.decode()), delimiter=',')
         responses_list = []
         for row in reader:
             responses_list.append(row)
