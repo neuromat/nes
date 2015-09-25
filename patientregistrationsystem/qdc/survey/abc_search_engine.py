@@ -1,7 +1,7 @@
 # coding=utf-8
 
 from base64 import b64decode, b64encode
-from jsonrpc_requests import Server
+from jsonrpc_requests import Server, TransportError
 from django.conf import settings
 from abc import ABCMeta, abstractmethod
 
@@ -16,8 +16,12 @@ class ABCSearchEngine(metaclass=ABCMeta):
     def get_session_key(self):
 
         self.server = Server(settings.LIMESURVEY['URL_API'] + '/index.php/admin/remotecontrol')
-        self.session_key = self.server.get_session_key(settings.LIMESURVEY['USER'], settings.LIMESURVEY['PASSWORD'])
-        self.session_key = None if isinstance(self.session_key, dict) else self.session_key
+
+        try:
+            self.session_key = self.server.get_session_key(settings.LIMESURVEY['USER'], settings.LIMESURVEY['PASSWORD'])
+            self.session_key = None if isinstance(self.session_key, dict) else self.session_key
+        except TransportError:
+            self.session_key = None
 
     def release_session_key(self):
         if self.session_key:
