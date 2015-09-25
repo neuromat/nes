@@ -378,10 +378,20 @@ def get_questionnaire_responses(language_code, lime_survey_id, token_id):
 
         # defining language to be showed
         languages = surveys.get_survey_languages(lime_survey_id)
+
+        # language to be showed can be the base language, or...
         language = languages['language']
-        if languages['additional_languages'] and \
-                language_code.lower() in [item.lower() for item in languages['additional_languages'].split(' ')]:
-            language = language_code
+
+        # ...can be one of the additional languages
+        if language.lower() != language_code.lower() and languages['additional_languages']:
+
+            # search for the right language in addional languages,
+            # considering that the LimeSurvey uses upper case in the two-letter language code, like en-US and pt-BR.
+            additional_languages_list = languages['additional_languages'].split(' ')
+            additional_languages_list_lower = [item.lower() for item in additional_languages_list]
+            if language_code.lower() in additional_languages_list_lower:
+                index = additional_languages_list_lower.index(language_code.lower())
+                language = additional_languages_list[index]
 
         for group in groups:
             if 'id' in group and group['id']['language'] == language:
