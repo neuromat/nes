@@ -1,0 +1,32 @@
+{% extends "quiz/template.html" %}
+
+{% load i18n admin_static %}
+
+{% block content %}
+    <form action="/i18n/setlang/" method="post">
+    {% csrf_token %}
+    <input name="next" type="hidden" value="" />
+    <select name="language">
+    {% get_language_info_list for LANGUAGES as languages %}
+    {% for language in languages %}
+        <option value="{{ language.code }}">{{ language.name_local }} ({{ language.code}})</option>
+    {% endfor %}
+    </select>
+    <input type="submit" value="Go" />
+    </form>
+
+        {# Modal for Language change confirmation #}
+    <div class="modal fade" id="modalLang" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-body">
+                    {% trans "Tem certeza que deseja alterar idioma?" %}
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-default" data-dismiss="modal">{% trans "Cancelar" %}</button>
+                    <button type="button" class="btn btn-primary" id="lang_modal">{% trans "Salvar" %}</button>
+                </div>
+            </div>
+        </div>
+    </div>
+{% endblock %}
