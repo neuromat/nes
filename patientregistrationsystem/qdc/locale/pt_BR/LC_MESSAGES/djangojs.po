@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2015-07-29 17:11-0300\n"
+"POT-Creation-Date: 2015-09-28 17:51-0300\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -19,19 +19,19 @@ msgstr ""
 "Plural-Forms: nplurals=2; plural=(n > 1);\n"
 
 #: admin/js/SelectFilter2.js:45
-#, c-format
+#, javascript-format
 msgid "Available %s"
 msgstr ""
 
 #: admin/js/SelectFilter2.js:46
-#, c-format
+#, javascript-format
 msgid ""
 "This is the list of available %s. You may choose some by selecting them in "
 "the box below and then clicking the \"Choose\" arrow between the two boxes."
 msgstr ""
 
 #: admin/js/SelectFilter2.js:53
-#, c-format
+#, javascript-format
 msgid "Type into this box to filter down the list of available %s."
 msgstr ""
 
@@ -44,7 +44,7 @@ msgid "Choose all"
 msgstr ""
 
 #: admin/js/SelectFilter2.js:61
-#, c-format
+#, javascript-format
 msgid "Click to choose all %s at once."
 msgstr ""
 
@@ -57,12 +57,12 @@ msgid "Remove"
 msgstr ""
 
 #: admin/js/SelectFilter2.js:75
-#, c-format
+#, javascript-format
 msgid "Chosen %s"
 msgstr ""
 
 #: admin/js/SelectFilter2.js:76
-#, c-format
+#, javascript-format
 msgid ""
 "This is the list of chosen %s. You may remove some by selecting them in the "
 "box below and then clicking the \"Remove\" arrow between the two boxes."
@@ -73,7 +73,7 @@ msgid "Remove all"
 msgstr ""
 
 #: admin/js/SelectFilter2.js:80
-#, c-format
+#, javascript-format
 msgid "Click to remove all chosen %s at once."
 msgstr ""
 
@@ -101,24 +101,6 @@ msgid ""
 "You have selected an action, and you haven't made any changes on individual "
 "fields. You're probably looking for the Go button rather than the Save "
 "button."
-msgstr ""
-
-#: admin/js/calendar.js:8
-msgid ""
-"January February March April May June July August September October November "
-"December"
-msgstr ""
-
-#: admin/js/calendar.js:9
-msgid "S M T W T F S"
-msgstr ""
-
-#: admin/js/collapse.js:8 admin/js/collapse.js.c:19 admin/js/collapse.min.js:1
-msgid "Show"
-msgstr ""
-
-#: admin/js/collapse.js:16 admin/js/collapse.min.js:1
-msgid "Hide"
 msgstr ""
 
 #: admin/js/admin/DateTimeShortcuts.js:52
@@ -166,4 +148,22 @@ msgstr ""
 
 #: admin/js/admin/DateTimeShortcuts.js:203
 msgid "Tomorrow"
+msgstr ""
+
+#: admin/js/calendar.js:8
+msgid ""
+"January February March April May June July August September October November "
+"December"
+msgstr ""
+
+#: admin/js/calendar.js:9
+msgid "S M T W T F S"
+msgstr ""
+
+#: admin/js/collapse.js:8 admin/js/collapse.js:19 admin/js/collapse.min.js:1
+msgid "Show"
+msgstr ""
+
+#: admin/js/collapse.js:16 admin/js/collapse.min.js:1
+msgid "Hide"
 msgstr ""

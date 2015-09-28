@@ -142,7 +142,7 @@
                                                     <br/>
                                                     <blockquote>
                                                         <i><h6>
-                                                        {% if diagnosis.date %}Em {{ diagnosis.date }}<br/>{% endif %}
+                                                        {% if diagnosis.date %}{% trans "Em " %}{{ diagnosis.date }}<br/>{% endif %}
                                                         {% if diagnosis.description %}{{ diagnosis.description }}<br/>{% endif %}
                                                         </h6></i>
 

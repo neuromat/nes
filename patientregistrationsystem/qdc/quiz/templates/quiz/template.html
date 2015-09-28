@@ -23,8 +23,25 @@
 {#            $('.datepicker').datepicker({dateFormat: "dd/mm/yy"}).#}
 {#                mask("99/99/9999");#}
 
-            $('.datepicker').datepicker().
-                mask("99/99/9999");
+            $('.datepicker').datepicker({
+                        dateFormat: gettext('dd/mm/yy'),
+                        dayNames: [gettext('Domingo'),gettext('Segunda'),gettext('Terça'),
+                            gettext('Quarta'),gettext('Quinta'),gettext('Sexta'),gettext('Sábado')],
+                        dayNamesMin: [gettext('Do'),gettext('Se'),gettext('Te'),gettext('Qa'),gettext('Qi'),
+                                gettext('Sx'),gettext('Sa'),gettext('Do')],
+                        dayNamesShort: [gettext('Dom'),gettext('Seg'),gettext('Ter'),gettext('Qua'),
+                                gettext('Qui'),gettext('Sex'),gettext('Sáb'),gettext('Dom')],
+                        monthNames: [gettext('Janeiro'),gettext('Fevereiro'),gettext('Março'),
+                                gettext('Abril'),gettext('Maio'),gettext('Junho'),
+                                gettext('Julho'),gettext('Agosto'),gettext('Setembro'),
+                                gettext('Outubro'),gettext('Novembro'),gettext('Dezembro')],
+                        monthNamesShort: [gettext('Jan'),gettext('Fev'),gettext('Mar'),gettext('Abr'),
+                                gettext('Mai'),gettext('Jun'),gettext('Jul'),gettext('Ago'),
+                                gettext('Set'),gettext('Out'),gettext('Nov'),gettext('Dez')],
+                        nextText: gettext('Próximo'),
+                        prevText: gettext('Anterior')
+            }).
+                    mask("99/99/9999");
         });
     </script>
 

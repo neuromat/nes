@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2015-07-27 11:34-0300\n"
+"POT-Creation-Date: 2015-09-28 17:51-0300\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -18,54 +18,46 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=(n > 1);\n"
 
-#: templates/quiz/contato.html:12 templates/quiz/template.html:11
+#: quiz/templates/quiz/contato.html:12 quiz/templates/quiz/template.html:11
 msgid "Neuroscience Experiments System - NES"
 msgstr ""
 
-#: templates/quiz/contato.html:14
+#: quiz/templates/quiz/contato.html:14
 msgid "Sistema de Cadastro e Consulta de Dados Sociodemográficos e Clínicos"
 msgstr ""
 
-#: templates/quiz/contato.html:15
+#: quiz/templates/quiz/contato.html:15
 msgid "Dúvidas e Sugestões"
 msgstr ""
 
-#: templates/quiz/template.html:108
+#: quiz/templates/quiz/template.html:128
 msgid "NES"
 msgstr ""
 
-#: templates/quiz/template.html:122
-msgid "English"
-msgstr ""
-
-#: templates/quiz/template.html:123
-msgid "Português"
-msgstr ""
-
-#: templates/quiz/template.html:135
+#: quiz/templates/quiz/template.html:155
 msgid "Alterar senha"
 msgstr ""
 
-#: templates/quiz/template.html:136
+#: quiz/templates/quiz/template.html:156
 msgid "Sair"
 msgstr ""
 
-#: templates/quiz/template.html:155
+#: quiz/templates/quiz/template.html:175
 msgid "Participantes"
 msgstr ""
 
-#: templates/quiz/template.html:161
+#: quiz/templates/quiz/template.html:181
 msgid "Usuários"
 msgstr ""
 
-#: templates/quiz/template.html:167
+#: quiz/templates/quiz/template.html:187
 msgid "Estudos"
 msgstr ""
 
-#: templates/quiz/template.html:173
+#: quiz/templates/quiz/template.html:193
 msgid "Questionários"
 msgstr ""
 
-#: templates/quiz/template.html:178
+#: quiz/templates/quiz/template.html:198
 msgid "Contato"
 msgstr ""

@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2015-07-27 11:24-0300\n"
+"POT-Creation-Date: 2015-09-28 17:51-0300\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -18,127 +18,128 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=(n > 1);\n"
 
-#: forms.py:14
+#: custom_user/forms.py:14
 msgid "Entrar primeiro nome"
 msgstr ""
 
-#: forms.py:15
+#: custom_user/forms.py:15
 msgid "Entrar último nome"
 msgstr ""
 
-#: forms.py:16
+#: custom_user/forms.py:16
 msgid "Entrar nome de usuário"
 msgstr ""
 
-#: forms.py:18 forms.py:40 templates/custom_user/register_users.html:175
+#: custom_user/forms.py:18 custom_user/forms.py:40
+#: custom_user/templates/custom_user/register_users.html:175
 msgid "Entrar senha"
 msgstr ""
 
-#: forms.py:20
+#: custom_user/forms.py:20
 msgid "Entrar e-mail"
 msgstr ""
 
-#: views.py:41
-msgid "Usuário criado com sucesso."
-msgstr ""
-
-#: views.py:44
-msgid "Não foi possível criar usuário."
-msgstr ""
-
-#: views.py:49
-msgid "Este nome de usuário já existe."
-msgstr ""
-
-#: views.py:51
-msgid "Este nome de usuário já existe em um usuário desabilitado."
-msgstr ""
-
-#: views.py:93
-msgid "Usuário atualizado com sucesso."
-msgstr ""
-
-#: views.py:101
-msgid "Usuário removido com sucesso."
-msgstr ""
-
-#: templates/custom_user/register_users.html:97
+#: custom_user/templates/custom_user/register_users.html:97
 msgid "Informações básicas"
 msgstr ""
 
-#: templates/custom_user/register_users.html:101
+#: custom_user/templates/custom_user/register_users.html:101
 msgid "Nome"
 msgstr ""
 
-#: templates/custom_user/register_users.html:110
+#: custom_user/templates/custom_user/register_users.html:110
 msgid "Sobrenome"
 msgstr ""
 
-#: templates/custom_user/register_users.html:122
-#: templates/custom_user/user_list.html:36
+#: custom_user/templates/custom_user/register_users.html:122
+#: custom_user/templates/custom_user/user_list.html:36
 msgid "Nome de usuário"
 msgstr ""
 
-#: templates/custom_user/register_users.html:154
+#: custom_user/templates/custom_user/register_users.html:154
 msgid ""
 "Senha deve conter pelo menos 8 caracteres, incluindo ao menos uma letra "
 "maiúscula, dígito ou caractere especial."
 msgstr ""
 
-#: templates/custom_user/register_users.html:156
+#: custom_user/templates/custom_user/register_users.html:156
 msgid "Senha"
 msgstr ""
 
-#: templates/custom_user/register_users.html:171
+#: custom_user/templates/custom_user/register_users.html:171
 msgid "Confirmar senha"
 msgstr ""
 
-#: templates/custom_user/register_users.html:191
+#: custom_user/templates/custom_user/register_users.html:191
 msgid "Perfis"
 msgstr ""
 
-#: templates/custom_user/register_users.html:193
+#: custom_user/templates/custom_user/register_users.html:193
 msgid "Em quais desses perfis o usuário se identifica?"
 msgstr ""
 
-#: templates/custom_user/register_users.html:220
-#: templates/custom_user/register_users.html:246
+#: custom_user/templates/custom_user/register_users.html:220
+#: custom_user/templates/custom_user/register_users.html:246
 msgid "Excluir"
 msgstr ""
 
-#: templates/custom_user/register_users.html:224
+#: custom_user/templates/custom_user/register_users.html:224
 msgid "Salvar"
 msgstr ""
 
-#: templates/custom_user/register_users.html:228
-#: templates/custom_user/register_users.html:245
+#: custom_user/templates/custom_user/register_users.html:228
+#: custom_user/templates/custom_user/register_users.html:245
 msgid "Cancelar"
 msgstr ""
 
-#: templates/custom_user/register_users.html:230
+#: custom_user/templates/custom_user/register_users.html:230
 msgid "Voltar"
 msgstr ""
 
-#: templates/custom_user/register_users.html:242
+#: custom_user/templates/custom_user/register_users.html:242
 msgid "Tem certeza que deseja excluir o usuário?"
 msgstr ""
 
-#: templates/custom_user/user_list.html:31
+#: custom_user/templates/custom_user/user_list.html:31
 msgid "Lista de usuários"
 msgstr ""
 
-#: templates/custom_user/user_list.html:37
+#: custom_user/templates/custom_user/user_list.html:37
 msgid "Nome completo"
 msgstr ""
 
-#: templates/custom_user/user_list.html:38
+#: custom_user/templates/custom_user/user_list.html:38
 msgid "E-mail"
 msgstr ""
 
-#: templates/custom_user/user_list.html:44
+#: custom_user/templates/custom_user/user_list.html:44
 msgid "Editar"
 msgstr ""
 
-#: templates/custom_user/user_list.html:54
+#: custom_user/templates/custom_user/user_list.html:54
 msgid "Inserir novo usuário"
+msgstr ""
+
+#: custom_user/views.py:41
+msgid "Usuário criado com sucesso."
+msgstr ""
+
+#: custom_user/views.py:44
+msgid "Não foi possível criar usuário."
+msgstr ""
+
+#: custom_user/views.py:49
+msgid "Este nome de usuário já existe."
+msgstr ""
+
+#: custom_user/views.py:51
+msgid "Este nome de usuário já existe em um usuário desabilitado."
+msgstr ""
+
+#: custom_user/views.py:93
+msgid "Usuário atualizado com sucesso."
+msgstr ""
+
+#: custom_user/views.py:101
+msgid "Usuário removido com sucesso."
 msgstr ""
