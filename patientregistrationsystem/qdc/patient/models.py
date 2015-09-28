@@ -1,6 +1,6 @@
 # -*- coding: UTF-8 -*-
 
-from __future__ import unicode_literals
+
 import datetime
 
 from django.db import models
@@ -15,7 +15,7 @@ from patient.validation import CPF
 
 def validate_date_questionnaire_response(value):
     if value > datetime.date.today():
-        raise ValidationError(_(u'Data de preenchimento não pode ser maior que a data de hoje.'))
+        raise ValidationError(_('Data de preenchimento não pode ser maior que a data de hoje.'))
 
 
 # Valida CPF
@@ -23,14 +23,14 @@ def validate_cpf(value):
     validation = CPF(value)
     if not validation.isValid():
         # raise ValidationError(u'CPF %s não é válido' % value)
-        raise ValidationError(_(u'CPF %(CPF)s não é válido') % {"CPF": value})
+        raise ValidationError(_('CPF %(CPF)s não é válido') % {"CPF": value})
 
 
 # Valida data de nascimento:
 # data de nascimento maior que a data atual
 def validate_date_birth(value):
     if value > datetime.date.today():
-        raise ValidationError(_(u'Data de nascimento não pode ser maior que a data de hoje.'))
+        raise ValidationError(_('Data de nascimento não pode ser maior que a data de hoje.'))
 
 
 class Payment(models.Model):
@@ -241,7 +241,7 @@ class SocialDemographicData(models.Model):
         }
         points = 0
 
-        for key_word in keywords.keys():
+        for key_word in list(keywords.keys()):
             points += (punctuation_table[key_word])[keywords[key_word]]
 
         if 0 <= points <= 7:
@@ -326,7 +326,7 @@ class Diagnosis(models.Model):
         unique_together = ('medical_record_data', 'classification_of_diseases',)
 
     def __unicode__(self):
-        return unicode(self.classification_of_diseases), self.date, self.description
+        return str(self.classification_of_diseases), self.date, self.description
 
 
 class ComplementaryExam(models.Model):
@@ -338,7 +338,7 @@ class ComplementaryExam(models.Model):
     exam_site = models.CharField(max_length=100, null=True, blank=True)
 
     def __unicode__(self):
-        return unicode(self.description)
+        return str(self.description)
 
 
 def get_user_dir(instance, filename):

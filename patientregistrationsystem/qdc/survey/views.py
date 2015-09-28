@@ -4,8 +4,7 @@
 import re
 import csv
 import datetime
-
-from StringIO import StringIO
+from io import StringIO
 from operator import itemgetter
 
 from django.contrib import messages
@@ -14,17 +13,13 @@ from django.core.urlresolvers import reverse
 from django.db.models.deletion import ProtectedError
 from django.http import HttpResponseRedirect
 from django.shortcuts import get_object_or_404, redirect, render
-
 from django.utils.translation import ugettext as _
 
-from models import Survey
-from forms import SurveyForm
-
+from .models import Survey
+from .forms import SurveyForm
 from patient.models import Patient, QuestionnaireResponse as PatientQuestionnaireResponse
-
 from experiment.models import ComponentConfiguration, Block, QuestionnaireResponse, Questionnaire, Group
-
-from experiment.abc_search_engine import Questionnaires
+from survey.abc_search_engine import Questionnaires
 
 
 @login_required
@@ -81,7 +76,7 @@ def survey_create(request, template_name="survey/survey_register.html"):
                     is_initial_evaluation=survey_added.is_initial_evaluation)
 
                 if created:
-                    messages.success(request, _(u'Questionário criado com sucesso.'))
+                    messages.success(request, _('Questionário criado com sucesso.'))
                     redirect_url = reverse("survey_list")
                     return HttpResponseRedirect(redirect_url)
 
@@ -113,9 +108,9 @@ def survey_update(request, survey_id, template_name="survey/survey_register.html
             if survey_form.is_valid():
                 if survey_form.has_changed():
                     survey_form.save()
-                    messages.success(request, _(u'Questionário atualizado com sucesso.'))
+                    messages.success(request, _('Questionário atualizado com sucesso.'))
                 else:
-                    messages.success(request, _(u'Não há alterações para salvar.'))
+                    messages.success(request, _('Não há alterações para salvar.'))
 
                 redirect_url = reverse("survey_view", args=(survey.id,))
                 return HttpResponseRedirect(redirect_url)
@@ -235,7 +230,7 @@ def create_experiments_questionnaire_data_list(survey, surveys):
     # Transform dictionary into a list to include questionnaire components that are not in use and to sort.
     experiments_questionnaire_data_list = []
 
-    for key, value in experiments_questionnaire_data_dictionary.items():
+    for key, value in list(experiments_questionnaire_data_dictionary.items()):
         value['component_id'] = ComponentConfiguration.objects.get(id=key).component_id
         experiments_questionnaire_data_list.append(value)
 
@@ -312,7 +307,7 @@ def create_patients_questionnaire_data_list(survey, surveys):
     # Transform the dictionary into a list, so that we can sort it by patient name.
     patients_questionnaire_data_list = []
 
-    for key, dictionary in patients_questionnaire_data_dictionary.items():
+    for key, dictionary in list(patients_questionnaire_data_dictionary.items()):
         dictionary['patient_id'] = key
         patients_questionnaire_data_list.append(dictionary)
 
@@ -344,11 +339,11 @@ def survey_view(request, survey_id, template_name="survey/survey_register.html")
         if request.POST['action'] == "remove":
             try:
                 survey.delete()
-                messages.success(request, _(u'Questionário removido com sucesso.'))
+                messages.success(request, _('Questionário removido com sucesso.'))
                 return redirect('survey_list')
             except ProtectedError:
-                messages.error(request, _(u"Não foi possível excluir o questionário, pois há respostas ou passos de "
-                                        "experimento associados."))
+                messages.error(request, _("Não foi possível excluir o questionário, pois há respostas ou passos de "
+                                          "experimento associados."))
 
     patients_questionnaire_data_list = create_patients_questionnaire_data_list(survey, surveys)
 
@@ -383,9 +378,20 @@ def get_questionnaire_responses(language_code, lime_survey_id, token_id):
 
         # defining language to be showed
         languages = surveys.get_survey_languages(lime_survey_id)
+
+        # language to be showed can be the base language, or...
         language = languages['language']
-        if language_code in languages['additional_languages'].split(' '):
-            language = language_code
+
+        # ...can be one of the additional languages
+        if language.lower() != language_code.lower() and languages['additional_languages']:
+
+            # search for the right language in addional languages,
+            # considering that the LimeSurvey uses upper case in the two-letter language code, like en-US and pt-BR.
+            additional_languages_list = languages['additional_languages'].split(' ')
+            additional_languages_list_lower = [item.lower() for item in additional_languages_list]
+            if language_code.lower() in additional_languages_list_lower:
+                index = additional_languages_list_lower.index(language_code.lower())
+                language = additional_languages_list[index]
 
         for group in groups:
             if 'id' in group and group['id']['language'] == language:
@@ -415,7 +421,7 @@ def get_questionnaire_responses(language_code, lime_survey_id, token_id):
                                 'hidden': 'hidden' in properties['attributes'] and
                                           properties['attributes']['hidden'] == '1'
                             })
-                            for key, value in sorted(properties['subquestions'].iteritems()):
+                            for key, value in sorted(properties['subquestions'].items()):
                                 question_properties.append({
                                     'question': value['question'],
                                     'question_id': properties['title'] + '[' + value['title'] + ']',
@@ -442,7 +448,7 @@ def get_questionnaire_responses(language_code, lime_survey_id, token_id):
         # ... transforming to a list:
         # response_list[0] has the questions
         #   response_list[1] has the answers
-        reader = csv.reader(StringIO(responses_string), delimiter=',')
+        reader = csv.reader(StringIO(responses_string.decode()), delimiter=',')
         responses_list = []
         for row in reader:
             responses_list.append(row)
@@ -451,7 +457,7 @@ def get_questionnaire_responses(language_code, lime_survey_id, token_id):
 
             if not question['hidden']:
 
-                if isinstance(question['answer_options'], basestring) and \
+                if isinstance(question['answer_options'], str) and \
                         question['answer_options'] == "super_question":
 
                     if question['question'] != '':
@@ -471,24 +477,34 @@ def get_questionnaire_responses(language_code, lime_survey_id, token_id):
                         if question['question_id'] + "[1]" in responses_list[0]:
                             index = responses_list[0].index(question['question_id'] + "[1]")
                             answer_options = question['answer_options']
+
+                            # if 'dualscale_headerA' in question['attributes_lang']:
+
                             answer = question['attributes_lang']['dualscale_headerA'] + ": "
                             if responses_list[1][index] in answer_options:
                                 answer_option = answer_options[responses_list[1][index]]
                                 answer += answer_option['answer']
                             else:
                                 answer += 'Sem resposta'
+                            # else:
+                            #     answer += 'Sem resposta'
 
                         answer_list.append(answer)
 
                         if question['question_id'] + "[2]" in responses_list[0]:
                             index = responses_list[0].index(question['question_id'] + "[2]")
                             answer_options = question['answer_options']
+
+                            # if 'dualscale_headerB' in question['attributes_lang']:
+
                             answer = question['attributes_lang']['dualscale_headerB'] + ": "
                             if responses_list[1][index] in answer_options:
                                 answer_option = answer_options[responses_list[1][index]]
                                 answer += answer_option['answer']
                             else:
                                 answer += 'Sem resposta'
+                            # else:
+                            #     answer += 'Sem resposta'
 
                         answer_list.append(answer)
 
@@ -537,6 +553,6 @@ def check_limesurvey_access(request, surveys):
     limesurvey_available = True
     if not surveys.session_key:
         limesurvey_available = False
-        messages.warning(request, _(u"LimeSurvey indisponível. Sistema funcionando parcialmente."))
+        messages.warning(request, _("LimeSurvey indisponível. Sistema funcionando parcialmente."))
 
     return limesurvey_available

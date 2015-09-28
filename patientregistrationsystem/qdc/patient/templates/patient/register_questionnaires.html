@@ -34,7 +34,7 @@
                             {% for patient_questionnaire in patient_questionnaires_data_list %}
                                 <tr {% if not patient_questionnaire.is_initial_evaluation %} data-toggle="tooltip" data-placement="left" title={% trans "Não é mais avaliação de entrada" %} {% endif %}>
                                     <td>
-                                        {{ patient_questionnaire.questionnaire_title }}
+                                        {{ patient_questionnaire.limesurvey_id }} - {{ patient_questionnaire.questionnaire_title }}
 
                                         {% if patient_questionnaire.questionnaire_responses|length == 0 %}
                                             <br/><span class="label label-warning">{% trans "Falta preencher" %}</span>

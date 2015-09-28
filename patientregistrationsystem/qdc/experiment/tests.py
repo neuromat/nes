@@ -6,7 +6,6 @@ from django.test import TestCase
 from django.test.client import RequestFactory
 from django.core.urlresolvers import reverse
 from django.core.files.uploadedfile import SimpleUploadedFile
-
 from django.shortcuts import get_object_or_404
 
 from experiment.models import Experiment, Group, Subject, \
@@ -14,12 +13,15 @@ from experiment.models import Experiment, Group, Subject, \
     Component, Task, TaskForTheExperimenter, Stimulus, Instruction, Pause, Questionnaire, Block
 from patient.models import ClassificationOfDiseases
 from experiment.views import experiment_update, upload_file, research_project_update
-from experiment.abc_search_engine import Questionnaires
+from survey.abc_search_engine import Questionnaires
 from patient.tests import UtilTests
 from custom_user.views import User
-
 from survey.models import Survey
 
+LIME_SURVEY_ID = 828636
+LIME_SURVEY_ID_WITHOUT_ACCESS_CODE_TABLE = 563235
+LIME_SURVEY_ID_INACTIVE = 846317
+LIME_SURVEY_ID_WITHOUT_IDENTIFICATION_GROUP = 913841
 LIME_SURVEY_TOKEN_ID_1 = 1
 
 CLASSIFICATION_OF_DISEASES_CREATE = 'classification_of_diseases_insert'
@@ -31,7 +33,6 @@ USER_PWD = 'mypassword'
 
 SEARCH_TEXT = 'search_text'
 SUBJECT_SEARCH = 'subject_search'
-
 
 
 class ExperimentalProtocolTest(TestCase):
@@ -133,7 +134,7 @@ class ExperimentalProtocolTest(TestCase):
         if isinstance(lime_survey.session_key, dict):
             if 'status' in lime_survey.session_key:
                 self.assertNotEqual(lime_survey.session_key['status'], 'Invalid user name or password')
-                print 'Failed to connect Lime Survey %s' % lime_survey.session_key['status']
+                print('Failed to connect Lime Survey %s' % lime_survey.session_key['status'])
 
         # Cria uma survey no Lime Survey
         survey_id = lime_survey.add_survey(9999, 'Questionario de teste - DjangoTests', 'en', 'G')
@@ -685,7 +686,7 @@ class ListOfQuestionnaireFromExperimentalProtocolOfAGroupTest(TestCase):
         if isinstance(self.lime_survey.session_key, dict):
             if 'status' in self.lime_survey.session_key:
                 self.assertNotEqual(self.lime_survey.session_key['status'], 'Invalid user name or password')
-                print 'Failed to connect Lime Survey %s' % self.lime_survey.session_key['status']
+                print('Failed to connect Lime Survey %s' % self.lime_survey.session_key['status'])
 
     def test_create_questionnaire_for_a_group(self):
         """Testa a criacao de um questionario para um dado grupo"""
@@ -773,45 +774,57 @@ class ListOfQuestionnaireFromExperimentalProtocolOfAGroupTest(TestCase):
                                      type="sequence")
         block.save()
 
-        # Create a quesitonnaire at LiveSurvey to use in this test.
-        survey_title = 'Questionario de teste - DjangoTests'
-        sid = self.lime_survey.add_survey(99999, survey_title, 'en', 'G')
+        # Using a known questionnaire at LiveSurvey to use in this test.
+        new_survey, created = Survey.objects.get_or_create(lime_survey_id=LIME_SURVEY_ID)
 
-        try:
-            new_survey, created = Survey.objects.get_or_create(lime_survey_id=sid)
+        # Create a questionnaire
+        questionnaire = Questionnaire.objects.create(identification='Questionnaire',
+                                                     description='Questionnaire description',
+                                                     experiment=Experiment.objects.first(),
+                                                     component_type='questionnaire',
+                                                     survey=new_survey)
+        questionnaire.save()
 
-            # Create a questionnaire
-            questionnaire = Questionnaire.objects.create(identification='Questionnaire',
-                                                         description='Questionnaire description',
-                                                         experiment=Experiment.objects.first(),
-                                                         component_type='questionnaire',
-                                                         survey=new_survey)
-            questionnaire.save()
+        # Include the questionnaire in the root.
+        component_configuration = ComponentConfiguration.objects.create(
+            name='ComponentConfiguration',
+            parent=block,
+            component=questionnaire
+        )
+        component_configuration.save()
 
-            # Include the questionnaire in the root.
-            component_configuration = ComponentConfiguration.objects.create(
-                name='ComponentConfiguration',
-                parent=block,
-                component=questionnaire
-            )
-            component_configuration.save()
+        # Create a mock group
+        group = Group.objects.create(experiment=experiment,
+                                     title="Group-update",
+                                     description="Description of the Group-update",
+                                     experimental_protocol_id=block.id)
+        group.save()
 
-            # Criar um grupo mock para ser utilizado no teste
-            group = Group.objects.create(experiment=experiment,
-                                         title="Group-update",
-                                         description="Descricao do Group-update",
-                                         experimental_protocol_id=block.id)
-            group.save()
+        # Insert subject in the group
+        util = UtilTests()
+        patient_mock = util.create_patient_mock(user=self.user)
 
-            # Show questionnaire screen
-            response = self.client.get(reverse('questionnaire_view', args=(group.pk, component_configuration.pk)))
-            self.assertEqual(response.status_code, 200)
-            # Check if the survey is listed
-            self.assertContains(response, survey_title)
-        finally:
-            # Deleta a survey gerada no Lime Survey
-            status = self.lime_survey.delete_survey(sid)
-            self.assertEqual(status, 'OK')
+        subject_mock = Subject(patient=patient_mock)
+        subject_mock.save()
+
+        subject_group = SubjectOfGroup(subject=subject_mock, group=group)
+        subject_group.save()
+
+        group.subjectofgroup_set.add(subject_group)
+        experiment.save()
+
+        # Setting the response
+        questionnaire_response = QuestionnaireResponse()
+        questionnaire_response.component_configuration = component_configuration
+        questionnaire_response.subject_of_group = subject_group
+        questionnaire_response.token_id = LIME_SURVEY_TOKEN_ID_1
+        questionnaire_response.questionnaire_responsible = self.user
+        questionnaire_response.date = datetime.datetime.now()
+        questionnaire_response.save()
+
+        # Show questionnaire screen
+        response = self.client.get(reverse('questionnaire_view', args=(group.pk, component_configuration.pk)))
+        self.assertEqual(response.status_code, 200)
 
     def test_questionnaire_response_view_response(self):
         """ Testa a visualizacao completa do questionario respondido no Lime Survey"""
@@ -822,7 +835,7 @@ class ListOfQuestionnaireFromExperimentalProtocolOfAGroupTest(TestCase):
                                                           description="Research project description")
         research_project.save()
 
-        # Criar um experimento mock para ser utilizado no teste
+        # Create a mock experiment
         experiment = Experiment.objects.create(title="Experimento-Update",
                                                description="Descricao do Experimento-Update",
                                                research_project=research_project)
@@ -836,69 +849,60 @@ class ListOfQuestionnaireFromExperimentalProtocolOfAGroupTest(TestCase):
                                      type="sequence")
         block.save()
 
-        # Create a quesitonnaire at LiveSurvey to use in this test.
-        survey_title = 'Questionario de teste - DjangoTests'
-        sid = self.lime_survey.add_survey(99999, survey_title, 'en', 'G')
+        # Using a known questionnaire at LiveSurvey to use in this test.
+        new_survey, created = Survey.objects.get_or_create(lime_survey_id=LIME_SURVEY_ID)
 
-        try:
-            new_survey, created = Survey.objects.get_or_create(lime_survey_id=sid)
+        # Create a questionnaire
+        questionnaire = Questionnaire.objects.create(identification='Questionnaire',
+                                                     description='Questionnaire description',
+                                                     experiment=Experiment.objects.first(),
+                                                     component_type='questionnaire',
+                                                     survey=new_survey)
+        questionnaire.save()
 
-            # Create a questionnaire
-            questionnaire = Questionnaire.objects.create(identification='Questionnaire',
-                                                         description='Questionnaire description',
-                                                         experiment=Experiment.objects.first(),
-                                                         component_type='questionnaire',
-                                                         survey=new_survey)
-            questionnaire.save()
+        # Include the questionnaire in the root.
+        component_configuration = ComponentConfiguration.objects.create(
+            name='ComponentConfiguration',
+            parent=block,
+            component=questionnaire
+        )
+        component_configuration.save()
 
-            # Include the questionnaire in the root.
-            component_configuration = ComponentConfiguration.objects.create(
-                name='ComponentConfiguration',
-                parent=block,
-                component=questionnaire
-            )
-            component_configuration.save()
+        # Create a mock group
+        group = Group.objects.create(experiment=experiment,
+                                     title="Group-update",
+                                     description="Descricao do Group-update",
+                                     experimental_protocol_id=block.id)
+        group.save()
 
-            # Criar um grupo mock para ser utilizado no teste
-            group = Group.objects.create(experiment=experiment,
-                                         title="Group-update",
-                                         description="Descricao do Group-update",
-                                         experimental_protocol_id=block.id)
-            group.save()
+        # Create a subject to the experiment
+        util = UtilTests()
+        patient_mock = util.create_patient_mock(user=self.user)
 
-            # Criar um Subject para o experimento
-            util = UtilTests()
-            patient_mock = util.create_patient_mock(user=self.user)
+        subject_mock = Subject(patient=patient_mock)
+        subject_mock.save()
 
-            subject_mock = Subject(patient=patient_mock)
-            subject_mock.save()
+        subject_group = SubjectOfGroup(subject=subject_mock, group=group)
+        subject_group.save()
 
-            subject_group = SubjectOfGroup(subject=subject_mock, group=group)
-            subject_group.save()
+        group.subjectofgroup_set.add(subject_group)
+        experiment.save()
 
-            group.subjectofgroup_set.add(subject_group)
-            experiment.save()
+        # Setting the response
+        questionnaire_response = QuestionnaireResponse()
+        questionnaire_response.component_configuration = component_configuration
+        questionnaire_response.subject_of_group = subject_group
+        questionnaire_response.token_id = LIME_SURVEY_TOKEN_ID_1
+        questionnaire_response.questionnaire_responsible = self.user
+        questionnaire_response.date = datetime.datetime.now()
+        questionnaire_response.save()
 
-            # Pretend we have a response
-            questionnaire_response = QuestionnaireResponse()
-            questionnaire_response.component_configuration = component_configuration
-            questionnaire_response.subject_of_group = subject_group
-            questionnaire_response.token_id = LIME_SURVEY_TOKEN_ID_1
-            questionnaire_response.questionnaire_responsible = self.user
-            questionnaire_response.date = datetime.datetime.now()
-            questionnaire_response.save()
+        # View the responses
+        get_data = {'origin': "experiment_questionnaire"}
+        response = self.client.get(reverse('questionnaire_response_view',
+                                           args=[questionnaire_response.pk, ]), data=get_data)
 
-            # Visualiza preenchimento da Survey
-            get_data = {'origin': "experiment_questionnaire"}
-            response = self.client.get(reverse('questionnaire_response_view',
-                                               args=[questionnaire_response.pk, ]), data=get_data)
-            # We don't get any error, because the method get_questionnaire_responses called by
-            # questionnaire_response_edit simply returns an empty list of responses.
-            self.assertEqual(response.status_code, 200)
-        finally:
-            # Deleta a survey gerada no Lime Survey
-            status = self.lime_survey.delete_survey(sid)
-            self.assertEqual(status, 'OK')
+        self.assertEqual(response.status_code, 200)
 
 
 class SubjectTest(TestCase):
@@ -909,7 +913,7 @@ class SubjectTest(TestCase):
         Configura autenticacao e variaveis para iniciar cada teste
 
         """
-        print 'Set up for', self._testMethodName
+        print('Set up for', self._testMethodName)
 
         # self.user = User.objects.all().first()
         # if self.user:
@@ -930,7 +934,7 @@ class SubjectTest(TestCase):
         if isinstance(self.lime_survey.session_key, dict):
             if 'status' in self.lime_survey.session_key:
                 self.assertNotEqual(self.lime_survey.session_key['status'], 'Invalid user name or password')
-                print 'Failed to connect Lime Survey %s' % self.lime_survey.session_key['status']
+                print('Failed to connect Lime Survey %s' % self.lime_survey.session_key['status'])
 
     def test_subject_view_and_search(self):
         """
@@ -973,151 +977,275 @@ class SubjectTest(TestCase):
         self.assertEqual(response.status_code, 200)
         self.assertEqual(response.context['patients'], '')
 
-    # TODO: Reescrever este teste.
-    # Este teste nao tem funcionado desde que começamos a validar se o questionario do limesurvey
-    # tem os campos obrigatorios. A solucao seria deixar criado um questionario com os campos obrigatorios
-    # e, antes de começar a testar, remover todos os tokens e deixa-lo como inativo
-    # def test_subject(self):
-    #     """
-    #     Teste
-    #     """
-    #     # Criar um experimento mock para ser utilizado no teste
-    #     experiment = Experiment.objects.create(title="Experimento-Update",
-    #                                            description="Descricao do Experimento-Update")
-    #     experiment.save()
-    #
-    #     # Criar um grupo mock para ser utilizado no teste
-    #     group = Group.objects.create(experiment=experiment,
-    #                                  title="Group-update",
-    #                                  description="Descricao do Group-update")
-    #     group.save()
-    #
-    #     patient_mock = self.util.create_patient_mock(user=self.user)
-    #
-    #     # Cria uma survey no Lime Survey
-    #     sid = self.lime_survey.add_survey(9999, 'Questionario de teste - DjangoTests', 'en', 'G')
-    #
-    #     try:
-    #
-    #         # Cria um questionario
-    #         questionnaire = QuestionnaireConfiguration.objects.create(lime_survey_id=sid, group=group,
-    #                                                                   number_of_fills=1)
-    #         questionnaire.save()
-    #
-    #         # Cria o TimeUnit para ser utilizado nos testes com intervalo de tempo
-    #         time_unit = TimeUnit.objects.create(name='Horas')
-    #         time_unit.save()
-    #
-    #         # Abre tela de cadastro de participantes com nenhum participante cadastrado a priori
-    #         response = self.client.get(reverse('subjects', args=(group.pk,)))
-    #         self.assertEqual(response.status_code, 200)
-    #         self.assertEqual(len(response.context['subject_list']), 0)
-    #
-    #         count_before_insert_subject = SubjectOfGroup.objects.all().filter(group=group).count()
-    #         response = self.client.post(reverse('subject_insert', args=(group.pk, patient_mock.pk)))
-    #         self.assertEqual(response.status_code, 302)
-    #         count_after_insert_subject = SubjectOfGroup.objects.all().filter(group=group).count()
-    #         self.assertEqual(count_after_insert_subject, count_before_insert_subject + 1)
-    #
-    #         # Reabre a tela de cadastro de participantes - devera conter ao menos um participante
-    #         # cadastrado
-    #         response = self.client.get(reverse('subjects', args=(group.pk,)))
-    #         self.assertEqual(response.status_code, 200)
-    #         self.assertEqual(len(response.context['subject_list']), 1)
-    #
-    #         # Inserir participante ja inserido para o experimento
-    #         count_before_insert_subject = SubjectOfGroup.objects.all().filter(group=group).count()
-    #         response = self.client.post(reverse('subject_insert', args=(group.pk, patient_mock.pk)))
-    #         self.assertEqual(response.status_code, 302)
-    #         count_after_insert_subject = SubjectOfGroup.objects.all().filter(group=group).count()
-    #         self.assertEqual(count_after_insert_subject, count_before_insert_subject)
-    #
-    #         subject = Subject.objects.all().first()
-    #
-    #         # Associar participante a Survey e iniciar preenchimento
-    #         # Abrir a tela de associacao
-    #         response = self.client.get(reverse('subject_questionnaire',
-    #                                            args=[group.pk, subject.pk]))
-    #         self.assertEqual(response.status_code, 200)
-    #
-    #         # Prepara para o a associacao entre preenchimento da Survey,
-    #         # participante e experimento
-    #         response = self.client.get(reverse('subject_questionnaire_response',
-    #                                            args=[subject.pk, questionnaire.pk, ]))
-    #         self.assertEqual(response.status_code, 200)
-    #         self.assertEqual(response.context['creating'], True)
-    #
-    #         # Dados para preenchimento da Survey
-    #         self.data = {'date': '29/08/2014', 'action': 'save'}
-    #
-    #         # Inicia o preenchimento de uma Survey sem tabela de tokens iniciada
-    #         response = self.client.post(reverse('subject_questionnaire_response',
-    #                                             args=[subject.pk, questionnaire.pk, ]), self.data)
-    #         self.assertEqual(response.status_code, 200)
-    #         self.assertEqual(response.context['FAIL'], False)
-    #
-    #         # Inicia o preenchimento de uma Survey INATIVA
-    #         response = self.client.post(reverse('subject_questionnaire_response',
-    #                                             args=[subject.pk, questionnaire.pk, ]), self.data)
-    #         self.assertEqual(response.status_code, 200)
-    #         self.assertEqual(response.context['FAIL'], False)
-    #
-    #         status = self.lime_survey.activate_tokens(sid)
-    #         self.assertEqual(status, 'OK')
-    #
-    #         # Ativar survey
-    #         status = self.lime_survey.activate_survey(sid)
-    #         self.assertEqual(status, 'OK')
-    #
-    #         # Inicia o preenchimento de uma Survey NORMAL
-    #         response = self.client.post(reverse('subject_questionnaire_response',
-    #                                             args=[subject.pk, questionnaire.pk, ]), self.data)
-    #         self.assertEqual(response.status_code, 200)
-    #         self.assertEqual(response.context['FAIL'], True)
-    #
-    #         questionnaire_response = QuestionnaireResponse.objects.all().first()
-    #
-    #         # Acessa tela de atualizacao do preenchimento da Survey
-    #         response = self.client.get(reverse('questionnaire_response_edit',
-    #                                            args=[questionnaire_response.pk, ]), self.data)
-    #         self.assertEqual(response.status_code, 200)
-    #         self.assertEqual(response.context['FAIL'], None)
-    #
-    #         # Atualiza o preenchimento da survey
-    #         response = self.client.post(reverse('questionnaire_response_edit',
-    #                                             args=[questionnaire_response.pk, ]), self.data)
-    #         self.assertEqual(response.status_code, 200)
-    #         self.assertEqual(response.context['FAIL'], True)
-    #
-    #         response = self.client.get(reverse('questionnaire_response_edit',
-    #                                            args=[questionnaire_response.pk, ]), self.data)
-    #         self.assertEqual(response.status_code, 200)
-    #
-    #         # Remove preenchimento da Survey
-    #         count_before_delete_questionnaire_response = QuestionnaireResponse.objects.all().count()
-    #
-    #         self.data['action'] = 'remove'
-    #         response = self.client.post(reverse('questionnaire_response_edit',
-    #                                             args=[questionnaire_response.pk, ]), self.data)
-    #         self.assertEqual(response.status_code, 302)
-    #
-    #         count_after_delete_questionnaire_response = QuestionnaireResponse.objects.all().count()
-    #         self.assertEqual(count_before_delete_questionnaire_response - 1,
-    #                          count_after_delete_questionnaire_response)
-    #
-    #         # Remover participante associado a survey
-    #         self.data = {'action': 'remove'}
-    #         count_before_delete_subject = SubjectOfGroup.objects.all().filter(group=group).count()
-    #         response = self.client.post(reverse('subject_questionnaire', args=(group.pk, subject.pk)),
-    #                                     self.data)
-    #         self.assertEqual(response.status_code, 302)
-    #         count_after_delete_subject = SubjectOfGroup.objects.all().filter(group=group).count()
-    #         self.assertEqual(count_before_delete_subject - 1, count_after_delete_subject)
-    #
-    #     finally:
-    #         # Deleta a survey gerada no Lime Survey
-    #         status = self.lime_survey.delete_survey(sid)
-    #         self.assertEqual(status, 'OK')
+    def test_subject_view(self):
+        """
+        Test exhibition of subjects of a group
+        """
+
+        # Create a research project
+        research_project = ResearchProject.objects.create(title="Research project title",
+                                                          start_date=datetime.date.today(),
+                                                          description="Research project description")
+        research_project.save()
+
+        # Criar um experimento mock para ser utilizado no teste
+        experiment = Experiment.objects.create(title="Experimento-Update",
+                                               description="Descricao do Experimento-Update",
+                                               research_project=research_project)
+        experiment.save()
+
+        # Create the root of the experimental protocol
+        block = Block.objects.create(identification='Root',
+                                     description='Root description',
+                                     experiment=Experiment.objects.first(),
+                                     component_type='block',
+                                     type="sequence")
+        block.save()
+
+        # Using a known questionnaire at LiveSurvey to use in this test.
+        new_survey, created = Survey.objects.get_or_create(lime_survey_id=LIME_SURVEY_ID)
+
+        # Create a questionnaire
+        questionnaire = Questionnaire.objects.create(identification='Questionnaire',
+                                                     description='Questionnaire description',
+                                                     experiment=Experiment.objects.first(),
+                                                     component_type='questionnaire',
+                                                     survey=new_survey)
+        questionnaire.save()
+
+        # Include the questionnaire in the root.
+        component_configuration = ComponentConfiguration.objects.create(
+            name='ComponentConfiguration',
+            parent=block,
+            component=questionnaire
+        )
+        component_configuration.save()
+
+        # Create a mock group
+        group = Group.objects.create(experiment=experiment,
+                                     title="Group-update",
+                                     description="Description of the Group-update",
+                                     experimental_protocol_id=block.id)
+        group.save()
+
+        # Abre tela de cadastro de participantes com nenhum participante cadastrado a priori
+        response = self.client.get(reverse('subjects', args=(group.pk,)))
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(len(response.context['subject_list']), 0)
+
+        # Insert subject in the group
+        util = UtilTests()
+        patient_mock = util.create_patient_mock(user=self.user)
+
+        count_before_insert_subject = SubjectOfGroup.objects.all().filter(group=group).count()
+        response = self.client.post(reverse('subject_insert', args=(group.pk, patient_mock.pk)))
+        self.assertEqual(response.status_code, 302)
+        count_after_insert_subject = SubjectOfGroup.objects.all().filter(group=group).count()
+        self.assertEqual(count_after_insert_subject, count_before_insert_subject + 1)
+
+        # Setting the response
+        questionnaire_response = QuestionnaireResponse()
+        questionnaire_response.component_configuration = component_configuration
+        questionnaire_response.subject_of_group = SubjectOfGroup.objects.all().first()
+        questionnaire_response.token_id = LIME_SURVEY_TOKEN_ID_1
+        questionnaire_response.questionnaire_responsible = self.user
+        questionnaire_response.date = datetime.datetime.now()
+        questionnaire_response.save()
+
+        # Reabre a tela de cadastro de participantes - devera conter ao menos um participante cadastrado
+        response = self.client.get(reverse('subjects', args=(group.pk,)))
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(len(response.context['subject_list']), 1)
+
+        # Inserir participante ja inserido para o experimento
+        count_before_insert_subject = SubjectOfGroup.objects.all().filter(group=group).count()
+        response = self.client.post(reverse('subject_insert', args=(group.pk, patient_mock.pk)))
+        self.assertEqual(response.status_code, 302)
+        count_after_insert_subject = SubjectOfGroup.objects.all().filter(group=group).count()
+        self.assertEqual(count_after_insert_subject, count_before_insert_subject)
+
+    def test_questionnaire_fill(self):
+        """
+        Test of a questionnaire fill
+        """
+
+        # Create a research project
+        research_project = ResearchProject.objects.create(title="Research project title",
+                                                          start_date=datetime.date.today(),
+                                                          description="Research project description")
+        research_project.save()
+
+        # Criar um experimento mock para ser utilizado no teste
+        experiment = Experiment.objects.create(title="Experimento-Update",
+                                               description="Descricao do Experimento-Update",
+                                               research_project=research_project)
+        experiment.save()
+
+        # Create the root of the experimental protocol
+        block = Block.objects.create(identification='Root',
+                                     description='Root description',
+                                     experiment=Experiment.objects.first(),
+                                     component_type='block',
+                                     type="sequence")
+        block.save()
+
+        # Using a known questionnaires at LiveSurvey to use in this test.
+        new_survey, created = \
+            Survey.objects.get_or_create(lime_survey_id=LIME_SURVEY_ID)
+        new_survey_without_access_table, created = \
+            Survey.objects.get_or_create(lime_survey_id=LIME_SURVEY_ID_WITHOUT_ACCESS_CODE_TABLE)
+        new_survey_inactive, created = \
+            Survey.objects.get_or_create(lime_survey_id=LIME_SURVEY_ID_INACTIVE)
+        new_survey_without_identification_group, created = \
+            Survey.objects.get_or_create(lime_survey_id=LIME_SURVEY_ID_WITHOUT_IDENTIFICATION_GROUP)
+
+        # Create a questionnaire
+        questionnaire = \
+            Questionnaire.objects.create(identification='Questionnaire',
+                                         description='Questionnaire description',
+                                         experiment=Experiment.objects.first(),
+                                         component_type='questionnaire',
+                                         survey=new_survey)
+        questionnaire.save()
+
+        questionnaire_without_access_table = \
+            Questionnaire.objects.create(identification='Questionnaire',
+                                         description='Questionnaire description',
+                                         experiment=Experiment.objects.first(),
+                                         component_type='questionnaire',
+                                         survey=new_survey_without_access_table)
+        questionnaire_without_access_table.save()
+
+        questionnaire_inactive = \
+            Questionnaire.objects.create(identification='Questionnaire',
+                                         description='Questionnaire description',
+                                         experiment=Experiment.objects.first(),
+                                         component_type='questionnaire',
+                                         survey=new_survey_inactive)
+        questionnaire_inactive.save()
+
+        questionnaire_without_identification_group = \
+            Questionnaire.objects.create(identification='Questionnaire',
+                                         description='Questionnaire description',
+                                         experiment=Experiment.objects.first(),
+                                         component_type='questionnaire',
+                                         survey=new_survey_without_identification_group)
+        questionnaire_without_identification_group.save()
+
+        # Include the questionnaire in the root.
+        component_configuration = ComponentConfiguration.objects.create(
+            name='ComponentConfiguration',
+            parent=block,
+            component=questionnaire
+        )
+        component_configuration.save()
+
+        component_configuration_without_access_table = ComponentConfiguration.objects.create(
+            name='ComponentConfiguration',
+            parent=block,
+            component=questionnaire_without_access_table
+        )
+        component_configuration_without_access_table.save()
+
+        component_configuration_inactive = ComponentConfiguration.objects.create(
+            name='ComponentConfiguration',
+            parent=block,
+            component=questionnaire_inactive
+        )
+        component_configuration_inactive.save()
+
+        component_configuration_without_identification_group = ComponentConfiguration.objects.create(
+            name='ComponentConfiguration',
+            parent=block,
+            component=questionnaire_without_identification_group
+        )
+        component_configuration_without_identification_group.save()
+
+        # Create a mock group
+        group = Group.objects.create(experiment=experiment,
+                                     title="Group-update",
+                                     description="Description of the Group-update",
+                                     experimental_protocol_id=block.id)
+        group.save()
+
+        # Criar um Subject para o experimento
+        util = UtilTests()
+        patient_mock = util.create_patient_mock(user=self.user)
+
+        subject_mock = Subject(patient=patient_mock)
+        subject_mock.save()
+
+        subject_group = SubjectOfGroup(subject=subject_mock, group=group)
+        subject_group.save()
+
+        group.subjectofgroup_set.add(subject_group)
+        experiment.save()
+
+        # Dados para preenchimento da Survey
+        self.data = {'date': '29/08/2014', 'action': 'save'}
+
+        # Inicia o preenchimento de uma Survey
+        response = self.client.post(reverse('subject_questionnaire_response',
+                                            args=[group.pk, subject_mock.pk, component_configuration.pk, ]), self.data)
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(response.context['FAIL'], False)
+
+        # Inicia o preenchimento de uma Survey without access code table
+        response = self.client.post(reverse('subject_questionnaire_response',
+                                            args=[group.pk, subject_mock.pk, component_configuration_without_access_table.pk, ]), self.data)
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(response.context['FAIL'], True)
+
+        # Inicia o preenchimento de uma Survey inactive
+        response = self.client.post(reverse('subject_questionnaire_response',
+                                            args=[group.pk, subject_mock.pk, component_configuration_inactive.pk, ]), self.data)
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(response.context['FAIL'], True)
+
+        # Inicia o preenchimento de uma Survey without identification group
+        response = self.client.post(reverse('subject_questionnaire_response',
+                                            args=[group.pk, subject_mock.pk, component_configuration_without_identification_group.pk, ]), self.data)
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(response.context['FAIL'], True)
+
+        questionnaire_response = QuestionnaireResponse.objects.all().first()
+
+        # Acessa tela de atualizacao do preenchimento da Survey
+        response = self.client.get(reverse('questionnaire_response_edit',
+                                           args=[questionnaire_response.pk, ]), self.data)
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(response.context['FAIL'], None)
+
+        # Atualiza o preenchimento da survey
+        response = self.client.post(reverse('questionnaire_response_edit',
+                                            args=[questionnaire_response.pk, ]), self.data)
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(response.context['FAIL'], False)
+
+        response = self.client.get(reverse('questionnaire_response_edit',
+                                           args=[questionnaire_response.pk, ]), self.data)
+        self.assertEqual(response.status_code, 200)
+
+        # Remove preenchimento da Survey
+        count_before_delete_questionnaire_response = QuestionnaireResponse.objects.all().count()
+
+        self.data['action'] = 'remove'
+        response = self.client.post(reverse('questionnaire_response_edit',
+                                            args=[questionnaire_response.pk, ]), self.data)
+        self.assertEqual(response.status_code, 302)
+
+        count_after_delete_questionnaire_response = QuestionnaireResponse.objects.all().count()
+        self.assertEqual(count_before_delete_questionnaire_response - 1,
+                         count_after_delete_questionnaire_response)
+
+        # Remover participante associado a survey
+        self.data = {'action': 'remove'}
+        count_before_delete_subject = SubjectOfGroup.objects.all().filter(group=group).count()
+        response = self.client.post(reverse('subject_questionnaire', args=(group.pk, subject_mock.pk)),
+                                    self.data)
+        self.assertEqual(response.status_code, 302)
+        count_after_delete_subject = SubjectOfGroup.objects.all().filter(group=group).count()
+        self.assertEqual(count_before_delete_subject - 1, count_after_delete_subject)
 
     # def test_questionaire_view(self):
     #     """ Testa a visualizacao completa do questionario respondido no Lime Survey"""
@@ -1247,7 +1375,7 @@ class SubjectTest(TestCase):
         self.assertEqual(response.status_code, 200)
 
         # Anexar arquivo
-        consent_form_file = SimpleUploadedFile('quiz/consent_form.txt', 'rb')
+        consent_form_file = SimpleUploadedFile('quiz/consent_form.txt', b'rb')
         self.data = {'action': 'upload', 'consent_form': consent_form_file}
         # url = reverse('upload_file', args=[group.pk, subject_mock.pk])
         # request = self.factory.post(url, self.data)d
@@ -1412,9 +1540,9 @@ class ResearchProjectTest(TestCase):
         self.assertContains(response, "test_keyword")  # Should be suggested
 
         # Add the suggested keyword
-        first_quote_index = response.content.index('"')
-        second_quote_index = response.content.index('"', first_quote_index + 1)
-        url = response.content[first_quote_index+1:second_quote_index] + "/"
+        first_quote_index = response.content.index(b'"')
+        second_quote_index = response.content.index(b'"', first_quote_index + 1)
+        url = response.content[first_quote_index+1:second_quote_index] + b"/"
         response = self.client.get(url)
         self.assertEqual(response.status_code, 302)
         self.assertEqual(research_project2.keywords.count(), 3)

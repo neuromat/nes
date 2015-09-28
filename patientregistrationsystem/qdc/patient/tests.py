@@ -1,19 +1,30 @@
 # -*- coding: UTF-8 -*-
-from datetime import date
+from datetime import date, datetime
 
 from django.shortcuts import get_object_or_404
 from django.test import TestCase, Client
 from django.http import Http404
 from django.core.files.uploadedfile import SimpleUploadedFile
 from django.test.client import RequestFactory
+from django.contrib.messages.api import MessageFailure
+# from django.utils.translation import ugettext as _
 
 from patient.models import ClassificationOfDiseases, MedicalRecordData, Diagnosis, ComplementaryExam, ExamFile, \
-    Gender, Schooling, Patient, AlcoholFrequency, AlcoholPeriod, AmountCigarettes
+    Gender, Schooling, Patient, AlcoholFrequency, AlcoholPeriod, AmountCigarettes, QuestionnaireResponse
 from patient.views import medical_record_view, medical_record_update, diagnosis_create, \
     medical_record_create_diagnosis_create, exam_create, exam_view, \
-    patient_update, patient_view, restore_patient, reverse
+    patient_update, patient_view, restore_patient, reverse, check_limesurvey_access
 from custom_user.models import User
+from experiment.models import Experiment, Group, Subject, \
+    QuestionnaireResponse as ExperimentQuestionnaireResponse, SubjectOfGroup, ComponentConfiguration, ResearchProject, \
+    Questionnaire, Block
 from patient.validation import CPF
+from survey.models import Survey
+
+from django.conf import settings
+from survey.abc_search_engine import Questionnaires
+
+from django.contrib.messages.storage.fallback import FallbackStorage
 
 # Constantes para testes de User
 USER_EDIT = 'user_edit'
@@ -30,9 +41,22 @@ PATIENT_SEARCH = 'patient_search'
 PATIENT_VIEW = 'patient_view'
 PATIENT_NEW = 'patient_new'
 PATIENT_EDIT = 'patient_edit'
+QUESTIONNAIRE_NEW = 'questionnaire_response_create'
+QUESTIONNAIRE_EDIT = 'questionnaire_response_edit'
+QUESTIONNAIRE_VIEW = 'questionnaire_response_view'
+
+# constant to test questionnaires
+CLEAN_QUESTIONNAIRE = 959774  # - questionnaire incomplete (CLEAN_QUESTIONNAIRE)
+FILLED_QUESTIONNAIRE = 0  # - questionnaire completed filled (FILLED_QUESTIONNAIRE)
+NO_TOKEN_TABLE = 0  # - questionnaire with error: tokens table not started (NO_TOKEN_TABLE)
+QUESTIONNAIRE_NOT_ACTIVE = 0  # - questionnaire with error: questionnaire not activated (QUESTIONNAIRE_NOT_ACTIVE)
+MISSING_STANDARD_FIEDS = 0  # - questionnaire with error: missing standard fields (MISSING_STANDARD_FIEDS)
+TOKEN_NOT_GENERATED = 0  # - questionnaire with error: token not generated (TOKEN_NOT_GENERATED)
+SURVEY_INVALID = 0  # - questionnaire with error: invalid survey (SURVEY_INVALID)
+LIME_SURVEY_TOKEN_ID_1 = 1
 
 
-class UtilTests():
+class UtilTests:
 
     def create_patient_mock(self, name='Pacient Test', user=None):
         """ Cria um participante para ser utilizado durante os testes """
@@ -76,6 +100,30 @@ class UtilTests():
         diagnosis.save()
 
         return diagnosis
+
+    def create_survey_mock(self, survey_id, is_initial_evaluation):
+        survey = Survey(lime_survey_id=survey_id, is_initial_evaluation=is_initial_evaluation)
+        survey.save()
+
+        return survey
+
+    def create_token_id_mock(self, patient, survey):
+        questionnaire_lime_survey = Questionnaires()
+        result = questionnaire_lime_survey.add_participant(survey.lime_survey_id, patient.name, '',
+                                                           patient.email)
+        questionnaire_lime_survey.release_session_key()
+
+        return result['token_id']
+
+    def create_response_survey_mock(self, user, patient, survey, token_id=None):
+        if token_id is None:
+            token_id = self.create_token_id_mock(patient, survey)
+
+        questionnaire_response = QuestionnaireResponse(patient=patient, survey=survey, token_id=token_id,
+                                                       questionnaire_responsible=user)
+        questionnaire_response.save()
+
+        return questionnaire_response
 
 
 class CpfValidationTest(TestCase):
@@ -224,7 +272,7 @@ class PatientFormValidation(TestCase):
 
         response = self.client.post(reverse(PATIENT_NEW), self.data)
         self.assertEqual(response.status_code, 200)
-        self.assertFormError(response, "patient_form", "cpf", u'CPF ' + cpf + u' n\xe3o \xe9 v\xe1lido')
+        self.assertFormError(response, "patient_form", "cpf", 'CPF ' + cpf + ' n\xe3o \xe9 v\xe1lido')
 
     def test_patient_empty_cpf(self):
         """
@@ -287,10 +335,56 @@ class PatientFormValidation(TestCase):
 
         self.assertEqual(Patient.objects.filter(name=name).count(), 1)
 
+    # def test_patient_telephone_create(self):
+    #     """
+    #     Testa inclusao de participante com telefone
+    #     """
+    #
+    #     self.data['telephone_set-0-number'] = '(11)4004-2929'
+    #     self.data['telephone_set-0-note'] = 'test telephone 0'
+    #     self.data['telephone_set-0-type'] = 'MO'
+    #     #self.data['telephone_set-0-DELETE'] = 'off'
+    #     self.data['telephone_set-0-id'] = '1'
+    #     #self.data['telephone_set-0-patient'] = ''
+    #
+    #
+    #     name = self._testMethodName
+    #     self.data['name'] = name
+    #
+    #     # "This data is required for the ManagementForm. This form is used by the formset to manage the collection of
+    #     # forms contained in the formset."
+    #     #self.fill_management_form()
+    #
+    #     self.data['telephone_set-INITIAL_FORMS'] = '0'
+    #     self.data['telephone_set-MAX_NUM_FORMS'] = '1000'
+    #     self.data['telephone_set-TOTAL_FORMS'] = '1'
+    #
+    #     self.client.post(reverse(PATIENT_NEW), self.data, follow=True)
+    #
+    #     self.assertEqual(Patient.objects.filter(name=name).count(), 1)
+
     def fill_management_form(self):
         self.data['telephone_set-TOTAL_FORMS'] = '3'
         self.data['telephone_set-INITIAL_FORMS'] = '0'
         self.data['telephone_set-MAX_NUM_FORMS'] = ''
+
+    # def test_patient_update_create(self):
+    #     """
+    #     Testa inclusao de participante com campos obrigatorios
+    #     """
+    #     name = self._testMethodName
+    #     self.data['name'] = name
+    #
+    #     # "This data is required for the ManagementForm. This form is used by the formset to manage the collection of
+    #     # forms contained in the formset."
+    #     self.fill_management_form()
+    #
+    #     self.client.post(reverse(PATIENT_NEW), self.data, follow=True)
+    #     self.assertEqual(Patient.objects.filter(name=name).count(), 1)
+    #
+    #     self.data['currentTab'] = 0
+    #     self.client.post(reverse(PATIENT_NEW), self.data, follow=True)
+    #     self.assertEqual(Patient.objects.filter(name=name).count(), 1)
 
     def test_patient_create(self):
         """
@@ -344,7 +438,7 @@ class PatientFormValidation(TestCase):
 
         response = self.client.post(reverse(PATIENT_NEW), self.data, follow=True)
         self.assertEqual(Patient.objects.filter(name=name).count(), 1)
-        self.assertNotContains(response, u'Classe Social não calculada')
+        self.assertNotContains(response, 'Classe Social não calculada')
 
         # Prepare to test social demographic data tab
         patient_to_update = Patient.objects.filter(name=name).first()
@@ -355,8 +449,8 @@ class PatientFormValidation(TestCase):
         response = self.client.post(
             reverse('patient_edit', args=(patient_to_update.pk,)), self.data, follow=True)
         self.assertEqual(Patient.objects.filter(name=name).count(), 1)
-        self.assertContains(response, u'Dados sociodemográficos gravados com sucesso.')
-        self.assertNotContains(response, u'Classe Social não calculada')
+        self.assertContains(response, 'Dados sociodemográficos gravados com sucesso.')
+        self.assertNotContains(response, 'Classe Social não calculada')
 
         # Error case
         self.data.pop('wash_machine')
@@ -367,7 +461,7 @@ class PatientFormValidation(TestCase):
         response = self.client.post(
             reverse('patient_edit', args=(patient_to_update.pk,)), self.data, follow=True)
         self.assertEqual(Patient.objects.filter(name=name).count(), 1)
-        self.assertContains(response, u'Classe Social não calculada')
+        self.assertContains(response, 'Classe Social não calculada')
 
     def fill_social_history_data(self):
         amount_cigarettes = AmountCigarettes.objects.create(name='Menos de 1 maço')
@@ -410,7 +504,7 @@ class PatientFormValidation(TestCase):
         response = self.client.post(
             reverse('patient_edit', args=(patient_to_update.pk,)), self.data, follow=True)
         self.assertEqual(Patient.objects.filter(name=name).count(), 1)
-        self.assertContains(response, u'História social gravada com sucesso.')
+        self.assertContains(response, 'História social gravada com sucesso.')
 
     def test_patient_valid_email(self):
         """
@@ -680,7 +774,8 @@ class MedicalRecordFormValidation(TestCase):
         Configura autenticacao e variaveis para iniciar cada teste
 
         """
-        # print 'Set up for', self._testMethodName
+
+        # print('Set up for', self._testMethodName)
 
         self.user = User.objects.create_user(username=USER_USERNAME, email='test@dummy.com', password=USER_PWD)
         self.user.is_staff = True
@@ -701,7 +796,7 @@ class MedicalRecordFormValidation(TestCase):
         self.data['date'] = '10/05/2005'
 
         if test_file:
-            file_to_test = SimpleUploadedFile('patient/exam_file.txt', 'rb')
+            file_to_test = SimpleUploadedFile('patient/exam_file.txt', b'rb')
             self.data['content'] = file_to_test
 
     def test_diagnosis_create_and_delete(self):
@@ -776,6 +871,34 @@ class MedicalRecordFormValidation(TestCase):
         except Http404:
             pass
 
+    def test_medical_record_view(self):
+
+        patient_mock = self.util.create_patient_mock(user=self.user)
+        cid10_mock = self.util.create_cid10_mock()
+        medical_record_mock = self.util.create_medical_record_mock(self.user, patient_mock)
+
+        response = self.client.get(reverse(PATIENT_VIEW, args=[patient_mock.pk]) + "?currentTab=3")
+        self.assertEqual(response.status_code, 200)
+        # self.assertEqual(medical_record_mock.pk, response.context['medical_record'])
+
+    def test_medical_record_update(self):
+
+        patient_mock = self.util.create_patient_mock(user=self.user)
+        medical_record_mock = self.util.create_medical_record_mock(self.user, patient_mock)
+
+        response = self.client.get(reverse(PATIENT_EDIT, args=[patient_mock.pk]) + "?currentTab=3")
+        self.assertEqual(response.status_code, 200)
+
+        self.data['action'] = 'save'
+        self.data['currentTab'] = 3
+        self.data['nextTab'] = ""
+        self.data['nextTabURL'] = ""
+        url = reverse(PATIENT_EDIT, args=[patient_mock.pk])
+        response = self.client.post(url + "?currentTab=3", self.data, follow=True)
+        self.assertEqual(response.status_code, 200)
+
+        # self.assertEqual(medical_record_mock.pk, response.context['medical_record'])
+
     def test_medical_record_edit(self):
         """
         Testar a edição de avaliação medica
@@ -809,6 +932,34 @@ class MedicalRecordFormValidation(TestCase):
 
         self.data['action'] = 'finish'
         url = reverse('medical_record_edit', args=(patient_mock.pk, medical_record_mock.pk,))
+        response = self.client.post(url + "?status=edit", self.data)
+        self.assertEqual(response.status_code, 302)
+
+        # diagnosis update
+        diagnosis_mock = self.util.create_diagnosis_mock(medical_record_mock)
+        diagnosis_id = diagnosis_mock.pk  # classification_of_diseases_id
+
+        count_diagnosis = Diagnosis.objects.all().count()
+        self.data['action'] = 'detail-' + str(diagnosis_id)
+        self.data['description-' + str(diagnosis_id)] = diagnosis_mock.classification_of_diseases.description
+        self.data['date-' + str(diagnosis_id)] = '21/02/2015'
+        url = reverse('medical_record_edit', args=(patient_mock.pk, medical_record_mock.pk))
+        response = self.client.post(url + "?status=edit", self.data)
+
+        self.assertEqual(response.status_code, 302)
+        self.assertEqual(Diagnosis.objects.all().count(), count_diagnosis)
+        self.assertEqual(Diagnosis.objects.filter(pk=diagnosis_id, date='2015-02-21').count(), 1)
+
+        # incorrect date
+        self.data['date-' + str(diagnosis_id)] = '99/02/2015'
+        url = reverse('medical_record_edit', args=(patient_mock.pk, medical_record_mock.pk))
+        response = self.client.post(url + "?status=edit", self.data)
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(Diagnosis.objects.filter(pk=diagnosis_id, date='2015-02-21').count(), 1)
+
+        # no date
+        self.data['date-' + str(diagnosis_id)] = ''
+        url = reverse('medical_record_edit', args=(patient_mock.pk, medical_record_mock.pk))
         response = self.client.post(url + "?status=edit", self.data)
         self.assertEqual(response.status_code, 302)
 
@@ -994,3 +1145,357 @@ class MedicalRecordFormValidation(TestCase):
         response = self.client.post(reverse('cid10_search'), self.data)
         self.assertEqual(response.status_code, 200)
         self.assertEqual(response.context['cid_10_list'], '')
+
+
+class QuestionnaireFormValidation(TestCase):
+    # '''
+    # For this test to be executed, it is necessary to
+    # have the following survey on LimeSurvey:
+    #
+    # - questionnaire with no answers (CLEAN_QUESTIONNAIRE)
+    # - questionnaire incomplete (INCOMPLETE_QUESTIONNAIRE)
+    # - questionnaire completed filled (FILLED_QUESTIONNAIRE)
+    # - questionnaire with error: tokens table not started (NO_TOKEN_TABLE)
+    # - questionnaire with error: questionnaire not activated (QUESTIONNAIRE_NOT_ACTIVE)
+    # - questionnaire with error: missing standard fields (MISSING_STANDARD_FIEDS)
+    # - questionnaire with error: token not generated (TOKEN_NOT_GENERATED)
+    # - questionnaire with error: invalid survey (SURVEY_INVALID)
+    # '''
+
+    user = ''
+    data = {}
+    util = UtilTests()
+
+    def setUp(self):
+        # """
+        # Configure authentication and variables to start each test
+        #
+        # """
+        # print('Set up for', self._testMethodName)
+
+        self.user = User.objects.create_user(username=USER_USERNAME, email='test@dummy.com', password=USER_PWD)
+        self.user.is_staff = True
+        self.user.is_superuser = True
+        self.user.save()
+
+        self.factory = RequestFactory()
+
+        logged = self.client.login(username=USER_USERNAME, password=USER_PWD)
+        self.assertEqual(logged, True)
+
+    # def fill_questionnaire_record_partial(self, test_file=True):
+    #     self.data['description'] = 'Hemograma'
+    #     self.data['doctor'] = 'Dr Medico'
+    #     self.data['exam_site'] = 'Hospital'
+    #     self.data['doctor_register'] = '1111'
+    #     self.data['action'] = 'upload'
+    #     self.data['date'] = '10/05/2005'
+    #
+    #
+    # def fill_questionnaire_record_complete(self, test_file=True):
+    #     self.data['description'] = 'Hemograma'
+    #     self.data['doctor'] = 'Dr Medico'
+    #     self.data['exam_site'] = 'Hospital'
+    #     self.data['doctor_register'] = '1111'
+    #     self.data['action'] = 'upload'
+    #     self.data['date'] = '10/05/2005'
+
+    def test_entrance_evaluation_response_view(self):
+        # """
+        # Test list of entrance evaluation
+        # of the entrance evaluation questionnaire type
+        # """
+        patient_mock = self.util.create_patient_mock(name=self._testMethodName, user=self.user)
+
+        response = self.client.get(reverse(PATIENT_VIEW, args=[patient_mock.pk]) + "?currentTab=4")
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(response.context['patient_questionnaires_data_list'], [])
+
+        # LimeSurvey system not available
+        settings.LIMESURVEY['URL_API'] = 'http://surveys.numec.prp.usp.br/'  # with error
+        request = self.factory.get(reverse(PATIENT_VIEW, args=[patient_mock.pk]) + "?currentTab=4")
+        request.user = self.user
+
+        # this was done in order to error messages can be "presented"
+        setattr(request, 'session', 'session')
+        messages = FallbackStorage(request)
+        setattr(request, '_messages', messages)
+
+        response = patient_view(request, patient_mock.pk)
+        self.assertEqual(response.status_code, 200)
+
+        settings.LIMESURVEY['URL_API'] = 'http://survey.numec.prp.usp.br/'  # return to correct url
+
+        # new filling - creating one survey - no responses
+        survey_mock = self.util.create_survey_mock(CLEAN_QUESTIONNAIRE, True)
+
+        response = self.client.get(reverse(PATIENT_VIEW, args=[patient_mock.pk]) + "?currentTab=4")
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(len(response.context['patient_questionnaires_data_list']), 1)
+        self.assertEqual(response.context['patient_questionnaires_data_list'][0]['survey_id'], survey_mock.pk)
+        self.assertEqual(response.context['patient_questionnaires_data_list'][0]['limesurvey_id'],
+                         survey_mock.lime_survey_id)
+        self.assertEqual(len(response.context['patient_questionnaires_data_list'][0]['questionnaire_responses']), 0)
+
+        # including a new survey response...
+        response_survey_mock = self.util.create_response_survey_mock(self.user, patient_mock, survey_mock)
+        response = self.client.get(reverse(PATIENT_VIEW, args=[patient_mock.pk]) + "?currentTab=4")
+        self.assertEqual(response.status_code, 200)
+
+        self.assertEqual(len(response.context['patient_questionnaires_data_list']), 1)
+        entrance_evaluation = response.context['patient_questionnaires_data_list'][0]
+        self.assertEqual(len(entrance_evaluation['questionnaire_responses']), 1)
+        response_survey = entrance_evaluation['questionnaire_responses'][0]['questionnaire_response']
+        self.assertEqual(response_survey.token_id, int(response_survey_mock.token_id))
+
+        completed = entrance_evaluation['questionnaire_responses'][0]['completed']
+        self.assertTrue(not completed)  # questionnaire is not completed
+
+    def test_check_limesurvey_availability(self):
+        # """
+        # Test to see if LimeSurvey is available under circumstances
+        # """
+
+        patient_mock = self.util.create_patient_mock(name=self._testMethodName, user=self.user)
+
+        request = self.factory.get(reverse(PATIENT_VIEW, args=[patient_mock.pk]) + "?currentTab=4")
+        request.user = self.user
+
+        # test limesurvey available
+        surveys = Questionnaires()
+
+        self.assertTrue(check_limesurvey_access(request, surveys))
+
+        surveys.release_session_key()
+
+        # test limesurvey not available
+        settings.LIMESURVEY['URL_API'] = 'http://surveys.numec.prp.usp.br/'  # with error
+
+        surveys = Questionnaires()
+
+        with self.assertRaises(MessageFailure):
+            check_limesurvey_access(request, surveys)
+
+        surveys.release_session_key()
+
+        settings.LIMESURVEY['URL_API'] = 'http://survey.numec.prp.usp.br/'  # without error
+
+    def test_entrance_evaluation_response_create(self):
+        # """
+        # Test inclusion of questionnaire response to a clear survey
+        # of the type: entrance evaluation questionnaire
+        # """
+        # create mock patient, questionnaire
+        patient_mock = self.util.create_patient_mock(name=self._testMethodName, user=self.user)
+        survey_mock = self.util.create_survey_mock(CLEAN_QUESTIONNAIRE, True)
+
+        self.data['date'] = '01/09/2014'
+        # self.data['questionnaire_responsible'] = self.user
+        self.data['action'] = 'save'
+        self.data['initial-date'] = '2015-09-02'
+
+        url = reverse(QUESTIONNAIRE_NEW, args=(patient_mock.pk, survey_mock.pk,))
+        response = self.client.post(url + "?origin=subject", self.data, follow=True)
+        self.assertEqual(response.status_code, 200)
+
+        # # error: "Preenchimento não disponível - Tabela de tokens não iniciada"
+        # survey_mock = self.util.create_survey_mock(NO_TOKEN_TABLE, True)
+        # self.data['action'] = 'save'
+        # url = reverse(QUESTIONNAIRE_NEW, args=(patient_mock.pk, survey_mock.pk,))
+        # response = self.client.post(url + "?origin=subject", self.data)
+        # self.assertEqual(response.status_code, 404)
+
+        # # error: "Preenchimento não disponível - Questionário não está ativo"
+        # survey_mock = self.util.create_survey_mock(QUESTIONNAIRE_NOT_ACTIVE, True)
+        #
+        # # error: "Preenchimento não disponível - Questionário não contém campos padronizados"
+        # survey_mock = self.util.create_survey_mock(MISSING_STANDARD_FIEDS, True)
+        #
+        # # ??? error: "Falha ao gerar token para responder questionário. Verifique se o questionário está ativo" ????
+        # survey_mock = self.util.create_survey_mock(TOKEN_NOT_GENERATED, True)
+        #
+        # # error: Questionnaire response date is not valid
+        # survey_mock = self.util.create_survey_mock(CLEAN_QUESTIONNAIRE, True)
+        # self.data['date'] = '99/09/2014'
+        #
+        # # error: Questionnaire response survey_id is not valid
+        # survey_mock = self.util.create_survey_mock(SURVEY_INVALID, True)
+        #
+        # # error: Questionnaire response patient_id is not valid
+        # survey_mock = self.util.create_survey_mock(CLEAN_QUESTIONNAIRE, True)
+        #
+        #
+        # # correct: created a new response
+        # survey_mock = self.util.create_survey_mock(CLEAN_QUESTIONNAIRE, True)
+        #
+        #
+        # # error: Questionnaire response already created
+        # survey_mock = self.util.create_survey_mock(FILLED_QUESTIONNAIRE, True)
+
+    def test_entrance_evaluation_response_update(self):
+        # """
+        # Test update of questionnaire response to a clear survey
+        # of the type: entrance evaluation questionnaire
+        # """
+        # create mock patient, questionnaire
+        patient_mock = self.util.create_patient_mock(name=self._testMethodName, user=self.user)
+        survey_mock = self.util.create_survey_mock(CLEAN_QUESTIONNAIRE, True)
+        response_survey_mock = self.util.create_response_survey_mock(self.user, patient_mock, survey_mock, 12)
+
+        # workaround because reverse is getting experiment url instead of patient
+        url1 = reverse(QUESTIONNAIRE_EDIT, args=[response_survey_mock.pk], current_app='patient')
+        url2 = url1.replace('experiment', 'patient')
+
+        response = self.client.get(url2 + "?origin=subject&status=edit")
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(response_survey_mock.token_id, response.context["questionnaire_response"].token_id)
+
+        self.data['action'] = 'save'
+        response = self.client.post(url2 + "?origin=subject&status=edit", self.data, follow=True)
+        self.assertEqual(response.status_code, 200)
+
+    def test_entrance_evaluation_response_delete(self):
+        # """
+        # Test delete from 2 views: update and view
+        # of the type: entrance evaluation questionnaire
+        # """
+        # create mock patient, questionnaire
+        patient_mock = self.util.create_patient_mock(name=self._testMethodName, user=self.user)
+        survey_mock = self.util.create_survey_mock(CLEAN_QUESTIONNAIRE, True)
+        response_survey_mock = self.util.create_response_survey_mock(self.user, patient_mock, survey_mock)
+
+        # delete questionnaire response when it is in mode
+        url1 = reverse(QUESTIONNAIRE_VIEW, args=[response_survey_mock.pk], current_app='patient')
+        url2 = url1.replace('experiment', 'patient')
+        self.data['action'] = 'remove'
+        response = self.client.post(url2 + "?origin=subject&status=edit", self.data, follow=True)
+        self.assertEqual(response.status_code, 200)
+
+        # workaround because reverse is getting experiment url instead of patient
+        url1 = reverse(QUESTIONNAIRE_EDIT, args=[response_survey_mock.pk], current_app='patient')
+        url2 = url1.replace('experiment', 'patient')
+
+        self.data['action'] = 'remove'
+        response = self.client.post(url2 + "?origin=subject&status=edit", self.data, follow=True)
+        self.assertEqual(response.status_code, 404)  # error - response already deleted
+
+        response_survey_mock = self.util.create_response_survey_mock(self.user, patient_mock, survey_mock)
+        # workaround because reverse is getting experiment url instead of patient
+        url1 = reverse(QUESTIONNAIRE_EDIT, args=[response_survey_mock.pk], current_app='patient')
+        url2 = url1.replace('experiment', 'patient')
+
+        self.data['action'] = 'remove'
+        response = self.client.post(url2 + "?origin=subject&status=edit", self.data, follow=True)
+        self.assertEqual(response.status_code, 200)  # now it is deleted
+
+    def test_entrance_ev_response_complete(self):
+        # """
+        # Test view of questionnaire response when questionnaire is complete
+        # of the type: entrance evaluation questionnaire
+        # """
+        # create mock patient, questionnaire
+        patient_mock = self.util.create_patient_mock(name=self._testMethodName, user=self.user)
+        survey_mock = self.util.create_survey_mock(CLEAN_QUESTIONNAIRE, True)
+        response_survey_mock = self.util.create_response_survey_mock(self.user, patient_mock, survey_mock, 2)
+
+        url1 = reverse(QUESTIONNAIRE_VIEW, args=[response_survey_mock.pk], current_app='patient')
+        url2 = url1.replace('experiment', 'patient')
+        response = self.client.get(url2 + "?origin=subject&status=edit")
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(response_survey_mock.token_id, response.context["questionnaire_response"].token_id)
+        self.assertEqual(len(response.context["questionnaire_responses"]), 1)
+
+    def test_experiment_response_view(self):
+        """ Testa a visualizacao completa do questionario respondido no Lime Survey"""
+
+        # Create a research project
+        research_project = ResearchProject.objects.create(title="Research project title",
+                                                          start_date=date.today(),
+                                                          description="Research project description")
+        research_project.save()
+
+        # Criar um experimento mock para ser utilizado no teste
+        experiment = Experiment.objects.create(title="Experimento-Update",
+                                               description="Descricao do Experimento-Update",
+                                               research_project=research_project)
+        experiment.save()
+
+        # Create the root of the experimental protocol
+        block = Block.objects.create(identification='Root',
+                                     description='Root description',
+                                     experiment=Experiment.objects.first(),
+                                     component_type='block',
+                                     type="sequence")
+        block.save()
+
+        # Create a quesitonnaire at LiveSurvey to use in this test.
+        survey_title = 'Questionario de teste - DjangoTests'
+
+        lime_survey = Questionnaires()
+        sid = lime_survey.add_survey(99999, survey_title, 'en', 'G')
+        lime_survey.release_session_key()
+
+        try:
+            new_survey, created = Survey.objects.get_or_create(lime_survey_id=sid,
+                                                               is_initial_evaluation=False)  # Create a questionnaire
+            questionnaire = Questionnaire.objects.create(identification='Questionnaire',
+                                                         description='Questionnaire description',
+                                                         experiment=Experiment.objects.first(),
+                                                         component_type='questionnaire',
+                                                         survey=new_survey)
+            questionnaire.save()
+
+            # Include the questionnaire in the root.
+            component_configuration = ComponentConfiguration.objects.create(
+                name='ComponentConfiguration',
+                parent=block,
+                component=questionnaire
+            )
+            component_configuration.save()
+
+            # Criar um grupo mock para ser utilizado no teste
+            group = Group.objects.create(experiment=experiment,
+                                         title="Group-update",
+                                         description="Descricao do Group-update",
+                                         experimental_protocol_id=block.id)
+            group.save()
+
+            # Criar um Subject para o experimento
+            patient_mock = self.util.create_patient_mock(user=self.user)
+
+            subject_mock = Subject(patient=patient_mock)
+            subject_mock.save()
+
+            subject_group = SubjectOfGroup(subject=subject_mock, group=group)
+            subject_group.save()
+
+            group.subjectofgroup_set.add(subject_group)
+            # experiment.save()
+
+            # Pretend we have a response
+            questionnaire_response = ExperimentQuestionnaireResponse()
+            questionnaire_response.component_configuration = component_configuration
+            questionnaire_response.subject_of_group = subject_group
+            questionnaire_response.token_id = LIME_SURVEY_TOKEN_ID_1
+            questionnaire_response.questionnaire_responsible = self.user
+            questionnaire_response.date = datetime.now()
+            questionnaire_response.save()
+
+            # Visualiza preenchimento da Survey
+            self.data['currentTab'] = 4
+
+            url = reverse(PATIENT_VIEW, args=[patient_mock.pk, ])
+
+            response = self.client.get(url + "?currentTab=4", data=self.data)
+            # We don't get any error, because the method get_questionnaire_responses called by
+            # questionnaire_response_edit simply returns an empty list of responses.
+            self.assertEqual(response.status_code, 200)
+            self.assertEqual(len(response.context['patient_questionnaires_data_list']), 0)  # no entrance evaluation
+            self.assertEqual(len(response.context['questionnaires_data']), 1)  # experiment questionnaire
+
+        finally:
+            # Deleta a survey gerada no Lime Survey
+            lime_survey = Questionnaires()
+            status = lime_survey.delete_survey(sid)
+            lime_survey.release_session_key()
+            self.assertEqual(status, 'OK')

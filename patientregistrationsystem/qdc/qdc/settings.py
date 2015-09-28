@@ -43,9 +43,10 @@ INSTALLED_APPS = (
     'django.contrib.staticfiles',
     'django_jenkins',
     'simple_history',
-    'cep',
+    #'cep',
     'quiz.templatetags.qdc_tags',
-    'south'
+    'jsonrpc_requests',
+    # 'south'
 )
 
 PROJECT_APPS = (
@@ -54,6 +55,7 @@ PROJECT_APPS = (
     'custom_user',
     'experiment',
     'survey',
+    'cep',
 )
 
 INSTALLED_APPS += PROJECT_APPS
@@ -107,8 +109,8 @@ LANGUAGE_CODE = 'pt-br'
 #LANGUAGE_CODE = 'en'
 
 LANGUAGES = (
-    ('pt-br', u'Português'),
-    ('en', u'English'),
+    ('pt-br', 'Português'),
+    ('en', 'English'),
 )
 
 #os.path.join(BASE_DIR, 'locale'),
@@ -144,6 +146,6 @@ MEDIA_URL = '/media/'
 VERSION = '0.3.0-DEV'
 
 try:
-    from settings_local import *
+    from .settings_local import *
 except ImportError:
     pass

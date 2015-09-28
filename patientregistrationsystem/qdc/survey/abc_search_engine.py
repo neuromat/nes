@@ -1,14 +1,12 @@
-__author__ = ''
+# coding=utf-8
 
-import pyjsonrpc
+from base64 import b64decode, b64encode
+from jsonrpc_requests import Server, TransportError
 from django.conf import settings
 from abc import ABCMeta, abstractmethod
-import base64
 
 
-class ABCSearchEngine:
-    __metaclass__ = ABCMeta
-
+class ABCSearchEngine(metaclass=ABCMeta):
     session_key = None
     server = None
 
@@ -16,10 +14,13 @@ class ABCSearchEngine:
         self.get_session_key()
 
     def get_session_key(self):
-        self.server = pyjsonrpc.HttpClient(settings.LIMESURVEY['URL_API'] + "/index.php/admin/remotecontrol")
+
+        self.server = Server(settings.LIMESURVEY['URL_API'] + '/index.php/admin/remotecontrol')
+
         try:
             self.session_key = self.server.get_session_key(settings.LIMESURVEY['USER'], settings.LIMESURVEY['PASSWORD'])
-        except:
+            self.session_key = None if isinstance(self.session_key, dict) else self.session_key
+        except TransportError:
             self.session_key = None
 
     def release_session_key(self):
@@ -55,7 +56,7 @@ class ABCSearchEngine:
         list_survey = self.server.list_surveys(self.session_key, None)
 
         try:
-            survey = (survey for survey in list_survey if survey['sid'] == sid).next()
+            survey = next((survey for survey in list_survey if survey['sid'] == sid))
         except StopIteration:
             survey = None
         return survey
@@ -64,7 +65,7 @@ class ABCSearchEngine:
     def add_participant(self, sid, firstname, lastname, email):
         """adiciona participante ao questionario e retorna informacao do mesmo incluindo o sid"""
 
-        participant_data = {'email': email, 'firstname': firstname, 'lastname': lastname}
+        participant_data = {'email': '', 'firstname': '', 'lastname': ''}
 
         participant_data_result = self.server.add_participants(
             self.session_key,
@@ -129,13 +130,13 @@ class ABCSearchEngine:
 
         return result
 
-    @abstractmethod
-    def set_survey_properties(self, sid, prop):
-        """Configura uma determinada propriedade de um questionario"""
-
-        result = self.server.set_survey_properties(self.session_key, sid, {'method': prop})
-
-        return result.get(prop)
+    # @abstractmethod
+    # def set_survey_properties(self, sid, prop):
+    #     """Configura uma determinada propriedade de um questionario"""
+    #
+    #     result = self.server.set_survey_properties(self.session_key, sid, {'method': prop})
+    #
+    #     return result.get(prop)
 
     @abstractmethod
     def activate_survey(self, sid):
@@ -192,34 +193,34 @@ class ABCSearchEngine:
     def get_responses_by_token(self, sid, token, language):
 
         responses = self.server.export_responses_by_token(self.session_key, sid, 'csv', token, language, 'complete')
-        responses_txt = base64.b64decode(responses)
+        responses_txt = b64decode(responses)
 
         return responses_txt
 
-    @abstractmethod
-    def insert_group(self, sid, groups_data, format_import_file):
-        groups_data_b64 = base64.b64encode(groups_data)
-        result = self.server.import_group(self.session_key, sid, groups_data_b64,
-                                          format_import_file)  # format_import_file (lsg | csv)
+    # @abstractmethod
+    # def insert_group(self, sid, groups_data, format_import_file):
+    #     groups_data_b64 = b64encode(groups_data)
+    #     result = self.server.import_group(self.session_key, sid, groups_data_b64,
+    #                                       format_import_file)  # format_import_file (lsg | csv)
+    #
+    #     if isinstance(result, dict):
+    #         if 'status' in result:
+    #             return result['status']
+    #     else:
+    #         return result
 
-        if isinstance(result, dict):
-            if 'status' in result:
-                return result['status']
-        else:
-            return result
-
-    def add_group_questions(self, sid, group_title, description):
-        result = self.server.add_group(self.session_key, sid, group_title, description)
-
-        if isinstance(result, dict):
-            if 'status' in result:
-                return result['status']
-        else:
-            return result
+    # def add_group_questions(self, sid, group_title, description):
+    #     result = self.server.add_group(self.session_key, sid, group_title, description)
+    #
+    #     if isinstance(result, dict):
+    #         if 'status' in result:
+    #             return result['status']
+    #     else:
+    #         return result
 
     def insert_questions(self, sid, questions_data, format_import_file):
-        questions_data_b64 = base64.b64encode(questions_data)
-        result = self.server.import_group(self.session_key, sid, questions_data_b64,
+        questions_data_b64 = b64encode(questions_data.encode('utf-8'))
+        result = self.server.import_group(self.session_key, sid, questions_data_b64.decode('utf-8'),
                                           format_import_file)  # format_import_file (lsg | csv)
 
         if isinstance(result, dict):
@@ -274,8 +275,8 @@ class Questionnaires(ABCSearchEngine):
     def get_survey_properties(self, sid, prop):
         return super(Questionnaires, self).get_survey_properties(sid, prop)
 
-    def set_survey_properties(self, sid, prop):
-        return super(Questionnaires, self).get_survey_properties(sid, prop)
+    # def set_survey_properties(self, sid, prop):
+    #     return super(Questionnaires, self).get_survey_properties(sid, prop)
 
     def get_survey_languages(self, sid):
         return super(Questionnaires, self).get_survey_languages(sid)
@@ -316,8 +317,8 @@ class Questionnaires(ABCSearchEngine):
     def insert_questions(self, sid, questions_data, format_import_file):
         return super(Questionnaires, self).insert_questions(sid, questions_data, format_import_file)
 
-    def insert_group(self, sid, groups_data, format_import_file):
-        return super(Questionnaires, self).insert_group(sid, groups_data, format_import_file)
+    # def insert_group(self, sid, groups_data, format_import_file):
+    #     return super(Questionnaires, self).insert_group(sid, groups_data, format_import_file)
 
-    def add_group_questions(self, sid, group_title, description):
-        return super(Questionnaires, self).add_group_questions(sid, group_title, description)
+    # def add_group_questions(self, sid, group_title, description):
+    #     return super(Questionnaires, self).add_group_questions(sid, group_title, description)
