@@ -1541,7 +1541,7 @@ def convert_to_string(duration_in_milliseconds):
 # TODO #########################VERIFICAR!!!!  review this
     duration_in_years = int(duration_in_milliseconds / year_in_milliseconds)
     if duration_in_years >= 1:
-        #string += str(duration_in_years) + (_(u" anos ") if duration_in_years > 1 else _(u" ano "))
+        # string += str(duration_in_years) + (_(u" anos ") if duration_in_years > 1 else _(u" ano "))
         string += ungettext(' %(duration_in_years) ano ',
                             ' %(duration_in_years) anos ', duration_in_years) % {
             'duration_in_years': duration_in_years,

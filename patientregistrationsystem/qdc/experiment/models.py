@@ -35,14 +35,14 @@ class Subject(models.Model):
 class StimulusType(models.Model):
     name = models.CharField(max_length=30, null=False, blank=False)
 
-    def __unicode__(self):
+    def __str__(self):
         return self.name
 
 
 class Keyword(models.Model):
     name = models.CharField(max_length=50, null=False, blank=False)
 
-    def __unicode__(self):
+    def __str__(self):
         return self.name
 
 
@@ -54,7 +54,7 @@ class ResearchProject(models.Model):
     keywords = models.ManyToManyField(Keyword)
     owner = models.ForeignKey(User, null=True, blank=True)
 
-    def __unicode__(self):
+    def __str__(self):
         return self.title
 
     class Meta:
@@ -73,7 +73,7 @@ class Experiment(models.Model):
     history = HistoricalRecords()
     # changed_by = models.ForeignKey('auth.User')
 
-    def __unicode__(self):  # Python 3: def __str__(self):
+    def __str__(self):
         return self.title
 
     @property
@@ -228,5 +228,5 @@ class QuestionnaireResponse(models.Model):
     def _history_user(self, value):
         self.changed_by = value
 
-    def __unicode__(self):  # Python 3: def __str__(self):
+    def __str__(self):
         return "token id: " + str(self.token_id)

@@ -36,63 +36,63 @@ def validate_date_birth(value):
 class Payment(models.Model):
     name = models.CharField(max_length=50)
 
-    def __unicode__(self):  # Python 3: def __str__(self):
+    def __str__(self):
         return self.name
 
 
 class Gender(models.Model):
     name = models.CharField(max_length=50)
 
-    def __unicode__(self):  # Python 3: def __str__(self):
+    def __str__(self):
         return self.name
 
 
 class FleshTone(models.Model):
     name = models.CharField(max_length=50)
 
-    def __unicode__(self):  # Python 3: def __str__(self):
+    def __str__(self):
         return self.name
 
 
 class MaritalStatus(models.Model):
     name = models.CharField(max_length=50)
 
-    def __unicode__(self):  # Python 3: def __str__(self):
+    def __str__(self):
         return self.name
 
 
 class Religion(models.Model):
     name = models.CharField(max_length=50)
 
-    def __unicode__(self):  # Python 3: def __str__(self):
+    def __str__(self):
         return self.name
 
 
 class Schooling(models.Model):
     name = models.CharField(max_length=50)
 
-    def __unicode__(self):  # Python 3: def __str__(self):
+    def __str__(self):
         return self.name
 
 
 class AmountCigarettes(models.Model):
     name = models.CharField(max_length=50)
 
-    def __unicode__(self):
+    def __str__(self):
         return self.name
 
 
 class AlcoholFrequency(models.Model):
     name = models.CharField(max_length=100)
 
-    def __unicode__(self):
+    def __str__(self):
         return self.name
 
 
 class AlcoholPeriod(models.Model):
     name = models.CharField(max_length=50)
 
-    def __unicode__(self):
+    def __str__(self):
         return self.name
 
 
@@ -138,7 +138,7 @@ class Patient(models.Model):
     def get_absolute_url(self):
         return "/patient/%i/" % self.pk
 
-    def __unicode__(self):  # Python 3: def __str__(self):
+    def __str__(self):
         return \
             self.name
 
@@ -179,7 +179,7 @@ class Telephone(models.Model):
     def _history_user(self, value):
         self.changed_by = value
 
-    def __unicode__(self):
+    def __str__(self):
         return self.number + '(' + self.type + ') - ' + self.note
 
 
@@ -209,7 +209,7 @@ class SocialDemographicData(models.Model):
     history = HistoricalRecords()
     changed_by = models.ForeignKey('auth.User')
 
-    def __unicode__(self):
+    def __str__(self):
         return \
             str(self.patient)
 
@@ -286,7 +286,7 @@ class SocialHistoryData(models.Model):
     def _history_user(self, value):
         self.changed_by = value
 
-    def __unicode__(self):
+    def __str__(self):
         return \
             str(self.patient)
 
@@ -301,7 +301,7 @@ class MedicalRecordData(models.Model):
             ("view_medicalrecorddata", _("Can view medical record")),
         )
 
-    def __unicode__(self):
+    def __str__(self):
         return \
             self.patient, self.record_date, self.record_responsible
 
@@ -312,7 +312,7 @@ class ClassificationOfDiseases(models.Model):
     abbreviated_description = models.CharField(max_length=100, null=False)
     parent = models.ForeignKey('self', null=True, related_name='children')
 
-    def __unicode__(self):
+    def __str__(self):
         return self.abbreviated_description
 
 
@@ -325,7 +325,7 @@ class Diagnosis(models.Model):
     class Meta:
         unique_together = ('medical_record_data', 'classification_of_diseases',)
 
-    def __unicode__(self):
+    def __str__(self):
         return str(self.classification_of_diseases), self.date, self.description
 
 
@@ -337,7 +337,7 @@ class ComplementaryExam(models.Model):
     doctor_register = models.CharField(max_length=10, null=True, blank=True)
     exam_site = models.CharField(max_length=100, null=True, blank=True)
 
-    def __unicode__(self):
+    def __str__(self):
         return str(self.description)
 
 
@@ -370,5 +370,5 @@ class QuestionnaireResponse(models.Model):
             ("view_questionnaireresponse", _("Can view questionnaire response")),
         )
 
-    def __unicode__(self):  # Python 3: def __str__(self):
+    def __str__(self):
         return _("token id: ") + str(self.token_id)
