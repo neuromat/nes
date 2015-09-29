@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2015-09-28 17:51-0300\n"
+"POT-Creation-Date: 2015-09-29 15:08-0300\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -167,3 +167,15 @@ msgstr ""
 #: admin/js/collapse.js:16 admin/js/collapse.min.js:1
 msgid "Hide"
 msgstr ""
+
+#: templates/registration/change_password_custom.html:35
+msgid "Senha inválida. Por favor tente de novo."
+msgstr "Senha inválida. Por favor tente de novo."
+
+#: templates/registration/password_reset_confirm.html:46
+msgid "Senha incompatível com o padrão definido."
+msgstr "Senha incompatível com o padrão definido."
+
+#: templates/registration/password_reset_confirm.html:140
+msgid "Preenchimento invalido. Verifique se as senhas digitadas sao iguais"
+msgstr "Preenchimento invalido. Verifique se as senhas digitadas sao iguais"

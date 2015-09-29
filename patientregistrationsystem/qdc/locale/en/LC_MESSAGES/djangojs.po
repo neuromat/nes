@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2015-09-28 17:51-0300\n"
+"POT-Creation-Date: 2015-09-29 15:08-0300\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -20,7 +20,7 @@ msgstr ""
 #: admin/js/SelectFilter2.js:45
 #, javascript-format
 msgid "Available %s"
-msgstr ""
+msgstr "Available %s"
 
 #: admin/js/SelectFilter2.js:46
 #, javascript-format
@@ -28,19 +28,21 @@ msgid ""
 "This is the list of available %s. You may choose some by selecting them in "
 "the box below and then clicking the \"Choose\" arrow between the two boxes."
 msgstr ""
+"This is the list of available %s. You may choose some by selecting them in "
+"the box below and then clicking the \"Choose\" arrow between the two boxes."
 
 #: admin/js/SelectFilter2.js:53
 #, javascript-format
 msgid "Type into this box to filter down the list of available %s."
-msgstr ""
+msgstr "Type into this box to filter down the list of available %s."
 
 #: admin/js/SelectFilter2.js:57
 msgid "Filter"
-msgstr ""
+msgstr "Filter"
 
 #: admin/js/SelectFilter2.js:61
 msgid "Choose all"
-msgstr ""
+msgstr "Choose all"
 
 #: admin/js/SelectFilter2.js:61
 #, javascript-format
@@ -166,3 +168,15 @@ msgstr ""
 #: admin/js/collapse.js:16 admin/js/collapse.min.js:1
 msgid "Hide"
 msgstr ""
+
+#: templates/registration/change_password_custom.html:35
+msgid "Senha inválida. Por favor tente de novo."
+msgstr "Invalid password. Please, try again."
+
+#: templates/registration/password_reset_confirm.html:46
+msgid "Senha incompatível com o padrão definido."
+msgstr "Password incompatible with defined standard."
+
+#: templates/registration/password_reset_confirm.html:140
+msgid "Preenchimento invalido. Verifique se as senhas digitadas sao iguais"
+msgstr "Invalid fill. Please, verify if passwords typed are equal"

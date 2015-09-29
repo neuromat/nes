@@ -25,7 +25,7 @@
     <script type="text/javascript">
         function Validate(){
            if(!validateForm()){
-                showErrorMessage('É necessário escolher pelo menos um perfil de usuário!');
+                showErrorMessage(gettext('É necessário escolher pelo menos um perfil de usuário!'));
                 return false;
            }
            return true;
@@ -48,7 +48,7 @@
                 if(checkPass())
                     event.preventDefault();
                 if(!$('#email').val()){
-                    showErrorMessage("Email deve ser preenchido!");
+                    showErrorMessage(gettext("Email deve ser preenchido!"));
                     $('#mailDivId').addClass('has-error');
                     event.preventDefault();
                 }
@@ -88,7 +88,9 @@
     {% endif %}
 
     {% if form.errors %}
-        <script>showErrorMessage('Por favor, corrija os campos em destaque.')</script>
+        <script type="text/javascript">
+            showErrorMessage(gettext('Por favor, corrija os campos em destaque.'))
+        </script>
     {% endif %}
 
     <div class="tab-pane fade in active" id="menuUserTab">

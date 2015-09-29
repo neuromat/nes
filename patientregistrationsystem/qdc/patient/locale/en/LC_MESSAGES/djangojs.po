@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2015-09-28 17:51-0300\n"
+"POT-Creation-Date: 2015-09-29 15:08-0300\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -17,12 +17,14 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 
-#: patient/templates/patient/medical_record.html:90
+#: patient/templates/patient/exams.html:99
+msgid "Exame não salvo. Por favor, corrija os campos em destaque."
+msgstr "Exam was not saved. Please, correct fields highlighted."
+
+#: patient/templates/patient/medical_record.html:87
 msgid "Avaliação médica não salva. Os campos com (*) são obrigatórios."
 msgstr "Medical evaluation was not saved. Fields with (*) are obligatory."
 
-#~ msgid "Exame não salvo. Por favor, corrija os campos em destaque."
-#~ msgstr "Exam was not saved. Please, correct fields highlighted."
-
-#~ msgid "Participante não salvo. Por favor, corrija os campos em destaque."
-#~ msgstr "Participant was not saved. Please, correct fields highlighted."
+#: patient/templates/patient/register_personal_data.html:31
+msgid "Participante não salvo. Por favor, corrija os campos em destaque."
+msgstr "Participant was not saved. Please, correct fields highlighted."
