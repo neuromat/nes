@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2015-08-10 11:42-0300\n"
+"POT-Creation-Date: 2015-09-29 15:08-0300\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -17,50 +17,257 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 
-#: static/quiz/js/block_component.js:52
+#: quiz/static/quiz/jquery-ui-1.11.2/jquery-ui.min.js:8
+msgid "'"
+msgstr ""
+
+#: quiz/static/quiz/js/block_component.js:52
 msgid "Recolher"
 msgstr "Collapse"
 
-#: static/quiz/js/block_component.js:66
+#: quiz/static/quiz/js/block_component.js:66
 msgid "Expandir"
 msgstr "Expand"
 
-#: static/quiz/js/block_component.js:89
+#: quiz/static/quiz/js/block_component.js:89
 msgid "Tem certeza que deseja excluir este uso de passo da lista?"
 msgstr "Are you sure you want to delete this use of step from list?"
 
-#: static/quiz/js/block_component.js:98
+#: quiz/static/quiz/js/block_component.js:98
 msgid "Tem certeza que deseja excluir estes "
 msgstr "Are you sure you want to delete these "
 
-#: static/quiz/js/block_component.js:98
+#: quiz/static/quiz/js/block_component.js:98
 msgid " usos de passo da lista?"
 msgstr " uses of step from list?"
 
-#: static/quiz/js/password.js:19
+#: quiz/static/quiz/js/password.js:19
 msgid "Senhas não combinam"
 msgstr "Passwords don't match"
 
-#: static/quiz/js/password.js:31
+#: quiz/static/quiz/js/password.js:31
 msgid ""
 "Senha deve conter pelo menos 8 caracteres, incluindo ao menos uma letra "
 "maiúscula, dígito ou caractere especial."
 msgstr ""
-"Password must have at least 8 characters, including at least one lower "
-"case letter, upper case letter, digit or special character."
+"Password must have at least 8 characters, including at least one lower case "
+"letter, upper case letter, digit or special character."
 
-#: static/quiz/js/password.js:66
-msgid "Fraca"
-msgstr "Weak"
+#: quiz/static/quiz/js/patient_personal_data.js:113
+#: quiz/static/quiz/js/register.js:75
+msgid "Campos obrigatórios devem ser preenchidos."
+msgstr "Obligatory fields must be filled"
 
-#: static/quiz/js/password.js:72
-msgid "Justa"
-msgstr "Fair"
+#: quiz/static/quiz/js/patient_personal_data.js:122
+msgid "Preencha os campos corretamente. Campo de e-mail inválido"
+msgstr "Please fill the fields correctly. E-mail is invalid"
 
-#: static/quiz/js/password.js:78
-msgid "Forte"
-msgstr "Strong"
+#: quiz/templates/quiz/template.html:27
+msgid "dd/mm/yy"
+msgstr "mm/dd/yy"
 
-#: static/quiz/js/password.js:84
-msgid "Excelente"
-msgstr "Excellent"
+#: quiz/templates/quiz/template.html:28
+msgid "Domingo"
+msgstr "Sunday"
+
+#: quiz/templates/quiz/template.html:28
+msgid "Segunda"
+msgstr "Monday"
+
+#: quiz/templates/quiz/template.html:28
+msgid "Terça"
+msgstr "Tuesday"
+
+#: quiz/templates/quiz/template.html:29
+msgid "Quarta"
+msgstr "Wednesday"
+
+#: quiz/templates/quiz/template.html:29
+msgid "Quinta"
+msgstr "Thursday"
+
+#: quiz/templates/quiz/template.html:29
+msgid "Sexta"
+msgstr "Friday"
+
+#: quiz/templates/quiz/template.html:29
+msgid "Sábado"
+msgstr "Saturday"
+
+#: quiz/templates/quiz/template.html:30 quiz/templates/quiz/template.html:31
+msgid "Do"
+msgstr "Su"
+
+#: quiz/templates/quiz/template.html:30
+msgid "Se"
+msgstr "Mo"
+
+#: quiz/templates/quiz/template.html:30
+msgid "Te"
+msgstr "Tu"
+
+#: quiz/templates/quiz/template.html:30
+msgid "Qa"
+msgstr "We"
+
+#: quiz/templates/quiz/template.html:30
+msgid "Qi"
+msgstr "Th"
+
+#: quiz/templates/quiz/template.html:31
+msgid "Sx"
+msgstr "Fr"
+
+#: quiz/templates/quiz/template.html:31
+msgid "Sa"
+msgstr "Sa"
+
+#: quiz/templates/quiz/template.html:32 quiz/templates/quiz/template.html:33
+msgid "Dom"
+msgstr "Sun"
+
+#: quiz/templates/quiz/template.html:32
+msgid "Seg"
+msgstr "Mon"
+
+#: quiz/templates/quiz/template.html:32
+msgid "Ter"
+msgstr "Tue"
+
+#: quiz/templates/quiz/template.html:32
+msgid "Qua"
+msgstr "Wed"
+
+#: quiz/templates/quiz/template.html:33
+msgid "Qui"
+msgstr "Thu"
+
+#: quiz/templates/quiz/template.html:33
+msgid "Sex"
+msgstr "Fri"
+
+#: quiz/templates/quiz/template.html:33
+msgid "Sáb"
+msgstr "Sat"
+
+#: quiz/templates/quiz/template.html:34
+msgid "Janeiro"
+msgstr "January"
+
+#: quiz/templates/quiz/template.html:34
+msgid "Fevereiro"
+msgstr "February"
+
+#: quiz/templates/quiz/template.html:34
+msgid "Março"
+msgstr "March"
+
+#: quiz/templates/quiz/template.html:35
+msgid "Abril"
+msgstr "April"
+
+#: quiz/templates/quiz/template.html:35
+msgid "Maio"
+msgstr "May"
+
+#: quiz/templates/quiz/template.html:35
+msgid "Junho"
+msgstr "June"
+
+#: quiz/templates/quiz/template.html:36
+msgid "Julho"
+msgstr "July"
+
+#: quiz/templates/quiz/template.html:36
+msgid "Agosto"
+msgstr "August"
+
+#: quiz/templates/quiz/template.html:36
+msgid "Setembro"
+msgstr "September"
+
+#: quiz/templates/quiz/template.html:37
+msgid "Outubro"
+msgstr "Octobre"
+
+#: quiz/templates/quiz/template.html:37
+msgid "Novembro"
+msgstr "November"
+
+#: quiz/templates/quiz/template.html:37
+msgid "Dezembro"
+msgstr "December"
+
+#: quiz/templates/quiz/template.html:38
+msgid "Jan"
+msgstr "Jan"
+
+#: quiz/templates/quiz/template.html:38
+msgid "Fev"
+msgstr "Feb"
+
+#: quiz/templates/quiz/template.html:38
+msgid "Mar"
+msgstr "Mar"
+
+#: quiz/templates/quiz/template.html:38
+msgid "Abr"
+msgstr "Apr"
+
+#: quiz/templates/quiz/template.html:39
+msgid "Mai"
+msgstr "May"
+
+#: quiz/templates/quiz/template.html:39
+msgid "Jun"
+msgstr "Jun"
+
+#: quiz/templates/quiz/template.html:39
+msgid "Jul"
+msgstr "Jul"
+
+#: quiz/templates/quiz/template.html:39
+msgid "Ago"
+msgstr "Aug"
+
+#: quiz/templates/quiz/template.html:40
+msgid "Set"
+msgstr "Sep"
+
+#: quiz/templates/quiz/template.html:40
+msgid "Out"
+msgstr "Oct"
+
+#: quiz/templates/quiz/template.html:40
+msgid "Nov"
+msgstr "Nov"
+
+#: quiz/templates/quiz/template.html:40
+msgid "Dez"
+msgstr "Dec"
+
+#: quiz/templates/quiz/template.html:41
+msgid "Próximo"
+msgstr "Next"
+
+#: quiz/templates/quiz/template.html:42
+msgid "Anterior"
+msgstr "Previous"
+
+#~ msgid "Qu"
+#~ msgstr "We"
+
+#~ msgid "Q"
+#~ msgstr "Th"
+
+#~ msgid "Fraca"
+#~ msgstr "Weak"
+
+#~ msgid "Justa"
+#~ msgstr "Fair"
+
+#~ msgid "Forte"
+#~ msgstr "Strong"
+
+#~ msgid "Excelente"
+#~ msgstr "Excellent"

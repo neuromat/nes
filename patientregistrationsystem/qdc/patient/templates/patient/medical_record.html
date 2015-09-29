@@ -83,10 +83,7 @@
     {% endif %}
 
     {% if medical_record_form.errors %}
-        <!--this next script is a workaround in order to work internationalization. With Django newer than 1.6,
-        it must be tested to see if works without it and be removed in this case. -->
-        <script>gettext('')</script>
-        <script>
+        <script type="text/javascript">
             showErrorMessage(gettext('Avaliação médica não salva. Os campos com (*) são obrigatórios.'))
         </script>
     {% endif %}
@@ -142,7 +139,7 @@
                                                     <br/>
                                                     <blockquote>
                                                         <i><h6>
-                                                        {% if diagnosis.date %}Em {{ diagnosis.date }}<br/>{% endif %}
+                                                        {% if diagnosis.date %}{% trans "Em " %}{{ diagnosis.date }}<br/>{% endif %}
                                                         {% if diagnosis.description %}{{ diagnosis.description }}<br/>{% endif %}
                                                         </h6></i>
 

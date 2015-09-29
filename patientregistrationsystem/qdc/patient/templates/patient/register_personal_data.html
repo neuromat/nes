@@ -26,7 +26,8 @@
                                 <script>showErrorMessage('{{ field.errors|striptags }}')</script>
                             {% endif %}
                         {% endfor %}
-                        <script>
+
+                        <script type="text/javascript">
                             showErrorMessage(gettext('Participante não salvo. Por favor, corrija os campos em destaque.'))
                         </script>
                     {% endif %}

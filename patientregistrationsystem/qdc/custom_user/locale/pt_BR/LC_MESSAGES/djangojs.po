@@ -18,16 +18,14 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=(n > 1);\n"
 
-#: experiment/templates/experiment/component_list.html:41
-#: experiment/templates/experiment/component_template.html:46
-#: experiment/templates/experiment/experiment_register.html:41
-#: experiment/templates/experiment/group_register.html:43
-#: experiment/templates/experiment/questionnaire_view.html:47
-#: experiment/templates/experiment/research_project_register.html:43
+#: custom_user/templates/custom_user/register_users.html:28
+msgid "É necessário escolher pelo menos um perfil de usuário!"
+msgstr "É necessário escolher pelo menos um perfil de usuário!"
+
+#: custom_user/templates/custom_user/register_users.html:51
+msgid "Email deve ser preenchido!"
+msgstr "E-mail deve ser preenchido!"
+
+#: custom_user/templates/custom_user/register_users.html:92
 msgid "Por favor, corrija os campos em destaque."
 msgstr "Por favor, corrija os campos em destaque."
-
-#: experiment/templates/experiment/subject_questionnaire_response_form.html:97
-msgid "Não foi possível abrir o questionário. Habilite pop-ups para esse site."
-msgstr ""
-"Não foi possível abrir o questionário. Habilite pop-ups para esse site."
