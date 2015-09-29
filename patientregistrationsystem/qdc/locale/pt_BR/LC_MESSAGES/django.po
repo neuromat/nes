@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2015-09-28 17:51-0300\n"
+"POT-Creation-Date: 2015-09-29 18:54-0300\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -30,13 +30,13 @@ msgstr ""
 msgid "Acesso não autorizado"
 msgstr ""
 
-#: templates/registration/change_password_custom.html:42
+#: templates/registration/change_password_custom.html:44
 msgid ""
 "Senha deve conter pelo menos 8 caracteres, incluindo ao menos uma letra "
 "maiúscula, dígito ou caractere especial."
 msgstr ""
 
-#: templates/registration/change_password_custom.html:63
+#: templates/registration/change_password_custom.html:65
 msgid "Salvar"
 msgstr ""
 

@@ -9,7 +9,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2015-09-28 17:51-0300\n"
+"POT-Creation-Date: 2015-09-29 18:54-0300\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -220,11 +220,11 @@ msgstr ""
 msgid " %(number_of_patients)s participantes cadastrados"
 msgstr ""
 
-#: patient/templates/patient/busca.html:24
-msgid "Digite o nome ou o CPF para buscar um participante"
-msgstr ""
+#: patient/templates/patient/busca.html:23
+msgid "Digite"
+msgstr "Digite o nome"
 
-#: patient/templates/patient/busca.html:33
+#: patient/templates/patient/busca.html:32
 msgid "Inserir novo"
 msgstr ""
 
@@ -259,7 +259,7 @@ msgid "Novo Exame"
 msgstr ""
 
 #: patient/templates/patient/exams.html:110
-#: patient/templates/patient/medical_record.html:171
+#: patient/templates/patient/medical_record.html:168
 #: patient/templates/patient/register_medical_record.html:21
 msgid "Data"
 msgstr ""
@@ -291,7 +291,7 @@ msgstr ""
 #: patient/templates/patient/exams.html:205
 #: patient/templates/patient/exams.html:236
 #: patient/templates/patient/exams.html:251
-#: patient/templates/patient/medical_record.html:256
+#: patient/templates/patient/medical_record.html:253
 #: patient/templates/patient/register.html:183
 msgid "Excluir"
 msgstr ""
@@ -299,17 +299,17 @@ msgstr ""
 #: patient/templates/patient/exams.html:210
 #: patient/templates/patient/exams.html:213
 #: patient/templates/patient/exams.html:215
-#: patient/templates/patient/medical_record.html:234
-#: patient/templates/patient/medical_record.html:236
+#: patient/templates/patient/medical_record.html:231
+#: patient/templates/patient/medical_record.html:233
 msgid "Voltar"
 msgstr ""
 
 #: patient/templates/patient/exams.html:219
-#: patient/templates/patient/medical_record.html:180
+#: patient/templates/patient/medical_record.html:177
 #: patient/templates/patient/register.html:126
 #: patient/templates/patient/register.html:128
 #: patient/templates/patient/register.html:154
-#: patient/templates/patient/register_personal_data.html:335
+#: patient/templates/patient/register_personal_data.html:336
 msgid "Salvar"
 msgstr ""
 
@@ -319,14 +319,14 @@ msgstr ""
 
 #: patient/templates/patient/exams.html:235
 #: patient/templates/patient/exams.html:250
-#: patient/templates/patient/medical_record.html:179
-#: patient/templates/patient/medical_record.html:231
-#: patient/templates/patient/medical_record.html:255
+#: patient/templates/patient/medical_record.html:176
+#: patient/templates/patient/medical_record.html:228
+#: patient/templates/patient/medical_record.html:252
 #: patient/templates/patient/register.html:152
 #: patient/templates/patient/register.html:181
-#: patient/templates/patient/register_personal_data.html:334
-#: patient/templates/patient/register_personal_data.html:353
-#: patient/templates/patient/register_personal_data.html:371
+#: patient/templates/patient/register_personal_data.html:335
+#: patient/templates/patient/register_personal_data.html:354
+#: patient/templates/patient/register_personal_data.html:372
 msgid "Cancelar"
 msgstr ""
 
@@ -343,46 +343,46 @@ msgstr ""
 msgid "Responsável:"
 msgstr "Responsável"
 
-#: patient/templates/patient/medical_record.html:123
+#: patient/templates/patient/medical_record.html:120
 #, fuzzy
 msgid "Diagnóstico"
 msgstr "Diagnóstico"
 
-#: patient/templates/patient/medical_record.html:124
+#: patient/templates/patient/medical_record.html:121
 msgid "Exames"
 msgstr ""
 
-#: patient/templates/patient/medical_record.html:130
+#: patient/templates/patient/medical_record.html:127
 #, fuzzy
 msgid "(sem diagnósticos)"
 msgstr "(sem diagnósticos)"
 
-#: patient/templates/patient/medical_record.html:145
+#: patient/templates/patient/medical_record.html:142
 msgid "Em "
 msgstr ""
 
-#: patient/templates/patient/medical_record.html:150
+#: patient/templates/patient/medical_record.html:147
 msgid "Editar detalhes"
 msgstr ""
 
-#: patient/templates/patient/medical_record.html:151
+#: patient/templates/patient/medical_record.html:148
 msgid "Detalhes"
 msgstr ""
 
-#: patient/templates/patient/medical_record.html:165
+#: patient/templates/patient/medical_record.html:162
 #, fuzzy
 msgid "Observações"
 msgstr "Observações"
 
-#: patient/templates/patient/medical_record.html:205
+#: patient/templates/patient/medical_record.html:202
 msgid "Inserir exame"
 msgstr ""
 
-#: patient/templates/patient/medical_record.html:226
+#: patient/templates/patient/medical_record.html:223
 msgid "Finalizar avaliação"
 msgstr ""
 
-#: patient/templates/patient/medical_record.html:252
+#: patient/templates/patient/medical_record.html:249
 msgid "Tem certeza que deseja excluir o diagnóstico?"
 msgstr ""
 
@@ -474,105 +474,105 @@ msgstr ""
 msgid "Informações básicas"
 msgstr "Informações básicas"
 
-#: patient/templates/patient/register_personal_data.html:36
+#: patient/templates/patient/register_personal_data.html:37
 msgid "Nome completo"
 msgstr ""
 
-#: patient/templates/patient/register_personal_data.html:47
+#: patient/templates/patient/register_personal_data.html:48
 msgid "CPF"
 msgstr ""
 
-#: patient/templates/patient/register_personal_data.html:65
+#: patient/templates/patient/register_personal_data.html:66
 msgid "Origem"
 msgstr ""
 
-#: patient/templates/patient/register_personal_data.html:75
+#: patient/templates/patient/register_personal_data.html:76
 #, fuzzy
 msgid "Número do prontuário"
 msgstr "Número do prontuário"
 
-#: patient/templates/patient/register_personal_data.html:87
+#: patient/templates/patient/register_personal_data.html:88
 msgid "Data de nascimento"
 msgstr ""
 
-#: patient/templates/patient/register_personal_data.html:105
+#: patient/templates/patient/register_personal_data.html:106
 msgid "Sexo"
 msgstr ""
 
-#: patient/templates/patient/register_personal_data.html:118
+#: patient/templates/patient/register_personal_data.html:119
 msgid "RG"
 msgstr ""
 
-#: patient/templates/patient/register_personal_data.html:127
+#: patient/templates/patient/register_personal_data.html:128
 msgid "Estado civil"
 msgstr ""
 
-#: patient/templates/patient/register_personal_data.html:139
-#: patient/templates/patient/register_personal_data.html:166
+#: patient/templates/patient/register_personal_data.html:140
+#: patient/templates/patient/register_personal_data.html:167
 #, fuzzy
 msgid "Endereço"
 msgstr "Endereço"
 
-#: patient/templates/patient/register_personal_data.html:143
+#: patient/templates/patient/register_personal_data.html:144
 msgid "País"
 msgstr ""
 
-#: patient/templates/patient/register_personal_data.html:153
+#: patient/templates/patient/register_personal_data.html:154
 msgid "CEP"
 msgstr ""
 
-#: patient/templates/patient/register_personal_data.html:177
-#: patient/templates/patient/register_personal_data.html:255
+#: patient/templates/patient/register_personal_data.html:178
+#: patient/templates/patient/register_personal_data.html:256
 #, fuzzy
 msgid "Número"
 msgstr "Número"
 
-#: patient/templates/patient/register_personal_data.html:188
+#: patient/templates/patient/register_personal_data.html:189
 msgid "Complemento"
 msgstr ""
 
-#: patient/templates/patient/register_personal_data.html:201
+#: patient/templates/patient/register_personal_data.html:202
 msgid "Bairro"
 msgstr ""
 
-#: patient/templates/patient/register_personal_data.html:212
+#: patient/templates/patient/register_personal_data.html:213
 msgid "Cidade"
 msgstr ""
 
-#: patient/templates/patient/register_personal_data.html:222
+#: patient/templates/patient/register_personal_data.html:223
 msgid "Estado"
 msgstr ""
 
-#: patient/templates/patient/register_personal_data.html:232
+#: patient/templates/patient/register_personal_data.html:233
 msgid "E-mail"
 msgstr ""
 
-#: patient/templates/patient/register_personal_data.html:247
+#: patient/templates/patient/register_personal_data.html:248
 msgid "Telefones"
 msgstr ""
 
-#: patient/templates/patient/register_personal_data.html:260
+#: patient/templates/patient/register_personal_data.html:261
 msgid "Tipo"
 msgstr ""
 
-#: patient/templates/patient/register_personal_data.html:265
+#: patient/templates/patient/register_personal_data.html:266
 #, fuzzy
 msgid "Observação"
 msgstr "Observações"
 
-#: patient/templates/patient/register_personal_data.html:270
+#: patient/templates/patient/register_personal_data.html:271
 msgid "Apagar"
 msgstr ""
 
-#: patient/templates/patient/register_personal_data.html:319
+#: patient/templates/patient/register_personal_data.html:320
 msgid "Salvar e incluir mais telefones"
 msgstr ""
 
-#: patient/templates/patient/register_personal_data.html:331
+#: patient/templates/patient/register_personal_data.html:332
 msgid "CPF não foi preenchido. Deseja salvar?"
 msgstr ""
 
-#: patient/templates/patient/register_personal_data.html:346
+#: patient/templates/patient/register_personal_data.html:347
 msgid ""
 "Participante já cadastrado.\n"
 "                            Clique para visualizar registro ou Cancelar para "
@@ -580,7 +580,7 @@ msgid ""
 "                    "
 msgstr ""
 
-#: patient/templates/patient/register_personal_data.html:364
+#: patient/templates/patient/register_personal_data.html:365
 msgid ""
 "Participante já foi excluído anteriormente.\n"
 "                        Clique para restaurar cadastro ou Cancelar para "
@@ -870,6 +870,9 @@ msgid ""
 "Falha ao gerar token para responder questionário. Verifique se o "
 "questionário está ativo"
 msgstr ""
+
+#~ msgid "Digite o nome ou o CPF para buscar um participante"
+#~ msgstr "Digite o nome ou o CPF para buscar um participante"
 
 #~ msgid "Você será redirecionado para o questionário. Aguarde."
 #~ msgstr "Você será redirecionado para o questionário. Aguarde."

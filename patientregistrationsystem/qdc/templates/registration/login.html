@@ -105,7 +105,9 @@
 
 
     {% if form.errors %}
-        <script>showErrorMessageTemporary(gettext('Usuario ou senha invalidos.'))</script>
+        <script type="text/javascript">
+            showErrorMessageTemporary(gettext('Usuario ou senha invalidos.'))
+        </script>
     {% endif %}
 
 
