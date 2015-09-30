@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2015-09-29 18:54-0300\n"
+"POT-Creation-Date: 2015-09-30 14:19-0300\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -52,24 +52,24 @@ msgstr ""
 msgid "Log in again"
 msgstr ""
 
-#: templates/registration/login.html:84
+#: templates/registration/login.html:79
 msgid "Login"
 msgstr ""
 
-#: templates/registration/login.html:85
+#: templates/registration/login.html:80
 msgid "Usuario"
 msgstr ""
 
-#: templates/registration/login.html:89
+#: templates/registration/login.html:84
 msgid "Senha"
 msgstr ""
 
-#: templates/registration/login.html:92
+#: templates/registration/login.html:87
 #: templates/registration/password_reset_confirm.html:130
 msgid "Confirmar"
 msgstr ""
 
-#: templates/registration/login.html:97
+#: templates/registration/login.html:92
 msgid "Esqueci minha senha"
 msgstr ""
 
@@ -168,6 +168,10 @@ msgstr ""
 #: templates/registration/password_reset_form.html:41
 msgid ""
 "Especifique seu e-mail para receber as instruções para redefinição de senha."
+msgstr ""
+
+#: templates/registration/password_reset_form.html:51
+msgid "E-mail"
 msgstr ""
 
 #: templates/registration/password_reset_subject.txt:2

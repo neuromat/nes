@@ -6,9 +6,9 @@
     {% if component_form.component_type == 'block' %}
         <div data-toggle="tooltip" data-placement="left"
              {% if has_unlimited %}
-                title={% trans "Calculada a partir dos subpassos. Esse conjunto possui pelo menos um uso que permite repetições ilimitadas. Está sendo considerado apenas uma execução nesses casos." %}
+                title="{% trans "Calculada a partir dos subpassos. Esse conjunto possui pelo menos um uso que permite repetições ilimitadas. Está sendo considerado apenas uma execução nesses casos." %}"
              {% else %}
-                title={% trans "Calculada a partir dos subpassos" %}
+                title="{% trans "Calculada a partir dos subpassos" %}"
              {% endif %}>
             <label class="control-label">{% trans "Duração" %}</label>
             <p>{{ block_duration }}</p>

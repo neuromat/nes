@@ -133,7 +133,7 @@
                                                 <td>
                                                     <b>{{ diagnosis.classification_of_diseases }}</b>
                                                     {% if editing %}
-                                                        <a class="btn glyphicon glyphicon-remove" data-toggle="tooltip" data-placement="right" title="Remover" style="color: indianred; vertical-align: -5%; padding-left: 0;"
+                                                        <a class="btn glyphicon glyphicon-remove" data-toggle="tooltip" data-placement="right" title="{% trans "Remover" %}" style="color: indianred; vertical-align: -5%; padding-left: 0;"
                                                            onclick="show_modal_remove({{ patient_id }}, {{ diagnosis.id }});"></a>
                                                     {% endif %}
                                                     <br/>
@@ -144,7 +144,7 @@
                                                         </h6></i>
 
                                                         {% if editing %}
-                                                            <a class="btn" data-toggle="tooltip" data-placement="left" style="font-size-adjust: 0.47; font-style: italic;" title={% trans "Editar detalhes" %}
+                                                            <a class="btn" data-toggle="tooltip" data-placement="left" style="font-size-adjust: 0.47; font-style: italic;" title="{% trans "Editar detalhes" %}"
                                                                onclick="show_modal_detail({{ diagnosis.id }});">{% trans "Detalhes" %}
                                                             </a>
 

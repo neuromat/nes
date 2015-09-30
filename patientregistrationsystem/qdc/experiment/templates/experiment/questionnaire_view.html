@@ -177,7 +177,7 @@
                                                         <tr>
                                                             <td>
                                                                 {% if limesurvey_available and response.completed != None %}
-                                                                    <a href="/experiment/questionnaire_response/{% if response.completed == False %}edit/{% endif %}{{ response.questionnaire_response.id }}" data-toggle="tooltip" data-placement="left" title="Ver detalhes">
+                                                                    <a href="/experiment/questionnaire_response/{% if response.completed == False %}edit/{% endif %}{{ response.questionnaire_response.id }}" data-toggle="tooltip" data-placement="left" title="{% trans "Ver detalhes" %}">
                                                                         {{ response.questionnaire_response.date }}
                                                                     </a>
                                                                 {% else %}

@@ -1538,14 +1538,9 @@ def convert_to_milliseconds(value, unit):
 def convert_to_string(duration_in_milliseconds):
     string = ""
 
-# TODO #########################VERIFICAR!!!!  review this
     duration_in_years = int(duration_in_milliseconds / year_in_milliseconds)
     if duration_in_years >= 1:
-        # string += str(duration_in_years) + (_(u" anos ") if duration_in_years > 1 else _(u" ano "))
-        string += ungettext(' %(duration_in_years) ano ',
-                            ' %(duration_in_years) anos ', duration_in_years) % {
-            'duration_in_years': duration_in_years,
-            }
+        string += str(duration_in_years) + (_(" anos ") if duration_in_years > 1 else _(" ano "))
         duration_in_milliseconds -= duration_in_years * year_in_milliseconds
 
     duration_in_months = int(duration_in_milliseconds / month_in_milliseconds)
@@ -1595,7 +1590,7 @@ def convert_to_string(duration_in_milliseconds):
         if before_and == "":
             string = list_of_values_with_units[-1]
         else:
-            string = before_and + " e " + list_of_values_with_units[-1]
+            string = before_and + _(" e ") + list_of_values_with_units[-1]
 
     return string
 

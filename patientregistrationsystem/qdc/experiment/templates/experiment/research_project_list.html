@@ -40,7 +40,7 @@
                         {% for research_project in research_projects %}
                             <tr>
                                 <td>{% if perms.experiment.view_researchproject %}
-                                        <a data-toggle="tooltip" data-placement="left" title={% trans "Visualizar" %}
+                                        <a data-toggle="tooltip" data-placement="left" title="{% trans "Visualizar" %}"
                                            href="/experiment/research_project/{{ research_project.id }}">
                                             {{ research_project.title }}
                                         </a>

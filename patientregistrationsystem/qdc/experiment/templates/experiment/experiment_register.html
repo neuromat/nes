@@ -119,7 +119,7 @@
                                 {% for group in group_list %}
                                     <tr>
                                         <td>
-                                            <a data-toggle="tooltip" data-placement="left" title="Editar" href="/experiment/group/{{ group.id }}">
+                                            <a data-toggle="tooltip" data-placement="left" title="{% trans "Editar" %}" href="/experiment/group/{{ group.id }}">
                                             {{ group.title }}
                                             </a>
                                         </td>

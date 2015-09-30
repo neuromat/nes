@@ -52,7 +52,7 @@
                         <tbody>
                         {% for questionnaire in questionnaires_list %}
                             <tr>
-                                <td><a data-toggle="tooltip" data-placement="left" title={% trans "Visualizar" %} href="/survey/{{ questionnaire.id }}">{{ questionnaire.lime_survey_id }} - {{ questionnaire.title }}</a></td>
+                                <td><a data-toggle="tooltip" data-placement="left" title="{% trans "Visualizar" %}" href="/survey/{{ questionnaire.id }}">{{ questionnaire.lime_survey_id }} - {{ questionnaire.title }}</a></td>
                                 <td style="text-align: center">{% if questionnaire.is_initial_evaluation %}<span class="glyphicon glyphicon-ok" style="color: royalblue"></span> {% endif %}</td>
                             </tr>
                         {% endfor %}

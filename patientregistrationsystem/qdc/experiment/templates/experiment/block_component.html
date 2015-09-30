@@ -42,13 +42,15 @@
                 <label class="control-label" for="type">{% trans "Organização dos subpassos" %} <b style="color: red;">*</b></label>
 
                 <div class="input-group  input-group-sm">
+                    {% trans "Os subpassos serão executados um após o outro" as text_1 %}
+                    {% trans "Os subpassos serão executados todos ao mesmo tempo" as text_2 %}
                     {% for radio in specific_form.type %}
                         <span style="margin-right: 15px;" data-toggle="tooltip" data-placement="bottom" title="
-                        {% cycle 'Os subpassos serão executados um após o outro' 'Os subpassos serão executados todos ao mesmo tempo' %}">
+                        {% cycle text_1 text_2 %}">
                             <div class="radio-inline">{{ radio }}</div>
                         </span>
                     {% endfor %}
-                </div>
+                 </div>
 
                 <div class="help-block with-errors"></div>
             </div>
@@ -115,7 +117,7 @@
                                             <tr>
                                                 <td colspan="6" style="padding: 0px;">
                                                     <div class="panel panel-default collapsed" style="margin: 0px;">
-                                                        <div class="panel-heading" role="tab" id="heading{{ forloop.counter }}" style="padding: 0px;" data-toggle="tooltip" data-placement="left" title={% trans "Expandir" %}>
+                                                        <div class="panel-heading" role="tab" id="heading{{ forloop.counter }}" style="padding: 0px;" data-toggle="tooltip" data-placement="left" title="{% trans "Expandir" %}">
                                                             <table class="table" style="margin: 0px;" role="button" data-toggle="collapse" href="#collapse{{ forloop.counter }}" aria-expanded="false" aria-controls="collapse{{ forloop.counter }}">
                                                                 <tbody>
                                                                     {% if not accordion.0.random_position %}  {# If the first is random, all confs from this accordeon will be random. #}
@@ -155,7 +157,7 @@
                                                                                     <a class="btn glyphicon glyphicon-remove" style="color: indianred;"
                                                                                        data-toggle="tooltip" data-placement="right"
                                                                                     onclick="show_modal_remove_many('fixed', {{ forloop.counter0 }}, {{ accordion|length }});"
-                                                                                    title={% trans "Remover usos da lista" %}></a>
+                                                                                    title="{% trans "Remover usos da lista" %}"></a>
                                                                                 </td>
                                                                             {% else %}
                                                                                 <td class="col-md-5">
@@ -253,7 +255,7 @@
                                                 <tr>
                                                     <td colspan="4" style="padding: 0px;">
                                                         <div class="panel panel-default collapsed" style="margin: 0px;">
-                                                            <div class="panel-heading" role="tab" id="heading{{ forloop.counter }}" style="padding: 0px;" data-toggle="tooltip" data-placement="left" title="Expandir">
+                                                            <div class="panel-heading" role="tab" id="heading{{ forloop.counter }}" style="padding: 0px;" data-toggle="tooltip" data-placement="left" title="{%  trans "Expandir" %}">
                                                                 <table class="table" style="margin: 0px;" role="button" data-toggle="collapse" href="#collapse{{ forloop.counter }}" aria-expanded="false" aria-controls="collapse{{ forloop.counter }}">
                                                                     <tbody>
                                                                         <tr>
@@ -273,7 +275,7 @@
                                                                                     <a class="btn glyphicon glyphicon-remove" style="color: indianred;"
                                                                                        data-toggle="tooltip" data-placement="right"
                                                                                     onclick="show_modal_remove_many('random', {{ forloop.counter0 }}, {{ accordion|length }});"
-                                                                                    title={% trans "Remover usos da lista" %}></a>
+                                                                                    title="{% trans "Remover usos da lista" %}"></a>
                                                                                 </td>
                                                                             {% endif %}
                                                                         </tr>

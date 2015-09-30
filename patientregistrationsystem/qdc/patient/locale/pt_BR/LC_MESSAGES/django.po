@@ -9,7 +9,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2015-09-29 18:54-0300\n"
+"POT-Creation-Date: 2015-09-30 14:19-0300\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -220,11 +220,11 @@ msgstr ""
 msgid " %(number_of_patients)s participantes cadastrados"
 msgstr ""
 
-#: patient/templates/patient/busca.html:23
-msgid "Digite"
-msgstr "Digite o nome"
+#: patient/templates/patient/busca.html:24
+msgid "Digite o nome ou o CPF para buscar um participante"
+msgstr "Digite o nome ou o CPF para buscar um participante"
 
-#: patient/templates/patient/busca.html:32
+#: patient/templates/patient/busca.html:33
 msgid "Inserir novo"
 msgstr ""
 
@@ -260,6 +260,7 @@ msgstr ""
 
 #: patient/templates/patient/exams.html:110
 #: patient/templates/patient/medical_record.html:168
+#: patient/templates/patient/medical_record.html:170
 #: patient/templates/patient/register_medical_record.html:21
 msgid "Data"
 msgstr ""
@@ -343,6 +344,10 @@ msgstr ""
 msgid "Responsável:"
 msgstr "Responsável"
 
+#: patient/templates/patient/medical_record.html:103
+msgid "Especificar o diagnóstico da doença ou o código da doença (CID-10)"
+msgstr ""
+
 #: patient/templates/patient/medical_record.html:120
 #, fuzzy
 msgid "Diagnóstico"
@@ -356,6 +361,10 @@ msgstr ""
 #, fuzzy
 msgid "(sem diagnósticos)"
 msgstr "(sem diagnósticos)"
+
+#: patient/templates/patient/medical_record.html:136
+msgid "Remover"
+msgstr ""
 
 #: patient/templates/patient/medical_record.html:142
 msgid "Em "
@@ -372,6 +381,12 @@ msgstr ""
 #: patient/templates/patient/medical_record.html:162
 #, fuzzy
 msgid "Observações"
+msgstr "Observações"
+
+#: patient/templates/patient/medical_record.html:163
+#: patient/templates/patient/register_personal_data.html:266
+#, fuzzy
+msgid "Observação"
 msgstr "Observações"
 
 #: patient/templates/patient/medical_record.html:202
@@ -554,11 +569,6 @@ msgstr ""
 #: patient/templates/patient/register_personal_data.html:261
 msgid "Tipo"
 msgstr ""
-
-#: patient/templates/patient/register_personal_data.html:266
-#, fuzzy
-msgid "Observação"
-msgstr "Observações"
 
 #: patient/templates/patient/register_personal_data.html:271
 msgid "Apagar"
@@ -871,8 +881,8 @@ msgid ""
 "questionário está ativo"
 msgstr ""
 
-#~ msgid "Digite o nome ou o CPF para buscar um participante"
-#~ msgstr "Digite o nome ou o CPF para buscar um participante"
+#~ msgid "Digite"
+#~ msgstr "Digite o nome"
 
 #~ msgid "Você será redirecionado para o questionário. Aguarde."
 #~ msgstr "Você será redirecionado para o questionário. Aguarde."

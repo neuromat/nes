@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2015-09-29 19:00-0300\n"
+"POT-Creation-Date: 2015-09-30 14:27-0300\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -173,7 +173,7 @@ msgstr ""
 msgid "Senha inválida. Por favor tente de novo."
 msgstr "Invalid password. Please, try again."
 
-#: templates/registration/login.html:109
+#: templates/registration/login.html:104
 msgid "Usuario ou senha invalidos."
 msgstr "Invalid user or password."
 

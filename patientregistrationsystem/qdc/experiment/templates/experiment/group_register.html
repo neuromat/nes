@@ -141,7 +141,7 @@
                                                     {{ classification_of_diseases.abbreviated_description }}
                                                     {% if can_change %}
                                                         <a class="btn glyphicon glyphicon-remove" data-toggle="tooltip"
-                                                           data-placement="right" title="Remover" style="color: indianred;
+                                                           data-placement="right" title="{% trans "Remover" %}" style="color: indianred;
                                                        position: relative; float: right; padding: 0"
                                                            onclick="show_modal_remove({{ group.id }}, {{ classification_of_diseases.id }});"></a>
                                                     {% endif %}
@@ -166,7 +166,7 @@
                                 {# Can't use bootstrap tooltip in the columns, because it hurts the format of the table. #}
                                 {# data-toggle="tooltip" data-placement="top" #}
                                 <th class="col-md-2 hidden-xs"
-                                    title={% trans "Quantidade de preenchimentos exigida para cada participante" %}>
+                                    title="{% trans "Quantidade de preenchimentos exigida para cada participante" %}">
                                     {% trans "Preenchimentos necessários por participante" %}</th>
                                 <th class="col-md-2 hidden-xs"
                                     title={% trans "Quantidade de preenchimentos necessários por participante vezes a quantidade de participantes deste grupo" %}>
@@ -196,7 +196,7 @@
                                     {% for questionnaire_configuration in questionnaires_configuration_list %}
                                         <tr>
                                             <td>
-                                                <a data-toggle="tooltip" data-placement="left" title={% trans "Editar" %}
+                                                <a data-toggle="tooltip" data-placement="left" title="{% trans "Editar" %}"
                                                    href="/experiment/group/{{ group.id }}/questionnaire/{{ questionnaire_configuration.id }}">
                                                     {{ questionnaire_configuration.survey_title }}
                                                 </a>
@@ -227,7 +227,7 @@
                         <div class="col-xs-12 col-sm-12">
                             {% if number_of_subjects > 0 %}
                                 <div class="form-group">
-                                    <a data-toggle="tooltip" data-placement="left" title="Ver / Editar"
+                                    <a data-toggle="tooltip" data-placement="left" title="{% trans "Ver / Editar" %}"
                                        href="/experiment/group/{{ group.id }}/subjects">
                                         {% if number_of_subjects == 1 %}
                                             {% blocktrans %}Há {{ number_of_subjects }} participante cadastrado{% endblocktrans %}
@@ -266,7 +266,7 @@
                                         <tbody>
                                             <tr>
                                                 <td>
-                                                    <a data-toggle="tooltip" data-placement="left" title={% trans "Editar" %}
+                                                    <a data-toggle="tooltip" data-placement="left" title="{% trans "Editar" %}"
                                                        href="/experiment/component/G{{ group.id }}-{{ group.experimental_protocol.id}}">
                                                         {{ group.experimental_protocol.identification }}
                                                     </a>
@@ -278,7 +278,7 @@
                                                         <a class="btn glyphicon glyphicon-remove" data-toggle="tooltip"
                                                            data-placement="right"
                                                            style="color: indianred; position: relative; float: right; padding: 0"
-                                                           title={% trans "Desconfigurar protocolo experimental" %}
+                                                           title="{% trans "Desconfigurar protocolo experimental" %}"
                                                            onclick="show_modal_remove_experimental_protocol();">
                                                         </a>
                                                     {% endif %}
@@ -295,7 +295,7 @@
                                     <div class="form-group">
                                         <a href="/experiment/component/G{{ group.id }}/add_new/block" class="btn btn-primary"
                                                 data-toggle="tooltip" data-placement="right"
-                                                title={% trans "A raiz de um protocolo experimental é sempre um conjunto de passos. Você poderá criar um conjunto novo ou reusar algum que já tenha sido criado para este experimento." %}>
+                                                title="{% trans "A raiz de um protocolo experimental é sempre um conjunto de passos. Você poderá criar um conjunto novo ou reusar algum que já tenha sido criado para este experimento." %}">
                                             {% trans "Configurar / Criar" %}</a>
                                     </div>
                                 {% endif %}

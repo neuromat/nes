@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2015-09-29 18:54-0300\n"
+"POT-Creation-Date: 2015-09-30 14:19-0300\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -33,30 +33,30 @@ msgstr "Doubts and Suggestions"
 msgid "NES"
 msgstr ""
 
-#: quiz/templates/quiz/template.html:155
+#: quiz/templates/quiz/template.html:167
 msgid "Alterar senha"
 msgstr "Change password"
 
-#: quiz/templates/quiz/template.html:156
+#: quiz/templates/quiz/template.html:168
 msgid "Sair"
 msgstr "Logout"
 
-#: quiz/templates/quiz/template.html:175
+#: quiz/templates/quiz/template.html:187
 msgid "Participantes"
 msgstr "Participants"
 
-#: quiz/templates/quiz/template.html:181
+#: quiz/templates/quiz/template.html:193
 msgid "Usuários"
 msgstr "Users"
 
-#: quiz/templates/quiz/template.html:187
+#: quiz/templates/quiz/template.html:199
 msgid "Estudos"
 msgstr "Studies"
 
-#: quiz/templates/quiz/template.html:193
+#: quiz/templates/quiz/template.html:205
 msgid "Questionários"
 msgstr "Questionnaires"
 
-#: quiz/templates/quiz/template.html:198
+#: quiz/templates/quiz/template.html:210
 msgid "Contato"
 msgstr "Contact"

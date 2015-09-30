@@ -81,9 +81,9 @@
                                     {{ component.get_component_type_display }}
                                 </td>
                                 {% if component.component_type == "block" %}
-                                    <td><a data-toggle="tooltip" data-placement="left" title={% trans "Editar" %} href="/experiment/component/{{ component.id }}">{{ component.identification }}</a></td>
+                                    <td><a data-toggle="tooltip" data-placement="left" title="{% trans "Editar" %}" href="/experiment/component/{{ component.id }}">{{ component.identification }}</a></td>
                                 {% else %}
-                                    <td><a data-toggle="tooltip" data-placement="left" title={% trans "Editar" %} href="/experiment/component/edit/{{ component.id }}">{{ component.identification }}</a></td>
+                                    <td><a data-toggle="tooltip" data-placement="left" title="{% trans "Editar" %}" href="/experiment/component/edit/{{ component.id }}">{{ component.identification }}</a></td>
                                 {% endif %}
                                 <td>{{ component.description }}</td>
                             </tr>

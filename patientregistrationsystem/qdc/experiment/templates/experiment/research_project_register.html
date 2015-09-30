@@ -140,7 +140,7 @@
                                             {% if can_change %}
                                                 <a href="/experiment/keyword/remove/{{ research_project.id }}/{{keyword.id}}">
                                                     <span class="glyphicon glyphicon-remove" data-toggle="tooltip"
-                                                          style="color: indianred; vertical-align: -10%;" title={% trans "Remover" %} />
+                                                          style="color: indianred; vertical-align: -10%;" title="{% trans "Remover" %}" />
                                             {% endif %}
                                             </a>
                                         </button>
@@ -178,7 +178,7 @@
                             {% for experiment in experiments %}
                                 <tr>
                                     <td>{% if perms.experiment.change_experiment %}
-                                        <a data-toggle="tooltip" data-placement="left" title={% trans "Visualizar" %} href="/experiment/{{ experiment.id }}">{{ experiment.title }}</a></td>
+                                        <a data-toggle="tooltip" data-placement="left" title="{% trans "Visualizar" %}" href="/experiment/{{ experiment.id }}">{{ experiment.title }}</a></td>
                                         {% else %}
                                         {{ experiment.title }}
                                         {% endif %}

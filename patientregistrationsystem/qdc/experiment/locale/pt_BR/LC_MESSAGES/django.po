@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2015-09-29 18:54-0300\n"
+"POT-Creation-Date: 2015-09-30 14:19-0300\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -137,87 +137,101 @@ msgstr ""
 msgid "o conjunto de passos"
 msgstr ""
 
-#: experiment/templates/experiment/block_component.html:57
+#: experiment/templates/experiment/block_component.html:42
+msgid "Organização dos subpassos"
+msgstr ""
+
+#: experiment/templates/experiment/block_component.html:45
+msgid "Os subpassos serão executados um após o outro"
+msgstr ""
+
+#: experiment/templates/experiment/block_component.html:46
+msgid "Os subpassos serão executados todos ao mesmo tempo"
+msgstr ""
+
+#: experiment/templates/experiment/block_component.html:59
 msgid "Quantidade de passos obrigatórios"
 msgstr ""
 
-#: experiment/templates/experiment/block_component.html:62
+#: experiment/templates/experiment/block_component.html:64
 msgid "Todos"
 msgstr ""
 
-#: experiment/templates/experiment/block_component.html:88
+#: experiment/templates/experiment/block_component.html:90
 msgid "Passos com posição fixa"
 msgstr ""
 
-#: experiment/templates/experiment/block_component.html:95
-#: experiment/templates/experiment/block_component.html:238
+#: experiment/templates/experiment/block_component.html:97
+#: experiment/templates/experiment/block_component.html:240
 #: experiment/templates/experiment/component_list.html:71
 msgid "Tipo"
 msgstr ""
 
-#: experiment/templates/experiment/block_component.html:97
-#: experiment/templates/experiment/block_component.html:106
-#: experiment/templates/experiment/block_component.html:240
-#: experiment/templates/experiment/block_component.html:244
+#: experiment/templates/experiment/block_component.html:99
+#: experiment/templates/experiment/block_component.html:108
+#: experiment/templates/experiment/block_component.html:242
+#: experiment/templates/experiment/block_component.html:246
 msgid "Passo"
 msgstr ""
 
-#: experiment/templates/experiment/block_component.html:99
-#: experiment/templates/experiment/block_component.html:102
-#: experiment/templates/experiment/block_component.html:107
-#: experiment/templates/experiment/block_component.html:241
-#: experiment/templates/experiment/block_component.html:245
+#: experiment/templates/experiment/block_component.html:101
+#: experiment/templates/experiment/block_component.html:104
+#: experiment/templates/experiment/block_component.html:109
+#: experiment/templates/experiment/block_component.html:243
+#: experiment/templates/experiment/block_component.html:247
 msgid "Nome do uso"
 msgstr ""
 
-#: experiment/templates/experiment/block_component.html:100
+#: experiment/templates/experiment/block_component.html:102
 msgid "Ordem"
 msgstr ""
 
-#: experiment/templates/experiment/block_component.html:104
-#: experiment/templates/experiment/block_component.html:242
+#: experiment/templates/experiment/block_component.html:106
+#: experiment/templates/experiment/block_component.html:244
+#: experiment/templates/experiment/group_register.html:144
 #: experiment/templates/experiment/research_project_register.html:143
 #: experiment/templates/experiment/upload_consent_form.html:111
 msgid "Remover"
 msgstr ""
 
-#: experiment/templates/experiment/block_component.html:118
+#: experiment/templates/experiment/block_component.html:120
+#: experiment/templates/experiment/block_component.html:258
 msgid "Expandir"
 msgstr ""
 
-#: experiment/templates/experiment/block_component.html:134
-#: experiment/templates/experiment/block_component.html:151
-#: experiment/templates/experiment/block_component.html:166
-#: experiment/templates/experiment/block_component.html:269
+#: experiment/templates/experiment/block_component.html:136
+#: experiment/templates/experiment/block_component.html:153
+#: experiment/templates/experiment/block_component.html:168
+#: experiment/templates/experiment/block_component.html:271
 msgid "usos agrupados"
 msgstr ""
 
-#: experiment/templates/experiment/block_component.html:158
-#: experiment/templates/experiment/block_component.html:276
+#: experiment/templates/experiment/block_component.html:160
+#: experiment/templates/experiment/block_component.html:278
 msgid "Remover usos da lista"
 msgstr ""
 
-#: experiment/templates/experiment/block_component.html:173
+#: experiment/templates/experiment/block_component.html:175
 msgid "posições para passo aleatório agrupadas"
 msgstr ""
 
-#: experiment/templates/experiment/block_component.html:205
-#: experiment/templates/experiment/block_component.html:309
+#: experiment/templates/experiment/block_component.html:207
+#: experiment/templates/experiment/block_component.html:311
 msgid "Não possui"
 msgstr ""
 
-#: experiment/templates/experiment/block_component.html:216
-#: experiment/templates/experiment/block_component.html:321
+#: experiment/templates/experiment/block_component.html:218
+#: experiment/templates/experiment/block_component.html:323
 msgid "Inserir passo"
 msgstr ""
 
-#: experiment/templates/experiment/block_component.html:233
+#: experiment/templates/experiment/block_component.html:235
 msgid "Passos com posição aleatória"
 msgstr ""
 
-#: experiment/templates/experiment/block_component.html:347
-#: experiment/templates/experiment/component_template.html:294
-#: experiment/templates/experiment/component_template.html:314
+#: experiment/templates/experiment/block_component.html:349
+#: experiment/templates/experiment/component_template.html:293
+#: experiment/templates/experiment/component_template.html:313
 #: experiment/templates/experiment/experiment_register.html:162
 #: experiment/templates/experiment/experiment_register.html:181
 #: experiment/templates/experiment/group_register.html:320
@@ -232,9 +246,9 @@ msgstr ""
 msgid "Cancelar"
 msgstr ""
 
-#: experiment/templates/experiment/block_component.html:350
-#: experiment/templates/experiment/component_template.html:280
-#: experiment/templates/experiment/component_template.html:316
+#: experiment/templates/experiment/block_component.html:352
+#: experiment/templates/experiment/component_template.html:279
+#: experiment/templates/experiment/component_template.html:315
 #: experiment/templates/experiment/experiment_register.html:153
 #: experiment/templates/experiment/experiment_register.html:183
 #: experiment/templates/experiment/group_register.html:311
@@ -306,12 +320,13 @@ msgstr ""
 #: experiment/templates/experiment/component_list.html:84
 #: experiment/templates/experiment/component_list.html:86
 #: experiment/templates/experiment/component_template.html:154
-#: experiment/templates/experiment/component_template.html:171
+#: experiment/templates/experiment/component_template.html:167
 #: experiment/templates/experiment/configuration_line.html:13
 #: experiment/templates/experiment/configuration_line.html:15
 #: experiment/templates/experiment/configuration_line.html:47
 #: experiment/templates/experiment/configuration_line.html:49
 #: experiment/templates/experiment/experiment_register.html:101
+#: experiment/templates/experiment/experiment_register.html:122
 #: experiment/templates/experiment/group_register.html:95
 #: experiment/templates/experiment/group_register.html:199
 #: experiment/templates/experiment/group_register.html:269
@@ -326,7 +341,7 @@ msgid "Inserir novo passo"
 msgstr ""
 
 #: experiment/templates/experiment/component_list.html:111
-#: experiment/templates/experiment/component_template.html:298
+#: experiment/templates/experiment/component_template.html:297
 #: experiment/templates/experiment/experiment_register.html:166
 #: experiment/templates/experiment/group_register.html:324
 #: experiment/templates/experiment/questionnaire_view.html:227
@@ -349,54 +364,64 @@ msgstr ""
 msgid "Informações sobre"
 msgstr ""
 
-#: experiment/templates/experiment/component_template.html:182
+#: experiment/templates/experiment/component_template.html:179
 msgid "Quantidade de usos a inserir"
 msgstr ""
 
-#: experiment/templates/experiment/component_template.html:200
+#: experiment/templates/experiment/component_template.html:197
 msgid "Informações sobre esse uso do passo"
 msgstr ""
 
-#: experiment/templates/experiment/component_template.html:206
+#: experiment/templates/experiment/component_template.html:203
 #: experiment/templates/experiment/experiment_register.html:114
 #: experiment/templates/experiment/group_register.html:165
 msgid "Nome"
 msgstr ""
 
-#: experiment/templates/experiment/component_template.html:214
+#: experiment/templates/experiment/component_template.html:211
 msgid "Posição no conjunto de passos"
 msgstr ""
 
-#: experiment/templates/experiment/component_template.html:229
+#: experiment/templates/experiment/component_template.html:213
+msgid "A ordem de execução deste subpasso não varia"
+msgstr ""
+
+#: experiment/templates/experiment/component_template.html:214
+msgid ""
+"Este subpasso pode ser executado em qualquer posição do conjunto pai onde "
+"não há um passo fixo"
+msgstr ""
+
+#: experiment/templates/experiment/component_template.html:228
 msgid "Quantidade de repetições"
 msgstr ""
 
-#: experiment/templates/experiment/component_template.html:232
+#: experiment/templates/experiment/component_template.html:231
 #: experiment/templates/experiment/questionnaire_view.html:118
 msgid "Ilimitada"
 msgstr ""
 
-#: experiment/templates/experiment/component_template.html:248
+#: experiment/templates/experiment/component_template.html:247
 msgid "Intervalo entre repetições"
 msgstr ""
 
-#: experiment/templates/experiment/component_template.html:251
+#: experiment/templates/experiment/component_template.html:250
 #: experiment/templates/experiment/questionnaire_view.html:129
 msgid "Indefinido"
 msgstr ""
 
-#: experiment/templates/experiment/component_template.html:287
+#: experiment/templates/experiment/component_template.html:286
 msgid "Inserir"
 msgstr ""
 
-#: experiment/templates/experiment/component_template.html:289
+#: experiment/templates/experiment/component_template.html:288
 #: experiment/templates/experiment/experiment_register.html:158
 #: experiment/templates/experiment/group_register.html:316
 #: experiment/templates/experiment/research_project_register.html:207
 msgid "Salvar"
 msgstr ""
 
-#: experiment/templates/experiment/component_template.html:311
+#: experiment/templates/experiment/component_template.html:310
 msgid "Tem certeza que deseja excluir o passo?"
 msgstr ""
 
@@ -474,6 +499,10 @@ msgstr ""
 msgid "Critério de inclusão"
 msgstr ""
 
+#: experiment/templates/experiment/group_register.html:111
+msgid "Especificar o diagnóstico da doença ou o código da doença (CID-10)"
+msgstr ""
+
 #: experiment/templates/experiment/group_register.html:133
 msgid ""
 "Não há diagnósticos como critério de inclusão de participantes neste grupo"
@@ -538,6 +567,10 @@ msgstr ""
 #: experiment/templates/experiment/subjects.html:27
 #: experiment/templates/experiment/upload_consent_form.html:25
 msgid "Participantes"
+msgstr ""
+
+#: experiment/templates/experiment/group_register.html:230
+msgid "Ver / Editar"
 msgstr ""
 
 #: experiment/templates/experiment/group_register.html:233
@@ -694,6 +727,11 @@ msgstr ""
 msgid "Sem status"
 msgstr ""
 
+#: experiment/templates/experiment/questionnaire_view.html:180
+#: experiment/templates/experiment/subject_questionnaire_response_list.html:106
+msgid "Ver detalhes"
+msgstr ""
+
 #: experiment/templates/experiment/questionnaire_view.html:190
 #: experiment/templates/experiment/subject_questionnaire_response_list.html:116
 msgid "Completo"
@@ -831,16 +869,16 @@ msgstr ""
 msgid "indefinido"
 msgstr ""
 
-#: experiment/templates/experiment/subject_questionnaire_response_list.html:106
-msgid "Ver detalhes"
-msgstr ""
-
 #: experiment/templates/experiment/subject_questionnaire_response_list.html:170
 msgid "Tem certeza que deseja excluir o participante?"
 msgstr ""
 
 #: experiment/templates/experiment/subjects.html:62
 msgid "Inserir participante"
+msgstr ""
+
+#: experiment/templates/experiment/subjects.html:66
+msgid "Entre com o nome ou CPF do participante"
 msgstr ""
 
 #: experiment/templates/experiment/subjects.html:84
@@ -904,7 +942,7 @@ msgid "Estudo atualizado com sucesso."
 msgstr ""
 
 #: experiment/views.py:147 experiment/views.py:326 experiment/views.py:493
-#: experiment/views.py:1996 experiment/views.py:2018 experiment/views.py:2028
+#: experiment/views.py:1991 experiment/views.py:2013 experiment/views.py:2023
 msgid "Não há alterações para salvar."
 msgstr ""
 
@@ -987,89 +1025,95 @@ msgstr ""
 msgid "Anexo removido com sucesso."
 msgstr ""
 
-#: experiment/views.py:1424 experiment/views.py:2230 experiment/views.py:2338
-#: experiment/views.py:2362
+#: experiment/views.py:1424 experiment/views.py:2225 experiment/views.py:2333
+#: experiment/views.py:2357
 msgid "Passo incluído com sucesso."
 msgstr ""
 
-#: experiment/views.py:1545
-msgid " %(duration_in_years) ano "
-msgid_plural " %(duration_in_years) anos "
-msgstr[0] ""
-msgstr[1] ""
+#: experiment/views.py:1543
+msgid " anos "
+msgstr ""
 
-#: experiment/views.py:1553
+#: experiment/views.py:1543
+msgid " ano "
+msgstr ""
+
+#: experiment/views.py:1548
 msgid " meses "
 msgstr ""
 
-#: experiment/views.py:1553
+#: experiment/views.py:1548
 msgid " mês "
 msgstr ""
 
-#: experiment/views.py:1558
+#: experiment/views.py:1553
 msgid " semanas "
 msgstr ""
 
-#: experiment/views.py:1558
+#: experiment/views.py:1553
 msgid " semana "
 msgstr ""
 
-#: experiment/views.py:1563
+#: experiment/views.py:1558
 msgid " dias "
 msgstr ""
 
-#: experiment/views.py:1563
+#: experiment/views.py:1558
 msgid " dia "
 msgstr ""
 
-#: experiment/views.py:1568
+#: experiment/views.py:1563
 msgid " horas "
 msgstr ""
 
-#: experiment/views.py:1568
+#: experiment/views.py:1563
 msgid " hora "
 msgstr ""
 
-#: experiment/views.py:1573
+#: experiment/views.py:1568
 msgid " minutos "
 msgstr ""
 
-#: experiment/views.py:1573
+#: experiment/views.py:1568
 msgid " minuto "
 msgstr ""
 
-#: experiment/views.py:1578
+#: experiment/views.py:1573
 msgid " segundos "
 msgstr ""
 
-#: experiment/views.py:1578
+#: experiment/views.py:1573
 msgid " segundo "
 msgstr ""
 
-#: experiment/views.py:1583
+#: experiment/views.py:1578
 msgid " milissegundos "
 msgstr ""
 
-#: experiment/views.py:1583
+#: experiment/views.py:1578
 msgid " milissegundo "
 msgstr ""
 
-#: experiment/views.py:1777 experiment/views.py:2026
+#: experiment/views.py:1593
+msgid " e "
+msgstr ""
+
+#: experiment/views.py:1772 experiment/views.py:2021
 msgid "Uso do passo atualizado com sucesso."
 msgstr ""
 
-#: experiment/views.py:1783 experiment/views.py:2035
+#: experiment/views.py:1778 experiment/views.py:2030
 msgid "Componente removido com sucesso."
 msgstr ""
 
-#: experiment/views.py:1994 experiment/views.py:2016
+#: experiment/views.py:1989 experiment/views.py:2011
 msgid "Passo alterado com sucesso."
 msgstr ""
 
-#: experiment/views.py:2200
+#: experiment/views.py:2195
 msgid "Protocolo experimental incluído com sucesso."
 msgstr ""
 
-#: experiment/views.py:2228 experiment/views.py:2360
+#: experiment/views.py:2223 experiment/views.py:2355
 msgid "Passos incluídos com sucesso."
 msgstr ""

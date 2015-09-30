@@ -9,7 +9,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2015-09-29 18:54-0300\n"
+"POT-Creation-Date: 2015-09-30 14:19-0300\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -213,11 +213,11 @@ msgstr "Search participant"
 msgid " %(number_of_patients)s participantes cadastrados"
 msgstr " %(number_of_patients)s registered participants"
 
-#: patient/templates/patient/busca.html:23
-msgid "Digite"
-msgstr "Type_the_name_or_the_CPF_to_seek_a participant"
+#: patient/templates/patient/busca.html:24
+msgid "Digite o nome ou o CPF para buscar um participante"
+msgstr "Type the name or the CPF to seek a participant"
 
-#: patient/templates/patient/busca.html:32
+#: patient/templates/patient/busca.html:33
 msgid "Inserir novo"
 msgstr "Insert new"
 
@@ -252,6 +252,7 @@ msgstr "New Exam"
 
 #: patient/templates/patient/exams.html:110
 #: patient/templates/patient/medical_record.html:168
+#: patient/templates/patient/medical_record.html:170
 #: patient/templates/patient/register_medical_record.html:21
 msgid "Data"
 msgstr "Date"
@@ -337,6 +338,10 @@ msgstr "Date:"
 msgid "Responsável:"
 msgstr "Responsible:"
 
+#: patient/templates/patient/medical_record.html:103
+msgid "Especificar o diagnóstico da doença ou o código da doença (CID-10)"
+msgstr "Specify diagnosis or disease code (CID-10)"
+
 #: patient/templates/patient/medical_record.html:120
 msgid "Diagnóstico"
 msgstr "Diagnosis"
@@ -348,6 +353,10 @@ msgstr "Exams"
 #: patient/templates/patient/medical_record.html:127
 msgid "(sem diagnósticos)"
 msgstr "(no diagnosis)"
+
+#: patient/templates/patient/medical_record.html:136
+msgid "Remover"
+msgstr "Delete"
 
 #: patient/templates/patient/medical_record.html:142
 msgid "Em "
@@ -363,6 +372,11 @@ msgstr "Details"
 
 #: patient/templates/patient/medical_record.html:162
 msgid "Observações"
+msgstr "Observation"
+
+#: patient/templates/patient/medical_record.html:163
+#: patient/templates/patient/register_personal_data.html:266
+msgid "Observação"
 msgstr "Observation"
 
 #: patient/templates/patient/medical_record.html:202
@@ -438,6 +452,7 @@ msgstr "Do not save"
 msgid ""
 "É necessário salvar os dados pessoais antes de poder acessar as demais abas."
 msgstr ""
+"It is necessary to save personnal data before you can access other tabs."
 
 #: patient/templates/patient/register.html:168
 msgid "OK"
@@ -537,10 +552,6 @@ msgstr "Telephones"
 #: patient/templates/patient/register_personal_data.html:261
 msgid "Tipo"
 msgstr "Type"
-
-#: patient/templates/patient/register_personal_data.html:266
-msgid "Observação"
-msgstr "Observation"
 
 #: patient/templates/patient/register_personal_data.html:271
 msgid "Apagar"
@@ -771,10 +782,11 @@ msgstr "There is already registered participant with this CPF."
 
 #: patient/views.py:235
 msgid ""
-"Classe Social não calculada, pois nem todos oscampos necessários para o "
+"Classe Social não calculada, pois nem todos os campos necessários para o "
 "cálculo foram preenchidos."
 msgstr ""
-
+"Social class was not calculated, because all the necessary fields "
+"were not filled."
 #: patient/views.py:241
 msgid "Dados sociodemográficos gravados com sucesso."
 msgstr "Social demographic data successfully written. "
@@ -848,8 +860,8 @@ msgstr ""
 "Failed to generate token to answer the questionnaire. Make sure the "
 "questionnaire is active"
 
-#~ msgid "Digite o nome ou o CPF para buscar um participante"
-#~ msgstr "Type the name or the CPF to seek a participant"
+#~ msgid "Digite"
+#~ msgstr "Type_the_name_or_the_CPF_to_seek_a participant"
 
 #~ msgid "Você será redirecionado para o questionário. Aguarde."
 #~ msgstr "You will be redirected to questionnaire. Please wait."

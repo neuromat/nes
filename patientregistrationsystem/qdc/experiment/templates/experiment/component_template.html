@@ -162,13 +162,10 @@
                 {% if component_configuration %}
                     <div class="row" style="padding-bottom: 1em">
                         <div class="col-xs-12 col-sm-12">
-                            <a href=
-                                    {% if component_configuration.component.component_type == "block" %}
-                                           "/experiment/component/{{ path_of_the_components }}-{{ component_configuration.component.id }}"
-                                    {% else %}
-                                           "/experiment/component/edit/{{ path_of_the_components }}-{{ component_configuration.component.id }}"
-                                    {% endif %}
-                               class="btn btn-primary">{% trans "Editar" %} </a>
+                            <a      href="/experiment/component/{% if component_configuration.component.component_type != "block" %}edit/{% endif %}{{ path_of_the_components }}-{{ component_configuration.component.id }}"
+                                    class="btn btn-primary">
+                                {% trans "Editar" %}
+                            </a>
                         </div>
                     </div>
                 {% endif %}
@@ -213,9 +210,11 @@
                                 <div class="form-group">
                                     <label>{% trans "Posição no conjunto de passos" %}</label>
                                     <div class="input-group  input-group-sm">
+                                        {% trans "A ordem de execução deste subpasso não varia" as text_1 %}
+                                        {% trans "Este subpasso pode ser executado em qualquer posição do conjunto pai onde não há um passo fixo" as text_2 %}
                                         {% for radio in configuration_form.random_position %}
                                             <span style="margin-right: 15px;" data-toggle="tooltip" data-placement="bottom" title="
-                                            {% cycle 'A ordem de execução deste subpasso não varia' 'Este subpasso pode ser executado em qualquer posição do conjunto pai onde não há um passo fixo' %}">
+                                            {% cycle text_1 text_2 %}">
                                                 <div class="radio-inline">{{ radio }}</div>
                                             </span>
                                         {% endfor %}
