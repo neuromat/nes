@@ -1,7 +1,9 @@
 from django.conf import settings
 from django.contrib.auth.decorators import login_required
+from django.http import HttpResponseRedirect
 from django.shortcuts import render
-from django.utils.translation import activate
+from django.utils.translation import activate, LANGUAGE_SESSION_KEY
+
 
 def qdc_permission_denied_view(request, template_name="admin/qdc_403.html"):
 
@@ -21,10 +23,11 @@ def contact(request):
 
     return render(request, 'quiz/contato.html', context)
 
+
 @login_required
-#@permission_required('patient.add_medicalrecorddata')
-def language_change(request, language_code, template_name='language/change_lang.html'):
+def language_change(request, language_code):
+
     activate(language_code)
-    request.LANGUAGE_CODE = language_code
-    return render(request, template_name,
-                  {})
+    request.session[LANGUAGE_SESSION_KEY] = language_code
+
+    return HttpResponseRedirect(request.GET['next'])
