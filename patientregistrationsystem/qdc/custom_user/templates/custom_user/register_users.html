@@ -174,7 +174,7 @@
                             <div class="input-group input-group-sm has-feedback">
                                 <span class="input-group-addon"> <span class="glyphicon glyphicon-user"></span></span>
                                 <input class="form-control" id="id_new_password2" maxlength="128" name="password2"
-                                       placeholder={% trans "Entrar senha" %} type="password" onkeyup="checkPass(); beginCheckPassword1=true;">
+                                       placeholder="{% trans "Entrar senha" %}" type="password" onkeyup="checkPass(); beginCheckPassword1=true;">
                             </div>
                             <div class="help-block with-errors">
                                 {% for error in form.errors.password %}
