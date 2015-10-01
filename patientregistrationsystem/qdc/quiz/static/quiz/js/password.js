@@ -8,17 +8,15 @@ function checkPass(){
     var password1 = $('#id_new_password1').val();
     var password2 = $('#id_new_password2').val();
     var confirmation = $('#id_new_password2_form_group');
-    if(password1){
-        if(password1 == password2){
-            confirmation.attr('class', 'has-success');
-            $('#id_new_password1_form_group').removeClass('has-error');
-            $("#message").text("");
-            return false;
-        }else{
-            confirmation.attr('class', 'has-error');
-            $("#message").text(gettext("Senhas não combinam"));
-            return true;
-        }
+    if(password1 && (password1 == password2)){
+        confirmation.attr('class', 'has-success');
+        $('#id_new_password1_form_group').removeClass('has-error');
+        $("#message").text("");
+        return false;
+    }else{
+        confirmation.attr('class', 'has-error');
+        $("#message").text(gettext("Senhas não combinam"));
+        return true;
     }
 }
 

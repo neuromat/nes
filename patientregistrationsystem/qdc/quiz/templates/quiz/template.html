@@ -182,33 +182,48 @@
         <div class="col-md-2">
             <ul id="myMenu" class="nav nav-pills nav-stacked">
 
+                <li {% block activeContact %}{% endblock %}>
+                    <a href="/home/">
+                        <span class="glyphicon glyphicon-home"></span>
+                        {% trans "Home" %}
+                    </a>
+                </li>
+
                 {% if perms.patient.view_patient %}
                     <li {% block activePatient %}{% endblock %} >
-                        <a href="/patient/find/">{% trans "Participantes" %}</a>
-                    </li>
-                {% endif %}
-
-                {% if perms.auth.add_user and perms.auth.change_user %}
-                    <li {% block activeUser %}{% endblock %}>
-                        <a href="/user/search/">{% trans "Usuários" %}</a>
+                        <a href="/patient/find/">
+                            <span class="glyphicon glyphicon-screenshot"></span>
+                            {% trans "Participantes" %}
+                        </a>
                     </li>
                 {% endif %}
 
                 {% if perms.experiment.view_researchproject %}
                     <li {% block activeAdvancedResearchProject %}{% endblock %}>
-                        <a href="/experiment/research_project/list/">{% trans "Estudos" %}</a>
+                        <a href="/experiment/research_project/list/">
+                            <span class="glyphicon glyphicon-book"></span>
+                            {% trans "Estudos" %}
+                        </a>
                     </li>
                 {% endif %}
 
                 {% if perms.survey.view_survey %}
                     <li {% block activeAdvancedSurvey %}{% endblock %}>
-                        <a href="/survey/list/">{% trans "Questionários" %}</a>
+                        <a href="/survey/list/">
+                            <span class="glyphicon glyphicon-list-alt"></span>
+                            {% trans "Questionários" %}
+                        </a>
                     </li>
                 {% endif %}
 
-                <li {% block activeContact %}{% endblock %}>
-                    <a href="/home/">{% trans "Contato" %}</a>
-                </li>
+                {% if perms.auth.add_user and perms.auth.change_user %}
+                    <li {% block activeUser %}{% endblock %}>
+                        <a href="/user/search/">
+                            <span class="glyphicon glyphicon-user"></span>
+                            {% trans "Usuários" %}
+                        </a>
+                    </li>
+                {% endif %}
 
             </ul>
         </div>

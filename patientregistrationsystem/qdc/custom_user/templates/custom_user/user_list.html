@@ -41,7 +41,7 @@
                         <tbody>
                         {% for user in object_list %}
                             <tr>
-                                <td><a data-toggle="tooltip" data-placement="left" title="{% trans "Editar" %} href="/user/edit/{{ user.id }}">{{ user.username }}"</a></td>
+                                <td><a data-toggle="tooltip" data-placement="left" title="{% trans "Editar" %}" href="/user/edit/{{ user.id }}">{{ user.username }}</a></td>
                                 <td>{{ user.first_name }} {{ user.last_name }}</td>
                                 <td class="hidden-xs hidden-sm">{{ user.email }}</td>
                             </tr>
