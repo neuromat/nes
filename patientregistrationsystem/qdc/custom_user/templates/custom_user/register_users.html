@@ -59,7 +59,7 @@
 
 {% block form %}
     <div class="row">
-    <form id="user_form" method="post" onsubmit="return Validate()">
+    <form id="user_form" method="post" onsubmit="return Validate()" data-toggle="validator">
     {% csrf_token %}
 {% endblock %}
 
@@ -140,7 +140,7 @@
                             <label for="name" class="control-label">E-mail<b style="color: red;">*</b></label>
 
                             <div class="input-group input-group-sm">
-                                <span class="input-group-addon"> <span class="glyphicon glyphicon-user"></span></span>
+                                <span class="input-group-addon"> <span class="glyphicon glyphicon-envelope"></span></span>
                                 {{ form.email }}
                             </div>
                             <div class="help-block with-errors">
@@ -173,7 +173,7 @@
                             <label for="name" class="control-label">{% trans "Confirmar senha" %}<b style="color: red;">*</b></label>
                             <div class="input-group input-group-sm has-feedback">
                                 <span class="input-group-addon"> <span class="glyphicon glyphicon-user"></span></span>
-                                <input class="form-control" id="id_new_password2" maxlength="128" name="password2"
+                                <input class="form-control" id="id_new_password2" maxlength="128" name="password2" required = ""
                                        placeholder="{% trans "Entrar senha" %}" type="password" onkeyup="checkPass(); beginCheckPassword1=true;">
                             </div>
                             <div class="help-block with-errors">

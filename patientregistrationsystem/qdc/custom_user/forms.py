@@ -11,13 +11,16 @@ class UserForm(ModelForm):
         fields = ['first_name', 'last_name', 'username', 'password', 'email', 'groups']
 
         widgets = {
-            'first_name': TextInput(attrs={'class': 'form-control', 'placeholder': _('Entrar primeiro nome')}),
+            'first_name': TextInput(attrs={'class': 'form-control', 'autofocus': "true",
+                                           'placeholder': _('Entrar primeiro nome')}),
             'last_name': TextInput(attrs={'class': 'form-control', 'placeholder': _('Entrar último nome')}),
-            'username': TextInput(attrs={'class': 'form-control', 'placeholder': _('Entrar nome de usuário')}),
-            'password': PasswordInput(attrs={'id': 'id_new_password1', 'class': 'form-control',
-                                             'placeholder': _('Entrar senha'),
+            'username': TextInput(attrs={'class': 'form-control', 'required': "",
+                                         'placeholder': _('Entrar nome de usuário')}),
+            'password': PasswordInput(attrs={'id': 'id_new_password1', 'required': "",
+                                             'class': 'form-control', 'placeholder': _('Entrar senha'),
                                              'onkeyup': "passwordForce(); if(beginCheckPassword1)checkPass();"}),
-            'email': TextInput(attrs={'class': 'form-control', 'placeholder': _('Entrar e-mail'), 'id': "email",
+            'email': TextInput(attrs={'class': 'form-control', 'required': "",
+                                      'placeholder': _('Entrar e-mail'), 'id': "email",
                                       'type': 'email', 'data-error': "E-mail inválido",
                                       'pattern': '^[_A-Za-z0-9-\+]+(\.[_A-Za-z0-9-]+)*@[A-Za-z0-9-]' +
                                                  '+(\.[A-Za-z0-9]+)*(\.[A-Za-z]{2,})$'}),

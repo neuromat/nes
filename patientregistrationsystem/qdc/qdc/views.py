@@ -1,8 +1,9 @@
 from django.conf import settings
+from django.contrib import messages
 from django.contrib.auth.decorators import login_required
 from django.http import HttpResponseRedirect
 from django.shortcuts import render
-from django.utils.translation import activate, LANGUAGE_SESSION_KEY
+from django.utils.translation import activate, LANGUAGE_SESSION_KEY, ugettext as _
 
 
 def qdc_permission_denied_view(request, template_name="admin/qdc_403.html"):
@@ -31,3 +32,11 @@ def language_change(request, language_code):
     request.session[LANGUAGE_SESSION_KEY] = language_code
 
     return HttpResponseRedirect(request.GET['next'])
+
+
+@login_required
+def password_changed(request):
+
+    messages.success(request, _('Senha alterada com sucesso.'))
+
+    return contact(request)
