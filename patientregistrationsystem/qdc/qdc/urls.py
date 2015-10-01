@@ -50,7 +50,10 @@ urlpatterns = patterns(
 js_info_dict = {
     'packages': ('patient',
     'experiment',
-    'survey',),
+    'survey',
+    'custom_user',
+    'quiz',
+                 ),
 }
 
 urlpatterns += patterns('',

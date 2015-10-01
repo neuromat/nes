@@ -12,14 +12,14 @@ from patient.models import Patient, ClassificationOfDiseases
 from survey.models import Survey
 
 TIME_UNITS = (
-    ("ms", "milesegundo(s)"),
-    ("s", "segundo(s)"),
-    ("min", "minuto(s)"),
-    ("h", "hora(s)"),
-    ("d", "dia(s)"),
-    ("w", "semana(s)"),
-    ("mon", "mês (meses)"),
-    ("y", "ano(s)"),
+    ("ms", _("milesegundo(s)")),
+    ("s", _("segundo(s)")),
+    ("min", _("minuto(s)")),
+    ("h", _("hora(s)")),
+    ("d", _("dia(s)")),
+    ("w", _("semana(s)")),
+    ("mon", _("mês (meses)")),
+    ("y", _("ano(s)")),
 )
 
 
@@ -87,13 +87,13 @@ class Experiment(models.Model):
 
 class Component(models.Model):
     COMPONENT_TYPES = (
-        ("block", "Conjunto de passos"),
-        ("instruction", "Instrução"),
-        ("pause", "Pausa"),
-        ("questionnaire", "Questionário"),
-        ("stimulus", "Estímulo"),
-        ("task", "Tarefa para o sujeito"),
-        ("task_experiment", "Tarefa para o experimentador"),
+        ("block", _("Conjunto de passos")),
+        ("instruction", _("Instrução")),
+        ("pause", _("Pausa")),
+        ("questionnaire", _("Questionário")),
+        ("stimulus", _("Estímulo")),
+        ("task", _("Tarefa para o sujeito")),
+        ("task_experiment", _("Tarefa para o experimentador")),
     )
 
     identification = models.CharField(null=False, max_length=50, blank=False)

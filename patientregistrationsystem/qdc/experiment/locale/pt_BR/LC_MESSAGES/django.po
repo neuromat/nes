@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2015-09-30 14:19-0300\n"
+"POT-Creation-Date: 2015-10-01 12:07-0300\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -108,8 +108,70 @@ msgstr ""
 msgid "Data de início deve ser preenchida"
 msgstr ""
 
+#: experiment/models.py:15
+msgid "milesegundo(s)"
+msgstr ""
+
+#: experiment/models.py:16
+msgid "segundo(s)"
+msgstr ""
+
+#: experiment/models.py:17
+msgid "minuto(s)"
+msgstr ""
+
+#: experiment/models.py:18
+msgid "hora(s)"
+msgstr ""
+
+#: experiment/models.py:19
+msgid "dia(s)"
+msgstr ""
+
+#: experiment/models.py:20
+msgid "semana(s)"
+msgstr ""
+
+#: experiment/models.py:21
+msgid "mês (meses)"
+msgstr ""
+
+#: experiment/models.py:22
+msgid "ano(s)"
+msgstr ""
+
 #: experiment/models.py:28
 msgid "Data de preenchimento não pode ser maior que a data de hoje."
+msgstr ""
+
+#: experiment/models.py:90
+msgid "Conjunto de passos"
+msgstr ""
+
+#: experiment/models.py:91
+msgid "Instrução"
+msgstr ""
+
+#: experiment/models.py:92
+msgid "Pausa"
+msgstr ""
+
+#: experiment/models.py:93
+#: experiment/templates/experiment/subject_questionnaire_response_form.html:120
+#: experiment/templates/experiment/subject_questionnaire_response_list.html:66
+msgid "Questionário"
+msgstr ""
+
+#: experiment/models.py:94
+msgid "Estímulo"
+msgstr ""
+
+#: experiment/models.py:95
+msgid "Tarefa para o sujeito"
+msgstr "Tarefa para o participipante"
+
+#: experiment/models.py:96
+msgid "Tarefa para o experimentador"
 msgstr ""
 
 #: experiment/templates/experiment/ajax_cid10.html:8
@@ -832,11 +894,6 @@ msgstr ""
 msgid "Continuar preenchimento"
 msgstr ""
 
-#: experiment/templates/experiment/subject_questionnaire_response_form.html:120
-#: experiment/templates/experiment/subject_questionnaire_response_list.html:66
-msgid "Questionário"
-msgstr ""
-
 #: experiment/templates/experiment/subject_questionnaire_response_form.html:148
 msgid "Responsável pelo preenchimento"
 msgstr ""
@@ -901,16 +958,13 @@ msgstr ""
 
 #: experiment/templates/experiment/task_component.html:8
 #: experiment/templates/experiment/task_component.html:18
+#: experiment/templates/experiment/task_component.html:24
 msgid "Nova tarefa para o sujeito"
-msgstr ""
+msgstr "Nova tarefa para o participante"
 
 #: experiment/templates/experiment/task_component.html:13
 msgid "a tarefa para o sujeito"
-msgstr ""
-
-#: experiment/templates/experiment/task_component.html:24
-msgid "Nova tafefa para o sujeito"
-msgstr ""
+msgstr "a tarefa para o participante"
 
 #: experiment/templates/experiment/task_experiment_component.html:8
 #: experiment/templates/experiment/task_experiment_component.html:18

@@ -9,7 +9,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2015-09-30 14:19-0300\n"
+"POT-Creation-Date: 2015-10-01 12:07-0300\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -604,7 +604,7 @@ msgstr "Fills"
 
 #: patient/templates/patient/register_questionnaires.html:35
 msgid "Não é mais avaliação de entrada"
-msgstr "Medical evaluation"
+msgstr "It is not entrance evaluation anymore"
 
 #: patient/templates/patient/register_questionnaires.html:40
 msgid "Falta preencher"
@@ -781,12 +781,17 @@ msgid "Já existe participante cadastrado com este CPF."
 msgstr "There is already registered participant with this CPF."
 
 #: patient/views.py:235
+#, fuzzy
+#| msgid ""
+#| "Classe Social não calculada, pois nem todos os campos necessários para o "
+#| "cálculo foram preenchidos."
 msgid ""
-"Classe Social não calculada, pois nem todos os campos necessários para o "
+"Classe Social não calculada, pois nem todos oscampos necessários para o "
 "cálculo foram preenchidos."
 msgstr ""
-"Social class was not calculated, because all the necessary fields "
-"were not filled."
+"Social class was not calculated, because all the necessary fields were not "
+"filled."
+
 #: patient/views.py:241
 msgid "Dados sociodemográficos gravados com sucesso."
 msgstr "Social demographic data successfully written. "

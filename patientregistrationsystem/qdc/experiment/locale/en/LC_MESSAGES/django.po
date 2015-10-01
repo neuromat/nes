@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2015-09-30 14:19-0300\n"
+"POT-Creation-Date: 2015-10-01 12:07-0300\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -101,15 +101,77 @@ msgstr "Quantity must be filled."
 #: experiment/templates/experiment/research_project_list.html:36
 #: experiment/templates/experiment/research_project_register.html:116
 msgid "Responsável"
-msgstr "Responsiblex"
+msgstr "Responsible"
 
 #: experiment/forms.py:198
 msgid "Data de início deve ser preenchida"
 msgstr "Initial date must be filled."
 
+#: experiment/models.py:15
+msgid "milesegundo(s)"
+msgstr "milisecond(s)"
+
+#: experiment/models.py:16
+msgid "segundo(s)"
+msgstr "second(s)"
+
+#: experiment/models.py:17
+msgid "minuto(s)"
+msgstr "minute(s)"
+
+#: experiment/models.py:18
+msgid "hora(s)"
+msgstr "hour(s)"
+
+#: experiment/models.py:19
+msgid "dia(s)"
+msgstr "day(s)"
+
+#: experiment/models.py:20
+msgid "semana(s)"
+msgstr "week(s)"
+
+#: experiment/models.py:21
+msgid "mês (meses)"
+msgstr "month(s)"
+
+#: experiment/models.py:22
+msgid "ano(s)"
+msgstr "year(s)"
+
 #: experiment/models.py:28
 msgid "Data de preenchimento não pode ser maior que a data de hoje."
 msgstr "Fill date cannot be greater than today."
+
+#: experiment/models.py:90
+msgid "Conjunto de passos"
+msgstr "Set of steps"
+
+#: experiment/models.py:91
+msgid "Instrução"
+msgstr "Instruction"
+
+#: experiment/models.py:92
+msgid "Pausa"
+msgstr "Pause"
+
+#: experiment/models.py:93
+#: experiment/templates/experiment/subject_questionnaire_response_form.html:120
+#: experiment/templates/experiment/subject_questionnaire_response_list.html:66
+msgid "Questionário"
+msgstr "Questionnaire"
+
+#: experiment/models.py:94
+msgid "Estímulo"
+msgstr "Stimulus"
+
+#: experiment/models.py:95
+msgid "Tarefa para o sujeito"
+msgstr "Task for participant"
+
+#: experiment/models.py:96
+msgid "Tarefa para o experimentador"
+msgstr "Task for experimenter"
 
 #: experiment/templates/experiment/ajax_cid10.html:8
 msgid "Nenhuma doença encontrada!"
@@ -574,10 +636,8 @@ msgid "Participantes"
 msgstr "Participant"
 
 #: experiment/templates/experiment/group_register.html:230
-#, fuzzy
-#| msgid "Editar"
 msgid "Ver / Editar"
-msgstr "Edit"
+msgstr "View / Edit"
 
 #: experiment/templates/experiment/group_register.html:233
 #, python-format
@@ -838,12 +898,7 @@ msgstr "Answers"
 #: experiment/templates/experiment/subject_questionnaire_response_form.html:47
 #: experiment/templates/experiment/subject_questionnaire_response_form.html:243
 msgid "Continuar preenchimento"
-msgstr "Keep filling"
-
-#: experiment/templates/experiment/subject_questionnaire_response_form.html:120
-#: experiment/templates/experiment/subject_questionnaire_response_list.html:66
-msgid "Questionário"
-msgstr "Questionnaire"
+msgstr "Continue filling"
 
 #: experiment/templates/experiment/subject_questionnaire_response_form.html:148
 msgid "Responsável pelo preenchimento"
@@ -909,16 +964,13 @@ msgstr "No attachments"
 
 #: experiment/templates/experiment/task_component.html:8
 #: experiment/templates/experiment/task_component.html:18
+#: experiment/templates/experiment/task_component.html:24
 msgid "Nova tarefa para o sujeito"
 msgstr "New task for subject"
 
 #: experiment/templates/experiment/task_component.html:13
 msgid "a tarefa para o sujeito"
 msgstr "the task for subject"
-
-#: experiment/templates/experiment/task_component.html:24
-msgid "Nova tafefa para o sujeito"
-msgstr "New task for subject"
 
 #: experiment/templates/experiment/task_experiment_component.html:8
 #: experiment/templates/experiment/task_experiment_component.html:18
@@ -1130,3 +1182,6 @@ msgstr "Experimental protocol included successfully."
 #: experiment/views.py:2223 experiment/views.py:2355
 msgid "Passos incluídos com sucesso."
 msgstr "Steps included successfully."
+
+#~ msgid "Nova tafefa para o sujeito"
+#~ msgstr "New task for subject"

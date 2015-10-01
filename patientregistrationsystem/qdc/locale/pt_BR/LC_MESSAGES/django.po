@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2015-09-30 14:19-0300\n"
+"POT-Creation-Date: 2015-10-01 12:07-0300\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -65,7 +65,7 @@ msgid "Senha"
 msgstr ""
 
 #: templates/registration/login.html:87
-#: templates/registration/password_reset_confirm.html:130
+#: templates/registration/password_reset_confirm.html:126
 msgid "Confirmar"
 msgstr ""
 
@@ -104,30 +104,30 @@ msgstr ""
 msgid "Acessar"
 msgstr ""
 
-#: templates/registration/password_reset_confirm.html:121
-#: templates/registration/password_reset_form.html:53
+#: templates/registration/password_reset_confirm.html:117
+#: templates/registration/password_reset_form.html:51
 msgid "Redefinir senha"
 msgstr ""
 
-#: templates/registration/password_reset_confirm.html:124
+#: templates/registration/password_reset_confirm.html:120
 msgid ""
 "Senha deve conter pelo menos 4 caracteres e ao menos uma letra maiúscula e "
 "minúscula, dígito e caractere especial"
 msgstr ""
 
-#: templates/registration/password_reset_confirm.html:125
+#: templates/registration/password_reset_confirm.html:121
 msgid "Nova senha"
 msgstr ""
 
-#: templates/registration/password_reset_confirm.html:128
+#: templates/registration/password_reset_confirm.html:124
 msgid "Confirme senha"
 msgstr ""
 
-#: templates/registration/password_reset_confirm.html:133
+#: templates/registration/password_reset_confirm.html:129
 msgid "Redefinição de senha falhou."
 msgstr ""
 
-#: templates/registration/password_reset_confirm.html:134
+#: templates/registration/password_reset_confirm.html:130
 msgid ""
 "Link inválido para redefinição de senha, possivelmente porque este link ja "
 "foi usado anteriormente. <br/>\n"
@@ -165,12 +165,12 @@ msgid ""
 "    "
 msgstr ""
 
-#: templates/registration/password_reset_form.html:41
+#: templates/registration/password_reset_form.html:39
 msgid ""
 "Especifique seu e-mail para receber as instruções para redefinição de senha."
 msgstr ""
 
-#: templates/registration/password_reset_form.html:51
+#: templates/registration/password_reset_form.html:49
 msgid "E-mail"
 msgstr ""
 

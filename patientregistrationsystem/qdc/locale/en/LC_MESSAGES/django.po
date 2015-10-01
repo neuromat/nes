@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2015-09-30 14:19-0300\n"
+"POT-Creation-Date: 2015-10-01 12:07-0300\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -66,7 +66,7 @@ msgid "Senha"
 msgstr "Password"
 
 #: templates/registration/login.html:87
-#: templates/registration/password_reset_confirm.html:130
+#: templates/registration/password_reset_confirm.html:126
 msgid "Confirmar"
 msgstr "Confirm"
 
@@ -119,12 +119,12 @@ msgstr ""
 msgid "Acessar"
 msgstr "Access"
 
-#: templates/registration/password_reset_confirm.html:121
-#: templates/registration/password_reset_form.html:53
+#: templates/registration/password_reset_confirm.html:117
+#: templates/registration/password_reset_form.html:51
 msgid "Redefinir senha"
 msgstr "Reset password"
 
-#: templates/registration/password_reset_confirm.html:124
+#: templates/registration/password_reset_confirm.html:120
 msgid ""
 "Senha deve conter pelo menos 4 caracteres e ao menos uma letra maiúscula e "
 "minúscula, dígito e caractere especial"
@@ -132,19 +132,19 @@ msgstr ""
 "Password must have at least 4 characters and at least a capital letter and "
 "small letter, digit and special character"
 
-#: templates/registration/password_reset_confirm.html:125
+#: templates/registration/password_reset_confirm.html:121
 msgid "Nova senha"
 msgstr "New password"
 
-#: templates/registration/password_reset_confirm.html:128
+#: templates/registration/password_reset_confirm.html:124
 msgid "Confirme senha"
 msgstr "Confirm password"
 
-#: templates/registration/password_reset_confirm.html:133
+#: templates/registration/password_reset_confirm.html:129
 msgid "Redefinição de senha falhou."
 msgstr "Password reset failed."
 
-#: templates/registration/password_reset_confirm.html:134
+#: templates/registration/password_reset_confirm.html:130
 msgid ""
 "Link inválido para redefinição de senha, possivelmente porque este link ja "
 "foi usado anteriormente. <br/>\n"
@@ -199,12 +199,12 @@ msgstr ""
 "    Neuromat Team.\n"
 "    "
 
-#: templates/registration/password_reset_form.html:41
+#: templates/registration/password_reset_form.html:39
 msgid ""
 "Especifique seu e-mail para receber as instruções para redefinição de senha."
 msgstr "Please enter your e-mail to receive instructions for password reset."
 
-#: templates/registration/password_reset_form.html:51
+#: templates/registration/password_reset_form.html:49
 msgid "E-mail"
 msgstr ""
 
