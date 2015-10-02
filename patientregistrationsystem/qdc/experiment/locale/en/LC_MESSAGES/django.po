@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2015-10-01 12:07-0300\n"
+"POT-Creation-Date: 2015-10-02 10:55-0300\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -503,6 +503,8 @@ msgid ""
 "permite repetições ilimitadas. Está sendo considerado apenas uma execução "
 "nesses casos."
 msgstr ""
+"Calculated from sub-steps. This set has at least one use that allows "
+"unlimited reptitions. It' been considered only one execution in these cases."
 
 #: experiment/templates/experiment/duration.html:11
 msgid "Calculada a partir dos subpassos"
@@ -1080,7 +1082,7 @@ msgstr "Participant has already been inserted in this group."
 
 #: experiment/views.py:1218
 msgid "Termo salvo com sucesso."
-msgstr "<> saved successfully."
+msgstr "Consent term saved successfully."
 
 #: experiment/views.py:1223
 msgid "Não existem anexos para salvar"
@@ -1182,6 +1184,3 @@ msgstr "Experimental protocol included successfully."
 #: experiment/views.py:2223 experiment/views.py:2355
 msgid "Passos incluídos com sucesso."
 msgstr "Steps included successfully."
-
-#~ msgid "Nova tafefa para o sujeito"
-#~ msgstr "New task for subject"

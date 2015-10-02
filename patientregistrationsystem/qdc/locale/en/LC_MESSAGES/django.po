@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2015-10-01 12:07-0300\n"
+"POT-Creation-Date: 2015-10-02 10:55-0300\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -27,19 +27,29 @@ msgstr ""
 
 #: templates/admin/qdc_403.html:9
 msgid "Acesso não autorizado"
-msgstr "Access not authorized"
+msgstr "Access is not authorized"
 
-#: templates/registration/change_password_custom.html:44
+#: templates/registration/change_password_custom.html:42
+#, fuzzy
+msgid "Alterar senha"
+msgstr "New password"
+
+#: templates/registration/change_password_custom.html:67
+#: templates/registration/password_reset_confirm.html:120
 msgid ""
 "Senha deve conter pelo menos 8 caracteres, incluindo ao menos uma letra "
 "maiúscula, dígito ou caractere especial."
 msgstr ""
-"The password must have at least 8 characters, including at least one lower "
-"case letter, upper case letter, digit or special character."
+"Password must contain at least 8 characters, including at least one "
+"uppercase letter, digit or special character."
 
-#: templates/registration/change_password_custom.html:65
+#: templates/registration/change_password_custom.html:109
 msgid "Salvar"
 msgstr "Save"
+
+#: templates/registration/change_password_custom.html:112
+msgid "Cancelar"
+msgstr ""
 
 #: templates/registration/logged_out.html:4
 msgid "Home"
@@ -124,14 +134,6 @@ msgstr "Access"
 msgid "Redefinir senha"
 msgstr "Reset password"
 
-#: templates/registration/password_reset_confirm.html:120
-msgid ""
-"Senha deve conter pelo menos 4 caracteres e ao menos uma letra maiúscula e "
-"minúscula, dígito e caractere especial"
-msgstr ""
-"Password must have at least 4 characters and at least a capital letter and "
-"small letter, digit and special character"
-
 #: templates/registration/password_reset_confirm.html:121
 msgid "Nova senha"
 msgstr "New password"
@@ -213,9 +215,12 @@ msgstr ""
 msgid "Password reset on %(site_name)s"
 msgstr ""
 
-#, fuzzy
-#~ msgid "Entrar senha"
-#~ msgstr "New password"
+#~ msgid ""
+#~ "Senha deve conter pelo menos 4 caracteres e ao menos uma letra maiúscula "
+#~ "e minúscula, dígito e caractere especial"
+#~ msgstr ""
+#~ "Password must have at least 4 characters and at least a capital letter "
+#~ "and small letter, digit and special character"
 
 #, fuzzy
 #~ msgid "Usuário criado com sucesso."

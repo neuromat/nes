@@ -49,7 +49,7 @@ function passwordForce(){
             if (password.match(/[0-9]+/)) {
                 force += 20;
             }
-            if (password.match(/[ !"@#$%&'()*+,-./:;<=>?@[\\\]_{|}~]+/)) {
+            if (password.match(/[ !"@#$%&'()*+,-.\/:;<=>?@[\\\]_{|}~]+/)) {
                 force += 25;
             }
         }

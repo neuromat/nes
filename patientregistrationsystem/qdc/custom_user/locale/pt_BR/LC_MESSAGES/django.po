@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2015-10-01 12:07-0300\n"
+"POT-Creation-Date: 2015-10-02 10:55-0300\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -18,24 +18,24 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=(n > 1);\n"
 
-#: custom_user/forms.py:14
+#: custom_user/forms.py:15
 msgid "Entrar primeiro nome"
 msgstr ""
 
-#: custom_user/forms.py:15
+#: custom_user/forms.py:16
 msgid "Entrar último nome"
 msgstr ""
 
-#: custom_user/forms.py:16
+#: custom_user/forms.py:18
 msgid "Entrar nome de usuário"
 msgstr ""
 
-#: custom_user/forms.py:18 custom_user/forms.py:40
+#: custom_user/forms.py:20 custom_user/forms.py:43
 #: custom_user/templates/custom_user/register_users.html:177
 msgid "Entrar senha"
 msgstr ""
 
-#: custom_user/forms.py:20
+#: custom_user/forms.py:23
 msgid "Entrar e-mail"
 msgstr ""
 
