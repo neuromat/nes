@@ -739,7 +739,7 @@ def subject_questionnaire_response_start_fill_questionnaire(request, subject_id,
             messages.warning(request, _('Preenchimento não disponível - Questionário não contém campos padronizados'))
             return None, None
 
-        result = questionnaire_lime_survey.add_participant(lime_survey_id, patient.name, '', patient.email)
+        result = questionnaire_lime_survey.add_participant(lime_survey_id)
 
         questionnaire_lime_survey.release_session_key()
 

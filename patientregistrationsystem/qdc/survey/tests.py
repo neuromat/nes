@@ -76,7 +76,7 @@ class ABCSearchEngineTest(TestCase):
             self.assertEqual(survey_active, 'Y')
 
             # Adiciona participante e obtem o token
-            result_token = lime_survey.add_participant(sid, 'Teste', 'Django', 'teste@teste.com')
+            result_token = lime_survey.add_participant(sid)
 
             # Verifica se o token
             token = lime_survey.get_participant_properties(sid, result_token, "token")
@@ -137,8 +137,7 @@ class ABCSearchEngineTest(TestCase):
         # list_participants = self.server.list_participants(self.session_key, sid)
 
         participant_data = {'email': 'juquinha@hotmail.com', 'lastname': 'junqueira', 'firstname': 'juca'}
-        participant_data_result = surveys.add_participant(
-            sid, participant_data['firstname'], participant_data['lastname'], participant_data['email'])
+        participant_data_result = surveys.add_participant(sid)
 
         # verificar se info retornada eh a mesma
         # self.assertEqual(participant_data_result[0]['email'], participant_data['email'])
@@ -236,8 +235,7 @@ class ABCSearchEngineTest(TestCase):
         # list_participants = self.server.list_participants(self.session_key, sid)
 
         participant_data = {'email': 'juquinha@hotmail.com', 'lastname': 'junqueira', 'firstname': 'juca'}
-        participant_data_result = surveys.add_participant(
-            sid, participant_data['firstname'], participant_data['lastname'], participant_data['email'])
+        participant_data_result = surveys.add_participant(sid)
 
         # verificar se info retornada eh a mesma
         # self.assertEqual(participant_data_result[0]['email'], participant_data['email'])
@@ -360,7 +358,6 @@ class SurveyTest(TestCase):
                                      component_type='block',
                                      type="sequence")
         block.save()
-
 
         # Using a known questionnaire at LiveSurvey to use in this test.
         survey, created = Survey.objects.get_or_create(lime_survey_id=LIME_SURVEY_ID)
