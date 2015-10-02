@@ -29,7 +29,9 @@ class ABCSearchEngine(metaclass=ABCMeta):
 
     @abstractmethod
     def find_all_questionnaires(self):
-        """retorna todos os questionarios armazenados no banco de dados da instancia do LimeSurvey"""
+        """
+        :return: all stored surveys
+        """
 
         list_survey = self.server.list_surveys(self.session_key, None)
 
@@ -37,7 +39,9 @@ class ABCSearchEngine(metaclass=ABCMeta):
 
     @abstractmethod
     def find_all_active_questionnaires(self):
-        """retorna todos os questionarios ativos armazenados no banco de dados da instancia do LimeSurvey"""
+        """
+        :return: all active surveys
+        """
 
         list_survey = self.server.list_surveys(self.session_key, None)
 
@@ -51,7 +55,10 @@ class ABCSearchEngine(metaclass=ABCMeta):
 
     @abstractmethod
     def find_questionnaire_by_id(self, sid):
-        """retorna o questionario que tenha o identiricador especificado"""
+        """
+        :param sid: survey ID
+        :return: survey
+        """
 
         list_survey = self.server.list_surveys(self.session_key, None)
 
@@ -62,8 +69,11 @@ class ABCSearchEngine(metaclass=ABCMeta):
         return survey
 
     @abstractmethod
-    def add_participant(self, sid, firstname, lastname, email):
-        """adiciona participante ao questionario e retorna informacao do mesmo incluindo o sid"""
+    def add_participant(self, sid):
+        """
+        :param sid: Survey ID
+        :return: dictionary with token and token_id; None if error.
+        """
 
         participant_data = {'email': '', 'firstname': '', 'lastname': ''}
 
@@ -73,24 +83,23 @@ class ABCSearchEngine(metaclass=ABCMeta):
             [participant_data],
             True)
 
-        result = None
+        if participant_data_result \
+                and isinstance(participant_data_result, list) \
+                and isinstance(participant_data_result[0], dict) \
+                and 'error' not in participant_data_result[0]:
 
-        try:
-            if len(participant_data_result) <= 0 or 'error' in participant_data_result[0]:
-                result = None
-            else:
-                result = {'token': participant_data_result[0]['token'],
-                          'token_id': participant_data_result[0]['tid']}
-        except:
-            result = None
-            pass
-
-        return result
+            return {'token': participant_data_result[0]['token'],
+                    'token_id': participant_data_result[0]['tid']}
+        else:
+            return None
 
     @abstractmethod
     def delete_participant(self, survey_id, tokens_ids):
-        """Delete survey participant and return on success a array of deletion status for each participant or a failure
-         status array"""
+        """ Delete survey participant
+        :param survey_id: survey ID
+        :param tokens_ids: token_id to put in a list
+        :return: on success, an array of deletion status for each participant; on failure, status array.
+        """
         result = self.server.delete_participants(
             self.session_key,
             survey_id,
@@ -100,7 +109,10 @@ class ABCSearchEngine(metaclass=ABCMeta):
 
     @abstractmethod
     def get_survey_title(self, sid):
-        """Retorna o titulo da survey pelo id"""
+        """
+        :param sid: survey ID
+        :return: title of the survey
+        """
 
         if self.session_key:
             survey_title = self.server.get_language_properties(self.session_key, sid, {'method': 'surveyls_title'})
@@ -116,7 +128,11 @@ class ABCSearchEngine(metaclass=ABCMeta):
 
     @abstractmethod
     def get_survey_properties(self, sid, prop):
-        """Retorna uma determinada propriedade de um questionario"""
+        """
+        :param sid: survey ID
+        :param prop: the name of the propriety of the survey
+        :return: value of the property
+        """
 
         result = self.server.get_survey_properties(self.session_key, sid, {'method': prop})
 
@@ -124,23 +140,21 @@ class ABCSearchEngine(metaclass=ABCMeta):
 
     @abstractmethod
     def get_survey_languages(self, sid):
-        """Retorna o idioma base e os idiomas adicionais"""
+        """
+        :param sid: survey ID
+        :return: the base and the additional idioms
+        """
 
         result = self.server.get_survey_properties(self.session_key, sid, ['additional_languages', 'language'])
 
         return result
 
-    # @abstractmethod
-    # def set_survey_properties(self, sid, prop):
-    #     """Configura uma determinada propriedade de um questionario"""
-    #
-    #     result = self.server.set_survey_properties(self.session_key, sid, {'method': prop})
-    #
-    #     return result.get(prop)
-
     @abstractmethod
     def activate_survey(self, sid):
-        """Ativa uma survey criada e disponibiliza para os participantes"""
+        """ Activates a survey
+        :param sid: survey ID
+        :return: status of the survey
+        """
 
         result = self.server.activate_survey(self.session_key, sid)
 
@@ -148,7 +162,10 @@ class ABCSearchEngine(metaclass=ABCMeta):
 
     @abstractmethod
     def activate_tokens(self, sid):
-        """Ativa tokens para uma survey """
+        """ Activates tokens for a determined survey
+        :param sid: survey ID
+        :return: status of the survey
+        """
 
         result = self.server.activate_tokens(self.session_key, sid)
 
@@ -156,7 +173,12 @@ class ABCSearchEngine(metaclass=ABCMeta):
 
     @abstractmethod
     def get_participant_properties(self, survey_id, token_id, prop):
-        """Retorna uma determinada propriedade de um participante/token"""
+        """
+        :param survey_id: survey ID
+        :param token_id: token ID
+        :param prop: property name
+        :return: value of a determined property from a participant/token
+        """
 
         if self.session_key:
             result = self.server.get_participant_properties(self.session_key, survey_id, token_id, {'method': prop})
@@ -168,57 +190,59 @@ class ABCSearchEngine(metaclass=ABCMeta):
 
     @abstractmethod
     def survey_has_token_table(self, sid):
-        """Retorna flag indicando se a tabela de tokens foi iniciada para determinado questionario"""
+        """
+        :param sid: survey ID
+        :return: True if the survey has token table; False, if not.
+        """
 
         result = self.server.get_summary(self.session_key, sid, "token_completed")
         return isinstance(result, int)
 
     @abstractmethod
     def add_survey(self, wish_sid, title, language, survey_format):
+        """ Adds a survey to the LimeSurvey
+        :param wish_sid: survey ID
+        :param title: title of the survey
+        :param language: language of the survey
+        :param survey_format: format of the survey
+        :return: survey ID generated
         """
-        Adiciona uma survey ao Lime Survey
-        """
+
         survey_id_generated = self.server.add_survey(self.session_key, wish_sid, title, language, survey_format)
         return survey_id_generated
 
     @abstractmethod
     def delete_survey(self, sid):
+        """ remove a survey from the LimeSurvey
+        :param sid: survey ID
+        :return: status of the operation
         """
-        Deleta uma survey do Lime Survey
-        """
+
         status = self.server.delete_survey(self.session_key, sid)
         return status['status']
 
     @abstractmethod
     def get_responses_by_token(self, sid, token, language):
+        """ obtains responses from a determined token
+        :param sid: survey ID
+        :param token: token
+        :param language: language
+        :return: responses in the txt format
+        """
 
         responses = self.server.export_responses_by_token(self.session_key, sid, 'csv', token, language, 'complete')
         responses_txt = b64decode(responses)
 
         return responses_txt
 
-    # @abstractmethod
-    # def insert_group(self, sid, groups_data, format_import_file):
-    #     groups_data_b64 = b64encode(groups_data)
-    #     result = self.server.import_group(self.session_key, sid, groups_data_b64,
-    #                                       format_import_file)  # format_import_file (lsg | csv)
-    #
-    #     if isinstance(result, dict):
-    #         if 'status' in result:
-    #             return result['status']
-    #     else:
-    #         return result
-
-    # def add_group_questions(self, sid, group_title, description):
-    #     result = self.server.add_group(self.session_key, sid, group_title, description)
-    #
-    #     if isinstance(result, dict):
-    #         if 'status' in result:
-    #             return result['status']
-    #     else:
-    #         return result
-
     def insert_questions(self, sid, questions_data, format_import_file):
+        """ Imports a group of questions from a file
+        :param sid: survey ID
+        :param questions_data: question data
+        :param format_import_file: lsg file
+        :return:
+        """
+
         questions_data_b64 = b64encode(questions_data.encode('utf-8'))
         result = self.server.import_group(self.session_key, sid, questions_data_b64.decode('utf-8'),
                                           format_import_file)  # format_import_file (lsg | csv)
@@ -231,6 +255,12 @@ class ABCSearchEngine(metaclass=ABCMeta):
 
     @abstractmethod
     def get_question_properties(self, question_id, language):
+        """
+        :param question_id: question ID
+        :param language: language of the answer
+        :return: properties of a question of a survey
+        """
+
         properties = self.server.get_question_properties(self.session_key, question_id,
                                                          ['question', 'subquestions', 'answeroptions', 'title', 'type',
                                                           'attributes_lang', 'attributes'],
@@ -240,12 +270,23 @@ class ABCSearchEngine(metaclass=ABCMeta):
 
     @abstractmethod
     def list_groups(self, sid):
+        """
+        :param sid: survey ID
+        :return: ids and info of groups belonging to survey
+        """
+
         groups = self.server.list_groups(self.session_key, sid)
 
         return groups
 
     @abstractmethod
     def list_questions(self, sid, gid):
+        """
+        :param sid: survey ID
+        :param gid: group ID
+        :return: ids and info of (sub-)questions of a survey/group
+        """
+
         question_list = []
         questions = self.server.list_questions(self.session_key, sid, gid)
         for question in questions:
@@ -266,17 +307,14 @@ class Questionnaires(ABCSearchEngine):
     def find_questionnaire_by_id(self, str_id):
         return super(Questionnaires, self).find_questionnaire_by_id(str_id)
 
-    def add_participant(self, str_id, firstname, lastname, email):
-        return super(Questionnaires, self).add_participant(str_id, firstname, lastname, email)
+    def add_participant(self, str_id):
+        return super(Questionnaires, self).add_participant(str_id)
 
     def delete_participant(self, survey_id, tokens_ids):
         return super(Questionnaires, self).delete_participant(survey_id, tokens_ids)
 
     def get_survey_properties(self, sid, prop):
         return super(Questionnaires, self).get_survey_properties(sid, prop)
-
-    # def set_survey_properties(self, sid, prop):
-    #     return super(Questionnaires, self).get_survey_properties(sid, prop)
 
     def get_survey_languages(self, sid):
         return super(Questionnaires, self).get_survey_languages(sid)
@@ -316,9 +354,3 @@ class Questionnaires(ABCSearchEngine):
 
     def insert_questions(self, sid, questions_data, format_import_file):
         return super(Questionnaires, self).insert_questions(sid, questions_data, format_import_file)
-
-    # def insert_group(self, sid, groups_data, format_import_file):
-    #     return super(Questionnaires, self).insert_group(sid, groups_data, format_import_file)
-
-    # def add_group_questions(self, sid, group_title, description):
-    #     return super(Questionnaires, self).add_group_questions(sid, group_title, description)

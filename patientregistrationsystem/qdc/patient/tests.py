@@ -109,8 +109,7 @@ class UtilTests:
 
     def create_token_id_mock(self, patient, survey):
         questionnaire_lime_survey = Questionnaires()
-        result = questionnaire_lime_survey.add_participant(survey.lime_survey_id, patient.name, '',
-                                                           patient.email)
+        result = questionnaire_lime_survey.add_participant(survey.lime_survey_id)
         questionnaire_lime_survey.release_session_key()
 
         return result['token_id']

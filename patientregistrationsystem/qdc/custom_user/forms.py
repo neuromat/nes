@@ -5,7 +5,9 @@ from django.contrib.auth.hashers import make_password
 from django.contrib.auth.models import User
 from django.utils.translation import ugettext_lazy as _
 
+
 class UserForm(ModelForm):
+
     class Meta:
         model = User
         fields = ['first_name', 'last_name', 'username', 'password', 'email', 'groups']
