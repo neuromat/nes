@@ -5,10 +5,9 @@ from django.contrib.auth.models import User
 
 class UserProfile(models.Model):
     # This is almost the same as
-    # user = models.OneToOneField(User)
+    # user = models.ForeignKey(User, unique=True)
     # See: http://stackoverflow.com/questions/5870537/whats-the-difference-between-django-onetoonefield-and-foreignkey
-    # As we never use the "reverse" side of the relation, this does not make any difference.
-    user = models.ForeignKey(User, unique=True)
+    user = models.OneToOneField(User)
     force_password_change = models.BooleanField(default=True)
 
 

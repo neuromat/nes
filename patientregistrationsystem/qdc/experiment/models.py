@@ -185,7 +185,7 @@ class Group(models.Model):
     experiment = models.ForeignKey(Experiment, null=False, blank=False)
     title = models.CharField(null=False, max_length=50, blank=False)
     description = models.TextField(null=False, blank=False)
-    classification_of_diseases = models.ManyToManyField(ClassificationOfDiseases, null=True)
+    classification_of_diseases = models.ManyToManyField(ClassificationOfDiseases)
     experimental_protocol = models.ForeignKey(Component, null=True, on_delete=models.SET_NULL)
 
 
