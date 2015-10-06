@@ -43,6 +43,7 @@ INSTALLED_APPS = (
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'django_jenkins',
+
     'simple_history',
     # 'cep',
     'quiz.templatetags.qdc_tags',
