@@ -14,15 +14,15 @@ class UserForm(ModelForm):
 
         widgets = {
             'first_name': TextInput(attrs={'class': 'form-control', 'autofocus': "true",
-                                           'placeholder': _('Entrar primeiro nome')}),
-            'last_name': TextInput(attrs={'class': 'form-control', 'placeholder': _('Entrar último nome')}),
+                                           'placeholder': _('Type first name')}),
+            'last_name': TextInput(attrs={'class': 'form-control', 'placeholder': _('Type last name')}),
             'username': TextInput(attrs={'class': 'form-control', 'required': "",
-                                         'placeholder': _('Entrar nome de usuário')}),
+                                         'placeholder': _('Type user name')}),
             'password': PasswordInput(attrs={'id': 'id_new_password1', 'required': "",
-                                             'class': 'form-control', 'placeholder': _('Entrar senha'),
+                                             'class': 'form-control', 'placeholder': _('Type password'),
                                              'onkeyup': "passwordForce(); if(beginCheckPassword1)checkPass();"}),
             'email': TextInput(attrs={'class': 'form-control', 'required': "",
-                                      'placeholder': _('Entrar e-mail'), 'id': "email",
+                                      'placeholder': _('Type e-mail'), 'id': "email",
                                       'type': 'email', 'data-error': "E-mail inválido",
                                       'pattern': '^[_A-Za-z0-9-\+]+(\.[_A-Za-z0-9-]+)*@[A-Za-z0-9-]' +
                                                  '+(\.[A-Za-z0-9]+)*(\.[A-Za-z]{2,})$'}),
@@ -42,7 +42,7 @@ class UserForm(ModelForm):
 class UserFormUpdate(UserForm):
     password = CharField(required=False,
                          widget=PasswordInput(attrs={'id': 'id_new_password1', 'class': 'form-control',
-                                                     'placeholder': _('Entrar senha'),
+                                                     'placeholder': _('Type password'),
                                                      'onkeyup': "passwordForce(); "
                                                                 "if(beginCheckPassword1) checkPass();"}))
 

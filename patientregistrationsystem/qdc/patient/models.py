@@ -109,7 +109,7 @@ class Patient(models.Model):
     country = models.CharField(max_length=30, null=True, blank=True)
     zipcode = models.CharField(max_length=12, null=True, blank=True)
     street = models.CharField(max_length=50, null=True, blank=True)
-    address_number = models.IntegerField(max_length=6, null=True, blank=True)
+    address_number = models.IntegerField(null=True, blank=True)
     address_complement = models.CharField(max_length=50, null=True, blank=True)
     district = models.CharField(max_length=50, null=True, blank=True)
     city = models.CharField(max_length=30, null=True, blank=True)
