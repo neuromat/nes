@@ -42,7 +42,7 @@ class UserForm(ModelForm):
 class UserFormUpdate(UserForm):
     password = CharField(required=False,
                          widget=PasswordInput(attrs={'id': 'id_new_password1', 'class': 'form-control',
-                                                     'placeholder': _('Entrar senha'),
+                                                     'placeholder': _('Type password'),
                                                      'onkeyup': "passwordForce(); "
                                                                 "if(beginCheckPassword1) checkPass();"}))
 
