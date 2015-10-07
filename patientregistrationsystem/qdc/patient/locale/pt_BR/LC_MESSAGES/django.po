@@ -9,7 +9,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2015-10-02 10:55-0300\n"
+"POT-Creation-Date: 2015-10-07 13:10-0300\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -818,11 +818,11 @@ msgstr ""
 msgid "Anexo removido com sucesso."
 msgstr ""
 
-#: patient/views.py:1070 patient/views.py:1259
+#: patient/views.py:1070 patient/views.py:1258
 msgid "Preenchimento removido com sucesso"
 msgstr ""
 
-#: patient/views.py:1072 patient/views.py:1261
+#: patient/views.py:1072 patient/views.py:1260
 msgid "Erro ao deletar o preenchimento"
 msgstr ""
 
@@ -839,7 +839,7 @@ msgid ""
 "Preenchimento não disponível - Questionário não contém campos padronizados"
 msgstr ""
 
-#: patient/views.py:1146
+#: patient/views.py:1145
 msgid ""
 "Falha ao gerar token para responder questionário. Verifique se o "
 "questionário está ativo"
@@ -899,7 +899,8 @@ msgstr ""
 #~ msgid "Informacoes basica"
 #~ msgstr "Informações básicas"
 
-# Permissões de usuário - Mensagens do BD 
+# Permissões de usuário - Mensagens do BD
+# --keep-obsolete
 #~ msgid "Can add user"
 #~ msgstr "Pode adicionar usuário"
 

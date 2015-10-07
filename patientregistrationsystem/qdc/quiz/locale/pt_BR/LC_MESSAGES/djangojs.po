@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2015-10-02 12:41-0300\n"
+"POT-Creation-Date: 2015-10-07 13:10-0300\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -79,146 +79,194 @@ msgstr "Campos obrigatórios devem ser preenchidos."
 msgid "Preencha os campos corretamente. Campo de e-mail inválido"
 msgstr "Preencha os campos corretamente. Campo de e-mail inválido"
 
-#~ msgid "dd/mm/yy"
-#~ msgstr "dd/mm/yy"
+#: quiz/templates/quiz/template.html:27
+msgid "dd/mm/yy"
+msgstr "dd/mm/yy"
 
-#~ msgid "Domingo"
-#~ msgstr "Domingo"
+#: quiz/templates/quiz/template.html:28
+msgid "Domingo"
+msgstr "Domingo"
 
-#~ msgid "Segunda"
-#~ msgstr "Segunda"
+#: quiz/templates/quiz/template.html:28
+msgid "Segunda"
+msgstr "Segunda"
 
-#~ msgid "Terça"
-#~ msgstr "Terça"
+#: quiz/templates/quiz/template.html:28
+msgid "Terça"
+msgstr "Terça"
 
-#~ msgid "Quarta"
-#~ msgstr "Quarta"
+#: quiz/templates/quiz/template.html:29
+msgid "Quarta"
+msgstr "Quarta"
 
-#~ msgid "Quinta"
-#~ msgstr "Quinta"
+#: quiz/templates/quiz/template.html:29
+msgid "Quinta"
+msgstr "Quinta"
 
-#~ msgid "Sexta"
-#~ msgstr "Sexta"
+#: quiz/templates/quiz/template.html:29
+msgid "Sexta"
+msgstr "Sexta"
 
-#~ msgid "Sábado"
-#~ msgstr "Sábado"
+#: quiz/templates/quiz/template.html:29
+msgid "Sábado"
+msgstr "Sábado"
 
-#~ msgid "Do"
-#~ msgstr "Do"
+#: quiz/templates/quiz/template.html:30 quiz/templates/quiz/template.html:31
+msgid "Do"
+msgstr "Do"
 
-#~ msgid "Se"
-#~ msgstr "Se"
+#: quiz/templates/quiz/template.html:30
+msgid "Se"
+msgstr "Se"
 
-#~ msgid "Te"
-#~ msgstr "Te"
+#: quiz/templates/quiz/template.html:30
+msgid "Te"
+msgstr "Te"
 
-#~ msgid "Qa"
-#~ msgstr "Qa"
+#: quiz/templates/quiz/template.html:30
+msgid "Qa"
+msgstr "Qa"
 
-#~ msgid "Qi"
-#~ msgstr "Qi"
+#: quiz/templates/quiz/template.html:30
+msgid "Qi"
+msgstr "Qi"
 
-#~ msgid "Sx"
-#~ msgstr "Sx"
+#: quiz/templates/quiz/template.html:31
+msgid "Sx"
+msgstr "Sx"
 
-#~ msgid "Sa"
-#~ msgstr "Sa"
+#: quiz/templates/quiz/template.html:31
+msgid "Sa"
+msgstr "Sa"
 
-#~ msgid "Dom"
-#~ msgstr "Dom"
+#: quiz/templates/quiz/template.html:32 quiz/templates/quiz/template.html:33
+msgid "Dom"
+msgstr "Dom"
 
-#~ msgid "Seg"
-#~ msgstr "Seg"
+#: quiz/templates/quiz/template.html:32
+msgid "Seg"
+msgstr "Seg"
 
-#~ msgid "Ter"
-#~ msgstr "Ter"
+#: quiz/templates/quiz/template.html:32
+msgid "Ter"
+msgstr "Ter"
 
-#~ msgid "Qua"
-#~ msgstr "Qua"
+#: quiz/templates/quiz/template.html:32
+msgid "Qua"
+msgstr "Qua"
 
-#~ msgid "Qui"
-#~ msgstr "Qui"
+#: quiz/templates/quiz/template.html:33
+msgid "Qui"
+msgstr "Qui"
 
-#~ msgid "Sex"
-#~ msgstr "Sex"
+#: quiz/templates/quiz/template.html:33
+msgid "Sex"
+msgstr "Sex"
 
-#~ msgid "Sáb"
-#~ msgstr "Sáb"
+#: quiz/templates/quiz/template.html:33
+msgid "Sáb"
+msgstr "Sáb"
 
-#~ msgid "Janeiro"
-#~ msgstr "Janeiro"
+#: quiz/templates/quiz/template.html:34
+msgid "Janeiro"
+msgstr "Janeiro"
 
-#~ msgid "Fevereiro"
-#~ msgstr "Fevereiro"
+#: quiz/templates/quiz/template.html:34
+msgid "Fevereiro"
+msgstr "Fevereiro"
 
-#~ msgid "Março"
-#~ msgstr "Março"
+#: quiz/templates/quiz/template.html:34
+msgid "Março"
+msgstr "Março"
 
-#~ msgid "Abril"
-#~ msgstr "Abril"
+#: quiz/templates/quiz/template.html:35
+msgid "Abril"
+msgstr "Abril"
 
-#~ msgid "Maio"
-#~ msgstr "Maio"
+#: quiz/templates/quiz/template.html:35
+msgid "Maio"
+msgstr "Maio"
 
-#~ msgid "Junho"
-#~ msgstr "Junho"
+#: quiz/templates/quiz/template.html:35
+msgid "Junho"
+msgstr "Junho"
 
-#~ msgid "Julho"
-#~ msgstr "Julho"
+#: quiz/templates/quiz/template.html:36
+msgid "Julho"
+msgstr "Julho"
 
-#~ msgid "Agosto"
-#~ msgstr "Agosto"
+#: quiz/templates/quiz/template.html:36
+msgid "Agosto"
+msgstr "Agosto"
 
-#~ msgid "Setembro"
-#~ msgstr "Setembro"
+#: quiz/templates/quiz/template.html:36
+msgid "Setembro"
+msgstr "Setembro"
 
-#~ msgid "Outubro"
-#~ msgstr "Outubro"
+#: quiz/templates/quiz/template.html:37
+msgid "Outubro"
+msgstr "Outubro"
 
-#~ msgid "Novembro"
-#~ msgstr "Novembro"
+#: quiz/templates/quiz/template.html:37
+msgid "Novembro"
+msgstr "Novembro"
 
-#~ msgid "Dezembro"
-#~ msgstr "Dezembro"
+#: quiz/templates/quiz/template.html:37
+msgid "Dezembro"
+msgstr "Dezembro"
 
-#~ msgid "Jan"
-#~ msgstr "Jan"
+#: quiz/templates/quiz/template.html:38
+msgid "Jan"
+msgstr "Jan"
 
-#~ msgid "Fev"
-#~ msgstr "Fev"
+#: quiz/templates/quiz/template.html:38
+msgid "Fev"
+msgstr "Fev"
 
-#~ msgid "Mar"
-#~ msgstr "Mar"
+#: quiz/templates/quiz/template.html:38
+msgid "Mar"
+msgstr "Mar"
 
-#~ msgid "Abr"
-#~ msgstr "Abr"
+#: quiz/templates/quiz/template.html:38
+msgid "Abr"
+msgstr "Abr"
 
-#~ msgid "Mai"
-#~ msgstr "Mai"
+#: quiz/templates/quiz/template.html:39
+msgid "Mai"
+msgstr "Mai"
 
-#~ msgid "Jun"
-#~ msgstr "Jun"
+#: quiz/templates/quiz/template.html:39
+msgid "Jun"
+msgstr "Jun"
 
-#~ msgid "Jul"
-#~ msgstr "Jul"
+#: quiz/templates/quiz/template.html:39
+msgid "Jul"
+msgstr "Jul"
 
-#~ msgid "Ago"
-#~ msgstr "Ago"
+#: quiz/templates/quiz/template.html:39
+msgid "Ago"
+msgstr "Ago"
 
-#~ msgid "Set"
-#~ msgstr "Set"
+#: quiz/templates/quiz/template.html:40
+msgid "Set"
+msgstr "Set"
 
-#~ msgid "Out"
-#~ msgstr "Out"
+#: quiz/templates/quiz/template.html:40
+msgid "Out"
+msgstr "Out"
 
-#~ msgid "Nov"
-#~ msgstr "Nov"
+#: quiz/templates/quiz/template.html:40
+msgid "Nov"
+msgstr "Nov"
 
-#~ msgid "Dez"
-#~ msgstr "Dez"
+#: quiz/templates/quiz/template.html:40
+msgid "Dez"
+msgstr "Dez"
 
-#~ msgid "Próximo"
-#~ msgstr "Próximo"
+#: quiz/templates/quiz/template.html:41
+msgid "Próximo"
+msgstr "Próximo"
 
-#~ msgid "Anterior"
-#~ msgstr "Anterior"
+#: quiz/templates/quiz/template.html:42
+msgid "Anterior"
+msgstr "Anterior"

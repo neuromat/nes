@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2015-10-02 10:55-0300\n"
+"POT-Creation-Date: 2015-10-07 13:10-0300\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -30,9 +30,8 @@ msgid "Acesso não autorizado"
 msgstr "Access is not authorized"
 
 #: templates/registration/change_password_custom.html:42
-#, fuzzy
 msgid "Alterar senha"
-msgstr "New password"
+msgstr "Change password"
 
 #: templates/registration/change_password_custom.html:67
 #: templates/registration/password_reset_confirm.html:120
@@ -49,7 +48,7 @@ msgstr "Save"
 
 #: templates/registration/change_password_custom.html:112
 msgid "Cancelar"
-msgstr ""
+msgstr "Cancel"
 
 #: templates/registration/logged_out.html:4
 msgid "Home"
