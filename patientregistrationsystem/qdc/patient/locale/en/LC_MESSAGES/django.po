@@ -9,7 +9,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2015-10-08 15:02-0300\n"
+"POT-Creation-Date: 2015-10-08 16:24-0300\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -143,10 +143,6 @@ msgstr "CPF %(CPF)s invalid"
 msgid "Data de nascimento não pode ser maior que a data de hoje."
 msgstr "Date of birth can' be greater than today' date."
 
-#: patient/models.py:135
-msgid "Can view patient"
-msgstr ""
-
 #: patient/models.py:158
 msgid "Celular"
 msgstr "Cell phone"
@@ -179,17 +175,9 @@ msgstr ""
 msgid "Outros"
 msgstr "Other"
 
-#: patient/models.py:301
-msgid "Can view medical record"
-msgstr ""
-
 #: patient/models.py:345
 #, python-format
 msgid "exams/%(patient)s/%(exam)s/%(filename)s"
-msgstr ""
-
-#: patient/models.py:370
-msgid "Can view questionnaire response"
 msgstr ""
 
 #: patient/models.py:374

@@ -9,7 +9,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2015-10-08 15:02-0300\n"
+"POT-Creation-Date: 2015-10-08 16:24-0300\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -144,10 +144,6 @@ msgstr ""
 msgid "Data de nascimento não pode ser maior que a data de hoje."
 msgstr ""
 
-#: patient/models.py:135
-msgid "Can view patient"
-msgstr "Pode ver paciente"
-
 #: patient/models.py:158
 msgid "Celular"
 msgstr ""
@@ -180,18 +176,10 @@ msgstr ""
 msgid "Outros"
 msgstr ""
 
-#: patient/models.py:301
-msgid "Can view medical record"
-msgstr "Pode ver dados de prontuário"
-
 #: patient/models.py:345
 #, python-format
 msgid "exams/%(patient)s/%(exam)s/%(filename)s"
 msgstr ""
-
-#: patient/models.py:370
-msgid "Can view questionnaire response"
-msgstr "Pode ver respostas do questionário"
 
 #: patient/models.py:374
 msgid "token id: "
@@ -864,6 +852,15 @@ msgid ""
 "Falha ao gerar token para responder questionário. Verifique se o "
 "questionário está ativo"
 msgstr ""
+
+#~ msgid "Can view patient"
+#~ msgstr "Pode ver paciente"
+
+#~ msgid "Can view medical record"
+#~ msgstr "Pode ver dados de prontuário"
+
+#~ msgid "Can view questionnaire response"
+#~ msgstr "Pode ver respostas do questionário"
 
 #~ msgid "Você será redirecionado para o questionário. Aguarde."
 #~ msgstr "Você será redirecionado para o questionário. Aguarde."
