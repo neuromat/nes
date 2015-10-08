@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2015-10-07 13:10-0300\n"
+"POT-Creation-Date: 2015-10-08 15:02-0300\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -18,129 +18,214 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 
 #: custom_user/forms.py:17
-msgid "Entrar primeiro nome"
-msgstr "Type first name"
+msgid "Type first name"
+msgstr ""
 
 #: custom_user/forms.py:18
-msgid "Entrar último nome"
-msgstr "Type last name"
+msgid "Type last name"
+msgstr ""
 
 #: custom_user/forms.py:20
-msgid "Entrar nome de usuário"
-msgstr "Type user name"
+msgid "Type user name"
+msgstr ""
 
 #: custom_user/forms.py:22 custom_user/forms.py:45
 #: custom_user/templates/custom_user/register_users.html:177
-msgid "Entrar senha"
-msgstr "Type password"
+msgid "Type password"
+msgstr ""
 
 #: custom_user/forms.py:25
-msgid "Entrar e-mail"
-msgstr "Type e-mail"
+msgid "Type e-mail"
+msgstr ""
 
 #: custom_user/templates/custom_user/register_users.html:99
-msgid "Informações básicas"
-msgstr "Basic Information"
+msgid "Basic Information"
+msgstr ""
 
 #: custom_user/templates/custom_user/register_users.html:103
-msgid "Nome"
-msgstr "First name"
+msgid "First name"
+msgstr ""
 
 #: custom_user/templates/custom_user/register_users.html:112
-msgid "Sobrenome"
-msgstr "Last name"
+msgid "Last name"
+msgstr ""
 
 #: custom_user/templates/custom_user/register_users.html:124
 #: custom_user/templates/custom_user/user_list.html:36
-msgid "Nome de usuário"
-msgstr "User name"
+msgid "User name"
+msgstr ""
 
 #: custom_user/templates/custom_user/register_users.html:156
 msgid ""
-"Senha deve conter pelo menos 8 caracteres, incluindo ao menos uma letra "
-"maiúscula, dígito ou caractere especial."
-msgstr ""
 "Password must contain at least 8 characters, including at least one "
 "uppercase letter, digit or special character."
+msgstr ""
 
 #: custom_user/templates/custom_user/register_users.html:158
-msgid "Senha"
-msgstr "Password"
+msgid "Password"
+msgstr ""
 
 #: custom_user/templates/custom_user/register_users.html:173
-msgid "Confirmar senha"
-msgstr "Please confirm password"
+msgid "Please confirm password"
+msgstr ""
 
 #: custom_user/templates/custom_user/register_users.html:193
-msgid "Perfis"
-msgstr "Profiles"
+msgid "Profiles"
+msgstr ""
 
 #: custom_user/templates/custom_user/register_users.html:195
-msgid "Em quais desses perfis o usuário se identifica?"
-msgstr "In which these profiles does user identify?"
+msgid "In which these profiles does user identify?"
+msgstr ""
 
 #: custom_user/templates/custom_user/register_users.html:222
 #: custom_user/templates/custom_user/register_users.html:248
-msgid "Excluir"
-msgstr "Delete"
+msgid "Delete"
+msgstr ""
 
 #: custom_user/templates/custom_user/register_users.html:226
-msgid "Salvar"
-msgstr "Save"
+msgid "Save"
+msgstr ""
 
 #: custom_user/templates/custom_user/register_users.html:230
 #: custom_user/templates/custom_user/register_users.html:247
-msgid "Cancelar"
+#, fuzzy
+#| msgid "Cancelar"
+msgid "Cancel"
 msgstr "Cancel"
 
 #: custom_user/templates/custom_user/register_users.html:232
-msgid "Voltar"
-msgstr "Back"
+msgid "Back"
+msgstr ""
 
 #: custom_user/templates/custom_user/register_users.html:244
-msgid "Tem certeza que deseja excluir o usuário?"
-msgstr "Are you sure you want to delete user?"
+msgid "Are you sure you want to delete user?"
+msgstr ""
 
 #: custom_user/templates/custom_user/user_list.html:31
-msgid "Lista de usuários"
+#, fuzzy
+#| msgid "Lista de usuários"
+msgid "List of users"
 msgstr "List of users"
 
 #: custom_user/templates/custom_user/user_list.html:37
-msgid "Nome completo"
-msgstr "Complete name"
+msgid "Complete name"
+msgstr ""
 
 #: custom_user/templates/custom_user/user_list.html:38
 msgid "E-mail"
 msgstr ""
 
 #: custom_user/templates/custom_user/user_list.html:44
-msgid "Editar"
+#, fuzzy
+#| msgid "Editar"
+msgid "Edit"
 msgstr "Edit"
 
 #: custom_user/templates/custom_user/user_list.html:54
-msgid "Inserir novo usuário"
+#, fuzzy
+#| msgid "Inserir novo usuário"
+msgid "Insert new user"
 msgstr "Insert new user"
 
 #: custom_user/views.py:41
-msgid "Usuário criado com sucesso."
-msgstr "User created successfully."
+msgid "User created successfully."
+msgstr ""
 
 #: custom_user/views.py:44
-msgid "Não foi possível criar usuário."
-msgstr "It was not possible to create user."
+msgid "It was not possible to create user."
+msgstr ""
 
 #: custom_user/views.py:49
-msgid "Este nome de usuário já existe."
-msgstr "This user name already exists."
+msgid "This user name already exists."
+msgstr ""
 
 #: custom_user/views.py:51
-msgid "Este nome de usuário já existe em um usuário desabilitado."
-msgstr "This username already exists in an disabled user."
+msgid "This username already exists in an disabled user."
+msgstr ""
 
 #: custom_user/views.py:93
-msgid "Usuário atualizado com sucesso."
-msgstr "User updated successfully."
+msgid "User updated successfully."
+msgstr ""
 
 #: custom_user/views.py:101
-msgid "Usuário removido com sucesso."
-msgstr "User deleted successfully."
+msgid "User deleted successfully."
+msgstr ""
+
+#~ msgid "Entrar primeiro nome"
+#~ msgstr "Type first name"
+
+#~ msgid "Entrar último nome"
+#~ msgstr "Type last name"
+
+#~ msgid "Entrar nome de usuário"
+#~ msgstr "Type user name"
+
+#~ msgid "Entrar senha"
+#~ msgstr "Type password"
+
+#~ msgid "Entrar e-mail"
+#~ msgstr "Type e-mail"
+
+#~ msgid "Informações básicas"
+#~ msgstr "Basic Information"
+
+#~ msgid "Nome"
+#~ msgstr "First name"
+
+#~ msgid "Sobrenome"
+#~ msgstr "Last name"
+
+#~ msgid "Nome de usuário"
+#~ msgstr "User name"
+
+#~ msgid ""
+#~ "Senha deve conter pelo menos 8 caracteres, incluindo ao menos uma letra "
+#~ "maiúscula, dígito ou caractere especial."
+#~ msgstr ""
+#~ "Password must contain at least 8 characters, including at least one "
+#~ "uppercase letter, digit or special character."
+
+#~ msgid "Senha"
+#~ msgstr "Password"
+
+#~ msgid "Confirmar senha"
+#~ msgstr "Please confirm password"
+
+#~ msgid "Perfis"
+#~ msgstr "Profiles"
+
+#~ msgid "Em quais desses perfis o usuário se identifica?"
+#~ msgstr "In which these profiles does user identify?"
+
+#~ msgid "Excluir"
+#~ msgstr "Delete"
+
+#~ msgid "Salvar"
+#~ msgstr "Save"
+
+#~ msgid "Voltar"
+#~ msgstr "Back"
+
+#~ msgid "Tem certeza que deseja excluir o usuário?"
+#~ msgstr "Are you sure you want to delete user?"
+
+#~ msgid "Nome completo"
+#~ msgstr "Complete name"
+
+#~ msgid "Usuário criado com sucesso."
+#~ msgstr "User created successfully."
+
+#~ msgid "Não foi possível criar usuário."
+#~ msgstr "It was not possible to create user."
+
+#~ msgid "Este nome de usuário já existe."
+#~ msgstr "This user name already exists."
+
+#~ msgid "Este nome de usuário já existe em um usuário desabilitado."
+#~ msgstr "This username already exists in an disabled user."
+
+#~ msgid "Usuário atualizado com sucesso."
+#~ msgstr "User updated successfully."
+
+#~ msgid "Usuário removido com sucesso."
+#~ msgstr "User deleted successfully."

@@ -9,7 +9,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2015-10-07 13:10-0300\n"
+"POT-Creation-Date: 2015-10-08 15:02-0300\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -18,7 +18,7 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 
-#: patient/forms.py:26
+#: patient/forms.py:26 patient/tests.py:536
 msgid "Nome deve ser preenchido"
 msgstr "Name must be included"
 
@@ -768,6 +768,38 @@ msgstr "Independent unit or part of the fridge-freezer"
 msgid "Classe social calculada"
 msgstr "Calculated social class"
 
+#: patient/tests.py:440 patient/tests.py:452 patient/tests.py:463
+#, fuzzy
+#| msgid "Classe social calculada"
+msgid "Classe Social não calculada"
+msgstr "Calculated social class"
+
+#: patient/tests.py:451 patient/views.py:241
+msgid "Dados sociodemográficos gravados com sucesso."
+msgstr "Social demographic data successfully written. "
+
+#: patient/tests.py:466
+msgid "Menos de 1 maço"
+msgstr ""
+
+#: patient/tests.py:469
+#, fuzzy
+#| msgid "Experimento"
+msgid "Esporadicamente"
+msgstr "Experiment"
+
+#: patient/tests.py:472
+msgid "Menos de 1 ano"
+msgstr ""
+
+#: patient/tests.py:506 patient/views.py:266
+msgid "História social gravada com sucesso."
+msgstr "Social history successfully recorded."
+
+#: patient/tests.py:521
+msgid "Informe um endereço de email válido"
+msgstr ""
+
 #: patient/views.py:69 patient/views.py:166
 msgid "Dados pessoais gravados com sucesso."
 msgstr "Personal data successfully written."
@@ -787,14 +819,6 @@ msgid ""
 msgstr ""
 "Social class was not calculated, because all the necessary fields were not "
 "filled."
-
-#: patient/views.py:241
-msgid "Dados sociodemográficos gravados com sucesso."
-msgstr "Social demographic data successfully written. "
-
-#: patient/views.py:266
-msgid "História social gravada com sucesso."
-msgstr "Social history successfully recorded."
 
 #: patient/views.py:711
 msgid "Detalhes do diagnóstico alterados com sucesso."

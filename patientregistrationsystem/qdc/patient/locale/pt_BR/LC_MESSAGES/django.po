@@ -9,7 +9,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2015-10-07 13:10-0300\n"
+"POT-Creation-Date: 2015-10-08 15:02-0300\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -19,7 +19,7 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=(n > 1);\n"
 
-#: patient/forms.py:26
+#: patient/forms.py:26 patient/tests.py:536
 msgid "Nome deve ser preenchido"
 msgstr ""
 
@@ -756,6 +756,34 @@ msgstr ""
 msgid "Classe social calculada"
 msgstr ""
 
+#: patient/tests.py:440 patient/tests.py:452 patient/tests.py:463
+msgid "Classe Social não calculada"
+msgstr ""
+
+#: patient/tests.py:451 patient/views.py:241
+msgid "Dados sociodemográficos gravados com sucesso."
+msgstr "História social gravada com sucesso."
+
+#: patient/tests.py:466
+msgid "Menos de 1 maço"
+msgstr ""
+
+#: patient/tests.py:469
+msgid "Esporadicamente"
+msgstr ""
+
+#: patient/tests.py:472
+msgid "Menos de 1 ano"
+msgstr ""
+
+#: patient/tests.py:506 patient/views.py:266
+msgid "História social gravada com sucesso."
+msgstr "História social gravada com sucesso."
+
+#: patient/tests.py:521
+msgid "Informe um endereço de email válido"
+msgstr ""
+
 #: patient/views.py:69 patient/views.py:166
 msgid "Dados pessoais gravados com sucesso."
 msgstr ""
@@ -773,14 +801,6 @@ msgid ""
 "Classe Social não calculada, pois nem todos oscampos necessários para o "
 "cálculo foram preenchidos."
 msgstr ""
-
-#: patient/views.py:241
-msgid "Dados sociodemográficos gravados com sucesso."
-msgstr "História social gravada com sucesso."
-
-#: patient/views.py:266
-msgid "História social gravada com sucesso."
-msgstr "História social gravada com sucesso."
 
 #: patient/views.py:711
 msgid "Detalhes do diagnóstico alterados com sucesso."

@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2015-10-07 13:10-0300\n"
+"POT-Creation-Date: 2015-10-08 15:02-0300\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -131,55 +131,66 @@ msgstr ""
 #: admin/js/admin/DateTimeShortcuts.js:95
 #: admin/js/admin/DateTimeShortcuts.js:208
 msgid "Cancel"
-msgstr ""
+msgstr "Cancelar"
 
 #: admin/js/admin/DateTimeShortcuts.js:148
 #: admin/js/admin/DateTimeShortcuts.js:201
 msgid "Today"
-msgstr ""
+msgstr "Hoje"
 
 #: admin/js/admin/DateTimeShortcuts.js:152
 msgid "Calendar"
-msgstr ""
+msgstr "Calendário"
 
 #: admin/js/admin/DateTimeShortcuts.js:199
 msgid "Yesterday"
-msgstr ""
+msgstr "Ontem"
 
 #: admin/js/admin/DateTimeShortcuts.js:203
 msgid "Tomorrow"
-msgstr ""
+msgstr "Amanhã"
 
 #: admin/js/calendar.js:8
 msgid ""
 "January February March April May June July August September October November "
 "December"
 msgstr ""
+"Janeiro Fevereiro Março Abril Maio Junho Julho Agosto Setembro Outubro "
+"Novembro Dezembro"
 
 #: admin/js/calendar.js:9
 msgid "S M T W T F S"
-msgstr ""
+msgstr "D S T Q Q S S"
 
 #: admin/js/collapse.js:8 admin/js/collapse.js:19 admin/js/collapse.min.js:1
 msgid "Show"
-msgstr ""
+msgstr "Mostrar"
 
 #: admin/js/collapse.js:16 admin/js/collapse.min.js:1
 msgid "Hide"
-msgstr ""
+msgstr "Esconder"
 
 #: templates/registration/change_password_custom.html:35
-msgid "Senha inválida. Por favor tente de novo."
-msgstr "Senha inválida. Por favor tente de novo."
+msgid "Invalid password. Please, try again."
+msgstr "Senha inválida. Por favor tente novamente."
 
-#: templates/registration/login.html:104
-msgid "Usuario ou senha invalidos."
-msgstr ""
+#: templates/registration/login.html:114
+msgid "Invalid user or password."
+msgstr "Usuário ou senha inválidos."
 
 #: templates/registration/password_reset_confirm.html:44
-msgid "Senha incompatível com o padrão definido."
+msgid "Password incompatible with defined standard."
 msgstr "Senha incompatível com o padrão definido."
 
 #: templates/registration/password_reset_confirm.html:137
-msgid "Preenchimento invalido. Verifique se as senhas digitadas sao iguais"
+msgid "Invalid fill. Make sure the passwords entered are the same"
 msgstr "Preenchimento invalido. Verifique se as senhas digitadas sao iguais"
+
+#~ msgid "Preenchimento invalido. Verifique se as senhas digitadas sao iguais"
+#~ msgstr "Preenchimento invalido. Verifique se as senhas digitadas sao iguais"
+
+#~ msgid "Senha inválida. Por favor tente de novo."
+#~ msgstr "Senha inválida. Por favor tente de novo."
+
+#~ msgid "Senha incompatível com o padrão definido."
+#~ msgstr "Senha incompatível com o padrão definido."

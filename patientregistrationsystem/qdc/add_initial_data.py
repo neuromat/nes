@@ -2,25 +2,192 @@
 
 # This file was created based on what is explained in:
 # https://code.djangoproject.com/wiki/InitialSQLDataDiangoORMWay
+from django.utils.translation import ugettext as _
+from django.contrib.auth.models import Group, Permission
+from django.contrib.contenttypes.models import ContentType
 
 from os import environ
 environ['DJANGO_SETTINGS_MODULE'] = 'qdc.settings'
 
-# from settings import *
+PermissionTable = [
+    _("Can add alcohol frequency"),
+    _("Can add alcohol period"),
+    _("Can add amount cigarettes"),
+    _("Can add block"),
+    _("Can add classification of diseases"),
+    _("Can add complementary exam"),
+    _("Can add component"),
+    _("Can add component configuration"),
+    _("Can add content type"),
+    _("Can add diagnosis"),
+    _("Can add exam file"),
+    _("Can add experiment"),
+    _("Can add flesh tone"),
+    _("Can add gender"),
+    _("Can add group"),
+    _("Can add group"),
+    _("Can add historical experiment"),
+    _("Can add historical patient"),
+    _("Can add historical questionnaire response"),
+    _("Can add historical social demographic data"),
+    _("Can add historical social history data"),
+    _("Can add historical telephone"),
+    _("Can add instruction"),
+    _("Can add keyword"),
+    _("Can add log entry"),
+    _("Can add marital status"),
+    _("Can add medical record data"),
+    _("Can add migration history"),
+    _("Can add patient"),
+    _("Can add pause"),
+    _("Can add payment"),
+    _("Can add permission"),
+    _("Can add questionnaire"),
+    _("Can add questionnaire response"),
+    _("Can add questionnaire response"),
+    _("Can add religion"),
+    _("Can add research project"),
+    _("Can add schooling"),
+    _("Can add session"),
+    _("Can add social demographic data"),
+    _("Can add social history data"),
+    _("Can add stimulus"),
+    _("Can add stimulus type"),
+    _("Can add subject"),
+    _("Can add subject of group"),
+    _("Can add survey"),
+    _("Can add task"),
+    _("Can add task for the experimenter"),
+    _("Can add telephone"),
+    _("Can add user"),
+    _("Can add user profile"),
+    _("Can change alcohol frequency"),
+    _("Can change alcohol period"),
+    _("Can change amount cigarettes"),
+    _("Can change block"),
+    _("Can change classification of diseases"),
+    _("Can change complementary exam"),
+    _("Can change component"),
+    _("Can change component configuration"),
+    _("Can change content type"),
+    _("Can change diagnosis"),
+    _("Can change exam file"),
+    _("Can change experiment"),
+    _("Can change flesh tone"),
+    _("Can change gender"),
+    _("Can change group"),
+    _("Can change group"),
+    _("Can change historical experiment"),
+    _("Can change historical patient"),
+    _("Can change historical questionnaire response"),
+    _("Can change historical social demographic data"),
+    _("Can change historical social history data"),
+    _("Can change historical telephone"),
+    _("Can change instruction"),
+    _("Can change keyword"),
+    _("Can change log entry"),
+    _("Can change marital status"),
+    _("Can change medical record data"),
+    _("Can change migration history"),
+    _("Can change patient"),
+    _("Can change pause"),
+    _("Can change payment"),
+    _("Can change permission"),
+    _("Can change questionnaire"),
+    _("Can change questionnaire response"),
+    _("Can change questionnaire response"),
+    _("Can change religion"),
+    _("Can change research project"),
+    _("Can change research project created by others"),
+    _("Can change schooling"),
+    _("Can change session"),
+    _("Can change social demographic data"),
+    _("Can change social history data"),
+    _("Can change stimulus"),
+    _("Can change stimulus type"),
+    _("Can change subject"),
+    _("Can change subject of group"),
+    _("Can change survey"),
+    _("Can change task"),
+    _("Can change task for the experimenter"),
+    _("Can change telephone"),
+    _("Can change user"),
+    _("Can change user profile"),
+    _("Can delete alcohol frequency"),
+    _("Can delete alcohol period"),
+    _("Can delete amount cigarettes"),
+    _("Can delete block"),
+    _("Can delete classification of diseases"),
+    _("Can delete complementary exam"),
+    _("Can delete component"),
+    _("Can delete component configuration"),
+    _("Can delete content type"),
+    _("Can delete diagnosis"),
+    _("Can delete exam file"),
+    _("Can delete experiment"),
+    _("Can delete flesh tone"),
+    _("Can delete gender"),
+    _("Can delete group"),
+    _("Can delete group"),
+    _("Can delete historical experiment"),
+    _("Can delete historical patient"),
+    _("Can delete historical questionnaire response"),
+    _("Can delete historical social demographic data"),
+    _("Can delete historical social history data"),
+    _("Can delete historical telephone"),
+    _("Can delete instruction"),
+    _("Can delete keyword"),
+    _("Can delete log entry"),
+    _("Can delete marital status"),
+    _("Can delete medical record data"),
+    _("Can delete migration history"),
+    _("Can delete patient"),
+    _("Can delete pause"),
+    _("Can delete payment"),
+    _("Can delete permission"),
+    _("Can delete questionnaire"),
+    _("Can delete questionnaire response"),
+    _("Can delete questionnaire response"),
+    _("Can delete religion"),
+    _("Can delete research project"),
+    _("Can delete schooling"),
+    _("Can delete session"),
+    _("Can delete social demographic data"),
+    _("Can delete social history data"),
+    _("Can delete stimulus"),
+    _("Can delete stimulus type"),
+    _("Can delete subject"),
+    _("Can delete subject of group"),
+    _("Can delete survey"),
+    _("Can delete task"),
+    _("Can delete task for the experimenter"),
+    _("Can delete telephone"),
+    _("Can delete user"),
+    _("Can delete user profile"),
+    _("Can view medical record"),
+    _("Can view patient"),
+    _("Can view questionnaire response"),
+    _("Can view questionnaire response"),
+    _("Can view research project"),
+    _("Can view survey"),
+]
 
-from django.contrib.auth.models import Group, Permission
-from django.contrib.contenttypes.models import ContentType
-from patient.models import AlcoholFrequency, AlcoholPeriod, AmountCigarettes, FleshTone, Gender, MaritalStatus, \
-    Payment, Religion, Schooling
-from experiment.models import StimulusType
+GroupTable = [
+    _("Administrator"),
+    _("Attendant"),
+    _("Physiotherapist"),
+    _("Doctor"),
+    _("Junior researcher"),
+    _("Senior researcher"),
+]
 
-g = Group(name='Administrador')
+g = Group(name='Administrator')
 g.save()
 g.permissions.add(Permission.objects.get(codename='add_user'),
                   Permission.objects.get(codename='change_user'),
                   Permission.objects.get(codename='delete_user'))
 
-g = Group(name='Atendente')
+g = Group(name='Attendant')
 g.save()
 patient_content_type = ContentType.objects.get(app_label='patient', model='patient')
 attendant_permission_list = [Permission.objects.get(codename='add_patient', content_type=patient_content_type),
@@ -30,7 +197,7 @@ attendant_permission_list = [Permission.objects.get(codename='add_patient', cont
 for p in attendant_permission_list:
     g.permissions.add(p)
 
-g = Group(name='Fisioterapeuta')
+g = Group(name='Physiotherapist')
 g.save()
 medicalrecorddata_content_type = ContentType.objects.get(app_label='patient', model='medicalrecorddata')
 survey_content_type = ContentType.objects.get(app_label='survey', model='survey')
@@ -55,7 +222,7 @@ physiotherapist_permission_list += [
 for p in physiotherapist_permission_list:
     g.permissions.add(p)
 
-g = Group(name='Médico')
+g = Group(name='Doctor')
 g.save()
 # Can do what a physiotherapist does
 doctor_permission_list = list(physiotherapist_permission_list)
@@ -65,7 +232,7 @@ doctor_permission_list.append(Permission.objects.get(codename='add_medicalrecord
 for p in doctor_permission_list:
     g.permissions.add(p)
 
-g = Group(name='Pesquisador júnior')
+g = Group(name='Junior Researcher')
 g.save()
 researchproject_content_type = ContentType.objects.get(app_label='experiment', model='researchproject')
 experiment_content_type = ContentType.objects.get(app_label='experiment', model='experiment')
@@ -98,7 +265,7 @@ junior_researcher_permission_list += [
 for p in junior_researcher_permission_list:
     g.permissions.add(p)
 
-g = Group(name='Pesquisador sênior')
+g = Group(name='Senior Researcher')
 g.save()
 # Can do what a junior researcher does
 senior_researcher_permission_list = list(junior_researcher_permission_list)
@@ -107,119 +274,3 @@ senior_researcher_permission_list.append(Permission.objects.get(codename='change
                                                                 content_type=researchproject_content_type))
 for p in senior_researcher_permission_list:
     g.permissions.add(p)
-
-# Alcohol frequency
-af = AlcoholFrequency(name="Todos os dias")
-af.save()
-af = AlcoholFrequency(name="Todos os finais de semana")
-af.save()
-af = AlcoholFrequency(name="Esporadicamente")
-af.save()
-
-# Alcohol period
-ap = AlcoholPeriod(name="Mais de 10 anos")
-ap.save()
-ap = AlcoholPeriod(name="5-10 anos")
-ap.save()
-ap = AlcoholPeriod(name="1-5 anos")
-ap.save()
-ap = AlcoholPeriod(name="Menos de 1 ano")
-ap.save()
-
-# Amount cigarettes
-ac = AmountCigarettes(name="Mais de 3 maços")
-ac.save()
-ac = AmountCigarettes(name="1-2 maços")
-ac.save()
-ac = AmountCigarettes(name="Menos de 1 maço")
-ac.save()
-
-# Flesh tone
-ft = FleshTone(name="Amarelo")
-ft.save()
-ft = FleshTone(name="Branco")
-ft.save()
-ft = FleshTone(name="Indígena")
-ft.save()
-ft = FleshTone(name="Pardo")
-ft.save()
-ft = FleshTone(name="Preto")
-ft.save()
-
-# Gender
-g = Gender(name="Masculino")
-g.save()
-g = Gender(name="Feminino")
-g.save()
-
-# Marital status
-ms = MaritalStatus(name="Não informado")
-ms.save()
-ms = MaritalStatus(name="Viúvo")
-ms.save()
-ms = MaritalStatus(name="Separado/Divorciado")
-ms.save()
-ms = MaritalStatus(name="Casado/Convive junto")
-ms.save()
-ms = MaritalStatus(name="Solteiro")
-ms.save()
-
-# Payment
-p = Payment(name="Particular")
-p.save()
-p = Payment(name="Convênio")
-p.save()
-p = Payment(name="SUS")
-p.save()
-
-# Religion
-r = Religion(name="Budismo")
-r.save()
-r = Religion(name="Candomblé")
-r.save()
-r = Religion(name="Católica")
-r.save()
-r = Religion(name="Espírita")
-r.save()
-r = Religion(name="Evangélica")
-r.save()
-r = Religion(name="Igreja de Jesus Cristo dos Santos dos Últimos Dias")
-r.save()
-r = Religion(name="Judaismo")
-r.save()
-r = Religion(name="Protestante")
-r.save()
-r = Religion(name="Religiões Orientais")
-r.save()
-r = Religion(name="Sem religião")
-r.save()
-r = Religion(name="Testemunha de Jeová")
-r.save()
-r = Religion(name="Umbanda")
-r.save()
-
-# Schooling
-s = Schooling(name="Superior completo")
-s.save()
-s = Schooling(name="Médio completo")
-s.save()
-s = Schooling(name="Fundamental completo")
-s.save()
-s = Schooling(name="5º Ano Fundamental")
-s.save()
-s = Schooling(name="Analfabeto / até 4º Ano Fundamental")
-s.save()
-
-# Stimulus type
-s = StimulusType(name="Auditivo")
-s.save()
-s = StimulusType(name="Gustativo")
-s.save()
-s = StimulusType(name="Interoceptivo")
-s.save()
-s = StimulusType(name="Olfativo")
-s.save()
-s = StimulusType(name="Somatosensorial")
-s.save()
-s = StimulusType(name="Visual")
-s.save()
