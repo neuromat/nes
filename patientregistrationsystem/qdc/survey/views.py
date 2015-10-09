@@ -76,7 +76,7 @@ def survey_create(request, template_name="survey/survey_register.html"):
                     is_initial_evaluation=survey_added.is_initial_evaluation)
 
                 if created:
-                    messages.success(request, _('Questionário criado com sucesso.'))
+                    messages.success(request, _('Questionnaire created successfully.'))
                     redirect_url = reverse("survey_list")
                     return HttpResponseRedirect(redirect_url)
 
@@ -108,9 +108,9 @@ def survey_update(request, survey_id, template_name="survey/survey_register.html
             if survey_form.is_valid():
                 if survey_form.has_changed():
                     survey_form.save()
-                    messages.success(request, _('Questionário atualizado com sucesso.'))
+                    messages.success(request, _('Questionnaire updated successfully.'))
                 else:
-                    messages.success(request, _('Não há alterações para salvar.'))
+                    messages.success(request, _('There are no changes to save.'))
 
                 redirect_url = reverse("survey_view", args=(survey.id,))
                 return HttpResponseRedirect(redirect_url)
@@ -339,11 +339,11 @@ def survey_view(request, survey_id, template_name="survey/survey_register.html")
         if request.POST['action'] == "remove":
             try:
                 survey.delete()
-                messages.success(request, _('Questionário removido com sucesso.'))
+                messages.success(request, _('Questionnaire deleted successfully.'))
                 return redirect('survey_list')
             except ProtectedError:
-                messages.error(request, _("Não foi possível excluir o questionário, pois há respostas ou passos de "
-                                          "experimento associados."))
+                messages.error(request, _("It was not possible to delete questionnaire, because there are experimental "
+                                          "answers or steps associated."))
 
     patients_questionnaire_data_list = create_patients_questionnaire_data_list(survey, surveys)
 
@@ -553,6 +553,6 @@ def check_limesurvey_access(request, surveys):
     limesurvey_available = True
     if not surveys.session_key:
         limesurvey_available = False
-        messages.warning(request, _("LimeSurvey indisponível. Sistema funcionando parcialmente."))
+        messages.warning(request, _("LimeSurvey unavailable. System running partially."))
 
     return limesurvey_available

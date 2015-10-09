@@ -8,10 +8,10 @@ class PasswordChangeFormCustomized(PasswordChangeForm):
         super(PasswordChangeForm, self).__init__(*args, **kwargs)
         self.fields['old_password'].widget = PasswordInput(attrs={'class': 'form-control',
                                                                   'autofocus': "true", 'required': "",
-                                                                  'placeholder': _('Entrar com senha antiga')})
+                                                                  'placeholder': _('Type old password')})
         self.fields['new_password1'].widget = PasswordInput(attrs={'class': 'form-control', 'required': "",
-                                                                   'placeholder': _('Entrar com nova senha'),
+                                                                   'placeholder': _('Type new password'),
                                                                    'onkeyup': "passwordForce();"})
         self.fields['new_password2'].widget = PasswordInput(attrs={'class': 'form-control', 'required': "",
-                                                                   'placeholder': _('Entrar novamente com nova senha'),
+                                                                   'placeholder': _('Type again new password'),
                                                                    'onkeyup': "checkPass();"})

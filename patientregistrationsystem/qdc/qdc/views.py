@@ -37,6 +37,6 @@ def language_change(request, language_code):
 @login_required
 def password_changed(request):
 
-    messages.success(request, _('Senha alterada com sucesso.'))
+    messages.success(request, _('Password changed successfully.'))
 
     return contact(request)

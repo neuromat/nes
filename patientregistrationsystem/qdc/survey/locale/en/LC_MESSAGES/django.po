@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2015-10-08 16:24-0300\n"
+"POT-Creation-Date: 2015-10-09 11:19-0300\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -18,158 +18,220 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 
 #: survey/templates/survey/survey_list.html:43
-msgid "Lista de questionários"
-msgstr "List of questionnaires"
+msgid "List of questionnaires"
+msgstr ""
 
 #: survey/templates/survey/survey_list.html:48
 #: survey/templates/survey/survey_register.html:76
-msgid "Questionário"
-msgstr "Questionnaire"
+msgid "Questionnaire"
+msgstr ""
 
 #: survey/templates/survey/survey_list.html:49
 #: survey/templates/survey/survey_register.html:93
-msgid "Avaliação de Entrada"
-msgstr "Input evaluation"
+msgid "Entrance evaluation"
+msgstr ""
 
 #: survey/templates/survey/survey_list.html:55
-msgid "Visualizar"
-msgstr "View"
+msgid "View"
+msgstr ""
 
 #: survey/templates/survey/survey_list.html:64
-msgid "Inserir novo questionário"
-msgstr "Insert new questionnaire"
+msgid "Insert new questionnaire"
+msgstr ""
 
 #: survey/templates/survey/survey_register.html:52
 msgid "Home"
 msgstr ""
 
 #: survey/templates/survey/survey_register.html:53
-msgid "Questionários"
-msgstr "Questionnaires"
+msgid "Questionnaires"
+msgstr ""
 
 #: survey/templates/survey/survey_register.html:56
-msgid "Novo"
-msgstr "New"
+msgid "New"
+msgstr ""
 
 #: survey/templates/survey/survey_register.html:60
-msgid "Edição"
-msgstr "Edition"
+msgid "Editing"
+msgstr ""
 
 #: survey/templates/survey/survey_register.html:72
-msgid "Informações do questionário"
-msgstr "Questionnaire information"
+msgid "Questionnaire information"
+msgstr ""
 
 #: survey/templates/survey/survey_register.html:77
-msgid "Por favor, selecione um questionário da lista."
-msgstr "Please, select a questionnaire from the list."
+msgid "Please, select a questionnaire from the list."
+msgstr ""
 
 #: survey/templates/survey/survey_register.html:101
-msgid "Editar"
-msgstr "Edit"
+msgid "Edit"
+msgstr ""
 
 #: survey/templates/survey/survey_register.html:111
-msgid "Respondido como avaliação de entrada"
-msgstr "Answered as input evaluation"
+msgid "Answered as entrance evaluation"
+msgstr ""
 
 #: survey/templates/survey/survey_register.html:118
 #: survey/templates/survey/survey_register.html:199
-msgid "Participante"
-msgstr "Participant"
+msgid "Participant"
+msgstr ""
 
 #: survey/templates/survey/survey_register.html:119
 #: survey/templates/survey/survey_register.html:200
-msgid "Preenchimentos"
-msgstr "Fills"
+msgid "Fills"
+msgstr ""
 
 #: survey/templates/survey/survey_register.html:129
-msgid "Falta preencher"
-msgstr "It must be filled"
+msgid "It has to be filled"
+msgstr ""
 
 #: survey/templates/survey/survey_register.html:142
 #: survey/templates/survey/survey_register.html:219
-msgid "Completo"
-msgstr "Complete"
+msgid "Complete"
+msgstr ""
 
 #: survey/templates/survey/survey_register.html:144
 #: survey/templates/survey/survey_register.html:221
-msgid "Incompleto"
-msgstr "Incomplete"
+msgid "Incomplete"
+msgstr ""
 
 #: survey/templates/survey/survey_register.html:147
 #: survey/templates/survey/survey_register.html:224
-msgid "Sem status"
-msgstr "No status"
+msgid "No status"
+msgstr ""
 
 #: survey/templates/survey/survey_register.html:165
-msgid "Uso em experimentos"
-msgstr "Used in experiments"
+msgid "Used in experiments"
+msgstr ""
 
 #: survey/templates/survey/survey_register.html:172
-msgid "Experimento:"
-msgstr "Experiment:"
+msgid "Experiment:"
+msgstr ""
 
 #: survey/templates/survey/survey_register.html:176
-msgid "Grupo:"
-msgstr "Group:"
+msgid "Group:"
+msgstr ""
 
 #: survey/templates/survey/survey_register.html:182
-msgid "Conjunto de passos pai:"
-msgstr "Set of parent steps."
+msgid "Set of parent steps:"
+msgstr ""
 
 #: survey/templates/survey/survey_register.html:186
-msgid "Passo:"
-msgstr "Step:"
+msgid "Step:"
+msgstr ""
 
 #: survey/templates/survey/survey_register.html:190
-msgid "Nome do uso:"
-msgstr "Name of the use:"
+msgid "Name of the use:"
+msgstr ""
 
 #: survey/templates/survey/survey_register.html:246
 #: survey/templates/survey/survey_register.html:277
-msgid "Excluir"
-msgstr "Delete"
+msgid "Delete"
+msgstr ""
 
 #: survey/templates/survey/survey_register.html:252
-msgid "Salvar"
-msgstr "Save"
+msgid "Save"
+msgstr ""
 
 #: survey/templates/survey/survey_register.html:256
 #: survey/templates/survey/survey_register.html:276
-msgid "Cancelar"
-msgstr "Cancel"
+msgid "Cancel"
+msgstr ""
 
 #: survey/templates/survey/survey_register.html:260
-msgid "Voltar"
-msgstr "Bakc"
+msgid "Back"
+msgstr ""
 
 #: survey/templates/survey/survey_register.html:273
-msgid "Tem certeza que deseja excluir o questionário?"
-msgstr "Are you sure you want to delete questionnaire?"
+msgid "Are you sure you want to delete questionnaire?"
+msgstr ""
 
 #: survey/views.py:79
-msgid "Questionário criado com sucesso."
-msgstr "Questionnaire created successfully."
+msgid "Questionnaire created successfully."
+msgstr ""
 
 #: survey/views.py:111
-msgid "Questionário atualizado com sucesso."
-msgstr "Questionnaire updated successfully."
+msgid "Questionnaire updated successfully."
+msgstr ""
 
 #: survey/views.py:113
-msgid "Não há alterações para salvar."
-msgstr "There are no changed to save."
+msgid "There are no changes to save."
+msgstr ""
 
 #: survey/views.py:342
-msgid "Questionário removido com sucesso."
-msgstr "Questionnaire deleted successfully."
+msgid "Questionnaire deleted successfully."
+msgstr ""
 
 #: survey/views.py:345
 msgid ""
-"Não foi possível excluir o questionário, pois há respostas ou passos de "
-"experimento associados."
-msgstr ""
 "It was not possible to delete questionnaire, because there are experimental "
 "answers or steps associated."
+msgstr ""
 
 #: survey/views.py:556
-msgid "LimeSurvey indisponível. Sistema funcionando parcialmente."
-msgstr "LimeSurvey unavailable. System running partially."
+msgid "LimeSurvey unavailable. System running partially."
+msgstr ""
+
+#~ msgid "Avaliação de Entrada"
+#~ msgstr "Entrance evaluation"
+
+#~ msgid "Visualizar"
+#~ msgstr "View"
+
+#~ msgid "Novo"
+#~ msgstr "New"
+
+#~ msgid "Edição"
+#~ msgstr "Editing"
+
+#~ msgid "Informações do questionário"
+#~ msgstr "Questionnaire information"
+
+#~ msgid "Respondido como avaliação de entrada"
+#~ msgstr "Answered as entrance evaluation"
+
+#~ msgid "Preenchimentos"
+#~ msgstr "Fills"
+
+#~ msgid "Falta preencher"
+#~ msgstr "It have to be filled"
+
+#~ msgid "Grupo:"
+#~ msgstr "Group:"
+
+#~ msgid "Conjunto de passos pai:"
+#~ msgstr "Set of parent steps:"
+
+#~ msgid "Passo:"
+#~ msgstr "Step:"
+
+#~ msgid "Nome do uso:"
+#~ msgstr "Name of the use:"
+
+#~ msgid "Excluir"
+#~ msgstr "Delete"
+
+#~ msgid "Salvar"
+#~ msgstr "Save"
+
+#~ msgid "Voltar"
+#~ msgstr "Back"
+
+#~ msgid "Tem certeza que deseja excluir o questionário?"
+#~ msgstr "Are you sure you want to delete questionnaire?"
+
+#~ msgid "Questionário atualizado com sucesso."
+#~ msgstr "Questionnaire updated successfully."
+
+#~ msgid "Não há alterações para salvar."
+#~ msgstr "There are no changes to save."
+
+#~ msgid "Questionário removido com sucesso."
+#~ msgstr "Questionnaire deleted successfully."
+
+#~ msgid ""
+#~ "Não foi possível excluir o questionário, pois há respostas ou passos de "
+#~ "experimento associados."
+#~ msgstr ""
+#~ "It was not possible to delete questionnaire, because there are "
+#~ "experimental answers or steps associated."

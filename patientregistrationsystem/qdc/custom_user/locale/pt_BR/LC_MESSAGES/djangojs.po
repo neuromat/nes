@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2015-10-08 16:24-0300\n"
+"POT-Creation-Date: 2015-10-09 11:19-0300\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -20,15 +20,15 @@ msgstr ""
 
 #: custom_user/templates/custom_user/register_users.html:28
 msgid "You have to choose at least one user profile!"
-msgstr ""
+msgstr "É necessário escolher pelo menos um perfil de usuário!"
 
 #: custom_user/templates/custom_user/register_users.html:51
 msgid "E-mail have to be filled!"
-msgstr ""
+msgstr "E-mail deve ser preenchido!"
 
 #: custom_user/templates/custom_user/register_users.html:92
 msgid "Please, correct the fields highlighted."
-msgstr ""
+msgstr "Por favor, corrija os campos em destaque."
 
 #~ msgid "É necessário escolher pelo menos um perfil de usuário!"
 #~ msgstr "É necessário escolher pelo menos um perfil de usuário!"
