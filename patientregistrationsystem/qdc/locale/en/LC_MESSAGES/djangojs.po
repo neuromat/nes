@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2015-10-09 11:19-0300\n"
+"POT-Creation-Date: 2015-10-09 12:20-0300\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -47,11 +47,11 @@ msgstr "Choose all"
 #: admin/js/SelectFilter2.js:61
 #, javascript-format
 msgid "Click to choose all %s at once."
-msgstr ""
+msgstr "Click to choose all %s at once."
 
 #: admin/js/SelectFilter2.js:67
 msgid "Choose"
-msgstr ""
+msgstr "Choose"
 
 #: admin/js/SelectFilter2.js:69
 msgid "Remove"
@@ -171,19 +171,19 @@ msgstr ""
 
 #: templates/registration/change_password_custom.html:35
 msgid "Invalid password. Please, try again."
-msgstr ""
+msgstr "Invalid password. Please, try again."
 
 #: templates/registration/login.html:114
 msgid "Invalid user or password."
-msgstr ""
+msgstr "Invalid user or password."
 
 #: templates/registration/password_reset_confirm.html:44
 msgid "Password incompatible with defined standard."
-msgstr ""
+msgstr "Password incompatible with defined standard."
 
 #: templates/registration/password_reset_confirm.html:137
 msgid "Invalid fill. Make sure the passwords entered are the same"
-msgstr ""
+msgstr "Invalid fill. Make sure the passwords entered are the same"
 
 #~ msgid "Preenchimento invalido. Verifique se as senhas digitadas sao iguais"
 #~ msgstr "Invalid fill. Please, verify if passwords typed are equal"

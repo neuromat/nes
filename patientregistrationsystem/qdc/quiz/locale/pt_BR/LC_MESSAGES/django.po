@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2015-10-09 11:19-0300\n"
+"POT-Creation-Date: 2015-10-09 12:20-0300\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -23,41 +23,41 @@ msgid "Neuroscience Experiments System - NES"
 msgstr ""
 
 #: quiz/templates/quiz/contato.html:37
-msgid "Sistema de Cadastro e Consulta de Dados Sociodemográficos e Clínicos"
-msgstr ""
+msgid "System Registration and Socio-Demographic and Clinical Data Query"
+msgstr "Sistema de Cadastro e Consulta de Dados Sociodemográficos e Clínicos"
 
 #: quiz/templates/quiz/contato.html:38
-msgid "Dúvidas e Sugestões"
-msgstr ""
+msgid "Doubts and Suggestions"
+msgstr "Dúvidas e Sugestões"
 
 #: quiz/templates/quiz/template.html:128
 msgid "NES"
 msgstr ""
 
 #: quiz/templates/quiz/template.html:167
-msgid "Alterar senha"
-msgstr ""
+msgid "Change password"
+msgstr "Alterar senha"
 
 #: quiz/templates/quiz/template.html:168
-msgid "Sair"
-msgstr ""
+msgid "Logout"
+msgstr "Sair"
 
 #: quiz/templates/quiz/template.html:188
 msgid "Home"
 msgstr ""
 
 #: quiz/templates/quiz/template.html:196
-msgid "Participantes"
-msgstr ""
+msgid "Participants"
+msgstr "Participantes"
 
 #: quiz/templates/quiz/template.html:205
-msgid "Estudos"
-msgstr ""
+msgid "Studies"
+msgstr "Estudos"
 
 #: quiz/templates/quiz/template.html:214
-msgid "Questionários"
-msgstr ""
+msgid "Questionnaires"
+msgstr "Questionários"
 
 #: quiz/templates/quiz/template.html:223
-msgid "Usuários"
-msgstr ""
+msgid "Users"
+msgstr "Usuários"

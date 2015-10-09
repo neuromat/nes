@@ -72,7 +72,7 @@ $(document).ready(function () {
         var description_value = $.trim($("#exam_description").val());
 
         if (date_value.length == 0 || description_value.length == 0) {
-            showErrorMessageTemporary(gettext("Campos obrigatórios devem ser preenchidos."));
+            showErrorMessageTemporary(gettext("Obligatory fields must be filled."));
             jumpToElement('exam_date');
             document.getElementById('exam_date').focus();
             document.getElementById('exam_description').focus();

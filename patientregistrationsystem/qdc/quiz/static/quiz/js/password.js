@@ -15,7 +15,7 @@ function checkPass(){
         return false;
     }else{
         confirmation.attr('class', 'has-error');
-        $("#message").text(gettext("Senhas não combinam"));
+        $("#message").text(gettext("Passwords don't match"));
         return true;
     }
 }
@@ -26,7 +26,7 @@ $(function(){
         if(checkPass())
             event.preventDefault();
         if(passwordForce() < 20 && $('#id_new_password1').val()){
-            showErrorMessageTemporary(gettext("Senha deve conter pelo menos 8 caracteres, incluindo ao menos uma letra maiúscula, dígito ou caractere especial."));
+            showErrorMessageTemporary(gettext("Password must contain at least 8 characters, including at least one uppercase letter, digit or special character."));
             event.preventDefault();
         }
     })
@@ -61,25 +61,25 @@ function passwordForce(){
 function showForce(force){
     var show = $("#show");
     if(force < 20){
-        show.text(gettext("Fraca"));
+        show.text(gettext("Weak"));
         show.removeClass(function() {
             return $(this).attr("class");
         });
         show.addClass("text-danger");
     }else if((force >= 20) && (force < 40)){
-        show.text(gettext("Justa"));
+        show.text(gettext("Fair"));
         show.removeClass(function() {
             return $(this).attr("class");
         });
         show.addClass("text-warning");
     }else if((force >= 40) && (force < 65)){
-        show.text(gettext("Forte"));
+        show.text(gettext("Strong"));
         show.removeClass(function() {
             return $(this).attr("class");
         });
         show.addClass("text-success");
     }else{
-        show.text(gettext("Excelente"));
+        show.text(gettext("Excellent"));
         show.removeClass(function() {
             return $(this).attr("class");
         });

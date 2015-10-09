@@ -24,22 +24,22 @@
 {#                mask("99/99/9999");#}
 
             $('.datepicker').datepicker({
-                        dateFormat: gettext('dd/mm/yy'),
-                        dayNames: [gettext('Domingo'),gettext('Segunda'),gettext('Terça'),
-                            gettext('Quarta'),gettext('Quinta'),gettext('Sexta'),gettext('Sábado')],
-                        dayNamesMin: [gettext('Do'),gettext('Se'),gettext('Te'),gettext('Qa'),gettext('Qi'),
-                                gettext('Sx'),gettext('Sa'),gettext('Do')],
-                        dayNamesShort: [gettext('Dom'),gettext('Seg'),gettext('Ter'),gettext('Qua'),
-                                gettext('Qui'),gettext('Sex'),gettext('Sáb'),gettext('Dom')],
-                        monthNames: [gettext('Janeiro'),gettext('Fevereiro'),gettext('Março'),
-                                gettext('Abril'),gettext('Maio'),gettext('Junho'),
-                                gettext('Julho'),gettext('Agosto'),gettext('Setembro'),
-                                gettext('Outubro'),gettext('Novembro'),gettext('Dezembro')],
-                        monthNamesShort: [gettext('Jan'),gettext('Fev'),gettext('Mar'),gettext('Abr'),
-                                gettext('Mai'),gettext('Jun'),gettext('Jul'),gettext('Ago'),
-                                gettext('Set'),gettext('Out'),gettext('Nov'),gettext('Dez')],
-                        nextText: gettext('Próximo'),
-                        prevText: gettext('Anterior')
+                        dateFormat: gettext('mm/dd/yy'),
+                        dayNames: [gettext('Sunday'),gettext('Monday'),gettext('Tuesday'),
+                            gettext('Wednesday'),gettext('Thursday'),gettext('Friday'),gettext('Saturday')],
+                        dayNamesMin: [gettext('Su'),gettext('Mo'),gettext('Tu'),gettext('We'),gettext('Th'),
+                                gettext('Fr'),gettext('Sa'),gettext('Su')],
+                        dayNamesShort: [gettext('Sun'),gettext('Mon'),gettext('Tue'),gettext('Wed'),
+                                gettext('Thu'),gettext('Fri'),gettext('Sat'),gettext('Sun')],
+                        monthNames: [gettext('January'),gettext('February'),gettext('March'),
+                                gettext('April'),gettext('May'),gettext('June'),
+                                gettext('July'),gettext('August'),gettext('September'),
+                                gettext('October'),gettext('November'),gettext('December')],
+                        monthNamesShort: [gettext('Jan'),gettext('Feb'),gettext('Mar'),gettext('Apr'),
+                                gettext('May'),gettext('Jun'),gettext('Jul'),gettext('Aug'),
+                                gettext('Sep'),gettext('Oct'),gettext('Nov'),gettext('Dec')],
+                        nextText: gettext('Next'),
+                        prevText: gettext('Previous')
             }).
                     mask("99/99/9999");
         });
@@ -164,8 +164,8 @@
                         <span class="caret"></span>
                     </a>
                     <ul class="dropdown dropdown-user dropdown-menu" role="menu">
-                        <li><a href="/password_change">{% trans "Alterar senha" %}</a></li>
-                        <li><a href="/logout">{% trans "Sair" %}</a></li>
+                        <li><a href="/password_change">{% trans "Change password" %}</a></li>
+                        <li><a href="/logout">{% trans "Logout" %}</a></li>
                     </ul>
 
                 </li>
@@ -193,7 +193,7 @@
                     <li {% block activePatient %}{% endblock %} >
                         <a href="/patient/find/">
                             <span class="glyphicon glyphicon-screenshot"></span>
-                            {% trans "Participantes" %}
+                            {% trans "Participants" %}
                         </a>
                     </li>
                 {% endif %}
@@ -202,7 +202,7 @@
                     <li {% block activeAdvancedResearchProject %}{% endblock %}>
                         <a href="/experiment/research_project/list/">
                             <span class="glyphicon glyphicon-book"></span>
-                            {% trans "Estudos" %}
+                            {% trans "Studies" %}
                         </a>
                     </li>
                 {% endif %}
@@ -211,7 +211,7 @@
                     <li {% block activeAdvancedSurvey %}{% endblock %}>
                         <a href="/survey/list/">
                             <span class="glyphicon glyphicon-list-alt"></span>
-                            {% trans "Questionários" %}
+                            {% trans "Questionnaires" %}
                         </a>
                     </li>
                 {% endif %}
@@ -220,7 +220,7 @@
                     <li {% block activeUser %}{% endblock %}>
                         <a href="/user/search/">
                             <span class="glyphicon glyphicon-user"></span>
-                            {% trans "Usuários" %}
+                            {% trans "Users" %}
                         </a>
                     </li>
                 {% endif %}
