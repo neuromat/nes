@@ -16,10 +16,10 @@ class ExperimentForm(ModelForm):
             'research_project': Select(attrs={'class': 'form-control'}, choices='research_projects'),
             'title': TextInput(attrs={'class': 'form-control',
                                       'required': "",
-                                      'data-error': _('Título deve ser preenchido.')}),
+                                      'data-error': _('Title must be filled.')}),
             'description': Textarea(attrs={'class': 'form-control',
                                            'rows': '4', 'required': "",
-                                           'data-error': _('Descrição deve ser preenchida.')}),
+                                           'data-error': _('Description must be filled.')}),
         }
 
 
@@ -33,10 +33,10 @@ class GroupForm(ModelForm):
         widgets = {
             'title': TextInput(attrs={'class': 'form-control',
                                       'required': "",
-                                      'data-error': _('Título deve ser preenchido.')}),
+                                      'data-error': _('Title must be filled.')}),
             'description': Textarea(attrs={'class': 'form-control',
                                            'rows': '4', 'required': "",
-                                           'data-error': _('Descrição deve ser preenchida.')})
+                                           'data-error': _('Description must be filled.')})
         }
 
 
@@ -49,9 +49,9 @@ class QuestionnaireResponseForm(ModelForm):
 
         widgets = {
             'date': DateInput(format=_("%m/%d/%Y"),
-                              attrs={'class': 'form-control datepicker', 'placeholder': _('dd/mm/aaaa'),
+                              attrs={'class': 'form-control datepicker', 'placeholder': _('mm/dd/yyyy'),
                                      'required': "",
-                                     'data-error': _("Data de preenchimento deve ser preenchida")}, )
+                                     'data-error': _("Fill date must be filled.")}, )
         }
 
 
@@ -76,11 +76,11 @@ class ComponentForm(ModelForm):
 
         widgets = {
             'identification': TextInput(attrs={'class': 'form-control', 'required': "",
-                                               'data-error': _('Identificação deve ser preenchida.')}),
+                                               'data-error': _('Identification must be filled.')}),
             # Even though maxlength is already set in the model, it has be be repeated here, because the form dos not
             # respect that information.
             'description': Textarea(attrs={'class': 'form-control', 'rows': '4'}),
-            'duration_value': TextInput(attrs={'class': 'form-control', 'placeholder': _('Tempo')}),
+            'duration_value': TextInput(attrs={'class': 'form-control', 'placeholder': _('Time')}),
             'duration_unit': Select(attrs={'class': 'form-control'}),
         }
 
@@ -88,7 +88,7 @@ class ComponentForm(ModelForm):
         duration_value = self.cleaned_data['duration_value']
 
         if self.component_type == "pause" and duration_value is None:
-            raise ValidationError(_("Tempo da duração deve ser preenchido"))
+            raise ValidationError(_("Duration time must be filled in."))
 
         return duration_value
 
@@ -96,7 +96,7 @@ class ComponentForm(ModelForm):
         duration_unit = self.cleaned_data['duration_unit']
 
         if self.component_type == "pause" and duration_unit is None:
-            raise ValidationError(_("Unidade da duração deve ser preenchida"))
+            raise ValidationError(_("Duration unit must be filled in."))
 
         return duration_unit
 
@@ -105,7 +105,7 @@ class ComponentConfigurationForm(ModelForm):
     # This is needed because it will be included only when the parent is a sequence.
     random_position = TypedChoiceField(required=False,
                                        empty_value=None,
-                                       choices=((False, _('Fixa')), (True, _('Aleatória'))),
+                                       choices=((False, _('Fixed')), (True, _('Random'))),
                                        widget=RadioSelect(attrs={'id': 'id_random_position'}))
 
     # TODO Replace "--------" by "Escolha unidade". The old code does not work because ModelChoiceField requires a
@@ -125,15 +125,14 @@ class ComponentConfigurationForm(ModelForm):
         widgets = {
             'name': TextInput(attrs={'class': 'form-control'}),
             'number_of_repetitions': TextInput(attrs={'class': 'form-control', 'required': "",
-                                                      'data-error': _('Quantidade de repetições deve '
-                                                                      'ser preenchida.')}),
+                                                      'data-error': _('Quantity of repetitions must be filled.')}),
             'interval_between_repetitions_value': TextInput(attrs={'class': 'form-control', 'required': "",
-                                                                   'data-error': _('Intervalo deve ser preenchido'),
-                                                                   'placeholder': _('Tempo')}),
+                                                                   'data-error': _('Interval must be filled.'),
+                                                                   'placeholder': _('Time')}),
             'interval_between_repetitions_unit': Select(
                 attrs={'class': 'form-control',
                        'required': "",
-                       'data-error': _('Unidade do intervalo deve ser preenchida')}),
+                       'data-error': _('Interval unit must be filled.')}),
         }
 
 
@@ -144,7 +143,7 @@ class InstructionForm(ModelForm):
 
         widgets = {
             'text': Textarea(attrs={'class': 'form-control', 'required': "", 'rows': '6',
-                                    'data-error': _('Instrução deve ser preenchida.')}),
+                                    'data-error': _('Instruction must be filled.')}),
         }
 
 
@@ -155,17 +154,17 @@ class StimulusForm(ModelForm):
 
         widgets = {
             'stimulus_type': Select(attrs={'class': 'form-control', 'required': "",
-                                           'data-error': _('Tipo do estímulo deve ser preenchido.')})
+                                           'data-error': _('Stimulus type must be filled.')})
         }
 
 
 class BlockForm(ModelForm):
     type = TypedChoiceField(required=True,
                             empty_value=None,
-                            choices=(('sequence', _('Em uma sequência')),
-                                     ('parallel_block', _('De forma paralela'))),
+                            choices=(('sequence', _('Sequence')),
+                                     ('parallel_block', _('Parallel'))),
                             widget=RadioSelect(attrs={'id': 'id_type', 'required': "",
-                                                      'data-error': _('Tipo de organização deve ser escolhido.')}))
+                                                      'data-error': _('Organization type must be filled in.')}))
 
     class Meta:
         model = Block
@@ -173,12 +172,12 @@ class BlockForm(ModelForm):
 
         widgets = {
             'number_of_mandatory_components': TextInput(attrs={'class': 'form-control', 'required': "",
-                                                               'data-error': _('Quantidade deve ser preenchida.')}),
+                                                               'data-error': _('Quantity must be filled.')}),
         }
 
 
 class ResearchProjectForm(ModelForm):
-    owners_full_name = CharField(label=_('Responsável'),
+    owners_full_name = CharField(label=_('Responsible'),
                                  widget=TextInput(attrs={'class': 'form-control', 'disabled': 'True'}),
                                  required=False)
 
@@ -188,16 +187,16 @@ class ResearchProjectForm(ModelForm):
 
         widgets = {
             'title': TextInput(attrs={'class': 'form-control', 'required': "",
-                                      'data-error': _('Título deve ser preenchido.')}),
+                                      'data-error': _('Title must be filled.')}),
             # Even though maxlength is already set in the model, it has be be repeated here, because the form dos not
             # respect that information.
             'description': Textarea(attrs={'class': 'form-control', 'rows': '4', 'required': "",
-                                           'data-error': _('Descrição deve ser preenchida.')}),
+                                           'data-error': _('Description must be filled.')}),
             'start_date': DateInput(format=_("%m/%d/%Y"),
-                                    attrs={'class': 'form-control datepicker', 'placeholder': _('dd/mm/aaaa'),
-                                           'required': "", 'data-error': _("Data de início deve ser preenchida")},),
+                                    attrs={'class': 'form-control datepicker', 'placeholder': _('mm/dd/yyyy'),
+                                           'required': "", 'data-error': _("Initial date must be filled.")},),
             'end_date': DateInput(format=_("%m/%d/%Y"),
-                                  attrs={'class': 'form-control datepicker', 'placeholder': _('dd/mm/aaaa')}),
+                                  attrs={'class': 'form-control datepicker', 'placeholder': _('mm/dd/yyyy')}),
         }
 
     def clean(self):

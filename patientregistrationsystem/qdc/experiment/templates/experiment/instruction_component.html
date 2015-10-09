@@ -5,30 +5,30 @@
 {% block breadcrumb %}
 
     {% if creating %}
-        <li class="active">{% trans "Nova instrução" %}</li>
+        <li class="active">{% trans "New instruction" %}</li>
     {% endif %}
 
 {% endblock %}
 
-{% block component_label %}{% trans "a instrução" %}{% endblock %}
+{% block component_label %}{% trans "the instruction" %}{% endblock %}
 
 {% block component_add_new %}
     <li role="presentation">
         <a role="menuitem" tabindex="-1" onclick="redirect_with_number_of_uses('/experiment/component/{{ path_of_the_components }}/add_new/instruction{% if position %}?position={{ position }}{% endif %}')">
-            << {% trans "Nova instrução" %} >>
+            << {% trans "New instruction" %} >>
         </a>
     </li>
 {% endblock %}
 
 {% block component_button_label %}
-    {% trans "Nova instrução" %}
+    {% trans "New instruction" %}
 {% endblock %}
 
 {% block extra_fields %}
     <div class="row">
         <div class="col-xs-6 col-sm-12">
             <div class="form-group">
-                <label class="control-label">{% trans "Texto da instrução" %} <b style="color: red;">*</b></label>
+                <label class="control-label">{% trans "Instrution text" %} <b style="color: red;">*</b></label>
                     {{ specific_form.text }}
                 <div class="help-block with-errors"></div>
             </div>

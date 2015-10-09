@@ -12,20 +12,20 @@ from patient.models import Patient, ClassificationOfDiseases
 from survey.models import Survey
 
 TIME_UNITS = (
-    ("ms", _("milesegundo(s)")),
-    ("s", _("segundo(s)")),
-    ("min", _("minuto(s)")),
-    ("h", _("hora(s)")),
-    ("d", _("dia(s)")),
-    ("w", _("semana(s)")),
-    ("mon", _("mês (meses)")),
-    ("y", _("ano(s)")),
+    ("ms", _("milisecond(s)")),
+    ("s", _("second(s)")),
+    ("min", _("minute(s)")),
+    ("h", _("hour(s)")),
+    ("d", _("day(s)")),
+    ("w", _("week(s)")),
+    ("mon", _("month(s)")),
+    ("y", _("year(s)")),
 )
 
 
 def validate_date_questionnaire_response(value):
     if value > datetime.date.today():
-        raise ValidationError(_('Data de preenchimento não pode ser maior que a data de hoje.'))
+        raise ValidationError(_('Fill date cannot be greater than today.'))
 
 
 class Subject(models.Model):
@@ -87,13 +87,13 @@ class Experiment(models.Model):
 
 class Component(models.Model):
     COMPONENT_TYPES = (
-        ("block", _("Conjunto de passos")),
-        ("instruction", _("Instrução")),
-        ("pause", _("Pausa")),
-        ("questionnaire", _("Questionário")),
-        ("stimulus", _("Estímulo")),
-        ("task", _("Tarefa para o sujeito")),
-        ("task_experiment", _("Tarefa para o experimentador")),
+        ("block", _("Set of steps")),
+        ("instruction", _("Instruction")),
+        ("pause", _("Pause")),
+        ("questionnaire", _("Questionnaire")),
+        ("stimulus", _("Stimulus")),
+        ("task", _("Task for participant")),
+        ("task_experiment", _("Task for experimenter")),
     )
 
     identification = models.CharField(null=False, max_length=50, blank=False)

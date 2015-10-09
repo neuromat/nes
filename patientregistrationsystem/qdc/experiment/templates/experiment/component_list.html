@@ -38,7 +38,7 @@
 
     {% if experiment_form.errors %}
         <script type="text/javascript">
-            showErrorMessage(gettext('Por favor, corrija os campos em destaque.'))
+            showErrorMessage(gettext('Please, correct fields highlighted.'))
         </script>
     {% endif %}
 
@@ -47,10 +47,10 @@
         <div class="col-md-10">
             <ol class="breadcrumb">
                 <li><a href="/home">{% trans "Home" %}</a></li>
-                <li><a href="/experiment/research_project/list">{% trans "Estudos" %}</a></li>
+                <li><a href="/experiment/research_project/list">{% trans "Studies" %}</a></li>
                 <li><a href="/experiment/research_project/{{ experiment.research_project.id }}">{{ experiment.research_project.title }}</a></li>
                 <li><a href="/experiment/{{ experiment.id }}">{{ experiment.title }}</a></li>
-                <li class="active">{% trans "Passos de Protocolo Experimental" %}</li>
+                <li class="active">{% trans "Steps of experimental protocol" %}</li>
             </ol>
         </div>
     </div>
@@ -60,7 +60,7 @@
             <div class="container span6 offset3 well ">
                 <div class="row">
                     <div class="col-xs-6 col-sm-6">
-                        <label class="control-label">{% trans "Lista de Passos:" %}</label>
+                        <label class="control-label">{% trans "list of steps:" %}</label>
                     </div>
                 </div>
                 <br>
@@ -68,9 +68,9 @@
                     <table class="table table-striped">
                         <thead>
                             <tr>
-                                <th>{% trans "Tipo" %}</th>
-                                <th>{% trans "Identificação" %}</th>
-                                <th>{% trans "Descrição" %}</th>
+                                <th>{% trans "Type" %}</th>
+                                <th>{% trans "Identification" %}</th>
+                                <th>{% trans "Description" %}</th>
                             </tr>
                         </thead>
                         <tbody>
@@ -81,9 +81,9 @@
                                     {{ component.get_component_type_display }}
                                 </td>
                                 {% if component.component_type == "block" %}
-                                    <td><a data-toggle="tooltip" data-placement="left" title="{% trans "Editar" %}" href="/experiment/component/{{ component.id }}">{{ component.identification }}</a></td>
+                                    <td><a data-toggle="tooltip" data-placement="left" title="{% trans "Edit" %}" href="/experiment/component/{{ component.id }}">{{ component.identification }}</a></td>
                                 {% else %}
-                                    <td><a data-toggle="tooltip" data-placement="left" title="{% trans "Editar" %}" href="/experiment/component/edit/{{ component.id }}">{{ component.identification }}</a></td>
+                                    <td><a data-toggle="tooltip" data-placement="left" title="{% trans "Edit" %}" href="/experiment/component/edit/{{ component.id }}">{{ component.identification }}</a></td>
                                 {% endif %}
                                 <td>{{ component.description }}</td>
                             </tr>
@@ -94,7 +94,7 @@
                 {% if can_change %}
                     <div class="dropdown">
                         <button class="btn btn-primary dropdown-toggle" type="button" id="dropdownMenu1" data-toggle="dropdown" aria-expanded="true">
-                            {% trans "Inserir novo passo" %}
+                            {% trans "Insert new step" %}
                             <span class="caret"></span>
                         </button>
                         <ul class="dropdown-menu" role="menu" aria-labelledby="dropdownMenu1">
@@ -108,7 +108,7 @@
 
             <div class="btn-toolbar">
                 <div class="btn-group pull-right">
-                    <a href="/experiment/{{ experiment.id }}" class="btn" style="background-color: #f5f5f5">{% trans "Voltar" %}</a>
+                    <a href="/experiment/{{ experiment.id }}" class="btn" style="background-color: #f5f5f5">{% trans "Back" %}</a>
                 </div>
             </div>
         </div>
