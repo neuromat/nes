@@ -192,7 +192,7 @@ msgstr "New set of steps"
 #: experiment/templates/experiment/group_register.html:61
 #: experiment/templates/experiment/research_project_register.html:59
 msgid "Edição"
-msgstr "Edition"
+msgstr "Editing"
 
 #: experiment/templates/experiment/block_component.html:24
 msgid "o conjunto de passos"
@@ -208,7 +208,7 @@ msgstr "Sub-steps will be executed one after another"
 
 #: experiment/templates/experiment/block_component.html:46
 msgid "Os subpassos serão executados todos ao mesmo tempo"
-msgstr "Sub-steps will be executed at the same time "
+msgstr "Sub-steps will be executed at the same time"
 
 #: experiment/templates/experiment/block_component.html:59
 msgid "Quantidade de passos obrigatórios"
@@ -452,7 +452,7 @@ msgid ""
 "Este subpasso pode ser executado em qualquer posição do conjunto pai onde "
 "não há um passo fixo"
 msgstr ""
-"TThis sub-step can be performed anywhere in the parent assembly where there "
+"This sub-step can be performed anywhere in the parent assembly where there "
 "is not a fixed step"
 
 #: experiment/templates/experiment/component_template.html:228
@@ -566,7 +566,7 @@ msgstr "Inclusion criteria"
 
 #: experiment/templates/experiment/group_register.html:111
 msgid "Especificar o diagnóstico da doença ou o código da doença (CID-10)"
-msgstr "Inform disease diagnosis or disease code (CID-10)"
+msgstr "Inform disease diagnosis or disease code (ICD-10)"
 
 #: experiment/templates/experiment/group_register.html:133
 msgid ""
@@ -748,7 +748,7 @@ msgstr "Questionnaire name at LimeSurvey"
 
 #: experiment/templates/experiment/questionnaire_view.html:76
 msgid "Identificação:"
-msgstr "Identificatioin:"
+msgstr "Identification:"
 
 #: experiment/templates/experiment/questionnaire_view.html:84
 msgid "Descrição:"
@@ -854,7 +854,7 @@ msgid "Informações básicas do estudo"
 msgstr "Study basic information"
 
 #: experiment/templates/experiment/research_project_register.html:84
-msgid "Data de início "
+msgid "Data de início"
 msgstr "Initial date"
 
 #: experiment/templates/experiment/research_project_register.html:95
@@ -888,7 +888,7 @@ msgid "o estímulo"
 msgstr "the stimulus"
 
 #: experiment/templates/experiment/stimulus_component.html:31
-msgid "Tipo do estímulo "
+msgid "Tipo do estímulo"
 msgstr "Stimulus type"
 
 #: experiment/templates/experiment/subject_questionnaire_response_form.html:33
@@ -920,7 +920,7 @@ msgstr "(No questinnaire for fill)"
 
 #: experiment/templates/experiment/subject_questionnaire_response_list.html:85
 msgid "Quantidade de preenchimentos:"
-msgstr "Quantity of fills"
+msgstr "Quantity of fills:"
 
 #: experiment/templates/experiment/subject_questionnaire_response_list.html:89
 msgid "ilimitada"
@@ -928,7 +928,7 @@ msgstr "unlimited"
 
 #: experiment/templates/experiment/subject_questionnaire_response_list.html:91
 msgid "Intervalo entre preenchimentos:"
-msgstr "Interval among fills"
+msgstr "Interval among fills:"
 
 #: experiment/templates/experiment/subject_questionnaire_response_list.html:95
 msgid "indefinido"
@@ -1086,7 +1086,7 @@ msgstr "Consent term saved successfully."
 
 #: experiment/views.py:1223
 msgid "Não existem anexos para salvar"
-msgstr "There aren't attachments to save"
+msgstr "There are not attachments to save"
 
 #: experiment/views.py:1227
 msgid "Anexo removido com sucesso."
@@ -1127,7 +1127,7 @@ msgstr " days "
 
 #: experiment/views.py:1558
 msgid " dia "
-msgstr " day"
+msgstr " day "
 
 #: experiment/views.py:1563
 msgid " horas "

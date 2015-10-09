@@ -20,11 +20,11 @@
         <div class="col-md-10">
             <ol class="breadcrumb">
                 <li><a href="/home">{% trans "Home" %}</a></li>
-                <li><a href="/experiment/research_project/list">{% trans "Estudos" %}</a></li>
+                <li><a href="/experiment/research_project/list">{% trans "Studies" %}</a></li>
                 <li><a href="/experiment/research_project/{{ group.experiment.research_project.id }}">{{ group.experiment.research_project.title }}</a></li>
                 <li><a href="/experiment/{{ group.experiment.id }}">{{ group.experiment.title }}</a></li>
                 <li><a href="/experiment/group/{{ group.id }}">{{ group.title }}</a></li>
-                <li class="active">{% trans "Participantes" %}</li>
+                <li class="active">{% trans "Participant" %}</li>
             </ol>
         </div>
     </div>
@@ -59,11 +59,11 @@
                         <div class="col-xs-12 col-sm-12">
                             <div class="form-group">
                                 <input id="group_id" value="{{ group.id }}" style="display: none;">
-                                <label>{% trans "Inserir participante" %}</label>
+                                <label>{% trans "Insert participant" %}</label>
 
                                 <div class="input-group input-group-sm">
                                     <span class="input-group-addon"> <span class="glyphicon glyphicon-search"></span></span>
-                                    <input class="form-control" placeholder="{% trans "Entre com o nome ou CPF do participante" %}"
+                                    <input class="form-control" placeholder="{% trans "Type name or CPF participant" %}"
                                            id="subject_name" type="text" autofocus="true" required="true">
                                 </div>
                                 {% csrf_token %}
@@ -80,15 +80,15 @@
                         <table class="table table-striped">
                             <thead>
                             <tr>
-                                <th>{% trans "Participante" %}</th>
-                                <th>{% trans "Termo de consentimento" %}</th>
-                                <th>{% trans "Questionários concluídos" %}</th>
+                                <th>{% trans "Participant" %}</th>
+                                <th>{% trans "Term of consent" %}</th>
+                                <th>{% trans "Completed questionnaires" %}</th>
                             </tr>
                             </thead>
                             <tbody>
                             {% if subject_list|length == 0 %}
                                 <tr>
-                                    <td>{% trans "(Nenhum participante inserido)" %}</td>
+                                    <td>{% trans "(No participant inserted)" %}</td>
                                     <td></td>
                                     <td></td>
                                 </tr>
@@ -105,9 +105,9 @@
                                                 </span>
                                             {% endif %}
                                             {% if item.consent %}
-                                                <span class="label label-success">{% trans "Anexado" %}</span>
+                                                <span class="label label-success">{% trans "Attached" %}</span>
                                             {% else %}
-                                                <span class="label label-warning">{% trans "Sem anexo" %}</span>
+                                                <span class="label label-warning">{% trans "No attachments" %}</span>
                                             {% endif %}
                                         </td>
                                         <td>
@@ -118,7 +118,7 @@
                                                     </div>
                                                 </div>
                                             {% else %}
-                                                <span class="label label-default">{% trans "Sem status" %}</span>
+                                                <span class="label label-default">{% trans "No status" %}</span>
                                             {% endif %}
                                         </td>
                                     </tr>
@@ -131,7 +131,7 @@
             </div>
             <div class="btn-toolbar">
                 <div class="btn-group pull-right">
-                    <a href="/experiment/group/{{ group.id }}" class="btn" style="background-color: #f5f5f5">{% trans "Voltar" %}</a>
+                    <a href="/experiment/group/{{ group.id }}" class="btn" style="background-color: #f5f5f5">{% trans "Back" %}</a>
                 </div>
             </div>
 

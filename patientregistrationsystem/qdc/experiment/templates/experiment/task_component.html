@@ -5,23 +5,23 @@
 {% block breadcrumb %}
 
     {% if creating %}
-        <li class="active">{% trans "Nova tarefa para o sujeito" %}</li>
+        <li class="active">{% trans "New task for subject" %}</li>
     {% endif %}
 
 {% endblock %}
 
-{% block component_label %}{% trans "a tarefa para o sujeito" %}{% endblock %}
+{% block component_label %}{% trans "the task for subject" %}{% endblock %}
 
 {% block component_add_new %}
     <li role="presentation">
         <a role="menuitem" tabindex="-1" onclick="redirect_with_number_of_uses('/experiment/component/{{ path_of_the_components }}/add_new/task{% if position %}?position={{ position }}{% endif %}')">
-            << {% trans "Nova tarefa para o sujeito" %} >>
+            << {% trans "New task for subject" %} >>
         </a>
     </li>
 {% endblock %}
 
 {% block component_button_label %}
-    {% trans "Nova tarefa para o sujeito" %}
+    {% trans "New task for subject" %}
 {% endblock %}
 
 {% block extra_fields %}
