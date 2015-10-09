@@ -160,7 +160,15 @@ MODELTRANSLATION_TRANSLATION_FILES = (
 
 MODELTRANSLATION_CUSTOM_FIELDS = ('name', )
 
-MODELTRANSLATION_AUTO_POPULATE = True
+MODELTRANSLATION_AUTO_POPULATE = 'all'
+
+MODELTRANSLATION_PREPOPULATE_LANGUAGE = 'en'
+
+
+FIXTURE_DIRS = (
+    'patient.fixtures',
+    'experiment.fixtures',
+)
 
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/1.6/howto/static-files/

@@ -132,7 +132,7 @@ class Patient(models.Model):
 
     class Meta:
         permissions = (
-            ("view_patient", _("Can view patient")),
+            ("view_patient", "Can view patient"),
         )
 
     def get_absolute_url(self):
@@ -298,7 +298,7 @@ class MedicalRecordData(models.Model):
 
     class Meta:
         permissions = (
-            ("view_medicalrecorddata", _("Can view medical record")),
+            ("view_medicalrecorddata", "Can view medical record"),
         )
 
     def __str__(self):
@@ -367,7 +367,7 @@ class QuestionnaireResponse(models.Model):
 
     class Meta:
         permissions = (
-            ("view_questionnaireresponse", _("Can view questionnaire response")),
+            ("view_questionnaireresponse", "Can view questionnaire response"),
         )
 
     def __str__(self):

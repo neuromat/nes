@@ -198,9 +198,9 @@
                                     <div class="myradio">
                                         <label>
                                             {% if group_permission.checked == True %}
-                                                <input name="groups" type="checkbox" checked="checked" value={{ group_permission.group.pk }}> {{ group_permission.group }}
+                                                <input name="groups" type="checkbox" checked="checked" value={{ group_permission.group.pk }}> {%  trans group_permission.group.name %}
                                             {% else %}
-                                                <input name="groups" type="checkbox" value={{ group_permission.group.pk }}> {{ group_permission.group }}
+                                                <input name="groups" type="checkbox" value={{ group_permission.group.pk }}> {%  trans group_permission.group.name %}
                                             {% endif %}
 
                                         </label>

@@ -9,7 +9,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2015-10-02 10:55-0300\n"
+"POT-Creation-Date: 2015-10-08 16:24-0300\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -19,7 +19,7 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=(n > 1);\n"
 
-#: patient/forms.py:26
+#: patient/forms.py:26 patient/tests.py:536
 msgid "Nome deve ser preenchido"
 msgstr ""
 
@@ -144,10 +144,6 @@ msgstr ""
 msgid "Data de nascimento não pode ser maior que a data de hoje."
 msgstr ""
 
-#: patient/models.py:135
-msgid "Can view patient"
-msgstr "Pode ver paciente"
-
 #: patient/models.py:158
 msgid "Celular"
 msgstr ""
@@ -180,18 +176,10 @@ msgstr ""
 msgid "Outros"
 msgstr ""
 
-#: patient/models.py:301
-msgid "Can view medical record"
-msgstr "Pode ver dados de prontuário"
-
 #: patient/models.py:345
 #, python-format
 msgid "exams/%(patient)s/%(exam)s/%(filename)s"
 msgstr ""
-
-#: patient/models.py:370
-msgid "Can view questionnaire response"
-msgstr "Pode ver respostas do questionário"
 
 #: patient/models.py:374
 msgid "token id: "
@@ -756,6 +744,34 @@ msgstr ""
 msgid "Classe social calculada"
 msgstr ""
 
+#: patient/tests.py:440 patient/tests.py:452 patient/tests.py:463
+msgid "Classe Social não calculada"
+msgstr ""
+
+#: patient/tests.py:451 patient/views.py:241
+msgid "Dados sociodemográficos gravados com sucesso."
+msgstr "História social gravada com sucesso."
+
+#: patient/tests.py:466
+msgid "Menos de 1 maço"
+msgstr ""
+
+#: patient/tests.py:469
+msgid "Esporadicamente"
+msgstr ""
+
+#: patient/tests.py:472
+msgid "Menos de 1 ano"
+msgstr ""
+
+#: patient/tests.py:506 patient/views.py:266
+msgid "História social gravada com sucesso."
+msgstr "História social gravada com sucesso."
+
+#: patient/tests.py:521
+msgid "Informe um endereço de email válido"
+msgstr ""
+
 #: patient/views.py:69 patient/views.py:166
 msgid "Dados pessoais gravados com sucesso."
 msgstr ""
@@ -773,14 +789,6 @@ msgid ""
 "Classe Social não calculada, pois nem todos oscampos necessários para o "
 "cálculo foram preenchidos."
 msgstr ""
-
-#: patient/views.py:241
-msgid "Dados sociodemográficos gravados com sucesso."
-msgstr "História social gravada com sucesso."
-
-#: patient/views.py:266
-msgid "História social gravada com sucesso."
-msgstr "História social gravada com sucesso."
 
 #: patient/views.py:711
 msgid "Detalhes do diagnóstico alterados com sucesso."
@@ -818,11 +826,11 @@ msgstr ""
 msgid "Anexo removido com sucesso."
 msgstr ""
 
-#: patient/views.py:1070 patient/views.py:1259
+#: patient/views.py:1070 patient/views.py:1258
 msgid "Preenchimento removido com sucesso"
 msgstr ""
 
-#: patient/views.py:1072 patient/views.py:1261
+#: patient/views.py:1072 patient/views.py:1260
 msgid "Erro ao deletar o preenchimento"
 msgstr ""
 
@@ -839,11 +847,20 @@ msgid ""
 "Preenchimento não disponível - Questionário não contém campos padronizados"
 msgstr ""
 
-#: patient/views.py:1146
+#: patient/views.py:1145
 msgid ""
 "Falha ao gerar token para responder questionário. Verifique se o "
 "questionário está ativo"
 msgstr ""
+
+#~ msgid "Can view patient"
+#~ msgstr "Pode ver paciente"
+
+#~ msgid "Can view medical record"
+#~ msgstr "Pode ver dados de prontuário"
+
+#~ msgid "Can view questionnaire response"
+#~ msgstr "Pode ver respostas do questionário"
 
 #~ msgid "Você será redirecionado para o questionário. Aguarde."
 #~ msgstr "Você será redirecionado para o questionário. Aguarde."
@@ -899,7 +916,8 @@ msgstr ""
 #~ msgid "Informacoes basica"
 #~ msgstr "Informações básicas"
 
-# Permissões de usuário - Mensagens do BD 
+# Permissões de usuário - Mensagens do BD
+# --keep-obsolete
 #~ msgid "Can add user"
 #~ msgstr "Pode adicionar usuário"
 
