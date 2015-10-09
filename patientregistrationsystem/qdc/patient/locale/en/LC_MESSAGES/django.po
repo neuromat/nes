@@ -92,15 +92,15 @@ msgstr "4 or +"
 
 #: patient/forms.py:124
 msgid "Já fez"
-msgstr "have already used"
+msgstr "Have already used"
 
 #: patient/forms.py:124
 msgid "Faz"
-msgstr "It' using"
+msgstr "It is using"
 
 #: patient/forms.py:125
 msgid "Nunca fez"
-msgstr "have never used"
+msgstr "Have never used"
 
 #: patient/forms.py:136
 msgid "Data deve ser preenchida"
@@ -141,7 +141,7 @@ msgstr "CPF %(CPF)s invalid"
 
 #: patient/models.py:33
 msgid "Data de nascimento não pode ser maior que a data de hoje."
-msgstr "Date of birth can' be greater than today' date."
+msgstr "Date of birth can't be greater than today date."
 
 #: patient/models.py:158
 msgid "Celular"
@@ -186,11 +186,11 @@ msgstr ""
 
 #: patient/templates/patient/ajax_cid10.html:17
 msgid "Nenhuma doença encontrada!"
-msgstr "No patient found!"
+msgstr "No diseases found!"
 
 #: patient/templates/patient/ajax_search.html:11
 msgid "Nenhum participante encontrado!"
-msgstr "No patient found!"
+msgstr "No participants found!"
 
 #: patient/templates/patient/busca.html:18
 msgid "Buscar participante"
@@ -251,7 +251,7 @@ msgstr "Performed in"
 
 #: patient/templates/patient/exams.html:131
 msgid "Descrição "
-msgstr "Description"
+msgstr "Description "
 
 #: patient/templates/patient/exams.html:146
 msgid "Nome do médico"
@@ -328,7 +328,7 @@ msgstr "Responsible:"
 
 #: patient/templates/patient/medical_record.html:103
 msgid "Especificar o diagnóstico da doença ou o código da doença (CID-10)"
-msgstr "Specify diagnosis or disease code (CID-10)"
+msgstr "Specify diagnosis or disease code (ICD-10)"
 
 #: patient/templates/patient/medical_record.html:120
 msgid "Diagnóstico"
@@ -584,7 +584,7 @@ msgstr "Medical evaluation"
 #: patient/templates/patient/register_questionnaires.html:29
 #: patient/templates/patient/register_questionnaires.html:121
 msgid "Questionário"
-msgstr "Questionnaires"
+msgstr "Questionnaire"
 
 #: patient/templates/patient/register_questionnaires.html:30
 msgid "Preenchimentos"
@@ -750,7 +750,7 @@ msgstr ""
 
 #: patient/templates/patient/register_socialdemographic_data.html:229
 msgid "*Aparelho independente ou parte da geladeira duplex."
-msgstr "Independent unit or part of the fridge-freezer"
+msgstr "*Independent unit or part of the fridge-freezer"
 
 #: patient/templates/patient/register_socialdemographic_data.html:236
 msgid "Classe social calculada"
@@ -760,25 +760,25 @@ msgstr "Calculated social class"
 #, fuzzy
 #| msgid "Classe social calculada"
 msgid "Classe Social não calculada"
-msgstr "Calculated social class"
+msgstr "Social class not calculated"
 
 #: patient/tests.py:451 patient/views.py:241
 msgid "Dados sociodemográficos gravados com sucesso."
-msgstr "Social demographic data successfully written. "
+msgstr "Social demographic data successfully written."
 
 #: patient/tests.py:466
 msgid "Menos de 1 maço"
-msgstr ""
+msgstr "Less than 1 pack"
 
 #: patient/tests.py:469
 #, fuzzy
 #| msgid "Experimento"
 msgid "Esporadicamente"
-msgstr "Experiment"
+msgstr "Sporadically"
 
 #: patient/tests.py:472
 msgid "Menos de 1 ano"
-msgstr ""
+msgstr "Less than 1 year"
 
 #: patient/tests.py:506 patient/views.py:266
 msgid "História social gravada com sucesso."
@@ -786,7 +786,7 @@ msgstr "Social history successfully recorded."
 
 #: patient/tests.py:521
 msgid "Informe um endereço de email válido"
-msgstr ""
+msgstr "Inform a valid e-mail"
 
 #: patient/views.py:69 patient/views.py:166
 msgid "Dados pessoais gravados com sucesso."

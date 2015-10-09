@@ -15,7 +15,7 @@ from patient.validation import CPF
 
 def validate_date_questionnaire_response(value):
     if value > datetime.date.today():
-        raise ValidationError(_('Data de preenchimento não pode ser maior que a data de hoje.'))
+        raise ValidationError(_("Fill date can not be bigger than today's date."))
 
 
 # Valida CPF
@@ -23,14 +23,14 @@ def validate_cpf(value):
     validation = CPF(value)
     if not validation.isValid():
         # raise ValidationError(u'CPF %s não é válido' % value)
-        raise ValidationError(_('CPF %(CPF)s não é válido') % {"CPF": value})
+        raise ValidationError(_('CPF %(CPF)s invalid') % {"CPF": value})
 
 
 # Valida data de nascimento:
 # data de nascimento maior que a data atual
 def validate_date_birth(value):
     if value > datetime.date.today():
-        raise ValidationError(_('Data de nascimento não pode ser maior que a data de hoje.'))
+        raise ValidationError(_("Date of birth can't be greater than today date."))
 
 
 class Payment(models.Model):
@@ -155,12 +155,12 @@ class Telephone(models.Model):
     FAX_HOME = 'FH'
     PAGER = 'PA'
     OTHER = 'OT'
-    TYPE_CHOICES = ((MOBILE, _("Celular")),
-                    (HOME, _("Residencial")),
-                    (WORK, _("Comercial")),
-                    (MAIN, _("Principal")),
-                    (FAX_WORK, _("Fax comercial")),
-                    (FAX_HOME, _("Fax residencial")),
+    TYPE_CHOICES = ((MOBILE, _("Cell phone")),
+                    (HOME, _("Home")),
+                    (WORK, _("Business")),
+                    (MAIN, _("Main")),
+                    (FAX_WORK, _("Business fax")),
+                    (FAX_HOME, _("Home fax")),
                     (PAGER, _("Pager")),
                     (OTHER, _("Outros")))
 

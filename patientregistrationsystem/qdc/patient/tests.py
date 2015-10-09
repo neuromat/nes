@@ -437,7 +437,7 @@ class PatientFormValidation(TestCase):
 
         response = self.client.post(reverse(PATIENT_NEW), self.data, follow=True)
         self.assertEqual(Patient.objects.filter(name=name).count(), 1)
-        self.assertNotContains(response, _('Classe Social não calculada'))
+        self.assertNotContains(response, _('Social class not calculated'))
 
         # Prepare to test social demographic data tab
         patient_to_update = Patient.objects.filter(name=name).first()
@@ -448,8 +448,8 @@ class PatientFormValidation(TestCase):
         response = self.client.post(
             reverse('patient_edit', args=(patient_to_update.pk,)), self.data, follow=True)
         self.assertEqual(Patient.objects.filter(name=name).count(), 1)
-        self.assertContains(response, _('Dados sociodemográficos gravados com sucesso.'))
-        self.assertNotContains(response, _('Classe Social não calculada'))
+        self.assertContains(response, _('Social demographic data successfully written.'))
+        self.assertNotContains(response, _('Social class not calculated'))
 
         # Error case
         self.data.pop('wash_machine')
@@ -460,16 +460,16 @@ class PatientFormValidation(TestCase):
         response = self.client.post(
             reverse('patient_edit', args=(patient_to_update.pk,)), self.data, follow=True)
         self.assertEqual(Patient.objects.filter(name=name).count(), 1)
-        self.assertContains(response, _('Classe Social não calculada'))
+        self.assertContains(response, _('Social class not calculated'))
 
     def fill_social_history_data(self):
-        amount_cigarettes = AmountCigarettes.objects.create(name=_('Menos de 1 maço'))
+        amount_cigarettes = AmountCigarettes.objects.create(name=_('Less than 1 pack'))
         amount_cigarettes.save()
 
-        alcohol_frequency = AlcoholFrequency.objects.create(name=_('Esporadicamente'))
+        alcohol_frequency = AlcoholFrequency.objects.create(name=_('Sporadically'))
         alcohol_frequency.save()
 
-        alcohol_period = AlcoholPeriod.objects.create(name=_('Menos de 1 ano'))
+        alcohol_period = AlcoholPeriod.objects.create(name=_('Less than 1 year'))
         alcohol_period.save()
 
         self.data['smoker'] = True
@@ -503,7 +503,7 @@ class PatientFormValidation(TestCase):
         response = self.client.post(
             reverse('patient_edit', args=(patient_to_update.pk,)), self.data, follow=True)
         self.assertEqual(Patient.objects.filter(name=name).count(), 1)
-        self.assertContains(response, _('História social gravada com sucesso.'))
+        self.assertContains(response, _('Social history successfully recorded.'))
 
     def test_patient_valid_email(self):
         """
@@ -518,7 +518,7 @@ class PatientFormValidation(TestCase):
 
         response = self.client.post(reverse(PATIENT_NEW), self.data)
 
-        self.assertContains(response, _('Informe um endereço de email válido'))
+        self.assertContains(response, _('Inform a valid e-mail'))
 
     def test_patient_valid_name(self):
         """
@@ -533,7 +533,7 @@ class PatientFormValidation(TestCase):
 
         response = self.client.post(reverse(PATIENT_NEW), self.data)
 
-        self.assertContains(response, _('Nome deve ser preenchido'))
+        self.assertContains(response, _('Name must be included'))
 
     def test_patient_view_and_search(self):
         """
