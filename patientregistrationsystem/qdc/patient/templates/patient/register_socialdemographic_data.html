@@ -8,11 +8,11 @@
         <div class="row">
             <div class="col-md-12">
                 <div class="container span6 offset3 well ">
-                    <h4>{% trans "Informações básicas" %}</h4>
+                    <h4>{% trans "Basic Information" %}</h4>
                     <div class="row">
                         <div class="col-xs-6 col-sm-6">
                             <div class="form-group">
-                                <label>{% trans "Natural de" %}</label>
+                                <label>{% trans "Natural of" %}</label>
 
                                 <div class="input-group input-group-sm">
                                     <span class="input-group-addon"> <span class="glyphicon glyphicon-flag"></span></span>
@@ -22,7 +22,7 @@
                         </div>
                         <div class="col-xs-6 col-sm-6">
                             <div class="form-group">
-                                <label>{% trans "País de nascimento" %}</label>
+                                <label>{% trans "Citizenship" %}</label>
 
                                 <div class="input-group input-group-sm">
                                     <span class="input-group-addon"> <span class="glyphicon glyphicon-home"></span></span>
@@ -34,7 +34,7 @@
                     <div class="row">
                         <div class="col-xs-6 col-sm-6">
                             <div class="form-group">
-                                <label>{% trans "Profissão" %}</label>
+                                <label>{% trans "Profession" %}</label>
 
                                 <div class="input-group  input-group-sm ">
                                     <span class="input-group-addon"> <span class="glyphicon"></span></span>
@@ -44,7 +44,7 @@
                         </div>
                         <div class="col-xs-6 col-sm-6">
                             <div class="form-group">
-                                <label for="occupation">{% trans "Ocupação" %}</label>
+                                <label for="occupation">{% trans "Occupation" %}</label>
 
                                 <div class="input-group  input-group-sm">
                                     <span class="input-group-addon"> <span class="glyphicon"></span></span>
@@ -56,7 +56,7 @@
                     <div class="row">
                         <div class="col-xs-12 col-sm-12">
                             <div class="form-group">
-                                <label>{% trans "Recebe algum benefício de escala municipal, estadual ou federal de governo?" %}</label>
+                                <label>{% trans "Do you receive some benefit from the municipal level, state or federal government?" %}</label>
 
                                 <div class="input-group  input-group-sm">
                                     {% for radio in social_demographic_form.benefit_government %}
@@ -71,7 +71,7 @@
                     <div class="row">
                         <div class="col-xs-12 col-sm-12">
                             <div class="form-group">
-                                <label>{% trans "Qual a forma de pagamento do tratamento realizado?" %}</label>
+                                <label>{% trans "What form of payment of the treatment performed?" %}</label>
 
                                 <div class="input-group  input-group-sm">
                                     {{ social_demographic_form.payment }}
@@ -82,7 +82,7 @@
                     <div class="row">
                         <div class="col-xs-6 col-sm-6">
                             <div class="form-group">
-                                <label>{% trans "Religião (IBGE)" %}</label>
+                                <label>{% trans "Religion" %}</label>
 
                                 <div class="input-group  input-group-sm">
                                     {{ social_demographic_form.religion }}
@@ -91,7 +91,7 @@
                         </div>
                         <div class="col-xs-6 col-sm-6">
                             <div class="form-group">
-                                <label for="skin_color">{% trans "Cor da pele (IBGE)" %}</label>
+                                <label for="skin_color">{% trans "Flesh tone" %}</label>
 
                                 <div class="input-group  input-group-sm">
                                     {{ social_demographic_form.flesh_tone }}
@@ -104,12 +104,12 @@
                     <div class="row">
                         <div class="col-xs-12 col-sm-12">
                             <label>
-                                <h4>{% trans "Classe social" %}</h4>
+                                <h4>{% trans "Social class" %}</h4>
                                 <br/>
                             </label>
 
                             <div class="form-group">
-                                <label>{% trans "Grau de instrução do chefe de família - Critério Brasil 2013" %}</label>
+                                <label>{% trans "Schooling" %}</label>
 
                                 <div class="input-group input-group-sm">
                                     {{ social_demographic_form.schooling }}
@@ -120,10 +120,10 @@
                     <div class="row">
                         <div class="col-xs-12 col-sm-12">
                             <div class="form-group">
-                                <label>{% trans "Quantidade de itens de conforto familiar - Critério Brasil 2013" %}</label>
+                                <label>{% trans "Amount of familiar comfort items - Brazil 2013 criteria" %}</label>
 
                                 <div class="form-group">
-                                    <label class="col-sm-5 control-label">{% trans "Televisores em cores" %}</label>
+                                    <label class="col-sm-5 control-label">{% trans "TV" %}</label>
 
                                     <div class="col-sm-7">
                                         {% for radio in social_demographic_form.tv %}
@@ -134,7 +134,7 @@
                                     </div>
                                 </div>
                                 <div class="form-group">
-                                    <label class="col-sm-5 control-label">{% trans "Videocassete/DVD" %}</label>
+                                    <label class="col-sm-5 control-label">{% trans "DVD" %}</label>
 
                                     <div class="col-sm-7">
                                         {% for radio in social_demographic_form.dvd %}
@@ -145,7 +145,7 @@
                                     </div>
                                 </div>
                                 <div class="form-group">
-                                    <label class="col-sm-5 control-label">{% trans "Rádios" %}</label>
+                                    <label class="col-sm-5 control-label">{% trans "Radio" %}</label>
 
                                     <div class="col-sm-7">
                                         {% for radio in social_demographic_form.radio %}
@@ -156,7 +156,7 @@
                                     </div>
                                 </div>
                                 <div class="form-group">
-                                    <label class="col-sm-5 control-label">{% trans "Banheiros" %}</label>
+                                    <label class="col-sm-5 control-label">{% trans "Bath" %}</label>
 
                                     <div class="col-sm-7">
                                         {% for radio in social_demographic_form.bath %}
@@ -167,7 +167,7 @@
                                     </div>
                                 </div>
                                 <div class="form-group">
-                                    <label class="col-sm-5 control-label">{% trans "Automóveis" %}</label>
+                                    <label class="col-sm-5 control-label">{% trans "Automobile" %}</label>
 
                                     <div class="col-sm-7">
                                         {% for radio in social_demographic_form.automobile %}
@@ -178,7 +178,7 @@
                                     </div>
                                 </div>
                                 <div class="form-group">
-                                    <label class="col-sm-5 control-label">{% trans "Empregadas mensalistas" %}</label>
+                                    <label class="col-sm-5 control-label">{% trans "Employed salaried" %}</label>
 
                                     <div class="col-sm-7">
                                         {% for radio in social_demographic_form.house_maid %}
@@ -189,7 +189,7 @@
                                     </div>
                                 </div>
                                 <div class="form-group">
-                                    <label class="col-sm-5 control-label">{% trans "Máquinas de lavar" %}</label>
+                                    <label class="col-sm-5 control-label">{% trans "Wash machine" %}</label>
 
                                     <div class="col-sm-7">
                                         {% for radio in social_demographic_form.wash_machine %}
@@ -200,7 +200,7 @@
                                     </div>
                                 </div>
                                 <div class="form-group">
-                                    <label class="col-sm-5 control-label">{% trans "Geladeiras" %}</label>
+                                    <label class="col-sm-5 control-label">{% trans "Refrigerator" %}</label>
 
                                     <div class="col-sm-7">
                                         {% for radio in social_demographic_form.refrigerator %}
@@ -226,14 +226,14 @@
                     </div>
                     <div class="row">
                         <div class="col-sm-12">
-                            <h6>{% trans "*Aparelho independente ou parte da geladeira duplex." %}</h6>
+                            <h6>{% trans "*Independent unit or part of the fridge-freezer" %}</h6>
                         </div>
                     </div>
                     <div class="row">
                         <div class="col-xs-12 col-sm-12">
                             <div class="form-group">
                                 <br/>
-                                <label>{% trans "Classe social calculada" %}</label>
+                                <label>{% trans "Calculated social class" %}</label>
                                 <div class="input-group input-group-sm">
                                     {{ social_demographic_form.social_class }}
                                 </div>

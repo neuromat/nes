@@ -18,7 +18,7 @@
 
                     <div class="row">
                         <div class="col-xs-12 col-sm-12">
-                            <h4>{% trans "Avaliações de entrada" %}</h4>
+                            <h4>{% trans "Medical evaluation" %}</h4>
                         </div>
                     </div>
 
@@ -26,18 +26,18 @@
                         <table class="table table-striped">
                             <thead>
                             <tr>
-                                <th>{% trans "Questionário" %}</th>
-                                <th>{% trans "Preenchimentos" %}</th>
+                                <th>{% trans "Questionnaire" %}</th>
+                                <th>{% trans "Fills" %}</th>
                             </tr>
                             </thead>
                             <tbody>
                             {% for patient_questionnaire in patient_questionnaires_data_list %}
-                                <tr {% if not patient_questionnaire.is_initial_evaluation %} data-toggle="tooltip" data-placement="left" title="{% trans "Não é mais avaliação de entrada" %}" {% endif %}>
+                                <tr {% if not patient_questionnaire.is_initial_evaluation %} data-toggle="tooltip" data-placement="left" title="{% trans "It is not entrance evaluation anymore" %}" {% endif %}>
                                     <td>
                                         {{ patient_questionnaire.limesurvey_id }} - {{ patient_questionnaire.questionnaire_title }}
 
                                         {% if patient_questionnaire.questionnaire_responses|length == 0 %}
-                                            <br/><span class="label label-warning">{% trans "Falta preencher" %}</span>
+                                            <br/><span class="label label-warning">{% trans "It must be filled" %}</span>
                                         {% endif %}
                                     </td>
                                     <td>
@@ -67,12 +67,12 @@
                                                     <td class="col-md-4">
                                                         {% if limesurvey_available and response.completed != None %}
                                                             {% if response.completed %}
-                                                                <span class="label label-success">{% trans "Completo" %}</span>
+                                                                <span class="label label-success">{% trans "Complete" %}</span>
                                                             {% else %}
-                                                                <span class="label label-warning">{% trans "Incompleto" %}</span>
+                                                                <span class="label label-warning">{% trans "Incomplete" %}</span>
                                                             {% endif %}
                                                         {% else %}
-                                                            <span class="label label-default">{% trans "Sem status" %}</span>
+                                                            <span class="label label-default">{% trans "No status" %}</span>
                                                         {% endif %}
                                                     </td>
                                                 </tr>
@@ -82,7 +82,7 @@
                                                 <tr>
                                                     <td colspan="2" class="col-md-12">
                                                         <a href="/patient/{{ patient_id }}/questionnaire/{{ patient_questionnaire.survey_id }}/add_response/?origin=subject"
-                                                            class="btn btn-primary {% if not limesurvey_available %} disabled {% endif %}">{% trans "Novo preenchimento" %}</a>
+                                                            class="btn btn-primary {% if not limesurvey_available %} disabled {% endif %}">{% trans "New fill" %}</a>
                                                     </td>
                                                 </tr>
                                             {% endif %}
@@ -107,7 +107,7 @@
 
                     <div class="row">
                         <div class="col-xs-12 col-sm-12">
-                            <h4>{% trans "Questionários de experimentos" %}</h4>
+                            <h4>{% trans "Questionnaires" %}</h4>
                         </div>
                     </div>
 
@@ -115,11 +115,11 @@
                         <table class="table table-striped">
                             <thead>
                             <tr>
-                                <th>{% trans "Estudo" %}</th>
-                                <th>{% trans "Experimento" %}</th>
-                                <th>{% trans "Grupo" %}</th>
-                                <th>{% trans "Questionário" %}</th>
-                                <th>{% trans "Preenchimento" %}</th>
+                                <th>{% trans "Research project" %}</th>
+                                <th>{% trans "Experiment" %}</th>
+                                <th>{% trans "Group" %}</th>
+                                <th>{% trans "Questionnaire" %}</th>
+                                <th>{% trans "Fill" %}</th>
                                 <th></th>
                             </tr>
                             </thead>
@@ -142,12 +142,12 @@
                                     <td>
                                         {% if limesurvey_available and questionnaire.completed != None %}
                                             {% if questionnaire.completed %}
-                                                <span class="label label-success">{% trans "Completo" %}</span>
+                                                <span class="label label-success">{% trans "Complete" %}</span>
                                             {% else %}
-                                                <span class="label label-warning">{% trans "Incompleto" %}</span>
+                                                <span class="label label-warning">{% trans "Incomplete" %}</span>
                                             {% endif %}
                                         {% else %}
-                                            <span class="label label-default">{% trans "Sem status" %}</span>
+                                            <span class="label label-default">{% trans "No status" %}</span>
                                         {% endif %}
                                     </td>
                                 </tr>
