@@ -7,8 +7,8 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
-"Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2015-10-13 11:05-0300\n"
+"Report-msgstr-Bugs-To: \n"
+"POT-Creation-Date: 2015-10-09 12:51-0300\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -27,7 +27,7 @@ msgstr ""
 
 #: experiment/forms.py:51 experiment/forms.py:195 experiment/forms.py:198
 msgid "%m/%d/%Y"
-msgstr "%m/%d/%Y"
+msgstr ""
 
 #: experiment/forms.py:52 experiment/forms.py:196 experiment/forms.py:199
 msgid "mm/dd/yyyy"
@@ -100,10 +100,8 @@ msgstr ""
 #: experiment/forms.py:180
 #: experiment/templates/experiment/research_project_list.html:36
 #: experiment/templates/experiment/research_project_register.html:116
-#, fuzzy
-#| msgid "Responsável"
 msgid "Responsible"
-msgstr "Responsible"
+msgstr ""
 
 #: experiment/forms.py:197
 msgid "Initial date must be filled."
@@ -111,23 +109,19 @@ msgstr ""
 
 #: experiment/forms.py:221
 msgid "Quantidade deve ser preenchida."
-msgstr "Quantity must be filled."
+msgstr ""
 
 #: experiment/models.py:15
-#, fuzzy
-#| msgid " milissegundos "
 msgid "milisecond(s)"
-msgstr " miliseconds "
+msgstr ""
 
 #: experiment/models.py:16
 msgid "second(s)"
 msgstr ""
 
 #: experiment/models.py:17
-#, fuzzy
-#| msgid "minuto(s)"
 msgid "minute(s)"
-msgstr "minute(s)"
+msgstr ""
 
 #: experiment/models.py:18
 msgid "hour(s)"
@@ -158,50 +152,38 @@ msgid "Set of steps"
 msgstr ""
 
 #: experiment/models.py:91
-#, fuzzy
-#| msgid "Instrução"
 msgid "Instruction"
-msgstr "Instruction"
+msgstr ""
 
 #: experiment/models.py:92
-#, fuzzy
-#| msgid "Pausa"
 msgid "Pause"
-msgstr "Pause"
+msgstr ""
 
 #: experiment/models.py:93
 #: experiment/templates/experiment/subject_questionnaire_response_form.html:120
 #: experiment/templates/experiment/subject_questionnaire_response_list.html:66
-#, fuzzy
-#| msgid "Questionário"
 msgid "Questionnaire"
-msgstr "Questionnaire"
+msgstr ""
 
 #: experiment/models.py:94
 msgid "Stimulus"
 msgstr ""
 
 #: experiment/models.py:95
-#, fuzzy
-#| msgid "Inserir participante"
 msgid "Task for participant"
-msgstr "Insert participant"
+msgstr ""
 
 #: experiment/models.py:96
-#, fuzzy
-#| msgid "Tarefa para o experimentador"
 msgid "Task for experimenter"
-msgstr "Task for experimenter"
+msgstr ""
 
 #: experiment/templates/experiment/ajax_cid10.html:8
 msgid "Nenhuma doença encontrada!"
-msgstr "No diseases found!"
+msgstr ""
 
 #: experiment/templates/experiment/ajax_search_patients.html:11
-#, fuzzy
-#| msgid "Nenhum participante encontrado!"
 msgid "No participants found!"
-msgstr "No participants found!"
+msgstr ""
 
 #: experiment/templates/experiment/block_component.html:15
 #: experiment/templates/experiment/block_component.html:29
@@ -213,20 +195,16 @@ msgstr ""
 #: experiment/templates/experiment/experiment_register.html:58
 #: experiment/templates/experiment/group_register.html:61
 #: experiment/templates/experiment/research_project_register.html:59
-#, fuzzy
-#| msgid "Editar"
 msgid "Editing"
-msgstr "Edit"
+msgstr ""
 
 #: experiment/templates/experiment/block_component.html:24
 msgid "the set of steps"
 msgstr ""
 
 #: experiment/templates/experiment/block_component.html:42
-#, fuzzy
-#| msgid "Organização dos subpassos"
 msgid "Organization of sub-steps"
-msgstr "Organization of sub-steps"
+msgstr ""
 
 #: experiment/templates/experiment/block_component.html:45
 msgid "Sub-steps will be executed one after another"
@@ -270,10 +248,8 @@ msgid "Name of use"
 msgstr ""
 
 #: experiment/templates/experiment/block_component.html:102
-#, fuzzy
-#| msgid "Ordem"
 msgid "Order"
-msgstr "Order"
+msgstr ""
 
 #: experiment/templates/experiment/block_component.html:106
 #: experiment/templates/experiment/block_component.html:244
@@ -299,10 +275,8 @@ msgstr ""
 
 #: experiment/templates/experiment/block_component.html:120
 #: experiment/templates/experiment/block_component.html:258
-#, fuzzy
-#| msgid "Expandir"
 msgid "Expand"
-msgstr "Expand"
+msgstr ""
 
 #: experiment/templates/experiment/block_component.html:136
 #: experiment/templates/experiment/block_component.html:153
@@ -350,10 +324,8 @@ msgstr ""
 #: experiment/templates/experiment/subject_questionnaire_response_form.html:275
 #: experiment/templates/experiment/subject_questionnaire_response_list.html:173
 #: experiment/templates/experiment/upload_consent_form.html:109
-#, fuzzy
-#| msgid "Cancelar"
 msgid "Cancel"
-msgstr "Cancel"
+msgstr ""
 
 #: experiment/templates/experiment/component_list.html:49
 #: experiment/templates/experiment/component_template.html:54
@@ -396,10 +368,8 @@ msgstr ""
 #: experiment/templates/experiment/component_list.html:72
 #: experiment/templates/experiment/component_template.html:92
 #: experiment/templates/experiment/component_template.html:129
-#, fuzzy
-#| msgid "Identificação"
 msgid "Identification"
-msgstr "Identification"
+msgstr ""
 
 #: experiment/templates/experiment/component_list.html:73
 #: experiment/templates/experiment/component_template.html:140
@@ -410,10 +380,8 @@ msgstr "Identification"
 #: experiment/templates/experiment/group_register.html:263
 #: experiment/templates/experiment/research_project_register.html:108
 #: experiment/templates/experiment/research_project_register.html:174
-#, fuzzy
-#| msgid "Descrição"
 msgid "Description"
-msgstr "Description"
+msgstr ""
 
 #: experiment/templates/experiment/component_list.html:84
 #: experiment/templates/experiment/component_list.html:86
@@ -431,10 +399,8 @@ msgstr "Description"
 #: experiment/templates/experiment/randon_configuration_line.html:10
 #: experiment/templates/experiment/randon_configuration_line.html:12
 #: experiment/templates/experiment/research_project_register.html:124
-#, fuzzy
-#| msgid "Editar"
 msgid "Edit"
-msgstr "Edit"
+msgstr ""
 
 #: experiment/templates/experiment/component_list.html:97
 msgid "Insert new step"
@@ -460,10 +426,8 @@ msgid "Information about"
 msgstr ""
 
 #: experiment/templates/experiment/component_template.html:179
-#, fuzzy
-#| msgid "Quantidade de usos a inserir"
 msgid "Quantity of uses to be inserted"
-msgstr "Quantity of uses to be inserted"
+msgstr ""
 
 #: experiment/templates/experiment/component_template.html:197
 msgid "Information about this use of step"
@@ -490,36 +454,26 @@ msgid ""
 msgstr ""
 
 #: experiment/templates/experiment/component_template.html:228
-#, fuzzy
-#| msgid "Quantidade de repetições"
 msgid "Quantity of repetitions"
-msgstr "Quantity of repetitions"
+msgstr ""
 
 #: experiment/templates/experiment/component_template.html:231
 #: experiment/templates/experiment/questionnaire_view.html:118
-#, fuzzy
-#| msgid "Ilimitada"
 msgid "Unlimited"
-msgstr "Unlimited"
+msgstr ""
 
 #: experiment/templates/experiment/component_template.html:247
-#, fuzzy
-#| msgid "Intervalo entre repetições"
 msgid "Interval among repetitions"
-msgstr "Interval among repetitions"
+msgstr ""
 
 #: experiment/templates/experiment/component_template.html:250
 #: experiment/templates/experiment/questionnaire_view.html:129
-#, fuzzy
-#| msgid "Indefinido"
 msgid "Undefined"
-msgstr "Undefined"
+msgstr ""
 
 #: experiment/templates/experiment/component_template.html:286
-#, fuzzy
-#| msgid "Inserir"
 msgid "Insert"
-msgstr "Insert"
+msgstr ""
 
 #: experiment/templates/experiment/component_template.html:288
 #: experiment/templates/experiment/experiment_register.html:158
@@ -552,10 +506,8 @@ msgid "Duration"
 msgstr ""
 
 #: experiment/templates/experiment/experiment_register.html:54
-#, fuzzy
-#| msgid "Novo experimento"
 msgid "New experiment"
-msgstr "New experiment"
+msgstr ""
 
 #: experiment/templates/experiment/experiment_register.html:70
 msgid "Basic experiment information"
@@ -579,10 +531,8 @@ msgstr ""
 
 #: experiment/templates/experiment/experiment_register.html:136
 #: experiment/templates/experiment/research_project_register.html:193
-#, fuzzy
-#| msgid "Inserir novo"
 msgid "Insert new"
-msgstr "Insert new"
+msgstr ""
 
 #: experiment/templates/experiment/experiment_register.html:144
 msgid "Manage"
@@ -614,10 +564,8 @@ msgid ""
 msgstr ""
 
 #: experiment/templates/experiment/group_register.html:160
-#, fuzzy
-#| msgid "Questionários do protocolo experimental"
 msgid "Questionnaires of experimental protocol"
-msgstr "Questionnaires of experimental protocol"
+msgstr ""
 
 #: experiment/templates/experiment/group_register.html:169
 #: experiment/templates/experiment/group_register.html:178
@@ -676,44 +624,34 @@ msgstr ""
 #: experiment/templates/experiment/subjects.html:27
 #: experiment/templates/experiment/subjects.html:83
 #: experiment/templates/experiment/upload_consent_form.html:25
-#, fuzzy
-#| msgid "Participante"
 msgid "Participant"
-msgstr "Participant"
+msgstr ""
 
 #: experiment/templates/experiment/group_register.html:230
-#, fuzzy
-#| msgid "Ver / Editar"
 msgid "View / Edit"
-msgstr "View / Edit"
+msgstr ""
 
 #: experiment/templates/experiment/group_register.html:233
-#, fuzzy, python-format
-#| msgid "Há %(number_of_subjects)s participante cadastrado"
+#, python-format
 msgid "There is %%(number_of_subjects)s participant recorded"
-msgstr "There is %(number_of_subjects)s participant recorded"
+msgstr ""
 
 #: experiment/templates/experiment/group_register.html:235
-#, fuzzy, python-format
-#| msgid "Há %(number_of_subjects)s participantes cadastrados"
+#, python-format
 msgid "There are %%(number_of_subjects)s participants recorded"
-msgstr "There are %(number_of_subjects)s participants recorded"
+msgstr ""
 
 #: experiment/templates/experiment/group_register.html:241
-#, fuzzy
-#| msgid "Nenhum participante encontrado!"
 msgid "No participants recorded"
-msgstr "No participants found!"
+msgstr ""
 
 #: experiment/templates/experiment/group_register.html:245
 msgid "Register"
 msgstr ""
 
 #: experiment/templates/experiment/group_register.html:254
-#, fuzzy
-#| msgid "Experimentos"
 msgid "Experimental protocol"
-msgstr "Experiments"
+msgstr ""
 
 #: experiment/templates/experiment/group_register.html:262
 msgid "Set of root steps"
@@ -734,10 +672,8 @@ msgid ""
 msgstr ""
 
 #: experiment/templates/experiment/group_register.html:299
-#, fuzzy
-#| msgid "Configurar / Criar"
 msgid "Configure / Create"
-msgstr "Configure / Create"
+msgstr ""
 
 #: experiment/templates/experiment/group_register.html:336
 msgid "Are you sure you want to delete group?"
@@ -776,76 +712,54 @@ msgstr ""
 #: experiment/templates/experiment/pause_component.html:8
 #: experiment/templates/experiment/pause_component.html:18
 #: experiment/templates/experiment/pause_component.html:24
-#, fuzzy
-#| msgid "Nova pausa"
 msgid "New pause"
-msgstr "New pause"
+msgstr ""
 
 #: experiment/templates/experiment/pause_component.html:13
-#, fuzzy
-#| msgid "a pausa"
 msgid "the pause"
-msgstr "the pause"
+msgstr ""
 
 #: experiment/templates/experiment/questionnaire_component.html:8
 #: experiment/templates/experiment/questionnaire_component.html:18
 #: experiment/templates/experiment/questionnaire_component.html:24
-#, fuzzy
-#| msgid "Novo questionário"
 msgid "New questionnaire"
-msgstr "New questionnaire"
+msgstr ""
 
 #: experiment/templates/experiment/questionnaire_component.html:13
-#, fuzzy
-#| msgid "o questionário"
 msgid "the questionnaire"
-msgstr "the questionnaire"
+msgstr ""
 
 #: experiment/templates/experiment/questionnaire_component.html:31
-#, fuzzy
-#| msgid "Nome do questionário no LimeSurvey"
 msgid "Questionnaire name at LimeSurvey"
-msgstr "Questionnaire name at LimeSurvey"
+msgstr ""
 
 #: experiment/templates/experiment/questionnaire_view.html:76
-#, fuzzy
-#| msgid "Identificação:"
 msgid "Identification:"
-msgstr "Identification:"
+msgstr ""
 
 #: experiment/templates/experiment/questionnaire_view.html:84
-#, fuzzy
-#| msgid "Descrição:"
 msgid "Description:"
-msgstr "Description:"
+msgstr ""
 
 #: experiment/templates/experiment/questionnaire_view.html:92
-#, fuzzy
-#| msgid "Duração:"
 msgid "Duration:"
-msgstr "Duration:"
+msgstr ""
 
 #: experiment/templates/experiment/questionnaire_view.html:102
 msgid "Use name:"
 msgstr ""
 
 #: experiment/templates/experiment/questionnaire_view.html:112
-#, fuzzy
-#| msgid "Quantidade de repetições:"
 msgid "Quantity of repetitions:"
-msgstr "Quantity of repetitions:"
+msgstr ""
 
 #: experiment/templates/experiment/questionnaire_view.html:123
-#, fuzzy
-#| msgid "Intervalo entre repetições:"
 msgid "Interval among repetitions:"
-msgstr "Interval among repetitions:"
+msgstr ""
 
 #: experiment/templates/experiment/questionnaire_view.html:143
-#, fuzzy
-#| msgid "Completo"
 msgid "Completed fills"
-msgstr "Complete"
+msgstr ""
 
 #: experiment/templates/experiment/questionnaire_view.html:144
 #: experiment/templates/experiment/subject_questionnaire_response_list.html:67
@@ -854,40 +768,30 @@ msgstr ""
 
 #: experiment/templates/experiment/questionnaire_view.html:150
 #: experiment/templates/experiment/subjects.html:91
-#, fuzzy
-#| msgid "(Nenhum participante inserido)"
 msgid "(No participant inserted)"
-msgstr "(No participant inserted)"
+msgstr ""
 
 #: experiment/templates/experiment/questionnaire_view.html:171
 #: experiment/templates/experiment/questionnaire_view.html:195
 #: experiment/templates/experiment/subject_questionnaire_response_list.html:121
 #: experiment/templates/experiment/subjects.html:121
-#, fuzzy
-#| msgid "Sem status"
 msgid "No status"
-msgstr "No status"
+msgstr ""
 
 #: experiment/templates/experiment/questionnaire_view.html:180
 #: experiment/templates/experiment/subject_questionnaire_response_list.html:106
-#, fuzzy
-#| msgid "Ver detalhes"
 msgid "See details"
-msgstr "See details"
+msgstr ""
 
 #: experiment/templates/experiment/questionnaire_view.html:190
 #: experiment/templates/experiment/subject_questionnaire_response_list.html:116
-#, fuzzy
-#| msgid "Completo"
 msgid "Complete"
-msgstr "Complete"
+msgstr ""
 
 #: experiment/templates/experiment/questionnaire_view.html:192
 #: experiment/templates/experiment/subject_questionnaire_response_list.html:118
-#, fuzzy
-#| msgid "Incompleto"
 msgid "Incomplete"
-msgstr "Incomplete"
+msgstr ""
 
 #: experiment/templates/experiment/questionnaire_view.html:206
 #: experiment/templates/experiment/subject_questionnaire_response_form.html:33
@@ -907,10 +811,8 @@ msgstr ""
 
 #: experiment/templates/experiment/research_project_list.html:43
 #: experiment/templates/experiment/research_project_register.html:181
-#, fuzzy
-#| msgid "Visualizar"
 msgid "Visualize"
-msgstr "Visualize"
+msgstr ""
 
 #: experiment/templates/experiment/research_project_list.html:54
 msgid "to"
@@ -921,10 +823,8 @@ msgid "From"
 msgstr ""
 
 #: experiment/templates/experiment/research_project_list.html:68
-#, fuzzy
-#| msgid "Inserir novo estudo"
 msgid "Insert new study"
-msgstr "Insert new study"
+msgstr ""
 
 #: experiment/templates/experiment/research_project_register.html:55
 msgid "New"
@@ -951,10 +851,8 @@ msgid "Type a keyword to include an existent or new"
 msgstr ""
 
 #: experiment/templates/experiment/research_project_register.html:168
-#, fuzzy
-#| msgid "Experimentos"
 msgid "Experiments"
-msgstr "Experiments"
+msgstr ""
 
 #: experiment/templates/experiment/research_project_register.html:227
 msgid "Are you sure you want to delete study?"
@@ -1006,44 +904,34 @@ msgid "Quantity of fills:"
 msgstr ""
 
 #: experiment/templates/experiment/subject_questionnaire_response_list.html:89
-#, fuzzy
-#| msgid "Ilimitada"
 msgid "unlimited"
-msgstr "Unlimited"
+msgstr ""
 
 #: experiment/templates/experiment/subject_questionnaire_response_list.html:91
 msgid "Interval among fills:"
 msgstr ""
 
 #: experiment/templates/experiment/subject_questionnaire_response_list.html:95
-#, fuzzy
-#| msgid "Indefinido"
 msgid "undefined"
-msgstr "Undefined"
+msgstr ""
 
 #: experiment/templates/experiment/subject_questionnaire_response_list.html:170
 msgid "Are you sure you want to delete participant?"
 msgstr ""
 
 #: experiment/templates/experiment/subjects.html:62
-#, fuzzy
-#| msgid "Inserir participante"
 msgid "Insert participant"
-msgstr "Insert participant"
+msgstr ""
 
 #: experiment/templates/experiment/subjects.html:66
-#, fuzzy
-#| msgid "Entre com o nome ou CPF do participante"
 msgid "Type name or CPF participant"
-msgstr "Type name or CPF participant"
+msgstr ""
 
 #: experiment/templates/experiment/subjects.html:84
 #: experiment/templates/experiment/upload_consent_form.html:26
 #: experiment/templates/experiment/upload_consent_form.html:58
-#, fuzzy
-#| msgid "Termo de consentimento"
 msgid "Term of consent"
-msgstr "Term of consent"
+msgstr ""
 
 #: experiment/templates/experiment/subjects.html:85
 msgid "Completed questionnaires"
@@ -1070,10 +958,8 @@ msgstr ""
 #: experiment/templates/experiment/task_experiment_component.html:8
 #: experiment/templates/experiment/task_experiment_component.html:18
 #: experiment/templates/experiment/task_experiment_component.html:24
-#, fuzzy
-#| msgid "Tarefa para o experimentador"
 msgid "New task for experimenter"
-msgstr "Task for experimenter"
+msgstr ""
 
 #: experiment/templates/experiment/upload_consent_form.html:91
 msgid "Upload"
@@ -1084,10 +970,8 @@ msgid "Are you sure you want to delete attachment?"
 msgstr ""
 
 #: experiment/views.py:73
-#, fuzzy
-#| msgid "Estudo criado com sucesso."
 msgid "Study created successfully."
-msgstr "Study created successfully."
+msgstr ""
 
 #: experiment/views.py:114
 msgid "Error trying to delete research."
@@ -1103,10 +987,8 @@ msgid "There is no changes to save."
 msgstr ""
 
 #: experiment/views.py:260
-#, fuzzy
-#| msgid "Experimento criado com sucesso."
 msgid "Experiment created successfully."
-msgstr "Experiment created successfully."
+msgstr ""
 
 #: experiment/views.py:295
 msgid ""
@@ -1114,16 +996,12 @@ msgid ""
 msgstr ""
 
 #: experiment/views.py:324
-#, fuzzy
-#| msgid "Experimento criado com sucesso."
 msgid "Experiment updated successfully."
-msgstr "Experiment created successfully."
+msgstr ""
 
 #: experiment/views.py:358
-#, fuzzy
-#| msgid "Grupo incluído com sucesso."
 msgid "Group included successfully."
-msgstr "Group included successfully."
+msgstr ""
 
 #: experiment/views.py:457
 msgid "Impossible to delete group, because there are dependencies."
@@ -1164,10 +1042,8 @@ msgid "Error trying to delete fill"
 msgstr ""
 
 #: experiment/views.py:1134
-#, fuzzy
-#| msgid "Participante removido do experimento."
 msgid "Participant deleted from experiment."
-msgstr "Participant deleted from experiment."
+msgstr ""
 
 #: experiment/views.py:1138
 msgid ""
@@ -1176,10 +1052,8 @@ msgid ""
 msgstr ""
 
 #: experiment/views.py:1173
-#, fuzzy
-#| msgid "Participante já inserido para este grupo."
 msgid "Participant has already been inserted in this group."
-msgstr "Participant has already been inserted in this group."
+msgstr ""
 
 #: experiment/views.py:1219
 msgid "Consent term saved successfully."
@@ -1239,16 +1113,12 @@ msgid " hour "
 msgstr ""
 
 #: experiment/views.py:1569
-#, fuzzy
-#| msgid " minutos "
 msgid " minutes "
-msgstr " minutes "
+msgstr ""
 
 #: experiment/views.py:1569
-#, fuzzy
-#| msgid " minuto "
 msgid " minute "
-msgstr " minute "
+msgstr ""
 
 #: experiment/views.py:1574
 msgid " seconds "
@@ -1259,16 +1129,12 @@ msgid " second "
 msgstr ""
 
 #: experiment/views.py:1579
-#, fuzzy
-#| msgid " milissegundos "
 msgid " miliseconds "
-msgstr " miliseconds "
+msgstr ""
 
 #: experiment/views.py:1579
-#, fuzzy
-#| msgid " milissegundo "
 msgid " milisecond "
-msgstr " milisecond "
+msgstr ""
 
 #: experiment/views.py:1594
 msgid " and "
@@ -1279,580 +1145,17 @@ msgid "Step use updated successfully."
 msgstr ""
 
 #: experiment/views.py:1779 experiment/views.py:2031
-#, fuzzy
-#| msgid "Componente removido com sucesso."
 msgid "Component deleted successfully."
-msgstr "Component deleted successfully."
+msgstr ""
 
 #: experiment/views.py:1990 experiment/views.py:2012
 msgid "Step updated successfully."
 msgstr ""
 
 #: experiment/views.py:2196
-#, fuzzy
-#| msgid "Experimento criado com sucesso."
 msgid "Experimental protocol included successfully."
-msgstr "Experiment created successfully."
+msgstr ""
 
 #: experiment/views.py:2224 experiment/views.py:2356
 msgid "Steps included successfully."
 msgstr ""
-
-#~ msgid "Título deve ser preenchido."
-#~ msgstr "Title must be filled."
-
-#~ msgid "Descrição deve ser preenchida."
-#~ msgstr "Description must be filled."
-
-#~ msgid "dd/mm/aaaa"
-#~ msgstr "mm/dd/yyyy"
-
-#~ msgid "Data de preenchimento deve ser preenchida"
-#~ msgstr "Fill date must be filled."
-
-#~ msgid "Identificação deve ser preenchida."
-#~ msgstr "Identification must be filled."
-
-#~ msgid "Tempo"
-#~ msgstr "Time"
-
-#~ msgid "Tempo da duração deve ser preenchido"
-#~ msgstr "Duration time must be filled in."
-
-#~ msgid "Unidade da duração deve ser preenchida"
-#~ msgstr "Duration unit must be filled in."
-
-#~ msgid "Fixa"
-#~ msgstr "Fixed"
-
-#~ msgid "Aleatória"
-#~ msgstr "Random"
-
-#~ msgid "Quantidade de repetições deve ser preenchida."
-#~ msgstr "Quantity of repetitions must be filled."
-
-#~ msgid "Intervalo deve ser preenchido"
-#~ msgstr "Interval must be filled."
-
-#~ msgid "Unidade do intervalo deve ser preenchida"
-#~ msgstr "Interval unit must be filled."
-
-#~ msgid "Instrução deve ser preenchida."
-#~ msgstr "Instruction must be filled."
-
-#~ msgid "Tipo do estímulo deve ser preenchido."
-#~ msgstr "Stimulus type must be filled."
-
-#~ msgid "Em uma sequência"
-#~ msgstr "Sequence"
-
-#~ msgid "De forma paralela"
-#~ msgstr "Parallel"
-
-#~ msgid "Tipo de organização deve ser escolhido."
-#~ msgstr "Organization type must be filled in."
-
-#~ msgid "Data de início deve ser preenchida"
-#~ msgstr "Initial date must be filled."
-
-#~ msgid "milesegundo(s)"
-#~ msgstr "milisecond(s)"
-
-#~ msgid "segundo(s)"
-#~ msgstr "second(s)"
-
-#~ msgid "hora(s)"
-#~ msgstr "hour(s)"
-
-#~ msgid "dia(s)"
-#~ msgstr "day(s)"
-
-#~ msgid "semana(s)"
-#~ msgstr "week(s)"
-
-#~ msgid "mês (meses)"
-#~ msgstr "month(s)"
-
-#~ msgid "ano(s)"
-#~ msgstr "year(s)"
-
-#~ msgid "Data de preenchimento não pode ser maior que a data de hoje."
-#~ msgstr "Fill date cannot be greater than today."
-
-#~ msgid "Conjunto de passos"
-#~ msgstr "Set of steps"
-
-#~ msgid "Estímulo"
-#~ msgstr "Stimulus"
-
-#~ msgid "Tarefa para o sujeito"
-#~ msgstr "Task for participant"
-
-#~ msgid "Novo conjunto de passos"
-#~ msgstr "New set of steps"
-
-#~ msgid "Edição"
-#~ msgstr "Editing"
-
-#~ msgid "o conjunto de passos"
-#~ msgstr "the set of steps"
-
-#~ msgid "Os subpassos serão executados um após o outro"
-#~ msgstr "Sub-steps will be executed one after another"
-
-#~ msgid "Os subpassos serão executados todos ao mesmo tempo"
-#~ msgstr "Sub-steps will be executed at the same time"
-
-#~ msgid "Quantidade de passos obrigatórios"
-#~ msgstr "Quantity of steps obligatory."
-
-#~ msgid "Todos"
-#~ msgstr "All"
-
-#~ msgid "Passos com posição fixa"
-#~ msgstr "Steps with fixed position"
-
-#~ msgid "Tipo"
-#~ msgstr "Type"
-
-#~ msgid "Passo"
-#~ msgstr "Step"
-
-#~ msgid "Nome do uso"
-#~ msgstr "Name of use"
-
-#~ msgid "Remover"
-#~ msgstr "Delete"
-
-#~ msgid "usos agrupados"
-#~ msgstr "uses grouped"
-
-#~ msgid "Remover usos da lista"
-#~ msgstr "Delete uses from list"
-
-#~ msgid "posições para passo aleatório agrupadas"
-#~ msgstr "positions for random step grouped"
-
-#~ msgid "Não possui"
-#~ msgstr "It does not have"
-
-#~ msgid "Inserir passo"
-#~ msgstr "Insert step"
-
-#~ msgid "Passos com posição aleatória"
-#~ msgstr "Steps with random position"
-
-#~ msgid "Excluir"
-#~ msgstr "Delete"
-
-#~ msgid "Estudos"
-#~ msgstr "Studies"
-
-#~ msgid "Passos de Protocolo Experimental"
-#~ msgstr "Steps of experimental protocol"
-
-#~ msgid "Lista de Passos:"
-#~ msgstr "list of steps:"
-
-#~ msgid "Inserir novo passo"
-#~ msgstr "Insert new step"
-
-#~ msgid "Voltar"
-#~ msgstr "Back"
-
-#~ msgid "Passos de protocolo experimental"
-#~ msgstr "Steps of experimental protocol"
-
-#~ msgid "Informações sobre"
-#~ msgstr "Information about"
-
-#~ msgid "Informações sobre esse uso do passo"
-#~ msgstr "Information about this use of step"
-
-#~ msgid "Nome"
-#~ msgstr "Name"
-
-#~ msgid "Posição no conjunto de passos"
-#~ msgstr "Position in the set of steps"
-
-#~ msgid "A ordem de execução deste subpasso não varia"
-#~ msgstr "Execution order from this sub-step does not vary"
-
-#~ msgid ""
-#~ "Este subpasso pode ser executado em qualquer posição do conjunto pai onde "
-#~ "não há um passo fixo"
-#~ msgstr ""
-#~ "This sub-step can be performed anywhere in the parent assembly where "
-#~ "there is not a fixed step"
-
-#~ msgid "Salvar"
-#~ msgstr "Save"
-
-#~ msgid "Tem certeza que deseja excluir o passo?"
-#~ msgstr "Are you sure you want to delete step?"
-
-#~ msgid "Remover da lista"
-#~ msgstr "Delete uses from list"
-
-#~ msgid "Posição para passo aleatório"
-#~ msgstr "Position for random step"
-
-#~ msgid ""
-#~ "Calculada a partir dos subpassos. Esse conjunto possui pelo menos um uso "
-#~ "que permite repetições ilimitadas. Está sendo considerado apenas uma "
-#~ "execução nesses casos."
-#~ msgstr ""
-#~ "Calculated from sub-steps. This set has at least one use that allows "
-#~ "unlimited reptitions. It' been considered only one execution in these "
-#~ "cases."
-
-#~ msgid "Calculada a partir dos subpassos"
-#~ msgstr "Calculated by sub-steps"
-
-#~ msgid "Duração"
-#~ msgstr "Duration"
-
-#~ msgid "Informações básicas do experimento"
-#~ msgstr "Basic experiment information"
-
-#~ msgid "Estudo"
-#~ msgstr "Study"
-
-#~ msgid "Título"
-#~ msgstr "Title"
-
-#~ msgid "Grupos"
-#~ msgstr "Groups"
-
-#~ msgid "Gerenciar"
-#~ msgstr "Manage"
-
-#~ msgid "Tem certeza que deseja excluir o experimento?"
-#~ msgstr "Are you sure you want to delete experiment?"
-
-#~ msgid "Novo grupo"
-#~ msgstr "New group"
-
-#~ msgid "Informações básicas do grupo"
-#~ msgstr "Group basic information"
-
-#~ msgid "Critério de inclusão"
-#~ msgstr "Inclusion criteria"
-
-#~ msgid "Especificar o diagnóstico da doença ou o código da doença (CID-10)"
-#~ msgstr "Inform disease diagnosis or disease code (ICD-10)"
-
-#~ msgid ""
-#~ "Não há diagnósticos como critério de inclusão de participantes neste grupo"
-#~ msgstr ""
-#~ "There are no diagnosis as inclusion criteria of participants in this group"
-
-#~ msgid "Quantidade de preenchimentos exigida para cada participante"
-#~ msgstr "Quantity of fills for each participant"
-
-#~ msgid "Preenchimentos necessários por participante"
-#~ msgstr "Needed fills by participant"
-
-#~ msgid ""
-#~ "Quantidade de preenchimentos necessários por participante vezes a "
-#~ "quantidade de participantes deste grupo"
-#~ msgstr ""
-#~ "Quantity of fills needed by pariticipant multiplied by quantity of "
-#~ "participants in this group"
-
-#~ msgid "Total de preenchimentos necessários"
-#~ msgstr "Total fills needed"
-
-#~ msgid ""
-#~ "Soma da quantidade de preenchimentos já realizada por cada participante"
-#~ msgstr "Sum of fills quantity already made by each participant"
-
-#~ msgid "Total de preenchimentos já realizados"
-#~ msgstr "Total fills already made"
-
-#~ msgid "Não há questionários no protocolo experimental deste grupo"
-#~ msgstr ""
-#~ "There are no questionnaires in the experimental protocol in this group"
-
-#~ msgid "Participantes"
-#~ msgstr "Participant"
-
-#~ msgid "Não há participantes cadastrados"
-#~ msgstr "No participants recorded"
-
-#~ msgid "Cadastrar"
-#~ msgstr "Register"
-
-#~ msgid "Protocolo Experimental"
-#~ msgstr "Experimental protocol"
-
-#~ msgid "Conjunto de passos raiz"
-#~ msgstr "Set of root steps"
-
-#~ msgid "Desconfigurar protocolo experimental"
-#~ msgstr "UnConfigure experimental protocol"
-
-#~ msgid "Não há protocolo experimental configurado"
-#~ msgstr "There is no experimental protocol configured"
-
-#~ msgid ""
-#~ "A raiz de um protocolo experimental é sempre um conjunto de passos. Você "
-#~ "poderá criar um conjunto novo ou reusar algum que já tenha sido criado "
-#~ "para este experimento."
-#~ msgstr ""
-#~ "The experimental protocol root is always a set of steps. You can create a "
-#~ "new set or reuse some that have already been created for this experiment."
-
-#~ msgid "Tem certeza que deseja excluir o grupo?"
-#~ msgstr "Are you sure you want to delete group?"
-
-#~ msgid "Tem certeza que deseja excluir o diagnóstico?"
-#~ msgstr "Are you sure you want to delete diagnosis?"
-
-#~ msgid "Tem certeza que deseja desconfigurar o protocolo experimental?"
-#~ msgstr "Are you sure you want to unprovision experimental protocol?"
-
-#~ msgid "Desconfigurar"
-#~ msgstr "Unset"
-
-#~ msgid "Nova instrução"
-#~ msgstr "New instruction"
-
-#~ msgid "a instrução"
-#~ msgstr "the instruction"
-
-#~ msgid "Texto da instrução"
-#~ msgstr "Instrution text"
-
-#~ msgid "Adicionar nova palavra-chave"
-#~ msgstr "Add a new keyword"
-
-#~ msgid "Nome do uso:"
-#~ msgstr "Use name:"
-
-#~ msgid "Preenchimentos concluídos"
-#~ msgstr "Completed fills"
-
-#~ msgid "Preenchimentos"
-#~ msgstr "Fills"
-
-#~ msgid "Novo preenchimento"
-#~ msgstr "New fill"
-
-#~ msgid "Lista de estudos"
-#~ msgstr "Studies List"
-
-#~ msgid "Vigência"
-#~ msgstr "Term"
-
-#~ msgid "a"
-#~ msgstr "to"
-
-#~ msgid "A partir de"
-#~ msgstr "From"
-
-#~ msgid "Novo"
-#~ msgstr "New"
-
-#~ msgid "Informações básicas do estudo"
-#~ msgstr "Study basic information"
-
-#~ msgid "Data de início"
-#~ msgstr "Initial date"
-
-#~ msgid "Data de fim"
-#~ msgstr "End date"
-
-#~ msgid "Palavras-chave"
-#~ msgstr "Keywords"
-
-#~ msgid "Digite uma palavra-chave para acrescentar uma existente ou uma nova"
-#~ msgstr "Type a keyword to include an existent or new"
-
-#~ msgid "Tem certeza que deseja excluir o estudo?"
-#~ msgstr "Are you sure you want to delete study?"
-
-#~ msgid "Novo estímulo"
-#~ msgstr "New stimulus"
-
-#~ msgid "o estímulo"
-#~ msgstr "the stimulus"
-
-#~ msgid "Tipo do estímulo"
-#~ msgstr "Stimulus type"
-
-#~ msgid "Respostas"
-#~ msgstr "Answers"
-
-#~ msgid "Continuar preenchimento"
-#~ msgstr "Continue filling"
-
-#~ msgid "Responsável pelo preenchimento"
-#~ msgstr "Responsible for fill"
-
-#~ msgid "Data de preenchimento"
-#~ msgstr "Fill date"
-
-#~ msgid "Tem certeza que deseja excluir o preenchimento deste questionário?"
-#~ msgstr "Are you sure you want to delete this questionnaire's fill?"
-
-#~ msgid "(Nenhum questionário para preenchimento)"
-#~ msgstr "(No questinnaire for fill)"
-
-#~ msgid "Quantidade de preenchimentos:"
-#~ msgstr "Quantity of fills:"
-
-#~ msgid "ilimitada"
-#~ msgstr "unlimited"
-
-#~ msgid "Intervalo entre preenchimentos:"
-#~ msgstr "Interval among fills:"
-
-#~ msgid "indefinido"
-#~ msgstr "undefined"
-
-#~ msgid "Tem certeza que deseja excluir o participante?"
-#~ msgstr "Are you sure you want to delete participant?"
-
-#~ msgid "Questionários concluídos"
-#~ msgstr "Completed questionnaires"
-
-#~ msgid "Anexado"
-#~ msgstr "Attached"
-
-#~ msgid "Sem anexo"
-#~ msgstr "No attachments"
-
-#~ msgid "Nova tarefa para o sujeito"
-#~ msgstr "New task for subject"
-
-#~ msgid "a tarefa para o sujeito"
-#~ msgstr "the task for subject"
-
-#~ msgid "Nova tarefa para o experimentador"
-#~ msgstr "New task for experimenter"
-
-#~ msgid "Nova tafefa para o experimentador"
-#~ msgstr "New task for experimenter"
-
-#~ msgid "Tem certeza que deseja remover o anexo?"
-#~ msgstr "Are you sure you want to delete attachment?"
-
-#~ msgid "Erro ao tentar excluir o estudo."
-#~ msgstr "Error trying to delete research."
-
-#~ msgid "Estudo atualizado com sucesso."
-#~ msgstr "Research updated successfully."
-
-#~ msgid "Não há alterações para salvar."
-#~ msgstr "There is no changes to save."
-
-#~ msgid "Não foi possível excluir o experimento, pois há grupos associados"
-#~ msgstr ""
-#~ "It was not possible to delete experiment, because there are groups "
-#~ "connected."
-
-#~ msgid "Experimento atualizado com sucesso."
-#~ msgstr "Experiment updated successfully."
-
-#~ msgid "Não foi possível excluir o grupo, pois há dependências."
-#~ msgstr "Impossible to delete group, because there are dependencies."
-
-#~ msgid "Grupo atualizado com sucesso."
-#~ msgstr "Group updated successfully."
-
-#~ msgid "Preenchimento não disponível - Tabela de tokens não iniciada"
-#~ msgstr "Fill not available - Table of tokens was not started."
-
-#~ msgid "Preenchimento não disponível - Questionário não está ativo"
-#~ msgstr "Fill not available - Questionnaire is not activated."
-
-#~ msgid ""
-#~ "Preenchimento não disponível - Questionário não contém campos padronizados"
-#~ msgstr ""
-#~ "Fill not available - Questionnaire does not contain standard fields."
-
-#~ msgid ""
-#~ "Falha ao gerar token para responder questionário. Verifique se o "
-#~ "questionário está ativo"
-#~ msgstr ""
-#~ "Fail trying to generate token to answer questionnaire. Check if "
-#~ "questionnaire is active."
-
-#~ msgid "Você será redirecionado para o questionário. Aguarde."
-#~ msgstr "You will be redirected to questionnaire. Please wait."
-
-#~ msgid "Preenchimento removido com sucesso"
-#~ msgstr "Fill deleted successfully."
-
-#~ msgid "Erro ao deletar o preenchimento"
-#~ msgstr "Error trying to delete fill"
-
-#~ msgid ""
-#~ "Não foi possível excluir o participante, pois há respostas associadas"
-#~ msgstr ""
-#~ "It was not possible to delete participante, becacuse there are answers "
-#~ "connected"
-
-#~ msgid "Termo salvo com sucesso."
-#~ msgstr "Consent term saved successfully."
-
-#~ msgid "Não existem anexos para salvar"
-#~ msgstr "There are not attachments to save"
-
-#~ msgid "Anexo removido com sucesso."
-#~ msgstr "Attachment deleted successfully."
-
-#~ msgid "Passo incluído com sucesso."
-#~ msgstr "Step included successfully."
-
-#~ msgid " anos "
-#~ msgstr " years "
-
-#~ msgid " ano "
-#~ msgstr " year "
-
-#~ msgid " meses "
-#~ msgstr " months "
-
-#~ msgid " mês "
-#~ msgstr " month "
-
-#~ msgid " semanas "
-#~ msgstr " weeks "
-
-#~ msgid " semana "
-#~ msgstr " week "
-
-#~ msgid " dias "
-#~ msgstr " days "
-
-#~ msgid " dia "
-#~ msgstr " day "
-
-#~ msgid " horas "
-#~ msgstr " hours "
-
-#~ msgid " hora "
-#~ msgstr " hour "
-
-#~ msgid " segundos "
-#~ msgstr " seconds "
-
-#~ msgid " segundo "
-#~ msgstr " second "
-
-#~ msgid " e "
-#~ msgstr " and "
-
-#~ msgid "Uso do passo atualizado com sucesso."
-#~ msgstr "Step use updated successfully."
-
-#~ msgid "Passo alterado com sucesso."
-#~ msgstr "Step updated successfully."
-
-#~ msgid "Protocolo experimental incluído com sucesso."
-#~ msgstr "Experimental protocol included successfully."
-
-#~ msgid "Passos incluídos com sucesso."
-#~ msgstr "Steps included successfully."
