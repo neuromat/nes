@@ -9,7 +9,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2015-10-13 11:05-0300\n"
+"POT-Creation-Date: 2015-10-13 17:53-0300\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -29,7 +29,7 @@ msgstr "%d/%m/%Y"
 
 #: patient/forms.py:32 patient/forms.py:135 patient/forms.py:160
 msgid "mm/dd/yyyy"
-msgstr ""
+msgstr "dd/mm/aaaa"
 
 #: patient/forms.py:33
 msgid "Date of birth must be completed"
@@ -737,7 +737,7 @@ msgstr ""
 
 #: patient/tests.py:440 patient/tests.py:452 patient/tests.py:463
 msgid "Social class not calculated"
-msgstr ""
+msgstr "Classe social não calculada"
 
 #: patient/tests.py:451 patient/views.py:241
 msgid "Social demographic data successfully written."
@@ -761,7 +761,7 @@ msgstr ""
 
 #: patient/tests.py:521
 msgid "Inform a valid e-mail"
-msgstr ""
+msgstr "Informar um e-mail válido"
 
 #: patient/views.py:69 patient/views.py:166
 msgid "Personal data successfully written."

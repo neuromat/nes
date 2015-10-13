@@ -218,5 +218,4 @@ class ResearchProjectForm(ModelForm):
 class NumberOfUsesToInsertForm(Form):
     number_of_uses_to_insert = IntegerField(label='Number of uses to insert', min_value=1, initial=1,
                                             widget=NumberInput(attrs={'class': 'form-control', 'required': "",
-                                                                      'data-error': _('Quantidade deve '
-                                                                                      'ser preenchida.')}))
+                                                                      'data-error': _('Quantity must be filled.')}))

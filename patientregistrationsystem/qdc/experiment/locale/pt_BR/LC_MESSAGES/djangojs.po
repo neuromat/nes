@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2015-10-13 11:05-0300\n"
+"POT-Creation-Date: 2015-10-13 17:54-0300\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -25,13 +25,15 @@ msgstr ""
 #: experiment/templates/experiment/questionnaire_view.html:47
 #: experiment/templates/experiment/research_project_register.html:43
 msgid "Please, correct fields highlighted."
-msgstr ""
+msgstr "Por favor, corrija os campos em destaque."
 
 #: experiment/templates/experiment/subject_questionnaire_response_form.html:97
 msgid ""
 "It was not possible to open the questionnaire. Please, enable pop-ups for "
 "this site."
 msgstr ""
+"Não foi possível abrir o questionário. Por favor, habilite pop-ups paraeste "
+"site."
 
 #~ msgid "Por favor, corrija os campos em destaque."
 #~ msgstr "Por favor, corrija os campos em destaque."

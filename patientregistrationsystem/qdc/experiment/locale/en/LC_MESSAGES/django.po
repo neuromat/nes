@@ -7,8 +7,8 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
-"Report-msgstr-Bugs-To: \n"
-"POT-Creation-Date: 2015-10-09 12:51-0300\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2015-10-13 17:53-0300\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -16,6 +16,7 @@ msgstr ""
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
+"Report-msgstr-Bugs-To: \n"
 
 #: experiment/forms.py:19 experiment/forms.py:36 experiment/forms.py:190
 msgid "Title must be filled."
@@ -93,7 +94,7 @@ msgstr ""
 msgid "Organization type must be filled in."
 msgstr ""
 
-#: experiment/forms.py:175
+#: experiment/forms.py:175 experiment/forms.py:221
 msgid "Quantity must be filled."
 msgstr ""
 
@@ -105,10 +106,6 @@ msgstr ""
 
 #: experiment/forms.py:197
 msgid "Initial date must be filled."
-msgstr ""
-
-#: experiment/forms.py:221
-msgid "Quantidade deve ser preenchida."
 msgstr ""
 
 #: experiment/models.py:15
@@ -178,7 +175,7 @@ msgid "Task for experimenter"
 msgstr ""
 
 #: experiment/templates/experiment/ajax_cid10.html:8
-msgid "Nenhuma doença encontrada!"
+msgid "No diseases found!"
 msgstr ""
 
 #: experiment/templates/experiment/ajax_search_patients.html:11
