@@ -271,7 +271,7 @@ class PatientFormValidation(TestCase):
 
         response = self.client.post(reverse(PATIENT_NEW), self.data)
         self.assertEqual(response.status_code, 200)
-        self.assertFormError(response, "patient_form", "cpf", 'CPF ' + cpf + ' n\xe3o \xe9 v\xe1lido')
+        self.assertFormError(response, "patient_form", "cpf", 'CPF ' + cpf + _(' invalid'))
 
     def test_patient_empty_cpf(self):
         """
