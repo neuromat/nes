@@ -83,8 +83,6 @@ msgid "Date must be completed"
 msgstr ""
 
 #: patient/forms.py:137
-#, fuzzy
-#| msgid "Descricao"
 msgid "Description"
 msgstr ""
 
@@ -113,8 +111,6 @@ msgid "Fill date can not be bigger than today's date."
 msgstr ""
 
 #: patient/models.py:26
-#, fuzzy, python-format
-#| msgid "CPF %(CPF)s não é válido"
 msgid "CPF %(CPF)s invalid"
 msgstr ""
 
@@ -126,9 +122,12 @@ msgstr ""
 msgid "Cell phone"
 msgstr ""
 
+msgid "Home"
+msgstr ""
+
 #: patient/models.py:159 patient/templates/patient/exams.html:46
 #: patient/templates/patient/medical_record.html:30
-msgid "Home"
+msgid "Home phone"
 msgstr ""
 
 #: patient/models.py:160
@@ -169,39 +168,27 @@ msgid "No diseases found!"
 msgstr ""
 
 #: patient/templates/patient/ajax_search.html:11
-#, fuzzy
-#| msgid "Nenhum participante encontrado!"
 msgid "No participants found!"
 msgstr ""
 
 #: patient/templates/patient/busca.html:18
-#, fuzzy
-#| msgid "Buscar participante"
 msgid "Search participant"
 msgstr ""
 
 #: patient/templates/patient/busca.html:20
-#, fuzzy, python-format
-#| msgid " %(number_of_patients)s participantes cadastrados"
 msgid " %(number_of_patients)s registered participants"
 msgstr ""
 
 #: patient/templates/patient/busca.html:24
-#, fuzzy
-#| msgid "Digite o nome ou o CPF para buscar um participante"
 msgid "Type the name or the CPF to seek a participant"
 msgstr ""
 
 #: patient/templates/patient/busca.html:33
-#, fuzzy
-#| msgid "Inserir novo"
 msgid "Insert new"
 msgstr ""
 
 #: patient/templates/patient/exams.html:47
 #: patient/templates/patient/medical_record.html:31
-#, fuzzy
-#| msgid "Participantes"
 msgid "Participants"
 msgstr ""
 
@@ -213,20 +200,14 @@ msgstr ""
 #: patient/templates/patient/exams.html:58
 #: patient/templates/patient/exams.html:61
 #: patient/templates/patient/exams.html:63
-#, fuzzy
-#| msgid "Diagnóstico e Exames"
 msgid "Diagnosis and Exams"
 msgstr ""
 
 #: patient/templates/patient/exams.html:68
-#, fuzzy
-#| msgid "Exame"
 msgid "Exam"
 msgstr ""
 
 #: patient/templates/patient/exams.html:70
-#, fuzzy
-#| msgid "Novo Exame"
 msgid "New Exam"
 msgstr ""
 
@@ -242,7 +223,6 @@ msgid "Performed in"
 msgstr ""
 
 #: patient/templates/patient/exams.html:131
-#, fuzzy
 msgid "Description "
 msgstr ""
 
@@ -303,8 +283,6 @@ msgstr ""
 #: patient/templates/patient/register_personal_data.html:335
 #: patient/templates/patient/register_personal_data.html:353
 #: patient/templates/patient/register_personal_data.html:370
-#, fuzzy
-#| msgid "Cancelar"
 msgid "Cancel"
 msgstr ""
 
@@ -319,7 +297,6 @@ msgid "Date:"
 msgstr ""
 
 #: patient/templates/patient/medical_record.html:56
-#, fuzzy
 msgid "Responsible:"
 msgstr ""
 
@@ -328,20 +305,14 @@ msgid "Specify diagnosis or disease code (ICD-10)"
 msgstr ""
 
 #: patient/templates/patient/medical_record.html:120
-#, fuzzy
-#| msgid "Diagnóstico"
 msgid "Diagnosis"
 msgstr ""
 
 #: patient/templates/patient/medical_record.html:121
-#, fuzzy
-#| msgid "Exames"
 msgid "Exams"
 msgstr ""
 
 #: patient/templates/patient/medical_record.html:127
-#, fuzzy
-#| msgid "(sem diagnósticos)"
 msgid "(no diagnosis)"
 msgstr ""
 
@@ -360,7 +331,6 @@ msgstr ""
 #: patient/templates/patient/medical_record.html:162
 #: patient/templates/patient/medical_record.html:163
 #: patient/templates/patient/register_personal_data.html:266
-#, fuzzy
 msgid "Observation"
 msgstr ""
 
@@ -400,8 +370,6 @@ msgstr ""
 #: patient/templates/patient/register.html:60
 #: patient/templates/patient/register.html:73
 #: patient/templates/patient/register_questionnaires.html:110
-#, fuzzy
-#| msgid "Questionario"
 msgid "Questionnaires"
 msgstr ""
 
@@ -426,8 +394,6 @@ msgid "Show next"
 msgstr ""
 
 #: patient/templates/patient/register.html:134
-#, fuzzy
-#| msgid "Editar"
 msgid "Edit"
 msgstr ""
 
@@ -453,7 +419,6 @@ msgid "Are you sure you want to delete participant?"
 msgstr ""
 
 #: patient/templates/patient/register_medical_record.html:22
-#, fuzzy
 msgid "Responsible"
 msgstr ""
 
@@ -475,8 +440,6 @@ msgid "Security id"
 msgstr ""
 
 #: patient/templates/patient/register_personal_data.html:66
-#, fuzzy
-#| msgid "Origem"
 msgid "Origin"
 msgstr ""
 
@@ -519,8 +482,6 @@ msgid "Number"
 msgstr ""
 
 #: patient/templates/patient/register_personal_data.html:189
-#, fuzzy
-#| msgid "Complemento"
 msgid "Complement"
 msgstr ""
 
@@ -541,8 +502,6 @@ msgid "E-mail"
 msgstr ""
 
 #: patient/templates/patient/register_personal_data.html:248
-#, fuzzy
-#| msgid "Telefones"
 msgid "Telephones"
 msgstr ""
 
@@ -573,8 +532,6 @@ msgstr ""
 
 #: patient/templates/patient/register_questionnaires.html:29
 #: patient/templates/patient/register_questionnaires.html:121
-#, fuzzy
-#| msgid "Questionario"
 msgid "Questionnaire"
 msgstr ""
 
@@ -614,8 +571,6 @@ msgid "Research project"
 msgstr ""
 
 #: patient/templates/patient/register_questionnaires.html:119
-#, fuzzy
-#| msgid "Experimento"
 msgid "Experiment"
 msgstr ""
 
@@ -644,8 +599,6 @@ msgid "Alcoholic"
 msgstr ""
 
 #: patient/templates/patient/register_social_history.html:70
-#, fuzzy
-#| msgid "Frequência"
 msgid "Frequency"
 msgstr ""
 
@@ -666,14 +619,10 @@ msgid "Citizenship"
 msgstr ""
 
 #: patient/templates/patient/register_socialdemographic_data.html:37
-#, fuzzy
-#| msgid "Profissão"
 msgid "Profession"
 msgstr ""
 
 #: patient/templates/patient/register_socialdemographic_data.html:47
-#, fuzzy
-#| msgid "Ocupação"
 msgid "Occupation"
 msgstr ""
 
@@ -756,8 +705,6 @@ msgid " invalid"
 msgstr ""
 
 #: patient/tests.py:440 patient/tests.py:452 patient/tests.py:463
-#, fuzzy
-#| msgid "Classe social calculada"
 msgid "Social class not calculated"
 msgstr ""
 
@@ -860,10 +807,6 @@ msgid "Not available filling - questionnaire does not contain standard fields"
 msgstr ""
 
 #: patient/views.py:1145
-#, fuzzy
-#| msgid ""
-#| "Falha ao gerar token para responder questionário. Verifique se o "
-#| "questionário está ativo"
 msgid ""
 "Failed to generate token to answer the questionnaire. Make sure the "
 "questionnaire is active"
@@ -1228,8 +1171,6 @@ msgstr ""
 #~ msgid "Menos de 1 maço"
 #~ msgstr "Less than 1 pack"
 
-#, fuzzy
-#~| msgid "Experimento"
 #~ msgid "Esporadicamente"
 #~ msgstr "Sporadically"
 
@@ -1311,11 +1252,9 @@ msgstr ""
 #~ msgid "Voce será redirecionado para o questionário. Aguarde."
 #~ msgstr "You will be redirected to questionnaire. Please wait."
 
-#, fuzzy
 #~ msgid "Jo existe participante removido comão este CPF."
 #~ msgstr "Participant with this CPF has already removed."
 
-#, fuzzy
 #~ msgid "Jó existe participante removido com este CPF."
 #~ msgstr "Participant with this CPF has already removed."
 
@@ -1328,11 +1267,9 @@ msgstr ""
 #~ msgid "Observacoes"
 #~ msgstr "Observation"
 
-#, fuzzy
 #~ msgid "Endereco"
 #~ msgstr "Address"
 
-#, fuzzy
 #~ msgid "Informacoes basica"
 #~ msgstr "Basic information"
 

@@ -156,7 +156,7 @@ class Telephone(models.Model):
     PAGER = 'PA'
     OTHER = 'OT'
     TYPE_CHOICES = ((MOBILE, _("Cell phone")),
-                    (HOME, _("Home")),
+                    (HOME, _("Home phone")),
                     (WORK, _("Business")),
                     (MAIN, _("Main")),
                     (FAX_WORK, _("Business fax")),

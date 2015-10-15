@@ -124,9 +124,12 @@ msgstr "Data de nascimento não pode ser maior que a data de hoje."
 msgid "Cell phone"
 msgstr "Celular"
 
+msgid "Home"
+msgstr ""
+
 #: patient/models.py:159 patient/templates/patient/exams.html:46
 #: patient/templates/patient/medical_record.html:30
-msgid "Home"
+msgid "Home phone"
 msgstr "Residencial"
 
 #: patient/models.py:160
@@ -180,8 +183,6 @@ msgid " %(number_of_patients)s registered participants"
 msgstr " %(number_of_patients)s participantes cadastrados"
 
 #: patient/templates/patient/busca.html:24
-#, fuzzy
-#| msgid "Digite o nome ou o CPF para buscar um participante"
 msgid "Type the name or the CPF to seek a participant"
 msgstr "Digite o nome ou o CPF para buscar um participante"
 
@@ -202,8 +203,6 @@ msgstr "Avaliação médica"
 #: patient/templates/patient/exams.html:58
 #: patient/templates/patient/exams.html:61
 #: patient/templates/patient/exams.html:63
-#, fuzzy
-#| msgid "Diagnóstico e Exames"
 msgid "Diagnosis and Exams"
 msgstr "Diagnóstico e Exames"
 
@@ -337,7 +336,6 @@ msgstr "Detalhes"
 #: patient/templates/patient/medical_record.html:162
 #: patient/templates/patient/medical_record.html:163
 #: patient/templates/patient/register_personal_data.html:266
-#, fuzzy
 msgid "Observation"
 msgstr "Observação"
 
@@ -931,26 +929,21 @@ msgstr ""
 #~ msgid "Você será redirecionado para o questionário. Aguarde."
 #~ msgstr "Você será redirecionado para o questionário. Aguarde."
 
-#, fuzzy
 #~ msgid "Nao é possível salvar exame sem arquivos."
 #~ msgstr "Não é possível salvar exame sem arquivos."
 
-#, fuzzy
 #~ msgid "Avaliacao médica"
 #~ msgstr "Avaliações médicas"
 
-#, fuzzy
 #~ msgid "Observacoes"
 #~ msgstr "Observações"
 
-#, fuzzy
 #~ msgid "Endereco"
 #~ msgstr "Endereço"
 
 #~ msgid "Pais"
 #~ msgstr "País"
 
-#, fuzzy
 #~ msgid "Informacoes basica"
 #~ msgstr "Informações básicas"
 

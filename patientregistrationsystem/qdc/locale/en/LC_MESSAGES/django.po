@@ -920,71 +920,54 @@ msgstr ""
 #~ "Password must have at least 4 characters and at least a capital letter "
 #~ "and small letter, digit and special character"
 
-#, fuzzy
 #~ msgid "Usuário criado com sucesso."
 #~ msgstr "User deleted successfully."
 
-#, fuzzy
 #~ msgid "Não foi possível criar usuário."
 #~ msgstr "It was not possible to create user."
 
-#, fuzzy
 #~ msgid "Usuário atualizado com sucesso."
 #~ msgstr "User created successfully."
 
-#, fuzzy
 #~ msgid "Usuário removido com sucesso."
 #~ msgstr "User deleted successfully."
 
-#, fuzzy
 #~ msgid "Informações básicas"
 #~ msgstr "Basic information"
 
-#, fuzzy
 #~ msgid "Nome de usuário"
 #~ msgstr "User name"
 
-#, fuzzy
 #~ msgid "Confirmar senha"
 #~ msgstr "Confirm password"
 
-#, fuzzy
 #~ msgid "Nome deve ser preenchido"
 #~ msgstr "User name"
 
-#, fuzzy
 #~ msgid "Dados pessoais gravados com sucesso."
 #~ msgstr "User created successfully."
 
-#, fuzzy
 #~ msgid "Dados sociodemográficos gravados com sucesso."
 #~ msgstr "User created successfully."
 
-#, fuzzy
 #~ msgid "História social gravada com sucesso."
 #~ msgstr "User created successfully."
 
-#, fuzzy
 #~ msgid "Diagnóstico removido com sucesso."
 #~ msgstr "User deleted successfully."
 
-#, fuzzy
 #~ msgid "Exame salvo com sucesso."
 #~ msgstr "User created successfully."
 
-#, fuzzy
 #~ msgid "Não é possível salvar exame sem arquivos."
 #~ msgstr "It is not possible to create user."
 
-#, fuzzy
 #~ msgid "Exame removido com sucesso."
 #~ msgstr "User deleted successfully."
 
-#, fuzzy
 #~ msgid "Nome do médico"
 #~ msgstr "User name"
 
-#, fuzzy
 #~ msgid "Avaliações médicas"
 #~ msgstr "Basic information"
 
