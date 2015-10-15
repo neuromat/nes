@@ -875,9 +875,6 @@ msgstr ""
 #~ msgid "Celular"
 #~ msgstr "Cell phone"
 
-#~ msgid "Residencial"
-#~ msgstr "Home"
-
 #~ msgid "Comercial"
 #~ msgstr "Business"
 
