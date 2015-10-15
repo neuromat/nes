@@ -19,15 +19,15 @@ msgstr ""
 
 #: patient/templates/patient/exams.html:99
 msgid "Exam was not saved. Please, correct fields highlighted."
-msgstr ""
+msgstr "Exam was not saved. Please, correct fields highlighted."
 
 #: patient/templates/patient/medical_record.html:87
 msgid "Medical evaluation was not saved. Fields with (*) are obligatory."
-msgstr ""
+msgstr "Medical evaluation was not saved. Fields with (*) are obligatory."
 
 #: patient/templates/patient/register_personal_data.html:31
 msgid "Participant was not saved. Please, correct fields highlighted."
-msgstr ""
+msgstr "Participant was not saved. Please, correct fields highlighted."
 
 #~ msgid "Exame não salvo. Por favor, corrija os campos em destaque."
 #~ msgstr "Exam was not saved. Please, correct fields highlighted."

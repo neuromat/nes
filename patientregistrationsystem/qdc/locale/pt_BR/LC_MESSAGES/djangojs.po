@@ -21,7 +21,7 @@ msgstr ""
 #: admin/js/SelectFilter2.js:45
 #, javascript-format
 msgid "Available %s"
-msgstr ""
+msgstr "Available %s"
 
 #: admin/js/SelectFilter2.js:46
 #, javascript-format
@@ -29,37 +29,39 @@ msgid ""
 "This is the list of available %s. You may choose some by selecting them in "
 "the box below and then clicking the \"Choose\" arrow between the two boxes."
 msgstr ""
+"This is the list of available %s. You may choose some by selecting them in "
+"the box below and then clicking the \"Choose\" arrow between the two boxes."
 
 #: admin/js/SelectFilter2.js:53
 #, javascript-format
 msgid "Type into this box to filter down the list of available %s."
-msgstr ""
+msgstr "Type into this box to filter down the list of available %s."
 
 #: admin/js/SelectFilter2.js:57
 msgid "Filter"
-msgstr ""
+msgstr "Filter"
 
 #: admin/js/SelectFilter2.js:61
 msgid "Choose all"
-msgstr ""
+msgstr "Choose all"
 
 #: admin/js/SelectFilter2.js:61
 #, javascript-format
 msgid "Click to choose all %s at once."
-msgstr ""
+msgstr "Click to choose all %s at once."
 
 #: admin/js/SelectFilter2.js:67
 msgid "Choose"
-msgstr ""
+msgstr "Choose"
 
 #: admin/js/SelectFilter2.js:69
 msgid "Remove"
-msgstr ""
+msgstr "Remove"
 
 #: admin/js/SelectFilter2.js:75
 #, javascript-format
 msgid "Chosen %s"
-msgstr ""
+msgstr "Chosen %s"
 
 #: admin/js/SelectFilter2.js:76
 #, javascript-format
@@ -67,15 +69,17 @@ msgid ""
 "This is the list of chosen %s. You may remove some by selecting them in the "
 "box below and then clicking the \"Remove\" arrow between the two boxes."
 msgstr ""
+"This is the list of chosen %s. You may remove some by selecting them in the "
+"box below and then clicking the \"Remove\" arrow between the two boxes."
 
 #: admin/js/SelectFilter2.js:80
 msgid "Remove all"
-msgstr ""
+msgstr "Remove all"
 
 #: admin/js/SelectFilter2.js:80
 #, javascript-format
 msgid "Click to remove all chosen %s at once."
-msgstr ""
+msgstr "Click to remove all chosen %s at once."
 
 #: admin/js/actions.js:18 admin/js/actions.min.js:1
 msgid "%(sel)s of %(cnt)s selected"
@@ -88,6 +92,8 @@ msgid ""
 "You have unsaved changes on individual editable fields. If you run an "
 "action, your unsaved changes will be lost."
 msgstr ""
+"You have unsaved changes on individual editable fields. If you run an "
+"action, your unsaved changes will be lost."
 
 #: admin/js/actions.js:121 admin/js/actions.min.js:5
 msgid ""
@@ -95,6 +101,9 @@ msgid ""
 "individual fields yet. Please click OK to save. You'll need to re-run the "
 "action."
 msgstr ""
+"You have selected an action, but you haven't saved your changes to "
+"individual fields yet. Please click OK to save. You'll need to re-run the "
+"action."
 
 #: admin/js/actions.js:123 admin/js/actions.min.js:6
 msgid ""
@@ -102,31 +111,34 @@ msgid ""
 "fields. You're probably looking for the Go button rather than the Save "
 "button."
 msgstr ""
+"You have selected an action, and you haven't made any changes on individual "
+"fields. You're probably looking for the Go button rather than the Save "
+"button."
 
 #: admin/js/admin/DateTimeShortcuts.js:52
 #: admin/js/admin/DateTimeShortcuts.js:88
 msgid "Now"
-msgstr ""
+msgstr "Now"
 
 #: admin/js/admin/DateTimeShortcuts.js:56
 msgid "Clock"
-msgstr ""
+msgstr "Clock"
 
 #: admin/js/admin/DateTimeShortcuts.js:84
 msgid "Choose a time"
-msgstr ""
+msgstr "Choose a time"
 
 #: admin/js/admin/DateTimeShortcuts.js:89
 msgid "Midnight"
-msgstr ""
+msgstr "Midnight"
 
 #: admin/js/admin/DateTimeShortcuts.js:90
 msgid "6 a.m."
-msgstr ""
+msgstr "6 a.m."
 
 #: admin/js/admin/DateTimeShortcuts.js:91
 msgid "Noon"
-msgstr ""
+msgstr "Noon"
 
 #: admin/js/admin/DateTimeShortcuts.js:95
 #: admin/js/admin/DateTimeShortcuts.js:208

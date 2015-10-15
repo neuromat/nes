@@ -699,7 +699,7 @@ msgid "the instruction"
 msgstr ""
 
 #: experiment/templates/experiment/instruction_component.html:31
-msgid "Instrution text"
+msgid "Instruction text"
 msgstr ""
 
 #: experiment/templates/experiment/keyword_ajax_search.html:8

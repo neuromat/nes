@@ -29,12 +29,3 @@ msgstr "Avaliação médica não salva. Os campos com (*) são obrigatórios."
 #: patient/templates/patient/register_personal_data.html:31
 msgid "Participant was not saved. Please, correct fields highlighted."
 msgstr "Participante não salvo. Por favor, corrija os campos em destaque."
-
-#~ msgid "Exame não salvo. Por favor, corrija os campos em destaque."
-#~ msgstr "Exame não salvo. Por favor, corrija os campos em destaque."
-
-#~ msgid "Avaliação médica não salva. Os campos com (*) são obrigatórios."
-#~ msgstr "Avaliação médica não salva. Os campos com (*) são obrigatórios."
-
-#~ msgid "Participante não salvo. Por favor, corrija os campos em destaque."
-#~ msgstr "Participante não salvo. Por favor, corrija os campos em destaque."

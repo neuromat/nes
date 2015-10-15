@@ -711,7 +711,7 @@ msgid "the instruction"
 msgstr "a instrução"
 
 #: experiment/templates/experiment/instruction_component.html:31
-msgid "Instrution text"
+msgid "Instruction text"
 msgstr "Texto da instrução"
 
 #: experiment/templates/experiment/keyword_ajax_search.html:8

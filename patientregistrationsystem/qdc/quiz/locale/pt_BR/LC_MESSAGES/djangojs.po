@@ -20,7 +20,7 @@ msgstr ""
 
 #: quiz/static/quiz/jquery-ui-1.11.2/jquery-ui.min.js:8
 msgid "'"
-msgstr ""
+msgstr "'"
 
 #: quiz/static/quiz/js/block_component.js:52
 msgid "Collapse"

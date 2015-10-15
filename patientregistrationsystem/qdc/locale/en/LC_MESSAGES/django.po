@@ -736,19 +736,12 @@ msgid ""
 "\n"
 "    Neuromat Team."
 msgstr ""
-"Your username: %(user.username)s\n"
-"\n"
-"    Thank you for using our site!\n"
-"\n"
-"    Neuromat Team."
 
 #: templates/registration/password_reset_complete.html:17
 msgid ""
 "Your password was configured successfully.\n"
 "           Access the system using your new credentials."
 msgstr ""
-"Your password was configured successfully.\n"
-"            Access the system using your new credentials."
 
 #: templates/registration/password_reset_complete.html:22
 msgid "Access"
@@ -811,11 +804,6 @@ msgid ""
 "    Neuromat Team.\n"
 "    "
 msgstr ""
-"\n"
-"    Thank you for using our site!\n"
-"\n"
-"    Neuromat Team.\n"
-"    "
 
 #: templates/registration/password_reset_form.html:39
 msgid "Please enter your e-mail to receive instructions for password reset."

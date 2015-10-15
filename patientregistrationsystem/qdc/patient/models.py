@@ -162,7 +162,7 @@ class Telephone(models.Model):
                     (FAX_WORK, _("Business fax")),
                     (FAX_HOME, _("Home fax")),
                     (PAGER, _("Pager")),
-                    (OTHER, _("Outros")))
+                    (OTHER, _("Other")))
 
     type = models.CharField(max_length=15, choices=TYPE_CHOICES, blank=True)
     note = models.CharField(max_length=50, blank=True)

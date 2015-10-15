@@ -24,13 +24,15 @@ msgstr ""
 #: experiment/templates/experiment/questionnaire_view.html:47
 #: experiment/templates/experiment/research_project_register.html:43
 msgid "Please, correct fields highlighted."
-msgstr ""
+msgstr "Please, correct fields highlighted."
 
 #: experiment/templates/experiment/subject_questionnaire_response_form.html:97
 msgid ""
 "It was not possible to open the questionnaire. Please, enable pop-ups for "
 "this site."
 msgstr ""
+"It was not possible to open the questionnaire. Please, enable pop-ups for "
+"this site."
 
 #~ msgid "Por favor, corrija os campos em destaque."
 #~ msgstr "Please, correct fields highlighted."

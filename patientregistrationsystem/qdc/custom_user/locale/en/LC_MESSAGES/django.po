@@ -88,10 +88,8 @@ msgstr ""
 
 #: custom_user/templates/custom_user/register_users.html:230
 #: custom_user/templates/custom_user/register_users.html:247
-#, fuzzy
-#| msgid "Cancelar"
 msgid "Cancel"
-msgstr "Cancel"
+msgstr ""
 
 #: custom_user/templates/custom_user/register_users.html:232
 msgid "Back"
@@ -102,10 +100,8 @@ msgid "Are you sure you want to delete user?"
 msgstr ""
 
 #: custom_user/templates/custom_user/user_list.html:31
-#, fuzzy
-#| msgid "Lista de usuários"
 msgid "List of users"
-msgstr "List of users"
+msgstr ""
 
 #: custom_user/templates/custom_user/user_list.html:37
 msgid "Complete name"
@@ -116,16 +112,12 @@ msgid "E-mail"
 msgstr ""
 
 #: custom_user/templates/custom_user/user_list.html:44
-#, fuzzy
-#| msgid "Editar"
 msgid "Edit"
-msgstr "Edit"
+msgstr ""
 
 #: custom_user/templates/custom_user/user_list.html:54
-#, fuzzy
-#| msgid "Inserir novo usuário"
 msgid "Insert new user"
-msgstr "Insert new user"
+msgstr ""
 
 #: custom_user/views.py:41
 msgid "User created successfully."
