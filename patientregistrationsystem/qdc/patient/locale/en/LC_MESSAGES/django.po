@@ -9,7 +9,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2015-10-13 17:53-0300\n"
+"POT-Creation-Date: 2015-10-15 16:26-0300\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -111,6 +111,7 @@ msgid "Fill date can not be bigger than today's date."
 msgstr ""
 
 #: patient/models.py:26
+#, python-format
 msgid "CPF %(CPF)s invalid"
 msgstr ""
 
@@ -122,11 +123,7 @@ msgstr ""
 msgid "Cell phone"
 msgstr ""
 
-msgid "Home"
-msgstr ""
-
-#: patient/models.py:159 patient/templates/patient/exams.html:46
-#: patient/templates/patient/medical_record.html:30
+#: patient/models.py:159
 msgid "Home phone"
 msgstr ""
 
@@ -176,6 +173,7 @@ msgid "Search participant"
 msgstr ""
 
 #: patient/templates/patient/busca.html:20
+#, python-format
 msgid " %(number_of_patients)s registered participants"
 msgstr ""
 
@@ -185,6 +183,11 @@ msgstr ""
 
 #: patient/templates/patient/busca.html:33
 msgid "Insert new"
+msgstr ""
+
+#: patient/templates/patient/exams.html:46
+#: patient/templates/patient/medical_record.html:30
+msgid "Home"
 msgstr ""
 
 #: patient/templates/patient/exams.html:47
@@ -325,7 +328,7 @@ msgid "Edit details"
 msgstr ""
 
 #: patient/templates/patient/medical_record.html:148
-msgid "Details"
+msgid "Detais"
 msgstr ""
 
 #: patient/templates/patient/medical_record.html:162

@@ -9,7 +9,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2015-10-13 17:53-0300\n"
+"POT-Creation-Date: 2015-10-15 16:26-0300\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -124,11 +124,7 @@ msgstr "Data de nascimento não pode ser maior que a data de hoje."
 msgid "Cell phone"
 msgstr "Celular"
 
-msgid "Home"
-msgstr ""
-
-#: patient/models.py:159 patient/templates/patient/exams.html:46
-#: patient/templates/patient/medical_record.html:30
+#: patient/models.py:159
 msgid "Home phone"
 msgstr "Residencial"
 
@@ -189,6 +185,11 @@ msgstr "Digite o nome ou o CPF para buscar um participante"
 #: patient/templates/patient/busca.html:33
 msgid "Insert new"
 msgstr "Inserir novo"
+
+#: patient/templates/patient/exams.html:46
+#: patient/templates/patient/medical_record.html:30
+msgid "Home"
+msgstr ""
 
 #: patient/templates/patient/exams.html:47
 #: patient/templates/patient/medical_record.html:31
@@ -294,8 +295,7 @@ msgid ""
 "As there are no attachments, the exam will be totally excluded. Do you "
 "confirm deletion?"
 msgstr ""
-"Como não existem anexos, o exame será excluído totalmente. Confirma "
-"exclusão?"
+"Como não existem anexos, o exame será excluído totalmente. Confirma exclusão?"
 
 #: patient/templates/patient/medical_record.html:47
 msgid "Date:"
@@ -414,8 +414,7 @@ msgstr "Não salvar"
 msgid ""
 "It is necessary to save personnal data before you can access other tabs."
 msgstr ""
-"É necessário salvar os dados pessoais antes de poder acessar as demais "
-"abas."
+"É necessário salvar os dados pessoais antes de poder acessar as demais abas."
 
 #: patient/templates/patient/register.html:168
 msgid "OK"
@@ -530,8 +529,8 @@ msgid ""
 "                        Click to view record ou Cancel to go back to form."
 msgstr ""
 "Participante já cadastrado.\n"
-"                            Clique para visualizar registro ou Cancelar "
-"para voltar ao formulário."
+"                            Clique para visualizar registro ou Cancelar para "
+"voltar ao formulário."
 
 #: patient/templates/patient/register_personal_data.html:364
 msgid ""
@@ -644,8 +643,7 @@ msgid ""
 "Do you receive some benefit from the municipal level, state or federal "
 "government?"
 msgstr ""
-"Recebe algum benefício de escala municipal, estadual ou federal de "
-"governo?"
+"Recebe algum benefício de escala municipal, estadual ou federal de governo?"
 
 #: patient/templates/patient/register_socialdemographic_data.html:74
 msgid "What form of payment of the treatment performed?"
@@ -831,7 +829,6 @@ msgid ""
 msgstr ""
 "Falha ao gerar token para responder questionário. Verifique se o "
 "questionário está ativo"
-
 
 #~ msgid "Avaliação médica"
 #~ msgstr "Avaliação médica"
