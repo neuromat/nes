@@ -171,3 +171,67 @@ msgstr ""
 #: survey/views.py:556
 msgid "LimeSurvey unavailable. System running partially."
 msgstr ""
+
+#~ msgid "Avaliação de Entrada"
+#~ msgstr "Entrance evaluation"
+
+#~ msgid "Visualizar"
+#~ msgstr "View"
+
+#~ msgid "Novo"
+#~ msgstr "New"
+
+#~ msgid "Edição"
+#~ msgstr "Editing"
+
+#~ msgid "Informações do questionário"
+#~ msgstr "Questionnaire information"
+
+#~ msgid "Respondido como avaliação de entrada"
+#~ msgstr "Answered as entrance evaluation"
+
+#~ msgid "Preenchimentos"
+#~ msgstr "Fills"
+
+#~ msgid "Falta preencher"
+#~ msgstr "It have to be filled"
+
+#~ msgid "Grupo:"
+#~ msgstr "Group:"
+
+#~ msgid "Conjunto de passos pai:"
+#~ msgstr "Set of parent steps:"
+
+#~ msgid "Passo:"
+#~ msgstr "Step:"
+
+#~ msgid "Nome do uso:"
+#~ msgstr "Name of the use:"
+
+#~ msgid "Excluir"
+#~ msgstr "Delete"
+
+#~ msgid "Salvar"
+#~ msgstr "Save"
+
+#~ msgid "Voltar"
+#~ msgstr "Back"
+
+#~ msgid "Tem certeza que deseja excluir o questionário?"
+#~ msgstr "Are you sure you want to delete questionnaire?"
+
+#~ msgid "Questionário atualizado com sucesso."
+#~ msgstr "Questionnaire updated successfully."
+
+#~ msgid "Não há alterações para salvar."
+#~ msgstr "There are no changes to save."
+
+#~ msgid "Questionário removido com sucesso."
+#~ msgstr "Questionnaire deleted successfully."
+
+#~ msgid ""
+#~ "Não foi possível excluir o questionário, pois há respostas ou passos de "
+#~ "experimento associados."
+#~ msgstr ""
+#~ "It was not possible to delete questionnaire, because there are "
+#~ "experimental answers or steps associated."

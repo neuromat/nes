@@ -443,7 +443,7 @@ msgstr "Nome completo"
 
 #: patient/templates/patient/register_personal_data.html:48
 msgid "Security id"
-msgstr "Security id"
+msgstr "CPF"
 
 #: patient/templates/patient/register_personal_data.html:66
 msgid "Origin"

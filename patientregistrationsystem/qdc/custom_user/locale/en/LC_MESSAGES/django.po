@@ -142,3 +142,82 @@ msgstr ""
 #: custom_user/views.py:101
 msgid "User deleted successfully."
 msgstr ""
+
+#~ msgid "Entrar primeiro nome"
+#~ msgstr "Type first name"
+
+#~ msgid "Entrar último nome"
+#~ msgstr "Type last name"
+
+#~ msgid "Entrar nome de usuário"
+#~ msgstr "Type user name"
+
+#~ msgid "Entrar senha"
+#~ msgstr "Type password"
+
+#~ msgid "Entrar e-mail"
+#~ msgstr "Type e-mail"
+
+#~ msgid "Informações básicas"
+#~ msgstr "Basic Information"
+
+#~ msgid "Nome"
+#~ msgstr "First name"
+
+#~ msgid "Sobrenome"
+#~ msgstr "Last name"
+
+#~ msgid "Nome de usuário"
+#~ msgstr "User name"
+
+#~ msgid ""
+#~ "Senha deve conter pelo menos 8 caracteres, incluindo ao menos uma letra "
+#~ "maiúscula, dígito ou caractere especial."
+#~ msgstr ""
+#~ "Password must contain at least 8 characters, including at least one "
+#~ "uppercase letter, digit or special character."
+
+#~ msgid "Senha"
+#~ msgstr "Password"
+
+#~ msgid "Confirmar senha"
+#~ msgstr "Please confirm password"
+
+#~ msgid "Perfis"
+#~ msgstr "Profiles"
+
+#~ msgid "Em quais desses perfis o usuário se identifica?"
+#~ msgstr "In which these profiles does user identify?"
+
+#~ msgid "Excluir"
+#~ msgstr "Delete"
+
+#~ msgid "Salvar"
+#~ msgstr "Save"
+
+#~ msgid "Voltar"
+#~ msgstr "Back"
+
+#~ msgid "Tem certeza que deseja excluir o usuário?"
+#~ msgstr "Are you sure you want to delete user?"
+
+#~ msgid "Nome completo"
+#~ msgstr "Complete name"
+
+#~ msgid "Usuário criado com sucesso."
+#~ msgstr "User created successfully."
+
+#~ msgid "Não foi possível criar usuário."
+#~ msgstr "It was not possible to create user."
+
+#~ msgid "Este nome de usuário já existe."
+#~ msgstr "This user name already exists."
+
+#~ msgid "Este nome de usuário já existe em um usuário desabilitado."
+#~ msgstr "This username already exists in an disabled user."
+
+#~ msgid "Usuário atualizado com sucesso."
+#~ msgstr "User updated successfully."
+
+#~ msgid "Usuário removido com sucesso."
+#~ msgstr "User deleted successfully."

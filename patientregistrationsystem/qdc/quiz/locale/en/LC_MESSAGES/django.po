@@ -60,3 +60,24 @@ msgstr ""
 #: quiz/templates/quiz/template.html:223
 msgid "Users"
 msgstr ""
+
+#~ msgid "Sistema de Cadastro e Consulta de Dados Sociodemográficos e Clínicos"
+#~ msgstr "System Registration and Socio-Demographic and Clinical Data Query"
+
+#~ msgid "Dúvidas e Sugestões"
+#~ msgstr "Doubts and Suggestions"
+
+#~ msgid "Alterar senha"
+#~ msgstr "Change password"
+
+#~ msgid "Sair"
+#~ msgstr "Logout"
+
+#~ msgid "Estudos"
+#~ msgstr "Studies"
+
+#~ msgid "Usuários"
+#~ msgstr "Users"
+
+#~ msgid "Contato"
+#~ msgstr "Contact"

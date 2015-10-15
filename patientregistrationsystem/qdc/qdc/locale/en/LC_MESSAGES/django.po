@@ -32,3 +32,15 @@ msgstr ""
 #: qdc/views.py:40
 msgid "Password changed successfully."
 msgstr ""
+
+#~ msgid "Entrar com senha antiga"
+#~ msgstr "Type old password"
+
+#~ msgid "Entrar com nova senha"
+#~ msgstr "Type new password"
+
+#~ msgid "Entrar novamente com nova senha"
+#~ msgstr "Type again new password"
+
+#~ msgid "Senha alterada com sucesso."
+#~ msgstr "Password changed successfully."
