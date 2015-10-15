@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2015-10-15 17:32-0300\n"
+"POT-Creation-Date: 2015-10-15 18:02-0300\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -663,7 +663,7 @@ msgstr ""
 
 #: templates/admin/qdc_403.html:9
 msgid "Access is not authorized"
-msgstr "Access is not authorized"
+msgstr ""
 
 #: templates/registration/change_password_custom.html:42
 msgid "Change password"
@@ -682,7 +682,7 @@ msgstr ""
 
 #: templates/registration/change_password_custom.html:112
 msgid "Cancel"
-msgstr "Cancel"
+msgstr ""
 
 #: templates/registration/logged_out.html:4
 msgid "Home"
@@ -745,7 +745,7 @@ msgstr ""
 
 #: templates/registration/password_reset_complete.html:22
 msgid "Access"
-msgstr "Access"
+msgstr ""
 
 #: templates/registration/password_reset_confirm.html:117
 #: templates/registration/password_reset_form.html:51
@@ -762,7 +762,7 @@ msgstr ""
 
 #: templates/registration/password_reset_confirm.html:126
 msgid "Confirm"
-msgstr "Confirm"
+msgstr ""
 
 #: templates/registration/password_reset_confirm.html:129
 msgid "Password reset failed."
@@ -817,159 +817,3 @@ msgstr ""
 #, python-format
 msgid "Password reset on %(site_name)s"
 msgstr ""
-
-#~ msgid "Alterar senha"
-#~ msgstr "Change password"
-
-#~ msgid ""
-#~ "Senha deve conter pelo menos 8 caracteres, incluindo ao menos uma letra "
-#~ "maiúscula, dígito ou caractere especial."
-#~ msgstr ""
-#~ "Password must contain at least 8 characters, including at least one "
-#~ "uppercase letter, digit or special character."
-
-#~ msgid "Salvar"
-#~ msgstr "Save"
-
-#~ msgid "Usuario"
-#~ msgstr "  "
-
-#~ msgid "Senha"
-#~ msgstr "Password"
-
-#~ msgid "Esqueci minha senha"
-#~ msgstr "I forgot my password"
-
-#~ msgid ""
-#~ "Ola tudo bem?\n"
-#~ "\n"
-#~ "    Você está recebendo este e-mail para definição de senha para sua "
-#~ "conta de usuário.\n"
-#~ "\n"
-#~ "    Por favor, vá para a seguinte página e entre com uma senha:\n"
-#~ "    "
-#~ msgstr ""
-#~ "Hi, is everything ok?\n"
-#~ "\n"
-#~ "    You are receiving this e-mail for password definition into your user "
-#~ "account.\n"
-#~ "\n"
-#~ "    Please, go to the next page and enter your password:\n"
-#~ "    "
-
-#~ msgid "Redefinir senha"
-#~ msgstr "Reset password"
-
-#~ msgid "Nova senha"
-#~ msgstr "New password"
-
-#~ msgid "Confirme senha"
-#~ msgstr "Confirm password"
-
-#~ msgid "Redefinição de senha falhou."
-#~ msgstr "Password reset failed."
-
-#~ msgid ""
-#~ "Link inválido para redefinição de senha, possivelmente porque este link "
-#~ "ja foi usado anteriormente. <br/>\n"
-#~ "                Por favor, faça uma nova requisição de redefinição de "
-#~ "senha."
-#~ msgstr ""
-#~ "Invalid link for password reset, possibly because this link has already "
-#~ "been used previously. <br/>\n"
-#~ "                Please, request a new password reset."
-
-#~ msgid ""
-#~ "Nós enviamos uma mensagem com instruções para configurar a sua senha para "
-#~ "o endereço de\n"
-#~ "            e-mail informado. "
-#~ msgstr ""
-#~ "We sent you a message with instructions to set up your password\n"
-#~ " for the e-mail provided.  "
-
-#~ msgid "Você deve recebê-lo em breve."
-#~ msgstr "You should receive it soon."
-
-#~ msgid ""
-#~ "Ola tudo bem?\n"
-#~ "\n"
-#~ "        Você está recebendo este e-mail porque você pediu uma redefinição "
-#~ "de senha para sua conta de usuário.\n"
-#~ "\n"
-#~ "        Por favor, vá para a seguinte página e entre com uma nova senha:\n"
-#~ "    "
-#~ msgstr ""
-#~ "Hi, is everything ok?\n"
-#~ "\n"
-#~ "        You are receiving this e-mail because you requested a password "
-#~ "reset for your user account.\n"
-#~ "\n"
-#~ "        Please, go to the next page and enter a new password:\n"
-#~ "    "
-
-#~ msgid ""
-#~ "Especifique seu e-mail para receber as instruções para redefinição de "
-#~ "senha."
-#~ msgstr ""
-#~ "Please enter your e-mail to receive instructions for password reset."
-
-#~ msgid ""
-#~ "Senha deve conter pelo menos 4 caracteres e ao menos uma letra maiúscula "
-#~ "e minúscula, dígito e caractere especial"
-#~ msgstr ""
-#~ "Password must have at least 4 characters and at least a capital letter "
-#~ "and small letter, digit and special character"
-
-#~ msgid "Usuário criado com sucesso."
-#~ msgstr "User deleted successfully."
-
-#~ msgid "Não foi possível criar usuário."
-#~ msgstr "It was not possible to create user."
-
-#~ msgid "Usuário atualizado com sucesso."
-#~ msgstr "User created successfully."
-
-#~ msgid "Usuário removido com sucesso."
-#~ msgstr "User deleted successfully."
-
-#~ msgid "Informações básicas"
-#~ msgstr "Basic information"
-
-#~ msgid "Nome de usuário"
-#~ msgstr "User name"
-
-#~ msgid "Confirmar senha"
-#~ msgstr "Confirm password"
-
-#~ msgid "Nome deve ser preenchido"
-#~ msgstr "User name"
-
-#~ msgid "Dados pessoais gravados com sucesso."
-#~ msgstr "User created successfully."
-
-#~ msgid "Dados sociodemográficos gravados com sucesso."
-#~ msgstr "User created successfully."
-
-#~ msgid "História social gravada com sucesso."
-#~ msgstr "User created successfully."
-
-#~ msgid "Diagnóstico removido com sucesso."
-#~ msgstr "User deleted successfully."
-
-#~ msgid "Exame salvo com sucesso."
-#~ msgstr "User created successfully."
-
-#~ msgid "Não é possível salvar exame sem arquivos."
-#~ msgstr "It is not possible to create user."
-
-#~ msgid "Exame removido com sucesso."
-#~ msgstr "User deleted successfully."
-
-#~ msgid "Nome do médico"
-#~ msgstr "User name"
-
-#~ msgid "Avaliações médicas"
-#~ msgstr "Basic information"
-
-#~ msgid "Tem certeza que deseja alterar idioma?"
-#~ msgstr "Are you sure you want to change language?"

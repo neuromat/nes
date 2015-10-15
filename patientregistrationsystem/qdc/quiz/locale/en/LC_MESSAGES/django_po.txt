@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2015-10-15 18:02-0300\n"
+"POT-Creation-Date: 2015-10-15 17:32-0300\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -60,3 +60,24 @@ msgstr ""
 #: quiz/templates/quiz/template.html:223
 msgid "Users"
 msgstr ""
+
+#~ msgid "Sistema de Cadastro e Consulta de Dados Sociodemográficos e Clínicos"
+#~ msgstr "System Registration and Socio-Demographic and Clinical Data Query"
+
+#~ msgid "Dúvidas e Sugestões"
+#~ msgstr "Doubts and Suggestions"
+
+#~ msgid "Alterar senha"
+#~ msgstr "Change password"
+
+#~ msgid "Sair"
+#~ msgstr "Logout"
+
+#~ msgid "Estudos"
+#~ msgstr "Studies"
+
+#~ msgid "Usuários"
+#~ msgstr "Users"
+
+#~ msgid "Contato"
+#~ msgstr "Contact"
