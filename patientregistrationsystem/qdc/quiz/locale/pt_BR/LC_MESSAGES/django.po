@@ -44,7 +44,7 @@ msgstr "Sair"
 
 #: quiz/templates/quiz/template.html:188
 msgid "Home"
-msgstr ""
+msgstr "Home"
 
 #: quiz/templates/quiz/template.html:196
 msgid "Participants"

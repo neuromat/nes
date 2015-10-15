@@ -336,7 +336,7 @@ msgstr "Cancelar"
 #: experiment/templates/experiment/subjects.html:22
 #: experiment/templates/experiment/upload_consent_form.html:20
 msgid "Home"
-msgstr ""
+msgstr "Home"
 
 #: experiment/templates/experiment/component_list.html:50
 #: experiment/templates/experiment/component_template.html:55

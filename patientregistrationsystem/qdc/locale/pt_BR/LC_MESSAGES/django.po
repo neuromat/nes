@@ -689,7 +689,7 @@ msgstr "Cancelar"
 
 #: templates/registration/logged_out.html:4
 msgid "Home"
-msgstr ""
+msgstr "Home"
 
 #: templates/registration/logged_out.html:8
 msgid "Thanks for spending some quality time with the Web site today."

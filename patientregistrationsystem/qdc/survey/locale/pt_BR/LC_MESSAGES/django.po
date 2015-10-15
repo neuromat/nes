@@ -42,7 +42,7 @@ msgstr "Inserir novo questionário"
 
 #: survey/templates/survey/survey_register.html:52
 msgid "Home"
-msgstr ""
+msgstr "Home"
 
 #: survey/templates/survey/survey_register.html:53
 msgid "Questionnaires"

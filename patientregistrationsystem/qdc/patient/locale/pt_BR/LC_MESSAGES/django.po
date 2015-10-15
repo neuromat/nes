@@ -189,7 +189,7 @@ msgstr "Inserir novo"
 #: patient/templates/patient/exams.html:46
 #: patient/templates/patient/medical_record.html:30
 msgid "Home"
-msgstr ""
+msgstr "Home"
 
 #: patient/templates/patient/exams.html:47
 #: patient/templates/patient/medical_record.html:31
