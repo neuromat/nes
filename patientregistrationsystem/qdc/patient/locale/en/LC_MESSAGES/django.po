@@ -1026,9 +1026,6 @@ msgstr ""
 #~ msgid "Questionários"
 #~ msgstr "Questionnaires"
 
-#~ msgid "Save and show before"
-#~ msgstr "Save and show before"
-
 #~ msgid "Salvar e mostrar próxima"
 #~ msgstr "Save and show next"
 
