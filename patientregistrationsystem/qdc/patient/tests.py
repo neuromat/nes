@@ -271,7 +271,7 @@ class PatientFormValidation(TestCase):
 
         response = self.client.post(reverse(PATIENT_NEW), self.data)
         self.assertEqual(response.status_code, 200)
-        self.assertFormError(response, "patient_form", "cpf", 'CPF ' + cpf + _(' invalid'))
+        self.assertFormError(response, "patient_form", "cpf", 'CPF ' + cpf + _(' is not valid'))
 
     def test_patient_empty_cpf(self):
         """
@@ -437,7 +437,7 @@ class PatientFormValidation(TestCase):
 
         response = self.client.post(reverse(PATIENT_NEW), self.data, follow=True)
         self.assertEqual(Patient.objects.filter(name=name).count(), 1)
-        self.assertNotContains(response, _('Social class not calculated'))
+        self.assertNotContains(response, _('Social class was not calculated'))
 
         # Prepare to test social demographic data tab
         patient_to_update = Patient.objects.filter(name=name).first()
@@ -449,7 +449,7 @@ class PatientFormValidation(TestCase):
             reverse('patient_edit', args=(patient_to_update.pk,)), self.data, follow=True)
         self.assertEqual(Patient.objects.filter(name=name).count(), 1)
         self.assertContains(response, _('Social demographic data successfully written.'))
-        self.assertNotContains(response, _('Social class not calculated'))
+        self.assertNotContains(response, _('Social class was not calculated'))
 
         # Error case
         self.data.pop('wash_machine')
@@ -460,7 +460,7 @@ class PatientFormValidation(TestCase):
         response = self.client.post(
             reverse('patient_edit', args=(patient_to_update.pk,)), self.data, follow=True)
         self.assertEqual(Patient.objects.filter(name=name).count(), 1)
-        self.assertContains(response, _('Social class not calculated'))
+        self.assertContains(response, _('Social class was not calculated'))
 
     def fill_social_history_data(self):
         amount_cigarettes = AmountCigarettes.objects.create(name=_('Less than 1 pack'))
@@ -518,7 +518,7 @@ class PatientFormValidation(TestCase):
 
         response = self.client.post(reverse(PATIENT_NEW), self.data)
 
-        self.assertContains(response, _('Inform a valid e-mail'))
+        self.assertContains(response, _('Incorrect e-mail'))
 
     def test_patient_valid_name(self):
         """

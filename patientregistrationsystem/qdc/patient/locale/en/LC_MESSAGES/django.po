@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2015-10-15 18:02-0300\n"
+"POT-Creation-Date: 2015-10-19 10:38-0200\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -37,7 +37,7 @@ msgstr ""
 msgid "Gender must be filled"
 msgstr ""
 
-#: patient/forms.py:50
+#: patient/forms.py:50 patient/tests.py:521
 msgid "Incorrect e-mail"
 msgstr ""
 
@@ -703,11 +703,11 @@ msgid "Calculated social class"
 msgstr ""
 
 #: patient/tests.py:274
-msgid " invalid"
+msgid " is not valid"
 msgstr ""
 
 #: patient/tests.py:440 patient/tests.py:452 patient/tests.py:463
-msgid "Social class not calculated"
+msgid "Social class was not calculated"
 msgstr ""
 
 #: patient/tests.py:451 patient/views.py:241
@@ -728,10 +728,6 @@ msgstr ""
 
 #: patient/tests.py:506 patient/views.py:266
 msgid "Social history successfully recorded."
-msgstr ""
-
-#: patient/tests.py:521
-msgid "Inform a valid e-mail"
 msgstr ""
 
 #: patient/views.py:69 patient/views.py:166

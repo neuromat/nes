@@ -9,7 +9,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2015-10-15 18:02-0300\n"
+"POT-Creation-Date: 2015-10-19 10:38-0200\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -39,7 +39,7 @@ msgstr "Data de nascimento deve ser preenchida"
 msgid "Gender must be filled"
 msgstr "Sexo deve ser preenchido"
 
-#: patient/forms.py:50
+#: patient/forms.py:50 patient/tests.py:521
 msgid "Incorrect e-mail"
 msgstr "E-mail incorreto"
 
@@ -714,12 +714,12 @@ msgid "Calculated social class"
 msgstr "Classe social calculada"
 
 #: patient/tests.py:274
-msgid " invalid"
-msgstr " inválido"
+msgid " is not valid"
+msgstr " não é válido"
 
 #: patient/tests.py:440 patient/tests.py:452 patient/tests.py:463
-msgid "Social class not calculated"
-msgstr "Classe social não calculada"
+msgid "Social class was not calculated"
+msgstr "Classe Social não calculada"
 
 #: patient/tests.py:451 patient/views.py:241
 msgid "Social demographic data successfully written."
@@ -740,10 +740,6 @@ msgstr "Menos de 1 ano"
 #: patient/tests.py:506 patient/views.py:266
 msgid "Social history successfully recorded."
 msgstr "História social gravada com sucesso."
-
-#: patient/tests.py:521
-msgid "Inform a valid e-mail"
-msgstr "Informar um e-mail válido"
 
 #: patient/views.py:69 patient/views.py:166
 msgid "Personal data successfully written."
@@ -829,6 +825,12 @@ msgid ""
 msgstr ""
 "Falha ao gerar token para responder questionário. Verifique se o "
 "questionário está ativo"
+
+#~ msgid "Inform a valid e-mail"
+#~ msgstr "Informar um e-mail válido"
+
+#~ msgid "Social class not calculated"
+#~ msgstr "Classe social não calculada"
 
 #~ msgid "Avaliação médica"
 #~ msgstr "Avaliação médica"
