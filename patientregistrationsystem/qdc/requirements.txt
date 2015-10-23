@@ -1,4 +1,4 @@
-Django==1.8.4
+Django==1.8.5
 django-jenkins==0.17.0
 django-modeltranslation==0.10.1
 django-simple-history==1.6.3
