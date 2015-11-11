@@ -230,9 +230,9 @@
                                     <a data-toggle="tooltip" data-placement="left" title="{% trans "View / Edit" %}"
                                        href="/experiment/group/{{ group.id }}/subjects">
                                         {% if number_of_subjects == 1 %}
-                                            {% blocktrans %}There is %(number_of_subjects)s participant recorded{% endblocktrans %}
+                                            {% blocktrans %}There is {{ number_of_subjects }} participant recorded{% endblocktrans %}
                                         {% else %}
-                                            {% blocktrans %}There are %(number_of_subjects)s participants recorded{% endblocktrans %}
+                                            {% blocktrans %}There are {{ number_of_subjects }} participants recorded{% endblocktrans %}
                                         {% endif %}
                                     </a>
                                 </div>
