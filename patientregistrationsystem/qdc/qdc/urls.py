@@ -4,6 +4,8 @@ from django.conf.urls.static import static
 from .forms import PasswordChangeFormCustomized
 from django.contrib import admin
 
+from custom_user.forms import CustomPasswordResetForm
+
 admin.autodiscover()
 
 urlpatterns = patterns(
@@ -30,7 +32,8 @@ urlpatterns = patterns(
         name='password_change_done'),
     url(r'^user/password/reset/$',
         'django.contrib.auth.views.password_reset',
-        {'post_reset_redirect': '/user/password/reset/done/'},
+        {'post_reset_redirect': '/user/password/reset/done/',
+         'password_reset_form': CustomPasswordResetForm},
         name="password_reset"),
     (r'^user/password/reset/done/$',
      'django.contrib.auth.views.password_reset_done'),
