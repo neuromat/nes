@@ -5,6 +5,8 @@ from django.contrib.auth.hashers import make_password
 from django.contrib.auth.models import User
 from django.utils.translation import ugettext_lazy as _
 
+from django.contrib.auth.forms import PasswordResetForm
+
 
 class UserForm(ModelForm):
 
@@ -51,3 +53,23 @@ class UserFormUpdate(UserForm):
             return make_password(self.cleaned_data['password'])
         else:
             return self.instance.password
+
+
+class CustomPasswordResetForm(PasswordResetForm):
+
+    def is_valid(self):
+
+        if not super(CustomPasswordResetForm, self).is_valid():
+            return False
+
+        # get_users returns a generator object
+        users = self.get_users(self.cleaned_data["email"])
+
+        try:
+            # trying to get the first element from the generator object using __next__() once
+            users.__next__()
+            return True
+        except StopIteration:
+            self.add_error('email', _('E-mail is not registered'))
+            self.add_error(None, _('E-mail is not registered'))
+            return False
