@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2015-10-19 18:31-0200\n"
+"POT-Creation-Date: 2015-11-12 16:14-0200\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -653,6 +653,10 @@ msgstr ""
 msgid "Senior researcher"
 msgstr ""
 
+#: export/tests.py:175 export/views.py:73
+msgid "Base path does not exist"
+msgstr ""
+
 #: templates/admin/base_site.html:4
 msgid "QDC site admin test"
 msgstr ""
@@ -670,17 +674,20 @@ msgid "Change password"
 msgstr ""
 
 #: templates/registration/change_password_custom.html:67
-#: templates/registration/password_reset_confirm.html:120
+#: templates/registration/password_reset_confirm.html:147
+#: templates/registration/password_reset_confirm_o.html:51
 msgid ""
 "Password must contain at least 8 characters, including at least one "
 "uppercase letter, digit or special character."
 msgstr ""
 
 #: templates/registration/change_password_custom.html:109
+#: templates/registration/password_reset_confirm_o.html:99
 msgid "Save"
 msgstr ""
 
 #: templates/registration/change_password_custom.html:112
+#: templates/registration/password_reset_confirm_o.html:102
 msgid "Cancel"
 msgstr ""
 
@@ -747,28 +754,31 @@ msgstr ""
 msgid "Access"
 msgstr ""
 
-#: templates/registration/password_reset_confirm.html:117
+#: templates/registration/password_reset_confirm.html:144
+#: templates/registration/password_reset_confirm_o.html:43
 #: templates/registration/password_reset_form.html:51
 msgid "Reset password"
 msgstr ""
 
-#: templates/registration/password_reset_confirm.html:121
+#: templates/registration/password_reset_confirm.html:148
 msgid "New password"
 msgstr ""
 
-#: templates/registration/password_reset_confirm.html:124
+#: templates/registration/password_reset_confirm.html:155
 msgid "Confirm password"
 msgstr ""
 
-#: templates/registration/password_reset_confirm.html:126
+#: templates/registration/password_reset_confirm.html:157
 msgid "Confirm"
 msgstr ""
 
-#: templates/registration/password_reset_confirm.html:129
+#: templates/registration/password_reset_confirm.html:160
+#: templates/registration/password_reset_confirm_o.html:88
 msgid "Password reset failed."
 msgstr ""
 
-#: templates/registration/password_reset_confirm.html:130
+#: templates/registration/password_reset_confirm.html:161
+#: templates/registration/password_reset_confirm_o.html:89
 msgid ""
 "Invalid link for password reset, possibly because this link has already been "
 "used previously. <br/>\n"

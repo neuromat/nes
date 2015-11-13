@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2015-10-15 18:02-0300\n"
+"POT-Creation-Date: 2015-11-12 16:14-0200\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -178,10 +178,12 @@ msgid "Show"
 msgstr "Show"
 
 #: admin/js/collapse.js:16 admin/js/collapse.min.js:1
+#: templates/registration/password_reset_confirm.html:28
 msgid "Hide"
 msgstr "Hide"
 
 #: templates/registration/change_password_custom.html:35
+#: templates/registration/password_reset_confirm_o.html:35
 msgid "Invalid password. Please, try again."
 msgstr "Invalid password. Please, try again."
 
@@ -189,11 +191,11 @@ msgstr "Invalid password. Please, try again."
 msgid "Invalid user or password."
 msgstr "Invalid user or password."
 
-#: templates/registration/password_reset_confirm.html:44
+#: templates/registration/password_reset_confirm.html:70
 msgid "Password incompatible with defined standard."
 msgstr "Password incompatible with defined standard."
 
-#: templates/registration/password_reset_confirm.html:137
+#: templates/registration/password_reset_confirm.html:168
 msgid "Invalid fill. Make sure the passwords entered are the same"
 msgstr "Invalid fill. Make sure the passwords entered are the same"
 

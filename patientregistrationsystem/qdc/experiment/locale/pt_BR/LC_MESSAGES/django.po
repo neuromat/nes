@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2015-10-19 18:31-0200\n"
+"POT-Creation-Date: 2015-11-12 16:14-0200\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -638,13 +638,15 @@ msgid "View / Edit"
 msgstr "Ver / Editar"
 
 #: experiment/templates/experiment/group_register.html:233
-#, python-format
-msgid "There is %%(number_of_subjects)s participant recorded"
+#, fuzzy, python-format
+#| msgid "There is %%(number_of_subjects)s participant recorded"
+msgid "There is %(number_of_subjects)s participant recorded"
 msgstr "Há %%(number_of_subjects)s participantes registrados"
 
 #: experiment/templates/experiment/group_register.html:235
-#, python-format
-msgid "There are %%(number_of_subjects)s participants recorded"
+#, fuzzy, python-format
+#| msgid "There are %%(number_of_subjects)s participants recorded"
+msgid "There are %(number_of_subjects)s participants recorded"
 msgstr "Há %%(number_of_subjects)s participantees registrados"
 
 #: experiment/templates/experiment/group_register.html:241
