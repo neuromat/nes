@@ -1149,7 +1149,7 @@ def questionnaire_response_start_fill_questionnaire(request, patient_id, survey)
         questionnaire_response.patient = patient
         questionnaire_response.survey = survey
         questionnaire_response.token_id = result['token_id']
-        questionnaire_response.date = datetime.datetime.strptime(request.POST['date'], '%d/%m/%Y')
+        questionnaire_response.date = datetime.datetime.strptime(request.POST['date'], _('%m/%d/%Y'))
         questionnaire_response.questionnaire_responsible = request.user
         questionnaire_response.save()
 
