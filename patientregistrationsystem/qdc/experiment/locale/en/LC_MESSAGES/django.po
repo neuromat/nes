@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2015-11-12 16:14-0200\n"
+"POT-Creation-Date: 2015-12-04 12:22-0200\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -978,7 +978,7 @@ msgid "Research updated successfully."
 msgstr ""
 
 #: experiment/views.py:147 experiment/views.py:326 experiment/views.py:493
-#: experiment/views.py:1992 experiment/views.py:2014 experiment/views.py:2024
+#: experiment/views.py:1993 experiment/views.py:2015 experiment/views.py:2025
 msgid "There is no changes to save."
 msgstr ""
 
@@ -1029,129 +1029,129 @@ msgstr ""
 msgid "You will be redirected to questionnaire. Please wait."
 msgstr ""
 
-#: experiment/views.py:890 experiment/views.py:1042
+#: experiment/views.py:890 experiment/views.py:1043
 msgid "Fill deleted successfully."
 msgstr ""
 
-#: experiment/views.py:892 experiment/views.py:1044
+#: experiment/views.py:892 experiment/views.py:1045
 msgid "Error trying to delete fill"
 msgstr ""
 
-#: experiment/views.py:1134
+#: experiment/views.py:1135
 msgid "Participant deleted from experiment."
 msgstr ""
 
-#: experiment/views.py:1138
+#: experiment/views.py:1139
 msgid ""
 "It was not possible to delete participante, becacuse there are answers "
 "connected"
 msgstr ""
 
-#: experiment/views.py:1173
+#: experiment/views.py:1174
 msgid "Participant has already been inserted in this group."
 msgstr ""
 
-#: experiment/views.py:1219
+#: experiment/views.py:1220
 msgid "Consent term saved successfully."
 msgstr ""
 
-#: experiment/views.py:1224
+#: experiment/views.py:1225
 msgid "There are not attachments to save"
 msgstr ""
 
-#: experiment/views.py:1228
+#: experiment/views.py:1229
 msgid "Attachment deleted successfully."
 msgstr ""
 
-#: experiment/views.py:1425 experiment/views.py:2226 experiment/views.py:2334
-#: experiment/views.py:2358
+#: experiment/views.py:1426 experiment/views.py:2227 experiment/views.py:2335
+#: experiment/views.py:2359
 msgid "Step included successfully."
 msgstr ""
 
-#: experiment/views.py:1544
+#: experiment/views.py:1545
 msgid " years "
 msgstr ""
 
-#: experiment/views.py:1544
+#: experiment/views.py:1545
 msgid " year "
 msgstr ""
 
-#: experiment/views.py:1549
+#: experiment/views.py:1550
 msgid " months "
 msgstr ""
 
-#: experiment/views.py:1549
+#: experiment/views.py:1550
 msgid " month "
 msgstr ""
 
-#: experiment/views.py:1554
+#: experiment/views.py:1555
 msgid " weeks "
 msgstr ""
 
-#: experiment/views.py:1554
+#: experiment/views.py:1555
 msgid " week "
 msgstr ""
 
-#: experiment/views.py:1559
+#: experiment/views.py:1560
 msgid " days "
 msgstr ""
 
-#: experiment/views.py:1559
+#: experiment/views.py:1560
 msgid " day "
 msgstr ""
 
-#: experiment/views.py:1564
+#: experiment/views.py:1565
 msgid " hours "
 msgstr ""
 
-#: experiment/views.py:1564
+#: experiment/views.py:1565
 msgid " hour "
 msgstr ""
 
-#: experiment/views.py:1569
+#: experiment/views.py:1570
 msgid " minutes "
 msgstr ""
 
-#: experiment/views.py:1569
+#: experiment/views.py:1570
 msgid " minute "
 msgstr ""
 
-#: experiment/views.py:1574
+#: experiment/views.py:1575
 msgid " seconds "
 msgstr ""
 
-#: experiment/views.py:1574
+#: experiment/views.py:1575
 msgid " second "
 msgstr ""
 
-#: experiment/views.py:1579
+#: experiment/views.py:1580
 msgid " miliseconds "
 msgstr ""
 
-#: experiment/views.py:1579
+#: experiment/views.py:1580
 msgid " milisecond "
 msgstr ""
 
-#: experiment/views.py:1594
+#: experiment/views.py:1595
 msgid " and "
 msgstr ""
 
-#: experiment/views.py:1773 experiment/views.py:2022
+#: experiment/views.py:1774 experiment/views.py:2023
 msgid "Step use updated successfully."
 msgstr ""
 
-#: experiment/views.py:1779 experiment/views.py:2031
+#: experiment/views.py:1780 experiment/views.py:2032
 msgid "Component deleted successfully."
 msgstr ""
 
-#: experiment/views.py:1990 experiment/views.py:2012
+#: experiment/views.py:1991 experiment/views.py:2013
 msgid "Step updated successfully."
 msgstr ""
 
-#: experiment/views.py:2196
+#: experiment/views.py:2197
 msgid "Experimental protocol included successfully."
 msgstr ""
 
-#: experiment/views.py:2224 experiment/views.py:2356
+#: experiment/views.py:2225 experiment/views.py:2357
 msgid "Steps included successfully."
 msgstr ""

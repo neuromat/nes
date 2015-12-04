@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2015-11-12 16:14-0200\n"
+"POT-Creation-Date: 2015-12-04 12:22-0200\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -653,7 +653,7 @@ msgstr ""
 msgid "Senior researcher"
 msgstr ""
 
-#: export/tests.py:175 export/views.py:73
+#: export/tests.py:175 export/views.py:142
 msgid "Base path does not exist"
 msgstr ""
 
@@ -674,20 +674,20 @@ msgid "Change password"
 msgstr ""
 
 #: templates/registration/change_password_custom.html:67
-#: templates/registration/password_reset_confirm.html:147
-#: templates/registration/password_reset_confirm_o.html:51
+#: templates/registration/password_reset_confirm.html:145
+#: templates/registration/password_reset_confirm_o.html:65
 msgid ""
 "Password must contain at least 8 characters, including at least one "
 "uppercase letter, digit or special character."
 msgstr ""
 
 #: templates/registration/change_password_custom.html:109
-#: templates/registration/password_reset_confirm_o.html:99
+#: templates/registration/password_reset_confirm_o.html:108
 msgid "Save"
 msgstr ""
 
 #: templates/registration/change_password_custom.html:112
-#: templates/registration/password_reset_confirm_o.html:102
+#: templates/registration/password_reset_confirm_o.html:111
 msgid "Cancel"
 msgstr ""
 
@@ -704,22 +704,23 @@ msgid "Log in again"
 msgstr ""
 
 #: templates/registration/login.html:7
+#: templates/registration/password_reset_form.html:9
 msgid "Neuroscience Experiments System - NES"
 msgstr ""
 
-#: templates/registration/login.html:90
+#: templates/registration/login.html:88
 msgid "User"
 msgstr ""
 
-#: templates/registration/login.html:94
+#: templates/registration/login.html:92
 msgid "Password"
 msgstr ""
 
-#: templates/registration/login.html:96
+#: templates/registration/login.html:94
 msgid "Login"
 msgstr ""
 
-#: templates/registration/login.html:102
+#: templates/registration/login.html:100
 msgid "I forgot my password"
 msgstr ""
 
@@ -754,31 +755,31 @@ msgstr ""
 msgid "Access"
 msgstr ""
 
-#: templates/registration/password_reset_confirm.html:144
-#: templates/registration/password_reset_confirm_o.html:43
-#: templates/registration/password_reset_form.html:51
+#: templates/registration/password_reset_confirm.html:142
+#: templates/registration/password_reset_confirm_o.html:57
+#: templates/registration/password_reset_form.html:88
 msgid "Reset password"
 msgstr ""
 
-#: templates/registration/password_reset_confirm.html:148
+#: templates/registration/password_reset_confirm.html:146
 msgid "New password"
 msgstr ""
 
-#: templates/registration/password_reset_confirm.html:155
+#: templates/registration/password_reset_confirm.html:149
 msgid "Confirm password"
 msgstr ""
 
-#: templates/registration/password_reset_confirm.html:157
+#: templates/registration/password_reset_confirm.html:151
 msgid "Confirm"
 msgstr ""
 
-#: templates/registration/password_reset_confirm.html:160
-#: templates/registration/password_reset_confirm_o.html:88
+#: templates/registration/password_reset_confirm.html:154
+#: templates/registration/password_reset_confirm_o.html:118
 msgid "Password reset failed."
 msgstr ""
 
-#: templates/registration/password_reset_confirm.html:161
-#: templates/registration/password_reset_confirm_o.html:89
+#: templates/registration/password_reset_confirm.html:155
+#: templates/registration/password_reset_confirm_o.html:119
 msgid ""
 "Invalid link for password reset, possibly because this link has already been "
 "used previously. <br/>\n"
@@ -815,11 +816,11 @@ msgid ""
 "    "
 msgstr ""
 
-#: templates/registration/password_reset_form.html:39
+#: templates/registration/password_reset_form.html:72
 msgid "Please enter your e-mail to receive instructions for password reset."
 msgstr ""
 
-#: templates/registration/password_reset_form.html:49
+#: templates/registration/password_reset_form.html:83
 msgid "E-mail"
 msgstr ""
 

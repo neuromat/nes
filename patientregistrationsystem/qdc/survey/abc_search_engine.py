@@ -231,10 +231,15 @@ class ABCSearchEngine(metaclass=ABCMeta):
         """
 
         responses = self.server.export_responses_by_token(self.session_key, sid, 'csv', token, language, 'complete')
-        responses_txt = b64decode(responses)
+
+        if isinstance(responses, str):
+            responses_txt = b64decode(responses)
+        else:
+            responses_txt = responses
 
         return responses_txt
 
+    @abstractmethod
     def insert_questions(self, sid, questions_data, format_import_file):
         """ Imports a group of questions from a file
         :param sid: survey ID
