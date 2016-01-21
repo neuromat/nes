@@ -2081,6 +2081,8 @@ def access_objects_for_add_new_and_reuse(component_type, path_of_the_components)
 
     experiment = None
 
+    block_id = None
+
     if len(list_of_ids_of_components_and_configurations) > 1 or path_of_the_components[0] != "G":
         # The last id of the list is the block where the new component will be added.
         block_id = list_of_ids_of_components_and_configurations[-1]
@@ -2092,7 +2094,19 @@ def access_objects_for_add_new_and_reuse(component_type, path_of_the_components)
         group = get_object_or_404(Group, pk=group_id)
         experiment = group.experiment
 
+    list_of_component_id_to_exclude = []
+
+    if block_id:
+        list_of_component_id_to_exclude.append(block_id)
+
+    # TODO: recursive method to obtain all the parent components to be excluded from the list
+    # (list_of_component_id_to_exclude)
+
     existing_component_list = Component.objects.filter(experiment=experiment, component_type=component_type)
+
+    for component_id in list_of_component_id_to_exclude:
+        existing_component_list = existing_component_list.exclude(id=component_id)
+
     specific_form = None
 
     # If configuring a new experimental protocol for a group, return to the group. Otherwise, return to the parent
