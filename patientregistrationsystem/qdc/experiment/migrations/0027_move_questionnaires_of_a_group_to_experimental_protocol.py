@@ -6,18 +6,13 @@ from django.db import models
 
 from experiment.abc_search_engine import Questionnaires
 
+
 class Migration(DataMigration):
 
     def forwards(self, orm):
         # Note: Don't use "from appname.models import ModelName".
         # Use orm.ModelName to refer to models in this application,
         # and orm['appname.ModelName'] for models in other applications.
-
-        surveys = Questionnaires()
-
-        # Can't run the migration if limesurvey is not available.
-        if not surveys.session_key:
-            raise RuntimeError("Cannot run this migration because limesurvey is not available.")
 
         list_of_distinct_group_ids =\
             [qc[0] for qc in orm.QuestionnaireConfiguration.objects.order_by().values_list('group_id').distinct()]
@@ -57,7 +52,7 @@ class Migration(DataMigration):
                 # Create a questionnaire
                 questionnaire = orm.Questionnaire()
                 # Use the first 50 characters of the name of the survey as the identification of the component.
-                questionnaire.identification = surveys.get_survey_title(qc.lime_survey_id)[:50]
+                questionnaire.identification = "LimeSurvey ID " + str(qc.lime_survey_id)
                 questionnaire.description = 'This questionnaire was migrated from the group to the experimental ' \
                                             'protocol of the group.'
                 questionnaire.experiment = group.experiment
