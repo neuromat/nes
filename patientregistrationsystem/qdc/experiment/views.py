@@ -2076,6 +2076,29 @@ def component_update(request, path_of_the_components):
     return render(request, template_name, context)
 
 
+def get_recursively_set_of_components_to_exclude(component):
+    """
+    :param component: component to analyse recursively
+    :return: set of components
+    """
+
+    # {[component]} returns a set with one element
+    component_list = [component]
+    output_set_of_components = set(component_list)
+
+    list_of_component_configuration = ComponentConfiguration.objects.filter(component=component)
+
+    if not list_of_component_configuration:
+        return output_set_of_components
+
+    for component_configuration in list_of_component_configuration:
+        if component_configuration.parent not in output_set_of_components:
+            set_of_parents = get_recursively_set_of_components_to_exclude(component_configuration.parent)
+            output_set_of_components |= set_of_parents
+
+    return output_set_of_components
+
+
 def access_objects_for_add_new_and_reuse(component_type, path_of_the_components):
     template_name = "experiment/" + component_type + "_component.html"
     list_of_ids_of_components_and_configurations = path_of_the_components.split(delimiter)
@@ -2091,6 +2114,7 @@ def access_objects_for_add_new_and_reuse(component_type, path_of_the_components)
         block_id = list_of_ids_of_components_and_configurations[-1]
         block = get_object_or_404(Block, pk=block_id)
         experiment = block.experiment
+
     if path_of_the_components[0] == "G":
         # The id of the group comes after "G"
         group_id = int(list_of_ids_of_components_and_configurations[0][1:])
@@ -2098,6 +2122,12 @@ def access_objects_for_add_new_and_reuse(component_type, path_of_the_components)
         experiment = group.experiment
 
     existing_component_list = Component.objects.filter(experiment=experiment, component_type=component_type)
+
+    if block:
+        set_of_components_to_exclude = get_recursively_set_of_components_to_exclude(block)
+        for component in set_of_components_to_exclude:
+            existing_component_list = existing_component_list.exclude(id=component.id)
+
     specific_form = None
 
     # If configuring a new experimental protocol for a group, return to the group. Otherwise, return to the parent
