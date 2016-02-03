@@ -48,11 +48,15 @@
                                                     <td class="col-md-8">
                                                         {% if limesurvey_available and response.completed != None %}
                                                             {% if response.completed %}
-                                                                <a href="/patient/questionnaire_response/{{ response.questionnaire_response.pk }}?origin=subject&status={% if editing %}edit{% else %}view{% endif %}">
+                                                                {% if perms.patient.view_questionnaireresponse %}
+                                                                    <a href="/patient/questionnaire_response/{{ response.questionnaire_response.pk }}?origin=subject&status={% if editing %}edit{% else %}view{% endif %}">
+                                                                        {{ response.questionnaire_response.date }}
+                                                                    </a>
+                                                                {% else %}
                                                                     {{ response.questionnaire_response.date }}
-                                                                </a>
+                                                                {% endif %}
                                                             {% else %}
-                                                                {% if editing %}
+                                                                {% if editing and perms.patient.change_questionnaireresponse %}
                                                                     <a href="/patient/questionnaire_response/edit/{{ response.questionnaire_response.pk }}?origin=subject&status={% if editing %}edit{% else %}view{% endif %}">
                                                                         {{ response.questionnaire_response.date }}
                                                                     </a>
