@@ -56,7 +56,7 @@ def survey_list(request, template_name='survey/survey_list.html'):
 @login_required
 @permission_required('survey.add_survey')
 def survey_create(request, template_name="survey/survey_register.html"):
-    survey_form = SurveyForm(request.POST or None, initial={'title': 'title'})
+    survey_form = SurveyForm(request.POST or None, initial={'title': 'title', 'is_initial_evaluation': False})
 
     surveys = Questionnaires()
     limesurvey_available = check_limesurvey_access(request, surveys)

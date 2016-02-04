@@ -1401,7 +1401,8 @@ def component_create(request, experiment_id, component_type):
                 if component_type == 'questionnaire':
                     new_specific_component = Questionnaire()
                     survey, created = Survey.objects.get_or_create(
-                        lime_survey_id=request.POST['questionnaire_selected'])
+                        lime_survey_id=request.POST['questionnaire_selected'],
+                        is_initial_evaluation=False)
                     new_specific_component.survey = survey
                 elif component_type == 'pause':
                     new_specific_component = Pause()
