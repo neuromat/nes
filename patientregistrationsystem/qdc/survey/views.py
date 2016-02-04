@@ -59,7 +59,13 @@ def survey_create(request, template_name="survey/survey_register.html"):
     survey_form = SurveyForm(request.POST or None, initial={'title': 'title'})
 
     surveys = Questionnaires()
-    questionnaires_list = surveys.find_all_active_questionnaires()
+    limesurvey_available = check_limesurvey_access(request, surveys)
+
+    questionnaires_list = []
+
+    if limesurvey_available:
+        questionnaires_list = surveys.find_all_active_questionnaires()
+
     surveys.release_session_key()
 
     # removing surveys already registered
@@ -89,7 +95,9 @@ def survey_create(request, template_name="survey/survey_register.html"):
         "survey_form": survey_form,
         "creating": True,
         "editing": True,
-        "questionnaires_list": questionnaires_list}
+        "questionnaires_list": questionnaires_list,
+        'limesurvey_available': limesurvey_available
+    }
 
     return render(request, template_name, context)
 
