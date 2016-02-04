@@ -61,7 +61,7 @@
                 </div>
                 {% if perms.survey.add_survey %}
                     <div class="btn-group pull-left">
-                        <a href="/survey/new/" class="btn btn-primary">{% trans "Insert new questionnaire" %}</a>
+                        <a href="/survey/new/" class="btn btn-primary" {% if not limesurvey_available  %} disabled {% endif %}>{% trans "Insert new questionnaire" %}</a>
                     </div>
                 {% endif %}
             </div>

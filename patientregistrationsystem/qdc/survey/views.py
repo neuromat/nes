@@ -27,6 +27,7 @@ from survey.abc_search_engine import Questionnaires
 def survey_list(request, template_name='survey/survey_list.html'):
 
     surveys = Questionnaires()
+    limesurvey_available = check_limesurvey_access(request, surveys)
 
     questionnaires_list = []
 
@@ -44,8 +45,12 @@ def survey_list(request, template_name='survey/survey_list.html'):
 
     questionnaires_list = sorted(questionnaires_list, key=itemgetter('title'))
 
-    data = {'questionnaires_list': questionnaires_list}
-    return render(request, template_name, data)
+    context = {
+        'questionnaires_list': questionnaires_list,
+        'limesurvey_available': limesurvey_available
+    }
+
+    return render(request, template_name, context)
 
 
 @login_required
