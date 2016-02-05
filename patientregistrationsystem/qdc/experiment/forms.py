@@ -16,7 +16,8 @@ class ExperimentForm(ModelForm):
             'research_project': Select(attrs={'class': 'form-control'}, choices='research_projects'),
             'title': TextInput(attrs={'class': 'form-control',
                                       'required': "",
-                                      'data-error': _('Title must be filled.')}),
+                                      'data-error': _('Title must be filled.'),
+                                      'autofocus': ''},),
             'description': Textarea(attrs={'class': 'form-control',
                                            'rows': '4', 'required': "",
                                            'data-error': _('Description must be filled.')}),
@@ -33,7 +34,8 @@ class GroupForm(ModelForm):
         widgets = {
             'title': TextInput(attrs={'class': 'form-control',
                                       'required': "",
-                                      'data-error': _('Title must be filled.')}),
+                                      'data-error': _('Title must be filled.'),
+                                      'autofocus': ''}),
             'description': Textarea(attrs={'class': 'form-control',
                                            'rows': '4', 'required': "",
                                            'data-error': _('Description must be filled.')})
@@ -76,7 +78,8 @@ class ComponentForm(ModelForm):
 
         widgets = {
             'identification': TextInput(attrs={'class': 'form-control', 'required': "",
-                                               'data-error': _('Identification must be filled.')}),
+                                               'data-error': _('Identification must be filled.'),
+                                               'autofocus': ''}),
             # Even though maxlength is already set in the model, it has be be repeated here, because the form dos not
             # respect that information.
             'description': Textarea(attrs={'class': 'form-control', 'rows': '4'}),
@@ -187,7 +190,8 @@ class ResearchProjectForm(ModelForm):
 
         widgets = {
             'title': TextInput(attrs={'class': 'form-control', 'required': "",
-                                      'data-error': _('Title must be filled.')}),
+                                      'data-error': _('Title must be filled.'),
+                                      'autofocus': ''}),
             # Even though maxlength is already set in the model, it has be be repeated here, because the form dos not
             # respect that information.
             'description': Textarea(attrs={'class': 'form-control', 'rows': '4', 'required': "",
