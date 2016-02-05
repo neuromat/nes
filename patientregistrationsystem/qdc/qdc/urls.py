@@ -40,7 +40,7 @@ urlpatterns = patterns(
     (r'^user/password/done/$',
      'django.contrib.auth.views.password_reset_complete'),
     url(r'^cep/', include('cep.urls')),
-
+    url(r'^$', 'qdc.views.contact', name='contact'),
 ) + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
 
 handler403 = 'qdc.views.qdc_permission_denied_view'

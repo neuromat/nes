@@ -78,7 +78,7 @@
                                                 </tr>
                                             {% endfor %}
 
-                                            {% if editing and patient_questionnaire.is_initial_evaluation and perms.experiment.add_questionnaireresponse %}
+                                            {% if editing and patient_questionnaire.is_initial_evaluation and perms.patient.add_questionnaireresponse %}
                                                 <tr>
                                                     <td colspan="2" class="col-md-12">
                                                         <a href="/patient/{{ patient_id }}/questionnaire/{{ patient_questionnaire.survey_id }}/add_response/?origin=subject"
@@ -119,7 +119,7 @@
                                 <th>Experimento</th>
                                 <th>Grupo</th>
                                 <th>Questionário</th>
-                                <th>Data</th>
+                                <th>Preenchimento</th>
                                 <th></th>
                             </tr>
                             </thead>
