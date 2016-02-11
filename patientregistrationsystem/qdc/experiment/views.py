@@ -1310,6 +1310,14 @@ def component_list(request, experiment_id, template_name="experiment/component_l
 
     for component in components:
         component.icon_class = icon_class[component.component_type]
+        component.is_root = False
+        component.is_unused = False
+        if component.component_type == "block":
+            if Group.objects.filter(experimental_protocol=component):
+                component.is_root = True
+        if not component.is_root:
+            if not ComponentConfiguration.objects.filter(component=component):
+                component.is_unused = True
 
     component_type_choices = []
 
