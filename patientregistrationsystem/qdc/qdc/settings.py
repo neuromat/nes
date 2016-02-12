@@ -181,9 +181,9 @@ ADMIN_MEDIA_PREFIX = STATIC_URL + 'admin/'
 MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
 MEDIA_URL = '/media/'
 
-VERSION = '0.3.0-DEV'
-
 try:
     from .settings_local import *
 except ImportError:
     pass
+
+VERSION = '0.3.0'
