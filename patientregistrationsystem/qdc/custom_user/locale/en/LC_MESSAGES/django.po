@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2015-11-12 16:14-0200\n"
+"POT-Creation-Date: 2015-12-04 12:22-0200\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -17,25 +17,29 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 
-#: custom_user/forms.py:17
+#: custom_user/forms.py:19
 msgid "Type first name"
 msgstr ""
 
-#: custom_user/forms.py:18
+#: custom_user/forms.py:20
 msgid "Type last name"
 msgstr ""
 
-#: custom_user/forms.py:20
+#: custom_user/forms.py:22
 msgid "Type user name"
 msgstr ""
 
-#: custom_user/forms.py:22 custom_user/forms.py:45
+#: custom_user/forms.py:24 custom_user/forms.py:47
 #: custom_user/templates/custom_user/register_users.html:177
 msgid "Type password"
 msgstr ""
 
-#: custom_user/forms.py:25
+#: custom_user/forms.py:27
 msgid "Type e-mail"
+msgstr ""
+
+#: custom_user/forms.py:73 custom_user/forms.py:74
+msgid "E-mail is not registered"
 msgstr ""
 
 #: custom_user/templates/custom_user/register_users.html:99
