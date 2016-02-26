@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2015-11-12 16:14-0200\n"
+"POT-Creation-Date: 2015-12-04 12:22-0200\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -171,6 +171,11 @@ msgstr ""
 "Não foi possível excluir o questionário, pois há respostas ou passos de "
 "experimento associados."
 
-#: survey/views.py:556
+#: survey/views.py:550
+msgid "LimeSurvey does not found fill data for this questionnaire."
+msgstr ""
+"LimeSurvey não encontrou dados de preenchimento para este questionário."
+
+#: survey/views.py:561
 msgid "LimeSurvey unavailable. System running partially."
 msgstr "LimeSurvey indisponível. Sistema funcionando parcialmente."
