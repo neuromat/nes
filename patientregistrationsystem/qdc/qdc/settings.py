@@ -158,7 +158,7 @@ MODELTRANSLATION_TRANSLATION_FILES = (
     # '<APP2_MODULE>.translation',
 )
 
-MODELTRANSLATION_CUSTOM_FIELDS = ('name', )
+MODELTRANSLATION_CUSTOM_FIELDS = ('name', 'description', 'abbreviated_description', )
 
 MODELTRANSLATION_AUTO_POPULATE = 'all'
 

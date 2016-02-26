@@ -1,7 +1,7 @@
 
 from modeltranslation.translator import translator, TranslationOptions
 from patient.models import Schooling, Payment, Religion, FleshTone, MaritalStatus, Gender, AmountCigarettes, \
-    AlcoholFrequency, AlcoholPeriod
+    AlcoholFrequency, AlcoholPeriod, ClassificationOfDiseases
 
 
 class SchoolingTranslationOptions(TranslationOptions):
@@ -56,3 +56,9 @@ class AlcoholPeriodTranslationOptions(TranslationOptions):
     fields = ('name', )
 
 translator.register(AlcoholPeriod, AlcoholPeriodTranslationOptions)
+
+
+class ClassificationOfDiseasesTranslationOptions(TranslationOptions):
+    fields = ('description', 'abbreviated_description', )
+
+translator.register(ClassificationOfDiseases, ClassificationOfDiseasesTranslationOptions)

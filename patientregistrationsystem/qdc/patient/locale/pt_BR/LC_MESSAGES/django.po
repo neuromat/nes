@@ -9,7 +9,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2015-12-04 12:22-0200\n"
+"POT-Creation-Date: 2016-02-25 18:03-0300\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -24,6 +24,7 @@ msgid "Name must be included"
 msgstr "Nome deve ser preenchido"
 
 #: patient/forms.py:31 patient/forms.py:134 patient/forms.py:159
+#: patient/views.py:1152
 msgid "%m/%d/%Y"
 msgstr "%d/%m/%Y"
 
@@ -786,7 +787,7 @@ msgid "Exam successfully saved."
 msgstr "Exame salvo com sucesso."
 
 #: patient/views.py:818 patient/views.py:867
-msgid "It is not possible to salve exam without files."
+msgid "It is not possible to save exam without files."
 msgstr "Não é possível salvar exame sem arquivos."
 
 #: patient/views.py:922

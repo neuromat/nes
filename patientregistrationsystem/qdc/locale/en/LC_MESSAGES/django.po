@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2015-12-04 12:22-0200\n"
+"POT-Creation-Date: 2016-02-25 18:03-0300\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -651,10 +651,6 @@ msgstr ""
 
 #: add_initial_data.py:181
 msgid "Senior researcher"
-msgstr ""
-
-#: export/tests.py:175 export/views.py:142
-msgid "Base path does not exist"
 msgstr ""
 
 #: templates/admin/base_site.html:4

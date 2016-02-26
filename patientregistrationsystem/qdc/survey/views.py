@@ -547,7 +547,7 @@ def get_questionnaire_responses(language_code, lime_survey_id, token_id, request
                                 'type': question['type']
                             })
         else:
-            messages.error(request, _("LimeSurvey does not found fill data for this questionnaire."))
+            messages.error(request, _("LimeSurvey did not find fill data for this questionnaire."))
 
     surveys.release_session_key()
 
