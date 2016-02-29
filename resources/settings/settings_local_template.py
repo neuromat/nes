@@ -14,12 +14,14 @@ JENKINS_TASKS = (
     'django_jenkins.tasks.run_pylint',
 )
 
+# https://docs.djangoproject.com/en/1.8/ref/settings/#std:setting-STATIC_ROOT
+STATIC_ROOT = ''
+
 # Database
 # https://docs.djangoproject.com/en/1.6/ref/settings/#databases
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.postgresql_psycopg2',
-
         'NAME': 'database_name',
         'USER': 'db_user_name',
         'PASSWORD': 'db_user_pwd',
@@ -43,9 +45,6 @@ EMAIL_HOST_USER = 'smtp.user@example.com'
 EMAIL_HOST_PASSWORD = 'smtp.user_pwd'
 DEFAULT_FROM_EMAIL = 'smtp.user@example.com'
 SERVER_EMAIL = EMAIL_HOST_USER
-
-# version
-VERSION = '0.3.1'
 
 CONTACT_INSTITUTION = 'Developer environment'
 CONTACT_EMAIL = 'contact at example dot com'

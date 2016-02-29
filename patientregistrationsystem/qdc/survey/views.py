@@ -27,6 +27,7 @@ from survey.abc_search_engine import Questionnaires
 def survey_list(request, template_name='survey/survey_list.html'):
 
     surveys = Questionnaires()
+    limesurvey_available = check_limesurvey_access(request, surveys)
 
     questionnaires_list = []
 
@@ -44,17 +45,27 @@ def survey_list(request, template_name='survey/survey_list.html'):
 
     questionnaires_list = sorted(questionnaires_list, key=itemgetter('title'))
 
-    data = {'questionnaires_list': questionnaires_list}
-    return render(request, template_name, data)
+    context = {
+        'questionnaires_list': questionnaires_list,
+        'limesurvey_available': limesurvey_available
+    }
+
+    return render(request, template_name, context)
 
 
 @login_required
 @permission_required('survey.add_survey')
 def survey_create(request, template_name="survey/survey_register.html"):
-    survey_form = SurveyForm(request.POST or None, initial={'title': 'title'})
+    survey_form = SurveyForm(request.POST or None, initial={'title': 'title', 'is_initial_evaluation': False})
 
     surveys = Questionnaires()
-    questionnaires_list = surveys.find_all_active_questionnaires()
+    limesurvey_available = check_limesurvey_access(request, surveys)
+
+    questionnaires_list = []
+
+    if limesurvey_available:
+        questionnaires_list = surveys.find_all_active_questionnaires()
+
     surveys.release_session_key()
 
     # removing surveys already registered
@@ -84,7 +95,9 @@ def survey_create(request, template_name="survey/survey_register.html"):
         "survey_form": survey_form,
         "creating": True,
         "editing": True,
-        "questionnaires_list": questionnaires_list}
+        "questionnaires_list": questionnaires_list,
+        'limesurvey_available': limesurvey_available
+    }
 
     return render(request, template_name, context)
 

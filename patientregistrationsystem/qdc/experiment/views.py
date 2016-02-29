@@ -104,14 +104,26 @@ def research_project_view(request, research_project_id, template_name="experimen
 
     if request.method == "POST":
         if request.POST['action'] == "remove":
-            try:
-                for keyword in research_project.keywords.all():
-                    manage_keywords(keyword, ResearchProject.objects.exclude(id=research_project.id))
+            if QuestionnaireResponse.objects.filter(
+                    subject_of_group__group__experiment__research_project_id=research_project_id).count() == 0:
 
-                research_project.delete()
-                return redirect('research_project_list')
-            except ProtectedError:
-                messages.error(request, _("Error trying to delete research."))
+                try:
+                    for keyword in research_project.keywords.all():
+                        manage_keywords(keyword, ResearchProject.objects.exclude(id=research_project.id))
+
+                    research_project.delete()
+                    messages.success(request, _('Study removed successfully.'))
+                    return redirect('research_project_list')
+                except ProtectedError:
+                    messages.error(request, _("Error trying to delete research."))
+                    redirect_url = reverse("research_project_view", args=(research_project_id,))
+                    return HttpResponseRedirect(redirect_url)
+
+            else:
+                messages.error(request,
+                               _("Impossible to delete group because there is (are) questionnaire(s) answered."))
+                redirect_url = reverse("research_project_view", args=(research_project_id,))
+                return HttpResponseRedirect(redirect_url)
 
     context = {
         "can_change": get_can_change(request.user, research_project),
@@ -285,14 +297,30 @@ def experiment_view(request, experiment_id, template_name="experiment/experiment
 
     if request.method == "POST":
         if request.POST['action'] == "remove":
+
             research_project = experiment.research_project
 
             if get_can_change(request.user, research_project):
-                try:
-                    experiment.delete()
-                    return redirect('research_project_view', research_project_id=research_project.id)
-                except ProtectedError:
-                    messages.error(request, _("It was not possible to delete experiment, because there are groups connected."))
+
+                if QuestionnaireResponse.objects.filter(
+                        subject_of_group__group__experiment_id=experiment_id).count() == 0:
+
+                    try:
+                        experiment.delete()
+                        messages.success(request, _('Experiment removed successfully.'))
+                        return redirect('research_project_view', research_project_id=research_project.id)
+                    except ProtectedError:
+                        messages.error(request,
+                                       _("It was not possible to delete experiment, "
+                                         "because there are groups connected."))
+                        redirect_url = reverse("experiment_view", args=(experiment_id,))
+                        return HttpResponseRedirect(redirect_url)
+                else:
+                    messages.error(request,
+                                   _("Impossible to delete group because there is (are) questionnaire(s) answered."))
+                    redirect_url = reverse("experiment_view", args=(experiment_id,))
+                    return HttpResponseRedirect(redirect_url)
+
             else:
                 raise PermissionDenied
 
@@ -449,12 +477,23 @@ def group_view(request, group_id, template_name="experiment/group_register.html"
     if request.method == "POST":
         if can_change:
             if request.POST['action'] == "remove":
-                try:
-                    group.delete()
-                    redirect_url = reverse("experiment_view", args=(group.experiment.id,))
+
+                if QuestionnaireResponse.objects.filter(subject_of_group__group_id=group_id).count() == 0:
+                    try:
+                        group.delete()
+                        messages.success(request, _('Group removed successfully.'))
+                        redirect_url = reverse("experiment_view", args=(group.experiment.id,))
+                        return HttpResponseRedirect(redirect_url)
+                    except ProtectedError:
+                        messages.error(request, _("Impossible to delete group, because there are dependencies."))
+                        redirect_url = reverse("group_view", args=(group.id,))
+                        return HttpResponseRedirect(redirect_url)
+                else:
+                    messages.error(request,
+                                   _("Impossible to delete group because there is (are) questionnaire(s) answered."))
+                    redirect_url = reverse("group_view", args=(group.id,))
                     return HttpResponseRedirect(redirect_url)
-                except ProtectedError:
-                    messages.error(request, _("Impossible to delete group, because there are dependencies."))
+
             elif request.POST['action'] == "remove_experimental_protocol":
                 group.experimental_protocol = None
                 group.save()
@@ -1136,8 +1175,8 @@ def subject_questionnaire_view(request, group_id, subject_id,
                 redirect_url = reverse("subjects", args=(group_id,))
                 return HttpResponseRedirect(redirect_url)
             else:
-                messages.error(request, _("It was not possible to delete participante, "
-                                          "becacuse there are answers connected"))
+                messages.error(request, _("It was not possible to delete participant, "
+                                          "because there are answers connected"))
                 redirect_url = reverse("subject_questionnaire", args=(group_id, subject_id,))
                 return HttpResponseRedirect(redirect_url)
 
@@ -1272,6 +1311,14 @@ def component_list(request, experiment_id, template_name="experiment/component_l
 
     for component in components:
         component.icon_class = icon_class[component.component_type]
+        component.is_root = False
+        component.is_unused = False
+        if component.component_type == "block":
+            if Group.objects.filter(experimental_protocol=component):
+                component.is_root = True
+        if not component.is_root:
+            if not ComponentConfiguration.objects.filter(component=component):
+                component.is_unused = True
 
     component_type_choices = []
 
@@ -1402,7 +1449,8 @@ def component_create(request, experiment_id, component_type):
                 if component_type == 'questionnaire':
                     new_specific_component = Questionnaire()
                     survey, created = Survey.objects.get_or_create(
-                        lime_survey_id=request.POST['questionnaire_selected'])
+                        lime_survey_id=request.POST['questionnaire_selected'],
+                        is_initial_evaluation=False)
                     new_specific_component.survey = survey
                 elif component_type == 'pause':
                     new_specific_component = Pause()

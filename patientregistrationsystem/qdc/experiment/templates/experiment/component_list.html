@@ -79,6 +79,12 @@
                                 <td>
                                     <span class="{{ component.icon_class }}"></span>
                                     {{ component.get_component_type_display }}
+                                    {% if component.is_root %}
+                                        <span class="label label-info">{% trans "root" %}</span>
+                                    {% endif %}
+                                    {% if component.is_unused %}
+                                        <span class="label label-warning">{% trans "not used" %}</span>
+                                    {% endif %}
                                 </td>
                                 {% if component.component_type == "block" %}
                                     <td><a data-toggle="tooltip" data-placement="left" title="{% trans "Edit" %}" href="/experiment/component/{{ component.id }}">{{ component.identification }}</a></td>
