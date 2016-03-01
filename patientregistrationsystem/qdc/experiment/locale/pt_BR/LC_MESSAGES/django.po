@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2015-12-04 12:22-0200\n"
+"POT-Creation-Date: 2016-02-25 18:03-0300\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -638,16 +638,12 @@ msgid "View / Edit"
 msgstr "Ver / Editar"
 
 #: experiment/templates/experiment/group_register.html:233
-#, fuzzy, python-format
-#| msgid "There is %%(number_of_subjects)s participant recorded"
 msgid "There is %(number_of_subjects)s participant recorded"
 msgstr "Há %%(number_of_subjects)s participantes registrados"
 
 #: experiment/templates/experiment/group_register.html:235
-#, fuzzy, python-format
-#| msgid "There are %%(number_of_subjects)s participants recorded"
 msgid "There are %(number_of_subjects)s participants recorded"
-msgstr "Há %%(number_of_subjects)s participantees registrados"
+msgstr "Há %%(number_of_subjects)s participantes registrados"
 
 #: experiment/templates/experiment/group_register.html:241
 msgid "No participants recorded"
@@ -1081,8 +1077,8 @@ msgstr "Não existem anexos para salvar"
 msgid "Attachment deleted successfully."
 msgstr "Anexo removido com sucesso."
 
-#: experiment/views.py:1426 experiment/views.py:2227 experiment/views.py:2335
-#: experiment/views.py:2359
+#: experiment/views.py:1426 experiment/views.py:2257 experiment/views.py:2365
+#: experiment/views.py:2389
 msgid "Step included successfully."
 msgstr "Passo incluído com sucesso."
 
@@ -1166,10 +1162,10 @@ msgstr "Componente removido com sucesso."
 msgid "Step updated successfully."
 msgstr "Passo alterado com sucesso."
 
-#: experiment/views.py:2197
+#: experiment/views.py:2227
 msgid "Experimental protocol included successfully."
 msgstr "Protocolo experimental incluído com sucesso."
 
-#: experiment/views.py:2225 experiment/views.py:2357
+#: experiment/views.py:2255 experiment/views.py:2387
 msgid "Steps included successfully."
 msgstr "Passos incluídos com sucesso."

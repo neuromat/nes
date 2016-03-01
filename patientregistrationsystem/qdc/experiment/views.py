@@ -1052,7 +1052,8 @@ def questionnaire_response_view(request, questionnaire_response_id,
     language_code = request.LANGUAGE_CODE
 
     # Get the responses for each question of the questionnaire.
-    survey_title, questionnaire_responses = get_questionnaire_responses(language_code, lime_survey_id, token_id)
+    survey_title, questionnaire_responses = get_questionnaire_responses(language_code, lime_survey_id,
+                                                                        token_id, request)
 
     origin = get_origin(request)
 

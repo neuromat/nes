@@ -815,7 +815,7 @@ def exam_create(request, patient_id, record_id, diagnosis_id, template_name="pat
 
                 return HttpResponseRedirect(redirect_url + "?status=edit")
         else:
-            messages.error(request, _('It is not possible to salve exam without files.'))
+            messages.error(request, _('It is not possible to save exam without files.'))
 
     else:
         file_form = ExamFileForm(request.POST)
@@ -864,7 +864,7 @@ def exam_edit(request, patient_id, record_id, exam_id, template_name="patient/ex
                             exam_file_list = ExamFile.objects.filter(exam=exam_id)
                             length = exam_file_list.__len__()
             else:
-                messages.error(request, _('It is not possible to salve exam without files.'))
+                messages.error(request, _('It is not possible to save exam without files.'))
 
         else:
             file_form = ExamFileForm(request.POST)
@@ -1274,7 +1274,8 @@ def questionnaire_response_view(request, questionnaire_response_id,
     token_id = questionnaire_response.token_id
     language_code = request.LANGUAGE_CODE
 
-    survey_title, questionnaire_responses = get_questionnaire_responses(language_code, lime_survey_id, token_id)
+    survey_title, questionnaire_responses = get_questionnaire_responses(language_code, lime_survey_id,
+                                                                        token_id, request)
 
     context = {
         "questionnaire_response_form": questionnaire_response_form,
