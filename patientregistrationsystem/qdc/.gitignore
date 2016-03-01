@@ -4,3 +4,4 @@ media
 .idea
 qdc/settings_local.py
 *.DS_Store
+qdc/wsgi.py
