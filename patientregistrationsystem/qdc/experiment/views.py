@@ -14,7 +14,7 @@ from django.db.models.deletion import ProtectedError
 # from django.forms import HiddenInput
 from django.http import HttpResponseRedirect
 from django.shortcuts import get_object_or_404, redirect, render, render_to_response
-from django.utils.translation import ugettext as _ , ungettext
+from django.utils.translation import ugettext as _, ungettext
 
 from experiment.models import Experiment, Subject, QuestionnaireResponse, SubjectOfGroup, Group, Component, \
     ComponentConfiguration, Questionnaire, Task, Stimulus, Pause, Instruction, Block, \
@@ -1789,6 +1789,7 @@ def remove_component_configuration(request, conf):
     except ProtectedError:
         messages.error(request, "Não foi possível excluir o uso, pois há dados associados")
 
+
 @login_required
 @permission_required('experiment.view_researchproject')
 def component_view(request, path_of_the_components):
@@ -1842,8 +1843,8 @@ def component_view(request, path_of_the_components):
                     # It means that a single component configuration should be removed
                     position_in_accordion_of_the_conf_to_be_deleted = int(action_parts[3])
                     remove_component_configuration(request,
-                        list_from_which_to_deleted[position_of_the_accordion_to_be_deleted]
-                        [position_in_accordion_of_the_conf_to_be_deleted])
+                                                   list_from_which_to_deleted[position_of_the_accordion_to_be_deleted]
+                                                   [position_in_accordion_of_the_conf_to_be_deleted])
                 else:
                     for conf in list_from_which_to_deleted[position_of_the_accordion_to_be_deleted]:
                         # Only uses that do not have associated data will be excluded.

@@ -17,4 +17,5 @@ def addressGet(request, zipcode):
     page = urllib.request.urlopen(url)
     text = page.read().decode('iso-8859-1')
     splitted = text.split('||')
-    return HttpResponse('{"street":"%s","district":"%s","city":"%s","state":"%s"}' % (splitted[0], splitted[1], splitted[2], splitted[4]))
+    return HttpResponse('{"street":"%s","district":"%s","city":"%s","state":"%s"}' %
+                        (splitted[0], splitted[1], splitted[2], splitted[4]))

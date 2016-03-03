@@ -1,8 +1,9 @@
 # -*- coding: UTF-8 -*-
 import re
 
+
 # traduz 123.456.789-10 para 12345678910
-_translate = lambda cpf: ''.join(re.findall("\d", cpf))
+def _translate(cpf): return ''.join(re.findall("\d", cpf))
 
 
 def _exceptions(cpf):

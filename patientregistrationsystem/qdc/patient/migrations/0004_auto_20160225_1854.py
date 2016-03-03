@@ -39,7 +39,11 @@ class Migration(migrations.Migration):
         migrations.AlterField(
             model_name='historicaltelephone',
             name='type',
-            field=models.CharField(max_length=15, choices=[('MO', 'Cell phone'), ('HO', 'Home phone'), ('WO', 'Business'), ('MA', 'Main'), ('FW', 'Business fax'), ('FH', 'Home fax'), ('PA', 'Pager'), ('OT', 'Other')], blank=True),
+            field=models.CharField(max_length=15, choices=[('MO', 'Cell phone'), ('HO', 'Home phone'),
+                                                           ('WO', 'Business'), ('MA', 'Main'),
+                                                           ('FW', 'Business fax'), ('FH', 'Home fax'),
+                                                           ('PA', 'Pager'), ('OT', 'Other')],
+                                   blank=True),
         ),
         migrations.AlterField(
             model_name='patient',
@@ -49,6 +53,10 @@ class Migration(migrations.Migration):
         migrations.AlterField(
             model_name='telephone',
             name='type',
-            field=models.CharField(max_length=15, choices=[('MO', 'Cell phone'), ('HO', 'Home phone'), ('WO', 'Business'), ('MA', 'Main'), ('FW', 'Business fax'), ('FH', 'Home fax'), ('PA', 'Pager'), ('OT', 'Other')], blank=True),
+            field=models.CharField(max_length=15, choices=[('MO', 'Cell phone'), ('HO', 'Home phone'),
+                                                           ('WO', 'Business'), ('MA', 'Main'),
+                                                           ('FW', 'Business fax'), ('FH', 'Home fax'),
+                                                           ('PA', 'Pager'), ('OT', 'Other')],
+                                   blank=True),
         ),
     ]

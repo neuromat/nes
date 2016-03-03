@@ -473,8 +473,7 @@ def get_questionnaire_responses(language_code, lime_survey_id, token_id, request
 
                 if not question['hidden']:
 
-                    if isinstance(question                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                           , str) and \
-                            question['answer_options'] == "super_question":
+                    if isinstance(question, str) and question['answer_options'] == "super_question":
 
                         if question['question'] != '':
                             questionnaire_responses.append({

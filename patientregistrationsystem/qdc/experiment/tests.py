@@ -1192,19 +1192,23 @@ class SubjectTest(TestCase):
 
         # Inicia o preenchimento de uma Survey without access code table
         response = self.client.post(reverse('subject_questionnaire_response',
-                                            args=[group.pk, subject_mock.pk, component_configuration_without_access_table.pk, ]), self.data)
+                                            args=[group.pk, subject_mock.pk,
+                                                  component_configuration_without_access_table.pk, ]), self.data)
         self.assertEqual(response.status_code, 200)
         self.assertEqual(response.context['FAIL'], True)
 
         # Inicia o preenchimento de uma Survey inactive
         response = self.client.post(reverse('subject_questionnaire_response',
-                                            args=[group.pk, subject_mock.pk, component_configuration_inactive.pk, ]), self.data)
+                                            args=[group.pk, subject_mock.pk,
+                                                  component_configuration_inactive.pk, ]), self.data)
         self.assertEqual(response.status_code, 200)
         self.assertEqual(response.context['FAIL'], True)
 
         # Inicia o preenchimento de uma Survey without identification group
         response = self.client.post(reverse('subject_questionnaire_response',
-                                            args=[group.pk, subject_mock.pk, component_configuration_without_identification_group.pk, ]), self.data)
+                                            args=[group.pk, subject_mock.pk,
+                                                  component_configuration_without_identification_group.pk, ]),
+                                    self.data)
         self.assertEqual(response.status_code, 200)
         self.assertEqual(response.context['FAIL'], True)
 
