@@ -208,7 +208,7 @@
                         {% if type_of_the_parent_block == "sequence" %}
                             <div class="col-xs-12 col-sm-5 col-sm-offset-1">
                                 <div class="form-group">
-                                    <label>{% trans "Position in the set of steps" %}</label>
+                                    <label>{% trans "Position in the set of steps" %} <b style="color: red;">*</b></label>
                                     <div class="input-group  input-group-sm">
                                         {% trans "Execution order from this sub-step does not vary" as text_1 %}
                                         {% trans "This sub-step can be performed anywhere in the parent assembly where there is not a fixed step" as text_2 %}
