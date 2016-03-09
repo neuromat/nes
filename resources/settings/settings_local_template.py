@@ -49,3 +49,4 @@ SERVER_EMAIL = EMAIL_HOST_USER
 CONTACT_INSTITUTION = 'Developer environment'
 CONTACT_EMAIL = 'contact at example dot com'
 CONTACT_URL = 'https://example.com'
+LOGO_INSTITUTION = 'logo-institution.png'
