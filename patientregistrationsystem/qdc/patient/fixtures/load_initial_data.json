@@ -154,36 +154,36 @@
   },
   {
     "fields": {
-      "name_pt_br": "N\u00e3o informado",
       "name_en": "Not informed",
-      "name": "N\u00e3o informado"
+      "name": "N\u00e3o Informado",
+      "name_pt_br": "N\u00e3o Informado"
     },
     "model": "patient.maritalstatus",
     "pk": 1
   },
   {
     "fields": {
-      "name_pt_br": "Vi\u00favo(a)",
-      "name_en": "Widow(er)",
-      "name": "Vi\u00favo(a)"
+      "name_en": "Widower",
+      "name": "Vi\u00favo",
+      "name_pt_br": "Vi\u00favo"
     },
     "model": "patient.maritalstatus",
     "pk": 2
   },
   {
     "fields": {
-      "name_pt_br": "Separado / Divorciado",
-      "name_en": "Separated / Divorced",
-      "name": "Separado / Divorciado"
+      "name_en": "Separated/Divorced",
+      "name": "Separado/Divorciado",
+      "name_pt_br": "Separado/Divorciado"
     },
     "model": "patient.maritalstatus",
     "pk": 3
   },
   {
     "fields": {
-      "name_pt_br": "Casado/Convive junto",
-      "name_en": "Married / Cohabit",
-      "name": "Casado/Convive junto"
+      "name_en": "Married/Live together",
+      "name": "Casado/Convive Junto",
+      "name_pt_br": "Casado/Convive Junto"
     },
     "model": "patient.maritalstatus",
     "pk": 4
@@ -334,9 +334,9 @@
   },
   {
     "fields": {
-      "name_pt_br": "Analfabeto / at\u00e9 3\u00ba Ano Fundamental",
-      "name_en": "Illiterate / Elementary to 3rd Year",
-      "name": "Analfabeto / at\u00e9 3\u00ba Ano Fundamental"
+      "name_pt_br": "Analfabeto/ at\u00e9 3\u00aa S\u00e9rie Fundamental",
+      "name_en": "Illiterate/until 3th Year Elementary ",
+      "name": "Analfabeto/ at\u00e9 3\u00aa S\u00e9rie Fundamental"
     },
     "model": "patient.schooling",
     "pk": 1
@@ -370,9 +370,9 @@
   },
   {
     "fields": {
-      "name_pt_br": "Superior completo",
+      "name_pt_br": "Superior Completo",
       "name_en": "Undergraduation Complete",
-      "name": "Superior completo"
+      "name": "Superior Completo"
     },
     "model": "patient.schooling",
     "pk": 5

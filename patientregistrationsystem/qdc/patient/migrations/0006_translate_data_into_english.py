@@ -22,6 +22,7 @@ class Migration(migrations.Migration):
 
     dependencies = [
         ('patient', '0005_auto_20160304_1942'),
+        ('experiment', '0002_auto_20151005_1521'),
     ]
 
     operations = [

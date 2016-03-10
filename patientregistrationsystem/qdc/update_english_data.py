@@ -1,39 +1,49 @@
 import json
 from django.conf import settings
 from django.apps import apps
+from django.core import management
 
-suffix_en = "_en"
-suffix_pt_br = "_pt_br"
+SUFFIX_EN = "_en"
+SUFFIX_PT_BR = "_pt_br"
 
 
 def translate_fixtures_into_english(filename):
-    json_data = open(filename)
+    """
+    :param filename:
+    :return: example:
+    {'experiment.stimulustype': {'name': {'Somatosensorial': 'Somatosensory', 'Portugues': 'English'}}}
+    """
+    fixture_data = open(filename)
 
-    data = json.load(json_data)
+    data_transformed = json.load(fixture_data)
 
     result = {}
 
-    for info in data:
-        if info['model'] not in result:
-            result[info['model']] = {}
+    for element in data_transformed:
+        if element['model'] not in result:
+            result[element['model']] = {}
 
         field_name = ''
-        for field in info['fields'].keys():
+        for field in element['fields'].keys():
             if field in settings.MODELTRANSLATION_CUSTOM_FIELDS:
                 field_name = field
                 break
+        if field_name:
 
-        field_name_portuguese = field_name + suffix_pt_br
-        field_data_portuguese = info['fields'][field_name_portuguese]
-        if field_name_portuguese not in result[info['model']]:
-            result[info['model']][field_name_portuguese] = {}
+            field_name_portuguese = field_name + SUFFIX_PT_BR
+            field_data_portuguese = element['fields'][field_name_portuguese]
+            if field_name not in result[element['model']]:
+                result[element['model']][field_name] = {}
 
-        result[info['model']][field_name_portuguese][field_data_portuguese] = info['fields'][field_name + suffix_en]
+            result[element['model']][field_name][field_data_portuguese] = element['fields'][field_name + SUFFIX_EN]
 
     return result
 
 
 def update_translated_data(data):
+
+    # update data in _pt_br
+    management.call_command('update_translation_fields', verbosity=0, interactive=False)
 
     for data_model, data_values in data.items():
 
@@ -42,13 +52,20 @@ def update_translated_data(data):
         for record in records_db:
             # print(record, record.name)
             for attrib, values in data_values.items():
-                attrib_value = getattr(record, attrib)
-                attrib_english = attrib.replace(suffix_pt_br, suffix_en)
-                if attrib_value in list(values.keys()):
-                    value_english = values[attrib_value]
-                else:
-                    value_english = "Please translate this"
-                setattr(record, attrib_english, value_english)
-            print(record.name_pt_br, record.name_en)
+                attrib_value_record = getattr(record, attrib)
+                # print(attrib,attrib_value_record)
+                if attrib_value_record:
+
+                    # update data in _en
+                    attrib_english = attrib + SUFFIX_EN
+                    if attrib_value_record in list(values.keys()):
+                        value_english = values[attrib_value_record]
+                    else:
+                        value_english = "Please translate this"
+                        print(attrib_value_record, value_english)
+                    setattr(record, attrib_english, value_english)
+                    # print(attrib_english, value_english)
+
+            # print(record.name_pt_br, record.name_en)
             print("---------------------------------")
             record.save()

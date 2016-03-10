@@ -30,6 +30,7 @@ from patient.management.commands.import_icd import icd_english_translation, impo
 from xml.etree.ElementTree import XML
 from xml.etree import ElementTree
 from django.core.management import call_command
+from update_english_data import translate_fixtures_into_english, update_translated_data
 
 import os
 
@@ -1659,3 +1660,11 @@ class TranslationValidation(TestCase):
         self.assertRaises(ElementTree.ParseError, import_classification_of_diseases, filename)
 
         os.remove(filename)
+
+    def test_translate_data_from_fixtures(self):
+        filename = os.path.join(settings.BASE_DIR,
+                                os.path.join("patient", os.path.join("fixtures", "load_initial_data.json")))
+
+        fixtures_formatted_data = translate_fixtures_into_english(filename)
+        # print(fixtures_formatted_data)
+        update_translated_data(fixtures_formatted_data)
