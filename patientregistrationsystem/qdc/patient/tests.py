@@ -26,7 +26,14 @@ from survey.abc_search_engine import Questionnaires
 
 from django.contrib.messages.storage.fallback import FallbackStorage
 
-# Constantes para testes de User
+from patient.management.commands.import_icd import icd_english_translation, import_classification_of_diseases
+from xml.etree.ElementTree import XML
+from xml.etree import ElementTree
+from django.core.management import call_command
+
+import os
+
+# Constants para testes de User
 USER_EDIT = 'user_edit'
 USER_USERNAME = 'myadmin'
 USER_PWD = 'mypassword'
@@ -57,7 +64,6 @@ LIME_SURVEY_TOKEN_ID_1 = 1
 
 
 class UtilTests:
-
     def create_patient_mock(self, name='Pacient Test', user=None):
         """ Cria um participante para ser utilizado durante os testes """
         gender = Gender.objects.create(name='Masculino')
@@ -1498,3 +1504,158 @@ class QuestionnaireFormValidation(TestCase):
             status = lime_survey.delete_survey(sid)
             lime_survey.release_session_key()
             self.assertEqual(status, 'OK')
+
+
+class TranslationValidation(TestCase):
+    # '''
+    # For this test to be executed, it is necessary to
+    # have the following files to be translated:
+    #
+    # - ICD in English (icdClaML2016ens/icdClaML2016ens.xml)
+    # - ICD in Portuguese (CID10XML/CID10.xml)
+    # '''
+
+    user = ''
+    data = {}
+    util = UtilTests()
+
+    xml_data = '''<ClaML version="2.0.0">
+    <Meta name="TopLevelSort" value="I II III IV V VI VII VIII IX X XI XII XIII XIV XV XVI XVII XVIII XIX XX XXI XXII"/>
+    <Meta name="lang" value="en"/>
+    <Identifier authority="WHO" uid="icd10_2016"/>
+    <Title date="2014-10-14" name="ICD-10-EN-2016" version="2016">International Statistical Classification of Diseases
+        and Related Health Problems 10th Revision
+    </Title>
+    <ClassKinds>
+        <ClassKind name="category"/>
+        <ClassKind name="block"/>
+        <ClassKind name="chapter"/>
+    </ClassKinds>
+    <UsageKinds>
+        <UsageKind mark="*" name="aster"/>
+        <UsageKind mark="+" name="dagger"/>
+    </UsageKinds>
+
+    <Class code="A01" kind="category">
+        <Meta name="MortBCode" value="058"/>
+        <Meta name="MortL4Code" value="4-016"/>
+        <Meta name="MortL3Code" value="3-018"/>
+        <Meta name="MortL2Code" value="2-025"/>
+        <Meta name="MortL1Code" value="1-027"/>
+        <SuperClass code="C00-C14"/>
+        <SubClass code="C05.0"/>
+        <SubClass code="C05.1"/>
+        <SubClass code="C05.2"/>
+        <SubClass code="C05.8"/>
+        <SubClass code="C05.9"/>
+        <Rubric id="D0001818" kind="preferred">
+            <Label xml:lang="en" xml:space="default">Malignant neoplasm of palate</Label>
+        </Rubric>
+    </Class>
+    <Class code="C05.0" kind="category">
+        <Meta name="MortBCode" value="058"/>
+        <Meta name="MortL4Code" value="4-016"/>
+        <Meta name="MortL3Code" value="3-018"/>
+        <Meta name="MortL2Code" value="2-025"/>
+        <Meta name="MortL1Code" value="1-027"/>
+        <SuperClass code="C05"/>
+        <Rubric id="id-to-be-added-later-1210506823253-239" kind="preferredLong">
+            <Label xml:lang="en" xml:space="default">Malignant neoplasm: Hard palate</Label>
+        </Rubric>
+        <Rubric id="D0001819" kind="preferred">
+            <Label xml:lang="en" xml:space="default">Hard palate</Label>
+        </Rubric>
+    </Class>
+
+    <Class code="U85" kind="category">
+        <Meta name="MortL1Code" value="UNDEF"/>
+        <Meta name="MortL2Code" value="UNDEF"/>
+        <Meta name="MortL3Code" value="UNDEF"/>
+        <Meta name="MortL4Code" value="UNDEF"/>
+        <Meta name="MortBCode" value="UNDEF"/>
+        <SuperClass code="U82-U85"/>
+        <Rubric id="id-WHOICD102010_v2011-January-11-1389184608984-20" kind="preferred">
+            <Label xml:lang="en" xml:space="default">Vitamin B<Term class="subscript">12</Term> deficiency anaemia</Label>
+        </Rubric>
+        <Rubric id="id-WHOICD102010_v2011-January-11-1389184782897-0" kind="inclusion">
+            <Label xml:lang="en" xml:space="default">Non-responsiveness to antineoplastic drugs</Label>
+        </Rubric>
+        <Rubric id="id-WHOICD102010_v2011-January-11-1389184782897-1" kind="inclusion">
+            <Label xml:lang="en" xml:space="default">Refractory cancer</Label>
+        </Rubric>
+    </Class>
+</ClaML>
+        '''
+
+    def setUp(self):
+        # """
+        # Configure authentication and variables to start each test
+        #
+        # """
+        # print('Set up for', self._testMethodName)
+
+        self.user = User.objects.create_user(username=USER_USERNAME, email='test@dummy.com', password=USER_PWD)
+        self.user.is_staff = True
+        self.user.is_superuser = True
+        self.user.save()
+
+        self.factory = RequestFactory()
+
+        logged = self.client.login(username=USER_USERNAME, password=USER_PWD)
+        self.assertEqual(logged, True)
+
+    def fill_en_icd_file(self):
+        tree = XML(self.xml_data)
+
+        return tree
+
+    def create_xml_file(self, filename):
+        with open(filename, 'w') as f:
+            f.write(self.xml_data)
+
+    def test_classification_of_diseases_translate_into_english(self):
+        # """
+        # Test to initialize icd with English translation
+        #
+        # """
+
+        classification_of_disease = self.util.create_cid10_mock()
+        classification_of_disease.description_en = None
+        classification_of_disease.save()
+
+        classification_of_disease = ClassificationOfDiseases.objects.first()
+
+        self.assertIsNone(classification_of_disease.description_en)
+
+        tree = self.fill_en_icd_file()
+
+        filename = os.path.join(settings.MEDIA_ROOT, "output.xml")
+
+        self.create_xml_file(filename)
+
+        # num_records_updated = icd_english_translation(tree)
+        num_records_updated = import_classification_of_diseases(filename)
+
+        os.remove(filename)
+
+        classification_of_disease = ClassificationOfDiseases.objects.all()
+        self.assertIsNotNone(classification_of_disease.first().description_en)
+        self.assertEqual(num_records_updated, classification_of_disease.count())
+
+    def test_check_filename(self):
+        # """
+        # Test to see if file is open correctly
+        # """
+
+        self.assertRaises(FileNotFoundError, import_classification_of_diseases, "incorrect_file_name")
+        self.assertRaises(IOError, import_classification_of_diseases, "incorrect_file_name")
+
+        filename = os.path.join(settings.MEDIA_ROOT, "output.xml")
+
+        with open(filename, 'w') as f:
+            f.write("incorrect data")
+        f.close()
+
+        self.assertRaises(ElementTree.ParseError, import_classification_of_diseases, filename)
+
+        os.remove(filename)

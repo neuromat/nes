@@ -309,7 +309,7 @@ class MedicalRecordData(models.Model):
 class ClassificationOfDiseases(models.Model):
     code = models.CharField(max_length=10, null=False)
     description = models.CharField(max_length=300, null=False)
-    abbreviated_description = models.CharField(max_length=100, null=False)
+    abbreviated_description = models.CharField(max_length=190, null=False)
     parent = models.ForeignKey('self', null=True, related_name='children')
 
     def __str__(self):
@@ -342,7 +342,7 @@ class ComplementaryExam(models.Model):
 
 
 def get_user_dir(instance, filename):
-    return _("exams/%(patient)s/%(exam)s/%(filename)s") % \
+    return "exams/%(patient)s/%(exam)s/%(filename)s" % \
         {'patient': instance.exam.diagnosis.medical_record_data.patient.pk,
          'exam': instance.exam.pk, 'filename': filename}
 

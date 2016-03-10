@@ -614,7 +614,8 @@ def search_cid10_ajax(request):
 
         if search_text:
             cid_10_list = ClassificationOfDiseases.objects.filter(Q(abbreviated_description__icontains=search_text) |
-                                                                  Q(description__icontains=search_text))
+                                                                  Q(description__icontains=search_text) |
+                                                                  Q(code__icontains=search_text)).order_by("code")
 
         return render_to_response('patient/ajax_cid10.html', {'cid_10_list': cid_10_list,
                                                               'medical_record': medical_record,
