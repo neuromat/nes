@@ -28,7 +28,7 @@
   },
   {
     "fields": {
-      "name_en": "Somatosensory" ,
+      "name_en": "Somatosensory",
       "name": "Somatosensorial",
       "name_pt_br": "Somatosensorial"
     },
@@ -38,10 +38,19 @@
   {
     "fields": {
       "name_en": "Interoceptive",
-      "name": "Introceptivo",
-      "name_pt_br": "Introceptivo"
+      "name": "Interoceptivo",
+      "name_pt_br": "Interoceptivo"
     },
     "model": "experiment.stimulustype",
     "pk": 6
+  },
+  {
+    "model": "experiment.stimulustype",
+    "fields": {
+      "name_en": "Gustatory",
+      "name": "Gustativo",
+      "name_pt_br": "Gustativo"
+    },
+    "pk": 7
   }
 ]
