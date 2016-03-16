@@ -30,6 +30,7 @@ from patient.management.commands.import_icd import icd_english_translation, impo
 from xml.etree.ElementTree import XML
 from xml.etree import ElementTree
 from django.core.management import call_command
+from django.core.management.base import CommandError
 from update_english_data import translate_fixtures_into_english, update_translated_data
 
 import os
@@ -1512,8 +1513,7 @@ class TranslationValidation(TestCase):
     # For this test to be executed, it is necessary to
     # have the following files to be translated:
     #
-    # - ICD in English (icdClaML2016ens/icdClaML2016ens.xml)
-    # - ICD in Portuguese (CID10XML/CID10.xml)
+    # - load_initial_data.json (fixtures directory) - to initialize data in database
     # '''
 
     user = ''
@@ -1576,7 +1576,7 @@ class TranslationValidation(TestCase):
         <Meta name="MortBCode" value="UNDEF"/>
         <SuperClass code="U82-U85"/>
         <Rubric id="id-WHOICD102010_v2011-January-11-1389184608984-20" kind="preferred">
-            <Label xml:lang="en" xml:space="default">Vitamin B<Term class="subscript">12</Term> deficiency anaemia</Label>
+          <Label xml:lang="en" xml:space="default">Vitamin B<Term class="subscript">12</Term> deficiency anaemia</Label>
         </Rubric>
         <Rubric id="id-WHOICD102010_v2011-January-11-1389184782897-0" kind="inclusion">
             <Label xml:lang="en" xml:space="default">Non-responsiveness to antineoplastic drugs</Label>
@@ -1614,6 +1614,11 @@ class TranslationValidation(TestCase):
         with open(filename, 'w') as f:
             f.write(self.xml_data)
 
+    def create_file_with_incorrect_data(self, filename):
+        with open(filename, 'w') as f:
+            f.write("incorrect data")
+            f.close()
+
     def test_classification_of_diseases_translate_into_english(self):
         # """
         # Test to initialize icd with English translation
@@ -1627,8 +1632,6 @@ class TranslationValidation(TestCase):
         classification_of_disease = ClassificationOfDiseases.objects.first()
 
         self.assertIsNone(classification_of_disease.description_en)
-
-        tree = self.fill_en_icd_file()
 
         filename = os.path.join(settings.MEDIA_ROOT, "output.xml")
 
@@ -1665,6 +1668,48 @@ class TranslationValidation(TestCase):
         filename = os.path.join(settings.BASE_DIR,
                                 os.path.join("patient", os.path.join("fixtures", "load_initial_data.json")))
 
+        call_command('loaddata', "load_initial_data")
+
+        first_alcohol_frequency = AlcoholFrequency.objects.first()
+        self.assertIsNotNone(AlcoholFrequency.objects.first().name_en)
+
+        first_alcohol_frequency.name_en = None
+        first_alcohol_frequency.save()
+        self.assertIsNone(AlcoholFrequency.objects.first().name_en)
+
         fixtures_formatted_data = translate_fixtures_into_english(filename)
         # print(fixtures_formatted_data)
         update_translated_data(fixtures_formatted_data)
+
+        self.assertIsNotNone(AlcoholFrequency.objects.first().name_en)
+
+    def test_translate_icd_into_english_with_command(self):
+        # """
+        # Test to initialize icd with English translation using command (similar to python manage.py import_icd)
+        #
+        # """
+
+        classification_of_disease = self.util.create_cid10_mock()
+        classification_of_disease.description_en = None
+        classification_of_disease.save()
+
+        classification_of_disease = ClassificationOfDiseases.objects.first()
+
+        self.assertIsNone(classification_of_disease.description_en)
+
+        filename = os.path.join(settings.MEDIA_ROOT, "output.xml")
+
+        self.create_xml_file(filename)
+
+        # python manage.py import_icd --en filename
+        call_command("import_icd", en=filename)
+
+        os.remove(filename)
+
+        classification_of_disease = ClassificationOfDiseases.objects.all()
+        self.assertIsNotNone(classification_of_disease.first().description_en)
+
+        self.create_file_with_incorrect_data(filename)
+        # call_command("import_icd", en=filename)
+        self.assertRaises(CommandError, call_command, "import_icd", en=filename)
+        os.remove(filename)
