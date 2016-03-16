@@ -1,3 +1,5 @@
+{% load i18n admin_static %}
+
 <tr>
     <td class="col-md-2">
         <span class="{{ configuration.component.icon_class }}"></span>
@@ -5,9 +7,9 @@
     </td>
     <td class="col-md-4">
         {% if configuration.component.component_type == "block" %}
-            <a data-toggle="tooltip" data-placement="left" title="Editar" href="/experiment/component/{{ path_of_the_components }}-U{{ configuration.id }}">{{ configuration.component.identification }}</a>
+            <a data-toggle="tooltip" data-placement="left" title="{% trans "Edit" %}" href="/experiment/component/{{ path_of_the_components }}-U{{ configuration.id }}">{{ configuration.component.identification }}</a>
         {% else %}
-            <a data-toggle="tooltip" data-placement="left" title="Editar" href="/experiment/component/edit/{{ path_of_the_components }}-U{{ configuration.id }}">{{ configuration.component.identification }}</a>
+            <a data-toggle="tooltip" data-placement="left" title="{% trans "Edit" %}" href="/experiment/component/edit/{{ path_of_the_components }}-U{{ configuration.id }}">{{ configuration.component.identification }}</a>
         {% endif %}
     </td>
     <td class="col-md-5">
@@ -17,7 +19,7 @@
     </td>
     {% if not component_configuration and can_change %}
         <td class="text-center col-md-1">
-            <a class="btn glyphicon glyphicon-remove" data-toggle="tooltip" data-placement="right" title="Remover da lista" style="color: indianred;" onclick="show_modal_remove('random', {{ forloop.parentloop.counter0 }}, {{ forloop.counter0 }});"></a>
+            <a class="btn glyphicon glyphicon-remove" data-toggle="tooltip" data-placement="right" style="color: indianred;" onclick="show_modal_remove('random', {{ forloop.parentloop.counter0 }}, {{ forloop.counter0 }});" title="{% trans "Delete uses from list" %}"></a>
         </td>
     {% endif %}
 </tr>

@@ -25,7 +25,7 @@
     <script type="text/javascript">
         function Validate(){
            if(!validateForm()){
-                showErrorMessage('É necessário escolher pelo menos um perfil de usuário!');
+                showErrorMessage(gettext('You have to choose at least one user profile!'));
                 return false;
            }
            return true;
@@ -48,7 +48,7 @@
                 if(checkPass())
                     event.preventDefault();
                 if(!$('#email').val()){
-                    showErrorMessage("Email deve ser preenchido!");
+                    showErrorMessage(gettext("E-mail have to be filled!"));
                     $('#mailDivId').addClass('has-error');
                     event.preventDefault();
                 }
@@ -59,7 +59,7 @@
 
 {% block form %}
     <div class="row">
-    <form id="user_form" method="post" onsubmit="return Validate()">
+    <form id="user_form" method="post" onsubmit="return Validate()" data-toggle="validator">
     {% csrf_token %}
 {% endblock %}
 
@@ -88,17 +88,19 @@
     {% endif %}
 
     {% if form.errors %}
-        <script>showErrorMessage('Por favor, corrija os campos em destaque.')</script>
+        <script type="text/javascript">
+            showErrorMessage(gettext('Please, correct the fields highlighted.'))
+        </script>
     {% endif %}
 
     <div class="tab-pane fade in active" id="menuUserTab">
         <div class="col-md-10">
             <div class="container span6 offset3 well ">
-                <h4>Informações básicas</h4>
+                <h4>{% trans "Basic Information" %}</h4>
                 <div class="row">
                     <div class="col-xs-6 col-sm-6">
                         <div class="form-group">
-                            <label>Nome</label>
+                            <label>{% trans "First name" %}</label>
                             <div class="input-group input-group-sm">
                                 <span class="input-group-addon"> <span class="glyphicon glyphicon-user"></span></span>
                                 {{ form.first_name }}
@@ -107,7 +109,7 @@
                     </div>
                     <div class="col-xs-6 col-sm-6">
                         <div class="form-group">
-                            <label>Sobrenome</label>
+                            <label>{% trans "Last name" %}</label>
                             <div class="input-group input-group-sm">
                                 <span class="input-group-addon"> <span class="glyphicon glyphicon-user"></span></span>
                                 {{ form.last_name }}
@@ -119,7 +121,7 @@
                     <div class="col-xs-6 col-sm-6">
                         <div class="form-group">
                             <div class="form-group {% if form.errors.username %}has-error{% endif %}">
-                                <label for="name" class="control-label">Nome de usuário<b style="color: red;">*</b></label>
+                                <label for="name" class="control-label">{% trans "User name" %}<b style="color: red;">*</b></label>
 
                                 <div class="input-group input-group-sm">
                                     <span class="input-group-addon"> <span class="glyphicon glyphicon-user"></span></span>
@@ -138,7 +140,7 @@
                             <label for="name" class="control-label">E-mail<b style="color: red;">*</b></label>
 
                             <div class="input-group input-group-sm">
-                                <span class="input-group-addon"> <span class="glyphicon glyphicon-user"></span></span>
+                                <span class="input-group-addon"> <span class="glyphicon glyphicon-envelope"></span></span>
                                 {{ form.email }}
                             </div>
                             <div class="help-block with-errors">
@@ -151,9 +153,9 @@
                 </div>
                 <div class="row">
                     <div class="col-xs-6 col-sm-6" data-toggle="tooltip" data-placement="left"
-                            title="Senha deve conter pelo menos 8 caracteres, incluindo ao menos uma letra maiúscula, dígito ou caractere especial." >
+                            title="{% trans "Password must contain at least 8 characters, including at least one uppercase letter, digit or special character." %}" >
                         <div class="form-group {% if form.errors.password %}has-error{% endif %}" id="id_new_password1_form_group">
-                            <label for="id_new_password1" class="control-label">Senha<b style="color: red;">*</b></label>
+                            <label for="id_new_password1" class="control-label">{% trans "Password" %}<b style="color: red;">*</b></label>
                             <div class="input-group input-group-sm right-inner-addon">
                                 <span class="input-group-addon"> <span class="glyphicon glyphicon-user"></span></span>
                                 <div id="show"></div>
@@ -168,11 +170,11 @@
                     </div>
                     <div class="col-xs-6 col-sm-6">
                         <div class="form-group {% if form.errors.password %}has-error{% endif %}" id="id_new_password2_form_group">
-                            <label for="name" class="control-label">Confirmar senha<b style="color: red;">*</b></label>
+                            <label for="name" class="control-label">{% trans "Please confirm password" %}<b style="color: red;">*</b></label>
                             <div class="input-group input-group-sm has-feedback">
                                 <span class="input-group-addon"> <span class="glyphicon glyphicon-user"></span></span>
-                                <input class="form-control" id="id_new_password2" maxlength="128" name="password2"
-                                       placeholder="Entrar senha" type="password" onkeyup="checkPass(); beginCheckPassword1=true;">
+                                <input class="form-control" id="id_new_password2" maxlength="128" name="password2" required = ""
+                                       placeholder="{% trans "Type password" %}" type="password" onkeyup="checkPass(); beginCheckPassword1=true;">
                             </div>
                             <div class="help-block with-errors">
                                 {% for error in form.errors.password %}
@@ -188,17 +190,17 @@
             <div class="container span6 offset3 well ">
                 <div class="row">
                     <div class="col-xs-12 col-sm-12">
-                        <h4>Perfis</h4>
+                        <h4>{% trans "Profiles" %}</h4>
                         <div class="form-group">
-                            <label class="control-label">Em quais desses perfis o usuário se indentifica? <b style="color: red;">*</b></label>
+                            <label class="control-label">{% trans "In which these profiles does user identify?" %} <b style="color: red;">*</b></label>
                             <div class="input-group  input-group-sm">
                                 {% for group_permission in group_permissions %}
                                     <div class="myradio">
                                         <label>
                                             {% if group_permission.checked == True %}
-                                                <input name="groups" type="checkbox" checked="checked" value={{ group_permission.group.pk }}> {{ group_permission.group }}
+                                                <input name="groups" type="checkbox" checked="checked" value={{ group_permission.group.pk }}> {%  trans group_permission.group.name %}
                                             {% else %}
-                                                <input name="groups" type="checkbox" value={{ group_permission.group.pk }}> {{ group_permission.group }}
+                                                <input name="groups" type="checkbox" value={{ group_permission.group.pk }}> {%  trans group_permission.group.name %}
                                             {% endif %}
 
                                         </label>
@@ -217,17 +219,17 @@
             <div class="btn-toolbar">
                 <div class="btn-group pull-left">
                     {% if not creating and perms.auth.delete_user and current_user_id != user.id %}
-                        <button type="button" class="btn btn-danger" onclick="$('#modalRemove').modal('show')">Excluir</button>
+                        <button type="button" class="btn btn-danger" onclick="$('#modalRemove').modal('show')">{% trans "Delete" %}</button>
                     {% endif %}
                 </div>
                 <div class="btn-group pull-right">
-                    <button type="submit" name="action" value="save" class="btn btn-primary" id="submit">Salvar</button>
+                    <button type="submit" name="action" value="save" class="btn btn-primary" id="submit">{% trans "Save" %}</button>
                 </div>
                 <div class="btn-group pull-right">
                     {% if creating %}
-                        <a href="/user/search" class="btn" style="background-color: #f5f5f5">Cancelar</a>
+                        <a href="/user/search" class="btn" style="background-color: #f5f5f5">{% trans "Cancel" %}</a>
                     {% else %}
-                        <a href="/user/search" class="btn" style="background-color: #f5f5f5">Voltar</a>
+                        <a href="/user/search" class="btn" style="background-color: #f5f5f5">{% trans "Back" %}</a>
                     {% endif %}
                 </div>
 
@@ -239,11 +241,11 @@
         <div class="modal-dialog">
             <div class="modal-content">
                 <div class="modal-body">
-                    Tem certeza que deseja excluir o usuário?
+                    {% trans "Are you sure you want to delete user?" %}
                 </div>
                 <div class="modal-footer">
-                    <button type="button" class="btn btn-default" data-dismiss="modal">Cancelar</button>
-                    <button type="submit" value="remove" name="action" class="btn btn-primary" style="background-color: indianred; color: #ffffff">Excluir</button>
+                    <button type="button" class="btn btn-default" data-dismiss="modal">{% trans "Cancel" %}</button>
+                    <button type="submit" value="remove" name="action" class="btn btn-primary" style="background-color: indianred; color: #ffffff">{% trans "Delete" %}</button>
                 </div>
             </div>
         </div>

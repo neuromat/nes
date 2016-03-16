@@ -2,6 +2,8 @@
 {% load static %}
 {% block activeAdvancedResearchProject %}class="active"{% endblock %}
 
+{% load i18n admin_static %}
+
 {% block header %}
     <script>
         $(function(){
@@ -41,15 +43,17 @@
     {% endif %}
 
     {% if questionnaire_form.errors %}
-        <script>showErrorMessage('Por favor, corrija os campos em destaque.')</script>
+        <script type="text/javascript">
+            showErrorMessage(gettext('Please, correct fields highlighted.'))
+        </script>
     {% endif %}
 
 
     <div class="tab-pane fade in active" id="questionnaireBreadCrumb">
         <div class="col-md-10">
             <ol class="breadcrumb">
-                <li><a href="/home">Home</a></li>
-                <li><a href="/experiment/research_project/list">Estudos</a></li>
+                <li><a href="/home">{% trans "Home" %}</a></li>
+                <li><a href="/experiment/research_project/list">{% trans "Studies" %}</a></li>
                 <li><a href="/experiment/research_project/{{ group.experiment.research_project.id }}">{{ group.experiment.research_project.title }}</a></li>
                 <li><a href="/experiment/{{ group.experiment.id }}">{{ group.experiment.title }}</a></li>
                 <li><a href="/experiment/group/{{ group.id }}">{{ group.title }}</a></li>
@@ -69,7 +73,7 @@
                 </div>
                 <div class="row form-group">
                     <div class="col-xs-12 col-sm-2">
-                        <strong>Identificação:</strong>
+                        <strong>{% trans "Identification:" %}</strong>
                     </div>
                     <div class="col-xs-12 col-sm-10">
                         {{ questionnaire_configuration.component.identification }}
@@ -77,7 +81,7 @@
                 </div>
                 <div class="row form-group">
                     <div class="col-xs-12 col-sm-2">
-                        <strong>Descrição:</strong>
+                        <strong>{% trans "Description:" %}</strong>
                     </div>
                     <div class="col-xs-12 col-sm-10">
                         {{ questionnaire_configuration.component.description }}
@@ -85,7 +89,7 @@
                 </div>
                 <div class="row form-group">
                     <div class="col-xs-12 col-sm-2">
-                        <strong>Duração:</strong>
+                        <strong>{% trans "Duration:" %}</strong>
                     </div>
                     <div class="col-xs-12 col-sm-10">
                         {% if questionnaire_configuration.component.duration_value %}
@@ -95,7 +99,7 @@
                 </div>
                 <div class="row form-group">
                     <div class="col-xs-12 col-sm-2">
-                        <strong>Nome do uso:</strong>
+                        <strong>{% trans "Use name:" %}</strong>
                     </div>
                     <div class="col-xs-12 col-sm-10">
                         {% if questionnaire_configuration.name %}
@@ -105,24 +109,24 @@
                 </div>
                 <div class="row form-group">
                     <div class="col-xs-9 col-sm-3">
-                        <strong>Quantidade de repetições:</strong>
+                        <strong>{% trans "Quantity of repetitions:" %}</strong>
                     </div>
                     <div class="col-xs-3 col-sm-3">
                         {% if questionnaire_configuration.number_of_repetitions != None %}
                             {{ questionnaire_configuration.number_of_repetitions }}
                         {% else %}
-                            Ilimitada
+                            {% trans "Unlimited" %}
                         {% endif %}
                     </div>
                     {% if questionnaire_configuration.number_of_repetitions != 1 %}
                         <div class="col-xs-9 col-sm-3">
-                            <strong>Intervalo entre repetições:</strong>
+                            <strong>{% trans "Interval among repetitions:" %}</strong>
                         </div>
                         <div class="col-xs-3 col-sm-3">
                             {% if questionnaire_configuration.interval_between_repetitions_value != None %}
                                 {{ questionnaire_configuration.interval_between_repetitions_value }} {{ questionnaire_configuration.get_interval_between_repetitions_unit_display }}
                             {% else %}
-                                Indefinido
+                                {% trans "Undefined" %}
                             {% endif %}
                         </div>
                     {% endif %}
@@ -135,15 +139,15 @@
                         <table class="table table-striped">
                             <thead>
                             <tr>
-                                <th>Participante</th>
-                                <th>Preenchimentos concluídos</th>
-                                <th>Preenchimentos</th>
+                                <th>{% trans "Participant" %}</th>
+                                <th>{% trans "Completed fills" %}</th>
+                                <th>{% trans "Fills" %}</th>
                             </tr>
                             </thead>
                             <tbody>
                             {% if subject_list|length == 0 %}
                                 <tr>
-                                    <td>(Nenhum participante inserido)</td>
+                                    <td>{% trans "(No participant inserted)" %}</td>
                                     <td></td>
                                     <td></td>
                                 </tr>
@@ -164,7 +168,7 @@
                                                         </div>
                                                     </div>
                                                 {% else %}
-                                                    <span class="label label-default">Sem status</span>
+                                                    <span class="label label-default">{% trans "No status" %}</span>
                                                 {% endif %}
                                             </td>
                                             <td>
@@ -173,7 +177,7 @@
                                                         <tr>
                                                             <td>
                                                                 {% if limesurvey_available and response.completed != None %}
-                                                                    <a href="/experiment/questionnaire_response/{% if response.completed == False %}edit/{% endif %}{{ response.questionnaire_response.id }}" data-toggle="tooltip" data-placement="left" title="Ver detalhes">
+                                                                    <a href="/experiment/questionnaire_response/{% if response.completed == False %}edit/{% endif %}{{ response.questionnaire_response.id }}" data-toggle="tooltip" data-placement="left" title="{% trans "See details" %}">
                                                                         {{ response.questionnaire_response.date }}
                                                                     </a>
                                                                 {% else %}
@@ -183,12 +187,12 @@
                                                             <td>
                                                                 {% if limesurvey_available and response.completed != None %}
                                                                     {% if response.completed %}
-                                                                        <span class="label label-success">Completo</span>
+                                                                        <span class="label label-success">{% trans "Complete" %}</span>
                                                                     {% else %}
-                                                                        <span class="label label-warning">Incompleto</span>
+                                                                        <span class="label label-warning">{% trans "Incomplete" %}</span>
                                                                     {% endif %}
                                                                 {% else %}
-                                                                    <span class="label label-default">Sem status</span>
+                                                                    <span class="label label-default">{% trans "No status" %}</span>
                                                                 {% endif %}
                                                             </td>
 
@@ -199,7 +203,7 @@
                                                             {% if perms.experiment.add_questionnaireresponse and can_change %}
                                                                 <td colspan="2">
                                                                     <a href="/experiment/group/{{ group.id }}/subject/{{ item.subject.id }}/questionnaire/{{ questionnaire_configuration.id }}/add_response" class="btn btn-primary {% if not limesurvey_available %} disabled {% endif %}">
-                                                                        Novo preenchimento
+                                                                        {% trans "New fill" %}
                                                                     </a>
                                                                 </td>
                                                             {% endif %}
@@ -220,7 +224,7 @@
 
             <div class="btn-toolbar">
                 <div class="btn-group pull-right">
-                    <a href="/experiment/group/{{ group.id }}" class="btn" style="background-color: #f5f5f5">Voltar</a>
+                    <a href="/experiment/group/{{ group.id }}" class="btn" style="background-color: #f5f5f5">{% trans "Back" %}</a>
                 </div>
             </div>
         </div>

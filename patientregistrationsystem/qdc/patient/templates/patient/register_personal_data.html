@@ -2,6 +2,8 @@
 
 {% load i18n admin_static %}
 
+{% load l10n admin_static %}
+
 {% block header_continuation %}
 
     <script src="{% static 'quiz/js/phone.js' %}"></script>
@@ -16,7 +18,7 @@
         <div class="row">
             <div class="col-md-12">
                 <div class="container span6 offset3 well ">
-                    <h4>Informações básicas</h4>
+                    <h4>{% trans "Basic Information" %}</h4>
 
                     {% if patient_form.errors %}
                         {% for field in patient_form %}
@@ -25,14 +27,14 @@
                             {% endif %}
                         {% endfor %}
 
-                        <script>showErrorMessage('Participante não salvo. Por favor, corrija os campos em destaque.')</script>
-
+                        <script type="text/javascript">
+                            showErrorMessage(gettext('Participant was not saved. Please, correct fields highlighted.'))
+                        </script>
                     {% endif %}
-
                     <div class="row">
                         <div class="col-xs-12 col-sm-6">
                             <div class="form-group {% if patient_form.errors.name %}has-error{% endif %}">
-                                <label for="name" class="control-label">Nome completo <b style="color: red;">*</b></label>
+                                <label for="name" class="control-label">{% trans "Full name" %}<b style="color: red;">*</b></label>
 
                                 <div class="input-group input-group-sm">
                                     <span class="input-group-addon"> <span class="glyphicon glyphicon-user"></span></span>
@@ -43,7 +45,7 @@
                         </div>
                         <div class="col-xs-12 col-sm-6">
                             <div class="form-group {% if patient_form.errors.cpf %}has-error{% endif %}">
-                                <label for="cpf" class="control-label">CPF</label>
+                                <label for="cpf" class="control-label">{% trans "Security id" %}</label>
                                 <div class="input-group input-group-sm">
                                     <span class="input-group-addon"> <span class="glyphicon glyphicon-asterisk"></span></span>
                                     {{ patient_form.cpf }}
@@ -61,7 +63,7 @@
                     <div class="row">
                         <div class="col-xs-6 col-sm-6">
                             <div class="form-group">
-                                <label>Origem</label>
+                                <label>{% trans "Origin" %}</label>
 
                                 <div class="input-group input-group-sm">
                                     <span class="input-group-addon"> <span class="glyphicon glyphicon-import"></span></span>
@@ -71,7 +73,7 @@
                         </div>
                         <div class="col-xs-6 col-sm-6">
                             <div class="form-group">
-                                <label>Número do prontuário</label>
+                                <label>{% trans "Medical record" %}</label>
 
                                 <div class="input-group input-group-sm">
                                     <span class="input-group-addon"> <span class="glyphicon glyphicon-list-alt"></span></span>
@@ -83,7 +85,7 @@
                     <div class="row">
                         <div class="col-xs-6 col-sm-6">
                             <div class="form-group {% if patient_form.errors.date_birth %}has-error{% endif %}">
-                                <label for="date_birth" class="control-label">Data de nascimento <b
+                                <label for="date_birth" class="control-label">{% trans "Date of birth" %}<b
                                         style="color: red;">*</b></label>
 
                                 <div class="input-group input-group-sm">
@@ -101,7 +103,7 @@
                         </div>
                         <div class="col-xs-6 col-sm-6">
                             <div class="form-group">
-                                <label for="id_gender" class="control-label">Sexo <b style="color: red;">*</b></label>
+                                <label for="id_gender" class="control-label">{% trans "Gender" %} <b style="color: red;">*</b></label>
 
                                 <div class="input-group input-group-sm">
                                     <span class="input-group-addon"> <span class="glyphicon"></span></span>
@@ -114,7 +116,7 @@
                     <div class="row">
                         <div class="col-xs-6 col-sm-6">
                             <div class="form-group">
-                                <label>RG</label>
+                                <label>{% trans "RG" %}</label>
                                 <div class="input-group input-group-sm">
                                     <span class="input-group-addon"><span class="glyphicon glyphicon-user"></span></span>
                                     {{ patient_form.rg }}
@@ -123,7 +125,7 @@
                         </div>
                         <div class="col-xs-6 col-sm-6">
                             <div class="form-group">
-                                <label>Estado civil</label>
+                                <label>{% trans "Marital status" %}</label>
 
                                 <div class="input-group  input-group-sm">
                                     <span class="input-group-addon"> <span class="glyphicon"></span></span>
@@ -135,11 +137,11 @@
                     <div class="col-md-1"></div>
                 </div>
                 <div class="container span6 offset3 well ">
-                    <h4>Endereço</h4>
+                    <h4>{% trans "Address" %}</h4>
                     <div class="row">
                         <div class="col-xs-6 col-sm-6">
                             <div class="form-group">
-                                <label>País</label>
+                                <label>{% trans "Country" %}</label>
 
                                 <div class="input-group  input-group-sm">
                                     <span class="input-group-addon"> <span class="glyphicon glyphicon-home"></span></span>
@@ -149,7 +151,7 @@
                         </div>
                         <div class="col-xs-6 col-sm-6">
                             <div class="form-group">
-                                <label>CEP</label>
+                                <label>{% trans "Zip code" %}</label>
 
                                 <div class="input-group  input-group-sm">
                                     <span class="input-group-addon"> <span class="glyphicon glyphicon-home"></span></span>
@@ -162,7 +164,7 @@
                     <div class="row">
                         <div class="col-xs-12 col-sm-6">
                             <div class="form-group">
-                                <label>Endereço</label>
+                                <label>{% trans "Address" %}</label>
 
                                 <div class="input-group  input-group-sm ">
                                     <span class="input-group-addon"> <span class="glyphicon glyphicon-home"></span></span>
@@ -173,7 +175,7 @@
                         </div>
                         <div class="col-xs-6 col-sm-3">
                             <div class="form-group">
-                                <label>Número</label>
+                                <label>{% trans "Number" %}</label>
 
                                 <div class="input-group  input-group-sm ">
                                     <span class="input-group-addon"> <span class="glyphicon glyphicon-home"></span></span>
@@ -184,7 +186,7 @@
                         </div>
                         <div class="col-xs-6 col-sm-3">
                             <div class="form-group">
-                                <label>Complemento</label>
+                                <label>{% trans "Complement" %}</label>
 
                                 <div class="input-group  input-group-sm">
                                     <span class="input-group-addon"> <span class="glyphicon glyphicon-home"></span></span>
@@ -197,7 +199,7 @@
                     <div class="row">
                         <div class="col-xs-12 col-sm-6">
                             <div class="form-group">
-                                <label>Bairro</label>
+                                <label>{% trans "District" %}</label>
 
                                 <div class="input-group  input-group-sm ">
                                     <span class="input-group-addon"> <span class="glyphicon glyphicon-home"></span></span>
@@ -208,7 +210,7 @@
                         </div>
                         <div class="col-xs-6 col-sm-6">
                             <div class="form-group">
-                                <label>Cidade</label>
+                                <label>{% trans "City" %}</label>
 
                                 <div class="input-group  input-group-sm ">
                                     <span class="input-group-addon"> <span class="glyphicon glyphicon-home"></span></span>
@@ -218,7 +220,7 @@
                         </div>
                         <div class="col-xs-6 col-sm-6">
                             <div class="form-group">
-                                <label>Estado</label>
+                                <label>{% trans "State" %}</label>
 
                                 <div class="input-group  input-group-sm">
                                     <span class="input-group-addon"> <span class="glyphicon glyphicon-home"></span></span>
@@ -228,7 +230,7 @@
                         </div>
                         <div class="col-xs-12 col-sm-6">
                             <div class="form-group">
-                                <label for="email" class="control-label">E-mail</label>
+                                <label for="email" class="control-label">{% trans "E-mail" %}</label>
 
                                 <div class="input-group input-group-sm">
                                     <span class="input-group-addon"> <span class="glyphicon glyphicon-envelope"></span></span>
@@ -243,7 +245,7 @@
                     <div class="row">
                         <div class="col-xs-6 col-sm-6">
                             <label>
-                                <h4>Telefones</h4>
+                                <h4>{% trans "Telephones" %}</h4>
                             </label>
                         </div>
                     </div>
@@ -251,22 +253,22 @@
                     <div class="row">
                         <div class="col-xs-6 col-sm-3">
                             <div class="form-group">
-                                <label>Número</label>
+                                <label>{% trans "Number" %}</label>
                             </div>
                         </div>
                         <div class="col-xs-6 col-sm-3">
                             <div class="form-group">
-                                <label>Tipo</label>
+                                <label>{% trans "Type" %}</label>
                             </div>
                         </div>
                         <div class="col-xs-8 col-sm-4">
                             <div class="form-group">
-                                <label>Observação</label>
+                                <label>{% trans "Observation" %}</label>
                             </div>
                         </div>
                         <div class="col-xs-4 col-sm-2">
                             <div class="form-group">
-                                <label>Apagar</label>
+                                <label>{% trans "Delete" %}</label>
                             </div>
                         </div>
                     </div>
@@ -315,7 +317,7 @@
                     {% endfor %}
 
                     {% if editing %}
-                        <button type="button" class="btn btn-default" id="more_phones">Salvar e incluir mais telefones</button>
+                        <button type="button" class="btn btn-default" id="more_phones">{% trans "Save and include more phones" %}</button>
                     {% endif %}
                 </div>
             </div>
@@ -327,11 +329,11 @@
         <div class="modal-dialog">
             <div class="modal-content">
                 <div class="modal-body">
-                    CPF não foi preenchido. Deseja salvar?
+                    {% trans "CPF is not filled in. Would you like saving?" %}
                 </div>
                 <div class="modal-footer">
-                    <button type="button" class="btn btn-default" data-dismiss="modal">Cancelar</button>
-                    <button type="button" class="btn btn-primary" id="noCPF_modal">Salvar</button>
+                    <button type="button" class="btn btn-default" data-dismiss="modal">{% trans "Cancel" %}</button>
+                    <button type="button" class="btn btn-primary" id="noCPF_modal">{% trans "Save" %}</button>
                 </div>
             </div>
         </div>
@@ -342,13 +344,13 @@
         <div class="modal-dialog">
             <div class="modal-content">
                 <div class="modal-body">
-                    Participante já cadastrado.
-                    Clique para visualizar registro ou "Cancelar" para voltar ao formulário.
+                    {% blocktrans %}Participant is already registered
+                        Click to view record ou Cancel to go back to form.{% endblocktrans %}
                 </div>
                 {% csrf_token %}
                 <ul id="search-results-homonym" style="list-style: none;"></ul>
                 <div class="modal-footer">
-                    <button type="button" class="btn btn-default" data-dismiss="modal" id="modalHomonymCancel">Cancelar</button>
+                    <button type="button" class="btn btn-default" data-dismiss="modal" id="modalHomonymCancel">{% trans "Cancel" %}</button>
                 </div>
             </div>
         </div>
@@ -359,13 +361,13 @@
         <div class="modal-dialog">
             <div class="modal-content">
                 <div class="modal-body">
-                    Participante já foi excluído anteriormente. Clique para restaurar cadastro ou "Cancelar" para cadastrar
-                    com mesmo nome.
+                    {% blocktrans %}Participant has already been deleted.
+                        Click to restore registration or Cancel to register with same name.{% endblocktrans %}
                 </div>
                 {% csrf_token %}
                 <ul id="search-results-homonym-excluded" style="list-style: none;"></ul>
                 <div class="modal-footer">
-                    <button type="button" class="btn btn-default" data-dismiss="modal" id="modalHomonymExcludedCancel">Cancelar</button>
+                    <button type="button" class="btn btn-default" data-dismiss="modal" id="modalHomonymExcludedCancel">{% trans "Cancel" %}</button>
                 </div>
             </div>
         </div>

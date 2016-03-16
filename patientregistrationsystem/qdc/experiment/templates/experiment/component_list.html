@@ -1,6 +1,8 @@
 {% extends "quiz/template.html" %}
 {% block activeAdvancedResearchProject %}class="active"{% endblock %}
 
+{% load i18n admin_static %}
+
 {% block header %}
 {% endblock %}
 
@@ -35,18 +37,20 @@
     {% endif %}
 
     {% if experiment_form.errors %}
-        <script>showErrorMessage('Por favor, corrija os campos em destaque.')</script>
+        <script type="text/javascript">
+            showErrorMessage(gettext('Please, correct fields highlighted.'))
+        </script>
     {% endif %}
 
 
     <div class="tab-pane fade in active" id="experimentBreadCrumb">
         <div class="col-md-10">
             <ol class="breadcrumb">
-                <li><a href="/home">Home</a></li>
-                <li><a href="/experiment/research_project/list">Estudos</a></li>
+                <li><a href="/home">{% trans "Home" %}</a></li>
+                <li><a href="/experiment/research_project/list">{% trans "Studies" %}</a></li>
                 <li><a href="/experiment/research_project/{{ experiment.research_project.id }}">{{ experiment.research_project.title }}</a></li>
                 <li><a href="/experiment/{{ experiment.id }}">{{ experiment.title }}</a></li>
-                <li class="active">Passos de Protocolo Experimental</li>
+                <li class="active">{% trans "Steps of experimental protocol" %}</li>
             </ol>
         </div>
     </div>
@@ -56,7 +60,7 @@
             <div class="container span6 offset3 well ">
                 <div class="row">
                     <div class="col-xs-6 col-sm-6">
-                        <label class="control-label">Lista de Passos:</label>
+                        <label class="control-label">{% trans "list of steps:" %}</label>
                     </div>
                 </div>
                 <br>
@@ -64,9 +68,9 @@
                     <table class="table table-striped">
                         <thead>
                             <tr>
-                                <th>Tipo</th>
-                                <th>Identificação</th>
-                                <th>Descrição</th>
+                                <th>{% trans "Type" %}</th>
+                                <th>{% trans "Identification" %}</th>
+                                <th>{% trans "Description" %}</th>
                             </tr>
                         </thead>
                         <tbody>
@@ -75,11 +79,17 @@
                                 <td>
                                     <span class="{{ component.icon_class }}"></span>
                                     {{ component.get_component_type_display }}
+                                    {% if component.is_root %}
+                                        <span class="label label-info">{% trans "root" %}</span>
+                                    {% endif %}
+                                    {% if component.is_unused %}
+                                        <span class="label label-warning">{% trans "not used" %}</span>
+                                    {% endif %}
                                 </td>
                                 {% if component.component_type == "block" %}
-                                    <td><a data-toggle="tooltip" data-placement="left" title="Editar" href="/experiment/component/{{ component.id }}">{{ component.identification }}</a></td>
+                                    <td><a data-toggle="tooltip" data-placement="left" title="{% trans "Edit" %}" href="/experiment/component/{{ component.id }}">{{ component.identification }}</a></td>
                                 {% else %}
-                                    <td><a data-toggle="tooltip" data-placement="left" title="Editar" href="/experiment/component/edit/{{ component.id }}">{{ component.identification }}</a></td>
+                                    <td><a data-toggle="tooltip" data-placement="left" title="{% trans "Edit" %}" href="/experiment/component/edit/{{ component.id }}">{{ component.identification }}</a></td>
                                 {% endif %}
                                 <td>{{ component.description }}</td>
                             </tr>
@@ -90,7 +100,7 @@
                 {% if can_change %}
                     <div class="dropdown">
                         <button class="btn btn-primary dropdown-toggle" type="button" id="dropdownMenu1" data-toggle="dropdown" aria-expanded="true">
-                            Inserir novo passo
+                            {% trans "Insert new step" %}
                             <span class="caret"></span>
                         </button>
                         <ul class="dropdown-menu" role="menu" aria-labelledby="dropdownMenu1">
@@ -104,7 +114,7 @@
 
             <div class="btn-toolbar">
                 <div class="btn-group pull-right">
-                    <a href="/experiment/{{ experiment.id }}" class="btn" style="background-color: #f5f5f5">Voltar</a>
+                    <a href="/experiment/{{ experiment.id }}" class="btn" style="background-color: #f5f5f5">{% trans "Back" %}</a>
                 </div>
             </div>
         </div>

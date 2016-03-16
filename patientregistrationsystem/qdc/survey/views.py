@@ -4,8 +4,7 @@
 import re
 import csv
 import datetime
-
-from StringIO import StringIO
+from io import StringIO
 from operator import itemgetter
 
 from django.contrib import messages
@@ -14,15 +13,13 @@ from django.core.urlresolvers import reverse
 from django.db.models.deletion import ProtectedError
 from django.http import HttpResponseRedirect
 from django.shortcuts import get_object_or_404, redirect, render
+from django.utils.translation import ugettext as _
 
-from models import Survey
-from forms import SurveyForm
-
+from .models import Survey
+from .forms import SurveyForm
 from patient.models import Patient, QuestionnaireResponse as PatientQuestionnaireResponse
-
 from experiment.models import ComponentConfiguration, Block, QuestionnaireResponse, Questionnaire, Group
-
-from experiment.abc_search_engine import Questionnaires
+from survey.abc_search_engine import Questionnaires
 
 
 @login_required
@@ -30,6 +27,7 @@ from experiment.abc_search_engine import Questionnaires
 def survey_list(request, template_name='survey/survey_list.html'):
 
     surveys = Questionnaires()
+    limesurvey_available = check_limesurvey_access(request, surveys)
 
     questionnaires_list = []
 
@@ -47,17 +45,27 @@ def survey_list(request, template_name='survey/survey_list.html'):
 
     questionnaires_list = sorted(questionnaires_list, key=itemgetter('title'))
 
-    data = {'questionnaires_list': questionnaires_list}
-    return render(request, template_name, data)
+    context = {
+        'questionnaires_list': questionnaires_list,
+        'limesurvey_available': limesurvey_available
+    }
+
+    return render(request, template_name, context)
 
 
 @login_required
 @permission_required('survey.add_survey')
 def survey_create(request, template_name="survey/survey_register.html"):
-    survey_form = SurveyForm(request.POST or None, initial={'title': 'title'})
+    survey_form = SurveyForm(request.POST or None, initial={'title': 'title', 'is_initial_evaluation': False})
 
     surveys = Questionnaires()
-    questionnaires_list = surveys.find_all_active_questionnaires()
+    limesurvey_available = check_limesurvey_access(request, surveys)
+
+    questionnaires_list = []
+
+    if limesurvey_available:
+        questionnaires_list = surveys.find_all_active_questionnaires()
+
     surveys.release_session_key()
 
     # removing surveys already registered
@@ -79,7 +87,7 @@ def survey_create(request, template_name="survey/survey_register.html"):
                     is_initial_evaluation=survey_added.is_initial_evaluation)
 
                 if created:
-                    messages.success(request, 'Questionário criado com sucesso.')
+                    messages.success(request, _('Questionnaire created successfully.'))
                     redirect_url = reverse("survey_list")
                     return HttpResponseRedirect(redirect_url)
 
@@ -87,7 +95,9 @@ def survey_create(request, template_name="survey/survey_register.html"):
         "survey_form": survey_form,
         "creating": True,
         "editing": True,
-        "questionnaires_list": questionnaires_list}
+        "questionnaires_list": questionnaires_list,
+        'limesurvey_available': limesurvey_available
+    }
 
     return render(request, template_name, context)
 
@@ -111,9 +121,9 @@ def survey_update(request, survey_id, template_name="survey/survey_register.html
             if survey_form.is_valid():
                 if survey_form.has_changed():
                     survey_form.save()
-                    messages.success(request, 'Questionário atualizado com sucesso.')
+                    messages.success(request, _('Questionnaire updated successfully.'))
                 else:
-                    messages.success(request, 'Não há alterações para salvar.')
+                    messages.success(request, _('There are no changes to save.'))
 
                 redirect_url = reverse("survey_view", args=(survey.id,))
                 return HttpResponseRedirect(redirect_url)
@@ -233,7 +243,7 @@ def create_experiments_questionnaire_data_list(survey, surveys):
     # Transform dictionary into a list to include questionnaire components that are not in use and to sort.
     experiments_questionnaire_data_list = []
 
-    for key, value in experiments_questionnaire_data_dictionary.items():
+    for key, value in list(experiments_questionnaire_data_dictionary.items()):
         value['component_id'] = ComponentConfiguration.objects.get(id=key).component_id
         experiments_questionnaire_data_list.append(value)
 
@@ -310,7 +320,7 @@ def create_patients_questionnaire_data_list(survey, surveys):
     # Transform the dictionary into a list, so that we can sort it by patient name.
     patients_questionnaire_data_list = []
 
-    for key, dictionary in patients_questionnaire_data_dictionary.items():
+    for key, dictionary in list(patients_questionnaire_data_dictionary.items()):
         dictionary['patient_id'] = key
         patients_questionnaire_data_list.append(dictionary)
 
@@ -342,11 +352,11 @@ def survey_view(request, survey_id, template_name="survey/survey_register.html")
         if request.POST['action'] == "remove":
             try:
                 survey.delete()
-                messages.success(request, 'Questionário removido com sucesso.')
+                messages.success(request, _('Questionnaire deleted successfully.'))
                 return redirect('survey_list')
             except ProtectedError:
-                messages.error(request, "Não foi possível excluir o questionário, pois há respostas ou passos de "
-                                        "experimento associados.")
+                messages.error(request, _("It was not possible to delete questionnaire, because there are experimental "
+                                          "answers or steps associated."))
 
     patients_questionnaire_data_list = create_patients_questionnaire_data_list(survey, surveys)
 
@@ -367,7 +377,7 @@ def survey_view(request, survey_id, template_name="survey/survey_register.html")
     return render(request, template_name, context)
 
 
-def get_questionnaire_responses(language_code, lime_survey_id, token_id):
+def get_questionnaire_responses(language_code, lime_survey_id, token_id, request):
 
     questionnaire_responses = []
     surveys = Questionnaires()
@@ -381,9 +391,20 @@ def get_questionnaire_responses(language_code, lime_survey_id, token_id):
 
         # defining language to be showed
         languages = surveys.get_survey_languages(lime_survey_id)
+
+        # language to be showed can be the base language, or...
         language = languages['language']
-        if language_code in languages['additional_languages'].split(' '):
-            language = language_code
+
+        # ...can be one of the additional languages
+        if language.lower() != language_code.lower() and languages['additional_languages']:
+
+            # search for the right language in addional languages,
+            # considering that the LimeSurvey uses upper case in the two-letter language code, like en-US and pt-BR.
+            additional_languages_list = languages['additional_languages'].split(' ')
+            additional_languages_list_lower = [item.lower() for item in additional_languages_list]
+            if language_code.lower() in additional_languages_list_lower:
+                index = additional_languages_list_lower.index(language_code.lower())
+                language = additional_languages_list[index]
 
         for group in groups:
             if 'id' in group and group['id']['language'] == language:
@@ -413,7 +434,7 @@ def get_questionnaire_responses(language_code, lime_survey_id, token_id):
                                 'hidden': 'hidden' in properties['attributes'] and
                                           properties['attributes']['hidden'] == '1'
                             })
-                            for key, value in sorted(properties['subquestions'].iteritems()):
+                            for key, value in sorted(properties['subquestions'].items()):
                                 question_properties.append({
                                     'question': value['question'],
                                     'question_id': properties['title'] + '[' + value['title'] + ']',
@@ -440,91 +461,105 @@ def get_questionnaire_responses(language_code, lime_survey_id, token_id):
         # ... transforming to a list:
         # response_list[0] has the questions
         #   response_list[1] has the answers
-        reader = csv.reader(StringIO(responses_string), delimiter=',')
         responses_list = []
-        for row in reader:
-            responses_list.append(row)
 
-        for question in question_properties:
+        if isinstance(responses_string, bytes):
+            reader = csv.reader(StringIO(responses_string.decode()), delimiter=',')
 
-            if not question['hidden']:
+            for row in reader:
+                responses_list.append(row)
 
-                if isinstance(question['answer_options'], basestring) and \
-                        question['answer_options'] == "super_question":
+            for question in question_properties:
 
-                    if question['question'] != '':
-                        questionnaire_responses.append({
-                            'question': question['question'],
-                            'answer': '',
-                            'type': question['type']
-                        })
-                else:
+                if not question['hidden']:
 
-                    answer = ''
+                    if isinstance(question, str) and question['answer_options'] == "super_question":
 
-                    if question['type'] == '1':
-
-                        answer_list = []
-
-                        if question['question_id'] + "[1]" in responses_list[0]:
-                            index = responses_list[0].index(question['question_id'] + "[1]")
-                            answer_options = question['answer_options']
-                            answer = question['attributes_lang']['dualscale_headerA'] + ": "
-                            if responses_list[1][index] in answer_options:
-                                answer_option = answer_options[responses_list[1][index]]
-                                answer += answer_option['answer']
-                            else:
-                                answer += 'Sem resposta'
-
-                        answer_list.append(answer)
-
-                        if question['question_id'] + "[2]" in responses_list[0]:
-                            index = responses_list[0].index(question['question_id'] + "[2]")
-                            answer_options = question['answer_options']
-                            answer = question['attributes_lang']['dualscale_headerB'] + ": "
-                            if responses_list[1][index] in answer_options:
-                                answer_option = answer_options[responses_list[1][index]]
-                                answer += answer_option['answer']
-                            else:
-                                answer += 'Sem resposta'
-
-                        answer_list.append(answer)
-
-                        questionnaire_responses.append({
-                            'question': question['question'],
-                            'answer': answer_list,
-                            'type': question['type']
-                        })
+                        if question['question'] != '':
+                            questionnaire_responses.append({
+                                'question': question['question'],
+                                'answer': '',
+                                'type': question['type']
+                            })
                     else:
 
-                        if question['question_id'] in responses_list[0]:
+                        answer = ''
 
-                            index = responses_list[0].index(question['question_id'])
+                        if question['type'] == '1':
 
-                            answer_options = question['answer_options']
+                            answer_list = []
 
-                            if isinstance(answer_options, dict):
+                            if question['question_id'] + "[1]" in responses_list[0]:
+                                index = responses_list[0].index(question['question_id'] + "[1]")
+                                answer_options = question['answer_options']
 
+                                # if 'dualscale_headerA' in question['attributes_lang']:
+
+                                answer = question['attributes_lang']['dualscale_headerA'] + ": "
                                 if responses_list[1][index] in answer_options:
                                     answer_option = answer_options[responses_list[1][index]]
-                                    answer = answer_option['answer']
+                                    answer += answer_option['answer']
                                 else:
-                                    answer = 'Sem resposta'
-                            else:
-                                if question['type'] == 'D':
-                                    if responses_list[1][index]:
-                                        answer = datetime.datetime.strptime(responses_list[1][index],
-                                                                            '%Y-%m-%d %H:%M:%S')
-                                    else:
-                                        answer = ''
-                                else:
-                                    answer = responses_list[1][index]
+                                    answer += 'Sem resposta'
+                                # else:
+                                #     answer += 'Sem resposta'
 
-                        questionnaire_responses.append({
-                            'question': question['question'],
-                            'answer': answer,
-                            'type': question['type']
-                        })
+                            answer_list.append(answer)
+
+                            if question['question_id'] + "[2]" in responses_list[0]:
+                                index = responses_list[0].index(question['question_id'] + "[2]")
+                                answer_options = question['answer_options']
+
+                                # if 'dualscale_headerB' in question['attributes_lang']:
+
+                                answer = question['attributes_lang']['dualscale_headerB'] + ": "
+                                if responses_list[1][index] in answer_options:
+                                    answer_option = answer_options[responses_list[1][index]]
+                                    answer += answer_option['answer']
+                                else:
+                                    answer += 'Sem resposta'
+                                # else:
+                                #     answer += 'Sem resposta'
+
+                            answer_list.append(answer)
+
+                            questionnaire_responses.append({
+                                'question': question['question'],
+                                'answer': answer_list,
+                                'type': question['type']
+                            })
+                        else:
+
+                            if question['question_id'] in responses_list[0]:
+
+                                index = responses_list[0].index(question['question_id'])
+
+                                answer_options = question['answer_options']
+
+                                if isinstance(answer_options, dict):
+
+                                    if responses_list[1][index] in answer_options:
+                                        answer_option = answer_options[responses_list[1][index]]
+                                        answer = answer_option['answer']
+                                    else:
+                                        answer = 'Sem resposta'
+                                else:
+                                    if question['type'] == 'D':
+                                        if responses_list[1][index]:
+                                            answer = datetime.datetime.strptime(responses_list[1][index],
+                                                                                '%Y-%m-%d %H:%M:%S')
+                                        else:
+                                            answer = ''
+                                    else:
+                                        answer = responses_list[1][index]
+
+                            questionnaire_responses.append({
+                                'question': question['question'],
+                                'answer': answer,
+                                'type': question['type']
+                            })
+        else:
+            messages.error(request, _("LimeSurvey did not find fill data for this questionnaire."))
 
     surveys.release_session_key()
 
@@ -535,6 +570,6 @@ def check_limesurvey_access(request, surveys):
     limesurvey_available = True
     if not surveys.session_key:
         limesurvey_available = False
-        messages.warning(request, "LimeSurvey indisponível. Sistema funcionando parcialmente.")
+        messages.warning(request, _("LimeSurvey unavailable. System running partially."))
 
     return limesurvey_available

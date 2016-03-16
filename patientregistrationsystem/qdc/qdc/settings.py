@@ -35,6 +35,7 @@ SESSION_COOKIE_AGE = 3600
 # Application definition
 
 INSTALLED_APPS = (
+    'modeltranslation',
     'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',
@@ -42,10 +43,12 @@ INSTALLED_APPS = (
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'django_jenkins',
+
     'simple_history',
-    'cep',
+    # 'cep',
     'quiz.templatetags.qdc_tags',
-    'south'
+    'jsonrpc_requests',
+    # 'south'
 )
 
 PROJECT_APPS = (
@@ -54,6 +57,7 @@ PROJECT_APPS = (
     'custom_user',
     'experiment',
     'survey',
+    'cep',
 )
 
 INSTALLED_APPS += PROJECT_APPS
@@ -69,6 +73,19 @@ MIDDLEWARE_CLASSES = (
     'qdc.middleware.PasswordChangeMiddleware',
     'simple_history.middleware.HistoryRequestMiddleware',
 )
+
+
+TEMPLATE_CONTEXT_PROCESSORS = (
+    "django.contrib.auth.context_processors.auth",
+    "django.template.context_processors.debug",
+    "django.template.context_processors.i18n",
+    "django.template.context_processors.media",
+    "django.template.context_processors.static",
+    "django.template.context_processors.tz",
+    "django.contrib.messages.context_processors.messages",
+    "django.template.context_processors.request",
+)
+
 
 ROOT_URLCONF = 'qdc.urls'
 
@@ -104,13 +121,24 @@ TEMPLATE_DIRS = [os.path.join(BASE_DIR, 'templates')]
 # https://docs.djangoproject.com/en/1.6/topics/i18n/
 
 LANGUAGE_CODE = 'pt-br'
+# LANGUAGE_CODE = 'en'
 
 LANGUAGES = (
-    ('pt-br', u'Português'),
-    # ('en', u'English'),
+    ('pt-br', 'Português'),
+    ('en', 'English'),
 )
 
-LOCALE_PATHS = [os.path.join(BASE_DIR, 'locale')]
+# os.path.join(BASE_DIR, 'locale'),
+# LOCALE_PATHS = [os.path.join(BASE_DIR, 'locale'),]
+LOCALE_PATHS = (
+    os.path.join(BASE_DIR, 'locale'),
+    os.path.join(BASE_DIR, 'patient/locale'),
+    os.path.join(BASE_DIR, 'experiment/locale'),
+    os.path.join(BASE_DIR, 'survey/locale'),
+    os.path.join(BASE_DIR, 'custom_user/locale'),
+    os.path.join(BASE_DIR, 'quiz/locale'),
+    os.path.join(BASE_DIR, 'qdc/locale'),
+)
 
 TIME_ZONE = 'America/Sao_Paulo'
 
@@ -119,6 +147,28 @@ USE_I18N = True
 USE_L10N = True
 
 USE_TZ = True
+
+# Database Translation
+MODELTRANSLATION_LANGUAGES = ('pt-br', 'en')
+MODELTRANSLATION_FALLBACK_LANGUAGES = ('pt-br', 'en')
+
+MODELTRANSLATION_TRANSLATION_FILES = (
+    'patient.translation',
+    'experiment.translation',
+    # '<APP2_MODULE>.translation',
+)
+
+MODELTRANSLATION_CUSTOM_FIELDS = ('name', 'description', 'abbreviated_description', )
+
+MODELTRANSLATION_AUTO_POPULATE = 'all'
+
+MODELTRANSLATION_PREPOPULATE_LANGUAGE = 'en'
+
+
+FIXTURE_DIRS = (
+    'patient.fixtures',
+    'experiment.fixtures',
+)
 
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/1.6/howto/static-files/
@@ -131,9 +181,9 @@ ADMIN_MEDIA_PREFIX = STATIC_URL + 'admin/'
 MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
 MEDIA_URL = '/media/'
 
-VERSION = '0.2.2-DEV'
-
 try:
-    from settings_local import *
+    from .settings_local import *
 except ImportError:
     pass
+
+VERSION = '0.3.0'

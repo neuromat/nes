@@ -10,9 +10,11 @@ from django.contrib.auth import PermissionDenied
 from django.core.urlresolvers import reverse
 from django.db.models import Q
 from django.db.models.deletion import ProtectedError
+
 # from django.forms import HiddenInput
 from django.http import HttpResponseRedirect
 from django.shortcuts import get_object_or_404, redirect, render, render_to_response
+from django.utils.translation import ugettext as _, ungettext
 
 from experiment.models import Experiment, Subject, QuestionnaireResponse, SubjectOfGroup, Group, Component, \
     ComponentConfiguration, Questionnaire, Task, Stimulus, Pause, Instruction, Block, \
@@ -20,7 +22,7 @@ from experiment.models import Experiment, Subject, QuestionnaireResponse, Subjec
 from experiment.forms import ExperimentForm, QuestionnaireResponseForm, FileForm, GroupForm, InstructionForm, \
     ComponentForm, StimulusForm, BlockForm, ComponentConfigurationForm, ResearchProjectForm, NumberOfUsesToInsertForm
 from patient.models import Patient, QuestionnaireResponse as PatientQuestionnaireResponse
-from experiment.abc_search_engine import Questionnaires
+from survey.abc_search_engine import Questionnaires
 
 from survey.models import Survey
 from survey.views import get_questionnaire_responses, check_limesurvey_access, recursively_create_list_of_questionnaires
@@ -31,13 +33,13 @@ from operator import itemgetter
 permission_required = partial(permission_required, raise_exception=True)
 
 icon_class = {
-    u'block': 'glyphicon glyphicon-th-large',
-    u'instruction': 'glyphicon glyphicon-comment',
-    u'pause': 'glyphicon glyphicon-time',
-    u'questionnaire': 'glyphicon glyphicon-list-alt',
-    u'stimulus': 'glyphicon glyphicon-headphones',
-    u'task': 'glyphicon glyphicon-check',
-    u'task_experiment': 'glyphicon glyphicon-wrench'
+    'block': 'glyphicon glyphicon-th-large',
+    'instruction': 'glyphicon glyphicon-comment',
+    'pause': 'glyphicon glyphicon-time',
+    'questionnaire': 'glyphicon glyphicon-list-alt',
+    'stimulus': 'glyphicon glyphicon-headphones',
+    'task': 'glyphicon glyphicon-check',
+    'task_experiment': 'glyphicon glyphicon-wrench'
 }
 
 delimiter = "-"
@@ -68,7 +70,7 @@ def research_project_create(request, template_name="experiment/research_project_
                 research_project_added.owner = request.user
                 research_project_added.save()
 
-                messages.success(request, 'Estudo criado com sucesso.')
+                messages.success(request, _('Study created successfully.'))
                 redirect_url = reverse("research_project_view", args=(research_project_added.id,))
                 return HttpResponseRedirect(redirect_url)
 
@@ -102,14 +104,26 @@ def research_project_view(request, research_project_id, template_name="experimen
 
     if request.method == "POST":
         if request.POST['action'] == "remove":
-            try:
-                for keyword in research_project.keywords.all():
-                    manage_keywords(keyword, ResearchProject.objects.exclude(id=research_project.id))
+            if QuestionnaireResponse.objects.filter(
+                    subject_of_group__group__experiment__research_project_id=research_project_id).count() == 0:
 
-                research_project.delete()
-                return redirect('research_project_list')
-            except ProtectedError:
-                messages.error(request, "Erro ao tentar excluir o estudo.")
+                try:
+                    for keyword in research_project.keywords.all():
+                        manage_keywords(keyword, ResearchProject.objects.exclude(id=research_project.id))
+
+                    research_project.delete()
+                    messages.success(request, _('Study removed successfully.'))
+                    return redirect('research_project_list')
+                except ProtectedError:
+                    messages.error(request, _("Error trying to delete research."))
+                    redirect_url = reverse("research_project_view", args=(research_project_id,))
+                    return HttpResponseRedirect(redirect_url)
+
+            else:
+                messages.error(request,
+                               _("Impossible to delete group because there is (are) questionnaire(s) answered."))
+                redirect_url = reverse("research_project_view", args=(research_project_id,))
+                return HttpResponseRedirect(redirect_url)
 
     context = {
         "can_change": get_can_change(request.user, research_project),
@@ -140,9 +154,9 @@ def research_project_update(request, research_project_id, template_name="experim
                 if research_project_form.is_valid():
                     if research_project_form.has_changed():
                         research_project_form.save()
-                        messages.success(request, 'Estudo atualizado com sucesso.')
+                        messages.success(request, _('Research updated successfully.'))
                     else:
-                        messages.success(request, 'Não há alterações para salvar.')
+                        messages.success(request, _('There is no changes to save.'))
 
                     redirect_url = reverse("research_project_view", args=(research_project.id,))
                     return HttpResponseRedirect(redirect_url)
@@ -255,7 +269,7 @@ def experiment_create(request, research_project_id, template_name="experiment/ex
                 if experiment_form.is_valid():
                     experiment_added = experiment_form.save()
 
-                    messages.success(request, 'Experimento criado com sucesso.')
+                    messages.success(request, _('Experiment created successfully.'))
 
                     redirect_url = reverse("experiment_view", args=(experiment_added.id,))
                     return HttpResponseRedirect(redirect_url)
@@ -283,14 +297,30 @@ def experiment_view(request, experiment_id, template_name="experiment/experiment
 
     if request.method == "POST":
         if request.POST['action'] == "remove":
+
             research_project = experiment.research_project
 
             if get_can_change(request.user, research_project):
-                try:
-                    experiment.delete()
-                    return redirect('research_project_view', research_project_id=research_project.id)
-                except ProtectedError:
-                    messages.error(request, "Não foi possível excluir o experimento, pois há grupos associados")
+
+                if QuestionnaireResponse.objects.filter(
+                        subject_of_group__group__experiment_id=experiment_id).count() == 0:
+
+                    try:
+                        experiment.delete()
+                        messages.success(request, _('Experiment removed successfully.'))
+                        return redirect('research_project_view', research_project_id=research_project.id)
+                    except ProtectedError:
+                        messages.error(request,
+                                       _("It was not possible to delete experiment, "
+                                         "because there are groups connected."))
+                        redirect_url = reverse("experiment_view", args=(experiment_id,))
+                        return HttpResponseRedirect(redirect_url)
+                else:
+                    messages.error(request,
+                                   _("Impossible to delete group because there is (are) questionnaire(s) answered."))
+                    redirect_url = reverse("experiment_view", args=(experiment_id,))
+                    return HttpResponseRedirect(redirect_url)
+
             else:
                 raise PermissionDenied
 
@@ -319,9 +349,9 @@ def experiment_update(request, experiment_id, template_name="experiment/experime
                 if experiment_form.is_valid():
                     if experiment_form.has_changed():
                         experiment_form.save()
-                        messages.success(request, 'Experimento atualizado com sucesso.')
+                        messages.success(request, _('Experiment updated successfully.'))
                     else:
-                        messages.success(request, 'Não há alterações para salvar.')
+                        messages.success(request, _('There is no changes to save.'))
 
                     redirect_url = reverse("experiment_view", args=(experiment_id,))
                     return HttpResponseRedirect(redirect_url)
@@ -353,7 +383,7 @@ def group_create(request, experiment_id, template_name="experiment/group_registe
                     group_added.experiment_id = experiment_id
                     group_added.save()
 
-                    messages.success(request, 'Grupo incluído com sucesso.')
+                    messages.success(request, _('Group included successfully.'))
 
                     redirect_url = reverse("group_view", args=(group_added.id,))
                     return HttpResponseRedirect(redirect_url)
@@ -447,12 +477,23 @@ def group_view(request, group_id, template_name="experiment/group_register.html"
     if request.method == "POST":
         if can_change:
             if request.POST['action'] == "remove":
-                try:
-                    group.delete()
-                    redirect_url = reverse("experiment_view", args=(group.experiment.id,))
+
+                if QuestionnaireResponse.objects.filter(subject_of_group__group_id=group_id).count() == 0:
+                    try:
+                        group.delete()
+                        messages.success(request, _('Group removed successfully.'))
+                        redirect_url = reverse("experiment_view", args=(group.experiment.id,))
+                        return HttpResponseRedirect(redirect_url)
+                    except ProtectedError:
+                        messages.error(request, _("Impossible to delete group, because there are dependencies."))
+                        redirect_url = reverse("group_view", args=(group.id,))
+                        return HttpResponseRedirect(redirect_url)
+                else:
+                    messages.error(request,
+                                   _("Impossible to delete group because there is (are) questionnaire(s) answered."))
+                    redirect_url = reverse("group_view", args=(group.id,))
                     return HttpResponseRedirect(redirect_url)
-                except ProtectedError:
-                    messages.error(request, "Não foi possível excluir o grupo, pois há dependências.")
+
             elif request.POST['action'] == "remove_experimental_protocol":
                 group.experimental_protocol = None
                 group.save()
@@ -486,9 +527,9 @@ def group_update(request, group_id, template_name="experiment/group_register.htm
                 if group_form.is_valid():
                     if group_form.has_changed():
                         group_form.save()
-                        messages.success(request, 'Grupo atualizado com sucesso.')
+                        messages.success(request, _('Group updated successfully.'))
                     else:
-                        messages.success(request, 'Não há alterações para salvar.')
+                        messages.success(request, _('There is no changes to save.'))
 
                     redirect_url = reverse("group_view", args=(group_id,))
                     return HttpResponseRedirect(redirect_url)
@@ -726,24 +767,25 @@ def subject_questionnaire_response_start_fill_questionnaire(request, subject_id,
         lime_survey_id = Questionnaire.objects.get(id=questionnaire_config.component_id).survey.lime_survey_id
 
         if not questionnaire_lime_survey.survey_has_token_table(lime_survey_id):
-            messages.warning(request, 'Preenchimento não disponível - Tabela de tokens não iniciada')
+            messages.warning(request, _('Fill not available - Table of tokens was not started.'))
             return None, None
 
         if questionnaire_lime_survey.get_survey_properties(lime_survey_id, 'active') == 'N':
-            messages.warning(request, 'Preenchimento não disponível - Questionário não está ativo')
+            messages.warning(request, _('Fill not available - Questionnaire is not activated.'))
             return None, None
 
         if not check_required_fields(questionnaire_lime_survey, lime_survey_id):
-            messages.warning(request, 'Preenchimento não disponível - Questionário não contém campos padronizados')
+            messages.warning(request, _('Fill not available - Questionnaire does not contain standard fields.'))
             return None, None
 
-        result = questionnaire_lime_survey.add_participant(lime_survey_id, patient.name, '', patient.email)
+        result = questionnaire_lime_survey.add_participant(lime_survey_id)
 
         questionnaire_lime_survey.release_session_key()
 
         if not result:
             messages.warning(request,
-                             'Falha ao gerar token para responder questionário. Verifique se o questionário está ativo')
+                             _('Fail trying to generate token to answer questionnaire. '
+                               'Check if questionnaire is active.'))
             return None, None
 
         questionnaire_response.subject_of_group = subject_of_group
@@ -862,6 +904,7 @@ def questionnaire_response_edit(request, questionnaire_response_id,
                     fail = True
                 else:
                     fail = False
+                    messages.info(request, _('You will be redirected to questionnaire. Please wait.'))
 
             elif request.POST['action'] == "remove":
                 if request.user.has_perm('experiment.delete_questionnaireresponse'):
@@ -878,14 +921,14 @@ def questionnaire_response_edit(request, questionnaire_response_id,
                         if result == 'Deleted' or result == 'Invalid token ID':
                             can_delete = True
                     else:
-                        if 'status' in result and result['status'] == u'Error: Invalid survey ID':
+                        if 'status' in result and result['status'] == 'Error: Invalid survey ID':
                             can_delete = True
 
                     if can_delete:
                         questionnaire_response.delete()
-                        messages.success(request, 'Preenchimento removido com sucesso')
+                        messages.success(request, _('Fill deleted successfully.'))
                     else:
-                        messages.error(request, "Erro ao deletar o preenchimento")
+                        messages.error(request, _("Error trying to delete fill"))
 
                     if origin == "experiment_subject":
                         redirect_url = reverse("subject_questionnaire", args=(group.id, subject.id,))
@@ -1009,7 +1052,8 @@ def questionnaire_response_view(request, questionnaire_response_id,
     language_code = request.LANGUAGE_CODE
 
     # Get the responses for each question of the questionnaire.
-    survey_title, questionnaire_responses = get_questionnaire_responses(language_code, lime_survey_id, token_id)
+    survey_title, questionnaire_responses = get_questionnaire_responses(language_code, lime_survey_id,
+                                                                        token_id, request)
 
     origin = get_origin(request)
 
@@ -1030,14 +1074,14 @@ def questionnaire_response_view(request, questionnaire_response_id,
                         if result == 'Deleted' or result == 'Invalid token ID':
                             can_delete = True
                     else:
-                        if 'status' in result and result['status'] == u'Error: Invalid survey ID':
+                        if 'status' in result and result['status'] == 'Error: Invalid survey ID':
                             can_delete = True
 
                     if can_delete:
                         questionnaire_response.delete()
-                        messages.success(request, 'Preenchimento removido com sucesso')
+                        messages.success(request, _('Fill deleted successfully.'))
                     else:
-                        messages.error(request, "Erro ao deletar o preenchimento")
+                        messages.error(request, _("Error trying to delete fill"))
 
                     if origin == "experiment_subject":
                         redirect_url = reverse("subject_questionnaire", args=(group.id, subject.id,))
@@ -1127,11 +1171,12 @@ def subject_questionnaire_view(request, group_id, subject_id,
             if can_remove:
                 get_object_or_404(SubjectOfGroup, group=group, subject=subject).delete()
 
-                messages.info(request, 'Participante removido do experimento.')
+                messages.info(request, _('Participant deleted from experiment.'))
                 redirect_url = reverse("subjects", args=(group_id,))
                 return HttpResponseRedirect(redirect_url)
             else:
-                messages.error(request, "Não foi possível excluir o participante, pois há respostas associadas")
+                messages.error(request, _("It was not possible to delete participant, "
+                                          "because there are answers connected"))
                 redirect_url = reverse("subject_questionnaire", args=(group_id, subject_id,))
                 return HttpResponseRedirect(redirect_url)
 
@@ -1165,7 +1210,7 @@ def subjects_insert(request, group_id, patient_id):
         if not SubjectOfGroup.objects.all().filter(group=group, subject=subject):
             SubjectOfGroup(subject=subject, group=group).save()
         else:
-            messages.warning(request, 'Participante já inserido para este grupo.')
+            messages.warning(request, _('Participant has already been inserted in this group.'))
 
         redirect_url = reverse("subjects", args=(group_id,))
         return HttpResponseRedirect(redirect_url)
@@ -1211,16 +1256,16 @@ def upload_file(request, subject_id, group_id, template_name="experiment/upload_
                 if 'consent_form' in request.FILES:
                     if file_form.is_valid():
                         file_form.save()
-                        messages.success(request, 'Termo salvo com sucesso.')
+                        messages.success(request, _('Consent term saved successfully.'))
 
                     redirect_url = reverse("subjects", args=(group_id, ))
                     return HttpResponseRedirect(redirect_url)
                 else:
-                    messages.error(request, 'Não existem anexos para salvar')
+                    messages.error(request, _("There are not attachments to save"))
             elif request.POST['action'] == "remove":
                 subject_of_group.consent_form.delete()
                 subject_of_group.save()
-                messages.success(request, 'Anexo removido com sucesso.')
+                messages.success(request, _('Attachment deleted successfully.'))
 
                 redirect_url = reverse("subjects", args=(group_id,))
                 return HttpResponseRedirect(redirect_url)
@@ -1266,6 +1311,14 @@ def component_list(request, experiment_id, template_name="experiment/component_l
 
     for component in components:
         component.icon_class = icon_class[component.component_type]
+        component.is_root = False
+        component.is_unused = False
+        if component.component_type == "block":
+            if Group.objects.filter(experimental_protocol=component):
+                component.is_root = True
+        if not component.is_root:
+            if not ComponentConfiguration.objects.filter(component=component):
+                component.is_unused = True
 
     component_type_choices = []
 
@@ -1396,7 +1449,8 @@ def component_create(request, experiment_id, component_type):
                 if component_type == 'questionnaire':
                     new_specific_component = Questionnaire()
                     survey, created = Survey.objects.get_or_create(
-                        lime_survey_id=request.POST['questionnaire_selected'])
+                        lime_survey_id=request.POST['questionnaire_selected'],
+                        is_initial_evaluation=False)
                     new_specific_component.survey = survey
                 elif component_type == 'pause':
                     new_specific_component = Pause()
@@ -1417,7 +1471,7 @@ def component_create(request, experiment_id, component_type):
                     new_specific_component.duration_unit = component.duration_unit
                     new_specific_component.save()
 
-                    messages.success(request, 'Passo incluído com sucesso.')
+                    messages.success(request, _('Step included successfully.'))
 
                     if component_type == 'block':
                         redirect_url = reverse("component_view", args=(new_specific_component.id,))
@@ -1536,42 +1590,42 @@ def convert_to_string(duration_in_milliseconds):
 
     duration_in_years = int(duration_in_milliseconds / year_in_milliseconds)
     if duration_in_years >= 1:
-        string += str(duration_in_years) + (" anos " if duration_in_years > 1 else " ano ")
+        string += str(duration_in_years) + (_(" years ") if duration_in_years > 1 else _(" year "))
         duration_in_milliseconds -= duration_in_years * year_in_milliseconds
 
     duration_in_months = int(duration_in_milliseconds / month_in_milliseconds)
     if duration_in_months >= 1:
-        string += str(duration_in_months) + (" meses " if duration_in_months > 1 else " mês ")
+        string += str(duration_in_months) + (_(" months ") if duration_in_months > 1 else _(" month "))
         duration_in_milliseconds -= duration_in_months * month_in_milliseconds
 
     duration_in_weeks = int(duration_in_milliseconds / week_in_milliseconds)
     if duration_in_weeks >= 1:
-        string += str(duration_in_weeks) + (" semanas " if duration_in_weeks > 1 else " semana ")
+        string += str(duration_in_weeks) + (_(" weeks ") if duration_in_weeks > 1 else _(" week "))
         duration_in_milliseconds -= duration_in_weeks * week_in_milliseconds
 
     duration_in_days = int(duration_in_milliseconds / day_in_milliseconds)
     if duration_in_days >= 1:
-        string += str(duration_in_days) + (" dias " if duration_in_days > 1 else " dia ")
+        string += str(duration_in_days) + (_(" days ") if duration_in_days > 1 else _(" day "))
         duration_in_milliseconds -= duration_in_days * day_in_milliseconds
 
     duration_in_hours = int(duration_in_milliseconds / hour_in_milliseconds)
     if duration_in_hours >= 1:
-        string += str(duration_in_hours) + (" horas " if duration_in_hours > 1 else " hora ")
+        string += str(duration_in_hours) + (_(" hours ") if duration_in_hours > 1 else _(" hour "))
         duration_in_milliseconds -= duration_in_hours * hour_in_milliseconds
 
     duration_in_minutes = int(duration_in_milliseconds / minute_in_milliseconds)
     if duration_in_minutes >= 1:
-        string += str(duration_in_minutes) + (" minutos " if duration_in_minutes > 1 else " minuto ")
+        string += str(duration_in_minutes) + (_(" minutes ") if duration_in_minutes > 1 else _(" minute "))
         duration_in_milliseconds -= duration_in_minutes * minute_in_milliseconds
 
     duration_in_seconds = int(duration_in_milliseconds / second_in_milliseconds)
     if duration_in_seconds >= 1:
-        string += str(duration_in_seconds) + (" segundos " if duration_in_seconds > 1 else " segundo ")
+        string += str(duration_in_seconds) + (_(" seconds ") if duration_in_seconds > 1 else _(" second "))
         duration_in_milliseconds -= duration_in_seconds * second_in_milliseconds
 
     if duration_in_milliseconds >= 1:
         string += str(duration_in_milliseconds) + \
-            (" milissegundos " if duration_in_milliseconds > 1 else " milissegundo ")
+            (_(" miliseconds ") if duration_in_milliseconds > 1 else _(" milisecond "))
 
     if string == "":
         string = "0"
@@ -1586,7 +1640,7 @@ def convert_to_string(duration_in_milliseconds):
         if before_and == "":
             string = list_of_values_with_units[-1]
         else:
-            string = before_and + " e " + list_of_values_with_units[-1]
+            string = before_and + _(" and ") + list_of_values_with_units[-1]
 
     return string
 
@@ -1735,6 +1789,7 @@ def remove_component_configuration(request, conf):
     except ProtectedError:
         messages.error(request, "Não foi possível excluir o uso, pois há dados associados")
 
+
 @login_required
 @permission_required('experiment.view_researchproject')
 def component_view(request, path_of_the_components):
@@ -1765,13 +1820,13 @@ def component_view(request, path_of_the_components):
                 if configuration_form is not None:
                     if configuration_form.is_valid():
                         configuration_form.save()
-                        messages.success(request, 'Uso do passo atualizado com sucesso.')
+                        messages.success(request, _('Step use updated successfully.'))
                         return HttpResponseRedirect(back_cancel_url)
             elif request.POST['action'] == "remove":
                 redirect_url = remove_component_and_related_configurations(component,
                                                                            list_of_ids_of_components_and_configurations,
                                                                            path_of_the_components)
-                messages.success(request, 'Componente removido com sucesso.')
+                messages.success(request, _('Component deleted successfully.'))
                 return HttpResponseRedirect(redirect_url)
             elif request.POST['action'][:7] == "remove-":
                 # If action starts with 'remove-' it means that a child or some children should be removed.
@@ -1788,8 +1843,8 @@ def component_view(request, path_of_the_components):
                     # It means that a single component configuration should be removed
                     position_in_accordion_of_the_conf_to_be_deleted = int(action_parts[3])
                     remove_component_configuration(request,
-                        list_from_which_to_deleted[position_of_the_accordion_to_be_deleted]
-                        [position_in_accordion_of_the_conf_to_be_deleted])
+                                                   list_from_which_to_deleted[position_of_the_accordion_to_be_deleted]
+                                                   [position_in_accordion_of_the_conf_to_be_deleted])
                 else:
                     for conf in list_from_which_to_deleted[position_of_the_accordion_to_be_deleted]:
                         # Only uses that do not have associated data will be excluded.
@@ -1982,9 +2037,9 @@ def component_update(request, path_of_the_components):
                             # Only save if there was a change.
                             if component_form.has_changed():
                                 component_form.save()
-                                messages.success(request, 'Passo alterado com sucesso.')
+                                messages.success(request, _('Step updated successfully.'))
                             else:
-                                messages.success(request, 'Não há alterações para salvar.')
+                                messages.success(request, _('There is no changes to save.'))
 
                             return HttpResponseRedirect(back_cancel_url)
 
@@ -2004,9 +2059,9 @@ def component_update(request, path_of_the_components):
                                 specific_form.save()
 
                             component_form.save()
-                            messages.success(request, 'Passo alterado com sucesso.')
+                            messages.success(request, _('Step updated successfully.'))
                         else:
-                            messages.success(request, 'Não há alterações para salvar.')
+                            messages.success(request, _('There is no changes to save.'))
 
                         return HttpResponseRedirect(back_cancel_url)
 
@@ -2014,16 +2069,16 @@ def component_update(request, path_of_the_components):
                     # Only save if there was a change.
                     if configuration_form.has_changed():
                         configuration_form.save()
-                        messages.success(request, 'Uso do passo atualizado com sucesso.')
+                        messages.success(request, _('Step use updated successfully.'))
                     else:
-                        messages.success(request, 'Não há alterações para salvar.')
+                        messages.success(request, _('There is no changes to save.'))
 
                     return HttpResponseRedirect(back_cancel_url)
             elif request.POST['action'] == "remove":
                 redirect_url = remove_component_and_related_configurations(component,
                                                                            list_of_ids_of_components_and_configurations,
                                                                            path_of_the_components)
-                messages.success(request, 'Componente removido com sucesso.')
+                messages.success(request, _('Component deleted successfully.'))
                 return HttpResponseRedirect(redirect_url)
 
     type_of_the_parent_block = None
@@ -2218,7 +2273,7 @@ def component_add_new(request, path_of_the_components, component_type):
                     group.experimental_protocol = new_specific_component
                     group.save()
 
-                    messages.success(request, 'Protocolo experimental incluído com sucesso.')
+                    messages.success(request, _('Experimental protocol included successfully.'))
 
                     redirect_url = reverse("component_view",
                                            args=(path_of_the_components + delimiter + str(new_specific_component.id), ))
@@ -2246,9 +2301,9 @@ def component_add_new(request, path_of_the_components, component_type):
                             new_configuration.save()
 
                         if number_of_uses > 1:
-                            messages.success(request, 'Passos incluídos com sucesso.')
+                            messages.success(request, _('Steps included successfully.'))
                         else:
-                            messages.success(request, 'Passo incluído com sucesso.')
+                            messages.success(request, _('Step included successfully.'))
 
                         redirect_url = reverse("component_view", args=(path_of_the_components, ))
 
@@ -2356,7 +2411,7 @@ def component_reuse(request, path_of_the_components, component_id):
                 redirect_url = reverse("component_view",
                                        args=(path_of_the_components + delimiter + str(component_to_add.id), ))
 
-                messages.success(request, 'Passo incluído com sucesso.')
+                messages.success(request, _('Step included successfully.'))
                 return HttpResponseRedirect(redirect_url)
             else:
                 if number_of_uses_form.is_valid():
@@ -2378,9 +2433,9 @@ def component_reuse(request, path_of_the_components, component_id):
                     redirect_url = reverse("component_view", args=(path_of_the_components, ))
 
                     if number_of_uses > 1:
-                        messages.success(request, 'Passos incluídos com sucesso.')
+                        messages.success(request, _('Steps included successfully.'))
                     else:
-                        messages.success(request, 'Passo incluído com sucesso.')
+                        messages.success(request, _('Step included successfully.'))
 
                     return HttpResponseRedirect(redirect_url)
 

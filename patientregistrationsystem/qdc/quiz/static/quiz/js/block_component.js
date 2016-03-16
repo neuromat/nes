@@ -49,7 +49,7 @@ $(document).ready(function () {
         $(this).click(collapse)
 
         // Replace the title of the tootip
-        $(this).children(".panel-heading").attr("data-original-title", "Recolher");
+        $(this).children(".panel-heading").attr("data-original-title", gettext("Collapse"));
     }
 
     $(".expanded").click(collapse)
@@ -63,7 +63,7 @@ $(document).ready(function () {
         $(this).click(expand)
 
         // Replace the title of the tootip
-        $(this).children(".panel-heading").attr("data-original-title", "Expandir");
+        $(this).children(".panel-heading").attr("data-original-title", gettext("Expand"));
     }
 
     // Following two handlers avoid expanding and collapsing an accordion while clicking to move or remove a line.
@@ -86,7 +86,7 @@ function show_modal_remove(list_name, accordion_position, conf_position) {
     var  modal_remove = document.getElementById('removeComponentConfiguration');
     modal_remove.setAttribute( "value", 'remove-' + list_name + '-' + accordion_position + '-' + conf_position);
 
-    $("#modalRemoveMessage").html("Tem certeza que deseja excluir este uso de passo da lista?");
+    $("#modalRemoveMessage").html(gettext("Are you sure you want to delete this use of step from list?"));
 
     $('#modalComponentConfigurationRemove').modal('show');
 }
@@ -95,7 +95,7 @@ function show_modal_remove_many(list_name, accordion_position, length) {
     var  modal_remove = document.getElementById('removeComponentConfiguration');
     modal_remove.setAttribute( "value", 'remove-' + list_name + '-' + accordion_position);
 
-    $("#modalRemoveMessage").html("Tem certeza que deseja excluir estes " + length + " usos de passo da lista?");
+    $("#modalRemoveMessage").html(gettext("Are you sure you want to delete these ") + length + gettext("  uses of step from list?"));
 
     $('#modalComponentConfigurationRemove').modal('show');
 }

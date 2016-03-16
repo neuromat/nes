@@ -2,3 +2,9 @@
 *.pyc
 patientregistrationsystem/qdc/.idea
 patientregistrationsystem/qdc/qdc/settings.py
+
+*.DS_Store
+patientregistrationsystem/qdc/.DS_Store
+
+
+

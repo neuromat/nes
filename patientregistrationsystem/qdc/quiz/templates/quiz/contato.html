@@ -1,15 +1,41 @@
 {% extends "quiz/template.html" %}
 {% block activeContact %}class="active"{% endblock %}
 {% load static %}
+
+{% load i18n admin_static %}
+
 {% block content %}
+
+    {% if messages %}
+        {% for message in messages %}
+
+            {% if message.tags == "success" %}
+                <script>showSuccessMessage('{{ message }}')</script>
+            {% endif %}
+
+            {% if message.tags == "warning" %}
+                <script>showWarningMessage('{{ message }}')</script>
+            {% endif %}
+
+            {% if message.tags == "error" %}
+                <script>showErrorMessage('{{ message }}')</script>
+            {% endif %}
+
+            {% if message.tags == "info" %}
+                <script>showInfoMessage('{{ message }}')</script>
+            {% endif %}
+
+        {% endfor %}
+    {% endif %}
+
     <div class="tab-pane fade in active" id="mainMenuContactTab">
         <div class="col-md-1">
         </div>
         <div class="col-md-10">
-            <h3>Neuroscience Experiments System - NES</h3>
+            <h3>{% trans "Neuroscience Experiments System - NES" %}</h3>
             <h4>{{ contact_institution }}</h4>
-            <h5>Sistema de Cadastro e Consulta de Dados Sociodemográficos e Clínicos</h5>
-            <h5>Dúvidas e Sugestões: {{ contact_email }}</h5>
+            <h5>{% trans "System Registration and Socio-Demographic and Clinical Data Query" %}</h5>
+            <h5>{% trans "Doubts and Suggestions" %}: {{ contact_email }}</h5>
             <br/>
 
 
@@ -38,12 +64,6 @@
                 </a>
             </div>
             <div class="col-lg-3 col-md-4 col-xs-6 thumb">
-                <a class="thumbnail" href="http://numec.prp.usp.br">
-                    <img class="img-responsive" src="{% static 'quiz/imgs/logo-numec.jpg' %}"
-                         alt="Logo do NUMEC">
-                </a>
-            </div>
-            <div class="col-lg-3 col-md-4 col-xs-6 thumb">
                 <a class="thumbnail" href="http://neuromat.numec.prp.usp.br">
                     <img class="img-responsive" src="{% static 'quiz/imgs/logo-neuromat.jpg' %}"
                          alt="Logo do NeuroMat">
@@ -58,7 +78,7 @@
             {% if contact_url %}
                 <div class="col-lg-3 col-md-4 col-xs-6 thumb">
                     <a class="thumbnail" href="{{ contact_url }}">
-                        <img class="img-responsive" src="{% static 'quiz/imgs/logo-institution.png' %}"
+                        <img class="img-responsive" src="{{STATIC_URL}}quiz/imgs/{{ logo_institution }}"
                              alt="Logo do {{ contact_institution }}">
                     </a>
                 </div>

@@ -9,7 +9,7 @@ from custom_user.models import User, UserProfile
 from custom_user.views import user_update
 
 from django.contrib.auth.tokens import default_token_generator
-from django.contrib.sites.models import get_current_site
+from django.contrib.sites.shortcuts import get_current_site
 from django.template import loader
 from django.utils.http import int_to_base36
 from django.core.urlresolvers import reverse
@@ -126,7 +126,7 @@ class FormUserValidation(TestCase):
 
         response = self.client.post(reverse(USER_NEW), self.data, follow=True)
 
-        self.assertFormError(response, "form", "username", u'Este campo é obrigatório.')
+        self.assertFormError(response, "form", "username", 'Este campo é obrigatório.')
         self.assertEqual(User.objects.filter(username='').count(), 0)
 
     def test_user_invalid_email(self):
@@ -137,7 +137,7 @@ class FormUserValidation(TestCase):
         self.data['email'] = 'email@invalid.'
 
         response = self.client.post(reverse(USER_NEW), self.data, follow=True)
-        self.assertFormError(response, "form", "email", u'Informe um endereço de email válido.')
+        self.assertFormError(response, "form", "email", 'Informe um endereço de email válido.')
         self.assertEqual(User.objects.filter(username='').count(), 0)
 
     def test_user_passwords_doesnt_match(self):
@@ -199,7 +199,7 @@ class FormUserValidation(TestCase):
 
         response = self.client.post(reverse(USER_NEW), self.data, follow=True)
         self.assertEqual(response.status_code, 200)
-        self.assertFormError(response, "form", "password", u'Este campo é obrigatório.')
+        self.assertFormError(response, "form", "password", 'Este campo é obrigatório.')
         self.assertEqual(User.objects.filter(username=user_pwd).count(), 0)
 
     def test_user_create(self):

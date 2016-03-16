@@ -1,0 +1,397 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) YEAR THE PACKAGE'S COPYRIGHT HOLDER
+# This file is distributed under the same license as the PACKAGE package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
+#
+#, fuzzy
+msgid ""
+msgstr ""
+"Project-Id-Version: PACKAGE VERSION\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2015-11-12 16:14-0200\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language-Team: LANGUAGE <LL@li.org>\n"
+"Language: \n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+
+#: quiz/static/quiz/jquery-ui-1.11.2/jquery-ui.min.js:8
+msgid "'"
+msgstr "'"
+
+#: quiz/static/quiz/js/block_component.js:52
+msgid "Collapse"
+msgstr "Collapse"
+
+#: quiz/static/quiz/js/block_component.js:66
+msgid "Expand"
+msgstr "Expand"
+
+#: quiz/static/quiz/js/block_component.js:89
+msgid "Are you sure you want to delete this use of step from list?"
+msgstr "Are you sure you want to delete this use of step from list?"
+
+#: quiz/static/quiz/js/block_component.js:98
+msgid "Are you sure you want to delete these "
+msgstr "Are you sure you want to delete these "
+
+#: quiz/static/quiz/js/block_component.js:98
+msgid "  uses of step from list?"
+msgstr "  uses of step from list?"
+
+#: quiz/static/quiz/js/password.js:18
+msgid "Passwords don't match"
+msgstr "Passwords don't match"
+
+#: quiz/static/quiz/js/password.js:29
+msgid ""
+"Password must contain at least 8 characters, including at least one "
+"uppercase letter, digit or special character."
+msgstr ""
+"Password must contain at least 8 characters, including at least one "
+"uppercase letter, digit or special character."
+
+#: quiz/static/quiz/js/password.js:64
+msgid "Weak"
+msgstr "Weak"
+
+#: quiz/static/quiz/js/password.js:70
+msgid "Fair"
+msgstr "Fair"
+
+#: quiz/static/quiz/js/password.js:76
+msgid "Strong"
+msgstr "Strong"
+
+#: quiz/static/quiz/js/password.js:82
+msgid "Excellent"
+msgstr "Excellent"
+
+#: quiz/static/quiz/js/patient_personal_data.js:113
+#: quiz/static/quiz/js/register.js:75
+msgid "Obligatory fields must be filled."
+msgstr "Obligatory fields must be filled."
+
+#: quiz/static/quiz/js/patient_personal_data.js:122
+msgid "Please fill the fields correctly. E-mail is invalid"
+msgstr "Please fill the fields correctly. E-mail is invalid"
+
+#: quiz/templates/quiz/template.html:27
+msgid "mm/dd/yy"
+msgstr "mm/dd/yy"
+
+#: quiz/templates/quiz/template.html:28
+msgid "Sunday"
+msgstr "Sunday"
+
+#: quiz/templates/quiz/template.html:28
+msgid "Monday"
+msgstr "Monday"
+
+#: quiz/templates/quiz/template.html:28
+msgid "Tuesday"
+msgstr "Tuesday"
+
+#: quiz/templates/quiz/template.html:29
+msgid "Wednesday"
+msgstr "Wednesday"
+
+#: quiz/templates/quiz/template.html:29
+msgid "Thursday"
+msgstr "Thursday"
+
+#: quiz/templates/quiz/template.html:29
+msgid "Friday"
+msgstr "Friday"
+
+#: quiz/templates/quiz/template.html:29
+msgid "Saturday"
+msgstr "Saturday"
+
+#: quiz/templates/quiz/template.html:30 quiz/templates/quiz/template.html:31
+msgid "Su"
+msgstr "Su"
+
+#: quiz/templates/quiz/template.html:30
+msgid "Mo"
+msgstr "Mo"
+
+#: quiz/templates/quiz/template.html:30
+msgid "Tu"
+msgstr "Tu"
+
+#: quiz/templates/quiz/template.html:30
+msgid "We"
+msgstr "We"
+
+#: quiz/templates/quiz/template.html:30
+msgid "Th"
+msgstr "Th"
+
+#: quiz/templates/quiz/template.html:31
+msgid "Fr"
+msgstr "Fr"
+
+#: quiz/templates/quiz/template.html:31
+msgid "Sa"
+msgstr "Sa"
+
+#: quiz/templates/quiz/template.html:32 quiz/templates/quiz/template.html:33
+msgid "Sun"
+msgstr "Sun"
+
+#: quiz/templates/quiz/template.html:32
+msgid "Mon"
+msgstr "Mon"
+
+#: quiz/templates/quiz/template.html:32
+msgid "Tue"
+msgstr "Tue"
+
+#: quiz/templates/quiz/template.html:32
+msgid "Wed"
+msgstr "Wed"
+
+#: quiz/templates/quiz/template.html:33
+msgid "Thu"
+msgstr "Thu"
+
+#: quiz/templates/quiz/template.html:33
+msgid "Fri"
+msgstr "Fri"
+
+#: quiz/templates/quiz/template.html:33
+msgid "Sat"
+msgstr "Sat"
+
+#: quiz/templates/quiz/template.html:34
+msgid "January"
+msgstr "January"
+
+#: quiz/templates/quiz/template.html:34
+msgid "February"
+msgstr "February"
+
+#: quiz/templates/quiz/template.html:34
+msgid "March"
+msgstr "March"
+
+#: quiz/templates/quiz/template.html:35
+msgid "April"
+msgstr "April"
+
+#: quiz/templates/quiz/template.html:35 quiz/templates/quiz/template.html:39
+msgid "May"
+msgstr "May"
+
+#: quiz/templates/quiz/template.html:35
+msgid "June"
+msgstr "June"
+
+#: quiz/templates/quiz/template.html:36
+msgid "July"
+msgstr "July"
+
+#: quiz/templates/quiz/template.html:36
+msgid "August"
+msgstr "August"
+
+#: quiz/templates/quiz/template.html:36
+msgid "September"
+msgstr "September"
+
+#: quiz/templates/quiz/template.html:37
+msgid "October"
+msgstr "October"
+
+#: quiz/templates/quiz/template.html:37
+msgid "November"
+msgstr "November"
+
+#: quiz/templates/quiz/template.html:37
+msgid "December"
+msgstr "December"
+
+#: quiz/templates/quiz/template.html:38
+msgid "Jan"
+msgstr "Jan"
+
+#: quiz/templates/quiz/template.html:38
+msgid "Feb"
+msgstr "Feb"
+
+#: quiz/templates/quiz/template.html:38
+msgid "Mar"
+msgstr "Mar"
+
+#: quiz/templates/quiz/template.html:38
+msgid "Apr"
+msgstr "Apr"
+
+#: quiz/templates/quiz/template.html:39
+msgid "Jun"
+msgstr "Jun"
+
+#: quiz/templates/quiz/template.html:39
+msgid "Jul"
+msgstr "Jul"
+
+#: quiz/templates/quiz/template.html:39
+msgid "Aug"
+msgstr "Aug"
+
+#: quiz/templates/quiz/template.html:40
+msgid "Sep"
+msgstr "Sep"
+
+#: quiz/templates/quiz/template.html:40
+msgid "Oct"
+msgstr "Oct"
+
+#: quiz/templates/quiz/template.html:40
+msgid "Nov"
+msgstr "Nov"
+
+#: quiz/templates/quiz/template.html:40
+msgid "Dec"
+msgstr "Dec"
+
+#: quiz/templates/quiz/template.html:41
+msgid "Next"
+msgstr "Next"
+
+#: quiz/templates/quiz/template.html:42
+msgid "Previous"
+msgstr "Previous"
+
+#~ msgid "Do"
+#~ msgstr "Su"
+
+#~ msgid "Mai"
+#~ msgstr "May"
+
+#~ msgid "Sx"
+#~ msgstr "Fr"
+
+#~ msgid "Recolher"
+#~ msgstr "Collapse"
+
+#~ msgid "Tem certeza que deseja excluir este uso de passo da lista?"
+#~ msgstr "Are you sure you want to delete this use of step from list?"
+
+#~ msgid "Tem certeza que deseja excluir estes "
+#~ msgstr "Are you sure you want to delete these "
+
+#~ msgid " usos de passo da lista?"
+#~ msgstr " uses of step from list?"
+
+#~ msgid "Senhas não combinam"
+#~ msgstr "Passwords don't match"
+
+#~ msgid ""
+#~ "Senha deve conter pelo menos 8 caracteres, incluindo ao menos uma letra "
+#~ "maiúscula, dígito ou caractere especial."
+#~ msgstr ""
+#~ "Password must contain at least 8 characters, including at least one "
+#~ "uppercase letter, digit or special character."
+
+#~ msgid "Fraca"
+#~ msgstr "Weak"
+
+#~ msgid "Justa"
+#~ msgstr "Fair"
+
+#~ msgid "Forte"
+#~ msgstr "Strong"
+
+#~ msgid "Campos obrigatórios devem ser preenchidos."
+#~ msgstr "Obligatory fields must be filled"
+
+#~ msgid "Preencha os campos corretamente. Campo de e-mail inválido"
+#~ msgstr "Please fill the fields correctly. E-mail is invalid"
+
+#~ msgid "dd/mm/yy"
+#~ msgstr "mm/dd/yy"
+
+#~ msgid "Domingo"
+#~ msgstr "Sunday"
+
+#~ msgid "Terça"
+#~ msgstr "Tuesday"
+
+#~ msgid "Quarta"
+#~ msgstr "Wednesday"
+
+#~ msgid "Quinta"
+#~ msgstr "Thursday"
+
+#~ msgid "Sexta"
+#~ msgstr "Friday"
+
+#~ msgid "Sábado"
+#~ msgstr "Saturday"
+
+#~ msgid "Qa"
+#~ msgstr "We"
+
+#~ msgid "Qi"
+#~ msgstr "Th"
+
+#~ msgid "Dom"
+#~ msgstr "Sun"
+
+#~ msgid "Seg"
+#~ msgstr "Mon"
+
+#~ msgid "Ter"
+#~ msgstr "Tue"
+
+#~ msgid "Qua"
+#~ msgstr "Wed"
+
+#~ msgid "Qui"
+#~ msgstr "Thu"
+
+#~ msgid "Sex"
+#~ msgstr "Fri"
+
+#~ msgid "Sáb"
+#~ msgstr "Sat"
+
+#~ msgid "Janeiro"
+#~ msgstr "January"
+
+#~ msgid "Fevereiro"
+#~ msgstr "February"
+
+#~ msgid "Março"
+#~ msgstr "March"
+
+#~ msgid "Abril"
+#~ msgstr "April"
+
+#~ msgid "Junho"
+#~ msgstr "June"
+
+#~ msgid "Julho"
+#~ msgstr "July"
+
+#~ msgid "Agosto"
+#~ msgstr "August"
+
+#~ msgid "Outubro"
+#~ msgstr "Octobre"
+
+#~ msgid "Dezembro"
+#~ msgstr "December"
+
+#~ msgid "Set"
+#~ msgstr "Sep"
+
+#~ msgid "Próximo"
+#~ msgstr "Next"
+
+#~ msgid "Anterior"
+#~ msgstr "Previous"

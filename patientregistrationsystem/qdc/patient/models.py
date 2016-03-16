@@ -1,11 +1,11 @@
 # -*- coding: UTF-8 -*-
 
-from __future__ import unicode_literals
+
 import datetime
 
 from django.db import models
 from django.core.exceptions import ValidationError
-from django.utils.translation import ugettext as _
+from django.utils.translation import ugettext_lazy as _
 from django.contrib.auth.models import User
 from simple_history.models import HistoricalRecords
 
@@ -15,7 +15,7 @@ from patient.validation import CPF
 
 def validate_date_questionnaire_response(value):
     if value > datetime.date.today():
-        raise ValidationError('Data de preenchimento não pode ser maior que a data de hoje.')
+        raise ValidationError(_("Fill date can not be bigger than today's date."))
 
 
 # Valida CPF
@@ -23,76 +23,76 @@ def validate_cpf(value):
     validation = CPF(value)
     if not validation.isValid():
         # raise ValidationError(u'CPF %s não é válido' % value)
-        raise ValidationError(_('CPF %s não é válido') % value)
+        raise ValidationError(_('CPF %(CPF)s invalid') % {"CPF": value})
 
 
 # Valida data de nascimento:
 # data de nascimento maior que a data atual
 def validate_date_birth(value):
     if value > datetime.date.today():
-        raise ValidationError(_('Data de nascimento não pode ser maior que a data de hoje.'))
+        raise ValidationError(_("Date of birth can't be greater than today date."))
 
 
 class Payment(models.Model):
     name = models.CharField(max_length=50)
 
-    def __unicode__(self):  # Python 3: def __str__(self):
+    def __str__(self):
         return self.name
 
 
 class Gender(models.Model):
     name = models.CharField(max_length=50)
 
-    def __unicode__(self):  # Python 3: def __str__(self):
+    def __str__(self):
         return self.name
 
 
 class FleshTone(models.Model):
     name = models.CharField(max_length=50)
 
-    def __unicode__(self):  # Python 3: def __str__(self):
+    def __str__(self):
         return self.name
 
 
 class MaritalStatus(models.Model):
     name = models.CharField(max_length=50)
 
-    def __unicode__(self):  # Python 3: def __str__(self):
+    def __str__(self):
         return self.name
 
 
 class Religion(models.Model):
     name = models.CharField(max_length=50)
 
-    def __unicode__(self):  # Python 3: def __str__(self):
+    def __str__(self):
         return self.name
 
 
 class Schooling(models.Model):
     name = models.CharField(max_length=50)
 
-    def __unicode__(self):  # Python 3: def __str__(self):
+    def __str__(self):
         return self.name
 
 
 class AmountCigarettes(models.Model):
     name = models.CharField(max_length=50)
 
-    def __unicode__(self):
+    def __str__(self):
         return self.name
 
 
 class AlcoholFrequency(models.Model):
     name = models.CharField(max_length=100)
 
-    def __unicode__(self):
+    def __str__(self):
         return self.name
 
 
 class AlcoholPeriod(models.Model):
     name = models.CharField(max_length=50)
 
-    def __unicode__(self):
+    def __str__(self):
         return self.name
 
 
@@ -109,7 +109,7 @@ class Patient(models.Model):
     country = models.CharField(max_length=30, null=True, blank=True)
     zipcode = models.CharField(max_length=12, null=True, blank=True)
     street = models.CharField(max_length=50, null=True, blank=True)
-    address_number = models.IntegerField(max_length=6, null=True, blank=True)
+    address_number = models.IntegerField(null=True, blank=True)
     address_complement = models.CharField(max_length=50, null=True, blank=True)
     district = models.CharField(max_length=50, null=True, blank=True)
     city = models.CharField(max_length=30, null=True, blank=True)
@@ -138,7 +138,7 @@ class Patient(models.Model):
     def get_absolute_url(self):
         return "/patient/%i/" % self.pk
 
-    def __unicode__(self):  # Python 3: def __str__(self):
+    def __str__(self):
         return \
             self.name
 
@@ -155,14 +155,14 @@ class Telephone(models.Model):
     FAX_HOME = 'FH'
     PAGER = 'PA'
     OTHER = 'OT'
-    TYPE_CHOICES = ((MOBILE, "Celular"),
-                    (HOME, "Residencial"),
-                    (WORK, "Comercial"),
-                    (MAIN, "Principal"),
-                    (FAX_WORK, "Fax comercial"),
-                    (FAX_HOME, "Fax residencial"),
-                    (PAGER, "Pager"),
-                    (OTHER, "Outros"))
+    TYPE_CHOICES = ((MOBILE, _("Cell phone")),
+                    (HOME, _("Home phone")),
+                    (WORK, _("Business")),
+                    (MAIN, _("Main")),
+                    (FAX_WORK, _("Business fax")),
+                    (FAX_HOME, _("Home fax")),
+                    (PAGER, _("Pager")),
+                    (OTHER, _("Other")))
 
     type = models.CharField(max_length=15, choices=TYPE_CHOICES, blank=True)
     note = models.CharField(max_length=50, blank=True)
@@ -179,7 +179,7 @@ class Telephone(models.Model):
     def _history_user(self, value):
         self.changed_by = value
 
-    def __unicode__(self):
+    def __str__(self):
         return self.number + '(' + self.type + ') - ' + self.note
 
 
@@ -209,7 +209,7 @@ class SocialDemographicData(models.Model):
     history = HistoricalRecords()
     changed_by = models.ForeignKey('auth.User')
 
-    def __unicode__(self):
+    def __str__(self):
         return \
             str(self.patient)
 
@@ -241,7 +241,7 @@ class SocialDemographicData(models.Model):
         }
         points = 0
 
-        for key_word in keywords.keys():
+        for key_word in list(keywords.keys()):
             points += (punctuation_table[key_word])[keywords[key_word]]
 
         if 0 <= points <= 7:
@@ -286,7 +286,7 @@ class SocialHistoryData(models.Model):
     def _history_user(self, value):
         self.changed_by = value
 
-    def __unicode__(self):
+    def __str__(self):
         return \
             str(self.patient)
 
@@ -301,7 +301,7 @@ class MedicalRecordData(models.Model):
             ("view_medicalrecorddata", "Can view medical record"),
         )
 
-    def __unicode__(self):
+    def __str__(self):
         return \
             self.patient, self.record_date, self.record_responsible
 
@@ -309,10 +309,10 @@ class MedicalRecordData(models.Model):
 class ClassificationOfDiseases(models.Model):
     code = models.CharField(max_length=10, null=False)
     description = models.CharField(max_length=300, null=False)
-    abbreviated_description = models.CharField(max_length=100, null=False)
+    abbreviated_description = models.CharField(max_length=190, null=False)
     parent = models.ForeignKey('self', null=True, related_name='children')
 
-    def __unicode__(self):
+    def __str__(self):
         return self.abbreviated_description
 
 
@@ -325,8 +325,8 @@ class Diagnosis(models.Model):
     class Meta:
         unique_together = ('medical_record_data', 'classification_of_diseases',)
 
-    def __unicode__(self):
-        return unicode(self.classification_of_diseases), self.date, self.description
+    def __str__(self):
+        return str(self.classification_of_diseases), self.date, self.description
 
 
 class ComplementaryExam(models.Model):
@@ -337,12 +337,14 @@ class ComplementaryExam(models.Model):
     doctor_register = models.CharField(max_length=10, null=True, blank=True)
     exam_site = models.CharField(max_length=100, null=True, blank=True)
 
-    def __unicode__(self):
-        return unicode(self.description)
+    def __str__(self):
+        return str(self.description)
 
 
 def get_user_dir(instance, filename):
-    return "exams/%s/%s/%s" % (instance.exam.diagnosis.medical_record_data.patient.pk, instance.exam.pk, filename)
+    return "exams/%(patient)s/%(exam)s/%(filename)s" % \
+        {'patient': instance.exam.diagnosis.medical_record_data.patient.pk,
+         'exam': instance.exam.pk, 'filename': filename}
 
 
 class ExamFile(models.Model):
@@ -368,5 +370,5 @@ class QuestionnaireResponse(models.Model):
             ("view_questionnaireresponse", "Can view questionnaire response"),
         )
 
-    def __unicode__(self):  # Python 3: def __str__(self):
-        return "token id: " + str(self.token_id)
+    def __str__(self):
+        return _("token id: ") + str(self.token_id)

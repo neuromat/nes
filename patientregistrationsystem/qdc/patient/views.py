@@ -12,23 +12,21 @@ from django.db.models import Q
 from django.forms.models import inlineformset_factory
 from django.http import HttpResponseRedirect
 from django.shortcuts import render, render_to_response, get_object_or_404
-
 from django.conf import settings
+from django.utils.translation import ugettext as _
 
 from patient.models import Patient, Telephone, SocialDemographicData, SocialHistoryData, MedicalRecordData, \
     ClassificationOfDiseases, Diagnosis, ExamFile, ComplementaryExam
 from patient.forms import PatientForm, TelephoneForm, SocialDemographicDataForm, SocialHistoryDataForm, \
     ComplementaryExamForm, ExamFileForm
 from patient.quiz_widget import SelectBoxCountriesDisabled, SelectBoxStateDisabled
-
 from experiment.models import Subject, SubjectOfGroup, QuestionnaireResponse as ExperimentQuestionnaireResponse
-from experiment.abc_search_engine import Questionnaires
-
+from survey.abc_search_engine import Questionnaires
 from patient.models import QuestionnaireResponse
 from patient.forms import QuestionnaireResponseForm
-
 from survey.models import Survey
 from survey.views import get_questionnaire_responses, check_limesurvey_access
+
 
 # pylint: disable=E1101
 # pylint: disable=E1103
@@ -68,7 +66,7 @@ def patient_create(request, template_name="patient/register_personal_data.html")
                 phone.patient_id = new_patient.id
                 phone.save()
 
-            messages.success(request, 'Dados pessoais gravados com sucesso.')
+            messages.success(request, _('Personal data successfully written.'))
             return finish_handling_post(request, new_patient.id, 0)
         else:
             if request.POST['cpf']:
@@ -76,9 +74,9 @@ def patient_create(request, template_name="patient/register_personal_data.html")
 
                 if patient_found:
                     if patient_found[0].removed:
-                        patient_form.errors['cpf'][0] = "Já existe participante removido com este CPF."
+                        patient_form.errors['cpf'][0] = _("Participant with this CPF has already removed.")
                     else:
-                        patient_form.errors['cpf'][0] = "Já existe participante cadastrado com este CPF."
+                        patient_form.errors['cpf'][0] = _("There is already registered participant with this CPF.")
     else:
         telephone_formset = telephone_inlineformset()
 
@@ -165,7 +163,7 @@ def patient_update_personal_data(request, patient, context):
                     phone.save()
 
             if patient_form_has_changed or telephone_formset_has_changed:
-                messages.success(request, 'Dados pessoais gravados com sucesso.')
+                messages.success(request, _('Personal data successfully written.'))
 
             return finish_handling_post(request, patient.id, 0)
     else:
@@ -234,13 +232,13 @@ def patient_update_social_demographic_data(request, patient, context):
                             new_social_demographic_data.refrigerator is not None or
                             new_social_demographic_data.freezer is not None or
                             new_social_demographic_data.schooling is not None):
-                        messages.warning(request, 'Classe Social não calculada, pois nem todos os campos necessários '
-                                                  'para o cálculo foram preenchidos.')
+                        messages.warning(request, _('Social class was not calculated, '
+                                                    'because all the necessary fields were not filled.'))
 
                 new_social_demographic_data.changed_by = request.user
                 new_social_demographic_data.save()
 
-                messages.success(request, 'Dados sociodemográficos gravados com sucesso.')
+                messages.success(request, _('Social demographic data successfully written.'))
 
             return finish_handling_post(request, patient.id, 1)
 
@@ -265,7 +263,7 @@ def patient_update_social_history(request, patient, context):
                 new_social_history_data = social_history_form.save(commit=False)
                 new_social_history_data.changed_by = request.user
                 new_social_history_data.save()
-                messages.success(request, 'História social gravada com sucesso.')
+                messages.success(request, _('Social history successfully recorded.'))
 
             return finish_handling_post(request, patient.id, 2)
 
@@ -477,7 +475,7 @@ def patient_view_questionnaires(request, patient, context, is_update):
     patient_questionnaires_data_list = []
 
     # transforming the dictionary to a list in order to sort
-    for key, dictionary in patient_questionnaires_data_dictionary.items():
+    for key, dictionary in list(patient_questionnaires_data_dictionary.items()):
         dictionary['limesurvey_id'] = key
         patient_questionnaires_data_list.append(dictionary)
 
@@ -616,7 +614,8 @@ def search_cid10_ajax(request):
 
         if search_text:
             cid_10_list = ClassificationOfDiseases.objects.filter(Q(abbreviated_description__icontains=search_text) |
-                                                                  Q(description__icontains=search_text))
+                                                                  Q(description__icontains=search_text) |
+                                                                  Q(code__icontains=search_text)).order_by("code")
 
         return render_to_response('patient/ajax_cid10.html', {'cid_10_list': cid_10_list,
                                                               'medical_record': medical_record,
@@ -652,7 +651,7 @@ def medical_record_view(request, patient_id, record_id, template_name="patient/m
         for diagnosis in diagnosis_list:
             complementary_exams_list.append(ComplementaryExam.objects.filter(diagnosis=diagnosis.pk))
 
-        lists_diagnosis_exams = zip(diagnosis_list, complementary_exams_list)
+        lists_diagnosis_exams = list(zip(diagnosis_list, complementary_exams_list))
 
         return render(request, template_name,
                       {'name_patient': current_patient.name,
@@ -686,7 +685,7 @@ def medical_record_update(request, patient_id, record_id, template_name="patient
         for diagnosis in diagnosis_list:
             complementary_exams_list.append(ComplementaryExam.objects.filter(diagnosis=diagnosis.pk))
 
-        lists_diagnosis_exams = zip(diagnosis_list, complementary_exams_list)
+        lists_diagnosis_exams = list(zip(diagnosis_list, complementary_exams_list))
 
         if request.method == "POST":
 
@@ -710,13 +709,13 @@ def medical_record_update(request, patient_id, record_id, template_name="patient
                         diagnosis.date = None
 
                     diagnosis.save()
-                    messages.success(request, 'Detalhes do diagnóstico alterados com sucesso.')
+                    messages.success(request, _('Diagnosis details successfully changed.'))
 
                     redirect_url = reverse("medical_record_edit", args=(patient_id, record_id))
                     return HttpResponseRedirect(redirect_url + "?status=edit")
 
                 except ValueError:
-                    messages.error(request, "Data incorreta. Utilize o formato dd/mm/yyyy.")
+                    messages.error(request, _("Incorrect date. Use format: mm/dd/yyyy"))
 
         return render(request, template_name,
                       {'name_patient': current_patient.name,
@@ -739,7 +738,7 @@ def diagnosis_create(request, patient_id, medical_record_id, cid10_id):
     cid10 = ClassificationOfDiseases.objects.get(pk=cid10_id)
 
     if Diagnosis.objects.filter(medical_record_data=medical_record).filter(classification_of_diseases=cid10):
-        messages.warning(request, 'Diagnóstico já existente nesta avaliação médica.')
+        messages.warning(request, _('Diagnosis has already exist in this medical assessment.'))
     else:
         diagnosis = Diagnosis(medical_record_data=medical_record, classification_of_diseases=cid10)
         diagnosis.save()
@@ -772,12 +771,12 @@ def medical_record_create_diagnosis_create(request, patient_id, cid10_id):
 def diagnosis_delete(request, patient_id, diagnosis_id):
     exams = ComplementaryExam.objects.filter(diagnosis=diagnosis_id)
     if exams:
-        messages.error(request, 'Diagnóstico não pode ser removido. Remova os exames antes.')
+        messages.error(request, _('Diagnosis can not be deleted. You must delete exams before.'))
         diagnosis = get_object_or_404(Diagnosis, pk=diagnosis_id)
     else:
         diagnosis = get_object_or_404(Diagnosis, pk=diagnosis_id)
         diagnosis.delete()
-        messages.success(request, 'Diagnóstico removido com sucesso.')
+        messages.success(request, _('Diagnosis successfully deleted.'))
 
     medical_record_id = diagnosis.medical_record_data_id
     redirect_url = reverse("medical_record_edit", args=(patient_id, medical_record_id, ))
@@ -805,7 +804,7 @@ def exam_create(request, patient_id, record_id, diagnosis_id, template_name="pat
                     new_file_data = file_form.save(commit=False)
                     new_file_data.exam = new_complementary_exam
                     new_file_data.save()
-                    messages.success(request, 'Exame salvo com sucesso.')
+                    messages.success(request, _('Exam successfully saved.'))
 
                 if request.POST['action'] == "upload":
                     redirect_url = reverse("exam_edit", args=(patient_id, record_id, new_complementary_exam.pk))
@@ -817,7 +816,7 @@ def exam_create(request, patient_id, record_id, diagnosis_id, template_name="pat
 
                 return HttpResponseRedirect(redirect_url + "?status=edit")
         else:
-            messages.error(request, 'Não é possível salvar exame sem arquivos.')
+            messages.error(request, _('It is not possible to save exam without files.'))
 
     else:
         file_form = ExamFileForm(request.POST)
@@ -858,7 +857,7 @@ def exam_edit(request, patient_id, record_id, exam_id, template_name="patient/ex
                         new_file_data.save()
 
                     if request.POST['action'] == "save":
-                        messages.success(request, 'Exame salvo com sucesso.')
+                        messages.success(request, _('Exam successfully saved.'))
                         redirect_url = reverse("medical_record_edit", args=(patient_id, record_id, ))
                         return HttpResponseRedirect(redirect_url + "?status=edit")
                     else:
@@ -866,7 +865,7 @@ def exam_edit(request, patient_id, record_id, exam_id, template_name="patient/ex
                             exam_file_list = ExamFile.objects.filter(exam=exam_id)
                             length = exam_file_list.__len__()
             else:
-                messages.error(request, 'Não é possível salvar exame sem arquivos.')
+                messages.error(request, _('It is not possible to save exam without files.'))
 
         else:
             file_form = ExamFileForm(request.POST)
@@ -921,7 +920,7 @@ def exam_delete(request, patient_id, record_id, exam_id):
 
     if complementary_exam:
         complementary_exam.delete()
-        messages.success(request, 'Exame removido com sucesso.')
+        messages.success(request, _('Exam successfully deleted.'))
 
     redirect_url = reverse("medical_record_edit", args=(patient_id, record_id))
     return HttpResponseRedirect(redirect_url + "?status=edit#tab4")
@@ -932,7 +931,7 @@ def exam_delete(request, patient_id, record_id, exam_id):
 def exam_file_delete(request, exam_file_id):
     exam_file = get_object_or_404(ExamFile, pk=exam_file_id)
     exam_file.delete()
-    messages.success(request, 'Anexo removido com sucesso.')
+    messages.success(request, _('Attachment successfully deleted.'))
 
     complementary_exam = get_object_or_404(ComplementaryExam, pk=exam_file.exam_id)
     diagnosis = get_object_or_404(Diagnosis, pk=complementary_exam.diagnosis_id)
@@ -959,7 +958,8 @@ def get_origin(request):
 
 
 @login_required
-@permission_required('patient.add_questionnaireresponse')
+# TODO: associate the right permission
+# @permission_required('patient.add_medicalrecorddata')
 def questionnaire_response_create(request, patient_id, survey_id,
                                   template_name="experiment/subject_questionnaire_response_form.html"):
 
@@ -1063,14 +1063,14 @@ def questionnaire_response_update(request, questionnaire_response_id,
                     if result == 'Deleted' or result == 'Invalid token ID':
                         can_delete = True
                 else:
-                    if 'status' in result and result['status'] == u'Error: Invalid survey ID':
+                    if 'status' in result and result['status'] == 'Error: Invalid survey ID':
                         can_delete = True
 
                 if can_delete:
                     questionnaire_response.delete()
-                    messages.success(request, 'Preenchimento removido com sucesso')
+                    messages.success(request, _('Fill deleted successfully'))
                 else:
-                    messages.error(request, "Erro ao deletar o preenchimento")
+                    messages.error(request, _("Error trying to delete"))
 
                 redirect_url = reverse("patient_edit", args=(patient.id,)) + "?currentTab=4"
                 return HttpResponseRedirect(redirect_url)
@@ -1124,33 +1124,33 @@ def questionnaire_response_start_fill_questionnaire(request, patient_id, survey)
 
         if not questionnaire_lime_survey.survey_has_token_table(survey.lime_survey_id):
             messages.warning(request,
-                             'Preenchimento não disponível - Tabela de tokens não iniciada')
+                             _('Not available filling - tokens table not started'))
             return None, None
 
         if questionnaire_lime_survey.get_survey_properties(survey.lime_survey_id, 'active') == 'N':
             messages.warning(request,
-                             'Preenchimento não disponível - Questionário não está ativo')
+                             _('Not available filling - questionnaire not active'))
             return None, None
 
         if not check_required_fields(questionnaire_lime_survey, survey.lime_survey_id):
             messages.warning(request,
-                             'Preenchimento não disponível - Questionário não contém campos padronizados')
+                             _('Not available filling - questionnaire does not contain standard fields'))
             return None, None
 
-        result = questionnaire_lime_survey.add_participant(survey.lime_survey_id, patient.name, '',
-                                                           patient.email)
+        result = questionnaire_lime_survey.add_participant(survey.lime_survey_id)
 
         questionnaire_lime_survey.release_session_key()
 
         if not result:
             messages.warning(request,
-                             'Falha ao gerar token para responder questionário. Verifique se o questionário está ativo')
+                             _('Failed to generate token to answer the questionnaire. '
+                               'Make sure the questionnaire is active'))
             return None, None
 
         questionnaire_response.patient = patient
         questionnaire_response.survey = survey
         questionnaire_response.token_id = result['token_id']
-        questionnaire_response.date = datetime.datetime.strptime(request.POST['date'], '%d/%m/%Y')
+        questionnaire_response.date = datetime.datetime.strptime(request.POST['date'], _('%m/%d/%Y'))
         questionnaire_response.questionnaire_responsible = request.user
         questionnaire_response.save()
 
@@ -1251,14 +1251,14 @@ def questionnaire_response_view(request, questionnaire_response_id,
                     if result == 'Deleted' or result == 'Invalid token ID':
                         can_delete = True
                 else:
-                    if 'status' in result and result['status'] == u'Error: Invalid survey ID':
+                    if 'status' in result and result['status'] == 'Error: Invalid survey ID':
                         can_delete = True
 
                 if can_delete:
                     questionnaire_response.delete()
-                    messages.success(request, 'Preenchimento removido com sucesso')
+                    messages.success(request, _('Fill deleted successfully'))
                 else:
-                    messages.error(request, "Erro ao deletar o preenchimento")
+                    messages.error(request, _("Error trying to delete"))
 
                 redirect_url = reverse("patient_edit", args=(questionnaire_response.patient.id,)) + "?currentTab=4"
                 return HttpResponseRedirect(redirect_url)
@@ -1275,7 +1275,8 @@ def questionnaire_response_view(request, questionnaire_response_id,
     token_id = questionnaire_response.token_id
     language_code = request.LANGUAGE_CODE
 
-    survey_title, questionnaire_responses = get_questionnaire_responses(language_code, lime_survey_id, token_id)
+    survey_title, questionnaire_responses = get_questionnaire_responses(language_code, lime_survey_id,
+                                                                        token_id, request)
 
     context = {
         "questionnaire_response_form": questionnaire_response_form,

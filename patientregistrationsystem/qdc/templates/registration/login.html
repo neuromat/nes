@@ -1,20 +1,20 @@
 {% load static %}
+
+{% load i18n admin_static %}
+
 {% block extrahead %}
 
-{#    <script src="http://code.jquery.com/jquery-1.9.1.min.js"></script>#}
-{#    <script src="http://code.jquery.com/jquery-migrate-1.2.1.min.js"></script>#}
+    <title>{% trans "Neuroscience Experiments System - NES" %}</title>
+
     <script src="{% static 'quiz/jquery/jquery-1.9.1.min.js' %}"></script>
     <script src="{% static 'quiz/jquery/jquery-migrate-1.2.1.min.js' %}"></script>
 
-{#    <script src="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/2.0.1/js/toastr.js"></script>#}
     <script src="{% static 'quiz/toastr/toastr.js' %}"></script>
     <script src="{% static 'quiz/js/quiz.js' %}"></script>
 
 {% endblock %}
 {% block extrastyle %}
 
-{#    <link href="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/2.0.1/css/toastr.css" rel="stylesheet"/>#}
-{#    <link href="http://netdna.bootstrapcdn.com/bootstrap/3.0.0/css/bootstrap.min.css" rel="stylesheet">#}
     <link href="{% static 'quiz/toastr/toastr.css' %}" rel="stylesheet"/>
     <link href="{% static 'quiz/bootstrap-3.0.0-dist/css/bootstrap.min.css' %}" rel="stylesheet">
 
@@ -22,7 +22,7 @@
         body {
             padding-top: 40px;
             padding-bottom: 40px;
-            background-color: #eee;
+            background-color: #fff;
         }
 
         .form-signin {
@@ -70,41 +70,47 @@
 {% endblock %}
 {% block content %}
 
-
-
-
     <div class="container">
+
         <form method="post" class="form-signin" action="{% url 'django.contrib.auth.views.login' %}">
             {% csrf_token %}
 
+            <h2 class="form-signin-heading">NES</h2>
+{#            <h2 class="form-signin-heading"><span style="color: #428bca">N</span><span style="color: limegreen">E</span><span style="color: red">S</span></h2>#}
 
-            <h2 class="form-signin-heading">Login</h2>
-            <input id="id_username" type="text" class="form-control" placeholder="Usuario" name="username" required=""
-                   autofocus="">
-            <br/>
+            <div class="container span6 offset3 well ">
 
-            <input type="password" class="form-control" name="password" placeholder="Senha" required="">
+                <div class="row" align="center">
+                    <span style="color: #428bca; font-size: 50px" class="glyphicon glyphicon-user"></span>
+                    <br/><br/>
+                </div>
 
+                <input id="id_username" type="text" class="form-control" placeholder="{% trans "User" %}" name="username" required=""
+                       autofocus=""/>
+                <br/>
 
-            <button class="btn btn-lg btn-primary btn-block" type="submit" value="login">Confirmar</button>
-            <input type="hidden" name="next" value="{{ next }}"/>
+                <input type="password" class="form-control" name="password" placeholder="{% trans "Password" %}" required=""/>
 
-            <div class="checkbox">
-                <label>
-                    <a href="/user/password/reset">Esqueci minha senha</a>
-                </label>
+                <button class="btn btn-lg btn-primary btn-block" type="submit" value="login">{% trans "Login" %}</button>
+
+                <input type="hidden" name="next" value="{{ next }}"/>
+
+                <div class="checkbox">
+                    <label>
+                        <a href="/user/password/reset">{% trans "I forgot my password" %}</a>
+                    </label>
+                </div>
+
             </div>
+
         </form>
 
     </div>
 
-
-
-
     {% if form.errors %}
-        <script>showErrorMessageTemporary('Usuario ou senha invalidos.')</script>
+        <script type="text/javascript">
+            showErrorMessageTemporary(gettext('Invalid user or password.'))
+        </script>
     {% endif %}
-
-
 
 {% endblock %}

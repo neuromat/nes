@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2014-08-15 16:22-0300\n"
+"POT-Creation-Date: 2016-02-25 18:03-0300\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -17,51 +17,1273 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 
-#: models.py:18
-#, python-format
-msgid "CPF %s não é válido"
-msgstr "CPF %s invalid"
-
-#: views.py:437
-msgid "Definir senha"
+#: patient/forms.py:26 patient/tests.py:536
+msgid "Name must be included"
 msgstr ""
 
-#: templates/quiz/ajax_cid10.html:17
-#, fuzzy
-msgid "Nenhuma doença encontrada!"
-msgstr "No patient found!"
+#: patient/forms.py:31 patient/forms.py:134 patient/forms.py:159
+#: patient/views.py:1152
+msgid "%m/%d/%Y"
+msgstr ""
 
-#: templates/quiz/ajax_search.html:11
-msgid "Nenhum paciente encontrado!"
-msgstr "No patient found!"
+#: patient/forms.py:32 patient/forms.py:135 patient/forms.py:160
+msgid "mm/dd/yyyy"
+msgstr ""
 
-msgid "Can add user"
-msgstr "Pode adicionar usuário"
+#: patient/forms.py:33
+msgid "Date of birth must be completed"
+msgstr ""
 
-msgid "Can change user"
-msgstr "Pode alterar usuário"
+#: patient/forms.py:35
+msgid "Gender must be filled"
+msgstr ""
 
-msgid "Can delete user"
-msgstr "Pode remover usuário"
+#: patient/forms.py:50 patient/tests.py:521
+msgid "Incorrect e-mail"
+msgstr ""
 
-msgid "Can add patient"
-msgstr "Pode adicionar paciente"
+#: patient/forms.py:71 patient/forms.py:105 patient/forms.py:109
+#: patient/forms.py:113
+msgid "Yes"
+msgstr ""
 
-msgid "Can change patient"
-msgstr "Pode alterar paciente"
+#: patient/forms.py:71 patient/forms.py:105 patient/forms.py:109
+#: patient/forms.py:113
+msgid "No"
+msgstr ""
 
-msgid "Can delete patient"
-msgstr "Pode remover paciente"
+#: patient/forms.py:86
+msgid "Type in profession"
+msgstr ""
 
-msgid "Can view patient"
-msgstr "Pode ver paciente"
+#: patient/forms.py:87
+msgid "Inform occupation"
+msgstr ""
 
-msgid "Can add medical record data"
-msgstr "Pode adicionar dados de prontuário"
+#: patient/forms.py:89 patient/forms.py:90 patient/forms.py:91
+#: patient/forms.py:92 patient/forms.py:93 patient/forms.py:94
+#: patient/forms.py:95 patient/forms.py:96 patient/forms.py:97
+msgid "4 or +"
+msgstr ""
 
-msgid "Can delete medical record data"
-msgstr "Pode remover dados de prontuário"
+#: patient/forms.py:124
+msgid "Have already used"
+msgstr ""
 
-msgid "Can view medical record"
-msgstr "Pode ver dados de prontuário"
+#: patient/forms.py:124
+msgid "It is using"
+msgstr ""
 
+#: patient/forms.py:125
+msgid "Have never used"
+msgstr ""
+
+#: patient/forms.py:136
+msgid "Date must be completed"
+msgstr ""
+
+#: patient/forms.py:137
+msgid "Description"
+msgstr ""
+
+#: patient/forms.py:138
+msgid "Description must be filled in"
+msgstr ""
+
+#: patient/forms.py:139
+msgid "Doctor"
+msgstr ""
+
+#: patient/forms.py:140 patient/templates/patient/exams.html:140
+msgid "CRM"
+msgstr ""
+
+#: patient/forms.py:141
+msgid "Place of execution"
+msgstr ""
+
+#: patient/forms.py:162
+msgid "Fill date must be filled"
+msgstr ""
+
+#: patient/models.py:18
+msgid "Fill date can not be bigger than today's date."
+msgstr ""
+
+#: patient/models.py:26
+#, python-format
+msgid "CPF %(CPF)s invalid"
+msgstr ""
+
+#: patient/models.py:33
+msgid "Date of birth can't be greater than today date."
+msgstr ""
+
+#: patient/models.py:158
+msgid "Cell phone"
+msgstr ""
+
+#: patient/models.py:159
+msgid "Home phone"
+msgstr ""
+
+#: patient/models.py:160
+msgid "Business"
+msgstr ""
+
+#: patient/models.py:161
+msgid "Main"
+msgstr ""
+
+#: patient/models.py:162
+msgid "Business fax"
+msgstr ""
+
+#: patient/models.py:163
+msgid "Home fax"
+msgstr ""
+
+#: patient/models.py:164
+msgid "Pager"
+msgstr ""
+
+#: patient/models.py:165
+msgid "Other"
+msgstr ""
+
+#: patient/models.py:345
+#, python-format
+msgid "exams/%(patient)s/%(exam)s/%(filename)s"
+msgstr ""
+
+#: patient/models.py:374
+msgid "token id: "
+msgstr ""
+
+#: patient/templates/patient/ajax_cid10.html:17
+msgid "No diseases found!"
+msgstr ""
+
+#: patient/templates/patient/ajax_search.html:11
+msgid "No participants found!"
+msgstr ""
+
+#: patient/templates/patient/busca.html:18
+msgid "Search participant"
+msgstr ""
+
+#: patient/templates/patient/busca.html:20
+#, python-format
+msgid " %(number_of_patients)s registered participants"
+msgstr ""
+
+#: patient/templates/patient/busca.html:24
+msgid "Type the name or the CPF to seek a participant"
+msgstr ""
+
+#: patient/templates/patient/busca.html:33
+msgid "Insert new"
+msgstr ""
+
+#: patient/templates/patient/exams.html:46
+#: patient/templates/patient/medical_record.html:30
+msgid "Home"
+msgstr ""
+
+#: patient/templates/patient/exams.html:47
+#: patient/templates/patient/medical_record.html:31
+msgid "Participants"
+msgstr ""
+
+#: patient/templates/patient/exams.html:55
+#: patient/templates/patient/medical_record.html:37
+msgid "Medical assessment"
+msgstr ""
+
+#: patient/templates/patient/exams.html:58
+#: patient/templates/patient/exams.html:61
+#: patient/templates/patient/exams.html:63
+msgid "Diagnosis and Exams"
+msgstr ""
+
+#: patient/templates/patient/exams.html:68
+msgid "Exam"
+msgstr ""
+
+#: patient/templates/patient/exams.html:70
+msgid "New Exam"
+msgstr ""
+
+#: patient/templates/patient/exams.html:110
+#: patient/templates/patient/medical_record.html:168
+#: patient/templates/patient/medical_record.html:170
+#: patient/templates/patient/register_medical_record.html:21
+msgid "Date"
+msgstr ""
+
+#: patient/templates/patient/exams.html:123
+msgid "Performed in"
+msgstr ""
+
+#: patient/templates/patient/exams.html:131
+msgid "Description "
+msgstr ""
+
+#: patient/templates/patient/exams.html:146
+msgid "Doctor name"
+msgstr ""
+
+#: patient/templates/patient/exams.html:157
+msgid "Attachments"
+msgstr ""
+
+#: patient/templates/patient/exams.html:163
+msgid "(no attachments)"
+msgstr ""
+
+#: patient/templates/patient/exams.html:194
+msgid "Upload"
+msgstr ""
+
+#: patient/templates/patient/exams.html:205
+#: patient/templates/patient/exams.html:236
+#: patient/templates/patient/exams.html:251
+#: patient/templates/patient/medical_record.html:136
+#: patient/templates/patient/medical_record.html:253
+#: patient/templates/patient/register.html:183
+#: patient/templates/patient/register_personal_data.html:271
+msgid "Delete"
+msgstr ""
+
+#: patient/templates/patient/exams.html:210
+#: patient/templates/patient/exams.html:213
+#: patient/templates/patient/exams.html:215
+#: patient/templates/patient/medical_record.html:231
+#: patient/templates/patient/medical_record.html:233
+msgid "Back"
+msgstr ""
+
+#: patient/templates/patient/exams.html:219
+#: patient/templates/patient/medical_record.html:177
+#: patient/templates/patient/register.html:126
+#: patient/templates/patient/register.html:128
+#: patient/templates/patient/register.html:154
+#: patient/templates/patient/register_personal_data.html:336
+msgid "Save"
+msgstr ""
+
+#: patient/templates/patient/exams.html:232
+msgid "Are you sure you want to delete exam?"
+msgstr ""
+
+#: patient/templates/patient/exams.html:235
+#: patient/templates/patient/exams.html:250
+#: patient/templates/patient/medical_record.html:176
+#: patient/templates/patient/medical_record.html:228
+#: patient/templates/patient/medical_record.html:252
+#: patient/templates/patient/register.html:152
+#: patient/templates/patient/register.html:181
+#: patient/templates/patient/register_personal_data.html:335
+#: patient/templates/patient/register_personal_data.html:353
+#: patient/templates/patient/register_personal_data.html:370
+msgid "Cancel"
+msgstr ""
+
+#: patient/templates/patient/exams.html:247
+msgid ""
+"As there are no attachments, the exam will be totally excluded. Do you "
+"confirm deletion?"
+msgstr ""
+
+#: patient/templates/patient/medical_record.html:47
+msgid "Date:"
+msgstr ""
+
+#: patient/templates/patient/medical_record.html:56
+msgid "Responsible:"
+msgstr ""
+
+#: patient/templates/patient/medical_record.html:103
+msgid "Specify diagnosis or disease code (ICD-10)"
+msgstr ""
+
+#: patient/templates/patient/medical_record.html:120
+msgid "Diagnosis"
+msgstr ""
+
+#: patient/templates/patient/medical_record.html:121
+msgid "Exams"
+msgstr ""
+
+#: patient/templates/patient/medical_record.html:127
+msgid "(no diagnosis)"
+msgstr ""
+
+#: patient/templates/patient/medical_record.html:142
+msgid "On "
+msgstr ""
+
+#: patient/templates/patient/medical_record.html:147
+msgid "Edit details"
+msgstr ""
+
+#: patient/templates/patient/medical_record.html:148
+msgid "Detais"
+msgstr ""
+
+#: patient/templates/patient/medical_record.html:162
+#: patient/templates/patient/medical_record.html:163
+#: patient/templates/patient/register_personal_data.html:266
+msgid "Observation"
+msgstr ""
+
+#: patient/templates/patient/medical_record.html:202
+msgid "Insert exam"
+msgstr ""
+
+#: patient/templates/patient/medical_record.html:223
+msgid "Finalize evaluation"
+msgstr ""
+
+#: patient/templates/patient/medical_record.html:249
+msgid "Are you sure you want to delete diagnosis?"
+msgstr ""
+
+#: patient/templates/patient/register.html:47
+#: patient/templates/patient/register.html:64
+msgid "Personal data"
+msgstr ""
+
+#: patient/templates/patient/register.html:50
+#: patient/templates/patient/register.html:66
+msgid "Social demographic data"
+msgstr ""
+
+#: patient/templates/patient/register.html:53
+#: patient/templates/patient/register.html:68
+msgid "Social history"
+msgstr ""
+
+#: patient/templates/patient/register.html:56
+#: patient/templates/patient/register.html:70
+#: patient/templates/patient/register_questionnaires.html:21
+msgid "Medical evaluation"
+msgstr ""
+
+#: patient/templates/patient/register.html:60
+#: patient/templates/patient/register.html:73
+#: patient/templates/patient/register_questionnaires.html:110
+msgid "Questionnaires"
+msgstr ""
+
+#: patient/templates/patient/register.html:116
+msgid "Delete participant"
+msgstr ""
+
+#: patient/templates/patient/register.html:123
+msgid "Save and show before"
+msgstr ""
+
+#: patient/templates/patient/register.html:124
+msgid "Save and show next"
+msgstr ""
+
+#: patient/templates/patient/register.html:131
+msgid "Show before"
+msgstr ""
+
+#: patient/templates/patient/register.html:132
+msgid "Show next"
+msgstr ""
+
+#: patient/templates/patient/register.html:134
+msgid "Edit"
+msgstr ""
+
+#: patient/templates/patient/register.html:149
+msgid "Would you like to save?"
+msgstr ""
+
+#: patient/templates/patient/register.html:153
+msgid "Do not save"
+msgstr ""
+
+#: patient/templates/patient/register.html:165
+msgid ""
+"It is necessary to save personnal data before you can access other tabs."
+msgstr ""
+
+#: patient/templates/patient/register.html:168
+msgid "OK"
+msgstr ""
+
+#: patient/templates/patient/register.html:178
+msgid "Are you sure you want to delete participant?"
+msgstr ""
+
+#: patient/templates/patient/register_medical_record.html:22
+msgid "Responsible"
+msgstr ""
+
+#: patient/templates/patient/register_medical_record.html:50
+msgid "Insert medical record"
+msgstr ""
+
+#: patient/templates/patient/register_personal_data.html:21
+#: patient/templates/patient/register_socialdemographic_data.html:11
+msgid "Basic Information"
+msgstr ""
+
+#: patient/templates/patient/register_personal_data.html:37
+msgid "Full name"
+msgstr ""
+
+#: patient/templates/patient/register_personal_data.html:48
+msgid "Security id"
+msgstr ""
+
+#: patient/templates/patient/register_personal_data.html:66
+msgid "Origin"
+msgstr ""
+
+#: patient/templates/patient/register_personal_data.html:76
+msgid "Medical record"
+msgstr ""
+
+#: patient/templates/patient/register_personal_data.html:88
+msgid "Date of birth"
+msgstr ""
+
+#: patient/templates/patient/register_personal_data.html:106
+msgid "Gender"
+msgstr ""
+
+#: patient/templates/patient/register_personal_data.html:119
+msgid "RG"
+msgstr ""
+
+#: patient/templates/patient/register_personal_data.html:128
+msgid "Marital status"
+msgstr ""
+
+#: patient/templates/patient/register_personal_data.html:140
+#: patient/templates/patient/register_personal_data.html:167
+msgid "Address"
+msgstr ""
+
+#: patient/templates/patient/register_personal_data.html:144
+msgid "Country"
+msgstr ""
+
+#: patient/templates/patient/register_personal_data.html:154
+msgid "Zip code"
+msgstr ""
+
+#: patient/templates/patient/register_personal_data.html:178
+#: patient/templates/patient/register_personal_data.html:256
+msgid "Number"
+msgstr ""
+
+#: patient/templates/patient/register_personal_data.html:189
+msgid "Complement"
+msgstr ""
+
+#: patient/templates/patient/register_personal_data.html:202
+msgid "District"
+msgstr ""
+
+#: patient/templates/patient/register_personal_data.html:213
+msgid "City"
+msgstr ""
+
+#: patient/templates/patient/register_personal_data.html:223
+msgid "State"
+msgstr ""
+
+#: patient/templates/patient/register_personal_data.html:233
+msgid "E-mail"
+msgstr ""
+
+#: patient/templates/patient/register_personal_data.html:248
+msgid "Telephones"
+msgstr ""
+
+#: patient/templates/patient/register_personal_data.html:261
+msgid "Type"
+msgstr ""
+
+#: patient/templates/patient/register_personal_data.html:320
+msgid "Save and include more phones"
+msgstr ""
+
+#: patient/templates/patient/register_personal_data.html:332
+msgid "CPF is not filled in. Would you like saving?"
+msgstr ""
+
+#: patient/templates/patient/register_personal_data.html:347
+msgid ""
+"Participant is already registered\n"
+"                        Click to view record ou Cancel to go back to form."
+msgstr ""
+
+#: patient/templates/patient/register_personal_data.html:364
+msgid ""
+"Participant has already been deleted.\n"
+"                        Click to restore registration or Cancel to register "
+"with same name."
+msgstr ""
+
+#: patient/templates/patient/register_questionnaires.html:29
+#: patient/templates/patient/register_questionnaires.html:121
+msgid "Questionnaire"
+msgstr ""
+
+#: patient/templates/patient/register_questionnaires.html:30
+msgid "Fills"
+msgstr ""
+
+#: patient/templates/patient/register_questionnaires.html:35
+msgid "It is not entrance evaluation anymore"
+msgstr ""
+
+#: patient/templates/patient/register_questionnaires.html:40
+msgid "It must be filled"
+msgstr ""
+
+#: patient/templates/patient/register_questionnaires.html:70
+#: patient/templates/patient/register_questionnaires.html:145
+msgid "Complete"
+msgstr ""
+
+#: patient/templates/patient/register_questionnaires.html:72
+#: patient/templates/patient/register_questionnaires.html:147
+msgid "Incomplete"
+msgstr ""
+
+#: patient/templates/patient/register_questionnaires.html:75
+#: patient/templates/patient/register_questionnaires.html:150
+msgid "No status"
+msgstr ""
+
+#: patient/templates/patient/register_questionnaires.html:85
+msgid "New fill"
+msgstr ""
+
+#: patient/templates/patient/register_questionnaires.html:118
+msgid "Research project"
+msgstr ""
+
+#: patient/templates/patient/register_questionnaires.html:119
+msgid "Experiment"
+msgstr ""
+
+#: patient/templates/patient/register_questionnaires.html:120
+msgid "Group"
+msgstr ""
+
+#: patient/templates/patient/register_questionnaires.html:122
+msgid "Fill"
+msgstr ""
+
+#: patient/templates/patient/register_social_history.html:20
+msgid "Smoker"
+msgstr ""
+
+#: patient/templates/patient/register_social_history.html:33
+msgid "Cigarretes/Day"
+msgstr ""
+
+#: patient/templates/patient/register_social_history.html:42
+msgid "Former smoker"
+msgstr ""
+
+#: patient/templates/patient/register_social_history.html:57
+msgid "Alcoholic"
+msgstr ""
+
+#: patient/templates/patient/register_social_history.html:70
+msgid "Frequency"
+msgstr ""
+
+#: patient/templates/patient/register_social_history.html:79
+msgid "Period"
+msgstr ""
+
+#: patient/templates/patient/register_social_history.html:90
+msgid "Drugs"
+msgstr ""
+
+#: patient/templates/patient/register_socialdemographic_data.html:15
+msgid "Natural of"
+msgstr ""
+
+#: patient/templates/patient/register_socialdemographic_data.html:25
+msgid "Citizenship"
+msgstr ""
+
+#: patient/templates/patient/register_socialdemographic_data.html:37
+msgid "Profession"
+msgstr ""
+
+#: patient/templates/patient/register_socialdemographic_data.html:47
+msgid "Occupation"
+msgstr ""
+
+#: patient/templates/patient/register_socialdemographic_data.html:59
+msgid ""
+"Do you receive some benefit from the municipal level, state or federal "
+"government?"
+msgstr ""
+
+#: patient/templates/patient/register_socialdemographic_data.html:74
+msgid "What form of payment of the treatment performed?"
+msgstr ""
+
+#: patient/templates/patient/register_socialdemographic_data.html:85
+msgid "Religion"
+msgstr ""
+
+#: patient/templates/patient/register_socialdemographic_data.html:94
+msgid "Flesh tone"
+msgstr ""
+
+#: patient/templates/patient/register_socialdemographic_data.html:107
+msgid "Social class"
+msgstr ""
+
+#: patient/templates/patient/register_socialdemographic_data.html:112
+msgid "Schooling"
+msgstr ""
+
+#: patient/templates/patient/register_socialdemographic_data.html:123
+msgid "Amount of familiar comfort items - Brazil 2013 criteria"
+msgstr ""
+
+#: patient/templates/patient/register_socialdemographic_data.html:126
+msgid "TV"
+msgstr ""
+
+#: patient/templates/patient/register_socialdemographic_data.html:137
+msgid "DVD"
+msgstr ""
+
+#: patient/templates/patient/register_socialdemographic_data.html:148
+msgid "Radio"
+msgstr ""
+
+#: patient/templates/patient/register_socialdemographic_data.html:159
+msgid "Bath"
+msgstr ""
+
+#: patient/templates/patient/register_socialdemographic_data.html:170
+msgid "Automobile"
+msgstr ""
+
+#: patient/templates/patient/register_socialdemographic_data.html:181
+msgid "Employed salaried"
+msgstr ""
+
+#: patient/templates/patient/register_socialdemographic_data.html:192
+msgid "Wash machine"
+msgstr ""
+
+#: patient/templates/patient/register_socialdemographic_data.html:203
+msgid "Refrigerator"
+msgstr ""
+
+#: patient/templates/patient/register_socialdemographic_data.html:214
+msgid "Freezer*"
+msgstr ""
+
+#: patient/templates/patient/register_socialdemographic_data.html:229
+msgid "*Independent unit or part of the fridge-freezer"
+msgstr ""
+
+#: patient/templates/patient/register_socialdemographic_data.html:236
+msgid "Calculated social class"
+msgstr ""
+
+#: patient/tests.py:274
+msgid " is not valid"
+msgstr ""
+
+#: patient/tests.py:440 patient/tests.py:452 patient/tests.py:463
+msgid "Social class was not calculated"
+msgstr ""
+
+#: patient/tests.py:451 patient/views.py:241
+msgid "Social demographic data successfully written."
+msgstr ""
+
+#: patient/tests.py:466
+msgid "Less than 1 pack"
+msgstr ""
+
+#: patient/tests.py:469
+msgid "Sporadically"
+msgstr ""
+
+#: patient/tests.py:472
+msgid "Less than 1 year"
+msgstr ""
+
+#: patient/tests.py:506 patient/views.py:266
+msgid "Social history successfully recorded."
+msgstr ""
+
+#: patient/views.py:69 patient/views.py:166
+msgid "Personal data successfully written."
+msgstr ""
+
+#: patient/views.py:77
+msgid "Participant with this CPF has already removed."
+msgstr ""
+
+#: patient/views.py:79
+msgid "There is already registered participant with this CPF."
+msgstr ""
+
+#: patient/views.py:235
+msgid ""
+"Social class was not calculated, because all the necessary fields were not "
+"filled."
+msgstr ""
+
+#: patient/views.py:711
+msgid "Diagnosis details successfully changed."
+msgstr ""
+
+#: patient/views.py:717
+msgid "Incorrect date. Use format: mm/dd/yyyy"
+msgstr ""
+
+#: patient/views.py:740
+msgid "Diagnosis has already exist in this medical assessment."
+msgstr ""
+
+#: patient/views.py:773
+msgid "Diagnosis can not be deleted. You must delete exams before."
+msgstr ""
+
+#: patient/views.py:778
+msgid "Diagnosis successfully deleted."
+msgstr ""
+
+#: patient/views.py:806 patient/views.py:859
+msgid "Exam successfully saved."
+msgstr ""
+
+#: patient/views.py:818 patient/views.py:867
+msgid "It is not possible to save exam without files."
+msgstr ""
+
+#: patient/views.py:922
+msgid "Exam successfully deleted."
+msgstr ""
+
+#: patient/views.py:933
+msgid "Attachment successfully deleted."
+msgstr ""
+
+#: patient/views.py:1070 patient/views.py:1258
+msgid "Fill deleted successfully"
+msgstr ""
+
+#: patient/views.py:1072 patient/views.py:1260
+msgid "Error trying to delete"
+msgstr ""
+
+#: patient/views.py:1126
+msgid "Not available filling - tokens table not started"
+msgstr ""
+
+#: patient/views.py:1131
+msgid "Not available filling - questionnaire not active"
+msgstr ""
+
+#: patient/views.py:1136
+msgid "Not available filling - questionnaire does not contain standard fields"
+msgstr ""
+
+#: patient/views.py:1145
+msgid ""
+"Failed to generate token to answer the questionnaire. Make sure the "
+"questionnaire is active"
+msgstr ""
+
+#~ msgid "Nome deve ser preenchido"
+#~ msgstr "Name must be included"
+
+#~ msgid "dd/mm/aaaa"
+#~ msgstr "mm/dd/yyyy"
+
+#~ msgid "Data de nascimento deve ser preenchida"
+#~ msgstr "Date of birth must be completed"
+
+#~ msgid "Sexo deve ser preenchido"
+#~ msgstr "Gender must be filled"
+
+#~ msgid "E-mail incorreto"
+#~ msgstr "Incorrect e-mail"
+
+#~ msgid "Sim"
+#~ msgstr "Yes"
+
+#~ msgid "Entrar profissão"
+#~ msgstr "Type in profession"
+
+#~ msgid "Entrar ocupação"
+#~ msgstr "Inform occupation"
+
+#~ msgid "4 ou +"
+#~ msgstr "4 or +"
+
+#~ msgid "Já fez"
+#~ msgstr "Have already used"
+
+#~ msgid "Faz"
+#~ msgstr "It is using"
+
+#~ msgid "Nunca fez"
+#~ msgstr "Have never used"
+
+#~ msgid "Data deve ser preenchida"
+#~ msgstr "Date must be completed"
+
+#~ msgid "Descrição deve ser preenchida"
+#~ msgstr "Description must be filled in"
+
+#~ msgid "Médico"
+#~ msgstr "Doctor"
+
+#~ msgid "Local de realização"
+#~ msgstr "Place of execution"
+
+#~ msgid "Data de preenchimento deve ser preenchida"
+#~ msgstr "Fill date must be filled"
+
+#~ msgid "Data de preenchimento não pode ser maior que a data de hoje."
+#~ msgstr "Fill date can not be bigger than today's date."
+
+#~ msgid "Data de nascimento não pode ser maior que a data de hoje."
+#~ msgstr "Date of birth can't be greater than today date."
+
+#~ msgid "Celular"
+#~ msgstr "Cell phone"
+
+#~ msgid "Comercial"
+#~ msgstr "Business"
+
+#~ msgid "Principal"
+#~ msgstr "Main"
+
+#~ msgid "Fax comercial"
+#~ msgstr "Business fax"
+
+#~ msgid "Fax residencial"
+#~ msgstr "Home fax"
+
+#~ msgid "Nenhuma doença encontrada!"
+#~ msgstr "No diseases found!"
+
+#~ msgid "Avaliação médica"
+#~ msgstr "Medical assessment"
+
+#~ msgid "Data"
+#~ msgstr "Date"
+
+#~ msgid "Realizado em"
+#~ msgstr "Performed in"
+
+#~ msgid "Descrição "
+#~ msgstr "Description "
+
+#~ msgid "Nome do médico"
+#~ msgstr "Doctor name"
+
+#~ msgid "Anexos"
+#~ msgstr "Attachments"
+
+#~ msgid "(sem anexos)"
+#~ msgstr "(no attachments)"
+
+#~ msgid "Excluir"
+#~ msgstr "Delete"
+
+#~ msgid "Voltar"
+#~ msgstr "Back"
+
+#~ msgid "Salvar"
+#~ msgstr "Save"
+
+#~ msgid "Tem certeza que deseja excluir o exame?"
+#~ msgstr "Are you sure you want to delete exam?"
+
+#~ msgid ""
+#~ "Como não existem anexos, o exame será excluído totalmente. Confirma "
+#~ "exclusão?"
+#~ msgstr ""
+#~ "As there are no attachments, the exam will be totally excluded. Do you "
+#~ "confirm deletion?"
+
+#~ msgid "Data:"
+#~ msgstr "Date:"
+
+#~ msgid "Responsável:"
+#~ msgstr "Responsible:"
+
+#~ msgid "Especificar o diagnóstico da doença ou o código da doença (CID-10)"
+#~ msgstr "Specify diagnosis or disease code (ICD-10)"
+
+#~ msgid "Remover"
+#~ msgstr "Delete"
+
+#~ msgid "Em "
+#~ msgstr "On "
+
+#~ msgid "Observações"
+#~ msgstr "Observation"
+
+#~ msgid "Observação"
+#~ msgstr "Observation"
+
+#~ msgid "Tem certeza que deseja excluir o diagnóstico?"
+#~ msgstr "Are you sure you want to delete diagnosis?"
+
+#~ msgid "Dados pessoais"
+#~ msgstr "Personal data"
+
+#~ msgid "Dados sociodemográficos"
+#~ msgstr "Social demographic data"
+
+#~ msgid "História social"
+#~ msgstr "Social history"
+
+#~ msgid "Avaliações médicas"
+#~ msgstr "Medical evaluation"
+
+#~ msgid "Questionários"
+#~ msgstr "Questionnaires"
+
+#~ msgid "Salvar e mostrar próxima"
+#~ msgstr "Save and show next"
+
+#~ msgid "Mostrar anterior"
+#~ msgstr "Show before"
+
+#~ msgid "Mostrar próxima"
+#~ msgstr "Show next"
+
+#~ msgid "Deseja salvar?"
+#~ msgstr "Would you like to save?"
+
+#~ msgid "Não salvar"
+#~ msgstr "Do not save"
+
+#~ msgid ""
+#~ "É necessário salvar os dados pessoais antes de poder acessar as demais "
+#~ "abas."
+#~ msgstr ""
+#~ "It is necessary to save personnal data before you can access other tabs."
+
+#~ msgid "Tem certeza que deseja excluir o participante?"
+#~ msgstr "Are you sure you want to delete participant?"
+
+#~ msgid "Responsável"
+#~ msgstr "Responsible"
+
+#~ msgid "Inserir avaliação médica"
+#~ msgstr "Insert medical record"
+
+#~ msgid "Informações básicas"
+#~ msgstr "Basic Information"
+
+#~ msgid "Nome completo"
+#~ msgstr "Full name"
+
+#~ msgid "CPF"
+#~ msgstr "Security id"
+
+#~ msgid "Número do prontuário"
+#~ msgstr "Medical record"
+
+#~ msgid "Data de nascimento"
+#~ msgstr "Date of birth"
+
+#~ msgid "Sexo"
+#~ msgstr "Gender"
+
+#~ msgid "Estado civil"
+#~ msgstr "Marital status"
+
+#~ msgid "Endereço"
+#~ msgstr "Address"
+
+#~ msgid "País"
+#~ msgstr "Country"
+
+#~ msgid "CEP"
+#~ msgstr "Zip code"
+
+#~ msgid "Número"
+#~ msgstr "Number"
+
+#~ msgid "Bairro"
+#~ msgstr "District"
+
+#~ msgid "Cidade"
+#~ msgstr "City"
+
+#~ msgid "Estado"
+#~ msgstr "State"
+
+#~ msgid "Tipo"
+#~ msgstr "Type"
+
+#~ msgid "Apagar"
+#~ msgstr "Delete"
+
+#~ msgid "Salvar e incluir mais telefones"
+#~ msgstr "Save and include more phones"
+
+#~ msgid "CPF não foi preenchido. Deseja salvar?"
+#~ msgstr "CPF is not filled in. Would you like saving?"
+
+#~ msgid ""
+#~ "Participante já cadastrado.\n"
+#~ "                            Clique para visualizar registro ou Cancelar "
+#~ "para voltar ao formulário.\n"
+#~ "                    "
+#~ msgstr ""
+#~ "Participant is already registered.\n"
+#~ "                            Click to view record ou Cancel to go back to "
+#~ "form.\n"
+#~ "                    "
+
+#~ msgid ""
+#~ "Participante já foi excluído anteriormente.\n"
+#~ "                        Clique para restaurar cadastro ou Cancelar para "
+#~ "cadastrar com mesmo nome.\n"
+#~ "                    "
+#~ msgstr ""
+#~ "Participant has already been deleted. \n"
+#~ "                        Click to restore registration or Cancel to "
+#~ "register with same name.\n"
+#~ "                    "
+
+#~ msgid "Avaliações de entrada"
+#~ msgstr "Medical evaluation"
+
+#~ msgid "Questionário"
+#~ msgstr "Questionnaire"
+
+#~ msgid "Preenchimentos"
+#~ msgstr "Fills"
+
+#~ msgid "Não é mais avaliação de entrada"
+#~ msgstr "It is not entrance evaluation anymore"
+
+#~ msgid "Falta preencher"
+#~ msgstr "It must be filled"
+
+#~ msgid "Novo preenchimento"
+#~ msgstr "New fill"
+
+#~ msgid "Questionários de experimentos"
+#~ msgstr "Questionnaires"
+
+#~ msgid "Estudo"
+#~ msgstr "Research project"
+
+#~ msgid "Grupo"
+#~ msgstr "Group"
+
+#~ msgid "Preenchimento"
+#~ msgstr "Fill"
+
+#~ msgid "Tabagismo"
+#~ msgstr "Smoker"
+
+#~ msgid "Ex-tabagista"
+#~ msgstr "Former smoker"
+
+#~ msgid "Etilismo"
+#~ msgstr "Alcoholic"
+
+#~ msgid "Tempo"
+#~ msgstr "Period"
+
+#~ msgid "Uso de drogas ilícitas"
+#~ msgstr "Drugs"
+
+#~ msgid "País de nascimento"
+#~ msgstr "Citizenship"
+
+#~ msgid "Religião (IBGE)"
+#~ msgstr "Religion"
+
+#~ msgid "Cor da pele (IBGE)"
+#~ msgstr "Flesh tone"
+
+#~ msgid "Classe social"
+#~ msgstr "Social class"
+
+#~ msgid "Grau de instrução do chefe de família - Critério Brasil 2013"
+#~ msgstr "Schooling"
+
+#~ msgid "Quantidade de itens de conforto familiar - Critério Brasil 2013"
+#~ msgstr "Amount of familiar comfort items - Brazil 2013 criteria"
+
+#~ msgid "Televisores em cores"
+#~ msgstr "TV"
+
+#~ msgid "Videocassete/DVD"
+#~ msgstr "DVD"
+
+#~ msgid "Rádios"
+#~ msgstr "Radio"
+
+#~ msgid "Banheiros"
+#~ msgstr "Bath"
+
+#~ msgid "Automóveis"
+#~ msgstr "Automobile"
+
+#~ msgid "Empregadas mensalistas"
+#~ msgstr "Employed salaried"
+
+#~ msgid "Máquinas de lavar"
+#~ msgstr "Wash machine"
+
+#~ msgid "Geladeiras"
+#~ msgstr "Refrigerator"
+
+#~ msgid "*Aparelho independente ou parte da geladeira duplex."
+#~ msgstr "*Independent unit or part of the fridge-freezer"
+
+#~ msgid "Dados sociodemográficos gravados com sucesso."
+#~ msgstr "Social demographic data successfully written."
+
+#~ msgid "Menos de 1 maço"
+#~ msgstr "Less than 1 pack"
+
+#~ msgid "Esporadicamente"
+#~ msgstr "Sporadically"
+
+#~ msgid "Menos de 1 ano"
+#~ msgstr "Less than 1 year"
+
+#~ msgid "História social gravada com sucesso."
+#~ msgstr "Social history successfully recorded."
+
+#~ msgid "Informe um endereço de email válido"
+#~ msgstr "Inform a valid e-mail"
+
+#~ msgid "Dados pessoais gravados com sucesso."
+#~ msgstr "Personal data successfully written."
+
+#~ msgid "Já existe participante removido com este CPF."
+#~ msgstr "Participant with this CPF has already removed."
+
+#~ msgid "Já existe participante cadastrado com este CPF."
+#~ msgstr "There is already registered participant with this CPF."
+
+#~ msgid ""
+#~ "Classe Social não calculada, pois nem todos oscampos necessários para o "
+#~ "cálculo foram preenchidos."
+#~ msgstr ""
+#~ "Social class was not calculated, because all the necessary fields were "
+#~ "not filled."
+
+#~ msgid "Detalhes do diagnóstico alterados com sucesso."
+#~ msgstr "Diagnosis details successfully changed."
+
+#~ msgid "Diagnóstico já existente nesta avaliação médica."
+#~ msgstr "Diagnosis has already exist in this medical assessment."
+
+#~ msgid "Diagnóstico não pode ser removido. Remova os exames antes."
+#~ msgstr "Diagnosis can not be deleted. You must delete exams before."
+
+#~ msgid "Diagnóstico removido com sucesso."
+#~ msgstr "Diagnosis successfully deleted."
+
+#~ msgid "Exame salvo com sucesso."
+#~ msgstr "Exam successfully saved."
+
+#~ msgid "Não é possível salvar exame sem arquivos."
+#~ msgstr "It is not possible to salve exam without files."
+
+#~ msgid "Exame removido com sucesso."
+#~ msgstr "Exam successfully deleted."
+
+#~ msgid "Anexo removido com sucesso."
+#~ msgstr "Attachment successfully deleted."
+
+#~ msgid "Preenchimento removido com sucesso"
+#~ msgstr "Fill deleted successfully"
+
+#~ msgid "Erro ao deletar o preenchimento"
+#~ msgstr "Error trying to delete"
+
+#~ msgid "Preenchimento não disponível - Tabela de tokens não iniciada"
+#~ msgstr "Not available filling - tokens table not started"
+
+#~ msgid "Preenchimento não disponível - Questionário não está ativo"
+#~ msgstr "Not available filling - questionnaire not active"
+
+#~ msgid ""
+#~ "Preenchimento não disponível - Questionário não contém campos padronizados"
+#~ msgstr ""
+#~ "Not available filling - questionnaire does not contain standard fields"
+
+#~ msgid "Digite"
+#~ msgstr "Type_the_name_or_the_CPF_to_seek_a participant"
+
+#~ msgid "Você será redirecionado para o questionário. Aguarde."
+#~ msgstr "You will be redirected to questionnaire. Please wait."
+
+#~ msgid "Exame não salvo. Por favor, corrija os campos em destaque"
+#~ msgstr "Exam was not saved. Please, correct the highlighted fields"
+
+#~ msgid "Voce será redirecionado para o questionário. Aguarde."
+#~ msgstr "You will be redirected to questionnaire. Please wait."
+
+#~ msgid "Jo existe participante removido comão este CPF."
+#~ msgstr "Participant with this CPF has already removed."
+
+#~ msgid "Jó existe participante removido com este CPF."
+#~ msgstr "Participant with this CPF has already removed."
+
+#~ msgid "Nao é possível salvar exame sem arquivos."
+#~ msgstr "It is not possible to salve exam without files."
+
+#~ msgid "Avaliacao médica"
+#~ msgstr "Medical evaluation"
+
+#~ msgid "Observacoes"
+#~ msgstr "Observation"
+
+#~ msgid "Endereco"
+#~ msgstr "Address"
+
+#~ msgid "Informacoes basica"
+#~ msgstr "Basic information"
+
+# '--keep-obsolete'
+#~ msgid "Can add user"
+#~ msgstr "Pode adicionar usuário"
+
+#~ msgid "Can change user"
+#~ msgstr "Pode alterar usuário"
+
+#~ msgid "Can delete user"
+#~ msgstr "Pode remover usuário"
+
+#~ msgid "Can add patient"
+#~ msgstr "Pode adicionar paciente"
+
+#~ msgid "Can change patient"
+#~ msgstr "Pode alterar paciente"
+
+#~ msgid "Can delete patient"
+#~ msgstr "Pode remover paciente"

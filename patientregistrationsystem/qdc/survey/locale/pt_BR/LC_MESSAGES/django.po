@@ -1,0 +1,181 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) YEAR THE PACKAGE'S COPYRIGHT HOLDER
+# This file is distributed under the same license as the PACKAGE package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
+#
+#, fuzzy
+msgid ""
+msgstr ""
+"Project-Id-Version: PACKAGE VERSION\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2016-02-25 18:03-0300\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language-Team: LANGUAGE <LL@li.org>\n"
+"Language: \n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=2; plural=(n > 1);\n"
+
+#: survey/templates/survey/survey_list.html:43
+msgid "List of questionnaires"
+msgstr "Lista de questionários"
+
+#: survey/templates/survey/survey_list.html:48
+#: survey/templates/survey/survey_register.html:76
+msgid "Questionnaire"
+msgstr "Questionário"
+
+#: survey/templates/survey/survey_list.html:49
+#: survey/templates/survey/survey_register.html:93
+msgid "Entrance evaluation"
+msgstr "Avaliação de Entrada"
+
+#: survey/templates/survey/survey_list.html:55
+msgid "View"
+msgstr "Visualizar"
+
+#: survey/templates/survey/survey_list.html:64
+msgid "Insert new questionnaire"
+msgstr "Inserir novo questionário"
+
+#: survey/templates/survey/survey_register.html:52
+msgid "Home"
+msgstr "Home"
+
+#: survey/templates/survey/survey_register.html:53
+msgid "Questionnaires"
+msgstr "Questionários"
+
+#: survey/templates/survey/survey_register.html:56
+msgid "New"
+msgstr "Novo"
+
+#: survey/templates/survey/survey_register.html:60
+msgid "Editing"
+msgstr "Edição"
+
+#: survey/templates/survey/survey_register.html:72
+msgid "Questionnaire information"
+msgstr "Informações do questionário"
+
+#: survey/templates/survey/survey_register.html:77
+msgid "Please, select a questionnaire from the list."
+msgstr "Por favor, selecione um questionário da lista."
+
+#: survey/templates/survey/survey_register.html:101
+msgid "Edit"
+msgstr "Editar"
+
+#: survey/templates/survey/survey_register.html:111
+msgid "Answered as entrance evaluation"
+msgstr "Respondido como avaliação de entrada"
+
+#: survey/templates/survey/survey_register.html:118
+#: survey/templates/survey/survey_register.html:199
+msgid "Participant"
+msgstr "Participante"
+
+#: survey/templates/survey/survey_register.html:119
+#: survey/templates/survey/survey_register.html:200
+msgid "Fills"
+msgstr "Preenchimentos"
+
+#: survey/templates/survey/survey_register.html:129
+msgid "It has to be filled"
+msgstr "Falta preencher"
+
+#: survey/templates/survey/survey_register.html:142
+#: survey/templates/survey/survey_register.html:219
+msgid "Complete"
+msgstr "Completo"
+
+#: survey/templates/survey/survey_register.html:144
+#: survey/templates/survey/survey_register.html:221
+msgid "Incomplete"
+msgstr "Incompleto"
+
+#: survey/templates/survey/survey_register.html:147
+#: survey/templates/survey/survey_register.html:224
+msgid "No status"
+msgstr "Sem status"
+
+#: survey/templates/survey/survey_register.html:165
+msgid "Used in experiments"
+msgstr "Usado em experimentos"
+
+#: survey/templates/survey/survey_register.html:172
+msgid "Experiment:"
+msgstr "Experimento:"
+
+#: survey/templates/survey/survey_register.html:176
+msgid "Group:"
+msgstr "Grupo:"
+
+#: survey/templates/survey/survey_register.html:182
+msgid "Set of parent steps:"
+msgstr "Conjunto de passos pai:"
+
+#: survey/templates/survey/survey_register.html:186
+msgid "Step:"
+msgstr "Passo:"
+
+#: survey/templates/survey/survey_register.html:190
+msgid "Name of the use:"
+msgstr "Nome do uso:"
+
+#: survey/templates/survey/survey_register.html:246
+#: survey/templates/survey/survey_register.html:277
+msgid "Delete"
+msgstr "Excluir"
+
+#: survey/templates/survey/survey_register.html:252
+msgid "Save"
+msgstr "Salvar"
+
+#: survey/templates/survey/survey_register.html:256
+#: survey/templates/survey/survey_register.html:276
+msgid "Cancel"
+msgstr "Cancelar"
+
+#: survey/templates/survey/survey_register.html:260
+msgid "Back"
+msgstr "Voltar"
+
+#: survey/templates/survey/survey_register.html:273
+msgid "Are you sure you want to delete questionnaire?"
+msgstr "Tem certeza que deseja excluir o questionário?"
+
+#: survey/views.py:79
+msgid "Questionnaire created successfully."
+msgstr "Questionário criado com sucesso."
+
+#: survey/views.py:111
+msgid "Questionnaire updated successfully."
+msgstr "Questionário atualizado com sucesso."
+
+#: survey/views.py:113
+msgid "There are no changes to save."
+msgstr "Não há alterações para salvar."
+
+#: survey/views.py:342
+msgid "Questionnaire deleted successfully."
+msgstr "Questionário removido com sucesso."
+
+#: survey/views.py:345
+msgid ""
+"It was not possible to delete questionnaire, because there are experimental "
+"answers or steps associated."
+msgstr ""
+"Não foi possível excluir o questionário, pois há respostas ou passos de "
+"experimento associados."
+
+#: survey/views.py:550
+msgid "LimeSurvey did not find fill data for this questionnaire."
+msgstr ""
+"LimeSurvey não encontrou dados de preenchimento para este questionário."
+
+#: survey/views.py:561
+msgid "LimeSurvey unavailable. System running partially."
+msgstr "LimeSurvey indisponível. Sistema funcionando parcialmente."

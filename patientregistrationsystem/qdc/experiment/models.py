@@ -5,26 +5,27 @@ from django.db import models
 from django.core.exceptions import ValidationError
 from django.core.validators import MinValueValidator
 from django.contrib.auth.models import User
+from django.utils.translation import ugettext_lazy as _
 from simple_history.models import HistoricalRecords
 
 from patient.models import Patient, ClassificationOfDiseases
 from survey.models import Survey
 
 TIME_UNITS = (
-    ("ms", "milesegundo(s)"),
-    ("s", "segundo(s)"),
-    ("min", "minuto(s)"),
-    ("h", "hora(s)"),
-    ("d", "dia(s)"),
-    ("w", "semana(s)"),
-    ("mon", "mês (meses)"),
-    ("y", "ano(s)"),
+    ("ms", _("milisecond(s)")),
+    ("s", _("second(s)")),
+    ("min", _("minute(s)")),
+    ("h", _("hour(s)")),
+    ("d", _("day(s)")),
+    ("w", _("week(s)")),
+    ("mon", _("month(s)")),
+    ("y", _("year(s)")),
 )
 
 
 def validate_date_questionnaire_response(value):
     if value > datetime.date.today():
-        raise ValidationError('Data de preenchimento não pode ser maior que a data de hoje.')
+        raise ValidationError(_('Fill date cannot be greater than today.'))
 
 
 class Subject(models.Model):
@@ -34,14 +35,14 @@ class Subject(models.Model):
 class StimulusType(models.Model):
     name = models.CharField(max_length=30, null=False, blank=False)
 
-    def __unicode__(self):
+    def __str__(self):
         return self.name
 
 
 class Keyword(models.Model):
     name = models.CharField(max_length=50, null=False, blank=False)
 
-    def __unicode__(self):
+    def __str__(self):
         return self.name
 
 
@@ -53,7 +54,7 @@ class ResearchProject(models.Model):
     keywords = models.ManyToManyField(Keyword)
     owner = models.ForeignKey(User, null=True, blank=True)
 
-    def __unicode__(self):
+    def __str__(self):
         return self.title
 
     class Meta:
@@ -72,7 +73,7 @@ class Experiment(models.Model):
     history = HistoricalRecords()
     # changed_by = models.ForeignKey('auth.User')
 
-    def __unicode__(self):  # Python 3: def __str__(self):
+    def __str__(self):
         return self.title
 
     @property
@@ -86,13 +87,13 @@ class Experiment(models.Model):
 
 class Component(models.Model):
     COMPONENT_TYPES = (
-        ("block", "Conjunto de passos"),
-        ("instruction", "Instrução"),
-        ("pause", "Pausa"),
-        ("questionnaire", "Questionário"),
-        ("stimulus", "Estímulo"),
-        ("task", "Tarefa para o sujeito"),
-        ("task_experiment", "Tarefa para o experimentador"),
+        ("block", _("Set of steps")),
+        ("instruction", _("Instruction")),
+        ("pause", _("Pause")),
+        ("questionnaire", _("Questionnaire")),
+        ("stimulus", _("Stimulus")),
+        ("task", _("Task for participant")),
+        ("task_experiment", _("Task for experimenter")),
     )
 
     identification = models.CharField(null=False, max_length=50, blank=False)
@@ -184,7 +185,7 @@ class Group(models.Model):
     experiment = models.ForeignKey(Experiment, null=False, blank=False)
     title = models.CharField(null=False, max_length=50, blank=False)
     description = models.TextField(null=False, blank=False)
-    classification_of_diseases = models.ManyToManyField(ClassificationOfDiseases, null=True)
+    classification_of_diseases = models.ManyToManyField(ClassificationOfDiseases)
     experimental_protocol = models.ForeignKey(Component, null=True, on_delete=models.SET_NULL)
 
 
@@ -227,5 +228,5 @@ class QuestionnaireResponse(models.Model):
     def _history_user(self, value):
         self.changed_by = value
 
-    def __unicode__(self):  # Python 3: def __str__(self):
+    def __str__(self):
         return "token id: " + str(self.token_id)
