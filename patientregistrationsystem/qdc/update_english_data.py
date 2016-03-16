@@ -9,9 +9,12 @@ SUFFIX_PT_BR = "_pt_br"
 
 def translate_fixtures_into_english(filename):
     """
-    :param filename:
+    :param filename: fixture json file
     :return: example:
     {'experiment.stimulustype': {'name': {'Somatosensorial': 'Somatosensory', 'Portugues': 'English'}}}
+    experiment.stimulustype - model name
+    name - model field name
+    'Portugues': 'English' - word in Portuguese and its translation in English
     """
     fixture_data = open(filename)
 
@@ -28,8 +31,8 @@ def translate_fixtures_into_english(filename):
             if field in settings.MODELTRANSLATION_CUSTOM_FIELDS:
                 field_name = field
                 break
-        if field_name:
 
+        if field_name:
             field_name_portuguese = field_name + SUFFIX_PT_BR
             field_data_portuguese = element['fields'][field_name_portuguese]
             if field_name not in result[element['model']]:
@@ -67,5 +70,5 @@ def update_translated_data(data):
                     # print(attrib_english, value_english)
 
             # print(record.name_pt_br, record.name_en)
-            print("---------------------------------")
+            # print("---------------------------------")
             record.save()
