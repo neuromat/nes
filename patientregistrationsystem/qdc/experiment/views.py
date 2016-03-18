@@ -18,7 +18,7 @@ from django.utils.translation import ugettext as _, ungettext
 
 from experiment.models import Experiment, Subject, QuestionnaireResponse, SubjectOfGroup, Group, Component, \
     ComponentConfiguration, Questionnaire, Task, Stimulus, Pause, Instruction, Block, \
-    TaskForTheExperimenter, ClassificationOfDiseases, ResearchProject, Keyword
+    TaskForTheExperimenter, ClassificationOfDiseases, ResearchProject, Keyword, EEG
 from experiment.forms import ExperimentForm, QuestionnaireResponseForm, FileForm, GroupForm, InstructionForm, \
     ComponentForm, StimulusForm, BlockForm, ComponentConfigurationForm, ResearchProjectForm, NumberOfUsesToInsertForm
 from patient.models import Patient, QuestionnaireResponse as PatientQuestionnaireResponse
@@ -39,7 +39,8 @@ icon_class = {
     'questionnaire': 'glyphicon glyphicon-list-alt',
     'stimulus': 'glyphicon glyphicon-headphones',
     'task': 'glyphicon glyphicon-check',
-    'task_experiment': 'glyphicon glyphicon-wrench'
+    'task_experiment': 'glyphicon glyphicon-wrench',
+    'eeg': 'glyphicon glyphicon-flash'
 }
 
 delimiter = "-"
@@ -1458,6 +1459,8 @@ def component_create(request, experiment_id, component_type):
                     new_specific_component = Task()
                 elif component_type == 'task_experiment':
                     new_specific_component = TaskForTheExperimenter()
+                elif component_type == 'eeg':
+                    new_specific_component = EEG()
                 elif specific_form.is_valid():
                     new_specific_component = specific_form.save(commit=False)
 
@@ -2032,7 +2035,8 @@ def component_update(request, path_of_the_components):
                 if configuration_form is None:
                     # There is no specific form for a these component types.
                     if component.component_type == "questionnaire" or component.component_type == "task" or \
-                            component.component_type == "task_experiment" or component.component_type == 'pause':
+                            component.component_type == "task_experiment" or component.component_type == 'pause' or \
+                            component.component_type == 'eeg':
                         if component_form.is_valid():
                             # Only save if there was a change.
                             if component_form.has_changed():
@@ -2253,6 +2257,8 @@ def component_add_new(request, path_of_the_components, component_type):
                 new_specific_component = Task()
             elif component_type == 'task_experiment':
                 new_specific_component = TaskForTheExperimenter()
+            elif component_type == 'eeg':
+                new_specific_component = EEG()
             elif specific_form.is_valid():
                 new_specific_component = specific_form.save(commit=False)
 
@@ -2396,7 +2402,8 @@ def component_reuse(request, path_of_the_components, component_id):
             for field in component_form.fields:
                 component_form.fields[field].widget.attrs['disabled'] = True
 
-            if component_type != 'pause' and component_type != 'task' and component_type != 'task_experiment':
+            if component_type != 'pause' and component_type != 'task' and \
+                    component_type != 'task_experiment' and component_type != 'eeg':
                 for field in specific_form.fields:
                     specific_form.fields[field].widget.attrs['disabled'] = True
 

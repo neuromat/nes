@@ -1,0 +1,28 @@
+{% extends "experiment/component_template.html" %}
+
+{% load i18n admin_static %}
+
+{% block breadcrumb %}
+
+    {% if creating %}
+        <li class="active">{% trans "New EEG" %}</li>
+    {% endif %}
+
+{% endblock %}
+
+{% block component_label %}{% trans "the EEG" %}{% endblock %}
+
+{% block component_add_new %}
+    <li role="presentation">
+        <a role="menuitem" tabindex="-1" onclick="redirect_with_number_of_uses('/experiment/component/{{ path_of_the_components }}/add_new/eeg{% if position %}?position={{ position }}{% endif %}')">
+            << {% trans "New EEG" %} >>
+        </a>
+    </li>
+{% endblock %}
+
+{% block component_button_label %}
+    {% trans "New EEG" %}
+{% endblock %}
+
+{% block extra_fields %}
+{% endblock %}

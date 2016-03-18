@@ -10,7 +10,7 @@ from django.shortcuts import get_object_or_404
 
 from experiment.models import Experiment, Group, Subject, \
     QuestionnaireResponse, SubjectOfGroup, ComponentConfiguration, ResearchProject, Keyword, StimulusType, \
-    Component, Task, TaskForTheExperimenter, Stimulus, Instruction, Pause, Questionnaire, Block
+    Component, Task, TaskForTheExperimenter, Stimulus, Instruction, Pause, Questionnaire, Block, EEG
 from patient.models import ClassificationOfDiseases
 from experiment.views import experiment_update, upload_file, research_project_update
 from survey.abc_search_engine import Questionnaires
@@ -101,6 +101,15 @@ class ExperimentalProtocolTest(TestCase):
         self.assertTrue("/experiment/" + str(experiment.id) + "/components" in response.url)
         self.assertTrue(TaskForTheExperimenter.objects.filter(description=description,
                                                               identification=identification).exists())
+
+        identification = 'EEG identification'
+        description = 'EEG description'
+        self.data = {'action': 'save', 'identification': identification, 'description': description}
+        response = self.client.post(reverse("component_new", args=(experiment.id, "eeg")), self.data)
+        self.assertEqual(response.status_code, 302)
+        # Check if redirected to list of components
+        self.assertTrue("/experiment/" + str(experiment.id) + "/components" in response.url)
+        self.assertTrue(EEG.objects.filter(description=description, identification=identification).exists())
 
         self.data = {'action': 'save', 'identification': 'Instruction identification',
                      'description': 'Instruction description', 'text': 'Instruction text'}
@@ -212,6 +221,23 @@ class ExperimentalProtocolTest(TestCase):
             identification="Block identification").first().id)), self.data)
         self.assertEqual(response.status_code, 302)
         self.assertEqual(ComponentConfiguration.objects.count(), 4)
+
+        # Add an eeg step
+        self.data = {'action': 'save',
+                     'identification': 'EEG identification',
+                     'description': 'EEG description',
+                     'type': 'eeg',
+                     'number_of_uses_to_insert': 1}
+        response = self.client.post(reverse("component_add_new", args=(block.id, "eeg")), self.data)
+        self.assertEqual(response.status_code, 302)
+        self.assertEqual(ComponentConfiguration.objects.count(), 5)
+
+        # Reuse an eeg step
+        self.data = {'number_of_uses_to_insert': 1}
+        response = self.client.post(reverse("component_reuse", args=(block.id, EEG.objects.filter(
+            identification="EEG identification").first().id)), self.data)
+        self.assertEqual(response.status_code, 302)
+        self.assertEqual(ComponentConfiguration.objects.count(), 6)
 
     def test_block_component_remove(self):
         experiment = Experiment.objects.first()
