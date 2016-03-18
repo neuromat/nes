@@ -555,9 +555,19 @@ def get_questionnaire_responses(language_code, lime_survey_id, token_id, request
 
 
 def check_limesurvey_access(request, surveys):
+
+    limesurvey_available = is_limesurvey_available(surveys)
+
+    if not limesurvey_available :
+        messages.warning(request, _("LimeSurvey unavailable. System running partially."))
+
+    return limesurvey_available
+
+
+def is_limesurvey_available(surveys):
     limesurvey_available = True
+
     if not surveys.session_key:
         limesurvey_available = False
-        messages.warning(request, _("LimeSurvey unavailable. System running partially."))
 
     return limesurvey_available
