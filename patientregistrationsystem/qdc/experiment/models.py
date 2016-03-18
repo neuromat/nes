@@ -94,6 +94,7 @@ class Component(models.Model):
         ("stimulus", _("Stimulus")),
         ("task", _("Task for participant")),
         ("task_experiment", _("Task for experimenter")),
+        ("eeg", _("EEG")),
     )
 
     identification = models.CharField(null=False, max_length=50, blank=False)
@@ -148,6 +149,11 @@ class Block(Component):
                             choices=((SEQUENCE, "Sequence component"),
                                      (PARALLEL_BLOCK, "Parallel block component")))
 
+    def save(self, *args, **kwargs):
+        super(Component, self).save(*args, **kwargs)
+
+
+class EEG(Component):
     def save(self, *args, **kwargs):
         super(Component, self).save(*args, **kwargs)
 
