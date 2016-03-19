@@ -240,6 +240,36 @@ class ABCSearchEngine(metaclass=ABCMeta):
         return responses_txt
 
     @abstractmethod
+    def get_responses(self, sid, language, fields=None):
+        """ obtains responses from a determined token
+        :param sid: survey ID
+        :param language: language
+        :param fields: filter fields that must be returned
+        :return: responses in the txt format
+        """
+        responses = self.server.export_responses(self.session_key, sid, 'csv', language, 'complete', 'code',
+                                                 'short')   # , 1,9999999, fields)
+
+        if isinstance(responses, str):
+            responses_txt = b64decode(responses)
+        else:
+            responses_txt = responses
+
+        return responses_txt
+
+    @abstractmethod
+    def get_summary(self, sid, stat_name):
+        """
+        :param sid: survey ID
+        :param stat_name: name of the summary option - valid values are 'token_count', 'token_invalid', 'token_sent',
+         'token_opted_out', 'token_completed', 'completed_responses', 'incomplete_responses', 'full_responses' or 'all'
+        :return: summary information
+        """
+        summary_responses = self.server.get_summary(self.session_key, sid, stat_name)
+
+        return summary_responses
+
+    @abstractmethod
     def insert_questions(self, sid, questions_data, format_import_file):
         """ Imports a group of questions from a file
         :param sid: survey ID
@@ -247,7 +277,6 @@ class ABCSearchEngine(metaclass=ABCMeta):
         :param format_import_file: lsg file
         :return:
         """
-
         questions_data_b64 = b64encode(questions_data.encode('utf-8'))
         result = self.server.import_group(self.session_key, sid, questions_data_b64.decode('utf-8'),
                                           format_import_file)  # format_import_file (lsg | csv)
@@ -299,6 +328,19 @@ class ABCSearchEngine(metaclass=ABCMeta):
 
         return question_list
 
+    @abstractmethod
+    def find_tokens_by_questionnaire(self, sid):
+        """
+        :param sid:
+        :return: tokens for specific id
+        """
+        #       list_participants(string $sSessionKey, int $iSurveyID, int $iStart,
+        #   int $iLimit, bool $bUnused, bool|array $aAttributes, array|\struct $aConditions) : array
+
+        tokens = self.server.list_participants(self.session_key, sid, 0, 99999999)
+
+        return tokens
+
 
 class Questionnaires(ABCSearchEngine):
     """ Classe envelope para o API do limesurvey """
@@ -348,6 +390,12 @@ class Questionnaires(ABCSearchEngine):
     def get_responses_by_token(self, sid, token, language):
         return super(Questionnaires, self).get_responses_by_token(sid, token, language)
 
+    def get_responses(self, sid, language, fields=None):
+        return super(Questionnaires, self).get_responses(sid, language, fields)
+
+    def get_summary(self, sid, stat_name):
+        return super(Questionnaires, self).get_summary(sid, stat_name)
+
     def list_questions(self, sid, gid):
         return super(Questionnaires, self).list_questions(sid, gid)
 
@@ -359,3 +407,6 @@ class Questionnaires(ABCSearchEngine):
 
     def insert_questions(self, sid, questions_data, format_import_file):
         return super(Questionnaires, self).insert_questions(sid, questions_data, format_import_file)
+
+    def find_tokens_by_questionnaire(self, sid):
+        return super(Questionnaires, self).find_tokens_by_questionnaire(sid)

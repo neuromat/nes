@@ -170,6 +170,9 @@ PermissionTable = [
     _("Can view questionnaire response"),
     _("Can view research project"),
     _("Can view survey"),
+    _("Can export medical record"),
+    _("Can export patient"),
+    _("Can export questionnaire response"),
 ]
 
 GroupTable = [

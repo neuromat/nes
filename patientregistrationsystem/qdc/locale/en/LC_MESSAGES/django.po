@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2016-02-25 18:03-0300\n"
+"POT-Creation-Date: 2016-03-18 21:37-0300\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -629,28 +629,48 @@ msgstr ""
 msgid "Can view survey"
 msgstr ""
 
-#: add_initial_data.py:176
-msgid "Administrator"
+#: add_initial_data.py:173
+msgid "Can export medical record"
 msgstr ""
 
-#: add_initial_data.py:177
-msgid "Attendant"
+#: add_initial_data.py:174
+msgid "Can export patient"
 msgstr ""
 
-#: add_initial_data.py:178
-msgid "Physiotherapist"
+#: add_initial_data.py:175
+msgid "Can export questionnaire response"
 msgstr ""
 
 #: add_initial_data.py:179
-msgid "Doctor"
+msgid "Administrator"
 msgstr ""
 
 #: add_initial_data.py:180
-msgid "Junior researcher"
+msgid "Attendant"
 msgstr ""
 
 #: add_initial_data.py:181
+msgid "Physiotherapist"
+msgstr ""
+
+#: add_initial_data.py:182
+msgid "Doctor"
+msgstr ""
+
+#: add_initial_data.py:183
+msgid "Junior researcher"
+msgstr ""
+
+#: add_initial_data.py:184
 msgid "Senior researcher"
+msgstr ""
+
+#: export/export.py:96 export/tests.py:174
+msgid "Base path does not exist"
+msgstr ""
+
+#: export/lixo.py:1075 export/views.py:363
+msgid "Export was finished correctly"
 msgstr ""
 
 #: templates/admin/base_site.html:4
