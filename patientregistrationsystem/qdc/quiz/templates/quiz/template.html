@@ -132,10 +132,13 @@
 
         <div class="collapse navbar-collapse navbar-ex1-collapse">
             <ol class="nav navbar-nav navbar-right">
+
+                {% if perms.patient.export_patient or perms.patient.export_questionnaireresponse or perms.patient.export_medicalrecorddata %}
                 <li>
                     <a href="/export/create/" class="btn-default dropdown-toggle navbar-inverse">
                         <span class="glyphicon glyphicon-export"></span> {% trans "Export" %}</a>
                 </li>
+                {% endif %}
                 <li>
 
                     {% get_current_language as LANGUAGE_CODE %}
