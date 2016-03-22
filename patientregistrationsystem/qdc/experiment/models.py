@@ -236,3 +236,22 @@ class QuestionnaireResponse(models.Model):
 
     def __str__(self):
         return "token id: " + str(self.token_id)
+
+
+class FileFormat(models.Model):
+    name = models.CharField(null=False, max_length=50, blank=False)
+    extension = models.CharField(null=False, max_length=20, blank=False)
+    description = models.TextField(null=True, blank=True)
+
+
+class DataFile(models.Model):
+    description = models.TextField(null=False, blank=False)
+    file = models.FileField(upload_to=get_dir, null=False)
+    file_format = models.ForeignKey(FileFormat, null=False, blank=False)
+
+
+class EEGData(models.Model):
+    subject_of_group = models.ForeignKey(SubjectOfGroup, null=False)
+    component_configuration = models.ForeignKey(ComponentConfiguration, null=False, on_delete=models.PROTECT)
+    start_date = models.DateTimeField(null=False, blank=False)
+    end_date = models.DateTimeField(null=True, blank=True)

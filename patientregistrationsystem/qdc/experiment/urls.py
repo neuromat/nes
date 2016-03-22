@@ -52,6 +52,9 @@ urlpatterns = patterns(
     url(r'^questionnaire_response/(?P<questionnaire_response_id>\d+)/$', 'questionnaire_response_view',
         name='questionnaire_response_view'),
 
+    # subject + eeg data
+    url(r'^group/(?P<group_id>\d+)/subject/(?P<subject_id>\d+)/eeg/$', 'subject_eeg_view', name='subject_eeg'),
+
     # experimental protocol components
     url(r'^(?P<experiment_id>\d+)/components/$', 'component_list', name='component_list'),
     url(r'^(?P<experiment_id>\d+)/new_component/(?P<component_type>\w+)/$', 'component_create', name='component_new'),

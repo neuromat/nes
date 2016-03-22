@@ -25,7 +25,7 @@ from patient.models import Patient, QuestionnaireResponse as PatientQuestionnair
 from survey.abc_search_engine import Questionnaires
 
 from survey.models import Survey
-from survey.views import get_questionnaire_responses, check_limesurvey_access, recursively_create_list_of_questionnaires
+from survey.views import get_questionnaire_responses, check_limesurvey_access
 
 from operator import itemgetter
 
@@ -678,8 +678,9 @@ def subjects(request, group_id, template_name="experiment/subjects.html"):
     # Navigate the components of the experimental protocol from the root to see if there is any questionnaire component
     # in this group.
     if group.experimental_protocol is not None:
-        list_of_questionnaires_configuration = recursively_create_list_of_questionnaires(group.experimental_protocol,
-                                                                                         [])
+        list_of_questionnaires_configuration = recursively_create_list_of_steps(group.experimental_protocol,
+                                                                                "questionnaire",
+                                                                                [])
 
         # For each subject of the group...
         for subject_of_group in subject_list:
@@ -732,7 +733,7 @@ def subjects(request, group_id, template_name="experiment/subjects.html"):
                 {'subject': subject_of_group.subject,
                  'number_of_questionnaires_filled': number_of_questionnaires_filled,
                  'total_of_questionnaires': len(list_of_questionnaires_configuration),
-                 'percentage': percentage,
+                 'percentage': int(percentage),
                  'consent': subject_of_group.consent_form})
     else:
         for subject_of_group in subject_list:
@@ -1134,8 +1135,9 @@ def subject_questionnaire_view(request, group_id, subject_id,
     surveys = Questionnaires()
     limesurvey_available = check_limesurvey_access(request, surveys)
 
-    list_of_questionnaires_configuration = recursively_create_list_of_questionnaires(group.experimental_protocol,
-                                                                                     [])
+    list_of_questionnaires_configuration = recursively_create_list_of_steps(group.experimental_protocol,
+                                                                            "questionnaire",
+                                                                            [])
     subject_of_group = get_object_or_404(SubjectOfGroup, group=group, subject=subject)
 
     for questionnaire_configuration in list_of_questionnaires_configuration:
@@ -1187,6 +1189,76 @@ def subject_questionnaire_view(request, group_id, subject_id,
         'limesurvey_available': limesurvey_available,
         'subject': subject,
         'subject_questionnaires': subject_questionnaires,
+    }
+
+    return render(request, template_name, context)
+
+
+@login_required
+@permission_required('experiment.view_researchproject')
+def subject_eeg_view(request, group_id, subject_id,
+                     template_name="experiment/subject_eeg_collection_list.html"):
+
+    group = get_object_or_404(Group, id=group_id)
+    subject = get_object_or_404(Subject, id=subject_id)
+
+    eeg_collections = []
+    can_remove = True
+
+    list_of_eeg_configuration = recursively_create_list_of_steps(group.experimental_protocol, "eeg", [])
+    subject_of_group = get_object_or_404(SubjectOfGroup, group=group, subject=subject)
+
+    for eeg_configuration in list_of_eeg_configuration:
+
+        # questionnaire_responses = QuestionnaireResponse.objects. \
+        #     filter(subject_of_group=subject_of_group, component_configuration=eeg_configuration)
+        #
+        # questionnaire_responses_with_status = []
+
+        # If any questionnaire has responses, the subject can't be removed from the group.
+        # if questionnaire_responses.count() > 0:
+        #     can_remove = False
+
+        # questionnaire = Questionnaire.objects.get(id=eeg_configuration.component.id)
+
+        # for questionnaire_response in questionnaire_responses:
+        #     response_result = surveys.get_participant_properties(questionnaire.survey.lime_survey_id,
+        #                                                          questionnaire_response.token_id,
+        #                                                          "completed")
+        #     questionnaire_responses_with_status.append(
+        #         {'questionnaire_response': questionnaire_response,
+        #          'completed': None if response_result is None else response_result != "N" and response_result != ""}
+        #     )
+
+        eeg_collections.append(
+            {'eeg_configuration': eeg_configuration}
+        )
+
+        # subject_questionnaires.append(
+        #     {'questionnaire_configuration': eeg_configuration,
+        #      'title': surveys.get_survey_title(questionnaire.survey.lime_survey_id),
+        #      'questionnaire_responses': questionnaire_responses_with_status}
+        # )
+
+    # if request.method == "POST":
+    #     if request.POST['action'] == "remove":
+    #         if can_remove:
+    #             get_object_or_404(SubjectOfGroup, group=group, subject=subject).delete()
+    #
+    #             messages.info(request, _('Participant deleted from experiment.'))
+    #             redirect_url = reverse("subjects", args=(group_id,))
+    #             return HttpResponseRedirect(redirect_url)
+    #         else:
+    #             messages.error(request, _("It was not possible to delete participant, "
+    #                                       "because there are answers connected"))
+    #             redirect_url = reverse("subject_questionnaire", args=(group_id, subject_id,))
+    #             return HttpResponseRedirect(redirect_url)
+
+    context = {
+        "can_change": get_can_change(request.user, group.experiment.research_project),
+        'group': group,
+        'subject': subject,
+        'eeg_collections': eeg_collections,
     }
 
     return render(request, template_name, context)
@@ -1911,7 +1983,7 @@ def sort_without_using_order(configuration_list_of_random_components):
         temp_list_of_tuples.append((cc,
                                     cc.component.get_component_type_display(),
                                     cc.component.identification,
-                                    cc.name))
+                                    (cc.name if cc.name else '')))
 
     temp_list_of_tuples.sort(key=itemgetter(1, 2, 3))
 
@@ -2470,3 +2542,22 @@ def component_reuse(request, path_of_the_components, component_id):
         return render(request, template_name, context)
     else:
         raise PermissionDenied
+
+
+def recursively_create_list_of_steps(block_id, component_type, list_of_configurations):
+    # Include into the list the steps of a specific type that belongs to the block
+    configurations = ComponentConfiguration.objects.filter(parent_id=block_id,
+                                                           component__component_type=component_type)
+    list_of_configurations += list(configurations)
+
+    # Look for steps in descendant blocks.
+    block_configurations = ComponentConfiguration.objects.filter(parent_id=block_id,
+                                                                 component__component_type="block")
+
+    for block_configuration in block_configurations:
+        list_of_configurations = recursively_create_list_of_steps(
+            Block.objects.get(id=block_configuration.component.id),
+            component_type,
+            list_of_configurations)
+
+    return list_of_configurations

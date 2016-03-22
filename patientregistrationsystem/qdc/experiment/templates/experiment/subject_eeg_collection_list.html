@@ -1,0 +1,176 @@
+{% extends "quiz/template.html" %}
+{% block activeAdvancedResearchProject %}class="active"{% endblock %}
+
+{% load i18n admin_static %}
+
+{% block header %}
+    <script>
+        $(function(){
+            $("[data-toggle=tooltip]").tooltip();
+        });
+    </script>
+{% endblock %}
+
+{% block form %}
+    <div class="row">
+    <form id="subject_form" method="post">
+    {% csrf_token %}
+{% endblock %}
+
+{% block content %}
+
+    <div class="tab-pane fade in active" id="subjectBreadCrumb">
+        <div class="col-md-10">
+            <ol class="breadcrumb">
+                <li><a href="/home">{% trans "Home" %}</a></li>
+                <li><a href="/experiment/research_project/list">{% trans "Studies" %}</a></li>
+                <li><a href="/experiment/research_project/{{ group.experiment.research_project.id }}">{{ group.experiment.research_project.title }}</a></li>
+                <li><a href="/experiment/{{ group.experiment.id }}">{{ group.experiment.title }}</a></li>
+                <li><a href="/experiment/group/{{ group.id }}">{{ group.title }}</a></li>
+                <li><a href="/experiment/group/{{ group.id }}/subjects/">{% trans "Participant" %}</a></li>
+                <li class="active">{{ subject.patient.name }}</li>
+            </ol>
+        </div>
+    </div>
+
+    {% if messages %}
+        {% for message in messages %}
+
+            {% if message.tags == "success" %}
+                <script>showSuccessMessage('{{ message }}')</script>
+            {% endif %}
+
+            {% if message.tags == "warning" %}
+                <script>showWarningMessage('{{ message }}')</script>
+            {% endif %}
+
+            {% if message.tags == "error" %}
+                <script>showErrorMessage('{{ message }}')</script>
+            {% endif %}
+
+            {% if message.tags == "info" %}
+                <script>showInfoMessage('{{ message }}')</script>
+            {% endif %}
+
+        {% endfor %}
+    {% endif %}
+
+    <div class="tab-pane fade in active" id="menuUserTab">
+        <div class="col-md-10">
+            <div class="row">
+                <div class="col-xs-12 col-sm-12">
+                    <div class="form-group">
+                        <table class="table table-striped">
+                            <thead>
+                            <tr>
+                                <th>{% trans "EEG step" %}</th>
+                                <th>{% trans "EEG data file" %}</th>
+                            </tr>
+                            </thead>
+                            <tbody>
+{#                            {% if eeg_collections|length == 0 %}#}
+                            {% if not eeg_collections %}
+                                <tr>
+                                    <td>{% trans "(No EEG collection)" %}</td>
+                                    <td></td>
+                                </tr>
+                            {% else %}
+                                {% for eeg_collection in eeg_collections %}
+                                    <tr>
+                                        <td>
+                                            <b>{{ eeg_collection.eeg_configuration.component.identification }}</b>
+                                            {% if eeg_collection.eeg_configuration.name %}
+                                                <br/>
+                                                 <blockquote>
+                                                    <i><h6>
+                                                    {{ eeg_collection.eeg_configuration.name }}
+                                                    </h6></i>
+                                                 </blockquote>
+                                            {% endif %}
+                                        </td>
+                                        <td>
+{#                                            <table>#}
+{#                                                {% for response in subject_questionnaire.questionnaire_responses %}#}
+{#                                                    <tr>#}
+{#                                                        <td>#}
+{#                                                            {% if limesurvey_available and response.completed != None %}#}
+{#                                                                <a href="/experiment/questionnaire_response/{% if response.completed == False %}edit/{% endif %}{{ response.questionnaire_response.id }}?origin=experiment_subject" data-toggle="tooltip" data-placement="left" title="{% trans "See details" %}">#}
+{#                                                                    {{ response.questionnaire_response.date }}#}
+{#                                                                </a>#}
+{#                                                            {% else %}#}
+{#                                                                {{ response.questionnaire_response.date }}#}
+{#                                                            {% endif %}#}
+{#                                                        </td>#}
+{#                                                        <td>#}
+{#                                                            {% if limesurvey_available and response.completed != None %}#}
+{#                                                                {% if response.completed %}#}
+{#                                                                    <span class="label label-success">{% trans "Complete" %}</span>#}
+{#                                                                {% else %}#}
+{#                                                                    <span class="label label-warning">{% trans "Incomplete" %}</span>#}
+{#                                                                {% endif %}#}
+{#                                                            {% else %}#}
+{#                                                                <span class="label label-default">{% trans "No status" %}</span>#}
+{#                                                            {% endif %}#}
+{#                                                        </td>#}
+{#                                                    </tr>#}
+{#                                                {% endfor %}#}
+{#                                                <tr>#}
+{#                                                    {% if subject_questionnaire.questionnaire_configuration.number_of_repetitions == None or subject_questionnaire.questionnaire_responses|length < subject_questionnaire.questionnaire_configuration.number_of_repetitions %}#}
+{#                                                        {% if perms.experiment.add_questionnaireresponse and can_change %}#}
+{#                                                            <td colspan="2">#}
+{#                                                                <a href="/experiment/group/{{ group.id }}/subject/{{ subject.id }}/questionnaire/{{ subject_questionnaire.questionnaire_configuration.id }}/add_response/?origin=experiment_subject" class="btn btn-primary {% if not limesurvey_available %} disabled {% endif %}">#}
+{#                                                                    {% trans "New fill" %}#}
+{#                                                                </a>#}
+{#                                                            </td>#}
+{#                                                        {% endif %}#}
+{#                                                    {% endif %}#}
+{#                                                </tr>#}
+{#                                            </table>#}
+                                        </td>
+
+                                    </tr>
+                                {% endfor %}
+                            {% endif %}
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+            <div class="btn-toolbar">
+                <div class="btn-group pull-left">
+                    {% if not creating and perms.experiment.delete_subject and can_change %}
+                        <button type="button" class="btn btn-danger" onclick="$('#modalRemove').modal('show')">{% trans "Delete" %}</button>
+                    {% endif %}
+                </div>
+                <div class="btn-group pull-right">
+                    <a href="/experiment/group/{{ group.id }}/subjects" class="btn" style="background-color: #f5f5f5">{% trans "Back" %}</a>
+                </div>
+            </div>
+
+        </div>
+
+    </div>
+
+    {% if not creating and perms.experiment.delete_subject and can_change %}
+        <div class="modal fade" id="modalRemove" tabindex="-1" role="dialog" aria-labelledby="myModalLabel"
+             aria-hidden="true">
+            <div class="modal-dialog">
+                <div class="modal-content">
+                    <div class="modal-body">
+                        {% trans "Are you sure you want to delete participant?" %}
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-default" data-dismiss="modal">{% trans "Cancel" %}</button>
+                        <button type="submit" class="btn btn-danger" value="remove" name="action">{% trans "Delete" %}</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    {% endif %}
+
+{% endblock %}
+
+{% block end_form %}
+    </form>
+    </div>
+{% endblock %}

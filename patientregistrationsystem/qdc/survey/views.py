@@ -15,10 +15,11 @@ from django.http import HttpResponseRedirect
 from django.shortcuts import get_object_or_404, redirect, render
 from django.utils.translation import ugettext as _
 
+from experiment.views import recursively_create_list_of_steps
 from .models import Survey
 from .forms import SurveyForm
 from patient.models import Patient, QuestionnaireResponse as PatientQuestionnaireResponse
-from experiment.models import ComponentConfiguration, Block, QuestionnaireResponse, Questionnaire, Group
+from experiment.models import ComponentConfiguration, QuestionnaireResponse, Questionnaire, Group
 from survey.abc_search_engine import Questionnaires
 
 
@@ -139,24 +140,6 @@ def survey_update(request, survey_id, template_name="survey/survey_register.html
     return render(request, template_name, context)
 
 
-def recursively_create_list_of_questionnaires(block_id, list_of_questionnaires_configuration):
-    # Include questionnaires of this block to the list.
-    questionnaire_configurations = ComponentConfiguration.objects.filter(parent_id=block_id,
-                                                                         component__component_type="questionnaire")
-    list_of_questionnaires_configuration += list(questionnaire_configurations)
-
-    # Look for questionnaires in descendant blocks.
-    block_configurations = ComponentConfiguration.objects.filter(parent_id=block_id,
-                                                                 component__component_type="block")
-
-    for block_configuration in block_configurations:
-        list_of_questionnaires_configuration = recursively_create_list_of_questionnaires(
-            Block.objects.get(id=block_configuration.component.id),
-            list_of_questionnaires_configuration)
-
-    return list_of_questionnaires_configuration
-
-
 def create_experiments_questionnaire_data_list(survey, surveys):
     # Create a list of questionnaires used in experiments by looking at questionnaires responses. We use a
     # dictionary because it is useful for filtering out duplicate component configurations from the list.
@@ -205,7 +188,7 @@ def create_experiments_questionnaire_data_list(survey, surveys):
     for g in Group.objects.all():
         if g.experimental_protocol is not None:
             list_of_component_configurations_for_questionnaires = \
-                recursively_create_list_of_questionnaires(g.experimental_protocol.id, [])
+                recursively_create_list_of_steps(g.experimental_protocol.id, "questionnaire", [])
 
             for use in list_of_component_configurations_for_questionnaires:
                 q = Questionnaire.objects.get(id=use.component_id)
