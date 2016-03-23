@@ -11,21 +11,23 @@ from django.core.urlresolvers import reverse
 from django.db.models import Q
 from django.db.models.deletion import ProtectedError
 
+
 # from django.forms import HiddenInput
 from django.http import HttpResponseRedirect
 from django.shortcuts import get_object_or_404, redirect, render, render_to_response
-from django.utils.translation import ugettext as _, ungettext
+from django.utils.translation import ugettext as _
 
 from experiment.models import Experiment, Subject, QuestionnaireResponse, SubjectOfGroup, Group, Component, \
     ComponentConfiguration, Questionnaire, Task, Stimulus, Pause, Instruction, Block, \
     TaskForTheExperimenter, ClassificationOfDiseases, ResearchProject, Keyword, EEG
 from experiment.forms import ExperimentForm, QuestionnaireResponseForm, FileForm, GroupForm, InstructionForm, \
-    ComponentForm, StimulusForm, BlockForm, ComponentConfigurationForm, ResearchProjectForm, NumberOfUsesToInsertForm
+    ComponentForm, StimulusForm, BlockForm, ComponentConfigurationForm, ResearchProjectForm, NumberOfUsesToInsertForm, \
+    EEGDataForm, DataFileForm
 from patient.models import Patient, QuestionnaireResponse as PatientQuestionnaireResponse
 from survey.abc_search_engine import Questionnaires
 
 from survey.models import Survey
-from survey.views import get_questionnaire_responses, check_limesurvey_access
+from survey.views import get_questionnaire_responses, check_limesurvey_access, recursively_create_list_of_steps
 
 from operator import itemgetter
 
@@ -1262,6 +1264,54 @@ def subject_eeg_view(request, group_id, subject_id,
     }
 
     return render(request, template_name, context)
+
+
+@login_required
+@permission_required('experiment.add_questionnaireresponse')
+def subject_eeg_data_create(request, group_id, subject_id, eeg_configuration_id,
+                            template_name="experiment/subject_eeg_data_form.html"):
+
+    group = get_object_or_404(Group, id=group_id)
+
+    if get_can_change(request.user, group.experiment.research_project):
+
+        eeg_configuration = get_object_or_404(ComponentConfiguration, id=eeg_configuration_id)
+
+        fail = None
+        redirect_url = None
+        eeg_data_id = None
+
+        eeg_data_form = EEGDataForm(request.POST or None)
+        data_file_form = DataFileForm(request.POST or None)
+    #
+    #     questionnaire_response_form = QuestionnaireResponseForm(request.POST or None)
+    #
+    #     if request.method == "POST":
+    #         if request.POST['action'] == "save":
+    #             redirect_url, questionnaire_response_id = subject_questionnaire_response_start_fill_questionnaire(
+    #                 request, subject_id, group_id, questionnaire_id)
+    #             if not redirect_url:
+    #                 fail = True
+    #             else:
+    #                 fail = False
+    #
+        context = {
+            "can_change": True,
+            "creating": True,
+            "FAIL": fail,
+            "group": group,
+            "eeg_configuration": eeg_configuration,
+            "eeg_data_form": eeg_data_form,
+            "data_file_form": data_file_form,
+            "eeg_data_id": eeg_data_id,
+            "responsible": request.user.get_username(),
+            "subject": get_object_or_404(Subject, pk=subject_id),
+            "URL": redirect_url,
+        }
+
+        return render(request, template_name, context)
+    else:
+        raise PermissionDenied
 
 
 @login_required
@@ -2542,22 +2592,3 @@ def component_reuse(request, path_of_the_components, component_id):
         return render(request, template_name, context)
     else:
         raise PermissionDenied
-
-
-def recursively_create_list_of_steps(block_id, component_type, list_of_configurations):
-    # Include into the list the steps of a specific type that belongs to the block
-    configurations = ComponentConfiguration.objects.filter(parent_id=block_id,
-                                                           component__component_type=component_type)
-    list_of_configurations += list(configurations)
-
-    # Look for steps in descendant blocks.
-    block_configurations = ComponentConfiguration.objects.filter(parent_id=block_id,
-                                                                 component__component_type="block")
-
-    for block_configuration in block_configurations:
-        list_of_configurations = recursively_create_list_of_steps(
-            Block.objects.get(id=block_configuration.component.id),
-            component_type,
-            list_of_configurations)
-
-    return list_of_configurations

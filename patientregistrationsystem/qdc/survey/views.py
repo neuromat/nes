@@ -15,11 +15,10 @@ from django.http import HttpResponseRedirect
 from django.shortcuts import get_object_or_404, redirect, render
 from django.utils.translation import ugettext as _
 
-from experiment.views import recursively_create_list_of_steps
 from .models import Survey
 from .forms import SurveyForm
 from patient.models import Patient, QuestionnaireResponse as PatientQuestionnaireResponse
-from experiment.models import ComponentConfiguration, QuestionnaireResponse, Questionnaire, Group
+from experiment.models import ComponentConfiguration, QuestionnaireResponse, Questionnaire, Group, Block
 from survey.abc_search_engine import Questionnaires
 
 
@@ -138,6 +137,26 @@ def survey_update(request, survey_id, template_name="survey/survey_register.html
         "creating": False}
 
     return render(request, template_name, context)
+
+
+def recursively_create_list_of_steps(block_id, component_type, list_of_configurations):
+    # Include into the list the steps of a specific type that belongs to the block
+    configurations = ComponentConfiguration.objects.filter(parent_id=block_id,
+                                                           component__component_type=component_type)
+    list_of_configurations += list(configurations)
+
+    # Look for steps in descendant blocks.
+    block_configurations = ComponentConfiguration.objects.filter(parent_id=block_id,
+                                                                 component__component_type="block")
+
+    for block_configuration in block_configurations:
+        list_of_configurations = recursively_create_list_of_steps(
+            Block.objects.get(id=block_configuration.component.id),
+            component_type,
+            list_of_configurations)
+
+    return list_of_configurations
+
 
 
 def create_experiments_questionnaire_data_list(survey, surveys):

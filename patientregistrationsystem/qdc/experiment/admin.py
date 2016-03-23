@@ -1,5 +1,5 @@
 from django.contrib import admin
-from experiment.models import Experiment, QuestionnaireResponse, StimulusType
+from experiment.models import Experiment, QuestionnaireResponse, StimulusType, FileFormat
 from simple_history.admin import SimpleHistoryAdmin
 from modeltranslation.admin import TranslationAdmin
 
@@ -12,3 +12,4 @@ class StimulusTypeAdmin(TranslationAdmin):
 
 
 admin.site.register(StimulusType, StimulusTypeAdmin)
+admin.site.register(FileFormat)

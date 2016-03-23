@@ -89,7 +89,7 @@
                                             {% endif %}
                                         </td>
                                         <td>
-{#                                            <table>#}
+                                            <table>
 {#                                                {% for response in subject_questionnaire.questionnaire_responses %}#}
 {#                                                    <tr>#}
 {#                                                        <td>#}
@@ -114,18 +114,14 @@
 {#                                                        </td>#}
 {#                                                    </tr>#}
 {#                                                {% endfor %}#}
-{#                                                <tr>#}
-{#                                                    {% if subject_questionnaire.questionnaire_configuration.number_of_repetitions == None or subject_questionnaire.questionnaire_responses|length < subject_questionnaire.questionnaire_configuration.number_of_repetitions %}#}
-{#                                                        {% if perms.experiment.add_questionnaireresponse and can_change %}#}
-{#                                                            <td colspan="2">#}
-{#                                                                <a href="/experiment/group/{{ group.id }}/subject/{{ subject.id }}/questionnaire/{{ subject_questionnaire.questionnaire_configuration.id }}/add_response/?origin=experiment_subject" class="btn btn-primary {% if not limesurvey_available %} disabled {% endif %}">#}
-{#                                                                    {% trans "New fill" %}#}
-{#                                                                </a>#}
-{#                                                            </td>#}
-{#                                                        {% endif %}#}
-{#                                                    {% endif %}#}
-{#                                                </tr>#}
-{#                                            </table>#}
+                                                <tr>
+                                                    <td colspan="2">
+                                                        <a href="/experiment/group/{{ group.id }}/subject/{{ subject.id }}/eeg/{{ eeg_collection.eeg_configuration.id }}/add_eeg_data" class="btn btn-primary">
+                                                            {% trans "New EEG data file" %}
+                                                        </a>
+                                                    </td>
+                                                </tr>
+                                            </table>
                                         </td>
 
                                     </tr>

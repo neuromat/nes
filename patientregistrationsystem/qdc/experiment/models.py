@@ -243,6 +243,9 @@ class FileFormat(models.Model):
     extension = models.CharField(null=False, max_length=20, blank=False)
     description = models.TextField(null=True, blank=True)
 
+    def __str__(self):
+        return self.name
+
 
 class DataFile(models.Model):
     description = models.TextField(null=False, blank=False)
@@ -253,5 +256,5 @@ class DataFile(models.Model):
 class EEGData(models.Model):
     subject_of_group = models.ForeignKey(SubjectOfGroup, null=False)
     component_configuration = models.ForeignKey(ComponentConfiguration, null=False, on_delete=models.PROTECT)
-    start_date = models.DateTimeField(null=False, blank=False)
-    end_date = models.DateTimeField(null=True, blank=True)
+    date = models.DateField(default=datetime.date.today, null=False, blank=False,
+                            validators=[validate_date_questionnaire_response])
