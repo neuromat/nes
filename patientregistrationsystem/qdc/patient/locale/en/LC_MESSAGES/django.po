@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2016-02-25 18:03-0300\n"
+"POT-Creation-Date: 2016-03-18 21:37-0300\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -17,12 +17,12 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 
-#: patient/forms.py:26 patient/tests.py:536
+#: patient/forms.py:26 patient/tests.py:544
 msgid "Name must be included"
 msgstr ""
 
 #: patient/forms.py:31 patient/forms.py:134 patient/forms.py:159
-#: patient/views.py:1152
+#: patient/views.py:1153
 msgid "%m/%d/%Y"
 msgstr ""
 
@@ -38,7 +38,7 @@ msgstr ""
 msgid "Gender must be filled"
 msgstr ""
 
-#: patient/forms.py:50 patient/tests.py:521
+#: patient/forms.py:50 patient/tests.py:529
 msgid "Incorrect e-mail"
 msgstr ""
 
@@ -119,44 +119,39 @@ msgstr ""
 msgid "Date of birth can't be greater than today date."
 msgstr ""
 
-#: patient/models.py:158
+#: patient/models.py:159
 msgid "Cell phone"
 msgstr ""
 
-#: patient/models.py:159
+#: patient/models.py:160
 msgid "Home phone"
 msgstr ""
 
-#: patient/models.py:160
+#: patient/models.py:161
 msgid "Business"
 msgstr ""
 
-#: patient/models.py:161
+#: patient/models.py:162
 msgid "Main"
 msgstr ""
 
-#: patient/models.py:162
+#: patient/models.py:163
 msgid "Business fax"
 msgstr ""
 
-#: patient/models.py:163
+#: patient/models.py:164
 msgid "Home fax"
 msgstr ""
 
-#: patient/models.py:164
+#: patient/models.py:165
 msgid "Pager"
 msgstr ""
 
-#: patient/models.py:165
+#: patient/models.py:166
 msgid "Other"
 msgstr ""
 
-#: patient/models.py:345
-#, python-format
-msgid "exams/%(patient)s/%(exam)s/%(filename)s"
-msgstr ""
-
-#: patient/models.py:374
+#: patient/models.py:377
 msgid "token id: "
 msgstr ""
 
@@ -372,7 +367,7 @@ msgstr ""
 
 #: patient/templates/patient/register.html:60
 #: patient/templates/patient/register.html:73
-#: patient/templates/patient/register_questionnaires.html:110
+#: patient/templates/patient/register_questionnaires.html:114
 msgid "Questionnaires"
 msgstr ""
 
@@ -534,7 +529,7 @@ msgid ""
 msgstr ""
 
 #: patient/templates/patient/register_questionnaires.html:29
-#: patient/templates/patient/register_questionnaires.html:121
+#: patient/templates/patient/register_questionnaires.html:125
 msgid "Questionnaire"
 msgstr ""
 
@@ -550,38 +545,38 @@ msgstr ""
 msgid "It must be filled"
 msgstr ""
 
-#: patient/templates/patient/register_questionnaires.html:70
-#: patient/templates/patient/register_questionnaires.html:145
+#: patient/templates/patient/register_questionnaires.html:74
+#: patient/templates/patient/register_questionnaires.html:149
 msgid "Complete"
 msgstr ""
 
-#: patient/templates/patient/register_questionnaires.html:72
-#: patient/templates/patient/register_questionnaires.html:147
+#: patient/templates/patient/register_questionnaires.html:76
+#: patient/templates/patient/register_questionnaires.html:151
 msgid "Incomplete"
 msgstr ""
 
-#: patient/templates/patient/register_questionnaires.html:75
-#: patient/templates/patient/register_questionnaires.html:150
+#: patient/templates/patient/register_questionnaires.html:79
+#: patient/templates/patient/register_questionnaires.html:154
 msgid "No status"
 msgstr ""
 
-#: patient/templates/patient/register_questionnaires.html:85
+#: patient/templates/patient/register_questionnaires.html:89
 msgid "New fill"
 msgstr ""
 
-#: patient/templates/patient/register_questionnaires.html:118
+#: patient/templates/patient/register_questionnaires.html:122
 msgid "Research project"
 msgstr ""
 
-#: patient/templates/patient/register_questionnaires.html:119
+#: patient/templates/patient/register_questionnaires.html:123
 msgid "Experiment"
 msgstr ""
 
-#: patient/templates/patient/register_questionnaires.html:120
+#: patient/templates/patient/register_questionnaires.html:124
 msgid "Group"
 msgstr ""
 
-#: patient/templates/patient/register_questionnaires.html:122
+#: patient/templates/patient/register_questionnaires.html:126
 msgid "Fill"
 msgstr ""
 
@@ -703,31 +698,31 @@ msgstr ""
 msgid "Calculated social class"
 msgstr ""
 
-#: patient/tests.py:274
+#: patient/tests.py:282
 msgid " is not valid"
 msgstr ""
 
-#: patient/tests.py:440 patient/tests.py:452 patient/tests.py:463
+#: patient/tests.py:448 patient/tests.py:460 patient/tests.py:471
 msgid "Social class was not calculated"
 msgstr ""
 
-#: patient/tests.py:451 patient/views.py:241
+#: patient/tests.py:459 patient/views.py:241
 msgid "Social demographic data successfully written."
 msgstr ""
 
-#: patient/tests.py:466
+#: patient/tests.py:474
 msgid "Less than 1 pack"
 msgstr ""
 
-#: patient/tests.py:469
+#: patient/tests.py:477
 msgid "Sporadically"
 msgstr ""
 
-#: patient/tests.py:472
+#: patient/tests.py:480
 msgid "Less than 1 year"
 msgstr ""
 
-#: patient/tests.py:506 patient/views.py:266
+#: patient/tests.py:514 patient/views.py:266
 msgid "Social history successfully recorded."
 msgstr ""
 
@@ -749,63 +744,63 @@ msgid ""
 "filled."
 msgstr ""
 
-#: patient/views.py:711
+#: patient/views.py:712
 msgid "Diagnosis details successfully changed."
 msgstr ""
 
-#: patient/views.py:717
+#: patient/views.py:718
 msgid "Incorrect date. Use format: mm/dd/yyyy"
 msgstr ""
 
-#: patient/views.py:740
+#: patient/views.py:741
 msgid "Diagnosis has already exist in this medical assessment."
 msgstr ""
 
-#: patient/views.py:773
+#: patient/views.py:774
 msgid "Diagnosis can not be deleted. You must delete exams before."
 msgstr ""
 
-#: patient/views.py:778
+#: patient/views.py:779
 msgid "Diagnosis successfully deleted."
 msgstr ""
 
-#: patient/views.py:806 patient/views.py:859
+#: patient/views.py:807 patient/views.py:860
 msgid "Exam successfully saved."
 msgstr ""
 
-#: patient/views.py:818 patient/views.py:867
+#: patient/views.py:819 patient/views.py:868
 msgid "It is not possible to save exam without files."
 msgstr ""
 
-#: patient/views.py:922
+#: patient/views.py:923
 msgid "Exam successfully deleted."
 msgstr ""
 
-#: patient/views.py:933
+#: patient/views.py:934
 msgid "Attachment successfully deleted."
 msgstr ""
 
-#: patient/views.py:1070 patient/views.py:1258
+#: patient/views.py:1071 patient/views.py:1259
 msgid "Fill deleted successfully"
 msgstr ""
 
-#: patient/views.py:1072 patient/views.py:1260
+#: patient/views.py:1073 patient/views.py:1261
 msgid "Error trying to delete"
 msgstr ""
 
-#: patient/views.py:1126
+#: patient/views.py:1127
 msgid "Not available filling - tokens table not started"
 msgstr ""
 
-#: patient/views.py:1131
+#: patient/views.py:1132
 msgid "Not available filling - questionnaire not active"
 msgstr ""
 
-#: patient/views.py:1136
+#: patient/views.py:1137
 msgid "Not available filling - questionnaire does not contain standard fields"
 msgstr ""
 
-#: patient/views.py:1145
+#: patient/views.py:1146
 msgid ""
 "Failed to generate token to answer the questionnaire. Make sure the "
 "questionnaire is active"

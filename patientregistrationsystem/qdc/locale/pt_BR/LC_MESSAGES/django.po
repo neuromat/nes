@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2016-02-25 18:03-0300\n"
+"POT-Creation-Date: 2016-03-18 21:37-0300\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -630,29 +630,49 @@ msgstr "Pode ver projeto de pesquisa"
 msgid "Can view survey"
 msgstr "Pode ver questionário"
 
-#: add_initial_data.py:176
+#: add_initial_data.py:173
+msgid "Can export medical record"
+msgstr "Pode exportar dados de registro médico"
+
+#: add_initial_data.py:174
+msgid "Can export patient"
+msgstr "Pode exportar participante"
+
+#: add_initial_data.py:175
+msgid "Can export questionnaire response"
+msgstr "Pode exportar respostas do questionário"
+
+#: add_initial_data.py:179
 msgid "Administrator"
 msgstr "Administrador"
 
-#: add_initial_data.py:177
+#: add_initial_data.py:180
 msgid "Attendant"
 msgstr "Atendente"
 
-#: add_initial_data.py:178
+#: add_initial_data.py:181
 msgid "Physiotherapist"
 msgstr "Fisioterapeuta"
 
-#: add_initial_data.py:179
+#: add_initial_data.py:182
 msgid "Doctor"
 msgstr "Médico"
 
-#: add_initial_data.py:180
+#: add_initial_data.py:183
 msgid "Junior researcher"
 msgstr "Pesquisador júnior"
 
-#: add_initial_data.py:181
+#: add_initial_data.py:184
 msgid "Senior researcher"
 msgstr "Pesquisador sênior"
+
+#: export/export.py:96 export/tests.py:174
+msgid "Base path does not exist"
+msgstr ""
+
+#: export/lixo.py:1075 export/views.py:363
+msgid "Export was finished correctly"
+msgstr ""
 
 #: templates/admin/base_site.html:4
 msgid "QDC site admin test"

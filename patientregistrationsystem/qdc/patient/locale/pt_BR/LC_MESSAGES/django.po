@@ -9,7 +9,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2016-02-25 18:03-0300\n"
+"POT-Creation-Date: 2016-03-18 21:37-0300\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -19,12 +19,12 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=(n > 1);\n"
 
-#: patient/forms.py:26 patient/tests.py:536
+#: patient/forms.py:26 patient/tests.py:544
 msgid "Name must be included"
 msgstr "Nome deve ser preenchido"
 
 #: patient/forms.py:31 patient/forms.py:134 patient/forms.py:159
-#: patient/views.py:1152
+#: patient/views.py:1153
 msgid "%m/%d/%Y"
 msgstr "%d/%m/%Y"
 
@@ -40,7 +40,7 @@ msgstr "Data de nascimento deve ser preenchida"
 msgid "Gender must be filled"
 msgstr "Sexo deve ser preenchido"
 
-#: patient/forms.py:50 patient/tests.py:521
+#: patient/forms.py:50 patient/tests.py:529
 msgid "Incorrect e-mail"
 msgstr "E-mail incorreto"
 
@@ -121,44 +121,39 @@ msgstr "CPF %(CPF)s não é válido"
 msgid "Date of birth can't be greater than today date."
 msgstr "Data de nascimento não pode ser maior que a data de hoje."
 
-#: patient/models.py:158
+#: patient/models.py:159
 msgid "Cell phone"
 msgstr "Celular"
 
-#: patient/models.py:159
+#: patient/models.py:160
 msgid "Home phone"
 msgstr "Residencial"
 
-#: patient/models.py:160
+#: patient/models.py:161
 msgid "Business"
 msgstr "Comercial"
 
-#: patient/models.py:161
+#: patient/models.py:162
 msgid "Main"
 msgstr "Principal"
 
-#: patient/models.py:162
+#: patient/models.py:163
 msgid "Business fax"
 msgstr "Fax comercial"
 
-#: patient/models.py:163
+#: patient/models.py:164
 msgid "Home fax"
 msgstr "Fax residencial"
 
-#: patient/models.py:164
+#: patient/models.py:165
 msgid "Pager"
 msgstr ""
 
-#: patient/models.py:165
+#: patient/models.py:166
 msgid "Other"
 msgstr "Outros"
 
-#: patient/models.py:345
-#, python-format
-msgid "exams/%(patient)s/%(exam)s/%(filename)s"
-msgstr "exames/%(patient)s/%(exam)s/%(filename)s"
-
-#: patient/models.py:374
+#: patient/models.py:377
 msgid "token id: "
 msgstr ""
 
@@ -375,7 +370,7 @@ msgstr "Avaliações médicas"
 
 #: patient/templates/patient/register.html:60
 #: patient/templates/patient/register.html:73
-#: patient/templates/patient/register_questionnaires.html:110
+#: patient/templates/patient/register_questionnaires.html:114
 msgid "Questionnaires"
 msgstr "Questionários"
 
@@ -544,7 +539,7 @@ msgstr ""
 "cadastrar com mesmo nome."
 
 #: patient/templates/patient/register_questionnaires.html:29
-#: patient/templates/patient/register_questionnaires.html:121
+#: patient/templates/patient/register_questionnaires.html:125
 msgid "Questionnaire"
 msgstr "Questionário"
 
@@ -560,38 +555,38 @@ msgstr "Não é mais avaliação de entrada"
 msgid "It must be filled"
 msgstr "Falta preencher"
 
-#: patient/templates/patient/register_questionnaires.html:70
-#: patient/templates/patient/register_questionnaires.html:145
+#: patient/templates/patient/register_questionnaires.html:74
+#: patient/templates/patient/register_questionnaires.html:149
 msgid "Complete"
 msgstr "Completo"
 
-#: patient/templates/patient/register_questionnaires.html:72
-#: patient/templates/patient/register_questionnaires.html:147
+#: patient/templates/patient/register_questionnaires.html:76
+#: patient/templates/patient/register_questionnaires.html:151
 msgid "Incomplete"
 msgstr "Incompleto"
 
-#: patient/templates/patient/register_questionnaires.html:75
-#: patient/templates/patient/register_questionnaires.html:150
+#: patient/templates/patient/register_questionnaires.html:79
+#: patient/templates/patient/register_questionnaires.html:154
 msgid "No status"
 msgstr "Sem status"
 
-#: patient/templates/patient/register_questionnaires.html:85
+#: patient/templates/patient/register_questionnaires.html:89
 msgid "New fill"
 msgstr "Novo preenchimento"
 
-#: patient/templates/patient/register_questionnaires.html:118
+#: patient/templates/patient/register_questionnaires.html:122
 msgid "Research project"
 msgstr "Estudo"
 
-#: patient/templates/patient/register_questionnaires.html:119
+#: patient/templates/patient/register_questionnaires.html:123
 msgid "Experiment"
 msgstr "Experimento"
 
-#: patient/templates/patient/register_questionnaires.html:120
+#: patient/templates/patient/register_questionnaires.html:124
 msgid "Group"
 msgstr "Grupo"
 
-#: patient/templates/patient/register_questionnaires.html:122
+#: patient/templates/patient/register_questionnaires.html:126
 msgid "Fill"
 msgstr "Preenchimento"
 
@@ -714,31 +709,31 @@ msgstr "*Aparelho independente ou parte da geladeira duplex."
 msgid "Calculated social class"
 msgstr "Classe social calculada"
 
-#: patient/tests.py:274
+#: patient/tests.py:282
 msgid " is not valid"
 msgstr " não é válido"
 
-#: patient/tests.py:440 patient/tests.py:452 patient/tests.py:463
+#: patient/tests.py:448 patient/tests.py:460 patient/tests.py:471
 msgid "Social class was not calculated"
 msgstr "Classe Social não calculada"
 
-#: patient/tests.py:451 patient/views.py:241
+#: patient/tests.py:459 patient/views.py:241
 msgid "Social demographic data successfully written."
 msgstr "Dados sociodemográficos gravados com sucesso."
 
-#: patient/tests.py:466
+#: patient/tests.py:474
 msgid "Less than 1 pack"
 msgstr "Menos de 1 maço"
 
-#: patient/tests.py:469
+#: patient/tests.py:477
 msgid "Sporadically"
 msgstr "Esporadicamente"
 
-#: patient/tests.py:472
+#: patient/tests.py:480
 msgid "Less than 1 year"
 msgstr "Menos de 1 ano"
 
-#: patient/tests.py:506 patient/views.py:266
+#: patient/tests.py:514 patient/views.py:266
 msgid "Social history successfully recorded."
 msgstr "História social gravada com sucesso."
 
@@ -762,70 +757,73 @@ msgstr ""
 "Classe Social não calculada, pois nem todos oscampos necessários para o "
 "cálculo foram preenchidos."
 
-#: patient/views.py:711
+#: patient/views.py:712
 msgid "Diagnosis details successfully changed."
 msgstr "Detalhes do diagnóstico alterados com sucesso."
 
-#: patient/views.py:717
+#: patient/views.py:718
 msgid "Incorrect date. Use format: mm/dd/yyyy"
 msgstr "Data incorreta. Utilize o formato dd/mm/yyyy."
 
-#: patient/views.py:740
+#: patient/views.py:741
 msgid "Diagnosis has already exist in this medical assessment."
 msgstr "Diagnóstico já existente nesta avaliação médica."
 
-#: patient/views.py:773
+#: patient/views.py:774
 msgid "Diagnosis can not be deleted. You must delete exams before."
 msgstr "Diagnóstico não pode ser removido. Remova os exames antes."
 
-#: patient/views.py:778
+#: patient/views.py:779
 msgid "Diagnosis successfully deleted."
 msgstr "Diagnóstico removido com sucesso."
 
-#: patient/views.py:806 patient/views.py:859
+#: patient/views.py:807 patient/views.py:860
 msgid "Exam successfully saved."
 msgstr "Exame salvo com sucesso."
 
-#: patient/views.py:818 patient/views.py:867
+#: patient/views.py:819 patient/views.py:868
 msgid "It is not possible to save exam without files."
 msgstr "Não é possível salvar exame sem arquivos."
 
-#: patient/views.py:922
+#: patient/views.py:923
 msgid "Exam successfully deleted."
 msgstr "Exame removido com sucesso."
 
-#: patient/views.py:933
+#: patient/views.py:934
 msgid "Attachment successfully deleted."
 msgstr "Anexo removido com sucesso."
 
-#: patient/views.py:1070 patient/views.py:1258
+#: patient/views.py:1071 patient/views.py:1259
 msgid "Fill deleted successfully"
 msgstr "Preenchimento removido com sucesso"
 
-#: patient/views.py:1072 patient/views.py:1260
+#: patient/views.py:1073 patient/views.py:1261
 msgid "Error trying to delete"
 msgstr "Erro ao deletar o preenchimento"
 
-#: patient/views.py:1126
+#: patient/views.py:1127
 msgid "Not available filling - tokens table not started"
 msgstr "Preenchimento não disponível - Tabela de tokens não iniciada"
 
-#: patient/views.py:1131
+#: patient/views.py:1132
 msgid "Not available filling - questionnaire not active"
 msgstr "Preenchimento não disponível - Questionário não está ativo"
 
-#: patient/views.py:1136
+#: patient/views.py:1137
 msgid "Not available filling - questionnaire does not contain standard fields"
 msgstr ""
 "Preenchimento não disponível - Questionário não contém campos padronizados"
 
-#: patient/views.py:1145
+#: patient/views.py:1146
 msgid ""
 "Failed to generate token to answer the questionnaire. Make sure the "
 "questionnaire is active"
 msgstr ""
 "Falha ao gerar token para responder questionário. Verifique se o "
 "questionário está ativo"
+
+#~ msgid "exams/%(patient)s/%(exam)s/%(filename)s"
+#~ msgstr "exames/%(patient)s/%(exam)s/%(filename)s"
 
 #~ msgid "Inform a valid e-mail"
 #~ msgstr "Informar um e-mail válido"
