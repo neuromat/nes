@@ -684,8 +684,13 @@ def subjects(request, group_id, template_name="experiment/subjects.html"):
                                                                                 "questionnaire",
                                                                                 [])
 
+        list_of_eeg_configuration = recursively_create_list_of_steps(group.experimental_protocol,
+                                                                     "eeg",
+                                                                     [])
+
         # For each subject of the group...
         for subject_of_group in subject_list:
+
             number_of_questionnaires_filled = 0
 
             # For each questionnaire in the experimental protocol of the group...
@@ -726,24 +731,44 @@ def subjects(request, group_id, template_name="experiment/subjects.html"):
                                 amount_of_completed_responses >= questionnaire_configuration.number_of_repetitions):
                         number_of_questionnaires_filled += 1
 
-            percentage = 0
+            percentage_of_questionnaires = 0
 
             if len(list_of_questionnaires_configuration) > 0:
-                percentage = 100 * number_of_questionnaires_filled / len(list_of_questionnaires_configuration)
+                percentage_of_questionnaires = 100 * number_of_questionnaires_filled / len(list_of_questionnaires_configuration)
+
+            # EEG data files
+            number_of_eeg_data_files_uploaded = 0
+
+            # for each component_configuration...
+            for eeg_configuration in list_of_eeg_configuration:
+                eeg_data_files = EEGData.objects.filter(subject_of_group=subject_of_group,
+                                                        component_configuration=eeg_configuration)
+                if len(eeg_data_files):
+                    number_of_eeg_data_files_uploaded += 1
+
+            percentage_of_eeg_data_files_uploaded = 0
+
+            if len(list_of_eeg_configuration) > 0:
+                percentage_of_eeg_data_files_uploaded = 100 * number_of_eeg_data_files_uploaded / len(list_of_eeg_configuration)
 
             subject_list_with_status.append(
                 {'subject': subject_of_group.subject,
                  'number_of_questionnaires_filled': number_of_questionnaires_filled,
                  'total_of_questionnaires': len(list_of_questionnaires_configuration),
-                 'percentage': int(percentage),
-                 'consent': subject_of_group.consent_form})
+                 'percentage_of_questionnaires': int(percentage_of_questionnaires),
+                 'consent': subject_of_group.consent_form,
+                 'number_of_eeg_data_files_uploaded': number_of_eeg_data_files_uploaded,
+                 'total_of_eeg_data_files': len(list_of_eeg_configuration),
+                 'percentage_of_eeg_data_files_uploaded': int(percentage_of_eeg_data_files_uploaded)
+                 },
+            )
     else:
         for subject_of_group in subject_list:
             subject_list_with_status.append(
                 {'subject': subject_of_group.subject,
                  'number_of_questionnaires_filled': 0,
                  'total_of_questionnaires': 0,
-                 'percentage': 0,
+                 'percentage_of_questionnaires': 0,
                  'consent': subject_of_group.consent_form})
 
     surveys.release_session_key()
