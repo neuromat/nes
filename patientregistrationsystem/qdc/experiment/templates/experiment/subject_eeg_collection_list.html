@@ -90,6 +90,20 @@
                                         </td>
                                         <td>
                                             <table>
+                                                {% for eeg_data_file in eeg_collection.eeg_data_files %}
+                                                    <tr>
+                                                        <td>
+                                                            <a href="/experiment/eeg_data/{{ eeg_data_file.id }}" data-toggle="tooltip" data-placement="left" title="{% trans "See details" %}">
+                                                                {{ eeg_data_file.description }}
+                                                            </a>
+                                                        </td>
+                                                        <td>{{ eeg_data_file.date }}</td>
+                                                        <td>{{ eeg_data_file.file_format.name }}</td>
+                                                        <td>{{ eeg_data_file.file.size|filesizeformat }}</td>
+                                                    </tr>
+                                                {% endfor %}
+
+
 {#                                                {% for response in subject_questionnaire.questionnaire_responses %}#}
 {#                                                    <tr>#}
 {#                                                        <td>#}

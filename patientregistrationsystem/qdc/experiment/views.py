@@ -19,10 +19,10 @@ from django.utils.translation import ugettext as _
 
 from experiment.models import Experiment, Subject, QuestionnaireResponse, SubjectOfGroup, Group, Component, \
     ComponentConfiguration, Questionnaire, Task, Stimulus, Pause, Instruction, Block, \
-    TaskForTheExperimenter, ClassificationOfDiseases, ResearchProject, Keyword, EEG
+    TaskForTheExperimenter, ClassificationOfDiseases, ResearchProject, Keyword, EEG, EEGData
 from experiment.forms import ExperimentForm, QuestionnaireResponseForm, FileForm, GroupForm, InstructionForm, \
     ComponentForm, StimulusForm, BlockForm, ComponentConfigurationForm, ResearchProjectForm, NumberOfUsesToInsertForm, \
-    EEGDataForm, DataFileForm
+    EEGDataForm
 from patient.models import Patient, QuestionnaireResponse as PatientQuestionnaireResponse
 from survey.abc_search_engine import Questionnaires
 
@@ -766,7 +766,6 @@ def subject_questionnaire_response_start_fill_questionnaire(request, subject_id,
         questionnaire_config = get_object_or_404(ComponentConfiguration, id=questionnaire_id)
         questionnaire_lime_survey = Questionnaires()
         subject = get_object_or_404(Subject, pk=subject_id)
-        patient = subject.patient
         subject_of_group = get_object_or_404(SubjectOfGroup, subject=subject, group_id=group_id)
         lime_survey_id = Questionnaire.objects.get(id=questionnaire_config.component_id).survey.lime_survey_id
 
@@ -1212,6 +1211,9 @@ def subject_eeg_view(request, group_id, subject_id,
 
     for eeg_configuration in list_of_eeg_configuration:
 
+        eeg_data_files = EEGData.objects.filter(subject_of_group=subject_of_group,
+                                                component_configuration=eeg_configuration)
+
         # questionnaire_responses = QuestionnaireResponse.objects. \
         #     filter(subject_of_group=subject_of_group, component_configuration=eeg_configuration)
         #
@@ -1233,7 +1235,8 @@ def subject_eeg_view(request, group_id, subject_id,
         #     )
 
         eeg_collections.append(
-            {'eeg_configuration': eeg_configuration}
+            {'eeg_configuration': eeg_configuration,
+             'eeg_data_files': eeg_data_files}
         )
 
         # subject_questionnaires.append(
@@ -1277,36 +1280,124 @@ def subject_eeg_data_create(request, group_id, subject_id, eeg_configuration_id,
 
         eeg_configuration = get_object_or_404(ComponentConfiguration, id=eeg_configuration_id)
 
-        fail = None
         redirect_url = None
         eeg_data_id = None
 
-        eeg_data_form = EEGDataForm(request.POST or None)
-        data_file_form = DataFileForm(request.POST or None)
-    #
-    #     questionnaire_response_form = QuestionnaireResponseForm(request.POST or None)
-    #
-    #     if request.method == "POST":
-    #         if request.POST['action'] == "save":
-    #             redirect_url, questionnaire_response_id = subject_questionnaire_response_start_fill_questionnaire(
-    #                 request, subject_id, group_id, questionnaire_id)
-    #             if not redirect_url:
-    #                 fail = True
-    #             else:
-    #                 fail = False
-    #
+        eeg_data_form = EEGDataForm(None)
+
+        if request.method == "POST":
+            if request.POST['action'] == "save":
+
+                eeg_data_form = EEGDataForm(request.POST, request.FILES)
+
+                subject = get_object_or_404(Subject, pk=subject_id)
+                subject_of_group = get_object_or_404(SubjectOfGroup, subject=subject, group_id=group_id)
+
+                eeg_data_added = eeg_data_form.save(commit=False)
+                eeg_data_added.subject_of_group = subject_of_group
+                eeg_data_added.component_configuration = eeg_configuration
+
+                # TODO: it was necessary adding these 2 lines because, I do not why (Evandro),
+                # django raised an error 'EEGData' object has no attribute 'group'
+                eeg_data_added.group = group
+                eeg_data_added.subject = subject
+
+                eeg_data_added.save()
+
+                messages.success(request, _('EEG data collection created successfully.'))
+
+                redirect_url = reverse("subject_eeg_view", args=(group_id, subject_id))
+                return HttpResponseRedirect(redirect_url)
+
         context = {
             "can_change": True,
             "creating": True,
-            "FAIL": fail,
+            "editing": True,
             "group": group,
             "eeg_configuration": eeg_configuration,
             "eeg_data_form": eeg_data_form,
-            "data_file_form": data_file_form,
             "eeg_data_id": eeg_data_id,
-            "responsible": request.user.get_username(),
             "subject": get_object_or_404(Subject, pk=subject_id),
             "URL": redirect_url,
+        }
+
+        return render(request, template_name, context)
+    else:
+        raise PermissionDenied
+
+
+@login_required
+@permission_required('experiment.change_experiment')
+def eeg_data_view(request, eeg_data_id, template_name="experiment/subject_eeg_data_form.html"):
+
+    eeg_data = get_object_or_404(EEGData, pk=eeg_data_id)
+
+    eeg_data_form = EEGDataForm(request.POST or None, instance=eeg_data)
+
+    for field in eeg_data_form.fields:
+        eeg_data_form.fields[field].widget.attrs['disabled'] = True
+
+    if request.method == "POST":
+        if request.POST['action'] == "remove":
+
+            if get_can_change(request.user, eeg_data.subject_of_group.group.experiment.research_project):
+
+                subject_of_group = eeg_data.subject_of_group
+                eeg_data.file.delete()
+                eeg_data.delete()
+                messages.success(request, _('EEG data removed successfully.'))
+                return redirect('subject_eeg_view',
+                                group_id=subject_of_group.group_id,
+                                subject_id=subject_of_group.subject_id)
+            else:
+                raise PermissionDenied
+
+    context = {
+        "can_change": get_can_change(request.user, eeg_data.subject_of_group.group.experiment.research_project),
+        "editing": False,
+        "group": eeg_data.subject_of_group.group,
+        "subject": eeg_data.subject_of_group.subject,
+        "eeg_data_form": eeg_data_form,
+        "eeg_data": eeg_data
+    }
+
+    return render(request, template_name, context)
+
+
+@login_required
+@permission_required('experiment.change_experiment')
+def eeg_data_edit(request, eeg_data_id, template_name="experiment/subject_eeg_data_form.html"):
+
+    eeg_data = get_object_or_404(EEGData, pk=eeg_data_id)
+
+    if get_can_change(request.user, eeg_data.subject_of_group.group.experiment.research_project):
+
+        if request.method == "POST":
+
+            eeg_data_form = EEGDataForm(request.POST, request.FILES, instance=eeg_data)
+
+            if request.POST['action'] == "save":
+                if eeg_data_form.is_valid():
+                    if eeg_data_form.has_changed():
+                        eeg_data_to_update = eeg_data_form.save(commit=False)
+                        eeg_data_to_update.group = eeg_data.subject_of_group.group
+                        eeg_data_to_update.subject = eeg_data.subject_of_group.subject
+                        eeg_data_to_update.save()
+                        messages.success(request, _('EEG data updated successfully.'))
+                    else:
+                        messages.success(request, _('There is no changes to save.'))
+
+                    redirect_url = reverse("eeg_data_view", args=(eeg_data_id,))
+                    return HttpResponseRedirect(redirect_url)
+        else:
+            eeg_data_form = EEGDataForm(None, instance=eeg_data)
+
+        context = {
+            "group": eeg_data.subject_of_group.group,
+            "subject": eeg_data.subject_of_group.subject,
+            "eeg_data_form": eeg_data_form,
+            "eeg_data": eeg_data,
+            "editing": True
         }
 
         return render(request, template_name, context)

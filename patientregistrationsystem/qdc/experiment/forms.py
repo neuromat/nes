@@ -230,23 +230,13 @@ class EEGDataForm(ModelForm):
     class Meta:
         model = EEGData
 
-        fields = [
-            'date',
-        ]
+        fields = ['date', 'file_format', 'description', 'file']
 
         widgets = {
             'date': DateInput(format=_("%m/%d/%Y"),
                               attrs={'class': 'form-control datepicker', 'placeholder': _('mm/dd/yyyy'),
                                      'required': "",
-                                     'data-error': _("Fill date must be filled.")}, )
-        }
-
-
-class DataFileForm(ModelForm):
-    class Meta:
-        model = DataFile
-        fields = ['file_format', 'description', 'file']
-        widgets = {
+                                     'data-error': _("Fill date must be filled.")}, ),
             'file_format': Select(attrs={'class': 'form-control', 'required': "",
                                          'data-error': _('File format must be chosen.')}),
             'description': Textarea(attrs={'class': 'form-control',
