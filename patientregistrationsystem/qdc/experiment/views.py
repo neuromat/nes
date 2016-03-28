@@ -671,11 +671,26 @@ def questionnaire_view(request, group_id, component_configuration_id,
 @login_required
 @permission_required('experiment.view_researchproject')
 def subjects(request, group_id, template_name="experiment/subjects.html"):
+
+    experimental_protocol_info = {'number_of_questionnaires': 0,
+                                  'number_of_eeg_data': 0}
+
     group = get_object_or_404(Group, id=group_id)
-    subject_list = SubjectOfGroup.objects.filter(group=group).order_by('subject__patient__name')
+
+    subject_id = None
+
+    if request.method == "POST" and request.POST['action'][:6] == "remove":
+        subject_id = request.POST['action'][7:]
+        subject_list = \
+            SubjectOfGroup.objects.filter(group=group, subject_id=subject_id).order_by('subject__patient__name')
+    else:
+        subject_list = SubjectOfGroup.objects.filter(group=group).order_by('subject__patient__name')
+
     subject_list_with_status = []
     surveys = Questionnaires()
     limesurvey_available = check_limesurvey_access(request, surveys)
+
+    can_remove = True
 
     # Navigate the components of the experimental protocol from the root to see if there is any questionnaire component
     # in this group.
@@ -687,6 +702,9 @@ def subjects(request, group_id, template_name="experiment/subjects.html"):
         list_of_eeg_configuration = recursively_create_list_of_steps(group.experimental_protocol,
                                                                      "eeg",
                                                                      [])
+
+        experimental_protocol_info = {'number_of_questionnaires': len(list_of_questionnaires_configuration),
+                                      'number_of_eeg_data': len(list_of_eeg_configuration)}
 
         # For each subject of the group...
         for subject_of_group in subject_list:
@@ -734,7 +752,8 @@ def subjects(request, group_id, template_name="experiment/subjects.html"):
             percentage_of_questionnaires = 0
 
             if len(list_of_questionnaires_configuration) > 0:
-                percentage_of_questionnaires = 100 * number_of_questionnaires_filled / len(list_of_questionnaires_configuration)
+                percentage_of_questionnaires = \
+                    100 * number_of_questionnaires_filled / len(list_of_questionnaires_configuration)
 
             # EEG data files
             number_of_eeg_data_files_uploaded = 0
@@ -749,7 +768,14 @@ def subjects(request, group_id, template_name="experiment/subjects.html"):
             percentage_of_eeg_data_files_uploaded = 0
 
             if len(list_of_eeg_configuration) > 0:
-                percentage_of_eeg_data_files_uploaded = 100 * number_of_eeg_data_files_uploaded / len(list_of_eeg_configuration)
+                percentage_of_eeg_data_files_uploaded = \
+                    100 * number_of_eeg_data_files_uploaded / len(list_of_eeg_configuration)
+
+
+            # If any questionnaire has responses or any eeg data file was uploaded,
+            # the subject can't be removed from the group.
+            if number_of_eeg_data_files_uploaded or number_of_questionnaires_filled:
+                can_remove = False
 
             subject_list_with_status.append(
                 {'subject': subject_of_group.subject,
@@ -773,11 +799,27 @@ def subjects(request, group_id, template_name="experiment/subjects.html"):
 
     surveys.release_session_key()
 
+    if request.method == "POST":
+
+        if request.POST['action'][:6] == "remove":
+
+            if can_remove:
+                get_object_or_404(SubjectOfGroup, group=group, subject_id=subject_id).delete()
+
+                messages.info(request, _('Participant deleted from experiment.'))
+            else:
+                messages.error(request, _("It was not possible to delete participant, "
+                                          "because there are answers or eeg data connected"))
+
+            redirect_url = reverse("subjects", args=(group_id,))
+            return HttpResponseRedirect(redirect_url)
+
     context = {
         "can_change": get_can_change(request.user, group.experiment.research_project),
         'group': group,
         'subject_list': subject_list_with_status,
-        "limesurvey_available": limesurvey_available
+        "limesurvey_available": limesurvey_available,
+        "experimental_protocol_info": experimental_protocol_info
     }
 
     return render(request, template_name, context)
@@ -1156,7 +1198,6 @@ def subject_questionnaire_view(request, group_id, subject_id,
     subject = get_object_or_404(Subject, id=subject_id)
 
     subject_questionnaires = []
-    can_remove = True
 
     surveys = Questionnaires()
     limesurvey_available = check_limesurvey_access(request, surveys)
@@ -1171,10 +1212,6 @@ def subject_questionnaire_view(request, group_id, subject_id,
             filter(subject_of_group=subject_of_group, component_configuration=questionnaire_configuration)
 
         questionnaire_responses_with_status = []
-
-        # If any questionnaire has responses, the subject can't be removed from the group.
-        if questionnaire_responses.count() > 0:
-            can_remove = False
 
         questionnaire = Questionnaire.objects.get(id=questionnaire_configuration.component.id)
 
@@ -1194,20 +1231,6 @@ def subject_questionnaire_view(request, group_id, subject_id,
         )
 
     surveys.release_session_key()
-
-    if request.method == "POST":
-        if request.POST['action'] == "remove":
-            if can_remove:
-                get_object_or_404(SubjectOfGroup, group=group, subject=subject).delete()
-
-                messages.info(request, _('Participant deleted from experiment.'))
-                redirect_url = reverse("subjects", args=(group_id,))
-                return HttpResponseRedirect(redirect_url)
-            else:
-                messages.error(request, _("It was not possible to delete participant, "
-                                          "because there are answers connected"))
-                redirect_url = reverse("subject_questionnaire", args=(group_id, subject_id,))
-                return HttpResponseRedirect(redirect_url)
 
     context = {
         "can_change": get_can_change(request.user, group.experiment.research_project),
@@ -1315,24 +1338,26 @@ def subject_eeg_data_create(request, group_id, subject_id, eeg_configuration_id,
 
                 eeg_data_form = EEGDataForm(request.POST, request.FILES)
 
-                subject = get_object_or_404(Subject, pk=subject_id)
-                subject_of_group = get_object_or_404(SubjectOfGroup, subject=subject, group_id=group_id)
+                if eeg_data_form.is_valid():
 
-                eeg_data_added = eeg_data_form.save(commit=False)
-                eeg_data_added.subject_of_group = subject_of_group
-                eeg_data_added.component_configuration = eeg_configuration
+                    subject = get_object_or_404(Subject, pk=subject_id)
+                    subject_of_group = get_object_or_404(SubjectOfGroup, subject=subject, group_id=group_id)
 
-                # TODO: it was necessary adding these 2 lines because, I do not why (Evandro),
-                # django raised an error 'EEGData' object has no attribute 'group'
-                eeg_data_added.group = group
-                eeg_data_added.subject = subject
+                    eeg_data_added = eeg_data_form.save(commit=False)
+                    eeg_data_added.subject_of_group = subject_of_group
+                    eeg_data_added.component_configuration = eeg_configuration
 
-                eeg_data_added.save()
+                    # TODO: it was necessary adding these 2 lines because, I do not why (Evandro),
+                    # django raised an error 'EEGData' object has no attribute 'group'
+                    eeg_data_added.group = group
+                    eeg_data_added.subject = subject
 
-                messages.success(request, _('EEG data collection created successfully.'))
+                    eeg_data_added.save()
 
-                redirect_url = reverse("subject_eeg_view", args=(group_id, subject_id))
-                return HttpResponseRedirect(redirect_url)
+                    messages.success(request, _('EEG data collection created successfully.'))
+
+                    redirect_url = reverse("subject_eeg_view", args=(group_id, subject_id))
+                    return HttpResponseRedirect(redirect_url)
 
         context = {
             "can_change": True,

@@ -68,7 +68,6 @@
                             </tr>
                             </thead>
                             <tbody>
-{#                            {% if eeg_collections|length == 0 %}#}
                             {% if not eeg_collections %}
                                 <tr>
                                     <td>{% trans "(No EEG collection)" %}</td>
@@ -102,32 +101,6 @@
                                                         <td>{{ eeg_data_file.file.size|filesizeformat }}</td>
                                                     </tr>
                                                 {% endfor %}
-
-
-{#                                                {% for response in subject_questionnaire.questionnaire_responses %}#}
-{#                                                    <tr>#}
-{#                                                        <td>#}
-{#                                                            {% if limesurvey_available and response.completed != None %}#}
-{#                                                                <a href="/experiment/questionnaire_response/{% if response.completed == False %}edit/{% endif %}{{ response.questionnaire_response.id }}?origin=experiment_subject" data-toggle="tooltip" data-placement="left" title="{% trans "See details" %}">#}
-{#                                                                    {{ response.questionnaire_response.date }}#}
-{#                                                                </a>#}
-{#                                                            {% else %}#}
-{#                                                                {{ response.questionnaire_response.date }}#}
-{#                                                            {% endif %}#}
-{#                                                        </td>#}
-{#                                                        <td>#}
-{#                                                            {% if limesurvey_available and response.completed != None %}#}
-{#                                                                {% if response.completed %}#}
-{#                                                                    <span class="label label-success">{% trans "Complete" %}</span>#}
-{#                                                                {% else %}#}
-{#                                                                    <span class="label label-warning">{% trans "Incomplete" %}</span>#}
-{#                                                                {% endif %}#}
-{#                                                            {% else %}#}
-{#                                                                <span class="label label-default">{% trans "No status" %}</span>#}
-{#                                                            {% endif %}#}
-{#                                                        </td>#}
-{#                                                    </tr>#}
-{#                                                {% endfor %}#}
                                                 <tr>
                                                     <td colspan="2">
                                                         <a href="/experiment/group/{{ group.id }}/subject/{{ subject.id }}/eeg/{{ eeg_collection.eeg_configuration.id }}/add_eeg_data" class="btn btn-primary">
@@ -147,11 +120,6 @@
                 </div>
             </div>
             <div class="btn-toolbar">
-                <div class="btn-group pull-left">
-                    {% if not creating and perms.experiment.delete_subject and can_change %}
-                        <button type="button" class="btn btn-danger" onclick="$('#modalRemove').modal('show')">{% trans "Delete" %}</button>
-                    {% endif %}
-                </div>
                 <div class="btn-group pull-right">
                     <a href="/experiment/group/{{ group.id }}/subjects" class="btn" style="background-color: #f5f5f5">{% trans "Back" %}</a>
                 </div>
@@ -160,23 +128,6 @@
         </div>
 
     </div>
-
-    {% if not creating and perms.experiment.delete_subject and can_change %}
-        <div class="modal fade" id="modalRemove" tabindex="-1" role="dialog" aria-labelledby="myModalLabel"
-             aria-hidden="true">
-            <div class="modal-dialog">
-                <div class="modal-content">
-                    <div class="modal-body">
-                        {% trans "Are you sure you want to delete participant?" %}
-                    </div>
-                    <div class="modal-footer">
-                        <button type="button" class="btn btn-default" data-dismiss="modal">{% trans "Cancel" %}</button>
-                        <button type="submit" class="btn btn-danger" value="remove" name="action">{% trans "Delete" %}</button>
-                    </div>
-                </div>
-            </div>
-        </div>
-    {% endif %}
 
 {% endblock %}
 

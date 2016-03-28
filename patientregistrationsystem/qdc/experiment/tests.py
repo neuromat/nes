@@ -1268,12 +1268,10 @@ class SubjectTest(TestCase):
         self.assertEqual(count_before_delete_questionnaire_response - 1,
                          count_after_delete_questionnaire_response)
 
-        # Remover participante associado a survey
-        self.data = {'action': 'remove'}
+        # Delete participant from a group
+        self.data = {'action': 'remove-' + str(subject_mock.pk)}
         count_before_delete_subject = SubjectOfGroup.objects.all().filter(group=group).count()
-        response = self.client.post(reverse('subject_questionnaire', args=(group.pk, subject_mock.pk)),
-                                    self.data)
-        self.assertEqual(response.status_code, 302)
+        response = self.client.post(reverse('subjects', args=(group.pk,)),self.data)
         count_after_delete_subject = SubjectOfGroup.objects.all().filter(group=group).count()
         self.assertEqual(count_before_delete_subject - 1, count_after_delete_subject)
 
