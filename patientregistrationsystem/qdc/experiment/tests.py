@@ -579,19 +579,19 @@ class ExperimentTest(TestCase):
         logged = self.client.login(username=USER_USERNAME, password=USER_PWD)
         self.assertEqual(logged, True)
 
+        # Cria um estudo
+        self.research_project = ResearchProject.objects.create(title="Research project title",
+                                                          start_date=datetime.date.today(),
+                                                          description="Research project description")
+        self.research_project.save()
+
     def test_experiment_list(self):
         """
         Testa a listagem de experimentos
         """
 
-        # Cria um estudo
-        research_project = ResearchProject.objects.create(title="Research project title",
-                                                          start_date=datetime.date.today(),
-                                                          description="Research project description")
-        research_project.save()
-
         # lista experimentos do estudo
-        response = self.client.get(reverse("research_project_view", args=[research_project.pk, ]))
+        response = self.client.get(reverse("research_project_view", args=[self.research_project.pk, ]))
         self.assertEqual(response.status_code, 200)
 
         # deve retornar vazia
@@ -599,13 +599,13 @@ class ExperimentTest(TestCase):
 
         # cria um experimento
         experiment_title = "Experimento-1"
-        experiment = Experiment.objects.create(research_project_id=research_project.id,
+        experiment = Experiment.objects.create(research_project_id=self.research_project.id,
                                                title=experiment_title,
                                                description="Descricao do Experimento-1")
         experiment.save()
 
         # lista experimentos: deve retornar 1
-        response = self.client.get(reverse("research_project_view", args=[research_project.pk, ]))
+        response = self.client.get(reverse("research_project_view", args=[self.research_project.pk, ]))
         self.assertEqual(response.status_code, 200)
 
         # deve retornar 1 experimento
@@ -616,25 +616,19 @@ class ExperimentTest(TestCase):
     def test_experiment_create(self):
         """Testa a criacao de um experimento """
 
-        # Create a research project
-        research_project = ResearchProject.objects.create(title="Research project title",
-                                                          start_date=datetime.date.today(),
-                                                          description="Research project description")
-        research_project.save()
-
         # Abre tela de cadastro de experimento
-        response = self.client.get(reverse('experiment_new', args=[research_project.pk, ]))
+        response = self.client.get(reverse('experiment_new', args=[self.research_project.pk, ]))
         self.assertEqual(response.status_code, 200)
 
         # Dados sobre o experimento
         self.data = {'action': 'save', 'description': 'Experimento de Teste', 'title': 'Teste Experimento',
-                     'research_project': research_project.id}
+                     'research_project': self.research_project.id}
 
         # Obtem o total de experimentos existente na tabela
         count_before_insert = Experiment.objects.all().count()
 
         # Efetua a adicao do experimento
-        response = self.client.post(reverse('experiment_new', args=[research_project.pk, ]), self.data)
+        response = self.client.post(reverse('experiment_new', args=[self.research_project.pk, ]), self.data)
 
         # Verifica se o status de retorno é adequado
         self.assertEqual(response.status_code, 302)
@@ -648,14 +642,8 @@ class ExperimentTest(TestCase):
     def test_experiment_update(self):
         """Testa a atualizacao do experimento"""
 
-        # Cria um estudo
-        research_project = ResearchProject.objects.create(title="Research project title",
-                                                          start_date=datetime.date.today(),
-                                                          description="Research project description")
-        research_project.save()
-
         # Criar um experimento para ser utilizado no teste
-        experiment = Experiment.objects.create(research_project_id=research_project.id,
+        experiment = Experiment.objects.create(research_project_id=self.research_project.id,
                                                title="Experimento-Update",
                                                description="Descricao do Experimento-Update")
         experiment.save()
@@ -672,7 +660,7 @@ class ExperimentTest(TestCase):
 
         # Efetua a atualizacao do experimento
         self.data = {'action': 'save', 'description': 'Experimento de Teste', 'title': 'Teste Experimento',
-                     'research_project': research_project.id}
+                     'research_project': self.research_project.id}
         response = self.client.post(reverse('experiment_edit', args=(experiment.pk,)), self.data, follow=True)
         self.assertEqual(response.status_code, 200)
 
@@ -680,7 +668,7 @@ class ExperimentTest(TestCase):
 
         # Remove experimento
         self.data = {'action': 'remove', 'description': 'Experimento de Teste', 'title': 'Teste Experimento',
-                     'research_project': research_project.id}
+                     'research_project': self.research_project.id}
         response = self.client.post(reverse('experiment_view', args=(experiment.pk,)), self.data, follow=True)
         self.assertEqual(response.status_code, 200)
         self.assertEqual(Experiment.objects.all().count(), count - 1)
