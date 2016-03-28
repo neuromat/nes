@@ -581,8 +581,8 @@ class ExperimentTest(TestCase):
 
         # Cria um estudo
         self.research_project = ResearchProject.objects.create(title="Research project title",
-                                                          start_date=datetime.date.today(),
-                                                          description="Research project description")
+                                                               start_date=datetime.date.today(),
+                                                               description="Research project description")
         self.research_project.save()
 
     def test_experiment_list(self):
@@ -639,14 +639,18 @@ class ExperimentTest(TestCase):
         # Verifica se o experimento foi de fato adicionado
         self.assertEqual(count_after_insert, count_before_insert + 1)
 
-    def test_experiment_update(self):
-        """Testa a atualizacao do experimento"""
-
+    def create_experiment_mock(self):
         # Criar um experimento para ser utilizado no teste
         experiment = Experiment.objects.create(research_project_id=self.research_project.id,
                                                title="Experimento-Update",
                                                description="Descricao do Experimento-Update")
         experiment.save()
+        return experiment
+
+    def test_experiment_update(self):
+        """Testa a atualizacao do experimento"""
+
+        experiment = self.create_experiment_mock()
 
         # Create an instance of a GET request.
         request = self.factory.get(reverse('experiment_edit', args=[experiment.pk, ]))
@@ -663,6 +667,11 @@ class ExperimentTest(TestCase):
                      'research_project': self.research_project.id}
         response = self.client.post(reverse('experiment_edit', args=(experiment.pk,)), self.data, follow=True)
         self.assertEqual(response.status_code, 200)
+
+    def test_experiment_remove(self):
+        """Testa a exclusao do experimento"""
+
+        experiment = self.create_experiment_mock()
 
         count = Experiment.objects.all().count()
 
@@ -1259,7 +1268,8 @@ class SubjectTest(TestCase):
         # Delete participant from a group
         self.data = {'action': 'remove-' + str(subject_mock.pk)}
         count_before_delete_subject = SubjectOfGroup.objects.all().filter(group=group).count()
-        response = self.client.post(reverse('subjects', args=(group.pk,)),self.data)
+        response = self.client.post(reverse('subjects', args=(group.pk,)), self.data)
+        self.assertEqual(response.status_code, 302)
         count_after_delete_subject = SubjectOfGroup.objects.all().filter(group=group).count()
         self.assertEqual(count_before_delete_subject - 1, count_after_delete_subject)
 
