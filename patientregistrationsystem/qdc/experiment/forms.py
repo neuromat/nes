@@ -1,9 +1,10 @@
 # coding=utf-8
 from experiment.models import Experiment, QuestionnaireResponse, SubjectOfGroup, Group, \
-    Component, Stimulus, Block, Instruction, ComponentConfiguration, ResearchProject
+    Component, Stimulus, Block, Instruction, ComponentConfiguration, ResearchProject, EEGData, DataFile
 from django.forms import ModelForm, TextInput, Textarea, Select, DateInput, TypedChoiceField, RadioSelect,\
-    ValidationError, Form, IntegerField, NumberInput, CharField
+    ValidationError, Form, IntegerField, NumberInput, CharField, DateTimeInput, TimeInput, FileInput
 from django.utils.translation import ugettext_lazy as _
+from django.contrib.admin import widgets
 
 
 class ExperimentForm(ModelForm):
@@ -223,3 +224,23 @@ class NumberOfUsesToInsertForm(Form):
     number_of_uses_to_insert = IntegerField(label='Number of uses to insert', min_value=1, initial=1,
                                             widget=NumberInput(attrs={'class': 'form-control', 'required': "",
                                                                       'data-error': _('Quantity must be filled.')}))
+
+
+class EEGDataForm(ModelForm):
+    class Meta:
+        model = EEGData
+
+        fields = ['date', 'file_format', 'description', 'file']
+
+        widgets = {
+            'date': DateInput(format=_("%m/%d/%Y"),
+                              attrs={'class': 'form-control datepicker', 'placeholder': _('mm/dd/yyyy'),
+                                     'required': "",
+                                     'data-error': _("Fill date must be filled.")}, ),
+            'file_format': Select(attrs={'class': 'form-control', 'required': "",
+                                         'data-error': _('File format must be chosen.')}),
+            'description': Textarea(attrs={'class': 'form-control',
+                                           'rows': '4', 'required': "",
+                                           'data-error': _('Description must be filled.')}),
+            'file': FileInput(attrs={'required': ""})
+        }

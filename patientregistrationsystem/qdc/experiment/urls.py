@@ -43,14 +43,22 @@ urlpatterns = patterns(
     url(r'^group/(?P<group_id>\d+)/subject/(?P<subject_id>\d+)/upload_file/$', 'upload_file', name='upload_file'),
 
     # subject + questionnaire
-    url(r'^group/(?P<group_id>\d+)/subject/(?P<subject_id>\d+)/$', 'subject_questionnaire_view',
-        name='subject_questionnaire'),
+    url(r'^group/(?P<group_id>\d+)/subject/(?P<subject_id>\d+)/$',
+        'subject_questionnaire_view', name='subject_questionnaire'),
     url(r'^group/(?P<group_id>\d+)/subject/(?P<subject_id>\d+)/questionnaire/(?P<questionnaire_id>\d+)/add_response/$',
         'subject_questionnaire_response_create', name='subject_questionnaire_response'),
-    url(r'^questionnaire_response/edit/(?P<questionnaire_response_id>\d+)/$', 'questionnaire_response_edit',
-        name='questionnaire_response_edit'),
-    url(r'^questionnaire_response/(?P<questionnaire_response_id>\d+)/$', 'questionnaire_response_view',
-        name='questionnaire_response_view'),
+    url(r'^questionnaire_response/edit/(?P<questionnaire_response_id>\d+)/$',
+        'questionnaire_response_edit', name='questionnaire_response_edit'),
+    url(r'^questionnaire_response/(?P<questionnaire_response_id>\d+)/$',
+        'questionnaire_response_view', name='questionnaire_response_view'),
+
+    # subject + eeg data
+    url(r'^group/(?P<group_id>\d+)/subject/(?P<subject_id>\d+)/eeg/$',
+        'subject_eeg_view', name='subject_eeg_view'),
+    url(r'^group/(?P<group_id>\d+)/subject/(?P<subject_id>\d+)/eeg/(?P<eeg_configuration_id>\d+)/add_eeg_data/$',
+        'subject_eeg_data_create', name='subject_eeg_data_create'),
+    url(r'^eeg_data/(?P<eeg_data_id>\d+)/$', 'eeg_data_view', name='eeg_data_view'),
+    url(r'^eeg_data/edit/(?P<eeg_data_id>\d+)/$', 'eeg_data_edit', name='eeg_data_edit'),
 
     # experimental protocol components
     url(r'^(?P<experiment_id>\d+)/components/$', 'component_list', name='component_list'),

@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2016-02-25 18:03-0300\n"
+"POT-Creation-Date: 2016-03-28 14:48-0300\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -629,28 +629,48 @@ msgstr ""
 msgid "Can view survey"
 msgstr ""
 
-#: add_initial_data.py:176
-msgid "Administrator"
+#: add_initial_data.py:173
+msgid "Can export medical record"
 msgstr ""
 
-#: add_initial_data.py:177
-msgid "Attendant"
+#: add_initial_data.py:174
+msgid "Can export patient"
 msgstr ""
 
-#: add_initial_data.py:178
-msgid "Physiotherapist"
+#: add_initial_data.py:175
+msgid "Can export questionnaire response"
 msgstr ""
 
 #: add_initial_data.py:179
-msgid "Doctor"
+msgid "Administrator"
 msgstr ""
 
 #: add_initial_data.py:180
-msgid "Junior researcher"
+msgid "Attendant"
 msgstr ""
 
 #: add_initial_data.py:181
+msgid "Physiotherapist"
+msgstr ""
+
+#: add_initial_data.py:182
+msgid "Doctor"
+msgstr ""
+
+#: add_initial_data.py:183
+msgid "Junior researcher"
+msgstr ""
+
+#: add_initial_data.py:184
 msgid "Senior researcher"
+msgstr ""
+
+#: export/export.py:96 export/tests.py:174
+msgid "Base path does not exist"
+msgstr ""
+
+#: export/views.py:363
+msgid "Export was finished correctly"
 msgstr ""
 
 #: templates/admin/base_site.html:4
@@ -671,19 +691,16 @@ msgstr ""
 
 #: templates/registration/change_password_custom.html:67
 #: templates/registration/password_reset_confirm.html:145
-#: templates/registration/password_reset_confirm_o.html:65
 msgid ""
 "Password must contain at least 8 characters, including at least one "
 "uppercase letter, digit or special character."
 msgstr ""
 
 #: templates/registration/change_password_custom.html:109
-#: templates/registration/password_reset_confirm_o.html:108
 msgid "Save"
 msgstr ""
 
 #: templates/registration/change_password_custom.html:112
-#: templates/registration/password_reset_confirm_o.html:111
 msgid "Cancel"
 msgstr ""
 
@@ -752,7 +769,6 @@ msgid "Access"
 msgstr ""
 
 #: templates/registration/password_reset_confirm.html:142
-#: templates/registration/password_reset_confirm_o.html:57
 #: templates/registration/password_reset_form.html:88
 msgid "Reset password"
 msgstr ""
@@ -770,12 +786,10 @@ msgid "Confirm"
 msgstr ""
 
 #: templates/registration/password_reset_confirm.html:154
-#: templates/registration/password_reset_confirm_o.html:118
 msgid "Password reset failed."
 msgstr ""
 
 #: templates/registration/password_reset_confirm.html:155
-#: templates/registration/password_reset_confirm_o.html:119
 msgid ""
 "Invalid link for password reset, possibly because this link has already been "
 "used previously. <br/>\n"

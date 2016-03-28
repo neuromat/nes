@@ -64,7 +64,7 @@
                                 <div class="input-group input-group-sm">
                                     <span class="input-group-addon"> <span class="glyphicon glyphicon-search"></span></span>
                                     <input class="form-control" placeholder="{% trans "Type name or CPF participant" %}"
-                                           id="subject_name" type="text" autofocus="true" required="true">
+                                           id="subject_name" type="text" autofocus="true">
                                 </div>
                                 {% csrf_token %}
                                 <ul id="search-results-subjects" style="list-style: none;">
@@ -82,7 +82,12 @@
                             <tr>
                                 <th>{% trans "Participant" %}</th>
                                 <th>{% trans "Term of consent" %}</th>
-                                <th>{% trans "Completed questionnaires" %}</th>
+                                {% if experimental_protocol_info.number_of_questionnaires %}
+                                    <th>{% trans "Completed questionnaires" %}</th>
+                                {% endif %}
+                                {% if experimental_protocol_info.number_of_eeg_data %}
+                                    <th>{% trans "EEG data files uploaded" %}</th>
+                                {% endif %}
                             </tr>
                             </thead>
                             <tbody>
@@ -91,36 +96,69 @@
                                     <td>{% trans "(No participant inserted)" %}</td>
                                     <td></td>
                                     <td></td>
+                                    <td></td>
                                 </tr>
                             {% else %}
                                 {% for item in subject_list %}
                                     <tr>
                                         <td>
-                                            <a href='/experiment/group/{{ group.id }}/subject/{{ item.subject.id }}/'>{{ item.subject.patient.name }}</a>
+                                            {% if perms.experiment.delete_subject and can_change %}
+                                                <a class="btn glyphicon glyphicon-remove" data-toggle="tooltip" data-placement="left" title="{% trans "Delete participant" %}" style="color: indianred; vertical-align: -5%; padding-left: 0;"
+                                                   onclick="show_modal_remove({{ item.subject.id }});"></a>
+                                            {% endif %}
+                                            {{ item.subject.patient.name }}
                                         </td>
                                         <td>
-                                            {% if can_change %}
-                                                <span>
-                                                    <a href='/experiment/group/{{ group.id }}/subject/{{ item.subject.id }}/upload_file' class="glyphicon glyphicon-paperclip"></a>
-                                                </span>
-                                            {% endif %}
-                                            {% if item.consent %}
-                                                <span class="label label-success">{% trans "Attached" %}</span>
-                                            {% else %}
-                                                <span class="label label-warning">{% trans "No attachments" %}</span>
-                                            {% endif %}
+                                            <div class="col-xs-2 col-sm-2" >
+                                                {% if can_change %}
+                                                    <span>
+                                                        <a href='/experiment/group/{{ group.id }}/subject/{{ item.subject.id }}/upload_file' class="glyphicon glyphicon-paperclip"
+                                                           data-toggle="tooltip" data-placement="top" title="{% trans "Upload consent form" %}"></a>
+                                                    </span>
+                                                {% endif %}
+                                            </div>
+                                            <div class="col-xs-10 col-sm-10" >
+                                                {% if item.consent %}
+                                                    <span class="label label-success">{% trans "Attached" %}</span>
+                                                {% else %}
+                                                    <span class="label label-warning">{% trans "No attachments" %}</span>
+                                                {% endif %}
+                                            </div>
                                         </td>
+                                        {% if experimental_protocol_info.number_of_questionnaires %}
                                         <td>
                                             {% if limesurvey_available %}
-                                                <div class="progress" >
-                                                    <div class="progress-bar {% if item.percentage == 100 %}progress-bar-success{% else %}progress-bar-warning{% endif %}" role="progressbar" aria-valuenow="{{ item.number_of_questionnaires_filled }}" aria-valuemin="0" aria-valuemax="{{ item.total_of_questionnaires }}" style="color: #000000; width: {{ item.percentage }}%;">
-                                                        {{ item.number_of_questionnaires_filled }}/{{ item.total_of_questionnaires }}
+                                                <div class="col-xs-2 col-sm-2">
+                                                    <a href='/experiment/group/{{ group.id }}/subject/{{ item.subject.id }}/' class="glyphicon glyphicon-list-alt"
+                                                            data-toggle="tooltip" data-placement="top" title="{% trans "Fill questionnaires" %}"></a>
+                                                </div>
+                                                <div class="col-xs-10 col-sm-10" >
+                                                    <div class="progress">
+                                                        <div class="progress-bar {% if item.percentage_of_questionnaires == 100.0 %}progress-bar-success{% else %}progress-bar-warning{% endif %}" role="progressbar" aria-valuenow="{{ item.number_of_questionnaires_filled }}" aria-valuemin="0" aria-valuemax="{{ item.total_of_questionnaires }}" style="color: #000000; width: {{ item.percentage_of_questionnaires }}%;">
+                                                            {{ item.number_of_questionnaires_filled }}/{{ item.total_of_questionnaires }}
+                                                        </div>
                                                     </div>
                                                 </div>
                                             {% else %}
                                                 <span class="label label-default">{% trans "No status" %}</span>
                                             {% endif %}
                                         </td>
+                                        {% endif %}
+                                        {% if experimental_protocol_info.number_of_eeg_data %}
+                                        <td>
+                                            <div class="col-xs-2 col-sm-2">
+                                                <a href='/experiment/group/{{ group.id }}/subject/{{ item.subject.id }}/eeg' class="glyphicon glyphicon-flash"
+                                                        data-toggle="tooltip" data-placement="top" title="{% trans "Upload EEG data files" %}"></a>
+                                            </div>
+                                            <div class="col-xs-10 col-sm-10">
+                                                <div class="progress">
+                                                    <div class="progress-bar {% if item.percentage_of_eeg_data_files_uploaded == 100.0 %}progress-bar-success{% else %}progress-bar-warning{% endif %}" role="progressbar" aria-valuenow="{{ item.number_of_eeg_data_files_uploaded }}" aria-valuemin="0" aria-valuemax="{{ item.total_of_eeg_data_files }}" style="color: #000000; width: {{ item.percentage_of_eeg_data_files_uploaded }}%;">
+                                                        {{ item.number_of_eeg_data_files_uploaded }}/{{ item.total_of_eeg_data_files }}
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </td>
+                                        {% endif %}
                                     </tr>
                                 {% endfor %}
                             {% endif %}
@@ -138,6 +176,23 @@
         </div>
 
     </div>
+
+    {% if perms.experiment.delete_subject and can_change %}
+        <div class="modal fade" id="modalRemove" tabindex="-1" role="dialog" aria-labelledby="myModalLabel"
+             aria-hidden="true">
+            <div class="modal-dialog">
+                <div class="modal-content">
+                    <div class="modal-body">
+                        {% trans "Are you sure you want to delete participant?" %}
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-default" data-dismiss="modal">{% trans "Cancel" %}</button>
+                        <button type="submit" id="remove-participant" class="btn btn-danger" value="remove" name="action">{% trans "Delete" %}</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    {% endif %}
 
 {% endblock %}
 
