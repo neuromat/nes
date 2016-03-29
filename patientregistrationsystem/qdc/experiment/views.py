@@ -771,7 +771,6 @@ def subjects(request, group_id, template_name="experiment/subjects.html"):
                 percentage_of_eeg_data_files_uploaded = \
                     100 * number_of_eeg_data_files_uploaded / len(list_of_eeg_configuration)
 
-
             # If any questionnaire has responses or any eeg data file was uploaded,
             # the subject can't be removed from the group.
             if number_of_eeg_data_files_uploaded or number_of_questionnaires_filled:
@@ -1252,7 +1251,6 @@ def subject_eeg_view(request, group_id, subject_id,
     subject = get_object_or_404(Subject, id=subject_id)
 
     eeg_collections = []
-    can_remove = True
 
     list_of_eeg_configuration = recursively_create_list_of_steps(group.experimental_protocol, "eeg", [])
     subject_of_group = get_object_or_404(SubjectOfGroup, group=group, subject=subject)
@@ -1262,50 +1260,10 @@ def subject_eeg_view(request, group_id, subject_id,
         eeg_data_files = EEGData.objects.filter(subject_of_group=subject_of_group,
                                                 component_configuration=eeg_configuration)
 
-        # questionnaire_responses = QuestionnaireResponse.objects. \
-        #     filter(subject_of_group=subject_of_group, component_configuration=eeg_configuration)
-        #
-        # questionnaire_responses_with_status = []
-
-        # If any questionnaire has responses, the subject can't be removed from the group.
-        # if questionnaire_responses.count() > 0:
-        #     can_remove = False
-
-        # questionnaire = Questionnaire.objects.get(id=eeg_configuration.component.id)
-
-        # for questionnaire_response in questionnaire_responses:
-        #     response_result = surveys.get_participant_properties(questionnaire.survey.lime_survey_id,
-        #                                                          questionnaire_response.token_id,
-        #                                                          "completed")
-        #     questionnaire_responses_with_status.append(
-        #         {'questionnaire_response': questionnaire_response,
-        #          'completed': None if response_result is None else response_result != "N" and response_result != ""}
-        #     )
-
         eeg_collections.append(
             {'eeg_configuration': eeg_configuration,
              'eeg_data_files': eeg_data_files}
         )
-
-        # subject_questionnaires.append(
-        #     {'questionnaire_configuration': eeg_configuration,
-        #      'title': surveys.get_survey_title(questionnaire.survey.lime_survey_id),
-        #      'questionnaire_responses': questionnaire_responses_with_status}
-        # )
-
-    # if request.method == "POST":
-    #     if request.POST['action'] == "remove":
-    #         if can_remove:
-    #             get_object_or_404(SubjectOfGroup, group=group, subject=subject).delete()
-    #
-    #             messages.info(request, _('Participant deleted from experiment.'))
-    #             redirect_url = reverse("subjects", args=(group_id,))
-    #             return HttpResponseRedirect(redirect_url)
-    #         else:
-    #             messages.error(request, _("It was not possible to delete participant, "
-    #                                       "because there are answers connected"))
-    #             redirect_url = reverse("subject_questionnaire", args=(group_id, subject_id,))
-    #             return HttpResponseRedirect(redirect_url)
 
     context = {
         "can_change": get_can_change(request.user, group.experiment.research_project),
@@ -1955,7 +1913,7 @@ def access_objects_for_view_and_update(request, path_of_the_components, updating
     list_of_ids_of_components_and_configurations = path_of_the_components.split(delimiter)
 
     # The last id of the list is the one that we want to show.
-    id = list_of_ids_of_components_and_configurations[-1]
+    last_id = list_of_ids_of_components_and_configurations[-1]
 
     group = None
 
@@ -1967,12 +1925,12 @@ def access_objects_for_view_and_update(request, path_of_the_components, updating
     component_configuration = None
     configuration_form = None
 
-    if id[0] == "U":  # If id starts with 'U' (from 'use'), it is a configuration.
-        component_configuration = get_object_or_404(ComponentConfiguration, pk=id[1:])
+    if last_id[0] == "U":  # If id starts with 'U' (from 'use'), it is a configuration.
+        component_configuration = get_object_or_404(ComponentConfiguration, pk=last_id[1:])
         configuration_form = ComponentConfigurationForm(request.POST or None, instance=component_configuration)
         component = component_configuration.component
     else:
-        component = get_object_or_404(Component, pk=id)
+        component = get_object_or_404(Component, pk=last_id)
 
     component_form = ComponentForm(request.POST or None, instance=component)
 
