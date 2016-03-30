@@ -585,6 +585,14 @@ class ExperimentTest(TestCase):
                                                                description="Research project description")
         self.research_project.save()
 
+    def create_experiment_mock(self):
+        # Criar um experimento para ser utilizado no teste
+        experiment = Experiment.objects.create(research_project_id=self.research_project.id,
+                                               title="Experimento-Update",
+                                               description="Descricao do Experimento-Update")
+        experiment.save()
+        return experiment
+
     def test_experiment_list(self):
         """
         Testa a listagem de experimentos
@@ -638,14 +646,6 @@ class ExperimentTest(TestCase):
 
         # Verifica se o experimento foi de fato adicionado
         self.assertEqual(count_after_insert, count_before_insert + 1)
-
-    def create_experiment_mock(self):
-        # Criar um experimento para ser utilizado no teste
-        experiment = Experiment.objects.create(research_project_id=self.research_project.id,
-                                               title="Experimento-Update",
-                                               description="Descricao do Experimento-Update")
-        experiment.save()
-        return experiment
 
     def test_experiment_update(self):
         """Testa a atualizacao do experimento"""
@@ -1431,17 +1431,23 @@ class ResearchProjectTest(TestCase):
         logged = self.client.login(username=USER_USERNAME, password=USER_PWD)
         self.assertEqual(logged, True)
 
+    def create_research_project(self):
+        # Create a research project to be used in the test
+        research_project = ResearchProject.objects.create(title="Research project title",
+                                                          start_date=datetime.date.today(),
+                                                          description="Research project description")
+        research_project.save()
+        return research_project
+
     def test_research_project_list(self):
         # Check if list of research projects is empty before inserting any.
         response = self.client.get(reverse('research_project_list'))
         self.assertEqual(response.status_code, 200)
         self.assertEqual(len(response.context['research_projects']), 0)
 
+        self.create_research_project()
+
         # Check if list of research projects returns one item after inserting one.
-        research_project = ResearchProject.objects.create(title="Research project title",
-                                                          start_date=datetime.date.today(),
-                                                          description="Research project description")
-        research_project.save()
         response = self.client.get(reverse('research_project_list'))
         self.assertEqual(response.status_code, 200)
         self.assertEqual(len(response.context['research_projects']), 1)
@@ -1469,21 +1475,15 @@ class ResearchProjectTest(TestCase):
         self.assertEqual(count_after_insert, count_before_insert + 1)
 
     def test_research_project_update(self):
-        # Create a research project to be used in the test
-        research_project = ResearchProject.objects.create(title="Research project title",
-                                                          start_date=datetime.date.today(),
-                                                          description="Research project description")
-        research_project.save()
+
+        research_project = self.create_research_project()
 
         # Create an instance of a GET request.
         request = self.factory.get(reverse('research_project_edit', args=[research_project.pk, ]))
         request.user = self.user
 
-        try:
-            response = research_project_update(request, research_project_id=research_project.pk)
-            self.assertEqual(response.status_code, 200)
-        except Http404:
-            pass
+        response = research_project_update(request, research_project_id=research_project.pk)
+        self.assertEqual(response.status_code, 200)
 
         # Update
         self.data = {'action': 'save', 'title': 'New research project title',
@@ -1495,16 +1495,12 @@ class ResearchProjectTest(TestCase):
 
     def test_research_project_remove(self):
         # Create a research project to be used in the test
-        research_project = ResearchProject.objects.create(title="Research project title",
-                                                          start_date=datetime.date.today(),
-                                                          description="Research project description")
-        research_project.save()
+        research_project = self.create_research_project()
 
         # Save current number of research projects
         count = ResearchProject.objects.all().count()
 
-        self.data = {'action': 'remove', 'title': 'Research project title',
-                     'description': 'Research project description'}
+        self.data = {'action': 'remove'}
         response = self.client.post(reverse('research_project_view', args=(research_project.pk,)),
                                     self.data, follow=True)
         self.assertEqual(response.status_code, 200)
@@ -1514,10 +1510,7 @@ class ResearchProjectTest(TestCase):
 
     def test_research_project_keywords(self):
         # Create a research project to be used in the test
-        research_project = ResearchProject.objects.create(title="Research project title",
-                                                          start_date=datetime.date.today(),
-                                                          description="Research project description")
-        research_project.save()
+        research_project = self.create_research_project()
 
         # Insert keyword
         self.assertEqual(Keyword.objects.all().count(), 0)
@@ -1538,10 +1531,7 @@ class ResearchProjectTest(TestCase):
         self.assertEqual(research_project.keywords.count(), 2)
 
         # Create a second research project to be used in the test
-        research_project2 = ResearchProject.objects.create(title="Research project 2",
-                                                           start_date=datetime.date.today(),
-                                                           description="Research project description")
-        research_project2.save()
+        research_project2 = self.create_research_project()
 
         # Insert keyword
         response = self.client.get(reverse('keyword_new', args=(research_project2.pk, "third_test_keyword")),

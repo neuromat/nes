@@ -34,9 +34,12 @@ class Migration(migrations.Migration):
         migrations.CreateModel(
             name='EEGData',
             fields=[
-                ('datafile_ptr', models.OneToOneField(to='experiment.DataFile', parent_link=True, auto_created=True, primary_key=True, serialize=False)),
-                ('date', models.DateField(default=datetime.date.today, validators=[experiment.models.validate_date_questionnaire_response])),
-                ('component_configuration', models.ForeignKey(on_delete=django.db.models.deletion.PROTECT, to='experiment.ComponentConfiguration')),
+                ('datafile_ptr', models.OneToOneField(to='experiment.DataFile', parent_link=True,
+                                                      auto_created=True, primary_key=True, serialize=False)),
+                ('date', models.DateField(default=datetime.date.today,
+                                          validators=[experiment.models.validate_date_questionnaire_response])),
+                ('component_configuration', models.ForeignKey(on_delete=django.db.models.deletion.PROTECT,
+                                                              to='experiment.ComponentConfiguration')),
                 ('subject_of_group', models.ForeignKey(to='experiment.SubjectOfGroup')),
             ],
             bases=('experiment.datafile',),

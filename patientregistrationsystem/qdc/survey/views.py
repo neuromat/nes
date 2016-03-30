@@ -158,7 +158,6 @@ def recursively_create_list_of_steps(block_id, component_type, list_of_configura
     return list_of_configurations
 
 
-
 def create_experiments_questionnaire_data_list(survey, surveys):
     # Create a list of questionnaires used in experiments by looking at questionnaires responses. We use a
     # dictionary because it is useful for filtering out duplicate component configurations from the list.
@@ -253,8 +252,8 @@ def create_experiments_questionnaire_data_list(survey, surveys):
     for q in Questionnaire.objects.filter(survey=survey):
         already_included = False
 
-        for dict in experiments_questionnaire_data_list:
-            if q.id == dict['component_id']:
+        for dictionary in experiments_questionnaire_data_list:
+            if q.id == dictionary['component_id']:
                 already_included = True
                 break
 
