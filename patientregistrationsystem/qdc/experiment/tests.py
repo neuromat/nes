@@ -74,22 +74,38 @@ class ObjectsFactory(object):
                                      experimental_protocol=experimental_protocol)
         return group
 
+    @staticmethod
+    def create_block(experiment):
+        block = Block.objects.create(
+            identification='Block identification',
+            description='Block description',
+            experiment=experiment,
+            component_type='block',
+            type="sequence"
+        )
+        block.save()
+        return block
 
-class ExperimentalProtocolTest(TestCase):
-    def setUp(self):
+    @staticmethod
+    def system_authentication(self):
         self.user = User.objects.create_user(username=USER_USERNAME, email='test@dummy.com', password=USER_PWD)
         self.user.is_staff = True
         self.user.is_superuser = True
         self.user.save()
-
         self.factory = RequestFactory()
-
         logged = self.client.login(username=USER_USERNAME, password=USER_PWD)
+        return logged
+
+
+class ExperimentalProtocolTest(TestCase):
+    def setUp(self):
+
+        logged = ObjectsFactory.system_authentication(self)
         self.assertEqual(logged, True)
 
         research_project = ObjectsFactory.create_research_project()
 
-        experiment = ObjectsFactory.create_experiment(research_project)
+        ObjectsFactory.create_experiment(research_project)
 
     def test_component_list(self):
         experiment = Experiment.objects.first()
@@ -99,14 +115,7 @@ class ExperimentalProtocolTest(TestCase):
         # Check if there is no item in the table
         self.assertNotContains(response, "<td>")
 
-        component = Block.objects.create(
-            type="sequence",
-            identification='Sequence_identification',
-            description='Sequence_description',
-            experiment=Experiment.objects.first(),
-            component_type='block'
-        )
-        component.save()
+        ObjectsFactory.create_block(Experiment.objects.first())
 
         response = self.client.get(url)
         self.assertEqual(response.status_code, 200)
@@ -217,12 +226,8 @@ class ExperimentalProtocolTest(TestCase):
         self.assertTrue("/experiment/component/" + str(block.id) in response.url)
 
     def test_component_configuration_create_and_update(self):
-        block = Block.objects.create(identification='Parent block',
-                                     description='Parent block description',
-                                     experiment=Experiment.objects.first(),
-                                     component_type='block',
-                                     type="sequence")
-        block.save()
+
+        block = ObjectsFactory.create_block(Experiment.objects.first())
 
         # Add a new component to the parent
         self.data = {'action': 'save',
@@ -286,14 +291,8 @@ class ExperimentalProtocolTest(TestCase):
         self.assertEqual(Task.objects.count(), 1)
         self.assertEqual(Component.objects.count(), 1)
 
-        block = Block.objects.create(
-            identification='Block identification',
-            description='Block description',
-            experiment=experiment,
-            component_type='block',
-            type="sequence"
-        )
-        block.save()
+        block = ObjectsFactory.create_block(experiment)
+
         self.assertEqual(Block.objects.count(), 1)
         self.assertEqual(Component.objects.count(), 2)
 
@@ -325,12 +324,7 @@ class ExperimentalProtocolTest(TestCase):
     def test_component_configuration_change_order_single_use(self):
         experiment = Experiment.objects.first()
 
-        block = Block.objects.create(identification='Parent block',
-                                     description='Parent block description',
-                                     experiment=experiment,
-                                     component_type='block',
-                                     type="sequence")
-        block.save()
+        block = ObjectsFactory.create_block(experiment)
 
         task = Task.objects.create(
             identification='Task identification',
@@ -377,12 +371,7 @@ class ExperimentalProtocolTest(TestCase):
     def test_component_configuration_change_order_accordion(self):
         experiment = Experiment.objects.first()
 
-        block = Block.objects.create(identification='Parent block',
-                                     description='Parent block description',
-                                     experiment=experiment,
-                                     component_type='block',
-                                     type="sequence")
-        block.save()
+        block = ObjectsFactory.create_block(experiment)
 
         task = Task.objects.create(
             identification='Task identification',
@@ -447,23 +436,12 @@ class ExperimentalProtocolTest(TestCase):
 
 class GroupTest(TestCase):
     def setUp(self):
-        """
-        Configura autenticação e ambiente para testar a inclusão, atualização e remoção de um Group de um Experiment.
-
-        """
-        self.user = User.objects.create_user(username=USER_USERNAME, email='test@dummy.com', password=USER_PWD)
-        self.user.is_staff = True
-        self.user.is_superuser = True
-        self.user.save()
-
-        self.factory = RequestFactory()
-
-        logged = self.client.login(username=USER_USERNAME, password=USER_PWD)
+        logged = ObjectsFactory.system_authentication(self)
         self.assertEqual(logged, True)
 
         research_project = ObjectsFactory.create_research_project()
 
-        experiment = ObjectsFactory.create_experiment(research_project)
+        ObjectsFactory.create_experiment(research_project)
 
     def test_group_insert(self):
         # Data about the group
@@ -505,19 +483,7 @@ class GroupTest(TestCase):
 
 class ClassificationOfDiseasesTest(TestCase):
     def setUp(self):
-        """
-        Configura autenticação e ambiente para testar a inclusão e remoção de um ClassificationOfDiseases em um Group de
-         um Experiment
-
-        """
-        self.user = User.objects.create_user(username=USER_USERNAME, email='test@dummy.com', password=USER_PWD)
-        self.user.is_staff = True
-        self.user.is_superuser = True
-        self.user.save()
-
-        self.factory = RequestFactory()
-
-        logged = self.client.login(username=USER_USERNAME, password=USER_PWD)
+        logged = ObjectsFactory.system_authentication(self)
         self.assertEqual(logged, True)
 
     def test_classification_of_diseases_insert(self):
@@ -570,20 +536,7 @@ class ClassificationOfDiseasesTest(TestCase):
 
 class ExperimentTest(TestCase):
     def setUp(self):
-        """
-        Configura autenticacao e variaveis para iniciar cada teste
-
-        """
-        # print 'Set up for', self._testMethodName
-
-        self.user = User.objects.create_user(username=USER_USERNAME, email='test@dummy.com', password=USER_PWD)
-        self.user.is_staff = True
-        self.user.is_superuser = True
-        self.user.save()
-
-        self.factory = RequestFactory()
-
-        logged = self.client.login(username=USER_USERNAME, password=USER_PWD)
+        logged = ObjectsFactory.system_authentication(self)
         self.assertEqual(logged, True)
 
         # Cria um estudo
@@ -679,20 +632,7 @@ class ListOfQuestionnaireFromExperimentalProtocolOfAGroupTest(TestCase):
     lime_survey = None
 
     def setUp(self):
-        """
-        Configura autenticacao e variaveis para iniciar cada teste
-
-        """
-        # print 'Set up for', self._testMethodName
-
-        self.user = User.objects.create_user(username=USER_USERNAME, email='test@dummy.com', password=USER_PWD)
-        self.user.is_staff = True
-        self.user.is_superuser = True
-        self.user.save()
-
-        self.factory = RequestFactory()
-
-        logged = self.client.login(username=USER_USERNAME, password=USER_PWD)
+        logged = ObjectsFactory.system_authentication(self)
         self.assertEqual(logged, True)
 
         # Conecta no Lime Survey
@@ -711,12 +651,7 @@ class ListOfQuestionnaireFromExperimentalProtocolOfAGroupTest(TestCase):
         experiment = ObjectsFactory.create_experiment(research_project)
 
         # Create the root of the experimental protocol
-        block = Block.objects.create(identification='Root',
-                                     description='Root description',
-                                     experiment=Experiment.objects.first(),
-                                     component_type='block',
-                                     type="sequence")
-        block.save()
+        block = ObjectsFactory.create_block(Experiment.objects.first())
 
         # Create a quesitonnaire at LiveSurvey to use in this test.
         survey_title = 'Questionario de teste - DjangoTests'
@@ -764,12 +699,7 @@ class ListOfQuestionnaireFromExperimentalProtocolOfAGroupTest(TestCase):
         experiment = ObjectsFactory.create_experiment(research_project)
 
         # Create the root of the experimental protocol
-        block = Block.objects.create(identification='Root',
-                                     description='Root description',
-                                     experiment=Experiment.objects.first(),
-                                     component_type='block',
-                                     type="sequence")
-        block.save()
+        block = ObjectsFactory.create_block(Experiment.objects.first())
 
         # Using a known questionnaire at LiveSurvey to use in this test.
         new_survey, created = Survey.objects.get_or_create(lime_survey_id=LIME_SURVEY_ID)
@@ -829,12 +759,7 @@ class ListOfQuestionnaireFromExperimentalProtocolOfAGroupTest(TestCase):
         experiment = ObjectsFactory.create_experiment(research_project)
 
         # Create the root of the experimental protocol
-        block = Block.objects.create(identification='Root',
-                                     description='Root description',
-                                     experiment=Experiment.objects.first(),
-                                     component_type='block',
-                                     type="sequence")
-        block.save()
+        block = ObjectsFactory.create_block(Experiment.objects.first())
 
         # Using a known questionnaire at LiveSurvey to use in this test.
         new_survey, created = Survey.objects.get_or_create(lime_survey_id=LIME_SURVEY_ID)
@@ -893,22 +818,7 @@ class SubjectTest(TestCase):
     util = UtilTests()
 
     def setUp(self):
-        """
-        Configura autenticacao e variaveis para iniciar cada teste
-
-        """
-        print('Set up for', self._testMethodName)
-
-        # self.user = User.objects.all().first()
-        # if self.user:
-        self.user = User.objects.create_user(username=USER_USERNAME, email='test@dummy.com', password=USER_PWD)
-        self.user.is_staff = True
-        self.user.is_superuser = True
-        self.user.save()
-
-        self.factory = RequestFactory()
-
-        logged = self.client.login(username=USER_USERNAME, password=USER_PWD)
+        logged = ObjectsFactory.system_authentication(self)
         self.assertEqual(logged, True)
 
         # Conecta no Lime Survey
@@ -965,12 +875,7 @@ class SubjectTest(TestCase):
         experiment = ObjectsFactory.create_experiment(research_project)
 
         # Create the root of the experimental protocol
-        block = Block.objects.create(identification='Root',
-                                     description='Root description',
-                                     experiment=Experiment.objects.first(),
-                                     component_type='block',
-                                     type="sequence")
-        block.save()
+        block = ObjectsFactory.create_block(Experiment.objects.first())
 
         # Using a known questionnaire at LiveSurvey to use in this test.
         new_survey, created = Survey.objects.get_or_create(lime_survey_id=LIME_SURVEY_ID)
@@ -1042,12 +947,7 @@ class SubjectTest(TestCase):
         experiment = ObjectsFactory.create_experiment(research_project)
 
         # Create the root of the experimental protocol
-        block = Block.objects.create(identification='Root',
-                                     description='Root description',
-                                     experiment=Experiment.objects.first(),
-                                     component_type='block',
-                                     type="sequence")
-        block.save()
+        block = ObjectsFactory.create_block(Experiment.objects.first())
 
         # Using a known questionnaires at LiveSurvey to use in this test.
         new_survey, created = \
@@ -1340,16 +1240,7 @@ class SubjectTest(TestCase):
 
 class ResearchProjectTest(TestCase):
     def setUp(self):
-        # print 'Set up for', self._testMethodName
-
-        self.user = User.objects.create_user(username=USER_USERNAME, email='test@dummy.com', password=USER_PWD)
-        self.user.is_staff = True
-        self.user.is_superuser = True
-        self.user.save()
-
-        self.factory = RequestFactory()
-
-        logged = self.client.login(username=USER_USERNAME, password=USER_PWD)
+        logged = ObjectsFactory.system_authentication(self)
         self.assertEqual(logged, True)
 
     def test_research_project_list(self):
