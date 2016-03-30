@@ -87,15 +87,9 @@ class ExperimentalProtocolTest(TestCase):
         logged = self.client.login(username=USER_USERNAME, password=USER_PWD)
         self.assertEqual(logged, True)
 
-        # Create a research project
-        research_project = ResearchProject.objects.create(title="Research project title",
-                                                          start_date=datetime.date.today(),
-                                                          description="Research project description")
-        research_project.save()
+        research_project = ObjectsFactory.create_research_project()
 
-        experiment = Experiment.objects.create(title="Experiment_title", description="Experiment_description",
-                                               research_project=research_project)
-        experiment.save()
+        experiment = ObjectsFactory.create_experiment(research_project)
 
     def test_component_list(self):
         experiment = Experiment.objects.first()
@@ -467,16 +461,9 @@ class GroupTest(TestCase):
         logged = self.client.login(username=USER_USERNAME, password=USER_PWD)
         self.assertEqual(logged, True)
 
-        # Create a research project
-        research_project = ResearchProject.objects.create(title="Research project title",
-                                                          start_date=datetime.date.today(),
-                                                          description="Research project description")
-        research_project.save()
+        research_project = ObjectsFactory.create_research_project()
 
-        # Crinando instancia de Experiment
-        experiment = Experiment.objects.create(title="Experimento-1", description="Descricao do Experimento-1",
-                                               research_project=research_project)
-        experiment.save()
+        experiment = ObjectsFactory.create_experiment(research_project)
 
     def test_group_insert(self):
         # Data about the group
@@ -491,8 +478,7 @@ class GroupTest(TestCase):
     def test_group_update(self):
         experiment = Experiment.objects.first()
 
-        group = Group.objects.create(experiment=experiment, title="Group-1", description="Descrição do Group-1")
-        group.save()
+        group = ObjectsFactory.create_group(experiment)
 
         # New data about the group
         self.data = {'action': 'save', 'description': 'Description of Group-1', 'title': 'Group-1'}
@@ -506,8 +492,7 @@ class GroupTest(TestCase):
     def test_group_remove(self):
         experiment = Experiment.objects.first()
 
-        group = Group.objects.create(experiment=experiment, title="Group-1", description="Descrição do Group-1")
-        group.save()
+        group = ObjectsFactory.create_group(experiment)
 
         # New data about the group
         self.data = {'action': 'remove'}
@@ -539,20 +524,11 @@ class ClassificationOfDiseasesTest(TestCase):
         """
         Testa a view classification_of_diseases_insert
         """
-        # Create a research project
-        research_project = ResearchProject.objects.create(title="Research project title",
-                                                          start_date=datetime.date.today(),
-                                                          description="Research project description")
-        research_project.save()
+        research_project = ObjectsFactory.create_research_project()
 
-        # Crinando instancia de Experiment
-        experiment = Experiment.objects.create(title="Experimento-1", description="Descricao do Experimento-1",
-                                               research_project=research_project)
-        experiment.save()
+        experiment = ObjectsFactory.create_experiment(research_project)
 
-        # Criando instancia de Group
-        group = Group.objects.create(experiment=experiment, title="Group-1", description="Descrição do Group-1")
-        group.save()
+        group = ObjectsFactory.create_group(experiment)
 
         # Criando instancia de ClassificationOfDiseases
         classification_of_diseases = ClassificationOfDiseases.objects.create(code="1", description="test",
@@ -568,20 +544,11 @@ class ClassificationOfDiseasesTest(TestCase):
         """
         Testa a view classification_of_diseases_insert
         """
-        # Create a research project
-        research_project = ResearchProject.objects.create(title="Research project title",
-                                                          start_date=datetime.date.today(),
-                                                          description="Research project description")
-        research_project.save()
+        research_project = ObjectsFactory.create_research_project()
 
-        # Crinando instancia de Experiment
-        experiment = Experiment.objects.create(title="Experimento-1", description="Descricao do Experimento-1",
-                                               research_project=research_project)
-        experiment.save()
+        experiment = ObjectsFactory.create_experiment(research_project)
 
-        # Criando instancia de Group
-        group = Group.objects.create(experiment=experiment, title="Group-1", description="Descrição do Group-1")
-        group.save()
+        group = ObjectsFactory.create_group(experiment)
 
         # Criando instancia de ClassificationOfDiseases
         classification_of_diseases = ClassificationOfDiseases.objects.create(code="1", description="test",
@@ -620,10 +587,7 @@ class ExperimentTest(TestCase):
         self.assertEqual(logged, True)
 
         # Cria um estudo
-        self.research_project = ResearchProject.objects.create(title="Research project title",
-                                                               start_date=datetime.date.today(),
-                                                               description="Research project description")
-        self.research_project.save()
+        self.research_project = ObjectsFactory.create_research_project()
 
     def test_experiment_list(self):
         """
@@ -638,11 +602,7 @@ class ExperimentTest(TestCase):
         self.assertEqual(len(response.context['experiments']), 0)
 
         # cria um experimento
-        experiment_title = "Experimento-1"
-        experiment = Experiment.objects.create(research_project_id=self.research_project.id,
-                                               title=experiment_title,
-                                               description="Descricao do Experimento-1")
-        experiment.save()
+        experiment = ObjectsFactory.create_experiment(self.research_project)
 
         # lista experimentos: deve retornar 1
         response = self.client.get(reverse("research_project_view", args=[self.research_project.pk, ]))
@@ -651,7 +611,7 @@ class ExperimentTest(TestCase):
         # deve retornar 1 experimento
         self.assertEqual(len(response.context['experiments']), 1)
 
-        self.assertContains(response, experiment_title)
+        self.assertContains(response, experiment.title)
 
     def test_experiment_create(self):
         """Testa a criacao de um experimento """
@@ -746,17 +706,9 @@ class ListOfQuestionnaireFromExperimentalProtocolOfAGroupTest(TestCase):
     def test_create_questionnaire_for_a_group(self):
         """Testa a criacao de um questionario para um dado grupo"""
 
-        # Create a research project
-        research_project = ResearchProject.objects.create(title="Research project title",
-                                                          start_date=datetime.date.today(),
-                                                          description="Research project description")
-        research_project.save()
+        research_project = ObjectsFactory.create_research_project()
 
-        # Criar um experimento mock para ser utilizado no teste
-        experiment = Experiment.objects.create(title="Experimento-Update",
-                                               description="Descricao do Experimento-Update",
-                                               research_project=research_project)
-        experiment.save()
+        experiment = ObjectsFactory.create_experiment(research_project)
 
         # Create the root of the experimental protocol
         block = Block.objects.create(identification='Root',
@@ -1040,11 +992,7 @@ class SubjectTest(TestCase):
         component_configuration.save()
 
         # Create a mock group
-        group = Group.objects.create(experiment=experiment,
-                                     title="Group-update",
-                                     description="Description of the Group-update",
-                                     experimental_protocol_id=block.id)
-        group.save()
+        group = ObjectsFactory.create_group(experiment, block)
 
         # Abre tela de cadastro de participantes com nenhum participante cadastrado a priori
         response = self.client.get(reverse('subjects', args=(group.pk,)))
@@ -1173,14 +1121,8 @@ class SubjectTest(TestCase):
         )
         component_configuration_without_identification_group.save()
 
-        # Create a mock group
-        group = Group.objects.create(experiment=experiment,
-                                     title="Group-update",
-                                     description="Description of the Group-update",
-                                     experimental_protocol_id=block.id)
-        group.save()
+        group = ObjectsFactory.create_group(experiment, block)
 
-        # Criar um Subject para o experimento
         util = UtilTests()
         patient_mock = util.create_patient_mock(user=self.user)
 
@@ -1339,21 +1281,11 @@ class SubjectTest(TestCase):
         Testa o upload de arquivos que corresponde ao formulario de consentimento do participante no experimento
         """
 
-        # Create a research project
-        research_project = ResearchProject.objects.create(title="Research project title",
-                                                          start_date=datetime.date.today(),
-                                                          description="Research project description")
-        research_project.save()
+        research_project = ObjectsFactory.create_research_project()
 
-        experiment = Experiment.objects.create(title="Experimento-Teste-Upload",
-                                               description="Descricao do Experimento-Upload",
-                                               research_project=research_project)
-        experiment.save()
+        experiment = ObjectsFactory.create_experiment(research_project)
 
-        group = Group.objects.create(experiment=experiment,
-                                     title="Grupo-teste-updload",
-                                     description="Descricao do Grupo-teste-updload")
-        group.save()
+        group = ObjectsFactory.create_group(experiment)
 
         patient_mock = self.util.create_patient_mock(user=self.user)
 
