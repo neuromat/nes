@@ -62,6 +62,18 @@ class ObjectsFactory(object):
         experiment.save()
         return experiment
 
+    @staticmethod
+    def create_group(experiment, experimental_protocol=None):
+        """
+        :param experiment: experiment
+        :return: group
+        """
+        group = Group.objects.create(experiment=experiment,
+                                     title="Group-update",
+                                     description="Descricao do Group-update",
+                                     experimental_protocol=experimental_protocol)
+        return group
+
 
 class ExperimentalProtocolTest(TestCase):
     def setUp(self):
@@ -778,11 +790,7 @@ class ListOfQuestionnaireFromExperimentalProtocolOfAGroupTest(TestCase):
             component_configuration.save()
 
             # Criar um grupo mock para ser utilizado no teste
-            group = Group.objects.create(experiment=experiment,
-                                         title="Group-update",
-                                         description="Descricao do Group-update",
-                                         experimental_protocol_id=block.id)
-            group.save()
+            group = ObjectsFactory.create_group(experiment, block)
 
             # Abre tela de grupo
             response = self.client.get(reverse('group_view', args=(group.pk,)))
@@ -798,16 +806,10 @@ class ListOfQuestionnaireFromExperimentalProtocolOfAGroupTest(TestCase):
         """Test exhibition of a questionnaire of a group"""
 
         # Create a research project
-        research_project = ResearchProject.objects.create(title="Research project title",
-                                                          start_date=datetime.date.today(),
-                                                          description="Research project description")
-        research_project.save()
+        research_project = ObjectsFactory.create_research_project()
 
         # Criar um experimento mock para ser utilizado no teste
-        experiment = Experiment.objects.create(title="Experimento-Update",
-                                               description="Descricao do Experimento-Update",
-                                               research_project=research_project)
-        experiment.save()
+        experiment = ObjectsFactory.create_experiment(research_project)
 
         # Create the root of the experimental protocol
         block = Block.objects.create(identification='Root',
@@ -837,11 +839,7 @@ class ListOfQuestionnaireFromExperimentalProtocolOfAGroupTest(TestCase):
         component_configuration.save()
 
         # Create a mock group
-        group = Group.objects.create(experiment=experiment,
-                                     title="Group-update",
-                                     description="Description of the Group-update",
-                                     experimental_protocol_id=block.id)
-        group.save()
+        group = ObjectsFactory.create_group(experiment, block)
 
         # Insert subject in the group
         util = UtilTests()
@@ -873,16 +871,10 @@ class ListOfQuestionnaireFromExperimentalProtocolOfAGroupTest(TestCase):
         """ Testa a visualizacao completa do questionario respondido no Lime Survey"""
 
         # Create a research project
-        research_project = ResearchProject.objects.create(title="Research project title",
-                                                          start_date=datetime.date.today(),
-                                                          description="Research project description")
-        research_project.save()
+        research_project = ObjectsFactory.create_research_project()
 
         # Create a mock experiment
-        experiment = Experiment.objects.create(title="Experimento-Update",
-                                               description="Descricao do Experimento-Update",
-                                               research_project=research_project)
-        experiment.save()
+        experiment = ObjectsFactory.create_experiment(research_project)
 
         # Create the root of the experimental protocol
         block = Block.objects.create(identification='Root',
@@ -912,11 +904,7 @@ class ListOfQuestionnaireFromExperimentalProtocolOfAGroupTest(TestCase):
         component_configuration.save()
 
         # Create a mock group
-        group = Group.objects.create(experiment=experiment,
-                                     title="Group-update",
-                                     description="Descricao do Group-update",
-                                     experimental_protocol_id=block.id)
-        group.save()
+        group = ObjectsFactory.create_group(experiment, block)
 
         # Create a subject to the experiment
         util = UtilTests()
@@ -992,9 +980,7 @@ class SubjectTest(TestCase):
         experiment = ObjectsFactory.create_experiment(research_project)
 
         # Criar um grupo mock para ser utilizado no teste
-        group = Group.objects.create(experiment=experiment,
-                                     title="Group-update",
-                                     description="Descricao do Group-update")
+        group = ObjectsFactory.create_group(experiment)
 
         patient_mock = self.util.create_patient_mock(user=self.user)
         self.data = {SEARCH_TEXT: 'Pacient', 'experiment_id': experiment.id, 'group_id': group.id}
@@ -1102,16 +1088,10 @@ class SubjectTest(TestCase):
         """
 
         # Create a research project
-        research_project = ResearchProject.objects.create(title="Research project title",
-                                                          start_date=datetime.date.today(),
-                                                          description="Research project description")
-        research_project.save()
+        research_project = ObjectsFactory.create_research_project()
 
         # Criar um experimento mock para ser utilizado no teste
-        experiment = Experiment.objects.create(title="Experimento-Update",
-                                               description="Descricao do Experimento-Update",
-                                               research_project=research_project)
-        experiment.save()
+        experiment = ObjectsFactory.create_experiment(research_project)
 
         # Create the root of the experimental protocol
         block = Block.objects.create(identification='Root',
