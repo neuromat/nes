@@ -10,7 +10,8 @@ from django.shortcuts import get_object_or_404
 
 from experiment.models import Experiment, Group, Subject, \
     QuestionnaireResponse, SubjectOfGroup, ComponentConfiguration, ResearchProject, Keyword, StimulusType, \
-    Component, Task, TaskForTheExperimenter, Stimulus, Instruction, Pause, Questionnaire, Block, EEG
+    Component, Task, TaskForTheExperimenter, Stimulus, Instruction, Pause, Questionnaire, Block, \
+    EEG, FileFormat, EEGData
 from patient.models import ClassificationOfDiseases
 from experiment.views import experiment_update, upload_file, research_project_update
 from survey.abc_search_engine import Questionnaires
@@ -87,20 +88,20 @@ class ObjectsFactory(object):
         return block
 
     @staticmethod
-    def system_authentication(self):
-        self.user = User.objects.create_user(username=USER_USERNAME, email='test@dummy.com', password=USER_PWD)
-        self.user.is_staff = True
-        self.user.is_superuser = True
-        self.user.save()
-        self.factory = RequestFactory()
-        logged = self.client.login(username=USER_USERNAME, password=USER_PWD)
-        return logged
+    def system_authentication(instance):
+        user = User.objects.create_user(username=USER_USERNAME, email='test@dummy.com', password=USER_PWD)
+        user.is_staff = True
+        user.is_superuser = True
+        user.save()
+        factory = RequestFactory()
+        logged = instance.client.login(username=USER_USERNAME, password=USER_PWD)
+        return logged, user, factory
 
 
 class ExperimentalProtocolTest(TestCase):
     def setUp(self):
 
-        logged = ObjectsFactory.system_authentication(self)
+        logged, self.user, self.factory = ObjectsFactory.system_authentication(self)
         self.assertEqual(logged, True)
 
         research_project = ObjectsFactory.create_research_project()
@@ -436,7 +437,7 @@ class ExperimentalProtocolTest(TestCase):
 
 class GroupTest(TestCase):
     def setUp(self):
-        logged = ObjectsFactory.system_authentication(self)
+        logged, self.user, self.factory = ObjectsFactory.system_authentication(self)
         self.assertEqual(logged, True)
 
         research_project = ObjectsFactory.create_research_project()
@@ -483,7 +484,7 @@ class GroupTest(TestCase):
 
 class ClassificationOfDiseasesTest(TestCase):
     def setUp(self):
-        logged = ObjectsFactory.system_authentication(self)
+        logged, self.user, self.factory = ObjectsFactory.system_authentication(self)
         self.assertEqual(logged, True)
 
     def test_classification_of_diseases_insert(self):
@@ -535,8 +536,9 @@ class ClassificationOfDiseasesTest(TestCase):
 
 
 class ExperimentTest(TestCase):
+
     def setUp(self):
-        logged = ObjectsFactory.system_authentication(self)
+        logged, self.user, self.factory = ObjectsFactory.system_authentication(self)
         self.assertEqual(logged, True)
 
         # Cria um estudo
@@ -632,7 +634,7 @@ class ListOfQuestionnaireFromExperimentalProtocolOfAGroupTest(TestCase):
     lime_survey = None
 
     def setUp(self):
-        logged = ObjectsFactory.system_authentication(self)
+        logged, self.user, self.factory = ObjectsFactory.system_authentication(self)
         self.assertEqual(logged, True)
 
         # Conecta no Lime Survey
@@ -818,7 +820,7 @@ class SubjectTest(TestCase):
     util = UtilTests()
 
     def setUp(self):
-        logged = ObjectsFactory.system_authentication(self)
+        logged, self.user, self.factory = ObjectsFactory.system_authentication(self)
         self.assertEqual(logged, True)
 
         # Conecta no Lime Survey
@@ -1176,6 +1178,81 @@ class SubjectTest(TestCase):
     #     self.assertEqual(response.status_code, 200)
     #     self.assertEqual(len(response.context['subject_list']), 1)
 
+    def test_eeg_data_file(self):
+        """
+        Test of a EEG data file upload
+        """
+
+        research_project = ObjectsFactory.create_research_project()
+
+        experiment = ObjectsFactory.create_experiment(research_project)
+
+        block = ObjectsFactory.create_block(Experiment.objects.first())
+
+        # EEG step
+        eeg_step = EEG.objects.create(experiment=experiment, component_type="eeg", identification="EEG step")
+
+        # Include the EEG step in the root.
+        component_configuration = ComponentConfiguration.objects.create(
+            name='ComponentConfiguration',
+            parent=block,
+            component=eeg_step
+        )
+        component_configuration.save()
+
+        group = ObjectsFactory.create_group(experiment, block)
+
+        util = UtilTests()
+        patient_mock = util.create_patient_mock(user=self.user)
+
+        subject_mock = Subject(patient=patient_mock)
+        subject_mock.save()
+
+        subject_group = SubjectOfGroup(subject=subject_mock, group=group)
+        subject_group.save()
+
+        group.subjectofgroup_set.add(subject_group)
+        experiment.save()
+
+        file_format = FileFormat.objects.create(name='Text file', extension='txt')
+        file = SimpleUploadedFile('experiment/eeg/eeg_metadata.txt', b'rb')
+
+        response = self.client.get(reverse('subject_eeg_data_create',
+                                           args=(group.id, subject_mock.id, component_configuration.id)))
+        self.assertEqual(response.status_code, 200)
+
+        self.data = {'date': '29/08/2014', 'action': 'save',
+                     'description': 'description of the file',
+                     'file_format': file_format.id, 'file': file}
+        response = self.client.post(reverse('subject_eeg_data_create',
+                                            args=(group.id, subject_mock.id, component_configuration.id)),
+                                    self.data)
+        self.assertEqual(response.status_code, 302)
+        self.assertEqual(EEGData.objects.all().count(), 1)
+
+        eeg_data = EEGData.objects.all().first()
+        response = self.client.get(reverse('eeg_data_view', args=(eeg_data.id,)))
+        self.assertEqual(response.status_code, 200)
+
+        self.data = {'date': '30/08/2014', 'action': 'save',
+                     'description': 'description of the file',
+                     'file_format': file_format.id, 'file': eeg_data.file}
+        response = self.client.post(reverse('eeg_data_edit', args=(eeg_data.id,)), self.data)
+        self.assertEqual(response.status_code, 302)
+
+        self.data = {'action': 'remove'}
+        response = self.client.post(reverse('eeg_data_view', args=(eeg_data.id,)), self.data)
+        self.assertEqual(response.status_code, 302)
+        self.assertEqual(EEGData.objects.all().count(), 0)
+
+        # # Delete participant from a group
+        # self.data = {'action': 'remove-' + str(subject_mock.pk)}
+        # count_before_delete_subject = SubjectOfGroup.objects.all().filter(group=group).count()
+        # response = self.client.post(reverse('subjects', args=(group.pk,)), self.data)
+        # self.assertEqual(response.status_code, 302)
+        # count_after_delete_subject = SubjectOfGroup.objects.all().filter(group=group).count()
+        # self.assertEqual(count_before_delete_subject - 1, count_after_delete_subject)
+
     def test_subject_upload_consent_file(self):
         """
         Testa o upload de arquivos que corresponde ao formulario de consentimento do participante no experimento
@@ -1240,7 +1317,7 @@ class SubjectTest(TestCase):
 
 class ResearchProjectTest(TestCase):
     def setUp(self):
-        logged = ObjectsFactory.system_authentication(self)
+        logged, self.user, self.factory = ObjectsFactory.system_authentication(self)
         self.assertEqual(logged, True)
 
     def test_research_project_list(self):

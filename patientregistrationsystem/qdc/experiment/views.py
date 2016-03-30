@@ -1398,7 +1398,7 @@ def eeg_data_edit(request, eeg_data_id, template_name="experiment/subject_eeg_da
                     redirect_url = reverse("eeg_data_view", args=(eeg_data_id,))
                     return HttpResponseRedirect(redirect_url)
         else:
-            eeg_data_form = EEGDataForm(None, instance=eeg_data)
+            eeg_data_form = EEGDataForm(request.POST or None, instance=eeg_data)
 
         context = {
             "group": eeg_data.subject_of_group.group,
