@@ -140,7 +140,7 @@ class ExportExecution:
             self.user_name = request.user.username
         return self.user_name
 
-    def __init__(self):
+    def __init__(self, user_id, export_id):
         # self.get_session_key()
 
         questionnaire_id = 0
@@ -148,7 +148,8 @@ class ExportExecution:
         # self.headers = []
         # self.fields = []
         self.base_directory_name = path.join(settings.MEDIA_ROOT, "export")
-        self.directory_base = self.base_directory_name
+        # self.directory_base = self.base_directory_name
+        self.set_directory_base(user_id, export_id)
         self.base_export_directory = ""
         self.user_name = None
         self.input_data = {}
@@ -174,7 +175,7 @@ class ExportExecution:
 
     def get_export_directory(self):
 
-        return self.base_export_directory
+        return self.base_export_directory   # MEDIA_ROOT/export/username_id/export_id/NES_EXPORT
 
     def read_configuration_data(self, json_file, update_input_data=True):
         json_data = open(json_file)
@@ -193,7 +194,8 @@ class ExportExecution:
         # verify if important tags from input_data are available
 
         for data_key in input_data_keys:
-            if not self.get_input_data(data_key):
+            # if not self.get_input_data(data_key):
+            if data_key not in self.input_data.keys():
                 return False
         return True
 
@@ -439,15 +441,17 @@ class ExportExecution:
 
     def process_per_questionnaire(self):
 
+        error_msg = ""
         # and save per_participant data
+        if self.get_input_data("export_per_questionnaire"):
+            per_questionnaire_directory = self.get_input_data("per_questionnaire_directory")
+            error_msg, path_per_questionnaire = create_directory(self.get_export_directory(),
+                                                                 per_questionnaire_directory)
+            if error_msg != "":
+                return error_msg
 
-        per_questionnaire_directory = self.get_input_data("per_questionnaire_directory")
-        error_msg, path_per_questionnaire = create_directory(self.get_export_directory(), per_questionnaire_directory)
-        if error_msg != "":
-            return error_msg
-
-        export_per_questionnaire_directory = path.join(self.get_input_data("base_directory"),
-                                                       self.get_input_data("per_questionnaire_directory"))
+            export_per_questionnaire_directory = path.join(self.get_input_data("base_directory"),
+                                                           self.get_input_data("per_questionnaire_directory"))
 
         questionnaire_lime_survey = Questionnaires()
 

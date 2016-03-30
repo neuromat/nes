@@ -138,6 +138,7 @@ LOCALE_PATHS = (
     os.path.join(BASE_DIR, 'survey/locale'),
     os.path.join(BASE_DIR, 'custom_user/locale'),
     os.path.join(BASE_DIR, 'quiz/locale'),
+    os.path.join(BASE_DIR, 'export/locale'),
     os.path.join(BASE_DIR, 'qdc/locale'),
 )
 

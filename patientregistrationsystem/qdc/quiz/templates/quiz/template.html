@@ -135,7 +135,8 @@
 
                 {% if perms.patient.export_patient or perms.patient.export_questionnaireresponse or perms.patient.export_medicalrecorddata %}
                 <li>
-                    <a href="/export/create/" class="btn-default dropdown-toggle navbar-inverse">
+{#                    <a href="/export/create/" class="btn-default dropdown-toggle navbar-inverse">#}
+                    <a href="/export/view/" class="btn-default dropdown-toggle navbar-inverse">
                         <span class="glyphicon glyphicon-export"></span> {% trans "Export" %}</a>
                 </li>
                 {% endif %}

@@ -10,6 +10,8 @@ import re
 from sys import modules
 from zipfile import ZipFile
 from django.http import HttpResponse
+from django.http import HttpResponseRedirect
+from django.core.urlresolvers import reverse
 from patient.models import Patient, QuestionnaireResponse
 from patient.views import check_limesurvey_access
 from survey.abc_search_engine import Questionnaires
@@ -22,9 +24,94 @@ import json
 from datetime import datetime
 from django.core.files import File
 
+
 from export.models import Export
 from export.export import ExportExecution, perform_csv_response, create_directory, save_to_csv, is_patient_active
 
+from .forms import ExportForm, ExportReturnForm
+from survey.models import Survey
+from export.input_export import build_complete_export_structure
+from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
+
+JSON_FILENAME = "json_export.json"
+EXPORT_DIRECTORY = "export"
+
+patient_fields = [
+    {"field": 'id', "header": 'id'},
+    {"field": 'name', "header": 'name'},
+    {"field": 'gender__name', "header": 'gender'},
+    {"field": 'date_birth', "header": 'date_birth'},
+    {"field": 'marital_status', "header": 'marital_status'},
+    {"field": 'origin', "header": 'origin'},
+    {"field": 'city', "header": 'city'},
+    {"field": 'state', "header": 'state'},
+    {"field": 'country', "header": 'country'},
+    {"field": 'socialdemographicdata__natural_of', "header": 'natural_of'},
+    {"field": 'socialdemographicdata__schooling', "header": 'schooling'},
+    {"field": 'socialdemographicdata__profession', "header": 'profession'},
+    {"field": 'socialdemographicdata__social_class', "header": 'social_class'},
+    {"field": 'socialdemographicdata__occupation', "header": 'occupation'},
+    {"field": 'socialdemographicdata__benefit_government', "header": 'benefit_government'},
+    {"field": 'socialdemographicdata__religion', "header": 'religion'},
+    {"field": 'socialdemographicdata__flesh_tone', "header": 'flesh_tone'},
+    {"field": 'socialdemographicdata__citizenship', "header": 'citizenship'},
+    {"field": 'socialdemographicdata__payment', "header": 'payment'},
+    {"field": 'socialhistorydata__alcohol_period', "header": 'alcohol_period'},
+    {"field": 'socialhistorydata__alcohol_frequency', "header": 'alcohol_frequency'},
+    {"field": 'socialhistorydata__smoker', "header": 'smoker'},
+    {"field": 'socialhistorydata__alcoholic', "header": 'alcoholic'},
+    {"field": 'socialhistorydata__drugs', "header": 'drugs'},
+    {"field": 'socialhistorydata__ex_smoker', "header": 'former_smoker'},
+    {"field": 'socialhistorydata__alcohol_frequency', "header": 'alcohol_frequency'},
+    {"field": 'socialhistorydata__amount_cigarettes', "header": 'amount_cigarettes'},
+]
+
+diagnosis_fields = [
+
+    {"field": "medicalrecorddata__record_responsible_id", "header": 'responsible_id'},
+    {"field": "medicalrecorddata__record_responsible__username", "header": 'responsible_username'},
+    {"field": "medicalrecorddata__diagnosis__date", "header": 'diagnosis_date'},
+    {"field": "medicalrecorddata__diagnosis__description", "header": 'diagnosis_description'},
+    {"field": "medicalrecorddata__diagnosis__classification_of_diseases__description",
+     "header": 'classification_of_diseases_description'},
+    {"field": "medicalrecorddata__diagnosis__classification_of_diseases_id", "header": 'classification_of_diseases_id'},
+]
+
+'''
+
+Diagnosis._meta.get_all_field_names()
+['description', 'medical_record_data_id', 'complementaryexam', 'classification_of_diseases_id',
+'classification_of_diseases', 'date', 'id', 'medical_record_data']
+
+
+SocialDemographicData._meta.get_all_field_names()
+['natural_of', 'changed_by_id', 'tv', 'wash_machine', 'flesh_tone', 'payment_id',
+'house_maid', 'automobile', 'schooling', 'radio', 'profession', 'dvd', 'bath', 'freezer',
+'social_class', 'schooling_id', 'occupation', 'changed_by', 'benefit_government', 'religion_id',
+'flesh_tone_id', 'refrigerator', 'patient', 'religion', 'citizenship', 'id', 'patient_id', 'payment']
+
+SocialHistoryData._meta.get_all_field_names()
+['alcohol_period', 'alcohol_period_id', 'alcohol_frequency_id', 'smoker', 'alcoholic', 'drugs',
+'ex_smoker', 'changed_by', 'changed_by_id',
+'alcohol_frequency', 'amount_cigarettes_id', 'id', 'patient_id', 'amount_cigarettes', 'patient']
+
+
+    ['email', 'address_complement', 'changed_by_id', 'cpf', 'medicalrecorddata',
+     'district',
+     'zipcode', 'address_number',
+
+     'marital_status_id',
+     'telephone', 'rg', 'state',
+     'socialhistorydata', 'gender_id', 'changed_by', 'subject',
+     'origin', 'medical_record', 'removed',
+     'city',
+     'marital_status',
+     'country',
+     'street', 'questionnaireresponse']
+     'socialdemographicdata',
+
+
+'''
 # BASE_DIRECTORY = 'NES_EXPORT'
 
 header_explanation_fields = ['questionnaire_id',
@@ -67,104 +154,6 @@ def read_configuration_data(json_file):
     return read_data
 
 
-json_format = [
-    '      {\n',
-    '        "id": %d,\n',
-    '        "questionnaire_name": "%s",\n',
-    '        "language": "pt-BR",\n',
-    '        "depends_on": "",\n',
-    '        "output_list": [\n',
-    '          {\n',
-    '            "field": "%s",\n',
-    '            "header": "%s"\n',
-    '          },\n',
-    '        ],\n',
-    '        "prefix_filename_responses": "Questionnaire",\n',
-    '        "prefix_filename_fields": "Fields"\n',
-    '      },\n',
-]
-
-questionnaire_code_list_example = [
-    113491,
-    256242,
-    271192,
-    345282,
-    367311,
-    456776,
-    471898,
-    578559,
-    599846,
-    885183,
-    944684,
-    969322,
-]
-
-
-def prepare_json(questionnaire_code_list=questionnaire_code_list_example):
-    """
-    :param questionnaire_code_list: list with questionnaire id to be formatted with json file
-    :return: 2 lists: questionnaires_included - questionnaire_id that was included in the .txt file
-                      questionnaires_excluded - questionnaire_id that was not included because
-                                there was an error when preparing the data
-                      MEDIA_ROOT/prep_json.txt - file created to be used with json export
-
-         IMPORTANT NOTE: only questionnaires with data(with answers) can be obtained to include in the .txt file
-    """
-    id_index = 1
-    language = "pt-BR"
-
-    questionnaires_included = []
-    questionnaires_excluded = []
-
-    with (open(path.join(settings.MEDIA_ROOT, "prep_json.txt"), "w")) as f:
-        json_file = File(f)
-
-        questionnaire_lime_survey = Questionnaires()
-        for questionnaire_id in questionnaire_code_list:
-            for index in range(id_index):
-                json_file.write(json_format[index])
-
-            responses_string = questionnaire_lime_survey.get_responses(questionnaire_id, language)
-
-            index = id_index
-            print("id: %d " % questionnaire_id)
-
-            if not isinstance(responses_string, dict):
-
-                questionnaires_included.append(questionnaire_id)
-
-                json_file.write(json_format[index] % questionnaire_id)
-                index += 1
-                questionnaire_title = questionnaire_lime_survey.get_survey_title(questionnaire_id)
-                json_file.write(json_format[index] % questionnaire_title)
-                index += 1
-                for i in range(index, index + 3):
-                    json_file.write(json_format[i])
-                index = 6
-                # questionnaire_questions = questionnaire_lime_survey.list_questions(questionnaire_id, 0)
-
-                questionnaire_questions = perform_csv_response(responses_string)
-
-                for question in questionnaire_questions[0]:
-                    # properties = questionnaire_lime_survey.get_question_properties(question, language)
-                    json_file.write(json_format[index])
-                    json_file.write(json_format[index + 1] % question)
-                    json_file.write(json_format[index + 2] % question)
-                    json_file.write(json_format[index + 3])
-
-                index = 10
-                for i in range(index, len(json_format)):
-                    json_file.write(json_format[i])
-            else:
-                print(smart_str(
-                    "error: %d - questionnaire was not included because there is no data." % questionnaire_id))
-                questionnaires_excluded.append(questionnaire_id)
-
-        questionnaire_lime_survey.release_session_key()
-    json_file.close()
-    return questionnaires_included, questionnaires_excluded
-
-
 def process_participant_data(participants, participants_list):
     export_rows_participants = []
 
@@ -192,54 +181,64 @@ def create_export_instance(user):
     return export_instance
 
 
+def get_export_instance(user, export_id):
+    export_instance = Export.objects.get(user=user, id=export_id)
+
+    return export_instance
+
+
 def update_export_instance(input_file, output_export, export_instance):
     export_instance.input_file = input_file
     export_instance.output_export = output_export
     export_instance.save()
 
 
-@login_required
+# @login_required
 # @permission_required('questionnaire.create_export')
-def export_create(request, template_name="export/export_data.html"):
+# def export_create(request, template_name="export/export_data.html"):
+def export_create(request, export_id, input_filename, template_name="export/export_data.html"):
     try:
-        export = ExportExecution()
 
-        files_to_zip_list = []
+        export_instance = get_export_instance(request.user, export_id)
 
-        export_instance = create_export_instance(request.user)
+        export = ExportExecution(export_instance.user.id, export_instance.id)
 
-        # directory_root = path.join("export", path.join(str(request.user.id), str(export_instance.id)))
-        export.set_directory_base(request.user.id, export_instance.id)
+        # files_to_zip_list = []
 
-        base_directory = path.split(export.get_directory_base())
-
-        path_to_create = base_directory[1]
-        base_directory = base_directory[0]
-
+        # export_instance = create_export_instance(request.user)
+        #
+        # # directory_root = path.join("export", path.join(str(request.user.id), str(export_instance.id)))
+        # export.set_directory_base(request.user.id, export_instance.id)
+        #
+        base_directory, path_to_create = path.split(export.get_directory_base())
+        #
+        # path_to_create = base_directory[1]
+        # base_directory = base_directory[0]
+        #
         error_msg, base_directory_name = create_directory(base_directory, path_to_create)
         if error_msg != "":
             messages.error(request, error_msg)
             return render(request, template_name)
-
-        # Read initial json file
-        json_filename = "json_export.json"
-        path_source = path.join(settings.BASE_DIR, "export")
-        input_name = path.join(path_source, json_filename)
-
+        #
+        # # Read initial json file
+        # json_filename = "json_export.json"
+        # path_source = path.join(settings.BASE_DIR, "export")
+        # input_name = path.join(path_source, json_filename)
+        #
         input_export_file = path.join("export", path.join(str(request.user.id),
-                                                          path.join(str(export_instance.id), str(json_filename))))
-
-        # copy data to .../media/export/<user_id>/<export_id>/
-        input_filename = path.join(settings.MEDIA_ROOT, input_export_file)
-
-        copy(input_name, input_filename)
+                                                          path.join(str(export_instance.id), str(JSON_FILENAME))))
+        #
+        # # copy data to .../media/export/<user_id>/<export_id>/
+        # input_filename = path.join(settings.MEDIA_ROOT, input_export_file)
+        #
+        # copy(input_name, input_filename)
 
         # prepare data to be processed
 
         input_data = export.read_configuration_data(input_filename)
 
         if not export.is_input_data_consistent() or not input_data:
-            messages.error(request, error_msg)
+            messages.error(request, _("Inconsistent data read from json file"))
             return render(request, template_name)
 
         # create directory base for export: /NES_EXPORT
@@ -298,7 +297,7 @@ def export_create(request, template_name="export/export_data.html"):
                     export_directory = path.join(export_directory_base, path_participant)
                     export_directory = path.join(export_directory, path_questionnaire)
 
-                    files_to_zip_list.append([complete_filename, export_directory])
+                    export.files_to_zip_list.append([complete_filename, export_directory])
 
         # process participants
         participants_list = (export.get_per_participant_data().keys())
@@ -308,11 +307,11 @@ def export_create(request, template_name="export/export_data.html"):
         export_filename = "%s.csv" % export.get_input_data('participants')[0]["output_filename"]  # "export.csv"
 
         base_export_directory = export.get_export_directory()
-        base_directory = export.get_directory_base()
+        base_directory = export.get_input_data("base_directory")   # /NES_EXPORT
 
         complete_filename = path.join(base_export_directory, export_filename)
 
-        files_to_zip_list.append([complete_filename, base_directory])
+        export.files_to_zip_list.append([complete_filename, base_directory])
 
         with open(complete_filename, 'w', newline='') as csv_file:
             export_writer = writer(csv_file)
@@ -327,7 +326,7 @@ def export_create(request, template_name="export/export_data.html"):
         complete_filename = path.join(base_export_directory, export_filename)
 
         # files_to_zip_list.append(complete_filename)
-        files_to_zip_list.append([complete_filename, base_directory])
+        export.files_to_zip_list.append([complete_filename, base_directory])
 
         with open(complete_filename, 'w', newline='') as csv_file:
             export_writer = writer(csv_file)
@@ -337,10 +336,10 @@ def export_create(request, template_name="export/export_data.html"):
         # create zip file and include files
         export_filename = export.get_input_data("export_filename")  # 'export.zip'
 
-        complete_filename = path.join(base_directory_name, export_filename)
+        export_complete_filename = path.join(base_directory_name, export_filename)
 
-        with ZipFile(complete_filename, 'w') as zip_file:
-            for filename, directory in files_to_zip_list:
+        with ZipFile(export_complete_filename, 'w') as zip_file:
+            for filename, directory in export.files_to_zip_list:
                 fdir, fname = path.split(filename)
 
                 zip_file.write(filename, path.join(directory, fname))
@@ -362,15 +361,231 @@ def export_create(request, template_name="export/export_data.html"):
 
         messages.success(request, _("Export was finished correctly"))
 
+        return export_complete_filename
         # return file to the user
-        zip_file = open(complete_filename, 'rb')
-        response = HttpResponse(zip_file, content_type='application/zip')
-        response['Content-Disposition'] = 'attachment; filename="export.zip"'
-        response['Content-Length'] = path.getsize(complete_filename)
-        return response
+        # zip_file = open(complete_filename, 'rb')
+        # response = HttpResponse(zip_file, content_type='application/zip')
+        # response['Content-Disposition'] = 'attachment; filename="export.zip"'
+        # response['Content-Length'] = path.getsize(complete_filename)
+        # return response
 
     except OSError as e:
         print(e)
         error_msg = e
         messages.error(request, error_msg)
         return render(request, template_name)
+
+
+# @login_required
+def export_view(request, template_name="export/export_data.html"):
+    export_form = ExportForm(request.POST or None, initial={'title': 'title'})
+    # , 'per_participant': False,
+    #                                                         'per_questinnaire': False})
+    # export_form.per_participant = False
+    # export_form.per_questionnaire = True
+
+    context = {}
+
+
+    # test with pagination
+    a = [{"b": "2", "c": "3"}, {"d": "7", "e": "8"}]
+    b = [1, 2, 3, 4, 5]
+    c = [7, 9, (4, 3, 2)]
+
+    contact_list = [a, b, c]
+
+    paginator = Paginator(contact_list, 1)  # Show 1 info per page
+
+    page = request.GET.get('page')
+    try:
+        contacts = paginator.page(page)
+    except PageNotAnInteger:
+        # If page is not an integer, deliver first page.
+        page = 1
+        contacts = paginator.page(1)
+    except EmptyPage:
+        # If page is out of range (e.g. 9999), deliver last page of results.
+        page = paginator.num_pages
+        contacts = paginator.page(paginator.num_pages)
+
+    if page == 1:
+
+        if request.method == "POST" and export_form.is_valid():
+            if export_form.is_valid():
+
+                print("valid data")
+
+                per_participant = export_form.cleaned_data['per_participant']
+                per_questionnaire = export_form.cleaned_data['per_questionnaire']
+
+                questionnaires_selected_list = request.POST.getlist('questionnaire_selected')
+
+                questionnaires_list = []
+
+                previous_questionnaire_id = 0
+                output_list = []
+                for questionnaire in questionnaires_selected_list:
+                    sid, title, field, header = questionnaire.split("*")
+
+                    sid = int(sid)    # transform to integer
+                    if sid != previous_questionnaire_id:
+                        if previous_questionnaire_id != 0:
+                            output_list = []
+
+                        questionnaires_list.append([sid, title, output_list])
+
+                        previous_questionnaire_id = sid
+
+                    output_list.append((field, header))
+
+                # get participants list
+                participant_selected_list = request.POST.getlist('patient_selected')
+
+                participants_list = []
+
+                for participant in participant_selected_list:
+                    participants_list.append(participant.split("*"))
+
+                # get diagnosis list
+                diagnosis_selected_list = request.POST.getlist('diagnosis_selected')
+
+                diagnosis_list = []
+
+                for diagnosis in diagnosis_selected_list:
+                    diagnosis_list.append(diagnosis.split("*"))
+
+        # output_filename = "/Users/sueli/PycharmProjects/nes/patientregistrationsystem/qdc/export/json_export_output2.json"
+
+                # MEDIA_ROOT/export/username_id/export_id
+
+                # input_export_file = create_initial_directory(request.user)
+
+                export_instance = create_export_instance(request.user)
+
+                input_export_file = path.join(EXPORT_DIRECTORY,
+                                              path.join(str(request.user.id),
+                                                        path.join(str(export_instance.id), str(JSON_FILENAME))))
+
+                # copy data to .../media/export/<user_id>/<export_id>/
+                input_filename = path.join(settings.MEDIA_ROOT, input_export_file)
+                create_directory(settings.MEDIA_ROOT, path.split(input_export_file)[0])
+
+                build_complete_export_structure(per_participant, per_questionnaire, participants_list, diagnosis_list,
+                                                questionnaires_list, input_filename)
+
+                complete_filename = export_create(request, export_instance.id, input_filename)
+
+                messages.success(request, _("Export was finished correctly"))
+
+                # return file to the user
+
+                # error_message = "a"
+                # return_response = complete_filename
+                #
+                # redirect_url = reverse("export_result", args=(return_response, error_message))
+                # return HttpResponseRedirect(redirect_url )
+
+                zip_file = open(complete_filename, 'rb')
+                response = HttpResponse(zip_file, content_type='application/zip')
+                response['Content-Disposition'] = 'attachment; filename="export.zip"'
+                response['Content-Length'] = path.getsize(complete_filename)
+                return response
+
+        else:
+            # page 1 - list of questionnaires
+            surveys = Questionnaires()
+            limesurvey_available = check_limesurvey_access(request, surveys)
+
+            questionnaires_list = []
+
+            if limesurvey_available:
+                questionnaires_list = surveys.find_all_active_questionnaires()
+
+            surveys.release_session_key()
+
+            questionnaires_list_final = []
+
+            # removing surveys that are not entrance evaluation
+            # entrance_evaluation_questionnaires = QuestionnaireResponse.objects.all()
+            entrance_evaluation_questionnaire_ids_list = set(QuestionnaireResponse.objects.values_list('survey',
+                                                                                                       flat=True))
+
+            # ev_questionnaire_ids_list = entrance_evaluation_questionnaires.values_list("survey")
+            surveys_with_ev_list = Survey.objects.filter(id__in=entrance_evaluation_questionnaire_ids_list)
+
+            for survey in surveys_with_ev_list:
+                for questionnaire in questionnaires_list:
+                    if survey.lime_survey_id == questionnaire['sid']:
+                        questionnaires_list_final.append(questionnaire)
+                        break
+
+            # page 2 fields
+
+            # entrance evaluation questionnarie fields
+            questionnaires_fields_list = get_questionnaire_fields(questionnaires_list_final)
+
+            # for field in questionnaires_fields_list:
+            #     for questionnaire in questionnaires_list_final:
+            #         if field["sid"] == questionnaire['sid']:
+            #             field["title"] = questionnaire["surveyls_title"]
+            #             break
+
+            # patient fields
+            # patient_fields = []
+            #
+            # "output_list":{}
+
+            # diagnosis fields
+
+            context = {
+                "limesurvey_available": limesurvey_available,
+                "export_form": export_form,
+                "questionnaires_list": questionnaires_list_final,
+                "contacts": contacts,
+                "patient_fields": patient_fields,
+                "diagnosis_fields": diagnosis_fields,
+                "questionnaires_fields_list": questionnaires_fields_list,
+            }
+
+    # elif page == 2:
+
+    return render(request, template_name, context)
+
+
+# def export_execute():
+
+def get_questionnaire_fields(questionnaire_code_list, language="pt-BR"):
+    """
+    :param questionnaire_code_list: list with questionnaire id to be formatted with json file
+    :return: 1 list: questionnaires_included - questionnaire_id that was included in the .txt file
+
+    """
+
+    questionnaires_included = []
+
+    questionnaire_lime_survey = Questionnaires()
+    for questionnaire in questionnaire_code_list:
+
+        questionnaire_id = questionnaire["sid"]
+
+        responses_string = questionnaire_lime_survey.get_responses(questionnaire_id, language)
+
+        # print("id: %d " % questionnaire_id)
+
+        if not isinstance(responses_string, dict):
+
+            record_question = {'sid': questionnaire_id, "title": questionnaire["surveyls_title"], "output_list": []}
+
+            questionnaire_questions = perform_csv_response(responses_string)
+
+            # line 0 - header information
+            for question in questionnaire_questions[0]:
+                # properties = questionnaire_lime_survey.get_question_properties(question, language)
+
+                record_question["output_list"].append({"field": question, "header": question})
+
+            questionnaires_included.append(record_question)
+
+    questionnaire_lime_survey.release_session_key()
+
+    return questionnaires_included

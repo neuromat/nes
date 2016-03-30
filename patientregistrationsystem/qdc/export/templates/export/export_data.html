@@ -1,10 +1,182 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <title></title>
-</head>
-<body>
 
-</body>
-</html>
+{% extends "quiz/template.html" %}
+
+{% load i18n admin_static %}
+
+{#{% block activeAdvancedSurvey %}class="active"{% endblock %}#}
+
+{% block header %}
+{#    <script src="{% static 'quiz/js/survey.js' %}"></script>#}
+
+    <script>
+        $(document).ready(function(){
+            $('[data-toggle="tooltip"]').tooltip();
+        });
+    </script>
+{% endblock %}
+
+{% block form %}
+    <div class="row">
+        <form id="export_form" method="post" data-toggle="validator">
+            {% csrf_token %}
+{% endblock %}
+
+{% block content %}
+    <div class="tab-content">
+        {% if messages %}
+            {% for message in messages %}
+
+                {% if message.tags == "success" %}
+                    <script>showSuccessMessage('{{ message }}')</script>
+                {% endif %}
+
+                {% if message.tags == "warning" %}
+                    <script>showWarningMessage('{{ message }}')</script>
+                {% endif %}
+
+                {% if message.tags == "error" %}
+                    <script>showErrorMessage('{{ message }}')</script>
+                {% endif %}
+
+                {% if message.tags == "info" %}
+                    <script>showInfoMessage('{{ message }}')</script>
+                {% endif %}
+
+            {% endfor %}
+        {% endif %}
+
+        {% if export_form.errors %}
+        <script type="text/javascript">
+            showErrorMessage(gettext('Please, correct the highlighted fields.'))
+        </script>
+        {% endif %}
+
+    <div class="tab-pane fade in active" id="menuUserTab">
+        <div class="col-md-10">
+            {% ifequal contacts.number 1 %}
+
+                <div class="container span6 offset3 well ">
+                    <div class="row">
+                        <div class="col-xs-12 col-sm-12">
+                            <h4>{% trans "General Information" %}</h4>
+                        </div>
+                    </div>
+                     <div class="row">
+                        <div class="col-xs-12 col-sm-7">
+                            <label data-toggle="tooltip" data-placement="auto left" title="{% trans "At least one option must be selected" %}" for="directory_structure" class="control-label">{% trans "Directory Structure" %} <b style="color: red;">*</b></label>
+
+                            <div class="form-group {% if export_form.errors.per_participant %}has-error{% endif %}">
+
+                                <div class="checkbox">
+                                    {{ export_form.per_participant }}
+                                    <label for="per_participant" class="control-label">{% trans "Per participant" %}</label>
+                                </div>
+                                <div class="help-block with-errors">
+                                    {% if export_form.per_participant.errors %}
+                                        <span>
+                                        {% for error in export_form.per_participant.errors %}{{ error }}{% endfor %}
+                                        </span>
+                                    {% endif %}
+                                </div>
+
+                                <div class="checkbox">
+                                    {{ export_form.per_questionnaire }}
+                                    <label for="per_questionnaire" class="control-label">{% trans "Per questionnaire" %}</label>
+                                </div>
+                                <div class="help-block with-errors">
+                                    {% if export_form.per_questionnaire.errors %}
+                                        <span>
+                                        {% for error in export_form.per_questionnaire.errors %}{{ error }}{% endfor %}
+                                        </span>
+                                    {% endif %}
+                                </div>
+
+                            </div>
+{#                            <div class="checkbox" style="margin-top: 0px">#}
+{#                                <input id="per_questionnaire" name="per_questionnaire" type="checkbox" value="per_questionnaire">#}
+{#                                    {{ export_form.per_questionnaire }}{% trans "Per questionnaire" %}#}
+{#                                </input>#}
+{#                            </div>#}
+
+{#                            <div class="checkbox" style="margin-top: 0px">#}
+{#                                <input id="per_participant" name="per_participant" type="checkbox" value="per_participant">#}
+{#                                    {{ export_form.per_participant }}{% trans "Per participant" %}#}
+{#                                </input>#}
+{#                            </div>#}
+
+                        </div>
+                    </div>
+
+                </div>
+
+                <div class="container span6 offset3 well ">
+                    <h4>{% trans "Questionnaire information" %}</h4>
+                    <div class="row">
+                        <div class="col-xs-12 col-sm-12">
+                            <div class="form-group">
+                                <label class="control-label">{% trans "Questionnaire - Entrance evaluation" %} <b style="color: red;">*</b></label>
+                                <select class="form-control" size="13" required="" id="questionnaire_selected" name="questionnaire_selected" multiple="multiple" data-error={% trans "Please, select a questionnaire from the list." %}>
+                                    {% for survey in questionnaires_fields_list %}
+                                        <optgroup label='{{ survey.sid }} - {{survey.title }}'>
+                                        {% for field in survey.output_list %}
+                                             <option value="{{ survey.sid }}*{{survey.title }}*{{ field.field }}*{{ field.header }}"> {{ field.header }} </option>
+                                        {% endfor %}
+                                        </optgroup>
+                                    {% endfor %}
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                 <div class="container span6 offset3 well ">
+                    <h4>{% trans "Participants" %}</h4>
+                    <div class="row">
+                        <div class="col-xs-12 col-sm-12">
+                            <div class="form-group">
+                                <label class="control-label">{% trans "Participant fields" %} <b style="color: red;">*</b></label>
+                                <select class="form-control" size="13" required="" id="patient_selected" name="patient_selected" multiple="multiple" data-error={% trans "Please, select a patient field from the list." %}>
+                                    {% for field in patient_fields %}
+                                        <option value="{{ field.field }}*{{ field.header }}"> {{ field.header }} </option>
+                                    {% endfor %}
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="container span6 offset3 well ">
+                    <h4>{% trans "Diagnosis" %}</h4>
+                    <div class="row">
+                        <div class="col-xs-12 col-sm-12">
+                            <div class="form-group">
+                                <label class="control-label">{% trans "Diagnosis fields" %} <b style="color: red;">*</b></label>
+                                <select class="form-control" size="13" required="" id="diagnosis_selected" name="diagnosis_selected" multiple="multiple" data-error={% trans "Please, select a diagnosis field from the list." %}>
+                                    {% for field in diagnosis_fields %}
+                                        <option value="{{ field.field }}*{{ field.header }}"> {{ field.header }} </option>
+                                    {% endfor %}
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            {% endifequal %}
+
+                <div class="btn-toolbar">
+                    <div class="btn-group pull-right">
+                        <button type="submit" name="action" value="save" class="btn btn-primary">{% trans "Run" %}</button>
+                    </div>
+                    <div class="btn-group pull-right">
+                        <a href="/home/"
+                           class="btn" style="background-color: #f5f5f5">{% trans "Cancel" %}</a>
+                    </div>
+                </div>
+
+        </div>
+    </div>
+
+    </div>
+{% endblock %}
+
+{% block end_form %}
+        </form>
+    </div>
+{% endblock %}

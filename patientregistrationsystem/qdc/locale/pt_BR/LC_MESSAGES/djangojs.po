@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2015-11-12 16:14-0200\n"
+"POT-Creation-Date: 2016-03-30 20:36-0300\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -179,24 +179,27 @@ msgid "Show"
 msgstr "Mostrar"
 
 #: admin/js/collapse.js:16 admin/js/collapse.min.js:1
-#: templates/registration/password_reset_confirm.html:28
 msgid "Hide"
 msgstr "Esconder"
 
 #: templates/registration/change_password_custom.html:35
-#: templates/registration/password_reset_confirm_o.html:35
+#: templates/registration/password_reset_confirm_o.html:49
 msgid "Invalid password. Please, try again."
 msgstr "Senha inválida. Por favor tente novamente."
 
-#: templates/registration/login.html:114
+#: templates/registration/login.html:112
 msgid "Invalid user or password."
 msgstr "Usuário ou senha inválidos."
 
-#: templates/registration/password_reset_confirm.html:70
+#: templates/registration/password_reset_confirm.html:37
+msgid "Passwords don't match"
+msgstr ""
+
+#: templates/registration/password_reset_confirm.html:64
 msgid "Password incompatible with defined standard."
 msgstr "Senha incompatível com o padrão definido."
 
-#: templates/registration/password_reset_confirm.html:168
+#: templates/registration/password_reset_confirm.html:162
 msgid "Invalid fill. Make sure the passwords entered are the same"
 msgstr "Preenchimento invalido. Verifique se as senhas digitadas sao iguais"
 

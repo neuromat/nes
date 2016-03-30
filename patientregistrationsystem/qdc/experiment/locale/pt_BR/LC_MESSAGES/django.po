@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2016-02-25 18:03-0300\n"
+"POT-Creation-Date: 2016-03-24 12:28-0300\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -18,93 +18,93 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=(n > 1);\n"
 
-#: experiment/forms.py:19 experiment/forms.py:36 experiment/forms.py:190
+#: experiment/forms.py:19 experiment/forms.py:37 experiment/forms.py:193
 msgid "Title must be filled."
 msgstr "Título deve ser preenchido."
 
-#: experiment/forms.py:22 experiment/forms.py:39 experiment/forms.py:194
+#: experiment/forms.py:23 experiment/forms.py:41 experiment/forms.py:198
 msgid "Description must be filled."
 msgstr "Descrição deve ser preenchida."
 
-#: experiment/forms.py:51 experiment/forms.py:195 experiment/forms.py:198
+#: experiment/forms.py:53 experiment/forms.py:199 experiment/forms.py:202
 msgid "%m/%d/%Y"
 msgstr "%d/%m/%Y"
 
-#: experiment/forms.py:52 experiment/forms.py:196 experiment/forms.py:199
+#: experiment/forms.py:54 experiment/forms.py:200 experiment/forms.py:203
 msgid "mm/dd/yyyy"
 msgstr "dd/mm/aaaa"
 
-#: experiment/forms.py:54
+#: experiment/forms.py:56
 msgid "Fill date must be filled."
 msgstr "Data de preenchimento deve ser preenchida"
 
-#: experiment/forms.py:79
+#: experiment/forms.py:81
 msgid "Identification must be filled."
 msgstr "Identificação deve ser preenchida."
 
-#: experiment/forms.py:83 experiment/forms.py:131
+#: experiment/forms.py:86 experiment/forms.py:134
 msgid "Time"
 msgstr "Tempo"
 
-#: experiment/forms.py:91
+#: experiment/forms.py:94
 msgid "Duration time must be filled in."
 msgstr "Tempo da duração deve ser preenchido"
 
-#: experiment/forms.py:99
+#: experiment/forms.py:102
 msgid "Duration unit must be filled in."
 msgstr "Unidade da duração deve ser preenchida"
 
-#: experiment/forms.py:108
+#: experiment/forms.py:111
 msgid "Fixed"
 msgstr "Fixa"
 
-#: experiment/forms.py:108
+#: experiment/forms.py:111
 msgid "Random"
 msgstr "Aleatória"
 
-#: experiment/forms.py:128
+#: experiment/forms.py:131
 msgid "Quantity of repetitions must be filled."
 msgstr "Quantidade de repetições deve ser preenchida."
 
-#: experiment/forms.py:130
+#: experiment/forms.py:133
 msgid "Interval must be filled."
 msgstr "Intervalo deve ser preenchido"
 
-#: experiment/forms.py:135
+#: experiment/forms.py:138
 msgid "Interval unit must be filled."
 msgstr "Unidade do intervalo deve ser preenchida"
 
-#: experiment/forms.py:146
+#: experiment/forms.py:149
 msgid "Instruction must be filled."
 msgstr "Instrução deve ser preenchida."
 
-#: experiment/forms.py:157
+#: experiment/forms.py:160
 msgid "Stimulus type must be filled."
 msgstr "Tipo do estímulo deve ser preenchido."
 
-#: experiment/forms.py:164
+#: experiment/forms.py:167
 msgid "Sequence"
 msgstr "Em uma sequência"
 
-#: experiment/forms.py:165
+#: experiment/forms.py:168
 msgid "Parallel"
 msgstr "De forma paralela"
 
-#: experiment/forms.py:167
+#: experiment/forms.py:170
 msgid "Organization type must be filled in."
 msgstr "Tipo de organização deve ser escolhido."
 
-#: experiment/forms.py:175 experiment/forms.py:221
+#: experiment/forms.py:178 experiment/forms.py:225
 msgid "Quantity must be filled."
 msgstr "Quantidade deve ser preenchida."
 
-#: experiment/forms.py:180
-#: experiment/templates/experiment/research_project_list.html:36
+#: experiment/forms.py:183
+#: experiment/templates/experiment/research_project_list.html:58
 #: experiment/templates/experiment/research_project_register.html:116
 msgid "Responsible"
 msgstr "Responsável"
 
-#: experiment/forms.py:197
+#: experiment/forms.py:201
 msgid "Initial date must be filled."
 msgstr "Data de início deve ser preenchida"
 
@@ -173,6 +173,10 @@ msgstr "Tarefa para o participante"
 #: experiment/models.py:96
 msgid "Task for experimenter"
 msgstr "Tarefa para o experimentador"
+
+#: experiment/models.py:97
+msgid "EEG"
+msgstr ""
 
 #: experiment/templates/experiment/ajax_cid10.html:8
 msgid "No diseases found!"
@@ -262,8 +266,8 @@ msgstr "Ordem"
 #: experiment/templates/experiment/research_project_register.html:143
 #: experiment/templates/experiment/research_project_register.html:202
 #: experiment/templates/experiment/research_project_register.html:231
-#: experiment/templates/experiment/subject_questionnaire_response_form.html:230
-#: experiment/templates/experiment/subject_questionnaire_response_form.html:276
+#: experiment/templates/experiment/subject_questionnaire_response_form.html:231
+#: experiment/templates/experiment/subject_questionnaire_response_form.html:278
 #: experiment/templates/experiment/subject_questionnaire_response_list.html:152
 #: experiment/templates/experiment/subject_questionnaire_response_list.html:174
 #: experiment/templates/experiment/upload_consent_form.html:111
@@ -318,7 +322,7 @@ msgstr "Passos com posição aleatória"
 #: experiment/templates/experiment/group_register.html:369
 #: experiment/templates/experiment/research_project_register.html:211
 #: experiment/templates/experiment/research_project_register.html:230
-#: experiment/templates/experiment/subject_questionnaire_response_form.html:275
+#: experiment/templates/experiment/subject_questionnaire_response_form.html:277
 #: experiment/templates/experiment/subject_questionnaire_response_list.html:173
 #: experiment/templates/experiment/upload_consent_form.html:109
 msgid "Cancel"
@@ -329,7 +333,7 @@ msgstr "Cancelar"
 #: experiment/templates/experiment/experiment_register.html:49
 #: experiment/templates/experiment/group_register.html:51
 #: experiment/templates/experiment/questionnaire_view.html:55
-#: experiment/templates/experiment/research_project_list.html:20
+#: experiment/templates/experiment/research_project_list.html:42
 #: experiment/templates/experiment/research_project_register.html:51
 #: experiment/templates/experiment/subject_questionnaire_response_form.html:23
 #: experiment/templates/experiment/subject_questionnaire_response_list.html:25
@@ -343,7 +347,7 @@ msgstr "Home"
 #: experiment/templates/experiment/experiment_register.html:50
 #: experiment/templates/experiment/group_register.html:52
 #: experiment/templates/experiment/questionnaire_view.html:56
-#: experiment/templates/experiment/research_project_list.html:21
+#: experiment/templates/experiment/research_project_list.html:43
 #: experiment/templates/experiment/research_project_register.html:52
 #: experiment/templates/experiment/subject_questionnaire_response_form.html:35
 #: experiment/templates/experiment/subject_questionnaire_response_list.html:26
@@ -380,8 +384,16 @@ msgstr "Identificação"
 msgid "Description"
 msgstr "Descrição"
 
-#: experiment/templates/experiment/component_list.html:84
+#: experiment/templates/experiment/component_list.html:83
+msgid "root"
+msgstr ""
+
 #: experiment/templates/experiment/component_list.html:86
+msgid "not used"
+msgstr ""
+
+#: experiment/templates/experiment/component_list.html:90
+#: experiment/templates/experiment/component_list.html:92
 #: experiment/templates/experiment/component_template.html:154
 #: experiment/templates/experiment/component_template.html:167
 #: experiment/templates/experiment/configuration_line.html:13
@@ -399,19 +411,19 @@ msgstr "Descrição"
 msgid "Edit"
 msgstr "Editar"
 
-#: experiment/templates/experiment/component_list.html:97
+#: experiment/templates/experiment/component_list.html:103
 msgid "Insert new step"
 msgstr "Inserir novo passo"
 
-#: experiment/templates/experiment/component_list.html:111
+#: experiment/templates/experiment/component_list.html:117
 #: experiment/templates/experiment/component_template.html:297
 #: experiment/templates/experiment/experiment_register.html:166
 #: experiment/templates/experiment/group_register.html:324
 #: experiment/templates/experiment/questionnaire_view.html:227
 #: experiment/templates/experiment/research_project_register.html:215
-#: experiment/templates/experiment/subject_questionnaire_response_form.html:251
-#: experiment/templates/experiment/subject_questionnaire_response_form.html:255
-#: experiment/templates/experiment/subject_questionnaire_response_form.html:258
+#: experiment/templates/experiment/subject_questionnaire_response_form.html:253
+#: experiment/templates/experiment/subject_questionnaire_response_form.html:257
+#: experiment/templates/experiment/subject_questionnaire_response_form.html:260
 #: experiment/templates/experiment/subject_questionnaire_response_list.html:156
 #: experiment/templates/experiment/subjects.html:134
 #: experiment/templates/experiment/upload_consent_form.html:95
@@ -507,6 +519,16 @@ msgstr "Calculada a partir dos subpassos"
 msgid "Duration"
 msgstr "Duração"
 
+#: experiment/templates/experiment/eeg_component.html:8
+#: experiment/templates/experiment/eeg_component.html:18
+#: experiment/templates/experiment/eeg_component.html:24
+msgid "New EEG"
+msgstr ""
+
+#: experiment/templates/experiment/eeg_component.html:13
+msgid "the EEG"
+msgstr ""
+
 #: experiment/templates/experiment/experiment_register.html:54
 msgid "New experiment"
 msgstr "Novo experimento"
@@ -521,7 +543,7 @@ msgstr "Estudo"
 
 #: experiment/templates/experiment/experiment_register.html:83
 #: experiment/templates/experiment/group_register.html:77
-#: experiment/templates/experiment/research_project_list.html:34
+#: experiment/templates/experiment/research_project_list.html:56
 #: experiment/templates/experiment/research_project_register.html:75
 #: experiment/templates/experiment/research_project_register.html:173
 msgid "Title"
@@ -638,10 +660,14 @@ msgid "View / Edit"
 msgstr "Ver / Editar"
 
 #: experiment/templates/experiment/group_register.html:233
+#, fuzzy, python-format
+#| msgid "There is %(number_of_subjects)s participant recorded"
 msgid "There is %(number_of_subjects)s participant recorded"
 msgstr "Há %%(number_of_subjects)s participantes registrados"
 
 #: experiment/templates/experiment/group_register.html:235
+#, fuzzy, python-format
+#| msgid "There are %(number_of_subjects)s participants recorded"
 msgid "There are %(number_of_subjects)s participants recorded"
 msgstr "Há %%(number_of_subjects)s participantes registrados"
 
@@ -803,33 +829,33 @@ msgstr "Incompleto"
 #: experiment/templates/experiment/questionnaire_view.html:206
 #: experiment/templates/experiment/subject_questionnaire_response_form.html:33
 #: experiment/templates/experiment/subject_questionnaire_response_form.html:47
-#: experiment/templates/experiment/subject_questionnaire_response_form.html:239
+#: experiment/templates/experiment/subject_questionnaire_response_form.html:241
 #: experiment/templates/experiment/subject_questionnaire_response_list.html:131
 msgid "New fill"
 msgstr "Novo preenchimento"
 
-#: experiment/templates/experiment/research_project_list.html:29
+#: experiment/templates/experiment/research_project_list.html:51
 msgid "Studies List"
 msgstr "Lista de estudos"
 
-#: experiment/templates/experiment/research_project_list.html:35
+#: experiment/templates/experiment/research_project_list.html:57
 msgid "Term"
 msgstr "Vigência"
 
-#: experiment/templates/experiment/research_project_list.html:43
+#: experiment/templates/experiment/research_project_list.html:65
 #: experiment/templates/experiment/research_project_register.html:181
 msgid "Visualize"
 msgstr "Ver"
 
-#: experiment/templates/experiment/research_project_list.html:54
+#: experiment/templates/experiment/research_project_list.html:76
 msgid "to"
 msgstr "a"
 
-#: experiment/templates/experiment/research_project_list.html:57
+#: experiment/templates/experiment/research_project_list.html:79
 msgid "From"
 msgstr "A partir de"
 
-#: experiment/templates/experiment/research_project_list.html:68
+#: experiment/templates/experiment/research_project_list.html:90
 msgid "Insert new study"
 msgstr "Inserir novo estudo"
 
@@ -886,7 +912,7 @@ msgstr "Respostas"
 
 #: experiment/templates/experiment/subject_questionnaire_response_form.html:33
 #: experiment/templates/experiment/subject_questionnaire_response_form.html:47
-#: experiment/templates/experiment/subject_questionnaire_response_form.html:243
+#: experiment/templates/experiment/subject_questionnaire_response_form.html:245
 msgid "Continue filling"
 msgstr "Continuar preenchimento"
 
@@ -898,7 +924,7 @@ msgstr "Responsável pelo preenchimento"
 msgid "Fill date"
 msgstr "Data de preenchimento"
 
-#: experiment/templates/experiment/subject_questionnaire_response_form.html:272
+#: experiment/templates/experiment/subject_questionnaire_response_form.html:274
 msgid "Are you sure you want to delete this questionnaire's fill?"
 msgstr "Tem certeza que deseja excluir o preenchimento deste questionário?"
 
@@ -976,62 +1002,87 @@ msgstr ""
 msgid "Are you sure you want to delete attachment?"
 msgstr "Tem certeza que deseja remover o anexo?"
 
-#: experiment/views.py:73
+#: experiment/views.py:74
 msgid "Study created successfully."
 msgstr "Estudo criado com sucesso."
 
-#: experiment/views.py:114
+#: experiment/views.py:116
+#, fuzzy
+#| msgid "Study created successfully."
+msgid "Study removed successfully."
+msgstr "Estudo criado com sucesso."
+
+#: experiment/views.py:119
 msgid "Error trying to delete research."
 msgstr "Erro ao tentar excluir o estudo."
 
-#: experiment/views.py:145
+#: experiment/views.py:125 experiment/views.py:321 experiment/views.py:494
+#, fuzzy
+#| msgid "Impossible to delete group, because there are dependencies."
+msgid ""
+"Impossible to delete group because there is (are) questionnaire(s) answered."
+msgstr "Não foi possível excluir o grupo, pois há dependências."
+
+#: experiment/views.py:158
 msgid "Research updated successfully."
 msgstr "Estudo atualizado com sucesso."
 
-#: experiment/views.py:147 experiment/views.py:326 experiment/views.py:493
-#: experiment/views.py:1993 experiment/views.py:2015 experiment/views.py:2025
+#: experiment/views.py:160 experiment/views.py:355 experiment/views.py:533
+#: experiment/views.py:2046 experiment/views.py:2068 experiment/views.py:2078
 msgid "There is no changes to save."
 msgstr "Não há alterações para salvar."
 
-#: experiment/views.py:260
+#: experiment/views.py:273
 msgid "Experiment created successfully."
 msgstr "Experimento criado com sucesso."
 
-#: experiment/views.py:295
+#: experiment/views.py:311
+#, fuzzy
+#| msgid "Experiment created successfully."
+msgid "Experiment removed successfully."
+msgstr "Experimento criado com sucesso."
+
+#: experiment/views.py:315
 msgid ""
 "It was not possible to delete experiment, because there are groups connected."
 msgstr "Não foi possível excluir o experimento, pois há grupos associados"
 
-#: experiment/views.py:324
+#: experiment/views.py:353
 msgid "Experiment updated successfully."
 msgstr "Experimento atualizado com sucesso."
 
-#: experiment/views.py:358
+#: experiment/views.py:387
 msgid "Group included successfully."
 msgstr "Grupo incluído com sucesso."
 
-#: experiment/views.py:457
+#: experiment/views.py:485
+#, fuzzy
+#| msgid "Group updated successfully."
+msgid "Group removed successfully."
+msgstr "Grupo atualizado com sucesso."
+
+#: experiment/views.py:489
 msgid "Impossible to delete group, because there are dependencies."
 msgstr "Não foi possível excluir o grupo, pois há dependências."
 
-#: experiment/views.py:491
+#: experiment/views.py:531
 msgid "Group updated successfully."
 msgstr "Grupo atualizado com sucesso."
 
-#: experiment/views.py:731
+#: experiment/views.py:771
 msgid "Fill not available - Table of tokens was not started."
 msgstr "Preenchimento não disponível - Tabela de tokens não iniciada"
 
-#: experiment/views.py:735
+#: experiment/views.py:775
 msgid "Fill not available - Questionnaire is not activated."
 msgstr "Preenchimento não disponível - Questionário não está ativo"
 
-#: experiment/views.py:739
+#: experiment/views.py:779
 msgid "Fill not available - Questionnaire does not contain standard fields."
 msgstr ""
 "Preenchimento não disponível - Questionário não contém campos padronizados"
 
-#: experiment/views.py:748
+#: experiment/views.py:788
 msgid ""
 "Fail trying to generate token to answer questionnaire. Check if "
 "questionnaire is active."
@@ -1039,133 +1090,137 @@ msgstr ""
 "Falha ao gerar token para responder questionário. Verifique se o "
 "questionário está ativo"
 
-#: experiment/views.py:868
+#: experiment/views.py:908
 msgid "You will be redirected to questionnaire. Please wait."
 msgstr "Você será redirecionado para o questionário. Aguarde."
 
-#: experiment/views.py:890 experiment/views.py:1043
+#: experiment/views.py:930 experiment/views.py:1083
 msgid "Fill deleted successfully."
 msgstr "Preenchimento removido com sucesso"
 
-#: experiment/views.py:892 experiment/views.py:1045
+#: experiment/views.py:932 experiment/views.py:1085
 msgid "Error trying to delete fill"
 msgstr "Erro ao deletar o preenchimento"
 
-#: experiment/views.py:1135
+#: experiment/views.py:1175
 msgid "Participant deleted from experiment."
 msgstr "Participante deletado do experimento."
 
-#: experiment/views.py:1139
+#: experiment/views.py:1179
+#, fuzzy
+#| msgid ""
+#| "It was not possible to delete participante, becacuse there are answers "
+#| "connected"
 msgid ""
-"It was not possible to delete participante, becacuse there are answers "
+"It was not possible to delete participant, because there are answers "
 "connected"
 msgstr "Não foi possível excluir o participante, pois há respostas associadas"
 
-#: experiment/views.py:1174
+#: experiment/views.py:1214
 msgid "Participant has already been inserted in this group."
 msgstr "Participante já foi incluído neste grupo"
 
-#: experiment/views.py:1220
+#: experiment/views.py:1260
 msgid "Consent term saved successfully."
 msgstr "Termo salvo com sucesso."
 
-#: experiment/views.py:1225
+#: experiment/views.py:1265
 msgid "There are not attachments to save"
 msgstr "Não existem anexos para salvar"
 
-#: experiment/views.py:1229
+#: experiment/views.py:1269
 msgid "Attachment deleted successfully."
 msgstr "Anexo removido com sucesso."
 
-#: experiment/views.py:1426 experiment/views.py:2257 experiment/views.py:2365
-#: experiment/views.py:2389
+#: experiment/views.py:1477 experiment/views.py:2312 experiment/views.py:2421
+#: experiment/views.py:2445
 msgid "Step included successfully."
 msgstr "Passo incluído com sucesso."
 
-#: experiment/views.py:1545
+#: experiment/views.py:1596
 msgid " years "
 msgstr " anos "
 
-#: experiment/views.py:1545
+#: experiment/views.py:1596
 msgid " year "
 msgstr " ano "
 
-#: experiment/views.py:1550
+#: experiment/views.py:1601
 msgid " months "
 msgstr " meses "
 
-#: experiment/views.py:1550
+#: experiment/views.py:1601
 msgid " month "
 msgstr " mês "
 
-#: experiment/views.py:1555
+#: experiment/views.py:1606
 msgid " weeks "
 msgstr " semanas "
 
-#: experiment/views.py:1555
+#: experiment/views.py:1606
 msgid " week "
 msgstr " semana "
 
-#: experiment/views.py:1560
+#: experiment/views.py:1611
 msgid " days "
 msgstr " dias "
 
-#: experiment/views.py:1560
+#: experiment/views.py:1611
 msgid " day "
 msgstr " dia "
 
-#: experiment/views.py:1565
+#: experiment/views.py:1616
 msgid " hours "
 msgstr " horas "
 
-#: experiment/views.py:1565
+#: experiment/views.py:1616
 msgid " hour "
 msgstr " hora "
 
-#: experiment/views.py:1570
+#: experiment/views.py:1621
 msgid " minutes "
 msgstr " minutos "
 
-#: experiment/views.py:1570
+#: experiment/views.py:1621
 msgid " minute "
 msgstr " minuto "
 
-#: experiment/views.py:1575
+#: experiment/views.py:1626
 msgid " seconds "
 msgstr " segundos "
 
-#: experiment/views.py:1575
+#: experiment/views.py:1626
 msgid " second "
 msgstr " segundo "
 
-#: experiment/views.py:1580
+#: experiment/views.py:1631
 msgid " miliseconds "
 msgstr " milesegundos "
 
-#: experiment/views.py:1580
+#: experiment/views.py:1631
 msgid " milisecond "
 msgstr " milesegundo "
 
-#: experiment/views.py:1595
+#: experiment/views.py:1646
 msgid " and "
 msgstr " e "
 
-#: experiment/views.py:1774 experiment/views.py:2023
+#: experiment/views.py:1826 experiment/views.py:2076
 msgid "Step use updated successfully."
 msgstr "Uso do passo atualizado com sucesso."
 
-#: experiment/views.py:1780 experiment/views.py:2032
+#: experiment/views.py:1832 experiment/views.py:2085
 msgid "Component deleted successfully."
 msgstr "Componente removido com sucesso."
 
-#: experiment/views.py:1991 experiment/views.py:2013
+#: experiment/views.py:2044 experiment/views.py:2066
 msgid "Step updated successfully."
 msgstr "Passo alterado com sucesso."
 
-#: experiment/views.py:2227
+#: experiment/views.py:2282
 msgid "Experimental protocol included successfully."
 msgstr "Protocolo experimental incluído com sucesso."
 
-#: experiment/views.py:2255 experiment/views.py:2387
+#: experiment/views.py:2310 experiment/views.py:2443
 msgid "Steps included successfully."
 msgstr "Passos incluídos com sucesso."

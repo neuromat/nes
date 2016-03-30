@@ -28,6 +28,7 @@ from django.conf import settings
 from survey.abc_search_engine import Questionnaires
 
 from export.views import *
+from export.input_export import InputExport
 
 from django.contrib.messages.storage.fallback import FallbackStorage
 
@@ -325,25 +326,25 @@ class JsonTest(TestCase):
         logged = self.client.login(username=USER_USERNAME, password=USER_PWD)
         self.assertEqual(logged, True)
 
-    def test_json_preparation(self):
-        # questionnaire_code_list_example = [
-        #     113491,
-        #     256242,
-        #     # 271192,
-        #     # 345282,
-        #     # 367311,
-        #     # 456776,
-        #     # 471898,
-        #     # 578559,
-        #     # 599846,
-        #     # 885183,
-        #     # 944684,
-        #     # 969322,
-        # ]
-
-        # prepare_json(questionnaire_code_list_example)
-
-        prepare_json()
+    # def test_json_preparation(self):
+    #     # questionnaire_code_list_example = [
+    #     #     113491,
+    #     #     256242,
+    #     #     # 271192,
+    #     #     # 345282,
+    #     #     # 367311,
+    #     #     # 456776,
+    #     #     # 471898,
+    #     #     # 578559,
+    #     #     # 599846,
+    #     #     # 885183,
+    #     #     # 944684,
+    #     #     # 969322,
+    #     # ]
+    #
+    #     # prepare_json(questionnaire_code_list_example)
+    #
+    #     prepare_json()
 
     def test_explanation_fields(self):
         questionnaire_lime_survey = Questionnaires()
@@ -354,3 +355,35 @@ class JsonTest(TestCase):
         # create_questionnaire_explanation_fields_file(questionnaire_id, language, questionnaire_lime_survey, fields)
 
         questionnaire_lime_survey.release_session_key()
+
+
+class InputExportTest(TestCase):
+    """ Cria um participante para ser utilizado durante os testes """
+    user = ''
+    data = {}
+    util = UtilTests()
+
+    def setUp(self):
+        # """
+        # Configure authentication and variables to start each test
+        #
+        # """
+        # print('Set up for', self._testMethodName)
+
+        self.user = User.objects.create_user(username=USER_USERNAME, email='test@dummy.com', password=USER_PWD)
+        self.user.is_staff = True
+        self.user.is_superuser = True
+        self.user.save()
+
+        self.factory = RequestFactory()
+
+        logged = self.client.login(username=USER_USERNAME, password=USER_PWD)
+        self.assertEqual(logged, True)
+
+    def test_write_dynamic_json(self):
+        input_data = InputExport()
+
+        input_data.build_header()
+
+        # self.assertEqual(input_data.data, )
+
