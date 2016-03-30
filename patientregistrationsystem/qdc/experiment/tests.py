@@ -35,6 +35,34 @@ SEARCH_TEXT = 'search_text'
 SUBJECT_SEARCH = 'subject_search'
 
 
+class ObjectsFactory(object):
+
+    @staticmethod
+    def create_research_project():
+        """
+        Create a research project to be used in the test
+        :return: research project
+        """
+        research_project = ResearchProject.objects.create(title="Research project title",
+                                                          start_date=datetime.date.today(),
+                                                          description="Research project description")
+        research_project.save()
+        return research_project
+
+    @staticmethod
+    def create_experiment(research_project):
+        """
+        Create an experiment to be used in the test
+        :param research_project: research project
+        :return: experiment
+        """
+        experiment = Experiment.objects.create(research_project_id=research_project.id,
+                                               title="Experimento-Update",
+                                               description="Descricao do Experimento-Update")
+        experiment.save()
+        return experiment
+
+
 class ExperimentalProtocolTest(TestCase):
     def setUp(self):
         self.user = User.objects.create_user(username=USER_USERNAME, email='test@dummy.com', password=USER_PWD)
@@ -585,14 +613,6 @@ class ExperimentTest(TestCase):
                                                                description="Research project description")
         self.research_project.save()
 
-    def create_experiment_mock(self):
-        # Criar um experimento para ser utilizado no teste
-        experiment = Experiment.objects.create(research_project_id=self.research_project.id,
-                                               title="Experimento-Update",
-                                               description="Descricao do Experimento-Update")
-        experiment.save()
-        return experiment
-
     def test_experiment_list(self):
         """
         Testa a listagem de experimentos
@@ -650,7 +670,7 @@ class ExperimentTest(TestCase):
     def test_experiment_update(self):
         """Testa a atualizacao do experimento"""
 
-        experiment = self.create_experiment_mock()
+        experiment = ObjectsFactory.create_experiment(self.research_project)
 
         # Create an instance of a GET request.
         request = self.factory.get(reverse('experiment_edit', args=[experiment.pk, ]))
@@ -671,7 +691,7 @@ class ExperimentTest(TestCase):
     def test_experiment_remove(self):
         """Testa a exclusao do experimento"""
 
-        experiment = self.create_experiment_mock()
+        experiment = ObjectsFactory.create_experiment(self.research_project)
 
         count = Experiment.objects.all().count()
 
@@ -929,6 +949,7 @@ class ListOfQuestionnaireFromExperimentalProtocolOfAGroupTest(TestCase):
 
 
 class SubjectTest(TestCase):
+
     util = UtilTests()
 
     def setUp(self):
@@ -965,16 +986,10 @@ class SubjectTest(TestCase):
         """
 
         # Create a research project
-        research_project = ResearchProject.objects.create(title="Research project title",
-                                                          start_date=datetime.date.today(),
-                                                          description="Research project description")
-        research_project.save()
+        research_project = ObjectsFactory.create_research_project()
 
         # Criar um experimento mock para ser utilizado no teste
-        experiment = Experiment.objects.create(title="Experimento-Teste",
-                                               description="Descricao do Experimento-Update",
-                                               research_project=research_project)
-        experiment.save()
+        experiment = ObjectsFactory.create_experiment(research_project)
 
         # Criar um grupo mock para ser utilizado no teste
         group = Group.objects.create(experiment=experiment,
@@ -1006,16 +1021,10 @@ class SubjectTest(TestCase):
         """
 
         # Create a research project
-        research_project = ResearchProject.objects.create(title="Research project title",
-                                                          start_date=datetime.date.today(),
-                                                          description="Research project description")
-        research_project.save()
+        research_project = ObjectsFactory.create_research_project()
 
         # Criar um experimento mock para ser utilizado no teste
-        experiment = Experiment.objects.create(title="Experimento-Update",
-                                               description="Descricao do Experimento-Update",
-                                               research_project=research_project)
-        experiment.save()
+        experiment = ObjectsFactory.create_experiment(research_project)
 
         # Create the root of the experimental protocol
         block = Block.objects.create(identification='Root',
@@ -1431,21 +1440,13 @@ class ResearchProjectTest(TestCase):
         logged = self.client.login(username=USER_USERNAME, password=USER_PWD)
         self.assertEqual(logged, True)
 
-    def create_research_project(self):
-        # Create a research project to be used in the test
-        research_project = ResearchProject.objects.create(title="Research project title",
-                                                          start_date=datetime.date.today(),
-                                                          description="Research project description")
-        research_project.save()
-        return research_project
-
     def test_research_project_list(self):
         # Check if list of research projects is empty before inserting any.
         response = self.client.get(reverse('research_project_list'))
         self.assertEqual(response.status_code, 200)
         self.assertEqual(len(response.context['research_projects']), 0)
 
-        self.create_research_project()
+        ObjectsFactory.create_research_project()
 
         # Check if list of research projects returns one item after inserting one.
         response = self.client.get(reverse('research_project_list'))
@@ -1476,7 +1477,7 @@ class ResearchProjectTest(TestCase):
 
     def test_research_project_update(self):
 
-        research_project = self.create_research_project()
+        research_project = ObjectsFactory.create_research_project()
 
         # Create an instance of a GET request.
         request = self.factory.get(reverse('research_project_edit', args=[research_project.pk, ]))
@@ -1495,7 +1496,7 @@ class ResearchProjectTest(TestCase):
 
     def test_research_project_remove(self):
         # Create a research project to be used in the test
-        research_project = self.create_research_project()
+        research_project = ObjectsFactory.create_research_project()
 
         # Save current number of research projects
         count = ResearchProject.objects.all().count()
@@ -1510,7 +1511,7 @@ class ResearchProjectTest(TestCase):
 
     def test_research_project_keywords(self):
         # Create a research project to be used in the test
-        research_project = self.create_research_project()
+        research_project = ObjectsFactory.create_research_project()
 
         # Insert keyword
         self.assertEqual(Keyword.objects.all().count(), 0)
@@ -1531,7 +1532,7 @@ class ResearchProjectTest(TestCase):
         self.assertEqual(research_project.keywords.count(), 2)
 
         # Create a second research project to be used in the test
-        research_project2 = self.create_research_project()
+        research_project2 = ObjectsFactory.create_research_project()
 
         # Insert keyword
         response = self.client.get(reverse('keyword_new', args=(research_project2.pk, "third_test_keyword")),
