@@ -13,7 +13,7 @@ from experiment.models import Experiment, Group, Subject, \
     Component, Task, TaskForTheExperimenter, Stimulus, Instruction, Pause, Questionnaire, Block, \
     EEG, FileFormat, EEGData
 from patient.models import ClassificationOfDiseases
-from experiment.views import experiment_update, upload_file, research_project_update
+from experiment.views import experiment_update, upload_file, research_project_update, group_update
 from survey.abc_search_engine import Questionnaires
 from patient.tests import UtilTests
 from custom_user.views import User
@@ -126,6 +126,10 @@ class ExperimentalProtocolTest(TestCase):
     def test_component_create(self):
         experiment = Experiment.objects.first()
 
+        # screen to create a component
+        response = self.client.post(reverse("component_new", args=(experiment.id, "task")))
+        self.assertEqual(response.status_code, 200)
+
         identification = 'Task for the subject identification'
         description = 'Task for the subject description'
         self.data = {'action': 'save', 'identification': identification, 'description': description}
@@ -230,6 +234,10 @@ class ExperimentalProtocolTest(TestCase):
 
         block = ObjectsFactory.create_block(Experiment.objects.first())
 
+        # Screen to add a component
+        response = self.client.get(reverse("component_add_new", args=(block.id, "block")))
+        self.assertEqual(response.status_code, 200)
+
         # Add a new component to the parent
         self.data = {'action': 'save',
                      'identification': 'Block identification',
@@ -246,6 +254,10 @@ class ExperimentalProtocolTest(TestCase):
         self.assertEqual(component_configuration.order, 1)
         self.assertEqual(component_configuration.name, None)
 
+        # Screen to update a component
+        response = self.client.get(reverse("component_edit", args=(block.id,)))
+        self.assertEqual(response.status_code, 200)
+
         # Update the component configuration of the recently added component.
         self.data = {'action': 'save', 'identification': 'Block identification', 'description': 'Block description',
                      'type': 'sequence', 'name': 'Use of block in block',
@@ -254,6 +266,11 @@ class ExperimentalProtocolTest(TestCase):
         self.assertEqual(response.status_code, 302)
         # Check if redirected to view block
         self.assertTrue("/experiment/component/" + str(block.id) in response.url)
+
+        # Screen to reuse a component
+        response = self.client.get(reverse("component_reuse", args=(block.id, Block.objects.filter(
+            identification="Block identification").first().id)))
+        self.assertEqual(response.status_code, 200)
 
         # Add 3 uses of an existing component to the parent
         self.data = {'number_of_uses_to_insert': 3}
@@ -306,6 +323,9 @@ class ExperimentalProtocolTest(TestCase):
         self.assertEqual(ComponentConfiguration.objects.count(), 1)
         self.assertEqual(component_configuration.order, 1)
 
+        response = self.client.get(reverse("component_view", args=(block.id,)))
+        self.assertEqual(response.status_code, 200)
+
         self.data = {'action': 'remove'}
         response = self.client.post(reverse("component_view", args=(block.id,)), self.data)
         self.assertEqual(response.status_code, 302)
@@ -315,6 +335,11 @@ class ExperimentalProtocolTest(TestCase):
         self.assertEqual(Component.objects.count(), 1)
         self.assertEqual(ComponentConfiguration.objects.count(), 0)
 
+        # Screen to update a component
+        response = self.client.get(reverse("component_edit", args=(task.id,)))
+        self.assertEqual(response.status_code, 200)
+
+        # Updating a component
         response = self.client.post(reverse("component_edit", args=(task.id,)), self.data)
         self.assertEqual(response.status_code, 302)
         # Check if redirected to list of components
@@ -445,9 +470,15 @@ class GroupTest(TestCase):
         ObjectsFactory.create_experiment(research_project)
 
     def test_group_insert(self):
+
+        experiment = Experiment.objects.first()
+
+        # Screen to insert a group
+        response = self.client.get(reverse("group_new", args=(experiment.id,)))
+        self.assertEqual(response.status_code, 200)
+
         # Data about the group
         self.data = {'action': 'save', 'description': 'Description of Group-1', 'title': 'Group-1'}
-        experiment = Experiment.objects.first()
 
         # Inserting a group in the experiment
         response = self.client.post(reverse("group_new", args=(experiment.id,)), self.data)
@@ -455,18 +486,31 @@ class GroupTest(TestCase):
         self.assertEqual(experiment.group_set.count(), 1)
 
     def test_group_update(self):
-        experiment = Experiment.objects.first()
 
+        experiment = Experiment.objects.first()
         group = ObjectsFactory.create_group(experiment)
+
+        # Screen to update a group
+        # request = self.factory.get(reverse('group_edit', args=[group.id, ]))
+        # request.user = self.user
+        # response = group_update(request, group_id=group.id)
+        # self.assertEqual(response.status_code, 200)
+
+        response = self.client.get(reverse("group_edit", args=(group.id,)))
+        self.assertEqual(response.status_code, 200)
 
         # New data about the group
         self.data = {'action': 'save', 'description': 'Description of Group-1', 'title': 'Group-1'}
 
-        # Inserting a group in the experiment
+        # Editing a group in the experiment
         response = self.client.post(reverse("group_edit", args=(group.id,)), self.data)
         self.assertEqual(response.status_code, 302)
         self.assertEqual(experiment.group_set.count(), 1)
         self.assertTrue(Group.objects.filter(title="Group-1", description="Description of Group-1").exists())
+
+        # Trying to editing a group with no changes
+        response = self.client.post(reverse("group_edit", args=(group.id,)), self.data)
+        self.assertEqual(response.status_code, 302)
 
     def test_group_remove(self):
         experiment = Experiment.objects.first()
@@ -603,11 +647,8 @@ class ExperimentTest(TestCase):
         request = self.factory.get(reverse('experiment_edit', args=[experiment.pk, ]))
         request.user = self.user
 
-        try:
-            response = experiment_update(request, experiment_id=experiment.pk)
-            self.assertEqual(response.status_code, 200)
-        except Http404:
-            pass
+        response = experiment_update(request, experiment_id=experiment.pk)
+        self.assertEqual(response.status_code, 200)
 
         # Efetua a atualizacao do experimento
         self.data = {'action': 'save', 'description': 'Experimento de Teste', 'title': 'Teste Experimento',
@@ -1086,6 +1127,10 @@ class SubjectTest(TestCase):
                                            args=[questionnaire_response.pk, ]), self.data)
         self.assertEqual(response.status_code, 200)
 
+        # Show the responses list of a subject
+        response = self.client.post(reverse('subject_questionnaire', args=(group.pk, subject_mock.pk)),)
+        self.assertEqual(response.status_code, 200)
+
         # Remove preenchimento da Survey
         count_before_delete_questionnaire_response = QuestionnaireResponse.objects.all().count()
 
@@ -1217,10 +1262,12 @@ class SubjectTest(TestCase):
         file_format = FileFormat.objects.create(name='Text file', extension='txt')
         file = SimpleUploadedFile('experiment/eeg/eeg_metadata.txt', b'rb')
 
+        # screen to create a eeg data file
         response = self.client.get(reverse('subject_eeg_data_create',
                                            args=(group.id, subject_mock.id, component_configuration.id)))
         self.assertEqual(response.status_code, 200)
 
+        # create a eeg data file
         self.data = {'date': '29/08/2014', 'action': 'save',
                      'description': 'description of the file',
                      'file_format': file_format.id, 'file': file}
@@ -1230,16 +1277,27 @@ class SubjectTest(TestCase):
         self.assertEqual(response.status_code, 302)
         self.assertEqual(EEGData.objects.all().count(), 1)
 
+        # show a eeg data file
         eeg_data = EEGData.objects.all().first()
         response = self.client.get(reverse('eeg_data_view', args=(eeg_data.id,)))
         self.assertEqual(response.status_code, 200)
 
+        # screen to edit a eeg data file
+        response = self.client.get(reverse('eeg_data_edit', args=(eeg_data.id,)))
+        self.assertEqual(response.status_code, 200)
+
+        # editing a eeg data file
         self.data = {'date': '30/08/2014', 'action': 'save',
                      'description': 'description of the file',
                      'file_format': file_format.id, 'file': eeg_data.file}
         response = self.client.post(reverse('eeg_data_edit', args=(eeg_data.id,)), self.data)
         self.assertEqual(response.status_code, 302)
 
+        # list eeg data files
+        response = self.client.post(reverse('subject_eeg_view', args=(group.id, subject_mock.id,)))
+        self.assertEqual(response.status_code, 200)
+
+        # remove eeg data file from a subject
         self.data = {'action': 'remove'}
         response = self.client.post(reverse('eeg_data_view', args=(eeg_data.id,)), self.data)
         self.assertEqual(response.status_code, 302)
