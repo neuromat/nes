@@ -168,7 +168,7 @@ def process_participant_data(participants, participants_list):
 
         # transform data
         for record in db_data:
-            export_rows_participants.append([smart_str(field).encode().decode('utf-8') for field in record])
+            export_rows_participants.append([smart_str(field).encode() for field in record])
 
     return export_rows_participants
 
