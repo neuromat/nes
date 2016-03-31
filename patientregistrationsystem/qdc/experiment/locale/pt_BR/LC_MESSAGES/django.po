@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2016-03-28 14:48-0300\n"
+"POT-Creation-Date: 2016-03-31 14:16-0300\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -273,8 +273,8 @@ msgstr "Ordem"
 #: experiment/templates/experiment/research_project_register.html:143
 #: experiment/templates/experiment/research_project_register.html:202
 #: experiment/templates/experiment/research_project_register.html:231
-#: experiment/templates/experiment/subject_eeg_data_form.html:141
-#: experiment/templates/experiment/subject_eeg_data_form.html:176
+#: experiment/templates/experiment/subject_eeg_data_form.html:145
+#: experiment/templates/experiment/subject_eeg_data_form.html:180
 #: experiment/templates/experiment/subject_questionnaire_response_form.html:231
 #: experiment/templates/experiment/subject_questionnaire_response_form.html:278
 #: experiment/templates/experiment/subjects.html:190
@@ -330,9 +330,9 @@ msgstr "Passos com posição aleatória"
 #: experiment/templates/experiment/group_register.html:369
 #: experiment/templates/experiment/research_project_register.html:211
 #: experiment/templates/experiment/research_project_register.html:230
-#: experiment/templates/experiment/subject_eeg_data_form.html:152
-#: experiment/templates/experiment/subject_eeg_data_form.html:155
-#: experiment/templates/experiment/subject_eeg_data_form.html:175
+#: experiment/templates/experiment/subject_eeg_data_form.html:156
+#: experiment/templates/experiment/subject_eeg_data_form.html:159
+#: experiment/templates/experiment/subject_eeg_data_form.html:179
 #: experiment/templates/experiment/subject_questionnaire_response_form.html:277
 #: experiment/templates/experiment/subjects.html:189
 #: experiment/templates/experiment/upload_consent_form.html:109
@@ -424,7 +424,7 @@ msgstr "não utilizado"
 #: experiment/templates/experiment/randon_configuration_line.html:10
 #: experiment/templates/experiment/randon_configuration_line.html:12
 #: experiment/templates/experiment/research_project_register.html:124
-#: experiment/templates/experiment/subject_eeg_data_form.html:132
+#: experiment/templates/experiment/subject_eeg_data_form.html:136
 msgid "Edit"
 msgstr "Editar"
 
@@ -439,7 +439,7 @@ msgstr "Inserir novo passo"
 #: experiment/templates/experiment/questionnaire_view.html:227
 #: experiment/templates/experiment/research_project_register.html:215
 #: experiment/templates/experiment/subject_eeg_collection_list.html:124
-#: experiment/templates/experiment/subject_eeg_data_form.html:161
+#: experiment/templates/experiment/subject_eeg_data_form.html:165
 #: experiment/templates/experiment/subject_questionnaire_response_form.html:253
 #: experiment/templates/experiment/subject_questionnaire_response_form.html:257
 #: experiment/templates/experiment/subject_questionnaire_response_form.html:260
@@ -509,7 +509,7 @@ msgstr "Inserir"
 #: experiment/templates/experiment/experiment_register.html:158
 #: experiment/templates/experiment/group_register.html:316
 #: experiment/templates/experiment/research_project_register.html:207
-#: experiment/templates/experiment/subject_eeg_data_form.html:146
+#: experiment/templates/experiment/subject_eeg_data_form.html:150
 msgid "Save"
 msgstr "Salvar"
 
@@ -959,7 +959,7 @@ msgstr "Formato de arquivo"
 msgid "File"
 msgstr "Arquivo"
 
-#: experiment/templates/experiment/subject_eeg_data_form.html:172
+#: experiment/templates/experiment/subject_eeg_data_form.html:176
 msgid "Are you sure you want to delete EEG data?"
 msgstr "Tem certeza que deseja excluir os dados de EEG?"
 
@@ -1095,15 +1095,16 @@ msgstr "Erro ao tentar excluir o estudo."
 #: experiment/views.py:127 experiment/views.py:323 experiment/views.py:496
 msgid ""
 "Impossible to delete group because there is (are) questionnaire(s) answered."
-msgstr "Não foi possível excluir o grupo, pois há questionário(s) respondido(s)."
+msgstr ""
+"Não foi possível excluir o grupo, pois há questionário(s) respondido(s)."
 
 #: experiment/views.py:160
 msgid "Research updated successfully."
 msgstr "Estudo atualizado com sucesso."
 
 #: experiment/views.py:162 experiment/views.py:357 experiment/views.py:535
-#: experiment/views.py:1438 experiment/views.py:2309 experiment/views.py:2331
-#: experiment/views.py:2341
+#: experiment/views.py:1396 experiment/views.py:2267 experiment/views.py:2289
+#: experiment/views.py:2299
 msgid "There is no changes to save."
 msgstr "Não há alterações para salvar."
 
@@ -1140,30 +1141,32 @@ msgstr "Não foi possível excluir o grupo, pois há dependências."
 msgid "Group updated successfully."
 msgstr "Grupo atualizado com sucesso."
 
-#: experiment/views.py:809
+#: experiment/views.py:808
 msgid "Participant deleted from experiment."
 msgstr "Participante deletado do experimento."
 
-#: experiment/views.py:811
+#: experiment/views.py:810
 msgid ""
 "It was not possible to delete participant, because there are answers or eeg "
 "data connected"
-msgstr "Não foi possível excluir o participante, pois há respostas de questionários ou arquivos de eeg associados"
+msgstr ""
+"Não foi possível excluir o participante, pois há respostas de questionários "
+"ou arquivos de eeg associados"
 
-#: experiment/views.py:840
+#: experiment/views.py:839
 msgid "Fill not available - Table of tokens was not started."
 msgstr "Preenchimento não disponível - Tabela de tokens não iniciada"
 
-#: experiment/views.py:844
+#: experiment/views.py:843
 msgid "Fill not available - Questionnaire is not activated."
 msgstr "Preenchimento não disponível - Questionário não está ativo"
 
-#: experiment/views.py:848
+#: experiment/views.py:847
 msgid "Fill not available - Questionnaire does not contain standard fields."
 msgstr ""
 "Preenchimento não disponível - Questionário não contém campos padronizados"
 
-#: experiment/views.py:857
+#: experiment/views.py:856
 msgid ""
 "Fail trying to generate token to answer questionnaire. Check if "
 "questionnaire is active."
@@ -1171,135 +1174,135 @@ msgstr ""
 "Falha ao gerar token para responder questionário. Verifique se o "
 "questionário está ativo"
 
-#: experiment/views.py:977
+#: experiment/views.py:976
 msgid "You will be redirected to questionnaire. Please wait."
 msgstr "Você será redirecionado para o questionário. Aguarde."
 
-#: experiment/views.py:999 experiment/views.py:1152
+#: experiment/views.py:998 experiment/views.py:1151
 msgid "Fill deleted successfully."
 msgstr "Preenchimento removido com sucesso"
 
-#: experiment/views.py:1001 experiment/views.py:1154
+#: experiment/views.py:1000 experiment/views.py:1153
 msgid "Error trying to delete fill"
 msgstr "Erro ao deletar o preenchimento"
 
-#: experiment/views.py:1357
+#: experiment/views.py:1315
 msgid "EEG data collection created successfully."
 msgstr "Coleta de dados de EEG criada com sucesso."
 
-#: experiment/views.py:1398
+#: experiment/views.py:1356
 msgid "EEG data removed successfully."
 msgstr "Dados de EEG excluídos com sucesso."
 
-#: experiment/views.py:1436
+#: experiment/views.py:1394
 msgid "EEG data updated successfully."
 msgstr "Dados de EEG alterado com sucesso."
 
-#: experiment/views.py:1477
+#: experiment/views.py:1435
 msgid "Participant has already been inserted in this group."
 msgstr "Participante já foi incluído neste grupo"
 
-#: experiment/views.py:1523
+#: experiment/views.py:1481
 msgid "Consent term saved successfully."
 msgstr "Termo salvo com sucesso."
 
-#: experiment/views.py:1528
+#: experiment/views.py:1486
 msgid "There are not attachments to save"
 msgstr "Não existem anexos para salvar"
 
-#: experiment/views.py:1532
+#: experiment/views.py:1490
 msgid "Attachment deleted successfully."
 msgstr "Anexo removido com sucesso."
 
-#: experiment/views.py:1740 experiment/views.py:2575 experiment/views.py:2684
-#: experiment/views.py:2708
+#: experiment/views.py:1698 experiment/views.py:2533 experiment/views.py:2642
+#: experiment/views.py:2666
 msgid "Step included successfully."
 msgstr "Passo incluído com sucesso."
 
-#: experiment/views.py:1859
+#: experiment/views.py:1817
 msgid " years "
 msgstr " anos "
 
-#: experiment/views.py:1859
+#: experiment/views.py:1817
 msgid " year "
 msgstr " ano "
 
-#: experiment/views.py:1864
+#: experiment/views.py:1822
 msgid " months "
 msgstr " meses "
 
-#: experiment/views.py:1864
+#: experiment/views.py:1822
 msgid " month "
 msgstr " mês "
 
-#: experiment/views.py:1869
+#: experiment/views.py:1827
 msgid " weeks "
 msgstr " semanas "
 
-#: experiment/views.py:1869
+#: experiment/views.py:1827
 msgid " week "
 msgstr " semana "
 
-#: experiment/views.py:1874
+#: experiment/views.py:1832
 msgid " days "
 msgstr " dias "
 
-#: experiment/views.py:1874
+#: experiment/views.py:1832
 msgid " day "
 msgstr " dia "
 
-#: experiment/views.py:1879
+#: experiment/views.py:1837
 msgid " hours "
 msgstr " horas "
 
-#: experiment/views.py:1879
+#: experiment/views.py:1837
 msgid " hour "
 msgstr " hora "
 
-#: experiment/views.py:1884
+#: experiment/views.py:1842
 msgid " minutes "
 msgstr " minutos "
 
-#: experiment/views.py:1884
+#: experiment/views.py:1842
 msgid " minute "
 msgstr " minuto "
 
-#: experiment/views.py:1889
+#: experiment/views.py:1847
 msgid " seconds "
 msgstr " segundos "
 
-#: experiment/views.py:1889
+#: experiment/views.py:1847
 msgid " second "
 msgstr " segundo "
 
-#: experiment/views.py:1894
+#: experiment/views.py:1852
 msgid " miliseconds "
 msgstr " milesegundos "
 
-#: experiment/views.py:1894
+#: experiment/views.py:1852
 msgid " milisecond "
 msgstr " milesegundo "
 
-#: experiment/views.py:1909
+#: experiment/views.py:1867
 msgid " and "
 msgstr " e "
 
-#: experiment/views.py:2089 experiment/views.py:2339
+#: experiment/views.py:2047 experiment/views.py:2297
 msgid "Step use updated successfully."
 msgstr "Uso do passo atualizado com sucesso."
 
-#: experiment/views.py:2095 experiment/views.py:2348
+#: experiment/views.py:2053 experiment/views.py:2306
 msgid "Component deleted successfully."
 msgstr "Componente removido com sucesso."
 
-#: experiment/views.py:2307 experiment/views.py:2329
+#: experiment/views.py:2265 experiment/views.py:2287
 msgid "Step updated successfully."
 msgstr "Passo alterado com sucesso."
 
-#: experiment/views.py:2545
+#: experiment/views.py:2503
 msgid "Experimental protocol included successfully."
 msgstr "Protocolo experimental incluído com sucesso."
 
-#: experiment/views.py:2573 experiment/views.py:2706
+#: experiment/views.py:2531 experiment/views.py:2664
 msgid "Steps included successfully."
 msgstr "Passos incluídos com sucesso."

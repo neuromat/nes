@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2016-03-24 12:29-0300\n"
+"POT-Creation-Date: 2016-03-31 14:16-0300\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -21,155 +21,82 @@ msgstr ""
 msgid "Base path does not exist"
 msgstr ""
 
-#: export/lixo.py:1075 export/views.py:366
+#: export/forms.py:39
+msgid "Either one or both Per participant/Per questionnaire must be set."
+msgstr ""
+
+#: export/lixo.py:1075 export/views.py:362 export/views.py:478
 msgid "Export was finished correctly"
 msgstr ""
 
-#: export/templates/export/export_data.html:57
-#: export/templates/export/page_1.html:72
-msgid "Questionnaire information"
+#: export/lixo.py:1205
+msgid "Please, correct the highlighted fields."
 msgstr ""
 
 #: export/templates/export/export_data.html:61
-#: export/templates/export/page_1.html:76
-msgid "Questionnaire - Entrance evaluation"
-msgstr ""
-
-#: export/templates/export/export_data.html:62
-#: export/templates/export/page_1.html:77
-msgid "Please, select a questionnaire from the list."
-msgstr ""
-
-#: export/templates/export/export_data.html:76
-#: export/templates/export/export_data.html:103
-msgid "Directory Structure"
-msgstr ""
-
-#: export/templates/export/export_data.html:79
-#: export/templates/export/export_data.html:107
-msgid "Per participant"
-msgstr ""
-
-#: export/templates/export/export_data.html:86
-#: export/templates/export/export_data.html:112
-msgid "Per questionnaire"
-msgstr ""
-
-#: export/templates/export/export_data.html:97
 msgid "General Information"
 msgstr ""
 
-#: export/templates/export/export_data.html:135
-#: export/templates/export/page_1.html:246
-#: export/templates/export/page_1.html:277
-msgid "Delete"
+#: export/templates/export/export_data.html:66
+msgid "At least one option must be selected"
 msgstr ""
 
-#: export/templates/export/export_data.html:141
-#: export/templates/export/page_1.html:252
-msgid "Save"
+#: export/templates/export/export_data.html:66
+msgid "Directory Structure"
 msgstr ""
 
-#: export/templates/export/export_data.html:145
-#: export/templates/export/page_1.html:256
-#: export/templates/export/page_1.html:276
+#: export/templates/export/export_data.html:72
+msgid "Per participant"
+msgstr ""
+
+#: export/templates/export/export_data.html:84
+msgid "Per questionnaire"
+msgstr ""
+
+#: export/templates/export/export_data.html:113
+msgid "Questionnaire information"
+msgstr ""
+
+#: export/templates/export/export_data.html:117
+msgid "Questionnaire - Entrance evaluation"
+msgstr ""
+
+#: export/templates/export/export_data.html:118
+msgid "Please, select a questionnaire from the list."
+msgstr ""
+
+#: export/templates/export/export_data.html:132
+msgid "Participants"
+msgstr ""
+
+#: export/templates/export/export_data.html:136
+msgid "Participant fields"
+msgstr ""
+
+#: export/templates/export/export_data.html:137
+msgid "Please, select a patient field from the list."
+msgstr ""
+
+#: export/templates/export/export_data.html:147
+msgid "Diagnosis"
+msgstr ""
+
+#: export/templates/export/export_data.html:151
+msgid "Diagnosis fields"
+msgstr ""
+
+#: export/templates/export/export_data.html:152
+msgid "Please, select a diagnosis field from the list."
+msgstr ""
+
+#: export/templates/export/export_data.html:165
+msgid "Run"
+msgstr ""
+
+#: export/templates/export/export_data.html:169
 msgid "Cancel"
 msgstr ""
 
-#: export/templates/export/export_data.html:149
-#: export/templates/export/page_1.html:260
-msgid "Back"
-msgstr ""
-
-#: export/templates/export/export_data.html:160
-msgid "Previous"
-msgstr ""
-
-#: export/templates/export/export_data.html:161
-msgid "Next"
-msgstr ""
-
-#: export/templates/export/page_1.html:52
-msgid "Home"
-msgstr ""
-
-#: export/templates/export/page_1.html:53
-msgid "Questionnaires"
-msgstr ""
-
-#: export/templates/export/page_1.html:56
-msgid "New"
-msgstr ""
-
-#: export/templates/export/page_1.html:60
-msgid "Editing"
-msgstr ""
-
-#: export/templates/export/page_1.html:93
-msgid "Entrance evaluation"
-msgstr ""
-
-#: export/templates/export/page_1.html:101
-msgid "Edit"
-msgstr ""
-
-#: export/templates/export/page_1.html:111
-msgid "Answered as entrance evaluation"
-msgstr ""
-
-#: export/templates/export/page_1.html:118
-#: export/templates/export/page_1.html:199
-msgid "Participant"
-msgstr ""
-
-#: export/templates/export/page_1.html:119
-#: export/templates/export/page_1.html:200
-msgid "Fills"
-msgstr ""
-
-#: export/templates/export/page_1.html:129
-msgid "It has to be filled"
-msgstr ""
-
-#: export/templates/export/page_1.html:142
-#: export/templates/export/page_1.html:219
-msgid "Complete"
-msgstr ""
-
-#: export/templates/export/page_1.html:144
-#: export/templates/export/page_1.html:221
-msgid "Incomplete"
-msgstr ""
-
-#: export/templates/export/page_1.html:147
-#: export/templates/export/page_1.html:224
-msgid "No status"
-msgstr ""
-
-#: export/templates/export/page_1.html:165
-msgid "Used in experiments"
-msgstr ""
-
-#: export/templates/export/page_1.html:172
-msgid "Experiment:"
-msgstr ""
-
-#: export/templates/export/page_1.html:176
-msgid "Group:"
-msgstr ""
-
-#: export/templates/export/page_1.html:182
-msgid "Set of parent steps:"
-msgstr ""
-
-#: export/templates/export/page_1.html:186
-msgid "Step:"
-msgstr ""
-
-#: export/templates/export/page_1.html:190
-msgid "Name of the use:"
-msgstr ""
-
-#: export/templates/export/page_1.html:273
-msgid "Are you sure you want to delete questionnaire?"
+#: export/views.py:241
+msgid "Inconsistent data read from json file"
 msgstr ""

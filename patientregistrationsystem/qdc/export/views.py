@@ -168,7 +168,7 @@ def process_participant_data(participants, participants_list):
 
         # transform data
         for record in db_data:
-            export_rows_participants.append([smart_str(field) for field in record])
+            export_rows_participants.append([smart_str(field).encode().decode('utf-8') for field in record])
 
     return export_rows_participants
 
@@ -376,7 +376,7 @@ def export_create(request, export_id, input_filename, template_name="export/expo
         return render(request, template_name)
 
 
-# @login_required
+@login_required
 def export_view(request, template_name="export/export_data.html"):
     export_form = ExportForm(request.POST or None, initial={'title': 'title'})
     # , 'per_participant': False,
