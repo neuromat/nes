@@ -28,7 +28,7 @@ from django.core.files import File
 from export.models import Export
 from export.export import ExportExecution, perform_csv_response, create_directory, save_to_csv, is_patient_active
 
-from .forms import ExportForm, ExportReturnForm
+from .forms import ExportForm
 from survey.models import Survey
 from export.input_export import build_complete_export_structure
 from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
