@@ -168,7 +168,7 @@ def process_participant_data(participants, participants_list):
 
         # transform data
         for record in db_data:
-            export_rows_participants.append([smart_str(field).encode() for field in record])
+            export_rows_participants.append([smart_str(field) for field in record])
 
     return export_rows_participants
 
@@ -313,7 +313,7 @@ def export_create(request, export_id, input_filename, template_name="export/expo
 
         export.files_to_zip_list.append([complete_filename, base_directory])
 
-        with open(complete_filename, 'w', newline='') as csv_file:
+        with open(complete_filename, 'w', newline='', encoding='UTF-8') as csv_file:
             export_writer = writer(csv_file)
             for row in export_rows_participants:
                 export_writer.writerow(row)
@@ -328,7 +328,7 @@ def export_create(request, export_id, input_filename, template_name="export/expo
         # files_to_zip_list.append(complete_filename)
         export.files_to_zip_list.append([complete_filename, base_directory])
 
-        with open(complete_filename, 'w', newline='') as csv_file:
+        with open(complete_filename, 'w', newline='', encoding='UTF-8') as csv_file:
             export_writer = writer(csv_file)
             for row in export_rows_diagnosis:
                 export_writer.writerow(row)
