@@ -147,11 +147,6 @@
                 </div>
             </div>
             <div class="btn-toolbar">
-                <div class="btn-group pull-left">
-                    {% if not creating and perms.experiment.delete_subject and can_change %}
-                        <button type="button" class="btn btn-danger" onclick="$('#modalRemove').modal('show')">{% trans "Delete" %}</button>
-                    {% endif %}
-                </div>
                 <div class="btn-group pull-right">
                     <a href="/experiment/group/{{ group.id }}/subjects" class="btn" style="background-color: #f5f5f5">{% trans "Back" %}</a>
                 </div>
@@ -160,23 +155,6 @@
         </div>
 
     </div>
-
-    {% if not creating and perms.experiment.delete_subject and can_change %}
-        <div class="modal fade" id="modalRemove" tabindex="-1" role="dialog" aria-labelledby="myModalLabel"
-             aria-hidden="true">
-            <div class="modal-dialog">
-                <div class="modal-content">
-                    <div class="modal-body">
-                        {% trans "Are you sure you want to delete participant?" %}
-                    </div>
-                    <div class="modal-footer">
-                        <button type="button" class="btn btn-default" data-dismiss="modal">{% trans "Cancel" %}</button>
-                        <button type="submit" class="btn btn-danger" value="remove" name="action">{% trans "Delete" %}</button>
-                    </div>
-                </div>
-            </div>
-        </div>
-    {% endif %}
 
 {% endblock %}
 

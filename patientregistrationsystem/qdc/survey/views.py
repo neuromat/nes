@@ -18,7 +18,7 @@ from django.utils.translation import ugettext as _
 from .models import Survey
 from .forms import SurveyForm
 from patient.models import Patient, QuestionnaireResponse as PatientQuestionnaireResponse
-from experiment.models import ComponentConfiguration, Block, QuestionnaireResponse, Questionnaire, Group
+from experiment.models import ComponentConfiguration, QuestionnaireResponse, Questionnaire, Group, Block
 from survey.abc_search_engine import Questionnaires
 
 
@@ -139,22 +139,23 @@ def survey_update(request, survey_id, template_name="survey/survey_register.html
     return render(request, template_name, context)
 
 
-def recursively_create_list_of_questionnaires(block_id, list_of_questionnaires_configuration):
-    # Include questionnaires of this block to the list.
-    questionnaire_configurations = ComponentConfiguration.objects.filter(parent_id=block_id,
-                                                                         component__component_type="questionnaire")
-    list_of_questionnaires_configuration += list(questionnaire_configurations)
+def recursively_create_list_of_steps(block_id, component_type, list_of_configurations):
+    # Include into the list the steps of a specific type that belongs to the block
+    configurations = ComponentConfiguration.objects.filter(parent_id=block_id,
+                                                           component__component_type=component_type)
+    list_of_configurations += list(configurations)
 
-    # Look for questionnaires in descendant blocks.
+    # Look for steps in descendant blocks.
     block_configurations = ComponentConfiguration.objects.filter(parent_id=block_id,
                                                                  component__component_type="block")
 
     for block_configuration in block_configurations:
-        list_of_questionnaires_configuration = recursively_create_list_of_questionnaires(
+        list_of_configurations = recursively_create_list_of_steps(
             Block.objects.get(id=block_configuration.component.id),
-            list_of_questionnaires_configuration)
+            component_type,
+            list_of_configurations)
 
-    return list_of_questionnaires_configuration
+    return list_of_configurations
 
 
 def create_experiments_questionnaire_data_list(survey, surveys):
@@ -205,7 +206,7 @@ def create_experiments_questionnaire_data_list(survey, surveys):
     for g in Group.objects.all():
         if g.experimental_protocol is not None:
             list_of_component_configurations_for_questionnaires = \
-                recursively_create_list_of_questionnaires(g.experimental_protocol.id, [])
+                recursively_create_list_of_steps(g.experimental_protocol.id, "questionnaire", [])
 
             for use in list_of_component_configurations_for_questionnaires:
                 q = Questionnaire.objects.get(id=use.component_id)
@@ -251,8 +252,8 @@ def create_experiments_questionnaire_data_list(survey, surveys):
     for q in Questionnaire.objects.filter(survey=survey):
         already_included = False
 
-        for dict in experiments_questionnaire_data_list:
-            if q.id == dict['component_id']:
+        for dictionary in experiments_questionnaire_data_list:
+            if q.id == dictionary['component_id']:
                 already_included = True
                 break
 

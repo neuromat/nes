@@ -80,7 +80,7 @@ class Command(BaseCommand):
             filename_english = options['en']
             try:
                 records = import_classification_of_diseases(filename_english)
-                self.stdout.write('Successfully imported %d record(s) English translation from file "%s".' \
+                self.stdout.write('Successfully imported %d record(s) English translation from file "%s".'
                                   % (records, filename_english))
 
             except IOError:

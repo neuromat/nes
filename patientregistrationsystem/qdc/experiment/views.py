@@ -11,21 +11,23 @@ from django.core.urlresolvers import reverse
 from django.db.models import Q
 from django.db.models.deletion import ProtectedError
 
+
 # from django.forms import HiddenInput
 from django.http import HttpResponseRedirect
 from django.shortcuts import get_object_or_404, redirect, render, render_to_response
-from django.utils.translation import ugettext as _, ungettext
+from django.utils.translation import ugettext as _
 
 from experiment.models import Experiment, Subject, QuestionnaireResponse, SubjectOfGroup, Group, Component, \
     ComponentConfiguration, Questionnaire, Task, Stimulus, Pause, Instruction, Block, \
-    TaskForTheExperimenter, ClassificationOfDiseases, ResearchProject, Keyword, EEG
+    TaskForTheExperimenter, ClassificationOfDiseases, ResearchProject, Keyword, EEG, EEGData
 from experiment.forms import ExperimentForm, QuestionnaireResponseForm, FileForm, GroupForm, InstructionForm, \
-    ComponentForm, StimulusForm, BlockForm, ComponentConfigurationForm, ResearchProjectForm, NumberOfUsesToInsertForm
+    ComponentForm, StimulusForm, BlockForm, ComponentConfigurationForm, ResearchProjectForm, NumberOfUsesToInsertForm, \
+    EEGDataForm
 from patient.models import Patient, QuestionnaireResponse as PatientQuestionnaireResponse
 from survey.abc_search_engine import Questionnaires
 
 from survey.models import Survey
-from survey.views import get_questionnaire_responses, check_limesurvey_access, recursively_create_list_of_questionnaires
+from survey.views import get_questionnaire_responses, check_limesurvey_access, recursively_create_list_of_steps
 
 from operator import itemgetter
 
@@ -669,20 +671,44 @@ def questionnaire_view(request, group_id, component_configuration_id,
 @login_required
 @permission_required('experiment.view_researchproject')
 def subjects(request, group_id, template_name="experiment/subjects.html"):
+
+    experimental_protocol_info = {'number_of_questionnaires': 0,
+                                  'number_of_eeg_data': 0}
+
     group = get_object_or_404(Group, id=group_id)
-    subject_list = SubjectOfGroup.objects.filter(group=group).order_by('subject__patient__name')
+
+    subject_id = None
+
+    if request.method == "POST" and request.POST['action'][:6] == "remove":
+        subject_id = request.POST['action'][7:]
+        subject_list = \
+            SubjectOfGroup.objects.filter(group=group, subject_id=subject_id).order_by('subject__patient__name')
+    else:
+        subject_list = SubjectOfGroup.objects.filter(group=group).order_by('subject__patient__name')
+
     subject_list_with_status = []
     surveys = Questionnaires()
     limesurvey_available = check_limesurvey_access(request, surveys)
 
+    can_remove = True
+
     # Navigate the components of the experimental protocol from the root to see if there is any questionnaire component
     # in this group.
     if group.experimental_protocol is not None:
-        list_of_questionnaires_configuration = recursively_create_list_of_questionnaires(group.experimental_protocol,
-                                                                                         [])
+        list_of_questionnaires_configuration = recursively_create_list_of_steps(group.experimental_protocol,
+                                                                                "questionnaire",
+                                                                                [])
+
+        list_of_eeg_configuration = recursively_create_list_of_steps(group.experimental_protocol,
+                                                                     "eeg",
+                                                                     [])
+
+        experimental_protocol_info = {'number_of_questionnaires': len(list_of_questionnaires_configuration),
+                                      'number_of_eeg_data': len(list_of_eeg_configuration)}
 
         # For each subject of the group...
         for subject_of_group in subject_list:
+
             number_of_questionnaires_filled = 0
 
             # For each questionnaire in the experimental protocol of the group...
@@ -723,33 +749,76 @@ def subjects(request, group_id, template_name="experiment/subjects.html"):
                                 amount_of_completed_responses >= questionnaire_configuration.number_of_repetitions):
                         number_of_questionnaires_filled += 1
 
-            percentage = 0
+            percentage_of_questionnaires = 0
 
             if len(list_of_questionnaires_configuration) > 0:
-                percentage = 100 * number_of_questionnaires_filled / len(list_of_questionnaires_configuration)
+                percentage_of_questionnaires = \
+                    100 * number_of_questionnaires_filled / len(list_of_questionnaires_configuration)
+
+            # EEG data files
+            number_of_eeg_data_files_uploaded = 0
+
+            # for each component_configuration...
+            for eeg_configuration in list_of_eeg_configuration:
+                eeg_data_files = EEGData.objects.filter(subject_of_group=subject_of_group,
+                                                        component_configuration=eeg_configuration)
+                if len(eeg_data_files):
+                    number_of_eeg_data_files_uploaded += 1
+
+            percentage_of_eeg_data_files_uploaded = 0
+
+            if len(list_of_eeg_configuration) > 0:
+                percentage_of_eeg_data_files_uploaded = \
+                    100 * number_of_eeg_data_files_uploaded / len(list_of_eeg_configuration)
+
+            # If any questionnaire has responses or any eeg data file was uploaded,
+            # the subject can't be removed from the group.
+            if number_of_eeg_data_files_uploaded or number_of_questionnaires_filled:
+                can_remove = False
 
             subject_list_with_status.append(
                 {'subject': subject_of_group.subject,
                  'number_of_questionnaires_filled': number_of_questionnaires_filled,
                  'total_of_questionnaires': len(list_of_questionnaires_configuration),
-                 'percentage': percentage,
-                 'consent': subject_of_group.consent_form})
+                 'percentage_of_questionnaires': int(percentage_of_questionnaires),
+                 'consent': subject_of_group.consent_form,
+                 'number_of_eeg_data_files_uploaded': number_of_eeg_data_files_uploaded,
+                 'total_of_eeg_data_files': len(list_of_eeg_configuration),
+                 'percentage_of_eeg_data_files_uploaded': int(percentage_of_eeg_data_files_uploaded)
+                 },
+            )
     else:
         for subject_of_group in subject_list:
             subject_list_with_status.append(
                 {'subject': subject_of_group.subject,
                  'number_of_questionnaires_filled': 0,
                  'total_of_questionnaires': 0,
-                 'percentage': 0,
+                 'percentage_of_questionnaires': 0,
                  'consent': subject_of_group.consent_form})
 
     surveys.release_session_key()
+
+    if request.method == "POST":
+
+        if request.POST['action'][:6] == "remove":
+
+            if can_remove:
+                get_object_or_404(SubjectOfGroup, group=group, subject_id=subject_id).delete()
+
+                messages.info(request, _('Participant deleted from experiment.'))
+            else:
+                messages.error(request, _("It was not possible to delete participant, "
+                                          "because there are answers or eeg data connected"))
+
+            redirect_url = reverse("subjects", args=(group_id,))
+            return HttpResponseRedirect(redirect_url)
 
     context = {
         "can_change": get_can_change(request.user, group.experiment.research_project),
         'group': group,
         'subject_list': subject_list_with_status,
-        "limesurvey_available": limesurvey_available
+        "limesurvey_available": limesurvey_available,
+        "experimental_protocol_info": experimental_protocol_info
     }
 
     return render(request, template_name, context)
@@ -763,7 +832,6 @@ def subject_questionnaire_response_start_fill_questionnaire(request, subject_id,
         questionnaire_config = get_object_or_404(ComponentConfiguration, id=questionnaire_id)
         questionnaire_lime_survey = Questionnaires()
         subject = get_object_or_404(Subject, pk=subject_id)
-        patient = subject.patient
         subject_of_group = get_object_or_404(SubjectOfGroup, subject=subject, group_id=group_id)
         lime_survey_id = Questionnaire.objects.get(id=questionnaire_config.component_id).survey.lime_survey_id
 
@@ -1129,13 +1197,13 @@ def subject_questionnaire_view(request, group_id, subject_id,
     subject = get_object_or_404(Subject, id=subject_id)
 
     subject_questionnaires = []
-    can_remove = True
 
     surveys = Questionnaires()
     limesurvey_available = check_limesurvey_access(request, surveys)
 
-    list_of_questionnaires_configuration = recursively_create_list_of_questionnaires(group.experimental_protocol,
-                                                                                     [])
+    list_of_questionnaires_configuration = recursively_create_list_of_steps(group.experimental_protocol,
+                                                                            "questionnaire",
+                                                                            [])
     subject_of_group = get_object_or_404(SubjectOfGroup, group=group, subject=subject)
 
     for questionnaire_configuration in list_of_questionnaires_configuration:
@@ -1143,10 +1211,6 @@ def subject_questionnaire_view(request, group_id, subject_id,
             filter(subject_of_group=subject_of_group, component_configuration=questionnaire_configuration)
 
         questionnaire_responses_with_status = []
-
-        # If any questionnaire has responses, the subject can't be removed from the group.
-        if questionnaire_responses.count() > 0:
-            can_remove = False
 
         questionnaire = Questionnaire.objects.get(id=questionnaire_configuration.component.id)
 
@@ -1167,20 +1231,6 @@ def subject_questionnaire_view(request, group_id, subject_id,
 
     surveys.release_session_key()
 
-    if request.method == "POST":
-        if request.POST['action'] == "remove":
-            if can_remove:
-                get_object_or_404(SubjectOfGroup, group=group, subject=subject).delete()
-
-                messages.info(request, _('Participant deleted from experiment.'))
-                redirect_url = reverse("subjects", args=(group_id,))
-                return HttpResponseRedirect(redirect_url)
-            else:
-                messages.error(request, _("It was not possible to delete participant, "
-                                          "because there are answers connected"))
-                redirect_url = reverse("subject_questionnaire", args=(group_id, subject_id,))
-                return HttpResponseRedirect(redirect_url)
-
     context = {
         "can_change": get_can_change(request.user, group.experiment.research_project),
         'group': group,
@@ -1190,6 +1240,177 @@ def subject_questionnaire_view(request, group_id, subject_id,
     }
 
     return render(request, template_name, context)
+
+
+@login_required
+@permission_required('experiment.view_researchproject')
+def subject_eeg_view(request, group_id, subject_id,
+                     template_name="experiment/subject_eeg_collection_list.html"):
+
+    group = get_object_or_404(Group, id=group_id)
+    subject = get_object_or_404(Subject, id=subject_id)
+
+    eeg_collections = []
+
+    list_of_eeg_configuration = recursively_create_list_of_steps(group.experimental_protocol, "eeg", [])
+    subject_of_group = get_object_or_404(SubjectOfGroup, group=group, subject=subject)
+
+    for eeg_configuration in list_of_eeg_configuration:
+
+        eeg_data_files = EEGData.objects.filter(subject_of_group=subject_of_group,
+                                                component_configuration=eeg_configuration)
+
+        eeg_collections.append(
+            {'eeg_configuration': eeg_configuration,
+             'eeg_data_files': eeg_data_files}
+        )
+
+    context = {
+        "can_change": get_can_change(request.user, group.experiment.research_project),
+        'group': group,
+        'subject': subject,
+        'eeg_collections': eeg_collections,
+    }
+
+    return render(request, template_name, context)
+
+
+@login_required
+@permission_required('experiment.add_questionnaireresponse')
+def subject_eeg_data_create(request, group_id, subject_id, eeg_configuration_id,
+                            template_name="experiment/subject_eeg_data_form.html"):
+
+    group = get_object_or_404(Group, id=group_id)
+
+    if get_can_change(request.user, group.experiment.research_project):
+
+        eeg_configuration = get_object_or_404(ComponentConfiguration, id=eeg_configuration_id)
+
+        redirect_url = None
+        eeg_data_id = None
+
+        eeg_data_form = EEGDataForm(None)
+
+        if request.method == "POST":
+            if request.POST['action'] == "save":
+
+                eeg_data_form = EEGDataForm(request.POST, request.FILES)
+
+                if eeg_data_form.is_valid():
+
+                    subject = get_object_or_404(Subject, pk=subject_id)
+                    subject_of_group = get_object_or_404(SubjectOfGroup, subject=subject, group_id=group_id)
+
+                    eeg_data_added = eeg_data_form.save(commit=False)
+                    eeg_data_added.subject_of_group = subject_of_group
+                    eeg_data_added.component_configuration = eeg_configuration
+
+                    # TODO: it was necessary adding these 2 lines because, I do not why (Evandro),
+                    # django raised an error 'EEGData' object has no attribute 'group'
+                    eeg_data_added.group = group
+                    eeg_data_added.subject = subject
+
+                    eeg_data_added.save()
+
+                    messages.success(request, _('EEG data collection created successfully.'))
+
+                    redirect_url = reverse("subject_eeg_view", args=(group_id, subject_id))
+                    return HttpResponseRedirect(redirect_url)
+
+        context = {
+            "can_change": True,
+            "creating": True,
+            "editing": True,
+            "group": group,
+            "eeg_configuration": eeg_configuration,
+            "eeg_data_form": eeg_data_form,
+            "eeg_data_id": eeg_data_id,
+            "subject": get_object_or_404(Subject, pk=subject_id),
+            "URL": redirect_url,
+        }
+
+        return render(request, template_name, context)
+    else:
+        raise PermissionDenied
+
+
+@login_required
+@permission_required('experiment.change_experiment')
+def eeg_data_view(request, eeg_data_id, template_name="experiment/subject_eeg_data_form.html"):
+
+    eeg_data = get_object_or_404(EEGData, pk=eeg_data_id)
+
+    eeg_data_form = EEGDataForm(request.POST or None, instance=eeg_data)
+
+    for field in eeg_data_form.fields:
+        eeg_data_form.fields[field].widget.attrs['disabled'] = True
+
+    if request.method == "POST":
+        if request.POST['action'] == "remove":
+
+            if get_can_change(request.user, eeg_data.subject_of_group.group.experiment.research_project):
+
+                subject_of_group = eeg_data.subject_of_group
+                eeg_data.file.delete()
+                eeg_data.delete()
+                messages.success(request, _('EEG data removed successfully.'))
+                return redirect('subject_eeg_view',
+                                group_id=subject_of_group.group_id,
+                                subject_id=subject_of_group.subject_id)
+            else:
+                raise PermissionDenied
+
+    context = {
+        "can_change": get_can_change(request.user, eeg_data.subject_of_group.group.experiment.research_project),
+        "editing": False,
+        "group": eeg_data.subject_of_group.group,
+        "subject": eeg_data.subject_of_group.subject,
+        "eeg_data_form": eeg_data_form,
+        "eeg_data": eeg_data
+    }
+
+    return render(request, template_name, context)
+
+
+@login_required
+@permission_required('experiment.change_experiment')
+def eeg_data_edit(request, eeg_data_id, template_name="experiment/subject_eeg_data_form.html"):
+
+    eeg_data = get_object_or_404(EEGData, pk=eeg_data_id)
+
+    if get_can_change(request.user, eeg_data.subject_of_group.group.experiment.research_project):
+
+        if request.method == "POST":
+
+            eeg_data_form = EEGDataForm(request.POST, request.FILES, instance=eeg_data)
+
+            if request.POST['action'] == "save":
+                if eeg_data_form.is_valid():
+                    if eeg_data_form.has_changed():
+                        eeg_data_to_update = eeg_data_form.save(commit=False)
+                        eeg_data_to_update.group = eeg_data.subject_of_group.group
+                        eeg_data_to_update.subject = eeg_data.subject_of_group.subject
+                        eeg_data_to_update.save()
+                        messages.success(request, _('EEG data updated successfully.'))
+                    else:
+                        messages.success(request, _('There is no changes to save.'))
+
+                    redirect_url = reverse("eeg_data_view", args=(eeg_data_id,))
+                    return HttpResponseRedirect(redirect_url)
+        else:
+            eeg_data_form = EEGDataForm(request.POST or None, instance=eeg_data)
+
+        context = {
+            "group": eeg_data.subject_of_group.group,
+            "subject": eeg_data.subject_of_group.subject,
+            "eeg_data_form": eeg_data_form,
+            "eeg_data": eeg_data,
+            "editing": True
+        }
+
+        return render(request, template_name, context)
+    else:
+        raise PermissionDenied
 
 
 @login_required
@@ -1692,7 +1913,7 @@ def access_objects_for_view_and_update(request, path_of_the_components, updating
     list_of_ids_of_components_and_configurations = path_of_the_components.split(delimiter)
 
     # The last id of the list is the one that we want to show.
-    id = list_of_ids_of_components_and_configurations[-1]
+    last_id = list_of_ids_of_components_and_configurations[-1]
 
     group = None
 
@@ -1704,12 +1925,12 @@ def access_objects_for_view_and_update(request, path_of_the_components, updating
     component_configuration = None
     configuration_form = None
 
-    if id[0] == "U":  # If id starts with 'U' (from 'use'), it is a configuration.
-        component_configuration = get_object_or_404(ComponentConfiguration, pk=id[1:])
+    if last_id[0] == "U":  # If id starts with 'U' (from 'use'), it is a configuration.
+        component_configuration = get_object_or_404(ComponentConfiguration, pk=last_id[1:])
         configuration_form = ComponentConfigurationForm(request.POST or None, instance=component_configuration)
         component = component_configuration.component
     else:
-        component = get_object_or_404(Component, pk=id)
+        component = get_object_or_404(Component, pk=last_id)
 
     component_form = ComponentForm(request.POST or None, instance=component)
 
@@ -1911,7 +2132,7 @@ def sort_without_using_order(configuration_list_of_random_components):
         temp_list_of_tuples.append((cc,
                                     cc.component.get_component_type_display(),
                                     cc.component.identification,
-                                    cc.name))
+                                    (cc.name if cc.name else '')))
 
     temp_list_of_tuples.sort(key=itemgetter(1, 2, 3))
 
