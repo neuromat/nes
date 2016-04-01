@@ -34,7 +34,7 @@ class InputExport:
 
     def write(self, output_filename):
         print("write")
-        with open(output_filename, 'w') as outfile:
+        with open(output_filename, 'w', encoding='UTF-8') as outfile:
             dump(self.data, outfile)
 
     def build_header(self):
@@ -50,7 +50,7 @@ class InputExport:
     def build_diagnosis_participant(self, strut_name, output_filename, field_header_list):
         print("participant or diagnosis")
         self.data[strut_name] = []
-        self.data[strut_name].append({"output_filename": output_filename, "output_list":[]})
+        self.data[strut_name].append({"output_filename": output_filename, "output_list": []})
 
         # field_header_list[0] -> field
         # field_header_list[1] -> header

@@ -119,7 +119,7 @@
                                     {% for survey in questionnaires_fields_list %}
                                         <optgroup label='{{ survey.sid }} - {{survey.title }}'>
                                         {% for field in survey.output_list %}
-                                             <option value="{{ survey.sid }}*{{survey.title }}*{{ field.field }}*{{ field.header }}"> {{ field.header }} </option>
+                                             <option {% for sid1, field1 in selected_ev_quest%} {% if survey.sid == sid1 and field.field == field1 %}selected{% endif %} {% endfor %}  value="{{ survey.sid }}*{{survey.title }}*{{ field.field }}*{{ field.header }}"> {{ field.header }} </option>
                                         {% endfor %}
                                         </optgroup>
                                     {% endfor %}
@@ -136,7 +136,7 @@
                                 <label class="control-label">{% trans "Participant fields" %} <b style="color: red;">*</b></label>
                                 <select class="form-control" size="13" required="" id="patient_selected" name="patient_selected" multiple="multiple" data-error={% trans "Please, select a patient field from the list." %}>
                                     {% for field in patient_fields %}
-                                        <option value="{{ field.field }}*{{ field.header }}"> {{ field.header }} </option>
+                                        <option {% if field.field in selected_participant %}selected{% endif %} value="{{ field.field }}*{{ field.header }}"> {{ field.header }} </option>
                                     {% endfor %}
                                 </select>
                             </div>
@@ -151,7 +151,7 @@
                                 <label class="control-label">{% trans "Diagnosis fields" %} <b style="color: red;">*</b></label>
                                 <select class="form-control" size="13" required="" id="diagnosis_selected" name="diagnosis_selected" multiple="multiple" data-error={% trans "Please, select a diagnosis field from the list." %}>
                                     {% for field in diagnosis_fields %}
-                                        <option value="{{ field.field }}*{{ field.header }}"> {{ field.header }} </option>
+                                        <option {% if field.field in selected_diagnosis %}selected{% endif %} value="{{ field.field }}*{{ field.header }}"> {{ field.header }} </option>
                                     {% endfor %}
                                 </select>
                             </div>

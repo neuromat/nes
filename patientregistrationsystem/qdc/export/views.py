@@ -410,49 +410,53 @@ def export_view(request, template_name="export/export_data.html"):
 
     if page == 1:
 
-        if request.method == "POST" and export_form.is_valid():
-            if export_form.is_valid():
+        selected_ev_quest = []
+        selected_participant = []
+        selected_diagnosis = []
 
+        if request.method == "POST":
+
+            questionnaires_selected_list = request.POST.getlist('questionnaire_selected')
+
+            questionnaires_list = []
+
+            previous_questionnaire_id = 0
+            output_list = []
+            for questionnaire in questionnaires_selected_list:
+                sid, title, field, header = questionnaire.split("*")
+
+                sid = int(sid)    # transform to integer
+                if sid != previous_questionnaire_id:
+                    if previous_questionnaire_id != 0:
+                        output_list = []
+
+                    questionnaires_list.append([sid, title, output_list])
+
+                    previous_questionnaire_id = sid
+
+                output_list.append((field, header))
+
+            # get participants list
+            participant_selected_list = request.POST.getlist('patient_selected')
+
+            participants_list = []
+
+            for participant in participant_selected_list:
+                participants_list.append(participant.split("*"))
+
+            # get diagnosis list
+            diagnosis_selected_list = request.POST.getlist('diagnosis_selected')
+
+            diagnosis_list = []
+
+            for diagnosis in diagnosis_selected_list:
+                diagnosis_list.append(diagnosis.split("*"))
+
+            if export_form.is_valid():
                 print("valid data")
 
                 per_participant = export_form.cleaned_data['per_participant']
                 per_questionnaire = export_form.cleaned_data['per_questionnaire']
-
-                questionnaires_selected_list = request.POST.getlist('questionnaire_selected')
-
-                questionnaires_list = []
-
-                previous_questionnaire_id = 0
-                output_list = []
-                for questionnaire in questionnaires_selected_list:
-                    sid, title, field, header = questionnaire.split("*")
-
-                    sid = int(sid)    # transform to integer
-                    if sid != previous_questionnaire_id:
-                        if previous_questionnaire_id != 0:
-                            output_list = []
-
-                        questionnaires_list.append([sid, title, output_list])
-
-                        previous_questionnaire_id = sid
-
-                    output_list.append((field, header))
-
-                # get participants list
-                participant_selected_list = request.POST.getlist('patient_selected')
-
-                participants_list = []
-
-                for participant in participant_selected_list:
-                    participants_list.append(participant.split("*"))
-
-                # get diagnosis list
-                diagnosis_selected_list = request.POST.getlist('diagnosis_selected')
-
-                diagnosis_list = []
-
-                for diagnosis in diagnosis_selected_list:
-                    diagnosis_list.append(diagnosis.split("*"))
 
         # output_filename = "/Users/sueli/PycharmProjects/nes/patientregistrationsystem/qdc/export/json_export_output2.json"
 
@@ -491,60 +495,75 @@ def export_view(request, template_name="export/export_data.html"):
                 response['Content-Length'] = path.getsize(complete_filename)
                 return response
 
-        else:
-            # page 1 - list of questionnaires
-            surveys = Questionnaires()
-            limesurvey_available = check_limesurvey_access(request, surveys)
-
-            questionnaires_list = []
-
-            if limesurvey_available:
-                questionnaires_list = surveys.find_all_active_questionnaires()
-
-            surveys.release_session_key()
-
-            questionnaires_list_final = []
-
-            # removing surveys that are not entrance evaluation
-            # entrance_evaluation_questionnaires = QuestionnaireResponse.objects.all()
-            entrance_evaluation_questionnaire_ids_list = set(QuestionnaireResponse.objects.values_list('survey',
-                                                                                                       flat=True))
-
-            # ev_questionnaire_ids_list = entrance_evaluation_questionnaires.values_list("survey")
-            surveys_with_ev_list = Survey.objects.filter(id__in=entrance_evaluation_questionnaire_ids_list)
-
-            for survey in surveys_with_ev_list:
+            else:
                 for questionnaire in questionnaires_list:
-                    if survey.lime_survey_id == questionnaire['sid']:
-                        questionnaires_list_final.append(questionnaire)
-                        break
+                    for field in questionnaire[2]:  # get output_list
+                        selected_ev_quest.append((questionnaire[0], field[0]))
 
-            # page 2 fields
+                for participant in participants_list:
+                    selected_participant.append(participant[0])
 
-            # entrance evaluation questionnarie fields
-            questionnaires_fields_list = get_questionnaire_fields(questionnaires_list_final)
+                for diagnosis in diagnosis_list:
+                    selected_diagnosis.append(diagnosis[0])
 
-            # for field in questionnaires_fields_list:
-            #     for questionnaire in questionnaires_list_final:
-            #         if field["sid"] == questionnaire['sid']:
-            #             field["title"] = questionnaire["surveyls_title"]
-            #             break
+        # else:
+        # page 1 - list of questionnaires
+        surveys = Questionnaires()
+        limesurvey_available = check_limesurvey_access(request, surveys)
 
-            # patient fields
-            # patient_fields = []
-            #
-            # "output_list":{}
+        questionnaires_list = []
 
-            # diagnosis fields
+        if limesurvey_available:
+            questionnaires_list = surveys.find_all_active_questionnaires()
 
-            context = {
+        surveys.release_session_key()
+
+        questionnaires_list_final = []
+
+        # removing surveys that are not entrance evaluation
+        # entrance_evaluation_questionnaires = QuestionnaireResponse.objects.all()
+        entrance_evaluation_questionnaire_ids_list = set(QuestionnaireResponse.objects.values_list('survey',
+                                                                                                   flat=True))
+
+        # ev_questionnaire_ids_list = entrance_evaluation_questionnaires.values_list("survey")
+        surveys_with_ev_list = Survey.objects.filter(id__in=entrance_evaluation_questionnaire_ids_list)
+
+        for survey in surveys_with_ev_list:
+            for questionnaire in questionnaires_list:
+                if survey.lime_survey_id == questionnaire['sid']:
+                    questionnaires_list_final.append(questionnaire)
+                    break
+
+        # page 2 fields
+
+        # entrance evaluation questionnarie fields
+        questionnaires_fields_list = get_questionnaire_fields(questionnaires_list_final)
+
+        # for field in questionnaires_fields_list:
+        #     for questionnaire in questionnaires_list_final:
+        #         if field["sid"] == questionnaire['sid']:
+        #             field["title"] = questionnaire["surveyls_title"]
+        #             break
+
+        # patient fields
+        # patient_fields = []
+        #
+        # "output_list":{}
+
+        # diagnosis fields
+
+        context = {
+
                 "limesurvey_available": limesurvey_available,
                 "export_form": export_form,
-                "questionnaires_list": questionnaires_list_final,
+                # "questionnaires_list": questionnaires_list_final,
                 "contacts": contacts,
                 "patient_fields": patient_fields,
                 "diagnosis_fields": diagnosis_fields,
                 "questionnaires_fields_list": questionnaires_fields_list,
+                "selected_ev_quest": selected_ev_quest,
+                "selected_participant": selected_participant,
+                "selected_diagnosis":selected_diagnosis,
             }
 
     # elif page == 2:
