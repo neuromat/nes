@@ -1,36 +1,16 @@
 from django.test import TestCase
-
-from datetime import date, datetime
-
-from django.shortcuts import get_object_or_404
-from django.test import TestCase, Client
-from django.http import Http404
-from django.core.files.uploadedfile import SimpleUploadedFile
 from django.test.client import RequestFactory
-from django.contrib.messages.api import MessageFailure
 from django.utils.translation import ugettext as _
-from os import path, mkdir
-from shutil import rmtree
 
-from patient.models import ClassificationOfDiseases, MedicalRecordData, Diagnosis, ComplementaryExam, ExamFile, \
-    Gender, Schooling, Patient, AlcoholFrequency, AlcoholPeriod, AmountCigarettes, QuestionnaireResponse
-from patient.views import medical_record_view, medical_record_update, diagnosis_create, \
-    medical_record_create_diagnosis_create, exam_create, exam_view, \
-    patient_update, patient_view, restore_patient, reverse, check_limesurvey_access
+from os import mkdir
+
 from custom_user.models import User
-from experiment.models import Experiment, Group, Subject, \
-    QuestionnaireResponse as ExperimentQuestionnaireResponse, SubjectOfGroup, ComponentConfiguration, ResearchProject, \
-    Questionnaire, Block
-from patient.validation import CPF
-from survey.models import Survey
-
-from django.conf import settings
-from survey.abc_search_engine import Questionnaires
 
 from export.views import *
 from export.input_export import InputExport
+from export.export import is_patient_active
 
-from django.contrib.messages.storage.fallback import FallbackStorage
+from patient.models import Gender, Patient
 
 # Constantes para testes de User
 USER_EDIT = 'user_edit'
@@ -42,6 +22,7 @@ QUESTIONNAIRE_ID = 957421
 
 
 class UtilTests:
+
     def create_patient_mock(self, name='Pacient Test', user=None):
         """ Cria um participante para ser utilizado durante os testes """
         gender = Gender.objects.create(name='Masculino')
@@ -386,4 +367,3 @@ class InputExportTest(TestCase):
         input_data.build_header()
 
         # self.assertEqual(input_data.data, )
-

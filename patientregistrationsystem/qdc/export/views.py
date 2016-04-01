@@ -1,37 +1,31 @@
+import json
+
 from django.shortcuts import render
+from django.conf import settings
 from django.contrib.auth.decorators import login_required
 from django.contrib import messages
+from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
+from django.http import HttpResponse
 from django.utils.encoding import smart_str
 from django.utils.translation import ugettext as _
-from io import StringIO
-from os import path, makedirs
-from csv import writer, reader
-import re
+
+from os import path
+from csv import writer
 from sys import modules
 from zipfile import ZipFile
-from django.http import HttpResponse
-from django.http import HttpResponseRedirect
-from django.core.urlresolvers import reverse
-from patient.models import Patient, QuestionnaireResponse
-from patient.views import check_limesurvey_access
-from survey.abc_search_engine import Questionnaires
-
-from django.conf import settings
-from shutil import copy, rmtree
-import collections
-from operator import itemgetter
-import json
-from datetime import datetime
-from django.core.files import File
-
-
-from export.models import Export
-from export.export import ExportExecution, perform_csv_response, create_directory, save_to_csv, is_patient_active
+from shutil import rmtree
 
 from .forms import ExportForm
-from survey.models import Survey
+from .models import Export
+from .export import ExportExecution, perform_csv_response, create_directory, save_to_csv
+
 from export.input_export import build_complete_export_structure
-from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
+
+from patient.models import QuestionnaireResponse
+from patient.views import check_limesurvey_access
+
+from survey.models import Survey
+from survey.abc_search_engine import Questionnaires
 
 JSON_FILENAME = "json_export.json"
 EXPORT_DIRECTORY = "export"
@@ -386,7 +380,6 @@ def export_view(request, template_name="export/export_data.html"):
 
     context = {}
 
-
     # test with pagination
     a = [{"b": "2", "c": "3"}, {"d": "7", "e": "8"}]
     b = [1, 2, 3, 4, 5]
@@ -458,7 +451,8 @@ def export_view(request, template_name="export/export_data.html"):
                 per_participant = export_form.cleaned_data['per_participant']
                 per_questionnaire = export_form.cleaned_data['per_questionnaire']
 
-        # output_filename = "/Users/sueli/PycharmProjects/nes/patientregistrationsystem/qdc/export/json_export_output2.json"
+                # output_filename =
+                # "/Users/sueli/PycharmProjects/nes/patientregistrationsystem/qdc/export/json_export_output2.json"
 
                 # MEDIA_ROOT/export/username_id/export_id
 

@@ -1,8 +1,9 @@
 # coding=utf-8
 import datetime
+import re
+
 from functools import partial
 from operator import itemgetter
-import re
 
 from django.contrib import messages
 from django.contrib.auth import PermissionDenied
@@ -15,18 +16,18 @@ from django.shortcuts import render, render_to_response, get_object_or_404
 from django.conf import settings
 from django.utils.translation import ugettext as _
 
-from patient.models import Patient, Telephone, SocialDemographicData, SocialHistoryData, MedicalRecordData, \
-    ClassificationOfDiseases, Diagnosis, ExamFile, ComplementaryExam
+from experiment.models import Subject, SubjectOfGroup, QuestionnaireResponse as ExperimentQuestionnaireResponse
+
+from patient.forms import QuestionnaireResponseForm
 from patient.forms import PatientForm, TelephoneForm, SocialDemographicDataForm, SocialHistoryDataForm, \
     ComplementaryExamForm, ExamFileForm
+from patient.models import Patient, Telephone, SocialDemographicData, SocialHistoryData, MedicalRecordData, \
+    ClassificationOfDiseases, Diagnosis, ExamFile, ComplementaryExam, QuestionnaireResponse
 from patient.quiz_widget import SelectBoxCountriesDisabled, SelectBoxStateDisabled
-from experiment.models import Subject, SubjectOfGroup, QuestionnaireResponse as ExperimentQuestionnaireResponse
+
 from survey.abc_search_engine import Questionnaires
-from patient.models import QuestionnaireResponse
-from patient.forms import QuestionnaireResponseForm
 from survey.models import Survey
 from survey.views import get_questionnaire_responses, check_limesurvey_access
-
 
 # pylint: disable=E1101
 # pylint: disable=E1103

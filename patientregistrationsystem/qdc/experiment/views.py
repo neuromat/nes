@@ -1,7 +1,8 @@
 # coding=utf-8
-from functools import partial
 import re
 import datetime
+
+from functools import partial
 
 from django.conf import settings
 from django.contrib import messages
@@ -10,9 +11,6 @@ from django.contrib.auth import PermissionDenied
 from django.core.urlresolvers import reverse
 from django.db.models import Q
 from django.db.models.deletion import ProtectedError
-
-
-# from django.forms import HiddenInput
 from django.http import HttpResponseRedirect
 from django.shortcuts import get_object_or_404, redirect, render, render_to_response
 from django.utils.translation import ugettext as _
@@ -23,14 +21,14 @@ from experiment.models import Experiment, Subject, QuestionnaireResponse, Subjec
 from experiment.forms import ExperimentForm, QuestionnaireResponseForm, FileForm, GroupForm, InstructionForm, \
     ComponentForm, StimulusForm, BlockForm, ComponentConfigurationForm, ResearchProjectForm, NumberOfUsesToInsertForm, \
     EEGDataForm
-from patient.models import Patient, QuestionnaireResponse as PatientQuestionnaireResponse
-from survey.abc_search_engine import Questionnaires
 
+from patient.models import Patient, QuestionnaireResponse as PatientQuestionnaireResponse
+
+from survey.abc_search_engine import Questionnaires
 from survey.models import Survey
 from survey.views import get_questionnaire_responses, check_limesurvey_access, recursively_create_list_of_steps
 
 from operator import itemgetter
-
 
 permission_required = partial(permission_required, raise_exception=True)
 

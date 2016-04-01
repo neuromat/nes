@@ -1,23 +1,25 @@
 # coding=utf-8
 import datetime
 
-from django.http import Http404
 from django.test import TestCase
 from django.test.client import RequestFactory
 from django.core.urlresolvers import reverse
 from django.core.files.uploadedfile import SimpleUploadedFile
 from django.shortcuts import get_object_or_404
 
-from experiment.models import Experiment, Group, Subject, \
+from .models import Experiment, Group, Subject, \
     QuestionnaireResponse, SubjectOfGroup, ComponentConfiguration, ResearchProject, Keyword, StimulusType, \
     Component, Task, TaskForTheExperimenter, Stimulus, Instruction, Pause, Questionnaire, Block, \
     EEG, FileFormat, EEGData
+from .views import experiment_update, upload_file, research_project_update
+
 from patient.models import ClassificationOfDiseases
-from experiment.views import experiment_update, upload_file, research_project_update, group_update
-from survey.abc_search_engine import Questionnaires
 from patient.tests import UtilTests
-from custom_user.views import User
+
 from survey.models import Survey
+from survey.abc_search_engine import Questionnaires
+
+from custom_user.views import User
 
 LIME_SURVEY_ID = 828636
 LIME_SURVEY_ID_WITHOUT_ACCESS_CODE_TABLE = 563235

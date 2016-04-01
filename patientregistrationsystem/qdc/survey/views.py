@@ -4,6 +4,7 @@
 import re
 import csv
 import datetime
+
 from io import StringIO
 from operator import itemgetter
 
@@ -17,9 +18,11 @@ from django.utils.translation import ugettext as _
 
 from .models import Survey
 from .forms import SurveyForm
-from patient.models import Patient, QuestionnaireResponse as PatientQuestionnaireResponse
-from experiment.models import ComponentConfiguration, QuestionnaireResponse, Questionnaire, Group, Block
 from survey.abc_search_engine import Questionnaires
+
+from experiment.models import ComponentConfiguration, QuestionnaireResponse, Questionnaire, Group, Block
+
+from patient.models import Patient, QuestionnaireResponse as PatientQuestionnaireResponse
 
 
 @login_required
