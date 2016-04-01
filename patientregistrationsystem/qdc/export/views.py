@@ -386,7 +386,6 @@ def export_view(request, template_name="export/export_data.html"):
 
     context = {}
 
-
     # test with pagination
     a = [{"b": "2", "c": "3"}, {"d": "7", "e": "8"}]
     b = [1, 2, 3, 4, 5]
@@ -454,7 +453,8 @@ def export_view(request, template_name="export/export_data.html"):
                 for diagnosis in diagnosis_selected_list:
                     diagnosis_list.append(diagnosis.split("*"))
 
-        # output_filename = "/Users/sueli/PycharmProjects/nes/patientregistrationsystem/qdc/export/json_export_output2.json"
+                # output_filename =
+                # "/Users/sueli/PycharmProjects/nes/patientregistrationsystem/qdc/export/json_export_output2.json"
 
                 # MEDIA_ROOT/export/username_id/export_id
 

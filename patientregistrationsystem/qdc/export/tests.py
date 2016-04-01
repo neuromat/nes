@@ -386,4 +386,3 @@ class InputExportTest(TestCase):
         input_data.build_header()
 
         # self.assertEqual(input_data.data, )
-
