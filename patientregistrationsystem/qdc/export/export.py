@@ -1,16 +1,21 @@
+import collections
+import json
+import re
+
+from csv import writer, reader
+
+from datetime import datetime
+
 from django.conf import settings
 from django.core.files import File
 from django.utils.encoding import smart_str
 from django.utils.translation import ugettext as _
 
-import json
-from datetime import datetime
-from os import path, makedirs
-from csv import writer, reader
 from io import StringIO
-import collections
-import re
+
 from operator import itemgetter
+
+from os import path, makedirs
 
 from patient.models import Patient, QuestionnaireResponse
 

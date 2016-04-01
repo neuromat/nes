@@ -4,12 +4,14 @@ from django.conf import settings
 from django.core.urlresolvers import reverse
 from django.test import TestCase
 from django.test.client import RequestFactory
+
 from jsonrpc_requests import Server
 
-from survey.abc_search_engine import Questionnaires
-from custom_user.views import User
 from .models import Survey
 from .views import survey_update
+from .abc_search_engine import Questionnaires
+
+from custom_user.views import User
 
 from experiment.models import QuestionnaireResponse, Questionnaire, Experiment, ComponentConfiguration, \
     Block, Group, Subject, SubjectOfGroup, ResearchProject
@@ -136,7 +138,7 @@ class ABCSearchEngineTest(TestCase):
 
         # list_participants = self.server.list_participants(self.session_key, sid)
 
-        participant_data = {'email': 'juquinha@hotmail.com', 'lastname': 'junqueira', 'firstname': 'juca'}
+        # participant_data = {'email': 'juquinha@hotmail.com', 'lastname': 'junqueira', 'firstname': 'juca'}
         participant_data_result = surveys.add_participant(sid)
 
         # verificar se info retornada eh a mesma
@@ -234,7 +236,7 @@ class ABCSearchEngineTest(TestCase):
 
         # list_participants = self.server.list_participants(self.session_key, sid)
 
-        participant_data = {'email': 'juquinha@hotmail.com', 'lastname': 'junqueira', 'firstname': 'juca'}
+        # participant_data = {'email': 'juquinha@hotmail.com', 'lastname': 'junqueira', 'firstname': 'juca'}
         participant_data_result = surveys.add_participant(sid)
 
         # verificar se info retornada eh a mesma

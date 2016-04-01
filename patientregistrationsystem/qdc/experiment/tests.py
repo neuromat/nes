@@ -16,9 +16,10 @@ from .views import experiment_update, upload_file, research_project_update
 from patient.models import ClassificationOfDiseases
 from patient.tests import UtilTests
 
-from survey.abc_search_engine import Questionnaires
-from custom_user.views import User
 from survey.models import Survey
+from survey.abc_search_engine import Questionnaires
+
+from custom_user.views import User
 
 LIME_SURVEY_ID = 828636
 LIME_SURVEY_ID_WITHOUT_ACCESS_CODE_TABLE = 563235

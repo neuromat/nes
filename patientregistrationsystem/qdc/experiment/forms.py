@@ -1,10 +1,11 @@
 # coding=utf-8
-from experiment.models import Experiment, QuestionnaireResponse, SubjectOfGroup, Group, \
-    Component, Stimulus, Block, Instruction, ComponentConfiguration, ResearchProject, EEGData, DataFile
+
 from django.forms import ModelForm, TextInput, Textarea, Select, DateInput, TypedChoiceField, RadioSelect,\
-    ValidationError, Form, IntegerField, NumberInput, CharField, DateTimeInput, TimeInput, FileInput
+    ValidationError, Form, IntegerField, NumberInput, CharField
 from django.utils.translation import ugettext_lazy as _
-from django.contrib.admin import widgets
+
+from experiment.models import Experiment, QuestionnaireResponse, SubjectOfGroup, Group, \
+    Component, Stimulus, Block, Instruction, ComponentConfiguration, ResearchProject, EEGData
 
 
 class ExperimentForm(ModelForm):

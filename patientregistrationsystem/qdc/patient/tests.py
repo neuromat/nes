@@ -1,39 +1,42 @@
 # -*- coding: UTF-8 -*-
+
+import os
+
 from datetime import date, datetime
 
+from django.conf import settings
+from django.contrib.messages.api import MessageFailure
+from django.contrib.messages.storage.fallback import FallbackStorage
+from django.core.files.uploadedfile import SimpleUploadedFile
+from django.core.management import call_command
+from django.core.management.base import CommandError
+from django.http import Http404
 from django.shortcuts import get_object_or_404
 from django.test import TestCase, Client
-from django.http import Http404
-from django.core.files.uploadedfile import SimpleUploadedFile
 from django.test.client import RequestFactory
-from django.contrib.messages.api import MessageFailure
 from django.utils.translation import ugettext as _
 
+from custom_user.models import User
+
+from experiment.models import Experiment, Group, Subject, \
+    QuestionnaireResponse as ExperimentQuestionnaireResponse, SubjectOfGroup, ComponentConfiguration, ResearchProject, \
+    Questionnaire, Block
+
+from patient.management.commands.import_icd import import_classification_of_diseases
 from patient.models import ClassificationOfDiseases, MedicalRecordData, Diagnosis, ComplementaryExam, ExamFile, \
     Gender, Schooling, Patient, AlcoholFrequency, AlcoholPeriod, AmountCigarettes, QuestionnaireResponse
 from patient.views import medical_record_view, medical_record_update, diagnosis_create, \
     medical_record_create_diagnosis_create, exam_create, exam_view, \
     patient_update, patient_view, restore_patient, reverse, check_limesurvey_access
-from custom_user.models import User
-from experiment.models import Experiment, Group, Subject, \
-    QuestionnaireResponse as ExperimentQuestionnaireResponse, SubjectOfGroup, ComponentConfiguration, ResearchProject, \
-    Questionnaire, Block
 from patient.validation import CPF
+
+from survey.abc_search_engine import Questionnaires
 from survey.models import Survey
 
-from django.conf import settings
-from survey.abc_search_engine import Questionnaires
-
-from django.contrib.messages.storage.fallback import FallbackStorage
-
-from patient.management.commands.import_icd import icd_english_translation, import_classification_of_diseases
-from xml.etree.ElementTree import XML
-from xml.etree import ElementTree
-from django.core.management import call_command
-from django.core.management.base import CommandError
 from update_english_data import translate_fixtures_into_english, update_translated_data
 
-import os
+from xml.etree.ElementTree import XML
+from xml.etree import ElementTree
 
 # Constants para testes de User
 USER_EDIT = 'user_edit'
