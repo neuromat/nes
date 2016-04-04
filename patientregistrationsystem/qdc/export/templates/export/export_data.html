@@ -6,7 +6,6 @@
 {#{% block activeAdvancedSurvey %}class="active"{% endblock %}#}
 
 {% block header %}
-{#    <script src="{% static 'quiz/js/survey.js' %}"></script>#}
 
     <script>
         $(document).ready(function(){
@@ -63,7 +62,7 @@
                     </div>
                      <div class="row">
                         <div class="col-xs-12 col-sm-7">
-                            <label data-toggle="tooltip" data-placement="auto left" title="{% trans "At least one option must be selected" %}" for="directory_structure" class="control-label">{% trans "Directory Structure" %} <b style="color: red;">*</b></label>
+                            <label data-toggle="tooltip" data-placement="auto left" title="{% trans "At least one option must be selected" %}" for="directory_structure" class="control-label">{% trans "Directory Structure" %} </label>
 
                             <div class="form-group {% if export_form.errors.per_participant %}has-error{% endif %}">
 
@@ -114,8 +113,8 @@
                     <div class="row">
                         <div class="col-xs-12 col-sm-12">
                             <div class="form-group">
-                                <label class="control-label">{% trans "Questionnaire - Entrance evaluation" %} <b style="color: red;">*</b></label>
-                                <select class="form-control" size="13" required="" id="questionnaire_selected" name="questionnaire_selected" multiple="multiple" data-error={% trans "Please, select a questionnaire from the list." %}>
+                                <label class="control-label">{% trans "Questionnaire - Entrance evaluation" %} </label>
+                                <select class="form-control" size="13" id="questionnaire_selected" name="questionnaire_selected" multiple="multiple" data-error={% trans "Please, select a questionnaire from the list." %}>
                                     {% for survey in questionnaires_fields_list %}
                                         <optgroup label='{{ survey.sid }} - {{survey.title }}'>
                                         {% for field in survey.output_list %}
@@ -133,8 +132,8 @@
                     <div class="row">
                         <div class="col-xs-12 col-sm-12">
                             <div class="form-group">
-                                <label class="control-label">{% trans "Participant fields" %} <b style="color: red;">*</b></label>
-                                <select class="form-control" size="13" required="" id="patient_selected" name="patient_selected" multiple="multiple" data-error={% trans "Please, select a patient field from the list." %}>
+                                <label class="control-label">{% trans "Participant fields" %} </label>
+                                <select class="form-control" size="13" id="patient_selected" name="patient_selected" multiple="multiple" data-error={% trans "Please, select a patient field from the list." %}>
                                     {% for field in patient_fields %}
                                         <option {% if field.field in selected_participant %}selected{% endif %} value="{{ field.field }}*{{ field.header }}"> {{ field.header }} </option>
                                     {% endfor %}
@@ -148,8 +147,8 @@
                     <div class="row">
                         <div class="col-xs-12 col-sm-12">
                             <div class="form-group">
-                                <label class="control-label">{% trans "Diagnosis fields" %} <b style="color: red;">*</b></label>
-                                <select class="form-control" size="13" required="" id="diagnosis_selected" name="diagnosis_selected" multiple="multiple" data-error={% trans "Please, select a diagnosis field from the list." %}>
+                                <label class="control-label">{% trans "Diagnosis fields" %} </label>
+                                <select class="form-control" size="13" id="diagnosis_selected" name="diagnosis_selected" multiple="multiple" data-error={% trans "Please, select a diagnosis field from the list." %}>
                                     {% for field in diagnosis_fields %}
                                         <option {% if field.field in selected_diagnosis %}selected{% endif %} value="{{ field.field }}*{{ field.header }}"> {{ field.header }} </option>
                                     {% endfor %}
