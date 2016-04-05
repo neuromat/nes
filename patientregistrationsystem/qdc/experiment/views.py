@@ -806,7 +806,7 @@ def subjects(request, group_id, template_name="experiment/subjects.html"):
                 messages.info(request, _('Participant deleted from experiment.'))
             else:
                 messages.error(request, _("It was not possible to delete participant, "
-                                          "because there are answers or eeg data connected"))
+                                          "because there are answers or eeg data associated"))
 
             redirect_url = reverse("subjects", args=(group_id,))
             return HttpResponseRedirect(redirect_url)

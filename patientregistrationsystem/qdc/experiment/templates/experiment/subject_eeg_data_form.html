@@ -81,11 +81,11 @@
 
                 <div class="row">
                     <div class="col-xs-6 col-sm-6">
-                        <div class="form-group {% if eeg_data_form.errors.start_date %}has-error{% endif %}">
+                        <div class="form-group {% if eeg_data_form.errors.date %}has-error{% endif %}">
                             <label class="control-label">{% trans "Date" %}<b style="color: red;">*</b></label>
                             {{ eeg_data_form.date }}
                             <div class="help-block with-errors">
-                                {% for error in eeg_data_form.start_date.errors %}
+                                {% for error in eeg_data_form.date.errors %}
                                     {{ error }}
                                 {% endfor %}
                             </div>

@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2016-03-31 14:16-0300\n"
+"POT-Creation-Date: 2016-04-05 11:44-0300\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -18,100 +18,100 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=(n > 1);\n"
 
-#: experiment/forms.py:20 experiment/forms.py:38 experiment/forms.py:194
+#: experiment/forms.py:21 experiment/forms.py:39 experiment/forms.py:195
 msgid "Title must be filled."
 msgstr "Título deve ser preenchido."
 
-#: experiment/forms.py:24 experiment/forms.py:42 experiment/forms.py:199
-#: experiment/forms.py:244
+#: experiment/forms.py:25 experiment/forms.py:43 experiment/forms.py:200
+#: experiment/forms.py:245
 msgid "Description must be filled."
 msgstr "Descrição deve ser preenchida."
 
-#: experiment/forms.py:54 experiment/forms.py:200 experiment/forms.py:203
-#: experiment/forms.py:236
+#: experiment/forms.py:55 experiment/forms.py:201 experiment/forms.py:204
+#: experiment/forms.py:237
 msgid "%m/%d/%Y"
 msgstr "%d/%m/%Y"
 
-#: experiment/forms.py:55 experiment/forms.py:201 experiment/forms.py:204
-#: experiment/forms.py:237
+#: experiment/forms.py:56 experiment/forms.py:202 experiment/forms.py:205
+#: experiment/forms.py:238
 msgid "mm/dd/yyyy"
 msgstr "dd/mm/aaaa"
 
-#: experiment/forms.py:57 experiment/forms.py:239
+#: experiment/forms.py:58 experiment/forms.py:240
 msgid "Fill date must be filled."
 msgstr "Data de preenchimento deve ser preenchida"
 
-#: experiment/forms.py:82
+#: experiment/forms.py:83
 msgid "Identification must be filled."
 msgstr "Identificação deve ser preenchida."
 
-#: experiment/forms.py:87 experiment/forms.py:135
+#: experiment/forms.py:88 experiment/forms.py:136
 msgid "Time"
 msgstr "Tempo"
 
-#: experiment/forms.py:95
+#: experiment/forms.py:96
 msgid "Duration time must be filled in."
 msgstr "Tempo da duração deve ser preenchido"
 
-#: experiment/forms.py:103
+#: experiment/forms.py:104
 msgid "Duration unit must be filled in."
 msgstr "Unidade da duração deve ser preenchida"
 
-#: experiment/forms.py:112
+#: experiment/forms.py:113
 msgid "Fixed"
 msgstr "Fixa"
 
-#: experiment/forms.py:112
+#: experiment/forms.py:113
 msgid "Random"
 msgstr "Aleatória"
 
-#: experiment/forms.py:132
+#: experiment/forms.py:133
 msgid "Quantity of repetitions must be filled."
 msgstr "Quantidade de repetições deve ser preenchida."
 
-#: experiment/forms.py:134
+#: experiment/forms.py:135
 msgid "Interval must be filled."
 msgstr "Intervalo deve ser preenchido"
 
-#: experiment/forms.py:139
+#: experiment/forms.py:140
 msgid "Interval unit must be filled."
 msgstr "Unidade do intervalo deve ser preenchida"
 
-#: experiment/forms.py:150
+#: experiment/forms.py:151
 msgid "Instruction must be filled."
 msgstr "Instrução deve ser preenchida."
 
-#: experiment/forms.py:161
+#: experiment/forms.py:162
 msgid "Stimulus type must be filled."
 msgstr "Tipo do estímulo deve ser preenchido."
 
-#: experiment/forms.py:168
+#: experiment/forms.py:169
 msgid "Sequence"
 msgstr "Em uma sequência"
 
-#: experiment/forms.py:169
+#: experiment/forms.py:170
 msgid "Parallel"
 msgstr "De forma paralela"
 
-#: experiment/forms.py:171
+#: experiment/forms.py:172
 msgid "Organization type must be filled in."
 msgstr "Tipo de organização deve ser escolhido."
 
-#: experiment/forms.py:179 experiment/forms.py:226
+#: experiment/forms.py:180 experiment/forms.py:227
 msgid "Quantity must be filled."
 msgstr "Quantidade deve ser preenchida."
 
-#: experiment/forms.py:184
+#: experiment/forms.py:185
 #: experiment/templates/experiment/research_project_list.html:58
 #: experiment/templates/experiment/research_project_register.html:116
 msgid "Responsible"
 msgstr "Responsável"
 
-#: experiment/forms.py:202
+#: experiment/forms.py:203
 msgid "Initial date must be filled."
 msgstr "Data de início deve ser preenchida"
 
-#: experiment/forms.py:241
+#: experiment/forms.py:242
 msgid "File format must be chosen."
 msgstr "Formato de arquivo deve ser escolhido."
 
@@ -148,7 +148,7 @@ msgid "year(s)"
 msgstr "ano(s)"
 
 #: experiment/models.py:28
-msgid "Fill date cannot be greater than today."
+msgid "Date cannot be greater than today's date."
 msgstr "Data de preenchimento não pode ser maior que a data de hoje."
 
 #: experiment/models.py:90
@@ -1080,93 +1080,93 @@ msgstr "Carregar"
 msgid "Are you sure you want to delete attachment?"
 msgstr "Tem certeza que deseja remover o anexo?"
 
-#: experiment/views.py:76
+#: experiment/views.py:74
 msgid "Study created successfully."
 msgstr "Estudo criado com sucesso."
 
-#: experiment/views.py:118
+#: experiment/views.py:116
 msgid "Study removed successfully."
 msgstr "Estudo excluído com sucesso."
 
-#: experiment/views.py:121
+#: experiment/views.py:119
 msgid "Error trying to delete research."
 msgstr "Erro ao tentar excluir o estudo."
 
-#: experiment/views.py:127 experiment/views.py:323 experiment/views.py:496
+#: experiment/views.py:125 experiment/views.py:321 experiment/views.py:494
 msgid ""
 "Impossible to delete group because there is (are) questionnaire(s) answered."
 msgstr ""
 "Não foi possível excluir o grupo, pois há questionário(s) respondido(s)."
 
-#: experiment/views.py:160
+#: experiment/views.py:158
 msgid "Research updated successfully."
 msgstr "Estudo atualizado com sucesso."
 
-#: experiment/views.py:162 experiment/views.py:357 experiment/views.py:535
-#: experiment/views.py:1396 experiment/views.py:2267 experiment/views.py:2289
-#: experiment/views.py:2299
+#: experiment/views.py:160 experiment/views.py:355 experiment/views.py:533
+#: experiment/views.py:1394 experiment/views.py:2265 experiment/views.py:2287
+#: experiment/views.py:2297
 msgid "There is no changes to save."
 msgstr "Não há alterações para salvar."
 
-#: experiment/views.py:275
+#: experiment/views.py:273
 msgid "Experiment created successfully."
 msgstr "Experimento criado com sucesso."
 
-#: experiment/views.py:313
+#: experiment/views.py:311
 msgid "Experiment removed successfully."
 msgstr "Experimento excluído com sucesso."
 
-#: experiment/views.py:317
+#: experiment/views.py:315
 msgid ""
 "It was not possible to delete experiment, because there are groups connected."
 msgstr "Não foi possível excluir o experimento, pois há grupos associados"
 
-#: experiment/views.py:355
+#: experiment/views.py:353
 msgid "Experiment updated successfully."
 msgstr "Experimento atualizado com sucesso."
 
-#: experiment/views.py:389
+#: experiment/views.py:387
 msgid "Group included successfully."
 msgstr "Grupo incluído com sucesso."
 
-#: experiment/views.py:487
+#: experiment/views.py:485
 msgid "Group removed successfully."
 msgstr "Grupo excluído com sucesso."
 
-#: experiment/views.py:491
+#: experiment/views.py:489
 msgid "Impossible to delete group, because there are dependencies."
 msgstr "Não foi possível excluir o grupo, pois há dependências."
 
-#: experiment/views.py:533
+#: experiment/views.py:531
 msgid "Group updated successfully."
 msgstr "Grupo atualizado com sucesso."
 
-#: experiment/views.py:808
+#: experiment/views.py:806
 msgid "Participant deleted from experiment."
 msgstr "Participante deletado do experimento."
 
-#: experiment/views.py:810
+#: experiment/views.py:808
 msgid ""
 "It was not possible to delete participant, because there are answers or eeg "
-"data connected"
+"data associated"
 msgstr ""
 "Não foi possível excluir o participante, pois há respostas de questionários "
 "ou arquivos de eeg associados"
 
-#: experiment/views.py:839
+#: experiment/views.py:837
 msgid "Fill not available - Table of tokens was not started."
 msgstr "Preenchimento não disponível - Tabela de tokens não iniciada"
 
-#: experiment/views.py:843
+#: experiment/views.py:841
 msgid "Fill not available - Questionnaire is not activated."
 msgstr "Preenchimento não disponível - Questionário não está ativo"
 
-#: experiment/views.py:847
+#: experiment/views.py:845
 msgid "Fill not available - Questionnaire does not contain standard fields."
 msgstr ""
 "Preenchimento não disponível - Questionário não contém campos padronizados"
 
-#: experiment/views.py:856
+#: experiment/views.py:854
 msgid ""
 "Fail trying to generate token to answer questionnaire. Check if "
 "questionnaire is active."
@@ -1174,135 +1174,135 @@ msgstr ""
 "Falha ao gerar token para responder questionário. Verifique se o "
 "questionário está ativo"
 
-#: experiment/views.py:976
+#: experiment/views.py:974
 msgid "You will be redirected to questionnaire. Please wait."
 msgstr "Você será redirecionado para o questionário. Aguarde."
 
-#: experiment/views.py:998 experiment/views.py:1151
+#: experiment/views.py:996 experiment/views.py:1149
 msgid "Fill deleted successfully."
 msgstr "Preenchimento removido com sucesso"
 
-#: experiment/views.py:1000 experiment/views.py:1153
+#: experiment/views.py:998 experiment/views.py:1151
 msgid "Error trying to delete fill"
 msgstr "Erro ao deletar o preenchimento"
 
-#: experiment/views.py:1315
+#: experiment/views.py:1313
 msgid "EEG data collection created successfully."
 msgstr "Coleta de dados de EEG criada com sucesso."
 
-#: experiment/views.py:1356
+#: experiment/views.py:1354
 msgid "EEG data removed successfully."
 msgstr "Dados de EEG excluídos com sucesso."
 
-#: experiment/views.py:1394
+#: experiment/views.py:1392
 msgid "EEG data updated successfully."
 msgstr "Dados de EEG alterado com sucesso."
 
-#: experiment/views.py:1435
+#: experiment/views.py:1433
 msgid "Participant has already been inserted in this group."
 msgstr "Participante já foi incluído neste grupo"
 
-#: experiment/views.py:1481
+#: experiment/views.py:1479
 msgid "Consent term saved successfully."
 msgstr "Termo salvo com sucesso."
 
-#: experiment/views.py:1486
+#: experiment/views.py:1484
 msgid "There are not attachments to save"
 msgstr "Não existem anexos para salvar"
 
-#: experiment/views.py:1490
+#: experiment/views.py:1488
 msgid "Attachment deleted successfully."
 msgstr "Anexo removido com sucesso."
 
-#: experiment/views.py:1698 experiment/views.py:2533 experiment/views.py:2642
-#: experiment/views.py:2666
+#: experiment/views.py:1696 experiment/views.py:2531 experiment/views.py:2640
+#: experiment/views.py:2664
 msgid "Step included successfully."
 msgstr "Passo incluído com sucesso."
 
-#: experiment/views.py:1817
+#: experiment/views.py:1815
 msgid " years "
 msgstr " anos "
 
-#: experiment/views.py:1817
+#: experiment/views.py:1815
 msgid " year "
 msgstr " ano "
 
-#: experiment/views.py:1822
+#: experiment/views.py:1820
 msgid " months "
 msgstr " meses "
 
-#: experiment/views.py:1822
+#: experiment/views.py:1820
 msgid " month "
 msgstr " mês "
 
-#: experiment/views.py:1827
+#: experiment/views.py:1825
 msgid " weeks "
 msgstr " semanas "
 
-#: experiment/views.py:1827
+#: experiment/views.py:1825
 msgid " week "
 msgstr " semana "
 
-#: experiment/views.py:1832
+#: experiment/views.py:1830
 msgid " days "
 msgstr " dias "
 
-#: experiment/views.py:1832
+#: experiment/views.py:1830
 msgid " day "
 msgstr " dia "
 
-#: experiment/views.py:1837
+#: experiment/views.py:1835
 msgid " hours "
 msgstr " horas "
 
-#: experiment/views.py:1837
+#: experiment/views.py:1835
 msgid " hour "
 msgstr " hora "
 
-#: experiment/views.py:1842
+#: experiment/views.py:1840
 msgid " minutes "
 msgstr " minutos "
 
-#: experiment/views.py:1842
+#: experiment/views.py:1840
 msgid " minute "
 msgstr " minuto "
 
-#: experiment/views.py:1847
+#: experiment/views.py:1845
 msgid " seconds "
 msgstr " segundos "
 
-#: experiment/views.py:1847
+#: experiment/views.py:1845
 msgid " second "
 msgstr " segundo "
 
-#: experiment/views.py:1852
+#: experiment/views.py:1850
 msgid " miliseconds "
 msgstr " milesegundos "
 
-#: experiment/views.py:1852
+#: experiment/views.py:1850
 msgid " milisecond "
 msgstr " milesegundo "
 
-#: experiment/views.py:1867
+#: experiment/views.py:1865
 msgid " and "
 msgstr " e "
 
-#: experiment/views.py:2047 experiment/views.py:2297
+#: experiment/views.py:2045 experiment/views.py:2295
 msgid "Step use updated successfully."
 msgstr "Uso do passo atualizado com sucesso."
 
-#: experiment/views.py:2053 experiment/views.py:2306
+#: experiment/views.py:2051 experiment/views.py:2304
 msgid "Component deleted successfully."
 msgstr "Componente removido com sucesso."
 
-#: experiment/views.py:2265 experiment/views.py:2287
+#: experiment/views.py:2263 experiment/views.py:2285
 msgid "Step updated successfully."
 msgstr "Passo alterado com sucesso."
 
-#: experiment/views.py:2503
+#: experiment/views.py:2501
 msgid "Experimental protocol included successfully."
 msgstr "Protocolo experimental incluído com sucesso."
 
-#: experiment/views.py:2531 experiment/views.py:2664
+#: experiment/views.py:2529 experiment/views.py:2662
 msgid "Steps included successfully."
 msgstr "Passos incluídos com sucesso."

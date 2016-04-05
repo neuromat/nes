@@ -6,6 +6,7 @@ from django.test.client import RequestFactory
 from django.core.urlresolvers import reverse
 from django.core.files.uploadedfile import SimpleUploadedFile
 from django.shortcuts import get_object_or_404
+from django.utils.translation import ugettext_lazy as _
 
 from .models import Experiment, Group, Subject, \
     QuestionnaireResponse, SubjectOfGroup, ComponentConfiguration, ResearchProject, Keyword, StimulusType, \
@@ -1261,15 +1262,30 @@ class SubjectTest(TestCase):
         group.subjectofgroup_set.add(subject_group)
         experiment.save()
 
-        file_format = FileFormat.objects.create(name='Text file', extension='txt')
-        file = SimpleUploadedFile('experiment/eeg/eeg_metadata.txt', b'rb')
-
-        # screen to create a eeg data file
+        # screen to create an eeg data file
         response = self.client.get(reverse('subject_eeg_data_create',
                                            args=(group.id, subject_mock.id, component_configuration.id)))
         self.assertEqual(response.status_code, 200)
 
-        # create a eeg data file
+        # trying to create an eeg data file with a date greater than todays' date
+        file_format = FileFormat.objects.create(name='Text file', extension='txt')
+        file = SimpleUploadedFile('experiment/eeg/eeg_metadata.txt', b'rb')
+        self.data = {'date': datetime.date.today() + datetime.timedelta(days=1), 'action': 'save',
+                     'description': 'description of the file',
+                     'file_format': file_format.id, 'file': file}
+        response = self.client.post(reverse('subject_eeg_data_create',
+                                            args=(group.id, subject_mock.id, component_configuration.id)),
+                                    self.data)
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(EEGData.objects.all().count(), 0)
+        self.assertEqual(len(response.context['eeg_data_form'].errors), 1)
+        self.assertTrue('date'in response.context['eeg_data_form'].errors)
+        self.assertEqual(response.context['eeg_data_form'].errors['date'][0],
+                         _("Date cannot be greater than today's date."))
+
+        # create an eeg data file
+        file_format = FileFormat.objects.create(name='Text file', extension='txt')
+        file = SimpleUploadedFile('experiment/eeg/eeg_metadata.txt', b'rb')
         self.data = {'date': '29/08/2014', 'action': 'save',
                      'description': 'description of the file',
                      'file_format': file_format.id, 'file': file}
