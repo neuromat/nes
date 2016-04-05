@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2016-03-31 14:16-0300\n"
+"POT-Creation-Date: 2016-04-05 11:34-0300\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -18,21 +18,13 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=(n > 1);\n"
 
-#: export/export.py:96 export/tests.py:175
+#: export/export.py:101 export/tests.py:156
 msgid "Base path does not exist"
 msgstr "Diretório base não existe"
 
 #: export/forms.py:39
 msgid "Either one or both Per participant/Per questionnaire must be set."
 msgstr "Opção Por participante e/ou Por questionário deve ser preenchida. "
-
-#: export/lixo.py:1075 export/views.py:362 export/views.py:478
-msgid "Export was finished correctly"
-msgstr "Exportação foi finalizada com sucesso"
-
-#: export/lixo.py:1205
-msgid "Please, correct the highlighted fields."
-msgstr "Por favor, corrija os campos em destaque."
 
 #: export/templates/export/export_data.html:61
 msgid "General Information"
@@ -98,9 +90,16 @@ msgstr "Executar"
 msgid "Cancel"
 msgstr "Cancelar"
 
-#: export/views.py:241
+#: export/views.py:235
 msgid "Inconsistent data read from json file"
 msgstr "Dados inconsistentes do arquivo de entrada"
+
+#: export/views.py:356 export/views.py:476
+msgid "Export was finished correctly"
+msgstr "Exportação foi finalizada com sucesso"
+
+#~ msgid "Please, correct the highlighted fields."
+#~ msgstr "Por favor, corrija os campos em destaque."
 
 #~ msgid "Questionnaires"
 #~ msgstr "Questionários"
