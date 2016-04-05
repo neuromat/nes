@@ -25,7 +25,7 @@ TIME_UNITS = (
 
 def validate_date_questionnaire_response(value):
     if value > datetime.date.today():
-        raise ValidationError(_('Fill date cannot be greater than today.'))
+        raise ValidationError(_("Date cannot be greater than today's date."))
 
 
 class Subject(models.Model):
