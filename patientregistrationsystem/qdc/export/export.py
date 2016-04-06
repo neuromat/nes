@@ -244,6 +244,14 @@ class ExportExecution:
             fields = self.questionnaires_data[questionnaire_id]["fields"]
         return fields
 
+    def get_header_description(self, questionnaire_id, field):
+
+        index = self.questionnaires_data[questionnaire_id]["fields"].index(field)
+
+        header_description = self.questionnaires_data[questionnaire_id]["header"][index]
+
+        return header_description
+
     def include_in_per_participant_data(self, to_be_included_list, participant_id, questionnaire_id):
         """
         :param to_be_included_list: list with information to be included in include_data dict
@@ -342,6 +350,8 @@ class ExportExecution:
 
         questionnaire_explanation_fields_list = [header_explanation_fields]
 
+        fields_from_questions = []
+
         # for each field, verify the question description
         # get title
         questionnaire_title = questionnaire_lime_survey.get_survey_title(questionnaire_id)
@@ -354,6 +364,8 @@ class ExportExecution:
             properties = questionnaire_lime_survey.get_question_properties(question, language)
 
             if properties['title'] in fields_cleared:
+
+                fields_from_questions.append(properties['title'])
 
                 # cleaning the question field
                 properties['question'] = re.sub('{.*?}', '', re.sub('<.*?>', '', properties['question']))
@@ -392,6 +404,17 @@ class ExportExecution:
 
                     for option in options_list:
                         questionnaire_explanation_fields_list.append(question_to_list + sub_question + option)
+
+        if len(fields_cleared) != len(fields_from_questions):
+
+            for field in fields_cleared:
+
+                if field not in fields_from_questions:
+                    description = self.get_header_description( questionnaire_id, field)
+                    question_to_list = [smart_str(questionnaire_id), smart_str(questionnaire_title),
+                                        smart_str(field), smart_str(description)]
+
+                    questionnaire_explanation_fields_list.append(question_to_list)
 
         return questionnaire_explanation_fields_list
 
