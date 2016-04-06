@@ -504,3 +504,57 @@ class ExportExecution:
         questionnaire_lime_survey.release_session_key()
 
         return error_msg
+
+    def process_per_participant(self):
+
+        error_msg = ''
+
+        if self.get_input_data("export_per_participant"):
+
+            per_participant_directory = self.get_input_data("per_participant_directory")
+
+            error_msg, path_per_participant = create_directory(self.get_export_directory(), per_participant_directory)
+            if error_msg != "":
+                return error_msg
+
+            prefix_filename_participant = "Participant"
+            export_directory_base = path.join(self.get_input_data("base_directory"),
+                                              self.get_input_data("per_participant_directory"))
+            path_questionnaire = "Questionnaires"
+
+            for participant in self.get_per_participant_data():
+
+                path_participant = str(participant)
+                error_msg, participant_path = create_directory(path_per_participant, path_participant)
+                if error_msg != "":
+                    return error_msg
+
+                error_msg, questionnaire_path = create_directory(participant_path, path_questionnaire)
+                if error_msg != "":
+                    return error_msg
+
+                for questionnaire in self.get_per_participant_data(participant):
+                    # print(participant, questionnaire)
+
+                    export_filename = "%s_%s.csv" % (prefix_filename_participant, str(questionnaire))
+
+                    complete_filename = path.join(questionnaire_path, export_filename)
+
+                    header = self.get_header_questionnaire(questionnaire)
+
+                    per_participant_rows = [header]
+
+                    fields_rows = self.get_per_participant_data(participant, questionnaire)
+
+                    for fields in fields_rows:
+                        per_participant_rows.append(fields)
+
+                    save_to_csv(complete_filename, per_participant_rows)
+
+                    export_directory = path.join(export_directory_base, path_participant)
+                    export_directory = path.join(export_directory, path_questionnaire)
+
+                    self.files_to_zip_list.append([complete_filename, export_directory])
+
+        return error_msg
+

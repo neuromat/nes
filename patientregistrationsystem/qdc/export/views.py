@@ -17,7 +17,7 @@ from shutil import rmtree
 
 from .forms import ExportForm
 from .models import Export
-from .export import ExportExecution, perform_csv_response, create_directory, save_to_csv
+from .export import ExportExecution, perform_csv_response, create_directory
 
 from export.input_export import build_complete_export_structure
 
@@ -252,46 +252,10 @@ def export_create(request, export_id, input_filename, template_name="export/expo
             return render(request, template_name)
 
         # process per participant data
-
-        if export.get_input_data("export_per_participant"):
-            per_participant_directory = export.get_input_data("per_participant_directory")
-
-            error_msg, path_per_participant = create_directory(export.get_export_directory(), per_participant_directory)
-            if error_msg != "":
-                messages.error(request, error_msg)
-                return render(request, template_name)
-
-            prefix_filename_participant = "Participant"
-            export_directory_base = path.join(export.get_input_data("base_directory"),
-                                              export.get_input_data("per_participant_directory"))
-            path_questionnaire = "Questionnaires"
-
-            for participant in export.get_per_participant_data():
-
-                path_participant = str(participant)
-                error_msg, participant_path = create_directory(path_per_participant, path_participant)
-                if error_msg != "":
-                    messages.error(request, error_msg)
-                    return render(request, template_name)
-
-                error_msg, questionnaire_path = create_directory(participant_path, path_questionnaire)
-                if error_msg != "":
-                    messages.error(request, error_msg)
-                    return render(request, template_name)
-
-                for questionnaire in export.get_per_participant_data(participant):
-                    # print(participant, questionnaire)
-
-                    export_filename = "%s_%s.csv" % (prefix_filename_participant, str(questionnaire))
-
-                    complete_filename = path.join(questionnaire_path, export_filename)
-
-                    save_to_csv(complete_filename, export.get_per_participant_data(participant, questionnaire))
-
-                    export_directory = path.join(export_directory_base, path_participant)
-                    export_directory = path.join(export_directory, path_questionnaire)
-
-                    export.files_to_zip_list.append([complete_filename, export_directory])
+        error_msg = export.process_per_participant()
+        if error_msg != "":
+            messages.error(request, error_msg)
+            return render(request, template_name)
 
         # process participants
         participants_list = (export.get_per_participant_data().keys())
@@ -548,17 +512,17 @@ def export_view(request, template_name="export/export_data.html"):
 
         context = {
 
-                "limesurvey_available": limesurvey_available,
-                "export_form": export_form,
-                # "questionnaires_list": questionnaires_list_final,
-                "contacts": contacts,
-                "patient_fields": patient_fields,
-                "diagnosis_fields": diagnosis_fields,
-                "questionnaires_fields_list": questionnaires_fields_list,
-                "selected_ev_quest": selected_ev_quest,
-                "selected_participant": selected_participant,
-                "selected_diagnosis":selected_diagnosis,
-            }
+            "limesurvey_available": limesurvey_available,
+            "export_form": export_form,
+            # "questionnaires_list": questionnaires_list_final,
+            "contacts": contacts,
+            "patient_fields": patient_fields,
+            "diagnosis_fields": diagnosis_fields,
+            "questionnaires_fields_list": questionnaires_fields_list,
+            "selected_ev_quest": selected_ev_quest,
+            "selected_participant": selected_participant,
+            "selected_diagnosis": selected_diagnosis,
+        }
 
     # elif page == 2:
 
