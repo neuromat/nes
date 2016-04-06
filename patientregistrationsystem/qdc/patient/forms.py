@@ -17,7 +17,7 @@ class PatientForm(ModelForm):
         model = Patient
 
         fields = [
-            'name', 'cpf', 'origin', 'medical_record',  'date_birth', 'gender', 'rg', 'marital_status',
+            'name', 'cpf', 'origin', 'medical_record', 'date_birth', 'gender', 'rg', 'marital_status',
             'country', 'zipcode', 'street', 'address_number', 'address_complement', 'district', 'city', 'state', 'email'
         ]
 

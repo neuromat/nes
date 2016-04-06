@@ -66,12 +66,10 @@ class ABCSearchEngineTest(TestCase):
             self.assertGreaterEqual(questions_id, 1)
 
             # Inicia tabela de tokens
-            status = lime_survey.activate_tokens(sid)
-            self.assertEqual(status, 'OK')
+            self.assertEqual(lime_survey.activate_tokens(sid), 'OK')
 
             # Ativar survey
-            status = lime_survey.activate_survey(sid)
-            self.assertEqual(status, 'OK')
+            self.assertEqual(lime_survey.activate_survey(sid), 'OK')
 
             # Verifica se esta ativa
             survey_active = lime_survey.get_survey_properties(sid, 'active')
@@ -86,8 +84,7 @@ class ABCSearchEngineTest(TestCase):
 
         finally:
             # Deleta a survey gerada no Lime Survey
-            status = lime_survey.delete_survey(sid)
-            self.assertEqual(status, 'OK')
+            self.assertEqual(lime_survey.delete_survey(sid), 'OK')
 
     def test_find_all_questionnaires_method_returns_correct_result(self):
         questionnaires = Questionnaires()

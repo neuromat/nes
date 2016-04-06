@@ -1,12 +1,11 @@
 # coding=utf-8
 
+from abc import abstractmethod, ABC
 from base64 import b64decode, b64encode
 from jsonrpc_requests import Server, TransportError
 from django.conf import settings
-from abc import ABCMeta, abstractmethod, ABC
 
 
-# class ABCSearchEngine(metaclass=ABCMeta):
 class ABCSearchEngine(ABC):
     session_key = None
     server = None

@@ -1,11 +1,14 @@
 # -*- coding: utf-8 -*-
 from __future__ import unicode_literals
 
-from django.db import models, migrations
+import datetime
+
 import django.db.models.deletion
 import django.core.validators
+
+from django.db import models, migrations
 from django.conf import settings
-import datetime
+
 import experiment.models
 
 
@@ -167,9 +170,9 @@ class Migration(migrations.Migration):
                 ('owner', models.ForeignKey(null=True, blank=True, to=settings.AUTH_USER_MODEL)),
             ],
             options={
-                'permissions': (('view_researchproject', 'Can view research project'),
-                                ('change_researchproject_from_others', 'Can change research project created by others')
-                                ),
+                'permissions':
+                    (('view_researchproject', 'Can view research project'),
+                     ('change_researchproject_from_others', 'Can change research project created by others')),
             },
         ),
         migrations.CreateModel(

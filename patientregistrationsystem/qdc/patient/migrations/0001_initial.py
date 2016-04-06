@@ -1,11 +1,13 @@
 # -*- coding: utf-8 -*-
 from __future__ import unicode_literals
 
-from django.db import models, migrations
 import datetime
 import django.db.models.deletion
-import patient.models
+
+from django.db import models, migrations
 from django.conf import settings
+
+import patient.models
 
 
 class Migration(migrations.Migration):

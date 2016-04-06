@@ -67,7 +67,7 @@ class FileForm(ModelForm):
 
 class ComponentForm(ModelForm):
     # TODO Replace "--------" by "Escolha unidade". The old code does not work because ModelChoiceField requires a
-    # TODO queryset.
+    # queryset.
     # This is needed because we want an empty_label different from "--------".
     # duration_unit = ModelChoiceField(
     #     required=False,
@@ -114,7 +114,7 @@ class ComponentConfigurationForm(ModelForm):
                                        widget=RadioSelect(attrs={'id': 'id_random_position'}))
 
     # TODO Replace "--------" by "Escolha unidade". The old code does not work because ModelChoiceField requires a
-    # TODO queryset.
+    # queryset.
     # This is needed because we want an empty_label different from "--------".
     # interval_between_repetitions_unit = ModelChoiceField(
     #     required=False,
