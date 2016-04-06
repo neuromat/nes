@@ -1,9 +1,10 @@
 # -*- coding: utf-8 -*-
-from django.http import HttpResponse
 import urllib.request
 import urllib.error
 import urllib.parse
 import re
+
+from django.http import HttpResponse
 
 
 # Podem ser usados outros webservices como o http://ceplivre.pc2consultoria.com/index.php?module=cep&cep=%s&formato=xml

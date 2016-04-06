@@ -1,5 +1,5 @@
 # coding=utf-8
-from django.forms import ModelForm, Form, TextInput, CharField
+from django.forms import ModelForm, TextInput, CharField
 
 from .models import Survey
 

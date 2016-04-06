@@ -5,8 +5,6 @@ when you run "manage.py test".
 Replace this with more appropriate tests for your application.
 """
 
-from .views import addressGet
-
 from django.test import TestCase
 
 

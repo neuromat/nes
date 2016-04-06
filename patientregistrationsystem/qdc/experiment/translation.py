@@ -1,5 +1,5 @@
 from modeltranslation.translator import translator, TranslationOptions
-from experiment.models import StimulusType, FileFormat
+from experiment.models import StimulusType
 
 
 class StimulusTypeTranslationOptions(TranslationOptions):

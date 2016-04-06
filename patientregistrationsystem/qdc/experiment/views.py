@@ -4,6 +4,8 @@ import datetime
 
 from functools import partial
 
+from operator import itemgetter
+
 from django.conf import settings
 from django.contrib import messages
 from django.contrib.auth.decorators import login_required, permission_required
@@ -27,8 +29,6 @@ from patient.models import Patient, QuestionnaireResponse as PatientQuestionnair
 from survey.abc_search_engine import Questionnaires
 from survey.models import Survey
 from survey.views import get_questionnaire_responses, check_limesurvey_access, recursively_create_list_of_steps
-
-from operator import itemgetter
 
 permission_required = partial(permission_required, raise_exception=True)
 
@@ -718,7 +718,7 @@ def subjects(request, group_id, template_name="experiment/subjects.html"):
                 # This is a shortcut that allows to avid the delay of the connection to LimeSurvey.
                 if (questionnaire_configuration.number_of_repetitions is None and subject_responses.count() > 0) or \
                         (questionnaire_configuration.number_of_repetitions is not None and
-                            subject_responses.count() >= questionnaire_configuration.number_of_repetitions):
+                         subject_responses.count() >= questionnaire_configuration.number_of_repetitions):
 
                     # Count the number of completed responses
                     amount_of_completed_responses = 0
@@ -744,7 +744,7 @@ def subjects(request, group_id, template_name="experiment/subjects.html"):
                     if (questionnaire_configuration.number_of_repetitions is None and
                             amount_of_completed_responses > 0) or \
                             (questionnaire_configuration.number_of_repetitions is not None and
-                                amount_of_completed_responses >= questionnaire_configuration.number_of_repetitions):
+                             amount_of_completed_responses >= questionnaire_configuration.number_of_repetitions):
                         number_of_questionnaires_filled += 1
 
             percentage_of_questionnaires = 0
@@ -782,8 +782,7 @@ def subjects(request, group_id, template_name="experiment/subjects.html"):
                  'consent': subject_of_group.consent_form,
                  'number_of_eeg_data_files_uploaded': number_of_eeg_data_files_uploaded,
                  'total_of_eeg_data_files': len(list_of_eeg_configuration),
-                 'percentage_of_eeg_data_files_uploaded': int(percentage_of_eeg_data_files_uploaded)
-                 },
+                 'percentage_of_eeg_data_files_uploaded': int(percentage_of_eeg_data_files_uploaded)},
             )
     else:
         for subject_of_group in subject_list:
@@ -2165,9 +2164,9 @@ def create_configuration_list(block):
         # Group if same component or if both are random_position
         while i < len(configuration_list) and \
                 ((configuration_list[i-1].component == configuration_list[i].component and
-                    configuration_list[i-1].random_position == configuration_list[i].random_position) or
-                    (configuration_list[i-1].random_position == configuration_list[i].random_position and
-                        configuration_list[i].random_position is True)):
+                  configuration_list[i-1].random_position == configuration_list[i].random_position) or
+                 (configuration_list[i-1].random_position == configuration_list[i].random_position and
+                  configuration_list[i].random_position is True)):
             accordion.append(configuration_list[i])
             i += 1
 

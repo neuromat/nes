@@ -514,8 +514,7 @@ def patient_view_questionnaires(request, patient, context, is_update):
                     'group_title': subject_of_group.group.title,
                     'questionnaire_title': surveys.get_survey_title(limesurvey_id),
                     'questionnaire_response': questionnaire_response,
-                    'completed': None if response_result is None
-                    else response_result != "N" and response_result != ""
+                    'completed': None if response_result is None else response_result != "N" and response_result != ""
                 }
             )
 

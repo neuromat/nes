@@ -1,9 +1,10 @@
 # -*- coding: utf-8 -*-
 from __future__ import unicode_literals
 
+from os.path import join
+
 from django.db import migrations
 from django.conf import settings
-from os.path import join
 from update_english_data import translate_fixtures_into_english, update_translated_data
 
 

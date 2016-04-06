@@ -102,6 +102,9 @@ class ObjectsFactory(object):
 
 
 class ExperimentalProtocolTest(TestCase):
+
+    data = {}
+
     def setUp(self):
 
         logged, self.user, self.factory = ObjectsFactory.system_authentication(self)
@@ -464,6 +467,9 @@ class ExperimentalProtocolTest(TestCase):
 
 
 class GroupTest(TestCase):
+
+    data = {}
+
     def setUp(self):
         logged, self.user, self.factory = ObjectsFactory.system_authentication(self)
         self.assertEqual(logged, True)
@@ -583,6 +589,8 @@ class ClassificationOfDiseasesTest(TestCase):
 
 
 class ExperimentTest(TestCase):
+
+    data = {}
 
     def setUp(self):
         logged, self.user, self.factory = ObjectsFactory.system_authentication(self)
@@ -862,6 +870,7 @@ class ListOfQuestionnaireFromExperimentalProtocolOfAGroupTest(TestCase):
 class SubjectTest(TestCase):
 
     util = UtilTests()
+    data = {}
 
     def setUp(self):
         logged, self.user, self.factory = ObjectsFactory.system_authentication(self)
@@ -1392,6 +1401,9 @@ class SubjectTest(TestCase):
 
 
 class ResearchProjectTest(TestCase):
+
+    data = {}
+
     def setUp(self):
         logged, self.user, self.factory = ObjectsFactory.system_authentication(self)
         self.assertEqual(logged, True)

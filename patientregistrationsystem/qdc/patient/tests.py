@@ -4,6 +4,9 @@ import os
 
 from datetime import date, datetime
 
+from xml.etree.ElementTree import XML
+from xml.etree import ElementTree
+
 from django.conf import settings
 from django.contrib.messages.api import MessageFailure
 from django.contrib.messages.storage.fallback import FallbackStorage
@@ -34,9 +37,6 @@ from survey.abc_search_engine import Questionnaires
 from survey.models import Survey
 
 from update_english_data import translate_fixtures_into_english, update_translated_data
-
-from xml.etree.ElementTree import XML
-from xml.etree import ElementTree
 
 # Constants para testes de User
 USER_EDIT = 'user_edit'
@@ -264,8 +264,7 @@ class PatientFormValidation(TestCase):
                      'cpf': '374.276.738-08',
                      'gender': str(self.gender.id),
                      'date_birth': '01/02/1995',
-                     'email': 'email@email.com'
-                     }
+                     'email': 'email@email.com'}
 
     def test_patient_invalid_cpf(self):
         """
@@ -884,8 +883,8 @@ class MedicalRecordFormValidation(TestCase):
     def test_medical_record_view(self):
 
         patient_mock = self.util.create_patient_mock(user=self.user)
-        cid10_mock = self.util.create_cid10_mock()
-        medical_record_mock = self.util.create_medical_record_mock(self.user, patient_mock)
+        self.util.create_cid10_mock()
+        self.util.create_medical_record_mock(self.user, patient_mock)
 
         response = self.client.get(reverse(PATIENT_VIEW, args=[patient_mock.pk]) + "?currentTab=3")
         self.assertEqual(response.status_code, 200)
@@ -894,7 +893,7 @@ class MedicalRecordFormValidation(TestCase):
     def test_medical_record_update(self):
 
         patient_mock = self.util.create_patient_mock(user=self.user)
-        medical_record_mock = self.util.create_medical_record_mock(self.user, patient_mock)
+        self.util.create_medical_record_mock(self.user, patient_mock)
 
         response = self.client.get(reverse(PATIENT_EDIT, args=[patient_mock.pk]) + "?currentTab=3")
         self.assertEqual(response.status_code, 200)

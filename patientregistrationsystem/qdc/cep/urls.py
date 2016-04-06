@@ -7,5 +7,4 @@ except ImportError:  # deprecated since Django 1.4
 from .views import addressGet
 
 urlpatterns = patterns('',
-                       url(r'^(?P<zipcode>[\w-]+)/$', addressGet, name='address'),
-                       )
+                       url(r'^(?P<zipcode>[\w-]+)/$', addressGet, name='address'),)

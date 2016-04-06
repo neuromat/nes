@@ -557,7 +557,7 @@ def export_view(request, template_name="export/export_data.html"):
                 "questionnaires_fields_list": questionnaires_fields_list,
                 "selected_ev_quest": selected_ev_quest,
                 "selected_participant": selected_participant,
-                "selected_diagnosis":selected_diagnosis,
+                "selected_diagnosis": selected_diagnosis,
             }
 
     # elif page == 2:
