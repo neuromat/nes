@@ -34,6 +34,8 @@ urlpatterns = patterns(
     # exam (create, read, update, delete)
     url(r'^(?P<patient_id>\d+)/medical_record/edit/(?P<record_id>\d+)/diagnosis/(?P<diagnosis_id>\d+)/exam/new/$',
         'exam_create', name='exam_create'),
+    url(r'^(?P<patient_id>\d+)/medical_record/(?P<record_id>\d+)/diagnosis/(?P<diagnosis_id>\d+)/exam/new/$',
+        'exam_create', name='exam_create'),
     url(r'^(?P<patient_id>\d+)/medical_record/(?P<record_id>\d+)/exam/(?P<exam_id>\d+)/$', 'exam_view',
         name='exam_view'),
     url(r'^(?P<patient_id>\d+)/medical_record/edit/(?P<record_id>\d+)/exam/edit/(?P<exam_id>\d+)/$', 'exam_edit',
