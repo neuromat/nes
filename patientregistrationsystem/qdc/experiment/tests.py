@@ -193,11 +193,9 @@ class ExperimentalProtocolTest(TestCase):
 
         # Conecta no Lime Survey
         lime_survey = Questionnaires()
-        # Checa se conseguiu conectar no lime Survey com as credenciais fornecidas no settings.py
-        if isinstance(lime_survey.session_key, dict):
-            if 'status' in lime_survey.session_key:
-                self.assertNotEqual(lime_survey.session_key['status'], 'Invalid user name or password')
-                print('Failed to connect Lime Survey %s' % lime_survey.session_key['status'])
+
+        # Checa se conseguiu conectar no limeSurvey com as credenciais fornecidas no settings.py
+        self.assertIsNotNone(lime_survey.session_key, 'Failed to connect LimeSurvey')
 
         # Cria uma survey no Lime Survey
         survey_id = lime_survey.add_survey(9999, 'Questionario de teste - DjangoTests', 'en', 'G')
@@ -691,11 +689,9 @@ class ListOfQuestionnaireFromExperimentalProtocolOfAGroupTest(TestCase):
 
         # Conecta no Lime Survey
         self.lime_survey = Questionnaires()
+
         # Checa se conseguiu conectar no lime Survey com as credenciais fornecidas no settings.py
-        if isinstance(self.lime_survey.session_key, dict):
-            if 'status' in self.lime_survey.session_key:
-                self.assertNotEqual(self.lime_survey.session_key['status'], 'Invalid user name or password')
-                print('Failed to connect Lime Survey %s' % self.lime_survey.session_key['status'])
+        self.assertIsNotNone(self.lime_survey.session_key, 'Failed to connect LimeSurvey')
 
     def test_create_questionnaire_for_a_group(self):
         """Testa a criacao de um questionario para um dado grupo"""
@@ -880,10 +876,7 @@ class SubjectTest(TestCase):
         self.lime_survey = Questionnaires()
 
         # Checa se conseguiu conectar no lime Survey com as credenciais fornecidas no settings.py
-        if isinstance(self.lime_survey.session_key, dict):
-            if 'status' in self.lime_survey.session_key:
-                self.assertNotEqual(self.lime_survey.session_key['status'], 'Invalid user name or password')
-                print('Failed to connect Lime Survey %s' % self.lime_survey.session_key['status'])
+        self.assertIsNotNone(self.lime_survey.session_key, 'Failed to connect LimeSurvey')
 
     def test_subject_view_and_search(self):
         """
