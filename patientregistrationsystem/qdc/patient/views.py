@@ -788,6 +788,10 @@ def diagnosis_delete(request, patient_id, diagnosis_id):
 def exam_create(request, patient_id, record_id, diagnosis_id, template_name="patient/exams.html"):
     form = ComplementaryExamForm(request.POST or None)
 
+    status = ""
+    if 'status' in request.GET:
+        status = request.GET['status']
+
     diagnosis = get_object_or_404(Diagnosis, pk=diagnosis_id)
     current_patient = get_object_or_404(Patient, pk=patient_id)
 
@@ -814,7 +818,7 @@ def exam_create(request, patient_id, record_id, diagnosis_id, template_name="pat
                 else:
                     redirect_url = reverse("medical_record_edit", args=(patient_id, record_id, ))
 
-                return HttpResponseRedirect(redirect_url + "?status=edit")
+                return HttpResponseRedirect(redirect_url + "?status=" + status)
         else:
             messages.error(request, _('It is not possible to save exam without files.'))
 
@@ -829,7 +833,7 @@ def exam_create(request, patient_id, record_id, diagnosis_id, template_name="pat
                    'record_id': record_id,
                    'name_patient': current_patient.name,
                    'file_form': file_form,
-                   'status': 'edit'}, )
+                   'status': status}, )
 
 
 @login_required
