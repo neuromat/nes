@@ -4,7 +4,7 @@ from django.shortcuts import render
 from django.conf import settings
 from django.contrib.auth.decorators import login_required
 from django.contrib import messages
-from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
+# from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
 from django.http import HttpResponse
 from django.utils.encoding import smart_str
 from django.utils.translation import ugettext as _
@@ -69,6 +69,14 @@ diagnosis_fields = [
     {"field": "medicalrecorddata__diagnosis__classification_of_diseases__description",
      "header": 'classification_of_diseases_description'},
     {"field": "medicalrecorddata__diagnosis__classification_of_diseases_id", "header": 'classification_of_diseases_id'},
+]
+
+patient_fields_inclusion = [
+    ["id", "participation_code"],
+]
+
+diagnosis_fields_inclusion = [
+    ["medicalrecorddata__patient__id", 'participation_code'],
 ]
 
 '''
@@ -185,6 +193,21 @@ def update_export_instance(input_file, output_export, export_instance):
     export_instance.input_file = input_file
     export_instance.output_export = output_export
     export_instance.save()
+
+
+def update_participants_list(participants_list):
+    # include participation_code
+
+    if participants_list:
+        for field, header in patient_fields_inclusion:
+            participants_list.append([field, header])
+
+
+def update_diagnosis_list(diagnosis_list):
+
+    if diagnosis_list:
+        for field, header in diagnosis_fields_inclusion:
+            diagnosis_list.append([field, header])
 
 
 # @login_required
@@ -345,75 +368,85 @@ def export_view(request, template_name="export/export_data.html"):
     context = {}
 
     # test with pagination
-    a = [{"b": "2", "c": "3"}, {"d": "7", "e": "8"}]
-    b = [1, 2, 3, 4, 5]
-    c = [7, 9, (4, 3, 2)]
+    # a = [{"b": "2", "c": "3"}, {"d": "7", "e": "8"}]
+    # b = [1, 2, 3, 4, 5]
+    # c = [7, 9, (4, 3, 2)]
+    #
+    # contact_list = [a, b, c]
+    #
+    # paginator = Paginator(contact_list, 1)  # Show 1 info per page
+    #
+    # page = request.GET.get('page')
+    # try:
+    #     contacts = paginator.page(page)
+    # except PageNotAnInteger:
+    #     # If page is not an integer, deliver first page.
+    #     page = 1
+    #     contacts = paginator.page(1)
+    # except EmptyPage:
+    #     # If page is out of range (e.g. 9999), deliver last page of results.
+    #     page = paginator.num_pages
+    #     contacts = paginator.page(paginator.num_pages)
+    # page = 1
+    #
+    # if page == 1:
 
-    contact_list = [a, b, c]
+    selected_ev_quest = []
+    selected_participant = []
+    selected_diagnosis = []
 
-    paginator = Paginator(contact_list, 1)  # Show 1 info per page
+    if request.method == "POST":
 
-    page = request.GET.get('page')
-    try:
-        contacts = paginator.page(page)
-    except PageNotAnInteger:
-        # If page is not an integer, deliver first page.
-        page = 1
-        contacts = paginator.page(1)
-    except EmptyPage:
-        # If page is out of range (e.g. 9999), deliver last page of results.
-        page = paginator.num_pages
-        contacts = paginator.page(paginator.num_pages)
+        questionnaires_selected_list = request.POST.getlist('questionnaire_selected')
 
-    if page == 1:
+        questionnaires_list = []
 
-        selected_ev_quest = []
-        selected_participant = []
-        selected_diagnosis = []
+        previous_questionnaire_id = 0
+        output_list = []
+        for questionnaire in questionnaires_selected_list:
+            sid, title, field, header = questionnaire.split("*")
 
-        if request.method == "POST":
+            sid = int(sid)    # transform to integer
+            if sid != previous_questionnaire_id:
+                if previous_questionnaire_id != 0:
+                    output_list = []
 
-            questionnaires_selected_list = request.POST.getlist('questionnaire_selected')
+                questionnaires_list.append([sid, title, output_list])
 
-            questionnaires_list = []
+                previous_questionnaire_id = sid
 
-            previous_questionnaire_id = 0
-            output_list = []
-            for questionnaire in questionnaires_selected_list:
-                sid, title, field, header = questionnaire.split("*")
+            output_list.append((field, header))
 
-                sid = int(sid)    # transform to integer
-                if sid != previous_questionnaire_id:
-                    if previous_questionnaire_id != 0:
-                        output_list = []
+        # get participants list
+        participant_selected_list = request.POST.getlist('patient_selected')
 
-                    questionnaires_list.append([sid, title, output_list])
+        participants_list = []
 
-                    previous_questionnaire_id = sid
+        for participant in participant_selected_list:
+            participants_list.append(participant.split("*"))
 
-                output_list.append((field, header))
+        # get diagnosis list
+        diagnosis_selected_list = request.POST.getlist('diagnosis_selected')
 
-            # get participants list
-            participant_selected_list = request.POST.getlist('patient_selected')
+        diagnosis_list = []
 
-            participants_list = []
+        for diagnosis in diagnosis_selected_list:
+            diagnosis_list.append(diagnosis.split("*"))
 
-            for participant in participant_selected_list:
-                participants_list.append(participant.split("*"))
+        selected_data_available = (len(questionnaires_selected_list) or
+                                   len(participant_selected_list) or len(diagnosis_selected_list))
 
-            # get diagnosis list
-            diagnosis_selected_list = request.POST.getlist('diagnosis_selected')
-
-            diagnosis_list = []
-
-            for diagnosis in diagnosis_selected_list:
-                diagnosis_list.append(diagnosis.split("*"))
+        if selected_data_available:
 
             if export_form.is_valid():
                 print("valid data")
 
                 per_participant = export_form.cleaned_data['per_participant']
                 per_questionnaire = export_form.cleaned_data['per_questionnaire']
+
+                # insert participation_code
+                update_participants_list(participants_list)
+                update_diagnosis_list(diagnosis_list)
 
                 # output_filename =
                 # "/Users/sueli/PycharmProjects/nes/patientregistrationsystem/qdc/export/json_export_output2.json"
@@ -463,66 +496,68 @@ def export_view(request, template_name="export/export_data.html"):
 
                 for diagnosis in diagnosis_list:
                     selected_diagnosis.append(diagnosis[0])
+        else:
+            messages.error(request, _("No data was select. Export data was not generated."))
 
-        # else:
-        # page 1 - list of questionnaires
-        surveys = Questionnaires()
-        limesurvey_available = check_limesurvey_access(request, surveys)
+    # else:
+    # page 1 - list of questionnaires
+    surveys = Questionnaires()
+    limesurvey_available = check_limesurvey_access(request, surveys)
 
-        questionnaires_list = []
+    questionnaires_list = []
 
-        if limesurvey_available:
-            questionnaires_list = surveys.find_all_active_questionnaires()
+    if limesurvey_available:
+        questionnaires_list = surveys.find_all_active_questionnaires()
 
-        surveys.release_session_key()
+    surveys.release_session_key()
 
-        questionnaires_list_final = []
+    questionnaires_list_final = []
 
-        # removing surveys that are not entrance evaluation
-        # entrance_evaluation_questionnaires = QuestionnaireResponse.objects.all()
-        entrance_evaluation_questionnaire_ids_list = set(QuestionnaireResponse.objects.values_list('survey',
-                                                                                                   flat=True))
+    # removing surveys that are not entrance evaluation
+    # entrance_evaluation_questionnaires = QuestionnaireResponse.objects.all()
+    entrance_evaluation_questionnaire_ids_list = set(QuestionnaireResponse.objects.values_list('survey',
+                                                                                               flat=True))
 
-        # ev_questionnaire_ids_list = entrance_evaluation_questionnaires.values_list("survey")
-        surveys_with_ev_list = Survey.objects.filter(id__in=entrance_evaluation_questionnaire_ids_list)
+    # ev_questionnaire_ids_list = entrance_evaluation_questionnaires.values_list("survey")
+    surveys_with_ev_list = Survey.objects.filter(id__in=entrance_evaluation_questionnaire_ids_list)
 
-        for survey in surveys_with_ev_list:
-            for questionnaire in questionnaires_list:
-                if survey.lime_survey_id == questionnaire['sid']:
-                    questionnaires_list_final.append(questionnaire)
-                    break
+    for survey in surveys_with_ev_list:
+        for questionnaire in questionnaires_list:
+            if survey.lime_survey_id == questionnaire['sid']:
+                questionnaires_list_final.append(questionnaire)
+                break
 
-        # page 2 fields
+    # page 2 fields
 
-        # entrance evaluation questionnarie fields
-        questionnaires_fields_list = get_questionnaire_fields(questionnaires_list_final)
+    # entrance evaluation questionnarie fields
+    questionnaires_fields_list = get_questionnaire_fields(questionnaires_list_final)
 
-        # for field in questionnaires_fields_list:
-        #     for questionnaire in questionnaires_list_final:
-        #         if field["sid"] == questionnaire['sid']:
-        #             field["title"] = questionnaire["surveyls_title"]
-        #             break
+    # for field in questionnaires_fields_list:
+    #     for questionnaire in questionnaires_list_final:
+    #         if field["sid"] == questionnaire['sid']:
+    #             field["title"] = questionnaire["surveyls_title"]
+    #             break
 
-        # patient fields
-        # patient_fields = []
-        #
-        # "output_list":{}
+    # patient fields
+    # patient_fields = []
+    #
+    # "output_list":{}
 
-        # diagnosis fields
+    # diagnosis fields
 
-        context = {
+    context = {
 
-            "limesurvey_available": limesurvey_available,
-            "export_form": export_form,
-            # "questionnaires_list": questionnaires_list_final,
-            "contacts": contacts,
-            "patient_fields": patient_fields,
-            "diagnosis_fields": diagnosis_fields,
-            "questionnaires_fields_list": questionnaires_fields_list,
-            "selected_ev_quest": selected_ev_quest,
-            "selected_participant": selected_participant,
-            "selected_diagnosis": selected_diagnosis,
-        }
+        "limesurvey_available": limesurvey_available,
+        "export_form": export_form,
+        # "questionnaires_list": questionnaires_list_final,
+        # "contacts": contacts,
+        "patient_fields": patient_fields,
+        "diagnosis_fields": diagnosis_fields,
+        "questionnaires_fields_list": questionnaires_fields_list,
+        "selected_ev_quest": selected_ev_quest,
+        "selected_participant": selected_participant,
+        "selected_diagnosis": selected_diagnosis,
+    }
 
     # elif page == 2:
 

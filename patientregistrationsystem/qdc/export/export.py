@@ -10,6 +10,8 @@ from django.conf import settings
 from django.core.files import File
 from django.utils.encoding import smart_str
 from django.utils.translation import ugettext as _
+from django.db.models import Model
+from django.apps import apps
 
 from io import StringIO
 
@@ -51,6 +53,11 @@ directory_structure = [
      }
 ]
 
+# valid for all questionnaires (no distinction amongst questionnaires)
+included_questionnaire_fields = [
+    {"field": "participation_code", "header": "participation_code", "model": "patient.patient", "model_field": "id" },
+]
+
 
 def is_number(s):
     try:
@@ -58,6 +65,10 @@ def is_number(s):
         return True
     except ValueError:
         return False
+
+
+def to_number(value):
+    return int(float(value))
 
 
 def save_to_csv(complete_filename, rows_to_be_saved):
@@ -112,7 +123,7 @@ def is_patient_active(subject_id):
     response = False
 
     if is_number(subject_id):
-        patient_id = int(float(subject_id))
+        patient_id = to_number(subject_id)
 
         if QuestionnaireResponse.objects.filter(patient_id=patient_id).exists():
             if not Patient.objects.filter(pk=patient_id)[0].removed:
@@ -211,6 +222,7 @@ class ExportExecution:
         return ""
 
     def set_questionnaire_header_and_fields(self, questionnaire):
+
         headers = []
         fields = []
 
@@ -227,6 +239,13 @@ class ExportExecution:
         self.questionnaires_data[questionnaire_id]["fields"] = fields
 
         return headers, fields
+
+    def append_questionnaire_header_and_field(self, questionnaire_id, header, fields):
+        # only one header, field instance
+        for field in fields:
+            if field not in self.questionnaires_data[questionnaire_id]["fields"]:
+                self.questionnaires_data[questionnaire_id]["header"].append(header[fields.index(field)])
+                self.questionnaires_data[questionnaire_id]["fields"].append(field)
 
     def get_header_questionnaire(self, questionnaire_id):
         # headers_questionnaire format: dict {questinnaire_id: {header:[header]}}
@@ -284,6 +303,34 @@ class ExportExecution:
 
         return self.per_participant_data
 
+    def update_questionnaire_rules(self, questionnaire_id):
+
+        header = []
+        fields = []
+
+        for row in included_questionnaire_fields:
+            header.append(smart_str(row["header"]))
+            fields.append(smart_str(row["field"]))
+
+        self.append_questionnaire_header_and_field(questionnaire_id, header, fields)
+
+    def transform_questionnaire_data(self, subject_id, fields):
+
+        for row in included_questionnaire_fields:
+
+            model_db = apps.get_model(row["model"])
+
+            model_data = model_db.objects.all()
+
+            if model_data.filter(id=subject_id).exists():
+                value = model_data.filter(id=subject_id).values_list(row["model_field"])[0][0]
+            else:
+                value = ''
+
+            fields.append(smart_str(value))
+
+        return fields
+
     def read_questionnaire_from_lime_survey(self, questionnaire_id, token, language, questionnaire_lime_survey, fields):
         """
         :param questionnaire_id:
@@ -306,7 +353,7 @@ class ExportExecution:
         # fill_list[1:len(fill_list)] -> data
 
         data_rows = []
-        header = []
+        header_transformed = []
 
         if "subjectid" in fill_list[0]:
 
@@ -318,20 +365,19 @@ class ExportExecution:
                 if field in fill_list[0]:
                     subscripts.append(fill_list[0].index(field))
 
-            header = [smart_str(fill_list[0][index]) for index in subscripts]
+            # header = [smart_str(fill_list[0][index]) for index in subscripts]
+            self.update_questionnaire_rules(questionnaire_id)
 
             # do not consider first line, because it is header
             for line in fill_list[1:len(fill_list) - 1]:
                 if is_patient_active(line[subject_id]):
-                    # data_line = []
-                    # for index in subscripts:
-                    #     data_line.append([smart_str(line[index])])
-                    #
                     # data_rows.append([data_line])
                     # print(data_rows)
-                    data_rows.append([smart_str(line[index]) for index in subscripts])
+                    fields = [smart_str(line[index]) for index in subscripts]
+                    transformed_fields = self.transform_questionnaire_data(to_number(line[subject_id]), fields)
+                    data_rows.append(transformed_fields)
 
-        return header, data_rows
+        return data_rows
 
     def create_questionnaire_explanation_fields_file(self, questionnaire_id, language,
                                                      questionnaire_lime_survey, fields):
@@ -431,7 +477,8 @@ class ExportExecution:
 
         headers, fields = self.set_questionnaire_header_and_fields(questionnaire)
 
-        export_rows = [headers]
+        export_rows = []
+        header = []
 
         # verify if Lime Survey is running
         limesurvey_available = is_limesurvey_available(questionnaire_lime_survey)
@@ -452,7 +499,7 @@ class ExportExecution:
                     token = questionnaire_lime_survey.get_participant_properties(
                         questionnaire_response.survey.lime_survey_id, questionnaire_response.token_id, "token")
 
-                    header, data_rows = self.read_questionnaire_from_lime_survey(
+                    data_rows = self.read_questionnaire_from_lime_survey(
                         questionnaire_response.survey.lime_survey_id,
                         token, language,
                         questionnaire_lime_survey,
@@ -465,6 +512,8 @@ class ExportExecution:
                                                              questionnaire_response.patient_id,
                                                              questionnaire_id)
 
+        header = self.get_header_questionnaire(questionnaire_id)
+        export_rows.insert(0, header)
         return export_rows
 
     def process_per_questionnaire(self):
@@ -493,12 +542,6 @@ class ExportExecution:
             # per_participant_data is updated by define_questionnaire method
             fields_description = self.define_questionnaire(questionnaire, questionnaire_lime_survey)
 
-            fields = self.get_questionnaire_fields(questionnaire_id)
-
-            questionnaire_fields = self.create_questionnaire_explanation_fields_file(questionnaire_id, language,
-                                                                                     questionnaire_lime_survey,
-                                                                                     fields)
-
             # create directory for questionnaire: <per_questionnaire>/<questionnaire_id>
             if self.get_input_data("export_per_questionnaire"):
                 path_questionnaire = str(questionnaire_id)
@@ -513,6 +556,13 @@ class ExportExecution:
                 complete_filename = path.join(export_path, export_filename)
 
                 save_to_csv(complete_filename, fields_description)
+
+                # create questionnaire fields file ("fields.csv")
+                fields = self.get_questionnaire_fields(questionnaire_id)
+
+                questionnaire_fields = self.create_questionnaire_explanation_fields_file(questionnaire_id, language,
+                                                                                         questionnaire_lime_survey,
+                                                                                         fields)
 
                 self.files_to_zip_list.append([complete_filename, export_directory])
 
