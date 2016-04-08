@@ -1,7 +1,7 @@
 # -*- coding: UTF-8 -*-
 
-
 import datetime
+import random
 
 from django.db import models
 from django.core.exceptions import ValidationError
@@ -10,7 +10,8 @@ from django.contrib.auth.models import User
 from simple_history.models import HistoricalRecords
 
 from survey.models import Survey
-from patient.validation import CPF
+
+from .validation import CPF
 
 
 def validate_date_questionnaire_response(value):
@@ -97,6 +98,8 @@ class AlcoholPeriod(models.Model):
 
 
 class Patient(models.Model):
+    code = models.CharField(max_length=10, null=False, unique=True)
+
     name = models.CharField(max_length=50)
     cpf = models.CharField(null=True, blank=True, max_length=15, unique=True, validators=[validate_cpf])
     origin = models.CharField(max_length=50, null=True, blank=True)
@@ -142,6 +145,18 @@ class Patient(models.Model):
     def __str__(self):
         return \
             self.name
+
+    def save(self, *args, **kwargs):
+        if not self.pk:
+            self.code = self.create_random_patient_code()
+        super(Patient, self).save(*args, **kwargs)
+
+    @staticmethod
+    def create_random_patient_code():
+        used_codes = set([patient.code for patient in Patient.objects.all()])
+        possible_code = set(['P' + str(item) for item in range(1, 100000)])
+        available_codes = list(possible_code - used_codes)
+        return random.choice(available_codes)
 
 
 class Telephone(models.Model):
