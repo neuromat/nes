@@ -18,15 +18,23 @@
                         <table class="table table-striped">
                             <thead>
                             <tr>
-                                <th>{% trans "Date" %}</th>
-                                <th>{% trans "Responsible" %}</th>
-                                <th></th>
+                                <th class="col-md-3">{% trans "Date" %}</th>
+                                <th class="col-md-6">{% trans "Diagnosis" %}</th>
+                                <th class="col-md-2">{% trans "Responsible" %}</th>
+                                <th class="col-md-1">{% trans "View" %}</th>
                             </tr>
                             </thead>
                             <tbody>
                             {% for record in medical_record %}
                                 <tr>
                                     <td>{{ record.record_date }}</td>
+                                    <td>
+                                        {% for diagnosis in record.diagnosis_set.all %}
+                                            <ul>
+                                                <li>{{ diagnosis.classification_of_diseases }}</li>
+                                            </ul>
+                                        {% endfor %}
+                                    </td>
                                     <td>{{ record.record_responsible }}</td>
                                     {% if perms.patient.view_medicalrecorddata %}
                                         {% if editing %}
