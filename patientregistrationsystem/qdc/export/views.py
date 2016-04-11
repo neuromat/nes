@@ -15,7 +15,7 @@ from sys import modules
 from zipfile import ZipFile
 from shutil import rmtree
 
-from .forms import ExportForm
+from .forms import ExportForm, ParticipantsSelectionForm
 from .models import Export
 from .export import ExportExecution, perform_csv_response, create_directory
 
@@ -620,3 +620,14 @@ def get_questionnaire_fields(questionnaire_code_list, language="pt-BR"):
     questionnaire_lime_survey.release_session_key()
 
     return questionnaires_included
+
+
+@login_required
+def participant_selection(request, template_name="export/participant_selection.html"):
+
+    participant_selection_form = ParticipantsSelectionForm(None)
+
+    context = {
+        "participant_selection_form": participant_selection_form,}
+
+    return render(request, template_name, context)

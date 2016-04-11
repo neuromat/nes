@@ -1,0 +1,102 @@
+{% extends "quiz/template.html" %}
+
+{% load i18n %}
+
+{% block header %}
+    {% load static %}
+    <script src="{% static 'quiz/js/participant_selection.js' %}"></script>
+
+    {% block specific_header %}
+    {% endblock %}
+{% endblock %}
+
+{% block form %}
+    <div class="row">
+    <form id="user_form" method="post" data-toggle="validator">
+    {% csrf_token %}
+{% endblock %}
+
+{% block content %}
+
+    <div class="tab-pane fade in active" id="participantSelectionBreadCrumb">
+        <div class="col-md-10">
+            <ol class="breadcrumb">
+                <li><a href="/home">{% trans "Home" %}</a></li>
+                <li class="active">{% trans "Export" %}</li>
+                <li class="active">{% trans "Participants selection" %}</li>
+            </ol>
+        </div>
+    </div>
+
+    <div class="tab-pane fade in active" id="mainMenuUserTab">
+        <div class="col-md-10">
+            <div class="container span6 offset3 well ">
+                <h4>{% trans "Participants selection" %}</h4>
+
+                <div class="form-group">
+
+                    <div class="radio" style="margin-top: 0px">
+                        <input id="id_selection_type_0" name="selection_type" type="radio" value="all" checked>
+                            {% trans "All participants" %}
+                        </input>
+                    </div>
+                    <div class="radio">
+                        <input id="id_selection_type_1" name="selection_type" type="radio" value="selected">
+                            {% trans "Selected participants" %}
+                        </input>
+                    </div>
+
+                    <div class="col-md-1"></div>
+                    <div class="col-md-11" id="selected_participants_fields" style="visibility: hidden">
+
+                        <div class="form-group">
+                            <input id="id_gender_selection" name="gender_selection" type="checkbox" value="gender_selection" checked>
+                                {% trans "Gender" %}
+                            </input>
+                        </div>
+
+                        <div class="form-group">
+                            <div class="input-group input-group-sm">
+{#                                <span class="input-group-addon"> <span class="glyphicon"></span></span>#}
+                                {{ participant_selection_form.gender }}
+                            </div>
+                            <div class="help-block with-errors"></div>
+                        </div>
+
+                        <div class="form-group">
+                            <input id="id_gender_selection" name="gender_selection" type="checkbox" value="gender_selection" checked>
+                                {% trans "Marital status" %}
+                            </input>
+                        </div>
+
+                        <div class="form-group">
+                            <div class="input-group input-group-sm">
+{#                                <span class="input-group-addon"> <span class="glyphicon"></span></span>#}
+                                {{ participant_selection_form.marital_status }}
+                            </div>
+                            <div class="help-block with-errors"></div>
+                        </div>
+
+                        <div class="form-group">
+                            <input id="id_gender_selection" name="gender_selection" type="checkbox" value="gender_selection" checked>
+                                {% trans "Age" %}
+                            </input>
+                        </div>
+                    </div>
+
+                </div>
+
+                <div class="btn-group pull-right">
+                    <button type="submit" name="action" value="save" class="btn btn-primary">{% trans "Save" %}</button>
+                </div>
+
+            </div>
+        </div>
+    </div>
+
+{% endblock %}
+
+{% block end_form %}
+    </form>
+    </div>
+{% endblock %}

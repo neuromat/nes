@@ -1,13 +1,21 @@
 # coding=utf-8
 from django.forms import ModelForm, Form, TextInput, CharField, BooleanField, MultipleChoiceField, \
-    CheckboxSelectMultiple, ValidationError
+    CheckboxSelectMultiple, ValidationError, ChoiceField, SelectMultiple
 
 from django.utils.translation import ugettext as _
+
+
+from patient.models import Patient
 
 FAVORITE_COLORS_CHOICES = (
     ('blue', 'Blue'),
     ('green', 'Green'),
     ('black', 'Black'),
+)
+
+SEARCH_PARTICIPANTS_CHOICES = (
+    ('all', _('All participants')),
+    ('selected', _('Selected participants'))
 )
 
 
@@ -37,3 +45,25 @@ class ExportForm(Form):
         if not (participant_field or questionnaire_field):
             self.add_error('per_participant',
                            _("Either one or both Per participant/Per questionnaire must be set."))
+
+
+class ParticipantsSelectionForm(ModelForm):
+
+    class Meta:
+        model = Patient
+
+        fields = [
+            'gender', 'marital_status'
+        ]
+
+        widgets = {
+            # 'gender': SelectMultiple(attrs={}),
+            # 'marital_status': SelectMultiple(attrs={}),
+            'gender': SelectMultiple(attrs={'height': '60px'}),
+            'marital_status': SelectMultiple(attrs={'class': 'form-control', 'height': '120px'}),
+        }
+
+    def __init__(self, *args, **kwargs):
+        super(ParticipantsSelectionForm, self).__init__(*args, **kwargs)
+        self.fields['gender'].empty_label = None
+        self.fields['marital_status'].empty_label = None
