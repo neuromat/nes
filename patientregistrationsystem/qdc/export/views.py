@@ -72,11 +72,11 @@ diagnosis_fields = [
 ]
 
 patient_fields_inclusion = [
-    ["id", "participation_code"],
+    ["code", "participation_code"],
 ]
 
 diagnosis_fields_inclusion = [
-    ["medicalrecorddata__patient__id", 'participation_code'],
+    ["medicalrecorddata__patient__code", 'participation_code'],
 ]
 
 '''
@@ -341,7 +341,8 @@ def export_create(request, export_id, input_filename, template_name="export/expo
             zip_file.close()
 
             output_export_file = path.join("export", path.join(str(export_instance.user.id),
-                                                               path.join(str(export_instance.id), str(export_filename))))
+                                                               path.join(str(export_instance.id),
+                                                                         str(export_filename))))
 
             update_export_instance(input_export_file, output_export_file, export_instance)
 
@@ -351,6 +352,7 @@ def export_create(request, export_id, input_filename, template_name="export/expo
         # print(complete_filename)
 
         # delete temporary directory: from base_directory and below
+        base_export_directory = export.get_export_directory()
         rmtree(base_export_directory)
 
         # messages.success(request, _("Export was finished correctly"))
@@ -378,7 +380,7 @@ def export_view(request, template_name="export/export_data.html"):
     # export_form.per_participant = False
     # export_form.per_questionnaire = True
 
-    context = {}
+    # context = {}
 
     # test with pagination
     # a = [{"b": "2", "c": "3"}, {"d": "7", "e": "8"}]
@@ -501,7 +503,7 @@ def export_view(request, template_name="export/export_data.html"):
                     response['Content-Length'] = path.getsize(complete_filename)
                     return response
                 else:
-                     messages.error(request, _("Export data was not generated."))
+                    messages.error(request, _("Export data was not generated."))
 
             else:
                 for questionnaire in questionnaires_list:
