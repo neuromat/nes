@@ -72,11 +72,11 @@ diagnosis_fields = [
 ]
 
 patient_fields_inclusion = [
-    ["id", "participation_code"],
+    ["code", "participation_code"],
 ]
 
 diagnosis_fields_inclusion = [
-    ["medicalrecorddata__patient__id", 'participation_code'],
+    ["medicalrecorddata__patient__code", 'participation_code'],
 ]
 
 '''
@@ -164,7 +164,7 @@ def process_participant_data(participants, participants_list):
 
         model_to_export = getattr(modules['patient.models'], 'Patient')
 
-        db_data = model_to_export.objects.filter(pk__in=participants_list).values_list(*fields).extra(order_by=['pk'])
+        db_data = model_to_export.objects.filter(id__in=participants_list).values_list(*fields).extra(order_by=['id'])
 
         export_rows_participants = [headers]
 
@@ -281,66 +281,81 @@ def export_create(request, export_id, input_filename, template_name="export/expo
             return render(request, template_name)
 
         # process participants
-        participants_list = (export.get_per_participant_data().keys())
+        # only participants that were used in questionnaire: export.get_per_participant_data().keys()
+        participants_list = (export.get_participants_filtered_data())
+        # participants_list = (export.get_per_participant_data().keys())
+        participants_input_data = export.get_input_data("participants")
 
-        export_rows_participants = process_participant_data(export.get_input_data("participants"), participants_list)
+        if participants_input_data and participants_list:
 
-        export_filename = "%s.csv" % export.get_input_data('participants')[0]["output_filename"]  # "export.csv"
+            export_rows_participants = process_participant_data(participants_input_data, participants_list)
 
-        base_export_directory = export.get_export_directory()
-        base_directory = export.get_input_data("base_directory")   # /NES_EXPORT
+            export_filename = "%s.csv" % export.get_input_data('participants')[0]["output_filename"]  # "export.csv"
 
-        complete_filename = path.join(base_export_directory, export_filename)
+            base_export_directory = export.get_export_directory()
+            base_directory = export.get_input_data("base_directory")   # /NES_EXPORT
 
-        export.files_to_zip_list.append([complete_filename, base_directory])
+            complete_filename = path.join(base_export_directory, export_filename)
 
-        with open(complete_filename, 'w', newline='', encoding='UTF-8') as csv_file:
-            export_writer = writer(csv_file)
-            for row in export_rows_participants:
-                export_writer.writerow(row)
+            export.files_to_zip_list.append([complete_filename, base_directory])
+
+            with open(complete_filename, 'w', newline='', encoding='UTF-8') as csv_file:
+                export_writer = writer(csv_file)
+                for row in export_rows_participants:
+                    export_writer.writerow(row)
 
         # process  diagnosis file
-        export_rows_diagnosis = process_participant_data(export.get_input_data("diagnosis"), participants_list)
+        diagnosis_input_data = export.get_input_data("diagnosis")
 
-        export_filename = "%s.csv" % export.get_input_data('diagnosis')[0]["output_filename"]  # "export.csv"
+        if diagnosis_input_data and participants_list:
+            export_rows_diagnosis = process_participant_data(diagnosis_input_data, participants_list)
 
-        complete_filename = path.join(base_export_directory, export_filename)
+            export_filename = "%s.csv" % export.get_input_data('diagnosis')[0]["output_filename"]  # "export.csv"
 
-        # files_to_zip_list.append(complete_filename)
-        export.files_to_zip_list.append([complete_filename, base_directory])
+            base_directory = export.get_input_data("base_directory")   # /NES_EXPORT
+            base_export_directory = export.get_export_directory()
 
-        with open(complete_filename, 'w', newline='', encoding='UTF-8') as csv_file:
-            export_writer = writer(csv_file)
-            for row in export_rows_diagnosis:
-                export_writer.writerow(row)
+            complete_filename = path.join(base_export_directory, export_filename)
+
+            # files_to_zip_list.append(complete_filename)
+            export.files_to_zip_list.append([complete_filename, base_directory])
+
+            with open(complete_filename, 'w', newline='', encoding='UTF-8') as csv_file:
+                export_writer = writer(csv_file)
+                for row in export_rows_diagnosis:
+                    export_writer.writerow(row)
 
         # create zip file and include files
-        export_filename = export.get_input_data("export_filename")  # 'export.zip'
+        export_complete_filename = ""
+        if export.files_to_zip_list:
+            export_filename = export.get_input_data("export_filename")  # 'export.zip'
 
-        export_complete_filename = path.join(base_directory_name, export_filename)
+            export_complete_filename = path.join(base_directory_name, export_filename)
 
-        with ZipFile(export_complete_filename, 'w') as zip_file:
-            for filename, directory in export.files_to_zip_list:
-                fdir, fname = path.split(filename)
+            with ZipFile(export_complete_filename, 'w') as zip_file:
+                for filename, directory in export.files_to_zip_list:
+                    fdir, fname = path.split(filename)
 
-                zip_file.write(filename, path.join(directory, fname))
+                    zip_file.write(filename, path.join(directory, fname))
 
-        zip_file.close()
+            zip_file.close()
 
-        output_export_file = path.join("export", path.join(str(export_instance.user.id),
-                                                           path.join(str(export_instance.id), str(export_filename))))
+            output_export_file = path.join("export", path.join(str(export_instance.user.id),
+                                                               path.join(str(export_instance.id),
+                                                                         str(export_filename))))
 
-        update_export_instance(input_export_file, output_export_file, export_instance)
+            update_export_instance(input_export_file, output_export_file, export_instance)
+
+            print("finalizado corretamente")
 
         # print(export_filename)
         # print(complete_filename)
 
         # delete temporary directory: from base_directory and below
+        base_export_directory = export.get_export_directory()
         rmtree(base_export_directory)
 
-        print("finalizado corretamente")
-
-        messages.success(request, _("Export was finished correctly"))
+        # messages.success(request, _("Export was finished correctly"))
 
         return export_complete_filename
         # return file to the user
@@ -365,7 +380,7 @@ def export_view(request, template_name="export/export_data.html"):
     # export_form.per_participant = False
     # export_form.per_questionnaire = True
 
-    context = {}
+    # context = {}
 
     # test with pagination
     # a = [{"b": "2", "c": "3"}, {"d": "7", "e": "8"}]
@@ -470,21 +485,25 @@ def export_view(request, template_name="export/export_data.html"):
 
                 complete_filename = export_create(request, export_instance.id, input_filename)
 
-                messages.success(request, _("Export was finished correctly"))
+                if complete_filename:
 
-                # return file to the user
+                    messages.success(request, _("Export was finished correctly"))
 
-                # error_message = "a"
-                # return_response = complete_filename
-                #
-                # redirect_url = reverse("export_result", args=(return_response, error_message))
-                # return HttpResponseRedirect(redirect_url )
+                    # return file to the user
 
-                zip_file = open(complete_filename, 'rb')
-                response = HttpResponse(zip_file, content_type='application/zip')
-                response['Content-Disposition'] = 'attachment; filename="export.zip"'
-                response['Content-Length'] = path.getsize(complete_filename)
-                return response
+                    # error_message = "a"
+                    # return_response = complete_filename
+                    #
+                    # redirect_url = reverse("export_result", args=(return_response, error_message))
+                    # return HttpResponseRedirect(redirect_url )
+
+                    zip_file = open(complete_filename, 'rb')
+                    response = HttpResponse(zip_file, content_type='application/zip')
+                    response['Content-Disposition'] = 'attachment; filename="export.zip"'
+                    response['Content-Length'] = path.getsize(complete_filename)
+                    return response
+                else:
+                    messages.error(request, _("Export data was not generated."))
 
             else:
                 for questionnaire in questionnaires_list:

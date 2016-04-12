@@ -10,7 +10,6 @@ from django.conf import settings
 from django.core.files import File
 from django.utils.encoding import smart_str
 from django.utils.translation import ugettext as _
-from django.db.models import Model
 from django.apps import apps
 
 from io import StringIO
@@ -55,7 +54,7 @@ directory_structure = [
 
 # valid for all questionnaires (no distinction amongst questionnaires)
 included_questionnaire_fields = [
-    {"field": "participation_code", "header": "participation_code", "model": "patient.patient", "model_field": "id" },
+    {"field": "participation_code", "header": "participation_code", "model": "patient.patient", "model_field": "code"},
 ]
 
 
@@ -159,7 +158,7 @@ class ExportExecution:
     def __init__(self, user_id, export_id):
         # self.get_session_key()
 
-        questionnaire_id = 0
+        # questionnaire_id = 0
         self.files_to_zip_list = []
         # self.headers = []
         # self.fields = []
@@ -303,6 +302,12 @@ class ExportExecution:
 
         return self.per_participant_data
 
+    def get_participants_filtered_data(self):
+
+        participants = Patient.objects.filter(removed=False).values_list("id")
+
+        return participants
+
     def update_questionnaire_rules(self, questionnaire_id):
 
         header = []
@@ -353,7 +358,6 @@ class ExportExecution:
         # fill_list[1:len(fill_list)] -> data
 
         data_rows = []
-        header_transformed = []
 
         if "subjectid" in fill_list[0]:
 
@@ -456,7 +460,7 @@ class ExportExecution:
             for field in fields_cleared:
 
                 if field not in fields_from_questions:
-                    description = self.get_header_description( questionnaire_id, field)
+                    description = self.get_header_description(questionnaire_id, field)
                     question_to_list = [smart_str(questionnaire_id), smart_str(questionnaire_title),
                                         smart_str(field), smart_str(description)]
 
@@ -478,7 +482,6 @@ class ExportExecution:
         headers, fields = self.set_questionnaire_header_and_fields(questionnaire)
 
         export_rows = []
-        header = []
 
         # verify if Lime Survey is running
         limesurvey_available = is_limesurvey_available(questionnaire_lime_survey)
@@ -630,4 +633,3 @@ class ExportExecution:
                     self.files_to_zip_list.append([complete_filename, export_directory])
 
         return error_msg
-
