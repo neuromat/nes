@@ -15,7 +15,7 @@ from sys import modules
 from zipfile import ZipFile
 from shutil import rmtree
 
-from .forms import ExportForm, ParticipantsSelectionForm
+from .forms import ExportForm, ParticipantsSelectionForm, AgeIntervalForm
 from .models import Export
 from .export import ExportExecution, perform_csv_response, create_directory
 
@@ -607,8 +607,26 @@ def get_questionnaire_fields(questionnaire_code_list, language="pt-BR"):
 def participant_selection(request, template_name="export/participant_selection.html"):
 
     participant_selection_form = ParticipantsSelectionForm(None)
+    age_interval_form = AgeIntervalForm(None)
+
+    gender_list = None
+    marital_status_list = None
+    age_interval = None
+
+    if request.method == "POST":
+        if request.POST['action'] == "next":
+
+            if "gender_selection" in request.POST:
+                gender_list = request.POST.getlist('gender')
+
+            if "marital_status_selection" in request.POST:
+                marital_status_list = request.POST.getlist('marital_status')
+
+            if "age_selection" in request.POST:
+                age_interval = [request.POST['min_age'], request.POST['max_age']]
 
     context = {
-        "participant_selection_form": participant_selection_form,}
+        "participant_selection_form": participant_selection_form,
+        "age_interval_form": age_interval_form}
 
     return render(request, template_name, context)
