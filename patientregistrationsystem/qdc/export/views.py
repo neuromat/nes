@@ -9,19 +9,22 @@ from django.http import HttpResponse
 from django.utils.encoding import smart_str
 from django.utils.translation import ugettext as _
 
+from datetime import datetime
+from dateutil.relativedelta import relativedelta
+
 from os import path
 from csv import writer
 from sys import modules
 from zipfile import ZipFile
 from shutil import rmtree
 
-from .forms import ExportForm, ParticipantsSelectionForm
+from .forms import ExportForm, ParticipantsSelectionForm, AgeIntervalForm
 from .models import Export
 from .export import ExportExecution, perform_csv_response, create_directory
 
 from export.input_export import build_complete_export_structure
 
-from patient.models import QuestionnaireResponse
+from patient.models import QuestionnaireResponse, Patient
 from patient.views import check_limesurvey_access
 
 from survey.models import Survey
@@ -629,8 +632,79 @@ def get_questionnaire_fields(questionnaire_code_list, language="pt-BR"):
 def participant_selection(request, template_name="export/participant_selection.html"):
 
     participant_selection_form = ParticipantsSelectionForm(None)
+    age_interval_form = AgeIntervalForm(None)
+
+    gender_list = None
+    marital_status_list = None
+    age_interval = None
+
+    if request.method == "POST":
+
+        if request.POST['action'] == "next-step-1":
+
+            if request.POST['selection_type'] == 'selected':
+
+                if "gender_selection" in request.POST:
+                    gender_list = request.POST.getlist('gender')
+
+                if "marital_status_selection" in request.POST:
+                    marital_status_list = request.POST.getlist('marital_status')
+
+                if "age_selection" in request.POST:
+                    age_interval = [request.POST['min_age'], request.POST['max_age']]
+
+                # select participants according the filters
+
+                participants_list = Patient.objects.filter(removed=False)
+
+                total_of_participants = len(participants_list)
+
+                if gender_list:
+                    participants_list = participants_list.filter(gender__id__in=gender_list)
+
+                if marital_status_list:
+                    participants_list = participants_list.filter(marital_status__id__in=marital_status_list)
+
+                if age_interval:
+                    date_birth_min = datetime.now() - relativedelta(years=int(age_interval[1]))
+                    date_birth_max = datetime.now() - relativedelta(years=int(age_interval[0]))
+                    participants_list = participants_list.filter(date_birth__range=(date_birth_min, date_birth_max))
+
+                request.session['participant_list'] = [item.id for item in participants_list]
+
+                context = {
+                    "total_of_participants": total_of_participants,
+                    "participants_list": participants_list
+                }
+                return render(request, "export/show_selected_participants.html", context)
+
+            else:
+
+                participants_list = Patient.objects.filter(removed=False)
+                request.session['participant_list'] = [item.id for item in participants_list]
+
+                context = {
+                    'participant_list': request.session['participant_list']
+                }
+                return render(request, "export/export_data.html", context)
+
+        if request.POST['action'] == 'previous-step-2':
+
+            context = {
+                "participant_selection_form": participant_selection_form,
+                "age_interval_form": age_interval_form}
+
+            return render(request, "export/participant_selection.html", context)
+
+        if request.POST['action'] == "next-step-2":
+
+            context = {
+                'participant_list': request.session['participant_list']
+            }
+            return render(request, "export/export_data.html", context)
 
     context = {
-        "participant_selection_form": participant_selection_form,}
+        "participant_selection_form": participant_selection_form,
+        "age_interval_form": age_interval_form}
 
     return render(request, template_name, context)
