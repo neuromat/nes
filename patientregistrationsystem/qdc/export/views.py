@@ -286,7 +286,7 @@ def export_create(request, export_id, input_filename, template_name="export/expo
         # participants_list = (export.get_per_participant_data().keys())
         participants_input_data = export.get_input_data("participants")
 
-        if participants_input_data and participants_list:
+        if participants_input_data[0]["output_list"] and participants_list:
 
             export_rows_participants = process_participant_data(participants_input_data, participants_list)
 
@@ -307,7 +307,7 @@ def export_create(request, export_id, input_filename, template_name="export/expo
         # process  diagnosis file
         diagnosis_input_data = export.get_input_data("diagnosis")
 
-        if diagnosis_input_data and participants_list:
+        if diagnosis_input_data[0]['output_list'] and participants_list:
             export_rows_diagnosis = process_participant_data(diagnosis_input_data, participants_list)
 
             export_filename = "%s.csv" % export.get_input_data('diagnosis')[0]["output_filename"]  # "export.csv"
@@ -356,6 +356,7 @@ def export_create(request, export_id, input_filename, template_name="export/expo
         rmtree(base_export_directory)
 
         # messages.success(request, _("Export was finished correctly"))
+        print("finalizado corretamente 2")
 
         return export_complete_filename
         # return file to the user
@@ -497,6 +498,8 @@ def export_view(request, template_name="export/export_data.html"):
                     # redirect_url = reverse("export_result", args=(return_response, error_message))
                     # return HttpResponseRedirect(redirect_url )
 
+                    print("antes do fim: httpResponse")
+
                     zip_file = open(complete_filename, 'rb')
                     response = HttpResponse(zip_file, content_type='application/zip')
                     response['Content-Disposition'] = 'attachment; filename="export.zip"'
@@ -599,7 +602,7 @@ def get_questionnaire_fields(questionnaire_code_list, language="pt-BR"):
 
         questionnaire_id = questionnaire["sid"]
 
-        responses_string = questionnaire_lime_survey.get_responses(questionnaire_id, language)
+        responses_string = questionnaire_lime_survey.get_header_response(questionnaire_id, language)
 
         # print("id: %d " % questionnaire_id)
 
