@@ -10,6 +10,6 @@ urlpatterns = patterns(
     # url(r'^new/$', 'survey_create', name='survey_create'),
     # url(r'^edit/(?P<survey_id>\d+)/$', 'survey_update', name='survey_edit'),
 
-    url(r'^participants/$', 'participant_selection', name='participant_selection'),
+    url(r'^filter_participants/$', 'filter_participants', name='filter_participants'),
 
 )

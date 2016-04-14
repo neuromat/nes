@@ -4,8 +4,9 @@ from django.shortcuts import render
 from django.conf import settings
 from django.contrib.auth.decorators import login_required
 from django.contrib import messages
+from django.core.urlresolvers import reverse
 # from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
-from django.http import HttpResponse
+from django.http import HttpResponse, HttpResponseRedirect
 from django.utils.encoding import smart_str
 from django.utils.translation import ugettext as _
 
@@ -629,7 +630,7 @@ def get_questionnaire_fields(questionnaire_code_list, language="pt-BR"):
 
 
 @login_required
-def participant_selection(request, template_name="export/participant_selection.html"):
+def filter_participants(request, template_name="export/participant_selection.html"):
 
     participant_selection_form = ParticipantsSelectionForm(None)
     age_interval_form = AgeIntervalForm(None)
@@ -698,10 +699,13 @@ def participant_selection(request, template_name="export/participant_selection.h
 
         if request.POST['action'] == "next-step-2":
 
-            context = {
-                'participant_list': request.session['participant_list']
-            }
-            return render(request, "export/export_data.html", context)
+            # context = {
+            #     'participant_list': request.session['participant_list']
+            # }
+            # return render(request, "export/export_data.html", context)
+
+            redirect_url = reverse("export_view", args=())
+            return HttpResponseRedirect(redirect_url)
 
     context = {
         "participant_selection_form": participant_selection_form,
