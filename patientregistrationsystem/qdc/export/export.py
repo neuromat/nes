@@ -172,6 +172,7 @@ class ExportExecution:
         self.questionnaires_data = {}
         self.root_directory = ""
         self.participants_filtered_data = []
+        self.directory_base = ''
 
     def set_directory_base(self, user_id, export_id):
         self.directory_base = path.join(self.base_directory_name, str(user_id))
@@ -345,7 +346,7 @@ class ExportExecution:
 
         return fields
 
-    # def read_questionnaire_from_lime_survey(self, questionnaire_id, token, language, questionnaire_lime_survey, fields):
+# def read_questionnaire_from_lime_survey(self, questionnaire_id, token, language, questionnaire_lime_survey, fields):
     #     """
     #     :param questionnaire_id:
     #     :param token:
@@ -531,6 +532,9 @@ class ExportExecution:
     def process_per_questionnaire(self):
 
         error_msg = ""
+        export_per_questionnaire_directory = ''
+        path_per_questionnaire = ''
+
         # and save per_participant data
         if self.get_input_data("export_per_questionnaire"):
             per_questionnaire_directory = self.get_input_data("per_questionnaire_directory")
@@ -552,7 +556,7 @@ class ExportExecution:
             print(questionnaire_id)
 
             # per_participant_data is updated by define_questionnaire method
-            fields_description = self.define_questionnaire2(questionnaire, questionnaire_lime_survey)
+            fields_description = self.define_questionnaire(questionnaire, questionnaire_lime_survey)
 
             # create directory for questionnaire: <per_questionnaire>/<questionnaire_id>
             if self.get_input_data("export_per_questionnaire"):
@@ -664,7 +668,7 @@ class ExportExecution:
     #
     #     return error_msg
 
-    def define_questionnaire2(self, questionnaire, questionnaire_lime_survey):
+    def define_questionnaire(self, questionnaire, questionnaire_lime_survey):
         """
         :param questionnaire:
         :return: fields_description: (list)
@@ -706,7 +710,8 @@ class ExportExecution:
 
             # filter data (participants)
             questionnaire_responses = QuestionnaireResponse.objects.filter(survey__lime_survey_id=questionnaire_id)
-            #   TODO: include new filter that came from advanced search
+
+            #  include new filter that come from advanced search
             filtered_data = self.get_participants_filtered_data()
             questionnaire_responses = questionnaire_responses.filter(patient_id__in=filtered_data)
 

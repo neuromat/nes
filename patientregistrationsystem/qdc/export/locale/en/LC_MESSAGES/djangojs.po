@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2016-03-31 14:11-0300\n"
+"POT-Creation-Date: 2016-04-14 19:31-0300\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -17,8 +17,6 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 
-#: export/templates/export/export_data.html:50
-#: export/templates/export/page_1.html:43
-#: export/templates/export/response_export.html:50
+#: export/templates/export/export_data.html:49
 msgid "Please, correct the highlighted fields."
 msgstr ""

@@ -150,14 +150,14 @@ def get_headers_and_fields(output_list):
     return headers, fields
 
 
-def read_configuration_data(json_file):
-    json_data = open(json_file)
-
-    read_data = json.load(json_data)
-
-    json_data.close()
-
-    return read_data
+# def read_configuration_data(json_file):
+#     json_data = open(json_file)
+#
+#     read_data = json.load(json_data)
+#
+#     json_data.close()
+#
+#     return read_data
 
 
 def process_participant_data(participants, participants_list):

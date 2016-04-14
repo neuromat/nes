@@ -1,15 +1,17 @@
+from django.conf import settings
 from django.test import TestCase
 from django.test.client import RequestFactory
 from django.utils.translation import ugettext as _
 from django.core.urlresolvers import reverse
 
-from os import mkdir, remove
+from os import mkdir, remove, path
+from shutil import rmtree
 
 from custom_user.models import User
 
-from export.views import *
-from export.input_export import InputExport
-from export.export import is_patient_active
+from .export import is_patient_active
+from .input_export import InputExport, build_complete_export_structure
+from .views import Survey, Questionnaires, QuestionnaireResponse, create_directory
 
 from patient.models import Gender, Patient
 
@@ -21,6 +23,7 @@ USER_NEW = 'user_new'
 
 QUESTIONNAIRE_ID = 957421
 TEST_QUESTIONNAIRE = 271192
+
 
 class UtilTests:
 

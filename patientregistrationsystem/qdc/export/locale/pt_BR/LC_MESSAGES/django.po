@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2016-04-05 11:44-0300\n"
+"POT-Creation-Date: 2016-04-14 19:22-0300\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -18,111 +18,185 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=(n > 1);\n"
 
-#: export/export.py:101 export/tests.py:156
+#: export/export.py:111 export/export_bkp.py:101 export/tests.py:160
 msgid "Base path does not exist"
 msgstr "Diretório base não existe"
 
-#: export/forms.py:39
+#: export/forms.py:17 export/templates/export/participant_selection.html:40
+msgid "All participants"
+msgstr "Todos os participantes"
+
+#: export/forms.py:18 export/templates/export/participant_selection.html:45
+#: export/templates/export/show_selected_participants.html:26
+msgid "Selected participants"
+msgstr "Participantes selecionados"
+
+#: export/forms.py:47
 msgid "Either one or both Per participant/Per questionnaire must be set."
 msgstr "Opção Por participante e/ou Por questionário deve ser preenchida. "
 
-#: export/templates/export/export_data.html:61
-msgid "General Information"
-msgstr "Informações Gerais"
+#: export/forms.py:73
+msgid "Min age must be filled."
+msgstr "Idade mínima deve ser preenchida."
 
-#: export/templates/export/export_data.html:66
-msgid "At least one option must be selected"
-msgstr "Pelo menos uma das opções deve ser selecionada"
+#: export/forms.py:76
+msgid "Max age must be filled."
+msgstr "Idade máxima deve ser preenchida."
 
-#: export/templates/export/export_data.html:66
-msgid "Directory Structure"
-msgstr "Estrutura de diretórios"
-
-#: export/templates/export/export_data.html:72
-msgid "Per participant"
-msgstr "Por participante"
-
-#: export/templates/export/export_data.html:84
-msgid "Per questionnaire"
-msgstr "Por questionário"
-
-#: export/templates/export/export_data.html:113
-msgid "Questionnaire information"
-msgstr "Informações de questionários"
-
-#: export/templates/export/export_data.html:117
-msgid "Questionnaire - Entrance evaluation"
-msgstr "Questionários - Avaliação de entrada"
-
-#: export/templates/export/export_data.html:118
-msgid "Please, select a questionnaire from the list."
-msgstr "Por favor, selecione um questionário da lista"
-
-#: export/templates/export/export_data.html:132
-msgid "Participants"
-msgstr "Participantes"
-
-#: export/templates/export/export_data.html:136
-msgid "Participant fields"
-msgstr "Campos de participante"
-
-#: export/templates/export/export_data.html:137
-msgid "Please, select a patient field from the list."
-msgstr "Por favor, selecione um participante da lista"
-
-#: export/templates/export/export_data.html:147
-msgid "Diagnosis"
-msgstr "Diagnóstico"
-
-#: export/templates/export/export_data.html:151
-msgid "Diagnosis fields"
-msgstr "Campos de diagnóstico"
-
-#: export/templates/export/export_data.html:152
-msgid "Please, select a diagnosis field from the list."
-msgstr "Por favor, selecione um campo de diagnóstico da lista"
-
-#: export/templates/export/export_data.html:165
-msgid "Run"
-msgstr "Executar"
-
-#: export/templates/export/export_data.html:169
-msgid "Cancel"
-msgstr "Cancelar"
-
-#: export/views.py:235
-msgid "Inconsistent data read from json file"
-msgstr "Dados inconsistentes do arquivo de entrada"
-
-#: export/views.py:356 export/views.py:476
+#: export/lixo.py:1075 export/views.py:502
 msgid "Export was finished correctly"
 msgstr "Exportação foi finalizada com sucesso"
 
-#~ msgid "Please, correct the highlighted fields."
-#~ msgstr "Por favor, corrija os campos em destaque."
+#: export/lixo.py:1205
+msgid "Please, correct the highlighted fields."
+msgstr "Por favor, corrija os campos em destaque."
 
-#~ msgid "Questionnaires"
-#~ msgstr "Questionários"
+#: export/templates/export/export_data.html:60
+msgid "General Information"
+msgstr "Informações Gerais"
 
-#~ msgid "Entrance evaluation"
-#~ msgstr "Avaliação de entrada"
+#: export/templates/export/export_data.html:65
+msgid "At least one option must be selected"
+msgstr "Pelo menos uma das opções deve ser selecionada"
 
-#~ msgid "Delete"
-#~ msgstr "Remover"
+#: export/templates/export/export_data.html:65
+msgid "Directory Structure"
+msgstr "Estrutura de diretórios"
 
-#~ msgid "Save"
-#~ msgstr "Salvar"
+#: export/templates/export/export_data.html:71
+msgid "Per participant"
+msgstr "Por participante"
 
-#~ msgid "Back"
-#~ msgstr "Voltar"
+#: export/templates/export/export_data.html:83
+msgid "Per questionnaire"
+msgstr "Por questionário"
 
-#, fuzzy
-#~| msgid "General Information"
-#~ msgid "Result Information"
-#~ msgstr "Informações Gerais"
+#: export/templates/export/export_data.html:112
+msgid "Questionnaire information"
+msgstr "Informações de questionários"
 
-#~ msgid "Previous"
-#~ msgstr "Anterior"
+#: export/templates/export/export_data.html:116
+msgid "Questionnaire - Entrance evaluation"
+msgstr "Questionários - Avaliação de entrada"
 
-#~ msgid "Next"
-#~ msgstr "Próximo"
+#: export/templates/export/export_data.html:117
+msgid "Please, select a questionnaire from the list."
+msgstr "Por favor, selecione um questionário da lista"
+
+#: export/templates/export/export_data.html:131
+msgid "Participants"
+msgstr "Participantes"
+
+#: export/templates/export/export_data.html:135
+msgid "Participant fields"
+msgstr "Campos de participante"
+
+#: export/templates/export/export_data.html:136
+msgid "Please, select a patient field from the list."
+msgstr "Por favor, selecione um participante da lista"
+
+#: export/templates/export/export_data.html:146
+msgid "Diagnosis"
+msgstr "Diagnóstico"
+
+#: export/templates/export/export_data.html:150
+msgid "Diagnosis fields"
+msgstr "Campos de diagnóstico"
+
+#: export/templates/export/export_data.html:151
+msgid "Please, select a diagnosis field from the list."
+msgstr "Por favor, selecione um campo de diagnóstico da lista"
+
+#: export/templates/export/export_data.html:164
+msgid "Run"
+msgstr "Executar"
+
+#: export/templates/export/export_data.html:168
+#: export/templates/export/participant_selection.html:111
+#: export/templates/export/show_selected_participants.html:92
+msgid "Cancel"
+msgstr "Cancelar"
+
+#: export/templates/export/participant_selection.html:24
+#: export/templates/export/show_selected_participants.html:24
+msgid "Home"
+msgstr ""
+
+#: export/templates/export/participant_selection.html:25
+#: export/templates/export/show_selected_participants.html:25
+msgid "Export"
+msgstr "Exportar"
+
+#: export/templates/export/participant_selection.html:26
+#: export/templates/export/participant_selection.html:34
+msgid "Participants selection"
+msgstr "Seleção de Participantes"
+
+#: export/templates/export/participant_selection.html:54
+#: export/templates/export/show_selected_participants.html:48
+msgid "Gender"
+msgstr "Sexo"
+
+#: export/templates/export/participant_selection.html:65
+#: export/templates/export/show_selected_participants.html:52
+msgid "Marital status"
+msgstr "Estado civil"
+
+#: export/templates/export/participant_selection.html:76
+#: export/templates/export/show_selected_participants.html:47
+msgid "Age"
+msgstr "Idade"
+
+#: export/templates/export/participant_selection.html:86
+msgid "to"
+msgstr "até"
+
+#: export/templates/export/participant_selection.html:105
+#: export/templates/export/show_selected_participants.html:79
+msgid "Next"
+msgstr "Próximo"
+
+#: export/templates/export/show_selected_participants.html:35
+msgid "List of questionnaires"
+msgstr "Lista de Questionários"
+
+#: export/templates/export/show_selected_participants.html:38
+msgid "of"
+msgstr "de"
+
+#: export/templates/export/show_selected_participants.html:38
+msgid "participants were selected"
+msgstr "participantes foram selecionados"
+
+#: export/templates/export/show_selected_participants.html:46
+msgid "Code"
+msgstr "Código"
+
+#: export/templates/export/show_selected_participants.html:49
+msgid "Country"
+msgstr "País"
+
+#: export/templates/export/show_selected_participants.html:50
+msgid "State"
+msgstr "Estado"
+
+#: export/templates/export/show_selected_participants.html:51
+msgid "City"
+msgstr "Cidade"
+
+#: export/templates/export/show_selected_participants.html:87
+msgid "Previous"
+msgstr "Anterior"
+
+#: export/views.py:269
+msgid "Inconsistent data read from json file"
+msgstr "Dados inconsistentes do arquivo de entrada"
+
+#: export/views.py:520
+msgid "Export data was not generated."
+msgstr "Exportação não foi gerada."
+
+#: export/views.py:533
+msgid "No data was select. Export data was not generated."
+msgstr "Nenhum dado foi selecionado. Exportação não foi gerada."
+
