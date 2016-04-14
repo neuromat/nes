@@ -171,6 +171,7 @@ class ExportExecution:
         self.per_participant_data = {}
         self.questionnaires_data = {}
         self.root_directory = ""
+        self.participants_filtered_data = []
 
     def set_directory_base(self, user_id, export_id):
         self.directory_base = path.join(self.base_directory_name, str(user_id))
@@ -302,11 +303,19 @@ class ExportExecution:
 
         return self.per_participant_data
 
-    def get_participants_filtered_data(self):
+    def set_participants_filtered_data(self, participants_filtered_list):
 
         participants = Patient.objects.filter(removed=False).values_list("id")
 
-        return participants
+        self.participants_filtered_data = participants.filter(id__in=participants_filtered_list)
+
+        # return participants
+
+    def get_participants_filtered_data(self):
+
+        # participants = Patient.objects.filter(removed=False).values_list("id")
+
+        return self.participants_filtered_data
 
     def update_questionnaire_rules(self, questionnaire_id):
 
@@ -698,6 +707,8 @@ class ExportExecution:
             # filter data (participants)
             questionnaire_responses = QuestionnaireResponse.objects.filter(survey__lime_survey_id=questionnaire_id)
             #   TODO: include new filter that came from advanced search
+            filtered_data = self.get_participants_filtered_data()
+            questionnaire_responses = questionnaire_responses.filter(patient_id__in=filtered_data)
 
             # process data fields
 

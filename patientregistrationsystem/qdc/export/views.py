@@ -224,6 +224,13 @@ def export_create(request, export_id, input_filename, template_name="export/expo
 
         export = ExportExecution(export_instance.user.id, export_instance.id)
 
+        # update data from advanced search
+        if 'filtered_participant_data' in request.session:
+            participants_filtered_list = request.session['filtered_participant_data']
+        else:
+            participants_filtered_list = Patient.objects.filter(removed=False)
+        export.set_participants_filtered_data(participants_filtered_list)
+
         # files_to_zip_list = []
 
         # export_instance = create_export_instance(request.user)
@@ -671,7 +678,7 @@ def filter_participants(request, template_name="export/participant_selection.htm
                     date_birth_max = datetime.now() - relativedelta(years=int(age_interval[0]))
                     participants_list = participants_list.filter(date_birth__range=(date_birth_min, date_birth_max))
 
-                request.session['participant_list'] = [item.id for item in participants_list]
+                request.session['filtered_participant_data'] = [item.id for item in participants_list]
 
                 context = {
                     "total_of_participants": total_of_participants,
@@ -682,13 +689,14 @@ def filter_participants(request, template_name="export/participant_selection.htm
             else:
 
                 participants_list = Patient.objects.filter(removed=False)
-                request.session['participant_list'] = [item.id for item in participants_list]
-
-                context = {
-                    'participant_list': request.session['participant_list']
-                }
-                return render(request, "export/export_data.html", context)
-
+                request.session['filtered_participant_data'] = [item.id for item in participants_list]
+                #
+                # context = {
+                #     'participant_list': request.session['filtered_participant_data']
+                # }
+                # return render(request, "export/export_data.html", context)
+                redirect_url = reverse("export_view", args=())
+                return HttpResponseRedirect(redirect_url)
         if request.POST['action'] == 'previous-step-2':
 
             context = {
@@ -712,3 +720,9 @@ def filter_participants(request, template_name="export/participant_selection.htm
         "age_interval_form": age_interval_form}
 
     return render(request, template_name, context)
+
+
+@login_required
+def export_main(request):
+    redirect_url = reverse("filter_participants", args=())
+    return HttpResponseRedirect(redirect_url)
