@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2016-04-05 11:44-0300\n"
+"POT-Creation-Date: 2016-04-14 19:22-0300\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -17,82 +17,184 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 
-#: export/export.py:101 export/tests.py:156
+#: export/export.py:111 export/export_bkp.py:101 export/tests.py:160
 msgid "Base path does not exist"
 msgstr ""
 
-#: export/forms.py:39
+#: export/forms.py:17 export/templates/export/participant_selection.html:40
+msgid "All participants"
+msgstr ""
+
+#: export/forms.py:18 export/templates/export/participant_selection.html:45
+#: export/templates/export/show_selected_participants.html:26
+msgid "Selected participants"
+msgstr ""
+
+#: export/forms.py:47
 msgid "Either one or both Per participant/Per questionnaire must be set."
 msgstr ""
 
-#: export/templates/export/export_data.html:61
+#: export/forms.py:73
+msgid "Min age must be filled."
+msgstr ""
+
+#: export/forms.py:76
+msgid "Max age must be filled."
+msgstr ""
+
+#: export/lixo.py:1075 export/views.py:502
+msgid "Export was finished correctly"
+msgstr ""
+
+#: export/lixo.py:1205
+msgid "Please, correct the highlighted fields."
+msgstr ""
+
+#: export/templates/export/export_data.html:60
 msgid "General Information"
 msgstr ""
 
-#: export/templates/export/export_data.html:66
+#: export/templates/export/export_data.html:65
 msgid "At least one option must be selected"
 msgstr ""
 
-#: export/templates/export/export_data.html:66
+#: export/templates/export/export_data.html:65
 msgid "Directory Structure"
 msgstr ""
 
-#: export/templates/export/export_data.html:72
+#: export/templates/export/export_data.html:71
 msgid "Per participant"
 msgstr ""
 
-#: export/templates/export/export_data.html:84
+#: export/templates/export/export_data.html:83
 msgid "Per questionnaire"
 msgstr ""
 
-#: export/templates/export/export_data.html:113
+#: export/templates/export/export_data.html:112
 msgid "Questionnaire information"
 msgstr ""
 
-#: export/templates/export/export_data.html:117
+#: export/templates/export/export_data.html:116
 msgid "Questionnaire - Entrance evaluation"
 msgstr ""
 
-#: export/templates/export/export_data.html:118
+#: export/templates/export/export_data.html:117
 msgid "Please, select a questionnaire from the list."
 msgstr ""
 
-#: export/templates/export/export_data.html:132
+#: export/templates/export/export_data.html:131
 msgid "Participants"
 msgstr ""
 
-#: export/templates/export/export_data.html:136
+#: export/templates/export/export_data.html:135
 msgid "Participant fields"
 msgstr ""
 
-#: export/templates/export/export_data.html:137
+#: export/templates/export/export_data.html:136
 msgid "Please, select a patient field from the list."
 msgstr ""
 
-#: export/templates/export/export_data.html:147
+#: export/templates/export/export_data.html:146
 msgid "Diagnosis"
 msgstr ""
 
-#: export/templates/export/export_data.html:151
+#: export/templates/export/export_data.html:150
 msgid "Diagnosis fields"
 msgstr ""
 
-#: export/templates/export/export_data.html:152
+#: export/templates/export/export_data.html:151
 msgid "Please, select a diagnosis field from the list."
 msgstr ""
 
-#: export/templates/export/export_data.html:165
+#: export/templates/export/export_data.html:164
 msgid "Run"
 msgstr ""
 
-#: export/templates/export/export_data.html:169
+#: export/templates/export/export_data.html:168
+#: export/templates/export/participant_selection.html:111
+#: export/templates/export/show_selected_participants.html:92
 msgid "Cancel"
 msgstr ""
 
-#: export/views.py:235
+#: export/templates/export/participant_selection.html:24
+#: export/templates/export/show_selected_participants.html:24
+msgid "Home"
+msgstr ""
+
+#: export/templates/export/participant_selection.html:25
+#: export/templates/export/show_selected_participants.html:25
+msgid "Export"
+msgstr ""
+
+#: export/templates/export/participant_selection.html:26
+#: export/templates/export/participant_selection.html:34
+msgid "Participants selection"
+msgstr ""
+
+#: export/templates/export/participant_selection.html:54
+#: export/templates/export/show_selected_participants.html:48
+msgid "Gender"
+msgstr ""
+
+#: export/templates/export/participant_selection.html:65
+#: export/templates/export/show_selected_participants.html:52
+msgid "Marital status"
+msgstr ""
+
+#: export/templates/export/participant_selection.html:76
+#: export/templates/export/show_selected_participants.html:47
+msgid "Age"
+msgstr ""
+
+#: export/templates/export/participant_selection.html:86
+msgid "to"
+msgstr ""
+
+#: export/templates/export/participant_selection.html:105
+#: export/templates/export/show_selected_participants.html:79
+msgid "Next"
+msgstr ""
+
+#: export/templates/export/show_selected_participants.html:35
+msgid "List of questionnaires"
+msgstr ""
+
+#: export/templates/export/show_selected_participants.html:38
+msgid "of"
+msgstr ""
+
+#: export/templates/export/show_selected_participants.html:38
+msgid "participants were selected"
+msgstr ""
+
+#: export/templates/export/show_selected_participants.html:46
+msgid "Code"
+msgstr ""
+
+#: export/templates/export/show_selected_participants.html:49
+msgid "Country"
+msgstr ""
+
+#: export/templates/export/show_selected_participants.html:50
+msgid "State"
+msgstr ""
+
+#: export/templates/export/show_selected_participants.html:51
+msgid "City"
+msgstr ""
+
+#: export/templates/export/show_selected_participants.html:87
+msgid "Previous"
+msgstr ""
+
+#: export/views.py:269
 msgid "Inconsistent data read from json file"
 msgstr ""
 
-#: export/views.py:356 export/views.py:476
-msgid "Export was finished correctly"
+#: export/views.py:520
+msgid "Export data was not generated."
+msgstr ""
+
+#: export/views.py:533
+msgid "No data was select. Export data was not generated."
 msgstr ""

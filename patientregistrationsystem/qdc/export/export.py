@@ -171,6 +171,8 @@ class ExportExecution:
         self.per_participant_data = {}
         self.questionnaires_data = {}
         self.root_directory = ""
+        self.participants_filtered_data = []
+        self.directory_base = ''
 
     def set_directory_base(self, user_id, export_id):
         self.directory_base = path.join(self.base_directory_name, str(user_id))
@@ -302,11 +304,19 @@ class ExportExecution:
 
         return self.per_participant_data
 
-    def get_participants_filtered_data(self):
+    def set_participants_filtered_data(self, participants_filtered_list):
 
         participants = Patient.objects.filter(removed=False).values_list("id")
 
-        return participants
+        self.participants_filtered_data = participants.filter(id__in=participants_filtered_list)
+
+        # return participants
+
+    def get_participants_filtered_data(self):
+
+        # participants = Patient.objects.filter(removed=False).values_list("id")
+
+        return self.participants_filtered_data
 
     def update_questionnaire_rules(self, questionnaire_id):
 
@@ -336,52 +346,52 @@ class ExportExecution:
 
         return fields
 
-    def read_questionnaire_from_lime_survey(self, questionnaire_id, token, language, questionnaire_lime_survey, fields):
-        """
-        :param questionnaire_id:
-        :param token:
-        :param language:
-        :param questionnaire_lime_survey:
-        :param fields:
-        :return: header, formatted according to fields
-                 data_rows, formatted according to fields
-                 if error, both data are []
-        """
-
-        # # for each questionnaire response
-        # token = '2gyciirwrpr54wj'
-
-        responses_string = questionnaire_lime_survey.get_responses_by_token(questionnaire_id, token, language)
-
-        fill_list = perform_csv_response(responses_string)
-        # fill_list[0] -> header
-        # fill_list[1:len(fill_list)] -> data
-
-        data_rows = []
-
-        if "subjectid" in fill_list[0]:
-
-            subject_id = fill_list[0].index("subjectid")
-
-            subscripts = []
-            # find fields that must be used for this process
-            for field in fields:
-                if field in fill_list[0]:
-                    subscripts.append(fill_list[0].index(field))
-
-            # header = [smart_str(fill_list[0][index]) for index in subscripts]
-            self.update_questionnaire_rules(questionnaire_id)
-
-            # do not consider first line, because it is header
-            for line in fill_list[1:len(fill_list) - 1]:
-                if is_patient_active(line[subject_id]):
-                    # data_rows.append([data_line])
-                    # print(data_rows)
-                    fields = [smart_str(line[index]) for index in subscripts]
-                    transformed_fields = self.transform_questionnaire_data(to_number(line[subject_id]), fields)
-                    data_rows.append(transformed_fields)
-
-        return data_rows
+# def read_questionnaire_from_lime_survey(self, questionnaire_id, token, language, questionnaire_lime_survey, fields):
+    #     """
+    #     :param questionnaire_id:
+    #     :param token:
+    #     :param language:
+    #     :param questionnaire_lime_survey:
+    #     :param fields:
+    #     :return: header, formatted according to fields
+    #              data_rows, formatted according to fields
+    #              if error, both data are []
+    #     """
+    #
+    #     # # for each questionnaire response
+    #     # token = '2gyciirwrpr54wj'
+    #
+    #     responses_string = questionnaire_lime_survey.get_responses_by_token(questionnaire_id, token, language)
+    #
+    #     fill_list = perform_csv_response(responses_string)
+    #     # fill_list[0] -> header
+    #     # fill_list[1:len(fill_list)] -> data
+    #
+    #     data_rows = []
+    #
+    #     if "subjectid" in fill_list[0]:
+    #
+    #         subject_id = fill_list[0].index("subjectid")
+    #
+    #         subscripts = []
+    #         # find fields that must be used for this process
+    #         for field in fields:
+    #             if field in fill_list[0]:
+    #                 subscripts.append(fill_list[0].index(field))
+    #
+    #         # header = [smart_str(fill_list[0][index]) for index in subscripts]
+    #         self.update_questionnaire_rules(questionnaire_id)
+    #
+    #         # do not consider first line, because it is header
+    #         for line in fill_list[1:len(fill_list) - 1]:
+    #             if is_patient_active(line[subject_id]):
+    #                 # data_rows.append([data_line])
+    #                 # print(data_rows)
+    #                 fields = [smart_str(line[index]) for index in subscripts]
+    #                 transformed_fields = self.transform_questionnaire_data(to_number(line[subject_id]), fields)
+    #                 data_rows.append(transformed_fields)
+    #
+    #     return data_rows
 
     def create_questionnaire_explanation_fields_file(self, questionnaire_id, language,
                                                      questionnaire_lime_survey, fields):
@@ -413,7 +423,7 @@ class ExportExecution:
 
             properties = questionnaire_lime_survey.get_question_properties(question, language)
 
-            if properties['title'] in fields_cleared:
+            if ('title' in properties) and (properties['title'] in fields_cleared):
 
                 fields_from_questions.append(properties['title'])
 
@@ -468,60 +478,63 @@ class ExportExecution:
 
         return questionnaire_explanation_fields_list
 
-    def define_questionnaire(self, questionnaire, questionnaire_lime_survey):
-        """
-        :param questionnaire:
-        :return: fields_description: (list)
-
-        """
-        # questionnaire exportation - evaluation questionnaire
-        # print("define_questionnaire:  ")
-        questionnaire_id = questionnaire["id"]
-        language = questionnaire["language"]
-
-        headers, fields = self.set_questionnaire_header_and_fields(questionnaire)
-
-        export_rows = []
-
-        # verify if Lime Survey is running
-        limesurvey_available = is_limesurvey_available(questionnaire_lime_survey)
-        questionnaire_exists = QuestionnaireResponse.objects.filter(survey__lime_survey_id=questionnaire_id).exists()
-
-        if questionnaire_exists and limesurvey_available:
-
-            questionnaire_responses = QuestionnaireResponse.objects.filter(survey__lime_survey_id=questionnaire_id)
-
-            # for each questionnaire_id from ResponseQuestionnaire from questionnaire_id
-            for questionnaire_response in questionnaire_responses:
-
-                survey_completed = (questionnaire_lime_survey.get_participant_properties(
-                    questionnaire_response.survey.lime_survey_id,
-                    questionnaire_response.token_id, "completed") != "N")
-
-                if survey_completed:
-                    token = questionnaire_lime_survey.get_participant_properties(
-                        questionnaire_response.survey.lime_survey_id, questionnaire_response.token_id, "token")
-
-                    data_rows = self.read_questionnaire_from_lime_survey(
-                        questionnaire_response.survey.lime_survey_id,
-                        token, language,
-                        questionnaire_lime_survey,
-                        fields)
-
-                    if len(data_rows) > 0:
-                        export_rows.extend(data_rows)
-
-                        self.include_in_per_participant_data(data_rows,
-                                                             questionnaire_response.patient_id,
-                                                             questionnaire_id)
-
-        header = self.get_header_questionnaire(questionnaire_id)
-        export_rows.insert(0, header)
-        return export_rows
+    # def define_questionnaire(self, questionnaire, questionnaire_lime_survey):
+    #     """
+    #     :param questionnaire:
+    #     :return: fields_description: (list)
+    #
+    #     """
+    #     # questionnaire exportation - evaluation questionnaire
+    #     # print("define_questionnaire:  ")
+    #     questionnaire_id = questionnaire["id"]
+    #     language = questionnaire["language"]
+    #
+    #     headers, fields = self.set_questionnaire_header_and_fields(questionnaire)
+    #
+    #     export_rows = []
+    #
+    #     # verify if Lime Survey is running
+    #     limesurvey_available = is_limesurvey_available(questionnaire_lime_survey)
+    #     questionnaire_exists = QuestionnaireResponse.objects.filter(survey__lime_survey_id=questionnaire_id).exists()
+    #
+    #     if questionnaire_exists and limesurvey_available:
+    #
+    #         questionnaire_responses = QuestionnaireResponse.objects.filter(survey__lime_survey_id=questionnaire_id)
+    #
+    #         # for each questionnaire_id from ResponseQuestionnaire from questionnaire_id
+    #         for questionnaire_response in questionnaire_responses:
+    #
+    #             survey_completed = (questionnaire_lime_survey.get_participant_properties(
+    #                 questionnaire_response.survey.lime_survey_id,
+    #                 questionnaire_response.token_id, "completed") != "N")
+    #
+    #             if survey_completed:
+    #                 token = questionnaire_lime_survey.get_participant_properties(
+    #                     questionnaire_response.survey.lime_survey_id, questionnaire_response.token_id, "token")
+    #
+    #                 data_rows = self.read_questionnaire_from_lime_survey(
+    #                     questionnaire_response.survey.lime_survey_id,
+    #                     token, language,
+    #                     questionnaire_lime_survey,
+    #                     fields)
+    #
+    #                 if len(data_rows) > 0:
+    #                     export_rows.extend(data_rows)
+    #
+    #                     self.include_in_per_participant_data(data_rows,
+    #                                                          questionnaire_response.patient_id,
+    #                                                          questionnaire_id)
+    #
+    #     header = self.get_header_questionnaire(questionnaire_id)
+    #     export_rows.insert(0, header)
+    #     return export_rows
 
     def process_per_questionnaire(self):
 
         error_msg = ""
+        export_per_questionnaire_directory = ''
+        path_per_questionnaire = ''
+
         # and save per_participant data
         if self.get_input_data("export_per_questionnaire"):
             per_questionnaire_directory = self.get_input_data("per_questionnaire_directory")
@@ -633,3 +646,101 @@ class ExportExecution:
                     self.files_to_zip_list.append([complete_filename, export_directory])
 
         return error_msg
+
+    # def pre_processing(self):
+    #
+    #     error_msg = ""
+    #     # and save per_participant data
+    #
+    #     questionnaire_lime_survey = Questionnaires()
+    #
+    #     for questionnaire in self.get_input_data("questionnaires"):
+    #
+    #         questionnaire_id = questionnaire["id"]
+    #         language = questionnaire["language"]
+    #
+    #         print(questionnaire_id)
+    #
+    #         # per_participant_data is updated by define_questionnaire method
+    #         fields_description = self.define_questionnaire2(questionnaire, questionnaire_lime_survey)
+    #
+    #     questionnaire_lime_survey.release_session_key()
+    #
+    #     return error_msg
+
+    def define_questionnaire(self, questionnaire, questionnaire_lime_survey):
+        """
+        :param questionnaire:
+        :return: fields_description: (list)
+
+        """
+        # questionnaire exportation - evaluation questionnaire
+        # print("define_questionnaire:  ")
+        questionnaire_id = questionnaire["id"]
+        language = questionnaire["language"]
+
+        headers, fields = self.set_questionnaire_header_and_fields(questionnaire)
+
+        export_rows = []
+
+        # verify if Lime Survey is running
+        limesurvey_available = is_limesurvey_available(questionnaire_lime_survey)
+        questionnaire_exists = QuestionnaireResponse.objects.filter(survey__lime_survey_id=questionnaire_id).exists()
+
+        if questionnaire_exists and limesurvey_available:
+
+            # read all data for questionnaire_id from LimeSurvey
+            responses_string = questionnaire_lime_survey.get_responses(questionnaire_id, language)
+            fill_list = perform_csv_response(responses_string)
+
+            # filter fields
+            subscripts = []
+            # find fields that must be used for this process
+            for field in fields:
+                if field in fill_list[0]:
+                    subscripts.append(fill_list[0].index(field))
+
+            data_from_lime_survey = {}
+
+            # do not consider first line, because it is header
+            for line in fill_list[1:len(fill_list) - 1]:
+                token_id = int(line[fill_list[0].index("id")])
+                data_fields_filtered = [line[index] for index in subscripts]
+                data_from_lime_survey[token_id] = data_fields_filtered
+
+            # filter data (participants)
+            questionnaire_responses = QuestionnaireResponse.objects.filter(survey__lime_survey_id=questionnaire_id)
+
+            #  include new filter that come from advanced search
+            filtered_data = self.get_participants_filtered_data()
+            questionnaire_responses = questionnaire_responses.filter(patient_id__in=filtered_data)
+
+            # process data fields
+
+            # data_rows = []
+            self.update_questionnaire_rules(questionnaire_id)
+
+            # for each questionnaire_id from ResponseQuestionnaire from questionnaire_id
+            for questionnaire_response in questionnaire_responses:
+
+                # transform data fields
+                # include new fields
+                if questionnaire_response.token_id in data_from_lime_survey:
+
+                    lm_data_row = data_from_lime_survey[questionnaire_response.token_id]
+
+                    data_fields = [smart_str(data) for data in lm_data_row]
+                    transformed_fields = self.transform_questionnaire_data(questionnaire_response.patient_id,
+                                                                           data_fields)
+                    # data_rows.append(transformed_fields)
+
+                    if len(transformed_fields) > 0:
+                        export_rows.append(transformed_fields)
+
+                        self.include_in_per_participant_data([transformed_fields],
+                                                             questionnaire_response.patient_id,
+                                                             questionnaire_id)
+
+        header = self.get_header_questionnaire(questionnaire_id)
+        export_rows.insert(0, header)
+        return export_rows

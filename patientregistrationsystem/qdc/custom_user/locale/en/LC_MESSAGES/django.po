@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2016-04-05 11:44-0300\n"
+"POT-Creation-Date: 2016-04-14 19:22-0300\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -123,27 +123,27 @@ msgstr ""
 msgid "Insert new user"
 msgstr ""
 
-#: custom_user/views.py:41
+#: custom_user/views.py:37
 msgid "User created successfully."
 msgstr ""
 
-#: custom_user/views.py:44
+#: custom_user/views.py:40
 msgid "It was not possible to create user."
 msgstr ""
 
-#: custom_user/views.py:49
+#: custom_user/views.py:45
 msgid "This user name already exists."
 msgstr ""
 
-#: custom_user/views.py:51
+#: custom_user/views.py:47
 msgid "This username already exists in an disabled user."
 msgstr ""
 
-#: custom_user/views.py:93
+#: custom_user/views.py:89
 msgid "User updated successfully."
 msgstr ""
 
-#: custom_user/views.py:101
+#: custom_user/views.py:97
 msgid "User deleted successfully."
 msgstr ""
 

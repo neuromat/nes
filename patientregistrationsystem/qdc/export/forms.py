@@ -1,6 +1,6 @@
 # coding=utf-8
 from django.forms import ModelForm, Form, TextInput, CharField, BooleanField, MultipleChoiceField, \
-    CheckboxSelectMultiple, ValidationError, ChoiceField, SelectMultiple
+    CheckboxSelectMultiple, ValidationError, ChoiceField, SelectMultiple, IntegerField, NumberInput
 
 from django.utils.translation import ugettext as _
 
@@ -57,13 +57,21 @@ class ParticipantsSelectionForm(ModelForm):
         ]
 
         widgets = {
-            # 'gender': SelectMultiple(attrs={}),
-            # 'marital_status': SelectMultiple(attrs={}),
-            'gender': SelectMultiple(attrs={'height': '60px'}),
-            'marital_status': SelectMultiple(attrs={'class': 'form-control', 'height': '120px'}),
+            'gender': SelectMultiple(attrs={'class': 'form-control', 'required': "", 'disabled': ''}),
+            'marital_status': SelectMultiple(attrs={'class': 'form-control', 'required': "", 'disabled': ''}),
         }
 
     def __init__(self, *args, **kwargs):
         super(ParticipantsSelectionForm, self).__init__(*args, **kwargs)
         self.fields['gender'].empty_label = None
         self.fields['marital_status'].empty_label = None
+
+
+class AgeIntervalForm(Form):
+
+    min_age = IntegerField(min_value=0, widget=NumberInput(attrs={'class': 'form-control', 'required': "",
+                                                                  'data-error': _('Min age must be filled.'),
+                                                                  'disabled': ''}))
+    max_age = IntegerField(min_value=0, widget=NumberInput(attrs={'class': 'form-control', 'required': "",
+                                                                  'data-error': _('Max age must be filled.'),
+                                                                  'disabled': ''}))

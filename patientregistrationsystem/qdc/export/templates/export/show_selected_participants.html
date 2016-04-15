@@ -1,0 +1,105 @@
+{% extends "quiz/template.html" %}
+
+{% load i18n %}
+
+{% block header %}
+    {% load static %}
+    <script src="{% static 'quiz/js/participant_selection.js' %}"></script>
+
+    {% block specific_header %}
+    {% endblock %}
+{% endblock %}
+
+{% block form %}
+    <div class="row">
+    <form id="user_form" method="post" data-toggle="validator">
+    {% csrf_token %}
+{% endblock %}
+
+{% block content %}
+
+    <div class="tab-pane fade in active" id="selectedParticipantBreadCrumb">
+        <div class="col-md-10">
+            <ol class="breadcrumb">
+                <li><a href="/home">{% trans "Home" %}</a></li>
+                <li class="active">{% trans "Export" %}</li>
+                <li class="active">{% trans "Selected participants" %}</li>
+            </ol>
+        </div>
+    </div>
+
+    <div class="tab-pane fade in active" id="mainMenuUserTab">
+        <div class="col-md-10">
+            <div class="container span6 offset3 well ">
+
+                <h4>{% trans "List of questionnaires" %}</h4>
+
+                <p class="{% if participants_list|length %}text-primary{% else %}text-danger{% endif %}">
+                    {{ participants_list|length }} {% trans "of" %} {{ total_of_participants }} {% trans "participants were selected" %}
+                </p>
+
+                {% if participants_list|length %}
+                    <div class="form-group">
+                        <table class="table table-striped">
+                            <thead>
+                                <tr>
+                                    <th>{% trans "Code" %}</th>
+                                    <th>{% trans "Age" %}</th>
+                                    <th>{% trans "Gender" %}</th>
+                                    <th>{% trans "Country" %}</th>
+                                    <th>{% trans "State" %}</th>
+                                    <th>{% trans "City" %}</th>
+                                    <th>{% trans "Marital status" %}</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                            {% for participant in participants_list %}
+                                <tr>
+                                    <td>{{ participant.code }}</td>
+                                    <td>{{ participant.date_birth|timesince }}</td>
+                                    <td>{{ participant.gender }}</td>
+                                    <td>{{ participant.country }}</td>
+                                    <td>{{ participant.state }}</td>
+                                    <td>{{ participant.city }}</td>
+                                    <td>{% if participant.marital_status %}{{ participant.marital_status }}{% endif %}</td>
+                                </tr>
+                            {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                {% endif %}
+            </div>
+
+            <div class="btn-toolbar">
+
+                <div class="btn-group pull-left">
+                </div>
+
+                <div class="btn-group pull-right">
+                    <button type="submit" name="action" value="next-step-2" class="btn btn-primary" {% if not participants_list|length %}disabled{% endif %}>{% trans "Next" %}
+                        <span class="glyphicon glyphicon-forward"></span>
+                    </button>
+                </div>
+
+                <div class="btn-group pull-right">
+                    <button type="submit" name="action" value="previous-step-2" class="btn btn-primary">
+                        <span class="glyphicon glyphicon-backward"></span>
+                        {% trans "Previous" %}
+                    </button>
+                </div>
+
+                <div class="btn-group pull-right">
+                    <a href="/home" class="btn" style="background-color: #f5f5f5">{% trans "Cancel" %}</a>
+                </div>
+
+            </div>
+
+        </div>
+    </div>
+
+{% endblock %}
+
+{% block end_form %}
+    </form>
+    </div>
+{% endblock %}

@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2016-04-05 11:44-0300\n"
+"POT-Creation-Date: 2016-04-14 19:22-0300\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -147,7 +147,7 @@ msgstr "mês (meses)"
 msgid "year(s)"
 msgstr "ano(s)"
 
-#: experiment/models.py:28
+#: experiment/models.py:28 experiment/tests.py:1286
 msgid "Date cannot be greater than today's date."
 msgstr "Data de preenchimento não pode ser maior que a data de hoje."
 
@@ -1103,8 +1103,8 @@ msgid "Research updated successfully."
 msgstr "Estudo atualizado com sucesso."
 
 #: experiment/views.py:160 experiment/views.py:355 experiment/views.py:533
-#: experiment/views.py:1394 experiment/views.py:2265 experiment/views.py:2287
-#: experiment/views.py:2297
+#: experiment/views.py:1393 experiment/views.py:2264 experiment/views.py:2286
+#: experiment/views.py:2296
 msgid "There is no changes to save."
 msgstr "Não há alterações para salvar."
 
@@ -1141,11 +1141,11 @@ msgstr "Não foi possível excluir o grupo, pois há dependências."
 msgid "Group updated successfully."
 msgstr "Grupo atualizado com sucesso."
 
-#: experiment/views.py:806
+#: experiment/views.py:805
 msgid "Participant deleted from experiment."
 msgstr "Participante deletado do experimento."
 
-#: experiment/views.py:808
+#: experiment/views.py:807
 msgid ""
 "It was not possible to delete participant, because there are answers or eeg "
 "data associated"
@@ -1153,20 +1153,20 @@ msgstr ""
 "Não foi possível excluir o participante, pois há respostas de questionários "
 "ou arquivos de eeg associados"
 
-#: experiment/views.py:837
+#: experiment/views.py:836
 msgid "Fill not available - Table of tokens was not started."
 msgstr "Preenchimento não disponível - Tabela de tokens não iniciada"
 
-#: experiment/views.py:841
+#: experiment/views.py:840
 msgid "Fill not available - Questionnaire is not activated."
 msgstr "Preenchimento não disponível - Questionário não está ativo"
 
-#: experiment/views.py:845
+#: experiment/views.py:844
 msgid "Fill not available - Questionnaire does not contain standard fields."
 msgstr ""
 "Preenchimento não disponível - Questionário não contém campos padronizados"
 
-#: experiment/views.py:854
+#: experiment/views.py:853
 msgid ""
 "Fail trying to generate token to answer questionnaire. Check if "
 "questionnaire is active."
@@ -1174,135 +1174,135 @@ msgstr ""
 "Falha ao gerar token para responder questionário. Verifique se o "
 "questionário está ativo"
 
-#: experiment/views.py:974
+#: experiment/views.py:973
 msgid "You will be redirected to questionnaire. Please wait."
 msgstr "Você será redirecionado para o questionário. Aguarde."
 
-#: experiment/views.py:996 experiment/views.py:1149
+#: experiment/views.py:995 experiment/views.py:1148
 msgid "Fill deleted successfully."
 msgstr "Preenchimento removido com sucesso"
 
-#: experiment/views.py:998 experiment/views.py:1151
+#: experiment/views.py:997 experiment/views.py:1150
 msgid "Error trying to delete fill"
 msgstr "Erro ao deletar o preenchimento"
 
-#: experiment/views.py:1313
+#: experiment/views.py:1312
 msgid "EEG data collection created successfully."
 msgstr "Coleta de dados de EEG criada com sucesso."
 
-#: experiment/views.py:1354
+#: experiment/views.py:1353
 msgid "EEG data removed successfully."
 msgstr "Dados de EEG excluídos com sucesso."
 
-#: experiment/views.py:1392
+#: experiment/views.py:1391
 msgid "EEG data updated successfully."
 msgstr "Dados de EEG alterado com sucesso."
 
-#: experiment/views.py:1433
+#: experiment/views.py:1432
 msgid "Participant has already been inserted in this group."
 msgstr "Participante já foi incluído neste grupo"
 
-#: experiment/views.py:1479
+#: experiment/views.py:1478
 msgid "Consent term saved successfully."
 msgstr "Termo salvo com sucesso."
 
-#: experiment/views.py:1484
+#: experiment/views.py:1483
 msgid "There are not attachments to save"
 msgstr "Não existem anexos para salvar"
 
-#: experiment/views.py:1488
+#: experiment/views.py:1487
 msgid "Attachment deleted successfully."
 msgstr "Anexo removido com sucesso."
 
-#: experiment/views.py:1696 experiment/views.py:2531 experiment/views.py:2640
-#: experiment/views.py:2664
+#: experiment/views.py:1695 experiment/views.py:2530 experiment/views.py:2639
+#: experiment/views.py:2663
 msgid "Step included successfully."
 msgstr "Passo incluído com sucesso."
 
-#: experiment/views.py:1815
+#: experiment/views.py:1814
 msgid " years "
 msgstr " anos "
 
-#: experiment/views.py:1815
+#: experiment/views.py:1814
 msgid " year "
 msgstr " ano "
 
-#: experiment/views.py:1820
+#: experiment/views.py:1819
 msgid " months "
 msgstr " meses "
 
-#: experiment/views.py:1820
+#: experiment/views.py:1819
 msgid " month "
 msgstr " mês "
 
-#: experiment/views.py:1825
+#: experiment/views.py:1824
 msgid " weeks "
 msgstr " semanas "
 
-#: experiment/views.py:1825
+#: experiment/views.py:1824
 msgid " week "
 msgstr " semana "
 
-#: experiment/views.py:1830
+#: experiment/views.py:1829
 msgid " days "
 msgstr " dias "
 
-#: experiment/views.py:1830
+#: experiment/views.py:1829
 msgid " day "
 msgstr " dia "
 
-#: experiment/views.py:1835
+#: experiment/views.py:1834
 msgid " hours "
 msgstr " horas "
 
-#: experiment/views.py:1835
+#: experiment/views.py:1834
 msgid " hour "
 msgstr " hora "
 
-#: experiment/views.py:1840
+#: experiment/views.py:1839
 msgid " minutes "
 msgstr " minutos "
 
-#: experiment/views.py:1840
+#: experiment/views.py:1839
 msgid " minute "
 msgstr " minuto "
 
-#: experiment/views.py:1845
+#: experiment/views.py:1844
 msgid " seconds "
 msgstr " segundos "
 
-#: experiment/views.py:1845
+#: experiment/views.py:1844
 msgid " second "
 msgstr " segundo "
 
-#: experiment/views.py:1850
+#: experiment/views.py:1849
 msgid " miliseconds "
 msgstr " milesegundos "
 
-#: experiment/views.py:1850
+#: experiment/views.py:1849
 msgid " milisecond "
 msgstr " milesegundo "
 
-#: experiment/views.py:1865
+#: experiment/views.py:1864
 msgid " and "
 msgstr " e "
 
-#: experiment/views.py:2045 experiment/views.py:2295
+#: experiment/views.py:2044 experiment/views.py:2294
 msgid "Step use updated successfully."
 msgstr "Uso do passo atualizado com sucesso."
 
-#: experiment/views.py:2051 experiment/views.py:2304
+#: experiment/views.py:2050 experiment/views.py:2303
 msgid "Component deleted successfully."
 msgstr "Componente removido com sucesso."
 
-#: experiment/views.py:2263 experiment/views.py:2285
+#: experiment/views.py:2262 experiment/views.py:2284
 msgid "Step updated successfully."
 msgstr "Passo alterado com sucesso."
 
-#: experiment/views.py:2501
+#: experiment/views.py:2500
 msgid "Experimental protocol included successfully."
 msgstr "Protocolo experimental incluído com sucesso."
 
-#: experiment/views.py:2529 experiment/views.py:2662
+#: experiment/views.py:2528 experiment/views.py:2661
 msgid "Steps included successfully."
 msgstr "Passos incluídos com sucesso."

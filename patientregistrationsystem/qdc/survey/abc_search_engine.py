@@ -257,6 +257,23 @@ class ABCSearchEngine(ABC):
 
         return responses_txt
 
+    def get_header_response(self, sid, language, heading_type='code'):
+        """ obtains header responses
+        :param sid: survey ID
+        :param language: language
+        :param heading_type: heading type (can be 'code' or 'full')
+        :return: responses in the txt format
+        """
+        responses = self.server.export_responses(self.session_key, sid, 'csv', language, 'complete', heading_type,
+                                                 'short', 1, 1)   # , 1,9999999, fields)
+
+        if isinstance(responses, str):
+            responses_txt = b64decode(responses)
+        else:
+            responses_txt = responses
+
+        return responses_txt
+
     @abstractmethod
     def get_summary(self, sid, stat_name):
         """
@@ -392,6 +409,9 @@ class Questionnaires(ABCSearchEngine):
 
     def get_responses(self, sid, language, fields=None):
         return super(Questionnaires, self).get_responses(sid, language, fields)
+
+    def get_header_response(self, sid, language, heading_type='code'):
+        return super(Questionnaires, self).get_header_response(sid, language, heading_type)
 
     def get_summary(self, sid, stat_name):
         return super(Questionnaires, self).get_summary(sid, stat_name)

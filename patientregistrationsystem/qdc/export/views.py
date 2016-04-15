@@ -4,10 +4,14 @@ from django.shortcuts import render
 from django.conf import settings
 from django.contrib.auth.decorators import login_required
 from django.contrib import messages
+from django.core.urlresolvers import reverse
 # from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
-from django.http import HttpResponse
+from django.http import HttpResponse, HttpResponseRedirect
 from django.utils.encoding import smart_str
 from django.utils.translation import ugettext as _
+
+from datetime import datetime
+from dateutil.relativedelta import relativedelta
 
 from os import path
 from csv import writer
@@ -15,13 +19,13 @@ from sys import modules
 from zipfile import ZipFile
 from shutil import rmtree
 
-from .forms import ExportForm, ParticipantsSelectionForm
+from .forms import ExportForm, ParticipantsSelectionForm, AgeIntervalForm
 from .models import Export
 from .export import ExportExecution, perform_csv_response, create_directory
 
 from export.input_export import build_complete_export_structure
 
-from patient.models import QuestionnaireResponse
+from patient.models import QuestionnaireResponse, Patient
 from patient.views import check_limesurvey_access
 
 from survey.models import Survey
@@ -146,14 +150,14 @@ def get_headers_and_fields(output_list):
     return headers, fields
 
 
-def read_configuration_data(json_file):
-    json_data = open(json_file)
-
-    read_data = json.load(json_data)
-
-    json_data.close()
-
-    return read_data
+# def read_configuration_data(json_file):
+#     json_data = open(json_file)
+#
+#     read_data = json.load(json_data)
+#
+#     json_data.close()
+#
+#     return read_data
 
 
 def process_participant_data(participants, participants_list):
@@ -219,6 +223,13 @@ def export_create(request, export_id, input_filename, template_name="export/expo
         export_instance = get_export_instance(request.user, export_id)
 
         export = ExportExecution(export_instance.user.id, export_instance.id)
+
+        # update data from advanced search
+        if 'filtered_participant_data' in request.session:
+            participants_filtered_list = request.session['filtered_participant_data']
+        else:
+            participants_filtered_list = Patient.objects.filter(removed=False)
+        export.set_participants_filtered_data(participants_filtered_list)
 
         # files_to_zip_list = []
 
@@ -286,7 +297,7 @@ def export_create(request, export_id, input_filename, template_name="export/expo
         # participants_list = (export.get_per_participant_data().keys())
         participants_input_data = export.get_input_data("participants")
 
-        if participants_input_data and participants_list:
+        if participants_input_data[0]["output_list"] and participants_list:
 
             export_rows_participants = process_participant_data(participants_input_data, participants_list)
 
@@ -307,7 +318,7 @@ def export_create(request, export_id, input_filename, template_name="export/expo
         # process  diagnosis file
         diagnosis_input_data = export.get_input_data("diagnosis")
 
-        if diagnosis_input_data and participants_list:
+        if diagnosis_input_data[0]['output_list'] and participants_list:
             export_rows_diagnosis = process_participant_data(diagnosis_input_data, participants_list)
 
             export_filename = "%s.csv" % export.get_input_data('diagnosis')[0]["output_filename"]  # "export.csv"
@@ -356,6 +367,7 @@ def export_create(request, export_id, input_filename, template_name="export/expo
         rmtree(base_export_directory)
 
         # messages.success(request, _("Export was finished correctly"))
+        print("finalizado corretamente 2")
 
         return export_complete_filename
         # return file to the user
@@ -497,6 +509,8 @@ def export_view(request, template_name="export/export_data.html"):
                     # redirect_url = reverse("export_result", args=(return_response, error_message))
                     # return HttpResponseRedirect(redirect_url )
 
+                    print("antes do fim: httpResponse")
+
                     zip_file = open(complete_filename, 'rb')
                     response = HttpResponse(zip_file, content_type='application/zip')
                     response['Content-Disposition'] = 'attachment; filename="export.zip"'
@@ -599,7 +613,7 @@ def get_questionnaire_fields(questionnaire_code_list, language="pt-BR"):
 
         questionnaire_id = questionnaire["sid"]
 
-        responses_string = questionnaire_lime_survey.get_responses(questionnaire_id, language)
+        responses_string = questionnaire_lime_survey.get_header_response(questionnaire_id, language)
 
         # print("id: %d " % questionnaire_id)
 
@@ -623,11 +637,92 @@ def get_questionnaire_fields(questionnaire_code_list, language="pt-BR"):
 
 
 @login_required
-def participant_selection(request, template_name="export/participant_selection.html"):
+def filter_participants(request, template_name="export/participant_selection.html"):
 
     participant_selection_form = ParticipantsSelectionForm(None)
+    age_interval_form = AgeIntervalForm(None)
+
+    gender_list = None
+    marital_status_list = None
+    age_interval = None
+
+    if request.method == "POST":
+
+        if request.POST['action'] == "next-step-1":
+
+            if request.POST['selection_type'] == 'selected':
+
+                if "gender_selection" in request.POST:
+                    gender_list = request.POST.getlist('gender')
+
+                if "marital_status_selection" in request.POST:
+                    marital_status_list = request.POST.getlist('marital_status')
+
+                if "age_selection" in request.POST:
+                    age_interval = [request.POST['min_age'], request.POST['max_age']]
+
+                # select participants according the filters
+
+                participants_list = Patient.objects.filter(removed=False)
+
+                total_of_participants = len(participants_list)
+
+                if gender_list:
+                    participants_list = participants_list.filter(gender__id__in=gender_list)
+
+                if marital_status_list:
+                    participants_list = participants_list.filter(marital_status__id__in=marital_status_list)
+
+                if age_interval:
+                    date_birth_min = datetime.now() - relativedelta(years=int(age_interval[1]))
+                    date_birth_max = datetime.now() - relativedelta(years=int(age_interval[0]))
+                    participants_list = participants_list.filter(date_birth__range=(date_birth_min, date_birth_max))
+
+                request.session['filtered_participant_data'] = [item.id for item in participants_list]
+
+                context = {
+                    "total_of_participants": total_of_participants,
+                    "participants_list": participants_list
+                }
+                return render(request, "export/show_selected_participants.html", context)
+
+            else:
+
+                participants_list = Patient.objects.filter(removed=False)
+                request.session['filtered_participant_data'] = [item.id for item in participants_list]
+                #
+                # context = {
+                #     'participant_list': request.session['filtered_participant_data']
+                # }
+                # return render(request, "export/export_data.html", context)
+                redirect_url = reverse("export_view", args=())
+                return HttpResponseRedirect(redirect_url)
+        if request.POST['action'] == 'previous-step-2':
+
+            context = {
+                "participant_selection_form": participant_selection_form,
+                "age_interval_form": age_interval_form}
+
+            return render(request, "export/participant_selection.html", context)
+
+        if request.POST['action'] == "next-step-2":
+
+            # context = {
+            #     'participant_list': request.session['participant_list']
+            # }
+            # return render(request, "export/export_data.html", context)
+
+            redirect_url = reverse("export_view", args=())
+            return HttpResponseRedirect(redirect_url)
 
     context = {
-        "participant_selection_form": participant_selection_form,}
+        "participant_selection_form": participant_selection_form,
+        "age_interval_form": age_interval_form}
 
     return render(request, template_name, context)
+
+
+@login_required
+def export_main(request):
+    redirect_url = reverse("filter_participants", args=())
+    return HttpResponseRedirect(redirect_url)

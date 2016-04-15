@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2016-04-05 11:44-0300\n"
+"POT-Creation-Date: 2016-04-14 19:22-0300\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -17,12 +17,12 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 
-#: patient/forms.py:26 patient/tests.py:547
+#: patient/forms.py:26 patient/tests.py:546
 msgid "Name must be included"
 msgstr ""
 
 #: patient/forms.py:31 patient/forms.py:134 patient/forms.py:159
-#: patient/views.py:1154
+#: patient/views.py:1157
 msgid "%m/%d/%Y"
 msgstr ""
 
@@ -38,7 +38,7 @@ msgstr ""
 msgid "Gender must be filled"
 msgstr ""
 
-#: patient/forms.py:50 patient/tests.py:532
+#: patient/forms.py:50 patient/tests.py:531
 msgid "Incorrect e-mail"
 msgstr ""
 
@@ -106,52 +106,52 @@ msgstr ""
 msgid "Fill date must be filled"
 msgstr ""
 
-#: patient/models.py:18
+#: patient/models.py:19
 msgid "Fill date can not be bigger than today's date."
 msgstr ""
 
-#: patient/models.py:26
+#: patient/models.py:27
 #, python-format
 msgid "CPF %(CPF)s invalid"
 msgstr ""
 
-#: patient/models.py:33
+#: patient/models.py:34
 msgid "Date of birth can't be greater than today date."
 msgstr ""
 
-#: patient/models.py:159
+#: patient/models.py:174
 msgid "Cell phone"
 msgstr ""
 
-#: patient/models.py:160
+#: patient/models.py:175
 msgid "Home phone"
 msgstr ""
 
-#: patient/models.py:161
+#: patient/models.py:176
 msgid "Business"
 msgstr ""
 
-#: patient/models.py:162
+#: patient/models.py:177
 msgid "Main"
 msgstr ""
 
-#: patient/models.py:163
+#: patient/models.py:178
 msgid "Business fax"
 msgstr ""
 
-#: patient/models.py:164
+#: patient/models.py:179
 msgid "Home fax"
 msgstr ""
 
-#: patient/models.py:165
+#: patient/models.py:180
 msgid "Pager"
 msgstr ""
 
-#: patient/models.py:166
+#: patient/models.py:181
 msgid "Other"
 msgstr ""
 
-#: patient/models.py:377
+#: patient/models.py:392
 msgid "token id: "
 msgstr ""
 
@@ -241,24 +241,23 @@ msgid "Upload"
 msgstr ""
 
 #: patient/templates/patient/exams.html:205
-#: patient/templates/patient/exams.html:236
-#: patient/templates/patient/exams.html:251
+#: patient/templates/patient/exams.html:232
+#: patient/templates/patient/exams.html:247
 #: patient/templates/patient/medical_record.html:136
-#: patient/templates/patient/medical_record.html:253
+#: patient/templates/patient/medical_record.html:257
 #: patient/templates/patient/register.html:183
 #: patient/templates/patient/register_personal_data.html:271
 msgid "Delete"
 msgstr ""
 
 #: patient/templates/patient/exams.html:210
-#: patient/templates/patient/exams.html:213
-#: patient/templates/patient/exams.html:215
-#: patient/templates/patient/medical_record.html:231
-#: patient/templates/patient/medical_record.html:233
+#: patient/templates/patient/exams.html:212
+#: patient/templates/patient/medical_record.html:235
+#: patient/templates/patient/medical_record.html:237
 msgid "Back"
 msgstr ""
 
-#: patient/templates/patient/exams.html:219
+#: patient/templates/patient/exams.html:215
 #: patient/templates/patient/medical_record.html:177
 #: patient/templates/patient/register.html:126
 #: patient/templates/patient/register.html:128
@@ -267,15 +266,15 @@ msgstr ""
 msgid "Save"
 msgstr ""
 
-#: patient/templates/patient/exams.html:232
+#: patient/templates/patient/exams.html:228
 msgid "Are you sure you want to delete exam?"
 msgstr ""
 
-#: patient/templates/patient/exams.html:235
-#: patient/templates/patient/exams.html:250
+#: patient/templates/patient/exams.html:231
+#: patient/templates/patient/exams.html:246
 #: patient/templates/patient/medical_record.html:176
-#: patient/templates/patient/medical_record.html:228
-#: patient/templates/patient/medical_record.html:252
+#: patient/templates/patient/medical_record.html:232
+#: patient/templates/patient/medical_record.html:256
 #: patient/templates/patient/register.html:152
 #: patient/templates/patient/register.html:181
 #: patient/templates/patient/register_personal_data.html:335
@@ -284,7 +283,7 @@ msgstr ""
 msgid "Cancel"
 msgstr ""
 
-#: patient/templates/patient/exams.html:247
+#: patient/templates/patient/exams.html:243
 msgid ""
 "As there are no attachments, the exam will be totally excluded. Do you "
 "confirm deletion?"
@@ -303,6 +302,7 @@ msgid "Specify diagnosis or disease code (ICD-10)"
 msgstr ""
 
 #: patient/templates/patient/medical_record.html:120
+#: patient/templates/patient/register_medical_record.html:22
 msgid "Diagnosis"
 msgstr ""
 
@@ -333,14 +333,15 @@ msgid "Observation"
 msgstr ""
 
 #: patient/templates/patient/medical_record.html:202
+#: patient/templates/patient/medical_record.html:206
 msgid "Insert exam"
 msgstr ""
 
-#: patient/templates/patient/medical_record.html:223
+#: patient/templates/patient/medical_record.html:227
 msgid "Finalize evaluation"
 msgstr ""
 
-#: patient/templates/patient/medical_record.html:249
+#: patient/templates/patient/medical_record.html:253
 msgid "Are you sure you want to delete diagnosis?"
 msgstr ""
 
@@ -416,11 +417,15 @@ msgstr ""
 msgid "Are you sure you want to delete participant?"
 msgstr ""
 
-#: patient/templates/patient/register_medical_record.html:22
+#: patient/templates/patient/register_medical_record.html:23
 msgid "Responsible"
 msgstr ""
 
-#: patient/templates/patient/register_medical_record.html:50
+#: patient/templates/patient/register_medical_record.html:24
+msgid "View"
+msgstr ""
+
+#: patient/templates/patient/register_medical_record.html:58
 msgid "Insert medical record"
 msgstr ""
 
@@ -698,31 +703,31 @@ msgstr ""
 msgid "Calculated social class"
 msgstr ""
 
-#: patient/tests.py:285
+#: patient/tests.py:284
 msgid " is not valid"
 msgstr ""
 
-#: patient/tests.py:451 patient/tests.py:463 patient/tests.py:474
+#: patient/tests.py:450 patient/tests.py:462 patient/tests.py:473
 msgid "Social class was not calculated"
 msgstr ""
 
-#: patient/tests.py:462 patient/views.py:242
+#: patient/tests.py:461 patient/views.py:242
 msgid "Social demographic data successfully written."
 msgstr ""
 
-#: patient/tests.py:477
+#: patient/tests.py:476
 msgid "Less than 1 pack"
 msgstr ""
 
-#: patient/tests.py:480
+#: patient/tests.py:479
 msgid "Sporadically"
 msgstr ""
 
-#: patient/tests.py:483
+#: patient/tests.py:482
 msgid "Less than 1 year"
 msgstr ""
 
-#: patient/tests.py:517 patient/views.py:267
+#: patient/tests.py:516 patient/views.py:267
 msgid "Social history successfully recorded."
 msgstr ""
 
@@ -744,63 +749,63 @@ msgid ""
 "filled."
 msgstr ""
 
-#: patient/views.py:713
+#: patient/views.py:712
 msgid "Diagnosis details successfully changed."
 msgstr ""
 
-#: patient/views.py:719
+#: patient/views.py:718
 msgid "Incorrect date. Use format: mm/dd/yyyy"
 msgstr ""
 
-#: patient/views.py:742
+#: patient/views.py:741
 msgid "Diagnosis has already exist in this medical assessment."
 msgstr ""
 
-#: patient/views.py:775
+#: patient/views.py:774
 msgid "Diagnosis can not be deleted. You must delete exams before."
 msgstr ""
 
-#: patient/views.py:780
+#: patient/views.py:779
 msgid "Diagnosis successfully deleted."
 msgstr ""
 
-#: patient/views.py:808 patient/views.py:861
+#: patient/views.py:811 patient/views.py:864
 msgid "Exam successfully saved."
 msgstr ""
 
-#: patient/views.py:820 patient/views.py:869
+#: patient/views.py:823 patient/views.py:872
 msgid "It is not possible to save exam without files."
 msgstr ""
 
-#: patient/views.py:924
+#: patient/views.py:927
 msgid "Exam successfully deleted."
 msgstr ""
 
-#: patient/views.py:935
+#: patient/views.py:938
 msgid "Attachment successfully deleted."
 msgstr ""
 
-#: patient/views.py:1072 patient/views.py:1260
+#: patient/views.py:1075 patient/views.py:1263
 msgid "Fill deleted successfully"
 msgstr ""
 
-#: patient/views.py:1074 patient/views.py:1262
+#: patient/views.py:1077 patient/views.py:1265
 msgid "Error trying to delete"
 msgstr ""
 
-#: patient/views.py:1128
+#: patient/views.py:1131
 msgid "Not available filling - tokens table not started"
 msgstr ""
 
-#: patient/views.py:1133
+#: patient/views.py:1136
 msgid "Not available filling - questionnaire not active"
 msgstr ""
 
-#: patient/views.py:1138
+#: patient/views.py:1141
 msgid "Not available filling - questionnaire does not contain standard fields"
 msgstr ""
 
-#: patient/views.py:1147
+#: patient/views.py:1150
 msgid ""
 "Failed to generate token to answer the questionnaire. Make sure the "
 "questionnaire is active"

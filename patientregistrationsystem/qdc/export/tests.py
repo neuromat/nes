@@ -1,14 +1,17 @@
+from django.conf import settings
 from django.test import TestCase
 from django.test.client import RequestFactory
 from django.utils.translation import ugettext as _
+from django.core.urlresolvers import reverse
 
-from os import mkdir
+from os import mkdir, remove, path
+from shutil import rmtree
 
 from custom_user.models import User
 
-from export.views import *
-from export.input_export import InputExport
-from export.export import is_patient_active
+from .export import is_patient_active
+from .input_export import InputExport, build_complete_export_structure
+from .views import Survey, Questionnaires, QuestionnaireResponse, create_directory
 
 from patient.models import Gender, Patient
 
@@ -19,6 +22,7 @@ USER_PWD = 'mypassword'
 USER_NEW = 'user_new'
 
 QUESTIONNAIRE_ID = 957421
+TEST_QUESTIONNAIRE = 271192
 
 
 class UtilTests:
@@ -262,29 +266,64 @@ class PatientActiveTest(TestCase):
 #         """ Test if directory is created correctly """
 #
 #
-# class ExportQuestionnaireTest(TestCase):
-#
-#     """ Cria um participante para ser utilizado durante os testes """
-#     user = ''
-#     data = {}
-#     util = UtilTests()
-#
-#     def setUp(self):
-#         # """
-#         # Configure authentication and variables to start each test
-#         #
-#         # """
-#         # print('Set up for', self._testMethodName)
-#
-#         self.user = User.objects.create_user(username=USER_USERNAME, email='test@dummy.com', password=USER_PWD)
-#         self.user.is_staff = True
-#         self.user.is_superuser = True
-#         self.user.save()
-#
-#         self.factory = RequestFactory()
-#
-#         logged = self.client.login(username=USER_USERNAME, password=USER_PWD)
-#         self.assertEqual(logged, True)
+class ExportQuestionnaireTest(TestCase):
+
+    """ Cria um participante para ser utilizado durante os testes """
+    user = ''
+    data = {}
+    util = UtilTests()
+
+    def setUp(self):
+        # """
+        # Configure authentication and variables to start each test
+        #
+        # """
+        # print('Set up for', self._testMethodName)
+
+        self.user = User.objects.create_user(username=USER_USERNAME, email='test@dummy.com', password=USER_PWD)
+        self.user.is_staff = True
+        self.user.is_superuser = True
+        self.user.save()
+
+        self.factory = RequestFactory()
+
+        logged = self.client.login(username=USER_USERNAME, password=USER_PWD)
+        self.assertEqual(logged, True)
+
+    def test_export(self):
+        # create mock patient, questionnaire
+        patient_mock = self.util.create_patient_mock(name=self._testMethodName, user=self.user)
+        survey_mock = self.util.create_survey_mock(TEST_QUESTIONNAIRE, True)
+        response_survey_mock = self.util.create_response_survey_mock(self.user, patient_mock, survey_mock, token_id=36)
+
+        response = self.client.get(reverse('export_view'))
+        self.assertEqual(response.status_code, 200)
+
+        questionnaire_selected = ["271192*title*id*id",
+                                  "271192*title*famliacanhoto2*famliacanhoto2",
+                                  "271192*title*idteste[1][1]*idteste[1][1]"]
+
+        patient_selected = ["id*id"]
+
+        diagnosis_selected = ["medicalrecorddata__record_responsible_id*responsible_id"]
+
+        self.data = {
+            'questionnaire_selected': questionnaire_selected,
+            'patient_selected':  patient_selected,
+            'diagnosis_selected': diagnosis_selected,
+            'per_questionnaire': 1,
+            'per_participant': 1,
+        }
+
+        response = self.client.post(reverse('export_view'), self.data)
+        self.assertEqual(response.status_code, 200)
+
+        filename = path.join("export", path.join(str(self.user.id), "1/export.zip"))
+        output_filename = path.join(settings.MEDIA_ROOT, filename)  # "export/1/1/export.zip"
+        print(output_filename)
+        self.assertTrue(path.isfile(output_filename))
+
+
 class JsonTest(TestCase):
     """ Cria um participante para ser utilizado durante os testes """
     user = ''
@@ -364,6 +403,66 @@ class InputExportTest(TestCase):
     def test_write_dynamic_json(self):
         input_data = InputExport()
 
+        self.assertEqual(len(input_data.data), 0)
+
         input_data.build_header()
 
+        self.assertEqual(len(input_data.data), 4)
         # self.assertEqual(input_data.data, )
+        input_data.build_dynamic_header("export_per_participant", 1)
+
+        self.assertEqual(len(input_data.data), 5)
+
+        # field_header_list[0] -> field
+        # field_header_list[1] -> header
+        participant_field_header_list = [
+            ("id", "id"),
+            ("name", "name")
+            ]
+
+        self.assertNotIn("participants", input_data.data)
+
+        input_data.build_diagnosis_participant("participants", "Participants",
+                                               participant_field_header_list)
+
+        self.assertIn("participants", input_data.data)
+
+        questionnaire_list = [
+            (271192, "title", [("header1", "field1")]),
+            (271193, "title", [("header2", "field2")])
+        ]
+
+        self.assertNotIn("questionnaires", input_data.data)
+
+        input_data.build_questionnaire(questionnaire_list)
+
+        self.assertIn("questionnaires", input_data.data)
+
+    def test_crate_dynamic_json(self):
+
+        participant_field_header_list = [
+            ("id", "id"),
+            ("name", "name")
+            ]
+
+        questionnaires_list = [
+            (271192, "title", [("header1", "field1")]),
+            (271193, "title", [("header2", "field2")])
+        ]
+
+        diagnosis_field_header_list = ""
+
+        output_filename = path.join(settings.MEDIA_ROOT, "export/test123.json")
+
+        if path.isfile(output_filename):
+            remove(output_filename)
+
+        self.assertTrue(not path.isfile(output_filename))
+
+        build_complete_export_structure(0, 1, participant_field_header_list,
+                                        diagnosis_field_header_list, questionnaires_list,
+                                        output_filename)
+
+        self.assertTrue(path.isfile(output_filename))
+
+        remove(output_filename)
