@@ -18,7 +18,7 @@
 
 {% block content %}
 
-    <div class="tab-pane fade in active" id="participantSelectionBreadCrumb">
+    <div class="tab-pane fade in active" id="participantsSelectionBreadCrumb">
         <div class="col-md-10">
             <ol class="breadcrumb">
                 <li><a href="/home">{% trans "Home" %}</a></li>
@@ -36,21 +36,21 @@
                 <div class="form-group">
 
                     <div class="radio" style="margin-top: 0px">
-                        <input id="id_selection_type_0" name="selection_type" type="radio" value="all" checked>
+                        <input id="id_type_of_selection_radio_0" name="type_of_selection_radio" type="radio" value="all" checked>
                             {% trans "All participants" %}
                         </input>
                     </div>
                     <div class="radio">
-                        <input id="id_selection_type_1" name="selection_type" type="radio" value="selected">
+                        <input id="id_type_of_selection_radio_1" name="type_of_selection_radio" type="radio" value="selected">
                             {% trans "Selected participants" %}
                         </input>
                     </div>
 
                     <div class="col-md-1"></div>
-                    <div class="col-md-11" id="selected_participants_fields" style="visibility: hidden">
+                    <div class="col-md-11" id="participants_filter_div" style="visibility: hidden">
 
                         <div class="form-group">
-                            <input id="id_gender_selection" name="gender_selection" type="checkbox" value="gender_selection">
+                            <input id="id_gender_checkbox" name="gender_checkbox" type="checkbox" value="gender_selected">
                                 {% trans "Gender" %}
                             </input>
                         </div>
@@ -61,7 +61,7 @@
                         </div>
 
                         <div class="form-group">
-                            <input id="id_marital_status_selection" name="marital_status_selection" type="checkbox" value="marital_status_selection">
+                            <input id="id_marital_status_checkbox" name="marital_status_checkbox" type="checkbox" value="marital_status_selected">
                                 {% trans "Marital status" %}
                             </input>
                         </div>
@@ -72,7 +72,7 @@
                         </div>
 
                         <div class="form-group">
-                            <input id="id_age_selection" name="age_selection" type="checkbox" value="age_selection">
+                            <input id="id_age_checkbox" name="age_checkbox" type="checkbox" value="age_selected">
                                 {% trans "Age" %}
                             </input>
                         </div>

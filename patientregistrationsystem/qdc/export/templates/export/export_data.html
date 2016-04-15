@@ -21,6 +21,17 @@
 {% endblock %}
 
 {% block content %}
+
+    <div class="tab-pane fade in active" id="selectedParticipantBreadCrumb">
+        <div class="col-md-10">
+            <ol class="breadcrumb">
+                <li><a href="/home">{% trans "Home" %}</a></li>
+                <li class="active">{% trans "Export" %}</li>
+                <li class="active">{% trans "Structure and fields selection" %}</li>
+            </ol>
+        </div>
+    </div>
+
     <div class="tab-content">
         {% if messages %}
             {% for message in messages %}
