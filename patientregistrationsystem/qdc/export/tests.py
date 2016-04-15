@@ -319,7 +319,7 @@ class ExportQuestionnaireTest(TestCase):
         self.assertEqual(response.status_code, 200)
 
         filename = path.join("export", path.join(str(self.user.id), "1/export.zip"))
-        output_filename = path.join(settings.MEDIA_ROOT, filename)  # "export/1/1/export.zip"
+        output_filename = path.join(settings.MEDIA_ROOT, filename)  # "export/<user.id>/1/export.zip"
         print(output_filename)
         self.assertTrue(path.isfile(output_filename))
 

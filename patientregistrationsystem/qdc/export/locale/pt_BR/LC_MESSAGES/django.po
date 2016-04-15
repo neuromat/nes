@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2016-04-14 19:22-0300\n"
+"POT-Creation-Date: 2016-04-14 19:48-0300\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -157,8 +157,8 @@ msgid "Next"
 msgstr "Próximo"
 
 #: export/templates/export/show_selected_participants.html:35
-msgid "List of questionnaires"
-msgstr "Lista de Questionários"
+msgid "List of participants"
+msgstr "Lista de participantes"
 
 #: export/templates/export/show_selected_participants.html:38
 msgid "of"
@@ -200,3 +200,5 @@ msgstr "Exportação não foi gerada."
 msgid "No data was select. Export data was not generated."
 msgstr "Nenhum dado foi selecionado. Exportação não foi gerada."
 
+#~ msgid "List of questionnaires"
+#~ msgstr "Lista de Questionários"
