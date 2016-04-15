@@ -8,11 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-<<<<<<< HEAD
-"POT-Creation-Date: 2016-04-14 19:48-0300\n"
-=======
 "POT-Creation-Date: 2016-04-15 11:11-0300\n"
->>>>>>> origin/dev
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -206,10 +202,5 @@ msgstr "Exportação não foi gerada."
 msgid "No data was select. Export data was not generated."
 msgstr "Nenhum dado foi selecionado. Exportação não foi gerada."
 
-<<<<<<< HEAD
-#~ msgid "List of questionnaires"
-#~ msgstr "Lista de Questionários"
-=======
 #~ msgid "Please, correct the highlighted fields."
 #~ msgstr "Por favor, corrija os campos em destaque."
->>>>>>> origin/dev
