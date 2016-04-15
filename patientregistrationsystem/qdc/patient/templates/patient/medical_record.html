@@ -223,7 +223,9 @@
 
         <div class="btn-toolbar">
             <div class="btn-group pull-right">
-                {% if creating or editing %}
+                {% if not object_list %}
+                    <button type="submit" name="action" value="finish" class="btn btn-primary" disabled>{% trans "Finalize evaluation" %}</button>
+                {% elif creating or editing %}
                     <button type="submit" name="action" value="finish" class="btn btn-primary">{% trans "Finalize evaluation" %}</button>
                 {% endif %}
             </div>

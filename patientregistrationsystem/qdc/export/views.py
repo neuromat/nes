@@ -637,47 +637,36 @@ def get_questionnaire_fields(questionnaire_code_list, language="pt-BR"):
 
 
 @login_required
-def filter_participants(request, template_name="export/participant_selection.html"):
+def filter_participants(request):
 
     participant_selection_form = ParticipantsSelectionForm(None)
     age_interval_form = AgeIntervalForm(None)
-
-    gender_list = None
-    marital_status_list = None
-    age_interval = None
 
     if request.method == "POST":
 
         if request.POST['action'] == "next-step-1":
 
-            if request.POST['selection_type'] == 'selected':
+            if request.POST['type_of_selection_radio'] == 'selected':
 
-                if "gender_selection" in request.POST:
-                    gender_list = request.POST.getlist('gender')
-
-                if "marital_status_selection" in request.POST:
-                    marital_status_list = request.POST.getlist('marital_status')
-
-                if "age_selection" in request.POST:
-                    age_interval = [request.POST['min_age'], request.POST['max_age']]
-
-                # select participants according the filters
+                # selecting participants according the filters
 
                 participants_list = Patient.objects.filter(removed=False)
-
                 total_of_participants = len(participants_list)
 
-                if gender_list:
+                if "gender_checkbox" in request.POST and 'gender' in request.POST:
+                    gender_list = request.POST.getlist('gender')
                     participants_list = participants_list.filter(gender__id__in=gender_list)
 
-                if marital_status_list:
+                if "marital_status_checkbox" in request.POST and 'marital_status' in request.POST:
+                    marital_status_list = request.POST.getlist('marital_status')
                     participants_list = participants_list.filter(marital_status__id__in=marital_status_list)
 
-                if age_interval:
-                    date_birth_min = datetime.now() - relativedelta(years=int(age_interval[1]))
-                    date_birth_max = datetime.now() - relativedelta(years=int(age_interval[0]))
+                if "age_checkbox" in request.POST and 'max_age' in request.POST and 'min_age' in request.POST:
+                    date_birth_min = datetime.now() - relativedelta(years=int(request.POST['max_age']))
+                    date_birth_max = datetime.now() - relativedelta(years=int(request.POST['min_age']))
                     participants_list = participants_list.filter(date_birth__range=(date_birth_min, date_birth_max))
 
+                # putting the list of participants in the user session
                 request.session['filtered_participant_data'] = [item.id for item in participants_list]
 
                 context = {
@@ -689,14 +678,13 @@ def filter_participants(request, template_name="export/participant_selection.htm
             else:
 
                 participants_list = Patient.objects.filter(removed=False)
+
+                # putting the list of participants in the user session
                 request.session['filtered_participant_data'] = [item.id for item in participants_list]
-                #
-                # context = {
-                #     'participant_list': request.session['filtered_participant_data']
-                # }
-                # return render(request, "export/export_data.html", context)
+
                 redirect_url = reverse("export_view", args=())
                 return HttpResponseRedirect(redirect_url)
+
         if request.POST['action'] == 'previous-step-2':
 
             context = {
@@ -707,11 +695,6 @@ def filter_participants(request, template_name="export/participant_selection.htm
 
         if request.POST['action'] == "next-step-2":
 
-            # context = {
-            #     'participant_list': request.session['participant_list']
-            # }
-            # return render(request, "export/export_data.html", context)
-
             redirect_url = reverse("export_view", args=())
             return HttpResponseRedirect(redirect_url)
 
@@ -719,7 +702,7 @@ def filter_participants(request, template_name="export/participant_selection.htm
         "participant_selection_form": participant_selection_form,
         "age_interval_form": age_interval_form}
 
-    return render(request, template_name, context)
+    return render(request, "export/participant_selection.html", context)
 
 
 @login_required

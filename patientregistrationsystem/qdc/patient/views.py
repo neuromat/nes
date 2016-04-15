@@ -733,6 +733,17 @@ def medical_record_update(request, patient_id, record_id, template_name="patient
 
 @login_required
 @permission_required('patient.add_medicalrecorddata')
+def medical_record_delete(request, patient_id, record_id):
+    medical_record = MedicalRecordData.objects.get(pk=record_id)
+    medical_record.delete()
+    messages.success(request, _('Medical evaluation successfully deleted.'))
+
+    redirect_url = reverse("patient_edit", args=(patient_id,))
+    return HttpResponseRedirect(redirect_url + "?status=edit&currentTab=3")
+
+
+@login_required
+@permission_required('patient.add_medicalrecorddata')
 def diagnosis_create(request, patient_id, medical_record_id, cid10_id):
     medical_record = MedicalRecordData.objects.get(pk=medical_record_id)
     cid10 = ClassificationOfDiseases.objects.get(pk=cid10_id)
@@ -779,7 +790,13 @@ def diagnosis_delete(request, patient_id, diagnosis_id):
         messages.success(request, _('Diagnosis successfully deleted.'))
 
     medical_record_id = diagnosis.medical_record_data_id
-    redirect_url = reverse("medical_record_edit", args=(patient_id, medical_record_id, ))
+    medical_record = MedicalRecordData.objects.get(pk=medical_record_id)
+    if medical_record.diagnosis_set.count() == 0:
+        medical_record.delete()
+        redirect_url = reverse("medical_record_new", args=(patient_id, ))
+    else:
+        redirect_url = reverse("medical_record_edit", args=(patient_id, medical_record_id, ))
+
     return HttpResponseRedirect(redirect_url + "?status=edit&currentTab=3")
 
 

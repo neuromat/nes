@@ -8,7 +8,11 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
+<<<<<<< HEAD
 "POT-Creation-Date: 2016-04-14 19:48-0300\n"
+=======
+"POT-Creation-Date: 2016-04-15 11:11-0300\n"
+>>>>>>> origin/dev
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -17,7 +21,7 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 
-#: export/export.py:111 export/export_bkp.py:101 export/tests.py:160
+#: export/export.py:111 export/tests.py:160
 msgid "Base path does not exist"
 msgstr ""
 
@@ -42,88 +46,86 @@ msgstr ""
 msgid "Max age must be filled."
 msgstr ""
 
-#: export/lixo.py:1075 export/views.py:502
-msgid "Export was finished correctly"
-msgstr ""
-
-#: export/lixo.py:1205
-msgid "Please, correct the highlighted fields."
-msgstr ""
-
-#: export/templates/export/export_data.html:60
-msgid "General Information"
-msgstr ""
-
-#: export/templates/export/export_data.html:65
-msgid "At least one option must be selected"
-msgstr ""
-
-#: export/templates/export/export_data.html:65
-msgid "Directory Structure"
-msgstr ""
-
-#: export/templates/export/export_data.html:71
-msgid "Per participant"
-msgstr ""
-
-#: export/templates/export/export_data.html:83
-msgid "Per questionnaire"
-msgstr ""
-
-#: export/templates/export/export_data.html:112
-msgid "Questionnaire information"
-msgstr ""
-
-#: export/templates/export/export_data.html:116
-msgid "Questionnaire - Entrance evaluation"
-msgstr ""
-
-#: export/templates/export/export_data.html:117
-msgid "Please, select a questionnaire from the list."
-msgstr ""
-
-#: export/templates/export/export_data.html:131
-msgid "Participants"
-msgstr ""
-
-#: export/templates/export/export_data.html:135
-msgid "Participant fields"
-msgstr ""
-
-#: export/templates/export/export_data.html:136
-msgid "Please, select a patient field from the list."
-msgstr ""
-
-#: export/templates/export/export_data.html:146
-msgid "Diagnosis"
-msgstr ""
-
-#: export/templates/export/export_data.html:150
-msgid "Diagnosis fields"
-msgstr ""
-
-#: export/templates/export/export_data.html:151
-msgid "Please, select a diagnosis field from the list."
-msgstr ""
-
-#: export/templates/export/export_data.html:164
-msgid "Run"
-msgstr ""
-
-#: export/templates/export/export_data.html:168
-#: export/templates/export/participant_selection.html:111
-#: export/templates/export/show_selected_participants.html:92
-msgid "Cancel"
-msgstr ""
-
+#: export/templates/export/export_data.html:28
 #: export/templates/export/participant_selection.html:24
 #: export/templates/export/show_selected_participants.html:24
 msgid "Home"
 msgstr ""
 
+#: export/templates/export/export_data.html:29
 #: export/templates/export/participant_selection.html:25
 #: export/templates/export/show_selected_participants.html:25
 msgid "Export"
+msgstr ""
+
+#: export/templates/export/export_data.html:30
+msgid "Structure and fields selection"
+msgstr ""
+
+#: export/templates/export/export_data.html:71
+msgid "General Information"
+msgstr ""
+
+#: export/templates/export/export_data.html:76
+msgid "At least one option must be selected"
+msgstr ""
+
+#: export/templates/export/export_data.html:76
+msgid "Directory Structure"
+msgstr ""
+
+#: export/templates/export/export_data.html:82
+msgid "Per participant"
+msgstr ""
+
+#: export/templates/export/export_data.html:94
+msgid "Per questionnaire"
+msgstr ""
+
+#: export/templates/export/export_data.html:123
+msgid "Questionnaire information"
+msgstr ""
+
+#: export/templates/export/export_data.html:127
+msgid "Questionnaire - Entrance evaluation"
+msgstr ""
+
+#: export/templates/export/export_data.html:128
+msgid "Please, select a questionnaire from the list."
+msgstr ""
+
+#: export/templates/export/export_data.html:142
+msgid "Participants"
+msgstr ""
+
+#: export/templates/export/export_data.html:146
+msgid "Participant fields"
+msgstr ""
+
+#: export/templates/export/export_data.html:147
+msgid "Please, select a patient field from the list."
+msgstr ""
+
+#: export/templates/export/export_data.html:157
+msgid "Diagnosis"
+msgstr ""
+
+#: export/templates/export/export_data.html:161
+msgid "Diagnosis fields"
+msgstr ""
+
+#: export/templates/export/export_data.html:162
+msgid "Please, select a diagnosis field from the list."
+msgstr ""
+
+#: export/templates/export/export_data.html:175
+msgid "Run"
+msgstr ""
+
+#: export/templates/export/export_data.html:179
+#: export/templates/export/participant_selection.html:111
+#: export/templates/export/show_selected_participants.html:92
+msgid "Cancel"
 msgstr ""
 
 #: export/templates/export/participant_selection.html:26
@@ -189,6 +191,10 @@ msgstr ""
 
 #: export/views.py:269
 msgid "Inconsistent data read from json file"
+msgstr ""
+
+#: export/views.py:502
+msgid "Export was finished correctly"
 msgstr ""
 
 #: export/views.py:520
