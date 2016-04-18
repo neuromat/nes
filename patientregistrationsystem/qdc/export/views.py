@@ -652,7 +652,6 @@ def filter_participants(request):
 
                 participants_list = Patient.objects.filter(removed=False)
                 total_of_participants = len(participants_list)
-
                 if "gender_checkbox" in request.POST and 'gender' in request.POST:
                     gender_list = request.POST.getlist('gender')
                     participants_list = participants_list.filter(gender__id__in=gender_list)
