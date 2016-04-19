@@ -519,7 +519,7 @@ class AdvancedSearchTest(TestCase):
         self.data = {}
 
     def create_initial_patients_data(self):
-        female_list = [1,2,4]
+        female_list = [1, 2, 4]
 
         delta = 1
         for index in range(6):
