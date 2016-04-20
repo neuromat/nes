@@ -1302,10 +1302,14 @@ def subject_eeg_data_create(request, group_id, subject_id, eeg_configuration_id,
                     eeg_data_added.subject_of_group = subject_of_group
                     eeg_data_added.component_configuration = eeg_configuration
 
-                    # TODO: it was necessary adding these 2 lines because, I do not why (Evandro),
-                    # django raised an error 'EEGData' object has no attribute 'group'
+                    # PS: it was necessary adding these 2 lines because Django raised, I do not why (Evandro),
+                    # the following error 'EEGData' object has no attribute 'group'
                     eeg_data_added.group = group
                     eeg_data_added.subject = subject
+
+                    # For known formats, try to access data to validate the format
+                    if eeg_data_added.file_format.nes_code == "NEO-RawBinarySignalIO":
+                        messages.success(request, _('Vou validar, hein!!'))
 
                     eeg_data_added.save()
 
