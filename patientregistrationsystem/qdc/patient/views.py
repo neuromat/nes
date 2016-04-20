@@ -809,6 +809,10 @@ def exam_create(request, patient_id, record_id, diagnosis_id, template_name="pat
     if 'status' in request.GET:
         status = request.GET['status']
 
+    new_medical_record = False
+    if 'mr' in request.GET:
+        new_medical_record = True
+
     diagnosis = get_object_or_404(Diagnosis, pk=diagnosis_id)
     current_patient = get_object_or_404(Patient, pk=patient_id)
 
@@ -829,13 +833,17 @@ def exam_create(request, patient_id, record_id, diagnosis_id, template_name="pat
 
                 if request.POST['action'] == "upload":
                     redirect_url = reverse("exam_edit", args=(patient_id, record_id, new_complementary_exam.pk))
-                # Nunca entra no save
-                elif request.POST['action'] == "save":
-                    redirect_url = reverse("medical_record_edit", args=(patient_id, record_id, ))
-                else:
-                    redirect_url = reverse("medical_record_edit", args=(patient_id, record_id, ))
 
-                return HttpResponseRedirect(redirect_url + "?status=" + status)
+                    return HttpResponseRedirect(redirect_url + "?status=" + status +
+                                                ("&mr=new" if new_medical_record else ""))
+
+                elif request.POST['action'] == "save":
+                    if new_medical_record:
+                        redirect_url = reverse("medical_record_edit", args=(patient_id, record_id, ))
+                    else:
+                        redirect_url = reverse("medical_record_view", args=(patient_id, record_id, ))
+
+                    return HttpResponseRedirect(redirect_url + "?status=" + status)
         else:
             messages.error(request, _('It is not possible to save exam without files.'))
 
@@ -850,7 +858,8 @@ def exam_create(request, patient_id, record_id, diagnosis_id, template_name="pat
                    'record_id': record_id,
                    'name_patient': current_patient.name,
                    'file_form': file_form,
-                   'status': status}, )
+                   'status': status,
+                   'new_medical_record': new_medical_record}, )
 
 
 @login_required
@@ -858,6 +867,14 @@ def exam_create(request, patient_id, record_id, diagnosis_id, template_name="pat
 def exam_edit(request, patient_id, record_id, exam_id, template_name="patient/exams.html"):
     current_patient = Patient.objects.get(id=patient_id)
     complementary_exam = ComplementaryExam.objects.get(pk=exam_id)
+
+    status = ""
+    if 'status' in request.GET:
+        status = request.GET['status']
+
+    new_medical_record = False
+    if 'mr' in request.GET:
+        new_medical_record = True
 
     if complementary_exam:
         complementary_exam_form = ComplementaryExamForm(request.POST or None, instance=complementary_exam)
@@ -879,8 +896,14 @@ def exam_edit(request, patient_id, record_id, exam_id, template_name="patient/ex
 
                     if request.POST['action'] == "save":
                         messages.success(request, _('Exam successfully saved.'))
-                        redirect_url = reverse("medical_record_edit", args=(patient_id, record_id, ))
-                        return HttpResponseRedirect(redirect_url + "?status=edit")
+
+                        if new_medical_record:
+                            redirect_url = reverse("medical_record_edit", args=(patient_id, record_id, ))
+                        else:
+                            redirect_url = reverse("medical_record_view", args=(patient_id, record_id, ))
+
+                        return HttpResponseRedirect(redirect_url + "?status=" + status)
+
                     else:
                         if request.POST['action'] == 'upload':
                             exam_file_list = ExamFile.objects.filter(exam=exam_id)
@@ -901,7 +924,8 @@ def exam_edit(request, patient_id, record_id, exam_id, template_name="patient/ex
                        'record_id': record_id,
                        'name_patient': current_patient.name,
                        'file_form': file_form,
-                       'status': 'edit'})
+                       'status': status,
+                       'new_medical_record': new_medical_record})
 
 
 @login_required
@@ -937,19 +961,41 @@ def exam_view(request, patient_id, record_id, exam_id, template_name="patient/ex
 @login_required
 @permission_required('patient.add_medicalrecorddata')
 def exam_delete(request, patient_id, record_id, exam_id):
+
+    status = ""
+    if 'status' in request.GET:
+        status = request.GET['status']
+
+    new_medical_record = False
+    if 'mr' in request.GET:
+        new_medical_record = True
+
     complementary_exam = get_object_or_404(ComplementaryExam, pk=exam_id)
 
     if complementary_exam:
         complementary_exam.delete()
         messages.success(request, _('Exam successfully deleted.'))
 
-    redirect_url = reverse("medical_record_edit", args=(patient_id, record_id))
-    return HttpResponseRedirect(redirect_url + "?status=edit#tab4")
+    if new_medical_record:
+        redirect_url = reverse("medical_record_edit", args=(patient_id, record_id, ))
+    else:
+        redirect_url = reverse("medical_record_view", args=(patient_id, record_id, ))
+
+    return HttpResponseRedirect(redirect_url + "?status=" + status)
 
 
 @login_required
 @permission_required('patient.add_medicalrecorddata')
 def exam_file_delete(request, exam_file_id):
+
+    status = ""
+    if 'status' in request.GET:
+        status = request.GET['status']
+
+    new_medical_record = False
+    if 'mr' in request.GET:
+        new_medical_record = True
+
     exam_file = get_object_or_404(ExamFile, pk=exam_file_id)
     exam_file.delete()
     messages.success(request, _('Attachment successfully deleted.'))
@@ -963,7 +1009,7 @@ def exam_file_delete(request, exam_file_id):
                                medical_record.patient_id,
                                diagnosis.medical_record_data_id,
                                complementary_exam.pk))
-    return HttpResponseRedirect(redirect_url + "?status=edit")
+    return HttpResponseRedirect(redirect_url + "?status=" + status + ("&mr=new" if new_medical_record else ""))
 
 
 def get_origin(request):
