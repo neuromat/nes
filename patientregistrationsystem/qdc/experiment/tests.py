@@ -1317,19 +1317,37 @@ class SubjectTest(TestCase):
         response = self.client.post(reverse('subject_eeg_view', args=(group.id, subject_mock.id,)))
         self.assertEqual(response.status_code, 200)
 
+        # Show the participants
+        response = self.client.get(reverse('subjects', args=(group.pk,)))
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(len(response.context['subject_list']), 1)
+
+        # Trying to delete participant from a group, but there is a eeg file associated
+        self.data = {'action': 'remove-' + str(subject_mock.pk)}
+        count_before_delete_subject = SubjectOfGroup.objects.all().filter(group=group).count()
+        response = self.client.post(reverse('subjects', args=(group.pk,)), self.data)
+        self.assertEqual(response.status_code, 302)
+        count_after_delete_subject = SubjectOfGroup.objects.all().filter(group=group).count()
+        self.assertEqual(count_before_delete_subject, count_after_delete_subject)
+
         # remove eeg data file from a subject
         self.data = {'action': 'remove'}
         response = self.client.post(reverse('eeg_data_view', args=(eeg_data.id,)), self.data)
         self.assertEqual(response.status_code, 302)
         self.assertEqual(EEGData.objects.all().count(), 0)
 
-        # # Delete participant from a group
-        # self.data = {'action': 'remove-' + str(subject_mock.pk)}
-        # count_before_delete_subject = SubjectOfGroup.objects.all().filter(group=group).count()
-        # response = self.client.post(reverse('subjects', args=(group.pk,)), self.data)
-        # self.assertEqual(response.status_code, 302)
-        # count_after_delete_subject = SubjectOfGroup.objects.all().filter(group=group).count()
-        # self.assertEqual(count_before_delete_subject - 1, count_after_delete_subject)
+        # Show the participants
+        response = self.client.get(reverse('subjects', args=(group.pk,)))
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(len(response.context['subject_list']), 1)
+
+        # Delete participant from a group
+        self.data = {'action': 'remove-' + str(subject_mock.pk)}
+        count_before_delete_subject = SubjectOfGroup.objects.all().filter(group=group).count()
+        response = self.client.post(reverse('subjects', args=(group.pk,)), self.data)
+        self.assertEqual(response.status_code, 302)
+        count_after_delete_subject = SubjectOfGroup.objects.all().filter(group=group).count()
+        self.assertEqual(count_before_delete_subject - 1, count_after_delete_subject)
 
     def test_subject_upload_consent_file(self):
         """

@@ -162,6 +162,7 @@ class ExportExecution:
         self.files_to_zip_list = []
         # self.headers = []
         # self.fields = []
+        self.directory_base = ''
         self.base_directory_name = path.join(settings.MEDIA_ROOT, "export")
         # self.directory_base = self.base_directory_name
         self.set_directory_base(user_id, export_id)
@@ -172,7 +173,6 @@ class ExportExecution:
         self.questionnaires_data = {}
         self.root_directory = ""
         self.participants_filtered_data = []
-        self.directory_base = ''
 
     def set_directory_base(self, user_id, export_id):
         self.directory_base = path.join(self.base_directory_name, str(user_id))

@@ -3,9 +3,11 @@ from django.test import TestCase
 from django.test.client import RequestFactory
 from django.utils.translation import ugettext as _
 from django.core.urlresolvers import reverse
-
+from dateutil.relativedelta import relativedelta
+from datetime import datetime
 from os import mkdir, remove, path
 from shutil import rmtree
+
 
 from custom_user.models import User
 
@@ -13,7 +15,7 @@ from .export import is_patient_active
 from .input_export import InputExport, build_complete_export_structure
 from .views import Survey, Questionnaires, QuestionnaireResponse, create_directory
 
-from patient.models import Gender, Patient
+from patient.models import Gender, MaritalStatus, Patient
 
 # Constantes para testes de User
 USER_EDIT = 'user_edit'
@@ -25,21 +27,45 @@ QUESTIONNAIRE_ID = 957421
 TEST_QUESTIONNAIRE = 271192
 
 
+marital_status_list = [
+    "Single",
+    "Married",
+    "Widow"
+]
+
+
 class UtilTests:
 
-    def create_patient_mock(self, name='Pacient Test', user=None):
+    def create_patient_mock(self, name='Pacient Test', user=None, gender_name='Masculino', date_birth='2001-01-15'):
         """ Cria um participante para ser utilizado durante os testes """
-        gender = Gender.objects.create(name='Masculino')
-        gender.save()
 
+        gender = self.create_gender_mock(gender_name)
         p_mock = Patient()
         p_mock.name = name
-        p_mock.date_birth = '2001-01-15'
-        p_mock.cpf = '374.276.738-08'
+        p_mock.date_birth = date_birth
+        # p_mock.cpf = '374.276.738-08'
         p_mock.gender = gender
         p_mock.changed_by = user
         p_mock.save()
         return p_mock
+
+    def create_marital_status_mock(self, marital_status_name="Single"):
+
+        marital_status = MaritalStatus.objects.create(name=marital_status_name)
+        marital_status.save()
+
+        return marital_status
+
+    def create_gender_mock(self, gender_name="Masculino"):
+
+        gender_exists = Gender.objects.filter(name=gender_name).exists()
+        if gender_exists:
+            gender = Gender.objects.get(name=gender_name)
+        else:
+            gender = Gender.objects.create(name=gender_name)
+            gender.save()
+
+        return gender
 
     #
     #     def create_cid10_to_search(self):
@@ -319,7 +345,7 @@ class ExportQuestionnaireTest(TestCase):
         self.assertEqual(response.status_code, 200)
 
         filename = path.join("export", path.join(str(self.user.id), "1/export.zip"))
-        output_filename = path.join(settings.MEDIA_ROOT, filename)  # "export/1/1/export.zip"
+        output_filename = path.join(settings.MEDIA_ROOT, filename)  # "export/<user.id>/1/export.zip"
         print(output_filename)
         self.assertTrue(path.isfile(output_filename))
 
@@ -466,3 +492,176 @@ class InputExportTest(TestCase):
         self.assertTrue(path.isfile(output_filename))
 
         remove(output_filename)
+
+
+class AdvancedSearchTest(TestCase):
+    """ Cria um participante para ser utilizado durante os testes """
+    user = ''
+    data = {}
+    util = UtilTests()
+
+    def setUp(self):
+        # """
+        # Configure authentication and variables to start each test
+        #
+        # """
+        # print('Set up for', self._testMethodName)
+
+        self.user = User.objects.create_user(username=USER_USERNAME, email='test@dummy.com', password=USER_PWD)
+        self.user.is_staff = True
+        self.user.is_superuser = True
+        self.user.save()
+
+        self.factory = RequestFactory()
+
+        logged = self.client.login(username=USER_USERNAME, password=USER_PWD)
+        self.assertEqual(logged, True)
+        self.data = {}
+
+    def create_initial_patients_data(self):
+        female_list = [1,2,4]
+
+        delta = 1
+        for index in range(6):
+            if index in female_list:
+                gender_name = "Female"
+            else:
+                gender_name = "Male"
+
+            birthday = datetime.now() - relativedelta(years=delta)
+            date_birth = '%s-%s-%s' % (birthday.year, birthday.month, birthday.day)
+            patient_mock = self.util.create_patient_mock(name=self._testMethodName + str(index),
+                                                         user=self.user, gender_name=gender_name,
+                                                         date_birth=date_birth)
+            delta += 5
+
+        # patients = Patient.objects.all()
+
+        for marital_status_name in marital_status_list:
+            marital_status_mock = self.util.create_marital_status_mock(marital_status_name)
+            # print("marital_id = %d" % marital_status_mock.id)
+
+        for index in range(6):
+            patient = Patient.objects.get(name=self._testMethodName + str(index))
+            marital_status_id = int(index/2.5)
+            marital_status = MaritalStatus.objects.get(name=marital_status_list[marital_status_id])
+            patient.marital_status = marital_status
+            patient.save()
+            # print("indice = %d, mar_id = %d, patient_id= %d " % (index, marital_status.id, patient.id ))
+
+        # for patient_mock in Patient.objects.all():
+        #     print("patient_mock id=%d, marital=%d-%s, gender=%d-%s" %
+        #                                                       (patient_mock.id, patient_mock.marital_status.id,
+        #                                                               patient_mock.marital_status.name,
+        #                                                               patient_mock.gender.id,
+        #           patient_mock.gender.name))
+
+    def test_filter_all_participants(self):
+
+        for index in range(3):
+            patient_mock = self.util.create_patient_mock(name=self._testMethodName + str(index), user=self.user)
+
+        response = self.client.get(reverse('filter_participants'))
+        self.assertEqual(response.status_code, 200)
+
+        self.data['action'] = "next-step-1"
+        self.data['type_of_selection_radio'] = 'all'
+        response = self.client.post(reverse('filter_participants'), self.data)
+        self.assertEqual(response.status_code, 302)
+
+        self.assertEqual(len(response.wsgi_request.session['filtered_participant_data']), Patient.objects.count())
+
+    def test_filter_gender_participants(self):
+
+        # print("************** gender ini *************")
+
+        self.create_initial_patients_data()
+
+        self.data['action'] = "next-step-1"
+        self.data['type_of_selection_radio'] = 'selected'
+        self.data['gender_checkbox'] = True
+
+        gender_list = Gender.objects.filter(name="Female").values_list("id")
+        gender_list = [data[0] for data in gender_list]
+        self.data['gender'] = gender_list
+
+        response = self.client.post(reverse('filter_participants'), self.data)
+        self.assertEqual(response.status_code, 200)
+
+        # print("gender")
+        # print(gender_list)
+        # print(Patient.objects.filter(gender__name="Female").values_list("id"),
+        #       response.wsgi_request.session['filtered_participant_data'])
+        #
+        # print("************** gender fim *************")
+
+        self.assertEqual(len(response.wsgi_request.session['filtered_participant_data']),
+                         Patient.objects.filter(gender__name="Female").count())
+
+    def test_filter_age_participants(self):
+
+        # print("************** age ini *************")
+
+        self.create_initial_patients_data()
+
+        self.data['action'] = "next-step-1"
+        self.data['type_of_selection_radio'] = 'selected'
+        self.data['age_checkbox'] = True
+
+        self.data['min_age'] = 5
+        self.data['max_age'] = 17
+
+        # print("age")
+
+        response = self.client.post(reverse('filter_participants'), self.data)
+        self.assertEqual(response.status_code, 200)
+
+        # self.assertEqual(len(response.wsgi_request.session['filtered_participant_data']),
+        #                  Patient.objects.filter(gender__name="Female").count())
+        # print(response.wsgi_request.session['filtered_participant_data'])
+        birthday_min = datetime.now() - relativedelta(years=5)
+        birthday_max = datetime.now() - relativedelta(years=17)
+
+        date_birth_min = '%s-%s-%s' % (birthday_min.year, birthday_min.month, birthday_min.day)
+        date_birth_max = '%s-%s-%s' % (birthday_max.year, birthday_max.month, birthday_max.day)
+
+        self.assertEqual(len(response.wsgi_request.session['filtered_participant_data']), 3)
+
+        # print(Patient.objects.filter(date_birth__range=(date_birth_min, date_birth_max) ))
+        # print("************** age fim *************")
+
+    def test_filter_marital_status_participants(self):
+
+        self.create_initial_patients_data()
+
+        self.data['action'] = "next-step-1"
+        self.data['type_of_selection_radio'] = 'selected'
+        self.data['marital_status_checkbox'] = True
+
+        marital_list = MaritalStatus.objects.filter(name="Married").values_list("id")
+        marital_list = [data[0] for data in marital_list]
+
+        self.data['marital_status'] = marital_list
+
+        # print("marital")
+        # print(marital_list)
+
+        response = self.client.post(reverse('filter_participants'), self.data)
+        self.assertEqual(response.status_code, 200)
+
+        # print(Patient.objects.filter(marital_status__name="Married").values_list("id"),
+        #       response.wsgi_request.session['filtered_participant_data'])
+
+        # print("************** marital fim *************")
+
+        self.assertEqual(len(response.wsgi_request.session['filtered_participant_data']),
+                         Patient.objects.filter(marital_status__name="Married").count())
+
+    def test_second_page(self):
+        self.data['action'] = 'previous-step-2'
+        response = self.client.post(reverse('filter_participants'), self.data)
+        self.assertEqual(response.status_code, 200)
+
+        self.data['action'] = 'next-step-2'
+        response = self.client.post(reverse('filter_participants'), self.data)
+        self.assertEqual(response.status_code, 302)
