@@ -21,7 +21,11 @@ from os import path, makedirs
 from patient.models import Patient, QuestionnaireResponse
 
 from survey.abc_search_engine import Questionnaires
+from survey.models import Survey
 from survey.views import is_limesurvey_available
+
+
+metadata_directory = "Questionnaire_metadata"
 
 header_explanation_fields = ['questionnaire_id',
                              'questionnaire_title',
@@ -173,6 +177,7 @@ class ExportExecution:
         self.questionnaires_data = {}
         self.root_directory = ""
         self.participants_filtered_data = []
+        self.questionnaire_code_and_id = {}
 
     def set_directory_base(self, user_id, export_id):
         self.directory_base = path.join(self.base_directory_name, str(user_id))
@@ -346,6 +351,58 @@ class ExportExecution:
 
         return fields
 
+    def get_title_reduced(self, questionnaire_id=None, questionnaire_code=None):
+
+        reduced_title = ''
+        title = ''
+
+        if questionnaire_code:
+            # if Survey.objects.filter(code=questionnaire_code).exists():
+            questionnaire_id = self.get_questionnaire_id_from_code(questionnaire_code)
+
+        if questionnaire_id:
+            questionnaires = self.get_input_data("questionnaires")
+            for questionnaire in questionnaires:
+                if questionnaire_id == questionnaire["id"]:
+                    title = questionnaire["questionnaire_name"]
+                    break
+
+        if title:
+            title = re.sub(r'[^\w]', ' ', title)
+            title = title.split(" ")
+
+            for part in title:
+                if len(part):
+                    reduced_title += part + "-"
+
+            reduced_title = reduced_title[:-1]
+            reduced_title = reduced_title[:30]
+
+        return reduced_title
+
+    def include_questionnaire_code_and_id(self, code, questionnaire_id):
+
+        if code not in self.questionnaire_code_and_id:
+            self.questionnaire_code_and_id[code] = questionnaire_id
+
+    def get_questionnaire_id_from_code(self, code):
+
+        questionnaire_id = 0
+        if code in self.questionnaire_code_and_id:
+            questionnaire_id = self.questionnaire_code_and_id[code]
+
+        return questionnaire_id
+
+    def get_questionnaire_code_from_id(self, questionnaire_id):
+        questionnaire_code = 0
+
+        for code in self.questionnaire_code_and_id:
+            if self.questionnaire_code_and_id[code] == questionnaire_id:
+                questionnaire_code = code
+                break
+
+        return questionnaire_code
+
 # def read_questionnaire_from_lime_survey(self, questionnaire_id, token, language, questionnaire_lime_survey, fields):
     #     """
     #     :param questionnaire_id:
@@ -416,6 +473,8 @@ class ExportExecution:
         # get title
         questionnaire_title = questionnaire_lime_survey.get_survey_title(questionnaire_id)
 
+        questionnaire_code = self.get_questionnaire_code_from_id(questionnaire_id)
+
         # get fields description
         questionnaire_questions = questionnaire_lime_survey.list_questions(questionnaire_id, 0)
 
@@ -431,7 +490,7 @@ class ExportExecution:
                 properties['question'] = re.sub('{.*?}', '', re.sub('<.*?>', '', properties['question']))
                 properties['question'] = properties['question'].replace('&nbsp;', '').strip()
 
-                question_to_list = [smart_str(questionnaire_id), smart_str(questionnaire_title),
+                question_to_list = [smart_str(questionnaire_code), smart_str(questionnaire_title),
                                     smart_str(properties['title']), smart_str(properties['question'])]
 
                 options_list = []
@@ -471,7 +530,7 @@ class ExportExecution:
 
                 if field not in fields_from_questions:
                     description = self.get_header_description(questionnaire_id, field)
-                    question_to_list = [smart_str(questionnaire_id), smart_str(questionnaire_title),
+                    question_to_list = [smart_str(questionnaire_code), smart_str(questionnaire_title),
                                         smart_str(field), smart_str(description)]
 
                     questionnaire_explanation_fields_list.append(question_to_list)
@@ -533,6 +592,7 @@ class ExportExecution:
 
         error_msg = ""
         export_per_questionnaire_directory = ''
+        export_metadata_directory = ''
         path_per_questionnaire = ''
 
         # and save per_participant data
@@ -546,6 +606,8 @@ class ExportExecution:
             export_per_questionnaire_directory = path.join(self.get_input_data("base_directory"),
                                                            self.get_input_data("per_questionnaire_directory"))
 
+            export_metadata_directory = path.join(self.get_input_data("base_directory"), metadata_directory)
+
         questionnaire_lime_survey = Questionnaires()
 
         for questionnaire in self.get_input_data("questionnaires"):
@@ -558,14 +620,18 @@ class ExportExecution:
             # per_participant_data is updated by define_questionnaire method
             fields_description = self.define_questionnaire(questionnaire, questionnaire_lime_survey)
 
-            # create directory for questionnaire: <per_questionnaire>/<questionnaire_id>
-            if self.get_input_data("export_per_questionnaire"):
+            # create directory for questionnaire: <per_questionnaire>/<q_code_title>
+            if self.get_input_data("export_per_questionnaire") and (len(fields_description) > 1):
                 path_questionnaire = str(questionnaire_id)
+
+                questionnaire_code = self.get_questionnaire_code_from_id(questionnaire_id)
+                questionnaire_title = self.get_title_reduced(questionnaire_id=questionnaire_id)
+                path_questionnaire = "%s_%s" % (str(questionnaire_code), questionnaire_title)
                 error_msg, export_path = create_directory(path_per_questionnaire, path_questionnaire)
                 if error_msg != "":
                     return error_msg
 
-                export_filename = "%s_%s.csv" % (questionnaire["prefix_filename_responses"], str(questionnaire_id))
+                export_filename = "%s_%s.csv" % (questionnaire["prefix_filename_responses"], str(questionnaire_code))
 
                 export_directory = path.join(export_per_questionnaire_directory, path_questionnaire)
 
@@ -582,7 +648,9 @@ class ExportExecution:
 
                 self.files_to_zip_list.append([complete_filename, export_directory])
 
-                export_filename = "%s_%s.csv" % (questionnaire["prefix_filename_fields"], str(questionnaire_id))
+                export_filename = "%s_%s.csv" % (questionnaire["prefix_filename_fields"], str(questionnaire_code))
+
+                export_directory = path.join(export_metadata_directory, path_questionnaire)
 
                 complete_filename = path.join(export_path, export_filename)
 
@@ -606,42 +674,47 @@ class ExportExecution:
             if error_msg != "":
                 return error_msg
 
-            prefix_filename_participant = "Participant"
+            prefix_filename_participant = "Participant_"
             export_directory_base = path.join(self.get_input_data("base_directory"),
                                               self.get_input_data("per_participant_directory"))
-            path_questionnaire = "Questionnaires"
+            # path_questionnaire = "Questionnaires"
 
-            for participant in self.get_per_participant_data():
+            for participant_code in self.get_per_participant_data():
 
-                path_participant = str(participant)
+                path_participant = prefix_filename_participant + str(participant_code)
                 error_msg, participant_path = create_directory(path_per_participant, path_participant)
                 if error_msg != "":
                     return error_msg
 
-                error_msg, questionnaire_path = create_directory(participant_path, path_questionnaire)
-                if error_msg != "":
-                    return error_msg
+                # error_msg, questionnaire_path = create_directory(participant_path, path_questionnaire)
+                # if error_msg != "":
+                #     return error_msg
 
-                for questionnaire in self.get_per_participant_data(participant):
+                for questionnaire_code in self.get_per_participant_data(participant_code):
                     # print(participant, questionnaire)
 
-                    export_filename = "%s_%s.csv" % (prefix_filename_participant, str(questionnaire))
+                    questionnaire_id = self.get_questionnaire_id_from_code(questionnaire_code)
 
-                    complete_filename = path.join(questionnaire_path, export_filename)
+                    title = self.get_title_reduced(questionnaire_id=questionnaire_id)
 
-                    header = self.get_header_questionnaire(questionnaire)
+                    export_filename = "%s_%s_%s.csv" % (str(participant_code), str(questionnaire_code), title)
+
+                    header = self.get_header_questionnaire(questionnaire_id)
 
                     per_participant_rows = [header]
 
-                    fields_rows = self.get_per_participant_data(participant, questionnaire)
+                    fields_rows = self.get_per_participant_data(participant_code, questionnaire_code)
 
                     for fields in fields_rows:
                         per_participant_rows.append(fields)
 
+
+                    complete_filename = path.join(participant_path, export_filename)
+
                     save_to_csv(complete_filename, per_participant_rows)
 
                     export_directory = path.join(export_directory_base, path_participant)
-                    export_directory = path.join(export_directory, path_questionnaire)
+                    # export_directory = path.join(export_directory, path_questionnaire)
 
                     self.files_to_zip_list.append([complete_filename, export_directory])
 
@@ -737,9 +810,15 @@ class ExportExecution:
                     if len(transformed_fields) > 0:
                         export_rows.append(transformed_fields)
 
+                        # self.include_in_per_participant_data([transformed_fields],
+                        #                                      questionnaire_response.patient_id,
+                        #                                      questionnaire_id)
+                        self.include_questionnaire_code_and_id(questionnaire_response.survey.code,
+                                                               questionnaire_response.survey.lime_survey_id)
+
                         self.include_in_per_participant_data([transformed_fields],
-                                                             questionnaire_response.patient_id,
-                                                             questionnaire_id)
+                                                             questionnaire_response.patient.code,
+                                                             questionnaire_response.survey.code)
 
         header = self.get_header_questionnaire(questionnaire_id)
         export_rows.insert(0, header)
