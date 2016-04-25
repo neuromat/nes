@@ -247,7 +247,7 @@ class FileFormat(models.Model):
 
     # Code that NES knows the format and can handle the content.
     # E.g.: "NEO-RawBinarySignalIO", "other"
-    nes_code = models.CharField(null=True, max_length=50, unique=True)
+    nes_code = models.CharField(null=True, blank=True, max_length=50, unique=True)
 
     name = models.CharField(max_length=50)
     extension = models.CharField(max_length=20)
