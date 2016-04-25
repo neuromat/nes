@@ -244,8 +244,13 @@ class QuestionnaireResponse(models.Model):
 
 
 class FileFormat(models.Model):
-    name = models.CharField(null=False, max_length=50, blank=False)
-    extension = models.CharField(null=False, max_length=20, blank=False)
+
+    # Code that NES knows the format and can handle the content.
+    # E.g.: "NEO-RawBinarySignalIO", "other"
+    nes_code = models.CharField(null=True, blank=True, max_length=50, unique=True)
+
+    name = models.CharField(max_length=50)
+    extension = models.CharField(max_length=20)
     description = models.TextField(null=True, blank=True)
 
     def __str__(self):
@@ -256,6 +261,7 @@ class DataFile(models.Model):
     description = models.TextField(null=False, blank=False)
     file = models.FileField(upload_to=get_eeg_dir, null=False)
     file_format = models.ForeignKey(FileFormat, null=False, blank=False)
+    file_format_description = models.TextField(null=False, blank=False, default='')
 
 
 class EEGData(DataFile):

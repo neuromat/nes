@@ -189,7 +189,7 @@
                                                                 <tr>
                                                                     <td>
                                                                         {% if editing %}
-                                                                            <a href="exam/edit/{{ exams.id }}/?status={{ status }}">{{ exams.description }}</a>
+                                                                            <a href="exam/edit/{{ exams.id }}/?status={{ status }}&mr=new">{{ exams.description }}</a>
                                                                         {% else %}
                                                                             <a href="exam/{{ exams.id }}/?status={{ status }}">{{ exams.description }}</a>
                                                                         {% endif %}
@@ -199,7 +199,7 @@
                                                         {% endif %}
                                                         {% if editing %}
                                                             <tr><td>
-                                                                <a href="diagnosis/{{ diagnosis.id }}/exam/new/?status={{ status }}" class="btn btn-primary">{% trans "Insert exam" %}</a>
+                                                                <a href="diagnosis/{{ diagnosis.id }}/exam/new/?status={{ status }}&mr=new" class="btn btn-primary">{% trans "Insert exam" %}</a>
                                                             </td></tr>
                                                         {% else %}
                                                             <tr><td>

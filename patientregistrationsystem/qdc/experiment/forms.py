@@ -231,7 +231,7 @@ class EEGDataForm(ModelForm):
     class Meta:
         model = EEGData
 
-        fields = ['date', 'file_format', 'description', 'file']
+        fields = ['date', 'file_format', 'description', 'file', 'file_format_description']
 
         widgets = {
             'date': DateInput(format=_("%m/%d/%Y"),
@@ -243,6 +243,9 @@ class EEGDataForm(ModelForm):
             'description': Textarea(attrs={'class': 'form-control',
                                            'rows': '4', 'required': "",
                                            'data-error': _('Description must be filled.')}),
+            'file_format_description': Textarea(attrs={'class': 'form-control',
+                                           'rows': '4', 'required': "",
+                                           'data-error': _('File format description must be filled.')}),
             # It is not possible to set the 'required' attribute because it affects the edit screen
             # 'file': FileInput(attrs={'required': ""})
         }
