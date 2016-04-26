@@ -464,7 +464,7 @@ class InputExportTest(TestCase):
 
         self.assertIn("questionnaires", input_data.data)
 
-    def test_crate_dynamic_json(self):
+    def test_create_dynamic_json(self):
 
         participant_field_header_list = [
             ("id", "id"),
@@ -487,10 +487,17 @@ class InputExportTest(TestCase):
 
         build_complete_export_structure(0, 1, participant_field_header_list,
                                         diagnosis_field_header_list, questionnaires_list,
-                                        output_filename)
+                                        output_filename, "pt-BR")
 
         self.assertTrue(path.isfile(output_filename))
 
+        remove(output_filename)
+
+        build_complete_export_structure(1, 0, participant_field_header_list,
+                                        diagnosis_field_header_list, questionnaires_list,
+                                        output_filename, "en")
+
+        self.assertTrue(path.isfile(output_filename))
         remove(output_filename)
 
 

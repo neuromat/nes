@@ -1,5 +1,8 @@
 
 from json import dump, load
+from .export import get_questionnaire_language
+from survey.abc_search_engine import Questionnaires
+
 
 BASE_DIRECTORY = "NES_EXPORT"
 PER_PARTICIPANT_DIRECTORY = "Per_participant"
@@ -64,7 +67,10 @@ class InputExport:
 
         self.data["questionnaires"] = []
 
+        questionnaire_lime_survey = Questionnaires()
+
         for sid, title, field_header_list in questionnaire_list:
+            language = get_questionnaire_language(questionnaire_lime_survey, sid, language)
 
             self.data["questionnaires"].append({"id": sid, "language": language,
                                                 "prefix_filename_fields": PREFIX_FILENAME_FIELDS,
@@ -76,6 +82,8 @@ class InputExport:
                 self.data["questionnaires"][-1]["output_list"].append(output_data)
                 # ["header"] = header
                 # self.data["questionnaires"][0]["output_list"]["field"] = field
+
+        questionnaire_lime_survey.release_session_key()
 
 
 def build_complete_export_structure(export_per_participant, export_per_questionnaire, participant_field_header_list,
