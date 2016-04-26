@@ -376,5 +376,25 @@
     },
     "model": "patient.schooling",
     "pk": 5
+  },
+  {
+    "model": "experiment.fileformat",
+    "fields": {
+      "nes_code": "NEO-RawBinarySignalIO",
+      "extension": "raw",
+      "description": "",
+      "name": "EEG raw data (NEO)"
+    },
+    "pk": 1
+  },
+  {
+    "model": "experiment.fileformat",
+    "fields": {
+      "nes_code": "other",
+      "extension": ".*",
+      "description": "",
+      "name": "Other"
+    },
+    "pk": 2
   }
 ]

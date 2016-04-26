@@ -1280,7 +1280,7 @@ class SubjectTest(TestCase):
                                     self.data)
         self.assertEqual(response.status_code, 200)
         self.assertEqual(EEGData.objects.all().count(), 0)
-        self.assertEqual(len(response.context['eeg_data_form'].errors), 1)
+        self.assertGreaterEqual(len(response.context['eeg_data_form'].errors), 1)
         self.assertTrue('date'in response.context['eeg_data_form'].errors)
         self.assertEqual(response.context['eeg_data_form'].errors['date'][0],
                          _("Date cannot be greater than today's date."))
