@@ -1,12 +1,9 @@
 {% extends "quiz/template.html" %}
+{% block activeAdvancedResearchProject %}class="active"{% endblock %}
 
 {% load i18n admin_static %}
 
-{% block activeAdvancedResearchProject %}class="active"{% endblock %}
-
 {% block header %}
-    <script src="{% static 'quiz/js/eeg_data_collection.js' %}"></script>
-
     <script type="text/javascript" src="/my_admin/jsi18n/"></script>
     <script type="text/javascript" src="/media/admin/js/core.js"></script>
 
@@ -14,6 +11,10 @@
     <link rel="stylesheet" type="text/css" href="/media/admin/css/base.css"/>
     <link rel="stylesheet" type="text/css" href="/media/admin/css/global.css"/>
     <link rel="stylesheet" type="text/css" href="/media/admin/css/widgets.css"/>
+
+    <script src="{% static 'quiz/js/research_project.js' %}"></script>
+    <script src="{% static 'quiz/js/eeg_data_collection.js' %}"></script>
+
 {% endblock %}
 
 {% block form %}
@@ -23,6 +24,28 @@
 {% endblock %}
 
 {% block content %}
+
+    <div class="tab-pane fade in active" id="eegDataProjectBreadCrumb">
+        <div class="col-md-10">
+            <ol class="breadcrumb">
+                <li><a href="/home">{% trans "Home" %}</a></li>
+                <li><a href="/experiment/research_project/list">{% trans "Studies" %}</a></li>
+                <li><a href="/experiment/research_project/{{ group.experiment.research_project.id }}">{{ group.experiment.research_project.title }}</a></li>
+                <li><a href="/experiment/{{ group.experiment.id }}">{{ group.experiment.title }}</a></li>
+                <li><a href="/experiment/group/{{ group.id }}">{{ group.title }}</a></li>
+                <li><a href="/experiment/group/{{ group.id }}/subjects/">{% trans "Participant" %}</a></li>
+
+                <li><a href="/experiment/group/{{ group.id }}/subject/{{ subject.id }}/eeg">{{ subject.patient.name }}</a></li>
+
+                {% if creating %}
+                    <li class="active">{% trans "New EEG data file" %}</li>
+                {% else %}
+                    <li class="active">{{ eeg_data_form.description.value }}</li>
+                {% endif %}
+
+            </ol>
+        </div>
+    </div>
 
     {% if messages %}
         {% for message in messages %}
@@ -46,33 +69,12 @@
         {% endfor %}
     {% endif %}
 
+
     {% if eeg_data_form.errors %}
         <script type="text/javascript">
             showErrorMessage(gettext('Please, correct fields highlighted.'))
         </script>
     {% endif %}
-
-    <div class="tab-pane fade in active" id="eegDataProjectBreadCrumb">
-        <div class="col-md-10">
-            <ol class="breadcrumb">
-                <li><a href="/home">{% trans "Home" %}</a></li>
-                <li><a href="/experiment/research_project/list">{% trans "Studies" %}</a></li>
-                <li><a href="/experiment/research_project/{{ group.experiment.research_project.id }}">{{ group.experiment.research_project.title }}</a></li>
-                <li><a href="/experiment/{{ group.experiment.id }}">{{ group.experiment.title }}</a></li>
-                <li><a href="/experiment/group/{{ group.id }}">{{ group.title }}</a></li>
-                <li><a href="/experiment/group/{{ group.id }}/subjects/">{% trans "Participant" %}</a></li>
-
-                <li><a href="/experiment/group/{{ group.id }}/subject/{{ subject.id }}/eeg">{{ subject.patient.name }}</a></li>
-
-                {% if creating %}
-                    <li class="active">{% trans "New EEG data file" %}</li>
-                {% else %}
-                    <li class="active">{{ eeg_data_form.description.value }}</li>
-                {% endif %}
-
-            </ol>
-        </div>
-    </div>
 
     <div class="tab-pane fade in active" id="menuUserTab">
         <div class="col-md-10">

@@ -17,6 +17,8 @@ from django.http import HttpResponseRedirect
 from django.shortcuts import get_object_or_404, redirect, render, render_to_response
 from django.utils.translation import ugettext as _
 
+from neo import io
+
 from experiment.models import Experiment, Subject, QuestionnaireResponse, SubjectOfGroup, Group, Component, \
     ComponentConfiguration, Questionnaire, Task, Stimulus, Pause, Instruction, Block, \
     TaskForTheExperimenter, ClassificationOfDiseases, ResearchProject, Keyword, EEG, EEGData
@@ -47,6 +49,11 @@ delimiter = "-"
 
 # pylint: disable=E1101
 # pylint: disable=E1103
+
+
+class EEGReading:
+    file_format = None
+    reading = None
 
 
 @login_required
@@ -1257,6 +1264,9 @@ def subject_eeg_view(request, group_id, subject_id,
         eeg_data_files = EEGData.objects.filter(subject_of_group=subject_of_group,
                                                 component_configuration=eeg_configuration)
 
+        for eeg_data_file in eeg_data_files:
+            eeg_data_file.eeg_reading = eeg_data_reading(eeg_data_file)
+
         eeg_collections.append(
             {'eeg_configuration': eeg_configuration,
              'eeg_data_files': eeg_data_files}
@@ -1307,11 +1317,10 @@ def subject_eeg_data_create(request, group_id, subject_id, eeg_configuration_id,
                     eeg_data_added.group = group
                     eeg_data_added.subject = subject
 
-                    # For known formats, try to access data to validate the format
-                    if eeg_data_added.file_format.nes_code == "NEO-RawBinarySignalIO":
-                        messages.success(request, _('Vou validar, hein!!'))
-
                     eeg_data_added.save()
+
+                    # Validate known eeg file formats
+                    reading_for_eeg_validation(eeg_data_added, request)
 
                     messages.success(request, _('EEG data collection created successfully.'))
 
@@ -1333,6 +1342,38 @@ def subject_eeg_data_create(request, group_id, subject_id, eeg_configuration_id,
         return render(request, template_name, context)
     else:
         raise PermissionDenied
+
+
+def reading_for_eeg_validation(eeg_data_added, request):
+    eeg_reading = eeg_data_reading(eeg_data_added)
+    if eeg_reading.file_format:
+        if eeg_reading.reading:
+            messages.success(request, _('EEG data file format validated.'))
+        else:
+            messages.warning(request, _('Not valid EEG file format.'))
+
+
+def eeg_data_reading(eeg_data):
+
+    eeg_reading = EEGReading()
+
+    # For known formats, try to access data in order to validate the format
+
+    if eeg_data.file_format.nes_code == "NEO-RawBinarySignalIO":
+
+        eeg_reading.file_format = eeg_data.file_format
+
+        reading = io.RawBinarySignalIO(filename=eeg_data.file.path)
+
+        try:
+            # Trying to read the segments
+            reading.read_segment(lazy=False, cascade=True, )
+        except:
+            reading = None
+
+        eeg_reading.reading = reading
+
+    return eeg_reading
 
 
 @login_required
@@ -1392,12 +1433,17 @@ def eeg_data_edit(request, eeg_data_id, template_name="experiment/subject_eeg_da
                         eeg_data_to_update.group = eeg_data.subject_of_group.group
                         eeg_data_to_update.subject = eeg_data.subject_of_group.subject
                         eeg_data_to_update.save()
+
+                        # Validate known eeg file formats
+                        reading_for_eeg_validation(eeg_data_to_update, request)
+
                         messages.success(request, _('EEG data updated successfully.'))
                     else:
                         messages.success(request, _('There is no changes to save.'))
 
                     redirect_url = reverse("eeg_data_view", args=(eeg_data_id,))
                     return HttpResponseRedirect(redirect_url)
+
         else:
             eeg_data_form = EEGDataForm(request.POST or None, instance=eeg_data)
 
