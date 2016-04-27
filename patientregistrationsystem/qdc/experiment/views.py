@@ -1297,7 +1297,12 @@ def subject_eeg_data_create(request, group_id, subject_id, eeg_configuration_id,
         eeg_data_id = None
 
         eeg_data_form = EEGDataForm(None)
-        file_format = FileFormat.objects.get(nes_code='other')
+
+        try:
+            file_format = FileFormat.objects.get(nes_code='other')
+        except FileFormat.DoesNotExist:
+            file_format = None
+
         file_format_id = None
         if file_format:
             file_format_id = file_format.pk
