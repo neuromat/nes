@@ -21,7 +21,7 @@ from os import path, makedirs
 from patient.models import Patient, QuestionnaireResponse
 
 from survey.abc_search_engine import Questionnaires
-from survey.models import Survey
+# from survey.models import Survey
 from survey.views import is_limesurvey_available
 
 DEFAULT_LANGUAGE = "pt-BR"
@@ -659,7 +659,7 @@ class ExportExecution:
 
             # create directory for questionnaire: <per_questionnaire>/<q_code_title>
             if self.get_input_data("export_per_questionnaire") and (len(fields_description) > 1):
-                path_questionnaire = str(questionnaire_id)
+                # path_questionnaire = str(questionnaire_id)
 
                 questionnaire_code = self.get_questionnaire_code_from_id(questionnaire_id)
                 questionnaire_title = self.get_title_reduced(questionnaire_id=questionnaire_id)
@@ -744,7 +744,6 @@ class ExportExecution:
 
                     for fields in fields_rows:
                         per_participant_rows.append(fields)
-
 
                     complete_filename = path.join(participant_path, export_filename)
 
