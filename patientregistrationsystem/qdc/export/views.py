@@ -1,4 +1,4 @@
-import json
+# import json
 
 from django.shortcuts import render
 from django.conf import settings
@@ -81,6 +81,11 @@ patient_fields_inclusion = [
 
 diagnosis_fields_inclusion = [
     ["medicalrecorddata__patient__code", 'participation_code'],
+]
+
+questionnaire_evaluation_fields_excluded = [
+    "subjectid",
+    "responsibleid",
 ]
 
 '''
@@ -563,11 +568,11 @@ def export_view(request, template_name="export/export_data.html"):
     # page 2 fields
 
     # entrance evaluation questionnarie fields
-    language_code = request.LANGUAGE_CODE
+
     # if len(language_code) > 2:
     #     language_code = "{}-{}".format(language_code[:2],language_code[-2:].upper())
 
-    questionnaires_fields_list = get_questionnaire_fields(questionnaires_list_final, language_code)
+    questionnaires_fields_list = get_questionnaire_fields(questionnaires_list_final, request.LANGUAGE_CODE)
 
     # for field in questionnaires_fields_list:
     #     for questionnaire in questionnaires_list_final:
@@ -636,14 +641,17 @@ def get_questionnaire_fields(questionnaire_code_list, language="pt-BR"):
             # index = 0
             # line 0 - header information
             for question in questionnaire_questions[0]:
-                # properties = questionnaire_lime_survey.get_question_properties(question, language)
-                record_question["output_list"].append({"field": question,
-                                                       "header": question})
+                if question not in questionnaire_evaluation_fields_excluded:
 
-                # record_question["output_list"].append({"field": question,
-                #                                        "header": questionnaire_questions_full[0][index]})
+                    # properties = questionnaire_lime_survey.get_question_properties(question, language)
 
-                # index += 1
+                    record_question["output_list"].append({"field": question,
+                                                           "header": question})
+
+                    # record_question["output_list"].append({"field": question,
+                    #                                        "header": questionnaire_questions_full[0][index]})
+
+                    # index += 1
 
             questionnaires_included.append(record_question)
 
