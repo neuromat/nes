@@ -21,7 +21,7 @@ from shutil import rmtree
 
 from .forms import ExportForm, ParticipantsSelectionForm, AgeIntervalForm
 from .models import Export
-from .export import ExportExecution, perform_csv_response, create_directory
+from .export import ExportExecution, perform_csv_response, create_directory, get_questionnaire_language
 
 from export.input_export import build_complete_export_structure
 
@@ -493,7 +493,7 @@ def export_view(request, template_name="export/export_data.html"):
                 create_directory(settings.MEDIA_ROOT, path.split(input_export_file)[0])
 
                 build_complete_export_structure(per_participant, per_questionnaire, participants_list, diagnosis_list,
-                                                questionnaires_list, input_filename)
+                                                questionnaires_list, input_filename, request.LANGUAGE_CODE)
 
                 complete_filename = export_create(request, export_instance.id, input_filename)
 
@@ -563,7 +563,11 @@ def export_view(request, template_name="export/export_data.html"):
     # page 2 fields
 
     # entrance evaluation questionnarie fields
-    questionnaires_fields_list = get_questionnaire_fields(questionnaires_list_final)
+    language_code = request.LANGUAGE_CODE
+    # if len(language_code) > 2:
+    #     language_code = "{}-{}".format(language_code[:2],language_code[-2:].upper())
+
+    questionnaires_fields_list = get_questionnaire_fields(questionnaires_list_final, language_code)
 
     # for field in questionnaires_fields_list:
     #     for questionnaire in questionnaires_list_final:
@@ -597,8 +601,6 @@ def export_view(request, template_name="export/export_data.html"):
     return render(request, template_name, context)
 
 
-# def export_execute():
-
 def get_questionnaire_fields(questionnaire_code_list, language="pt-BR"):
     """
     :param questionnaire_code_list: list with questionnaire id to be formatted with json file
@@ -613,21 +615,35 @@ def get_questionnaire_fields(questionnaire_code_list, language="pt-BR"):
 
         questionnaire_id = questionnaire["sid"]
 
+        language = get_questionnaire_language(questionnaire_lime_survey, questionnaire_id, language)
+
         responses_string = questionnaire_lime_survey.get_header_response(questionnaire_id, language)
+
+        questionnaire_title = questionnaire_lime_survey.get_survey_title(questionnaire_id, language)
 
         # print("id: %d " % questionnaire_id)
 
         if not isinstance(responses_string, dict):
 
-            record_question = {'sid': questionnaire_id, "title": questionnaire["surveyls_title"], "output_list": []}
+            record_question = {'sid': questionnaire_id, "title": questionnaire_title, "output_list": []}
 
             questionnaire_questions = perform_csv_response(responses_string)
 
+            # responses_full = questionnaire_lime_survey.get_header_response(questionnaire_id,
+            #                                                                language, heading_type='full')
+            # questionnaire_questions_full = perform_csv_response(responses_full)
+
+            # index = 0
             # line 0 - header information
             for question in questionnaire_questions[0]:
                 # properties = questionnaire_lime_survey.get_question_properties(question, language)
+                record_question["output_list"].append({"field": question,
+                                                       "header": question})
 
-                record_question["output_list"].append({"field": question, "header": question})
+                # record_question["output_list"].append({"field": question,
+                #                                        "header": questionnaire_questions_full[0][index]})
+
+                # index += 1
 
             questionnaires_included.append(record_question)
 

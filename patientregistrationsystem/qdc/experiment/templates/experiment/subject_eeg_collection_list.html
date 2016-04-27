@@ -99,6 +99,17 @@
                                                         <td>{{ eeg_data_file.date }}</td>
                                                         <td>{{ eeg_data_file.file_format.name }}</td>
                                                         <td>{{ eeg_data_file.file.size|filesizeformat }}</td>
+                                                        <td>
+                                                            {% if eeg_data_file.eeg_reading.file_format %}
+                                                                {% if eeg_data_file.eeg_reading.reading %}
+                                                                    <span class="label label-success">{% trans "Valid EEG file format" %}</span>
+                                                                {% else %}
+                                                                    <span class="label label-warning">{% trans "Not valid EEG file format" %}</span>
+                                                                {% endif %}
+                                                            {% else %}
+                                                                <span class="label label-default">{% trans "File format not validated" %}</span>
+                                                            {% endif %}
+                                                        </td>
                                                     </tr>
                                                 {% endfor %}
                                                 <tr>

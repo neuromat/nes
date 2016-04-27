@@ -8,3 +8,4 @@ pyflakes==0.9.2
 pylint==1.4.4
 pep8==1.6.2
 python-dateutil==2.5.2
+neo==0.3.3

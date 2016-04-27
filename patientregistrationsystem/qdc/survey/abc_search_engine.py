@@ -108,14 +108,15 @@ class ABCSearchEngine(ABC):
         return result
 
     @abstractmethod
-    def get_survey_title(self, sid):
+    def get_survey_title(self, sid, language):
         """
         :param sid: survey ID
         :return: title of the survey
         """
 
         if self.session_key:
-            survey_title = self.server.get_language_properties(self.session_key, sid, {'method': 'surveyls_title'})
+            survey_title = self.server.get_language_properties(self.session_key, sid, {'method': 'surveyls_title'},
+                                                               language)
 
             if 'surveyls_title' in survey_title:
                 survey_title = survey_title.get('surveyls_title')
@@ -386,8 +387,8 @@ class Questionnaires(ABCSearchEngine):
     def get_participant_properties(self, survey_id, token_id, prop):
         return super(Questionnaires, self).get_participant_properties(survey_id, token_id, prop)
 
-    def get_survey_title(self, sid):
-        return super(Questionnaires, self).get_survey_title(sid)
+    def get_survey_title(self, sid, language=None):
+        return super(Questionnaires, self).get_survey_title(sid, language)
 
     def survey_has_token_table(self, sid):
         return super(Questionnaires, self).survey_has_token_table(sid)

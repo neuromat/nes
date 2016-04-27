@@ -24,6 +24,7 @@ from survey.abc_search_engine import Questionnaires
 from survey.models import Survey
 from survey.views import is_limesurvey_available
 
+DEFAULT_LANGUAGE = "pt-BR"
 
 metadata_directory = "Questionnaire_metadata"
 
@@ -133,6 +134,31 @@ def is_patient_active(subject_id):
                 response = True
 
     return response
+
+
+def get_questionnaire_language(questionnaire_lime_survey, questionnaire_id, language_code):
+
+    language = DEFAULT_LANGUAGE
+    # defining language to be showed
+    languages = questionnaire_lime_survey.get_survey_languages(questionnaire_id)
+
+    # language to be showed can be the base language, or...
+    if "language" in languages:
+
+        language = languages['language']
+
+        # ...can be one of the additional languages
+        if language.lower() != language_code.lower() and languages['additional_languages']:
+
+            # search for the right language in addional languages,
+            # considering that the LimeSurvey uses upper case in the two-letter language code, like en-US and pt-BR.
+            additional_languages_list = languages['additional_languages'].split(' ')
+            additional_languages_list_lower = [item.lower() for item in additional_languages_list]
+            if language_code.lower() in additional_languages_list_lower:
+                index = additional_languages_list_lower.index(language_code.lower())
+                language = additional_languages_list[index]
+
+    return language
 
 
 class LogMessages:
@@ -351,6 +377,16 @@ class ExportExecution:
 
         return fields
 
+    def get_title(self, questionnaire_id):
+
+        title = ''
+        questionnaires = self.get_input_data("questionnaires")
+        for questionnaire in questionnaires:
+            if questionnaire_id == questionnaire["id"]:
+                title = questionnaire["questionnaire_name"]
+                break
+        return title
+
     def get_title_reduced(self, questionnaire_id=None, questionnaire_code=None):
 
         reduced_title = ''
@@ -361,11 +397,7 @@ class ExportExecution:
             questionnaire_id = self.get_questionnaire_id_from_code(questionnaire_code)
 
         if questionnaire_id:
-            questionnaires = self.get_input_data("questionnaires")
-            for questionnaire in questionnaires:
-                if questionnaire_id == questionnaire["id"]:
-                    title = questionnaire["questionnaire_name"]
-                    break
+            title = self.get_title(questionnaire_id)
 
         if title:
             title = re.sub(r'[^\w]', ' ', title)
@@ -471,7 +503,9 @@ class ExportExecution:
 
         # for each field, verify the question description
         # get title
-        questionnaire_title = questionnaire_lime_survey.get_survey_title(questionnaire_id)
+
+        questionnaire_title = questionnaire_lime_survey.get_survey_title(questionnaire_id, language)
+        # questionnaire_title = self.get_title(questionnaire_id)
 
         questionnaire_code = self.get_questionnaire_code_from_id(questionnaire_id)
 
@@ -504,7 +538,10 @@ class ExportExecution:
                         column_scale = [attribute for attribute in sorted(properties['attributes_lang'].values())]
 
                     for option_key, option_values in options.items():
-                        column_title = column_scale[option_values['scale_id']]
+                        if len(column_scale) > option_values['scale_id']:
+                            column_title = column_scale[option_values['scale_id']]
+                        else:
+                            column_title = ''
                         options_list.append([smart_str(option_key), smart_str(option_values['answer']),
                                              smart_str(option_values['assessment_value']), smart_str(column_title)])
                 else:
