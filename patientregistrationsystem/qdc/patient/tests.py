@@ -1668,7 +1668,7 @@ class TranslationValidation(TestCase):
 
     def test_translate_data_from_fixtures(self):
         filename = os.path.join(settings.BASE_DIR,
-                                os.path.join("patient", os.path.join("fixtures", "load_initial_data.json")))
+                                os.path.join("patient", os.path.join("fixtures", "load_initial_data_translation.json")))
 
         call_command('loaddata', "load_initial_data")
 

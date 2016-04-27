@@ -1290,7 +1290,8 @@ class SubjectTest(TestCase):
         file = SimpleUploadedFile('experiment/eeg/eeg_metadata.txt', b'rb')
         self.data = {'date': '29/08/2014', 'action': 'save',
                      'description': 'description of the file',
-                     'file_format': file_format.id, 'file': file}
+                     'file_format': file_format.id, 'file': file,
+                     'file_format_description': 'teste'}
         response = self.client.post(reverse('subject_eeg_data_create',
                                             args=(group.id, subject_mock.id, component_configuration.id)),
                                     self.data)
@@ -1309,7 +1310,8 @@ class SubjectTest(TestCase):
         # editing a eeg data file
         self.data = {'date': '30/08/2014', 'action': 'save',
                      'description': 'description of the file',
-                     'file_format': file_format.id, 'file': eeg_data.file}
+                     'file_format': file_format.id, 'file': eeg_data.file,
+                     'file_format_description': 'teste'}
         response = self.client.post(reverse('eeg_data_edit', args=(eeg_data.id,)), self.data)
         self.assertEqual(response.status_code, 302)
 
