@@ -1293,6 +1293,19 @@ def subject_eeg_view(request, group_id, subject_id,
     return render(request, template_name, context)
 
 
+def file_format_code():
+    try:
+        file_format = FileFormat.objects.get(nes_code='other')
+    except FileFormat.DoesNotExist:
+        file_format = None
+
+    file_format_id = None
+    if file_format:
+        file_format_id = file_format.pk
+
+    return file_format_id
+
+
 @login_required
 @permission_required('experiment.add_questionnaireresponse')
 def subject_eeg_data_create(request, group_id, subject_id, eeg_configuration_id,
@@ -1309,14 +1322,7 @@ def subject_eeg_data_create(request, group_id, subject_id, eeg_configuration_id,
 
         eeg_data_form = EEGDataForm(None)
 
-        try:
-            file_format = FileFormat.objects.get(nes_code='other')
-        except FileFormat.DoesNotExist:
-            file_format = None
-
-        file_format_id = None
-        if file_format:
-            file_format_id = file_format.pk
+        file_format_id = file_format_code()
 
         if request.method == "POST":
             if request.POST['action'] == "save":
@@ -1408,6 +1414,8 @@ def eeg_data_view(request, eeg_data_id, template_name="experiment/subject_eeg_da
     for field in eeg_data_form.fields:
         eeg_data_form.fields[field].widget.attrs['disabled'] = True
 
+    file_format_id = file_format_code()
+
     if request.method == "POST":
         if request.POST['action'] == "remove":
 
@@ -1429,7 +1437,8 @@ def eeg_data_view(request, eeg_data_id, template_name="experiment/subject_eeg_da
         "group": eeg_data.subject_of_group.group,
         "subject": eeg_data.subject_of_group.subject,
         "eeg_data_form": eeg_data_form,
-        "eeg_data": eeg_data
+        "eeg_data": eeg_data,
+        "file_format_id": file_format_id
     }
 
     return render(request, template_name, context)
@@ -1440,6 +1449,8 @@ def eeg_data_view(request, eeg_data_id, template_name="experiment/subject_eeg_da
 def eeg_data_edit(request, eeg_data_id, template_name="experiment/subject_eeg_data_form.html"):
 
     eeg_data = get_object_or_404(EEGData, pk=eeg_data_id)
+
+    file_format_id = file_format_code()
 
     if get_can_change(request.user, eeg_data.subject_of_group.group.experiment.research_project):
 
@@ -1473,6 +1484,7 @@ def eeg_data_edit(request, eeg_data_id, template_name="experiment/subject_eeg_da
             "subject": eeg_data.subject_of_group.subject,
             "eeg_data_form": eeg_data_form,
             "eeg_data": eeg_data,
+            "file_format_id": file_format_id,
             "editing": True
         }
 
