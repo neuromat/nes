@@ -71,16 +71,14 @@ def research_project_create(request, template_name="experiment/research_project_
     research_project_form = ResearchProjectForm(request.POST or None,
                                                 initial={'owners_full_name': request.user.get_full_name()})
 
-    if request.method == "POST":
-        if request.POST['action'] == "save":
-            if research_project_form.is_valid():
-                research_project_added = research_project_form.save(commit=False)
-                research_project_added.owner = request.user
-                research_project_added.save()
+    if request.method == "POST" and request.POST['action'] == "save" and research_project_form.is_valid():
+        research_project_added = research_project_form.save(commit=False)
+        research_project_added.owner = request.user
+        research_project_added.save()
 
-                messages.success(request, _('Study created successfully.'))
-                redirect_url = reverse("research_project_view", args=(research_project_added.id,))
-                return HttpResponseRedirect(redirect_url)
+        messages.success(request, _('Study created successfully.'))
+        redirect_url = reverse("research_project_view", args=(research_project_added.id,))
+        return HttpResponseRedirect(redirect_url)
 
     context = {
         "research_project_form": research_project_form,
