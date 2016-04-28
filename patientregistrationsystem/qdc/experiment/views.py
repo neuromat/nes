@@ -72,23 +72,33 @@ def research_project_create(request, template_name="experiment/research_project_
     research_project_form = ResearchProjectForm(request.POST or None,
                                                 initial={'owners_full_name': request.user.get_full_name()})
 
-    if request.method == "POST" and request.POST['action'] == "save" and research_project_form.is_valid():
+    if request.method == "POST":
 
-        research_project_added = research_project_form.save(commit=False)
-        research_project_added.owner = request.user
-        research_project_added.save()
+        if request.POST['action'] == "save":
 
-        messages.success(request, _('Study created successfully.'))
-        redirect_url = reverse("research_project_view", args=(research_project_added.id,))
-        return HttpResponseRedirect(redirect_url)
+            if research_project_form.is_valid():
 
-    else:
+                research_project_added = research_project_form.save(commit=False)
+                research_project_added.owner = request.user
+                research_project_added.save()
 
-        context = {
-            "research_project_form": research_project_form,
-            "creating": True,
-            "editing": True}
-        return render(request, template_name, context)
+                messages.success(request, _('Study created successfully.'))
+                redirect_url = reverse("research_project_view", args=(research_project_added.id,))
+                return HttpResponseRedirect(redirect_url)
+
+            else:
+                messages.warning(request, _('Information not saved.'))
+
+        else:
+            messages.warning(request, _('Action not available.'))
+
+    context = {
+        "research_project_form": research_project_form,
+        "creating": True,
+        "editing": True
+    }
+
+    return render(request, template_name, context)
 
 
 def get_can_change(user, research_project):

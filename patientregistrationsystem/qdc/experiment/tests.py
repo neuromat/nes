@@ -1281,7 +1281,7 @@ class SubjectTest(TestCase):
         self.assertEqual(response.status_code, 200)
         self.assertEqual(EEGData.objects.all().count(), 0)
         self.assertGreaterEqual(len(response.context['eeg_data_form'].errors), 1)
-        self.assertTrue('date'in response.context['eeg_data_form'].errors)
+        self.assertTrue('date' in response.context['eeg_data_form'].errors)
         self.assertEqual(response.context['eeg_data_form'].errors['date'][0],
                          _("Date cannot be greater than today's date."))
 
@@ -1437,6 +1437,25 @@ class ResearchProjectTest(TestCase):
     def test_research_project_create(self):
         # Request the research project register screen
         response = self.client.get(reverse('research_project_new'))
+        self.assertEqual(response.status_code, 200)
+
+        # POSTing "wrong" action
+        self.data = {'action': 'wrong', 'title': 'Research project title', 'start_date': datetime.date.today(),
+                     'description': 'Research project description'}
+        response = self.client.post(reverse('research_project_new'), self.data)
+        self.assertEqual(ResearchProject.objects.all().count(), 0)
+        self.assertEqual(str(list(response.context['messages'])[0]), _('Action not available.'))
+        self.assertEqual(response.status_code, 200)
+
+        # POSTing missing information
+        self.data = {'action': 'save'}
+        response = self.client.post(reverse('research_project_new'), self.data)
+        self.assertEqual(ResearchProject.objects.all().count(), 0)
+        self.assertGreaterEqual(len(response.context['research_project_form'].errors), 3)
+        self.assertTrue('title' in response.context['research_project_form'].errors)
+        self.assertTrue('start_date' in response.context['research_project_form'].errors)
+        self.assertTrue('description' in response.context['research_project_form'].errors)
+        self.assertEqual(str(list(response.context['messages'])[0]), _('Information not saved.'))
         self.assertEqual(response.status_code, 200)
 
         # Set research project data
