@@ -13,7 +13,29 @@
     <link rel="stylesheet" type="text/css" href="/media/admin/css/widgets.css"/>
 
     <script src="{% static 'quiz/js/research_project.js' %}"></script>
-    <script src="{% static 'quiz/js/eeg_data_collection.js' %}"></script>
+    <script>
+        $(document).ready(function () {
+            var $id_file_format = $("#id_file_format");
+
+            {% if not file_format_id %}
+                $id_file_format.parents('.row').next().hide();
+            {% else %}
+                $id_file_format.each((function() {
+                    if ($("#id_file_format option:selected").val() == {{ file_format_id }})
+                        $id_file_format.parents('.row').next().show();
+                    else
+                        $id_file_format.parents('.row').next().hide();
+                }));
+
+                $id_file_format.on('change', (function() {
+                    if ($("#id_file_format option:selected").val() == {{ file_format_id }})
+                        $id_file_format.parents('.row').next().show();
+                    else
+                        $id_file_format.parents('.row').next().hide();
+                }));
+            {% endif %}
+        });
+    </script>
 
 {% endblock %}
 
