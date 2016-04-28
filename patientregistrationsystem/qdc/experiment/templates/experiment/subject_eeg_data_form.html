@@ -25,8 +25,13 @@
                 $id_file_format.each((function() {
                     if ($("#id_file_format option:selected").val() == {{ file_format_id }})
                     {
-                        $id_file_format_description.prop( "disabled", false );
-                        $id_file_format.parents('.row').next().show();
+                        {% if editing %}
+                            $id_file_format_description.prop( "disabled", false );
+                            $id_file_format.parents('.row').next().show();
+                        {% else %}
+                            $id_file_format_description.prop( "disabled", true );
+                            $id_file_format.parents('.row').next().show();
+                        {% endif %}
                     }
                     else
                     {
