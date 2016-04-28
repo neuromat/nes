@@ -68,10 +68,12 @@ def research_project_list(request, template_name="experiment/research_project_li
 @login_required
 @permission_required('experiment.add_researchproject')
 def research_project_create(request, template_name="experiment/research_project_register.html"):
+
     research_project_form = ResearchProjectForm(request.POST or None,
                                                 initial={'owners_full_name': request.user.get_full_name()})
 
     if request.method == "POST" and request.POST['action'] == "save" and research_project_form.is_valid():
+
         research_project_added = research_project_form.save(commit=False)
         research_project_added.owner = request.user
         research_project_added.save()
@@ -80,12 +82,13 @@ def research_project_create(request, template_name="experiment/research_project_
         redirect_url = reverse("research_project_view", args=(research_project_added.id,))
         return HttpResponseRedirect(redirect_url)
 
-    context = {
-        "research_project_form": research_project_form,
-        "creating": True,
-        "editing": True}
+    else:
 
-    return render(request, template_name, context)
+        context = {
+            "research_project_form": research_project_form,
+            "creating": True,
+            "editing": True}
+        return render(request, template_name, context)
 
 
 def get_can_change(user, research_project):
