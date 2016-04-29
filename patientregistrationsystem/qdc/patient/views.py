@@ -704,7 +704,7 @@ def medical_record_update(request, patient_id, record_id, template_name="patient
 
                 try:
                     if date_text:
-                        diagnosis.date = datetime.datetime.strptime(date_text, '%d/%m/%Y')
+                        diagnosis.date = datetime.datetime.strptime(date_text, _('%m/%d/%Y'))
                     else:
                         diagnosis.date = None
 

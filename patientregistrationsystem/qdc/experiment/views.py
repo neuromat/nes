@@ -68,12 +68,16 @@ def research_project_list(request, template_name="experiment/research_project_li
 @login_required
 @permission_required('experiment.add_researchproject')
 def research_project_create(request, template_name="experiment/research_project_register.html"):
+
     research_project_form = ResearchProjectForm(request.POST or None,
                                                 initial={'owners_full_name': request.user.get_full_name()})
 
     if request.method == "POST":
+
         if request.POST['action'] == "save":
+
             if research_project_form.is_valid():
+
                 research_project_added = research_project_form.save(commit=False)
                 research_project_added.owner = request.user
                 research_project_added.save()
@@ -82,10 +86,17 @@ def research_project_create(request, template_name="experiment/research_project_
                 redirect_url = reverse("research_project_view", args=(research_project_added.id,))
                 return HttpResponseRedirect(redirect_url)
 
+            else:
+                messages.warning(request, _('Information not saved.'))
+
+        else:
+            messages.warning(request, _('Action not available.'))
+
     context = {
         "research_project_form": research_project_form,
         "creating": True,
-        "editing": True}
+        "editing": True
+    }
 
     return render(request, template_name, context)
 
@@ -864,7 +875,7 @@ def subject_questionnaire_response_start_fill_questionnaire(request, subject_id,
         questionnaire_response.subject_of_group = subject_of_group
         questionnaire_response.component_configuration = questionnaire_config
         questionnaire_response.token_id = result['token_id']
-        questionnaire_response.date = datetime.datetime.strptime(request.POST['date'], '%d/%m/%Y')
+        questionnaire_response.date = datetime.datetime.strptime(request.POST['date'], _('%m/%d/%Y'))
         questionnaire_response.questionnaire_responsible = request.user
         questionnaire_response.save()
 
@@ -1282,6 +1293,19 @@ def subject_eeg_view(request, group_id, subject_id,
     return render(request, template_name, context)
 
 
+def file_format_code():
+    try:
+        file_format = FileFormat.objects.get(nes_code='other')
+    except FileFormat.DoesNotExist:
+        file_format = None
+
+    file_format_id = None
+    if file_format:
+        file_format_id = file_format.pk
+
+    return file_format_id
+
+
 @login_required
 @permission_required('experiment.add_questionnaireresponse')
 def subject_eeg_data_create(request, group_id, subject_id, eeg_configuration_id,
@@ -1297,10 +1321,8 @@ def subject_eeg_data_create(request, group_id, subject_id, eeg_configuration_id,
         eeg_data_id = None
 
         eeg_data_form = EEGDataForm(None)
-        file_format = FileFormat.objects.get(nes_code='other')
-        file_format_id = None
-        if file_format:
-            file_format_id = file_format.pk
+
+        file_format_id = file_format_code()
 
         if request.method == "POST":
             if request.POST['action'] == "save":
@@ -1392,6 +1414,8 @@ def eeg_data_view(request, eeg_data_id, template_name="experiment/subject_eeg_da
     for field in eeg_data_form.fields:
         eeg_data_form.fields[field].widget.attrs['disabled'] = True
 
+    file_format_id = file_format_code()
+
     if request.method == "POST":
         if request.POST['action'] == "remove":
 
@@ -1413,7 +1437,8 @@ def eeg_data_view(request, eeg_data_id, template_name="experiment/subject_eeg_da
         "group": eeg_data.subject_of_group.group,
         "subject": eeg_data.subject_of_group.subject,
         "eeg_data_form": eeg_data_form,
-        "eeg_data": eeg_data
+        "eeg_data": eeg_data,
+        "file_format_id": file_format_id
     }
 
     return render(request, template_name, context)
@@ -1424,6 +1449,8 @@ def eeg_data_view(request, eeg_data_id, template_name="experiment/subject_eeg_da
 def eeg_data_edit(request, eeg_data_id, template_name="experiment/subject_eeg_data_form.html"):
 
     eeg_data = get_object_or_404(EEGData, pk=eeg_data_id)
+
+    file_format_id = file_format_code()
 
     if get_can_change(request.user, eeg_data.subject_of_group.group.experiment.research_project):
 
@@ -1457,6 +1484,7 @@ def eeg_data_edit(request, eeg_data_id, template_name="experiment/subject_eeg_da
             "subject": eeg_data.subject_of_group.subject,
             "eeg_data_form": eeg_data_form,
             "eeg_data": eeg_data,
+            "file_format_id": file_format_id,
             "editing": True
         }
 
