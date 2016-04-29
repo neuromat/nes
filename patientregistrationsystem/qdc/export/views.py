@@ -8,7 +8,7 @@ from django.core.urlresolvers import reverse
 # from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
 from django.http import HttpResponse, HttpResponseRedirect
 from django.utils.encoding import smart_str
-from django.utils.translation import ugettext as _
+from django.utils.translation import ugettext_lazy as _
 
 from datetime import datetime
 from dateutil.relativedelta import relativedelta
@@ -34,45 +34,91 @@ from survey.abc_search_engine import Questionnaires
 JSON_FILENAME = "json_export.json"
 EXPORT_DIRECTORY = "export"
 
+# patient_fields = [
+#     {"field": 'id', "header": 'id'},
+#     {"field": 'name', "header": 'name'},
+#     {"field": 'gender__name', "header": 'gender'},
+#     {"field": 'date_birth', "header": 'date_birth'},
+#     {"field": 'marital_status', "header": 'marital_status'},
+#     {"field": 'origin', "header": 'origin'},
+#     {"field": 'city', "header": 'city'},
+#     {"field": 'state', "header": 'state'},
+#     {"field": 'country', "header": 'country'},
+#     {"field": 'socialdemographicdata__natural_of', "header": 'natural_of'},
+#     {"field": 'socialdemographicdata__schooling', "header": 'schooling'},
+#     {"field": 'socialdemographicdata__profession', "header": 'profession'},
+#     {"field": 'socialdemographicdata__social_class', "header": 'social_class'},
+#     {"field": 'socialdemographicdata__occupation', "header": 'occupation'},
+#     {"field": 'socialdemographicdata__benefit_government', "header": 'benefit_government'},
+#     {"field": 'socialdemographicdata__religion', "header": 'religion'},
+#     {"field": 'socialdemographicdata__flesh_tone', "header": 'flesh_tone'},
+#     {"field": 'socialdemographicdata__citizenship', "header": 'citizenship'},
+#     {"field": 'socialdemographicdata__payment', "header": 'payment'},
+#     {"field": 'socialhistorydata__alcohol_period', "header": 'alcohol_period'},
+#     {"field": 'socialhistorydata__alcohol_frequency', "header": 'alcohol_frequency'},
+#     {"field": 'socialhistorydata__smoker', "header": 'smoker'},
+#     {"field": 'socialhistorydata__alcoholic', "header": 'alcoholic'},
+#     {"field": 'socialhistorydata__drugs', "header": 'drugs'},
+#     {"field": 'socialhistorydata__ex_smoker', "header": 'former_smoker'},
+#     {"field": 'socialhistorydata__alcohol_frequency', "header": 'alcohol_frequency'},
+#     {"field": 'socialhistorydata__amount_cigarettes', "header": 'amount_cigarettes'},
+# ]
+#
+# diagnosis_fields = [
+#
+#     {"field": "medicalrecorddata__record_responsible_id", "header": 'responsible_id'},
+#     {"field": "medicalrecorddata__record_responsible__username", "header": 'responsible_username'},
+#     {"field": "medicalrecorddata__diagnosis__date", "header": 'diagnosis_date'},
+#     {"field": "medicalrecorddata__diagnosis__description", "header": 'diagnosis_description'},
+#     {"field": "medicalrecorddata__diagnosis__classification_of_diseases__description",
+#      "header": 'classification_of_diseases_description'},
+#  {"field": "medicalrecorddata__diagnosis__classification_of_diseases_id", "header": 'classification_of_diseases_id'},
+# ]
+
+
 patient_fields = [
-    {"field": 'id', "header": 'id'},
-    {"field": 'name', "header": 'name'},
-    {"field": 'gender__name', "header": 'gender'},
-    {"field": 'date_birth', "header": 'date_birth'},
-    {"field": 'marital_status', "header": 'marital_status'},
-    {"field": 'origin', "header": 'origin'},
-    {"field": 'city', "header": 'city'},
-    {"field": 'state', "header": 'state'},
-    {"field": 'country', "header": 'country'},
-    {"field": 'socialdemographicdata__natural_of', "header": 'natural_of'},
-    {"field": 'socialdemographicdata__schooling', "header": 'schooling'},
-    {"field": 'socialdemographicdata__profession', "header": 'profession'},
-    {"field": 'socialdemographicdata__social_class', "header": 'social_class'},
-    {"field": 'socialdemographicdata__occupation', "header": 'occupation'},
-    {"field": 'socialdemographicdata__benefit_government', "header": 'benefit_government'},
-    {"field": 'socialdemographicdata__religion', "header": 'religion'},
-    {"field": 'socialdemographicdata__flesh_tone', "header": 'flesh_tone'},
-    {"field": 'socialdemographicdata__citizenship', "header": 'citizenship'},
-    {"field": 'socialdemographicdata__payment', "header": 'payment'},
-    {"field": 'socialhistorydata__alcohol_period', "header": 'alcohol_period'},
-    {"field": 'socialhistorydata__alcohol_frequency', "header": 'alcohol_frequency'},
-    {"field": 'socialhistorydata__smoker', "header": 'smoker'},
-    {"field": 'socialhistorydata__alcoholic', "header": 'alcoholic'},
-    {"field": 'socialhistorydata__drugs', "header": 'drugs'},
-    {"field": 'socialhistorydata__ex_smoker', "header": 'former_smoker'},
-    {"field": 'socialhistorydata__alcohol_frequency', "header": 'alcohol_frequency'},
-    {"field": 'socialhistorydata__amount_cigarettes', "header": 'amount_cigarettes'},
+    {"field": 'id', "header": 'id', "description": _("Identification")},
+    {"field": 'name', "header": 'name', "description": _("Full name")},
+    {"field": 'gender__name', "header": 'gender', "description": _("Gender")},
+    {"field": 'date_birth', "header": 'date_birth', "description": _("Date of birth")},
+    {"field": 'marital_status', "header": 'marital_status', "description": _("Marital status")},
+    {"field": 'origin', "header": 'origin', "description": _("Origin")},
+    {"field": 'city', "header": 'city', "description": _("City")},
+    {"field": 'state', "header": 'state', "description": _("State")},
+    {"field": 'country', "header": 'country', "description": _("Country")},
+    {"field": 'socialdemographicdata__natural_of', "header": 'natural_of', "description": _("Natural of")},
+    {"field": 'socialdemographicdata__schooling', "header": 'schooling', "description": _("Schooling")},
+    {"field": 'socialdemographicdata__profession', "header": 'profession', "description": _("Profession")},
+    {"field": 'socialdemographicdata__social_class', "header": 'social_class',
+     "description": _("Calculated social class")},
+    {"field": 'socialdemographicdata__occupation', "header": 'occupation', "description": _("Occupation")},
+    {"field": 'socialdemographicdata__benefit_government', "header": 'benefit_government',
+     "description": _("What form of payment of the treatment performed")},
+    {"field": 'socialdemographicdata__religion', "header": 'religion', "description": _("Religion")},
+    {"field": 'socialdemographicdata__flesh_tone', "header": 'flesh_tone', "description": _("Flesh tone")},
+    {"field": 'socialdemographicdata__citizenship', "header": 'citizenship', "description": _("Citizenship")},
+    {"field": 'socialdemographicdata__payment', "header": 'payment',
+     "description": _("Do you receive some benefit from the municipal level, state or federal government?")},
+    {"field": 'socialhistorydata__smoker', "header": 'smoker', "description": _("Smoker")},
+    {"field": 'socialhistorydata__amount_cigarettes', "header": 'amount_cigarettes',
+     "description": _("Cigarretes/Day")},
+    {"field": 'socialhistorydata__ex_smoker', "header": 'former_smoker', "description": _("Former smoker")},
+    {"field": 'socialhistorydata__alcoholic', "header": 'alcoholic', "description": _("Alcoholic")},
+    {"field": 'socialhistorydata__alcohol_frequency', "header": 'alcohol_frequency', "description": _("Frequency")},
+    {"field": 'socialhistorydata__alcohol_period', "header": 'alcohol_period', "description": _("Period")},
+    {"field": 'socialhistorydata__drugs', "header": 'drugs', "description": _("Drugs")},
 ]
 
 diagnosis_fields = [
-
-    {"field": "medicalrecorddata__record_responsible_id", "header": 'responsible_id'},
-    {"field": "medicalrecorddata__record_responsible__username", "header": 'responsible_username'},
-    {"field": "medicalrecorddata__diagnosis__date", "header": 'diagnosis_date'},
-    {"field": "medicalrecorddata__diagnosis__description", "header": 'diagnosis_description'},
+    {"field": "medicalrecorddata__diagnosis__date", "header": 'diagnosis_date', "description": _("Date")},
+    {"field": "medicalrecorddata__diagnosis__description", "header": 'diagnosis_description',
+     "description": _("Observation")},
+    {"field": "medicalrecorddata__diagnosis__classification_of_diseases_id", "header": 'classification_of_diseases_id',
+     "description": _("ICD code")},
     {"field": "medicalrecorddata__diagnosis__classification_of_diseases__description",
-     "header": 'classification_of_diseases_description'},
-    {"field": "medicalrecorddata__diagnosis__classification_of_diseases_id", "header": 'classification_of_diseases_id'},
+     "header": 'classification_of_diseases_description', "description": _("ICD Description")},
+    {"field": "medicalrecorddata__diagnosis__classification_of_diseases__abbreviated_description",
+     "header": 'classification_of_diseases_description', "description": _("ICD Abbreviated Description")},
 ]
 
 patient_fields_inclusion = [
@@ -580,13 +626,6 @@ def export_view(request, template_name="export/export_data.html"):
     #             field["title"] = questionnaire["surveyls_title"]
     #             break
 
-    # patient fields
-    # patient_fields = []
-    #
-    # "output_list":{}
-
-    # diagnosis fields
-
     context = {
 
         "limesurvey_available": limesurvey_available,
@@ -622,7 +661,11 @@ def get_questionnaire_fields(questionnaire_code_list, language="pt-BR"):
 
         language = get_questionnaire_language(questionnaire_lime_survey, questionnaire_id, language)
 
-        responses_string = questionnaire_lime_survey.get_header_response(questionnaire_id, language)
+        # get a valid token
+        survey = Survey.objects.filter(lime_survey_id=questionnaire_id).first()
+        token = QuestionnaireResponse.objects.filter(survey=survey).first().token_id
+
+        responses_string = questionnaire_lime_survey.get_header_response(questionnaire_id, language, token)
 
         questionnaire_title = questionnaire_lime_survey.get_survey_title(questionnaire_id, language)
 
@@ -634,24 +677,35 @@ def get_questionnaire_fields(questionnaire_code_list, language="pt-BR"):
 
             questionnaire_questions = perform_csv_response(responses_string)
 
-            # responses_full = questionnaire_lime_survey.get_header_response(questionnaire_id,
-            #                                                                language, heading_type='full')
-            # questionnaire_questions_full = perform_csv_response(responses_full)
+            responses_full = questionnaire_lime_survey.get_header_response(questionnaire_id,
+                                                                           language, token, heading_type='full')
+            questionnaire_questions_full = perform_csv_response(responses_full)
 
-            # index = 0
+            index = 0
             # line 0 - header information
             for question in questionnaire_questions[0]:
                 if question not in questionnaire_evaluation_fields_excluded:
 
                     # properties = questionnaire_lime_survey.get_question_properties(question, language)
 
-                    record_question["output_list"].append({"field": question,
-                                                           "header": question})
-
                     # record_question["output_list"].append({"field": question,
-                    #                                        "header": questionnaire_questions_full[0][index]})
+                    #                                        "header": question})
 
-                    # index += 1
+                    description = questionnaire_questions_full[0][index]
+
+                    # if len(description)+3+len(question) > 120:
+                    #     length = 120 - (3+len(question))
+                    #
+                    #     description_part1 = description[:length-30]
+                    #     description_part2 = description[-25:]
+                    #     description = description_part1 + "..." + description_part2
+
+                    record_question["output_list"].append({"field": question,
+                                                           "header": question,
+                                                           "description": description
+                                                           })
+
+                index += 1
 
             questionnaires_included.append(record_question)
 

@@ -3,7 +3,7 @@ import random
 
 
 class Survey(models.Model):
-    code = models.CharField(max_length=10, null=True, unique=True)
+    code = models.CharField(max_length=10, unique=True)
 
     lime_survey_id = models.IntegerField(null=False, blank=False, unique=True)
     is_initial_evaluation = models.BooleanField(null=False, blank=False, default=True)

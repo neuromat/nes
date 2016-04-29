@@ -1,22 +1,29 @@
 # coding=utf-8
 from django.forms import ModelForm, Form, TextInput, CharField, BooleanField, MultipleChoiceField, \
-    CheckboxSelectMultiple, ValidationError, ChoiceField, SelectMultiple, IntegerField, NumberInput
+    CheckboxSelectMultiple, ValidationError, ChoiceField, SelectMultiple, IntegerField, NumberInput, Select
 
 from django.utils.translation import ugettext as _
 
 
 from patient.models import Patient
 
-FAVORITE_COLORS_CHOICES = (
-    ('blue', 'Blue'),
-    ('green', 'Green'),
-    ('black', 'Black'),
-)
+# FAVORITE_COLORS_CHOICES = (
+#     ('blue', 'Blue'),
+#     ('green', 'Green'),
+#     ('black', 'Black'),
+# )
 
-SEARCH_PARTICIPANTS_CHOICES = (
-    ('all', _('All participants')),
-    ('selected', _('Selected participants'))
-)
+# SEARCH_PARTICIPANTS_CHOICES = (
+#     ('all', _('All participants')),
+#     ('selected', _('Selected participants'))
+# )
+
+# HEADINGS_CHOICES = (
+#
+#     ('code', _("Question code")),
+#     ('full', _("Full question text")),
+#     ('abbreviated', _("Abbreviated question text")),
+# )
 
 
 class ExportForm(Form):
@@ -29,6 +36,7 @@ class ExportForm(Form):
     # patient_fields_selected = MultipleChoiceField(required=True,
     #                                               widget=CheckboxSelectMultiple, choices=FAVORITE_COLORS_CHOICES)
 
+    # headings = ChoiceField(widget=Select(), choices=HEADINGS_CHOICES)
     #
     # questionnaire_entrance_fields_selected = []
     #
@@ -37,6 +45,7 @@ class ExportForm(Form):
     # diagnosis_fields_selected = []
     #
     # per_questionnaire_field = True
+
     def clean(self):
         cleaned_data = super(ExportForm, self).clean()
         participant_field = cleaned_data.get("per_participant")

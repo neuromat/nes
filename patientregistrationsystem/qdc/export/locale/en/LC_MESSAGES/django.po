@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2016-04-15 11:11-0300\n"
+"POT-Creation-Date: 2016-04-28 20:46-0300\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -17,17 +17,8 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 
-#: export/export.py:111 export/tests.py:160
+#: export/export.py:116 export/tests.py:186
 msgid "Base path does not exist"
-msgstr ""
-
-#: export/forms.py:17 export/templates/export/participant_selection.html:40
-msgid "All participants"
-msgstr ""
-
-#: export/forms.py:18 export/templates/export/participant_selection.html:45
-#: export/templates/export/show_selected_participants.html:26
-msgid "Selected participants"
 msgstr ""
 
 #: export/forms.py:47
@@ -129,13 +120,24 @@ msgstr ""
 msgid "Participants selection"
 msgstr ""
 
+#: export/templates/export/participant_selection.html:40
+msgid "All participants"
+msgstr ""
+
+#: export/templates/export/participant_selection.html:45
+#: export/templates/export/show_selected_participants.html:26
+msgid "Selected participants"
+msgstr ""
+
 #: export/templates/export/participant_selection.html:54
 #: export/templates/export/show_selected_participants.html:48
+#: export/views.py:82
 msgid "Gender"
 msgstr ""
 
 #: export/templates/export/participant_selection.html:65
 #: export/templates/export/show_selected_participants.html:52
+#: export/views.py:84
 msgid "Marital status"
 msgstr ""
 
@@ -170,14 +172,17 @@ msgid "Code"
 msgstr ""
 
 #: export/templates/export/show_selected_participants.html:49
+#: export/views.py:88
 msgid "Country"
 msgstr ""
 
 #: export/templates/export/show_selected_participants.html:50
+#: export/views.py:87
 msgid "State"
 msgstr ""
 
 #: export/templates/export/show_selected_participants.html:51
+#: export/views.py:86
 msgid "City"
 msgstr ""
 
@@ -185,18 +190,124 @@ msgstr ""
 msgid "Previous"
 msgstr ""
 
-#: export/views.py:269
+#: export/views.py:80
+msgid "Identification"
+msgstr ""
+
+#: export/views.py:81
+msgid "Full name"
+msgstr ""
+
+#: export/views.py:83
+msgid "Date of birth"
+msgstr ""
+
+#: export/views.py:85
+msgid "Origin"
+msgstr ""
+
+#: export/views.py:89
+msgid "Natural of"
+msgstr ""
+
+#: export/views.py:90
+msgid "Schooling"
+msgstr ""
+
+#: export/views.py:91
+msgid "Profession"
+msgstr ""
+
+#: export/views.py:93
+msgid "Calculated social class"
+msgstr ""
+
+#: export/views.py:94
+msgid "Occupation"
+msgstr ""
+
+#: export/views.py:96
+msgid "What form of payment of the treatment performed"
+msgstr ""
+
+#: export/views.py:97
+msgid "Religion"
+msgstr ""
+
+#: export/views.py:98
+msgid "Flesh tone"
+msgstr ""
+
+#: export/views.py:99
+msgid "Citizenship"
+msgstr ""
+
+#: export/views.py:101
+msgid ""
+"Do you receive some benefit from the municipal level, state or federal "
+"government?"
+msgstr ""
+
+#: export/views.py:102
+msgid "Smoker"
+msgstr ""
+
+#: export/views.py:104
+msgid "Cigarretes/Day"
+msgstr ""
+
+#: export/views.py:105
+msgid "Former smoker"
+msgstr ""
+
+#: export/views.py:106
+msgid "Alcoholic"
+msgstr ""
+
+#: export/views.py:107
+msgid "Frequency"
+msgstr ""
+
+#: export/views.py:108
+msgid "Period"
+msgstr ""
+
+#: export/views.py:109
+msgid "Drugs"
+msgstr ""
+
+#: export/views.py:113
+msgid "Date"
+msgstr ""
+
+#: export/views.py:115
+msgid "Observation"
+msgstr ""
+
+#: export/views.py:117
+msgid "ICD code"
+msgstr ""
+
+#: export/views.py:119
+msgid "ICD Description"
+msgstr ""
+
+#: export/views.py:121
+msgid "ICD Abbreviated Description"
+msgstr ""
+
+#: export/views.py:320
 msgid "Inconsistent data read from json file"
 msgstr ""
 
-#: export/views.py:502
+#: export/views.py:553
 msgid "Export was finished correctly"
 msgstr ""
 
-#: export/views.py:520
+#: export/views.py:571
 msgid "Export data was not generated."
 msgstr ""
 
-#: export/views.py:533
+#: export/views.py:584
 msgid "No data was select. Export data was not generated."
 msgstr ""
