@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2016-04-28 20:46-0300\n"
+"POT-Creation-Date: 2016-04-29 18:32-0300\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -22,15 +22,35 @@ msgstr ""
 msgid "Base path does not exist"
 msgstr "Diretório base não existe"
 
-#: export/forms.py:47
+#: export/forms.py:23
+msgid "Question code"
+msgstr "Código da questão"
+
+#: export/forms.py:24
+msgid "Full question text"
+msgstr "Texto completo da pergunta"
+
+#: export/forms.py:25
+msgid "Abbreviated question text"
+msgstr "Texto abreviado da pergunta"
+
+#: export/forms.py:29
+msgid "Answer codes"
+msgstr "Códigos de resposta"
+
+#: export/forms.py:30
+msgid "Full answers"
+msgstr "Respostas completas"
+
+#: export/forms.py:62
 msgid "Either one or both Per participant/Per questionnaire must be set."
 msgstr "Opção Por participante e/ou Por questionário deve ser preenchida. "
 
-#: export/forms.py:73
+#: export/forms.py:92
 msgid "Min age must be filled."
 msgstr "Idade mínima deve ser preenchida."
 
-#: export/forms.py:76
+#: export/forms.py:95
 msgid "Max age must be filled."
 msgstr "Idade máxima deve ser preenchida."
 
@@ -82,35 +102,43 @@ msgstr "Questionários - Avaliação de entrada"
 msgid "Please, select a questionnaire from the list."
 msgstr "Por favor, selecione um questionário da lista"
 
-#: export/templates/export/export_data.html:142
+#: export/templates/export/export_data.html:144
+msgid "Headings"
+msgstr "Cabeçalhos"
+
+#: export/templates/export/export_data.html:159
+msgid "Responses"
+msgstr "Respostas"
+
+#: export/templates/export/export_data.html:176
 msgid "Participants"
 msgstr "Participantes"
 
-#: export/templates/export/export_data.html:146
+#: export/templates/export/export_data.html:180
 msgid "Participant fields"
 msgstr "Campos de participante"
 
-#: export/templates/export/export_data.html:147
+#: export/templates/export/export_data.html:181
 msgid "Please, select a patient field from the list."
 msgstr "Por favor, selecione um participante da lista"
 
-#: export/templates/export/export_data.html:157
+#: export/templates/export/export_data.html:191
 msgid "Diagnosis"
 msgstr "Diagnóstico"
 
-#: export/templates/export/export_data.html:161
+#: export/templates/export/export_data.html:195
 msgid "Diagnosis fields"
 msgstr "Campos de diagnóstico"
 
-#: export/templates/export/export_data.html:162
+#: export/templates/export/export_data.html:196
 msgid "Please, select a diagnosis field from the list."
 msgstr "Por favor, selecione um campo de diagnóstico da lista"
 
-#: export/templates/export/export_data.html:175
+#: export/templates/export/export_data.html:209
 msgid "Run"
 msgstr "Executar"
 
-#: export/templates/export/export_data.html:179
+#: export/templates/export/export_data.html:213
 #: export/templates/export/participant_selection.html:111
 #: export/templates/export/show_selected_participants.html:92
 msgid "Cancel"
@@ -247,7 +275,8 @@ msgstr "País de nascimento"
 msgid ""
 "Do you receive some benefit from the municipal level, state or federal "
 "government?"
-msgstr "Recebe algum benefício de escala municipal, estadual ou federal de governo?"
+msgstr ""
+"Recebe algum benefício de escala municipal, estadual ou federal de governo?"
 
 #: export/views.py:102
 msgid "Smoker"
@@ -286,16 +315,16 @@ msgid "Observation"
 msgstr "Observação"
 
 #: export/views.py:117
-msgid "ICD code"
-msgstr "Código CID"
+msgid "Disease code (ICD)"
+msgstr "Código da doença (CID)"
 
 #: export/views.py:119
-msgid "ICD Description"
-msgstr "Descrição CID"
+msgid "Disease Description"
+msgstr "Descrição da doença"
 
 #: export/views.py:121
-msgid "ICD Abbreviated Description"
-msgstr "Descrição CID abreviada"
+msgid "Disease Abbreviated Description"
+msgstr "Descrição da doença abreviada"
 
 #: export/views.py:320
 msgid "Inconsistent data read from json file"
@@ -312,6 +341,9 @@ msgstr "Exportação não foi gerada."
 #: export/views.py:584
 msgid "No data was select. Export data was not generated."
 msgstr "Nenhum dado foi selecionado. Exportação não foi gerada."
+
+#~ msgid "ICD code"
+#~ msgstr "Código CID"
 
 #~ msgid "Please, correct the highlighted fields."
 #~ msgstr "Por favor, corrija os campos em destaque."

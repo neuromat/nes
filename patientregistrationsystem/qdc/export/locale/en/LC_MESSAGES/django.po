@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2016-04-28 20:46-0300\n"
+"POT-Creation-Date: 2016-04-29 18:32-0300\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -21,15 +21,35 @@ msgstr ""
 msgid "Base path does not exist"
 msgstr ""
 
-#: export/forms.py:47
+#: export/forms.py:23
+msgid "Question code"
+msgstr ""
+
+#: export/forms.py:24
+msgid "Full question text"
+msgstr ""
+
+#: export/forms.py:25
+msgid "Abbreviated question text"
+msgstr ""
+
+#: export/forms.py:29
+msgid "Answer codes"
+msgstr ""
+
+#: export/forms.py:30
+msgid "Full answers"
+msgstr ""
+
+#: export/forms.py:62
 msgid "Either one or both Per participant/Per questionnaire must be set."
 msgstr ""
 
-#: export/forms.py:73
+#: export/forms.py:92
 msgid "Min age must be filled."
 msgstr ""
 
-#: export/forms.py:76
+#: export/forms.py:95
 msgid "Max age must be filled."
 msgstr ""
 
@@ -81,35 +101,43 @@ msgstr ""
 msgid "Please, select a questionnaire from the list."
 msgstr ""
 
-#: export/templates/export/export_data.html:142
+#: export/templates/export/export_data.html:144
+msgid "Headings"
+msgstr ""
+
+#: export/templates/export/export_data.html:159
+msgid "Responses"
+msgstr ""
+
+#: export/templates/export/export_data.html:176
 msgid "Participants"
 msgstr ""
 
-#: export/templates/export/export_data.html:146
+#: export/templates/export/export_data.html:180
 msgid "Participant fields"
 msgstr ""
 
-#: export/templates/export/export_data.html:147
+#: export/templates/export/export_data.html:181
 msgid "Please, select a patient field from the list."
 msgstr ""
 
-#: export/templates/export/export_data.html:157
+#: export/templates/export/export_data.html:191
 msgid "Diagnosis"
 msgstr ""
 
-#: export/templates/export/export_data.html:161
+#: export/templates/export/export_data.html:195
 msgid "Diagnosis fields"
 msgstr ""
 
-#: export/templates/export/export_data.html:162
+#: export/templates/export/export_data.html:196
 msgid "Please, select a diagnosis field from the list."
 msgstr ""
 
-#: export/templates/export/export_data.html:175
+#: export/templates/export/export_data.html:209
 msgid "Run"
 msgstr ""
 
-#: export/templates/export/export_data.html:179
+#: export/templates/export/export_data.html:213
 #: export/templates/export/participant_selection.html:111
 #: export/templates/export/show_selected_participants.html:92
 msgid "Cancel"
@@ -285,15 +313,15 @@ msgid "Observation"
 msgstr ""
 
 #: export/views.py:117
-msgid "ICD code"
+msgid "Disease code (ICD)"
 msgstr ""
 
 #: export/views.py:119
-msgid "ICD Description"
+msgid "Disease Description"
 msgstr ""
 
 #: export/views.py:121
-msgid "ICD Abbreviated Description"
+msgid "Disease Abbreviated Description"
 msgstr ""
 
 #: export/views.py:320
