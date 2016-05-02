@@ -154,6 +154,8 @@ class Block(Component):
 
 
 class EEG(Component):
+    # eeg_setting = models.ForeignKey(EEGSetting, null=False)
+
     def save(self, *args, **kwargs):
         super(Component, self).save(*args, **kwargs)
 
@@ -269,3 +271,36 @@ class EEGData(DataFile):
     component_configuration = models.ForeignKey(ComponentConfiguration, null=False, on_delete=models.PROTECT)
     date = models.DateField(default=datetime.date.today, null=False, blank=False,
                             validators=[validate_date_questionnaire_response])
+    # eeg_setting = models.ForeignKey(EEGSetting, null=False)
+
+
+# class Manufacturer(models.Model):
+#     name = models.CharField(max_length=50)
+#
+#
+# class Equipment(models.Model):
+#     EQUIPMENT_TYPES = (
+#         ("eeg_machine", _("EEG Machine")),
+#         ("amplifier", _("Amplifier")),
+#     )
+#
+#     manufacturer = models.ForeignKey(Manufacturer, null=False)
+#     name = models.CharField(max_length=50)
+#     description = models.TextField()
+#     equipment_type = models.CharField(null=False, max_length=30, choices=EQUIPMENT_TYPES)
+#
+#
+# class EEGMachine(Equipment):
+#     def save(self, *args, **kwargs):
+#         super(Equipment, self).save(*args, **kwargs)
+#
+#
+# class Amplifier(Equipment):
+#     def save(self, *args, **kwargs):
+#         super(Equipment, self).save(*args, **kwargs)
+#
+#
+# class EEGSetting(models.Model):
+#     experiment = models.ForeignKey(Experiment, null=False)
+#     name = models.CharField(max_length=50)
+#     description = models.TextField()
