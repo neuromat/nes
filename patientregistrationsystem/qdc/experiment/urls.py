@@ -27,6 +27,9 @@ urlpatterns = patterns(
     url(r'^group/(?P<group_id>\d+)/$', 'group_view', name='group_view'),
     url(r'^group/edit/(?P<group_id>\d+)/$', 'group_update', name='group_edit'),
 
+    # eeg setting
+    url(r'^(?P<experiment_id>\d+)/eeg_setting/new/$', 'eeg_setting_create', name='eeg_setting_new'),
+
     # cid
     url(r'^group_diseases/cid-10/$', 'search_cid10_ajax', name='cid10_search'),
 

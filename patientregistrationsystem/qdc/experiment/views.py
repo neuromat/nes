@@ -25,7 +25,7 @@ from experiment.models import Experiment, Subject, QuestionnaireResponse, Subjec
     EEGSetting
 from experiment.forms import ExperimentForm, QuestionnaireResponseForm, FileForm, GroupForm, InstructionForm, \
     ComponentForm, StimulusForm, BlockForm, ComponentConfigurationForm, ResearchProjectForm, NumberOfUsesToInsertForm, \
-    EEGDataForm
+    EEGDataForm, EEGSettingForm
 
 from patient.models import Patient, QuestionnaireResponse as PatientQuestionnaireResponse
 
@@ -562,6 +562,38 @@ def group_update(request, group_id, template_name="experiment/group_register.htm
             "experiment": group.experiment,
             "group": group,
         }
+
+        return render(request, template_name, context)
+    else:
+        raise PermissionDenied
+
+
+@login_required
+@permission_required('experiment.add_subject')
+def eeg_setting_create(request, experiment_id, template_name="experiment/eeg_setting_register.html"):
+    experiment = get_object_or_404(Experiment, pk=experiment_id)
+
+    if get_can_change(request.user, experiment.research_project):
+        eeg_setting_form = EEGSettingForm(request.POST or None)
+
+        if request.method == "POST":
+            if request.POST['action'] == "save":
+                if eeg_setting_form.is_valid():
+                    eeg_setting_added = eeg_setting_form.save(commit=False)
+                    eeg_setting_added.experiment_id = experiment_id
+                    eeg_setting_added.save()
+
+                    messages.success(request, _('EEG setting included successfully.'))
+
+                    redirect_url = reverse("experiment_view", args=(experiment.id,))
+                    # redirect_url = reverse("group_view", args=(group_added.id,))
+                    return HttpResponseRedirect(redirect_url)
+
+        context = {
+            "eeg_setting_form": eeg_setting_form,
+            "creating": True,
+            "editing": True,
+            "experiment": experiment}
 
         return render(request, template_name, context)
     else:

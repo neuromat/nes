@@ -5,7 +5,8 @@ from django.forms import ModelForm, TextInput, Textarea, Select, DateInput, Type
 from django.utils.translation import ugettext_lazy as _
 
 from experiment.models import Experiment, QuestionnaireResponse, SubjectOfGroup, Group, \
-    Component, Stimulus, Block, Instruction, ComponentConfiguration, ResearchProject, EEGData
+    Component, Stimulus, Block, Instruction, ComponentConfiguration, ResearchProject, EEGData, \
+    EEGSetting
 
 
 class ExperimentForm(ModelForm):
@@ -248,4 +249,22 @@ class EEGDataForm(ModelForm):
                                            'data-error': _('File format description must be filled.')}),
             # It is not possible to set the 'required' attribute because it affects the edit screen
             # 'file': FileInput(attrs={'required': ""})
+        }
+
+
+class EEGSettingForm(ModelForm):
+    class Meta:
+        model = EEGSetting
+
+        fields = ['name', 'description']
+
+
+        widgets = {
+            'name': TextInput(attrs={'class': 'form-control',
+                                     'required': "",
+                                     'data-error': _('Name must be filled.'),
+                                     'autofocus': ''}),
+            'description': Textarea(attrs={'class': 'form-control',
+                                           'rows': '4', 'required': "",
+                                           'data-error': _('Description must be filled.')})
         }
