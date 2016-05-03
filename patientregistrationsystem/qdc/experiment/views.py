@@ -21,7 +21,8 @@ from neo import io
 
 from experiment.models import Experiment, Subject, QuestionnaireResponse, SubjectOfGroup, Group, Component, \
     ComponentConfiguration, Questionnaire, Task, Stimulus, Pause, Instruction, Block, \
-    TaskForTheExperimenter, ClassificationOfDiseases, ResearchProject, Keyword, EEG, EEGData, FileFormat
+    TaskForTheExperimenter, ClassificationOfDiseases, ResearchProject, Keyword, EEG, EEGData, FileFormat, \
+    EEGSetting
 from experiment.forms import ExperimentForm, QuestionnaireResponseForm, FileForm, GroupForm, InstructionForm, \
     ComponentForm, StimulusForm, BlockForm, ComponentConfigurationForm, ResearchProjectForm, NumberOfUsesToInsertForm, \
     EEGDataForm
@@ -309,6 +310,7 @@ def experiment_create(request, research_project_id, template_name="experiment/ex
 def experiment_view(request, experiment_id, template_name="experiment/experiment_register.html"):
     experiment = get_object_or_404(Experiment, pk=experiment_id)
     group_list = Group.objects.filter(experiment=experiment)
+    eeg_setting_list = EEGSetting.objects.filter(experiment=experiment)
     experiment_form = ExperimentForm(request.POST or None, instance=experiment)
 
     for field in experiment_form.fields:
@@ -348,6 +350,7 @@ def experiment_view(request, experiment_id, template_name="experiment/experiment
         "experiment": experiment,
         "experiment_form": experiment_form,
         "group_list": group_list,
+        "eeg_setting_list": eeg_setting_list,
         "research_project": experiment.research_project,
     }
 
