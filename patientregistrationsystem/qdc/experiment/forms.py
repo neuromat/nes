@@ -6,7 +6,7 @@ from django.utils.translation import ugettext_lazy as _
 
 from experiment.models import Experiment, QuestionnaireResponse, SubjectOfGroup, Group, \
     Component, Stimulus, Block, Instruction, ComponentConfiguration, ResearchProject, EEGData, \
-    EEGSetting
+    EEGSetting, Equipment
 
 
 class ExperimentForm(ModelForm):
@@ -245,8 +245,8 @@ class EEGDataForm(ModelForm):
                                            'rows': '4', 'required': "",
                                            'data-error': _('Description must be filled.')}),
             'file_format_description': Textarea(attrs={'class': 'form-control',
-                                           'rows': '4', 'required': "",
-                                           'data-error': _('File format description must be filled.')}),
+                                                       'rows': '4', 'required': "",
+                                                       'data-error': _('File format description must be filled.')}),
             # It is not possible to set the 'required' attribute because it affects the edit screen
             # 'file': FileInput(attrs={'required': ""})
         }
@@ -258,7 +258,6 @@ class EEGSettingForm(ModelForm):
 
         fields = ['name', 'description']
 
-
         widgets = {
             'name': TextInput(attrs={'class': 'form-control',
                                      'required': "",
@@ -268,3 +267,10 @@ class EEGSettingForm(ModelForm):
                                            'rows': '4', 'required': "",
                                            'data-error': _('Description must be filled.')})
         }
+
+
+class EquipmentForm(ModelForm):
+    class Meta:
+        model = Equipment
+
+        fields = ['identification', 'description']

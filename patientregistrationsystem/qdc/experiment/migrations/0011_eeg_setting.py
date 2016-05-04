@@ -14,8 +14,8 @@ class Migration(migrations.Migration):
         migrations.CreateModel(
             name='EEGSetting',
             fields=[
-                ('id', models.AutoField(auto_created=True, primary_key=True, verbose_name='ID', serialize=False)),
-                ('name', models.CharField(max_length=50)),
+                ('id', models.AutoField(auto_created=True, verbose_name='ID', serialize=False, primary_key=True)),
+                ('name', models.CharField(max_length=150)),
                 ('description', models.TextField()),
                 ('experiment', models.ForeignKey(to='experiment.Experiment')),
             ],
@@ -23,36 +23,67 @@ class Migration(migrations.Migration):
         migrations.CreateModel(
             name='Equipment',
             fields=[
-                ('id', models.AutoField(auto_created=True, primary_key=True, verbose_name='ID', serialize=False)),
-                ('name', models.CharField(max_length=50)),
+                ('id', models.AutoField(auto_created=True, verbose_name='ID', serialize=False, primary_key=True)),
+                ('identification', models.CharField(max_length=150)),
                 ('description', models.TextField()),
-                ('equipment_type', models.CharField(max_length=30, choices=[('eeg_machine', 'EEG Machine'), ('amplifier', 'Amplifier')])),
+                ('serial_number', models.CharField(max_length=50)),
+            ],
+        ),
+        migrations.CreateModel(
+            name='EquipmentCategory',
+            fields=[
+                ('id', models.AutoField(auto_created=True, verbose_name='ID', serialize=False, primary_key=True)),
+                ('name', models.CharField(max_length=150)),
+                ('equipment_type', models.CharField(choices=[('eeg_machine', 'EEG Machine'), ('amplifier', 'Amplifier')], max_length=50)),
+            ],
+        ),
+        migrations.CreateModel(
+            name='EquipmentModel',
+            fields=[
+                ('id', models.AutoField(auto_created=True, verbose_name='ID', serialize=False, primary_key=True)),
+                ('identification', models.CharField(max_length=150)),
+                ('description', models.TextField()),
             ],
         ),
         migrations.CreateModel(
             name='Manufacturer',
             fields=[
-                ('id', models.AutoField(auto_created=True, primary_key=True, verbose_name='ID', serialize=False)),
+                ('id', models.AutoField(auto_created=True, verbose_name='ID', serialize=False, primary_key=True)),
                 ('name', models.CharField(max_length=50)),
             ],
         ),
         migrations.CreateModel(
             name='Amplifier',
             fields=[
-                ('equipment_ptr', models.OneToOneField(primary_key=True, parent_link=True, auto_created=True, to='experiment.Equipment', serialize=False)),
+                ('equipmentcategory_ptr', models.OneToOneField(to='experiment.EquipmentCategory', auto_created=True, serialize=False, parent_link=True, primary_key=True)),
             ],
-            bases=('experiment.equipment',),
+            bases=('experiment.equipmentcategory',),
         ),
         migrations.CreateModel(
             name='EEGMachine',
             fields=[
-                ('equipment_ptr', models.OneToOneField(primary_key=True, parent_link=True, auto_created=True, to='experiment.Equipment', serialize=False)),
+                ('equipmentcategory_ptr', models.OneToOneField(to='experiment.EquipmentCategory', auto_created=True, serialize=False, parent_link=True, primary_key=True)),
             ],
-            bases=('experiment.equipment',),
+            bases=('experiment.equipmentcategory',),
+        ),
+        migrations.AddField(
+            model_name='equipmentmodel',
+            name='equipment_category',
+            field=models.ForeignKey(to='experiment.EquipmentCategory'),
+        ),
+        migrations.AddField(
+            model_name='equipmentmodel',
+            name='manufacturer',
+            field=models.ForeignKey(to='experiment.Manufacturer'),
         ),
         migrations.AddField(
             model_name='equipment',
-            name='manufacturer',
-            field=models.ForeignKey(to='experiment.Manufacturer'),
+            name='equipment_model',
+            field=models.ForeignKey(to='experiment.EquipmentModel'),
+        ),
+        migrations.AddField(
+            model_name='eegsetting',
+            name='set_of_equipment',
+            field=models.ManyToManyField(to='experiment.Equipment'),
         ),
     ]

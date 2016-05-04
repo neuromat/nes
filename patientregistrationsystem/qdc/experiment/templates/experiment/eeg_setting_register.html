@@ -97,213 +97,69 @@
                 {% endif %}
             </div>
 
-{#            {% if not editing %}#}
-{#                <div class="container span6 offset3 well ">#}
-{#                    <h4>{% trans "Inclusion criteria" %}</h4>#}
-{#                    {% if can_change %}#}
-{#                        <div class="row">#}
-{#                            <div class="col-xs-12 col-sm-12">#}
-{#                                <div class="form-group">#}
-{#                                    <input id="group_id" value="{{ group.id }}" style="display: none;">#}
-{#                                    <div class="input-group  input-group-sm "><span class="input-group-addon">#}
-{#                                            <span class="glyphicon glyphicon-edit"></span></span>#}
-{#                                        <input class="form-control" id="get_diseases" type="text"#}
-{#                                               placeholder="{%  trans "Inform disease diagnosis or disease code (ICD-10)" %}">#}
-{#                                    </div>#}
-{#                                    {% csrf_token %}#}
-{#                                    <ul id="search-results-diseases" style="list-style: none;"></ul>#}
-{#                                </div>#}
-{#                            </div>#}
-{#                        </div>#}
-{#                    {% endif %}#}
-{#                    <div class="row">#}
-{#                        <div class="col-xs-12 col-sm-12">#}
-{#                            <div class="form-group">#}
-{#                                <table class="table table-striped">#}
-{#                                    <thead>#}
-{#                                    <tr>#}
-{#                                        <th>CID</th>#}
-{#                                        <th>{% trans "Description" %}</th>#}
-{#                                    </tr>#}
-{#                                    </thead>#}
-{#                                    <tbody>#}
-{#                                    {% if not classification_of_diseases_list %}#}
-{#                                        <tr>#}
-{#                                            <td colspan="2">#}
-{#                                                {% trans "There are no diagnosis as inclusion criteria of participants in this group" %}#}
-{#                                            </td>#}
-{#                                        </tr>#}
-{#                                    {% else %}#}
-{#                                        {% for classification_of_diseases in classification_of_diseases_list %}#}
-{#                                            <tr>#}
-{#                                                <td>{{ classification_of_diseases.code }}</td>#}
-{#                                                <td>#}
-{#                                                    {{ classification_of_diseases.abbreviated_description }}#}
-{#                                                    {% if can_change %}#}
-{#                                                        <a class="btn glyphicon glyphicon-remove" data-toggle="tooltip"#}
-{#                                                           data-placement="right" title="{% trans "Delete" %}" style="color: indianred;#}
-{#                                                       position: relative; float: right; padding: 0"#}
-{#                                                           onclick="show_modal_remove({{ group.id }}, {{ classification_of_diseases.id }});"></a>#}
-{#                                                    {% endif %}#}
-{#                                                </td>#}
-{#                                            </tr>#}
-{#                                        {% endfor %}#}
-{#                                    {% endif %}#}
-{#                                    </tbody>#}
-{#                                </table>#}
-{#                            </div>#}
-{#                        </div>#}
-{#                    </div>#}
-{#                </div>#}
-{##}
-{#                <div class="container span6 offset3 well ">#}
-{#                    <h4>{% trans "Questionnaires of experimental protocol" %}</h4>#}
-{#                    <div class="form-group">#}
-{#                        <table class="table table-striped col-xs-12 col-md-12">#}
-{#                            <thead>#}
-{#                            <tr>#}
-{#                                <th class="col-md-6">{% trans "Name" %}</th>#}
-                                {# Can't use bootstrap tooltip in the columns, because it hurts the format of the table. #}
-                                {# data-toggle="tooltip" data-placement="top" #}
-{#                                <th class="col-md-2 hidden-xs"#}
-{#                                    title="{% trans "Quantity of fills for each participant" %}">#}
-{#                                    {% trans "Needed fills by participant" %}</th>#}
-{#                                <th class="col-md-2 hidden-xs"#}
-{#                                    title={% trans "Quantity of fills needed by pariticipant multiplied by quantity of participants in this group" %}>#}
-{#                                    {% trans "Total fills needed" %}</th>#}
-{#                                <th class="col-md-2 hidden-xs"#}
-{#                                    title={% trans "Sum of fills quantity already made by each participant" %}>#}
-{#                                    {% trans "Total fills already made" %}</th>#}
-{#                                <th class="visible-xs"#}
-{#                                    title={% trans "Quantity of fills for each participant" %}>#}
-{#                                    {% trans "PNP" %}<sup>1</sup></th>#}
-{#                                <th class="visible-xs"#}
-{#                                    title={% trans "Quantity of fills needed by pariticipant multiplied by quantity of participants in this group" %}>#}
-{#                                    {% trans "TPN" %}<sup>2</sup></th>#}
-{#                                <th class="visible-xs"#}
-{#                                    title={% trans "Sum of fills quantity already made by each participant" %}>#}
-{#                                    {% trans "TPR" %}<sup>3</sup></th>#}
-{#                            </tr>#}
-{#                            </thead>#}
-{#                            <tbody>#}
-{#                                {% if questionnaires_configuration_list|length == 0 %}#}
-{#                                    <tr>#}
-{#                                        <td colspan="4">#}
-{#                                            {% trans "There are no questionnaires in the experimental protocol in this group" %}#}
-{#                                        </td>#}
-{#                                    </tr>#}
-{#                                {% else %}#}
-{#                                    {% for questionnaire_configuration in questionnaires_configuration_list %}#}
-{#                                        <tr>#}
-{#                                            <td>#}
-{#                                                <a data-toggle="tooltip" data-placement="left" title="{% trans "Edit" %}"#}
-{#                                                   href="/experiment/group/{{ group.id }}/questionnaire/{{ questionnaire_configuration.id }}">#}
-{#                                                    {{ questionnaire_configuration.survey_title }}#}
-{#                                                </a>#}
-{#                                            </td>#}
-{#                                            <td>#}
-{#                                                {{ questionnaire_configuration.fills_per_participant }}#}
-{#                                            </td>#}
-{#                                            <td>#}
-{#                                                {{ questionnaire_configuration.total_fills_needed }}#}
-{#                                            </td>#}
-{#                                            <td>#}
-{#                                                {{ questionnaire_configuration.total_fills_done }}#}
-{#                                            </td>#}
-{#                                        </tr>#}
-{#                                    {% endfor %}#}
-{#                                {% endif %}#}
-{#                            </tbody>#}
-{#                        </table>#}
-{#                        <p class="col-xp-12 visible-xs"><sup>1</sup> {% trans "Needed fills by participant" %}</p>#}
-{#                        <p class="col-xp-12 visible-xs"><sup>2</sup> {% trans "Total fills needed" %}</p>#}
-{#                        <p class="col-xp-12 visible-xs"><sup>3</sup> {% trans "Total fills already made" %}</p>#}
-{#                    </div>#}
-{#                </div>#}
-{##}
-{#                <div class="container span6 offset3 well ">#}
-{#                    <h4>{% trans "Participant" %}</h4>#}
-{#                    <div class="row">#}
-{#                        <div class="col-xs-12 col-sm-12">#}
-{#                            {% if number_of_subjects > 0 %}#}
-{#                                <div class="form-group">#}
-{#                                    <a data-toggle="tooltip" data-placement="left" title="{% trans "View / Edit" %}"#}
-{#                                       href="/experiment/group/{{ group.id }}/subjects">#}
-{#                                        {% if number_of_subjects == 1 %}#}
-{#                                            {% blocktrans %}There is {{ number_of_subjects }} participant recorded{% endblocktrans %}#}
-{#                                        {% else %}#}
-{#                                            {% blocktrans %}There are {{ number_of_subjects }} participants recorded{% endblocktrans %}#}
-{#                                        {% endif %}#}
-{#                                    </a>#}
-{#                                </div>#}
-{#                            {% else %}#}
-{#                                <div style="margin-bottom: 1em">#}
-{#                                    {% trans "No participants recorded" %}#}
-{#                                </div>#}
-{#                                {% if perms.experiment.add_subject and can_change %}#}
-{#                                    <a href="/experiment/group/{{ group.id }}/subjects" class="btn btn-primary">#}
-{#                                        {% trans "Register" %}#}
-{#                                    </a>#}
-{#                                {% endif %}#}
-{#                            {% endif %}#}
-{#                        </div>#}
-{#                    </div>#}
-{#                </div>#}
-{##}
-{#                <div class="container span6 offset3 well ">#}
-{#                    <h4>{% trans "Experimental protocol" %}</h4>#}
-{#                    <div class="row">#}
-{#                        <div class="col-xs-12 col-sm-12">#}
-{#                            {% if group.experimental_protocol %}#}
-{#                                <div class="form-group">#}
-{#                                    <table class="table table-striped">#}
-{#                                        <thead>#}
-{#                                            <tr>#}
-{#                                                <th>{% trans "Set of root steps" %}</th>#}
-{#                                                <th>{% trans "Description" %}</th>#}
-{#                                            </tr>#}
-{#                                        </thead>#}
-{#                                        <tbody>#}
-{#                                            <tr>#}
-{#                                                <td>#}
-{#                                                    <a data-toggle="tooltip" data-placement="left" title="{% trans "Edit" %}"#}
-{#                                                       href="/experiment/component/G{{ group.id }}-{{ group.experimental_protocol.id}}">#}
-{#                                                        {{ group.experimental_protocol.identification }}#}
-{#                                                    </a>#}
-{#                                                </td>#}
-{#                                                <td>#}
-{#                                                    {{ group.experimental_protocol.description }}#}
-{##}
-{#                                                    {% if can_change %}#}
-{#                                                        <a class="btn glyphicon glyphicon-remove" data-toggle="tooltip"#}
-{#                                                           data-placement="right"#}
-{#                                                           style="color: indianred; position: relative; float: right; padding: 0"#}
-{#                                                           title="{% trans "UnConfigure experimental protocol" %}"#}
-{#                                                           onclick="show_modal_remove_experimental_protocol();">#}
-{#                                                        </a>#}
-{#                                                    {% endif %}#}
-{#                                                </td>#}
-{#                                            </tr>#}
-{#                                        </tbody>#}
-{#                                    </table>#}
-{#                                </div>#}
-{#                            {% else %}#}
-{#                                <div style="margin-bottom: 1em">#}
-{#                                    {% trans "There is no experimental protocol configured" %}#}
-{#                                </div>#}
-{#                                {% if can_change %}#}
-{#                                    <div class="form-group">#}
-{#                                        <a href="/experiment/component/G{{ group.id }}/add_new/block" class="btn btn-primary"#}
-{#                                                data-toggle="tooltip" data-placement="right"#}
-{#                                                title="{% trans "The experimental protocol root is always a set of steps. You can create a new set or reuse some that have already been created for this experiment." %}">#}
-{#                                            {% trans "Configure / Create" %}</a>#}
-{#                                    </div>#}
-{#                                {% endif %}#}
-{#                            {% endif %}#}
-{#                        </div>#}
-{#                    </div>#}
-{#                </div>#}
-{#            {% endif %}#}
+            {% if not editing %}
+
+                <div class="container span6 offset3 well ">
+                    <h4>{% trans "List of equipment:" %}</h4>
+                    <div class="form-group">
+                        <table class="table table-striped col-xs-12 col-md-12">
+                            <thead>
+                            <tr>
+                                <th>{% trans "Equipment" %}</th>
+                                <th>{% trans "Manufacturer" %}</th>
+                                <th>{% trans "Name" %}</th>
+                                <th>{% trans "Delete" %}</th>
+                            </tr>
+                            </thead>
+                            <tbody>
+                                {% if eeg_setting.set_of_equipment|length == 0 %}
+                                    <tr>
+                                        <td colspan="4">
+                                            {% trans "There are not equipment associated to the EEG setting" %}
+                                        </td>
+                                    </tr>
+                                {% else %}
+                                    {% for equipment in eeg_setting.set_of_equipment %}
+                                        <tr>
+                                            <td>
+                                                {{ equipment.equipment_type }}
+                                            </td>
+                                            <td>
+                                                {{ equipment.manufacturer.name }}
+                                            </td>
+                                            <td>
+                                                {{ equipment.name }}
+                                            </td>
+                                            <td>
+                                                X
+                                            </td>
+                                        </tr>
+                                    {% endfor %}
+                                {% endif %}
+                            </tbody>
+                        </table>
+                        <p class="col-xp-12 visible-xs"><sup>1</sup> {% trans "Needed fills by participant" %}</p>
+                        <p class="col-xp-12 visible-xs"><sup>2</sup> {% trans "Total fills needed" %}</p>
+                        <p class="col-xp-12 visible-xs"><sup>3</sup> {% trans "Total fills already made" %}</p>
+
+                        {% if can_change %}
+                            <div class="dropdown">
+                                <button class="btn btn-primary dropdown-toggle" type="button" id="dropdownMenu1" data-toggle="dropdown" aria-expanded="true">
+                                    {% trans "Insert equipment" %}
+                                    <span class="caret"></span>
+                                </button>
+                                <ul class="dropdown-menu" role="menu" aria-labelledby="dropdownMenu1">
+                                    {% for type, type_name in equipment_type_choices %}
+                                        <li role="presentation"><a role="menuitem" tabindex="-1" href="/experiment/{{ experiment.id }}/add_equipment/{{ type }}"> {{ type_name }}</a></li>
+                                    {% endfor %}
+                                </ul>
+                            </div>
+                        {% endif %}
+
+                    </div>
+                </div>
+
+            {% endif %}
 
             <div class="btn-toolbar">
                 <div class="btn-group pull-left">

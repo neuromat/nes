@@ -29,6 +29,10 @@ urlpatterns = patterns(
 
     # eeg setting
     url(r'^(?P<experiment_id>\d+)/eeg_setting/new/$', 'eeg_setting_create', name='eeg_setting_new'),
+    url(r'^eeg_setting/(?P<eeg_setting_id>\d+)/$', 'eeg_setting_view', name='eeg_setting_view'),
+    url(r'^eeg_setting/edit/(?P<eeg_setting_id>\d+)/$', 'eeg_setting_update', name='eeg_setting_edit'),
+    url(r'^eeg_setting/(?P<eeg_setting_id>\d+)/add_equipment/(?P<equipment_type>\w+)/$',
+        'equipment_add', name='equipment_add'),
 
     # cid
     url(r'^group_diseases/cid-10/$', 'search_cid10_ajax', name='cid10_search'),

@@ -22,7 +22,7 @@ from neo import io
 from experiment.models import Experiment, Subject, QuestionnaireResponse, SubjectOfGroup, Group, Component, \
     ComponentConfiguration, Questionnaire, Task, Stimulus, Pause, Instruction, Block, \
     TaskForTheExperimenter, ClassificationOfDiseases, ResearchProject, Keyword, EEG, EEGData, FileFormat, \
-    EEGSetting
+    EEGSetting, Equipment, Manufacturer, EquipmentCategory
 from experiment.forms import ExperimentForm, QuestionnaireResponseForm, FileForm, GroupForm, InstructionForm, \
     ComponentForm, StimulusForm, BlockForm, ComponentConfigurationForm, ResearchProjectForm, NumberOfUsesToInsertForm, \
     EEGDataForm, EEGSettingForm
@@ -585,8 +585,7 @@ def eeg_setting_create(request, experiment_id, template_name="experiment/eeg_set
 
                     messages.success(request, _('EEG setting included successfully.'))
 
-                    redirect_url = reverse("experiment_view", args=(experiment.id,))
-                    # redirect_url = reverse("group_view", args=(group_added.id,))
+                    redirect_url = reverse("eeg_setting_view", args=(eeg_setting_added.id,))
                     return HttpResponseRedirect(redirect_url)
 
         context = {
@@ -594,6 +593,214 @@ def eeg_setting_create(request, experiment_id, template_name="experiment/eeg_set
             "creating": True,
             "editing": True,
             "experiment": experiment}
+
+        return render(request, template_name, context)
+    else:
+        raise PermissionDenied
+
+
+@login_required
+@permission_required('experiment.view_researchproject')
+def eeg_setting_view(request, eeg_setting_id, template_name="experiment/eeg_setting_register.html"):
+    eeg_setting = get_object_or_404(EEGSetting, pk=eeg_setting_id)
+    eeg_setting_form = EEGSettingForm(request.POST or None, instance=eeg_setting)
+
+    for field in eeg_setting_form.fields:
+        eeg_setting_form.fields[field].widget.attrs['disabled'] = True
+
+    # # Navigate the components of the experimental protocol from the root to see if there is any questionnaire component
+    # # in this group.
+    # if group.experimental_protocol is not None:
+    #     surveys = Questionnaires()
+    #     # This method shows a message to the user if limesurvey is not available.
+    #     check_limesurvey_access(request, surveys)
+    #
+    #     list_of_questionnaires_configuration = recursively_create_list_of_questionnaires_and_statistics(
+    #         group.experimental_protocol,
+    #         [],
+    #         surveys,
+    #         SubjectOfGroup.objects.filter(group_id=group_id).count())
+    #
+    #     surveys.release_session_key()
+    # else:
+    #     list_of_questionnaires_configuration = None
+
+    can_change = get_can_change(request.user, eeg_setting.experiment.research_project)
+
+    # if request.method == "POST":
+    #     if can_change:
+    #         if request.POST['action'] == "remove":
+    #
+    #             if QuestionnaireResponse.objects.filter(subject_of_group__group_id=group_id).count() == 0:
+    #                 try:
+    #                     group.delete()
+    #                     messages.success(request, _('Group removed successfully.'))
+    #                     redirect_url = reverse("experiment_view", args=(group.experiment.id,))
+    #                     return HttpResponseRedirect(redirect_url)
+    #                 except ProtectedError:
+    #                     messages.error(request, _("Impossible to delete group, because there are dependencies."))
+    #                     redirect_url = reverse("group_view", args=(group.id,))
+    #                     return HttpResponseRedirect(redirect_url)
+    #             else:
+    #                 messages.error(request,
+    #                                _("Impossible to delete group because there is (are) questionnaire(s) answered."))
+    #                 redirect_url = reverse("group_view", args=(group.id,))
+    #                 return HttpResponseRedirect(redirect_url)
+    #
+    #         elif request.POST['action'] == "remove_experimental_protocol":
+    #             group.experimental_protocol = None
+    #             group.save()
+    #     else:
+    #         raise PermissionDenied
+
+    equipment_type_choices = []
+
+    for type_element, type_name in EquipmentCategory.EQUIPMENT_TYPES:
+        equipment_type_choices.append((type_element, type_name))
+
+    context = {
+        "can_change": can_change,
+        "eeg_setting_form": eeg_setting_form,
+        # "equipment_list": equipment_list,
+        "experiment": eeg_setting.experiment,
+        "eeg_setting": eeg_setting,
+        "editing": False,
+        "equipment_type_choices": equipment_type_choices,
+    }
+
+    return render(request, template_name, context)
+
+
+@login_required
+@permission_required('experiment.change_experiment')
+def eeg_setting_update(request, eeg_setting_id, template_name="experiment/eeg_setting_register.html"):
+    eeg_setting = get_object_or_404(EEGSetting, pk=eeg_setting_id)
+
+    if get_can_change(request.user, eeg_setting.experiment.research_project):
+        eeg_setting_form = EEGSettingForm(request.POST or None, instance=eeg_setting)
+
+        if request.method == "POST":
+            if request.POST['action'] == "save":
+                if eeg_setting_form.is_valid():
+                    if eeg_setting_form.has_changed():
+                        eeg_setting_form.save()
+                        messages.success(request, _('EEG setting updated successfully.'))
+                    else:
+                        messages.success(request, _('There is no changes to save.'))
+
+                    redirect_url = reverse("eeg_setting_view", args=(eeg_setting_id,))
+                    return HttpResponseRedirect(redirect_url)
+
+        context = {
+            "eeg_setting_form": eeg_setting_form,
+            "editing": True,
+            "experiment": eeg_setting.experiment,
+            "eeg_setting": eeg_setting,
+        }
+
+        return render(request, template_name, context)
+    else:
+        raise PermissionDenied
+
+
+@login_required
+@permission_required('experiment.change_experiment')
+def equipment_add(request, eeg_setting_id, equipment_type,
+                  template_name="experiment/add_equipment_to_eeg_setting.html"):
+
+    eeg_setting = get_object_or_404(EEGSetting, pk=eeg_setting_id)
+
+    # list of manufacturer
+    manufacturer_list = Manufacturer.objects.all()
+
+    # list of equipment
+    equipment_list = Equipment.objects.filter(equipment_type=equipment_type)
+
+    if get_can_change(request.user, eeg_setting.research_project):
+
+        # if request.method == "POST":
+        #     new_specific_component = None
+        #     survey = None
+        #
+        #     if component_type == 'questionnaire':
+        #         new_specific_component = Questionnaire()
+        #
+        #         try:
+        #             survey = Survey.objects.get(lime_survey_id=request.POST['questionnaire_selected'])
+        #         except Survey.DoesNotExist:
+        #             survey = Survey()
+        #             survey.lime_survey_id = request.POST['questionnaire_selected']
+        #
+        #     elif component_type == 'pause':
+        #         new_specific_component = Pause()
+        #     elif component_type == 'task':
+        #         new_specific_component = Task()
+        #     elif component_type == 'task_experiment':
+        #         new_specific_component = TaskForTheExperimenter()
+        #     elif component_type == 'eeg':
+        #         new_specific_component = EEG()
+        #     elif specific_form.is_valid():
+        #         new_specific_component = specific_form.save(commit=False)
+        #
+        #     if component_form.is_valid():
+        #         component = component_form.save(commit=False)
+        #         new_specific_component.experiment = experiment
+        #         new_specific_component.component_type = component_type
+        #         new_specific_component.identification = component.identification
+        #         new_specific_component.description = component.description
+        #         new_specific_component.duration_value = component.duration_value
+        #         new_specific_component.duration_unit = component.duration_unit
+        #         # new_specific_component is not saved until later.
+        #
+        #         # If this is a new component for creating the root of a group's experimental protocol, no
+        #         # component_configuration has to be created.
+        #         if is_configuring_new_experimental_protocol:
+        #             new_specific_component.save()
+        #             group.experimental_protocol = new_specific_component
+        #             group.save()
+        #
+        #             messages.success(request, _('Experimental protocol included successfully.'))
+        #
+        #             redirect_url = reverse("component_view",
+        #                                    args=(path_of_the_components + delimiter + str(new_specific_component.id), ))
+        #             return HttpResponseRedirect(redirect_url)
+        #         else:
+        #             if number_of_uses_form.is_valid():
+        #                 if component_type == 'questionnaire':
+        #                     survey.save()
+        #                     new_specific_component.survey = survey
+        #
+        #                 new_specific_component.save()
+        #                 number_of_uses = number_of_uses_form.cleaned_data['number_of_uses_to_insert']
+        #
+        #                 for i in range(number_of_uses):
+        #                     new_configuration = ComponentConfiguration()
+        #                     new_configuration.component = new_specific_component
+        #                     new_configuration.parent = block
+        #
+        #                     if position is not None:
+        #                         if position == 'random':
+        #                             new_configuration.random_position = True
+        #                         else:  # position == 'fixed'
+        #                             new_configuration.random_position = False
+        #
+        #                     new_configuration.save()
+        #
+        #                 if number_of_uses > 1:
+        #                     messages.success(request, _('Steps included successfully.'))
+        #                 else:
+        #                     messages.success(request, _('Step included successfully.'))
+        #
+        #                 redirect_url = reverse("component_view", args=(path_of_the_components, ))
+        #
+        #                 return HttpResponseRedirect(redirect_url)
+
+        context = {
+            "creating": True,
+            "eeg_setting": eeg_setting,
+            "manufacturer_list": manufacturer_list,
+            "equipment_list": equipment_list
+        }
 
         return render(request, template_name, context)
     else:

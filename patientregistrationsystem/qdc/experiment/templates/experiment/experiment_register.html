@@ -152,9 +152,9 @@
                                 {% for eeg_setting in eeg_setting_list %}
                                     <tr>
                                         <td>
-{#                                            <a data-toggle="tooltip" data-placement="left" title="{% trans "Edit" %}" href="/experiment/group/{{ group.id }}">#}
+                                            <a data-toggle="tooltip" data-placement="left" title="{% trans "Edit" %}" href="/experiment/eeg_setting/{{ eeg_setting.id }}">
                                             {{ eeg_setting.name }}
-{#                                            </a>#}
+                                            </a>
                                         </td>
                                         <td>
                                             {{ eeg_setting.description }}
