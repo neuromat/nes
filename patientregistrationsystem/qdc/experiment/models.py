@@ -98,7 +98,7 @@ class EquipmentCategory(models.Model):
         ("amplifier", _("Amplifier")),
     )
     name = models.CharField(max_length=150)
-    equipment_type = models.CharField(null=False, max_length=50, choices=EQUIPMENT_TYPES)
+    equipment_type = models.CharField(null=True, blank=True, max_length=50, choices=EQUIPMENT_TYPES)
 
     def __str__(self):
         return self.name
@@ -115,20 +115,20 @@ class Amplifier(EquipmentCategory):
 
 
 class EquipmentModel(models.Model):
-    manufacturer = models.ForeignKey(Manufacturer, null=False)
+    manufacturer = models.ForeignKey(Manufacturer, null=False, related_name="equipment_models")
     equipment_category = models.ForeignKey(EquipmentCategory, null=False)
     identification = models.CharField(max_length=150)
-    description = models.TextField()
+    description = models.TextField(null=True, blank=True)
 
     def __str__(self):
         return self.identification
 
 
 class Equipment(models.Model):
-    equipment_model = models.ForeignKey(EquipmentModel, null=False)
+    equipment_model = models.ForeignKey(EquipmentModel, null=False, related_name="set_of_equipment")
     identification = models.CharField(max_length=150)
-    description = models.TextField()
-    serial_number = models.CharField(max_length=50)
+    description = models.TextField(null=True, blank=True)
+    serial_number = models.CharField(max_length=50, null=True, blank=True)
 
     def __str__(self):
         return self.identification

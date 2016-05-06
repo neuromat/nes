@@ -25,8 +25,8 @@ class Migration(migrations.Migration):
             fields=[
                 ('id', models.AutoField(auto_created=True, verbose_name='ID', serialize=False, primary_key=True)),
                 ('identification', models.CharField(max_length=150)),
-                ('description', models.TextField()),
-                ('serial_number', models.CharField(max_length=50)),
+                ('description', models.TextField(blank=True, null=True)),
+                ('serial_number', models.CharField(max_length=50, null=True, blank=True)),
             ],
         ),
         migrations.CreateModel(
@@ -34,7 +34,9 @@ class Migration(migrations.Migration):
             fields=[
                 ('id', models.AutoField(auto_created=True, verbose_name='ID', serialize=False, primary_key=True)),
                 ('name', models.CharField(max_length=150)),
-                ('equipment_type', models.CharField(choices=[('eeg_machine', 'EEG Machine'), ('amplifier', 'Amplifier')], max_length=50)),
+                ('equipment_type', models.CharField(
+                    blank=True, null=True,
+                    choices=[('eeg_machine', 'EEG Machine'), ('amplifier', 'Amplifier')], max_length=50)),
             ],
         ),
         migrations.CreateModel(
@@ -42,7 +44,7 @@ class Migration(migrations.Migration):
             fields=[
                 ('id', models.AutoField(auto_created=True, verbose_name='ID', serialize=False, primary_key=True)),
                 ('identification', models.CharField(max_length=150)),
-                ('description', models.TextField()),
+                ('description', models.TextField(null=True, blank=True)),
             ],
         ),
         migrations.CreateModel(
@@ -55,14 +57,22 @@ class Migration(migrations.Migration):
         migrations.CreateModel(
             name='Amplifier',
             fields=[
-                ('equipmentcategory_ptr', models.OneToOneField(to='experiment.EquipmentCategory', auto_created=True, serialize=False, parent_link=True, primary_key=True)),
+                ('equipmentcategory_ptr', models.OneToOneField(to='experiment.EquipmentCategory',
+                                                               auto_created=True,
+                                                               serialize=False,
+                                                               parent_link=True,
+                                                               primary_key=True)),
             ],
             bases=('experiment.equipmentcategory',),
         ),
         migrations.CreateModel(
             name='EEGMachine',
             fields=[
-                ('equipmentcategory_ptr', models.OneToOneField(to='experiment.EquipmentCategory', auto_created=True, serialize=False, parent_link=True, primary_key=True)),
+                ('equipmentcategory_ptr', models.OneToOneField(to='experiment.EquipmentCategory',
+                                                               auto_created=True,
+                                                               serialize=False,
+                                                               parent_link=True,
+                                                               primary_key=True)),
             ],
             bases=('experiment.equipmentcategory',),
         ),

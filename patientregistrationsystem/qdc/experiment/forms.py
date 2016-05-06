@@ -16,7 +16,7 @@ class ExperimentForm(ModelForm):
         fields = ['research_project', 'title', 'description']
 
         widgets = {
-            'research_project': Select(attrs={'class': 'form-control'}, choices='research_projects'),
+            'research_project': Select(attrs={'class': 'form-control'}),
             'title': TextInput(attrs={'class': 'form-control',
                                       'required': "",
                                       'data-error': _('Title must be filled.'),
@@ -274,3 +274,14 @@ class EquipmentForm(ModelForm):
         model = Equipment
 
         fields = ['identification', 'description']
+
+
+class FilterEquipmentForm(ModelForm):
+    class Meta:
+        model = Equipment
+        fields = ['description', 'serial_number']
+
+        widgets = {
+            'description': Textarea(attrs={'class': 'form-control', 'rows': '4', 'disabled': ''}),
+            'serial_number': TextInput(attrs={'class': 'form-control', 'disabled': ''})
+        }
