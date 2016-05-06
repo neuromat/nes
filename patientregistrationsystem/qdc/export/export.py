@@ -120,13 +120,15 @@ def create_directory(basedir, path_to_create):
 
     complete_path = ""
 
+    print("create_directory:", basedir, path_to_create )
+
     if not path.exists(basedir):
         return _("Base path does not exist"), complete_path
 
     complete_path = path.join(basedir, path_to_create)
 
     if not path.exists(complete_path):
-        makedirs(complete_path)
+        makedirs(complete_path.encode('utf-8'))
 
     return "", complete_path
 
@@ -914,8 +916,8 @@ class ExportExecution:
                         data_fields_filtered.append(line2[index])
                         header_filtered.add(fill_list1[0][index])
 
-                token_id = int(line1[fill_list1[0].index("id")])
-                data_from_lime_survey[token_id] = list(data_fields_filtered)
+                token = int(line1[fill_list1[0].index("token")])
+                data_from_lime_survey[token] = list(data_fields_filtered)
                 line_index += 1
 
             # filter data (participants)
@@ -935,9 +937,12 @@ class ExportExecution:
 
                 # transform data fields
                 # include new fields
-                if questionnaire_response.token_id in data_from_lime_survey:
+                token = questionnaire_lime_survey.get_participant_properties(questionnaire_id,
+                                                                             questionnaire_response.token_id,
+                                                                             "token")
+                if token in data_from_lime_survey:
 
-                    lm_data_row = data_from_lime_survey[questionnaire_response.token_id]
+                    lm_data_row = data_from_lime_survey[token]
 
                     data_fields = [smart_str(data) for data in lm_data_row]
                     transformed_fields = self.transform_questionnaire_data(questionnaire_response.patient_id,
