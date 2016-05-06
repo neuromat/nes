@@ -916,7 +916,7 @@ class ExportExecution:
                         data_fields_filtered.append(line2[index])
                         header_filtered.add(fill_list1[0][index])
 
-                token = int(line1[fill_list1[0].index("token")])
+                token = line1[fill_list1[0].index("token")]
                 data_from_lime_survey[token] = list(data_fields_filtered)
                 line_index += 1
 
