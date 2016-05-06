@@ -1,8 +1,9 @@
 # coding=utf-8
 from django.forms import ModelForm, Form, TextInput, CharField, BooleanField, MultipleChoiceField, \
-    CheckboxSelectMultiple, ValidationError, ChoiceField, SelectMultiple, IntegerField, NumberInput, Select
+    CheckboxSelectMultiple, ValidationError, ChoiceField, SelectMultiple, IntegerField, NumberInput, \
+    RadioSelect, CheckboxInput
 
-from django.utils.translation import ugettext as _
+from django.utils.translation import ugettext_lazy as _
 
 
 from patient.models import Patient
@@ -18,12 +19,16 @@ from patient.models import Patient
 #     ('selected', _('Selected participants'))
 # )
 
-# HEADINGS_CHOICES = (
-#
-#     ('code', _("Question code")),
-#     ('full', _("Full question text")),
-#     ('abbreviated', _("Abbreviated question text")),
-# )
+HEADINGS_CHOICES = (
+    ('code', _("Question code")),
+    ('full', _("Full question text")),
+    ('abbreviated', _("Abbreviated question text")),
+)
+
+RESPONSES_CHOICES = (
+    ('short', _("Answer codes")),
+    ('long', _("Full answers")),
+)
 
 
 class ExportForm(Form):
@@ -36,7 +41,9 @@ class ExportForm(Form):
     # patient_fields_selected = MultipleChoiceField(required=True,
     #                                               widget=CheckboxSelectMultiple, choices=FAVORITE_COLORS_CHOICES)
 
-    # headings = ChoiceField(widget=Select(), choices=HEADINGS_CHOICES)
+    headings = ChoiceField(widget=RadioSelect(), choices=HEADINGS_CHOICES)
+    responses = MultipleChoiceField(widget=CheckboxSelectMultiple(attrs={'data-error': _('Response must be selected')}),
+                                    choices=RESPONSES_CHOICES, )
     #
     # questionnaire_entrance_fields_selected = []
     #
@@ -54,6 +61,11 @@ class ExportForm(Form):
         if not (participant_field or questionnaire_field):
             self.add_error('per_participant',
                            _("Either one or both Per participant/Per questionnaire must be set."))
+
+    # def __init__(self, *args, **kwargs):
+    #     super(ExportForm, self).__init__(*args, **kwargs)
+    #     self.base_fields['headings'].initial = 'abbreviated'
+    #     self.base_fields['responses'].initial = 'short'
 
 
 class ParticipantsSelectionForm(ModelForm):

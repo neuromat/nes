@@ -8,7 +8,7 @@ from django.core.urlresolvers import reverse
 # from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
 from django.http import HttpResponse, HttpResponseRedirect
 from django.utils.encoding import smart_str
-from django.utils.translation import ugettext_lazy as _
+from django.utils.translation import ugettext as ug_, ugettext_lazy as _
 
 from datetime import datetime
 from dateutil.relativedelta import relativedelta
@@ -114,19 +114,22 @@ diagnosis_fields = [
     {"field": "medicalrecorddata__diagnosis__description", "header": 'diagnosis_description',
      "description": _("Observation")},
     {"field": "medicalrecorddata__diagnosis__classification_of_diseases_id", "header": 'classification_of_diseases_id',
-     "description": _("ICD code")},
+     "description": _("Disease code (ICD)")},
     {"field": "medicalrecorddata__diagnosis__classification_of_diseases__description",
-     "header": 'classification_of_diseases_description', "description": _("ICD Description")},
+     "header": 'classification_of_diseases_description', "description": _("Disease Description")},
     {"field": "medicalrecorddata__diagnosis__classification_of_diseases__abbreviated_description",
-     "header": 'classification_of_diseases_description', "description": _("ICD Abbreviated Description")},
+     "header": 'classification_of_diseases_description', "description": _("Disease Abbreviated Description")},
 ]
 
 patient_fields_inclusion = [
-    ["code", "participation_code"],
+    # ["code", {"code": "participation_code", "full": g_("Participation code"), "abbreviated": g_("Participation code") }],
+    ["code", {"code": "participation_code", "full": _("Participation code"),
+              "abbreviated": _("Participation code")}],
 ]
 
 diagnosis_fields_inclusion = [
-    ["medicalrecorddata__patient__code", 'participation_code'],
+    ["medicalrecorddata__patient__code", {"code": "participation_code", "full": _("Participation code"),
+                                          "abbreviated": _("Participation code")}],
 ]
 
 questionnaire_evaluation_fields_excluded = [
@@ -250,19 +253,53 @@ def update_export_instance(input_file, output_export, export_instance):
     export_instance.save()
 
 
-def update_participants_list(participants_list):
-    # include participation_code
+def find_description(field_to_find, fields_inclusion):
+    for field_dict in fields_inclusion:
+        if field_dict["field"] == field_to_find:
+            return ug_(field_dict["description"])
+    return ""
+
+
+def abbreviated_data(data_to_abbreviate, heading_type):
+
+    if heading_type == "abbreviated":
+        data_updated = data_to_abbreviate[:17] + ".."
+    else:
+        data_updated = data_to_abbreviate
+
+    return data_updated
+
+
+def update_participants_list(participants_list, heading_type):
 
     if participants_list:
+
+        # update header, if necessary
+        if heading_type != "code":
+            for participant in participants_list:
+                header_translated = find_description(participant[0], patient_fields)
+                participant[1] = abbreviated_data(header_translated, heading_type)
+
+        # include participation_code
+
         for field, header in patient_fields_inclusion:
-            participants_list.append([field, header])
+            header_translated = ug_(header[heading_type])
+            participants_list.append([field, abbreviated_data(header_translated, heading_type)])
 
 
-def update_diagnosis_list(diagnosis_list):
+def update_diagnosis_list(diagnosis_list, heading_type):
 
     if diagnosis_list:
+        # update header, if necessary
+        if heading_type != "code":
+            for diagnosis in diagnosis_list:
+                header_translated = find_description(diagnosis[0], diagnosis_fields)
+                diagnosis[1] = abbreviated_data(header_translated, heading_type)
+
+        # include participation_code
         for field, header in diagnosis_fields_inclusion:
-            diagnosis_list.append([field, header])
+            header_translated = ug_(header[heading_type])
+            diagnosis_list.append([field, abbreviated_data(header_translated, heading_type)])
 
 
 # @login_required
@@ -437,7 +474,8 @@ def export_create(request, export_id, input_filename, template_name="export/expo
 
 @login_required
 def export_view(request, template_name="export/export_data.html"):
-    export_form = ExportForm(request.POST or None, initial={'title': 'title'})
+    export_form = ExportForm(request.POST or None, initial={'title': 'title',
+                                                            'responses': ['short'], 'headings': 'code'})
     # , 'per_participant': False,
     #                                                         'per_questinnaire': False})
     # export_form.per_participant = False
@@ -479,12 +517,19 @@ def export_view(request, template_name="export/export_data.html"):
 
         questionnaires_list = []
 
+        # fields = {}
+
         previous_questionnaire_id = 0
         output_list = []
         for questionnaire in questionnaires_selected_list:
             sid, title, field, header = questionnaire.split("*")
 
             sid = int(sid)    # transform to integer
+            #
+            # if sid not in fields:
+            #     fields[sid] = []
+            # fields[sid].append(field)
+
             if sid != previous_questionnaire_id:
                 if previous_questionnaire_id != 0:
                     output_list = []
@@ -522,9 +567,15 @@ def export_view(request, template_name="export/export_data.html"):
                 per_participant = export_form.cleaned_data['per_participant']
                 per_questionnaire = export_form.cleaned_data['per_questionnaire']
 
+                heading_type = export_form.cleaned_data['headings']
+                responses_type = export_form.cleaned_data['responses']
+
+                questionnaires_list = update_questionnaire_list(questionnaires_list, heading_type,
+                                                                request.LANGUAGE_CODE)
+
                 # insert participation_code
-                update_participants_list(participants_list)
-                update_diagnosis_list(diagnosis_list)
+                update_participants_list(participants_list, heading_type)
+                update_diagnosis_list(diagnosis_list, heading_type)
 
                 # output_filename =
                 # "/Users/sueli/PycharmProjects/nes/patientregistrationsystem/qdc/export/json_export_output2.json"
@@ -543,8 +594,10 @@ def export_view(request, template_name="export/export_data.html"):
                 input_filename = path.join(settings.MEDIA_ROOT, input_export_file)
                 create_directory(settings.MEDIA_ROOT, path.split(input_export_file)[0])
 
-                build_complete_export_structure(per_participant, per_questionnaire, participants_list, diagnosis_list,
-                                                questionnaires_list, input_filename, request.LANGUAGE_CODE)
+                build_complete_export_structure(per_participant, per_questionnaire,
+                                                participants_list, diagnosis_list,
+                                                questionnaires_list, responses_type, heading_type,
+                                                input_filename, request.LANGUAGE_CODE)
 
                 complete_filename = export_create(request, export_instance.id, input_filename)
 
@@ -645,7 +698,72 @@ def export_view(request, template_name="export/export_data.html"):
     return render(request, template_name, context)
 
 
-def get_questionnaire_fields(questionnaire_code_list, language="pt-BR"):
+def update_questionnaire_list(questionnaire_list, heading_type, current_language="pt-BR"):
+
+    questionnaire_list_updated = []
+
+    if heading_type == 'code':
+        return questionnaire_list
+
+    questionnaire_lime_survey = Questionnaires()
+
+    for questionnaire in questionnaire_list:
+
+        # position 0: id, postion 1: title
+
+        questionnaire_id = questionnaire[0]
+
+        # position 2: output_list (field, header)
+        fields, headers = zip(*questionnaire[2])
+
+        questionnaire_field_header = get_questionnaire_header(questionnaire_lime_survey, questionnaire_id,
+                                                              fields, heading_type, current_language)
+
+        questionnaire_list_updated.append([questionnaire_id, questionnaire[1], questionnaire_field_header])
+
+    questionnaire_lime_survey.release_session_key()
+
+    return questionnaire_list_updated
+
+
+def get_questionnaire_header(questionnaire_lime_survey,
+                             questionnaire_id, fields, heading_type="code", current_language="pt-BR"):
+    # return: {"<question_code>": "question_heading_type", "<question_code1>": "question_heading_type1"...}
+    # ("<question_code>": "question_heading_type")
+
+    # questionnaire_header = []
+    questionnaire_list = []
+
+    language_new = get_questionnaire_language(questionnaire_lime_survey, questionnaire_id, current_language)
+
+    # get a valid token (anyone)
+    survey = Survey.objects.filter(lime_survey_id=questionnaire_id).first()
+    token_id = QuestionnaireResponse.objects.filter(survey=survey).first().token_id
+    token = questionnaire_lime_survey.get_participant_properties(questionnaire_id, token_id, "token")
+
+    responses_string = questionnaire_lime_survey.get_header_response(questionnaire_id, language_new, token)
+
+    if not isinstance(responses_string, dict):
+
+        questionnaire_questions = perform_csv_response(responses_string)
+
+        responses_heading_type = questionnaire_lime_survey.get_header_response(questionnaire_id,
+                                                                               language_new, token,
+                                                                               heading_type=heading_type)
+
+        questionnaire_questions_heading_type = perform_csv_response(responses_heading_type)
+
+        questionnaire_header = list(zip(questionnaire_questions_heading_type[0], questionnaire_questions[0]))
+
+        # line 0 - header information
+        for question in questionnaire_header:
+            if question[1] in fields:
+                questionnaire_list.append(question)
+
+    return questionnaire_list
+
+
+def get_questionnaire_fields(questionnaire_code_list, language_current="pt-BR"):
     """
     :param questionnaire_code_list: list with questionnaire id to be formatted with json file
     :return: 1 list: questionnaires_included - questionnaire_id that was included in the .txt file
@@ -659,15 +777,16 @@ def get_questionnaire_fields(questionnaire_code_list, language="pt-BR"):
 
         questionnaire_id = questionnaire["sid"]
 
-        language = get_questionnaire_language(questionnaire_lime_survey, questionnaire_id, language)
+        language_new = get_questionnaire_language(questionnaire_lime_survey, questionnaire_id, language_current)
 
-        # get a valid token
+        # get a valid token (anyone)
         survey = Survey.objects.filter(lime_survey_id=questionnaire_id).first()
-        token = QuestionnaireResponse.objects.filter(survey=survey).first().token_id
+        token_id = QuestionnaireResponse.objects.filter(survey=survey).first().token_id
+        token = questionnaire_lime_survey.get_participant_properties(questionnaire_id, token_id, "token")
 
-        responses_string = questionnaire_lime_survey.get_header_response(questionnaire_id, language, token)
+        responses_string = questionnaire_lime_survey.get_header_response(questionnaire_id, language_new, token)
 
-        questionnaire_title = questionnaire_lime_survey.get_survey_title(questionnaire_id, language)
+        questionnaire_title = questionnaire_lime_survey.get_survey_title(questionnaire_id, language_new)
 
         # print("id: %d " % questionnaire_id)
 
@@ -678,7 +797,7 @@ def get_questionnaire_fields(questionnaire_code_list, language="pt-BR"):
             questionnaire_questions = perform_csv_response(responses_string)
 
             responses_full = questionnaire_lime_survey.get_header_response(questionnaire_id,
-                                                                           language, token, heading_type='full')
+                                                                           language_new, token, heading_type='full')
             questionnaire_questions_full = perform_csv_response(responses_full)
 
             index = 0

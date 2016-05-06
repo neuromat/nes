@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2016-04-29 18:32-0300\n"
+"POT-Creation-Date: 2016-05-04 18:03-0300\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -41,15 +41,19 @@ msgstr ""
 msgid "Full answers"
 msgstr ""
 
-#: export/forms.py:62
+#: export/forms.py:45
+msgid "Response must be selected"
+msgstr ""
+
+#: export/forms.py:63
 msgid "Either one or both Per participant/Per questionnaire must be set."
 msgstr ""
 
-#: export/forms.py:92
+#: export/forms.py:94
 msgid "Min age must be filled."
 msgstr ""
 
-#: export/forms.py:95
+#: export/forms.py:97
 msgid "Max age must be filled."
 msgstr ""
 
@@ -89,55 +93,55 @@ msgstr ""
 msgid "Per questionnaire"
 msgstr ""
 
-#: export/templates/export/export_data.html:123
-msgid "Questionnaire information"
-msgstr ""
-
-#: export/templates/export/export_data.html:127
-msgid "Questionnaire - Entrance evaluation"
-msgstr ""
-
-#: export/templates/export/export_data.html:128
-msgid "Please, select a questionnaire from the list."
-msgstr ""
-
-#: export/templates/export/export_data.html:144
+#: export/templates/export/export_data.html:122
 msgid "Headings"
 msgstr ""
 
-#: export/templates/export/export_data.html:159
+#: export/templates/export/export_data.html:137
 msgid "Responses"
 msgstr ""
 
-#: export/templates/export/export_data.html:176
+#: export/templates/export/export_data.html:167
+msgid "Questionnaire information"
+msgstr ""
+
+#: export/templates/export/export_data.html:171
+msgid "Questionnaire - Entrance evaluation"
+msgstr ""
+
+#: export/templates/export/export_data.html:172
+msgid "Please, select a questionnaire from the list."
+msgstr ""
+
+#: export/templates/export/export_data.html:188
 msgid "Participants"
 msgstr ""
 
-#: export/templates/export/export_data.html:180
+#: export/templates/export/export_data.html:192
 msgid "Participant fields"
 msgstr ""
 
-#: export/templates/export/export_data.html:181
+#: export/templates/export/export_data.html:193
 msgid "Please, select a patient field from the list."
 msgstr ""
 
-#: export/templates/export/export_data.html:191
+#: export/templates/export/export_data.html:203
 msgid "Diagnosis"
 msgstr ""
 
-#: export/templates/export/export_data.html:195
+#: export/templates/export/export_data.html:207
 msgid "Diagnosis fields"
 msgstr ""
 
-#: export/templates/export/export_data.html:196
+#: export/templates/export/export_data.html:208
 msgid "Please, select a diagnosis field from the list."
 msgstr ""
 
-#: export/templates/export/export_data.html:209
+#: export/templates/export/export_data.html:221
 msgid "Run"
 msgstr ""
 
-#: export/templates/export/export_data.html:213
+#: export/templates/export/export_data.html:225
 #: export/templates/export/participant_selection.html:111
 #: export/templates/export/show_selected_participants.html:92
 msgid "Cancel"
@@ -324,18 +328,22 @@ msgstr ""
 msgid "Disease Abbreviated Description"
 msgstr ""
 
-#: export/views.py:320
+#: export/views.py:131 export/views.py:132
+msgid "Participation code"
+msgstr ""
+
+#: export/views.py:357
 msgid "Inconsistent data read from json file"
 msgstr ""
 
-#: export/views.py:553
+#: export/views.py:603
 msgid "Export was finished correctly"
 msgstr ""
 
-#: export/views.py:571
+#: export/views.py:621
 msgid "Export data was not generated."
 msgstr ""
 
-#: export/views.py:584
+#: export/views.py:634
 msgid "No data was select. Export data was not generated."
 msgstr ""
