@@ -128,12 +128,12 @@ def create_directory(basedir, path_to_create):
     complete_path = path.join(basedir, path_to_create)
 
     print("encode: ", sys.getfilesystemencoding(), sys.getdefaultencoding())
-    print("create_directory-encode:", complete_path.encode('utf-8'))
+    print("create_directory-encode:", complete_path.decode("utf-8").encode('utf-8'))
     if not path.exists(complete_path.encode('utf-8')):
         # print("create_directory:", basedir, path_to_create)
         print("create_directory:", complete_path)
 
-        makedirs(complete_path.encode('utf-8'))
+        makedirs(complete_path.decode("utf-8").encode('utf-8'))
 
     return "", complete_path
 
