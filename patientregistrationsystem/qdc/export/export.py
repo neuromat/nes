@@ -59,8 +59,16 @@ directory_structure = [
 
 # valid for all questionnaires (no distinction amongst questionnaires)
 included_questionnaire_fields = [
-    {"field": "participation_code", "header": "participation_code", "model": "patient.patient", "model_field": "code"},
+    {"field": "participation_code", "header": {"code": "participation_code",
+                                               "full": _("Participation code"),
+                                               "abbreviated": _("Participation code")},
+     "model": "patient.patient", "model_field": "code"},
 ]
+
+
+# questionnaire_special_fields = [
+#     ["code", {"code": "participation_code", "full": _("Participation code"),"abbreviated": _("Participation code")}],
+# ]
 
 
 def is_number(s):
@@ -354,8 +362,11 @@ class ExportExecution:
         header = []
         fields = []
 
+        heading_type = self.get_heading_type()
+
         for row in included_questionnaire_fields:
-            header.append(smart_str(row["header"]))
+            header_translated = _(row["header"][heading_type])
+            header.append(smart_str(header_translated))
             fields.append(smart_str(row["field"]))
 
         self.append_questionnaire_header_and_field(questionnaire_id, header, fields)
@@ -777,6 +788,60 @@ class ExportExecution:
     #
     #     return error_msg
 
+    def find_duplicates(self, fill_list1, fill_list2):
+
+        line1 = fill_list1[1]
+        line2 = fill_list2[1]
+
+        index = 0
+        total = len(line1)
+
+        duplicate_list = []
+
+        while index != total:
+            if line1[index] != line2[index]:
+                duplicate_list.append(index)
+            index += 1
+
+        return duplicate_list
+
+    def redefine_header_and_fields(self, questionnaire_id, header_filtered, fields):
+
+        header = self.questionnaires_data[questionnaire_id]["header"]
+        fields_saved = self.questionnaires_data[questionnaire_id]["fields"]
+
+        new_header = []
+        new_fields = []
+
+        for item in fields:
+            new_header.append(header[fields.index(item)])
+            new_fields.append(fields_saved[fields.index(item)])
+
+            if item in header_filtered:
+                new_header.append(header[fields.index(item)])
+                new_fields.append(fields_saved[fields.index(item)])
+
+        self.questionnaires_data[questionnaire_id]["header"] = new_header
+        self.questionnaires_data[questionnaire_id]["fields"] = new_fields
+
+    def get_response_type(self):
+
+        response_type = self.get_input_data("response_type")
+
+        if not response_type:
+            response_type = ["short"]
+
+        return response_type
+
+    def get_heading_type(self):
+
+        heading_type = self.get_input_data("heading_type")
+
+        if not heading_type:
+            heading_type = ["code"]
+
+        return heading_type
+
     def define_questionnaire(self, questionnaire, questionnaire_lime_survey):
         """
         :param questionnaire:
@@ -787,6 +852,8 @@ class ExportExecution:
         # print("define_questionnaire:  ")
         questionnaire_id = questionnaire["id"]
         language = questionnaire["language"]
+
+        response_type = self.get_response_type()
 
         headers, fields = self.set_questionnaire_header_and_fields(questionnaire)
 
@@ -799,23 +866,57 @@ class ExportExecution:
         if questionnaire_exists and limesurvey_available:
 
             # read all data for questionnaire_id from LimeSurvey
-            responses_string = questionnaire_lime_survey.get_responses(questionnaire_id, language)
-            fill_list = perform_csv_response(responses_string)
+            # responses_string = questionnaire_lime_survey.get_responses(questionnaire_id, language)
+            responses_string1 = questionnaire_lime_survey.get_responses(questionnaire_id, language, response_type[0])
+            # fill_list = perform_csv_response(responses_string)
+            fill_list1 = perform_csv_response(responses_string1)
+
+            # read "long" information, if necessary
+            if len(response_type) > 1:
+                responses_string2 = questionnaire_lime_survey.get_responses(questionnaire_id, language,
+                                                                            response_type[1])
+                fill_list2 = perform_csv_response(responses_string2)
+            else:
+                fill_list2 = fill_list1
 
             # filter fields
             subscripts = []
             # find fields that must be used for this process
+            # for field in fields:
+            #     if field in fill_list[0]:
+            #         subscripts.append(fill_list[0].index(field))
+
             for field in fields:
-                if field in fill_list[0]:
-                    subscripts.append(fill_list[0].index(field))
+                if field in fill_list1[0]:
+                    subscripts.append(fill_list1[0].index(field))
 
             data_from_lime_survey = {}
 
-            # do not consider first line, because it is header
-            for line in fill_list[1:len(fill_list) - 1]:
-                token_id = int(line[fill_list[0].index("id")])
-                data_fields_filtered = [line[index] for index in subscripts]
-                data_from_lime_survey[token_id] = data_fields_filtered
+            # do not consider first line, because it is header TODO: verificar token_id
+            # for line in fill_list[1:len(fill_list) - 1]:
+            #     token_id = int(line[fill_list[0].index("id")])
+            #     data_fields_filtered = [line[index] for index in subscripts]
+            #     data_from_lime_survey[token_id] = data_fields_filtered
+
+            duplicate_indices = self.find_duplicates(fill_list1, fill_list2)
+
+            line_index = 1
+            line_total = len(fill_list1) - 1
+            header_filtered = set()
+            while line_index < line_total:
+                data_fields_filtered = []
+                line1 = fill_list1[line_index]
+                line2 = fill_list2[line_index]
+
+                for index in subscripts:
+                    data_fields_filtered.append(line1[index])
+                    if index in duplicate_indices:
+                        data_fields_filtered.append(line2[index])
+                        header_filtered.add(fill_list1[0][index])
+
+                token_id = int(line1[fill_list1[0].index("id")])
+                data_from_lime_survey[token_id] = list(data_fields_filtered)
+                line_index += 1
 
             # filter data (participants)
             questionnaire_responses = QuestionnaireResponse.objects.filter(survey__lime_survey_id=questionnaire_id)
@@ -856,6 +957,8 @@ class ExportExecution:
                                                              questionnaire_response.patient.code,
                                                              questionnaire_response.survey.code)
 
+            self.redefine_header_and_fields(questionnaire_id, header_filtered, fields)
         header = self.get_header_questionnaire(questionnaire_id)
+
         export_rows.insert(0, header)
         return export_rows

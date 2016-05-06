@@ -5,7 +5,7 @@ from django.utils.translation import ugettext as _
 from django.core.urlresolvers import reverse
 from dateutil.relativedelta import relativedelta
 from datetime import datetime
-from os import mkdir, remove, path
+from os import mkdir, remove, path, rename
 from shutil import rmtree
 
 
@@ -339,7 +339,17 @@ class ExportQuestionnaireTest(TestCase):
             'diagnosis_selected': diagnosis_selected,
             'per_questionnaire': 1,
             'per_participant': 1,
+            "headings": "full",
+            "responses": "long",
         }
+
+        filename = path.join("export", path.join(str(self.user.id), "1/export.zip"))
+
+        dir_name = path.split(path.join(settings.MEDIA_ROOT, filename))[0]
+        new_dir_name = ''
+        if path.isdir(dir_name):
+            new_dir_name = dir_name + "aaa"
+            rename(dir_name, new_dir_name)
 
         response = self.client.post(reverse('export_view'), self.data)
         self.assertEqual(response.status_code, 200)
@@ -349,6 +359,11 @@ class ExportQuestionnaireTest(TestCase):
         print(output_filename)
         self.assertTrue(path.isfile(output_filename))
 
+        if new_dir_name:
+            #  delete directory and files created for testing
+            rmtree(dir_name)
+
+            rename(new_dir_name, dir_name)
 
 class JsonTest(TestCase):
     """ Cria um participante para ser utilizado durante os testes """
@@ -484,10 +499,14 @@ class InputExportTest(TestCase):
             remove(output_filename)
 
         self.assertTrue(not path.isfile(output_filename))
+        #
+        # (export_per_participant, export_per_questionnaire, participant_field_header_list,
+        #                             diagnosis_field_header_list, questionnaires_list, response_type, heading_type,
+        #                             output_filename, language=DEFAULT_LANGUAGE)
 
         build_complete_export_structure(0, 1, participant_field_header_list,
                                         diagnosis_field_header_list, questionnaires_list,
-                                        output_filename, "pt-BR")
+                                        ["short"], "full", output_filename, "pt-BR")
 
         self.assertTrue(path.isfile(output_filename))
 
@@ -495,6 +514,7 @@ class InputExportTest(TestCase):
 
         build_complete_export_structure(1, 0, participant_field_header_list,
                                         diagnosis_field_header_list, questionnaires_list,
+                                        ["short","long"], "full",
                                         output_filename, "en")
 
         self.assertTrue(path.isfile(output_filename))

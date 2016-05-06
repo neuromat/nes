@@ -241,7 +241,7 @@ class ABCSearchEngine(ABC):
         return responses_txt
 
     @abstractmethod
-    def get_responses(self, sid, language, fields=None):
+    def get_responses(self, sid, language, response_type='short', fields=None):
         """ obtains responses from a determined token
         :param sid: survey ID
         :param language: language
@@ -249,7 +249,7 @@ class ABCSearchEngine(ABC):
         :return: responses in the txt format
         """
         responses = self.server.export_responses(self.session_key, sid, 'csv', language, 'complete', 'code',
-                                                 'short')   # , 1,9999999, fields)
+                                                 response_type)   # , 1,9999999, fields)
 
         if isinstance(responses, str):
             responses_txt = b64decode(responses)
@@ -258,16 +258,23 @@ class ABCSearchEngine(ABC):
 
         return responses_txt
 
-    def get_header_response(self, sid, language, token=1, heading_type='code'):
+    def get_header_response(self, sid, language, token, heading_type='code'):
         """ obtains header responses
         :param sid: survey ID
         :param language: language
         :param heading_type: heading type (can be 'code' or 'full')
         :return: responses in the txt format
         """
-        responses = self.server.export_responses(self.session_key, sid, 'csv', language, 'complete', heading_type,
-                                                 'short', token, token)   # , 1,9999999, fields)
+        # responses = self.server.export_responses(self.session_key, sid, 'csv', language, 'complete', heading_type,
+        #                                          'short', token, token)   # , 1,9999999, fields)
 
+        responses = self.server.export_responses_by_token(self.session_key, sid, 'csv', token, language,
+                                                          'complete', heading_type, 'short')
+
+        # export_responses_by_token(string $sSessionKey, int $iSurveyID, string $sDocumentType,
+        # string $sToken, string $sLanguageCode, string $sCompletionStatus, string $sHeadingType,
+        #                                                                 string $sResponseType, array $aFields)
+        #
         if isinstance(responses, str):
             responses_txt = b64decode(responses)
         else:
@@ -408,8 +415,8 @@ class Questionnaires(ABCSearchEngine):
     def get_responses_by_token(self, sid, token, language):
         return super(Questionnaires, self).get_responses_by_token(sid, token, language)
 
-    def get_responses(self, sid, language, fields=None):
-        return super(Questionnaires, self).get_responses(sid, language, fields)
+    def get_responses(self, sid, language, response_type='short', fields=None):
+        return super(Questionnaires, self).get_responses(sid, language, response_type, fields)
 
     def get_header_response(self, sid, language, token=1, heading_type='code'):
         return super(Questionnaires, self).get_header_response(sid, language, token, heading_type)

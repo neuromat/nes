@@ -87,7 +87,7 @@ class InputExport:
 
 
 def build_complete_export_structure(export_per_participant, export_per_questionnaire, participant_field_header_list,
-                                    diagnosis_field_header_list, questionnaires_list,
+                                    diagnosis_field_header_list, questionnaires_list, response_type, heading_type,
                                     output_filename, language=DEFAULT_LANGUAGE):
 
     json_data = InputExport()
@@ -97,6 +97,10 @@ def build_complete_export_structure(export_per_participant, export_per_questionn
     json_data.build_dynamic_header("export_per_participant", export_per_participant)
 
     json_data.build_dynamic_header("export_per_questionnaire", export_per_questionnaire)
+
+    json_data.build_dynamic_header("response_type", response_type)
+
+    json_data.build_dynamic_header("heading_type", heading_type)
 
     json_data.build_diagnosis_participant("participants", OUTPUT_FILENAME_PARTICIPANTS, participant_field_header_list)
 
