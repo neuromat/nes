@@ -24,6 +24,8 @@ from survey.abc_search_engine import Questionnaires
 # from survey.models import Survey
 from survey.views import is_limesurvey_available
 
+import sys
+
 DEFAULT_LANGUAGE = "pt-BR"
 
 metadata_directory = "Questionnaire_metadata"
@@ -120,14 +122,17 @@ def create_directory(basedir, path_to_create):
 
     complete_path = ""
 
-    print("create_directory:", basedir, path_to_create )
-
-    if not path.exists(basedir):
+    if not path.exists(basedir.encode('utf-8')):
         return _("Base path does not exist"), complete_path
 
     complete_path = path.join(basedir, path_to_create)
 
-    if not path.exists(complete_path):
+    print("encode: ", sys.getfilesystemencoding(), sys.getdefaultencoding())
+    print("create_directory-encode:", complete_path.encode('utf-8'))
+    if not path.exists(complete_path.encode('utf-8')):
+        # print("create_directory:", basedir, path_to_create)
+        print("create_directory:", complete_path)
+
         makedirs(complete_path.encode('utf-8'))
 
     return "", complete_path
