@@ -20,19 +20,21 @@
             var $div_file_format_description = $("#div-file-format-description");
             var $id_file = $("#id_file");
 
-            {% if format_codes %}
-                {% for id,nes_code in format_codes.items %}
-                    {% if nes_code == 'other' %}
-                        var $code_other = {{ id }};
-                    {% elif nes_code == 'txt' %}
-                        var $code_txt = {{ id }};
-                    {% elif nes_code == 'NEO-RawBinarySignalIO' %}
-                        var $code_raw = {{ id }};
+            {% if file_format_list %}
+                {% for item in file_format_list %}
+                    {% if item.code == 'other' %}
+                        var $other_code = {{ item.id }};
+                    {% elif item.code == 'txt' %}
+                        var $txt_code = {{ item.id }};
+                        var $txt_extension = "{{ item.extension }}";
+                    {% elif item.code == 'NEO-RawBinarySignalIO' %}
+                        var $raw_code = {{ item.id }};
+                        var $raw_extension = "{{ item.extension }}";
                     {% endif %}
                 {% endfor %}
 
                 $id_file_format.each((function() {
-                    if ($id_file_format.val() == $code_other)
+                    if ($id_file_format.val() == $other_code)
                     {
                         $id_file.removeAttr("accept");
                         {% if editing %}
@@ -43,15 +45,15 @@
                             $div_file_format_description.show();
                         {% endif %}
                     }
-                    else if ($id_file_format.val() == $code_txt)
+                    else if ($id_file_format.val() == $txt_code)
                     {
-                        $id_file.attr("accept", "text/plain");
+                        $id_file.attr("accept", $txt_extension);
                         $id_file_format_description.prop( "disabled", true );
                         $div_file_format_description.hide();
                     }
-                    else if ($id_file_format.val() == $code_raw)
+                    else if ($id_file_format.val() == $raw_code)
                     {
-                        $id_file.attr("accept", ".raw");
+                        $id_file.attr("accept", $raw_extension);
                         $id_file_format_description.prop( "disabled", true );
                         $div_file_format_description.hide();
                     }
@@ -64,21 +66,21 @@
                 }));
 
                 $id_file_format.on('change', (function() {
-                    if ($id_file_format.val() == $code_other)
+                    if ($id_file_format.val() == $other_code)
                     {
                         $id_file.removeAttr("accept");
                         $id_file_format_description.prop( "disabled", false );
                         $div_file_format_description.show();
                     }
-                    else if ($id_file_format.val() == $code_txt)
+                    else if ($id_file_format.val() == $txt_code)
                     {
-                        $id_file.attr("accept", "text/plain");
+                        $id_file.attr("accept", $txt_extension);
                         $id_file_format_description.prop( "disabled", true );
                         $div_file_format_description.hide();
                     }
-                    else if ($id_file_format.val() == $code_raw)
+                    else if ($id_file_format.val() == $raw_code)
                     {
-                        $id_file.attr("accept", ".raw");
+                        $id_file.attr("accept", $raw_extension);
                         $id_file_format_description.prop( "disabled", true );
                         $div_file_format_description.hide();
                     }
