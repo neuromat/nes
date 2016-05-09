@@ -92,7 +92,7 @@ def save_to_csv(complete_filename, rows_to_be_saved):
     :param rows_to_be_saved: list of rows that are going to be written on the file
     :return:
     """
-    with open(complete_filename, 'w', newline='', encoding='UTF-8') as csv_file:
+    with open(complete_filename.encode('utf-8'), 'w', newline='', encoding='UTF-8') as csv_file:
         export_writer = writer(csv_file)
         for row in rows_to_be_saved:
             export_writer.writerow(row)
