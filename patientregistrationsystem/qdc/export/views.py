@@ -398,7 +398,7 @@ def export_create(request, export_id, input_filename, template_name="export/expo
 
             export.files_to_zip_list.append([complete_filename, base_directory])
 
-            with open(complete_filename, 'w', newline='', encoding='UTF-8') as csv_file:
+            with open(complete_filename.encode('utf-8'), 'w', newline='', encoding='UTF-8') as csv_file:
                 export_writer = writer(csv_file)
                 for row in export_rows_participants:
                     export_writer.writerow(row)
@@ -419,7 +419,7 @@ def export_create(request, export_id, input_filename, template_name="export/expo
             # files_to_zip_list.append(complete_filename)
             export.files_to_zip_list.append([complete_filename, base_directory])
 
-            with open(complete_filename, 'w', newline='', encoding='UTF-8') as csv_file:
+            with open(complete_filename.encode('utf-8'), 'w', newline='', encoding='UTF-8') as csv_file:
                 export_writer = writer(csv_file)
                 for row in export_rows_diagnosis:
                     export_writer.writerow(row)
@@ -431,11 +431,11 @@ def export_create(request, export_id, input_filename, template_name="export/expo
 
             export_complete_filename = path.join(base_directory_name, export_filename)
 
-            with ZipFile(export_complete_filename, 'w') as zip_file:
+            with ZipFile(export_complete_filename.encode('utf-8'), 'w') as zip_file:
                 for filename, directory in export.files_to_zip_list:
                     fdir, fname = path.split(filename)
 
-                    zip_file.write(filename, path.join(directory, fname))
+                    zip_file.write(filename.encode('utf-8'), path.join(directory, fname))
 
             zip_file.close()
 
