@@ -1,4 +1,4 @@
-
+# -*- coding: utf-8 -*-
 from json import dump, load
 from .export import get_questionnaire_language
 from survey.abc_search_engine import Questionnaires
