@@ -1571,11 +1571,13 @@ def subject_eeg_data_create(request, group_id, subject_id, eeg_configuration_id,
     if get_can_change(request.user, group.experiment.research_project):
 
         eeg_configuration = get_object_or_404(ComponentConfiguration, id=eeg_configuration_id)
+        eeg_step = get_object_or_404(EEG, id=eeg_configuration.component_id)
 
         redirect_url = None
         eeg_data_id = None
 
-        eeg_data_form = EEGDataForm(None)
+        eeg_data_form = EEGDataForm(None, initial={'experiment': group.experiment,
+                                                   'eeg_setting': eeg_step.eeg_setting_id})
 
         file_format_list = file_format_code()
 
@@ -1617,6 +1619,7 @@ def subject_eeg_data_create(request, group_id, subject_id, eeg_configuration_id,
             "eeg_data_form": eeg_data_form,
             "eeg_data_id": eeg_data_id,
             "file_format_list": file_format_list,
+            "eeg_setting_default_id": eeg_step.eeg_setting_id,
             "subject": get_object_or_404(Subject, pk=subject_id),
             "URL": redirect_url,
         }
@@ -1666,6 +1669,8 @@ def eeg_data_view(request, eeg_data_id, template_name="experiment/subject_eeg_da
 
     eeg_data_form = EEGDataForm(request.POST or None, instance=eeg_data)
 
+    eeg_step = get_object_or_404(EEG, id=eeg_data.component_configuration.component.id)
+
     for field in eeg_data_form.fields:
         eeg_data_form.fields[field].widget.attrs['disabled'] = True
 
@@ -1693,6 +1698,7 @@ def eeg_data_view(request, eeg_data_id, template_name="experiment/subject_eeg_da
         "subject": eeg_data.subject_of_group.subject,
         "eeg_data_form": eeg_data_form,
         "eeg_data": eeg_data,
+        "eeg_setting_default_id": eeg_step.eeg_setting_id,
         "file_format_list": file_format_list
     }
 
@@ -1704,6 +1710,8 @@ def eeg_data_view(request, eeg_data_id, template_name="experiment/subject_eeg_da
 def eeg_data_edit(request, eeg_data_id, template_name="experiment/subject_eeg_data_form.html"):
 
     eeg_data = get_object_or_404(EEGData, pk=eeg_data_id)
+
+    eeg_step = get_object_or_404(EEG, id=eeg_data.component_configuration.component.id)
 
     file_format_list = file_format_code()
 
@@ -1732,7 +1740,8 @@ def eeg_data_edit(request, eeg_data_id, template_name="experiment/subject_eeg_da
                     return HttpResponseRedirect(redirect_url)
 
         else:
-            eeg_data_form = EEGDataForm(request.POST or None, instance=eeg_data)
+            eeg_data_form = EEGDataForm(request.POST or None, instance=eeg_data,
+                                        initial={'experiment': eeg_data.subject_of_group.group.experiment})
 
         context = {
             "group": eeg_data.subject_of_group.group,
@@ -1740,6 +1749,7 @@ def eeg_data_edit(request, eeg_data_id, template_name="experiment/subject_eeg_da
             "eeg_data_form": eeg_data_form,
             "eeg_data": eeg_data,
             "file_format_list": file_format_list,
+            "eeg_setting_default_id": eeg_step.eeg_setting_id,
             "editing": True
         }
 

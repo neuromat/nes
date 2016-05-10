@@ -250,13 +250,16 @@ class EEGDataForm(ModelForm):
     class Meta:
         model = EEGData
 
-        fields = ['date', 'file_format', 'description', 'file', 'file_format_description']
+        fields = ['date', 'file_format', 'eeg_setting', 'description', 'file',
+                  'file_format_description', 'eeg_setting_reason_for_change']
 
         widgets = {
             'date': DateInput(format=_("%m/%d/%Y"),
                               attrs={'class': 'form-control datepicker', 'placeholder': _('mm/dd/yyyy'),
                                      'required': "",
                                      'data-error': _("Fill date must be filled.")}, ),
+            'eeg_setting': Select(attrs={'class': 'form-control', 'required': "",
+                                         'data-error': _('EEG setting type must be filled.')}),
             'file_format': Select(attrs={'class': 'form-control', 'required': "",
                                          'data-error': _('File format must be chosen.')}),
             'description': Textarea(attrs={'class': 'form-control',
@@ -265,9 +268,20 @@ class EEGDataForm(ModelForm):
             'file_format_description': Textarea(attrs={'class': 'form-control',
                                                        'rows': '4', 'required': "",
                                                        'data-error': _('File format description must be filled.')}),
+            'eeg_setting_reason_for_change':
+                Textarea(attrs={'class': 'form-control', 'rows': '4',
+                                'required': "",
+                                'data-error': _('Reason for change must be filled.')}),
+
             # It is not possible to set the 'required' attribute because it affects the edit screen
             # 'file': FileInput(attrs={'required': ""})
         }
+
+    def __init__(self, *args, **kwargs):
+        super(EEGDataForm, self).__init__(*args, **kwargs)
+        initial = kwargs.get('initial')
+        if initial and 'experiment' in initial:
+            self.fields['eeg_setting'].queryset = EEGSetting.objects.filter(experiment=initial['experiment'])
 
 
 class EEGSettingForm(ModelForm):
