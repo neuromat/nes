@@ -213,7 +213,7 @@ class Block(Component):
 
 
 class EEG(Component):
-    # eeg_setting = models.ForeignKey(EEGSetting, null=False)
+    eeg_setting = models.ForeignKey(EEGSetting)
 
     def save(self, *args, **kwargs):
         super(Component, self).save(*args, **kwargs)
@@ -330,5 +330,5 @@ class EEGData(DataFile):
     component_configuration = models.ForeignKey(ComponentConfiguration, null=False, on_delete=models.PROTECT)
     date = models.DateField(default=datetime.date.today, null=False, blank=False,
                             validators=[validate_date_questionnaire_response])
-    # eeg_setting = models.ForeignKey(EEGSetting, null=False)
-    # eeg_setting_reason_for_change = models.TextField(null=True, blank=True, default='')
+    eeg_setting = models.ForeignKey(EEGSetting)
+    eeg_setting_reason_for_change = models.TextField(null=True, blank=True, default='')
