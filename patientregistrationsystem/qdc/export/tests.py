@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*-
 from django.conf import settings
 from django.test import TestCase
 from django.test.client import RequestFactory
@@ -349,7 +350,8 @@ class ExportQuestionnaireTest(TestCase):
         new_dir_name = ''
         if path.isdir(dir_name):
             new_dir_name = dir_name + "aaa"
-            rename(dir_name, new_dir_name)
+            if not path.isdir(new_dir_name):
+                rename(dir_name, new_dir_name)
 
         response = self.client.post(reverse('export_view'), self.data)
         self.assertEqual(response.status_code, 200)

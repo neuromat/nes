@@ -1545,14 +1545,20 @@ def subject_eeg_view(request, group_id, subject_id,
 
 
 def file_format_code():
-    file_format = FileFormat.objects.all()
-    codes = {}
-    for file_format_type in file_format:
-        key = file_format_type.pk
-        value = file_format_type.nes_code
-        codes[key] = value
+    """
 
-    return codes
+    :return: List of dicts. Each dict contains information about a file format.
+    """
+    file_format = FileFormat.objects.all()
+    file_format_list = []
+    for file_format_type in file_format:
+        file_format_id = file_format_type.pk
+        nes_code = file_format_type.nes_code
+        extension = file_format_type.extension
+        codes = {"id": file_format_id, "code": nes_code, "extension": extension}
+        file_format_list.append(codes)
+
+    return file_format_list
 
 
 @login_required
@@ -1571,7 +1577,7 @@ def subject_eeg_data_create(request, group_id, subject_id, eeg_configuration_id,
 
         eeg_data_form = EEGDataForm(None)
 
-        format_codes = file_format_code()
+        file_format_list = file_format_code()
 
         if request.method == "POST":
             if request.POST['action'] == "save":
@@ -1610,7 +1616,7 @@ def subject_eeg_data_create(request, group_id, subject_id, eeg_configuration_id,
             "eeg_configuration": eeg_configuration,
             "eeg_data_form": eeg_data_form,
             "eeg_data_id": eeg_data_id,
-            "format_codes": format_codes,
+            "file_format_list": file_format_list,
             "subject": get_object_or_404(Subject, pk=subject_id),
             "URL": redirect_url,
         }
@@ -1663,7 +1669,7 @@ def eeg_data_view(request, eeg_data_id, template_name="experiment/subject_eeg_da
     for field in eeg_data_form.fields:
         eeg_data_form.fields[field].widget.attrs['disabled'] = True
 
-    format_codes = file_format_code()
+    file_format_list = file_format_code()
 
     if request.method == "POST":
         if request.POST['action'] == "remove":
@@ -1687,7 +1693,7 @@ def eeg_data_view(request, eeg_data_id, template_name="experiment/subject_eeg_da
         "subject": eeg_data.subject_of_group.subject,
         "eeg_data_form": eeg_data_form,
         "eeg_data": eeg_data,
-        "format_codes": format_codes
+        "file_format_list": file_format_list
     }
 
     return render(request, template_name, context)
@@ -1699,7 +1705,7 @@ def eeg_data_edit(request, eeg_data_id, template_name="experiment/subject_eeg_da
 
     eeg_data = get_object_or_404(EEGData, pk=eeg_data_id)
 
-    format_codes = file_format_code()
+    file_format_list = file_format_code()
 
     if get_can_change(request.user, eeg_data.subject_of_group.group.experiment.research_project):
 
@@ -1733,7 +1739,7 @@ def eeg_data_edit(request, eeg_data_id, template_name="experiment/subject_eeg_da
             "subject": eeg_data.subject_of_group.subject,
             "eeg_data_form": eeg_data_form,
             "eeg_data": eeg_data,
-            "format_codes": format_codes,
+            "file_format_list": file_format_list,
             "editing": True
         }
 
