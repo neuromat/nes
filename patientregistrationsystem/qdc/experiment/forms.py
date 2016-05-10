@@ -6,7 +6,7 @@ from django.utils.translation import ugettext_lazy as _
 
 from experiment.models import Experiment, QuestionnaireResponse, SubjectOfGroup, Group, \
     Component, Stimulus, Block, Instruction, ComponentConfiguration, ResearchProject, EEGData, \
-    EEGSetting, Equipment
+    EEGSetting, Equipment, EEG
 
 
 class ExperimentForm(ModelForm):
@@ -162,6 +162,24 @@ class StimulusForm(ModelForm):
             'stimulus_type': Select(attrs={'class': 'form-control', 'required': "",
                                            'data-error': _('Stimulus type must be filled.')})
         }
+
+
+class EEGForm(ModelForm):
+
+    class Meta:
+        model = EEG
+        fields = ['eeg_setting']
+
+        widgets = {
+            'eeg_setting': Select(attrs={'class': 'form-control', 'required': "",
+                                         'data-error': _('EEG setting type must be filled.')})
+        }
+
+    def __init__(self, *args, **kwargs):
+        super(EEGForm, self).__init__(*args, **kwargs)
+        initial = kwargs.get('initial')
+        if initial:
+            self.fields['eeg_setting'].queryset = EEGSetting.objects.filter(experiment=initial['experiment'])
 
 
 class BlockForm(ModelForm):

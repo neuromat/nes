@@ -27,7 +27,7 @@ from experiment.models import Experiment, Subject, QuestionnaireResponse, Subjec
     EEGSetting, Equipment, Manufacturer, EquipmentCategory, EquipmentModel
 from experiment.forms import ExperimentForm, QuestionnaireResponseForm, FileForm, GroupForm, InstructionForm, \
     ComponentForm, StimulusForm, BlockForm, ComponentConfigurationForm, ResearchProjectForm, NumberOfUsesToInsertForm, \
-    EEGDataForm, EEGSettingForm, FilterEquipmentForm
+    EEGDataForm, EEGSettingForm, FilterEquipmentForm, EEGForm
 
 from patient.models import Patient, QuestionnaireResponse as PatientQuestionnaireResponse
 
@@ -1992,6 +1992,8 @@ def component_create(request, experiment_id, component_type):
             specific_form = InstructionForm(request.POST or None)
         elif component_type == 'stimulus':
             specific_form = StimulusForm(request.POST or None)
+        elif component_type == 'eeg':
+            specific_form = EEGForm(request.POST or None, initial={'experiment': experiment})
         elif component_type == 'questionnaire':
             questionnaires_list = Questionnaires().find_all_active_questionnaires()
         elif component_type == 'block':
@@ -2015,8 +2017,6 @@ def component_create(request, experiment_id, component_type):
                     new_specific_component = Task()
                 elif component_type == 'task_experiment':
                     new_specific_component = TaskForTheExperimenter()
-                elif component_type == 'eeg':
-                    new_specific_component = EEG()
                 elif specific_form.is_valid():
                     new_specific_component = specific_form.save(commit=False)
 
@@ -2567,6 +2567,9 @@ def component_update(request, path_of_the_components):
     elif component_type == 'stimulus':
         stimulus = get_object_or_404(Stimulus, pk=component.id)
         specific_form = StimulusForm(request.POST or None, instance=stimulus)
+    elif component_type == 'eeg':
+        eeg = get_object_or_404(EEG, pk=component.id)
+        specific_form = EEGForm(request.POST or None, instance=eeg, initial={'experiment': experiment})
     elif component_type == 'questionnaire':
         questionnaire = get_object_or_404(Questionnaire, pk=component.id)
         questionnaire_details = Questionnaires().find_questionnaire_by_id(questionnaire.survey.lime_survey_id)
@@ -2591,8 +2594,7 @@ def component_update(request, path_of_the_components):
                 if configuration_form is None:
                     # There is no specific form for a these component types.
                     if component.component_type == "questionnaire" or component.component_type == "task" or \
-                            component.component_type == "task_experiment" or component.component_type == 'pause' or \
-                            component.component_type == 'eeg':
+                            component.component_type == "task_experiment" or component.component_type == 'pause':
                         if component_form.is_valid():
                             # Only save if there was a change.
                             if component_form.has_changed():
@@ -2788,6 +2790,8 @@ def component_add_new(request, path_of_the_components, component_type):
             specific_form = InstructionForm(request.POST or None)
         elif component_type == 'stimulus':
             specific_form = StimulusForm(request.POST or None)
+        elif component_type == 'eeg':
+            specific_form = EEGForm(request.POST or None, initial={'experiment': experiment})
         elif component_type == 'questionnaire':
             questionnaires_list = Questionnaires().find_all_active_questionnaires()
         elif component_type == 'block':
@@ -2813,8 +2817,6 @@ def component_add_new(request, path_of_the_components, component_type):
                 new_specific_component = Task()
             elif component_type == 'task_experiment':
                 new_specific_component = TaskForTheExperimenter()
-            elif component_type == 'eeg':
-                new_specific_component = EEG()
             elif specific_form.is_valid():
                 new_specific_component = specific_form.save(commit=False)
 
@@ -2937,6 +2939,9 @@ def component_reuse(request, path_of_the_components, component_id):
         elif component_type == 'stimulus':
             stimulus = get_object_or_404(Stimulus, pk=component_to_add.id)
             specific_form = StimulusForm(request.POST or None, instance=stimulus)
+        elif component_type == 'eeg':
+            eeg = get_object_or_404(EEG, pk=component_to_add.id)
+            specific_form = EEGForm(request.POST or None, instance=eeg, initial={'experiment': experiment})
         elif component_type == 'questionnaire':
             questionnaire = get_object_or_404(Questionnaire, pk=component_to_add.id)
             questionnaire_details = Questionnaires().find_questionnaire_by_id(questionnaire.survey.lime_survey_id)
@@ -2959,7 +2964,7 @@ def component_reuse(request, path_of_the_components, component_id):
                 component_form.fields[field].widget.attrs['disabled'] = True
 
             if component_type != 'pause' and component_type != 'task' and \
-                    component_type != 'task_experiment' and component_type != 'eeg':
+                    component_type != 'task_experiment':
                 for field in specific_form.fields:
                     specific_form.fields[field].widget.attrs['disabled'] = True
 
