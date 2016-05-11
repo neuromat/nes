@@ -85,6 +85,65 @@ class Experiment(models.Model):
         self.changed_by = value
 
 
+class Manufacturer(models.Model):
+    name = models.CharField(max_length=50)
+
+    def __str__(self):
+        return self.name
+
+
+class EquipmentCategory(models.Model):
+    EQUIPMENT_TYPES = (
+        ("eeg_machine", _("EEG Machine")),
+        ("amplifier", _("Amplifier")),
+    )
+    name = models.CharField(max_length=150)
+    equipment_type = models.CharField(null=True, blank=True, max_length=50, choices=EQUIPMENT_TYPES)
+
+    def __str__(self):
+        return self.name
+
+
+class EEGMachine(EquipmentCategory):
+    def save(self, *args, **kwargs):
+        super(EquipmentCategory, self).save(*args, **kwargs)
+
+
+class Amplifier(EquipmentCategory):
+    def save(self, *args, **kwargs):
+        super(EquipmentCategory, self).save(*args, **kwargs)
+
+
+class EquipmentModel(models.Model):
+    manufacturer = models.ForeignKey(Manufacturer, null=False, related_name="equipment_models")
+    equipment_category = models.ForeignKey(EquipmentCategory, null=False)
+    identification = models.CharField(max_length=150)
+    description = models.TextField(null=True, blank=True)
+
+    def __str__(self):
+        return self.identification
+
+
+class Equipment(models.Model):
+    equipment_model = models.ForeignKey(EquipmentModel, null=False, related_name="set_of_equipment")
+    identification = models.CharField(max_length=150)
+    description = models.TextField(null=True, blank=True)
+    serial_number = models.CharField(max_length=50, null=True, blank=True)
+
+    def __str__(self):
+        return self.identification
+
+
+class EEGSetting(models.Model):
+    experiment = models.ForeignKey(Experiment, null=False)
+    name = models.CharField(max_length=150)
+    description = models.TextField()
+    set_of_equipment = models.ManyToManyField(Equipment)
+
+    def __str__(self):
+        return self.name
+
+
 class Component(models.Model):
     COMPONENT_TYPES = (
         ("block", _("Set of steps")),
@@ -154,7 +213,7 @@ class Block(Component):
 
 
 class EEG(Component):
-    # eeg_setting = models.ForeignKey(EEGSetting, null=False)
+    eeg_setting = models.ForeignKey(EEGSetting)
 
     def save(self, *args, **kwargs):
         super(Component, self).save(*args, **kwargs)
@@ -271,36 +330,5 @@ class EEGData(DataFile):
     component_configuration = models.ForeignKey(ComponentConfiguration, null=False, on_delete=models.PROTECT)
     date = models.DateField(default=datetime.date.today, null=False, blank=False,
                             validators=[validate_date_questionnaire_response])
-    # eeg_setting = models.ForeignKey(EEGSetting, null=False)
-
-
-# class Manufacturer(models.Model):
-#     name = models.CharField(max_length=50)
-#
-#
-# class Equipment(models.Model):
-#     EQUIPMENT_TYPES = (
-#         ("eeg_machine", _("EEG Machine")),
-#         ("amplifier", _("Amplifier")),
-#     )
-#
-#     manufacturer = models.ForeignKey(Manufacturer, null=False)
-#     name = models.CharField(max_length=50)
-#     description = models.TextField()
-#     equipment_type = models.CharField(null=False, max_length=30, choices=EQUIPMENT_TYPES)
-#
-#
-# class EEGMachine(Equipment):
-#     def save(self, *args, **kwargs):
-#         super(Equipment, self).save(*args, **kwargs)
-#
-#
-# class Amplifier(Equipment):
-#     def save(self, *args, **kwargs):
-#         super(Equipment, self).save(*args, **kwargs)
-#
-#
-# class EEGSetting(models.Model):
-#     experiment = models.ForeignKey(Experiment, null=False)
-#     name = models.CharField(max_length=50)
-#     description = models.TextField()
+    eeg_setting = models.ForeignKey(EEGSetting)
+    eeg_setting_reason_for_change = models.TextField(null=True, blank=True, default='')

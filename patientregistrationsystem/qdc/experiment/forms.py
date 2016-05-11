@@ -5,7 +5,8 @@ from django.forms import ModelForm, TextInput, Textarea, Select, DateInput, Type
 from django.utils.translation import ugettext_lazy as _
 
 from experiment.models import Experiment, QuestionnaireResponse, SubjectOfGroup, Group, \
-    Component, Stimulus, Block, Instruction, ComponentConfiguration, ResearchProject, EEGData
+    Component, Stimulus, Block, Instruction, ComponentConfiguration, ResearchProject, EEGData, \
+    EEGSetting, Equipment, EEG
 
 
 class ExperimentForm(ModelForm):
@@ -15,7 +16,7 @@ class ExperimentForm(ModelForm):
         fields = ['research_project', 'title', 'description']
 
         widgets = {
-            'research_project': Select(attrs={'class': 'form-control'}, choices='research_projects'),
+            'research_project': Select(attrs={'class': 'form-control'}),
             'title': TextInput(attrs={'class': 'form-control',
                                       'required': "",
                                       'data-error': _('Title must be filled.'),
@@ -163,6 +164,24 @@ class StimulusForm(ModelForm):
         }
 
 
+class EEGForm(ModelForm):
+
+    class Meta:
+        model = EEG
+        fields = ['eeg_setting']
+
+        widgets = {
+            'eeg_setting': Select(attrs={'class': 'form-control', 'required': "",
+                                         'data-error': _('EEG setting type must be filled.')})
+        }
+
+    def __init__(self, *args, **kwargs):
+        super(EEGForm, self).__init__(*args, **kwargs)
+        initial = kwargs.get('initial')
+        if initial:
+            self.fields['eeg_setting'].queryset = EEGSetting.objects.filter(experiment=initial['experiment'])
+
+
 class BlockForm(ModelForm):
     type = TypedChoiceField(required=True,
                             empty_value=None,
@@ -231,21 +250,70 @@ class EEGDataForm(ModelForm):
     class Meta:
         model = EEGData
 
-        fields = ['date', 'file_format', 'description', 'file', 'file_format_description']
+        fields = ['date', 'file_format', 'eeg_setting', 'description', 'file',
+                  'file_format_description', 'eeg_setting_reason_for_change']
 
         widgets = {
             'date': DateInput(format=_("%m/%d/%Y"),
                               attrs={'class': 'form-control datepicker', 'placeholder': _('mm/dd/yyyy'),
                                      'required': "",
                                      'data-error': _("Fill date must be filled.")}, ),
+            'eeg_setting': Select(attrs={'class': 'form-control', 'required': "",
+                                         'data-error': _('EEG setting type must be filled.')}),
             'file_format': Select(attrs={'class': 'form-control', 'required': "",
                                          'data-error': _('File format must be chosen.')}),
             'description': Textarea(attrs={'class': 'form-control',
                                            'rows': '4', 'required': "",
                                            'data-error': _('Description must be filled.')}),
             'file_format_description': Textarea(attrs={'class': 'form-control',
-                                           'rows': '4', 'required': "",
-                                           'data-error': _('File format description must be filled.')}),
+                                                       'rows': '4', 'required': "",
+                                                       'data-error': _('File format description must be filled.')}),
+            'eeg_setting_reason_for_change':
+                Textarea(attrs={'class': 'form-control', 'rows': '4',
+                                'required': "",
+                                'data-error': _('Reason for change must be filled.')}),
+
             # It is not possible to set the 'required' attribute because it affects the edit screen
             # 'file': FileInput(attrs={'required': ""})
+        }
+
+    def __init__(self, *args, **kwargs):
+        super(EEGDataForm, self).__init__(*args, **kwargs)
+        initial = kwargs.get('initial')
+        if initial and 'experiment' in initial:
+            self.fields['eeg_setting'].queryset = EEGSetting.objects.filter(experiment=initial['experiment'])
+
+
+class EEGSettingForm(ModelForm):
+    class Meta:
+        model = EEGSetting
+
+        fields = ['name', 'description']
+
+        widgets = {
+            'name': TextInput(attrs={'class': 'form-control',
+                                     'required': "",
+                                     'data-error': _('Name must be filled.'),
+                                     'autofocus': ''}),
+            'description': Textarea(attrs={'class': 'form-control',
+                                           'rows': '4', 'required': "",
+                                           'data-error': _('Description must be filled.')})
+        }
+
+
+class EquipmentForm(ModelForm):
+    class Meta:
+        model = Equipment
+
+        fields = ['identification', 'description']
+
+
+class FilterEquipmentForm(ModelForm):
+    class Meta:
+        model = Equipment
+        fields = ['description', 'serial_number']
+
+        widgets = {
+            'description': Textarea(attrs={'class': 'form-control', 'rows': '4', 'disabled': ''}),
+            'serial_number': TextInput(attrs={'class': 'form-control', 'disabled': ''})
         }

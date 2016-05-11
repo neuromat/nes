@@ -11,7 +11,7 @@ from django.utils.translation import ugettext_lazy as _
 from .models import Experiment, Group, Subject, \
     QuestionnaireResponse, SubjectOfGroup, ComponentConfiguration, ResearchProject, Keyword, StimulusType, \
     Component, Task, TaskForTheExperimenter, Stimulus, Instruction, Pause, Questionnaire, Block, \
-    EEG, FileFormat, EEGData
+    EEG, FileFormat, EEGData, EEGSetting
 from .views import experiment_update, upload_file, research_project_update
 
 from patient.models import ClassificationOfDiseases
@@ -67,6 +67,14 @@ class ObjectsFactory(object):
         return experiment
 
     @staticmethod
+    def create_eeg_setting(experiment):
+        eeg_setting = EEGSetting.objects.create(experiment=experiment,
+                                                name='EEG-Setting name',
+                                                description='EEG-Setting description')
+        eeg_setting.save()
+        return eeg_setting
+
+    @staticmethod
     def create_group(experiment, experimental_protocol=None):
         """
         :param experiment: experiment
@@ -105,6 +113,7 @@ class ExperimentalProtocolTest(TestCase):
 
     data = {}
 
+
     def setUp(self):
 
         logged, self.user, self.factory = ObjectsFactory.system_authentication(self)
@@ -112,7 +121,9 @@ class ExperimentalProtocolTest(TestCase):
 
         research_project = ObjectsFactory.create_research_project()
 
-        ObjectsFactory.create_experiment(research_project)
+        experiment = ObjectsFactory.create_experiment(research_project)
+
+        self.eeg_setting = ObjectsFactory.create_eeg_setting(experiment)
 
     def test_component_list(self):
         experiment = Experiment.objects.first()
@@ -158,7 +169,8 @@ class ExperimentalProtocolTest(TestCase):
 
         identification = 'EEG identification'
         description = 'EEG description'
-        self.data = {'action': 'save', 'identification': identification, 'description': description}
+        self.data = {'action': 'save', 'identification': identification, 'description': description,
+                     'eeg_setting': self.eeg_setting.id}
         response = self.client.post(reverse("component_new", args=(experiment.id, "eeg")), self.data)
         self.assertEqual(response.status_code, 302)
         # Check if redirected to list of components
@@ -236,7 +248,8 @@ class ExperimentalProtocolTest(TestCase):
 
     def test_component_configuration_create_and_update(self):
 
-        block = ObjectsFactory.create_block(Experiment.objects.first())
+        experiment = Experiment.objects.first()
+        block = ObjectsFactory.create_block(experiment)
 
         # Screen to add a component
         response = self.client.get(reverse("component_add_new", args=(block.id, "block")))
@@ -283,11 +296,14 @@ class ExperimentalProtocolTest(TestCase):
         self.assertEqual(response.status_code, 302)
         self.assertEqual(ComponentConfiguration.objects.count(), 4)
 
+        eeg_setting = ObjectsFactory.create_eeg_setting(experiment)
+
         # Add an eeg step
         self.data = {'action': 'save',
                      'identification': 'EEG identification',
                      'description': 'EEG description',
                      'type': 'eeg',
+                     'eeg_setting': eeg_setting.id,
                      'number_of_uses_to_insert': 1}
         response = self.client.post(reverse("component_add_new", args=(block.id, "eeg")), self.data)
         self.assertEqual(response.status_code, 302)
@@ -1239,8 +1255,11 @@ class SubjectTest(TestCase):
 
         block = ObjectsFactory.create_block(Experiment.objects.first())
 
+        eeg_setting = ObjectsFactory.create_eeg_setting(experiment)
+
         # EEG step
-        eeg_step = EEG.objects.create(experiment=experiment, component_type="eeg", identification="EEG step")
+        eeg_step = EEG.objects.create(experiment=experiment, component_type="eeg", identification="EEG step",
+                                      eeg_setting=eeg_setting)
 
         # Include the EEG step in the root.
         component_configuration = ComponentConfiguration.objects.create(
@@ -1291,7 +1310,8 @@ class SubjectTest(TestCase):
         self.data = {'date': '29/08/2014', 'action': 'save',
                      'description': 'description of the file',
                      'file_format': file_format.id, 'file': file,
-                     'file_format_description': 'teste'}
+                     'file_format_description': 'teste',
+                     'eeg_setting': eeg_setting.id}
         response = self.client.post(reverse('subject_eeg_data_create',
                                             args=(group.id, subject_mock.id, component_configuration.id)),
                                     self.data)
@@ -1311,7 +1331,8 @@ class SubjectTest(TestCase):
         self.data = {'date': '30/08/2014', 'action': 'save',
                      'description': 'description of the file',
                      'file_format': file_format.id, 'file': eeg_data.file,
-                     'file_format_description': 'teste'}
+                     'file_format_description': 'teste',
+                     'eeg_setting': eeg_setting.id}
         response = self.client.post(reverse('eeg_data_edit', args=(eeg_data.id,)), self.data)
         self.assertEqual(response.status_code, 302)
 

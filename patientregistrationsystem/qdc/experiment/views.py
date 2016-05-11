@@ -1,6 +1,7 @@
 # coding=utf-8
 import re
 import datetime
+import json
 
 from functools import partial
 
@@ -10,10 +11,11 @@ from django.conf import settings
 from django.contrib import messages
 from django.contrib.auth.decorators import login_required, permission_required
 from django.contrib.auth import PermissionDenied
+from django.core import serializers
 from django.core.urlresolvers import reverse
 from django.db.models import Q
 from django.db.models.deletion import ProtectedError
-from django.http import HttpResponseRedirect
+from django.http import HttpResponseRedirect, HttpResponse
 from django.shortcuts import get_object_or_404, redirect, render, render_to_response
 from django.utils.translation import ugettext as _
 
@@ -21,10 +23,11 @@ from neo import io
 
 from experiment.models import Experiment, Subject, QuestionnaireResponse, SubjectOfGroup, Group, Component, \
     ComponentConfiguration, Questionnaire, Task, Stimulus, Pause, Instruction, Block, \
-    TaskForTheExperimenter, ClassificationOfDiseases, ResearchProject, Keyword, EEG, EEGData, FileFormat
+    TaskForTheExperimenter, ClassificationOfDiseases, ResearchProject, Keyword, EEG, EEGData, FileFormat, \
+    EEGSetting, Equipment, Manufacturer, EquipmentCategory, EquipmentModel
 from experiment.forms import ExperimentForm, QuestionnaireResponseForm, FileForm, GroupForm, InstructionForm, \
     ComponentForm, StimulusForm, BlockForm, ComponentConfigurationForm, ResearchProjectForm, NumberOfUsesToInsertForm, \
-    EEGDataForm
+    EEGDataForm, EEGSettingForm, FilterEquipmentForm, EEGForm
 
 from patient.models import Patient, QuestionnaireResponse as PatientQuestionnaireResponse
 
@@ -309,6 +312,7 @@ def experiment_create(request, research_project_id, template_name="experiment/ex
 def experiment_view(request, experiment_id, template_name="experiment/experiment_register.html"):
     experiment = get_object_or_404(Experiment, pk=experiment_id)
     group_list = Group.objects.filter(experiment=experiment)
+    eeg_setting_list = EEGSetting.objects.filter(experiment=experiment)
     experiment_form = ExperimentForm(request.POST or None, instance=experiment)
 
     for field in experiment_form.fields:
@@ -348,6 +352,7 @@ def experiment_view(request, experiment_id, template_name="experiment/experiment
         "experiment": experiment,
         "experiment_form": experiment_form,
         "group_list": group_list,
+        "eeg_setting_list": eeg_setting_list,
         "research_project": experiment.research_project,
     }
 
@@ -558,6 +563,252 @@ def group_update(request, group_id, template_name="experiment/group_register.htm
             "editing": True,
             "experiment": group.experiment,
             "group": group,
+        }
+
+        return render(request, template_name, context)
+    else:
+        raise PermissionDenied
+
+
+@login_required
+@permission_required('experiment.add_subject')
+def eeg_setting_create(request, experiment_id, template_name="experiment/eeg_setting_register.html"):
+    experiment = get_object_or_404(Experiment, pk=experiment_id)
+
+    if get_can_change(request.user, experiment.research_project):
+        eeg_setting_form = EEGSettingForm(request.POST or None)
+
+        if request.method == "POST":
+            if request.POST['action'] == "save":
+                if eeg_setting_form.is_valid():
+                    eeg_setting_added = eeg_setting_form.save(commit=False)
+                    eeg_setting_added.experiment_id = experiment_id
+                    eeg_setting_added.save()
+
+                    messages.success(request, _('EEG setting included successfully.'))
+
+                    redirect_url = reverse("eeg_setting_view", args=(eeg_setting_added.id,))
+                    return HttpResponseRedirect(redirect_url)
+
+        context = {
+            "eeg_setting_form": eeg_setting_form,
+            "creating": True,
+            "editing": True,
+            "experiment": experiment}
+
+        return render(request, template_name, context)
+    else:
+        raise PermissionDenied
+
+
+@login_required
+@permission_required('experiment.view_researchproject')
+def eeg_setting_view(request, eeg_setting_id, template_name="experiment/eeg_setting_register.html"):
+    eeg_setting = get_object_or_404(EEGSetting, pk=eeg_setting_id)
+    eeg_setting_form = EEGSettingForm(request.POST or None, instance=eeg_setting)
+
+    for field in eeg_setting_form.fields:
+        eeg_setting_form.fields[field].widget.attrs['disabled'] = True
+
+    can_change = get_can_change(request.user, eeg_setting.experiment.research_project)
+
+    if request.method == "POST":
+        if can_change:
+            if request.POST['action'] == "remove":
+                # TODO: checking if there is some EEG Data using it
+
+                # TODO: checking if there is some EEG Step using it
+
+                experiment_id = eeg_setting.experiment_id
+
+                eeg_setting.delete()
+
+                messages.success(request, _('EEG setting was removed successfully.'))
+
+                redirect_url = reverse("experiment_view", args=(experiment_id,))
+                return HttpResponseRedirect(redirect_url)
+
+            if request.POST['action'][:7] == "remove-":
+                # If action starts with 'remove-' it means that an equipment should be removed from the eeg_setting.
+                equipment_id = int(request.POST['action'][7:])
+                equipment_to_be_removed = get_object_or_404(Equipment, pk=equipment_id)
+                eeg_setting.set_of_equipment.remove(equipment_to_be_removed)
+
+                messages.success(request, _('Equipment was removed from the list successfully.'))
+
+                redirect_url = reverse("eeg_setting_view", args=(eeg_setting.id,))
+                return HttpResponseRedirect(redirect_url)
+
+    equipment_category_choices = EquipmentCategory.objects.all()
+
+    context = {
+        "can_change": can_change,
+        "eeg_setting_form": eeg_setting_form,
+        "experiment": eeg_setting.experiment,
+        "eeg_setting": eeg_setting,
+        "editing": False,
+        "equipment_category_choices": equipment_category_choices,
+    }
+
+    return render(request, template_name, context)
+
+
+@login_required
+@permission_required('experiment.change_experiment')
+def eeg_setting_update(request, eeg_setting_id, template_name="experiment/eeg_setting_register.html"):
+    eeg_setting = get_object_or_404(EEGSetting, pk=eeg_setting_id)
+
+    if get_can_change(request.user, eeg_setting.experiment.research_project):
+        eeg_setting_form = EEGSettingForm(request.POST or None, instance=eeg_setting)
+
+        if request.method == "POST":
+            if request.POST['action'] == "save":
+                if eeg_setting_form.is_valid():
+                    if eeg_setting_form.has_changed():
+                        eeg_setting_form.save()
+                        messages.success(request, _('EEG setting updated successfully.'))
+                    else:
+                        messages.success(request, _('There is no changes to save.'))
+
+                    redirect_url = reverse("eeg_setting_view", args=(eeg_setting_id,))
+                    return HttpResponseRedirect(redirect_url)
+
+        context = {
+            "eeg_setting_form": eeg_setting_form,
+            "editing": True,
+            "experiment": eeg_setting.experiment,
+            "eeg_setting": eeg_setting
+        }
+
+        return render(request, template_name, context)
+    else:
+        raise PermissionDenied
+
+
+@login_required
+@permission_required('experiment.change_experiment')
+def equipment_add(request, eeg_setting_id, equipment_category_id,
+                  template_name="experiment/add_equipment_to_eeg_setting.html"):
+
+    eeg_setting = get_object_or_404(EEGSetting, pk=eeg_setting_id)
+    equipment_category = get_object_or_404(EquipmentCategory, pk=equipment_category_id)
+
+    if get_can_change(request.user, eeg_setting.experiment.research_project):
+
+        equipment_list = Equipment.objects.filter(equipment_model__equipment_category_id=equipment_category_id)
+        manufacturer_list = Manufacturer.objects.filter(equipment_models__equipment_category_id=equipment_category_id)
+        equipment_model_list = EquipmentModel.objects.filter(equipment_category_id=equipment_category_id)
+
+        filter_equipment_form = FilterEquipmentForm(request.POST or None)
+
+        if request.method == "POST":
+            if request.POST['action'] == "insert":
+                if 'equipment_selection' in request.POST:
+                    equipment = Equipment.objects.get(pk=request.POST['equipment_selection'])
+                    eeg_setting.set_of_equipment.add(equipment)
+
+                    messages.success(request, _('Equipment added successfully.'))
+
+                    redirect_url = reverse("eeg_setting_view", args=(eeg_setting_id,))
+                    return HttpResponseRedirect(redirect_url)
+
+        context = {
+            "creating": True,
+            "editing": True,
+            "eeg_setting": eeg_setting,
+            "manufacturer_list": manufacturer_list,
+            "equipment_model_list": equipment_model_list,
+            "equipment_list": equipment_list,
+            "filter_equipment_form": filter_equipment_form,
+            "equipment_category": equipment_category,
+        }
+
+        return render(request, template_name, context)
+    else:
+        raise PermissionDenied
+
+
+@login_required
+@permission_required('experiment.change_experiment')
+def get_json_equipment_model_by_manufacturer(request, equipment_category_id, manufacturer_id):
+    equipment_models = EquipmentModel.objects.filter(equipment_category_id=equipment_category_id)
+    if manufacturer_id != "0":
+        equipment_models = equipment_models.filter(manufacturer_id=manufacturer_id)
+    json_models = serializers.serialize("json", equipment_models)
+    return HttpResponse(json_models, content_type ='application/json')
+
+
+@login_required
+@permission_required('experiment.change_experiment')
+def get_json_equipment_by_manufacturer(request, equipment_category_id, manufacturer_id):
+    equipment = Equipment.objects.filter(equipment_model__equipment_category_id=equipment_category_id)
+    if manufacturer_id != "0":
+        equipment = equipment.filter(equipment_model__manufacturer_id=manufacturer_id)
+    json_equipment = serializers.serialize("json", equipment)
+    return HttpResponse(json_equipment, content_type ='application/json')
+
+
+@login_required
+@permission_required('experiment.change_experiment')
+def get_json_equipment_by_manufacturer_and_model(request, equipment_category_id, manufacturer_id, equipment_model_id):
+    equipment = Equipment.objects.filter(equipment_model__equipment_category_id=equipment_category_id)
+    if equipment_model_id == "0":
+        if manufacturer_id != "0":
+            equipment = equipment.filter(equipment_model__manufacturer_id=manufacturer_id)
+    else:
+        equipment = equipment.filter(equipment_model_id=equipment_model_id)
+    json_equipment = serializers.serialize("json", equipment)
+    return HttpResponse(json_equipment, content_type ='application/json')
+
+
+@login_required
+@permission_required('experiment.change_experiment')
+def get_json_equipment_attributes(request, equipment_id):
+    equipment = get_object_or_404(Equipment, pk=equipment_id)
+    response_data = {
+        'description': equipment.description,
+        'serial_number': equipment.serial_number
+    }
+    return HttpResponse(json.dumps(response_data), content_type='application/json')
+
+
+@login_required
+@permission_required('experiment.change_experiment')
+def equipment_view(request, eeg_setting_id, equipment_id,
+                   template_name="experiment/add_equipment_to_eeg_setting.html"):
+
+    equipment = get_object_or_404(Equipment, pk=equipment_id)
+    eeg_setting = get_object_or_404(EEGSetting, pk=eeg_setting_id)
+
+    if get_can_change(request.user, eeg_setting.experiment.research_project):
+
+        equipment_list = Equipment.objects.filter(id=equipment_id)
+        manufacturer_list = Manufacturer.objects.filter(equipment_models__set_of_equipment=equipment)
+        equipment_model_list = EquipmentModel.objects.filter(set_of_equipment=equipment)
+
+        filter_equipment_form = FilterEquipmentForm(
+            request.POST or None, initial={'description': equipment.description,
+                                           'serial_number': equipment.serial_number})
+
+        for field in filter_equipment_form.fields:
+            filter_equipment_form.fields[field].widget.attrs['disabled'] = True
+
+        equipment_type_name = equipment.equipment_model.equipment_category.equipment_type
+
+        for type_element, type_name in EquipmentCategory.EQUIPMENT_TYPES:
+            if type_element == equipment.equipment_model.equipment_category.equipment_type:
+                equipment_type_name = type_name
+        context = {
+            "creating": False,
+            "editing": False,
+            "eeg_setting": eeg_setting,
+            "manufacturer_list": manufacturer_list,
+            "equipment_model_list": equipment_model_list,
+            "equipment_list": equipment_list,
+            "filter_equipment_form": filter_equipment_form,
+            "equipment_type": equipment.equipment_model.equipment_category.equipment_type,
+            "equipment_selected": equipment,
+            "equipment_type_name": equipment_type_name
         }
 
         return render(request, template_name, context)
@@ -1320,11 +1571,13 @@ def subject_eeg_data_create(request, group_id, subject_id, eeg_configuration_id,
     if get_can_change(request.user, group.experiment.research_project):
 
         eeg_configuration = get_object_or_404(ComponentConfiguration, id=eeg_configuration_id)
+        eeg_step = get_object_or_404(EEG, id=eeg_configuration.component_id)
 
         redirect_url = None
         eeg_data_id = None
 
-        eeg_data_form = EEGDataForm(None)
+        eeg_data_form = EEGDataForm(None, initial={'experiment': group.experiment,
+                                                   'eeg_setting': eeg_step.eeg_setting_id})
 
         file_format_list = file_format_code()
 
@@ -1366,6 +1619,7 @@ def subject_eeg_data_create(request, group_id, subject_id, eeg_configuration_id,
             "eeg_data_form": eeg_data_form,
             "eeg_data_id": eeg_data_id,
             "file_format_list": file_format_list,
+            "eeg_setting_default_id": eeg_step.eeg_setting_id,
             "subject": get_object_or_404(Subject, pk=subject_id),
             "URL": redirect_url,
         }
@@ -1415,6 +1669,8 @@ def eeg_data_view(request, eeg_data_id, template_name="experiment/subject_eeg_da
 
     eeg_data_form = EEGDataForm(request.POST or None, instance=eeg_data)
 
+    eeg_step = get_object_or_404(EEG, id=eeg_data.component_configuration.component.id)
+
     for field in eeg_data_form.fields:
         eeg_data_form.fields[field].widget.attrs['disabled'] = True
 
@@ -1442,6 +1698,7 @@ def eeg_data_view(request, eeg_data_id, template_name="experiment/subject_eeg_da
         "subject": eeg_data.subject_of_group.subject,
         "eeg_data_form": eeg_data_form,
         "eeg_data": eeg_data,
+        "eeg_setting_default_id": eeg_step.eeg_setting_id,
         "file_format_list": file_format_list
     }
 
@@ -1453,6 +1710,8 @@ def eeg_data_view(request, eeg_data_id, template_name="experiment/subject_eeg_da
 def eeg_data_edit(request, eeg_data_id, template_name="experiment/subject_eeg_data_form.html"):
 
     eeg_data = get_object_or_404(EEGData, pk=eeg_data_id)
+
+    eeg_step = get_object_or_404(EEG, id=eeg_data.component_configuration.component.id)
 
     file_format_list = file_format_code()
 
@@ -1481,7 +1740,8 @@ def eeg_data_edit(request, eeg_data_id, template_name="experiment/subject_eeg_da
                     return HttpResponseRedirect(redirect_url)
 
         else:
-            eeg_data_form = EEGDataForm(request.POST or None, instance=eeg_data)
+            eeg_data_form = EEGDataForm(request.POST or None, instance=eeg_data,
+                                        initial={'experiment': eeg_data.subject_of_group.group.experiment})
 
         context = {
             "group": eeg_data.subject_of_group.group,
@@ -1489,6 +1749,7 @@ def eeg_data_edit(request, eeg_data_id, template_name="experiment/subject_eeg_da
             "eeg_data_form": eeg_data_form,
             "eeg_data": eeg_data,
             "file_format_list": file_format_list,
+            "eeg_setting_default_id": eeg_step.eeg_setting_id,
             "editing": True
         }
 
@@ -1741,6 +2002,8 @@ def component_create(request, experiment_id, component_type):
             specific_form = InstructionForm(request.POST or None)
         elif component_type == 'stimulus':
             specific_form = StimulusForm(request.POST or None)
+        elif component_type == 'eeg':
+            specific_form = EEGForm(request.POST or None, initial={'experiment': experiment})
         elif component_type == 'questionnaire':
             questionnaires_list = Questionnaires().find_all_active_questionnaires()
         elif component_type == 'block':
@@ -1764,8 +2027,6 @@ def component_create(request, experiment_id, component_type):
                     new_specific_component = Task()
                 elif component_type == 'task_experiment':
                     new_specific_component = TaskForTheExperimenter()
-                elif component_type == 'eeg':
-                    new_specific_component = EEG()
                 elif specific_form.is_valid():
                     new_specific_component = specific_form.save(commit=False)
 
@@ -2316,6 +2577,9 @@ def component_update(request, path_of_the_components):
     elif component_type == 'stimulus':
         stimulus = get_object_or_404(Stimulus, pk=component.id)
         specific_form = StimulusForm(request.POST or None, instance=stimulus)
+    elif component_type == 'eeg':
+        eeg = get_object_or_404(EEG, pk=component.id)
+        specific_form = EEGForm(request.POST or None, instance=eeg, initial={'experiment': experiment})
     elif component_type == 'questionnaire':
         questionnaire = get_object_or_404(Questionnaire, pk=component.id)
         questionnaire_details = Questionnaires().find_questionnaire_by_id(questionnaire.survey.lime_survey_id)
@@ -2340,8 +2604,7 @@ def component_update(request, path_of_the_components):
                 if configuration_form is None:
                     # There is no specific form for a these component types.
                     if component.component_type == "questionnaire" or component.component_type == "task" or \
-                            component.component_type == "task_experiment" or component.component_type == 'pause' or \
-                            component.component_type == 'eeg':
+                            component.component_type == "task_experiment" or component.component_type == 'pause':
                         if component_form.is_valid():
                             # Only save if there was a change.
                             if component_form.has_changed():
@@ -2537,6 +2800,8 @@ def component_add_new(request, path_of_the_components, component_type):
             specific_form = InstructionForm(request.POST or None)
         elif component_type == 'stimulus':
             specific_form = StimulusForm(request.POST or None)
+        elif component_type == 'eeg':
+            specific_form = EEGForm(request.POST or None, initial={'experiment': experiment})
         elif component_type == 'questionnaire':
             questionnaires_list = Questionnaires().find_all_active_questionnaires()
         elif component_type == 'block':
@@ -2562,8 +2827,6 @@ def component_add_new(request, path_of_the_components, component_type):
                 new_specific_component = Task()
             elif component_type == 'task_experiment':
                 new_specific_component = TaskForTheExperimenter()
-            elif component_type == 'eeg':
-                new_specific_component = EEG()
             elif specific_form.is_valid():
                 new_specific_component = specific_form.save(commit=False)
 
@@ -2686,6 +2949,9 @@ def component_reuse(request, path_of_the_components, component_id):
         elif component_type == 'stimulus':
             stimulus = get_object_or_404(Stimulus, pk=component_to_add.id)
             specific_form = StimulusForm(request.POST or None, instance=stimulus)
+        elif component_type == 'eeg':
+            eeg = get_object_or_404(EEG, pk=component_to_add.id)
+            specific_form = EEGForm(request.POST or None, instance=eeg, initial={'experiment': experiment})
         elif component_type == 'questionnaire':
             questionnaire = get_object_or_404(Questionnaire, pk=component_to_add.id)
             questionnaire_details = Questionnaires().find_questionnaire_by_id(questionnaire.survey.lime_survey_id)
@@ -2708,7 +2974,7 @@ def component_reuse(request, path_of_the_components, component_id):
                 component_form.fields[field].widget.attrs['disabled'] = True
 
             if component_type != 'pause' and component_type != 'task' and \
-                    component_type != 'task_experiment' and component_type != 'eeg':
+                    component_type != 'task_experiment':
                 for field in specific_form.fields:
                     specific_form.fields[field].widget.attrs['disabled'] = True
 

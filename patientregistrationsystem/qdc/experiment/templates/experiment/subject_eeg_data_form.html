@@ -19,6 +19,12 @@
             var $id_file_format_description = $("#id_file_format_description");
             var $div_file_format_description = $("#div-file-format-description");
             var $id_file = $("#id_file");
+            var $div_reason_for_change = $("#div-reason-for-change");
+            var $id_eeg_setting_reason_for_change = $("#id_eeg_setting_reason_for_change");
+            var $id_eeg_setting = $("#id_eeg_setting");
+            {% if eeg_setting_default_id %}
+                var $eeg_setting_default_id = {{ eeg_setting_default_id }};
+            {% endif %}
 
             {% if file_format_list %}
                 {% for item in file_format_list %}
@@ -95,6 +101,38 @@
                 $id_file_format_description.prop( "disabled", true );
                 $div_file_format_description.hide();
             {% endif %}
+
+            $id_eeg_setting.each((function() {
+                    if ($id_eeg_setting.val() == $eeg_setting_default_id){
+                        {% if editing %}
+                            $id_eeg_setting_reason_for_change.prop( "disabled", true );
+                            $div_reason_for_change.hide();
+                        {% else %}
+                            $id_eeg_setting_reason_for_change.prop( "disabled", false );
+                            $div_reason_for_change.hide();
+                        {% endif %}
+                    }
+                    else {
+                        {% if editing %}
+                            $id_eeg_setting_reason_for_change.prop( "disabled", false );
+                            $div_reason_for_change.show();
+                        {% else %}
+                            $id_eeg_setting_reason_for_change.prop( "disabled", true );
+                            $div_reason_for_change.show();
+                        {% endif %}
+                    }
+                }));
+
+                $id_eeg_setting.on('change', (function() {
+                    if ($id_eeg_setting.val() == $eeg_setting_default_id){
+                        $id_eeg_setting_reason_for_change.prop( "disabled", true );
+                        $div_reason_for_change.hide();
+                    }
+                    else {
+                        $id_eeg_setting_reason_for_change.prop( "disabled", false );
+                        $div_reason_for_change.show();
+                    }
+                }));
         });
     </script>
 
@@ -174,6 +212,26 @@
                                     {{ error }}
                                 {% endfor %}
                             </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="row">
+                    <div class="col-xs-6 col-sm-6">
+                        <div class="form-group">
+                            <label class="control-label">{% trans "EEG setting" %}<b style="color: red;">*</b></label>
+                                {{ eeg_data_form.eeg_setting }}
+                            <div class="help-block with-errors"></div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="row" id="div-reason-for-change">
+                    <div class="col-xs-12 col-sm-12">
+                        <div class="form-group">
+                            <label class="control-label">{% trans "Reason for change the EEG setting" %} <b style="color: red;">*</b></label>
+                            {{ eeg_data_form.eeg_setting_reason_for_change }}
+                            <div class="help-block with-errors"></div>
                         </div>
                     </div>
                 </div>
