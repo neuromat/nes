@@ -1,6 +1,8 @@
 # -*- coding: utf-8 -*-
 from __future__ import unicode_literals
 
+from django.db import models, migrations
+
 from os.path import join
 
 from django.db import migrations
@@ -8,7 +10,8 @@ from django.conf import settings
 from update_english_data import translate_fixtures_into_english, update_translated_data
 
 migration_commands_table = [
-   "UPDATE experiment_stimulustype set name_pt_br = name WHERE name <> '' and (name_pt_br = '' or name_pt_br is null);",
+   "UPDATE experiment_fileformat set name_pt_br = name WHERE name <> '' and (name_pt_br = '' or name_pt_br is null);",
+   "UPDATE experiment_fileformat set description_pt_br = description WHERE description <> '' and (description_pt_br = '' or description_pt_br is null);",
 ]
 
 
@@ -30,8 +33,7 @@ def load_data(apps, schema_editor):
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('experiment', '0002_auto_20151005_1521'),
-        ('patient', '0006_translate_data_into_english'),
+        ('experiment', '0015_auto_20160512_2026'),
     ]
 
     operations = [

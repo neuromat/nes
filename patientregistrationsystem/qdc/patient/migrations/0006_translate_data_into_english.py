@@ -8,6 +8,18 @@ from django.conf import settings
 
 from update_english_data import translate_fixtures_into_english, update_translated_data
 
+migration_commands_table = [
+   "UPDATE patient_alcoholfrequency set name_pt_br = name WHERE name <> '' and (name_pt_br = '' or name_pt_br is null);",
+   "UPDATE patient_alcoholperiod set name_pt_br = name WHERE name <> '' and (name_pt_br = '' or name_pt_br is null);",
+   "UPDATE patient_amountcigarettes set name_pt_br = name WHERE name <> '' and (name_pt_br = '' or name_pt_br is null);",
+   "UPDATE patient_fleshtone set name_pt_br = name WHERE name <> '' and (name_pt_br = '' or name_pt_br is null);",
+   "UPDATE patient_gender set name_pt_br = name WHERE name <> '' and (name_pt_br = '' or name_pt_br is null);",
+   "UPDATE patient_maritalstatus set name_pt_br = name WHERE name <> '' and (name_pt_br = '' or name_pt_br is null);",
+   "UPDATE patient_payment set name_pt_br = name WHERE name <> '' and (name_pt_br = '' or name_pt_br is null);",
+   "UPDATE patient_religion set name_pt_br = name WHERE name <> '' and (name_pt_br = '' or name_pt_br is null);",
+   "UPDATE patient_schooling set name_pt_br = name WHERE name <> '' and (name_pt_br = '' or name_pt_br is null);",
+]
+
 
 def backwards_data(apps, schema_editor):
     print("backwards data")
@@ -28,5 +40,6 @@ class Migration(migrations.Migration):
     ]
 
     operations = [
+        migrations.RunSQL(migration_commands_table, ""),
         migrations.RunPython(load_data, backwards_data)
     ]

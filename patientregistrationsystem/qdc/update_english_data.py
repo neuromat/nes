@@ -46,7 +46,7 @@ def translate_fixtures_into_english(filename):
 def update_translated_data(data):
 
     # update data in _pt_br
-    management.call_command('update_translation_fields', verbosity=0, interactive=False)
+    # management.call_command('update_translation_fields', verbosity=0, interactive=False)
 
     for data_model, data_values in data.items():
 

@@ -13,8 +13,11 @@ class StimulusTypeAdmin(TranslationAdmin):
     pass
 
 
+class FileFormatAdmin(TranslationAdmin):
+    pass
+
 admin.site.register(StimulusType, StimulusTypeAdmin)
-admin.site.register(FileFormat)
+admin.site.register(FileFormat, FileFormatAdmin)
 
 admin.site.register(Manufacturer)
 admin.site.register(Equipment)
