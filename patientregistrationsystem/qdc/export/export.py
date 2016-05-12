@@ -186,7 +186,7 @@ class LogMessages:
 
         text_message = "%s %s %s %s %s" % (smart_str(current_time), smart_str(self.user),
                                            smart_str(text), smart_str(param1), smart_str(param2))
-        with open(self.file_name, "a", encoding='UTF-8') as f:
+        with open(self.file_name.encode('utf-8'), "a", encoding='UTF-8') as f:
             file_log = File(f)
             file_log.write(text_message)
 

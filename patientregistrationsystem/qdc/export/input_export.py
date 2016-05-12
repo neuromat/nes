@@ -27,7 +27,7 @@ class InputExport:
     def read(self, input_filename, update_input_data=True):
         print("read")
 
-        with open(input_filename, 'r') as input_file:
+        with open(input_filename.encode('utf-8'), 'r') as input_file:
             input_data_temp = load(self.data, input_file)
 
             if update_input_data:
@@ -37,7 +37,7 @@ class InputExport:
 
     def write(self, output_filename):
         print("write")
-        with open(output_filename, 'w', encoding='UTF-8') as outfile:
+        with open(output_filename.encode('utf-8'), 'w', encoding='UTF-8') as outfile:
             dump(self.data, outfile)
 
     def build_header(self):

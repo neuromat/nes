@@ -398,7 +398,7 @@ def export_create(request, export_id, input_filename, template_name="export/expo
 
             export.files_to_zip_list.append([complete_filename, base_directory])
 
-            with open(complete_filename, 'w', newline='', encoding='UTF-8') as csv_file:
+            with open(complete_filename.encode('utf-8'), 'w', newline='', encoding='UTF-8') as csv_file:
                 export_writer = writer(csv_file)
                 for row in export_rows_participants:
                     export_writer.writerow(row)
@@ -419,7 +419,7 @@ def export_create(request, export_id, input_filename, template_name="export/expo
             # files_to_zip_list.append(complete_filename)
             export.files_to_zip_list.append([complete_filename, base_directory])
 
-            with open(complete_filename, 'w', newline='', encoding='UTF-8') as csv_file:
+            with open(complete_filename.encode('utf-8'), 'w', newline='', encoding='UTF-8') as csv_file:
                 export_writer = writer(csv_file)
                 for row in export_rows_diagnosis:
                     export_writer.writerow(row)
@@ -435,7 +435,7 @@ def export_create(request, export_id, input_filename, template_name="export/expo
                 for filename, directory in export.files_to_zip_list:
                     fdir, fname = path.split(filename)
 
-                    zip_file.write(filename, path.join(directory, fname))
+                    zip_file.write(filename.encode('utf-8'), path.join(directory, fname))
 
             zip_file.close()
 
@@ -513,7 +513,7 @@ def export_view(request, template_name="export/export_data.html"):
 
     if request.method == "POST":
 
-        questionnaires_selected_list = request.POST.getlist('questionnaire_selected')
+        questionnaires_selected_list = request.POST.getlist('to[]')
 
         questionnaires_list = []
 
@@ -672,6 +672,18 @@ def export_view(request, template_name="export/export_data.html"):
     #     language_code = "{}-{}".format(language_code[:2],language_code[-2:].upper())
 
     questionnaires_fields_list = get_questionnaire_fields(questionnaires_list_final, request.LANGUAGE_CODE)
+
+    if len(selected_ev_quest):
+        questionnaire_ids, field_id = zip(*selected_ev_quest)
+    else:
+        questionnaire_ids = ()
+
+    for questionnaire in questionnaires_fields_list:
+        questionnaire["selected_counter"] = questionnaire_ids.count(questionnaire["sid"])
+        for output_list in questionnaire["output_list"]:
+            if (questionnaire["sid"], output_list["field"]) in selected_ev_quest:
+                output_list["selected"] = True
+
 
     # for field in questionnaires_fields_list:
     #     for questionnaire in questionnaires_list_final:
