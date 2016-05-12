@@ -105,7 +105,7 @@
                         <table class="table table-striped col-xs-12 col-md-12">
                             <thead>
                             <tr>
-                                <th>{% trans "Category" %}</th>
+                                <th>{% trans "Type" %}</th>
                                 <th>{% trans "Manufacturer" %}</th>
                                 <th>{% trans "Identification" %}</th>
                                 <th>{% trans "Delete" %}</th>
@@ -122,10 +122,10 @@
                                     {% for equipment in eeg_setting.set_of_equipment.all %}
                                         <tr>
                                             <td>
-                                                {{ equipment.equipment_model.equipment_category.name }}
+                                                {{ equipment.get_equipment_type_display }}
                                             </td>
                                             <td>
-                                                {{ equipment.equipment_model.manufacturer.name }}
+                                                {{ equipment.manufacturer.name }}
                                             </td>
                                             <td>
                                                 <a data-toggle="tooltip" data-placement="left" title="{% trans "View" %}" href="/experiment/eeg_setting/{{ eeg_setting.id }}/equipment/{{ equipment.id }}">
@@ -152,8 +152,8 @@
                                     <span class="caret"></span>
                                 </button>
                                 <ul class="dropdown-menu" role="menu" aria-labelledby="dropdownMenu1">
-                                    {% for equipment_category in equipment_category_choices %}
-                                        <li role="presentation"><a role="menuitem" tabindex="-1" href="/experiment/eeg_setting/{{ eeg_setting.id }}/add_equipment/{{ equipment_category.id }}"> {{ equipment_category.name }}</a></li>
+                                    {% for type, type_name in equipment_type_choices %}
+                                        <li role="presentation"><a role="menuitem" tabindex="-1" href="/experiment/eeg_setting/{{ eeg_setting.id }}/add_equipment/{{ type }}"> {{ type_name }}</a></li>
                                     {% endfor %}
                                 </ul>
                             </div>

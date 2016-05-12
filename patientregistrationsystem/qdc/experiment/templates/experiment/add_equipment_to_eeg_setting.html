@@ -58,7 +58,7 @@
                 <li><a href="/experiment/eeg_setting/{{ eeg_setting.id }}">{{ eeg_setting.name }}</a></li>
 
                 {% if creating %}
-                    <li class="active">{% trans "Add" %} {{ equipment_category.name }}</li>
+                    <li class="active">{% trans "Add" %} {{ equipment_type_name }}</li>
                 {% else %}
                     <li class="active"> {{ equipment_selected.identification }} </li>
                 {% endif %}
@@ -73,16 +73,16 @@
         <div class="col-md-10">
             <div class="container span6 offset3 well ">
 
-                <h4>{% if creating %}{% trans "Add" %}{% endif %} {{ equipment_category.name }}</h4>
+                <h4>{% if creating %}{% trans "Add" %}{% endif %} {{ equipment_type_name }}</h4>
 
                 <div hidden="hidden">
-                    <input id="id_equipment_category" type="text" value="{{ equipment_category.id }}">
+                    <input id="id_equipment_type" type="text" value="{{ equipment_type }}">
                 </div>
 
                 <div class="row">
                     <div class="col-xs-12 col-sm-12">
                         <div class="form-group">
-                            <label class="control-label">{% trans "Search" %} {{ equipment_category.name }}</label>
+                            <label class="control-label">{% trans "Search" %} {{ equipment_type_name }}</label>
                         </div>
                     </div>
                 </div>
@@ -100,27 +100,6 @@
                                 {% endif %}
                                 {% for manufacturer in manufacturer_list %}
                                     <option value="{{ manufacturer.id }}">{{ manufacturer.name }}</option>
-                                {% endfor %}
-                            </select>
-
-                            <div class="help-block with-errors"></div>
-                        </div>
-                    </div>
-                </div>
-
-                <div class="row">
-                    <div class="col-xs-1 col-sm-1">
-                    </div>
-                    <div class="col-xs-11 col-sm-11">
-                        <div class="form-group">
-                            <label class="control-label">{% trans "Equipment model" %} </label>
-
-                            <select class="form-control" name="equipment_model" id="id_equipment_model" {% if not creating %}disabled{% endif %}>
-                                {% if creating %}
-                                    <option value>-------</option>
-                                {% endif %}
-                                {% for equipment_model in equipment_model_list %}
-                                    <option value="{{ equipment_model.id }}">{{ equipment_model.identification }}</option>
                                 {% endfor %}
                             </select>
 
@@ -152,7 +131,7 @@
                 <div class="row">
                     <div class="col-xs-12 col-sm-12">
                         <div class="form-group">
-                            <label class="control-label">{{ equipment_category.name }} {% trans "information" %}</label>
+                            <label class="control-label">{{ equipment_type_name }} {% trans "information" %}</label>
                         </div>
                     </div>
                 </div>

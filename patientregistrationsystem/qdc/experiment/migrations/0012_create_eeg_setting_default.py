@@ -34,8 +34,6 @@ def load_data(apps, schema_editor):
 
         if eeg_steps:
 
-            print("experiment" + experiment.title)
-
             # criar um eeg_setting_fake
             new_eeg_setting = model_eeg_setting(
                 experiment=experiment,
@@ -58,7 +56,7 @@ def load_data(apps, schema_editor):
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('experiment', '0012_eeg_setting_to_eeg_component'),
+        ('experiment', '0011_equipment_and_eeg_setting'),
     ]
 
     operations = [
