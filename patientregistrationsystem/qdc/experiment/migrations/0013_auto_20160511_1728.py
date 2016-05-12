@@ -7,7 +7,7 @@ from django.db import migrations, models
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('experiment', '0013_create_eeg_setting_default'),
+        ('experiment', '0012_create_eeg_setting_default'),
     ]
 
     operations = [

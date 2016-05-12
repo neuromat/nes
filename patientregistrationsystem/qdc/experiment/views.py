@@ -24,7 +24,7 @@ from neo import io
 from experiment.models import Experiment, Subject, QuestionnaireResponse, SubjectOfGroup, Group, Component, \
     ComponentConfiguration, Questionnaire, Task, Stimulus, Pause, Instruction, Block, \
     TaskForTheExperimenter, ClassificationOfDiseases, ResearchProject, Keyword, EEG, EEGData, FileFormat, \
-    EEGSetting, Equipment, Manufacturer, EquipmentCategory, EquipmentModel
+    EEGSetting, Equipment, Manufacturer
 from experiment.forms import ExperimentForm, QuestionnaireResponseForm, FileForm, GroupForm, InstructionForm, \
     ComponentForm, StimulusForm, BlockForm, ComponentConfigurationForm, ResearchProjectForm, NumberOfUsesToInsertForm, \
     EEGDataForm, EEGSettingForm, FilterEquipmentForm, EEGForm
@@ -639,7 +639,7 @@ def eeg_setting_view(request, eeg_setting_id, template_name="experiment/eeg_sett
                 redirect_url = reverse("eeg_setting_view", args=(eeg_setting.id,))
                 return HttpResponseRedirect(redirect_url)
 
-    equipment_category_choices = EquipmentCategory.objects.all()
+    equipment_type_choices = Equipment.EQUIPMENT_TYPES
 
     context = {
         "can_change": can_change,
@@ -647,7 +647,7 @@ def eeg_setting_view(request, eeg_setting_id, template_name="experiment/eeg_sett
         "experiment": eeg_setting.experiment,
         "eeg_setting": eeg_setting,
         "editing": False,
-        "equipment_category_choices": equipment_category_choices,
+        "equipment_type_choices": equipment_type_choices,
     }
 
     return render(request, template_name, context)
@@ -687,17 +687,15 @@ def eeg_setting_update(request, eeg_setting_id, template_name="experiment/eeg_se
 
 @login_required
 @permission_required('experiment.change_experiment')
-def equipment_add(request, eeg_setting_id, equipment_category_id,
+def equipment_add(request, eeg_setting_id, equipment_type,
                   template_name="experiment/add_equipment_to_eeg_setting.html"):
 
     eeg_setting = get_object_or_404(EEGSetting, pk=eeg_setting_id)
-    equipment_category = get_object_or_404(EquipmentCategory, pk=equipment_category_id)
 
     if get_can_change(request.user, eeg_setting.experiment.research_project):
 
-        equipment_list = Equipment.objects.filter(equipment_model__equipment_category_id=equipment_category_id)
-        manufacturer_list = Manufacturer.objects.filter(equipment_models__equipment_category_id=equipment_category_id)
-        equipment_model_list = EquipmentModel.objects.filter(equipment_category_id=equipment_category_id)
+        equipment_list = Equipment.objects.filter(equipment_type=equipment_type)
+        manufacturer_list = Manufacturer.objects.filter(set_of_equipment__equipment_type=equipment_type).distinct()
 
         filter_equipment_form = FilterEquipmentForm(request.POST or None)
 
@@ -712,15 +710,20 @@ def equipment_add(request, eeg_setting_id, equipment_category_id,
                     redirect_url = reverse("eeg_setting_view", args=(eeg_setting_id,))
                     return HttpResponseRedirect(redirect_url)
 
+        equipment_type_name = equipment_type
+        for type_element, type_name in Equipment.EQUIPMENT_TYPES:
+            if type_element == equipment_type:
+                equipment_type_name = type_name
+
         context = {
             "creating": True,
             "editing": True,
             "eeg_setting": eeg_setting,
             "manufacturer_list": manufacturer_list,
-            "equipment_model_list": equipment_model_list,
             "equipment_list": equipment_list,
             "filter_equipment_form": filter_equipment_form,
-            "equipment_category": equipment_category,
+            "equipment_type": equipment_type,
+            "equipment_type_name": equipment_type_name,
         }
 
         return render(request, template_name, context)
@@ -730,33 +733,10 @@ def equipment_add(request, eeg_setting_id, equipment_category_id,
 
 @login_required
 @permission_required('experiment.change_experiment')
-def get_json_equipment_model_by_manufacturer(request, equipment_category_id, manufacturer_id):
-    equipment_models = EquipmentModel.objects.filter(equipment_category_id=equipment_category_id)
+def get_json_equipment_by_manufacturer(request, equipment_type, manufacturer_id):
+    equipment = Equipment.objects.filter(equipment_type=equipment_type)
     if manufacturer_id != "0":
-        equipment_models = equipment_models.filter(manufacturer_id=manufacturer_id)
-    json_models = serializers.serialize("json", equipment_models)
-    return HttpResponse(json_models, content_type ='application/json')
-
-
-@login_required
-@permission_required('experiment.change_experiment')
-def get_json_equipment_by_manufacturer(request, equipment_category_id, manufacturer_id):
-    equipment = Equipment.objects.filter(equipment_model__equipment_category_id=equipment_category_id)
-    if manufacturer_id != "0":
-        equipment = equipment.filter(equipment_model__manufacturer_id=manufacturer_id)
-    json_equipment = serializers.serialize("json", equipment)
-    return HttpResponse(json_equipment, content_type ='application/json')
-
-
-@login_required
-@permission_required('experiment.change_experiment')
-def get_json_equipment_by_manufacturer_and_model(request, equipment_category_id, manufacturer_id, equipment_model_id):
-    equipment = Equipment.objects.filter(equipment_model__equipment_category_id=equipment_category_id)
-    if equipment_model_id == "0":
-        if manufacturer_id != "0":
-            equipment = equipment.filter(equipment_model__manufacturer_id=manufacturer_id)
-    else:
-        equipment = equipment.filter(equipment_model_id=equipment_model_id)
+        equipment = equipment.filter(manufacturer_id=manufacturer_id)
     json_equipment = serializers.serialize("json", equipment)
     return HttpResponse(json_equipment, content_type ='application/json')
 
@@ -783,8 +763,7 @@ def equipment_view(request, eeg_setting_id, equipment_id,
     if get_can_change(request.user, eeg_setting.experiment.research_project):
 
         equipment_list = Equipment.objects.filter(id=equipment_id)
-        manufacturer_list = Manufacturer.objects.filter(equipment_models__set_of_equipment=equipment)
-        equipment_model_list = EquipmentModel.objects.filter(set_of_equipment=equipment)
+        manufacturer_list = Manufacturer.objects.filter(set_of_equipment=equipment)
 
         filter_equipment_form = FilterEquipmentForm(
             request.POST or None, initial={'description': equipment.description,
@@ -793,20 +772,20 @@ def equipment_view(request, eeg_setting_id, equipment_id,
         for field in filter_equipment_form.fields:
             filter_equipment_form.fields[field].widget.attrs['disabled'] = True
 
-        equipment_type_name = equipment.equipment_model.equipment_category.equipment_type
+        equipment_type_name = equipment.equipment_type
 
-        for type_element, type_name in EquipmentCategory.EQUIPMENT_TYPES:
-            if type_element == equipment.equipment_model.equipment_category.equipment_type:
+        for type_element, type_name in Equipment.EQUIPMENT_TYPES:
+            if type_element == equipment.equipment_type:
                 equipment_type_name = type_name
+
         context = {
             "creating": False,
             "editing": False,
             "eeg_setting": eeg_setting,
             "manufacturer_list": manufacturer_list,
-            "equipment_model_list": equipment_model_list,
             "equipment_list": equipment_list,
             "filter_equipment_form": filter_equipment_form,
-            "equipment_type": equipment.equipment_model.equipment_category.equipment_type,
+            "equipment_type": equipment.equipment_type,
             "equipment_selected": equipment,
             "equipment_type_name": equipment_type_name
         }

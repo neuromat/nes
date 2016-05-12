@@ -31,19 +31,14 @@ urlpatterns = patterns(
     url(r'^(?P<experiment_id>\d+)/eeg_setting/new/$', 'eeg_setting_create', name='eeg_setting_new'),
     url(r'^eeg_setting/(?P<eeg_setting_id>\d+)/$', 'eeg_setting_view', name='eeg_setting_view'),
     url(r'^eeg_setting/edit/(?P<eeg_setting_id>\d+)/$', 'eeg_setting_update', name='eeg_setting_edit'),
-    url(r'^eeg_setting/(?P<eeg_setting_id>\d+)/add_equipment/(?P<equipment_category_id>\d+)/$',
+    url(r'^eeg_setting/(?P<eeg_setting_id>\d+)/add_equipment/(?P<equipment_type>\w+)/$',
         'equipment_add', name='equipment_add'),
     url(r'^eeg_setting/(?P<eeg_setting_id>\d+)/equipment/(?P<equipment_id>\d+)/$',
         'equipment_view', name='equipment_view'),
 
     # eeg setting (ajax)
-    url(r'^equipment/get_models_by_manufacturer/(?P<equipment_category_id>\d+)/(?P<manufacturer_id>\d+)/$',
-        'get_json_equipment_model_by_manufacturer'),
-    url(r'^equipment/get_equipment_by_manufacturer/(?P<equipment_category_id>\d+)/(?P<manufacturer_id>\d+)/$',
+    url(r'^equipment/get_equipment_by_manufacturer/(?P<equipment_type>\w+)/(?P<manufacturer_id>\d+)/$',
         'get_json_equipment_by_manufacturer'),
-    url(r'^equipment/get_equipment_by_manufacturer_and_model/(?P<equipment_category_id>\d+)/'
-        r'(?P<manufacturer_id>\d+)/(?P<equipment_model_id>\d+)/$',
-        'get_json_equipment_by_manufacturer_and_model'),
     url(r'^equipment/(?P<equipment_id>\d+)/attributes/$', 'get_json_equipment_attributes'),
 
     # cid

@@ -92,40 +92,13 @@ class Manufacturer(models.Model):
         return self.name
 
 
-class EquipmentCategory(models.Model):
+class Equipment(models.Model):
     EQUIPMENT_TYPES = (
         ("eeg_machine", _("EEG Machine")),
         ("amplifier", _("Amplifier")),
     )
-    name = models.CharField(max_length=150)
+    manufacturer = models.ForeignKey(Manufacturer, null=False, related_name="set_of_equipment")
     equipment_type = models.CharField(null=True, blank=True, max_length=50, choices=EQUIPMENT_TYPES)
-
-    def __str__(self):
-        return self.name
-
-
-class EEGMachine(EquipmentCategory):
-    def save(self, *args, **kwargs):
-        super(EquipmentCategory, self).save(*args, **kwargs)
-
-
-class Amplifier(EquipmentCategory):
-    def save(self, *args, **kwargs):
-        super(EquipmentCategory, self).save(*args, **kwargs)
-
-
-class EquipmentModel(models.Model):
-    manufacturer = models.ForeignKey(Manufacturer, null=False, related_name="equipment_models")
-    equipment_category = models.ForeignKey(EquipmentCategory, null=False)
-    identification = models.CharField(max_length=150)
-    description = models.TextField(null=True, blank=True)
-
-    def __str__(self):
-        return self.identification
-
-
-class Equipment(models.Model):
-    equipment_model = models.ForeignKey(EquipmentModel, null=False, related_name="set_of_equipment")
     identification = models.CharField(max_length=150)
     description = models.TextField(null=True, blank=True)
     serial_number = models.CharField(max_length=50, null=True, blank=True)
@@ -133,9 +106,13 @@ class Equipment(models.Model):
     def __str__(self):
         return self.identification
 
+    class Meta:
+        verbose_name = _('Equipment')
+        verbose_name_plural = _('Equipment')
+
 
 class EEGSetting(models.Model):
-    experiment = models.ForeignKey(Experiment, null=False)
+    experiment = models.ForeignKey(Experiment)
     name = models.CharField(max_length=150)
     description = models.TextField()
     set_of_equipment = models.ManyToManyField(Equipment)
