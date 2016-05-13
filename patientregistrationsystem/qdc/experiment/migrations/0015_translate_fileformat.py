@@ -33,7 +33,7 @@ def load_data(apps, schema_editor):
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('experiment', '0015_auto_20160512_2026'),
+        ('experiment', '0014_auto_20160512_2026'),
     ]
 
     operations = [
