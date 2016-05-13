@@ -7,7 +7,7 @@ from django.db import models, migrations
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('experiment', '0014_eeg_setting_not_null'),
+        ('experiment', '0013_auto_20160511_1728'),
     ]
 
     operations = [
