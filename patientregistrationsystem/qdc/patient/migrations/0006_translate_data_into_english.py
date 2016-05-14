@@ -26,7 +26,10 @@ def backwards_data(apps, schema_editor):
 
 
 def load_data(apps, schema_editor):
-    filename = join(settings.BASE_DIR, join("patient", join("fixtures", "load_initial_data_translation.json")))
+    filename = join(settings.BASE_DIR, join("patient", join("data_migrations",
+                                                               "0006_translate_data_into_english.json")))
+
+    # filename = join(settings.BASE_DIR, join("patient", join("fixtures", "load_initial_data_translation.json")))
 
     fixtures_formatted_data = translate_fixtures_into_english(filename)
     update_translated_data(fixtures_formatted_data)

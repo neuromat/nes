@@ -23,22 +23,23 @@ def translate_fixtures_into_english(filename):
     result = {}
 
     for element in data_transformed:
+
         if element['model'] not in result:
             result[element['model']] = {}
 
-        field_name = ''
+        # field_name = ''
         for field in element['fields'].keys():
+
             if field in settings.MODELTRANSLATION_CUSTOM_FIELDS:
+                # print(field)
                 field_name = field
-                break
 
-        if field_name:
-            field_name_portuguese = field_name + SUFFIX_PT_BR
-            field_data_portuguese = element['fields'][field_name_portuguese]
-            if field_name not in result[element['model']]:
-                result[element['model']][field_name] = {}
+                if element['fields'][field_name]:
+                    field_data_portuguese = element['fields'][field_name + SUFFIX_PT_BR]
+                    if field_name not in result[element['model']]:
+                        result[element['model']][field_name] = {}
 
-            result[element['model']][field_name][field_data_portuguese] = element['fields'][field_name + SUFFIX_EN]
+                    result[element['model']][field_name][field_data_portuguese] = element['fields'][field_name + SUFFIX_EN]
 
     return result
 
@@ -52,6 +53,8 @@ def update_translated_data(data):
 
         model_db = apps.get_model(data_model)
         records_db = model_db.objects.all()
+        print()
+        print("--- " + data_model + "...")
         for record in records_db:
             # print(record, record.name)
             for attrib, values in data_values.items():

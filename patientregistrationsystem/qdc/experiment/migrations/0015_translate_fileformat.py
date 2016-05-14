@@ -22,10 +22,14 @@ def backwards_data(apps, schema_editor):
 def load_data(apps, schema_editor):
 
     # update_translation_fields
+    filename = join(settings.BASE_DIR, join("experiment", join("data_migrations",
+                                                               "0015_translate_fileformat.json")))
 
-    filename = join(settings.BASE_DIR, join("experiment", join("fixtures", "load_initial_data_translation.json")))
+    # filename = join(settings.BASE_DIR, join("experiment", join("fixtures", "load_initial_data_translation.json")))
 
     fixtures_formatted_data = translate_fixtures_into_english(filename)
+
+    # print(fixtures_formatted_data)
 
     update_translated_data(fixtures_formatted_data)
 
