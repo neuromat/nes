@@ -438,7 +438,8 @@ def recursively_create_list_of_questionnaires_and_statistics(block_id,
             fills_per_participant = "Ilimitado"
             total_fills_needed = "Ilimitado"
 
-        subject_responses = QuestionnaireResponse.objects.filter(component_configuration=questionnaire_configuration)
+        subject_responses = QuestionnaireResponse.objects.filter(
+            data_configuration_tree__component_configuration=questionnaire_configuration)
         amount_of_completed_questionnaires = 0
 
         questionnaire = Questionnaire.objects.get(id=questionnaire_configuration.component.id)
@@ -858,7 +859,7 @@ def questionnaire_view(request, group_id, component_configuration_id,
     for subject_of_group in SubjectOfGroup.objects.filter(group=group).order_by('subject__patient__name'):
         subject_responses = QuestionnaireResponse.objects.\
             filter(subject_of_group=subject_of_group,
-                   component_configuration=questionnaire_configuration)
+                   data_configuration_tree__component_configuration=questionnaire_configuration)
         amount_of_completed_questionnaires = 0
         questionnaire_responses_with_status = []
 
@@ -961,7 +962,8 @@ def subjects(request, group_id, template_name="experiment/subjects.html"):
             for questionnaire_configuration in list_of_questionnaires_configuration:
                 # Get the responses
                 subject_responses = QuestionnaireResponse.objects. \
-                    filter(subject_of_group=subject_of_group, component_configuration=questionnaire_configuration)
+                    filter(subject_of_group=subject_of_group,
+                           data_configuration_tree__component_configuration=questionnaire_configuration)
 
                 # This is a shortcut that allows to avid the delay of the connection to LimeSurvey.
                 if (questionnaire_configuration.number_of_repetitions is None and subject_responses.count() > 0) or \
@@ -1007,7 +1009,7 @@ def subjects(request, group_id, template_name="experiment/subjects.html"):
             # for each component_configuration...
             for eeg_configuration in list_of_eeg_configuration:
                 eeg_data_files = EEGData.objects.filter(subject_of_group=subject_of_group,
-                                                        component_configuration=eeg_configuration)
+                                                        data_configuration_tree__component_configuration=eeg_configuration)
                 if len(eeg_data_files):
                     number_of_eeg_data_files_uploaded += 1
 
@@ -1453,7 +1455,8 @@ def subject_questionnaire_view(request, group_id, subject_id,
 
     for questionnaire_configuration in list_of_questionnaires_configuration:
         questionnaire_responses = QuestionnaireResponse.objects. \
-            filter(subject_of_group=subject_of_group, component_configuration=questionnaire_configuration)
+            filter(subject_of_group=subject_of_group,
+                   data_configuration_tree__component_configuration=questionnaire_configuration)
 
         questionnaire_responses_with_status = []
 
@@ -1503,7 +1506,7 @@ def subject_eeg_view(request, group_id, subject_id,
     for eeg_configuration in list_of_eeg_configuration:
 
         eeg_data_files = EEGData.objects.filter(subject_of_group=subject_of_group,
-                                                component_configuration=eeg_configuration)
+                                                data_configuration_tree__component_configuration=eeg_configuration)
 
         for eeg_data_file in eeg_data_files:
             eeg_data_file.eeg_reading = eeg_data_reading(eeg_data_file)

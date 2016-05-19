@@ -252,12 +252,23 @@ class SubjectOfGroup(models.Model):
         unique_together = ('subject', 'group',)
 
 
-class QuestionnaireResponse(models.Model):
-    subject_of_group = models.ForeignKey(SubjectOfGroup, null=False)
-    component_configuration = models.ForeignKey(ComponentConfiguration, null=False, on_delete=models.PROTECT)
-    token_id = models.IntegerField(null=False)
+class DataConfigurationTree(models.Model):
+    component_configuration = models.ForeignKey(ComponentConfiguration, on_delete=models.PROTECT)
+    parent = models.ForeignKey('self', null=True, related_name='children')
+
+
+class DataCollection(models.Model):
+    data_configuration_tree = models.ForeignKey(DataConfigurationTree)
+    subject_of_group = models.ForeignKey(SubjectOfGroup)
     date = models.DateField(default=datetime.date.today, null=False,
                             validators=[validate_date_questionnaire_response])
+
+    class Meta:
+        abstract = True
+
+
+class QuestionnaireResponse(DataCollection):
+    token_id = models.IntegerField(null=False)
     questionnaire_responsible = models.ForeignKey(User, null=False, related_name="+")
 
     # Audit trail - Simple History
@@ -301,11 +312,10 @@ class DataFile(models.Model):
     file_format = models.ForeignKey(FileFormat, null=False, blank=False)
     file_format_description = models.TextField(null=True, blank=True, default='')
 
+    class Meta:
+        abstract = True
 
-class EEGData(DataFile):
-    subject_of_group = models.ForeignKey(SubjectOfGroup, null=False)
-    component_configuration = models.ForeignKey(ComponentConfiguration, null=False, on_delete=models.PROTECT)
-    date = models.DateField(default=datetime.date.today, null=False, blank=False,
-                            validators=[validate_date_questionnaire_response])
+
+class EEGData(DataFile, DataCollection):
     eeg_setting = models.ForeignKey(EEGSetting)
     eeg_setting_reason_for_change = models.TextField(null=True, blank=True, default='')
