@@ -28,6 +28,7 @@ def load_data(apps, schema_editor):
         new_data_configuration_tree.save()
 
         questionnaire.data_configuration_tree = new_data_configuration_tree
+        questionnaire.save()
 
 
 class Migration(migrations.Migration):

@@ -22,6 +22,13 @@ TIME_UNITS = (
     ("y", _("year(s)")),
 )
 
+IMPEDANCE_UNIT = (
+    ("ohm", _("Ohm(s)")),
+    ("kilohm", _("Kilohm(s)")),
+    ("megaohm", _("Megaohm(s)")),
+    ("gigaohm", _("Gigaohm(s)"))
+)
+
 
 def validate_date_questionnaire_response(value):
     if value > datetime.date.today():
@@ -111,14 +118,131 @@ class Equipment(models.Model):
         verbose_name_plural = _('Equipment')
 
 
+class EEGMachine(Equipment):
+    number_of_channels = models.IntegerField(null=True, blank=True)
+    software_version = models.CharField(max_length=150, null=True, blank=True)
+
+
+class EEGAmplifier(Equipment):
+    gain = models.FloatField(null=True, blank=True)
+
+
+class EEGSolution(models.Model):
+    name = models.CharField(max_length=150)
+    components = models.TextField(null=True, blank=True)
+
+
+class EEGFilterType(models.Model):
+    name = models.CharField(max_length=150)
+    description = models.TextField(null=True, blank=True)
+
+
+class Material(models.Model):
+    name = models.CharField(max_length=150)
+    description = models.TextField(null=True, blank=True)
+
+
+class EEGElectrodeModel(models.Model):
+    USABILITY_TYPES = (
+        ("disposable", _("Disposable")),
+        ("reusable", _("Reusable")),
+    )
+    name = models.CharField(max_length=150)
+    description = models.TextField(null=True, blank=True)
+    material = models.ForeignKey(Material, null=True, blank=True)
+    usability = models.CharField(null=True, blank=True, max_length=50, choices=USABILITY_TYPES)
+    impedance = models.FloatField(null=True, blank=True)
+    impedance_unit = models.CharField(null=True, blank=True, max_length=15, choices=IMPEDANCE_UNIT)
+
+
+class EEGElectrodeNet(Equipment):
+    electrode_model_default = models.ForeignKey(EEGElectrodeModel)
+
+    def __str__(self):
+        return self.identification
+
+
+class EEGElectrodeCap(EEGElectrodeNet):
+    material = models.ForeignKey(Material, null=True, blank=True)
+
+
+class EEGCapSize(models.Model):
+    eeg_electrode_cap = models.ForeignKey(EEGElectrodeCap)
+    size = models.CharField(max_length=30)
+    electrode_adjacent_distance = models.FloatField(null=True, blank=True)
+
+
+def get_eeg_electrode_system_dir(instance, filename):
+    return "eeg_electrode_system_files/%s/%s" % \
+           (instance.id, filename)
+
+
+class EEGElectrodeLocalizationSystem(models.Model):
+    name = models.CharField(max_length=150)
+    description = models.TextField(null=True, blank=True)
+    number_of_electrodes = models.IntegerField(null=True, blank=True)
+    map_image_file = models.FileField(upload_to=get_eeg_electrode_system_dir, null=True, blank=True)
+
+
+class EEGElectrodePosition(models.Model):
+    eeg_electrode_localization_system = models.ForeignKey(EEGElectrodeLocalizationSystem)
+    name = models.CharField(max_length=150)
+    coordinate_x = models.IntegerField(null=True, blank=True)
+    coordinate_y = models.IntegerField(null=True, blank=True)
+    position_reference = models.ForeignKey('self', null=True, related_name='children')
+
+
+class EEGElectrodeNetSystem(models.Model):
+    eeg_electrode_net = models.ForeignKey(EEGElectrodeNet)
+    eeg_electrode_localization_system = models.ForeignKey(EEGElectrodeLocalizationSystem)
+
+
 class EEGSetting(models.Model):
     experiment = models.ForeignKey(Experiment)
     name = models.CharField(max_length=150)
     description = models.TextField()
-    set_of_equipment = models.ManyToManyField(Equipment)
+    copied_from = models.ForeignKey('self', null=True, related_name='children')
+    # set_of_equipment = models.ManyToManyField(Equipment)
 
     def __str__(self):
         return self.name
+
+
+class EEGMachineSetting(models.Model):
+    eeg_setting = models.OneToOneField(EEGSetting, primary_key=True)
+    eeg_machine = models.ForeignKey(EEGMachine)
+    number_of_channels_used = models.IntegerField()
+
+
+class EEGAmplifierSetting(models.Model):
+    eeg_setting = models.OneToOneField(EEGSetting, primary_key=True)
+    eeg_amplifier = models.ForeignKey(EEGAmplifier)
+    gain = models.FloatField(null=True, blank=True)
+
+
+class EEGSolutionSetting(models.Model):
+    eeg_setting = models.OneToOneField(EEGSetting, primary_key=True)
+    eeg_solution = models.ForeignKey(EEGSolution)
+
+
+class EEGFilterSetting(models.Model):
+    eeg_setting = models.OneToOneField(EEGSetting, primary_key=True)
+    eeg_filter_type = models.ForeignKey(EEGFilterType)
+    high_pass = models.FloatField(null=True, blank=True)
+    low_pass = models.FloatField(null=True, blank=True)
+    order = models.IntegerField(null=True, blank=True)
+
+
+class EEGElectrodeLayoutSetting(models.Model):
+    eeg_setting = models.OneToOneField(EEGSetting, primary_key=True)
+    eeg_electrode_net_system = models.ForeignKey(EEGElectrodeNetSystem)
+    number_of_electrodes = models.IntegerField()
+
+
+class EEGElectrodePositionSetting(models.Model):
+    eeg_electrode_layout_setting = models.ForeignKey(EEGElectrodeLayoutSetting)
+    eeg_electrode_position = models.ForeignKey(EEGElectrodePosition)
+    used = models.BooleanField()
 
 
 class Component(models.Model):
@@ -319,3 +443,10 @@ class DataFile(models.Model):
 class EEGData(DataFile, DataCollection):
     eeg_setting = models.ForeignKey(EEGSetting)
     eeg_setting_reason_for_change = models.TextField(null=True, blank=True, default='')
+    eeg_cap_size = models.ForeignKey(EEGCapSize, null=True)
+
+
+class EEGElectrodePositionCollectionStatus(models.Model):
+    eeg_data = models.ForeignKey(EEGData)
+    eeg_electrode_position_setting = models.ForeignKey(EEGElectrodePositionSetting)
+    worked = models.BooleanField()
