@@ -153,7 +153,7 @@
                                 </button>
                                 <ul class="dropdown-menu" role="menu" aria-labelledby="dropdownMenu1">
                                     {% for type, type_name in equipment_type_choices %}
-                                        <li role="presentation"><a role="menuitem" tabindex="-1" href="/experiment/eeg_setting/{{ eeg_setting.id }}/add_equipment/{{ type }}"> {{ type_name }}</a></li>
+                                        <li role="presentation"><a role="menuitem" tabindex="-1" href="/experiment/eeg_setting/{{ eeg_setting.id }}/{{ type }}"> {{ type_name }}</a></li>
                                     {% endfor %}
                                 </ul>
                             </div>

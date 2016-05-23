@@ -209,24 +209,24 @@ class EEGSetting(models.Model):
 
 
 class EEGMachineSetting(models.Model):
-    eeg_setting = models.OneToOneField(EEGSetting, primary_key=True)
+    eeg_setting = models.OneToOneField(EEGSetting, primary_key=True, related_name='eeg_machine_setting')
     eeg_machine = models.ForeignKey(EEGMachine)
     number_of_channels_used = models.IntegerField()
 
 
 class EEGAmplifierSetting(models.Model):
-    eeg_setting = models.OneToOneField(EEGSetting, primary_key=True)
+    eeg_setting = models.OneToOneField(EEGSetting, primary_key=True, related_name='eeg_amplifier_setting')
     eeg_amplifier = models.ForeignKey(EEGAmplifier)
     gain = models.FloatField(null=True, blank=True)
 
 
 class EEGSolutionSetting(models.Model):
-    eeg_setting = models.OneToOneField(EEGSetting, primary_key=True)
+    eeg_setting = models.OneToOneField(EEGSetting, primary_key=True, related_name='eeg_solution_setting')
     eeg_solution = models.ForeignKey(EEGSolution)
 
 
 class EEGFilterSetting(models.Model):
-    eeg_setting = models.OneToOneField(EEGSetting, primary_key=True)
+    eeg_setting = models.OneToOneField(EEGSetting, primary_key=True, related_name='eeg_filter_setting')
     eeg_filter_type = models.ForeignKey(EEGFilterType)
     high_pass = models.FloatField(null=True, blank=True)
     low_pass = models.FloatField(null=True, blank=True)
@@ -234,7 +234,7 @@ class EEGFilterSetting(models.Model):
 
 
 class EEGElectrodeLayoutSetting(models.Model):
-    eeg_setting = models.OneToOneField(EEGSetting, primary_key=True)
+    eeg_setting = models.OneToOneField(EEGSetting, primary_key=True, related_name='eeg_electrode_layout_setting')
     eeg_electrode_net_system = models.ForeignKey(EEGElectrodeNetSystem)
     number_of_electrodes = models.IntegerField()
 
