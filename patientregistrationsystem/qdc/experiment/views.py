@@ -25,7 +25,8 @@ from neo import io
 from experiment.models import Experiment, Subject, QuestionnaireResponse, SubjectOfGroup, Group, Component, \
     ComponentConfiguration, Questionnaire, Task, Stimulus, Pause, Instruction, Block, \
     TaskForTheExperimenter, ClassificationOfDiseases, ResearchProject, Keyword, EEG, EEGData, FileFormat, \
-    EEGSetting, Equipment, Manufacturer, EEGMachine, EEGAmplifier, EEGElectrodeNet, EEGMachineSetting
+    EEGSetting, Equipment, Manufacturer, EEGMachine, EEGAmplifier, EEGElectrodeNet, \
+    EEGMachineSetting, EEGAmplifierSetting, EEGSolutionSetting, EEGFilterSetting, EEGElectrodeLayoutSetting
 from experiment.forms import ExperimentForm, QuestionnaireResponseForm, FileForm, GroupForm, InstructionForm, \
     ComponentForm, StimulusForm, BlockForm, ComponentConfigurationForm, ResearchProjectForm, NumberOfUsesToInsertForm, \
     EEGDataForm, EEGSettingForm, EquipmentForm, EEGForm, EEGMachineForm, EEGMachineSettingForm
@@ -606,6 +607,7 @@ def eeg_setting_create(request, experiment_id, template_name="experiment/eeg_set
 @login_required
 @permission_required('experiment.view_researchproject')
 def eeg_setting_view(request, eeg_setting_id, template_name="experiment/eeg_setting_register.html"):
+
     eeg_setting = get_object_or_404(EEGSetting, pk=eeg_setting_id)
     eeg_setting_form = EEGSettingForm(request.POST or None, instance=eeg_setting)
 
@@ -632,11 +634,23 @@ def eeg_setting_view(request, eeg_setting_id, template_name="experiment/eeg_sett
 
             if request.POST['action'][:7] == "remove-":
                 # If action starts with 'remove-' it means that an equipment should be removed from the eeg_setting.
-                equipment_id = int(request.POST['action'][7:])
-                equipment_to_be_removed = get_object_or_404(Equipment, pk=equipment_id)
-                eeg_setting.set_of_equipment.remove(equipment_to_be_removed)
+                eeg_setting_type = request.POST['action'][7:]
 
-                messages.success(request, _('Equipment was removed from the list successfully.'))
+                if eeg_setting_type == "eeg_machine":
+                    setting_to_be_deleted = get_object_or_404(EEGMachineSetting, pk=eeg_setting_id)
+                elif eeg_setting_type == "eeg_amplifier":
+                    setting_to_be_deleted = get_object_or_404(EEGAmplifierSetting, pk=eeg_setting_id)
+                elif eeg_setting_type == "eeg_solution":
+                    setting_to_be_deleted = get_object_or_404(EEGSolutionSetting, pk=eeg_setting_id)
+                elif eeg_setting_type == "eeg_filter":
+                    setting_to_be_deleted = get_object_or_404(EEGFilterSetting, pk=eeg_setting_id)
+                elif eeg_setting_type == "eeg_electrode_net_system":
+                    setting_to_be_deleted = get_object_or_404(EEGElectrodeLayoutSetting, pk=eeg_setting_id)
+
+                # eeg_setting.eeg_machine_setting.delete()
+                setting_to_be_deleted.delete()
+
+                messages.success(request, _('Setting was removed successfully.'))
 
                 redirect_url = reverse("eeg_setting_view", args=(eeg_setting.id,))
                 return HttpResponseRedirect(redirect_url)
