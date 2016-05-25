@@ -42,6 +42,7 @@ urlpatterns = patterns(
     url(r'^equipment/get_equipment_by_manufacturer/(?P<equipment_type>\w+)/(?P<manufacturer_id>\d+)/$',
         'get_json_equipment_by_manufacturer'),
     url(r'^equipment/(?P<equipment_id>\d+)/attributes/$', 'get_json_equipment_attributes'),
+    url(r'^solution/(?P<solution_id>\d+)/attributes/$', 'get_json_solution_attributes'),
 
     # cid
     url(r'^group_diseases/cid-10/$', 'search_cid10_ajax', name='cid10_search'),

@@ -26,11 +26,13 @@ from experiment.models import Experiment, Subject, QuestionnaireResponse, Subjec
     ComponentConfiguration, Questionnaire, Task, Stimulus, Pause, Instruction, Block, \
     TaskForTheExperimenter, ClassificationOfDiseases, ResearchProject, Keyword, EEG, EEGData, FileFormat, \
     EEGSetting, Equipment, Manufacturer, EEGMachine, EEGAmplifier, EEGElectrodeNet, DataConfigurationTree, \
-    EEGMachineSetting, EEGAmplifierSetting, EEGSolutionSetting, EEGFilterSetting, EEGElectrodeLayoutSetting
+    EEGMachineSetting, EEGAmplifierSetting, EEGSolutionSetting, EEGFilterSetting, EEGElectrodeLayoutSetting, \
+    EEGFilterType, EEGSolution
 from experiment.forms import ExperimentForm, QuestionnaireResponseForm, FileForm, GroupForm, InstructionForm, \
     ComponentForm, StimulusForm, BlockForm, ComponentConfigurationForm, ResearchProjectForm, NumberOfUsesToInsertForm, \
-    EEGDataForm, EEGSettingForm, EquipmentForm, EEGForm, EEGMachineForm, EEGMachineSettingForm, \
-    EEGElectrodeLocalizationSystemForm, EEGElectrodeLayoutSettingForm
+    EEGDataForm, EEGSettingForm, EquipmentForm, EEGForm, EEGMachineForm, EEGMachineSettingForm, EEGAmplifierForm, \
+    EEGAmplifierSettingForm, EEGSolutionForm, EEGFilterForm, EEGFilterSettingForm, EEGElectrodeLocalizationSystemForm, \
+    EEGElectrodeLayoutSettingForm
 
 from patient.models import Patient, QuestionnaireResponse as PatientQuestionnaireResponse
 
@@ -718,6 +720,8 @@ def view_eeg_setting_type(request, eeg_setting_id, eeg_setting_type):
         equipment_form = None
         selection_form = None
         setting_form = None
+        solution_list = None
+        solution_selected = None
 
         creating = False
 
@@ -740,6 +744,34 @@ def view_eeg_setting_type(request, eeg_setting_id, eeg_setting_type):
                     redirect_url = reverse("eeg_setting_view", args=(eeg_setting_id,))
                     return HttpResponseRedirect(redirect_url)
 
+                if 'equipment_selection' in request.POST and 'gain' in request.POST:
+                    eeg_amplifier = EEGAmplifier.objects.get(pk=request.POST['equipment_selection'])
+
+                    eeg_amplifier_setting = EEGAmplifierSetting()
+                    eeg_amplifier_setting.eeg_amplifier = eeg_amplifier
+                    eeg_amplifier_setting.gain = request.POST['gain']
+                    eeg_amplifier_setting.eeg_setting = eeg_setting
+                    eeg_amplifier_setting.save()
+
+                    messages.success(request, _('EEG amplifier setting created sucessfully.'))
+
+                    redirect_url = reverse("eeg_setting_view", args=(eeg_setting_id,))
+                    return HttpResponseRedirect(redirect_url)
+
+                if 'solution_selection' in request.POST:
+                    eeg_solution = EEGSolution.objects.get(pk=request.POST['solution_selection'])
+
+                    eeg_solution_setting = EEGSolutionSetting()
+                    eeg_solution_setting.eeg_solution = eeg_solution
+                    eeg_solution_setting.eeg_setting = eeg_setting
+                    eeg_solution_setting.save()
+
+                    messages.success(request, _('EEG solution setting created sucessfully.'))
+
+                    redirect_url = reverse("eeg_setting_view", args=(eeg_setting_id,))
+                    return HttpResponseRedirect(redirect_url)
+
+
         if eeg_setting_type == "eeg_machine":
 
             try:
@@ -758,6 +790,45 @@ def view_eeg_setting_type(request, eeg_setting_id, eeg_setting_type):
 
                 selection_form = EEGMachineForm(request.POST or None)
                 setting_form = EEGMachineSettingForm(request.POST or None)
+
+        if eeg_setting_type == "eeg_amplifier":
+
+            try:
+                eeg_amplifier_setting = EEGAmplifierSetting.objects.get(eeg_setting_id=eeg_setting_id)
+
+                selection_form = EEGAmplifierForm(request.POST or None, instance=eeg_amplifier_setting.eeg_amplifier)
+                setting_form = EEGAmplifierSettingForm(request.POST or None, instance=eeg_amplifier_setting)
+                equipment_selected = eeg_amplifier_setting.eeg_amplifier
+
+                for field in setting_form.fields:
+                    setting_form.fields[field].widget.attrs['disabled'] = True
+
+            except:
+                creating = True
+
+                selection_form = EEGAmplifierForm(request.POST or None)
+                setting_form = EEGAmplifierSettingForm(request.POST or None)
+
+        if eeg_setting_type == "eeg_solution":
+
+            try:
+                eeg_solution_setting = EEGSolutionSetting.objects.get(eeg_setting_id=eeg_setting_id)
+
+                selection_form = EEGSolutionForm(request.POST or None, instance=eeg_solution_setting.eeg_solution)
+                solution_selected = eeg_solution_setting.eeg_solution
+
+            except:
+                creating = True
+
+                selection_form = EEGSolutionForm(request.POST or None)
+
+        if eeg_setting_type == "eeg_filter":
+
+            try:
+                eeg_filter_setting = EEGFilterSetting.objects.get(eeg_setting_id=eeg_setting_id)
+
+            except:
+                creating = True
 
         if eeg_setting_type == "eeg_electrode_net_system":
 
@@ -785,6 +856,23 @@ def view_eeg_setting_type(request, eeg_setting_id, eeg_setting_type):
             else:
                 equipment_form = EquipmentForm(request.POST or None, instance=equipment_selected)
 
+        if eeg_setting_type == "eeg_solution":
+            solution_list = EEGSolution.objects.all()
+            manufacturer_list = Manufacturer.objects.filter(set_of_solution__isnull=False).distinct()
+
+            if creating:
+                equipment_form = EEGSolutionForm(request.POST or None)
+            else:
+                equipment_form = EEGSolutionForm(request.POST or None, instance=solution_selected)
+
+        if eeg_setting_type == "eeg_filter":
+            manufacturer_list = EEGFilterType.objects.all()
+
+            if creating:
+                equipment_form = EquipmentForm(request.POST or None)
+            else:
+                equipment_form = EEGFilterForm(request.POST or None, instance=equipment_selected)
+
         context = {
             "creating": creating,
             "editing": False,
@@ -795,9 +883,11 @@ def view_eeg_setting_type(request, eeg_setting_id, eeg_setting_type):
 
             "eeg_setting": eeg_setting,
             "equipment_selected": equipment_selected,
+            "solution_selected" : solution_selected,
 
             "manufacturer_list": manufacturer_list,
             "equipment_list": equipment_list,
+            "solution_list": solution_list,
             "equipment_form": equipment_form,
 
             "selection_form": selection_form,
@@ -824,6 +914,8 @@ def edit_eeg_setting_type(request, eeg_setting_id, eeg_setting_type):
         equipment_form = None
         selection_form = None
         setting_form = None
+        solution_list = None
+        solution_selected = None
 
         equipment_selected = None
 
@@ -846,6 +938,36 @@ def edit_eeg_setting_type(request, eeg_setting_id, eeg_setting_type):
                     redirect_url = reverse("view_eeg_setting_type", args=(eeg_setting_id, eeg_setting_type))
                     return HttpResponseRedirect(redirect_url)
 
+                if 'equipment_selection' in request.POST and 'gain' in request.POST:
+
+                    eeg_amplifier = EEGAmplifier.objects.get(pk=request.POST['equipment_selection'])
+
+                    eeg_amplifier_setting = eeg_setting.eeg_amplifier_setting
+
+                    eeg_amplifier_setting.eeg_amplifier = eeg_amplifier
+                    eeg_amplifier_setting.gain = request.POST['gain']
+                    eeg_amplifier_setting.eeg_setting = eeg_setting
+                    eeg_amplifier_setting.save()
+
+                    messages.success(request, _('EEG amplifier setting updated sucessfully.'))
+
+                    redirect_url = reverse("view_eeg_setting_type", args=(eeg_setting_id, eeg_setting_type))
+                    return HttpResponseRedirect(redirect_url)
+
+                if 'solution_selection' in request.POST:
+                    eeg_solution = EEGSolution.objects.get(pk=request.POST['solution_selection'])
+
+                    eeg_solution_setting = eeg_setting.eeg_solution_setting
+
+                    eeg_solution_setting.eeg_solution = eeg_solution
+                    eeg_solution_setting.eeg_setting = eeg_setting
+                    eeg_solution_setting.save()
+
+                    messages.success(request, _('EEG solution setting updated sucessfully.'))
+
+                    redirect_url = reverse("view_eeg_setting_type", args=(eeg_setting_id, eeg_setting_type))
+                    return HttpResponseRedirect(redirect_url)
+
         if eeg_setting_type == "eeg_machine":
 
             eeg_machine_setting = eeg_setting.eeg_machine_setting
@@ -853,6 +975,18 @@ def edit_eeg_setting_type(request, eeg_setting_id, eeg_setting_type):
             selection_form = EEGMachineForm(request.POST or None, instance=eeg_machine_setting.eeg_machine)
             setting_form = EEGMachineSettingForm(request.POST or None, instance=eeg_machine_setting)
             equipment_selected = eeg_machine_setting.eeg_machine
+
+        if eeg_setting_type == "eeg_amplifier":
+            eeg_amplifier_setting = eeg_setting.eeg_amplifier_setting
+
+            selection_form = EEGAmplifierForm(request.POST or None, instance=eeg_amplifier_setting.eeg_amplifier)
+            setting_form = EEGAmplifierSettingForm(request.POST or None, instance=eeg_amplifier_setting)
+            equipment_selected = eeg_amplifier_setting.eeg_amplifier
+
+        if eeg_setting_type == "eeg_solution":
+            eeg_solution_setting = eeg_setting.eeg_solution_setting
+
+            solution_selected = eeg_solution_setting.eeg_solution
 
         # Settings related to equipment
         if eeg_setting_type in ["eeg_machine", "eeg-amplifier", "eeg_electrode_net_system"]:
@@ -862,6 +996,13 @@ def edit_eeg_setting_type(request, eeg_setting_id, eeg_setting_type):
                 set_of_equipment__equipment_type=eeg_setting_type).distinct()
 
             equipment_form = EquipmentForm(request.POST or None, instance=equipment_selected)
+
+        if eeg_setting_type == "eeg_solution":
+            solution_list = EEGSolution.objects.all()
+            manufacturer_list = Manufacturer.objects.filter(set_of_solution__isnull=False).distinct()
+
+            equipment_form = EEGSolutionForm(request.POST or None, instance=solution_selected)
+
 
         context = {
             "creating": False,
@@ -873,7 +1014,9 @@ def edit_eeg_setting_type(request, eeg_setting_id, eeg_setting_type):
 
             "eeg_setting": eeg_setting,
             "equipment_selected": equipment_selected,
+            "solution_selected": solution_selected,
 
+            "solution_list": solution_list,
             "manufacturer_list": manufacturer_list,
             "equipment_list": equipment_list,
             "equipment_form": equipment_form,
@@ -890,7 +1033,10 @@ def edit_eeg_setting_type(request, eeg_setting_id, eeg_setting_type):
 @login_required
 @permission_required('experiment.change_experiment')
 def get_json_equipment_by_manufacturer(request, equipment_type, manufacturer_id):
-    equipment = Equipment.objects.filter(equipment_type=equipment_type)
+    if equipment_type == "eeg_solution":
+        equipment = EEGSolution.objects.all()
+    else:
+        equipment = Equipment.objects.filter(equipment_type=equipment_type)
     if manufacturer_id != "0":
         equipment = equipment.filter(manufacturer_id=manufacturer_id)
     json_equipment = serializers.serialize("json", equipment)
@@ -919,6 +1065,18 @@ def get_json_equipment_attributes(request, equipment_id):
     # elif equipment.equipment_type == "eeg_electrode_net":
     #     equipment = get_object_or_404(EEGElectrodeNet, pk=equipment_id)
     #     response_data[''] =
+
+    return HttpResponse(json.dumps(response_data), content_type='application/json')
+
+@login_required
+@permission_required('experiment.change_experiment')
+def get_json_solution_attributes(request, solution_id):
+
+    solution = get_object_or_404(EEGSolution, pk=solution_id)
+
+    response_data = {
+        'description': solution.components,
+    }
 
     return HttpResponse(json.dumps(response_data), content_type='application/json')
 
