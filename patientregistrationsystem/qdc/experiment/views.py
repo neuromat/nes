@@ -25,8 +25,9 @@ from neo import io
 from experiment.models import Experiment, Subject, QuestionnaireResponse, SubjectOfGroup, Group, Component, \
     ComponentConfiguration, Questionnaire, Task, Stimulus, Pause, Instruction, Block, \
     TaskForTheExperimenter, ClassificationOfDiseases, ResearchProject, Keyword, EEG, EEGData, FileFormat, \
-    EEGSetting, Equipment, Manufacturer, EEGMachine, EEGAmplifier, EEGElectrodeNet, EEGMachineSetting, \
-    EEGAmplifierSetting, EEGSolution, EEGSolutionSetting, EEGFilterType, EEGFilterSetting
+    EEGSetting, Equipment, Manufacturer, EEGMachine, EEGAmplifier, EEGElectrodeNet, DataConfigurationTree, \
+    EEGMachineSetting, EEGAmplifierSetting, EEGSolutionSetting, EEGFilterSetting, EEGElectrodeLayoutSetting, \
+    EEGFilterType, EEGSolution
 from experiment.forms import ExperimentForm, QuestionnaireResponseForm, FileForm, GroupForm, InstructionForm, \
     ComponentForm, StimulusForm, BlockForm, ComponentConfigurationForm, ResearchProjectForm, NumberOfUsesToInsertForm, \
     EEGDataForm, EEGSettingForm, EquipmentForm, EEGForm, EEGMachineForm, EEGMachineSettingForm, EEGAmplifierForm, \
@@ -36,7 +37,8 @@ from patient.models import Patient, QuestionnaireResponse as PatientQuestionnair
 
 from survey.abc_search_engine import Questionnaires
 from survey.models import Survey
-from survey.views import get_questionnaire_responses, check_limesurvey_access, recursively_create_list_of_steps
+from survey.views import get_questionnaire_responses, check_limesurvey_access, recursively_create_list_of_steps, \
+    create_list_of_trees
 
 permission_required = partial(permission_required, raise_exception=True)
 
@@ -608,6 +610,7 @@ def eeg_setting_create(request, experiment_id, template_name="experiment/eeg_set
 @login_required
 @permission_required('experiment.view_researchproject')
 def eeg_setting_view(request, eeg_setting_id, template_name="experiment/eeg_setting_register.html"):
+
     eeg_setting = get_object_or_404(EEGSetting, pk=eeg_setting_id)
     eeg_setting_form = EEGSettingForm(request.POST or None, instance=eeg_setting)
 
@@ -634,11 +637,23 @@ def eeg_setting_view(request, eeg_setting_id, template_name="experiment/eeg_sett
 
             if request.POST['action'][:7] == "remove-":
                 # If action starts with 'remove-' it means that an equipment should be removed from the eeg_setting.
-                equipment_id = int(request.POST['action'][7:])
-                equipment_to_be_removed = get_object_or_404(Equipment, pk=equipment_id)
-                eeg_setting.set_of_equipment.remove(equipment_to_be_removed)
+                eeg_setting_type = request.POST['action'][7:]
 
-                messages.success(request, _('Equipment was removed from the list successfully.'))
+                if eeg_setting_type == "eeg_machine":
+                    setting_to_be_deleted = get_object_or_404(EEGMachineSetting, pk=eeg_setting_id)
+                elif eeg_setting_type == "eeg_amplifier":
+                    setting_to_be_deleted = get_object_or_404(EEGAmplifierSetting, pk=eeg_setting_id)
+                elif eeg_setting_type == "eeg_solution":
+                    setting_to_be_deleted = get_object_or_404(EEGSolutionSetting, pk=eeg_setting_id)
+                elif eeg_setting_type == "eeg_filter":
+                    setting_to_be_deleted = get_object_or_404(EEGFilterSetting, pk=eeg_setting_id)
+                elif eeg_setting_type == "eeg_electrode_net_system":
+                    setting_to_be_deleted = get_object_or_404(EEGElectrodeLayoutSetting, pk=eeg_setting_id)
+
+                # eeg_setting.eeg_machine_setting.delete()
+                setting_to_be_deleted.delete()
+
+                messages.success(request, _('Setting was removed successfully.'))
 
                 redirect_url = reverse("eeg_setting_view", args=(eeg_setting.id,))
                 return HttpResponseRedirect(redirect_url)
@@ -1802,19 +1817,31 @@ def subject_eeg_view(request, group_id, subject_id,
 
     eeg_collections = []
 
-    list_of_eeg_configuration = recursively_create_list_of_steps(group.experimental_protocol, "eeg", [])
+    # list_of_eeg_configuration = recursively_create_list_of_steps(group.experimental_protocol, "eeg", [])
+
+    list_of_paths = create_list_of_trees(group.experimental_protocol, "eeg")
+
     subject_of_group = get_object_or_404(SubjectOfGroup, group=group, subject=subject)
 
-    for eeg_configuration in list_of_eeg_configuration:
+    # for eeg_configuration in list_of_eeg_configuration:
+    for path in list_of_paths:
+
+        eeg_configuration = ComponentConfiguration.objects.get(pk=path[-1][0])
+
+        data_configuration_tree_id = list_data_configuration_tree(eeg_configuration.id, [item[0] for item in path])
 
         eeg_data_files = EEGData.objects.filter(subject_of_group=subject_of_group,
-                                                data_configuration_tree__component_configuration=eeg_configuration)
+                                                data_configuration_tree__id=data_configuration_tree_id)
+
+        # eeg_data_files = EEGData.objects.filter(subject_of_group=subject_of_group,
+        #                                         data_configuration_tree__component_configuration=eeg_configuration)
 
         for eeg_data_file in eeg_data_files:
             eeg_data_file.eeg_reading = eeg_data_reading(eeg_data_file)
 
         eeg_collections.append(
             {'eeg_configuration': eeg_configuration,
+             'path': path,
              'eeg_data_files': eeg_data_files}
         )
 
@@ -1845,12 +1872,51 @@ def file_format_code():
     return file_format_list
 
 
+def create_data_configuration_tree(list_of_path):
+    parent = None
+    data_configuration_tree_id = None
+    for item in list_of_path:
+        new_path = DataConfigurationTree.objects.create(component_configuration_id=item, parent_id=parent)
+        new_path.save()
+        parent = new_path.id
+        data_configuration_tree_id = parent
+
+    return data_configuration_tree_id
+
+
+def list_data_configuration_tree(eeg_configuration_id, list_of_path):
+    data_configuration_tree = DataConfigurationTree.objects.filter(component_configuration_id=eeg_configuration_id)
+    list_of_path_in_db = []
+    data_configuration_tree_id = None
+
+    if data_configuration_tree:
+        for item in data_configuration_tree:
+            list_of_path_in_db.insert(0, item.component_configuration_id)
+            parent = item.parent_id
+            data_configuration_tree_id = item.id
+            while parent:
+                path = DataConfigurationTree.objects.get(id=parent)
+                list_of_path_in_db.insert(0, path.component_configuration_id)
+                parent = path.parent_id
+
+            if list_of_path_in_db == list_of_path:
+                break
+            else:
+                list_of_path_in_db = []
+                data_configuration_tree_id = None
+
+    return data_configuration_tree_id
+
+
 @login_required
 @permission_required('experiment.add_questionnaireresponse')
 def subject_eeg_data_create(request, group_id, subject_id, eeg_configuration_id,
                             template_name="experiment/subject_eeg_data_form.html"):
 
     group = get_object_or_404(Group, id=group_id)
+
+    list_of_path = [int(item) for item in eeg_configuration_id.split('-')]
+    eeg_configuration_id = list_of_path[-1]
 
     if get_can_change(request.user, group.experiment.research_project):
 
@@ -1872,12 +1938,17 @@ def subject_eeg_data_create(request, group_id, subject_id, eeg_configuration_id,
 
                 if eeg_data_form.is_valid():
 
+                    data_configuration_tree_id = list_data_configuration_tree(eeg_configuration_id, list_of_path)
+                    if not data_configuration_tree_id:
+                        data_configuration_tree_id = create_data_configuration_tree(list_of_path)
+
                     subject = get_object_or_404(Subject, pk=subject_id)
                     subject_of_group = get_object_or_404(SubjectOfGroup, subject=subject, group_id=group_id)
 
                     eeg_data_added = eeg_data_form.save(commit=False)
                     eeg_data_added.subject_of_group = subject_of_group
                     eeg_data_added.component_configuration = eeg_configuration
+                    eeg_data_added.data_configuration_tree_id = data_configuration_tree_id
 
                     # PS: it was necessary adding these 2 lines because Django raised, I do not why (Evandro),
                     # the following error 'EEGData' object has no attribute 'group'
@@ -1953,7 +2024,7 @@ def eeg_data_view(request, eeg_data_id, template_name="experiment/subject_eeg_da
 
     eeg_data_form = EEGDataForm(request.POST or None, instance=eeg_data)
 
-    eeg_step = get_object_or_404(EEG, id=eeg_data.component_configuration.component.id)
+    eeg_step = get_object_or_404(EEG, id=eeg_data.data_configuration_tree.component_configuration.component.id)
 
     for field in eeg_data_form.fields:
         eeg_data_form.fields[field].widget.attrs['disabled'] = True
@@ -1995,7 +2066,7 @@ def eeg_data_edit(request, eeg_data_id, template_name="experiment/subject_eeg_da
 
     eeg_data = get_object_or_404(EEGData, pk=eeg_data_id)
 
-    eeg_step = get_object_or_404(EEG, id=eeg_data.component_configuration.component.id)
+    eeg_step = get_object_or_404(EEG, id=eeg_data.data_configuration_tree.component_configuration.component.id)
 
     file_format_list = file_format_code()
 
