@@ -31,8 +31,10 @@ urlpatterns = patterns(
     url(r'^(?P<experiment_id>\d+)/eeg_setting/new/$', 'eeg_setting_create', name='eeg_setting_new'),
     url(r'^eeg_setting/(?P<eeg_setting_id>\d+)/$', 'eeg_setting_view', name='eeg_setting_view'),
     url(r'^eeg_setting/edit/(?P<eeg_setting_id>\d+)/$', 'eeg_setting_update', name='eeg_setting_edit'),
-    url(r'^eeg_setting/(?P<eeg_setting_id>\d+)/add_equipment/(?P<equipment_type>\w+)/$',
-        'equipment_add', name='equipment_add'),
+    url(r'^eeg_setting/(?P<eeg_setting_id>\d+)/(?P<eeg_setting_type>\w+)/$',
+        'view_eeg_setting_type', name='view_eeg_setting_type'),
+    url(r'^eeg_setting/(?P<eeg_setting_id>\d+)/(?P<eeg_setting_type>\w+)/edit/$',
+        'edit_eeg_setting_type', name='edit_eeg_setting_type'),
     url(r'^eeg_setting/(?P<eeg_setting_id>\d+)/equipment/(?P<equipment_id>\d+)/$',
         'equipment_view', name='equipment_view'),
 
@@ -40,6 +42,7 @@ urlpatterns = patterns(
     url(r'^equipment/get_equipment_by_manufacturer/(?P<equipment_type>\w+)/(?P<manufacturer_id>\d+)/$',
         'get_json_equipment_by_manufacturer'),
     url(r'^equipment/(?P<equipment_id>\d+)/attributes/$', 'get_json_equipment_attributes'),
+    url(r'^solution/(?P<solution_id>\d+)/attributes/$', 'get_json_solution_attributes'),
 
     # cid
     url(r'^group_diseases/cid-10/$', 'search_cid10_ajax', name='cid10_search'),
@@ -69,7 +72,7 @@ urlpatterns = patterns(
     # subject + eeg data
     url(r'^group/(?P<group_id>\d+)/subject/(?P<subject_id>\d+)/eeg/$',
         'subject_eeg_view', name='subject_eeg_view'),
-    url(r'^group/(?P<group_id>\d+)/subject/(?P<subject_id>\d+)/eeg/(?P<eeg_configuration_id>\d+)/add_eeg_data/$',
+    url(r'^group/(?P<group_id>\d+)/subject/(?P<subject_id>\d+)/eeg/(?P<eeg_configuration_id>[0-9-]+)/add_eeg_data/$',
         'subject_eeg_data_create', name='subject_eeg_data_create'),
     url(r'^eeg_data/(?P<eeg_data_id>\d+)/$', 'eeg_data_view', name='eeg_data_view'),
     url(r'^eeg_data/edit/(?P<eeg_data_id>\d+)/$', 'eeg_data_edit', name='eeg_data_edit'),

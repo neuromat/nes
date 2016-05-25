@@ -1,0 +1,90 @@
+{% extends "experiment/eeg_setting_type_template.html" %}
+{% load i18n admin_static %}
+
+{% block selection %}
+
+    <h4>{% trans "EEG Electrode net settings" %}</h4>
+
+    <div class="row">
+        <div class="col-xs-1 col-sm-1">
+        </div>
+        <div class="col-xs-11 col-sm-11">
+            <div class="form-group">
+                <label class="control-label">{% trans "Manufacturer" %} </label>
+
+                <select class="form-control" name="manufacturer" id="id_manufacturer" {% if not editing and not creating %}disabled{% endif %}>
+                    <option value>-------</option>
+                    {% for manufacturer in manufacturer_list %}
+                        <option value="{{ manufacturer.id }}">{{ manufacturer.name }}</option>
+                    {% endfor %}
+                </select>
+
+                <div class="help-block with-errors"></div>
+            </div>
+        </div>
+    </div>
+
+    <div class="row">
+        <div class="col-xs-1 col-sm-1">
+        </div>
+        <div class="col-xs-11 col-sm-11">
+            <div class="form-group">
+                <label class="control-label">{% trans "Identification" %} </label>
+
+                <select class="form-control" name="equipment_selection" id="id_equipment_selection" required {% if not editing and not creating %}disabled{% endif %}>
+                    <option value>-------</option>
+                    {% for equipment in equipment_list %}
+                        <option {% if not creating and equipment_selected.id == equipment.id %}selected="selected"{% endif %} value="{{ equipment.id }}">{{ equipment.identification }}</option>
+                    {% endfor %}
+                </select>
+
+                <div class="help-block with-errors"></div>
+
+            </div>
+        </div>
+    </div>
+
+    <div class="row">
+        <div class="col-xs-1 col-sm-1">
+        </div>
+        <div class="col-xs-11 col-sm-11">
+            <div class="form-group">
+                <label class="control-label">{% trans "Description" %} </label>
+                {{ equipment_form.description }}
+                <div class="help-block with-errors"></div>
+            </div>
+        </div>
+    </div>
+
+    aaaqui
+
+
+    <div class="row">
+        <div class="col-xs-1 col-sm-1">
+        </div>
+        <div class="col-xs-11 col-sm-11">
+            <div class="form-group">
+                <label class="control-label">{% trans "Number of electrodes" %} </label>
+                {{ selection_form.number_of_electrodes }}
+                <div class="help-block with-errors"></div>
+            </div>
+        </div>
+    </div>
+
+{% endblock %}
+
+{% block settings %}
+
+    <div class="row">
+        <div class="col-xs-1 col-sm-1">
+        </div>
+        <div class="col-xs-11 col-sm-11">
+            <div class="form-group">
+                <label class="control-label">{% trans "Number of electrodes setted" %} </label>
+                {{ setting_form.number_of_electrodes }}
+                <div class="help-block with-errors"></div>
+            </div>
+        </div>
+    </div>
+
+{% endblock %}

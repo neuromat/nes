@@ -63,7 +63,7 @@
                         <table class="table table-striped">
                             <thead>
                             <tr>
-                                <th>{% trans "EEG step" %}</th>
+                                <th>{% trans "EEG path" %}</th>
                                 <th>{% trans "EEG data file" %}</th>
                             </tr>
                             </thead>
@@ -77,15 +77,16 @@
                                 {% for eeg_collection in eeg_collections %}
                                     <tr>
                                         <td>
+
                                             <b>{{ eeg_collection.eeg_configuration.component.identification }}</b>
-                                            {% if eeg_collection.eeg_configuration.name %}
-                                                <br/>
-                                                 <blockquote>
-                                                    <i><h6>
-                                                    {{ eeg_collection.eeg_configuration.name }}
-                                                    </h6></i>
-                                                 </blockquote>
-                                            {% endif %}
+                                             <blockquote>
+                                                <i><h6>
+                                                    {% for item in eeg_collection.path %}
+                                                        {{ item.1 }} > {% if item.2 %}{{ item.2 }} > {% endif %} {% if forloop.last %}{{ item.3 }}{% endif %}
+                                                    {% endfor %}
+                                                </h6></i>
+                                             </blockquote>
+
                                         </td>
                                         <td>
                                             <table>
@@ -114,7 +115,7 @@
                                                 {% endfor %}
                                                 <tr>
                                                     <td colspan="2">
-                                                        <a href="/experiment/group/{{ group.id }}/subject/{{ subject.id }}/eeg/{{ eeg_collection.eeg_configuration.id }}/add_eeg_data" class="btn btn-primary">
+                                                        <a href="/experiment/group/{{ group.id }}/subject/{{ subject.id }}/eeg/{% for item in eeg_collection.path %}{{ item.0 }}{% if not forloop.last %}-{% endif %}{% endfor %}/add_eeg_data" class="btn btn-primary">
                                                             {% trans "New EEG data file" %}
                                                         </a>
                                                     </td>
