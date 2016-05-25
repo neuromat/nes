@@ -102,7 +102,9 @@ class Manufacturer(models.Model):
 class Equipment(models.Model):
     EQUIPMENT_TYPES = (
         ("eeg_machine", _("EEG Machine")),
-        ("amplifier", _("Amplifier")),
+        ("eeg_amplifier", _("EEG Amplifier")),
+        ("eeg_solution", _("EEG Solution")),
+        ("eeg_filter", _("EEG Filter"))
     )
     manufacturer = models.ForeignKey(Manufacturer, null=False, related_name="set_of_equipment")
     equipment_type = models.CharField(null=True, blank=True, max_length=50, choices=EQUIPMENT_TYPES)
@@ -130,6 +132,7 @@ class EEGAmplifier(Equipment):
 class EEGSolution(models.Model):
     name = models.CharField(max_length=150)
     components = models.TextField(null=True, blank=True)
+    manufacturer = models.ForeignKey(Manufacturer, null=False, related_name="set_of_solution")
 
 
 class EEGFilterType(models.Model):

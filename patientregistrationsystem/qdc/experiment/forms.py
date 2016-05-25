@@ -6,7 +6,8 @@ from django.utils.translation import ugettext_lazy as _
 
 from experiment.models import Experiment, QuestionnaireResponse, SubjectOfGroup, Group, \
     Component, Stimulus, Block, Instruction, ComponentConfiguration, ResearchProject, EEGData, \
-    EEGSetting, Equipment, EEG, EEGMachine, EEGMachineSetting
+    EEGSetting, Equipment, EEG, EEGMachine, EEGMachineSetting, EEGAmplifier, EEGAmplifierSetting, \
+    EEGSolution, EEGFilterSetting, EEGFilterType
 
 
 class ExperimentForm(ModelForm):
@@ -331,4 +332,54 @@ class EEGMachineSettingForm(ModelForm):
             'number_of_channels_used': TextInput(attrs={'class': 'form-control',
                                                         'required': "",
                                                         'data-error': _('Description must be filled.')})
+        }
+
+
+class EEGAmplifierForm(ModelForm):
+    class Meta:
+        model = EEGAmplifier
+        fields = ['gain']
+
+        widgets = {
+            'gain': TextInput(attrs={'class': 'form-control', 'disabled': ''})
+        }
+
+class EEGAmplifierSettingForm(ModelForm):
+    class Meta:
+        model = EEGAmplifierSetting
+        fields = ['gain']
+
+        widgets = {
+            'gain': TextInput(attrs={'class': 'form-control',
+                                     'required': "",
+                                     'data-error': _('Description must be filled.')})
+        }
+
+class EEGSolutionForm(ModelForm):
+    class Meta:
+        model = EEGSolution
+        fields = ['components']
+
+        widgets = {
+            'components': Textarea(attrs={'id': 'id_description', 'class': 'form-control', 'rows': '4', 'disabled': ''})
+        }
+
+class EEGFilterForm(ModelForm):
+    class Meta:
+        model = EEGFilterType
+        fields = ['description']
+
+        widgets = {
+            'description': Textarea(attrs={'class': 'form-control', 'rows': '4', 'disabled': ''})
+        }
+
+class EEGFilterSettingForm(ModelForm):
+    class Meta:
+        model = EEGFilterSetting
+        fields =['high_pass', 'low_pass', 'order']
+
+        widgets = {
+            'high_pass': TextInput(attrs={'class': 'form-control', 'disabled': ''}),
+            'low_pass': TextInput(attrs={'class': 'form-control', 'disabled': ''}),
+            'order': TextInput(attrs={'class': 'form-control', 'disabled': ''})
         }

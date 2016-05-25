@@ -14,6 +14,7 @@ $(document).ready(function () {
     var description_field = $("#id_description");
     var software_version = $("#id_software_version");
     var number_of_channels = $("#id_number_of_channels");
+    var gain = $("#id_gain");
 
     select_manufacturer.change(function() {
 
@@ -25,14 +26,22 @@ $(document).ready(function () {
 
         var url = "/experiment/equipment/get_equipment_by_manufacturer/" + eeg_setting_type + "/" + manufacturer_id;
 
-        $.getJSON(url, function(all_equipment) {
-            var options = '<option value="" selected="selected">---------</option>';
-            for (var i = 0; i < all_equipment.length; i++) {
-                options += '<option value="' + all_equipment[i].pk + '">' + all_equipment[i].fields['identification'] + '</option>';
-            }
-            select_equipment.html(options);
-            select_equipment.change();
-        });
+
+            $.getJSON(url, function(all_equipment) {
+                var options = '<option value="" selected="selected">---------</option>';
+                for (var i = 0; i < all_equipment.length; i++) {
+                    if(eeg_setting_type == "eeg_solution"){
+                        options += '<option value="' + all_equipment[i].pk + '">' + all_equipment[i].fields['name'] + '</option>';
+                    }else{
+                        options += '<option value="' + all_equipment[i].pk + '">' + all_equipment[i].fields['identification'] + '</option>';
+                    }
+
+                }
+                select_equipment.html(options);
+                select_equipment.change();
+            });
+
+
     });
 
     select_equipment.change(function() {
@@ -47,15 +56,27 @@ $(document).ready(function () {
             }
         } else {
 
-            var url = "/experiment/equipment/" + equipment_id + "/attributes";
+            if(eeg_setting_type == "eeg_solution"){
+                var url = "/experiment/solution/" + equipment_id + "/attributes";
 
-            $.getJSON(url, function(equipment) {
-                description_field.prop('value', equipment['description']);
-                if (eeg_setting_type == "eeg_machine") {
-                    software_version.prop('value', equipment['software_version']);
-                    number_of_channels.prop('value', equipment['number_of_channels']);
-                }
-            });
+                $.getJSON(url, function(solution){
+                   description_field.prop('value', solution['description']) ;
+                });
+            }else{
+                var url = "/experiment/equipment/" + equipment_id + "/attributes";
+
+                $.getJSON(url, function(equipment) {
+                    description_field.prop('value', equipment['description']);
+                    if (eeg_setting_type == "eeg_machine") {
+                        software_version.prop('value', equipment['software_version']);
+                        number_of_channels.prop('value', equipment['number_of_channels']);
+                    }
+                    if(eeg_setting_type == "eeg_amplifier"){
+                        gain.prop('value', equipment['gain']);
+                    }
+                });
+            }
+
         }
     });
 });
