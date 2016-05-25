@@ -392,6 +392,7 @@ class EEGFilterSettingForm(ModelForm):
 class EEGElectrodeLocalizationSystemForm(ModelForm):
     class Meta:
         model = EEGElectrodeLocalizationSystem
+        fields = ['number_of_electrodes']
         widgets = {
             'number_of_electrodes': TextInput(attrs={'class': 'form-control', 'disabled': ''})
         }
@@ -400,6 +401,9 @@ class EEGElectrodeLocalizationSystemForm(ModelForm):
 class EEGElectrodeLayoutSettingForm(ModelForm):
     class Meta:
         model = EEGElectrodeLayoutSetting
+        fields = ['number_of_electrodes']
         widgets = {
-            'number_of_electrodes': TextInput(attrs={'class': 'form-control', 'disabled': ''})
+            'number_of_electrodes': TextInput(attrs={'class': 'form-control',
+                                                        'required': "",
+                                                        'data-error': _('Description must be filled.')})
         }
