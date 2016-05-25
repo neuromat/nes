@@ -721,6 +721,8 @@ def view_eeg_setting_type(request, eeg_setting_id, eeg_setting_type):
         setting_form = None
         solution_list = None
         solution_selected = None
+        filter_list = None
+        filter_selected = None
 
         creating = False
 
@@ -766,6 +768,22 @@ def view_eeg_setting_type(request, eeg_setting_id, eeg_setting_type):
                     eeg_solution_setting.save()
 
                     messages.success(request, _('EEG solution setting created sucessfully.'))
+
+                    redirect_url = reverse("eeg_setting_view", args=(eeg_setting_id,))
+                    return HttpResponseRedirect(redirect_url)
+
+                if 'filter_selection' in request.POST:
+                    eeg_filter = EEGFilterType.objects.get(pk=request.POST['filter_selection'])
+
+                    eeg_filter_setting = EEGFilterSetting()
+                    eeg_filter_setting.eeg_filter_type = eeg_filter
+                    eeg_filter_setting.high_pass = request.POST['high_pass']
+                    eeg_filter_setting.low_pass = request.POST['low_pass']
+                    eeg_filter_setting.order = request.POST['order']
+                    eeg_filter_setting.eeg_setting = eeg_setting
+                    eeg_filter_setting.save()
+
+                    messages.success(request, _('EEG filter setting created sucessfully.'))
 
                     redirect_url = reverse("eeg_setting_view", args=(eeg_setting_id,))
                     return HttpResponseRedirect(redirect_url)
@@ -826,9 +844,18 @@ def view_eeg_setting_type(request, eeg_setting_id, eeg_setting_type):
             try:
                 eeg_filter_setting = EEGFilterSetting.objects.get(eeg_setting_id=eeg_setting_id)
 
+                selection_form = EEGFilterForm(request.POST or None, instance=eeg_filter_setting.eeg_filter_type)
+                setting_form = EEGFilterForm(request.POST or None, instance=eeg_filter_setting)
+                filter_selected = eeg_filter_setting.eeg_filter_type
+
+                for field in setting_form.fields:
+                    setting_form.fields[field].widget.attrs['disabled'] = True
+
             except:
                 creating = True
 
+                selection_form = EEGFilterForm(request.POST or None)
+                setting_form = EEGFilterSettingForm(request.POST or None)
 
         if eeg_setting_type == "eeg_machine" \
                 or eeg_setting_type == "eeg_amplifier" \
@@ -853,12 +880,12 @@ def view_eeg_setting_type(request, eeg_setting_id, eeg_setting_type):
                 equipment_form = EEGSolutionForm(request.POST or None, instance=solution_selected)
 
         if eeg_setting_type == "eeg_filter":
-            manufacturer_list = EEGFilterType.objects.all()
+            filter_list = EEGFilterType.objects.all()
 
             if creating:
-                equipment_form = EquipmentForm(request.POST or None)
+                equipment_form = EEGFilterForm(request.POST or None)
             else:
-                equipment_form = EEGFilterForm(request.POST or None, instance=equipment_selected)
+                equipment_form = EEGFilterForm(request.POST or None, instance=filter_selected)
 
         context = {
             "creating": creating,
@@ -871,10 +898,12 @@ def view_eeg_setting_type(request, eeg_setting_id, eeg_setting_type):
             "eeg_setting": eeg_setting,
             "equipment_selected": equipment_selected,
             "solution_selected" : solution_selected,
+            "filter_selected" : filter_selected,
 
             "manufacturer_list": manufacturer_list,
             "equipment_list": equipment_list,
             "solution_list": solution_list,
+            "filter_list": filter_list,
             "equipment_form": equipment_form,
 
             "selection_form": selection_form,
@@ -993,6 +1022,7 @@ def edit_eeg_setting_type(request, eeg_setting_id, eeg_setting_type):
             equipment_form = EEGSolutionForm(request.POST or None, instance=solution_selected)
 
 
+
         context = {
             "creating": False,
             "editing": True,
@@ -1069,6 +1099,18 @@ def get_json_solution_attributes(request, solution_id):
 
     return HttpResponse(json.dumps(response_data), content_type='application/json')
 
+
+@login_required
+@permission_required('experiment.change_experiment')
+def get_json_filter_attributes(request, filter_id):
+
+    filter = get_object_or_404(EEGFilterType, pk=filter_id)
+
+    response_data = {
+        'description': filter.description,
+    }
+
+    return HttpResponse(json.dumps(response_data), content_type='application/json')
 
 @login_required
 @permission_required('experiment.change_experiment')

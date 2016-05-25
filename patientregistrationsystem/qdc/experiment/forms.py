@@ -379,7 +379,12 @@ class EEGFilterSettingForm(ModelForm):
         fields =['high_pass', 'low_pass', 'order']
 
         widgets = {
-            'high_pass': TextInput(attrs={'class': 'form-control', 'disabled': ''}),
-            'low_pass': TextInput(attrs={'class': 'form-control', 'disabled': ''}),
-            'order': TextInput(attrs={'class': 'form-control', 'disabled': ''})
+            'high_pass': TextInput(attrs={'class': 'form-control', 'required': "",
+                                          'data-error': _('Description must be filled.')}),
+            'low_pass': TextInput(attrs={'class': 'form-control', 'required': "",
+                                         'data-error': _('Description must be filled.')}),
+            'order': TextInput(attrs={'class': 'form-control', 'required': "",
+                                      'data-error': _('Description must be filled.')})
+
+
         }
