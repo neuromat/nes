@@ -6,7 +6,8 @@ from django.utils.translation import ugettext_lazy as _
 
 from experiment.models import Experiment, QuestionnaireResponse, SubjectOfGroup, Group, \
     Component, Stimulus, Block, Instruction, ComponentConfiguration, ResearchProject, EEGData, \
-    EEGSetting, Equipment, EEG, EEGMachine, EEGMachineSetting
+    EEGSetting, Equipment, EEG, EEGMachine, EEGMachineSetting, EEGElectrodeLocalizationSystem, \
+    EEGElectrodeLayoutSetting
 
 
 class ExperimentForm(ModelForm):
@@ -331,4 +332,20 @@ class EEGMachineSettingForm(ModelForm):
             'number_of_channels_used': TextInput(attrs={'class': 'form-control',
                                                         'required': "",
                                                         'data-error': _('Description must be filled.')})
+        }
+
+
+class EEGElectrodeLocalizationSystemForm(ModelForm):
+    class Meta:
+        model = EEGElectrodeLocalizationSystem
+        widgets = {
+            'number_of_electrodes': TextInput(attrs={'class': 'form-control', 'disabled': ''})
+        }
+
+
+class EEGElectrodeLayoutSettingForm(ModelForm):
+    class Meta:
+        model = EEGElectrodeLayoutSetting
+        widgets = {
+            'number_of_electrodes': TextInput(attrs={'class': 'form-control', 'disabled': ''})
         }

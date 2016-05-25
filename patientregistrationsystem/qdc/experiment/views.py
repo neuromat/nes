@@ -29,7 +29,8 @@ from experiment.models import Experiment, Subject, QuestionnaireResponse, Subjec
     EEGMachineSetting, EEGAmplifierSetting, EEGSolutionSetting, EEGFilterSetting, EEGElectrodeLayoutSetting
 from experiment.forms import ExperimentForm, QuestionnaireResponseForm, FileForm, GroupForm, InstructionForm, \
     ComponentForm, StimulusForm, BlockForm, ComponentConfigurationForm, ResearchProjectForm, NumberOfUsesToInsertForm, \
-    EEGDataForm, EEGSettingForm, EquipmentForm, EEGForm, EEGMachineForm, EEGMachineSettingForm
+    EEGDataForm, EEGSettingForm, EquipmentForm, EEGForm, EEGMachineForm, EEGMachineSettingForm, \
+    EEGElectrodeLocalizationSystemForm, EEGElectrodeLayoutSettingForm
 
 from patient.models import Patient, QuestionnaireResponse as PatientQuestionnaireResponse
 
@@ -758,9 +759,22 @@ def view_eeg_setting_type(request, eeg_setting_id, eeg_setting_type):
                 selection_form = EEGMachineForm(request.POST or None)
                 setting_form = EEGMachineSettingForm(request.POST or None)
 
-        if eeg_setting_type == "eeg_machine" \
-                or eeg_setting_type == "eeg-amplifier" \
-                or eeg_setting_type == "eeg_electrode_net":
+        if eeg_setting_type == "eeg_electrode_net_system":
+
+            if "eeg_electrode_layout_setting" in eeg_setting:
+
+                creating = False
+
+                # TODO: info do EEG
+
+            else:
+                creating = True
+
+                selection_form = EEGElectrodeLocalizationSystemForm(request.POST or None)
+                setting_form = EEGElectrodeLocalizationSystemForm(request.POST or None)
+
+        # Settings related to equipment
+        if eeg_setting_type in ["eeg_machine", "eeg-amplifier", "eeg_electrode_net_system"]:
 
             equipment_list = Equipment.objects.filter(equipment_type=eeg_setting_type)
             manufacturer_list = \
@@ -841,9 +855,7 @@ def edit_eeg_setting_type(request, eeg_setting_id, eeg_setting_type):
             equipment_selected = eeg_machine_setting.eeg_machine
 
         # Settings related to equipment
-        if eeg_setting_type == "eeg_machine" \
-                or eeg_setting_type == "eeg-amplifier" \
-                or eeg_setting_type == "eeg_electrode_net":
+        if eeg_setting_type in ["eeg_machine", "eeg-amplifier", "eeg_electrode_net_system"]:
 
             equipment_list = Equipment.objects.filter(equipment_type=eeg_setting_type)
             manufacturer_list = Manufacturer.objects.filter(
