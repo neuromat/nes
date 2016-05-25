@@ -6,7 +6,7 @@ from django.utils.translation import ugettext_lazy as _
 
 from experiment.models import Experiment, QuestionnaireResponse, SubjectOfGroup, Group, \
     Component, Stimulus, Block, Instruction, ComponentConfiguration, ResearchProject, EEGData, \
-    EEGSetting, Equipment, EEG
+    EEGSetting, Equipment, EEG, EEGMachine, EEGMachineSetting
 
 
 class ExperimentForm(ModelForm):
@@ -304,16 +304,31 @@ class EEGSettingForm(ModelForm):
 class EquipmentForm(ModelForm):
     class Meta:
         model = Equipment
-
-        fields = ['identification', 'description']
-
-
-class FilterEquipmentForm(ModelForm):
-    class Meta:
-        model = Equipment
-        fields = ['description', 'serial_number']
+        fields = ['description']
 
         widgets = {
-            'description': Textarea(attrs={'class': 'form-control', 'rows': '4', 'disabled': ''}),
-            'serial_number': TextInput(attrs={'class': 'form-control', 'disabled': ''})
+            'description': Textarea(attrs={'class': 'form-control', 'rows': '4', 'disabled': ''})
+        }
+
+
+class EEGMachineForm(ModelForm):
+    class Meta:
+        model = EEGMachine
+        fields = ['number_of_channels', 'software_version']
+
+        widgets = {
+            'number_of_channels': TextInput(attrs={'class': 'form-control', 'disabled': ''}),
+            'software_version': TextInput(attrs={'class': 'form-control', 'disabled': ''})
+        }
+
+
+class EEGMachineSettingForm(ModelForm):
+    class Meta:
+        model = EEGMachineSetting
+        fields = ['number_of_channels_used']
+
+        widgets = {
+            'number_of_channels_used': TextInput(attrs={'class': 'form-control',
+                                                        'required': "",
+                                                        'data-error': _('Description must be filled.')})
         }

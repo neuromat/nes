@@ -8,12 +8,13 @@ $(function(){
 
 $(document).ready(function () {
 
-    var equipment_type = $("#id_equipment_type").prop("value");
+    var eeg_setting_type = $("#eeg_setting_type").prop("value");
     var select_equipment = $("select#id_equipment_selection");
     var select_manufacturer = $("select#id_manufacturer");
     var description_field = $("#id_description");
-    var serial_number_field = $("#id_serial_number");
-    
+    var software_version = $("#id_software_version");
+    var number_of_channels = $("#id_number_of_channels");
+
     select_manufacturer.change(function() {
 
         var manufacturer_id = $(this).val();
@@ -22,7 +23,7 @@ $(document).ready(function () {
             manufacturer_id = "0";
         }
 
-        var url = "/experiment/equipment/get_equipment_by_manufacturer/" + equipment_type + "/" + manufacturer_id;
+        var url = "/experiment/equipment/get_equipment_by_manufacturer/" + eeg_setting_type + "/" + manufacturer_id;
 
         $.getJSON(url, function(all_equipment) {
             var options = '<option value="" selected="selected">---------</option>';
@@ -40,14 +41,20 @@ $(document).ready(function () {
 
         if (equipment_id == "") {
             description_field.prop('value', "");
-            serial_number_field.prop('value', "");
+            if (eeg_setting_type == "eeg_machine") {
+                software_version.prop('value', "");
+                number_of_channels.prop('value', "");
+            }
         } else {
 
             var url = "/experiment/equipment/" + equipment_id + "/attributes";
 
             $.getJSON(url, function(equipment) {
                 description_field.prop('value', equipment['description']);
-                serial_number_field.prop('value', equipment['serial_number']);
+                if (eeg_setting_type == "eeg_machine") {
+                    software_version.prop('value', equipment['software_version']);
+                    number_of_channels.prop('value', equipment['number_of_channels']);
+                }
             });
         }
     });
