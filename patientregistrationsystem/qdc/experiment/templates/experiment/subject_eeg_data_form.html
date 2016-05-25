@@ -104,22 +104,8 @@
 
             $id_eeg_setting.each((function() {
                     if ($id_eeg_setting.val() == $eeg_setting_default_id){
-                        {% if editing %}
-                            $id_eeg_setting_reason_for_change.prop( "disabled", true );
-                            $div_reason_for_change.hide();
-                        {% else %}
-                            $id_eeg_setting_reason_for_change.prop( "disabled", false );
-                            $div_reason_for_change.hide();
-                        {% endif %}
-                    }
-                    else {
-                        {% if editing %}
-                            $id_eeg_setting_reason_for_change.prop( "disabled", false );
-                            $div_reason_for_change.show();
-                        {% else %}
-                            $id_eeg_setting_reason_for_change.prop( "disabled", true );
-                            $div_reason_for_change.show();
-                        {% endif %}
+                        $id_eeg_setting_reason_for_change.prop( "disabled", true );
+                        $div_reason_for_change.hide();
                     }
                 }));
 
