@@ -191,14 +191,21 @@
                             <div class="col-xs-12 col-sm-12">
                                 <div class="form-group">
                                     <div class="input-group input-group-sm">
-                                        <label>{{ question_response.question }}</label>
+{#                                        <label>{{ question_response.question }}</label>#}
                                         {% if question_response.type == 'M' %}
+                                            <label>
                                             {% if question_response.answer == 'Y'%}
-                                                <br/><input type="checkbox" value="answer" checked disabled>
-                                            {% else %}
-                                                <br/><input type="checkbox" value="answer" disabled>
+{#                                                <br/><input type="checkbox" value="answer" checked disabled>#}
+                                                <input type="checkbox" value="answer" checked disabled>
+
+                                            {% else%}
+{#                                                <br/><input type="checkbox" value="answer" disabled>#}
+                                                <input type="checkbox" value="answer" disabled>
+
                                             {% endif %}
+                                             {{ question_response.question }}</label>
                                         {% else %}
+                                          <label>{{ question_response.question }}</label>
                                             {% if question_response.type == 'D' %}
                                                 <input class="form-control" value="{{ question_response.answer|date:"d/m/Y" }}" type="text" disabled>
                                             {% else %}
@@ -215,6 +222,7 @@
                                                 {% endif %}
                                             {% endif %}
                                         {% endif %}
+{#                                    <label>{{ question_response.question }}</label>#}
                                     </div>
                                 </div>
                             </div>
