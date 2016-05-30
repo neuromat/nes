@@ -27,7 +27,7 @@ from experiment.models import Experiment, Subject, QuestionnaireResponse, Subjec
     TaskForTheExperimenter, ClassificationOfDiseases, ResearchProject, Keyword, EEG, EEGData, FileFormat, \
     EEGSetting, Equipment, Manufacturer, EEGMachine, EEGAmplifier, EEGElectrodeNet, DataConfigurationTree, \
     EEGMachineSetting, EEGAmplifierSetting, EEGSolutionSetting, EEGFilterSetting, EEGElectrodeLayoutSetting, \
-    EEGFilterType, EEGSolution, EEGElectrodeLocalizationSystem, EEGElectrodeNetSystem
+    EEGFilterType, EEGSolution, EEGElectrodeLocalizationSystem, EEGElectrodeNetSystem, EEGElectrodePositionSetting
 from experiment.forms import ExperimentForm, QuestionnaireResponseForm, FileForm, GroupForm, InstructionForm, \
     ComponentForm, StimulusForm, BlockForm, ComponentConfigurationForm, ResearchProjectForm, NumberOfUsesToInsertForm, \
     EEGDataForm, EEGSettingForm, EquipmentForm, EEGForm, EEGMachineForm, EEGMachineSettingForm, EEGAmplifierForm, \
@@ -822,6 +822,14 @@ def view_eeg_setting_type(request, eeg_setting_id, eeg_setting_type):
                     eeg_electrode_layout_setting.eeg_electrode_net_system = eeg_electrode_net_system
                     eeg_electrode_layout_setting.number_of_electrodes = request.POST['number_of_electrodes']
                     eeg_electrode_layout_setting.save()
+
+                    if eeg_electrode_localization_system.eegelectrodeposition_set:
+                        for position in eeg_electrode_localization_system.eegelectrodeposition_set.all():
+                            new_position_setting = EEGElectrodePositionSetting()
+                            new_position_setting.eeg_electrode_position = position
+                            new_position_setting.used = True
+                            new_position_setting.eeg_electrode_layout_setting = eeg_electrode_layout_setting
+                            new_position_setting.save()
 
                     messages.success(request, _('EEG electrode net system setting created sucessfully.'))
 
