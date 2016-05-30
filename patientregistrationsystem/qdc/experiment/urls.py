@@ -43,6 +43,7 @@ urlpatterns = patterns(
         'get_json_equipment_by_manufacturer'),
     url(r'^equipment/(?P<equipment_id>\d+)/attributes/$', 'get_json_equipment_attributes'),
     url(r'^solution/(?P<solution_id>\d+)/attributes/$', 'get_json_solution_attributes'),
+    url(r'^filter/(?P<filter_id>\d+)/attributes/$', 'get_json_filter_attributes'),
     url(r'^eeg_localization_system/(?P<eeg_localization_system_id>\d+)/attributes/$',
         'get_json_eeg_localization_system_attributes'),
     url(r'^equipment/get_localization_system_by_electrode_net/(?P<equipment_id>\d+)/$',

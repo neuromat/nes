@@ -10,31 +10,12 @@
         </div>
         <div class="col-xs-11 col-sm-11">
             <div class="form-group">
-                <label class="control-label">{% trans "Manufacturer" %} </label>
+                <label class="control-label">{% trans "Filter type" %} </label>
 
-                <select class="form-control" name="manufacturer" id="id_manufacturer" {% if not editing and not creating %}disabled{% endif %}>
+                <select class="form-control" name="filter_selection" id="id_equipment_selection" required {% if not editing and not creating %}disabled{% endif %}>
                     <option value>-------</option>
-                    {% for manufacturer in manufacturer_list %}
-                        <option value="{{ manufacturer.id }}">{{ manufacturer.name }}</option>
-                    {% endfor %}
-                </select>
-
-                <div class="help-block with-errors"></div>
-            </div>
-        </div>
-    </div>
-
-    <div class="row">
-        <div class="col-xs-1 col-sm-1">
-        </div>
-        <div class="col-xs-11 col-sm-11">
-            <div class="form-group">
-                <label class="control-label">{% trans "Identification" %} </label>
-
-                <select class="form-control" name="equipment_selection" id="id_equipment_selection" required {% if not editing and not creating %}disabled{% endif %}>
-                    <option value>-------</option>
-                    {% for equipment in equipment_list %}
-                        <option {% if not creating and equipment_selected.id == equipment.id %}selected="selected"{% endif %} value="{{ equipment.id }}">{{ equipment.identification }}</option>
+                    {% for filter in filter_list %}
+                        <option {% if not creating and filter_selected.id == filter.id %}selected="selected"{% endif %} value="{{ filter.id }}">{{ filter.name }}</option>
                     {% endfor %}
                 </select>
 
@@ -59,5 +40,40 @@
 {% endblock %}
 
 {% block settings %}
+    <div class="row">
+        <div class="col-xs-1 col-sm-1">
+        </div>
+        <div class="col-xs-11 col-sm-11">
+            <div class="form-group">
+                <label class="control-label">{% trans "High pass cutoff (Hz)" %} </label>
+                {{ setting_form.high_pass }}
+                <div class="help-block with-errors"></div>
+            </div>
+        </div>
+    </div>
+
+    <div class="row">
+        <div class="col-xs-1 col-sm-1">
+        </div>
+        <div class="col-xs-11 col-sm-11">
+            <div class="form-group">
+                <label class="control-label">{% trans "Low pass cutoff (Hz)" %} </label>
+                {{ setting_form.low_pass }}
+                <div class="help-block with-errors"></div>
+            </div>
+        </div>
+    </div>
+
+    <div class="row">
+        <div class="col-xs-1 col-sm-1">
+        </div>
+        <div class="col-xs-11 col-sm-11">
+            <div class="form-group">
+                <label class="control-label">{% trans "Order" %} </label>
+                {{ setting_form.order }}
+                <div class="help-block with-errors"></div>
+            </div>
+        </div>
+    </div>
 
 {% endblock %}

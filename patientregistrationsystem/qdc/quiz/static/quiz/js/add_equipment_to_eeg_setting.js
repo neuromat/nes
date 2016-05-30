@@ -64,16 +64,19 @@ $(document).ready(function () {
         } else {
 
             if (equipment_type == "eeg_solution") {
+                var url = "/experiment/solution/" + equipment_id + "/attributes";
 
-                url = "/experiment/solution/" + equipment_id + "/attributes";
-
-                $.getJSON(url, function(solution){
-                   description_field.prop('value', solution['description']) ;
+                $.getJSON(url, function (solution) {
+                    description_field.prop('value', solution['description']);
                 });
+            } else if (equipment_type == "eeg_filter") {
+                var url = "/experiment/filter/" + equipment_id + "/attributes";
 
+                $.getJSON(url, function (filter) {
+                    description_field.prop('value', filter['description']);
+                });
             } else {
-
-                url = "/experiment/equipment/" + equipment_id + "/attributes";
+                var url = "/experiment/equipment/" + equipment_id + "/attributes";
 
                 $.getJSON(url, function(equipment) {
                     description_field.prop('value', equipment['description']);
