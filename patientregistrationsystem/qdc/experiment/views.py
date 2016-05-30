@@ -1170,6 +1170,16 @@ def get_json_filter_attributes(request, filter_id):
 
 @login_required
 @permission_required('experiment.change_experiment')
+def eeg_electrode_position(request, eeg_setting_id, eeg_setting_type):
+    eeg_setting = get_object_or_404(EEGSetting, pk=eeg_setting_id)
+
+    if get_can_change(request.user, eeg_setting.experiment.research_project):
+
+        template_name = "experiment/eeg_setting_" + "eeg_electrode_position" + ".html"
+
+
+@login_required
+@permission_required('experiment.change_experiment')
 def equipment_view(request, eeg_setting_id, equipment_id,
                    template_name="experiment/add_equipment_to_eeg_setting.html"):
 

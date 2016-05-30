@@ -37,6 +37,9 @@ urlpatterns = patterns(
         'edit_eeg_setting_type', name='edit_eeg_setting_type'),
     url(r'^eeg_setting/(?P<eeg_setting_id>\d+)/equipment/(?P<equipment_id>\d+)/$',
         'equipment_view', name='equipment_view'),
+    url(r'^eeg_setting/(?P<eeg_setting_id>\d+)/(?P<eeg_setting_type>\w+)/eeg_electrode_position/$',
+        'eeg_electrode_position', name='eeg_electrode_position'),
+
 
     # eeg setting (ajax)
     url(r'^equipment/get_equipment_by_manufacturer/(?P<equipment_type>\w+)/(?P<manufacturer_id>\d+)/$',
