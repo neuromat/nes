@@ -334,8 +334,13 @@ class ExportQuestionnaireTest(TestCase):
 
         diagnosis_selected = ["medicalrecorddata__record_responsible_id*responsible_id"]
 
+        patient_selected = []
+
+        diagnosis_selected = []
+
         self.data = {
             'questionnaire_selected': questionnaire_selected,
+            'to[]': questionnaire_selected,
             'patient_selected':  patient_selected,
             'diagnosis_selected': diagnosis_selected,
             'per_questionnaire': 1,
@@ -349,7 +354,7 @@ class ExportQuestionnaireTest(TestCase):
         dir_name = path.split(path.join(settings.MEDIA_ROOT, filename))[0]
         new_dir_name = ''
         if path.isdir(dir_name):
-            new_dir_name = dir_name + "aaa"
+            new_dir_name = dir_name + "-original"
             if not path.isdir(new_dir_name):
                 rename(dir_name, new_dir_name)
 
@@ -366,6 +371,7 @@ class ExportQuestionnaireTest(TestCase):
             rmtree(dir_name)
 
             rename(new_dir_name, dir_name)
+        print("fim teste")
 
 class JsonTest(TestCase):
     """ Cria um participante para ser utilizado durante os testes """
