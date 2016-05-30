@@ -104,7 +104,8 @@ class Equipment(models.Model):
         ("eeg_machine", _("EEG Machine")),
         ("eeg_amplifier", _("EEG Amplifier")),
         ("eeg_solution", _("EEG Solution")),
-        ("eeg_filter", _("EEG Filter"))
+        ("eeg_filter", _("EEG Filter")),
+        ("eeg_electrode_net", _("EEG Electrode Net"))
     )
     manufacturer = models.ForeignKey(Manufacturer, null=False, related_name="set_of_equipment")
     equipment_type = models.CharField(null=True, blank=True, max_length=50, choices=EQUIPMENT_TYPES)
@@ -196,8 +197,9 @@ class EEGElectrodePosition(models.Model):
 
 
 class EEGElectrodeNetSystem(models.Model):
-    eeg_electrode_net = models.ForeignKey(EEGElectrodeNet)
-    eeg_electrode_localization_system = models.ForeignKey(EEGElectrodeLocalizationSystem)
+    eeg_electrode_net = models.ForeignKey(EEGElectrodeNet, related_name="set_of_electrode_net_system")
+    eeg_electrode_localization_system = models.ForeignKey(EEGElectrodeLocalizationSystem,
+                                                          related_name='set_of_electrode_net_system')
 
 
 class EEGSetting(models.Model):

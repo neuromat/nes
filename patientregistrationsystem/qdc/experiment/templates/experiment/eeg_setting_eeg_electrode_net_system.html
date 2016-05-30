@@ -29,7 +29,7 @@
         </div>
         <div class="col-xs-11 col-sm-11">
             <div class="form-group">
-                <label class="control-label">{% trans "Identification" %} </label>
+                <label class="control-label">{% trans "Equipment identification" %} </label>
 
                 <select class="form-control" name="equipment_selection" id="id_equipment_selection" required {% if not editing and not creating %}disabled{% endif %}>
                     <option value>-------</option>
@@ -56,8 +56,25 @@
         </div>
     </div>
 
-    aaaqui
+    <div class="row">
+        <div class="col-xs-1 col-sm-1">
+        </div>
+        <div class="col-xs-11 col-sm-11">
+            <div class="form-group">
+                <label class="control-label">{% trans "Electrode layout system" %} </label>
 
+                <select class="form-control" name="localization_system_selection" id="id_localization_system_selection" required {% if not editing and not creating %}disabled{% endif %}>
+                    <option value>-------</option>
+                    {% for localization_system in localization_system_list %}
+                        <option {% if not creating and localization_system_selected.id == localization_system.id %}selected="selected"{% endif %} value="{{ localization_system.id }}">{{ localization_system.name }}</option>
+                    {% endfor %}
+                </select>
+
+                <div class="help-block with-errors"></div>
+
+            </div>
+        </div>
+    </div>
 
     <div class="row">
         <div class="col-xs-1 col-sm-1">
