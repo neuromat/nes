@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2016-04-28 20:42-0300\n"
+"POT-Creation-Date: 2016-05-30 17:11-0300\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -17,31 +17,61 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 
-#: export/export.py:116 export/tests.py:186
+#: export/export.py:66 export/export.py:67 export/export.py:73
+#: export/views.py:126 export/views.py:127 export/views.py:131
+#: export/views.py:132
+msgid "Participation code"
+msgstr ""
+
+#: export/export.py:127 export/tests.py:187
 msgid "Base path does not exist"
 msgstr ""
 
-#: export/forms.py:17
+#: export/forms.py:13
 msgid "All participants"
 msgstr ""
 
-#: export/forms.py:18
+#: export/forms.py:14
 msgid "Selected participants"
 msgstr ""
 
-#: export/forms.py:47
+#: export/forms.py:18
+msgid "Question code"
+msgstr ""
+
+#: export/forms.py:19
+msgid "Full question text"
+msgstr ""
+
+#: export/forms.py:20
+msgid "Abbreviated question text"
+msgstr ""
+
+#: export/forms.py:24
+msgid "Answer codes"
+msgstr ""
+
+#: export/forms.py:25
+msgid "Full answers"
+msgstr ""
+
+#: export/forms.py:40
+msgid "Response must be selected"
+msgstr ""
+
+#: export/forms.py:58
 msgid "Either one or both Per participant/Per questionnaire must be set."
 msgstr ""
 
-#: export/forms.py:73
+#: export/forms.py:89
 msgid "Min age must be filled."
 msgstr ""
 
-#: export/forms.py:76
+#: export/forms.py:92
 msgid "Max age must be filled."
 msgstr ""
 
-#: export/templates/export/export_data.html:60
+#: export/templates/export/export_data.html:61
 msgid "Please, correct the highlighted fields."
 msgstr ""
 
@@ -160,29 +190,29 @@ msgid "Observation"
 msgstr ""
 
 #: export/views.py:117
-msgid "ICD code"
+msgid "Disease code (ICD)"
 msgstr ""
 
 #: export/views.py:119
-msgid "ICD Description"
+msgid "Disease Description"
 msgstr ""
 
 #: export/views.py:121
-msgid "ICD Abbreviated Description"
+msgid "Disease Abbreviated Description"
 msgstr ""
 
-#: export/views.py:320
+#: export/views.py:357
 msgid "Inconsistent data read from json file"
 msgstr ""
 
-#: export/views.py:553
+#: export/views.py:606
 msgid "Export was finished correctly"
 msgstr ""
 
-#: export/views.py:571
+#: export/views.py:624
 msgid "Export data was not generated."
 msgstr ""
 
-#: export/views.py:584
+#: export/views.py:637
 msgid "No data was select. Export data was not generated."
 msgstr ""

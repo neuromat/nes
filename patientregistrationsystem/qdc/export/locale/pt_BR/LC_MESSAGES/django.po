@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2016-05-04 18:03-0300\n"
+"POT-Creation-Date: 2016-05-30 17:06-0300\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -18,131 +18,136 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=(n > 1);\n"
 
-#: export/export.py:116 export/tests.py:186
+#: export/export.py:66 export/export.py:67 export/views.py:126
+#: export/views.py:127 export/views.py:131 export/views.py:132
+msgid "Participation code"
+msgstr "Código de Participante"
+
+#: export/export.py:127 export/tests.py:187
 msgid "Base path does not exist"
 msgstr "Diretório base não existe"
 
-#: export/forms.py:23
+#: export/forms.py:18
 msgid "Question code"
 msgstr "Código da questão"
 
-#: export/forms.py:24
+#: export/forms.py:19
 msgid "Full question text"
 msgstr "Texto completo da pergunta"
 
-#: export/forms.py:25
+#: export/forms.py:20
 msgid "Abbreviated question text"
 msgstr "Texto abreviado da pergunta"
 
-#: export/forms.py:29
+#: export/forms.py:24
 msgid "Answer codes"
 msgstr "Códigos de resposta"
 
-#: export/forms.py:30
+#: export/forms.py:25
 msgid "Full answers"
 msgstr "Respostas completas"
 
-#: export/forms.py:45
+#: export/forms.py:40
 msgid "Response must be selected"
 msgstr "Resposta deve ser selecionada"
 
-#: export/forms.py:63
-msgid "Either one or both Per participant/Per questionnaire must be set."
-msgstr "Opção Por participante e/ou Por questionário deve ser preenchida. "
-
-#: export/forms.py:94
+#: export/forms.py:89
 msgid "Min age must be filled."
 msgstr "Idade mínima deve ser preenchida."
 
-#: export/forms.py:97
+#: export/forms.py:92
 msgid "Max age must be filled."
 msgstr "Idade máxima deve ser preenchida."
 
-#: export/templates/export/export_data.html:28
+#: export/templates/export/export_data.html:29
 #: export/templates/export/participant_selection.html:24
 #: export/templates/export/show_selected_participants.html:24
 msgid "Home"
 msgstr ""
 
-#: export/templates/export/export_data.html:29
+#: export/templates/export/export_data.html:30
 #: export/templates/export/participant_selection.html:25
 #: export/templates/export/show_selected_participants.html:25
 msgid "Export"
 msgstr "Exportar"
 
-#: export/templates/export/export_data.html:30
+#: export/templates/export/export_data.html:31
 msgid "Structure and fields selection"
 msgstr "Seleção de estrutura e campos"
 
-#: export/templates/export/export_data.html:71
+#: export/templates/export/export_data.html:73
 msgid "General Information"
 msgstr "Informações Gerais"
 
-#: export/templates/export/export_data.html:76
+#: export/templates/export/export_data.html:79
 msgid "At least one option must be selected"
 msgstr "Pelo menos uma das opções deve ser selecionada"
 
-#: export/templates/export/export_data.html:76
+#: export/templates/export/export_data.html:80
 msgid "Directory Structure"
 msgstr "Estrutura de diretórios"
 
-#: export/templates/export/export_data.html:82
+#: export/templates/export/export_data.html:87
 msgid "Per participant"
 msgstr "Por participante"
 
-#: export/templates/export/export_data.html:94
+#: export/templates/export/export_data.html:106
 msgid "Per questionnaire"
 msgstr "Por questionário"
 
-#: export/templates/export/export_data.html:122
+#: export/templates/export/export_data.html:128
 msgid "Headings"
 msgstr "Cabeçalhos"
 
-#: export/templates/export/export_data.html:137
+#: export/templates/export/export_data.html:148
 msgid "Responses"
 msgstr "Respostas"
 
-#: export/templates/export/export_data.html:167
+#: export/templates/export/export_data.html:179
 msgid "Questionnaire information"
 msgstr "Informações de questionários"
 
-#: export/templates/export/export_data.html:171
-msgid "Questionnaire - Entrance evaluation"
-msgstr "Questionários - Avaliação de entrada"
+#: export/templates/export/export_data.html:202
+msgid "Fields available:"
+msgstr ""
 
-#: export/templates/export/export_data.html:172
+#: export/templates/export/export_data.html:207
 msgid "Please, select a questionnaire from the list."
 msgstr "Por favor, selecione um questionário da lista"
 
-#: export/templates/export/export_data.html:188
+#: export/templates/export/export_data.html:240
+msgid "Fields chosen:"
+msgstr ""
+
+#: export/templates/export/export_data.html:270
 msgid "Participants"
 msgstr "Participantes"
 
-#: export/templates/export/export_data.html:192
+#: export/templates/export/export_data.html:276
 msgid "Participant fields"
 msgstr "Campos de participante"
 
-#: export/templates/export/export_data.html:193
+#: export/templates/export/export_data.html:279
 msgid "Please, select a patient field from the list."
 msgstr "Por favor, selecione um participante da lista"
 
-#: export/templates/export/export_data.html:203
+#: export/templates/export/export_data.html:292
 msgid "Diagnosis"
 msgstr "Diagnóstico"
 
-#: export/templates/export/export_data.html:207
+#: export/templates/export/export_data.html:297
 msgid "Diagnosis fields"
 msgstr "Campos de diagnóstico"
 
-#: export/templates/export/export_data.html:208
+#: export/templates/export/export_data.html:300
 msgid "Please, select a diagnosis field from the list."
 msgstr "Por favor, selecione um campo de diagnóstico da lista"
 
-#: export/templates/export/export_data.html:221
+#: export/templates/export/export_data.html:315
 msgid "Run"
 msgstr "Executar"
 
-#: export/templates/export/export_data.html:225
+#: export/templates/export/export_data.html:319
 #: export/templates/export/participant_selection.html:111
 #: export/templates/export/show_selected_participants.html:92
 msgid "Cancel"
@@ -330,25 +335,27 @@ msgstr "Descrição da doença"
 msgid "Disease Abbreviated Description"
 msgstr "Descrição da doença abreviada"
 
-#: export/views.py:131 export/views.py:132
-msgid "Participation code"
-msgstr "Código de Participante"
-
 #: export/views.py:357
 msgid "Inconsistent data read from json file"
 msgstr "Dados inconsistentes do arquivo de entrada"
 
-#: export/views.py:603
+#: export/views.py:606
 msgid "Export was finished correctly"
 msgstr "Exportação foi finalizada com sucesso"
 
-#: export/views.py:621
+#: export/views.py:624
 msgid "Export data was not generated."
 msgstr "Exportação não foi gerada."
 
-#: export/views.py:634
+#: export/views.py:637
 msgid "No data was select. Export data was not generated."
 msgstr "Nenhum dado foi selecionado. Exportação não foi gerada."
+
+#~ msgid "Either one or both Per participant/Per questionnaire must be set."
+#~ msgstr "Opção Por participante e/ou Por questionário deve ser preenchida. "
+
+#~ msgid "Questionnaire - Entrance evaluation"
+#~ msgstr "Questionários - Avaliação de entrada"
 
 #~ msgid "ICD code"
 #~ msgstr "Código CID"
