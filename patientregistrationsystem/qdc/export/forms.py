@@ -8,11 +8,6 @@ from django.utils.translation import ugettext_lazy as _
 
 from patient.models import Patient
 
-# FAVORITE_COLORS_CHOICES = (
-#     ('blue', 'Blue'),
-#     ('green', 'Green'),
-#     ('black', 'Black'),
-# )
 
 # SEARCH_PARTICIPANTS_CHOICES = (
 #     ('all', _('All participants')),
@@ -53,14 +48,14 @@ class ExportForm(Form):
     #
     # per_questionnaire_field = True
 
-    def clean(self):
-        cleaned_data = super(ExportForm, self).clean()
-        participant_field = cleaned_data.get("per_participant")
-        questionnaire_field = cleaned_data.get("per_questionnaire")
-
-        if not (participant_field or questionnaire_field):
-            self.add_error('per_participant',
-                           _("Either one or both Per participant/Per questionnaire must be set."))
+    # def clean(self):
+    #     cleaned_data = super(ExportForm, self).clean()
+    #     participant_field = cleaned_data.get("per_participant")
+    #     questionnaire_field = cleaned_data.get("per_questionnaire")
+    #
+    #     if not (participant_field or questionnaire_field):
+    #         self.add_error('per_participant',
+    #                        _("Either one or both Per participant/Per questionnaire must be set."))
 
     # def __init__(self, *args, **kwargs):
     #     super(ExportForm, self).__init__(*args, **kwargs)

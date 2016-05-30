@@ -465,7 +465,7 @@ def get_questionnaire_responses(language_code, lime_survey_id, token_id, request
                                 'question': properties['question'],
                                 'question_id': properties['title'],
                                 'answer_options': 'super_question',
-                                'type': properties['type'],
+                                'type': 'X',   # properties['type'],
                                 'attributes_lang': properties['attributes_lang'],
                                 'hidden': 'hidden' in properties['attributes'] and
                                           properties['attributes']['hidden'] == '1'
@@ -490,6 +490,16 @@ def get_questionnaire_responses(language_code, lime_survey_id, token_id, request
                                 'hidden': 'hidden' in properties['attributes'] and
                                           properties['attributes']['hidden'] == '1'
                             })
+                    else:
+                        question_properties.append({
+                            'question':  _("Formula") + " (" + properties['title'] + ")",
+                            'question_id': properties['title'],
+                            'answer_options': properties['answeroptions'],
+                            'type': properties['type'],
+                            'attributes_lang': properties['attributes_lang'],
+                            'hidden': False
+                        })
+
 
         # Reading from Limesurvey and...
         responses_string = surveys.get_responses_by_token(lime_survey_id, token, language)
@@ -523,7 +533,6 @@ def get_questionnaire_responses(language_code, lime_survey_id, token_id, request
 
                 for question in questions:
                     if question and (question['question_id'] != previous_question):
-                        previous_question = question['question_id']
 
                         if not question['hidden']:
 
@@ -537,6 +546,7 @@ def get_questionnaire_responses(language_code, lime_survey_id, token_id, request
                                         'type': question['type']
                                     })
                             else:
+                                previous_question = question['question_id']
 
                                 answer = ''
 

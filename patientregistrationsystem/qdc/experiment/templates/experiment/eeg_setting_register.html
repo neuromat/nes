@@ -168,7 +168,7 @@
                                         {% if eeg_setting.eeg_solution_setting %}
 
                                             <a role="menuitem" tabindex="-1" href="/experiment/eeg_setting/{{ eeg_setting.id }}/eeg_solution">
-                                                {{ eeg_setting.eeg_solution_setting.solution.name }}
+                                                {{ eeg_setting.eeg_solution_setting.eeg_solution.name }}
                                             </a>
 
                                         {% else %}
@@ -217,6 +217,7 @@
                                             <a role="menuitem" tabindex="-1" href="/experiment/eeg_setting/{{ eeg_setting.id }}/eeg_electrode_net_system">
                                                 {{ eeg_setting.eeg_electrode_layout_setting.eeg_electrode_net_system.eeg_electrode_net.identification }}
                                             </a>
+                                            <br/>
                                             {% if eeg_setting.eeg_electrode_layout_setting.eeg_electrode_net_system.eeg_electrode_net.material %}
                                             <blockquote>
                                                 <i><h6>
@@ -230,7 +231,7 @@
                                             </a>
                                             <blockquote>
                                                 <i><h6>
-                                                    {% trans "Number of electrode setted:" %} {{ eeg_setting.eeg_electrode_layout_setting.number_of_electrodes }}
+                                                    {% trans "Number of electrode:" %} {{ eeg_setting.eeg_electrode_layout_setting.number_of_electrodes }}
                                                 </h6></i>
                                             </blockquote>
 
