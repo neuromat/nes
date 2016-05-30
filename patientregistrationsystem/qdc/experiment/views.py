@@ -845,7 +845,7 @@ def view_eeg_setting_type(request, eeg_setting_id, eeg_setting_type):
                 eeg_filter_setting = EEGFilterSetting.objects.get(eeg_setting_id=eeg_setting_id)
 
                 selection_form = EEGFilterForm(request.POST or None, instance=eeg_filter_setting.eeg_filter_type)
-                setting_form = EEGFilterForm(request.POST or None, instance=eeg_filter_setting)
+                setting_form = EEGFilterSettingForm(request.POST or None, instance=eeg_filter_setting)
                 filter_selected = eeg_filter_setting.eeg_filter_type
 
                 for field in setting_form.fields:
@@ -932,6 +932,8 @@ def edit_eeg_setting_type(request, eeg_setting_id, eeg_setting_type):
         setting_form = None
         solution_list = None
         solution_selected = None
+        filter_list = None
+        filter_selected = None
 
         equipment_selected = None
 
@@ -984,6 +986,23 @@ def edit_eeg_setting_type(request, eeg_setting_id, eeg_setting_type):
                     redirect_url = reverse("view_eeg_setting_type", args=(eeg_setting_id, eeg_setting_type))
                     return HttpResponseRedirect(redirect_url)
 
+                if 'filter_selection' in request.POST:
+                    eeg_filter = EEGFilterType.objects.get(pk=request.POST['filter_selection'])
+
+                    eeg_filter_setting = eeg_setting.eeg_filter_setting
+
+                    eeg_filter_setting.eeg_filter_type = eeg_filter
+                    eeg_filter_setting.high_pass = request.POST['high_pass']
+                    eeg_filter_setting.low_pass = request.POST['low_pass']
+                    eeg_filter_setting.order = request.POST['order']
+                    eeg_filter_setting.eeg_setting = eeg_setting
+                    eeg_filter_setting.save()
+
+                    messages.success(request, _('EEG filter setting updated sucessfully.'))
+
+                    redirect_url = reverse("view_eeg_setting_type", args=(eeg_setting_id, eeg_setting_type))
+                    return HttpResponseRedirect(redirect_url)
+
         if eeg_setting_type == "eeg_machine":
 
             eeg_machine_setting = eeg_setting.eeg_machine_setting
@@ -1004,6 +1023,16 @@ def edit_eeg_setting_type(request, eeg_setting_id, eeg_setting_type):
 
             solution_selected = eeg_solution_setting.eeg_solution
 
+
+        if eeg_setting_type == "eeg_filter":
+            eeg_filter_setting = eeg_setting.eeg_filter_setting
+
+            filter_selected = eeg_filter_setting.eeg_filter_type
+
+            selection_form = EEGFilterForm(request.POST or None, instance=eeg_filter_setting.eeg_filter_type)
+            setting_form = EEGFilterSettingForm(request.POST or None, instance=eeg_filter_setting)
+
+
         # Settings related to equipment
         if eeg_setting_type == "eeg_machine" \
                 or eeg_setting_type == "eeg_amplifier" \
@@ -1021,6 +1050,10 @@ def edit_eeg_setting_type(request, eeg_setting_id, eeg_setting_type):
 
             equipment_form = EEGSolutionForm(request.POST or None, instance=solution_selected)
 
+        if eeg_setting_type == "eeg_filter":
+            filter_list = EEGFilterType.objects.all()
+
+            equipment_form = EEGFilterForm(request.POST or None, instance=filter_selected)
 
 
         context = {
@@ -1034,10 +1067,12 @@ def edit_eeg_setting_type(request, eeg_setting_id, eeg_setting_type):
             "eeg_setting": eeg_setting,
             "equipment_selected": equipment_selected,
             "solution_selected": solution_selected,
+            "filter_selected": filter_selected,
 
             "solution_list": solution_list,
             "manufacturer_list": manufacturer_list,
             "equipment_list": equipment_list,
+            "filter_list": filter_list,
             "equipment_form": equipment_form,
 
             "selection_form": selection_form,
