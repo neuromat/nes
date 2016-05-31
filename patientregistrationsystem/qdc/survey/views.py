@@ -199,10 +199,10 @@ def create_experiments_questionnaire_data_list(survey, surveys):
     experiments_questionnaire_data_dictionary = {}
 
     for qr in QuestionnaireResponse.objects.all():
-        q = Questionnaire.objects.get(id=qr.component_configuration.component_id)
+        q = Questionnaire.objects.get(id=qr.data_configuration_tree.component_configuration.component_id)
 
         if q.survey == survey:
-            use = qr.component_configuration
+            use = qr.data_configuration_tree.component_configuration
             group = qr.subject_of_group.group
 
             if use.id not in experiments_questionnaire_data_dictionary:
