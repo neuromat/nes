@@ -104,4 +104,11 @@
         </div>
     </div>
 
+    {% if not editing and not creating and can_change %}
+        <div class="btn-group pull-right">
+            <a href="/experiment/eeg_setting/eeg_electrode_position_status/{{ eeg_setting.id }}" class="btn btn-primary">{% trans "Electrode positions setting" %}</a>
+        </div>
+    {% endif %}
+
+
 {% endblock %}

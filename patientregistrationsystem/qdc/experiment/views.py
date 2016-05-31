@@ -832,9 +832,11 @@ def view_eeg_setting_type(request, eeg_setting_id, eeg_setting_type):
                             new_position_setting.eeg_electrode_layout_setting = eeg_electrode_layout_setting
                             new_position_setting.save()
 
+                    messages.info(request, _('Now you can set each electrode position.'))
+
                     messages.success(request, _('EEG electrode net system setting created sucessfully.'))
 
-                    redirect_url = reverse("eeg_setting_view", args=(eeg_setting_id,))
+                    redirect_url = reverse("eeg_electrode_position_setting", args=(eeg_setting_id,))
                     return HttpResponseRedirect(redirect_url)
 
         if eeg_setting_type == "eeg_machine":
