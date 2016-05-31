@@ -248,7 +248,7 @@ class EEGElectrodeLayoutSetting(models.Model):
 
 
 class EEGElectrodePositionSetting(models.Model):
-    eeg_electrode_layout_setting = models.ForeignKey(EEGElectrodeLayoutSetting)
+    eeg_electrode_layout_setting = models.ForeignKey(EEGElectrodeLayoutSetting, related_name='positions_setting')
     eeg_electrode_position = models.ForeignKey(EEGElectrodePosition)
     used = models.BooleanField()
 
