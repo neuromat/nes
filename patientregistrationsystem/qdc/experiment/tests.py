@@ -1017,7 +1017,7 @@ class SubjectTest(TestCase):
         count_after_insert_subject = SubjectOfGroup.objects.all().filter(group=group).count()
         self.assertEqual(count_after_insert_subject, count_before_insert_subject)
 
-    def _test_questionnaire_fill(self):
+    def test_questionnaire_fill(self):
         """
         Test of a questionnaire fill
         """
@@ -1104,7 +1104,7 @@ class SubjectTest(TestCase):
         component_configuration_without_identification_group.save()
 
         data_configuration_tree = DataConfigurationTree.objects.create(
-            component_configuration = component_configuration
+            component_configuration=component_configuration
         )
         data_configuration_tree.save()
 
@@ -1127,7 +1127,8 @@ class SubjectTest(TestCase):
 
         # Inicia o preenchimento de uma Survey
         response = self.client.post(reverse('subject_questionnaire_response',
-                                            args=[group.pk, subject_mock.pk, data_configuration_tree.pk, ]), self.data)
+                                            args=[group.pk, subject_mock.pk,
+                                                  data_configuration_tree.component_configuration.id, ]), self.data)
         self.assertEqual(response.status_code, 200)
         self.assertEqual(response.context['FAIL'], False)
 
@@ -1267,7 +1268,7 @@ class SubjectTest(TestCase):
     #     self.assertEqual(response.status_code, 200)
     #     self.assertEqual(len(response.context['subject_list']), 1)
 
-    def _test_eeg_data_file(self):
+    def test_eeg_data_file(self):
         """
         Test of a EEG data file upload
         """

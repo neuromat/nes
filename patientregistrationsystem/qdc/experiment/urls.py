@@ -70,7 +70,7 @@ urlpatterns = patterns(
     # subject + questionnaire
     url(r'^group/(?P<group_id>\d+)/subject/(?P<subject_id>\d+)/$',
         'subject_questionnaire_view', name='subject_questionnaire'),
-    url(r'^group/(?P<group_id>\d+)/subject/(?P<subject_id>\d+)/questionnaire/(?P<questionnaire_id>\d+)/add_response/$',
+    url(r'^group/(?P<group_id>\d+)/subject/(?P<subject_id>\d+)/questionnaire/(?P<questionnaire_id>[0-9-]+)/add_response/$',
         'subject_questionnaire_response_create', name='subject_questionnaire_response'),
     url(r'^questionnaire_response/edit/(?P<questionnaire_response_id>\d+)/$',
         'questionnaire_response_edit', name='questionnaire_response_edit'),
