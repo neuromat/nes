@@ -501,8 +501,9 @@ def patient_view_questionnaires(request, patient, context, is_update):
 
         for questionnaire_response in experiment_questionnaire_response_list:
 
-            limesurvey_id = \
-                questionnaire_response.component_configuration.component.questionnaire.survey.lime_survey_id
+            component_configuration = questionnaire_response.data_configuration_tree.component_configuration
+
+            limesurvey_id = component_configuration.component.questionnaire.survey.lime_survey_id
 
             response_result = surveys.get_participant_properties(limesurvey_id,
                                                                  questionnaire_response.token_id, "completed")

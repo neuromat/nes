@@ -383,9 +383,14 @@ class EEGFilterSettingForm(ModelForm):
         fields =['high_pass', 'low_pass', 'order']
 
         widgets = {
-            'high_pass': TextInput(attrs={'class': 'form-control', 'disabled': ''}),
-            'low_pass': TextInput(attrs={'class': 'form-control', 'disabled': ''}),
-            'order': TextInput(attrs={'class': 'form-control', 'disabled': ''})
+            'high_pass': TextInput(attrs={'class': 'form-control', 'required': "",
+                                          'data-error': _('Description must be filled.')}),
+            'low_pass': TextInput(attrs={'class': 'form-control', 'required': "",
+                                         'data-error': _('Description must be filled.')}),
+            'order': TextInput(attrs={'class': 'form-control', 'required': "",
+                                      'data-error': _('Description must be filled.')})
+
+
         }
 
 
@@ -394,7 +399,8 @@ class EEGElectrodeLocalizationSystemForm(ModelForm):
         model = EEGElectrodeLocalizationSystem
         fields = ['number_of_electrodes']
         widgets = {
-            'number_of_electrodes': TextInput(attrs={'class': 'form-control', 'disabled': ''})
+            'number_of_electrodes': TextInput(attrs={'id': 'id_system_number_of_electrodes',
+                                                     'class': 'form-control', 'disabled': ''})
         }
 
 
@@ -404,6 +410,6 @@ class EEGElectrodeLayoutSettingForm(ModelForm):
         fields = ['number_of_electrodes']
         widgets = {
             'number_of_electrodes': TextInput(attrs={'class': 'form-control',
-                                                        'required': "",
-                                                        'data-error': _('Description must be filled.')})
+                                                     'required': "",
+                                                     'data-error': _('Description must be filled.')})
         }
