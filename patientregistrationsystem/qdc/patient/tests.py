@@ -1224,6 +1224,7 @@ class QuestionnaireFormValidation(TestCase):
         settings.LIMESURVEY['URL_API'] = 'http://surveys.numec.prp.usp.br/'  # with error
         request = self.factory.get(reverse(PATIENT_VIEW, args=[patient_mock.pk]) + "?currentTab=4")
         request.user = self.user
+        request.LANGUAGE_CODE = 'pt-BR'
 
         # this was done in order to error messages can be "presented"
         setattr(request, 'session', 'session')
