@@ -734,6 +734,7 @@ def view_eeg_setting_type(request, eeg_setting_id, eeg_setting_type):
         equipment_selected = None
 
         localization_system_list = None
+        localization_system_selected = None
 
         if request.method == "POST":
             if request.POST['action'] == "save":
@@ -906,13 +907,15 @@ def view_eeg_setting_type(request, eeg_setting_id, eeg_setting_type):
 
         if eeg_setting_type == "eeg_electrode_net_system":
 
-            # localization_system_list = EEGElectrodeLocalizationSystem.objects.all()
             localization_system_list = EEGElectrodeLocalizationSystem.objects.filter(
                 set_of_electrode_net_system__isnull=False)
 
             if hasattr(eeg_setting, 'eeg_electrode_layout_setting'):
 
                 setting = eeg_setting.eeg_electrode_layout_setting
+
+                equipment_selected = setting.eeg_electrode_net_system.eeg_electrode_net
+                localization_system_selected = setting.eeg_electrode_net_system.eeg_electrode_localization_system
 
                 selection_form = EEGElectrodeLocalizationSystemForm(
                     request.POST or None,
@@ -923,6 +926,9 @@ def view_eeg_setting_type(request, eeg_setting_id, eeg_setting_type):
                 setting_form = EEGElectrodeLayoutSettingForm(
                     request.POST or None,
                     initial={'number_of_electrodes': setting.number_of_electrodes})
+
+                for field in setting_form.fields:
+                    setting_form.fields[field].widget.attrs['disabled'] = True
 
             else:
                 creating = True
@@ -983,7 +989,8 @@ def view_eeg_setting_type(request, eeg_setting_id, eeg_setting_type):
             "selection_form": selection_form,
             "setting_form": setting_form,
 
-            "localization_system_list": localization_system_list
+            "localization_system_list": localization_system_list,
+            "localization_system_selected": localization_system_selected
         }
 
         return render(request, template_name, context)
@@ -1013,9 +1020,13 @@ def edit_eeg_setting_type(request, eeg_setting_id, eeg_setting_type):
 
         equipment_selected = None
 
+        localization_system_list = None
+        localization_system_selected = None
+
         if request.method == "POST":
 
             if request.POST['action'] == "save":
+
                 if 'equipment_selection' in request.POST and 'number_of_channels_used' in request.POST:
 
                     eeg_machine = EEGMachine.objects.get(pk=request.POST['equipment_selection'])
@@ -1079,8 +1090,32 @@ def edit_eeg_setting_type(request, eeg_setting_id, eeg_setting_type):
                     redirect_url = reverse("view_eeg_setting_type", args=(eeg_setting_id, eeg_setting_type))
                     return HttpResponseRedirect(redirect_url)
 
-        if eeg_setting_type == "eeg_machine":
+                if eeg_setting_type == "eeg_electrode_net_system" \
+                        and 'equipment_selection' in request.POST \
+                        and 'localization_system_selection' in request.POST \
+                        and 'number_of_electrodes' in request.POST:
 
+                    eeg_electrode_net = \
+                        EEGElectrodeNet.objects.get(pk=request.POST['equipment_selection'])
+
+                    eeg_electrode_localization_system = \
+                        EEGElectrodeLocalizationSystem.objects.get(pk=request.POST['localization_system_selection'])
+
+                    eeg_electrode_net_system = EEGElectrodeNetSystem.objects.get(
+                        eeg_electrode_net=eeg_electrode_net,
+                        eeg_electrode_localization_system=eeg_electrode_localization_system)
+
+                    eeg_electrode_layout_setting = eeg_setting.eeg_electrode_layout_setting
+                    eeg_electrode_layout_setting.eeg_electrode_net_system = eeg_electrode_net_system
+                    eeg_electrode_layout_setting.number_of_electrodes = request.POST['number_of_electrodes']
+                    eeg_electrode_layout_setting.save()
+
+                    messages.success(request, _('EEG electrode net system setting updated sucessfully.'))
+
+                    redirect_url = reverse("view_eeg_setting_type", args=(eeg_setting_id, eeg_setting_type))
+                    return HttpResponseRedirect(redirect_url)
+
+        if eeg_setting_type == "eeg_machine":
             eeg_machine_setting = eeg_setting.eeg_machine_setting
 
             selection_form = EEGMachineForm(request.POST or None, instance=eeg_machine_setting.eeg_machine)
@@ -1099,7 +1134,6 @@ def edit_eeg_setting_type(request, eeg_setting_id, eeg_setting_type):
 
             solution_selected = eeg_solution_setting.eeg_solution
 
-
         if eeg_setting_type == "eeg_filter":
             eeg_filter_setting = eeg_setting.eeg_filter_setting
 
@@ -1107,16 +1141,6 @@ def edit_eeg_setting_type(request, eeg_setting_id, eeg_setting_type):
 
             selection_form = EEGFilterForm(request.POST or None, instance=eeg_filter_setting.eeg_filter_type)
             setting_form = EEGFilterSettingForm(request.POST or None, instance=eeg_filter_setting)
-
-
-        # Settings related to equipment
-        if eeg_setting_type in ["eeg_machine", "eeg-amplifier", "eeg_electrode_net_system"]:
-
-            equipment_list = Equipment.objects.filter(equipment_type=eeg_setting_type)
-            manufacturer_list = Manufacturer.objects.filter(
-                set_of_equipment__equipment_type=eeg_setting_type).distinct()
-
-            equipment_form = EquipmentForm(request.POST or None, instance=equipment_selected)
 
         if eeg_setting_type == "eeg_solution":
             solution_list = EEGSolution.objects.all()
@@ -1129,6 +1153,30 @@ def edit_eeg_setting_type(request, eeg_setting_id, eeg_setting_type):
 
             equipment_form = EEGFilterForm(request.POST or None, instance=filter_selected)
 
+        if eeg_setting_type == "eeg_electrode_net_system":
+
+            localization_system_list = EEGElectrodeLocalizationSystem.objects.filter(
+                set_of_electrode_net_system__isnull=False)
+
+            setting = eeg_setting.eeg_electrode_layout_setting
+
+            selection_form = EEGElectrodeLocalizationSystemForm(
+                request.POST or None,
+                instance=setting.eeg_electrode_net_system.eeg_electrode_localization_system)
+            setting_form = EEGElectrodeLayoutSettingForm(request.POST or None, instance=setting)
+
+            equipment_selected = setting.eeg_electrode_net_system.eeg_electrode_net
+            localization_system_selected = setting.eeg_electrode_net_system.eeg_electrode_localization_system
+
+        # Settings related to equipment
+        if eeg_setting_type in ["eeg_machine", "eeg-amplifier", "eeg_electrode_net_system"]:
+
+            equipment_type = "eeg_electrode_net" if eeg_setting_type == "eeg_electrode_net_system" else eeg_setting_type
+            equipment_list = Equipment.objects.filter(equipment_type=equipment_type)
+            manufacturer_list = Manufacturer.objects.filter(
+                set_of_equipment__equipment_type=equipment_type).distinct()
+
+            equipment_form = EquipmentForm(request.POST or None, instance=equipment_selected)
 
         context = {
             "creating": False,
@@ -1151,6 +1199,9 @@ def edit_eeg_setting_type(request, eeg_setting_id, eeg_setting_type):
 
             "selection_form": selection_form,
             "setting_form": setting_form,
+
+            "localization_system_list": localization_system_list,
+            "localization_system_selected": localization_system_selected
         }
 
         return render(request, template_name, context)
