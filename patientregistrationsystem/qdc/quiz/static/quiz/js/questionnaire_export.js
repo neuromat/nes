@@ -37,8 +37,8 @@ function validateFormExport() {
     var fields_selected = 0;
     var fields_counter = $("span[id ^='badge']");
 
-    alert(checkbox_per_participant);
-    alert(checkbox_per_questionnaire);
+    //alert(checkbox_per_participant);
+    //alert(checkbox_per_questionnaire);
 
     $(fields_counter).each(function (index, element){
         fields_selected = fields_selected + parseInt($(element).text());
