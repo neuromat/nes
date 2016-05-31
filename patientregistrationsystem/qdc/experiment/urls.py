@@ -31,15 +31,28 @@ urlpatterns = patterns(
     url(r'^(?P<experiment_id>\d+)/eeg_setting/new/$', 'eeg_setting_create', name='eeg_setting_new'),
     url(r'^eeg_setting/(?P<eeg_setting_id>\d+)/$', 'eeg_setting_view', name='eeg_setting_view'),
     url(r'^eeg_setting/edit/(?P<eeg_setting_id>\d+)/$', 'eeg_setting_update', name='eeg_setting_edit'),
-    url(r'^eeg_setting/(?P<eeg_setting_id>\d+)/add_equipment/(?P<equipment_type>\w+)/$',
-        'equipment_add', name='equipment_add'),
+    url(r'^eeg_setting/(?P<eeg_setting_id>\d+)/(?P<eeg_setting_type>\w+)/$',
+        'view_eeg_setting_type', name='view_eeg_setting_type'),
+    url(r'^eeg_setting/(?P<eeg_setting_id>\d+)/(?P<eeg_setting_type>\w+)/edit/$',
+        'edit_eeg_setting_type', name='edit_eeg_setting_type'),
     url(r'^eeg_setting/(?P<eeg_setting_id>\d+)/equipment/(?P<equipment_id>\d+)/$',
         'equipment_view', name='equipment_view'),
+    url(r'^eeg_setting/eeg_electrode_position_status/(?P<eeg_setting_id>\d+)/$',
+        'eeg_electrode_position_setting', name='eeg_electrode_position_setting'),
 
     # eeg setting (ajax)
     url(r'^equipment/get_equipment_by_manufacturer/(?P<equipment_type>\w+)/(?P<manufacturer_id>\d+)/$',
         'get_json_equipment_by_manufacturer'),
     url(r'^equipment/(?P<equipment_id>\d+)/attributes/$', 'get_json_equipment_attributes'),
+    url(r'^solution/(?P<solution_id>\d+)/attributes/$', 'get_json_solution_attributes'),
+    url(r'^filter/(?P<filter_id>\d+)/attributes/$', 'get_json_filter_attributes'),
+    url(r'^eeg_localization_system/(?P<eeg_localization_system_id>\d+)/attributes/$',
+        'get_json_eeg_localization_system_attributes'),
+    url(r'^equipment/get_localization_system_by_electrode_net/(?P<equipment_id>\d+)/$',
+        'get_localization_system_by_electrode_net'),
+    url(r'^equipment/get_equipment_by_manufacturer_and_localization_system/'
+        r'(?P<manufacturer_id>\w+)/(?P<eeg_localization_system_id>\d+)/$',
+        'get_equipment_by_manufacturer_and_localization_system'),
 
     # cid
     url(r'^group_diseases/cid-10/$', 'search_cid10_ajax', name='cid10_search'),
@@ -59,7 +72,7 @@ urlpatterns = patterns(
     # subject + questionnaire
     url(r'^group/(?P<group_id>\d+)/subject/(?P<subject_id>\d+)/$',
         'subject_questionnaire_view', name='subject_questionnaire'),
-    url(r'^group/(?P<group_id>\d+)/subject/(?P<subject_id>\d+)/questionnaire/(?P<questionnaire_id>\d+)/add_response/$',
+    url(r'^group/(?P<group_id>\d+)/subject/(?P<subject_id>\d+)/questionnaire/(?P<questionnaire_id>[0-9-]+)/add_response/$',
         'subject_questionnaire_response_create', name='subject_questionnaire_response'),
     url(r'^questionnaire_response/edit/(?P<questionnaire_response_id>\d+)/$',
         'questionnaire_response_edit', name='questionnaire_response_edit'),
@@ -69,7 +82,7 @@ urlpatterns = patterns(
     # subject + eeg data
     url(r'^group/(?P<group_id>\d+)/subject/(?P<subject_id>\d+)/eeg/$',
         'subject_eeg_view', name='subject_eeg_view'),
-    url(r'^group/(?P<group_id>\d+)/subject/(?P<subject_id>\d+)/eeg/(?P<eeg_configuration_id>\d+)/add_eeg_data/$',
+    url(r'^group/(?P<group_id>\d+)/subject/(?P<subject_id>\d+)/eeg/(?P<eeg_configuration_id>[0-9-]+)/add_eeg_data/$',
         'subject_eeg_data_create', name='subject_eeg_data_create'),
     url(r'^eeg_data/(?P<eeg_data_id>\d+)/$', 'eeg_data_view', name='eeg_data_view'),
     url(r'^eeg_data/edit/(?P<eeg_data_id>\d+)/$', 'eeg_data_edit', name='eeg_data_edit'),

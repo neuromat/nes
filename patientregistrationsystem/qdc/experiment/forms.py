@@ -6,7 +6,9 @@ from django.utils.translation import ugettext_lazy as _
 
 from experiment.models import Experiment, QuestionnaireResponse, SubjectOfGroup, Group, \
     Component, Stimulus, Block, Instruction, ComponentConfiguration, ResearchProject, EEGData, \
-    EEGSetting, Equipment, EEG
+    EEGSetting, Equipment, EEG, EEGMachine, EEGMachineSetting, EEGAmplifier, EEGAmplifierSetting, \
+    EEGSolution, EEGFilterSetting, EEGFilterType, EEGElectrodeLayoutSetting, EEGElectrodeLocalizationSystem
+
 
 
 class ExperimentForm(ModelForm):
@@ -304,16 +306,112 @@ class EEGSettingForm(ModelForm):
 class EquipmentForm(ModelForm):
     class Meta:
         model = Equipment
-
-        fields = ['identification', 'description']
-
-
-class FilterEquipmentForm(ModelForm):
-    class Meta:
-        model = Equipment
-        fields = ['description', 'serial_number']
+        fields = ['description']
 
         widgets = {
-            'description': Textarea(attrs={'class': 'form-control', 'rows': '4', 'disabled': ''}),
-            'serial_number': TextInput(attrs={'class': 'form-control', 'disabled': ''})
+            'description': Textarea(attrs={'class': 'form-control', 'rows': '4', 'disabled': ''})
         }
+
+
+class EEGMachineForm(ModelForm):
+    class Meta:
+        model = EEGMachine
+        fields = ['number_of_channels', 'software_version']
+
+        widgets = {
+            'number_of_channels': TextInput(attrs={'class': 'form-control', 'disabled': ''}),
+            'software_version': TextInput(attrs={'class': 'form-control', 'disabled': ''})
+        }
+
+
+class EEGMachineSettingForm(ModelForm):
+    class Meta:
+        model = EEGMachineSetting
+        fields = ['number_of_channels_used']
+
+        widgets = {
+            'number_of_channels_used': TextInput(attrs={'class': 'form-control',
+                                                        'required': "",
+                                                        'data-error': _('Description must be filled.')})
+        }
+
+
+class EEGAmplifierForm(ModelForm):
+    class Meta:
+        model = EEGAmplifier
+        fields = ['gain']
+
+        widgets = {
+            'gain': TextInput(attrs={'class': 'form-control', 'disabled': ''})
+        }
+
+
+class EEGAmplifierSettingForm(ModelForm):
+    class Meta:
+        model = EEGAmplifierSetting
+        fields = ['gain']
+
+        widgets = {
+            'gain': TextInput(attrs={'class': 'form-control',
+                                     'required': "",
+                                     'data-error': _('Description must be filled.')})
+        }
+
+
+class EEGSolutionForm(ModelForm):
+    class Meta:
+        model = EEGSolution
+        fields = ['components']
+
+        widgets = {
+            'components': Textarea(attrs={'id': 'id_description', 'class': 'form-control', 'rows': '4', 'disabled': ''})
+        }
+
+
+class EEGFilterForm(ModelForm):
+    class Meta:
+        model = EEGFilterType
+        fields = ['description']
+
+        widgets = {
+            'description': Textarea(attrs={'class': 'form-control', 'rows': '4', 'disabled': ''})
+        }
+
+
+class EEGFilterSettingForm(ModelForm):
+    class Meta:
+        model = EEGFilterSetting
+        fields =['high_pass', 'low_pass', 'order']
+
+        widgets = {
+            'high_pass': TextInput(attrs={'class': 'form-control', 'required': "",
+                                          'data-error': _('Description must be filled.')}),
+            'low_pass': TextInput(attrs={'class': 'form-control', 'required': "",
+                                         'data-error': _('Description must be filled.')}),
+            'order': TextInput(attrs={'class': 'form-control', 'required': "",
+                                      'data-error': _('Description must be filled.')})
+
+
+        }
+
+
+class EEGElectrodeLocalizationSystemForm(ModelForm):
+    class Meta:
+        model = EEGElectrodeLocalizationSystem
+        fields = ['number_of_electrodes']
+        widgets = {
+            'number_of_electrodes': TextInput(attrs={'id': 'id_system_number_of_electrodes',
+                                                     'class': 'form-control', 'disabled': ''})
+        }
+
+
+class EEGElectrodeLayoutSettingForm(ModelForm):
+    class Meta:
+        model = EEGElectrodeLayoutSetting
+        fields = ['number_of_electrodes']
+        widgets = {
+            'number_of_electrodes': TextInput(attrs={'class': 'form-control',
+                                                     'required': "",
+                                                     'data-error': _('Description must be filled.')})
+        }
+

@@ -693,7 +693,7 @@ def export_view(request, template_name="export/export_data.html"):
 
     context = {
 
-        "limesurvey_available": limesurvey_available,
+        # "limesurvey_available": limesurvey_available,
         "export_form": export_form,
         # "questionnaires_list": questionnaires_list_final,
         # "contacts": contacts,

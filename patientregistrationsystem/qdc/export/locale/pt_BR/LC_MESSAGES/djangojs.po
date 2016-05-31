@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2016-04-28 20:42-0300\n"
+"POT-Creation-Date: 2016-05-30 17:11-0300\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -18,6 +18,202 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=(n > 1);\n"
 
-#: export/templates/export/export_data.html:60
+#: export/export.py:66 export/export.py:67 export/export.py:73
+#: export/views.py:126 export/views.py:127 export/views.py:131
+#: export/views.py:132
+msgid "Participation code"
+msgstr ""
+
+#: export/export.py:127 export/tests.py:187
+msgid "Base path does not exist"
+msgstr ""
+
+#: export/forms.py:13
+msgid "All participants"
+msgstr ""
+
+#: export/forms.py:14
+msgid "Selected participants"
+msgstr ""
+
+#: export/forms.py:18
+msgid "Question code"
+msgstr ""
+
+#: export/forms.py:19
+msgid "Full question text"
+msgstr ""
+
+#: export/forms.py:20
+msgid "Abbreviated question text"
+msgstr ""
+
+#: export/forms.py:24
+msgid "Answer codes"
+msgstr ""
+
+#: export/forms.py:25
+msgid "Full answers"
+msgstr ""
+
+#: export/forms.py:40
+msgid "Response must be selected"
+msgstr ""
+
+#: export/forms.py:58
+msgid "Either one or both Per participant/Per questionnaire must be set."
+msgstr ""
+
+#: export/forms.py:89
+msgid "Min age must be filled."
+msgstr ""
+
+#: export/forms.py:92
+msgid "Max age must be filled."
+msgstr ""
+
+#: export/templates/export/export_data.html:61
 msgid "Please, correct the highlighted fields."
 msgstr "Por favor, corrija os campos em destaque."
+
+#: export/views.py:80
+msgid "Identification"
+msgstr ""
+
+#: export/views.py:81
+msgid "Full name"
+msgstr ""
+
+#: export/views.py:82
+msgid "Gender"
+msgstr ""
+
+#: export/views.py:83
+msgid "Date of birth"
+msgstr ""
+
+#: export/views.py:84
+msgid "Marital status"
+msgstr ""
+
+#: export/views.py:85
+msgid "Origin"
+msgstr ""
+
+#: export/views.py:86
+msgid "City"
+msgstr ""
+
+#: export/views.py:87
+msgid "State"
+msgstr ""
+
+#: export/views.py:88
+msgid "Country"
+msgstr ""
+
+#: export/views.py:89
+msgid "Natural of"
+msgstr ""
+
+#: export/views.py:90
+msgid "Schooling"
+msgstr ""
+
+#: export/views.py:91
+msgid "Profession"
+msgstr ""
+
+#: export/views.py:93
+msgid "Calculated social class"
+msgstr ""
+
+#: export/views.py:94
+msgid "Occupation"
+msgstr ""
+
+#: export/views.py:96
+msgid "What form of payment of the treatment performed"
+msgstr ""
+
+#: export/views.py:97
+msgid "Religion"
+msgstr ""
+
+#: export/views.py:98
+msgid "Flesh tone"
+msgstr ""
+
+#: export/views.py:99
+msgid "Citizenship"
+msgstr ""
+
+#: export/views.py:101
+msgid ""
+"Do you receive some benefit from the municipal level, state or federal "
+"government?"
+msgstr ""
+
+#: export/views.py:102
+msgid "Smoker"
+msgstr ""
+
+#: export/views.py:104
+msgid "Cigarretes/Day"
+msgstr ""
+
+#: export/views.py:105
+msgid "Former smoker"
+msgstr ""
+
+#: export/views.py:106
+msgid "Alcoholic"
+msgstr ""
+
+#: export/views.py:107
+msgid "Frequency"
+msgstr ""
+
+#: export/views.py:108
+msgid "Period"
+msgstr ""
+
+#: export/views.py:109
+msgid "Drugs"
+msgstr ""
+
+#: export/views.py:113
+msgid "Date"
+msgstr ""
+
+#: export/views.py:115
+msgid "Observation"
+msgstr ""
+
+#: export/views.py:117
+msgid "Disease code (ICD)"
+msgstr ""
+
+#: export/views.py:119
+msgid "Disease Description"
+msgstr ""
+
+#: export/views.py:121
+msgid "Disease Abbreviated Description"
+msgstr ""
+
+#: export/views.py:357
+msgid "Inconsistent data read from json file"
+msgstr ""
+
+#: export/views.py:606
+msgid "Export was finished correctly"
+msgstr ""
+
+#: export/views.py:624
+msgid "Export data was not generated."
+msgstr ""
+
+#: export/views.py:637
+msgid "No data was select. Export data was not generated."
+msgstr ""
