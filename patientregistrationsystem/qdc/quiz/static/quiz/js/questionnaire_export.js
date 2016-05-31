@@ -68,6 +68,7 @@ function validateFormExport() {
 
 function onClickRun() {
     //alert("entrou click");
+    var field_counter = $("span[id ^='badge']:first");
     var check_validation = validateFormExport();
 
     if (check_validation == 0){
@@ -80,7 +81,7 @@ function onClickRun() {
         }
         else{
             showWarningMessage(gettext("At least one questionnaire field have to be set."));
-            $("h4").focus();
+            $(field_counter).focus();
         }
         return false;
     }

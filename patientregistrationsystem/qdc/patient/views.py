@@ -17,6 +17,7 @@ from django.conf import settings
 from django.utils.translation import ugettext as _
 
 from experiment.models import Subject, SubjectOfGroup, QuestionnaireResponse as ExperimentQuestionnaireResponse
+from export.export import get_questionnaire_language
 
 from patient.forms import QuestionnaireResponseForm
 from patient.forms import PatientForm, TelephoneForm, SocialDemographicDataForm, SocialHistoryDataForm, \
@@ -431,14 +432,18 @@ def patient_view_questionnaires(request, patient, context, is_update):
 
     initial_evaluation_list = Survey.objects.filter(is_initial_evaluation=True)
 
+    language_code = request.LANGUAGE_CODE
+
     # first, add initial evaluation...
 
     for initial_evaluation in initial_evaluation_list:
+
+        language = get_questionnaire_language(surveys, initial_evaluation.lime_survey_id, language_code)
         patient_questionnaires_data_dictionary[initial_evaluation.lime_survey_id] = \
             {
                 'is_initial_evaluation': True,
                 'survey_id': initial_evaluation.pk,
-                'questionnaire_title': surveys.get_survey_title(initial_evaluation.lime_survey_id),
+                'questionnaire_title': surveys.get_survey_title(initial_evaluation.lime_survey_id, language),
                 'questionnaire_responses': []
             }
 
@@ -452,11 +457,12 @@ def patient_view_questionnaires(request, patient, context, is_update):
         limesurvey_id = patient_questionnaire_response.survey.lime_survey_id
 
         if limesurvey_id not in patient_questionnaires_data_dictionary:
+            language = get_questionnaire_language(surveys, limesurvey_id, language_code)
             patient_questionnaires_data_dictionary[limesurvey_id] = \
                 {
                     'is_initial_evaluation': False,
                     'survey_id': patient_questionnaire_response.survey.pk,
-                    'questionnaire_title': surveys.get_survey_title(limesurvey_id),
+                    'questionnaire_title': surveys.get_survey_title(limesurvey_id, language),
                     'questionnaire_responses': []
                 }
 
