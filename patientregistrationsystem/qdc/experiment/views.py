@@ -1343,8 +1343,9 @@ def subjects(request, group_id, template_name="experiment/subjects.html"):
 
             # for each component_configuration...
             for eeg_configuration in list_of_eeg_configuration:
-                eeg_data_files = EEGData.objects.filter(subject_of_group=subject_of_group,
-                                                        data_configuration_tree__component_configuration=eeg_configuration)
+                eeg_data_files = \
+                    EEGData.objects.filter(subject_of_group=subject_of_group,
+                                           data_configuration_tree__component_configuration=eeg_configuration)
                 if len(eeg_data_files):
                     number_of_eeg_data_files_uploaded += 1
 
@@ -1406,8 +1407,13 @@ def subjects(request, group_id, template_name="experiment/subjects.html"):
     return render(request, template_name, context)
 
 
-def subject_questionnaire_response_start_fill_questionnaire(request, subject_id, group_id, questionnaire_id):
+def subject_questionnaire_response_start_fill_questionnaire(request, subject_id, group_id, questionnaire_id,
+                                                            list_of_path):
     questionnaire_response_form = QuestionnaireResponseForm(request.POST)
+
+    data_configuration_tree_id = list_data_configuration_tree(questionnaire_id, list_of_path)
+    if not data_configuration_tree_id:
+        data_configuration_tree_id = create_data_configuration_tree(list_of_path)
 
     if questionnaire_response_form.is_valid():
         questionnaire_response = questionnaire_response_form.save(commit=False)
@@ -1439,6 +1445,7 @@ def subject_questionnaire_response_start_fill_questionnaire(request, subject_id,
                                'Check if questionnaire is active.'))
             return None, None
 
+        questionnaire_response.data_configuration_tree_id = data_configuration_tree_id
         questionnaire_response.subject_of_group = subject_of_group
         questionnaire_response.component_configuration = questionnaire_config
         questionnaire_response.token_id = result['token_id']
@@ -1454,7 +1461,8 @@ def subject_questionnaire_response_start_fill_questionnaire(request, subject_id,
 
 
 def get_limesurvey_response_url(questionnaire_response):
-    questionnaire = Questionnaire.objects.get(id=questionnaire_response.component_configuration.component.id)
+    questionnaire = Questionnaire.objects.get(
+        id=questionnaire_response.data_configuration_tree.component_configuration.component.id)
 
     questionnaire_lime_survey = Questionnaires()
     token = questionnaire_lime_survey.get_participant_properties(questionnaire.survey.lime_survey_id,
@@ -1479,6 +1487,9 @@ def subject_questionnaire_response_create(request, group_id, subject_id, questio
                                           template_name="experiment/subject_questionnaire_response_form.html"):
     group = get_object_or_404(Group, id=group_id)
 
+    list_of_path = [int(item) for item in questionnaire_id.split('-')]
+    questionnaire_id = list_of_path[-1]
+
     if get_can_change(request.user, group.experiment.research_project):
         questionnaire_config = get_object_or_404(ComponentConfiguration, id=questionnaire_id)
         surveys = Questionnaires()
@@ -1495,7 +1506,7 @@ def subject_questionnaire_response_create(request, group_id, subject_id, questio
         if request.method == "POST":
             if request.POST['action'] == "save":
                 redirect_url, questionnaire_response_id = subject_questionnaire_response_start_fill_questionnaire(
-                    request, subject_id, group_id, questionnaire_id)
+                    request, subject_id, group_id, questionnaire_id, list_of_path)
                 if not redirect_url:
                     fail = True
                 else:
@@ -1528,7 +1539,8 @@ def subject_questionnaire_response_create(request, group_id, subject_id, questio
 def questionnaire_response_edit(request, questionnaire_response_id,
                                 template_name="experiment/subject_questionnaire_response_form.html"):
     questionnaire_response = get_object_or_404(QuestionnaireResponse, id=questionnaire_response_id)
-    questionnaire = Questionnaire.objects.get(id=questionnaire_response.component_configuration.component.id)
+    questionnaire = Questionnaire.objects.get(
+        id=questionnaire_response.data_configuration_tree.component_configuration.component.id)
     group = questionnaire_response.subject_of_group.group
     subject = questionnaire_response.subject_of_group.subject
 
@@ -1584,8 +1596,10 @@ def questionnaire_response_edit(request, questionnaire_response_id,
                     if origin == "experiment_subject":
                         redirect_url = reverse("subject_questionnaire", args=(group.id, subject.id,))
                     else:
-                        redirect_url = reverse("questionnaire_view",
-                                               args=(group.id, questionnaire_response.component_configuration.id,))
+                        redirect_url = \
+                            reverse("questionnaire_view",
+                                    args=(group.id,
+                                          questionnaire_response.data_configuration_tree.component_configuration.id,))
 
                     return HttpResponseRedirect(redirect_url)
                 else:
@@ -1600,7 +1614,7 @@ def questionnaire_response_edit(request, questionnaire_response_id,
         "FAIL": fail,
         "group": group,
         "origin": origin,
-        "questionnaire_configuration": questionnaire_response.component_configuration,
+        "questionnaire_configuration": questionnaire_response.data_configuration_tree.component_configuration,
         "questionnaire_response_form": questionnaire_response_form,
         "questionnaire_response_id": questionnaire_response_id,
         "questionnaire_responsible": questionnaire_response.questionnaire_responsible,
@@ -1686,7 +1700,8 @@ def check_required_fields(surveys, lime_survey_id):
 def questionnaire_response_view(request, questionnaire_response_id,
                                 template_name="experiment/subject_questionnaire_response_form.html"):
     questionnaire_response = get_object_or_404(QuestionnaireResponse, id=questionnaire_response_id)
-    questionnaire = Questionnaire.objects.get(id=questionnaire_response.component_configuration.component.id)
+    questionnaire = Questionnaire.objects.get(
+        id=questionnaire_response.data_configuration_tree.component_configuration.component.id)
     group = questionnaire_response.subject_of_group.group
     subject = questionnaire_response.subject_of_group.subject
 
@@ -1756,7 +1771,7 @@ def questionnaire_response_view(request, questionnaire_response_id,
         "creating": False,
         "group": group,
         "origin": origin,
-        "questionnaire_configuration": questionnaire_response.component_configuration,
+        "questionnaire_configuration": questionnaire_response.data_configuration_tree.component_configuration,
         "questionnaire_response": questionnaire_response,
         "questionnaire_response_form": questionnaire_response_form,
         "questionnaire_response_id": questionnaire_response_id,
@@ -1783,18 +1798,22 @@ def subject_questionnaire_view(request, group_id, subject_id,
     surveys = Questionnaires()
     limesurvey_available = check_limesurvey_access(request, surveys)
 
-    list_of_questionnaires_configuration = recursively_create_list_of_steps(group.experimental_protocol,
-                                                                            "questionnaire",
-                                                                            [])
     subject_of_group = get_object_or_404(SubjectOfGroup, group=group, subject=subject)
 
-    for questionnaire_configuration in list_of_questionnaires_configuration:
-        questionnaire_responses = QuestionnaireResponse.objects. \
-            filter(subject_of_group=subject_of_group,
-                   data_configuration_tree__component_configuration=questionnaire_configuration)
+    list_of_paths = create_list_of_trees(group.experimental_protocol, "questionnaire")
+
+    for path in list_of_paths:
+        questionnaire_response = ComponentConfiguration.objects.get(pk=path[-1][0])
+
+        data_configuration_tree_id = list_data_configuration_tree(questionnaire_response.id, [item[0] for item in path])
+
+        questionnaire_responses = \
+            QuestionnaireResponse.objects.filter(subject_of_group=subject_of_group,
+                                                 data_configuration_tree__id=data_configuration_tree_id)
 
         questionnaire_responses_with_status = []
 
+        questionnaire_configuration = get_object_or_404(ComponentConfiguration, pk=path[-1][0])
         questionnaire = Questionnaire.objects.get(id=questionnaire_configuration.component.id)
 
         for questionnaire_response in questionnaire_responses:
@@ -1809,6 +1828,7 @@ def subject_questionnaire_view(request, group_id, subject_id,
         subject_questionnaires.append(
             {'questionnaire_configuration': questionnaire_configuration,
              'title': surveys.get_survey_title(questionnaire.survey.lime_survey_id),
+             'path': path,
              'questionnaire_responses': questionnaire_responses_with_status}
         )
 

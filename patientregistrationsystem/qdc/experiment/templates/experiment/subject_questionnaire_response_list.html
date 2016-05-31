@@ -82,6 +82,9 @@
                                                 <br/>
                                                  <blockquote>
                                                     <i><h6>
+                                                    {% for item in subject_questionnaire.path %}
+                                                        {{ item.1 }} > {% if item.2 %}{{ item.2 }} > {% endif %} {% if forloop.last %}{{ item.3 }}{% endif %}
+                                                    {% endfor %} <br/><br/>
                                                     {% trans "Quantity of fills:" %}
                                                     {% if subject_questionnaire.questionnaire_configuration.number_of_repetitions != None %}
                                                         {{ subject_questionnaire.questionnaire_configuration.number_of_repetitions }}
@@ -127,7 +130,7 @@
                                                         {% if subject_questionnaire.questionnaire_configuration.number_of_repetitions == None or subject_questionnaire.questionnaire_responses|length < subject_questionnaire.questionnaire_configuration.number_of_repetitions %}
                                                             {% if perms.experiment.add_questionnaireresponse and can_change %}
                                                                 <td colspan="2">
-                                                                    <a href="/experiment/group/{{ group.id }}/subject/{{ subject.id }}/questionnaire/{{ subject_questionnaire.questionnaire_configuration.id }}/add_response/?origin=experiment_subject" class="btn btn-primary {% if not limesurvey_available %} disabled {% endif %}">
+                                                                    <a href="/experiment/group/{{ group.id }}/subject/{{ subject.id }}/questionnaire/{% for item in subject_questionnaire.path %}{{ item.0 }}{% if not forloop.last %}-{% endif %}{% endfor %}/add_response/?origin=experiment_subject" class="btn btn-primary {% if not limesurvey_available %} disabled {% endif %}">
                                                                         {% trans "New fill" %}
                                                                     </a>
                                                                 </td>
