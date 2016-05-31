@@ -10,6 +10,7 @@ from experiment.models import Experiment, QuestionnaireResponse, SubjectOfGroup,
     EEGSolution, EEGFilterSetting, EEGFilterType, EEGElectrodeLayoutSetting, EEGElectrodeLocalizationSystem
 
 
+
 class ExperimentForm(ModelForm):
     class Meta:
         model = Experiment
@@ -413,3 +414,4 @@ class EEGElectrodeLayoutSettingForm(ModelForm):
                                                      'required': "",
                                                      'data-error': _('Description must be filled.')})
         }
+
