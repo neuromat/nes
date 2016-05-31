@@ -3,7 +3,7 @@ from simple_history.admin import SimpleHistoryAdmin
 from modeltranslation.admin import TranslationAdmin
 
 from experiment.models import Experiment, QuestionnaireResponse, StimulusType, FileFormat, \
-    Manufacturer, Equipment
+    Manufacturer, Equipment, EEGElectrodeLocalizationSystem
 
 admin.site.register(Experiment, SimpleHistoryAdmin)
 admin.site.register(QuestionnaireResponse, SimpleHistoryAdmin)
@@ -21,3 +21,5 @@ admin.site.register(FileFormat, FileFormatAdmin)
 
 admin.site.register(Manufacturer)
 admin.site.register(Equipment)
+
+admin.site.register(EEGElectrodeLocalizationSystem)
