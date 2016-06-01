@@ -187,6 +187,9 @@ class EEGElectrodeLocalizationSystem(models.Model):
     number_of_electrodes = models.IntegerField(null=True, blank=True)
     map_image_file = models.FileField(upload_to=get_eeg_electrode_system_dir, null=True, blank=True)
 
+    def __str__(self):
+        return self.name
+
 
 class EEGElectrodePosition(models.Model):
     eeg_electrode_localization_system = models.ForeignKey(EEGElectrodeLocalizationSystem)
@@ -245,7 +248,7 @@ class EEGElectrodeLayoutSetting(models.Model):
 
 
 class EEGElectrodePositionSetting(models.Model):
-    eeg_electrode_layout_setting = models.ForeignKey(EEGElectrodeLayoutSetting)
+    eeg_electrode_layout_setting = models.ForeignKey(EEGElectrodeLayoutSetting, related_name='positions_setting')
     eeg_electrode_position = models.ForeignKey(EEGElectrodePosition)
     used = models.BooleanField()
 

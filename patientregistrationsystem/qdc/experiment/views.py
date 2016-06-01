@@ -832,9 +832,11 @@ def view_eeg_setting_type(request, eeg_setting_id, eeg_setting_type):
                             new_position_setting.eeg_electrode_layout_setting = eeg_electrode_layout_setting
                             new_position_setting.save()
 
+                    messages.info(request, _('Now you can set each electrode position.'))
+
                     messages.success(request, _('EEG electrode net system setting created sucessfully.'))
 
-                    redirect_url = reverse("eeg_setting_view", args=(eeg_setting_id,))
+                    redirect_url = reverse("eeg_electrode_position_setting", args=(eeg_setting_id,))
                     return HttpResponseRedirect(redirect_url)
 
         if eeg_setting_type == "eeg_machine":
@@ -937,7 +939,7 @@ def view_eeg_setting_type(request, eeg_setting_id, eeg_setting_type):
                 setting_form = EEGElectrodeLayoutSettingForm(request.POST or None)
 
         # Settings related to equipment
-        if eeg_setting_type in ["eeg_machine", "eeg-amplifier", "eeg_electrode_net_system"]:
+        if eeg_setting_type in ["eeg_machine", "eeg_amplifier", "eeg_electrode_net_system"]:
 
             equipment_type = "eeg_electrode_net" if eeg_setting_type == "eeg_electrode_net_system" else eeg_setting_type
 
@@ -1308,6 +1310,32 @@ def get_equipment_by_manufacturer_and_localization_system(request, manufacturer_
         equipment = equipment.filter(manufacturer_id=manufacturer_id)
     json_equipment = serializers.serialize("json", equipment)
     return HttpResponse(json_equipment, content_type ='application/json')
+
+
+@login_required
+@permission_required('experiment.change_experiment')
+def eeg_electrode_position_setting(request, eeg_setting_id,
+                                  template_name="experiment/eeg_setting_electrode_position_status.html"):
+
+    eeg_setting = get_object_or_404(EEGSetting, pk=eeg_setting_id)
+
+    if get_can_change(request.user, eeg_setting.experiment.research_project):
+
+        #if request.method == "POST":
+            #if request.POST['action'] == "save":
+                #eeg_electrode_position_setting =
+
+        context = {
+            "eeg_setting": eeg_setting
+        }
+
+        return render(request, template_name, context)
+    else:
+        raise PermissionDenied
+
+
+
+
 
 
 @login_required
