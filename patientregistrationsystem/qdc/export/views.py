@@ -21,7 +21,7 @@ from shutil import rmtree
 
 from .forms import ExportForm, ParticipantsSelectionForm, AgeIntervalForm
 from .models import Export
-from .export import ExportExecution, perform_csv_response, create_directory, get_questionnaire_language
+from .export import ExportExecution, perform_csv_response, create_directory
 
 from export.input_export import build_complete_export_structure
 
@@ -30,6 +30,7 @@ from patient.views import check_limesurvey_access
 
 from survey.models import Survey
 from survey.abc_search_engine import Questionnaires
+from survey.views import get_questionnaire_language
 
 JSON_FILENAME = "json_export.json"
 EXPORT_DIRECTORY = "export"
