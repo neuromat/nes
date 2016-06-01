@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2016-03-31 14:05-0300\n"
+"POT-Creation-Date: 2016-06-01 14:58-0300\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -16,6 +16,143 @@ msgstr ""
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
+
+#: patient/forms.py:26 patient/tests.py:546
+msgid "Name must be included"
+msgstr ""
+
+#: patient/forms.py:31 patient/forms.py:134 patient/forms.py:159
+#: patient/views.py:713 patient/views.py:1226
+msgid "%m/%d/%Y"
+msgstr ""
+
+#: patient/forms.py:32 patient/forms.py:135 patient/forms.py:160
+msgid "mm/dd/yyyy"
+msgstr ""
+
+#: patient/forms.py:33
+msgid "Date of birth must be completed"
+msgstr ""
+
+#: patient/forms.py:35
+msgid "Gender must be filled"
+msgstr ""
+
+#: patient/forms.py:50 patient/tests.py:531
+msgid "Incorrect e-mail"
+msgstr ""
+
+#: patient/forms.py:71 patient/forms.py:105 patient/forms.py:109
+#: patient/forms.py:113
+msgid "Yes"
+msgstr ""
+
+#: patient/forms.py:71 patient/forms.py:105 patient/forms.py:109
+#: patient/forms.py:113
+msgid "No"
+msgstr ""
+
+#: patient/forms.py:86
+msgid "Type in profession"
+msgstr ""
+
+#: patient/forms.py:87
+msgid "Inform occupation"
+msgstr ""
+
+#: patient/forms.py:89 patient/forms.py:90 patient/forms.py:91
+#: patient/forms.py:92 patient/forms.py:93 patient/forms.py:94
+#: patient/forms.py:95 patient/forms.py:96 patient/forms.py:97
+msgid "4 or +"
+msgstr ""
+
+#: patient/forms.py:124
+msgid "Have already used"
+msgstr ""
+
+#: patient/forms.py:124
+msgid "It is using"
+msgstr ""
+
+#: patient/forms.py:125
+msgid "Have never used"
+msgstr ""
+
+#: patient/forms.py:136
+msgid "Date must be completed"
+msgstr ""
+
+#: patient/forms.py:137
+msgid "Description"
+msgstr ""
+
+#: patient/forms.py:138
+msgid "Description must be filled in"
+msgstr ""
+
+#: patient/forms.py:139
+msgid "Doctor"
+msgstr ""
+
+#: patient/forms.py:140
+msgid "CRM"
+msgstr ""
+
+#: patient/forms.py:141
+msgid "Place of execution"
+msgstr ""
+
+#: patient/forms.py:162
+msgid "Fill date must be filled"
+msgstr ""
+
+#: patient/models.py:19
+msgid "Fill date can not be bigger than today's date."
+msgstr ""
+
+#: patient/models.py:27
+msgid "CPF %(CPF)s invalid"
+msgstr ""
+
+#: patient/models.py:34
+msgid "Date of birth can't be greater than today date."
+msgstr ""
+
+#: patient/models.py:174
+msgid "Cell phone"
+msgstr ""
+
+#: patient/models.py:175
+msgid "Home phone"
+msgstr ""
+
+#: patient/models.py:176
+msgid "Business"
+msgstr ""
+
+#: patient/models.py:177
+msgid "Main"
+msgstr ""
+
+#: patient/models.py:178
+msgid "Business fax"
+msgstr ""
+
+#: patient/models.py:179
+msgid "Home fax"
+msgstr ""
+
+#: patient/models.py:180
+msgid "Pager"
+msgstr ""
+
+#: patient/models.py:181
+msgid "Other"
+msgstr ""
+
+#: patient/models.py:392
+msgid "token id: "
+msgstr ""
 
 #: patient/templates/patient/exams.html:99
 msgid "Exam was not saved. Please, correct fields highlighted."
@@ -28,3 +165,111 @@ msgstr "Medical evaluation was not saved. Fields with (*) are obligatory."
 #: patient/templates/patient/register_personal_data.html:31
 msgid "Participant was not saved. Please, correct fields highlighted."
 msgstr "Participant was not saved. Please, correct fields highlighted."
+
+#: patient/tests.py:284
+msgid " is not valid"
+msgstr ""
+
+#: patient/tests.py:450 patient/tests.py:462 patient/tests.py:473
+msgid "Social class was not calculated"
+msgstr ""
+
+#: patient/tests.py:461 patient/views.py:242
+msgid "Social demographic data successfully written."
+msgstr ""
+
+#: patient/tests.py:476
+msgid "Less than 1 pack"
+msgstr ""
+
+#: patient/tests.py:479
+msgid "Sporadically"
+msgstr ""
+
+#: patient/tests.py:482
+msgid "Less than 1 year"
+msgstr ""
+
+#: patient/tests.py:516 patient/views.py:267
+msgid "Social history successfully recorded."
+msgstr ""
+
+#: patient/views.py:70 patient/views.py:167
+msgid "Personal data successfully written."
+msgstr ""
+
+#: patient/views.py:78
+msgid "Participant with this CPF has already removed."
+msgstr ""
+
+#: patient/views.py:80
+msgid "There is already registered participant with this CPF."
+msgstr ""
+
+#: patient/views.py:236
+msgid "Social class was not calculated, "
+msgstr ""
+
+#: patient/views.py:718
+msgid "Diagnosis details successfully changed."
+msgstr ""
+
+#: patient/views.py:724
+msgid "Incorrect date. Use format: mm/dd/yyyy"
+msgstr ""
+
+#: patient/views.py:745
+msgid "Medical evaluation successfully deleted."
+msgstr ""
+
+#: patient/views.py:758
+msgid "Diagnosis has already exist in this medical assessment."
+msgstr ""
+
+#: patient/views.py:791
+msgid "Diagnosis can not be deleted. You must delete exams before."
+msgstr ""
+
+#: patient/views.py:796
+msgid "Diagnosis successfully deleted."
+msgstr ""
+
+#: patient/views.py:838 patient/views.py:904
+msgid "Exam successfully saved."
+msgstr ""
+
+#: patient/views.py:854 patient/views.py:918
+msgid "It is not possible to save exam without files."
+msgstr ""
+
+#: patient/views.py:983
+msgid "Exam successfully deleted."
+msgstr ""
+
+#: patient/views.py:1007
+msgid "Attachment successfully deleted."
+msgstr ""
+
+#: patient/views.py:1144 patient/views.py:1332
+msgid "Fill deleted successfully"
+msgstr ""
+
+#: patient/views.py:1146 patient/views.py:1334
+msgid "Error trying to delete"
+msgstr ""
+
+#: patient/views.py:1200
+msgid "Not available filling - tokens table not started"
+msgstr ""
+
+#: patient/views.py:1205
+msgid "Not available filling - questionnaire not active"
+msgstr ""
+
+#: patient/views.py:1210
+msgid "Not available filling - questionnaire does not contain standard fields"
+msgstr ""
+
+#: patient/views.py:1219
+msgid "Failed to generate token to answer the questionnaire. "
+msgstr ""

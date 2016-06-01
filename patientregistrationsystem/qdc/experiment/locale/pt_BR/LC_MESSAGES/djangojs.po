@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2015-11-12 16:14-0200\n"
+"POT-Creation-Date: 2016-06-01 14:58-0300\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -18,12 +18,246 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=(n > 1);\n"
 
+#: experiment/forms.py:24 experiment/forms.py:42 experiment/forms.py:216
+msgid "Title must be filled."
+msgstr "Título deve ser preenchido."
+
+#: experiment/forms.py:28 experiment/forms.py:46 experiment/forms.py:221
+#: experiment/forms.py:269 experiment/forms.py:302 experiment/forms.py:335
+#: experiment/forms.py:357 experiment/forms.py:388 experiment/forms.py:390
+#: experiment/forms.py:392 experiment/forms.py:415
+msgid "Description must be filled."
+msgstr "Descrição deve ser preenchida."
+
+#: experiment/forms.py:58 experiment/forms.py:222 experiment/forms.py:225
+#: experiment/forms.py:259 experiment/views.py:1702
+msgid "%m/%d/%Y"
+msgstr "%d/%m/%Y"
+
+#: experiment/forms.py:59 experiment/forms.py:223 experiment/forms.py:226
+#: experiment/forms.py:260
+msgid "mm/dd/yyyy"
+msgstr "dd/mm/yyyy"
+
+#: experiment/forms.py:61 experiment/forms.py:262
+msgid "Fill date must be filled."
+msgstr "Data de preechimento deve ser preenchida."
+
+#: experiment/forms.py:86
+msgid "Identification must be filled."
+msgstr "Identificação deve ser preenchida."
+
+#: experiment/forms.py:91 experiment/forms.py:139
+msgid "Time"
+msgstr "Tempo"
+
+#: experiment/forms.py:99
+msgid "Duration time must be filled in."
+msgstr "Tempo de duração deve ser preenchida."
+
+#: experiment/forms.py:107
+msgid "Duration unit must be filled in."
+msgstr "Unidade de duração deve ser preenchida."
+
+#: experiment/forms.py:116
+msgid "Fixed"
+msgstr "Fixo"
+
+#: experiment/forms.py:116
+msgid "Random"
+msgstr "Aleatório"
+
+#: experiment/forms.py:136
+msgid "Quantity of repetitions must be filled."
+msgstr "Quantidade de repetições deve ser preenchida."
+
+#: experiment/forms.py:138
+msgid "Interval must be filled."
+msgstr "Intervalo deve ser preenchido."
+
+#: experiment/forms.py:143
+msgid "Interval unit must be filled."
+msgstr "Unidade de intervalo deve ser preenchida."
+
+#: experiment/forms.py:154
+msgid "Instruction must be filled."
+msgstr "Instruções deve ser preenchida."
+
+#: experiment/forms.py:165
+msgid "Stimulus type must be filled."
+msgstr "Tipo de estímulo deve ser preenchido."
+
+#: experiment/forms.py:177 experiment/forms.py:264
+msgid "EEG setting type must be filled."
+msgstr "Tipo de configuração de EEG deve ser preenchido."
+
+#: experiment/forms.py:190
+msgid "Sequence"
+msgstr "Sequência"
+
+#: experiment/forms.py:191
+msgid "Parallel"
+msgstr "Paralelo"
+
+#: experiment/forms.py:193
+msgid "Organization type must be filled in."
+msgstr "Tipo de organização deve ser preenchido."
+
+#: experiment/forms.py:201 experiment/forms.py:248
+msgid "Quantity must be filled."
+msgstr "Quantidade deve ser preenchida."
+
+#: experiment/forms.py:206
+msgid "Responsible"
+msgstr "Responsável"
+
+#: experiment/forms.py:224
+msgid "Initial date must be filled."
+msgstr "Data inicial deve ser preenchida."
+
+#: experiment/forms.py:266
+msgid "File format must be chosen."
+msgstr "Formato do arquivo deve ser escolhido."
+
+#: experiment/forms.py:272
+msgid "File format description must be filled."
+msgstr "Descrição do formato de arquivo deve ser preenchida."
+
+#: experiment/forms.py:276
+msgid "Reason for change must be filled."
+msgstr "Razão para a mudança deve ser preenchida."
+
+#: experiment/forms.py:298
+msgid "Name must be filled."
+msgstr "Nome deve ser preenchido."
+
+#: experiment/models.py:15
+msgid "milisecond(s)"
+msgstr "microsegundo(s)"
+
+#: experiment/models.py:16
+msgid "second(s)"
+msgstr "segundo(s)"
+
+#: experiment/models.py:17
+msgid "minute(s)"
+msgstr "minuto(s)"
+
+#: experiment/models.py:18
+msgid "hour(s)"
+msgstr "hora(s)"
+
+#: experiment/models.py:19
+msgid "day(s)"
+msgstr "dia(s)"
+
+#: experiment/models.py:20
+msgid "week(s)"
+msgstr "semana(s)"
+
+#: experiment/models.py:21
+msgid "month(s)"
+msgstr "mes(es)"
+
+#: experiment/models.py:22
+msgid "year(s)"
+msgstr "ano(s)"
+
+#: experiment/models.py:26
+msgid "Ohm(s)"
+msgstr ""
+
+#: experiment/models.py:27
+msgid "Kilohm(s)"
+msgstr ""
+
+#: experiment/models.py:28
+msgid "Megaohm(s)"
+msgstr ""
+
+#: experiment/models.py:29
+msgid "Gigaohm(s)"
+msgstr ""
+
+#: experiment/models.py:35 experiment/tests.py:1329
+msgid "Date cannot be greater than today's date."
+msgstr "Data não pode ser maior que o dia de hoje"
+
+#: experiment/models.py:104
+msgid "EEG Machine"
+msgstr "Máquina EEG"
+
+#: experiment/models.py:105
+msgid "EEG Amplifier"
+msgstr "Amplificador EEG"
+
+#: experiment/models.py:106
+msgid "EEG Solution"
+msgstr "Solução EEG"
+
+#: experiment/models.py:107
+msgid "EEG Filter"
+msgstr "Filtro EEG"
+
+#: experiment/models.py:108
+msgid "EEG Electrode Net"
+msgstr "Rede de eletrodos EEG"
+
+#: experiment/models.py:120 experiment/models.py:121
+msgid "Equipment"
+msgstr "Equipamento"
+
+#: experiment/models.py:151
+msgid "Disposable"
+msgstr "Descartável"
+
+#: experiment/models.py:152
+msgid "Reusable"
+msgstr "Reutilizável"
+
+#: experiment/models.py:258
+msgid "Set of steps"
+msgstr "Conjunto de passos"
+
+#: experiment/models.py:259
+msgid "Instruction"
+msgstr "Instrução"
+
+#: experiment/models.py:260
+msgid "Pause"
+msgstr "Pausa"
+
+#: experiment/models.py:261
+msgid "Questionnaire"
+msgstr "Questionário"
+
+#: experiment/models.py:262
+msgid "Stimulus"
+msgstr "Estímulo"
+
+#: experiment/models.py:263
+msgid "Task for participant"
+msgstr "Tarefa para participante"
+
+#: experiment/models.py:264
+msgid "Task for experimenter"
+msgstr "Tarefa para experimentador"
+
+#: experiment/models.py:265
+msgid "EEG"
+msgstr ""
+
+#: experiment/templates/experiment/add_equipment_to_eeg_setting.html:46
 #: experiment/templates/experiment/component_list.html:41
 #: experiment/templates/experiment/component_template.html:46
+#: experiment/templates/experiment/eeg_setting_electrode_position_status.html:46
+#: experiment/templates/experiment/eeg_setting_register.html:43
+#: experiment/templates/experiment/eeg_setting_type_template.html:46
 #: experiment/templates/experiment/experiment_register.html:41
 #: experiment/templates/experiment/group_register.html:43
 #: experiment/templates/experiment/questionnaire_view.html:47
 #: experiment/templates/experiment/research_project_register.html:43
+#: experiment/templates/experiment/subject_eeg_data_form.html:182
 msgid "Please, correct fields highlighted."
 msgstr "Por favor, corrija os campos em destaque."
 
@@ -34,6 +268,299 @@ msgid ""
 msgstr ""
 "Não foi possível abrir o questionário. Por favor, habilite pop-ups paraeste "
 "site."
+
+#: experiment/tests.py:1492 experiment/views.py:103
+msgid "Action not available."
+msgstr "Ação não disponível"
+
+#: experiment/tests.py:1503 experiment/views.py:100
+msgid "Information not saved."
+msgstr "Informação não foi salva."
+
+#: experiment/views.py:95
+msgid "Study created successfully."
+msgstr "Estudo criado com sucesso."
+
+#: experiment/views.py:144
+msgid "Study removed successfully."
+msgstr "Estudo removido com sucesso."
+
+#: experiment/views.py:147
+msgid "Error trying to delete research."
+msgstr "Erro enquanto tentava deletar pesquisa."
+
+#: experiment/views.py:153 experiment/views.py:350 experiment/views.py:525
+msgid ""
+"Impossible to delete group because there is (are) questionnaire(s) answered."
+msgstr ""
+"Impossível deletar grupo porque há questionário(s) respondido(s)."
+
+#: experiment/views.py:186
+msgid "Research updated successfully."
+msgstr "Pesquisa atualizada com sucesso."
+
+#: experiment/views.py:188 experiment/views.py:385 experiment/views.py:564
+#: experiment/views.py:695 experiment/views.py:2380 experiment/views.py:3257
+#: experiment/views.py:3279 experiment/views.py:3289
+msgid "There is no changes to save."
+msgstr "Não há mudanças a salvar."
+
+#: experiment/views.py:301
+msgid "Experiment created successfully."
+msgstr "Experimento criado com sucesso."
+
+#: experiment/views.py:340
+msgid "Experiment removed successfully."
+msgstr "Experimento removido com sucesso."
+
+#: experiment/views.py:344
+msgid "It was not possible to delete experiment, "
+msgstr "Não foi possível deletar experimento."
+
+#: experiment/views.py:383
+msgid "Experiment updated successfully."
+msgstr "Experimento atualizado com sucesso."
+
+#: experiment/views.py:417
+msgid "Group included successfully."
+msgstr "Grupo incluído com sucesso."
+
+#: experiment/views.py:516
+msgid "Group removed successfully."
+msgstr "Grupo removido com sucesso."
+
+#: experiment/views.py:520
+msgid "Impossible to delete group, because there are dependencies."
+msgstr "Impossível deletar grupo, porque há dependências."
+
+#: experiment/views.py:562
+msgid "Group updated successfully."
+msgstr "Grupo atualizado com sucesso."
+
+#: experiment/views.py:596
+msgid "EEG setting included successfully."
+msgstr "Configuração de EEG incluída com sucesso."
+
+#: experiment/views.py:635
+msgid "EEG setting was removed successfully."
+msgstr "Configuração de EEG foi removida com sucesso."
+
+#: experiment/views.py:661
+msgid "Setting was removed successfully."
+msgstr "Configuração foi removida com sucesso."
+
+#: experiment/views.py:693
+msgid "EEG setting updated successfully."
+msgstr "Configuração de EEG atualizada com sucesso."
+
+#: experiment/views.py:754
+msgid "EEG machine setting created successfully."
+msgstr "Configuração de máquina EEG criada com sucesso."
+
+#: experiment/views.py:771
+msgid "EEG amplifier setting created sucessfully."
+msgstr "Amplificador de EEG criado com sucesso."
+
+#: experiment/views.py:785
+msgid "EEG solution setting created sucessfully."
+msgstr "Configuração de solução de EEG criada com sucesso."
+
+#: experiment/views.py:801
+msgid "EEG filter setting created sucessfully."
+msgstr "Configuração de iltro de EEG criada com sucesso."
+
+#: experiment/views.py:835
+msgid "Now you can set each electrode position."
+msgstr "Agora você pode configurar cada posição de eletrodo."
+
+#: experiment/views.py:837
+msgid "EEG electrode net system setting created sucessfully."
+msgstr "Configuração de sistema de rede de eletrodo EEG criada com sucesso."
+
+#: experiment/views.py:1043
+msgid "EEG machine setting updated successfully."
+msgstr "Configuração de máquina de EEG atualizada com sucesso."
+
+#: experiment/views.py:1059
+msgid "EEG amplifier setting updated sucessfully."
+msgstr "Configuração de amplificador de EEG atualizada com sucesso."
+
+#: experiment/views.py:1073
+msgid "EEG solution setting updated sucessfully."
+msgstr "Configuração de solução de EEG atualizada com sucesso."
+
+#: experiment/views.py:1090
+msgid "EEG filter setting updated sucessfully."
+msgstr "Configuração de filtro de EEG atualizada com sucesso."
+
+#: experiment/views.py:1115
+msgid "EEG electrode net system setting updated sucessfully."
+msgstr "Configuração de sistema de rede de eletrodo de EEG atualizada com sucesso."
+
+#: experiment/views.py:1641
+msgid "Participant deleted from experiment."
+msgstr "Participante deletado do experimento."
+
+#: experiment/views.py:1643
+msgid "It was not possible to delete participant, "
+msgstr "Não foi possível deletar participante."
+
+#: experiment/views.py:1677
+msgid "Fill not available - Table of tokens was not started."
+msgstr "Preenchimento não disponível - Tabela de tokens não foi iniciada."
+
+#: experiment/views.py:1681
+msgid "Fill not available - Questionnaire is not activated."
+msgstr "Preenchimento não disponível -  Questionário não está ativo."
+
+#: experiment/views.py:1685
+msgid "Fill not available - Questionnaire does not contain standard fields."
+msgstr "Preenchimento não disponível - Questionário não contém campos."
+
+#: experiment/views.py:1694
+msgid "Fail trying to generate token to answer questionnaire. "
+msgstr "Falha ao tentar gerar token para responder questionário."
+
+#: experiment/views.py:1820
+msgid "You will be redirected to questionnaire. Please wait."
+msgstr "Você será redirecionado para o questionário. Por favor, aguarde."
+
+#: experiment/views.py:1842 experiment/views.py:1998
+msgid "Fill deleted successfully."
+msgstr "Preenchimento deletado com sucesso."
+
+#: experiment/views.py:1844 experiment/views.py:2000
+msgid "Error trying to delete fill"
+msgstr "Erro ao tentar deletar preenchimento"
+
+#: experiment/views.py:2251
+msgid "EEG data collection created successfully."
+msgstr "Coleta de dados de EEG criado com sucesso."
+
+#: experiment/views.py:2279
+msgid "EEG data file format validated."
+msgstr "Formato de arquivo de dados de EEG validado."
+
+#: experiment/views.py:2281
+msgid "Not valid EEG file format."
+msgstr "Formato de arquivo de EEG não válido."
+
+#: experiment/views.py:2330
+msgid "EEG data removed successfully."
+msgstr "Dados de EEG removidos com sucesso."
+
+#: experiment/views.py:2378
+msgid "EEG data updated successfully."
+msgstr "Dados de EEG atualizado com sucesso."
+
+#: experiment/views.py:2423
+msgid "Participant has already been inserted in this group."
+msgstr "Participante já foi inserido neste grupo."
+
+#: experiment/views.py:2469
+msgid "Consent term saved successfully."
+msgstr "Termo de consentimento foi salvo com sucesso."
+
+#: experiment/views.py:2474
+msgid "There are not attachments to save"
+msgstr "Há anexos para salvar"
+
+#: experiment/views.py:2478
+msgid "Attachment deleted successfully."
+msgstr "Anexos deletados com sucesso."
+
+#: experiment/views.py:2686 experiment/views.py:3523 experiment/views.py:3635
+#: experiment/views.py:3659
+msgid "Step included successfully."
+msgstr "Passo incluído com sucesso."
+
+#: experiment/views.py:2805
+msgid " years "
+msgstr " anos "
+
+#: experiment/views.py:2805
+msgid " year "
+msgstr " ano "
+
+#: experiment/views.py:2810
+msgid " months "
+msgstr " meses "
+
+#: experiment/views.py:2810
+msgid " month "
+msgstr " mês "
+
+#: experiment/views.py:2815
+msgid " weeks "
+msgstr " semanas "
+
+#: experiment/views.py:2815
+msgid " week "
+msgstr " semana "
+
+#: experiment/views.py:2820
+msgid " days "
+msgstr " dias "
+
+#: experiment/views.py:2820
+msgid " day "
+msgstr " dia "
+
+#: experiment/views.py:2825
+msgid " hours "
+msgstr " horas "
+
+#: experiment/views.py:2825
+msgid " hour "
+msgstr " hora "
+
+#: experiment/views.py:2830
+msgid " minutes "
+msgstr " minutos "
+
+#: experiment/views.py:2830
+msgid " minute "
+msgstr " minuto "
+
+#: experiment/views.py:2835
+msgid " seconds "
+msgstr " segundos "
+
+#: experiment/views.py:2835
+msgid " second "
+msgstr " segundo "
+
+#: experiment/views.py:2840
+msgid " miliseconds "
+msgstr " milisegundos "
+
+#: experiment/views.py:2840
+msgid " milisecond "
+msgstr " milisegundo "
+
+#: experiment/views.py:2855
+msgid " and "
+msgstr " e "
+
+#: experiment/views.py:3035 experiment/views.py:3287
+msgid "Step use updated successfully."
+msgstr "Uso do passo atualizado com sucesso."
+
+#: experiment/views.py:3041 experiment/views.py:3296
+msgid "Component deleted successfully."
+msgstr "Componente deletado com sucesso."
+
+#: experiment/views.py:3255 experiment/views.py:3277
+msgid "Step updated successfully."
+msgstr "Passo atualizado com sucesso."
+
+#: experiment/views.py:3493
+msgid "Experimental protocol included successfully."
+msgstr "Protocolo experimento incluído com sucesso."
+
+#: experiment/views.py:3521 experiment/views.py:3657
+msgid "Steps included successfully."
+msgstr "Passos incluídos com sucesso."
 
 #~ msgid "Por favor, corrija os campos em destaque."
 #~ msgstr "Por favor, corrija os campos em destaque."

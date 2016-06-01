@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2016-05-30 17:11-0300\n"
+"POT-Creation-Date: 2016-06-01 14:58-0300\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -78,11 +78,11 @@ msgstr "Obligatory fields must be filled."
 msgid "Please fill the fields correctly. E-mail is invalid"
 msgstr "Please fill the fields correctly. E-mail is invalid"
 
-#: quiz/static/quiz/js/questionnaire_export.js:78
+#: quiz/static/quiz/js/questionnaire_export.js:79
 msgid "Either one or both Per participant/Per questionnaire must be set."
 msgstr ""
 
-#: quiz/static/quiz/js/questionnaire_export.js:82
+#: quiz/static/quiz/js/questionnaire_export.js:83
 msgid "At least one questionnaire field have to be set."
 msgstr ""
 
