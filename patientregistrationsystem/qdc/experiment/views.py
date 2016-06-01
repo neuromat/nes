@@ -939,7 +939,7 @@ def view_eeg_setting_type(request, eeg_setting_id, eeg_setting_type):
                 setting_form = EEGElectrodeLayoutSettingForm(request.POST or None)
 
         # Settings related to equipment
-        if eeg_setting_type in ["eeg_machine", "eeg-amplifier", "eeg_electrode_net_system"]:
+        if eeg_setting_type in ["eeg_machine", "eeg_amplifier", "eeg_electrode_net_system"]:
 
             equipment_type = "eeg_electrode_net" if eeg_setting_type == "eeg_electrode_net_system" else eeg_setting_type
 
