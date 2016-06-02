@@ -10,7 +10,6 @@ from experiment.models import Experiment, QuestionnaireResponse, SubjectOfGroup,
     EEGSolution, EEGFilterSetting, EEGFilterType, EEGElectrodeLayoutSetting, EEGElectrodeLocalizationSystem
 
 
-
 class ExperimentForm(ModelForm):
     class Meta:
         model = Experiment
@@ -243,9 +242,13 @@ class ResearchProjectForm(ModelForm):
 
 
 class NumberOfUsesToInsertForm(Form):
-    number_of_uses_to_insert = IntegerField(label='Number of uses to insert', min_value=1, initial=1,
-                                            widget=NumberInput(attrs={'class': 'form-control', 'required': "",
-                                                                      'data-error': _('Quantity must be filled.')}))
+    number_of_uses_to_insert = \
+        IntegerField(
+            label='Number of uses to insert',
+            min_value=1,
+            initial=1,
+            widget=NumberInput(
+                attrs={'class': 'form-control', 'required': "", 'data-error': _('Quantity must be filled.')}))
 
 
 class EEGDataForm(ModelForm):

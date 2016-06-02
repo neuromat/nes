@@ -2,10 +2,11 @@
 from __future__ import unicode_literals
 
 import datetime
-import experiment.models
 import django.db.models.deletion
 
 from django.db import models, migrations
+
+import experiment.models
 
 
 class Migration(migrations.Migration):
