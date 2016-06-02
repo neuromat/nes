@@ -18,15 +18,18 @@ class Migration(migrations.Migration):
             name='DataConfigurationTree',
             fields=[
                 ('id', models.AutoField(serialize=False, auto_created=True, verbose_name='ID', primary_key=True)),
-                ('component_configuration', models.ForeignKey(to='experiment.ComponentConfiguration', on_delete=django.db.models.deletion.PROTECT)),
-                ('parent', models.ForeignKey(to='experiment.DataConfigurationTree', null=True, related_name='children')),
+                ('component_configuration', models.ForeignKey(to='experiment.ComponentConfiguration',
+                                                              on_delete=django.db.models.deletion.PROTECT)),
+                ('parent', models.ForeignKey(to='experiment.DataConfigurationTree',
+                                             null=True, related_name='children')),
             ],
         ),
         migrations.CreateModel(
             name='EEGData',
             fields=[
                 ('id', models.AutoField(serialize=False, auto_created=True, verbose_name='ID', primary_key=True)),
-                ('date', models.DateField(default=datetime.date.today, validators=[experiment.models.validate_date_questionnaire_response])),
+                ('date', models.DateField(default=datetime.date.today,
+                                          validators=[experiment.models.validate_date_questionnaire_response])),
                 ('description', models.TextField()),
                 ('file', models.FileField(upload_to=experiment.models.get_eeg_dir)),
                 ('file_format_description', models.TextField(blank=True, null=True, default='')),
@@ -43,7 +46,8 @@ class Migration(migrations.Migration):
         migrations.AddField(
             model_name='historicalquestionnaireresponse',
             name='data_configuration_tree',
-            field=models.ForeignKey(blank=True, to='experiment.DataConfigurationTree', null=True, related_name='+', on_delete=django.db.models.deletion.DO_NOTHING, db_constraint=False),
+            field=models.ForeignKey(blank=True, to='experiment.DataConfigurationTree', null=True, related_name='+',
+                                    on_delete=django.db.models.deletion.DO_NOTHING, db_constraint=False),
         ),
         migrations.AddField(
             model_name='questionnaireresponse',

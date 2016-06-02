@@ -15,7 +15,8 @@ class Migration(migrations.Migration):
         migrations.CreateModel(
             name='EEGAmplifier',
             fields=[
-                ('equipment_ptr', models.OneToOneField(primary_key=True, auto_created=True, parent_link=True, to='experiment.Equipment', serialize=False)),
+                ('equipment_ptr', models.OneToOneField(primary_key=True, auto_created=True, parent_link=True,
+                                                       to='experiment.Equipment', serialize=False)),
                 ('gain', models.FloatField(blank=True, null=True)),
             ],
             bases=('experiment.equipment',),
@@ -50,7 +51,9 @@ class Migration(migrations.Migration):
                 ('name', models.CharField(max_length=150)),
                 ('description', models.TextField(blank=True, null=True)),
                 ('number_of_electrodes', models.IntegerField(blank=True, null=True)),
-                ('map_image_file', models.FileField(blank=True, upload_to=experiment.models.get_eeg_electrode_system_dir, null=True)),
+                ('map_image_file', models.FileField(blank=True,
+                                                    upload_to=experiment.models.get_eeg_electrode_system_dir,
+                                                    null=True)),
             ],
         ),
         migrations.CreateModel(
@@ -59,15 +62,20 @@ class Migration(migrations.Migration):
                 ('id', models.AutoField(primary_key=True, auto_created=True, serialize=False, verbose_name='ID')),
                 ('name', models.CharField(max_length=150)),
                 ('description', models.TextField(blank=True, null=True)),
-                ('usability', models.CharField(choices=[('disposable', 'Disposable'), ('reusable', 'Reusable')], blank=True, null=True, max_length=50)),
+                ('usability', models.CharField(choices=[('disposable', 'Disposable'), ('reusable', 'Reusable')],
+                                               blank=True, null=True, max_length=50)),
                 ('impedance', models.FloatField(blank=True, null=True)),
-                ('impedance_unit', models.CharField(choices=[('ohm', 'Ohm(s)'), ('kilohm', 'Kilohm(s)'), ('megaohm', 'Megaohm(s)'), ('gigaohm', 'Gigaohm(s)')], blank=True, null=True, max_length=15)),
+                ('impedance_unit', models.CharField(
+                    choices=[('ohm', 'Ohm(s)'), ('kilohm', 'Kilohm(s)'),
+                             ('megaohm', 'Megaohm(s)'), ('gigaohm', 'Gigaohm(s)')],
+                    blank=True, null=True, max_length=15)),
             ],
         ),
         migrations.CreateModel(
             name='EEGElectrodeNet',
             fields=[
-                ('equipment_ptr', models.OneToOneField(primary_key=True, auto_created=True, parent_link=True, to='experiment.Equipment', serialize=False)),
+                ('equipment_ptr', models.OneToOneField(primary_key=True, auto_created=True, parent_link=True,
+                                                       to='experiment.Equipment', serialize=False)),
             ],
             bases=('experiment.equipment',),
         ),
@@ -75,7 +83,8 @@ class Migration(migrations.Migration):
             name='EEGElectrodeNetSystem',
             fields=[
                 ('id', models.AutoField(primary_key=True, auto_created=True, serialize=False, verbose_name='ID')),
-                ('eeg_electrode_localization_system', models.ForeignKey(to='experiment.EEGElectrodeLocalizationSystem')),
+                ('eeg_electrode_localization_system',
+                 models.ForeignKey(to='experiment.EEGElectrodeLocalizationSystem')),
             ],
         ),
         migrations.CreateModel(
@@ -85,8 +94,10 @@ class Migration(migrations.Migration):
                 ('name', models.CharField(max_length=150)),
                 ('coordinate_x', models.IntegerField(blank=True, null=True)),
                 ('coordinate_y', models.IntegerField(blank=True, null=True)),
-                ('eeg_electrode_localization_system', models.ForeignKey(to='experiment.EEGElectrodeLocalizationSystem')),
-                ('position_reference', models.ForeignKey(related_name='children', to='experiment.EEGElectrodePosition', null=True)),
+                ('eeg_electrode_localization_system', models.ForeignKey(
+                    to='experiment.EEGElectrodeLocalizationSystem')),
+                ('position_reference', models.ForeignKey(related_name='children',
+                                                         to='experiment.EEGElectrodePosition', null=True)),
             ],
         ),
         migrations.CreateModel(
@@ -126,7 +137,8 @@ class Migration(migrations.Migration):
         migrations.CreateModel(
             name='EEGMachine',
             fields=[
-                ('equipment_ptr', models.OneToOneField(primary_key=True, auto_created=True, parent_link=True, to='experiment.Equipment', serialize=False)),
+                ('equipment_ptr', models.OneToOneField(primary_key=True, auto_created=True, parent_link=True,
+                                                       to='experiment.Equipment', serialize=False)),
                 ('number_of_channels', models.IntegerField(blank=True, null=True)),
                 ('software_version', models.CharField(blank=True, null=True, max_length=150)),
             ],
@@ -175,7 +187,8 @@ class Migration(migrations.Migration):
         migrations.CreateModel(
             name='EEGElectrodeCap',
             fields=[
-                ('eegelectrodenet_ptr', models.OneToOneField(primary_key=True, auto_created=True, parent_link=True, to='experiment.EEGElectrodeNet', serialize=False)),
+                ('eegelectrodenet_ptr', models.OneToOneField(primary_key=True, auto_created=True, parent_link=True,
+                                                             to='experiment.EEGElectrodeNet', serialize=False)),
                 ('material', models.ForeignKey(to='experiment.Material', blank=True, null=True)),
             ],
             bases=('experiment.eegelectrodenet',),

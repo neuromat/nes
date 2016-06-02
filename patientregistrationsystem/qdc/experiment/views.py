@@ -15,7 +15,7 @@ from django.core import serializers
 from django.core.urlresolvers import reverse
 from django.db.models import Q
 from django.db.models.deletion import ProtectedError
-from django.db.models.query import QuerySet
+# from django.db.models.query import QuerySet
 from django.http import HttpResponseRedirect, HttpResponse
 from django.shortcuts import get_object_or_404, redirect, render, render_to_response
 from django.utils.translation import ugettext as _
@@ -39,8 +39,7 @@ from patient.models import Patient, QuestionnaireResponse as PatientQuestionnair
 
 from survey.abc_search_engine import Questionnaires
 from survey.models import Survey
-from survey.views import get_questionnaire_responses, check_limesurvey_access, recursively_create_list_of_steps, \
-    create_list_of_trees
+from survey.views import get_questionnaire_responses, check_limesurvey_access, create_list_of_trees
 
 permission_required = partial(permission_required, raise_exception=True)
 
@@ -979,8 +978,8 @@ def view_eeg_setting_type(request, eeg_setting_id, eeg_setting_type):
 
             "eeg_setting": eeg_setting,
             "equipment_selected": equipment_selected,
-            "solution_selected" : solution_selected,
-            "filter_selected" : filter_selected,
+            "solution_selected": solution_selected,
+            "filter_selected": filter_selected,
 
             "manufacturer_list": manufacturer_list,
             "equipment_list": equipment_list,
@@ -1221,7 +1220,7 @@ def get_json_equipment_by_manufacturer(request, equipment_type, manufacturer_id)
     if manufacturer_id != "0":
         equipment = equipment.filter(manufacturer_id=manufacturer_id)
     json_equipment = serializers.serialize("json", equipment)
-    return HttpResponse(json_equipment, content_type ='application/json')
+    return HttpResponse(json_equipment, content_type='application/json')
 
 
 @login_required
@@ -1295,7 +1294,7 @@ def get_localization_system_by_electrode_net(request, equipment_id):
     list_of_localization_system = EEGElectrodeLocalizationSystem.objects.filter(
         set_of_electrode_net_system__eeg_electrode_net_id=equipment_id)
     json_equipment = serializers.serialize("json", list_of_localization_system)
-    return HttpResponse(json_equipment, content_type ='application/json')
+    return HttpResponse(json_equipment, content_type='application/json')
 
 
 @login_required
@@ -1309,21 +1308,21 @@ def get_equipment_by_manufacturer_and_localization_system(request, manufacturer_
     if manufacturer_id != "0":
         equipment = equipment.filter(manufacturer_id=manufacturer_id)
     json_equipment = serializers.serialize("json", equipment)
-    return HttpResponse(json_equipment, content_type ='application/json')
+    return HttpResponse(json_equipment, content_type='application/json')
 
 
 @login_required
 @permission_required('experiment.change_experiment')
 def eeg_electrode_position_setting(request, eeg_setting_id,
-                                  template_name="experiment/eeg_setting_electrode_position_status.html"):
+                                   template_name="experiment/eeg_setting_electrode_position_status.html"):
 
     eeg_setting = get_object_or_404(EEGSetting, pk=eeg_setting_id)
 
     if get_can_change(request.user, eeg_setting.experiment.research_project):
 
-        #if request.method == "POST":
-            #if request.POST['action'] == "save":
-                #eeg_electrode_position_setting =
+        # if request.method == "POST":
+        #     if request.POST['action'] == "save":
+        #         eeg_electrode_position_setting =
 
         context = {
             "eeg_setting": eeg_setting
@@ -1332,10 +1331,6 @@ def eeg_electrode_position_setting(request, eeg_setting_id,
         return render(request, template_name, context)
     else:
         raise PermissionDenied
-
-
-
-
 
 
 @login_required
@@ -1527,13 +1522,9 @@ def subjects(request, group_id, template_name="experiment/subjects.html"):
     # Navigate the components of the experimental protocol from the root to see if there is any questionnaire component
     # in this group.
     if group.experimental_protocol is not None:
-        list_of_questionnaires_configuration = recursively_create_list_of_steps(group.experimental_protocol,
-                                                                                "questionnaire",
-                                                                                [])
+        list_of_questionnaires_configuration = create_list_of_trees(group.experimental_protocol, "questionnaire")
 
-        list_of_eeg_configuration = recursively_create_list_of_steps(group.experimental_protocol,
-                                                                     "eeg",
-                                                                     [])
+        list_of_eeg_configuration = create_list_of_trees(group.experimental_protocol, "eeg")
 
         experimental_protocol_info = {'number_of_questionnaires': len(list_of_questionnaires_configuration),
                                       'number_of_eeg_data': len(list_of_eeg_configuration)}
@@ -1546,10 +1537,13 @@ def subjects(request, group_id, template_name="experiment/subjects.html"):
             # For each questionnaire in the experimental protocol of the group...
             for questionnaire_configuration in list_of_questionnaires_configuration:
                 # Get the responses
+                path = [item[0] for item in questionnaire_configuration]
+                data_configuration_tree_id = list_data_configuration_tree(path[-1], path)
                 subject_responses = QuestionnaireResponse.objects. \
                     filter(subject_of_group=subject_of_group,
-                           data_configuration_tree__component_configuration=questionnaire_configuration)
+                           data_configuration_tree_id=data_configuration_tree_id)
 
+                questionnaire_configuration = get_object_or_404(ComponentConfiguration, pk=path[-1])
                 # This is a shortcut that allows to avid the delay of the connection to LimeSurvey.
                 if (questionnaire_configuration.number_of_repetitions is None and subject_responses.count() > 0) or \
                         (questionnaire_configuration.number_of_repetitions is not None and
@@ -1593,9 +1587,11 @@ def subjects(request, group_id, template_name="experiment/subjects.html"):
 
             # for each component_configuration...
             for eeg_configuration in list_of_eeg_configuration:
+                path = [item[0] for item in eeg_configuration]
+                data_configuration_tree_id = list_data_configuration_tree(path[-1], path)
                 eeg_data_files = \
                     EEGData.objects.filter(subject_of_group=subject_of_group,
-                                           data_configuration_tree__component_configuration=eeg_configuration)
+                                           data_configuration_tree_id=data_configuration_tree_id)
                 if len(eeg_data_files):
                     number_of_eeg_data_files_uploaded += 1
 
@@ -2104,8 +2100,6 @@ def subject_eeg_view(request, group_id, subject_id,
     subject = get_object_or_404(Subject, id=subject_id)
 
     eeg_collections = []
-
-    # list_of_eeg_configuration = recursively_create_list_of_steps(group.experimental_protocol, "eeg", [])
 
     list_of_paths = create_list_of_trees(group.experimental_protocol, "eeg")
 
