@@ -844,7 +844,8 @@ def view_eeg_setting_type(request, eeg_setting_id, eeg_setting_type):
 
         if eeg_setting_type == "eeg_machine":
 
-            try:
+            if hasattr(eeg_setting, 'eeg_machine_setting'):
+
                 eeg_machine_setting = EEGMachineSetting.objects.get(eeg_setting_id=eeg_setting_id)
 
                 selection_form = EEGMachineForm(request.POST or None, instance=eeg_machine_setting.eeg_machine)
@@ -854,8 +855,7 @@ def view_eeg_setting_type(request, eeg_setting_id, eeg_setting_type):
                 for field in setting_form.fields:
                     setting_form.fields[field].widget.attrs['disabled'] = True
 
-            except:
-
+            else:
                 creating = True
 
                 selection_form = EEGMachineForm(request.POST or None)
@@ -863,7 +863,8 @@ def view_eeg_setting_type(request, eeg_setting_id, eeg_setting_type):
 
         if eeg_setting_type == "eeg_amplifier":
 
-            try:
+            if hasattr(eeg_setting, 'eeg_amplifier_setting'):
+
                 eeg_amplifier_setting = EEGAmplifierSetting.objects.get(eeg_setting_id=eeg_setting_id)
 
                 selection_form = EEGAmplifierForm(request.POST or None, instance=eeg_amplifier_setting.eeg_amplifier)
@@ -873,7 +874,7 @@ def view_eeg_setting_type(request, eeg_setting_id, eeg_setting_type):
                 for field in setting_form.fields:
                     setting_form.fields[field].widget.attrs['disabled'] = True
 
-            except:
+            else:
                 creating = True
 
                 selection_form = EEGAmplifierForm(request.POST or None)
@@ -881,20 +882,22 @@ def view_eeg_setting_type(request, eeg_setting_id, eeg_setting_type):
 
         if eeg_setting_type == "eeg_solution":
 
-            try:
+            if hasattr(eeg_setting, 'eeg_solution_setting'):
+
                 eeg_solution_setting = EEGSolutionSetting.objects.get(eeg_setting_id=eeg_setting_id)
 
                 selection_form = EEGSolutionForm(request.POST or None, instance=eeg_solution_setting.eeg_solution)
                 solution_selected = eeg_solution_setting.eeg_solution
 
-            except:
+            else:
                 creating = True
 
                 selection_form = EEGSolutionForm(request.POST or None)
 
         if eeg_setting_type == "eeg_filter":
 
-            try:
+            if hasattr(eeg_setting, 'eeg_filter_setting'):
+
                 eeg_filter_setting = EEGFilterSetting.objects.get(eeg_setting_id=eeg_setting_id)
 
                 selection_form = EEGFilterForm(request.POST or None, instance=eeg_filter_setting.eeg_filter_type)
@@ -904,7 +907,7 @@ def view_eeg_setting_type(request, eeg_setting_id, eeg_setting_type):
                 for field in setting_form.fields:
                     setting_form.fields[field].widget.attrs['disabled'] = True
 
-            except:
+            else:
                 creating = True
 
                 selection_form = EEGFilterForm(request.POST or None)
@@ -1174,7 +1177,7 @@ def edit_eeg_setting_type(request, eeg_setting_id, eeg_setting_type):
             localization_system_selected = setting.eeg_electrode_net_system.eeg_electrode_localization_system
 
         # Settings related to equipment
-        if eeg_setting_type in ["eeg_machine", "eeg-amplifier", "eeg_electrode_net_system"]:
+        if eeg_setting_type in ["eeg_machine", "eeg_amplifier", "eeg_electrode_net_system"]:
 
             equipment_type = "eeg_electrode_net" if eeg_setting_type == "eeg_electrode_net_system" else eeg_setting_type
             equipment_list = Equipment.objects.filter(equipment_type=equipment_type)
@@ -1270,10 +1273,10 @@ def get_json_solution_attributes(request, solution_id):
 @permission_required('experiment.change_experiment')
 def get_json_filter_attributes(request, filter_id):
 
-    filter = get_object_or_404(EEGFilterType, pk=filter_id)
+    filter_type = get_object_or_404(EEGFilterType, pk=filter_id)
 
     response_data = {
-        'description': filter.description,
+        'description': filter_type.description,
     }
 
     return HttpResponse(json.dumps(response_data), content_type='application/json')

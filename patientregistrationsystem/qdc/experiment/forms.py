@@ -243,12 +243,10 @@ class ResearchProjectForm(ModelForm):
 
 class NumberOfUsesToInsertForm(Form):
     number_of_uses_to_insert = \
-        IntegerField(
-            label='Number of uses to insert',
-            min_value=1,
-            initial=1,
-            widget=NumberInput(
-                attrs={'class': 'form-control', 'required': "", 'data-error': _('Quantity must be filled.')}))
+        IntegerField(label='Number of uses to insert', min_value=1, initial=1,
+                     widget=NumberInput(attrs={'class': 'form-control',
+                                               'required': "",
+                                               'data-error': _('Quantity must be filled.')}))
 
 
 class EEGDataForm(ModelForm):
@@ -384,7 +382,7 @@ class EEGFilterForm(ModelForm):
 class EEGFilterSettingForm(ModelForm):
     class Meta:
         model = EEGFilterSetting
-        fields =['high_pass', 'low_pass', 'order']
+        fields = ['high_pass', 'low_pass', 'order']
 
         widgets = {
             'high_pass': TextInput(attrs={'class': 'form-control', 'required': "",
@@ -417,4 +415,3 @@ class EEGElectrodeLayoutSettingForm(ModelForm):
                                                      'required': "",
                                                      'data-error': _('Description must be filled.')})
         }
-
