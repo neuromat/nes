@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2016-04-15 11:11-0300\n"
+"POT-Creation-Date: 2016-06-01 14:59-0300\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -22,7 +22,7 @@ msgid "Name must be included"
 msgstr ""
 
 #: patient/forms.py:31 patient/forms.py:134 patient/forms.py:159
-#: patient/views.py:1157
+#: patient/views.py:713 patient/views.py:1226
 msgid "%m/%d/%Y"
 msgstr ""
 
@@ -241,23 +241,24 @@ msgid "Upload"
 msgstr ""
 
 #: patient/templates/patient/exams.html:205
-#: patient/templates/patient/exams.html:232
-#: patient/templates/patient/exams.html:247
+#: patient/templates/patient/exams.html:236
+#: patient/templates/patient/exams.html:251
 #: patient/templates/patient/medical_record.html:136
-#: patient/templates/patient/medical_record.html:257
+#: patient/templates/patient/medical_record.html:259
 #: patient/templates/patient/register.html:183
 #: patient/templates/patient/register_personal_data.html:271
 msgid "Delete"
 msgstr ""
 
 #: patient/templates/patient/exams.html:210
-#: patient/templates/patient/exams.html:212
-#: patient/templates/patient/medical_record.html:235
+#: patient/templates/patient/exams.html:213
+#: patient/templates/patient/exams.html:215
 #: patient/templates/patient/medical_record.html:237
+#: patient/templates/patient/medical_record.html:239
 msgid "Back"
 msgstr ""
 
-#: patient/templates/patient/exams.html:215
+#: patient/templates/patient/exams.html:219
 #: patient/templates/patient/medical_record.html:177
 #: patient/templates/patient/register.html:126
 #: patient/templates/patient/register.html:128
@@ -266,15 +267,15 @@ msgstr ""
 msgid "Save"
 msgstr ""
 
-#: patient/templates/patient/exams.html:228
+#: patient/templates/patient/exams.html:232
 msgid "Are you sure you want to delete exam?"
 msgstr ""
 
-#: patient/templates/patient/exams.html:231
-#: patient/templates/patient/exams.html:246
+#: patient/templates/patient/exams.html:235
+#: patient/templates/patient/exams.html:250
 #: patient/templates/patient/medical_record.html:176
-#: patient/templates/patient/medical_record.html:232
-#: patient/templates/patient/medical_record.html:256
+#: patient/templates/patient/medical_record.html:234
+#: patient/templates/patient/medical_record.html:258
 #: patient/templates/patient/register.html:152
 #: patient/templates/patient/register.html:181
 #: patient/templates/patient/register_personal_data.html:335
@@ -283,7 +284,7 @@ msgstr ""
 msgid "Cancel"
 msgstr ""
 
-#: patient/templates/patient/exams.html:243
+#: patient/templates/patient/exams.html:247
 msgid ""
 "As there are no attachments, the exam will be totally excluded. Do you "
 "confirm deletion?"
@@ -338,10 +339,11 @@ msgid "Insert exam"
 msgstr ""
 
 #: patient/templates/patient/medical_record.html:227
+#: patient/templates/patient/medical_record.html:229
 msgid "Finalize evaluation"
 msgstr ""
 
-#: patient/templates/patient/medical_record.html:253
+#: patient/templates/patient/medical_record.html:255
 msgid "Are you sure you want to delete diagnosis?"
 msgstr ""
 
@@ -749,63 +751,67 @@ msgid ""
 "filled."
 msgstr ""
 
-#: patient/views.py:712
+#: patient/views.py:718
 msgid "Diagnosis details successfully changed."
 msgstr ""
 
-#: patient/views.py:718
+#: patient/views.py:724
 msgid "Incorrect date. Use format: mm/dd/yyyy"
 msgstr ""
 
-#: patient/views.py:741
+#: patient/views.py:745
+msgid "Medical evaluation successfully deleted."
+msgstr ""
+
+#: patient/views.py:758
 msgid "Diagnosis has already exist in this medical assessment."
 msgstr ""
 
-#: patient/views.py:774
+#: patient/views.py:791
 msgid "Diagnosis can not be deleted. You must delete exams before."
 msgstr ""
 
-#: patient/views.py:779
+#: patient/views.py:796
 msgid "Diagnosis successfully deleted."
 msgstr ""
 
-#: patient/views.py:811 patient/views.py:864
+#: patient/views.py:838 patient/views.py:904
 msgid "Exam successfully saved."
 msgstr ""
 
-#: patient/views.py:823 patient/views.py:872
+#: patient/views.py:854 patient/views.py:918
 msgid "It is not possible to save exam without files."
 msgstr ""
 
-#: patient/views.py:927
+#: patient/views.py:983
 msgid "Exam successfully deleted."
 msgstr ""
 
-#: patient/views.py:938
+#: patient/views.py:1007
 msgid "Attachment successfully deleted."
 msgstr ""
 
-#: patient/views.py:1075 patient/views.py:1263
+#: patient/views.py:1144 patient/views.py:1332
 msgid "Fill deleted successfully"
 msgstr ""
 
-#: patient/views.py:1077 patient/views.py:1265
+#: patient/views.py:1146 patient/views.py:1334
 msgid "Error trying to delete"
 msgstr ""
 
-#: patient/views.py:1131
+#: patient/views.py:1200
 msgid "Not available filling - tokens table not started"
 msgstr ""
 
-#: patient/views.py:1136
+#: patient/views.py:1205
 msgid "Not available filling - questionnaire not active"
 msgstr ""
 
-#: patient/views.py:1141
+#: patient/views.py:1210
 msgid "Not available filling - questionnaire does not contain standard fields"
 msgstr ""
 
-#: patient/views.py:1150
+#: patient/views.py:1219
 msgid ""
 "Failed to generate token to answer the questionnaire. Make sure the "
 "questionnaire is active"

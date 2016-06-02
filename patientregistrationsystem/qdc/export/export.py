@@ -150,32 +150,6 @@ def is_patient_active(subject_id):
 
     return response
 
-
-def get_questionnaire_language(questionnaire_lime_survey, questionnaire_id, language_code):
-
-    language = DEFAULT_LANGUAGE
-    # defining language to be showed
-    languages = questionnaire_lime_survey.get_survey_languages(questionnaire_id)
-
-    # language to be showed can be the base language, or...
-    if "language" in languages:
-
-        language = languages['language']
-
-        # ...can be one of the additional languages
-        if language.lower() != language_code.lower() and languages['additional_languages']:
-
-            # search for the right language in addional languages,
-            # considering that the LimeSurvey uses upper case in the two-letter language code, like en-US and pt-BR.
-            additional_languages_list = languages['additional_languages'].split(' ')
-            additional_languages_list_lower = [item.lower() for item in additional_languages_list]
-            if language_code.lower() in additional_languages_list_lower:
-                index = additional_languages_list_lower.index(language_code.lower())
-                language = additional_languages_list[index]
-
-    return language
-
-
 class LogMessages:
     def __init__(self, user, file_name=path.join(settings.MEDIA_ROOT, "export_log")):
         self.user = user

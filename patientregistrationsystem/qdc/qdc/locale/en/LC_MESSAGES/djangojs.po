@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2016-06-01 14:59-0300\n"
+"POT-Creation-Date: 2016-06-01 14:58-0300\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -32,15 +32,3 @@ msgstr ""
 #: qdc/views.py:40
 msgid "Password changed successfully."
 msgstr ""
-
-#~ msgid "Entrar com senha antiga"
-#~ msgstr "Type old password"
-
-#~ msgid "Entrar com nova senha"
-#~ msgstr "Type new password"
-
-#~ msgid "Entrar novamente com nova senha"
-#~ msgstr "Type again new password"
-
-#~ msgid "Senha alterada com sucesso."
-#~ msgstr "Password changed successfully."
