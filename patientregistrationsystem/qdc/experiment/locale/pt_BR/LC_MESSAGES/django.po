@@ -779,7 +779,7 @@ msgstr "Usado"
 #: experiment/templates/experiment/eeg_setting_electrode_position_status.html:118
 #: experiment/templates/experiment/eeg_setting_type_template.html:101
 msgid "Save setting"
-msgstr "Salver configuração"
+msgstr "Salvar configuração"
 
 #: experiment/templates/experiment/eeg_setting_register.html:57
 msgid "New EEG setting"
@@ -799,7 +799,7 @@ msgstr "Configuração"
 
 #: experiment/templates/experiment/eeg_setting_register.html:116
 msgid "EEG machine"
-msgstr "Máquina de EEg"
+msgstr "Máquina de EEG"
 
 #: experiment/templates/experiment/eeg_setting_register.html:125
 msgid "Number of channels setted:"
