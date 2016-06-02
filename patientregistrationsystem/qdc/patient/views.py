@@ -513,12 +513,13 @@ def patient_view_questionnaires(request, patient, context, is_update):
             response_result = surveys.get_participant_properties(limesurvey_id,
                                                                  questionnaire_response.token_id, "completed")
 
+            language = get_questionnaire_language(surveys, limesurvey_id, request.LANGUAGE_CODE)
             questionnaires_data.append(
                 {
                     'research_project_title': subject_of_group.group.experiment.research_project.title,
                     'experiment_title': subject_of_group.group.experiment.title,
                     'group_title': subject_of_group.group.title,
-                    'questionnaire_title': surveys.get_survey_title(limesurvey_id),
+                    'questionnaire_title': surveys.get_survey_title(limesurvey_id, language),
                     'questionnaire_response': questionnaire_response,
                     'completed': None if response_result is None else response_result != "N" and response_result != ""
                 }
@@ -1040,7 +1041,8 @@ def questionnaire_response_create(request, patient_id, survey_id,
     survey = get_object_or_404(Survey, pk=survey_id)
 
     surveys = Questionnaires()
-    survey_title = surveys.get_survey_title(survey.lime_survey_id)
+    language = get_questionnaire_language(surveys, survey.lime_survey_id, request.LANGUAGE_CODE)
+    survey_title = surveys.get_survey_title(survey.lime_survey_id, language)
     surveys.release_session_key()
 
     fail = None
@@ -1094,7 +1096,8 @@ def questionnaire_response_update(request, questionnaire_response_id,
     questionnaire_response = get_object_or_404(QuestionnaireResponse, pk=questionnaire_response_id)
 
     surveys = Questionnaires()
-    survey_title = surveys.get_survey_title(questionnaire_response.survey.lime_survey_id)
+    language = get_questionnaire_language(surveys, questionnaire_response.survey.lime_survey_id, request.LANGUAGE_CODE)
+    survey_title = surveys.get_survey_title(questionnaire_response.survey.lime_survey_id, language)
     survey_completed = (surveys.get_participant_properties(questionnaire_response.survey.lime_survey_id,
                                                            questionnaire_response.token_id,
                                                            "completed") != "N")

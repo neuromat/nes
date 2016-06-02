@@ -319,6 +319,7 @@ class SurveyTest(TestCase):
         # Create an instance of a GET request.
         request = self.factory.get(reverse('survey_edit', args=[survey.pk, ]))
         request.user = self.user
+        request.LANGUAGE_CODE = 'pt-BR'
 
         response = survey_update(request, survey_id=survey.pk)
         self.assertEqual(response.status_code, 200)

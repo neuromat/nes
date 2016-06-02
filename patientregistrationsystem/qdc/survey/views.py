@@ -114,7 +114,8 @@ def survey_update(request, survey_id, template_name="survey/survey_register.html
     survey = get_object_or_404(Survey, pk=survey_id)
 
     surveys = Questionnaires()
-    survey_title = surveys.get_survey_title(survey.lime_survey_id)
+    language = get_questionnaire_language(surveys, survey.lime_survey_id, request.LANGUAGE_CODE)
+    survey_title = surveys.get_survey_title(survey.lime_survey_id, language)
     limesurvey_available = check_limesurvey_access(request, surveys)
 
     surveys.release_session_key()
@@ -374,8 +375,10 @@ def survey_view(request, survey_id, template_name="survey/survey_register.html")
     survey = get_object_or_404(Survey, pk=survey_id)
 
     surveys = Questionnaires()
+
     limesurvey_available = check_limesurvey_access(request, surveys)
-    survey_title = surveys.get_survey_title(survey.lime_survey_id)
+    language = get_questionnaire_language(surveys, survey.lime_survey_id, request.LANGUAGE_CODE)
+    survey_title = surveys.get_survey_title(survey.lime_survey_id, language)
 
     # There is no need to use "request.POST or None" because the data will never be changed here. In fact we have to
     # use "None" only, because request.POST does not contain any value because the fields are disabled, and this results
