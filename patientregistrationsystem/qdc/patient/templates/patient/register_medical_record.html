@@ -21,7 +21,7 @@
                                 <th class="col-md-3">{% trans "Date" %}</th>
                                 <th class="col-md-6">{% trans "Diagnosis" %}</th>
                                 <th class="col-md-2">{% trans "Responsible" %}</th>
-                                <th class="col-md-1">{% trans "View" %}</th>
+                                <th class="col-md-1">{% if editing %}{% trans "Edit" %}{% else %}{% trans "View" %}{% endif %}</th>
                             </tr>
                             </thead>
                             <tbody>
@@ -38,8 +38,8 @@
                                     <td>{{ record.record_responsible }}</td>
                                     {% if perms.patient.view_medicalrecorddata %}
                                         {% if editing %}
-                                            <td><a class="glyphicon glyphicon-search"
-                                                   href="/patient/{{ patient_id }}/medical_record/{{ record.pk }}/?status=edit"></a>
+                                            <td><a class="glyphicon glyphicon-edit"
+                                                   href="/patient/{{ patient_id }}/medical_record/edit/{{ record.pk }}/?status=edit"></a>
                                             </td>
                                         {% else %}
                                             <td><a class="glyphicon glyphicon-search"
