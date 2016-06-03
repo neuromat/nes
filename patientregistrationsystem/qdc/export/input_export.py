@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 from json import dump, load
-from .export import get_questionnaire_language
 from survey.abc_search_engine import Questionnaires
+from survey.views import get_questionnaire_language
 
 
 BASE_DIRECTORY = "NES_EXPORT"

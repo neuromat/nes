@@ -27,7 +27,7 @@ from patient.quiz_widget import SelectBoxCountriesDisabled, SelectBoxStateDisabl
 
 from survey.abc_search_engine import Questionnaires
 from survey.models import Survey
-from survey.views import get_questionnaire_responses, check_limesurvey_access
+from survey.views import get_questionnaire_responses, check_limesurvey_access, get_questionnaire_language
 
 # pylint: disable=E1101
 # pylint: disable=E1103
@@ -431,14 +431,18 @@ def patient_view_questionnaires(request, patient, context, is_update):
 
     initial_evaluation_list = Survey.objects.filter(is_initial_evaluation=True)
 
+    language_code = request.LANGUAGE_CODE
+
     # first, add initial evaluation...
 
     for initial_evaluation in initial_evaluation_list:
+
+        language = get_questionnaire_language(surveys, initial_evaluation.lime_survey_id, language_code)
         patient_questionnaires_data_dictionary[initial_evaluation.lime_survey_id] = \
             {
                 'is_initial_evaluation': True,
                 'survey_id': initial_evaluation.pk,
-                'questionnaire_title': surveys.get_survey_title(initial_evaluation.lime_survey_id),
+                'questionnaire_title': surveys.get_survey_title(initial_evaluation.lime_survey_id, language),
                 'questionnaire_responses': []
             }
 
@@ -452,11 +456,12 @@ def patient_view_questionnaires(request, patient, context, is_update):
         limesurvey_id = patient_questionnaire_response.survey.lime_survey_id
 
         if limesurvey_id not in patient_questionnaires_data_dictionary:
+            language = get_questionnaire_language(surveys, limesurvey_id, language_code)
             patient_questionnaires_data_dictionary[limesurvey_id] = \
                 {
                     'is_initial_evaluation': False,
                     'survey_id': patient_questionnaire_response.survey.pk,
-                    'questionnaire_title': surveys.get_survey_title(limesurvey_id),
+                    'questionnaire_title': surveys.get_survey_title(limesurvey_id, language),
                     'questionnaire_responses': []
                 }
 
@@ -508,12 +513,13 @@ def patient_view_questionnaires(request, patient, context, is_update):
             response_result = surveys.get_participant_properties(limesurvey_id,
                                                                  questionnaire_response.token_id, "completed")
 
+            language = get_questionnaire_language(surveys, limesurvey_id, request.LANGUAGE_CODE)
             questionnaires_data.append(
                 {
                     'research_project_title': subject_of_group.group.experiment.research_project.title,
                     'experiment_title': subject_of_group.group.experiment.title,
                     'group_title': subject_of_group.group.title,
-                    'questionnaire_title': surveys.get_survey_title(limesurvey_id),
+                    'questionnaire_title': surveys.get_survey_title(limesurvey_id, language),
                     'questionnaire_response': questionnaire_response,
                     'completed': None if response_result is None else response_result != "N" and response_result != ""
                 }
@@ -1035,7 +1041,8 @@ def questionnaire_response_create(request, patient_id, survey_id,
     survey = get_object_or_404(Survey, pk=survey_id)
 
     surveys = Questionnaires()
-    survey_title = surveys.get_survey_title(survey.lime_survey_id)
+    language = get_questionnaire_language(surveys, survey.lime_survey_id, request.LANGUAGE_CODE)
+    survey_title = surveys.get_survey_title(survey.lime_survey_id, language)
     surveys.release_session_key()
 
     fail = None
@@ -1089,7 +1096,8 @@ def questionnaire_response_update(request, questionnaire_response_id,
     questionnaire_response = get_object_or_404(QuestionnaireResponse, pk=questionnaire_response_id)
 
     surveys = Questionnaires()
-    survey_title = surveys.get_survey_title(questionnaire_response.survey.lime_survey_id)
+    language = get_questionnaire_language(surveys, questionnaire_response.survey.lime_survey_id, request.LANGUAGE_CODE)
+    survey_title = surveys.get_survey_title(questionnaire_response.survey.lime_survey_id, language)
     survey_completed = (surveys.get_participant_properties(questionnaire_response.survey.lime_survey_id,
                                                            questionnaire_response.token_id,
                                                            "completed") != "N")
@@ -1366,3 +1374,30 @@ def questionnaire_response_view(request, questionnaire_response_id,
     }
 
     return render(request, template_name, context)
+
+
+# def get_questionnaire_language(questionnaire_lime_survey, questionnaire_id, language_code):
+#
+#     language = "pt-BR"
+#     # defining language to be showed
+#     languages = questionnaire_lime_survey.get_survey_languages(questionnaire_id)
+#
+#     # language = languages['language']
+#
+#     # language to be showed can be the base language, or...
+#     if "language" in languages:
+#
+#         language = languages['language']
+#
+#         # ...can be one of the additional languages
+#         if language.lower() != language_code.lower() and languages['additional_languages']:
+#
+#             # search for the right language in addional languages,
+#             # considering that the LimeSurvey uses upper case in the two-letter language code, like en-US and pt-BR.
+#             additional_languages_list = languages['additional_languages'].split(' ')
+#             additional_languages_list_lower = [item.lower() for item in additional_languages_list]
+#             if language_code.lower() in additional_languages_list_lower:
+#                 index = additional_languages_list_lower.index(language_code.lower())
+#                 language = additional_languages_list[index]
+#
+#     return language

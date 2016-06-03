@@ -35,8 +35,8 @@ function init(){
         //pintar();
     };
     var map_file = document.getElementById("map_file");
-    imageObj.src = "../media/eeg_electrode_system_files/3/10-20_system_for_EEG.png";
-    //imageObj.src = map_file.value;
+    //imageObj.src = "/media/eeg_electrode_system_files/3/10-20_system_for_EEG.png;
+    imageObj.src = map_file.value;
     //imageObj.src = 'https://www.ant-neuro.com/sites/default/files/images/waveguard_layout_024ch.png';
     //canvas.addEventListener("mousedown", getPosition, false);
     //canvas.addEventListener('mousedown',ev_canvas, false);

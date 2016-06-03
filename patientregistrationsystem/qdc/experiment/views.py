@@ -15,7 +15,7 @@ from django.core import serializers
 from django.core.urlresolvers import reverse
 from django.db.models import Q
 from django.db.models.deletion import ProtectedError
-from django.db.models.query import QuerySet
+# from django.db.models.query import QuerySet
 from django.http import HttpResponseRedirect, HttpResponse
 from django.shortcuts import get_object_or_404, redirect, render, render_to_response
 from django.utils.translation import ugettext as _
@@ -39,8 +39,7 @@ from patient.models import Patient, QuestionnaireResponse as PatientQuestionnair
 
 from survey.abc_search_engine import Questionnaires
 from survey.models import Survey
-from survey.views import get_questionnaire_responses, check_limesurvey_access, recursively_create_list_of_steps, \
-    create_list_of_trees
+from survey.views import get_questionnaire_responses, check_limesurvey_access, create_list_of_trees
 
 permission_required = partial(permission_required, raise_exception=True)
 
@@ -433,7 +432,8 @@ def group_create(request, experiment_id, template_name="experiment/group_registe
 def recursively_create_list_of_questionnaires_and_statistics(block_id,
                                                              list_of_questionnaires_configuration,
                                                              surveys,
-                                                             num_participants):
+                                                             num_participants,
+                                                             language_code):
     questionnaire_configurations = ComponentConfiguration.objects.filter(parent_id=block_id,
                                                                          component__component_type="questionnaire")
 
@@ -458,8 +458,9 @@ def recursively_create_list_of_questionnaires_and_statistics(block_id,
             if response_result != "N" and response_result != "":
                 amount_of_completed_questionnaires += 1
 
+        language = get_questionnaire_language(surveys, questionnaire.survey.lime_survey_id, language_code)
         list_of_questionnaires_configuration.append({
-            "survey_title": surveys.get_survey_title(questionnaire.survey.lime_survey_id),
+            "survey_title": surveys.get_survey_title(questionnaire.survey.lime_survey_id, language),
             "fills_per_participant": fills_per_participant,
             "total_fills_needed": total_fills_needed,
             "total_fills_done": amount_of_completed_questionnaires,
@@ -473,7 +474,8 @@ def recursively_create_list_of_questionnaires_and_statistics(block_id,
             Block.objects.get(id=block_configuration.component.id),
             list_of_questionnaires_configuration,
             surveys,
-            num_participants)
+            num_participants,
+            language_code)
 
     return list_of_questionnaires_configuration
 
@@ -498,7 +500,8 @@ def group_view(request, group_id, template_name="experiment/group_register.html"
             group.experimental_protocol,
             [],
             surveys,
-            SubjectOfGroup.objects.filter(group_id=group_id).count())
+            SubjectOfGroup.objects.filter(group_id=group_id).count(),
+            request.LANGUAGE_CODE)
 
         surveys.release_session_key()
     else:
@@ -841,7 +844,8 @@ def view_eeg_setting_type(request, eeg_setting_id, eeg_setting_type):
 
         if eeg_setting_type == "eeg_machine":
 
-            try:
+            if hasattr(eeg_setting, 'eeg_machine_setting'):
+
                 eeg_machine_setting = EEGMachineSetting.objects.get(eeg_setting_id=eeg_setting_id)
 
                 selection_form = EEGMachineForm(request.POST or None, instance=eeg_machine_setting.eeg_machine)
@@ -851,8 +855,7 @@ def view_eeg_setting_type(request, eeg_setting_id, eeg_setting_type):
                 for field in setting_form.fields:
                     setting_form.fields[field].widget.attrs['disabled'] = True
 
-            except:
-
+            else:
                 creating = True
 
                 selection_form = EEGMachineForm(request.POST or None)
@@ -860,7 +863,8 @@ def view_eeg_setting_type(request, eeg_setting_id, eeg_setting_type):
 
         if eeg_setting_type == "eeg_amplifier":
 
-            try:
+            if hasattr(eeg_setting, 'eeg_amplifier_setting'):
+
                 eeg_amplifier_setting = EEGAmplifierSetting.objects.get(eeg_setting_id=eeg_setting_id)
 
                 selection_form = EEGAmplifierForm(request.POST or None, instance=eeg_amplifier_setting.eeg_amplifier)
@@ -870,7 +874,7 @@ def view_eeg_setting_type(request, eeg_setting_id, eeg_setting_type):
                 for field in setting_form.fields:
                     setting_form.fields[field].widget.attrs['disabled'] = True
 
-            except:
+            else:
                 creating = True
 
                 selection_form = EEGAmplifierForm(request.POST or None)
@@ -878,20 +882,22 @@ def view_eeg_setting_type(request, eeg_setting_id, eeg_setting_type):
 
         if eeg_setting_type == "eeg_solution":
 
-            try:
+            if hasattr(eeg_setting, 'eeg_solution_setting'):
+
                 eeg_solution_setting = EEGSolutionSetting.objects.get(eeg_setting_id=eeg_setting_id)
 
                 selection_form = EEGSolutionForm(request.POST or None, instance=eeg_solution_setting.eeg_solution)
                 solution_selected = eeg_solution_setting.eeg_solution
 
-            except:
+            else:
                 creating = True
 
                 selection_form = EEGSolutionForm(request.POST or None)
 
         if eeg_setting_type == "eeg_filter":
 
-            try:
+            if hasattr(eeg_setting, 'eeg_filter_setting'):
+
                 eeg_filter_setting = EEGFilterSetting.objects.get(eeg_setting_id=eeg_setting_id)
 
                 selection_form = EEGFilterForm(request.POST or None, instance=eeg_filter_setting.eeg_filter_type)
@@ -901,7 +907,7 @@ def view_eeg_setting_type(request, eeg_setting_id, eeg_setting_type):
                 for field in setting_form.fields:
                     setting_form.fields[field].widget.attrs['disabled'] = True
 
-            except:
+            else:
                 creating = True
 
                 selection_form = EEGFilterForm(request.POST or None)
@@ -939,7 +945,7 @@ def view_eeg_setting_type(request, eeg_setting_id, eeg_setting_type):
                 setting_form = EEGElectrodeLayoutSettingForm(request.POST or None)
 
         # Settings related to equipment
-        if eeg_setting_type in ["eeg_machine", "eeg-amplifier", "eeg_electrode_net_system"]:
+        if eeg_setting_type in ["eeg_machine", "eeg_amplifier", "eeg_electrode_net_system"]:
 
             equipment_type = "eeg_electrode_net" if eeg_setting_type == "eeg_electrode_net_system" else eeg_setting_type
 
@@ -979,8 +985,8 @@ def view_eeg_setting_type(request, eeg_setting_id, eeg_setting_type):
 
             "eeg_setting": eeg_setting,
             "equipment_selected": equipment_selected,
-            "solution_selected" : solution_selected,
-            "filter_selected" : filter_selected,
+            "solution_selected": solution_selected,
+            "filter_selected": filter_selected,
 
             "manufacturer_list": manufacturer_list,
             "equipment_list": equipment_list,
@@ -1171,7 +1177,7 @@ def edit_eeg_setting_type(request, eeg_setting_id, eeg_setting_type):
             localization_system_selected = setting.eeg_electrode_net_system.eeg_electrode_localization_system
 
         # Settings related to equipment
-        if eeg_setting_type in ["eeg_machine", "eeg-amplifier", "eeg_electrode_net_system"]:
+        if eeg_setting_type in ["eeg_machine", "eeg_amplifier", "eeg_electrode_net_system"]:
 
             equipment_type = "eeg_electrode_net" if eeg_setting_type == "eeg_electrode_net_system" else eeg_setting_type
             equipment_list = Equipment.objects.filter(equipment_type=equipment_type)
@@ -1221,7 +1227,7 @@ def get_json_equipment_by_manufacturer(request, equipment_type, manufacturer_id)
     if manufacturer_id != "0":
         equipment = equipment.filter(manufacturer_id=manufacturer_id)
     json_equipment = serializers.serialize("json", equipment)
-    return HttpResponse(json_equipment, content_type ='application/json')
+    return HttpResponse(json_equipment, content_type='application/json')
 
 
 @login_required
@@ -1267,10 +1273,10 @@ def get_json_solution_attributes(request, solution_id):
 @permission_required('experiment.change_experiment')
 def get_json_filter_attributes(request, filter_id):
 
-    filter = get_object_or_404(EEGFilterType, pk=filter_id)
+    filter_type = get_object_or_404(EEGFilterType, pk=filter_id)
 
     response_data = {
-        'description': filter.description,
+        'description': filter_type.description,
     }
 
     return HttpResponse(json.dumps(response_data), content_type='application/json')
@@ -1295,7 +1301,7 @@ def get_localization_system_by_electrode_net(request, equipment_id):
     list_of_localization_system = EEGElectrodeLocalizationSystem.objects.filter(
         set_of_electrode_net_system__eeg_electrode_net_id=equipment_id)
     json_equipment = serializers.serialize("json", list_of_localization_system)
-    return HttpResponse(json_equipment, content_type ='application/json')
+    return HttpResponse(json_equipment, content_type='application/json')
 
 
 @login_required
@@ -1309,13 +1315,13 @@ def get_equipment_by_manufacturer_and_localization_system(request, manufacturer_
     if manufacturer_id != "0":
         equipment = equipment.filter(manufacturer_id=manufacturer_id)
     json_equipment = serializers.serialize("json", equipment)
-    return HttpResponse(json_equipment, content_type ='application/json')
+    return HttpResponse(json_equipment, content_type='application/json')
 
 
 @login_required
 @permission_required('experiment.change_experiment')
 def eeg_electrode_position_setting(request, eeg_setting_id,
-                                  template_name="experiment/eeg_setting_electrode_position_status.html"):
+                                   template_name="experiment/eeg_setting_electrode_position_status.html"):
 
     eeg_setting = get_object_or_404(EEGSetting, pk=eeg_setting_id)
 
@@ -1339,10 +1345,6 @@ def eeg_electrode_position_setting(request, eeg_setting_id,
         return render(request, template_name, context)
     else:
         raise PermissionDenied
-
-
-
-
 
 
 @login_required
@@ -1441,8 +1443,9 @@ def questionnaire_view(request, group_id, component_configuration_id,
     questionnaire = Questionnaire.objects.get(id=questionnaire_configuration.component.id)
 
     surveys = Questionnaires()
-    questionnaire_title = surveys.get_survey_title(
-        Questionnaire.objects.get(id=questionnaire_configuration.component_id).survey.lime_survey_id)
+    lime_survey_id = Questionnaire.objects.get(id=questionnaire_configuration.component_id).survey.lime_survey_id
+    language = get_questionnaire_language(surveys, lime_survey_id, request.LANGUAGE_CODE)
+    questionnaire_title = surveys.get_survey_title(lime_survey_id, language)
 
     limesurvey_available = check_limesurvey_access(request, surveys)
 
@@ -1534,13 +1537,9 @@ def subjects(request, group_id, template_name="experiment/subjects.html"):
     # Navigate the components of the experimental protocol from the root to see if there is any questionnaire component
     # in this group.
     if group.experimental_protocol is not None:
-        list_of_questionnaires_configuration = recursively_create_list_of_steps(group.experimental_protocol,
-                                                                                "questionnaire",
-                                                                                [])
+        list_of_questionnaires_configuration = create_list_of_trees(group.experimental_protocol, "questionnaire")
 
-        list_of_eeg_configuration = recursively_create_list_of_steps(group.experimental_protocol,
-                                                                     "eeg",
-                                                                     [])
+        list_of_eeg_configuration = create_list_of_trees(group.experimental_protocol, "eeg")
 
         experimental_protocol_info = {'number_of_questionnaires': len(list_of_questionnaires_configuration),
                                       'number_of_eeg_data': len(list_of_eeg_configuration)}
@@ -1553,10 +1552,13 @@ def subjects(request, group_id, template_name="experiment/subjects.html"):
             # For each questionnaire in the experimental protocol of the group...
             for questionnaire_configuration in list_of_questionnaires_configuration:
                 # Get the responses
+                path = [item[0] for item in questionnaire_configuration]
+                data_configuration_tree_id = list_data_configuration_tree(path[-1], path)
                 subject_responses = QuestionnaireResponse.objects. \
                     filter(subject_of_group=subject_of_group,
-                           data_configuration_tree__component_configuration=questionnaire_configuration)
+                           data_configuration_tree_id=data_configuration_tree_id)
 
+                questionnaire_configuration = get_object_or_404(ComponentConfiguration, pk=path[-1])
                 # This is a shortcut that allows to avid the delay of the connection to LimeSurvey.
                 if (questionnaire_configuration.number_of_repetitions is None and subject_responses.count() > 0) or \
                         (questionnaire_configuration.number_of_repetitions is not None and
@@ -1600,9 +1602,11 @@ def subjects(request, group_id, template_name="experiment/subjects.html"):
 
             # for each component_configuration...
             for eeg_configuration in list_of_eeg_configuration:
+                path = [item[0] for item in eeg_configuration]
+                data_configuration_tree_id = list_data_configuration_tree(path[-1], path)
                 eeg_data_files = \
                     EEGData.objects.filter(subject_of_group=subject_of_group,
-                                           data_configuration_tree__component_configuration=eeg_configuration)
+                                           data_configuration_tree_id=data_configuration_tree_id)
                 if len(eeg_data_files):
                     number_of_eeg_data_files_uploaded += 1
 
@@ -1751,7 +1755,9 @@ def subject_questionnaire_response_create(request, group_id, subject_id, questio
         questionnaire_config = get_object_or_404(ComponentConfiguration, id=questionnaire_id)
         surveys = Questionnaires()
         lime_survey_id = Questionnaire.objects.get(id=questionnaire_config.component_id).survey.lime_survey_id
-        survey_title = surveys.get_survey_title(lime_survey_id)
+
+        language = get_questionnaire_language(surveys, lime_survey_id, request.LANGUAGE_CODE)
+        survey_title = surveys.get_survey_title(lime_survey_id, language)
         surveys.release_session_key()
 
         fail = None
@@ -1802,7 +1808,9 @@ def questionnaire_response_edit(request, questionnaire_response_id,
     subject = questionnaire_response.subject_of_group.subject
 
     surveys = Questionnaires()
-    survey_title = surveys.get_survey_title(questionnaire.survey.lime_survey_id)
+
+    language = get_questionnaire_language(surveys, questionnaire.survey.lime_survey_id, request.LANGUAGE_CODE)
+    survey_title = surveys.get_survey_title(questionnaire.survey.lime_survey_id, language)
     survey_completed = (surveys.get_participant_properties(questionnaire.survey.lime_survey_id,
                                                            questionnaire_response.token_id,
                                                            "completed") != "N")
@@ -2059,6 +2067,8 @@ def subject_questionnaire_view(request, group_id, subject_id,
 
     list_of_paths = create_list_of_trees(group.experimental_protocol, "questionnaire")
 
+    language_code = request.LANGUAGE_CODE
+
     for path in list_of_paths:
         questionnaire_response = ComponentConfiguration.objects.get(pk=path[-1][0])
 
@@ -2082,9 +2092,10 @@ def subject_questionnaire_view(request, group_id, subject_id,
                  'completed': None if response_result is None else response_result != "N" and response_result != ""}
             )
 
+        language = get_questionnaire_language(surveys, questionnaire.survey.lime_survey_id, language_code)
         subject_questionnaires.append(
             {'questionnaire_configuration': questionnaire_configuration,
-             'title': surveys.get_survey_title(questionnaire.survey.lime_survey_id),
+             'title': surveys.get_survey_title(questionnaire.survey.lime_survey_id, language),
              'path': path,
              'questionnaire_responses': questionnaire_responses_with_status}
         )
@@ -2111,8 +2122,6 @@ def subject_eeg_view(request, group_id, subject_id,
     subject = get_object_or_404(Subject, id=subject_id)
 
     eeg_collections = []
-
-    # list_of_eeg_configuration = recursively_create_list_of_steps(group.experimental_protocol, "eeg", [])
 
     list_of_paths = create_list_of_trees(group.experimental_protocol, "eeg")
 
@@ -2655,7 +2664,7 @@ def component_create(request, experiment_id, component_type):
         elif component_type == 'eeg':
             specific_form = EEGForm(request.POST or None, initial={'experiment': experiment})
         elif component_type == 'questionnaire':
-            questionnaires_list = Questionnaires().find_all_active_questionnaires()
+            questionnaires_list = find_active_questionnaires(request.LANGUAGE_CODE)  # Questionnaires().find_all_active_questionnaires()
         elif component_type == 'block':
             specific_form = BlockForm(request.POST or None, initial={'number_of_mandatory_components': None})
             # component_form.fields['duration_value'].widget.attrs['disabled'] = True
@@ -2709,6 +2718,24 @@ def component_create(request, experiment_id, component_type):
         return render(request, template_name, context)
     else:
         raise PermissionDenied
+
+from survey.views import get_questionnaire_language
+
+
+def find_active_questionnaires(language_code):
+
+    surveys = Questionnaires()
+
+    questionnaires_list = surveys.find_all_active_questionnaires()
+
+    for questionnaire in questionnaires_list:
+        questionnaire_id = questionnaire["sid"]
+        language = get_questionnaire_language(surveys, questionnaire_id, language_code)
+        questionnaire['surveyls_title'] = surveys.get_survey_title(questionnaire_id, language)
+
+    surveys.release_session_key()
+
+    return questionnaires_list
 
 
 def create_list_of_breadcrumbs(list_of_ids_of_components_and_configurations):
@@ -3453,7 +3480,7 @@ def component_add_new(request, path_of_the_components, component_type):
         elif component_type == 'eeg':
             specific_form = EEGForm(request.POST or None, initial={'experiment': experiment})
         elif component_type == 'questionnaire':
-            questionnaires_list = Questionnaires().find_all_active_questionnaires()
+            questionnaires_list = find_active_questionnaires(request.LANGUAGE_CODE)  # Questionnaires().find_all_active_questionnaires()
         elif component_type == 'block':
             specific_form = BlockForm(request.POST or None, initial={'number_of_mandatory_components': None})
             duration_string = "0"

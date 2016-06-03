@@ -34,12 +34,15 @@ def survey_list(request, template_name='survey/survey_list.html'):
 
     questionnaires_list = []
 
+    language_code = request.LANGUAGE_CODE
+
     for survey in Survey.objects.all():
+        language = get_questionnaire_language(surveys, survey.lime_survey_id, language_code)
         questionnaires_list.append(
             {
                 'id': survey.id,
                 'lime_survey_id': survey.lime_survey_id,
-                'title': surveys.get_survey_title(survey.lime_survey_id),
+                'title': surveys.get_survey_title(survey.lime_survey_id, language),
                 'is_initial_evaluation': survey.is_initial_evaluation
             }
         )
@@ -111,7 +114,8 @@ def survey_update(request, survey_id, template_name="survey/survey_register.html
     survey = get_object_or_404(Survey, pk=survey_id)
 
     surveys = Questionnaires()
-    survey_title = surveys.get_survey_title(survey.lime_survey_id)
+    language = get_questionnaire_language(surveys, survey.lime_survey_id, request.LANGUAGE_CODE)
+    survey_title = surveys.get_survey_title(survey.lime_survey_id, language)
     limesurvey_available = check_limesurvey_access(request, surveys)
 
     surveys.release_session_key()
@@ -371,8 +375,10 @@ def survey_view(request, survey_id, template_name="survey/survey_register.html")
     survey = get_object_or_404(Survey, pk=survey_id)
 
     surveys = Questionnaires()
+
     limesurvey_available = check_limesurvey_access(request, surveys)
-    survey_title = surveys.get_survey_title(survey.lime_survey_id)
+    language = get_questionnaire_language(surveys, survey.lime_survey_id, request.LANGUAGE_CODE)
+    survey_title = surveys.get_survey_title(survey.lime_survey_id, language)
 
     # There is no need to use "request.POST or None" because the data will never be changed here. In fact we have to
     # use "None" only, because request.POST does not contain any value because the fields are disabled, and this results
@@ -653,3 +659,28 @@ def is_limesurvey_available(surveys):
         limesurvey_available = False
 
     return limesurvey_available
+
+
+def get_questionnaire_language(questionnaire_lime_survey, questionnaire_id, language_code):
+
+    language = "pt-BR"
+    # defining language to be showed
+    languages = questionnaire_lime_survey.get_survey_languages(questionnaire_id)
+
+    # language to be showed can be the base language, or...
+    if "language" in languages:
+
+        language = languages['language']
+
+        # ...can be one of the additional languages
+        if language.lower() != language_code.lower() and languages['additional_languages']:
+
+            # search for the right language in addional languages,
+            # considering that the LimeSurvey uses upper case in the two-letter language code, like en-US and pt-BR.
+            additional_languages_list = languages['additional_languages'].split(' ')
+            additional_languages_list_lower = [item.lower() for item in additional_languages_list]
+            if language_code.lower() in additional_languages_list_lower:
+                index = additional_languages_list_lower.index(language_code.lower())
+                language = additional_languages_list[index]
+
+    return language
