@@ -275,6 +275,9 @@ class ABCSearchEngine(ABC):
         # string $sToken, string $sLanguageCode, string $sCompletionStatus, string $sHeadingType,
         #                                                                 string $sResponseType, array $aFields)
         #
+        if not isinstance(responses, str):
+            responses = self.server.export_responses(self.session_key, sid, 'csv', language,
+                                                     'complete', heading_type, 'short')
         if isinstance(responses, str):
             responses_txt = b64decode(responses)
         else:
