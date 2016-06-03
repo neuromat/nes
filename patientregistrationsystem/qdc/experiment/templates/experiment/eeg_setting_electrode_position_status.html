@@ -72,6 +72,12 @@
     <div class="tab-pane fade in active" id="menuUserTab" style="width:100%;">
         <div class="col-md-10">
             <div class="container span6 offset3 well">
+{#                <div hidden="hidden">#}
+                    {% load staticfiles %}
+                    <img src="{% static "../media/eeg_electrode_system_files/3/10-20_system_for_EEG.png" %}" alt="My image"/>
+                    <input id="eeg_electrode_position" type="text" value="{{ json_list }}">
+                    <input id="map_file" type="text" value="{{ map_file_url }}">
+{#                </div>#}
 
                 <div style="width:100%;">
                     <h4>{% trans "EEG electrode position" %}</h4>
@@ -79,7 +85,7 @@
                         <tr>
                             <td width="80%">
                                 <div style="float:left; width: 80%">
-                                    <canvas id="electrodeMapCanvas" width="600" height="400" style="border:1px solid #000000;">
+                                    <canvas id="electrodeMapCanvas" width="700" height="500" style="border:1px solid #000000;">
                                     </canvas>
                                 </div>
                             </td>
@@ -98,7 +104,7 @@
                                                 {{ position_setting.eeg_electrode_position.name }}
                                             </td>
                                             <td>
-                                                <input type="checkbox" id="position_status_{{ position_setting.id }}" {% if position_setting.used %}checked="checked"{% endif %} />
+                                                <input type="checkbox" id="position_status_{{ position_setting.id }}" {% if position_setting.used %}checked="checked"{% endif %} onclick="used();" />
                                             </td>
                                         </tr>
                                         {% endfor %}
