@@ -556,84 +556,87 @@ def get_questionnaire_responses(language_code, lime_survey_id, token_id, request
 
                                 answer = ''
 
-                                # type "1" means "Array dual scale"
-                                if question['type'] == '1':
+                                # type 'X' means "Text display"
+                                if not question['type'] == 'X':
 
-                                    answer_list = []
+                                    # type "1" means "Array dual scale"
+                                    if question['type'] == '1':
 
-                                    if question['question_id'] + "[1]" in responses_list[0]:
-                                        index = responses_list[0].index(question['question_id'] + "[1]")
-                                        answer_options = question['answer_options']
+                                        answer_list = []
 
-                                        # if 'dualscale_headerA' in question['attributes_lang']:
+                                        if question['question_id'] + "[1]" in responses_list[0]:
+                                            index = responses_list[0].index(question['question_id'] + "[1]")
+                                            answer_options = question['answer_options']
 
-                                        answer = question['attributes_lang']['dualscale_headerA'] + ": "
-                                        if responses_list[1][index] in answer_options:
-                                            answer_option = answer_options[responses_list[1][index]]
-                                            answer += answer_option['answer']
-                                        else:
-                                            # Sem resposta
-                                            answer += _('No answer')
-                                        # else:
-                                        #     answer += 'Sem resposta'
+                                            # if 'dualscale_headerA' in question['attributes_lang']:
 
-                                    answer_list.append(answer)
-
-                                    if question['question_id'] + "[2]" in responses_list[0]:
-                                        index = responses_list[0].index(question['question_id'] + "[2]")
-                                        answer_options = question['answer_options']
-
-                                        # if 'dualscale_headerB' in question['attributes_lang']:
-
-                                        answer = question['attributes_lang']['dualscale_headerB'] + ": "
-                                        if responses_list[1][index] in answer_options:
-                                            answer_option = answer_options[responses_list[1][index]]
-                                            answer += answer_option['answer']
-                                        else:
-                                            # Sem resposta
-                                            answer += _('No answer')
-                                        # else:
-                                        #     answer += 'Sem resposta'
-
-                                    answer_list.append(answer)
-
-                                    questionnaire_responses.append({
-                                        'question': question['question'],
-                                        'answer': answer_list,
-                                        'type': question['type']
-                                    })
-                                else:
-
-                                    if question['question_id'] in responses_list[0]:
-
-                                        index = responses_list[0].index(question['question_id'])
-
-                                        answer_options = question['answer_options']
-
-                                        if isinstance(answer_options, dict):
-
+                                            answer = question['attributes_lang']['dualscale_headerA'] + ": "
                                             if responses_list[1][index] in answer_options:
                                                 answer_option = answer_options[responses_list[1][index]]
-                                                answer = answer_option['answer']
+                                                answer += answer_option['answer']
                                             else:
                                                 # Sem resposta
-                                                answer = _('No answer')
-                                        else:
-                                            # type "D" means "Date/Time"
-                                            if question['type'] == 'D':
-                                                if responses_list[1][index]:
-                                                    answer = datetime.datetime.strptime(responses_list[1][index],
-                                                                                        '%Y-%m-%d %H:%M:%S')
-                                                else:
-                                                    answer = ''
-                                            else:
-                                                answer = responses_list[1][index]
+                                                answer += _('No answer')
+                                            # else:
+                                            #     answer += 'Sem resposta'
 
-                                    questionnaire_responses.append({
-                                        'question': question['question'],
-                                        'answer': answer,
-                                        'type': question['type']
-                                    })
+                                        answer_list.append(answer)
+
+                                        if question['question_id'] + "[2]" in responses_list[0]:
+                                            index = responses_list[0].index(question['question_id'] + "[2]")
+                                            answer_options = question['answer_options']
+
+                                            # if 'dualscale_headerB' in question['attributes_lang']:
+
+                                            answer = question['attributes_lang']['dualscale_headerB'] + ": "
+                                            if responses_list[1][index] in answer_options:
+                                                answer_option = answer_options[responses_list[1][index]]
+                                                answer += answer_option['answer']
+                                            else:
+                                                # Sem resposta
+                                                answer += _('No answer')
+                                            # else:
+                                            #     answer += 'Sem resposta'
+
+                                        answer_list.append(answer)
+
+                                        questionnaire_responses.append({
+                                            'question': question['question'],
+                                            'answer': answer_list,
+                                            'type': question['type']
+                                        })
+                                    else:
+
+                                        if question['question_id'] in responses_list[0]:
+
+                                            index = responses_list[0].index(question['question_id'])
+
+                                            answer_options = question['answer_options']
+
+                                            if isinstance(answer_options, dict):
+
+                                                if responses_list[1][index] in answer_options:
+                                                    answer_option = answer_options[responses_list[1][index]]
+                                                    answer = answer_option['answer']
+                                                else:
+                                                    # Sem resposta
+                                                    answer = _('No answer')
+                                            else:
+                                                # type "D" means "Date/Time"
+                                                if question['type'] == 'D':
+                                                    if responses_list[1][index]:
+                                                        answer = datetime.datetime.strptime(responses_list[1][index],
+                                                                                            '%Y-%m-%d %H:%M:%S')
+                                                    else:
+                                                        answer = ''
+                                                else:
+                                                    answer = responses_list[1][index]
+
+                                        questionnaire_responses.append({
+                                            'question': question['question'],
+                                            'answer': answer,
+                                            'type': question['type']
+                                        })
         else:
             messages.error(request, _("LimeSurvey did not find fill data for this questionnaire."))
 
