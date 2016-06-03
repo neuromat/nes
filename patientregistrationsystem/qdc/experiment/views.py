@@ -1327,12 +1327,19 @@ def eeg_electrode_position_setting(request, eeg_setting_id,
 
     if get_can_change(request.user, eeg_setting.experiment.research_project):
 
-        # if request.method == "POST":
-        #     if request.POST['action'] == "save":
-        #         eeg_electrode_position_setting =
+
+        map_file_url = eeg_setting.eeg_electrode_layout_setting.eeg_electrode_net_system.eeg_electrode_localization_system.map_image_file.url;
+
+        my_dict = [{'id': 'position_status_13','x': 350, 'y': 333, 'position': 'Pz'},
+                   {'id': 'position_status_14','x': 350, 'y': 244, 'position': 'Cz'},
+                   {'id': 'position_status_15','x': 350, 'y': 157, 'position': 'Fz'}]
+
+        json_list = json.dumps(my_dict)
 
         context = {
-            "eeg_setting": eeg_setting
+            "eeg_setting": eeg_setting,
+            "json_list": json_list,
+            "map_file_url": map_file_url
         }
 
         return render(request, template_name, context)
