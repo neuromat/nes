@@ -158,6 +158,9 @@ class EEGElectrodeModel(models.Model):
     impedance = models.FloatField(null=True, blank=True)
     impedance_unit = models.CharField(null=True, blank=True, max_length=15, choices=IMPEDANCE_UNIT)
 
+    def __str__(self):
+        return self.name
+
 
 class EEGElectrodeNet(Equipment):
     electrode_model_default = models.ForeignKey(EEGElectrodeModel)
@@ -251,6 +254,7 @@ class EEGElectrodePositionSetting(models.Model):
     eeg_electrode_layout_setting = models.ForeignKey(EEGElectrodeLayoutSetting, related_name='positions_setting')
     eeg_electrode_position = models.ForeignKey(EEGElectrodePosition)
     used = models.BooleanField()
+    electrode_model = models.ForeignKey(EEGElectrodeModel)
 
 
 class Component(models.Model):

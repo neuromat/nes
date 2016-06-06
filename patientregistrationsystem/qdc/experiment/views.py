@@ -27,7 +27,8 @@ from experiment.models import Experiment, Subject, QuestionnaireResponse, Subjec
     TaskForTheExperimenter, ClassificationOfDiseases, ResearchProject, Keyword, EEG, EEGData, FileFormat, \
     EEGSetting, Equipment, Manufacturer, EEGMachine, EEGAmplifier, EEGElectrodeNet, DataConfigurationTree, \
     EEGMachineSetting, EEGAmplifierSetting, EEGSolutionSetting, EEGFilterSetting, EEGElectrodeLayoutSetting, \
-    EEGFilterType, EEGSolution, EEGElectrodeLocalizationSystem, EEGElectrodeNetSystem, EEGElectrodePositionSetting
+    EEGFilterType, EEGSolution, EEGElectrodeLocalizationSystem, EEGElectrodeNetSystem, EEGElectrodePositionSetting, \
+    EEGElectrodeModel
 from experiment.forms import ExperimentForm, QuestionnaireResponseForm, FileForm, GroupForm, InstructionForm, \
     ComponentForm, StimulusForm, BlockForm, ComponentConfigurationForm, ResearchProjectForm, NumberOfUsesToInsertForm, \
     EEGDataForm, EEGSettingForm, EquipmentForm, EEGForm, EEGMachineForm, EEGMachineSettingForm, EEGAmplifierForm, \
@@ -830,9 +831,10 @@ def view_eeg_setting_type(request, eeg_setting_id, eeg_setting_type):
                     if eeg_electrode_localization_system.eegelectrodeposition_set:
                         for position in eeg_electrode_localization_system.eegelectrodeposition_set.all():
                             new_position_setting = EEGElectrodePositionSetting()
+                            new_position_setting.eeg_electrode_layout_setting = eeg_electrode_layout_setting
                             new_position_setting.eeg_electrode_position = position
                             new_position_setting.used = True
-                            new_position_setting.eeg_electrode_layout_setting = eeg_electrode_layout_setting
+                            new_position_setting.electrode_model = eeg_electrode_net.electrode_model_default
                             new_position_setting.save()
 
                     messages.info(request, _('Now you can set each electrode position.'))
@@ -1337,14 +1339,51 @@ def eeg_electrode_position_setting(request, eeg_setting_id,
             })
 
         if request.method == "POST":
-            if request.POST['action'] == "save":
+            if request.POST['action'] in ["save", "save_and_next"]:
                 for position_setting in eeg_setting.eeg_electrode_layout_setting.positions_setting.all():
                     position_setting.used = 'position_status_' + str(position_setting.id) in request.POST
                     position_setting.save()
 
+                messages.success(request, _('Setting saved successfully.'))
+
+                if request.POST['action'] == "save_and_next":
+                    redirect_url = reverse("eeg_electrode_position_setting_model", args=(eeg_setting_id,))
+                    return HttpResponseRedirect(redirect_url)
+
         context = {
             "eeg_setting": eeg_setting,
             "json_list": json.dumps(positions)
+        }
+
+        return render(request, template_name, context)
+    else:
+        raise PermissionDenied
+
+
+@login_required
+@permission_required('experiment.change_experiment')
+def eeg_electrode_position_setting_model(request, eeg_setting_id,
+                                         template_name="experiment/eeg_setting_electrode_position_status_model.html"):
+
+    eeg_setting = get_object_or_404(EEGSetting, pk=eeg_setting_id)
+
+    if get_can_change(request.user, eeg_setting.experiment.research_project):
+
+        eeg_electrode_model_list = EEGElectrodeModel.objects.all()
+
+        if request.method == "POST":
+            if request.POST['action'] == "save":
+
+                for position_setting in eeg_setting.eeg_electrode_layout_setting.positions_setting.all():
+                    electrode_model_id = int(request.POST['electrode_model_' + str(position_setting.id)])
+                    position_setting.electrode_model_id = electrode_model_id
+                    position_setting.save()
+
+                messages.success(request, _('Setting saved successfully.'))
+
+        context = {
+            "eeg_setting": eeg_setting,
+            "eeg_electrode_model_list": eeg_electrode_model_list
         }
 
         return render(request, template_name, context)
