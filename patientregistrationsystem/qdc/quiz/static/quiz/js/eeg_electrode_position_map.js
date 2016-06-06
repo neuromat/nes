@@ -16,12 +16,12 @@
 ////
 //}
 
-window.onload = function(){
+window.onload = function() {
     var eeg_positions = document.getElementById("eeg_electrode_position");
     var positions = eval(eeg_positions.value);
+    used();
     pintar(positions);
-
-}
+};
 
 document.addEventListener("DOMContentLoaded", init, false);
 
@@ -48,10 +48,14 @@ function used(){
     var canvas = document.getElementById("electrodeMapCanvas");
     var context = canvas.getContext("2d");
     var eeg_positions = document.getElementById("eeg_electrode_position");
+
     positions = eval(eeg_positions.value);
+
     for(var i in positions) {
         var position = positions[i];
-        if(document.getElementById(position.id).checked==false){
+
+        if(document.getElementById(position.id).checked == false) {
+        // if(document.getElementById(position.id).checked == false) {
             //context.clearRect(0, 0, canvas.width,canvas.height);
             delete positions[i];
             //init();
@@ -72,7 +76,10 @@ function used(){
         ctx.drawImage(imageObj, 0,0,700,500);
         pintar(positions);
     };
-    imageObj.src = 'https://www.ant-neuro.com/sites/default/files/images/waveguard_layout_024ch.png';
+    // imageObj.src = 'https://www.ant-neuro.com/sites/default/files/images/waveguard_layout_024ch.png';
+    var map_file = document.getElementById("map_file");
+    imageObj.src = map_file.value;
+
 
 }
 
@@ -188,7 +195,7 @@ function pintar(positions){
     }
 
 
-}; //fim function pintar
+} //fim function pintar
 
 //if(window.addEventListener){
 //        window.addEventListener(
