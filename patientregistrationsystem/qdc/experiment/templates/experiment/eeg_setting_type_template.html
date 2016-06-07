@@ -61,6 +61,9 @@
                     <li class="active">{% trans "Add setting" %} </li>
                 {% else %}
                     <li class="active"> {{ equipment_selected.identification }} </li>
+                    {% if eeg_setting_type == "eeg_electrode_net_system" %}
+                        <li class="active"> {{ eeg_setting.eeg_electrode_layout_setting.eeg_electrode_net_system.eeg_electrode_localization_system.name }} </li>
+                    {% endif %}
                 {% endif %}
 
                 {% block breadcrumb %}

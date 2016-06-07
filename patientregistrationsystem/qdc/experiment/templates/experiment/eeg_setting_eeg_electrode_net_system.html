@@ -3,106 +3,132 @@
 
 {% block selection %}
 
-    <h4>{% trans "EEG Electrode net settings" %}</h4>
+    <h4>{% trans "EEG electrode layout setting" %}</h4>
 
-    <div class="row">
-        <div class="col-xs-1 col-sm-1">
-        </div>
-        <div class="col-xs-11 col-sm-11">
-            <div class="form-group">
-                <label class="control-label">{% trans "Manufacturer" %} </label>
+    <ul class="nav nav-tabs">
+        <li class="active"><a data-toggle="tab" href="#electrode_net">{% trans "Electrode net" %}</a></li>
+        <li {% if creating %}class="disabled"{% endif %}>
+            <a {% if creating %}href="#"{% else %}data-toggle="tab" href="#electrode_position"{% endif %}>{% trans "Electrode position" %}</a>
+        </li>
+        <li {% if creating %}class="disabled"{% endif %}>
+            <a {% if creating %}href="#"{% else %}data-toggle="tab" href="#electrode_model"{% endif %}>{% trans "Electrode model" %}</a>
+        </li>
+    </ul>
 
-                <select class="form-control" name="manufacturer" id="id_manufacturer" {% if not editing and not creating %}disabled{% endif %}>
-                    <option value>-------</option>
-                    {% for manufacturer in manufacturer_list %}
-                        <option value="{{ manufacturer.id }}">{{ manufacturer.name }}</option>
-                    {% endfor %}
-                </select>
+  <div class="tab-content">
+    <div id="electrode_net" class="tab-pane fade in active">
 
-                <div class="help-block with-errors"></div>
+        <h4>{% trans "Step 1 of 3" %}</h4>
+
+        <div class="row">
+            <div class="col-xs-1 col-sm-1">
+            </div>
+            <div class="col-xs-11 col-sm-11">
+                <div class="form-group">
+                    <label class="control-label">{% trans "Manufacturer" %} </label>
+
+                    <select class="form-control" name="manufacturer" id="id_manufacturer" {% if not editing and not creating %}disabled{% endif %}>
+                        <option value>-------</option>
+                        {% for manufacturer in manufacturer_list %}
+                            <option value="{{ manufacturer.id }}">{{ manufacturer.name }}</option>
+                        {% endfor %}
+                    </select>
+
+                    <div class="help-block with-errors"></div>
+                </div>
             </div>
         </div>
-    </div>
 
-    <div class="row">
-        <div class="col-xs-1 col-sm-1">
-        </div>
-        <div class="col-xs-11 col-sm-11">
-            <div class="form-group">
-                <label class="control-label">{% trans "Equipment identification" %} </label>
+        <div class="row">
+            <div class="col-xs-1 col-sm-1">
+            </div>
+            <div class="col-xs-11 col-sm-11">
+                <div class="form-group">
+                    <label class="control-label">{% trans "Equipment identification" %} </label>
 
-                <select class="form-control" name="equipment_selection" id="id_equipment_selection" required {% if not editing and not creating %}disabled{% endif %}>
-                    <option value>-------</option>
-                    {% for equipment in equipment_list %}
-                        <option {% if not creating and equipment_selected.id == equipment.id %}selected="selected"{% endif %} value="{{ equipment.id }}">{{ equipment.identification }}</option>
-                    {% endfor %}
-                </select>
+                    <select class="form-control" name="equipment_selection" id="id_equipment_selection" required {% if not editing and not creating %}disabled{% endif %}>
+                        <option value>-------</option>
+                        {% for equipment in equipment_list %}
+                            <option {% if not creating and equipment_selected.id == equipment.id %}selected="selected"{% endif %} value="{{ equipment.id }}">{{ equipment.identification }}</option>
+                        {% endfor %}
+                    </select>
 
-                <div class="help-block with-errors"></div>
+                    <div class="help-block with-errors"></div>
 
+                </div>
             </div>
         </div>
-    </div>
 
-    <div class="row">
-        <div class="col-xs-1 col-sm-1">
-        </div>
-        <div class="col-xs-11 col-sm-11">
-            <div class="form-group">
-                <label class="control-label">{% trans "Description" %} </label>
-                {{ equipment_form.description }}
-                <div class="help-block with-errors"></div>
+        <div class="row">
+            <div class="col-xs-1 col-sm-1">
+            </div>
+            <div class="col-xs-11 col-sm-11">
+                <div class="form-group">
+                    <label class="control-label">{% trans "Description" %} </label>
+                    {{ equipment_form.description }}
+                    <div class="help-block with-errors"></div>
+                </div>
             </div>
         </div>
-    </div>
 
-    <div class="row">
-        <div class="col-xs-1 col-sm-1">
-        </div>
-        <div class="col-xs-11 col-sm-11">
-            <div class="form-group">
-                <label class="control-label">{% trans "Electrode layout system" %} </label>
+        <div class="row">
+            <div class="col-xs-1 col-sm-1">
+            </div>
+            <div class="col-xs-11 col-sm-11">
+                <div class="form-group">
+                    <label class="control-label">{% trans "Electrode layout system" %} </label>
 
-                <select class="form-control" name="localization_system_selection" id="id_localization_system_selection" required {% if not editing and not creating %}disabled{% endif %}>
-                    <option value>-------</option>
-                    {% for localization_system in localization_system_list %}
-                        <option {% if not creating and localization_system_selected.id == localization_system.id %}selected="selected"{% endif %} value="{{ localization_system.id }}">{{ localization_system.name }}</option>
-                    {% endfor %}
-                </select>
+                    <select class="form-control" name="localization_system_selection" id="id_localization_system_selection" required {% if not editing and not creating %}disabled{% endif %}>
+                        <option value>-------</option>
+                        {% for localization_system in localization_system_list %}
+                            <option {% if not creating and localization_system_selected.id == localization_system.id %}selected="selected"{% endif %} value="{{ localization_system.id }}">{{ localization_system.name }}</option>
+                        {% endfor %}
+                    </select>
 
-                <div class="help-block with-errors"></div>
+                    <div class="help-block with-errors"></div>
 
+                </div>
             </div>
         </div>
-    </div>
 
-    <div class="row">
-        <div class="col-xs-1 col-sm-1">
-        </div>
-        <div class="col-xs-11 col-sm-11">
-            <div class="form-group">
-                <label class="control-label">{% trans "Number of electrodes" %} </label>
-                {{ selection_form.number_of_electrodes }}
-                <div class="help-block with-errors"></div>
+        <div class="row">
+            <div class="col-xs-1 col-sm-1">
+            </div>
+            <div class="col-xs-11 col-sm-11">
+                <div class="form-group">
+                    <label class="control-label">{% trans "Number of electrodes" %} </label>
+                    {{ selection_form.number_of_electrodes }}
+                    <div class="help-block with-errors"></div>
+                </div>
             </div>
         </div>
-    </div>
 
-{% endblock %}
+        {#{% block settings %}#}
+        {#{% endblock %}#}
 
-{% block settings %}
-
-    <div class="row">
-        <div class="col-xs-1 col-sm-1">
-        </div>
-        <div class="col-xs-11 col-sm-11">
-            <div class="form-group">
-                <label class="control-label">{% trans "Number of electrodes setted" %} </label>
-                {{ setting_form.number_of_electrodes }}
-                <div class="help-block with-errors"></div>
+        <div class="row">
+            <div class="col-xs-1 col-sm-1">
+            </div>
+            <div class="col-xs-11 col-sm-11">
+                <div class="form-group">
+                    <label class="control-label">{% trans "Number of electrodes setted" %} </label>
+                    {{ setting_form.number_of_electrodes }}
+                    <div class="help-block with-errors"></div>
+                </div>
             </div>
         </div>
+
     </div>
+    <div id="electrode_position" class="tab-pane fade">
+
+        <h4>{% trans "Step 2 of 3" %}</h4>
+
+    </div>
+    <div id="electrode_model" class="tab-pane fade">
+        <h4>{% trans "Step 3 of 3" %}</h4>
+    </div>
+  </div>
+
 
     {% if not editing and not creating and can_change %}
         <div class="btn-group pull-right">
@@ -111,4 +137,8 @@
     {% endif %}
 
 
+
+{% endblock %}
+
+{% block settings %}
 {% endblock %}
