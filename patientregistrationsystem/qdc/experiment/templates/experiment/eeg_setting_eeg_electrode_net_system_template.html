@@ -1,0 +1,43 @@
+{% extends "experiment/eeg_setting_type_template.html" %}
+{% load i18n admin_static %}
+
+{% block selection %}
+
+    <h4>{% trans "EEG electrode layout setting" %}</h4>
+
+    <ul class="nav nav-tabs">
+
+        {% if creating or editing %}
+            <li class="active"><a href="#">{% trans "Electrode net setting" %}</a></li>
+            <li class="disabled"><a href="#">{% trans "Electrode position setting" %}</a></li>
+            <li class="disabled"><a href="#">{% trans "Electrode model setting" %}</a></li>
+        {% else %}
+
+            <li {% if tab == '0' %}class="active"{% endif %}>
+                <a href="/experiment/eeg_setting/{{ eeg_setting.id }}/eeg_electrode_net_system">
+                    {% trans "Electrode net setting" %}</a>
+            </li>
+            <li {% if tab == '1' %}class="active"{% endif %}>
+                <a href="/experiment/eeg_setting/eeg_electrode_position_status/{{ eeg_setting.id }}">
+                    {% trans "Electrode position setting" %}</a>
+            </li>
+            <li {% if tab == '2' %}class="active"{% endif %}>
+                <a href="/experiment/eeg_setting/eeg_electrode_position_status_model/{{ eeg_setting.id }}">
+                    {% trans "Electrode model setting" %}</a>
+            </li>
+
+        {% endif %}
+
+    </ul>
+
+    <div class="tab-content">
+
+        {% block subcontent %}
+        {% endblock %}
+
+    </div>
+
+{% endblock %}
+
+{% block settings %}
+{% endblock %}

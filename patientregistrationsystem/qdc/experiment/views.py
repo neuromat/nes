@@ -980,6 +980,7 @@ def view_eeg_setting_type(request, eeg_setting_id, eeg_setting_type):
         context = {
             "creating": creating,
             "editing": False,
+            "tab": "0",
 
             "can_change": True,
 
@@ -1215,6 +1216,7 @@ def edit_eeg_setting_type(request, eeg_setting_id, eeg_setting_type):
         context = {
             "creating": False,
             "editing": True,
+            "tab": "0",
 
             "can_change": True,
 
@@ -1375,6 +1377,7 @@ def eeg_electrode_position_setting(request, eeg_setting_id,
                     return HttpResponseRedirect(redirect_url)
 
         context = {
+            "tab": "1",
             "eeg_setting": eeg_setting,
             "json_list": json.dumps(positions)
         }
@@ -1406,6 +1409,7 @@ def eeg_electrode_position_setting_model(request, eeg_setting_id,
                 messages.success(request, _('Setting saved successfully.'))
 
         context = {
+            "tab": "2",
             "eeg_setting": eeg_setting,
             "eeg_electrode_model_list": eeg_electrode_model_list
         }

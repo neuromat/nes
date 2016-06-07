@@ -1,21 +1,8 @@
-{% extends "experiment/eeg_setting_type_template.html" %}
+{% extends "experiment/eeg_setting_eeg_electrode_net_system_template.html" %}
 {% load i18n admin_static %}
 
-{% block selection %}
+{% block subcontent %}
 
-    <h4>{% trans "EEG electrode layout setting" %}</h4>
-
-    <ul class="nav nav-tabs">
-        <li class="active"><a data-toggle="tab" href="#electrode_net">{% trans "Electrode net" %}</a></li>
-        <li {% if creating %}class="disabled"{% endif %}>
-            <a {% if creating %}href="#"{% else %}data-toggle="tab" href="#electrode_position"{% endif %}>{% trans "Electrode position" %}</a>
-        </li>
-        <li {% if creating %}class="disabled"{% endif %}>
-            <a {% if creating %}href="#"{% else %}data-toggle="tab" href="#electrode_model"{% endif %}>{% trans "Electrode model" %}</a>
-        </li>
-    </ul>
-
-  <div class="tab-content">
     <div id="electrode_net" class="tab-pane fade in active">
 
         <h4>{% trans "Step 1 of 3" %}</h4>
@@ -103,9 +90,6 @@
             </div>
         </div>
 
-        {#{% block settings %}#}
-        {#{% endblock %}#}
-
         <div class="row">
             <div class="col-xs-1 col-sm-1">
             </div>
@@ -118,27 +102,11 @@
             </div>
         </div>
 
+        {% if not editing and not creating and can_change %}
+            <div class="btn-group pull-right">
+                <a href="/experiment/eeg_setting/eeg_electrode_position_status/{{ eeg_setting.id }}" class="btn btn-primary">{% trans "Electrode positions setting" %}</a>
+            </div>
+        {% endif %}
     </div>
-    <div id="electrode_position" class="tab-pane fade">
 
-        <h4>{% trans "Step 2 of 3" %}</h4>
-
-    </div>
-    <div id="electrode_model" class="tab-pane fade">
-        <h4>{% trans "Step 3 of 3" %}</h4>
-    </div>
-  </div>
-
-
-    {% if not editing and not creating and can_change %}
-        <div class="btn-group pull-right">
-            <a href="/experiment/eeg_setting/eeg_electrode_position_status/{{ eeg_setting.id }}" class="btn btn-primary">{% trans "Electrode positions setting" %}</a>
-        </div>
-    {% endif %}
-
-
-
-{% endblock %}
-
-{% block settings %}
 {% endblock %}

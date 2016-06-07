@@ -1,134 +1,69 @@
-{% extends "quiz/template.html" %}
-{% block activeAdvancedResearchProject %}class="active"{% endblock %}
-
+{% extends "experiment/eeg_setting_eeg_electrode_net_system_template.html" %}
 {% load i18n admin_static %}
 
-{% block header %}
-    {% load static %}
+{% block specific_header %}
     <script src="{% static 'quiz/js/eeg_electrode_position_map.js' %}"></script>
-
-    {% block specific_header %}
-    {% endblock %}
 {% endblock %}
 
-{% block form %}
-    <div class="row">
-    <form id="eeg_setting_form" method="post" data-toggle="validator">
-    {% csrf_token %}
-{% endblock %}
+{% block subcontent %}
 
-{% block content %}
+    <div id="electrode_model" class="tab-pane fade in active">
 
-    {% if messages %}
-        {% for message in messages %}
-
-            {% if message.tags == "success" %}
-                <script>showSuccessMessage('{{ message }}')</script>
-            {% endif %}
-
-            {% if message.tags == "warning" %}
-                <script>showWarningMessage('{{ message }}')</script>
-            {% endif %}
-
-            {% if message.tags == "error" %}
-                <script>showErrorMessage('{{ message }}')</script>
-            {% endif %}
-
-            {% if message.tags == "info" %}
-                <script>showInfoMessage('{{ message }}')</script>
-            {% endif %}
-
-        {% endfor %}
-    {% endif %}
-
-    {% if component_form.errors %}
-        <script type="text/javascript">
-            showErrorMessage(gettext('Please, correct fields highlighted.'))
-        </script>
-    {% endif %}
-
-
-    <div class="tab-pane fade in active" id="experimentBreadCrumb">
-        <div class="col-md-10">
-            <ol class="breadcrumb">
-                <li><a href="/home">{% trans "Home" %}</a></li>
-                <li><a href="/experiment/research_project/list">{% trans "Studies" %}</a></li>
-                <li><a href="/experiment/research_project/{{ eeg_setting.experiment.research_project.id }}">{{ eeg_setting.experiment.research_project.title }}</a></li>
-                <li><a href="/experiment/{{ eeg_setting.experiment.id }}">{{ eeg_setting.experiment.title }}</a></li>
-                <li><a href="/experiment/eeg_setting/{{ eeg_setting.id }}">{{ eeg_setting.name }}</a></li>
-
-                <li class="active"> {% trans "EEG electrode position setting" %} </li>
-
-                {% block breadcrumb %}
-                {% endblock %}
-            </ol>
+        <div hidden="hidden">
+            <input id="eeg_electrode_position" type="text" value="{{ json_list }}">
+            <input id="map_file" type="text" value="{{ eeg_setting.eeg_electrode_layout_setting.eeg_electrode_net_system.eeg_electrode_localization_system.map_image_file.url }}">
         </div>
-    </div>
 
-    <div class="tab-pane fade in active" id="menuUserTab" style="width:100%;">
-        <div class="col-md-10">
-            <div class="container span6 offset3 well">
-                <div hidden="hidden">
-                    <input id="eeg_electrode_position" type="text" value="{{ json_list }}">
-                    <input id="map_file" type="text" value="{{ eeg_setting.eeg_electrode_layout_setting.eeg_electrode_net_system.eeg_electrode_localization_system.map_image_file.url }}">
-                </div>
+        <div style="width:100%;">
+            <h4>{% trans "Step 3 of 3" %}</h4>
+            <table class="table table-striped" style="margin-top:10px; margin-left:10px;">
+                <thead>
+                    <tr>
+                        <th>{% trans "#" %}</th>
+                        <th>{% trans "Position" %}</th>
+                        <th>{% trans "Used" %}</th>
+                        <th>{% trans "Electrode Model" %}</th>
+                        <th></th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for position_setting in eeg_setting.eeg_electrode_layout_setting.positions_setting.all %}
+                    <tr>
+                        <td>
+                            {{ forloop.counter }}
+                        </td>
+                        <td>
+                            {{ position_setting.eeg_electrode_position.name }}
+                        </td>
+                        <td>
+                            <input disabled type="checkbox" name="position_status_{{ position_setting.id }}" id="position_status_{{ position_setting.id }}" {% if position_setting.used %}checked="checked"{% endif %} onclick="used();" />
+                        </td>
+                        <td>
+                            <select class="form-control" name="electrode_model_{{ position_setting.id }}" id="electrode_model_{{ position_setting.id }}">
+                                {% for eeg_electrode_model in eeg_electrode_model_list %}
+                                    <option {% if eeg_electrode_model.id == position_setting.electrode_model.id %}selected="selected"{% endif %} value="{{ eeg_electrode_model.id }}">{{ eeg_electrode_model.name }}</option>
+                                {% endfor %}
+                            </select>
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
 
-                <div style="width:100%;">
-                    <h4>{% trans "EEG electrode models" %}</h4>
-                    <table class="table table-striped" style="margin-top:10px; margin-left:10px;">
-                        <thead>
-                            <tr>
-                                <th>{% trans "#" %}</th>
-                                <th>{% trans "Position" %}</th>
-                                <th>{% trans "Used" %}</th>
-                                <th>{% trans "Electrode Model" %}</th>
-                                <th></th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            {% for position_setting in eeg_setting.eeg_electrode_layout_setting.positions_setting.all %}
-                            <tr>
-                                <td>
-                                    {{ forloop.counter }}
-                                </td>
-                                <td>
-                                    {{ position_setting.eeg_electrode_position.name }}
-                                </td>
-                                <td>
-                                    <input disabled type="checkbox" name="position_status_{{ position_setting.id }}" id="position_status_{{ position_setting.id }}" {% if position_setting.used %}checked="checked"{% endif %} onclick="used();" />
-                                </td>
-                                <td>
-                                    <select class="form-control" name="electrode_model_{{ position_setting.id }}" id="electrode_model_{{ position_setting.id }}">
-                                        {% for eeg_electrode_model in eeg_electrode_model_list %}
-                                            <option {% if eeg_electrode_model.id == position_setting.electrode_model.id %}selected="selected"{% endif %} value="{{ eeg_electrode_model.id }}">{{ eeg_electrode_model.name }}</option>
-                                        {% endfor %}
-                                    </select>
-                                </td>
-                            </tr>
-                            {% endfor %}
-                        </tbody>
-                    </table>
+        </div>
 
-                </div>
+        <div class="btn-toolbar pull-right">
 
+            <div class="btn-group">
+                <a href="/experiment/eeg_setting/eeg_electrode_position_status/{{ eeg_setting.id }}" class="btn" style="background-color: #f5f5f5">{% trans "Back" %}</a>
+            </div>
+            <div class="btn-group">
+                <button type="submit" name="action" value="save" class="btn btn-primary">{% trans "Save model setting" %}</button>
             </div>
 
-            <div class="btn-toolbar pull-right">
-
-                <div class="btn-group">
-                    <a href="/experiment/eeg_setting/eeg_electrode_position_status/{{ eeg_setting.id }}" class="btn" style="background-color: #f5f5f5">{% trans "Back" %}</a>
-                </div>
-                <div class="btn-group">
-                    <button type="submit" name="action" value="save" class="btn btn-primary">{% trans "Save model setting" %}</button>
-                </div>
-
-            </div>
         </div>
+
     </div>
 
 {% endblock %}
 
-{% block end_form %}
-    </form>
-</div>
-{% endblock %}
