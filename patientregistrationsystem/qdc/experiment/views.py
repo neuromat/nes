@@ -1115,10 +1115,34 @@ def edit_eeg_setting_type(request, eeg_setting_id, eeg_setting_type):
                         eeg_electrode_net=eeg_electrode_net,
                         eeg_electrode_localization_system=eeg_electrode_localization_system)
 
+                    # get the current layout setting
                     eeg_electrode_layout_setting = eeg_setting.eeg_electrode_layout_setting
+
+                    # if the electrode localization system changed
+                    if eeg_electrode_layout_setting.eeg_electrode_net_system.eeg_electrode_localization_system != eeg_electrode_localization_system:
+                        # remove all current position settings
+                        for position in eeg_electrode_layout_setting.positions_setting.all():
+                            position.delete()
+
                     eeg_electrode_layout_setting.eeg_electrode_net_system = eeg_electrode_net_system
                     eeg_electrode_layout_setting.number_of_electrodes = request.POST['number_of_electrodes']
                     eeg_electrode_layout_setting.save()
+
+                    if eeg_electrode_localization_system.eegelectrodeposition_set:
+                        for position in eeg_electrode_localization_system.eegelectrodeposition_set.all():
+                            # if not exists a position setting
+                            position_setting = \
+                                EEGElectrodePositionSetting.objects.filter(
+                                    eeg_electrode_layout_setting=eeg_electrode_layout_setting,
+                                    eeg_electrode_position=position)
+
+                            if not position_setting:
+                                new_position_setting = EEGElectrodePositionSetting()
+                                new_position_setting.eeg_electrode_layout_setting = eeg_electrode_layout_setting
+                                new_position_setting.eeg_electrode_position = position
+                                new_position_setting.used = True
+                                new_position_setting.electrode_model = eeg_electrode_net.electrode_model_default
+                                new_position_setting.save()
 
                     messages.success(request, _('EEG electrode net system setting updated sucessfully.'))
 

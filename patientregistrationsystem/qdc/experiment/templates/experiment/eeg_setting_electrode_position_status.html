@@ -57,11 +57,7 @@
                 <li><a href="/experiment/{{ eeg_setting.experiment.id }}">{{ eeg_setting.experiment.title }}</a></li>
                 <li><a href="/experiment/eeg_setting/{{ eeg_setting.id }}">{{ eeg_setting.name }}</a></li>
 
-                {% if creating %}
-                    <li class="active">{% trans "Add" %} {{ equipment_type_name }}</li>
-                {% else %}
-                    <li class="active"> {{ equipment_selected.identification }} </li>
-                {% endif %}
+                <li class="active"> {% trans "EEG electrode layout setting" %} </li>
 
                 {% block breadcrumb %}
                 {% endblock %}
