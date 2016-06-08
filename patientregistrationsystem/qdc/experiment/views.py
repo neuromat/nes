@@ -1364,20 +1364,62 @@ def eeg_electrode_position_setting(request, eeg_setting_id,
                 'y': position_setting.eeg_electrode_position.coordinate_y
             })
 
+        # if request.method == "POST":
+        #     if request.POST['action'] in ["save", "save_and_next"]:
+        #         for position_setting in eeg_setting.eeg_electrode_layout_setting.positions_setting.all():
+        #             position_setting.used = 'position_status_' + str(position_setting.id) in request.POST
+        #             position_setting.save()
+        #
+        #         messages.success(request, _('Setting saved successfully.'))
+        #
+        #         if request.POST['action'] == "save_and_next":
+        #             redirect_url = reverse("eeg_electrode_position_setting_model", args=(eeg_setting_id,))
+        #             return HttpResponseRedirect(redirect_url)
+
+        context = {
+            "tab": "1",
+            "editing": False,
+            "eeg_setting": eeg_setting,
+            "json_list": json.dumps(positions)
+        }
+
+        return render(request, template_name, context)
+    else:
+        raise PermissionDenied
+
+
+@login_required
+@permission_required('experiment.change_experiment')
+def edit_eeg_electrode_position_setting(request, eeg_setting_id,
+                                        template_name="experiment/eeg_setting_electrode_position_status.html"):
+
+    eeg_setting = get_object_or_404(EEGSetting, pk=eeg_setting_id)
+
+    if get_can_change(request.user, eeg_setting.experiment.research_project):
+
+        positions = []
+        for position_setting in eeg_setting.eeg_electrode_layout_setting.positions_setting.all():
+            positions.append({
+                'id': 'position_status_' + str(position_setting.id),
+                'position': position_setting.eeg_electrode_position.name,
+                'x': position_setting.eeg_electrode_position.coordinate_x,
+                'y': position_setting.eeg_electrode_position.coordinate_y
+            })
+
         if request.method == "POST":
-            if request.POST['action'] in ["save", "save_and_next"]:
+            if request.POST['action'] == "save":
                 for position_setting in eeg_setting.eeg_electrode_layout_setting.positions_setting.all():
                     position_setting.used = 'position_status_' + str(position_setting.id) in request.POST
                     position_setting.save()
 
                 messages.success(request, _('Setting saved successfully.'))
 
-                if request.POST['action'] == "save_and_next":
-                    redirect_url = reverse("eeg_electrode_position_setting_model", args=(eeg_setting_id,))
-                    return HttpResponseRedirect(redirect_url)
+                redirect_url = reverse("eeg_electrode_position_setting", args=(eeg_setting_id,))
+                return HttpResponseRedirect(redirect_url)
 
         context = {
             "tab": "1",
+            "editing": True,
             "eeg_setting": eeg_setting,
             "json_list": json.dumps(positions)
         }
@@ -1398,6 +1440,39 @@ def eeg_electrode_position_setting_model(request, eeg_setting_id,
 
         eeg_electrode_model_list = EEGElectrodeModel.objects.all()
 
+        # if request.method == "POST":
+        #     if request.POST['action'] == "save":
+        #
+        #         for position_setting in eeg_setting.eeg_electrode_layout_setting.positions_setting.all():
+        #             electrode_model_id = int(request.POST['electrode_model_' + str(position_setting.id)])
+        #             position_setting.electrode_model_id = electrode_model_id
+        #             position_setting.save()
+        #
+        #         messages.success(request, _('Setting saved successfully.'))
+
+        context = {
+            "tab": "2",
+            "editing": False,
+            "eeg_setting": eeg_setting,
+            "eeg_electrode_model_list": eeg_electrode_model_list
+        }
+
+        return render(request, template_name, context)
+    else:
+        raise PermissionDenied
+
+
+@login_required
+@permission_required('experiment.change_experiment')
+def edit_eeg_electrode_position_setting_model(
+        request, eeg_setting_id, template_name="experiment/eeg_setting_electrode_position_status_model.html"):
+
+    eeg_setting = get_object_or_404(EEGSetting, pk=eeg_setting_id)
+
+    if get_can_change(request.user, eeg_setting.experiment.research_project):
+
+        eeg_electrode_model_list = EEGElectrodeModel.objects.all()
+
         if request.method == "POST":
             if request.POST['action'] == "save":
 
@@ -1408,8 +1483,12 @@ def eeg_electrode_position_setting_model(request, eeg_setting_id,
 
                 messages.success(request, _('Setting saved successfully.'))
 
+                redirect_url = reverse("eeg_electrode_position_setting_model", args=(eeg_setting_id,))
+                return HttpResponseRedirect(redirect_url)
+
         context = {
             "tab": "2",
+            "editing": True,
             "eeg_setting": eeg_setting,
             "eeg_electrode_model_list": eeg_electrode_model_list
         }

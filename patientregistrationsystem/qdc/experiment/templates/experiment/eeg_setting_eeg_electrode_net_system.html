@@ -103,10 +103,16 @@
         </div>
 
         {% if not editing and not creating and can_change %}
-            <div class="btn-group pull-right">
-                <a href="/experiment/eeg_setting/eeg_electrode_position_status/{{ eeg_setting.id }}" class="btn btn-primary">{% trans "Electrode positions setting" %}</a>
+            <div class="btn-toolbar pull-right">
+                <div class="btn-group">
+                    <a disabled="" href="#" class="btn btn-default"><span class="glyphicon glyphicon-chevron-left"></span> {% trans "Previous" %}</a>
+                </div>
+                <div class="btn-group">
+                    <a href="/experiment/eeg_setting/eeg_electrode_position_status/{{ eeg_setting.id }}" class="btn btn-default">{% trans "Next" %} <span class="glyphicon glyphicon-chevron-right"></span></a>
+                </div>
             </div>
         {% endif %}
+
     </div>
 
 {% endblock %}

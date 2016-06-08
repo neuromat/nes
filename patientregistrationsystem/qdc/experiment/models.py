@@ -201,6 +201,9 @@ class EEGElectrodePosition(models.Model):
     coordinate_y = models.IntegerField(null=True, blank=True)
     position_reference = models.ForeignKey('self', null=True, related_name='children')
 
+    def __str__(self):
+        return self.eeg_electrode_localization_system.name + ' - ' + self.name
+
 
 class EEGElectrodeNetSystem(models.Model):
     eeg_electrode_net = models.ForeignKey(EEGElectrodeNet, related_name="set_of_electrode_net_system")
