@@ -2426,9 +2426,9 @@ def subject_eeg_data_create(request, group_id, subject_id, eeg_configuration_id,
                     reading_for_eeg_validation(eeg_data_added, request)
 
                     messages.success(request, _('EEG data collection created successfully.'))
+                    messages.info(request, _('Now you can configure each electrode position'))
 
-                    # redirect_url = reverse("subject_eeg_view", args=(group_id, subject_id))
-                    redirect_url = reverse("eeg_data_view", args=(eeg_data_added, 2))
+                    redirect_url = reverse("eeg_data_view", args=(eeg_data_added.id, 2))
                     return HttpResponseRedirect(redirect_url)
 
         context = {
@@ -2443,7 +2443,7 @@ def subject_eeg_data_create(request, group_id, subject_id, eeg_configuration_id,
             "eeg_setting_default_id": eeg_step.eeg_setting_id,
             "subject": get_object_or_404(Subject, pk=subject_id),
             "URL": redirect_url,
-            "tab": 1
+            "tab": "1"
         }
 
         return render(request, template_name, context)
