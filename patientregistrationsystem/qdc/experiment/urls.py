@@ -90,8 +90,8 @@ urlpatterns = patterns(
         'subject_eeg_view', name='subject_eeg_view'),
     url(r'^group/(?P<group_id>\d+)/subject/(?P<subject_id>\d+)/eeg/(?P<eeg_configuration_id>[0-9-]+)/add_eeg_data/$',
         'subject_eeg_data_create', name='subject_eeg_data_create'),
-    url(r'^eeg_data/(?P<eeg_data_id>\d+)/$', 'eeg_data_view', name='eeg_data_view'),
-    url(r'^eeg_data/edit/(?P<eeg_data_id>\d+)/$', 'eeg_data_edit', name='eeg_data_edit'),
+    url(r'^eeg_data/(?P<eeg_data_id>\d+)/(?P<tab>\d+)/$', 'eeg_data_view', name='eeg_data_view'),
+    url(r'^eeg_data/edit/(?P<eeg_data_id>\d+)/(?P<tab>\d+)/$', 'eeg_data_edit', name='eeg_data_edit'),
 
     # experimental protocol components
     url(r'^(?P<experiment_id>\d+)/components/$', 'component_list', name='component_list'),

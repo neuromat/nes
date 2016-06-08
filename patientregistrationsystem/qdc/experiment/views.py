@@ -28,7 +28,7 @@ from experiment.models import Experiment, Subject, QuestionnaireResponse, Subjec
     EEGSetting, Equipment, Manufacturer, EEGMachine, EEGAmplifier, EEGElectrodeNet, DataConfigurationTree, \
     EEGMachineSetting, EEGAmplifierSetting, EEGSolutionSetting, EEGFilterSetting, EEGElectrodeLayoutSetting, \
     EEGFilterType, EEGSolution, EEGElectrodeLocalizationSystem, EEGElectrodeNetSystem, EEGElectrodePositionSetting, \
-    EEGElectrodeModel
+    EEGElectrodeModel, EEGElectrodePositionCollectionStatus
 from experiment.forms import ExperimentForm, QuestionnaireResponseForm, FileForm, GroupForm, InstructionForm, \
     ComponentForm, StimulusForm, BlockForm, ComponentConfigurationForm, ResearchProjectForm, NumberOfUsesToInsertForm, \
     EEGDataForm, EEGSettingForm, EquipmentForm, EEGForm, EEGMachineForm, EEGMachineSettingForm, EEGAmplifierForm, \
@@ -2412,12 +2412,23 @@ def subject_eeg_data_create(request, group_id, subject_id, eeg_configuration_id,
 
                     eeg_data_added.save()
 
+                    # creating position status
+                    if hasattr(eeg_data_added.eeg_setting, 'eeg_electrode_layout_setting'):
+                        eeg_electrode_layout_setting = eeg_data_added.eeg_setting.eeg_electrode_layout_setting
+                        for position_setting in eeg_electrode_layout_setting.positions_setting.all():
+                            EEGElectrodePositionCollectionStatus(
+                                worked=position_setting.used,
+                                eeg_data=eeg_data_added,
+                                eeg_electrode_position_setting=position_setting
+                            ).save()
+
                     # Validate known eeg file formats
                     reading_for_eeg_validation(eeg_data_added, request)
 
                     messages.success(request, _('EEG data collection created successfully.'))
 
-                    redirect_url = reverse("subject_eeg_view", args=(group_id, subject_id))
+                    # redirect_url = reverse("subject_eeg_view", args=(group_id, subject_id))
+                    redirect_url = reverse("eeg_data_view", args=(eeg_data_added, 2))
                     return HttpResponseRedirect(redirect_url)
 
         context = {
@@ -2432,6 +2443,7 @@ def subject_eeg_data_create(request, group_id, subject_id, eeg_configuration_id,
             "eeg_setting_default_id": eeg_step.eeg_setting_id,
             "subject": get_object_or_404(Subject, pk=subject_id),
             "URL": redirect_url,
+            "tab": 1
         }
 
         return render(request, template_name, context)
@@ -2473,7 +2485,7 @@ def eeg_data_reading(eeg_data):
 
 @login_required
 @permission_required('experiment.change_experiment')
-def eeg_data_view(request, eeg_data_id, template_name="experiment/subject_eeg_data_form.html"):
+def eeg_data_view(request, eeg_data_id, tab, template_name="experiment/subject_eeg_data_form.html"):
 
     eeg_data = get_object_or_404(EEGData, pk=eeg_data_id)
 
@@ -2509,7 +2521,8 @@ def eeg_data_view(request, eeg_data_id, template_name="experiment/subject_eeg_da
         "eeg_data_form": eeg_data_form,
         "eeg_data": eeg_data,
         "eeg_setting_default_id": eeg_step.eeg_setting_id,
-        "file_format_list": file_format_list
+        "file_format_list": file_format_list,
+        "tab": tab
     }
 
     return render(request, template_name, context)
@@ -2517,9 +2530,12 @@ def eeg_data_view(request, eeg_data_id, template_name="experiment/subject_eeg_da
 
 @login_required
 @permission_required('experiment.change_experiment')
-def eeg_data_edit(request, eeg_data_id, template_name="experiment/subject_eeg_data_form.html"):
+def eeg_data_edit(request, eeg_data_id, tab, template_name="experiment/subject_eeg_data_form.html"):
 
     eeg_data = get_object_or_404(EEGData, pk=eeg_data_id)
+
+    # get the current before change
+    current_eeg_setting_id = eeg_data.eeg_setting.id
 
     eeg_step = get_object_or_404(EEG, id=eeg_data.data_configuration_tree.component_configuration.component.id)
 
@@ -2533,20 +2549,54 @@ def eeg_data_edit(request, eeg_data_id, template_name="experiment/subject_eeg_da
 
             if request.POST['action'] == "save":
                 if eeg_data_form.is_valid():
-                    if eeg_data_form.has_changed():
-                        eeg_data_to_update = eeg_data_form.save(commit=False)
-                        eeg_data_to_update.group = eeg_data.subject_of_group.group
-                        eeg_data_to_update.subject = eeg_data.subject_of_group.subject
-                        eeg_data_to_update.save()
 
-                        # Validate known eeg file formats
-                        reading_for_eeg_validation(eeg_data_to_update, request)
+                    if tab == "1":
 
-                        messages.success(request, _('EEG data updated successfully.'))
+                        if eeg_data_form.has_changed():
+
+                            # if the eeg-setting changed
+                            if current_eeg_setting_id != int(request.POST['eeg_setting']):
+                                # remove all current position status
+                                for position in eeg_data.electrode_positions.all():
+                                    position.delete()
+
+                            eeg_data_to_update = eeg_data_form.save(commit=False)
+                            eeg_data_to_update.group = eeg_data.subject_of_group.group
+                            eeg_data_to_update.subject = eeg_data.subject_of_group.subject
+                            eeg_data_to_update.save()
+
+                            if hasattr(eeg_data.eeg_setting, "eeg_electrode_layout_setting"):
+                                if eeg_data.eeg_setting.eeg_electrode_layout_setting.positions_setting:
+                                    for position_setting in \
+                                            eeg_data.eeg_setting.eeg_electrode_layout_setting.positions_setting.all():
+                                        # if not exists a position status
+                                        position_status = EEGElectrodePositionCollectionStatus.objects.filter(
+                                            eeg_data=eeg_data_to_update,
+                                            eeg_electrode_position_setting=position_setting
+                                        )
+                                        if not position_status:
+                                            EEGElectrodePositionCollectionStatus(
+                                                eeg_data=eeg_data_to_update,
+                                                eeg_electrode_position_setting=position_setting,
+                                                worked=position_setting.used
+                                            ).save()
+
+                            # Validate known eeg file formats
+                            reading_for_eeg_validation(eeg_data_to_update, request)
+
+                            messages.success(request, _('EEG data updated successfully.'))
+                        else:
+                            messages.success(request, _('There is no changes to save.'))
+
                     else:
-                        messages.success(request, _('There is no changes to save.'))
 
-                    redirect_url = reverse("eeg_data_view", args=(eeg_data_id,))
+                        for position_status in eeg_data.electrode_positions.all():
+                            position_status.worked = 'position_status_' + str(position_status.id) in request.POST
+                            position_status.save()
+
+                        messages.success(request, _('EEG position data updated successfully.'))
+
+                    redirect_url = reverse("eeg_data_view", args=(eeg_data_id, tab))
                     return HttpResponseRedirect(redirect_url)
 
         else:
@@ -2560,7 +2610,8 @@ def eeg_data_edit(request, eeg_data_id, template_name="experiment/subject_eeg_da
             "eeg_data": eeg_data,
             "file_format_list": file_format_list,
             "eeg_setting_default_id": eeg_step.eeg_setting_id,
-            "editing": True
+            "editing": True,
+            "tab": tab
         }
 
         return render(request, template_name, context)

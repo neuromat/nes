@@ -465,3 +465,6 @@ class EEGElectrodePositionCollectionStatus(models.Model):
     eeg_data = models.ForeignKey(EEGData, related_name='electrode_positions')
     eeg_electrode_position_setting = models.ForeignKey(EEGElectrodePositionSetting)
     worked = models.BooleanField()
+
+    def __str__(self):
+        return self.eeg_electrode_position_setting.eeg_electrode_position.name
