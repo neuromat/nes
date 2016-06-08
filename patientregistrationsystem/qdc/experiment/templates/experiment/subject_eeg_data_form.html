@@ -24,20 +24,27 @@
             var $div_reason_for_change = $("#div-reason-for-change");
             var $id_eeg_setting_reason_for_change = $("#id_eeg_setting_reason_for_change");
             var $id_eeg_setting = $("#id_eeg_setting");
+
             {% if eeg_setting_default_id %}
                 var $eeg_setting_default_id = {{ eeg_setting_default_id }};
             {% endif %}
 
+            var $other_code = null;
+            var $txt_code = null;
+            var $txt_extension = null;
+            var $raw_code = null;
+            var $raw_extension = null;
+
             {% if file_format_list %}
                 {% for item in file_format_list %}
                     {% if item.code == 'other' %}
-                        var $other_code = {{ item.id }};
+                        $other_code = {{ item.id }};
                     {% elif item.code == 'txt' %}
-                        var $txt_code = {{ item.id }};
-                        var $txt_extension = "{{ item.extension }}";
+                        $txt_code = {{ item.id }};
+                        $txt_extension = "{{ item.extension }}";
                     {% elif item.code == 'NEO-RawBinarySignalIO' %}
-                        var $raw_code = {{ item.id }};
-                        var $raw_extension = "{{ item.extension }}";
+                        $raw_code = {{ item.id }};
+                        $raw_extension = "{{ item.extension }}";
                     {% endif %}
                 {% endfor %}
 
