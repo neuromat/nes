@@ -462,6 +462,6 @@ class EEGData(DataFile, DataCollection):
 
 
 class EEGElectrodePositionCollectionStatus(models.Model):
-    eeg_data = models.ForeignKey(EEGData)
+    eeg_data = models.ForeignKey(EEGData, related_name='electrode_positions')
     eeg_electrode_position_setting = models.ForeignKey(EEGElectrodePositionSetting)
     worked = models.BooleanField()
