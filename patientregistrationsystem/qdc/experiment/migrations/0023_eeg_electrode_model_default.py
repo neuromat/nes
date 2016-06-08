@@ -28,7 +28,7 @@ def load_data(apps, schema_editor):
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('experiment', '0022_eeg_electrode_model_for_position_setting'),
+        ('experiment', '0022_eeg_electrode_model_for_eeg_position_setting'),
     ]
 
     operations = [
