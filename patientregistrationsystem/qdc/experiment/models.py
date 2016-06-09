@@ -145,6 +145,9 @@ class Material(models.Model):
     name = models.CharField(max_length=150)
     description = models.TextField(null=True, blank=True)
 
+    def __str__(self):
+        return self.name
+
 
 class EEGElectrodeModel(models.Model):
     USABILITY_TYPES = (
@@ -177,6 +180,9 @@ class EEGCapSize(models.Model):
     eeg_electrode_cap = models.ForeignKey(EEGElectrodeCap)
     size = models.CharField(max_length=30)
     electrode_adjacent_distance = models.FloatField(null=True, blank=True)
+
+    def __str__(self):
+        return self.size
 
 
 def get_eeg_electrode_system_dir(instance, filename):
@@ -458,7 +464,7 @@ class DataFile(models.Model):
 class EEGData(DataFile, DataCollection):
     eeg_setting = models.ForeignKey(EEGSetting)
     eeg_setting_reason_for_change = models.TextField(null=True, blank=True, default='')
-    eeg_cap_size = models.ForeignKey(EEGCapSize, null=True)
+    eeg_cap_size = models.ForeignKey(EEGCapSize, null=True, blank=True)
 
 
 class EEGElectrodePositionCollectionStatus(models.Model):

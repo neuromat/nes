@@ -28,7 +28,7 @@ from experiment.models import Experiment, Subject, QuestionnaireResponse, Subjec
     EEGSetting, Equipment, Manufacturer, EEGMachine, EEGAmplifier, EEGElectrodeNet, DataConfigurationTree, \
     EEGMachineSetting, EEGAmplifierSetting, EEGSolutionSetting, EEGFilterSetting, EEGElectrodeLayoutSetting, \
     EEGFilterType, EEGSolution, EEGElectrodeLocalizationSystem, EEGElectrodeNetSystem, EEGElectrodePositionSetting, \
-    EEGElectrodeModel, EEGElectrodePositionCollectionStatus
+    EEGElectrodeModel, EEGElectrodePositionCollectionStatus, EEGCapSize, EEGElectrodeCap
 from experiment.forms import ExperimentForm, QuestionnaireResponseForm, FileForm, GroupForm, InstructionForm, \
     ComponentForm, StimulusForm, BlockForm, ComponentConfigurationForm, ResearchProjectForm, NumberOfUsesToInsertForm, \
     EEGDataForm, EEGSettingForm, EquipmentForm, EEGForm, EEGMachineForm, EEGMachineSettingForm, EEGAmplifierForm, \
@@ -2617,6 +2617,20 @@ def eeg_data_edit(request, eeg_data_id, tab, template_name="experiment/subject_e
         return render(request, template_name, context)
     else:
         raise PermissionDenied
+
+
+@login_required
+@permission_required('experiment.change_experiment')
+def get_cap_size_list_from_eeg_setting(request, eeg_setting_id):
+    eeg_setting = get_object_or_404(EEGSetting, pk=eeg_setting_id)
+    list_of_cap_size = EEGCapSize.objects.filter(id=0)
+    if hasattr(eeg_setting, 'eeg_electrode_layout_setting'):
+        eeg_electrode_net_id = eeg_setting.eeg_electrode_layout_setting.eeg_electrode_net_system.eeg_electrode_net.id
+        # if the electrode net is a cap
+        if EEGElectrodeCap.objects.filter(id=eeg_electrode_net_id):
+            list_of_cap_size = EEGCapSize.objects.filter(eeg_electrode_cap_id=eeg_electrode_net_id)
+    json_cap_size = serializers.serialize("json", list_of_cap_size)
+    return HttpResponse(json_cap_size, content_type='application/json')
 
 
 @login_required
