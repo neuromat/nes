@@ -1,13 +1,14 @@
 # coding=utf-8
 
 from django.forms import ModelForm, TextInput, Textarea, Select, DateInput, TypedChoiceField, RadioSelect,\
-    ValidationError, Form, IntegerField, NumberInput, CharField
+    ValidationError, Form, IntegerField, NumberInput, CharField, MultipleChoiceField, CheckboxSelectMultiple
 from django.utils.translation import ugettext_lazy as _
 
 from experiment.models import Experiment, QuestionnaireResponse, SubjectOfGroup, Group, \
     Component, Stimulus, Block, Instruction, ComponentConfiguration, ResearchProject, EEGData, \
     EEGSetting, Equipment, EEG, EEGMachine, EEGMachineSetting, EEGAmplifier, EEGAmplifierSetting, \
-    EEGSolution, EEGFilterSetting, EEGFilterType, EEGElectrodeLayoutSetting, EEGElectrodeLocalizationSystem
+    EEGSolution, EEGFilterSetting, EEGFilterType, EEGElectrodeLayoutSetting, EEGElectrodeLocalizationSystem, \
+    Manufacturer, EEGElectrodeModel, EEGElectrodeNet, EEGElectrodeCap, EEGCapSize, EEGElectrodeNetSystem, Material
 
 
 class ExperimentForm(ModelForm):
@@ -414,4 +415,218 @@ class EEGElectrodeLayoutSettingForm(ModelForm):
             'number_of_electrodes': TextInput(attrs={'class': 'form-control',
                                                      'required': "",
                                                      'data-error': _('Description must be filled.')})
+        }
+
+
+class ManufacturerRegisterForm(ModelForm):
+    class Meta:
+        model = Manufacturer
+        fields = ['name']
+        widgets = {
+            'name': TextInput(attrs={'class': 'form-control',
+                                     'required': "",
+                                     'data-error': _('Name must be filled.')})
+        }
+
+class EEGMachineRegisterForm(ModelForm):
+    class Meta:
+        model = EEGMachine
+        fields = ['manufacturer', 'equipment_type', 'identification', 'description', 'serial_number',
+                  'number_of_channels', 'software_version']
+
+        widgets = {
+
+            'manufacturer': Select(attrs={'class': 'form-control', 'required': "",
+                                             'data-error': _('Manufacturer must be filled.')}),
+
+            'equipment_type': Select(attrs={'class': 'form-control',
+                                            'data-error': _('Equipment type must be filled in.'),
+                                            'initial': 'eeg_machine'}),
+
+            'identification': TextInput(attrs={'class': 'form-control', 'required': "",
+                                               'data-error': _('Identification must be filled.')}),
+
+            'description': Textarea(attrs={'class': 'form-control', 'rows': '4',
+                                           'data-error': _('Description must be filled.')}),
+
+            'serial_number': TextInput(attrs={'class': 'form-control', 'required': "",
+                                              'data-error': _('Serial number must be filled.')}),
+
+            'number_of_channels': TextInput(attrs={'class': 'form-control', 'required': "",
+                                                   'data-error': _('Number of channels must be filled.')}),
+            'software_version': TextInput(attrs={'class': 'form-control', 'required': "",
+                                                 'data-error': _('Software version must be filled.')})
+        }
+
+
+class EEGAmplifierRegisterForm(ModelForm):
+    class Meta:
+        model = EEGAmplifier
+        fields = ['manufacturer', 'equipment_type', 'identification', 'description', 'serial_number',
+                  'gain']
+
+        widgets = {
+
+            'manufacturer': Select(attrs={'class': 'form-control', 'required': "",
+                                             'data-error': _('Manufacturer must be filled.')}),
+
+            'equipment_type': Select(attrs={'class': 'form-control', 'disabled': '',
+                                            'data-error': _('Equipment type must be filled in.'),
+                                            'initial': 'eeg_amplifier'}),
+
+            'identification': TextInput(attrs={'class': 'form-control', 'required': "",
+                                               'data-error': _('Identification must be filled.')}),
+
+            'description': Textarea(attrs={'class': 'form-control', 'rows': '4',
+                                           'data-error': _('Description must be filled.')}),
+
+            'serial_number': TextInput(attrs={'class': 'form-control', 'required': "",
+                                              'data-error': _('Serial number must be filled.')}),
+
+            'gain': TextInput(attrs={'class': 'form-control'})
+        }
+
+
+class EEGSolutionRegisterForm(ModelForm):
+    class Meta:
+        model = EEGSolution
+        fields = ['name', 'components', 'manufacturer']
+
+        widgets = {
+
+            'name': TextInput(attrs={'class': 'form-control',
+                                     'required': "",
+                                     'data-error': _('Name must be filled.')}),
+
+            'components': Textarea(attrs={'id': 'id_description', 'class': 'form-control', 'rows': '4'}),
+
+            'manufacturer': Select(attrs={'class': 'form-control', 'required': "",
+                                             'data-error': _('Manufacturer must be filled.')}),
+
+        }
+
+
+class EEGFilterTypeRegisterForm(ModelForm):
+    class Meta:
+        model = EEGFilterType
+        fields = ['name', 'description']
+
+        widgets = {
+            'name': TextInput(attrs={'class': 'form-control',
+                                     'required': "",
+                                     'data-error': _('Name must be filled.')}),
+
+            'description': Textarea(attrs={'class': 'form-control', 'rows': '4'})
+        }
+
+
+class EEGElectrodeModelRegisterForm(ModelForm):
+    class Meta:
+        model = EEGElectrodeModel
+        fields = ['name', 'description', 'material', 'usability', 'impedance', 'impedance_unit']
+
+        widgets = {
+            'name': TextInput(attrs={'class': 'form-control',
+                                     'required': "",
+                                     'data-error': _('Name must be filled.')}),
+
+            'description': Textarea(attrs={'class': 'form-control', 'rows': '4'}),
+
+            'material': Select(attrs={'class': 'form-control', 'required': "",
+                                      'data-error': _('Material must be filled.')}),
+
+            'usability': Select(attrs={'class': 'form-control', 'required': "",
+                                      'data-error': _('Usability must be filled.')}),
+
+            'impedance': NumberInput(attrs={'class': 'form-control',
+                                          'required': "",
+                                          'data-error': _('Impedance must be filled.')}),
+
+            'impedance_unit': Select(attrs={'class': 'form-control', 'required': "",
+                                      'data-error': _('Impedance unit must be filled.')}),
+
+        }
+
+
+class MaterialRegisterForm(ModelForm):
+    class Meta:
+        model = Material
+        fields = ['name', 'description']
+
+        widgets = {
+            'name': TextInput(attrs={'class': 'form-control',
+                                     'required': "",
+                                     'data-error': _('Name must be filled.')}),
+
+            'description': Textarea(attrs={'class': 'form-control', 'rows': '4'})
+        }
+
+
+class EEGElectrodeNETRegisterForm(ModelForm):
+    class Meta:
+        model = EEGElectrodeNet
+        fields = ['manufacturer', 'equipment_type', 'identification', 'description', 'serial_number',
+                  'electrode_model_default']
+
+        widgets = {
+
+            'manufacturer': Select(attrs={'class': 'form-control', 'required': "",
+                                          'data-error': _('Manufacturer must be filled.')}),
+
+            'equipment_type': Select(attrs={'class': 'form-control', 'disabled': '',
+                                            'data-error': _('Equipment type must be filled in.'),
+                                            'initial': 'eeg_machine'}),
+
+            'identification': TextInput(attrs={'class': 'form-control', 'required': "",
+                                               'data-error': _('Identification must be filled.')}),
+
+            'description': Textarea(attrs={'class': 'form-control', 'rows': '4',
+                                           'data-error': _('Description must be filled.')}),
+
+            'serial_number': TextInput(attrs={'class': 'form-control', 'required': "",
+                                              'data-error': _('Serial number must be filled.')}),
+
+            'electrode_model_default': Select(attrs={'class': 'form-control',  'required': "",
+                                                     'data-error': _('Electrode model default must be filled in.')}),
+        }
+
+
+class EEGElectrodeCapRegisterForm(ModelForm):
+    class Meta:
+        model = EEGElectrodeCap
+        fields = ['material']
+        widgets = {
+            'material': Select(attrs={'class': 'form-control',
+                                     'required': "",
+                                     'data-error': _('Material must be filled.')})
+        }
+
+
+class EEGCapSizeRegisterForm(ModelForm):
+    class Meta:
+        model = EEGCapSize
+        fields = ['size', 'electrode_adjacent_distance']
+
+        widgets = {
+            'size': TextInput(attrs={'class': 'form-control',
+                                     'required': "",
+                                     'data-error': _('Name must be filled.')}),
+            'electrode_adjacent_distance': NumberInput(attrs={'class': 'form-control',
+                                                              'required': "",
+                                                              'data-error': _('Electrode adjacent distance must be filled.')}),
+
+        }
+
+
+class EEGElectrodeNetRegisterSystemForm(ModelForm):
+
+    localization_system = MultipleChoiceField(widget=CheckboxSelectMultiple(attrs={'data-error': _('Localization system must be selected')}))
+
+    class Meta:
+        model = EEGElectrodeNetSystem
+        fields = ['eeg_electrode_localization_system']
+        widgets = {
+            'eeg_electrode_localization_system': CheckboxSelectMultiple(attrs={'class': 'form-control',
+
+                                     'data-error': _('EEG electrode localization system must be filled.')})
         }
