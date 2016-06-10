@@ -16,12 +16,12 @@
 ////
 //}
 
-window.onload = function(){
+window.onload = function() {
     var eeg_positions = document.getElementById("eeg_electrode_position");
     var positions = eval(eeg_positions.value);
+    used();
     pintar(positions);
-
-}
+};
 
 document.addEventListener("DOMContentLoaded", init, false);
 
@@ -48,17 +48,20 @@ function used(){
     var canvas = document.getElementById("electrodeMapCanvas");
     var context = canvas.getContext("2d");
     var eeg_positions = document.getElementById("eeg_electrode_position");
+
     positions = eval(eeg_positions.value);
+
     for(var i in positions) {
         var position = positions[i];
-        if(document.getElementById(position.id).checked==false){
+
+        if(document.getElementById(position.id).checked == false) {
+        // if(document.getElementById(position.id).checked == false) {
             //context.clearRect(0, 0, canvas.width,canvas.height);
             delete positions[i];
             //init();
         }else{
             positions.push({
                 id:"position.id",
-
             });
         }
     }
@@ -66,13 +69,17 @@ function used(){
     var canvas = document.getElementById("electrodeMapCanvas");
     var ctx = canvas.getContext("2d");
     ctx.clearRect(0, 0, canvas.width,canvas.height);
+
     var imageObj = new Image();
 
-    imageObj.onload = function(){
-        ctx.drawImage(imageObj, 0,0,700,500);
+    imageObj.onload = function() {
+        ctx.drawImage(imageObj, 0, 0, 700, 500);
         pintar(positions);
     };
-    imageObj.src = 'https://www.ant-neuro.com/sites/default/files/images/waveguard_layout_024ch.png';
+    // imageObj.src = 'https://www.ant-neuro.com/sites/default/files/images/waveguard_layout_024ch.png';
+    var map_file = document.getElementById("map_file");
+    imageObj.src = map_file.value;
+
 
 }
 
@@ -115,6 +122,7 @@ function ev_canvas(ev) {
                 function func(ev,dots) {
                     var canvas = document.getElementById("electrodeMapCanvas");
                     context = canvas.getContext("2d");
+
                     if(ev.which == 1){
                         mouseX = parseInt(ev._x);
                         mouseY = parseInt(ev._y);
@@ -130,7 +138,7 @@ function ev_canvas(ev) {
 
                         context.fillStyle = 'red';
 
-                        context.beginPath()
+                        context.beginPath();
                         context.arc(mouseX, mouseY, 5, 0, 2 * Math.PI);
                         context.fill();
                         context.stroke();
@@ -142,7 +150,7 @@ function ev_canvas(ev) {
                     }//fim if ev.which == 1
 
                     if(ev.which == 3){
-                        //alert("Right click done!");
+                        // alert("Right click done!");
                         mouseX = parseInt(ev._x);
                         mouseY = parseInt(ev._y);
 
@@ -153,8 +161,7 @@ function ev_canvas(ev) {
 
                             var dist = (dx * dx) + (dy * dy);
                             if (compara(dist,dot.rXr)) {
-                                context.clearRect(0, 0, canvas.width,
-														canvas.height);
+                                context.clearRect(0, 0, canvas.width, canvas.height);
                                 delete dots[i];
                                 init();
                             }
@@ -175,8 +182,8 @@ function pintar(positions){
         x = parseInt(position.x);
         y = parseInt(position.y);
 
-        context.beginPath()
-        context.arc(x, y, 5,0,2 * Math.PI);
+        context.beginPath();
+        context.arc(x, y, 5, 0, 2 * Math.PI);
         context.fillStyle = "red";
         context.fill();
         context.stroke();
@@ -188,7 +195,7 @@ function pintar(positions){
     }
 
 
-}; //fim function pintar
+} //fim function pintar
 
 //if(window.addEventListener){
 //        window.addEventListener(

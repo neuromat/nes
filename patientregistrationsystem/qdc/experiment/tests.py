@@ -1344,11 +1344,11 @@ class SubjectTest(TestCase):
 
         # show a eeg data file
         eeg_data = EEGData.objects.all().first()
-        response = self.client.get(reverse('eeg_data_view', args=(eeg_data.id,)))
+        response = self.client.get(reverse('eeg_data_view', args=(eeg_data.id, 1)))
         self.assertEqual(response.status_code, 200)
 
         # screen to edit a eeg data file
-        response = self.client.get(reverse('eeg_data_edit', args=(eeg_data.id,)))
+        response = self.client.get(reverse('eeg_data_edit', args=(eeg_data.id, 1)))
         self.assertEqual(response.status_code, 200)
 
         # editing a eeg data file
@@ -1357,7 +1357,7 @@ class SubjectTest(TestCase):
                      'file_format': file_format.id, 'file': eeg_data.file,
                      'file_format_description': 'teste',
                      'eeg_setting': eeg_setting.id}
-        response = self.client.post(reverse('eeg_data_edit', args=(eeg_data.id,)), self.data)
+        response = self.client.post(reverse('eeg_data_edit', args=(eeg_data.id, 1)), self.data)
         self.assertEqual(response.status_code, 302)
 
         # list eeg data files
@@ -1379,7 +1379,7 @@ class SubjectTest(TestCase):
 
         # remove eeg data file from a subject
         self.data = {'action': 'remove'}
-        response = self.client.post(reverse('eeg_data_view', args=(eeg_data.id,)), self.data)
+        response = self.client.post(reverse('eeg_data_view', args=(eeg_data.id, 1)), self.data)
         self.assertEqual(response.status_code, 302)
         self.assertEqual(EEGData.objects.all().count(), 0)
 

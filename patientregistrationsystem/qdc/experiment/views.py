@@ -28,15 +28,16 @@ from experiment.models import Experiment, Subject, QuestionnaireResponse, Subjec
     EEGSetting, Equipment, Manufacturer, EEGMachine, EEGAmplifier, EEGElectrodeNet, DataConfigurationTree, \
     EEGMachineSetting, EEGAmplifierSetting, EEGSolutionSetting, EEGFilterSetting, EEGElectrodeLayoutSetting, \
     EEGFilterType, EEGSolution, EEGElectrodeLocalizationSystem, EEGElectrodeNetSystem, EEGElectrodePositionSetting, \
-    EEGElectrodeModel, Material
+    EEGElectrodeModel, EEGElectrodePositionCollectionStatus, EEGCapSize, EEGElectrodeCap, EEGElectrodePosition, \
+    Material
 from experiment.forms import ExperimentForm, QuestionnaireResponseForm, FileForm, GroupForm, InstructionForm, \
     ComponentForm, StimulusForm, BlockForm, ComponentConfigurationForm, ResearchProjectForm, NumberOfUsesToInsertForm, \
     EEGDataForm, EEGSettingForm, EquipmentForm, EEGForm, EEGMachineForm, EEGMachineSettingForm, EEGAmplifierForm, \
     EEGAmplifierSettingForm, EEGSolutionForm, EEGFilterForm, EEGFilterSettingForm, \
-    EEGElectrodeLayoutSettingForm, EEGElectrodeLocalizationSystemForm, \
+    EEGElectrodeLayoutSettingForm, EEGElectrodeLocalizationSystemForm, EEGElectrodeLocalizationSystemRegisterForm, \
     ManufacturerRegisterForm, EEGMachineRegisterForm, EEGAmplifierRegisterForm, EEGSolutionRegisterForm, \
     EEGFilterTypeRegisterForm, EEGElectrodeModelRegisterForm, MaterialRegisterForm, EEGElectrodeNETRegisterForm, \
-    EEGElectrodeNetRegisterSystemForm
+    EEGElectrodeNetRegisterSystemForm, EEGElectrodePositionForm
 
 
 from patient.models import Patient, QuestionnaireResponse as PatientQuestionnaireResponse
@@ -834,9 +835,10 @@ def view_eeg_setting_type(request, eeg_setting_id, eeg_setting_type):
                     if eeg_electrode_localization_system.eegelectrodeposition_set:
                         for position in eeg_electrode_localization_system.eegelectrodeposition_set.all():
                             new_position_setting = EEGElectrodePositionSetting()
+                            new_position_setting.eeg_electrode_layout_setting = eeg_electrode_layout_setting
                             new_position_setting.eeg_electrode_position = position
                             new_position_setting.used = True
-                            new_position_setting.eeg_electrode_layout_setting = eeg_electrode_layout_setting
+                            new_position_setting.electrode_model = eeg_electrode_net.electrode_model_default
                             new_position_setting.save()
 
                     messages.info(request, _('Now you can set each electrode position.'))
@@ -982,6 +984,7 @@ def view_eeg_setting_type(request, eeg_setting_id, eeg_setting_type):
         context = {
             "creating": creating,
             "editing": False,
+            "tab": "0",
 
             "can_change": True,
 
@@ -1117,10 +1120,34 @@ def edit_eeg_setting_type(request, eeg_setting_id, eeg_setting_type):
                         eeg_electrode_net=eeg_electrode_net,
                         eeg_electrode_localization_system=eeg_electrode_localization_system)
 
+                    # get the current layout setting
                     eeg_electrode_layout_setting = eeg_setting.eeg_electrode_layout_setting
+
+                    # if the electrode localization system changed
+                    if eeg_electrode_layout_setting.eeg_electrode_net_system.eeg_electrode_localization_system != eeg_electrode_localization_system:
+                        # remove all current position settings
+                        for position in eeg_electrode_layout_setting.positions_setting.all():
+                            position.delete()
+
                     eeg_electrode_layout_setting.eeg_electrode_net_system = eeg_electrode_net_system
                     eeg_electrode_layout_setting.number_of_electrodes = request.POST['number_of_electrodes']
                     eeg_electrode_layout_setting.save()
+
+                    if eeg_electrode_localization_system.eegelectrodeposition_set:
+                        for position in eeg_electrode_localization_system.eegelectrodeposition_set.all():
+                            # if not exists a position setting
+                            position_setting = \
+                                EEGElectrodePositionSetting.objects.filter(
+                                    eeg_electrode_layout_setting=eeg_electrode_layout_setting,
+                                    eeg_electrode_position=position)
+
+                            if not position_setting:
+                                new_position_setting = EEGElectrodePositionSetting()
+                                new_position_setting.eeg_electrode_layout_setting = eeg_electrode_layout_setting
+                                new_position_setting.eeg_electrode_position = position
+                                new_position_setting.used = True
+                                new_position_setting.electrode_model = eeg_electrode_net.electrode_model_default
+                                new_position_setting.save()
 
                     messages.success(request, _('EEG electrode net system setting updated sucessfully.'))
 
@@ -1193,6 +1220,7 @@ def edit_eeg_setting_type(request, eeg_setting_id, eeg_setting_type):
         context = {
             "creating": False,
             "editing": True,
+            "tab": "0",
 
             "can_change": True,
 
@@ -1331,19 +1359,142 @@ def eeg_electrode_position_setting(request, eeg_setting_id,
 
     if get_can_change(request.user, eeg_setting.experiment.research_project):
 
+        positions = []
+        for position_setting in eeg_setting.eeg_electrode_layout_setting.positions_setting.all():
+            positions.append({
+                'id': 'position_status_' + str(position_setting.id),
+                'position': position_setting.eeg_electrode_position.name,
+                'x': position_setting.eeg_electrode_position.coordinate_x,
+                'y': position_setting.eeg_electrode_position.coordinate_y
+            })
 
-        map_file_url = eeg_setting.eeg_electrode_layout_setting.eeg_electrode_net_system.eeg_electrode_localization_system.map_image_file.url;
-
-        my_dict = [{'id': 'position_status_13','x': 350, 'y': 333, 'position': 'Pz'},
-                   {'id': 'position_status_14','x': 350, 'y': 244, 'position': 'Cz'},
-                   {'id': 'position_status_15','x': 350, 'y': 157, 'position': 'Fz'}]
-
-        json_list = json.dumps(my_dict)
+        # if request.method == "POST":
+        #     if request.POST['action'] in ["save", "save_and_next"]:
+        #         for position_setting in eeg_setting.eeg_electrode_layout_setting.positions_setting.all():
+        #             position_setting.used = 'position_status_' + str(position_setting.id) in request.POST
+        #             position_setting.save()
+        #
+        #         messages.success(request, _('Setting saved successfully.'))
+        #
+        #         if request.POST['action'] == "save_and_next":
+        #             redirect_url = reverse("eeg_electrode_position_setting_model", args=(eeg_setting_id,))
+        #             return HttpResponseRedirect(redirect_url)
 
         context = {
+            "tab": "1",
+            "editing": False,
             "eeg_setting": eeg_setting,
-            "json_list": json_list,
-            "map_file_url": map_file_url
+            "json_list": json.dumps(positions)
+        }
+
+        return render(request, template_name, context)
+    else:
+        raise PermissionDenied
+
+
+@login_required
+@permission_required('experiment.change_experiment')
+def edit_eeg_electrode_position_setting(request, eeg_setting_id,
+                                        template_name="experiment/eeg_setting_electrode_position_status.html"):
+
+    eeg_setting = get_object_or_404(EEGSetting, pk=eeg_setting_id)
+
+    if get_can_change(request.user, eeg_setting.experiment.research_project):
+
+        positions = []
+        for position_setting in eeg_setting.eeg_electrode_layout_setting.positions_setting.all():
+            positions.append({
+                'id': 'position_status_' + str(position_setting.id),
+                'position': position_setting.eeg_electrode_position.name,
+                'x': position_setting.eeg_electrode_position.coordinate_x,
+                'y': position_setting.eeg_electrode_position.coordinate_y
+            })
+
+        if request.method == "POST":
+            if request.POST['action'] == "save":
+                for position_setting in eeg_setting.eeg_electrode_layout_setting.positions_setting.all():
+                    position_setting.used = 'position_status_' + str(position_setting.id) in request.POST
+                    position_setting.save()
+
+                messages.success(request, _('Setting saved successfully.'))
+
+                redirect_url = reverse("eeg_electrode_position_setting", args=(eeg_setting_id,))
+                return HttpResponseRedirect(redirect_url)
+
+        context = {
+            "tab": "1",
+            "editing": True,
+            "eeg_setting": eeg_setting,
+            "json_list": json.dumps(positions)
+        }
+
+        return render(request, template_name, context)
+    else:
+        raise PermissionDenied
+
+
+@login_required
+@permission_required('experiment.change_experiment')
+def eeg_electrode_position_setting_model(request, eeg_setting_id,
+                                         template_name="experiment/eeg_setting_electrode_position_status_model.html"):
+
+    eeg_setting = get_object_or_404(EEGSetting, pk=eeg_setting_id)
+
+    if get_can_change(request.user, eeg_setting.experiment.research_project):
+
+        eeg_electrode_model_list = EEGElectrodeModel.objects.all()
+
+        # if request.method == "POST":
+        #     if request.POST['action'] == "save":
+        #
+        #         for position_setting in eeg_setting.eeg_electrode_layout_setting.positions_setting.all():
+        #             electrode_model_id = int(request.POST['electrode_model_' + str(position_setting.id)])
+        #             position_setting.electrode_model_id = electrode_model_id
+        #             position_setting.save()
+        #
+        #         messages.success(request, _('Setting saved successfully.'))
+
+        context = {
+            "tab": "2",
+            "editing": False,
+            "eeg_setting": eeg_setting,
+            "eeg_electrode_model_list": eeg_electrode_model_list
+        }
+
+        return render(request, template_name, context)
+    else:
+        raise PermissionDenied
+
+
+@login_required
+@permission_required('experiment.change_experiment')
+def edit_eeg_electrode_position_setting_model(
+        request, eeg_setting_id, template_name="experiment/eeg_setting_electrode_position_status_model.html"):
+
+    eeg_setting = get_object_or_404(EEGSetting, pk=eeg_setting_id)
+
+    if get_can_change(request.user, eeg_setting.experiment.research_project):
+
+        eeg_electrode_model_list = EEGElectrodeModel.objects.all()
+
+        if request.method == "POST":
+            if request.POST['action'] == "save":
+
+                for position_setting in eeg_setting.eeg_electrode_layout_setting.positions_setting.all():
+                    electrode_model_id = int(request.POST['electrode_model_' + str(position_setting.id)])
+                    position_setting.electrode_model_id = electrode_model_id
+                    position_setting.save()
+
+                messages.success(request, _('Setting saved successfully.'))
+
+                redirect_url = reverse("eeg_electrode_position_setting_model", args=(eeg_setting_id,))
+                return HttpResponseRedirect(redirect_url)
+
+        context = {
+            "tab": "2",
+            "editing": True,
+            "eeg_setting": eeg_setting,
+            "eeg_electrode_model_list": eeg_electrode_model_list
         }
 
         return render(request, template_name, context)
@@ -3135,12 +3286,23 @@ def subject_eeg_data_create(request, group_id, subject_id, eeg_configuration_id,
 
                     eeg_data_added.save()
 
+                    # creating position status
+                    if hasattr(eeg_data_added.eeg_setting, 'eeg_electrode_layout_setting'):
+                        eeg_electrode_layout_setting = eeg_data_added.eeg_setting.eeg_electrode_layout_setting
+                        for position_setting in eeg_electrode_layout_setting.positions_setting.all():
+                            EEGElectrodePositionCollectionStatus(
+                                worked=position_setting.used,
+                                eeg_data=eeg_data_added,
+                                eeg_electrode_position_setting=position_setting
+                            ).save()
+
                     # Validate known eeg file formats
                     reading_for_eeg_validation(eeg_data_added, request)
 
                     messages.success(request, _('EEG data collection created successfully.'))
+                    messages.info(request, _('Now you can configure each electrode position'))
 
-                    redirect_url = reverse("subject_eeg_view", args=(group_id, subject_id))
+                    redirect_url = reverse("eeg_data_view", args=(eeg_data_added.id, 2))
                     return HttpResponseRedirect(redirect_url)
 
         context = {
@@ -3155,6 +3317,7 @@ def subject_eeg_data_create(request, group_id, subject_id, eeg_configuration_id,
             "eeg_setting_default_id": eeg_step.eeg_setting_id,
             "subject": get_object_or_404(Subject, pk=subject_id),
             "URL": redirect_url,
+            "tab": "1"
         }
 
         return render(request, template_name, context)
@@ -3196,7 +3359,7 @@ def eeg_data_reading(eeg_data):
 
 @login_required
 @permission_required('experiment.change_experiment')
-def eeg_data_view(request, eeg_data_id, template_name="experiment/subject_eeg_data_form.html"):
+def eeg_data_view(request, eeg_data_id, tab, template_name="experiment/subject_eeg_data_form.html"):
 
     eeg_data = get_object_or_404(EEGData, pk=eeg_data_id)
 
@@ -3232,7 +3395,8 @@ def eeg_data_view(request, eeg_data_id, template_name="experiment/subject_eeg_da
         "eeg_data_form": eeg_data_form,
         "eeg_data": eeg_data,
         "eeg_setting_default_id": eeg_step.eeg_setting_id,
-        "file_format_list": file_format_list
+        "file_format_list": file_format_list,
+        "tab": tab
     }
 
     return render(request, template_name, context)
@@ -3240,9 +3404,12 @@ def eeg_data_view(request, eeg_data_id, template_name="experiment/subject_eeg_da
 
 @login_required
 @permission_required('experiment.change_experiment')
-def eeg_data_edit(request, eeg_data_id, template_name="experiment/subject_eeg_data_form.html"):
+def eeg_data_edit(request, eeg_data_id, tab, template_name="experiment/subject_eeg_data_form.html"):
 
     eeg_data = get_object_or_404(EEGData, pk=eeg_data_id)
+
+    # get the current before change
+    current_eeg_setting_id = eeg_data.eeg_setting.id
 
     eeg_step = get_object_or_404(EEG, id=eeg_data.data_configuration_tree.component_configuration.component.id)
 
@@ -3256,20 +3423,54 @@ def eeg_data_edit(request, eeg_data_id, template_name="experiment/subject_eeg_da
 
             if request.POST['action'] == "save":
                 if eeg_data_form.is_valid():
-                    if eeg_data_form.has_changed():
-                        eeg_data_to_update = eeg_data_form.save(commit=False)
-                        eeg_data_to_update.group = eeg_data.subject_of_group.group
-                        eeg_data_to_update.subject = eeg_data.subject_of_group.subject
-                        eeg_data_to_update.save()
 
-                        # Validate known eeg file formats
-                        reading_for_eeg_validation(eeg_data_to_update, request)
+                    if tab == "1":
 
-                        messages.success(request, _('EEG data updated successfully.'))
+                        if eeg_data_form.has_changed():
+
+                            # if the eeg-setting changed
+                            if current_eeg_setting_id != int(request.POST['eeg_setting']):
+                                # remove all current position status
+                                for position in eeg_data.electrode_positions.all():
+                                    position.delete()
+
+                            eeg_data_to_update = eeg_data_form.save(commit=False)
+                            eeg_data_to_update.group = eeg_data.subject_of_group.group
+                            eeg_data_to_update.subject = eeg_data.subject_of_group.subject
+                            eeg_data_to_update.save()
+
+                            if hasattr(eeg_data.eeg_setting, "eeg_electrode_layout_setting"):
+                                if eeg_data.eeg_setting.eeg_electrode_layout_setting.positions_setting:
+                                    for position_setting in \
+                                            eeg_data.eeg_setting.eeg_electrode_layout_setting.positions_setting.all():
+                                        # if not exists a position status
+                                        position_status = EEGElectrodePositionCollectionStatus.objects.filter(
+                                            eeg_data=eeg_data_to_update,
+                                            eeg_electrode_position_setting=position_setting
+                                        )
+                                        if not position_status:
+                                            EEGElectrodePositionCollectionStatus(
+                                                eeg_data=eeg_data_to_update,
+                                                eeg_electrode_position_setting=position_setting,
+                                                worked=position_setting.used
+                                            ).save()
+
+                            # Validate known eeg file formats
+                            reading_for_eeg_validation(eeg_data_to_update, request)
+
+                            messages.success(request, _('EEG data updated successfully.'))
+                        else:
+                            messages.success(request, _('There is no changes to save.'))
+
                     else:
-                        messages.success(request, _('There is no changes to save.'))
 
-                    redirect_url = reverse("eeg_data_view", args=(eeg_data_id,))
+                        for position_status in eeg_data.electrode_positions.all():
+                            position_status.worked = 'position_status_' + str(position_status.id) in request.POST
+                            position_status.save()
+
+                        messages.success(request, _('EEG position data updated successfully.'))
+
+                    redirect_url = reverse("eeg_data_view", args=(eeg_data_id, tab))
                     return HttpResponseRedirect(redirect_url)
 
         else:
@@ -3283,12 +3484,27 @@ def eeg_data_edit(request, eeg_data_id, template_name="experiment/subject_eeg_da
             "eeg_data": eeg_data,
             "file_format_list": file_format_list,
             "eeg_setting_default_id": eeg_step.eeg_setting_id,
-            "editing": True
+            "editing": True,
+            "tab": tab
         }
 
         return render(request, template_name, context)
     else:
         raise PermissionDenied
+
+
+@login_required
+@permission_required('experiment.change_experiment')
+def get_cap_size_list_from_eeg_setting(request, eeg_setting_id):
+    eeg_setting = get_object_or_404(EEGSetting, pk=eeg_setting_id)
+    list_of_cap_size = EEGCapSize.objects.filter(id=0)
+    if hasattr(eeg_setting, 'eeg_electrode_layout_setting'):
+        eeg_electrode_net_id = eeg_setting.eeg_electrode_layout_setting.eeg_electrode_net_system.eeg_electrode_net.id
+        # if the electrode net is a cap
+        if EEGElectrodeCap.objects.filter(id=eeg_electrode_net_id):
+            list_of_cap_size = EEGCapSize.objects.filter(eeg_electrode_cap_id=eeg_electrode_net_id)
+    json_cap_size = serializers.serialize("json", list_of_cap_size)
+    return HttpResponse(json_cap_size, content_type='application/json')
 
 
 @login_required
@@ -4592,3 +4808,253 @@ def component_reuse(request, path_of_the_components, component_id):
         return render(request, template_name, context)
     else:
         raise PermissionDenied
+
+
+@login_required
+@permission_required('experiment.view_equipment')
+def eeg_electrode_localization_system_list(
+        request,
+        template_name="experiment/eeg_electrode_localization_system_list.html"):
+
+    eeg_electrode_localization_systems = EEGElectrodeLocalizationSystem.objects.order_by('name')
+    context = {"eeg_electrode_localization_systems": eeg_electrode_localization_systems}
+    return render(request, template_name, context)
+
+
+@login_required
+@permission_required('experiment.view_equipment')
+def eeg_electrode_localization_system_create(
+        request,
+        template_name="experiment/eeg_electrode_localization_system_register.html"):
+
+    localization_system_form = EEGElectrodeLocalizationSystemRegisterForm(request.POST or None)
+
+    if request.method == "POST":
+
+        if request.POST['action'] == "save":
+
+            localization_system_form = EEGElectrodeLocalizationSystemRegisterForm(request.POST, request.FILES)
+
+            if localization_system_form.is_valid():
+
+                localization_system_added = localization_system_form.save()
+
+                messages.success(request, _('EEG electrode localization system created successfully.'))
+
+                redirect_url = reverse("eeg_electrode_localization_system_view", args=(localization_system_added.id,))
+                # redirect_url = reverse("eeg_electrode_localization_system_list", args=())
+                return HttpResponseRedirect(redirect_url)
+
+            else:
+                messages.warning(request, _('Information not saved.'))
+        else:
+            messages.warning(request, _('Action not available.'))
+
+    context = {
+        "localization_system_form": localization_system_form,
+        "creating": True,
+        "editing": True
+    }
+
+    return render(request, template_name, context)
+
+
+@login_required
+@permission_required('experiment.view_equipment')
+def eeg_electrode_localization_system_view(
+        request,
+        eeg_electrode_localization_system_id,
+        template_name="experiment/eeg_electrode_localization_system_register.html"):
+
+    localization_system = get_object_or_404(EEGElectrodeLocalizationSystem, pk=eeg_electrode_localization_system_id)
+    localization_system_form = EEGElectrodeLocalizationSystemRegisterForm(
+        request.POST or None, instance=localization_system)
+
+    for field in localization_system_form.fields:
+        localization_system_form.fields[field].widget.attrs['disabled'] = True
+
+    if request.method == "POST":
+        if request.POST['action'] == "remove":
+
+            if EEGElectrodeNetSystem.objects.filter(
+                    eeg_electrode_localization_system=localization_system).count() == 0:
+                try:
+                    localization_system.delete()
+                    messages.success(request, _('Study removed successfully.'))
+                    return redirect('eeg_electrode_localization_system_list')
+                except ProtectedError:
+                    messages.error(request, _("Error trying to delete localization system."))
+                    redirect_url = reverse("eeg_electrode_localization_system_view",
+                                           args=(eeg_electrode_localization_system_id,))
+                    return HttpResponseRedirect(redirect_url)
+
+            else:
+                messages.error(request,
+                               _("Impossible to delete localization system because there is (are) Electrode Net associated."))
+                redirect_url = reverse("eeg_electrode_localization_system_view",
+                                       args=(eeg_electrode_localization_system_id,))
+                return HttpResponseRedirect(redirect_url)
+
+    context = {
+        "localization_system": localization_system,
+        "localization_system_form": localization_system_form,
+    }
+
+    return render(request, template_name, context)
+
+
+@login_required
+@permission_required('experiment.view_equipment')
+def eeg_electrode_localization_system_update(
+        request,
+        eeg_electrode_localization_system_id,
+        template_name="experiment/eeg_electrode_localization_system_register.html"):
+
+    localization_system = get_object_or_404(EEGElectrodeLocalizationSystem, pk=eeg_electrode_localization_system_id)
+    localization_system_form = \
+        EEGElectrodeLocalizationSystemRegisterForm(request.POST or None, instance=localization_system)
+
+    if request.method == "POST":
+
+        if request.POST['action'] == "save":
+
+            localization_system_form = \
+                EEGElectrodeLocalizationSystemRegisterForm(request.POST, request.FILES, instance=localization_system)
+
+            if localization_system_form.is_valid():
+                if localization_system_form.has_changed():
+                    localization_system_form.save()
+                    messages.success(request, _('Localization system updated successfully.'))
+                else:
+                    messages.success(request, _('There is no changes to save.'))
+
+                redirect_url = reverse("eeg_electrode_localization_system_view", args=(eeg_electrode_localization_system_id,))
+                return HttpResponseRedirect(redirect_url)
+
+    context = {
+        "localization_system": localization_system,
+        "localization_system_form": localization_system_form,
+        "editing": True}
+
+    return render(request, template_name, context)
+
+
+@login_required
+@permission_required('experiment.view_equipment')
+def eeg_electrode_position_create(
+        request,
+        eeg_electrode_localization_system_id,
+        template_name="experiment/eeg_electrode_position_register.html"):
+
+    localization_system = get_object_or_404(EEGElectrodeLocalizationSystem, pk=eeg_electrode_localization_system_id)
+
+    position_form = EEGElectrodePositionForm(request.POST or None)
+
+    if request.method == "POST":
+
+        if request.POST['action'] == "save":
+
+            if position_form.is_valid():
+
+                position_added = position_form.save(commit=False)
+                position_added.eeg_electrode_localization_system = localization_system
+                position_added.save()
+
+                messages.success(request, _('EEG electrode position created successfully.'))
+
+                redirect_url = reverse("eeg_electrode_localization_system_view",
+                                       args=(eeg_electrode_localization_system_id,))
+                return HttpResponseRedirect(redirect_url)
+
+            else:
+                messages.warning(request, _('Information not saved.'))
+        else:
+            messages.warning(request, _('Action not available.'))
+
+    context = {
+        "position_form": position_form,
+        "localization_system": localization_system,
+        "creating": True,
+        "editing": True
+    }
+
+    return render(request, template_name, context)
+
+
+@login_required
+@permission_required('experiment.view_equipment')
+def eeg_electrode_position_view(
+        request,
+        eeg_electrode_position_id,
+        template_name="experiment/eeg_electrode_position_register.html"):
+
+    position = get_object_or_404(EEGElectrodePosition, pk=eeg_electrode_position_id)
+    position_form = EEGElectrodePositionForm(request.POST or None, instance=position)
+
+    for field in position_form.fields:
+        position_form.fields[field].widget.attrs['disabled'] = True
+
+    if request.method == "POST":
+        if request.POST['action'] == "remove":
+
+            if EEGElectrodePositionSetting.objects.filter(
+                    eeg_electrode_position=position).count() == 0:
+                try:
+                    localization_system_id = position.eeg_electrode_localization_system_id
+                    position.delete()
+                    messages.success(request, _('Position removed successfully.'))
+
+                    redirect_url = reverse("eeg_electrode_localization_system_view",
+                                           args=(localization_system_id,))
+                    return HttpResponseRedirect(redirect_url)
+                except ProtectedError:
+                    messages.error(request, _("Error trying to delete position."))
+                    redirect_url = reverse("eeg_electrode_position_view",
+                                           args=(eeg_electrode_position_id,))
+                    return HttpResponseRedirect(redirect_url)
+
+            else:
+                messages.error(request,
+                               _("Impossible to delete position because there is (are) Position Setting associated."))
+                redirect_url = reverse("eeg_electrode_position_view",
+                                       args=(eeg_electrode_position_id,))
+                return HttpResponseRedirect(redirect_url)
+
+    context = {
+        "position": position,
+        "position_form": position_form,
+    }
+
+    return render(request, template_name, context)
+
+
+@login_required
+@permission_required('experiment.view_equipment')
+def eeg_electrode_position_update(
+        request,
+        eeg_electrode_position_id,
+        template_name="experiment/eeg_electrode_position_register.html"):
+
+    position = get_object_or_404(EEGElectrodePosition, pk=eeg_electrode_position_id)
+    position_form = EEGElectrodePositionForm(request.POST or None, instance=position)
+
+    if request.method == "POST":
+
+        if request.POST['action'] == "save":
+
+            if position_form.is_valid():
+                if position_form.has_changed():
+                    position_form.save()
+                    messages.success(request, _('Position updated successfully.'))
+                else:
+                    messages.success(request, _('There is no changes to save.'))
+
+                redirect_url = reverse("eeg_electrode_position_view", args=(eeg_electrode_position_id,))
+                return HttpResponseRedirect(redirect_url)
+
+    context = {
+        "position": position,
+        "position_form": position_form,
+        "editing": True}
+
+    return render(request, template_name, context)

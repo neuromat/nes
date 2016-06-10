@@ -2,13 +2,15 @@
 
 from django.forms import ModelForm, TextInput, Textarea, Select, DateInput, TypedChoiceField, RadioSelect,\
     ValidationError, Form, IntegerField, NumberInput, CharField, MultipleChoiceField, CheckboxSelectMultiple
+from django.shortcuts import get_object_or_404
 from django.utils.translation import ugettext_lazy as _
 
 from experiment.models import Experiment, QuestionnaireResponse, SubjectOfGroup, Group, \
     Component, Stimulus, Block, Instruction, ComponentConfiguration, ResearchProject, EEGData, \
     EEGSetting, Equipment, EEG, EEGMachine, EEGMachineSetting, EEGAmplifier, EEGAmplifierSetting, \
     EEGSolution, EEGFilterSetting, EEGFilterType, EEGElectrodeLayoutSetting, EEGElectrodeLocalizationSystem, \
-    Manufacturer, EEGElectrodeModel, EEGElectrodeNet, EEGElectrodeCap, EEGCapSize, EEGElectrodeNetSystem, Material
+    EEGCapSize, EEGElectrodeCap, EEGElectrodePosition, Manufacturer, EEGElectrodeModel, EEGElectrodeNet, \
+    EEGElectrodeNetSystem, Material
 
 
 class ExperimentForm(ModelForm):
@@ -254,7 +256,7 @@ class EEGDataForm(ModelForm):
     class Meta:
         model = EEGData
 
-        fields = ['date', 'file_format', 'eeg_setting', 'description', 'file',
+        fields = ['date', 'file_format', 'eeg_setting', 'eeg_cap_size', 'description', 'file',
                   'file_format_description', 'eeg_setting_reason_for_change']
 
         widgets = {
@@ -264,6 +266,8 @@ class EEGDataForm(ModelForm):
                                      'data-error': _("Fill date must be filled.")}, ),
             'eeg_setting': Select(attrs={'class': 'form-control', 'required': "",
                                          'data-error': _('EEG setting type must be filled.')}),
+            'eeg_cap_size': Select(attrs={'class': 'form-control', 'required': "",
+                                          'data-error': _('Cap size type must be filled.')}),
             'file_format': Select(attrs={'class': 'form-control', 'required': "",
                                          'data-error': _('File format must be chosen.')}),
             'description': Textarea(attrs={'class': 'form-control',
@@ -286,6 +290,16 @@ class EEGDataForm(ModelForm):
         initial = kwargs.get('initial')
         if initial and 'experiment' in initial:
             self.fields['eeg_setting'].queryset = EEGSetting.objects.filter(experiment=initial['experiment'])
+        if initial and 'eeg_setting' in initial:
+            eeg_setting = get_object_or_404(EEGSetting, pk=initial['eeg_setting'])
+            self.fields['eeg_cap_size'].queryset = EEGCapSize.objects.filter(id=0)
+            if hasattr(eeg_setting, 'eeg_electrode_layout_setting'):
+                eeg_electrode_net_id = \
+                    eeg_setting.eeg_electrode_layout_setting.eeg_electrode_net_system.eeg_electrode_net.id
+                # if the electrode net is a cap
+                if EEGElectrodeCap.objects.filter(id=eeg_electrode_net_id):
+                    self.fields['eeg_cap_size'].queryset = \
+                        EEGCapSize.objects.filter(eeg_electrode_cap_id=eeg_electrode_net_id)
 
 
 class EEGSettingForm(ModelForm):
@@ -415,6 +429,36 @@ class EEGElectrodeLayoutSettingForm(ModelForm):
             'number_of_electrodes': TextInput(attrs={'class': 'form-control',
                                                      'required': "",
                                                      'data-error': _('Description must be filled.')})
+        }
+
+
+class EEGElectrodeLocalizationSystemRegisterForm(ModelForm):
+    class Meta:
+        model = EEGElectrodeLocalizationSystem
+        fields = ['name', 'description', 'number_of_electrodes', 'map_image_file']
+
+        widgets = {
+            'name': TextInput(attrs={'class': 'form-control', 'required': "",
+                                     'data-error': _('Name field must be filled.'),
+                                     'autofocus': ''}),
+            'description': Textarea(attrs={'class': 'form-control', 'rows': '4',}),
+            'number_of_electrodes': TextInput(attrs={'class': 'form-control'}),
+        }
+
+
+class EEGElectrodePositionForm(ModelForm):
+    class Meta:
+        model = EEGElectrodePosition
+
+        fields = ['name', 'coordinate_x', 'coordinate_y', 'position_reference']
+
+        widgets = {
+            'name': TextInput(attrs={'class': 'form-control', 'required': "",
+                                     'data-error': _('Name field must be filled.'),
+                                     'autofocus': ''}),
+            'coordinate_x': TextInput(attrs={'class': 'form-control'}),
+            'coordinate_y': TextInput(attrs={'class': 'form-control'}),
+            'position_reference': Select(attrs={'class': 'form-control'}),
         }
 
 

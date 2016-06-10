@@ -145,6 +145,9 @@ class Material(models.Model):
     name = models.CharField(max_length=150)
     description = models.TextField(null=True, blank=True)
 
+    def __str__(self):
+        return self.name
+
 
 class EEGElectrodeModel(models.Model):
     USABILITY_TYPES = (
@@ -157,6 +160,9 @@ class EEGElectrodeModel(models.Model):
     usability = models.CharField(null=True, blank=True, max_length=50, choices=USABILITY_TYPES)
     impedance = models.FloatField(null=True, blank=True)
     impedance_unit = models.CharField(null=True, blank=True, max_length=15, choices=IMPEDANCE_UNIT)
+
+    def __str__(self):
+        return self.name
 
 
 class EEGElectrodeNet(Equipment):
@@ -175,6 +181,9 @@ class EEGCapSize(models.Model):
     size = models.CharField(max_length=30)
     electrode_adjacent_distance = models.FloatField(null=True, blank=True)
 
+    def __str__(self):
+        return self.size
+
 
 def get_eeg_electrode_system_dir(instance, filename):
     return "eeg_electrode_system_files/%s/%s" % \
@@ -192,11 +201,15 @@ class EEGElectrodeLocalizationSystem(models.Model):
 
 
 class EEGElectrodePosition(models.Model):
-    eeg_electrode_localization_system = models.ForeignKey(EEGElectrodeLocalizationSystem)
+    eeg_electrode_localization_system = models.ForeignKey(EEGElectrodeLocalizationSystem,
+                                                          related_name="electrode_positions")
     name = models.CharField(max_length=150)
     coordinate_x = models.IntegerField(null=True, blank=True)
     coordinate_y = models.IntegerField(null=True, blank=True)
-    position_reference = models.ForeignKey('self', null=True, related_name='children')
+    position_reference = models.ForeignKey('self', null=True, blank=True, related_name='children')
+
+    def __str__(self):
+        return self.eeg_electrode_localization_system.name + ' - ' + self.name
 
 
 class EEGElectrodeNetSystem(models.Model):
@@ -251,6 +264,7 @@ class EEGElectrodePositionSetting(models.Model):
     eeg_electrode_layout_setting = models.ForeignKey(EEGElectrodeLayoutSetting, related_name='positions_setting')
     eeg_electrode_position = models.ForeignKey(EEGElectrodePosition)
     used = models.BooleanField()
+    electrode_model = models.ForeignKey(EEGElectrodeModel)
 
 
 class Component(models.Model):
@@ -451,10 +465,13 @@ class DataFile(models.Model):
 class EEGData(DataFile, DataCollection):
     eeg_setting = models.ForeignKey(EEGSetting)
     eeg_setting_reason_for_change = models.TextField(null=True, blank=True, default='')
-    eeg_cap_size = models.ForeignKey(EEGCapSize, null=True)
+    eeg_cap_size = models.ForeignKey(EEGCapSize, null=True, blank=True)
 
 
 class EEGElectrodePositionCollectionStatus(models.Model):
-    eeg_data = models.ForeignKey(EEGData)
+    eeg_data = models.ForeignKey(EEGData, related_name='electrode_positions')
     eeg_electrode_position_setting = models.ForeignKey(EEGElectrodePositionSetting)
     worked = models.BooleanField()
+
+    def __str__(self):
+        return self.eeg_electrode_position_setting.eeg_electrode_position.name
