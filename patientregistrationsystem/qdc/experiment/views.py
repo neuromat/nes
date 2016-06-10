@@ -3108,6 +3108,117 @@ def remove_component_configuration(request, conf):
         messages.error(request, "Não foi possível excluir o uso, pois há dados associados")
 
 
+def check_experiment(experiment):
+    experiment_id = experiment.id
+    groups = Group.objects.filter(experiment_id=experiment_id)
+    experiment_with_data = False
+
+    for group in groups:
+        subject_list = [item.pk for item in SubjectOfGroup.objects.filter(group=group)]
+        eegdata_list = EEGData.objects.filter(subject_of_group_id__in=subject_list)
+        if eegdata_list:
+            experiment_with_data = True
+
+    return experiment_with_data
+
+
+def copy_experiment(experiment):
+    experiment_id = experiment.id
+
+    new_experiment = experiment
+    new_experiment.pk = None
+    new_experiment.title = _('Copy of') + ' ' + new_experiment.title
+    new_experiment.save()
+
+    orig_and_clone = {}
+    for component in Component.objects.filter(experiment_id=experiment_id):
+        clone_component = create_component(component, new_experiment)
+        orig_and_clone[component.id] = clone_component.id
+
+    groups = Group.objects.filter(experiment_id=experiment_id)
+    for group in groups:
+        experimental_protocol_id = group.experimental_protocol_id
+        subject_list = [item.pk for item in SubjectOfGroup.objects.filter(group=group)]
+        new_group = group
+        new_group.pk = None
+        new_group.title = _('Copy of') + ' ' + new_group.title
+        new_group.experiment_id = new_experiment.id
+        if experimental_protocol_id in orig_and_clone:
+            new_group.experimental_protocol_id = orig_and_clone[experimental_protocol_id]
+        new_group.save()
+
+        if subject_list:
+            new_subject_of_group = SubjectOfGroup.objects.filter(id__in=subject_list)
+            for subject_of_group in new_subject_of_group:
+                subject_of_group.pk = None
+                subject_of_group.group_id = group.id
+                subject_of_group.save()
+
+        # for key in orig_and_clone:
+        #     new_component_configuration = ComponentConfiguration.objects.filter(component_id=key)
+        #     if new_component_configuration:
+        #         for component_configuration in new_component_configuration:
+        #             component_configuration.pk = None
+        #             if component_configuration.name:
+        #                 component_configuration.name = _('Copy of') + ' ' + component_configuration.name
+        #             else:
+        #                 component_configuration.name = _('Copy')
+        #             component_configuration.save()
+
+
+def create_component(component, new_experiment):
+
+    clone = None
+    component_type = component.component_type
+
+    if component_type == 'block':
+        block = get_object_or_404(Block, pk=component.id)
+        clone = Block(number_of_mandatory_components=block.number_of_mandatory_components, type=block.type)
+
+    elif component_type == 'eeg':
+        eeg = get_object_or_404(EEG, pk=component.id)
+        clone = EEG(eeg_setting_id=eeg.eeg_setting_id)
+
+    elif component_type == 'instruction':
+        instruction = get_object_or_404(Instruction, pk=component.id)
+        clone = Instruction(text=instruction.text)
+
+    elif component_type == 'pause':
+        clone = Pause()
+
+    elif component_type == 'questionnaire':
+        questionnaire = get_object_or_404(Questionnaire, pk=component.id)
+        clone = Questionnaire(survey_id=questionnaire.survey_id)
+
+    elif component_type == 'stimulus':
+        stimulus = get_object_or_404(Stimulus, pk=component.id)
+        clone = Stimulus(stimulus_type_id=stimulus.stimulus_type_id)
+
+    elif component_type == 'task':
+        clone = Task()
+
+    elif component_type == 'task_experiment':
+        clone = TaskForTheExperimenter()
+
+    else:
+        clone = Component()
+
+    if component.identification:
+        clone.identification = _('Copy of') + ' ' + component.identification
+    else:
+        clone.identification = _('Copy')
+
+    clone.experiment = new_experiment
+    clone.description = component.description
+    clone.duration_value = component.duration_value
+    clone.duration_unit = component.duration_unit
+    clone.component_type = component.component_type
+
+    clone.save()
+
+    return clone
+
+
 @login_required
 @permission_required('experiment.view_researchproject')
 def component_view(request, path_of_the_components):
@@ -3117,6 +3228,10 @@ def component_view(request, path_of_the_components):
     component, component_configuration, component_form, configuration_form, experiment, component_type, template_name,\
         list_of_ids_of_components_and_configurations, list_of_breadcrumbs, group, back_cancel_url =\
         access_objects_for_view_and_update(request, path_of_the_components)
+
+    # experiment_in_use = check_experiment(experiment)
+    # if experiment_in_use:
+    #     copy_experiment(experiment)
 
     block = get_object_or_404(Block, pk=component.id)
     block_form = BlockForm(request.POST or None, instance=block)
