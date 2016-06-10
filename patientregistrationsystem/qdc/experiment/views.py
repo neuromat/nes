@@ -1661,10 +1661,6 @@ def eegmachine_create(request, template_name="experiment/eegmachine_register.htm
 
     eegmachine_form = EEGMachineRegisterForm(request.POST or None, initial={'equipment_type': 'eeg_machine'})
 
-    # eegmachine_form.fields['equipment_type'] = 'eeg_machine'
-
-    eegmachine_form.fields['equipment_type'].widget.attrs['disabled'] = True
-
     if request.method == "POST":
 
         if request.POST['action'] == "save":
@@ -1697,20 +1693,18 @@ def eegmachine_create(request, template_name="experiment/eegmachine_register.htm
 @login_required
 @permission_required('experiment.change_eegmachine')
 def eegmachine_update(request, eegmachine_id, template_name="experiment/eegmachine_register.html"):
+
     eegmachine = get_object_or_404(EEGMachine, pk=eegmachine_id)
-    eegmachine.equipment_type = 'eeg_machine'
+    # eegmachine.equipment_type = 'eeg_machine'
 
     eegmachine_form = EEGMachineRegisterForm(request.POST or None, instance=eegmachine)
 
-    eegmachine_form.fields['equipment_type'].widget.attrs['disabled'] = True
+    # eegmachine_form.fields['equipment_type'].widget.attrs['disabled'] = True
 
     if request.method == "POST":
         if request.POST['action'] == "save":
             if eegmachine_form.is_valid():
                 if eegmachine_form.has_changed():
-                    # eegmachine_form.equipment_type = 'eeg_machine'
-                    # TODO: verificar por que está mudando valor do equipment_type
-
                     eegmachine_form.save()
                     messages.success(request, _('EEG machine updated successfully.'))
                 else:
@@ -1773,10 +1767,6 @@ def eegamplifier_create(request, template_name="experiment/eegamplifier_register
 
     eegamplifier_form = EEGAmplifierRegisterForm(request.POST or None, initial={'equipment_type': 'eeg_amplifier'})
 
-    # eegamplifier_form.fields['equipment_type'] = 'eeg_amplifier'
-
-    # eegamplifier_form.fields['equipment_type'].widget.attrs['disabled'] = True
-
     if request.method == "POST":
 
         if request.POST['action'] == "save":
@@ -1810,19 +1800,13 @@ def eegamplifier_create(request, template_name="experiment/eegamplifier_register
 @permission_required('experiment.change_eegamplifier')
 def eegamplifier_update(request, eegamplifier_id, template_name="experiment/eegamplifier_register.html"):
     eegamplifier = get_object_or_404(EEGAmplifier, pk=eegamplifier_id)
-    eegamplifier.equipment_type = 'eeg_amplifier'
 
     eegamplifier_form = EEGAmplifierRegisterForm(request.POST or None, instance=eegamplifier)
-
-    # eegamplifier_form.fields['equipment_type'].widget.attrs['disabled'] = True
 
     if request.method == "POST":
         if request.POST['action'] == "save":
             if eegamplifier_form.is_valid():
                 if eegamplifier_form.has_changed():
-                    # eegamplifier_form.equipment_type = 'eeg_amplifier'
-                    # TODO: verificar por que está mudando valor do equipment_type
-
                     eegamplifier_form.save()
                     messages.success(request, _('EEG amplifier updated successfully.'))
                 else:
@@ -2305,6 +2289,7 @@ def eegelectrodenet_create(request, template_name="experiment/eegelectrodenet_re
             if eegelectrodenet_form.is_valid():
 
                 eegelectrodenet_added = eegelectrodenet_form.save(commit=False)
+                eegelectrodenet_added.equipment_type = "eeg_electrode_net"
                 eegelectrodenet_added.save()
 
                 messages.success(request, _('EEG electrode net created successfully.'))

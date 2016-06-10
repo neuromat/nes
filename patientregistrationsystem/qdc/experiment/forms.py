@@ -475,58 +475,34 @@ class ManufacturerRegisterForm(ModelForm):
 class EEGMachineRegisterForm(ModelForm):
     class Meta:
         model = EEGMachine
-        fields = ['manufacturer', 'equipment_type', 'identification', 'description', 'serial_number',
+        fields = ['manufacturer', 'identification', 'description', 'serial_number',
                   'number_of_channels', 'software_version']
 
         widgets = {
 
             'manufacturer': Select(attrs={'class': 'form-control', 'required': "",
-                                             'data-error': _('Manufacturer must be filled.')}),
-
-            'equipment_type': Select(attrs={'class': 'form-control',
-                                            'data-error': _('Equipment type must be filled in.'),
-                                            'initial': 'eeg_machine'}),
-
+                                          'data-error': _('Manufacturer must be filled.')}),
             'identification': TextInput(attrs={'class': 'form-control', 'required': "",
                                                'data-error': _('Identification must be filled.')}),
-
-            'description': Textarea(attrs={'class': 'form-control', 'rows': '4',
-                                           'data-error': _('Description must be filled.')}),
-
-            'serial_number': TextInput(attrs={'class': 'form-control', 'required': "",
-                                              'data-error': _('Serial number must be filled.')}),
-
-            'number_of_channels': TextInput(attrs={'class': 'form-control', 'required': "",
-                                                   'data-error': _('Number of channels must be filled.')}),
-            'software_version': TextInput(attrs={'class': 'form-control', 'required': "",
-                                                 'data-error': _('Software version must be filled.')})
+            'description': Textarea(attrs={'class': 'form-control', 'rows': '4'}),
+            'serial_number': TextInput(attrs={'class': 'form-control'}),
+            'number_of_channels': TextInput(attrs={'class': 'form-control'}),
+            'software_version': TextInput(attrs={'class': 'form-control'})
         }
 
 
 class EEGAmplifierRegisterForm(ModelForm):
     class Meta:
         model = EEGAmplifier
-        fields = ['manufacturer', 'equipment_type', 'identification', 'description', 'serial_number',
-                  'gain']
+        fields = ['manufacturer', 'identification', 'description', 'serial_number', 'gain']
 
         widgets = {
-
             'manufacturer': Select(attrs={'class': 'form-control', 'required': "",
-                                             'data-error': _('Manufacturer must be filled.')}),
-
-            'equipment_type': Select(attrs={'class': 'form-control', 'disabled': '',
-                                            'data-error': _('Equipment type must be filled in.'),
-                                            'initial': 'eeg_amplifier'}),
-
+                                          'data-error': _('Manufacturer must be filled.')}),
             'identification': TextInput(attrs={'class': 'form-control', 'required': "",
                                                'data-error': _('Identification must be filled.')}),
-
-            'description': Textarea(attrs={'class': 'form-control', 'rows': '4',
-                                           'data-error': _('Description must be filled.')}),
-
-            'serial_number': TextInput(attrs={'class': 'form-control', 'required': "",
-                                              'data-error': _('Serial number must be filled.')}),
-
+            'description': Textarea(attrs={'class': 'form-control', 'rows': '4'}),
+            'serial_number': TextInput(attrs={'class': 'form-control'}),
             'gain': TextInput(attrs={'class': 'form-control'})
         }
 
@@ -609,28 +585,16 @@ class MaterialRegisterForm(ModelForm):
 class EEGElectrodeNETRegisterForm(ModelForm):
     class Meta:
         model = EEGElectrodeNet
-        fields = ['manufacturer', 'equipment_type', 'identification', 'description', 'serial_number',
-                  'electrode_model_default']
+        fields = ['manufacturer', 'identification', 'description', 'serial_number', 'electrode_model_default']
 
         widgets = {
-
             'manufacturer': Select(attrs={'class': 'form-control', 'required': "",
                                           'data-error': _('Manufacturer must be filled.')}),
-
-            'equipment_type': Select(attrs={'class': 'form-control', 'disabled': '',
-                                            'data-error': _('Equipment type must be filled in.'),
-                                            'initial': 'eeg_machine'}),
-
             'identification': TextInput(attrs={'class': 'form-control', 'required': "",
                                                'data-error': _('Identification must be filled.')}),
-
-            'description': Textarea(attrs={'class': 'form-control', 'rows': '4',
-                                           'data-error': _('Description must be filled.')}),
-
-            'serial_number': TextInput(attrs={'class': 'form-control', 'required': "",
-                                              'data-error': _('Serial number must be filled.')}),
-
-            'electrode_model_default': Select(attrs={'class': 'form-control',  'required': "",
+            'description': Textarea(attrs={'class': 'form-control', 'rows': '4'}),
+            'serial_number': TextInput(attrs={'class': 'form-control'}),
+            'electrode_model_default': Select(attrs={'class': 'form-control', 'required': "",
                                                      'data-error': _('Electrode model default must be filled in.')}),
         }
 

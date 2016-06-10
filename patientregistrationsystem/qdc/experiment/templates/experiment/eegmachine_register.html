@@ -2,11 +2,11 @@
 
 {% load i18n admin_static %}
 
-{% block activeEquipment %}class="active"{% endblock %}
-
 {% block header %}
     <script src="{% static 'quiz/js/equipment.js' %}"></script>
 {% endblock %}
+
+{% block activeEquipment %}class="active"{% endblock %}
 
 {% block form %}
     <div class="row">
@@ -78,25 +78,6 @@
                         </div>
                     </div>
                 </div>
-{#                <div class="row" {% if creating %}style="display: none;"{% endif %}>#}
-{#                    <div class="col-xs-12 col-sm-12">#}
-{#                        <div class="form-group">#}
-{#                            <label class="control-label">{% trans "Study" %} <b style="color: red;">*</b></label>#}
-{#                            {{ equipment_form.equipment_type }}#}
-{#                            <div class="help-block with-errors"></div>#}
-{#                        </div>#}
-{#                    </div>#}
-{#                </div>#}
-
-                <div class="row">
-                    <div class="col-xs-12 col-sm-12">
-                        <div class="form-group">
-                            <label class="control-label">{% trans "Equipment type" %} <b style="color: red;">*</b></label>
-                            {{ equipment_form.equipment_type }}
-                            <div class="help-block with-errors"></div>
-                        </div>
-                    </div>
-                </div>
                 <div class="row">
                     <div class="col-xs-12 col-sm-12">
                         <div class="form-group">
@@ -118,7 +99,7 @@
                 <div class="row">
                     <div class="col-xs-12 col-sm-12">
                         <div class="form-group">
-                            <label class="control-label">{% trans "Serial number" %} <b style="color: red;">*</b></label>
+                            <label class="control-label">{% trans "Serial number" %}</label>
                             {{ equipment_form.serial_number }}
                             <div class="help-block with-errors"></div>
                         </div>
@@ -127,7 +108,7 @@
                 <div class="row">
                     <div class="col-xs-12 col-sm-12">
                         <div class="form-group">
-                            <label class="control-label">{% trans "Number of channels" %} <b style="color: red;">*</b></label>
+                            <label class="control-label">{% trans "Number of channels" %}</label>
                             {{ equipment_form.number_of_channels }}
                             <div class="help-block with-errors"></div>
                         </div>
@@ -136,7 +117,7 @@
                 <div class="row">
                     <div class="col-xs-12 col-sm-12">
                         <div class="form-group">
-                            <label class="control-label">{% trans "Software version" %} <b style="color: red;">*</b></label>
+                            <label class="control-label">{% trans "Software version" %}</label>
                             {{ equipment_form.software_version }}
                             <div class="help-block with-errors"></div>
                         </div>
