@@ -201,11 +201,12 @@ class EEGElectrodeLocalizationSystem(models.Model):
 
 
 class EEGElectrodePosition(models.Model):
-    eeg_electrode_localization_system = models.ForeignKey(EEGElectrodeLocalizationSystem)
+    eeg_electrode_localization_system = models.ForeignKey(EEGElectrodeLocalizationSystem,
+                                                          related_name="electrode_positions")
     name = models.CharField(max_length=150)
     coordinate_x = models.IntegerField(null=True, blank=True)
     coordinate_y = models.IntegerField(null=True, blank=True)
-    position_reference = models.ForeignKey('self', null=True, related_name='children')
+    position_reference = models.ForeignKey('self', null=True, blank=True, related_name='children')
 
     def __str__(self):
         return self.eeg_electrode_localization_system.name + ' - ' + self.name

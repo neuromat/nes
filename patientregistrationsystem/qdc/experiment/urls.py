@@ -17,6 +17,22 @@ urlpatterns = patterns(
     url(r'^research_project/edit/(?P<research_project_id>\d+)/$', 'research_project_update',
         name='research_project_edit'),
 
+    # Localization system and position
+    url(r'^eeg_electrode_localization_system/list/$',
+        'eeg_electrode_localization_system_list', name='eeg_electrode_localization_system_list'),
+    url(r'^eeg_electrode_localization_system/new/$',
+        'eeg_electrode_localization_system_create', name='eeg_electrode_localization_system_new'),
+    url(r'^eeg_electrode_localization_system/(?P<eeg_electrode_localization_system_id>\d+)/$',
+        'eeg_electrode_localization_system_view', name='eeg_electrode_localization_system_view'),
+    url(r'^eeg_electrode_localization_system/edit/(?P<eeg_electrode_localization_system_id>\d+)/$',
+        'eeg_electrode_localization_system_update', name='eeg_electrode_localization_system_edit'),
+    url(r'^eeg_electrode_localization_system/(?P<eeg_electrode_localization_system_id>\d+)/new_position/$',
+        'eeg_electrode_position_create', name='eeg_electrode_position_create'),
+    url(r'^eeg_electrode_position/(?P<eeg_electrode_position_id>\d+)/$',
+        'eeg_electrode_position_view', name='eeg_electrode_position_view'),
+    url(r'^eeg_electrode_position/edit/(?P<eeg_electrode_position_id>\d+)/$',
+        'eeg_electrode_position_update', name='eeg_electrode_position_edit'),
+
     # experiment
     url(r'^research_project/(?P<research_project_id>\d+)/new_experiment/$', 'experiment_create', name='experiment_new'),
     url(r'^(?P<experiment_id>\d+)/$', 'experiment_view', name='experiment_view'),
@@ -112,4 +128,6 @@ urlpatterns = patterns(
     # Data collection
     url(r'^group/(?P<group_id>\d+)/questionnaire/(?P<component_configuration_id>\d+)/$', 'questionnaire_view',
         name='questionnaire_view'),
+
+
 )

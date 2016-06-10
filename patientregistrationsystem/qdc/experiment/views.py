@@ -28,12 +28,13 @@ from experiment.models import Experiment, Subject, QuestionnaireResponse, Subjec
     EEGSetting, Equipment, Manufacturer, EEGMachine, EEGAmplifier, EEGElectrodeNet, DataConfigurationTree, \
     EEGMachineSetting, EEGAmplifierSetting, EEGSolutionSetting, EEGFilterSetting, EEGElectrodeLayoutSetting, \
     EEGFilterType, EEGSolution, EEGElectrodeLocalizationSystem, EEGElectrodeNetSystem, EEGElectrodePositionSetting, \
-    EEGElectrodeModel, EEGElectrodePositionCollectionStatus, EEGCapSize, EEGElectrodeCap
+    EEGElectrodeModel, EEGElectrodePositionCollectionStatus, EEGCapSize, EEGElectrodeCap, EEGElectrodePosition
 from experiment.forms import ExperimentForm, QuestionnaireResponseForm, FileForm, GroupForm, InstructionForm, \
     ComponentForm, StimulusForm, BlockForm, ComponentConfigurationForm, ResearchProjectForm, NumberOfUsesToInsertForm, \
     EEGDataForm, EEGSettingForm, EquipmentForm, EEGForm, EEGMachineForm, EEGMachineSettingForm, EEGAmplifierForm, \
     EEGAmplifierSettingForm, EEGSolutionForm, EEGFilterForm, EEGFilterSettingForm, \
-    EEGElectrodeLayoutSettingForm, EEGElectrodeLocalizationSystemForm
+    EEGElectrodeLayoutSettingForm, EEGElectrodeLocalizationSystemForm, EEGElectrodeLocalizationSystemRegisterForm, \
+    EEGElectrodePositionForm
 
 
 from patient.models import Patient, QuestionnaireResponse as PatientQuestionnaireResponse
@@ -3934,3 +3935,253 @@ def component_reuse(request, path_of_the_components, component_id):
         return render(request, template_name, context)
     else:
         raise PermissionDenied
+
+
+@login_required
+@permission_required('experiment.view_equipment')
+def eeg_electrode_localization_system_list(
+        request,
+        template_name="experiment/eeg_electrode_localization_system_list.html"):
+
+    eeg_electrode_localization_systems = EEGElectrodeLocalizationSystem.objects.order_by('name')
+    context = {"eeg_electrode_localization_systems": eeg_electrode_localization_systems}
+    return render(request, template_name, context)
+
+
+@login_required
+@permission_required('experiment.view_equipment')
+def eeg_electrode_localization_system_create(
+        request,
+        template_name="experiment/eeg_electrode_localization_system_register.html"):
+
+    localization_system_form = EEGElectrodeLocalizationSystemRegisterForm(request.POST or None)
+
+    if request.method == "POST":
+
+        if request.POST['action'] == "save":
+
+            localization_system_form = EEGElectrodeLocalizationSystemRegisterForm(request.POST, request.FILES)
+
+            if localization_system_form.is_valid():
+
+                localization_system_added = localization_system_form.save()
+
+                messages.success(request, _('EEG electrode localization system created successfully.'))
+
+                redirect_url = reverse("eeg_electrode_localization_system_view", args=(localization_system_added.id,))
+                # redirect_url = reverse("eeg_electrode_localization_system_list", args=())
+                return HttpResponseRedirect(redirect_url)
+
+            else:
+                messages.warning(request, _('Information not saved.'))
+        else:
+            messages.warning(request, _('Action not available.'))
+
+    context = {
+        "localization_system_form": localization_system_form,
+        "creating": True,
+        "editing": True
+    }
+
+    return render(request, template_name, context)
+
+
+@login_required
+@permission_required('experiment.view_equipment')
+def eeg_electrode_localization_system_view(
+        request,
+        eeg_electrode_localization_system_id,
+        template_name="experiment/eeg_electrode_localization_system_register.html"):
+
+    localization_system = get_object_or_404(EEGElectrodeLocalizationSystem, pk=eeg_electrode_localization_system_id)
+    localization_system_form = EEGElectrodeLocalizationSystemRegisterForm(
+        request.POST or None, instance=localization_system)
+
+    for field in localization_system_form.fields:
+        localization_system_form.fields[field].widget.attrs['disabled'] = True
+
+    if request.method == "POST":
+        if request.POST['action'] == "remove":
+
+            if EEGElectrodeNetSystem.objects.filter(
+                    eeg_electrode_localization_system=localization_system).count() == 0:
+                try:
+                    localization_system.delete()
+                    messages.success(request, _('Study removed successfully.'))
+                    return redirect('eeg_electrode_localization_system_list')
+                except ProtectedError:
+                    messages.error(request, _("Error trying to delete localization system."))
+                    redirect_url = reverse("eeg_electrode_localization_system_view",
+                                           args=(eeg_electrode_localization_system_id,))
+                    return HttpResponseRedirect(redirect_url)
+
+            else:
+                messages.error(request,
+                               _("Impossible to delete localization system because there is (are) Electrode Net associated."))
+                redirect_url = reverse("eeg_electrode_localization_system_view",
+                                       args=(eeg_electrode_localization_system_id,))
+                return HttpResponseRedirect(redirect_url)
+
+    context = {
+        "localization_system": localization_system,
+        "localization_system_form": localization_system_form,
+    }
+
+    return render(request, template_name, context)
+
+
+@login_required
+@permission_required('experiment.view_equipment')
+def eeg_electrode_localization_system_update(
+        request,
+        eeg_electrode_localization_system_id,
+        template_name="experiment/eeg_electrode_localization_system_register.html"):
+
+    localization_system = get_object_or_404(EEGElectrodeLocalizationSystem, pk=eeg_electrode_localization_system_id)
+    localization_system_form = \
+        EEGElectrodeLocalizationSystemRegisterForm(request.POST or None, instance=localization_system)
+
+    if request.method == "POST":
+
+        if request.POST['action'] == "save":
+
+            localization_system_form = \
+                EEGElectrodeLocalizationSystemRegisterForm(request.POST, request.FILES, instance=localization_system)
+
+            if localization_system_form.is_valid():
+                if localization_system_form.has_changed():
+                    localization_system_form.save()
+                    messages.success(request, _('Localization system updated successfully.'))
+                else:
+                    messages.success(request, _('There is no changes to save.'))
+
+                redirect_url = reverse("eeg_electrode_localization_system_view", args=(eeg_electrode_localization_system_id,))
+                return HttpResponseRedirect(redirect_url)
+
+    context = {
+        "localization_system": localization_system,
+        "localization_system_form": localization_system_form,
+        "editing": True}
+
+    return render(request, template_name, context)
+
+
+@login_required
+@permission_required('experiment.view_equipment')
+def eeg_electrode_position_create(
+        request,
+        eeg_electrode_localization_system_id,
+        template_name="experiment/eeg_electrode_position_register.html"):
+
+    localization_system = get_object_or_404(EEGElectrodeLocalizationSystem, pk=eeg_electrode_localization_system_id)
+
+    position_form = EEGElectrodePositionForm(request.POST or None)
+
+    if request.method == "POST":
+
+        if request.POST['action'] == "save":
+
+            if position_form.is_valid():
+
+                position_added = position_form.save(commit=False)
+                position_added.eeg_electrode_localization_system = localization_system
+                position_added.save()
+
+                messages.success(request, _('EEG electrode position created successfully.'))
+
+                redirect_url = reverse("eeg_electrode_localization_system_view",
+                                       args=(eeg_electrode_localization_system_id,))
+                return HttpResponseRedirect(redirect_url)
+
+            else:
+                messages.warning(request, _('Information not saved.'))
+        else:
+            messages.warning(request, _('Action not available.'))
+
+    context = {
+        "position_form": position_form,
+        "localization_system": localization_system,
+        "creating": True,
+        "editing": True
+    }
+
+    return render(request, template_name, context)
+
+
+@login_required
+@permission_required('experiment.view_equipment')
+def eeg_electrode_position_view(
+        request,
+        eeg_electrode_position_id,
+        template_name="experiment/eeg_electrode_position_register.html"):
+
+    position = get_object_or_404(EEGElectrodePosition, pk=eeg_electrode_position_id)
+    position_form = EEGElectrodePositionForm(request.POST or None, instance=position)
+
+    for field in position_form.fields:
+        position_form.fields[field].widget.attrs['disabled'] = True
+
+    if request.method == "POST":
+        if request.POST['action'] == "remove":
+
+            if EEGElectrodePositionSetting.objects.filter(
+                    eeg_electrode_position=position).count() == 0:
+                try:
+                    localization_system_id = position.eeg_electrode_localization_system_id
+                    position.delete()
+                    messages.success(request, _('Position removed successfully.'))
+
+                    redirect_url = reverse("eeg_electrode_localization_system_view",
+                                           args=(localization_system_id,))
+                    return HttpResponseRedirect(redirect_url)
+                except ProtectedError:
+                    messages.error(request, _("Error trying to delete position."))
+                    redirect_url = reverse("eeg_electrode_position_view",
+                                           args=(eeg_electrode_position_id,))
+                    return HttpResponseRedirect(redirect_url)
+
+            else:
+                messages.error(request,
+                               _("Impossible to delete position because there is (are) Position Setting associated."))
+                redirect_url = reverse("eeg_electrode_position_view",
+                                       args=(eeg_electrode_position_id,))
+                return HttpResponseRedirect(redirect_url)
+
+    context = {
+        "position": position,
+        "position_form": position_form,
+    }
+
+    return render(request, template_name, context)
+
+
+@login_required
+@permission_required('experiment.view_equipment')
+def eeg_electrode_position_update(
+        request,
+        eeg_electrode_position_id,
+        template_name="experiment/eeg_electrode_position_register.html"):
+
+    position = get_object_or_404(EEGElectrodePosition, pk=eeg_electrode_position_id)
+    position_form = EEGElectrodePositionForm(request.POST or None, instance=position)
+
+    if request.method == "POST":
+
+        if request.POST['action'] == "save":
+
+            if position_form.is_valid():
+                if position_form.has_changed():
+                    position_form.save()
+                    messages.success(request, _('Position updated successfully.'))
+                else:
+                    messages.success(request, _('There is no changes to save.'))
+
+                redirect_url = reverse("eeg_electrode_position_view", args=(eeg_electrode_position_id,))
+                return HttpResponseRedirect(redirect_url)
+
+    context = {
+        "position": position,
+        "position_form": position_form,
+        "editing": True}
+
+    return render(request, template_name, context)

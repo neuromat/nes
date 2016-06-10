@@ -9,7 +9,7 @@ from experiment.models import Experiment, QuestionnaireResponse, SubjectOfGroup,
     Component, Stimulus, Block, Instruction, ComponentConfiguration, ResearchProject, EEGData, \
     EEGSetting, Equipment, EEG, EEGMachine, EEGMachineSetting, EEGAmplifier, EEGAmplifierSetting, \
     EEGSolution, EEGFilterSetting, EEGFilterType, EEGElectrodeLayoutSetting, EEGElectrodeLocalizationSystem, \
-    EEGCapSize, EEGElectrodeCap
+    EEGCapSize, EEGElectrodeCap, EEGElectrodePosition
 
 
 class ExperimentForm(ModelForm):
@@ -428,4 +428,34 @@ class EEGElectrodeLayoutSettingForm(ModelForm):
             'number_of_electrodes': TextInput(attrs={'class': 'form-control',
                                                      'required': "",
                                                      'data-error': _('Description must be filled.')})
+        }
+
+
+class EEGElectrodeLocalizationSystemRegisterForm(ModelForm):
+    class Meta:
+        model = EEGElectrodeLocalizationSystem
+        fields = ['name', 'description', 'number_of_electrodes', 'map_image_file']
+
+        widgets = {
+            'name': TextInput(attrs={'class': 'form-control', 'required': "",
+                                     'data-error': _('Name field must be filled.'),
+                                     'autofocus': ''}),
+            'description': Textarea(attrs={'class': 'form-control', 'rows': '4',}),
+            'number_of_electrodes': TextInput(attrs={'class': 'form-control'}),
+        }
+
+
+class EEGElectrodePositionForm(ModelForm):
+    class Meta:
+        model = EEGElectrodePosition
+
+        fields = ['name', 'coordinate_x', 'coordinate_y', 'position_reference']
+
+        widgets = {
+            'name': TextInput(attrs={'class': 'form-control', 'required': "",
+                                     'data-error': _('Name field must be filled.'),
+                                     'autofocus': ''}),
+            'coordinate_x': TextInput(attrs={'class': 'form-control'}),
+            'coordinate_y': TextInput(attrs={'class': 'form-control'}),
+            'position_reference': Select(attrs={'class': 'form-control'}),
         }
