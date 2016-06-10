@@ -1,0 +1,90 @@
+{% extends "quiz/template.html" %}
+
+{% load i18n %}
+
+{% block header %}
+    <script>
+        $(function(){
+            $("[data-toggle=tooltip]").tooltip();
+        });
+    </script>
+{% endblock %}
+
+{#{% block activeAdvancedResearchProject %}class="active"{% endblock %}#}
+
+{% block content %}
+
+    {% if messages %}
+        {% for message in messages %}
+
+            {% if message.tags == "success" %}
+                <script>showSuccessMessage('{{ message }}')</script>
+            {% endif %}
+
+            {% if message.tags == "warning" %}
+                <script>showWarningMessage('{{ message }}')</script>
+            {% endif %}
+
+            {% if message.tags == "error" %}
+                <script>showErrorMessage('{{ message }}')</script>
+            {% endif %}
+
+            {% if message.tags == "info" %}
+                <script>showInfoMessage('{{ message }}')</script>
+            {% endif %}
+
+        {% endfor %}
+    {% endif %}
+
+    <div class="tab-pane fade in active" id="eegElectrodeLocalizationSystemBreadCrumb">
+        <div class="col-md-10">
+            <ol class="breadcrumb">
+                <li><a href="/home">{% trans "Home" %}</a></li>
+                <li class="active">{% trans "EEG electrode localization system" %}</li>
+            </ol>
+        </div>
+    </div>
+
+    <div class="tab-pane fade in active" id="mainMenuUserTab">
+        <div class="col-md-10">
+            <div class="container span6 offset3 well ">
+                <h4>{% trans "EEG electrode localization system list" %}</h4>
+                <div class="form-group">
+                    <table class="table table-striped">
+                        <thead>
+                            <tr>
+                                <th>{% trans "Name" %}</th>
+                                <th>{% trans "Description" %}</th>
+                                <th>{% trans "Number of electrodes" %}</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                        {% for eeg_electrode_localization_system in eeg_electrode_localization_systems %}
+                            <tr>
+                                <td>
+                                    <a data-toggle="tooltip" data-placement="left" title="{% trans "Visualize" %}"
+                                       href="/experiment/eeg_electrode_localization_system/{{ eeg_electrode_localization_system.id }}">
+                                        {{ eeg_electrode_localization_system.name }}
+                                    </a>
+                                </td>
+                                <td>
+                                    {{ eeg_electrode_localization_system.description }}
+                                </td>
+                                <td>
+                                    {{ eeg_electrode_localization_system.number_of_electrodes }}
+                                </td>
+                            </tr>
+                        {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+                {% if perms.experiment.view_equipment %}
+                    <div class="btn-group pull-left">
+                        <a href="/experiment/eeg_electrode_localization_system/new/" class="btn btn-primary">{% trans "Insert new localization system" %}</a>
+                    </div>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+
+{% endblock %}

@@ -4,7 +4,8 @@ from modeltranslation.admin import TranslationAdmin
 
 from experiment.models import Experiment, QuestionnaireResponse, StimulusType, FileFormat, \
     Manufacturer, Equipment, EEGElectrodeLocalizationSystem, EEGMachine, EEGFilterType, EEGAmplifier, EEGSolution, \
-    EEGElectrodeNet, EEGElectrodeCap, EEGElectrodePosition, EEGElectrodeNetSystem, EEGCapSize, EEGElectrodeModel
+    EEGElectrodeNet, EEGElectrodeCap, EEGElectrodePosition, EEGElectrodeNetSystem, EEGCapSize, EEGElectrodeModel, \
+    Material
 
 
 admin.site.register(Experiment, SimpleHistoryAdmin)
@@ -35,3 +36,4 @@ admin.site.register(EEGElectrodePosition)
 admin.site.register(EEGElectrodeNetSystem)
 admin.site.register(EEGCapSize)
 admin.site.register(EEGElectrodeModel)
+admin.site.register(Material)

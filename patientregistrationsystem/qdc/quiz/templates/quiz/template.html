@@ -233,6 +233,72 @@
                     </li>
                 {% endif %}
 
+                {% if perms.experiment.add_equipment %}
+                    <li {% block activeEquipment %}{% endblock %}>
+                        <a  data-toggle="collapse" href="#collapseEquipment">
+                            <span class="glyphicon glyphicon-wrench"></span>
+                            {% trans "Equipment" %}
+                        </a>
+
+                        <div class="collapse" id="collapseEquipment">
+                            <div class="col-md-1"></div>
+                            <div class="col-md-11" style="padding-right: 0px">
+                                <ul class="nav">
+
+                                    <li {% block activeManufacturer %}{% endblock %}>
+                                        <a href="/experiment/manufacturer/list/">
+{#                                            <span class="glyphicon glyphicon-road"></span>#}
+                                            {% trans "Manufacturer" %}
+                                        </a>
+                                    </li>
+                                    <li {% block activeEEGMachine %}{% endblock %}>
+                                        <a class="nav-link" href="/experiment/eegmachine/list/">
+{#                                            <span class="glyphicon glyphicon-music"></span>#}
+                                            {% trans "EEG machine" %}
+                                        </a>
+                                    </li>
+                                    <li {% block activeEEGAmplifier %}{% endblock %}>
+                                        <a href="/experiment/eegamplifier/list/">
+{#                                            <span class="glyphicon glyphicon-star"></span>#}
+                                            {% trans "EEG amplifier" %}
+                                        </a>
+                                    </li>
+                                    <li {% block activeSolution %}{% endblock %}>
+                                        <a href="/experiment/eegsolution/list/">
+{#                                            <span class="glyphicon glyphicon-star"></span>#}
+                                            {% trans "Solution" %}
+                                        </a>
+                                    </li>
+                                    <li {% block activeFilterType %}{% endblock %}>
+                                        <a href="/experiment/eegfiltertype/list/">
+{#                                            <span class="glyphicon glyphicon-star"></span>#}
+                                            {% trans "Filter Type" %}
+                                        </a>
+                                    </li>
+                                    <li {% block activeElectrodeModel %}{% endblock %}>
+                                        <a href="/experiment/eegelectrodemodel/list/">
+{#                                            <span class="glyphicon glyphicon-star"></span>#}
+                                            {% trans "Electrode Model" %}
+                                        </a>
+                                    </li>
+                                    <li {% block activeMaterial %}{% endblock %}>
+                                        <a href="/experiment/material/list/">
+{#                                            <span class="glyphicon glyphicon-star"></span>#}
+                                            {% trans "Material" %}
+                                        </a>
+                                    </li>
+                                    <li {% block activeElectrodeNet %}{% endblock %}>
+                                        <a href="/experiment/eegelectrodenet/list/">
+{#                                            <span class="glyphicon glyphicon-star"></span>#}
+                                            {% trans "Electrode Net" %}
+                                        </a>
+                                    </li>
+                                </ul>
+                            </div>
+                        </div>
+                    </li>
+                {% endif %}
+
             </ul>
         </div>
         <div id="myMenuContent" class="tab-content">

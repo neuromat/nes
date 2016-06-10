@@ -17,6 +17,22 @@ urlpatterns = patterns(
     url(r'^research_project/edit/(?P<research_project_id>\d+)/$', 'research_project_update',
         name='research_project_edit'),
 
+    # Localization system and position
+    url(r'^eeg_electrode_localization_system/list/$',
+        'eeg_electrode_localization_system_list', name='eeg_electrode_localization_system_list'),
+    url(r'^eeg_electrode_localization_system/new/$',
+        'eeg_electrode_localization_system_create', name='eeg_electrode_localization_system_new'),
+    url(r'^eeg_electrode_localization_system/(?P<eeg_electrode_localization_system_id>\d+)/$',
+        'eeg_electrode_localization_system_view', name='eeg_electrode_localization_system_view'),
+    url(r'^eeg_electrode_localization_system/edit/(?P<eeg_electrode_localization_system_id>\d+)/$',
+        'eeg_electrode_localization_system_update', name='eeg_electrode_localization_system_edit'),
+    url(r'^eeg_electrode_localization_system/(?P<eeg_electrode_localization_system_id>\d+)/new_position/$',
+        'eeg_electrode_position_create', name='eeg_electrode_position_create'),
+    url(r'^eeg_electrode_position/(?P<eeg_electrode_position_id>\d+)/$',
+        'eeg_electrode_position_view', name='eeg_electrode_position_view'),
+    url(r'^eeg_electrode_position/edit/(?P<eeg_electrode_position_id>\d+)/$',
+        'eeg_electrode_position_update', name='eeg_electrode_position_edit'),
+
     # experiment
     url(r'^research_project/(?P<research_project_id>\d+)/new_experiment/$', 'experiment_create', name='experiment_new'),
     url(r'^(?P<experiment_id>\d+)/$', 'experiment_view', name='experiment_view'),
@@ -26,6 +42,58 @@ urlpatterns = patterns(
     url(r'^(?P<experiment_id>\d+)/group/new/$', 'group_create', name='group_new'),
     url(r'^group/(?P<group_id>\d+)/$', 'group_view', name='group_view'),
     url(r'^group/edit/(?P<group_id>\d+)/$', 'group_update', name='group_edit'),
+
+    # equipment
+    # url(r'^equipment/list/$', 'equipment_list', name='equipment_list'),
+    # url(r'^equipment/configuration/$', 'equipment_configuration', name='equipment_configuration'),
+
+    # register manufacturer
+    url(r'^manufacturer/list/$', 'manufacturer_list', name='manufacturer_list'),
+    url(r'^manufacturer/new/$', 'manufacturer_create', name='manufacturer_new'),
+    url(r'^manufacturer/(?P<manufacturer_id>\d+)/$', 'manufacturer_view', name='manufacturer_view'),
+    url(r'^manufacturer/edit/(?P<manufacturer_id>\d+)/$', 'manufacturer_update', name='manufacturer_edit'),
+
+    # register eeg machine
+    url(r'^eegmachine/list/$', 'eegmachine_list', name='eegmachine_list'),
+    url(r'^eegmachine/new/$', 'eegmachine_create', name='eegmachine_new'),
+    url(r'^eegmachine/(?P<eegmachine_id>\d+)/$', 'eegmachine_view', name='eegmachine_view'),
+    url(r'^eegmachine/edit/(?P<eegmachine_id>\d+)/$', 'eegmachine_update', name='eegmachine_edit'),
+
+    # register eeg amplifier
+    url(r'^eegamplifier/list/$', 'eegamplifier_list', name='eegamplifier_list'),
+    url(r'^eegamplifier/new/$', 'eegamplifier_create', name='eegamplifier_new'),
+    url(r'^eegamplifier/(?P<eegamplifier_id>\d+)/$', 'eegamplifier_view', name='eegamplifier_view'),
+    url(r'^eegamplifier/edit/(?P<eegamplifier_id>\d+)/$', 'eegamplifier_update', name='eegamplifier_edit'),
+
+    # register eeg solution
+    url(r'^eegsolution/list/$', 'eegsolution_list', name='eegsolution_list'),
+    url(r'^eegsolution/new/$', 'eegsolution_create', name='eegsolution_new'),
+    url(r'^eegsolution/(?P<eegsolution_id>\d+)/$', 'eegsolution_view', name='eegsolution_view'),
+    url(r'^eegsolution/edit/(?P<eegsolution_id>\d+)/$', 'eegsolution_update', name='eegsolution_edit'),
+
+    # register eeg filter type
+    url(r'^eegfiltertype/list/$', 'eegfiltertype_list', name='eegfiltertype_list'),
+    url(r'^eegfiltertype/new/$', 'eegfiltertype_create', name='eegfiltertype_new'),
+    url(r'^eegfiltertype/(?P<eegfiltertype_id>\d+)/$', 'eegfiltertype_view', name='eegfiltertype_view'),
+    url(r'^eegfiltertype/edit/(?P<eegfiltertype_id>\d+)/$', 'eegfiltertype_update', name='eegfiltertype_edit'),
+
+    # register eeg electrode model
+    url(r'^eegelectrodemodel/list/$', 'eegelectrodemodel_list', name='eegelectrodemodel_list'),
+    url(r'^eegelectrodemodel/new/$', 'eegelectrodemodel_create', name='eegelectrodemodel_new'),
+    url(r'^eegelectrodemodel/(?P<eegelectrodemodel_id>\d+)/$', 'eegelectrodemodel_view', name='eegelectrodemodel_view'),
+    url(r'^eegelectrodemodel/edit/(?P<eegelectrodemodel_id>\d+)/$', 'eegelectrodemodel_update', name='eegelectrodemodel_edit'),
+
+    # register material
+    url(r'^material/list/$', 'material_list', name='material_list'),
+    url(r'^material/new/$', 'material_create', name='material_new'),
+    url(r'^material/(?P<material_id>\d+)/$', 'material_view', name='material_view'),
+    url(r'^material/edit/(?P<material_id>\d+)/$', 'material_update', name='material_edit'),
+
+    # register eeg electrode net
+    url(r'^eegelectrodenet/list/$', 'eegelectrodenet_list', name='eegelectrodenet_list'),
+    url(r'^eegelectrodenet/new/$', 'eegelectrodenet_create', name='eegelectrodenet_new'),
+    url(r'^eegelectrodenet/(?P<eegelectrodenet_id>\d+)/$', 'eegelectrodenet_view', name='eegelectrodenet_view'),
+    url(r'^eegelectrodenet/edit/(?P<eegelectrodenet_id>\d+)/$', 'eegelectrodenet_update', name='eegelectrodenet_edit'),
 
     # eeg setting
     url(r'^(?P<experiment_id>\d+)/eeg_setting/new/$', 'eeg_setting_create', name='eeg_setting_new'),
@@ -39,8 +107,12 @@ urlpatterns = patterns(
         'equipment_view', name='equipment_view'),
     url(r'^eeg_setting/eeg_electrode_position_status/(?P<eeg_setting_id>\d+)/$',
         'eeg_electrode_position_setting', name='eeg_electrode_position_setting'),
+    url(r'^eeg_setting/eeg_electrode_position_status/edit/(?P<eeg_setting_id>\d+)/$',
+        'edit_eeg_electrode_position_setting', name='edit_eeg_electrode_position_setting'),
     url(r'^eeg_setting/eeg_electrode_position_status_model/(?P<eeg_setting_id>\d+)/$',
         'eeg_electrode_position_setting_model', name='eeg_electrode_position_setting_model'),
+    url(r'^eeg_setting/eeg_electrode_position_status_model/edit/(?P<eeg_setting_id>\d+)/$',
+        'edit_eeg_electrode_position_setting_model', name='edit_eeg_electrode_position_setting_model'),
 
     # eeg setting (ajax)
     url(r'^equipment/get_equipment_by_manufacturer/(?P<equipment_type>\w+)/(?P<manufacturer_id>\d+)/$',
@@ -86,8 +158,12 @@ urlpatterns = patterns(
         'subject_eeg_view', name='subject_eeg_view'),
     url(r'^group/(?P<group_id>\d+)/subject/(?P<subject_id>\d+)/eeg/(?P<eeg_configuration_id>[0-9-]+)/add_eeg_data/$',
         'subject_eeg_data_create', name='subject_eeg_data_create'),
-    url(r'^eeg_data/(?P<eeg_data_id>\d+)/$', 'eeg_data_view', name='eeg_data_view'),
-    url(r'^eeg_data/edit/(?P<eeg_data_id>\d+)/$', 'eeg_data_edit', name='eeg_data_edit'),
+    url(r'^eeg_data/(?P<eeg_data_id>\d+)/(?P<tab>\d+)/$', 'eeg_data_view', name='eeg_data_view'),
+    url(r'^eeg_data/edit/(?P<eeg_data_id>\d+)/(?P<tab>\d+)/$', 'eeg_data_edit', name='eeg_data_edit'),
+
+    # eeg_data (ajax)
+    url(r'^equipment/get_cap_size_list_from_eeg_setting/(?P<eeg_setting_id>\d+)/$',
+        'get_cap_size_list_from_eeg_setting'),
 
     # experimental protocol components
     url(r'^(?P<experiment_id>\d+)/components/$', 'component_list', name='component_list'),
@@ -104,4 +180,6 @@ urlpatterns = patterns(
     # Data collection
     url(r'^group/(?P<group_id>\d+)/questionnaire/(?P<component_configuration_id>\d+)/$', 'questionnaire_view',
         name='questionnaire_view'),
+
+
 )
