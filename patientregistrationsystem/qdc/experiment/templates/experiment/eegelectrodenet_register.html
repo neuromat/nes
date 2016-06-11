@@ -182,36 +182,36 @@
 {#                    </div>#}
 {#                </div>#}
 
-               <div class="container span6 offset3 well ">
-                    <h4>{% trans "Cap" %}</h4>
-                    <div class="form-group">
-                        <table class="table table-striped">
-                            <thead>
-                                <tr>
-                                    <th>{% trans "Title" %}</th>
-                                    <th>{% trans "Description" %}</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                            {% for experiment in experiments %}
-                                <tr>
-                                    <td>{% if perms.experiment.change_experiment %}
-                                        <a data-toggle="tooltip" data-placement="left" title="{% trans "Visualize" %}" href="/experiment/{{ experiment.id }}">{{ experiment.title }}</a></td>
-                                        {% else %}
-                                        {{ experiment.title }}
-                                        {% endif %}
-                                    <td>{{ experiment.description }}</td>
-                                </tr>
-                            {% endfor %}
-                            </tbody>
-                        </table>
-                    </div>
-                    {% if perms.experiment.add_experiment and can_change %}
-                        <div class="btn-group pull-left">
-                            <a href="/experiment/research_project/{{ research_project.id }}/new_experiment/" class="btn btn-primary">{% trans "Insert new" %}</a>
-                        </div>
-                    {% endif %}
-                </div>
+{#               <div class="container span6 offset3 well ">#}
+{#                    <h4>{% trans "Cap" %}</h4>#}
+{#                    <div class="form-group">#}
+{#                        <table class="table table-striped">#}
+{#                            <thead>#}
+{#                                <tr>#}
+{#                                    <th>{% trans "Title" %}</th>#}
+{#                                    <th>{% trans "Description" %}</th>#}
+{#                                </tr>#}
+{#                            </thead>#}
+{#                            <tbody>#}
+{#                            {% for experiment in experiments %}#}
+{#                                <tr>#}
+{#                                    <td>{% if perms.experiment.change_experiment %}#}
+{#                                        <a data-toggle="tooltip" data-placement="left" title="{% trans "Visualize" %}" href="/experiment/{{ experiment.id }}">{{ experiment.title }}</a></td>#}
+{#                                        {% else %}#}
+{#                                        {{ experiment.title }}#}
+{#                                        {% endif %}#}
+{#                                    <td>{{ experiment.description }}</td>#}
+{#                                </tr>#}
+{#                            {% endfor %}#}
+{#                            </tbody>#}
+{#                        </table>#}
+{#                    </div>#}
+{#                    {% if perms.experiment.add_experiment and can_change %}#}
+{#                        <div class="btn-group pull-left">#}
+{#                            <a href="/experiment/research_project/{{ research_project.id }}/new_experiment/" class="btn btn-primary">{% trans "Insert new" %}</a>#}
+{#                        </div>#}
+{#                    {% endif %}#}
+{#                </div>#}
 
             {% endif %}
 
