@@ -496,7 +496,7 @@ class EEGMachineRegisterForm(ModelForm):
             'serial_number': TextInput(attrs={'class': 'form-control', 'required': "",
                                               'data-error': _('Serial number must be filled.')}),
 
-            'number_of_channels': TextInput(attrs={'class': 'form-control', 'required': "",
+            'number_of_channels': TextInput(attrs={'class': 'form-control',
                                                    'data-error': _('Number of channels must be filled.')}),
             'software_version': TextInput(attrs={'class': 'form-control', 'required': "",
                                                  'data-error': _('Software version must be filled.')})
@@ -524,7 +524,7 @@ class EEGAmplifierRegisterForm(ModelForm):
             'description': Textarea(attrs={'class': 'form-control', 'rows': '4',
                                            'data-error': _('Description must be filled.')}),
 
-            'serial_number': TextInput(attrs={'class': 'form-control', 'required': "",
+            'serial_number': TextInput(attrs={'class': 'form-control',
                                               'data-error': _('Serial number must be filled.')}),
 
             'gain': TextInput(attrs={'class': 'form-control'})
@@ -627,7 +627,7 @@ class EEGElectrodeNETRegisterForm(ModelForm):
             'description': Textarea(attrs={'class': 'form-control', 'rows': '4',
                                            'data-error': _('Description must be filled.')}),
 
-            'serial_number': TextInput(attrs={'class': 'form-control', 'required': "",
+            'serial_number': TextInput(attrs={'class': 'form-control',
                                               'data-error': _('Serial number must be filled.')}),
 
             'electrode_model_default': Select(attrs={'class': 'form-control',  'required': "",
@@ -662,15 +662,17 @@ class EEGCapSizeRegisterForm(ModelForm):
         }
 
 
-class EEGElectrodeNetRegisterSystemForm(ModelForm):
-
-    localization_system = MultipleChoiceField(widget=CheckboxSelectMultiple(attrs={'data-error': _('Localization system must be selected')}))
-
-    class Meta:
-        model = EEGElectrodeNetSystem
-        fields = ['eeg_electrode_localization_system']
-        widgets = {
-            'eeg_electrode_localization_system': CheckboxSelectMultiple(attrs={'class': 'form-control',
-
-                                     'data-error': _('EEG electrode localization system must be filled.')})
-        }
+# class EEGElectrodeNetRegisterSystemForm(ModelForm):
+#
+#     # localization_system = MultipleChoiceField(widget=CheckboxSelectMultiple(attrs={'data-error': _('Localization system must be selected')}))
+#
+#     class Meta:
+#         model = EEGElectrodeNetSystem
+#         fields = ['eeg_electrode_localization_system', 'eeg_electrode_net']
+#         widgets = {
+#             'eeg_electrode_localization_system': CheckboxSelectMultiple(attrs={
+#                                      'data-error': _('EEG electrode localization system must be filled.')}),
+#
+#             'eeg_electrode_net': Select(attrs={'class': 'form-control',
+#                                      'data-error': _('Name must be filled.')}),
+#         }

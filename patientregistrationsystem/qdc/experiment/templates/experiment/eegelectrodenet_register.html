@@ -109,7 +109,7 @@
                 <div class="row">
                     <div class="col-xs-12 col-sm-12">
                         <div class="form-group">
-                            <label class="control-label">{% trans "Serial number" %} <b style="color: red;">*</b></label>
+                            <label class="control-label">{% trans "Serial number" %} </label>
                             {{ equipment_form.serial_number }}
                             <div class="help-block with-errors"></div>
                         </div>
@@ -125,6 +125,40 @@
                     </div>
                 </div>
 
+                <div class="row">
+                    <div class="col-xs-12 col-sm-12">
+                        <div class="form-group">
+                            <label class="control-label">{% trans "Localization system" %}</label>
+                            <div class="container span6 offset3 well ">
+                                <div class="form-group">
+                                    <table class="table table-striped">
+                                        <tbody>
+                                        {% for localizationsystem in eegelectrodelocalizationsystem %}
+                                            <tr>
+                                                <td>
+                                                    <input type="checkbox"
+                                                           id="localization_system_{{ localizationsystem.id }}"
+                                                           name="localization_system_{{ localizationsystem.id }}"
+                                                           {% if localizationsystem.checked %}checked="checked"{% endif %}
+                                                           {% if localizationsystem.disabled %}disabled{% endif %}>
+                                                    {{ localizationsystem.name }}
+                                                    </input>
+                                                </td>
+                                                <td>
+                                                    {% if localizationsystem.used %}
+                                                        {% trans "Used in EEG setting(s)" %}{% endif %}
+                                                </td>
+                                            </tr>
+                                        {% endfor %}
+                                        </tbody>
+                                    </table>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+
                 {% if not editing and can_change %}
                     <div class="btn-group pull-left">
                         <a href="/experiment/eegelectrodenet/edit/{{ equipment.id }}" class="btn btn-primary">{% trans "Edit" %}</a>
@@ -134,65 +168,29 @@
             </div>
             {% if not editing %}
 
-            {% endif %}
-
-                <div class="container span6 offset3 well ">
-                    <h4>{% trans "Localization system" %}</h4>
-                    <div class="form-group">
-{#                        {{eegelectrodenetsystem_form.as_p}}#}
-{#                        {% for netsystem in eegelectrodenetsystem_form %}#}
-{#                            <div class="row">#}
-{#                            <div class="col-xs-6 col-sm-6">#}
-{#                                {{ netsystem.eeg_electrode_localization_system }}#}
-{##}
-{#                                    <label>{% trans "Responses" %}</label>#}
-{#                                    <div class="form-group {% if export_form.errors.responses %}has-error{% endif %}">#}
-{#                                            {% for check in export_form.responses %}#}
-{#                                                <div class="checkbox">#}
-{#                                                    {{ check }}#}
-{#                                                </div>#}
-{#                                            {% endfor %}#}
-{#                                    </div>#}
-{#                                 <div class="checkbox">#}
-{#                                    {{ export_form.per_participant }}#}
-{#                                    <label for="eeg_electrode_localization_system"#}
-{#                                           class="control-label">{{ electrodenetsystem.eeg_electrode_localization_system }}</label>#}
-{#                                     <div class="help-block with-errors"> </div>#}
-{#                                </div>#}
-{#                            </div>#}
-{##}
-{#                            </div>#}
-
-{#                            {{ electrodenetsystem.eeg_electrode_localization_system }}#}
-{#                        {% endfor %}#}
-
+{#                <div class="container span6 offset3 well ">#}
+{#                    <h4>{% trans "Localization system" %}</h4>#}
+{#                    <div class="form-group">#}
 {#                        <table class="table table-striped">#}
-{#                            <thead>#}
-{#                                <tr>#}
-{#                                    <th>{% trans "Title" %}</th>#}
-{#                                    <th>{% trans "Description" %}</th>#}
-{#                                </tr>#}
-{#                            </thead>#}
 {#                            <tbody>#}
-{#                            {% for experiment in experiments %}#}
+{#                            {% for localizationsystem in eegelectrodelocalizationsystem %}#}
 {#                                <tr>#}
-{#                                    <td>{% if perms.experiment.change_experiment %}#}
-{#                                        <a data-toggle="tooltip" data-placement="left" title="{% trans "Visualize" %}" href="/experiment/{{ experiment.id }}">{{ experiment.title }}</a></td>#}
-{#                                        {% else %}#}
-{#                                        {{ experiment.title }}#}
-{#                                        {% endif %}#}
-{#                                    <td>{{ experiment.description }}</td>#}
+{#                                    <td>#}
+{#                                        <input type="checkbox" id="localization_system_{{ localizationsystem.id }}" name="localization_system_{{ localizationsystem.id }}"#}
+{#                                                {% if localizationsystem.checked %}checked="checked"{% endif %}#}
+{#                                                {% if localizationsystem.used %}disabled{% endif %}>#}
+{#                                        {{ localizationsystem.name }}#}
+{#                                        </input>#}
+{#                                    </td>#}
+{#                                    <td>#}
+{#                                        {% if localizationsystem.used %}{% trans "Used in EEG setting(s)" %}{% endif %}#}
+{#                                    </td>#}
 {#                                </tr>#}
 {#                            {% endfor %}#}
 {#                            </tbody>#}
 {#                        </table>#}
-                    </div>
-{#                    {% if perms.experiment.add_experiment and can_change %}#}
-{#                        <div class="btn-group pull-left">#}
-{#                            <a href="/experiment/research_project/{{ research_project.id }}/new_experiment/" class="btn btn-primary">{% trans "Insert new" %}</a>#}
-{#                        </div>#}
-{#                    {% endif %}#}
-                </div>
+{#                    </div>#}
+{#                </div>#}
 
                <div class="container span6 offset3 well ">
                     <h4>{% trans "Cap" %}</h4>
@@ -225,6 +223,7 @@
                     {% endif %}
                 </div>
 
+            {% endif %}
 
 
 
