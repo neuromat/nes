@@ -549,22 +549,11 @@ class EEGElectrodeModelRegisterForm(ModelForm):
             'name': TextInput(attrs={'class': 'form-control',
                                      'required': "",
                                      'data-error': _('Name must be filled.')}),
-
             'description': Textarea(attrs={'class': 'form-control', 'rows': '4'}),
-
-            'material': Select(attrs={'class': 'form-control', 'required': "",
-                                      'data-error': _('Material must be filled.')}),
-
-            'usability': Select(attrs={'class': 'form-control', 'required': "",
-                                      'data-error': _('Usability must be filled.')}),
-
-            'impedance': NumberInput(attrs={'class': 'form-control',
-                                          'required': "",
-                                          'data-error': _('Impedance must be filled.')}),
-
-            'impedance_unit': Select(attrs={'class': 'form-control', 'required': "",
-                                      'data-error': _('Impedance unit must be filled.')}),
-
+            'material': Select(attrs={'class': 'form-control'}),
+            'usability': Select(attrs={'class': 'form-control'}),
+            'impedance': NumberInput(attrs={'class': 'form-control'}),
+            'impedance_unit': Select(attrs={'class': 'form-control'}),
         }
 
 

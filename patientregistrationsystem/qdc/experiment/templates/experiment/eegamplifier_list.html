@@ -74,7 +74,7 @@
                                     {{ equipment.serial_number }}
                                 </td>
                                 <td>
-                                    {% if equipment.gain %}{{ equipment.gain }}{% endif %}
+                                    {{ equipment.gain|default:"" }}
                                 </td>
                             </tr>
                         {% endfor %}

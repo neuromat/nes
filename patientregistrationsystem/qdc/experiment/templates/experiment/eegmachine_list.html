@@ -75,7 +75,7 @@
                                     {{ equipment.serial_number }}
                                 </td>
                                 <td>
-                                    {% if equipment.number_of_channels %}{{ equipment.number_of_channels }}{% endif %}
+                                    {{ equipment.number_of_channels|default:"" }}
                                 </td>
                                 <td>
                                     {{ equipment.software_version }}
