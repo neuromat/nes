@@ -10,7 +10,7 @@
     </script>
 {% endblock %}
 
-{% block activeEEGAmplifier %}class="active"{% endblock %}
+{% block activeEquipment %}class="active"{% endblock %}
 
 {% block content %}
 
@@ -71,10 +71,10 @@
                                     {% endif %}
                                 </td>
                                 <td>
-                                        {{ equipment.serial_number }}
+                                    {{ equipment.serial_number }}
                                 </td>
                                 <td>
-                                        {{ equipment.gain }}
+                                    {% if equipment.gain %}{{ equipment.gain }}{% endif %}
                                 </td>
                             </tr>
                         {% endfor %}

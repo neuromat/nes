@@ -10,7 +10,7 @@
     </script>
 {% endblock %}
 
-{% block activeEEGMachine %}class="active"{% endblock %}
+{% block activeEquipment %}class="active"{% endblock %}
 
 {% block content %}
 
@@ -75,7 +75,7 @@
                                     {{ equipment.serial_number }}
                                 </td>
                                 <td>
-                                    {{ equipment.number_of_channels }}
+                                    {% if equipment.number_of_channels %}{{ equipment.number_of_channels }}{% endif %}
                                 </td>
                                 <td>
                                     {{ equipment.software_version }}
