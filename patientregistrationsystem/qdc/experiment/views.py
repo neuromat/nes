@@ -832,8 +832,8 @@ def view_eeg_setting_type(request, eeg_setting_id, eeg_setting_type):
                     eeg_electrode_layout_setting.number_of_electrodes = request.POST['number_of_electrodes']
                     eeg_electrode_layout_setting.save()
 
-                    if eeg_electrode_localization_system.eegelectrodeposition_set:
-                        for position in eeg_electrode_localization_system.eegelectrodeposition_set.all():
+                    if eeg_electrode_localization_system.electrode_positions:
+                        for position in eeg_electrode_localization_system.electrode_positions.all():
                             new_position_setting = EEGElectrodePositionSetting()
                             new_position_setting.eeg_electrode_layout_setting = eeg_electrode_layout_setting
                             new_position_setting.eeg_electrode_position = position
@@ -1133,8 +1133,8 @@ def edit_eeg_setting_type(request, eeg_setting_id, eeg_setting_type):
                     eeg_electrode_layout_setting.number_of_electrodes = request.POST['number_of_electrodes']
                     eeg_electrode_layout_setting.save()
 
-                    if eeg_electrode_localization_system.eegelectrodeposition_set:
-                        for position in eeg_electrode_localization_system.eegelectrodeposition_set.all():
+                    if eeg_electrode_localization_system.electrode_positions:
+                        for position in eeg_electrode_localization_system.electrode_positions.all():
                             # if not exists a position setting
                             position_setting = \
                                 EEGElectrodePositionSetting.objects.filter(
