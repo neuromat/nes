@@ -37,7 +37,7 @@ from experiment.forms import ExperimentForm, QuestionnaireResponseForm, FileForm
     EEGElectrodeLayoutSettingForm, EEGElectrodeLocalizationSystemForm, EEGElectrodeLocalizationSystemRegisterForm, \
     ManufacturerRegisterForm, EEGMachineRegisterForm, EEGAmplifierRegisterForm, EEGSolutionRegisterForm, \
     EEGFilterTypeRegisterForm, EEGElectrodeModelRegisterForm, MaterialRegisterForm, EEGElectrodeNETRegisterForm, \
-    EEGElectrodeNetRegisterSystemForm, EEGElectrodePositionForm
+    EEGElectrodePositionForm
 
 
 from patient.models import Patient, QuestionnaireResponse as PatientQuestionnaireResponse
@@ -2292,6 +2292,17 @@ def eegelectrodenet_create(request, template_name="experiment/eegelectrodenet_re
                 eegelectrodenet_added.equipment_type = "eeg_electrode_net"
                 eegelectrodenet_added.save()
 
+                localization_systems = get_localization_system(request.POST)
+                if localization_systems:
+                    for localization_system_item in localization_systems:
+                        localization_system_id = localization_system_item.split("_")[-1]
+                        if request.POST[localization_system_item] == "on":
+                            eeg_electrode_net_system = EEGElectrodeNetSystem()
+                            eeg_electrode_net_system.eeg_electrode_net_id=eegelectrodenet_added.id
+                            eeg_electrode_net_system.eeg_electrode_localization_system_id=localization_system_id
+                            eeg_electrode_net_system.save()
+
+
                 messages.success(request, _('EEG electrode net created successfully.'))
                 redirect_url = reverse("eegelectrodenet_view", args=(eegelectrodenet_added.id,))
                 return HttpResponseRedirect(redirect_url)
@@ -2302,14 +2313,31 @@ def eegelectrodenet_create(request, template_name="experiment/eegelectrodenet_re
         else:
             messages.warning(request, _('Action not available.'))
 
+    eegelectrodelocalizationsystem = EEGElectrodeLocalizationSystem.objects.all()
+
+    for localization_system in eegelectrodelocalizationsystem:
+        localization_system.checked = False
+        localization_system.used = False
+        localization_system.disabled = False
+
+
     context = {
         "equipment_form": eegelectrodenet_form,
+        "eegelectrodelocalizationsystem" : eegelectrodelocalizationsystem,
         "creating": True,
         "editing": True
     }
 
     return render(request, template_name, context)
 
+def get_localization_system(data_post):
+
+    localization_list = []
+    for item in data_post:
+        if "localization_system" in item:
+            localization_list.append(item)
+
+    return localization_list
 
 @login_required
 @permission_required('experiment.change_eegelectrodenet')
@@ -2318,14 +2346,33 @@ def eegelectrodenet_update(request, eegelectrodenet_id, template_name="experimen
     eegelectrodenetsystem = EEGElectrodeNetSystem.objects.all()
 
     eegelectrodenet_form = EEGElectrodeNETRegisterForm(request.POST or None, instance=eegelectrodenet)
-    eegelectrodenetsystem_form = EEGElectrodeNetRegisterSystemForm(request.POST or None, instance=eegelectrodenet)
+    # eegelectrodenetsystem_form = EEGElectrodeNetRegisterSystemForm(request.POST or None, instance=eegelectrodenet)
 
     if request.method == "POST":
         if request.POST['action'] == "save":
             if eegelectrodenet_form.is_valid():
-                if eegelectrodenet_form.has_changed():
+                localization_systems = get_localization_system(request.POST)
+                if eegelectrodenet_form.has_changed() or localization_systems:
+                    if localization_systems:
+                        for localization_system_item in localization_systems:
+                            localization_system_id = localization_system_item.split("_")[-1]
+                            if request.POST[localization_system_item] == "on":
+                                eeg_electrode_net_system = EEGElectrodeNetSystem()
+                                eeg_electrode_net_system.eeg_electrode_net_id=eegelectrodenet.id
+                                eeg_electrode_net_system.eeg_electrode_localization_system_id=localization_system_id
+                                eeg_electrode_net_system.save()
+                            else:
+                                net_system = EEGElectrodeNetSystem.objects.filter(eeg_electrode_net=eegelectrodenet,
+                                                          eeg_electrode_localization_system=localization_system_item)
+                                if net_system:
+                                    messages.error(request, _('It is not possible to delete localization system, since it in use.'))
+                                else:
+                                    eeg_electrode_net_system = EEGElectrodeNetSystem.objects.get(eeg_electrode_net_id=eegelectrodenet.id,
+                                                                                                  eeg_electrode_localization_system_id=localization_system_id)
+                                    eeg_electrode_net_system.delete()
 
-                    eegelectrodenet_form.save()
+                    if eegelectrodenet_form.has_changed():
+                        eegelectrodenet_form.save()
                     messages.success(request, _('EEG electrode net updated successfully.'))
                 else:
                     messages.success(request, _('There is no changes to save.'))
@@ -2333,11 +2380,26 @@ def eegelectrodenet_update(request, eegelectrodenet_id, template_name="experimen
                 redirect_url = reverse("eegelectrodenet_view", args=(eegelectrodenet.id,))
                 return HttpResponseRedirect(redirect_url)
 
+    eegelectrodelocalizationsystem = EEGElectrodeLocalizationSystem.objects.all()
+
+    for localization_system in eegelectrodelocalizationsystem:
+        localization_system.checked = False
+        localization_system.used = False
+        localization_system.disabled = False
+        net_system = EEGElectrodeNetSystem.objects.filter(eeg_electrode_net=eegelectrodenet,
+                                                          eeg_electrode_localization_system=localization_system)
+        if net_system:
+            localization_system.checked = True
+            if EEGElectrodeLayoutSetting.objects.filter(eeg_electrode_net_system=net_system):
+                localization_system.used = True
+                localization_system.disabled = True
+
     context = {
         "equipment": eegelectrodenet,
         "equipment_form": eegelectrodenet_form,
         "eegelectrodenetsystem": eegelectrodenetsystem,
-        "eegelectrodenetsystem_form": eegelectrodenetsystem_form,
+        # "eegelectrodenetsystem_form": eegelectrodenetsystem_form,
+        "eegelectrodelocalizationsystem": eegelectrodelocalizationsystem,
         "editing": True}
 
     return render(request, template_name, context)
@@ -2349,10 +2411,7 @@ def eegelectrodenet_view(request, eegelectrodenet_id, template_name="experiment/
     eegelectrodenet = get_object_or_404(EEGElectrodeNet, pk=eegelectrodenet_id)
     eegelectrodenet_form = EEGElectrodeNETRegisterForm(request.POST or None, instance=eegelectrodenet)
 
-    eegelectrodenetsystem = EEGElectrodeNetSystem.objects.all()
-    eegelectrodenetsystem_form = EEGElectrodeNetRegisterSystemForm()
-
-    eegelectrodenetsystem_form.fields['localization_system'].choices = [(x.id, x) for x in eegelectrodenetsystem]
+    eegelectrodelocalizationsystem = EEGElectrodeLocalizationSystem.objects.all()
 
     for field in eegelectrodenet_form.fields:
         eegelectrodenet_form.fields[field].widget.attrs['disabled'] = True
@@ -2369,12 +2428,22 @@ def eegelectrodenet_view(request, eegelectrodenet_id, template_name="experiment/
                 redirect_url = reverse("eegelectrodenet_view", args=(eegelectrodenet_id,))
                 return HttpResponseRedirect(redirect_url)
 
+    for localization_system in eegelectrodelocalizationsystem:
+        localization_system.checked = False
+        localization_system.used = False
+        localization_system.disabled = True
+        net_system = EEGElectrodeNetSystem.objects.filter(eeg_electrode_net=eegelectrodenet,
+                                                          eeg_electrode_localization_system=localization_system)
+        if net_system:
+            localization_system.checked = True
+            if EEGElectrodeLayoutSetting.objects.filter(eeg_electrode_net_system=net_system):
+                localization_system.used = True
+
     context = {
         "can_change": True,
         "equipment": eegelectrodenet,
         "equipment_form": eegelectrodenet_form,
-        "eegelectrodenetsystem": eegelectrodenetsystem,
-        "eegelectrodenetsystem_form": eegelectrodenetsystem_form,
+        "eegelectrodelocalizationsystem": eegelectrodelocalizationsystem,
     }
 
     return render(request, template_name, context)

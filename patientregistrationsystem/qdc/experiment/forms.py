@@ -615,15 +615,17 @@ class EEGCapSizeRegisterForm(ModelForm):
         }
 
 
-class EEGElectrodeNetRegisterSystemForm(ModelForm):
-
-    localization_system = MultipleChoiceField(widget=CheckboxSelectMultiple(attrs={'data-error': _('Localization system must be selected')}))
-
-    class Meta:
-        model = EEGElectrodeNetSystem
-        fields = ['eeg_electrode_localization_system']
-        widgets = {
-            'eeg_electrode_localization_system': CheckboxSelectMultiple(attrs={'class': 'form-control',
-
-                                     'data-error': _('EEG electrode localization system must be filled.')})
-        }
+# class EEGElectrodeNetRegisterSystemForm(ModelForm):
+#
+#     # localization_system = MultipleChoiceField(widget=CheckboxSelectMultiple(attrs={'data-error': _('Localization system must be selected')}))
+#
+#     class Meta:
+#         model = EEGElectrodeNetSystem
+#         fields = ['eeg_electrode_localization_system', 'eeg_electrode_net']
+#         widgets = {
+#             'eeg_electrode_localization_system': CheckboxSelectMultiple(attrs={
+#                                      'data-error': _('EEG electrode localization system must be filled.')}),
+#
+#             'eeg_electrode_net': Select(attrs={'class': 'form-control',
+#                                      'data-error': _('Name must be filled.')}),
+#         }
