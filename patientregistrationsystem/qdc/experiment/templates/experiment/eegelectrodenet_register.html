@@ -6,6 +6,7 @@
 
 {% block header %}
     <script src="{% static 'quiz/js/equipment.js' %}"></script>
+    <script src="{% static 'quiz/js/eeg_electrode_net_register.js' %}"></script>
 {% endblock %}
 
 {% block form %}
@@ -78,6 +79,7 @@
                         </div>
                     </div>
                 </div>
+
                 <div class="row">
                     <div class="col-xs-12 col-sm-12">
                         <div class="form-group">
@@ -148,6 +150,75 @@
                     </div>
                 </div>
 
+                <div class="row">
+                    <div class="col-xs-12 col-sm-12">
+                        <div class="form-group">
+                            <div class="container span6 offset3 well ">
+
+                                <div class="row">
+                                    <div class="col-xs-12 col-sm-12">
+                                        <div class="form-group">
+                                            <input type="checkbox" id="cap_flag" name="cap_flag" {% if is_a_cap %}checked="checked"{% endif %} {% if not creating %}disabled{% endif %}> <b>{% trans "Is a cap" %}</b> </input>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div class="row" id="div_cap">
+                                    <div class="col-xs-12 col-sm-12">
+                                        <div class="form-group">
+                                            <label class="control-label">{% trans "Material" %} <b style="color: red;">*</b></label>
+                                            {{ cap_form.material}}
+                                            <div class="help-block with-errors"></div>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                {% if is_a_cap and not editing %}
+
+                                    <div class="row">
+                                        <div class="col-xs-12 col-sm-12">
+                                            <div class="form-group">
+{#                                                <label class="control-label">{% trans "Sizes" %}</label>#}
+                                                <div class="container span6 offset3 well ">
+
+                                                    <table class="table table-striped">
+                                                        <thead>
+                                                            <th>{% trans "Size" %}</th>
+                                                            <th>{% trans "Electrode adjacent distance" %}</th>
+                                                        </thead>
+                                                        <tbody>
+                                                        {% for cap_size in cap_size_list %}
+                                                            <tr>
+                                                                <td>
+                                                                    {{ cap_size.size }}
+                                                                </td>
+                                                                <td>
+                                                                    {{ cap_size.electrode_adjacent_distance|default:"" }}
+                                                                </td>
+                                                            </tr>
+                                                        {% endfor %}
+                                                        </tbody>
+                                                    </table>
+
+                                                    <div class="row" id="div_cap">
+                                                        <div class="col-xs-12 col-sm-12">
+                                                            <div class="form-group">
+                                                                <a disabled="" href="/experiment/eeg_electrode_net/{{ equipment.id }}/add_size" class="btn btn-primary">{% trans "Add size" %}</a>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                {% endif %}
+
+                            </div>
+                        </div>
+                    </div>
+                </div>
 
                 {% if not editing and can_change %}
                     <div class="btn-group pull-left">

@@ -37,7 +37,7 @@ from experiment.forms import ExperimentForm, QuestionnaireResponseForm, FileForm
     EEGElectrodeLayoutSettingForm, EEGElectrodeLocalizationSystemForm, EEGElectrodeLocalizationSystemRegisterForm, \
     ManufacturerRegisterForm, EEGMachineRegisterForm, EEGAmplifierRegisterForm, EEGSolutionRegisterForm, \
     EEGFilterTypeRegisterForm, EEGElectrodeModelRegisterForm, MaterialRegisterForm, EEGElectrodeNETRegisterForm, \
-    EEGElectrodePositionForm
+    EEGElectrodePositionForm, EEGElectrodeCapRegisterForm
 
 
 from patient.models import Patient, QuestionnaireResponse as PatientQuestionnaireResponse
@@ -2281,16 +2281,32 @@ def eegelectrodenet_list(request,
 def eegelectrodenet_create(request, template_name="experiment/eegelectrodenet_register.html"):
 
     eegelectrodenet_form = EEGElectrodeNETRegisterForm(request.POST or None)
+    cap_form = EEGElectrodeCapRegisterForm(request.POST or None)
 
     if request.method == "POST":
 
         if request.POST['action'] == "save":
 
-            if eegelectrodenet_form.is_valid():
+            is_a_cap = 'cap_flag' in request.POST
+
+            if eegelectrodenet_form.is_valid() and (not is_a_cap or (is_a_cap and cap_form.is_valid())):
 
                 eegelectrodenet_added = eegelectrodenet_form.save(commit=False)
                 eegelectrodenet_added.equipment_type = "eeg_electrode_net"
-                eegelectrodenet_added.save()
+
+                if not is_a_cap:
+                    eegelectrodenet_added.save()
+                else:
+                    cap_added = cap_form.save(commit=False)
+                    cap_added.equipment_type = eegelectrodenet_added.equipment_type
+                    cap_added.electrode_model_default = eegelectrodenet_added.electrode_model_default
+                    cap_added.manufacturer = eegelectrodenet_added.manufacturer
+                    cap_added.identification = eegelectrodenet_added.identification
+                    cap_added.description = eegelectrodenet_added.description
+                    cap_added.serial_number = eegelectrodenet_added.serial_number
+                    cap_added.save()
+
+                equipment_added = cap_added if is_a_cap else eegelectrodenet_added
 
                 localization_systems = get_localization_system(request.POST)
                 if localization_systems:
@@ -2298,13 +2314,12 @@ def eegelectrodenet_create(request, template_name="experiment/eegelectrodenet_re
                         localization_system_id = localization_system_item.split("_")[-1]
                         if request.POST[localization_system_item] == "on":
                             eeg_electrode_net_system = EEGElectrodeNetSystem()
-                            eeg_electrode_net_system.eeg_electrode_net_id=eegelectrodenet_added.id
-                            eeg_electrode_net_system.eeg_electrode_localization_system_id=localization_system_id
+                            eeg_electrode_net_system.eeg_electrode_net_id = equipment_added.id
+                            eeg_electrode_net_system.eeg_electrode_localization_system_id = localization_system_id
                             eeg_electrode_net_system.save()
 
-
                 messages.success(request, _('EEG electrode net created successfully.'))
-                redirect_url = reverse("eegelectrodenet_view", args=(eegelectrodenet_added.id,))
+                redirect_url = reverse("eegelectrodenet_view", args=(equipment_added.id,))
                 return HttpResponseRedirect(redirect_url)
 
             else:
@@ -2320,15 +2335,17 @@ def eegelectrodenet_create(request, template_name="experiment/eegelectrodenet_re
         localization_system.used = False
         localization_system.disabled = False
 
-
     context = {
         "equipment_form": eegelectrodenet_form,
+        "is_a_cap": False,
+        "cap_form": cap_form,
         "eegelectrodelocalizationsystem" : eegelectrodelocalizationsystem,
         "creating": True,
         "editing": True
     }
 
     return render(request, template_name, context)
+
 
 def get_localization_system(data_post):
 
@@ -2347,6 +2364,15 @@ def eegelectrodenet_update(request, eegelectrodenet_id, template_name="experimen
 
     eegelectrodenet_form = EEGElectrodeNETRegisterForm(request.POST or None, instance=eegelectrodenet)
     # eegelectrodenetsystem_form = EEGElectrodeNetRegisterSystemForm(request.POST or None, instance=eegelectrodenet)
+
+    cap_form = None
+    cap = EEGElectrodeCap.objects.filter(id=eegelectrodenet_id)
+    is_a_cap = False
+    if cap:
+        is_a_cap = True
+        cap_form = EEGElectrodeCapRegisterForm(request.POST or None, instance=cap[0])
+    else:
+        cap_form = EEGElectrodeCapRegisterForm(request.POST or None)
 
     if request.method == "POST":
         if request.POST['action'] == "save":
@@ -2371,6 +2397,8 @@ def eegelectrodenet_update(request, eegelectrodenet_id, template_name="experimen
                                                                                                   eeg_electrode_localization_system_id=localization_system_id)
                                     eeg_electrode_net_system.delete()
 
+                    if is_a_cap and cap_form.has_changed():
+                        cap_form.save()
                     if eegelectrodenet_form.has_changed():
                         eegelectrodenet_form.save()
                     messages.success(request, _('EEG electrode net updated successfully.'))
@@ -2397,6 +2425,8 @@ def eegelectrodenet_update(request, eegelectrodenet_id, template_name="experimen
     context = {
         "equipment": eegelectrodenet,
         "equipment_form": eegelectrodenet_form,
+        "is_a_cap": is_a_cap,
+        "cap_form": cap_form,
         "eegelectrodenetsystem": eegelectrodenetsystem,
         # "eegelectrodenetsystem_form": eegelectrodenetsystem_form,
         "eegelectrodelocalizationsystem": eegelectrodelocalizationsystem,
@@ -2411,10 +2441,24 @@ def eegelectrodenet_view(request, eegelectrodenet_id, template_name="experiment/
     eegelectrodenet = get_object_or_404(EEGElectrodeNet, pk=eegelectrodenet_id)
     eegelectrodenet_form = EEGElectrodeNETRegisterForm(request.POST or None, instance=eegelectrodenet)
 
+    cap_form = None
+    cap = EEGElectrodeCap.objects.filter(id=eegelectrodenet_id)
+    is_a_cap = False
+    cap_size_list = None
+    if cap:
+        is_a_cap = True
+        cap_form = EEGElectrodeCapRegisterForm(request.POST or None, instance=cap[0])
+        cap_size_list = EEGCapSize.objects.filter(eeg_electrode_cap=cap[0])
+    else:
+        cap_form = EEGElectrodeCapRegisterForm(request.POST or None)
+
     eegelectrodelocalizationsystem = EEGElectrodeLocalizationSystem.objects.all()
 
     for field in eegelectrodenet_form.fields:
         eegelectrodenet_form.fields[field].widget.attrs['disabled'] = True
+
+    for field in cap_form.fields:
+        cap_form.fields[field].widget.attrs['disabled'] = True
 
     if request.method == "POST":
         if request.POST['action'] == "remove":
@@ -2442,7 +2486,10 @@ def eegelectrodenet_view(request, eegelectrodenet_id, template_name="experiment/
     context = {
         "can_change": True,
         "equipment": eegelectrodenet,
+        "is_a_cap": is_a_cap,
         "equipment_form": eegelectrodenet_form,
+        "cap_form": cap_form,
+        "cap_size_list": cap_size_list,
         "eegelectrodelocalizationsystem": eegelectrodelocalizationsystem,
     }
 

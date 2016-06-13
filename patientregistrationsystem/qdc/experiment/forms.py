@@ -594,8 +594,8 @@ class EEGElectrodeCapRegisterForm(ModelForm):
         fields = ['material']
         widgets = {
             'material': Select(attrs={'class': 'form-control',
-                                     'required': "",
-                                     'data-error': _('Material must be filled.')})
+                                      'required': "",
+                                      'data-error': _('Material must be filled.')})
         }
 
 
