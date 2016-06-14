@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2016-06-13 10:39-0300\n"
+"POT-Creation-Date: 2016-06-14 15:27-0300\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -130,23 +130,28 @@ msgstr ""
 msgid "Please, select a patient field from the list."
 msgstr ""
 
-#: export/templates/export/export_data.html:292
+#: export/templates/export/export_data.html:285
+#: export/templates/export/export_data.html:307
+msgid "* use ctrl-click to select more than one field. (command-click on Mac)"
+msgstr ""
+
+#: export/templates/export/export_data.html:293
 msgid "Diagnosis"
 msgstr ""
 
-#: export/templates/export/export_data.html:297
+#: export/templates/export/export_data.html:298
 msgid "Diagnosis fields"
 msgstr ""
 
-#: export/templates/export/export_data.html:300
+#: export/templates/export/export_data.html:301
 msgid "Please, select a diagnosis field from the list."
 msgstr ""
 
-#: export/templates/export/export_data.html:315
+#: export/templates/export/export_data.html:317
 msgid "Run"
 msgstr ""
 
-#: export/templates/export/export_data.html:319
+#: export/templates/export/export_data.html:321
 #: export/templates/export/participant_selection.html:111
 #: export/templates/export/show_selected_participants.html:92
 msgid "Cancel"
