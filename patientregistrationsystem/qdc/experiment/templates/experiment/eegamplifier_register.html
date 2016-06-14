@@ -55,10 +55,10 @@
                     <li class="active">{% trans "New" %}</li>
                 {% else %}
                     {% if editing %}
-                        <li><a href="/experiment/eegamplifier/{{ equipment.id }}">{{ equipment_form.name.value }}</a></li>
+                        <li><a href="/experiment/eegamplifier/{{ equipment.id }}">{{ equipment_form.identification.value }}</a></li>
                         <li class="active">{% trans "Editing" %}</li>
                     {% else %}
-                        <li class="active"> {{ equipment_form.name.value }} </li>
+                        <li class="active"> {{ equipment_form.identification.value }} </li>
                     {% endif %}
                 {% endif %}
             </ol>

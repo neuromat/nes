@@ -1547,13 +1547,9 @@ def equipment_view(request, eeg_setting_id, equipment_id,
 
 @login_required
 @permission_required('experiment.add_equipment')
-def manufacturer_list(request,
-                   template_name="experiment/manufacturer_list.html"):
+def manufacturer_list(request, template_name="experiment/manufacturer_list.html"):
+    return render(request, template_name, {"equipments": Manufacturer.objects.order_by('name')})
 
-    equipments = Manufacturer.objects.order_by('name')
-    context = {"equipments": equipments}
-
-    return render(request, template_name, context)
 
 @login_required
 @permission_required('experiment.add_manufacturer')
@@ -1615,6 +1611,7 @@ def manufacturer_update(request, manufacturer_id, template_name="experiment/manu
 
     return render(request, template_name, context)
 
+
 @login_required
 @permission_required('experiment.view_manufacturer')
 def manufacturer_view(request, manufacturer_id, template_name="experiment/manufacturer_register.html"):
@@ -1645,15 +1642,12 @@ def manufacturer_view(request, manufacturer_id, template_name="experiment/manufa
 
     return render(request, template_name, context)
 
+
 @login_required
 @permission_required('experiment.add_equipment')
-def eegmachine_list(request,
-                   template_name="experiment/eegmachine_list.html"):
+def eegmachine_list(request, template_name="experiment/eegmachine_list.html"):
+    return render(request, template_name, {"equipments": EEGMachine.objects.all().order_by('identification')})
 
-    equipments = EEGMachine.objects.all()
-    context = {"equipments": equipments}
-
-    return render(request, template_name, context)
 
 @login_required
 @permission_required('experiment.add_eegmachine')
@@ -1720,6 +1714,7 @@ def eegmachine_update(request, eegmachine_id, template_name="experiment/eegmachi
 
     return render(request, template_name, context)
 
+
 @login_required
 @permission_required('experiment.view_eegmachine')
 def eegmachine_view(request, eegmachine_id, template_name="experiment/eegmachine_register.html"):
@@ -1753,13 +1748,9 @@ def eegmachine_view(request, eegmachine_id, template_name="experiment/eegmachine
 
 @login_required
 @permission_required('experiment.add_equipment')
-def eegamplifier_list(request,
-                      template_name="experiment/eegamplifier_list.html"):
+def eegamplifier_list(request, template_name="experiment/eegamplifier_list.html"):
+    return render(request, template_name, {"equipments": EEGAmplifier.objects.all().order_by('identification')})
 
-    equipments = EEGAmplifier.objects.all()
-    context = {"equipments": equipments}
-
-    return render(request, template_name, context)
 
 @login_required
 @permission_required('experiment.add_eegamplifier')
@@ -1856,13 +1847,9 @@ def eegamplifier_view(request, eegamplifier_id, template_name="experiment/eegamp
 
 @login_required
 @permission_required('experiment.add_equipment')
-def eegsolution_list(request,
-                      template_name="experiment/eegsolution_list.html"):
+def eegsolution_list(request, template_name="experiment/eegsolution_list.html"):
+    return render(request, template_name, {"equipments": EEGSolution.objects.all().order_by('name')})
 
-    equipments = EEGSolution.objects.all()
-    context = {"equipments": equipments}
-
-    return render(request, template_name, context)
 
 @login_required
 @permission_required('experiment.add_eegsolution')
@@ -1928,6 +1915,7 @@ def eegsolution_update(request, eegsolution_id, template_name="experiment/eegsol
 
     return render(request, template_name, context)
 
+
 @login_required
 @permission_required('experiment.view_eegsolution')
 def eegsolution_view(request, eegsolution_id, template_name="experiment/eegsolution_register.html"):
@@ -1961,13 +1949,9 @@ def eegsolution_view(request, eegsolution_id, template_name="experiment/eegsolut
 
 @login_required
 @permission_required('experiment.add_equipment')
-def eegfiltertype_list(request,
-                      template_name="experiment/eegfiltertype_list.html"):
+def eegfiltertype_list(request, template_name="experiment/eegfiltertype_list.html"):
+    return render(request, template_name, {"equipments": EEGFilterType.objects.all().order_by('name')})
 
-    equipments = EEGFilterType.objects.all()
-    context = {"equipments": equipments}
-
-    return render(request, template_name, context)
 
 @login_required
 @permission_required('experiment.add_eegfiltertype')
@@ -2030,6 +2014,7 @@ def eegfiltertype_update(request, eegfiltertype_id, template_name="experiment/ee
 
     return render(request, template_name, context)
 
+
 @login_required
 @permission_required('experiment.view_eegfiltertype')
 def eegfiltertype_view(request, eegfiltertype_id, template_name="experiment/eegfiltertype_register.html"):
@@ -2063,13 +2048,9 @@ def eegfiltertype_view(request, eegfiltertype_id, template_name="experiment/eegf
 
 @login_required
 @permission_required('experiment.add_equipment')
-def eegelectrodemodel_list(request,
-                      template_name="experiment/eegelectrodemodel_list.html"):
+def eegelectrodemodel_list(request, template_name="experiment/eegelectrodemodel_list.html"):
+    return render(request, template_name, {"equipments": EEGElectrodeModel.objects.all().order_by('name')})
 
-    equipments = EEGElectrodeModel.objects.all()
-    context = {"equipments": equipments}
-
-    return render(request, template_name, context)
 
 @login_required
 @permission_required('experiment.add_eegelectrodemodel')
@@ -2132,6 +2113,7 @@ def eegelectrodemodel_update(request, eegelectrodemodel_id, template_name="exper
 
     return render(request, template_name, context)
 
+
 @login_required
 @permission_required('experiment.view_eegelectrodemodel')
 def eegelectrodemodel_view(request, eegelectrodemodel_id, template_name="experiment/eegelectrodemodel_register.html"):
@@ -2165,13 +2147,9 @@ def eegelectrodemodel_view(request, eegelectrodemodel_id, template_name="experim
 
 @login_required
 @permission_required('experiment.add_equipment')
-def material_list(request,
-                      template_name="experiment/material_list.html"):
+def material_list(request, template_name="experiment/material_list.html"):
+    return render(request, template_name, {"equipments": Material.objects.all().order_by('name')})
 
-    equipments = Material.objects.all()
-    context = {"equipments": equipments}
-
-    return render(request, template_name, context)
 
 @login_required
 @permission_required('experiment.add_material')
@@ -2234,6 +2212,7 @@ def material_update(request, material_id, template_name="experiment/material_reg
 
     return render(request, template_name, context)
 
+
 @login_required
 @permission_required('experiment.view_material')
 def material_view(request, material_id, template_name="experiment/material_register.html"):
@@ -2267,13 +2246,8 @@ def material_view(request, material_id, template_name="experiment/material_regis
 
 @login_required
 @permission_required('experiment.add_equipment')
-def eegelectrodenet_list(request,
-                      template_name="experiment/eegelectrodenet_list.html"):
-
-    equipments = EEGElectrodeNet.objects.all()
-    context = {"equipments": equipments}
-
-    return render(request, template_name, context)
+def eegelectrodenet_list(request, template_name="experiment/eegelectrodenet_list.html"):
+    return render(request, template_name, {"equipments": EEGElectrodeNet.objects.all().order_by('identification')})
 
 
 @login_required
@@ -2339,7 +2313,7 @@ def eegelectrodenet_create(request, template_name="experiment/eegelectrodenet_re
         "equipment_form": eegelectrodenet_form,
         "is_a_cap": False,
         "cap_form": cap_form,
-        "eegelectrodelocalizationsystem" : eegelectrodelocalizationsystem,
+        "eegelectrodelocalizationsystem": eegelectrodelocalizationsystem,
         "creating": True,
         "editing": True
     }
@@ -2356,6 +2330,7 @@ def get_localization_system(data_post):
 
     return localization_list
 
+
 @login_required
 @permission_required('experiment.change_eegelectrodenet')
 def eegelectrodenet_update(request, eegelectrodenet_id, template_name="experiment/eegelectrodenet_register.html"):
@@ -2363,7 +2338,6 @@ def eegelectrodenet_update(request, eegelectrodenet_id, template_name="experimen
     eegelectrodenetsystem = EEGElectrodeNetSystem.objects.all()
 
     eegelectrodenet_form = EEGElectrodeNETRegisterForm(request.POST or None, instance=eegelectrodenet)
-    # eegelectrodenetsystem_form = EEGElectrodeNetRegisterSystemForm(request.POST or None, instance=eegelectrodenet)
 
     cap_form = None
     cap = EEGElectrodeCap.objects.filter(id=eegelectrodenet_id)
@@ -2388,13 +2362,17 @@ def eegelectrodenet_update(request, eegelectrodenet_id, template_name="experimen
                                 eeg_electrode_net_system.eeg_electrode_localization_system_id=localization_system_id
                                 eeg_electrode_net_system.save()
                             else:
-                                net_system = EEGElectrodeNetSystem.objects.filter(eeg_electrode_net=eegelectrodenet,
-                                                          eeg_electrode_localization_system=localization_system_item)
+                                net_system = EEGElectrodeNetSystem.objects.filter(
+                                    eeg_electrode_net=eegelectrodenet,
+                                    eeg_electrode_localization_system=localization_system_item)
                                 if net_system:
-                                    messages.error(request, _('It is not possible to delete localization system, since it in use.'))
+                                    messages.error(
+                                        request,
+                                        _('It is not possible to delete localization system, since it in use.'))
                                 else:
-                                    eeg_electrode_net_system = EEGElectrodeNetSystem.objects.get(eeg_electrode_net_id=eegelectrodenet.id,
-                                                                                                  eeg_electrode_localization_system_id=localization_system_id)
+                                    eeg_electrode_net_system = EEGElectrodeNetSystem.objects.get(
+                                        eeg_electrode_net_id=eegelectrodenet.id,
+                                        eeg_electrode_localization_system_id=localization_system_id)
                                     eeg_electrode_net_system.delete()
 
                     if is_a_cap and cap_form.has_changed():
@@ -2428,7 +2406,6 @@ def eegelectrodenet_update(request, eegelectrodenet_id, template_name="experimen
         "is_a_cap": is_a_cap,
         "cap_form": cap_form,
         "eegelectrodenetsystem": eegelectrodenetsystem,
-        # "eegelectrodenetsystem_form": eegelectrodenetsystem_form,
         "eegelectrodelocalizationsystem": eegelectrodelocalizationsystem,
         "editing": True}
 
@@ -5029,12 +5006,9 @@ def component_reuse(request, path_of_the_components, component_id):
 @login_required
 @permission_required('experiment.view_equipment')
 def eeg_electrode_localization_system_list(
-        request,
-        template_name="experiment/eeg_electrode_localization_system_list.html"):
-
-    eeg_electrode_localization_systems = EEGElectrodeLocalizationSystem.objects.order_by('name')
-    context = {"eeg_electrode_localization_systems": eeg_electrode_localization_systems}
-    return render(request, template_name, context)
+        request, template_name="experiment/eeg_electrode_localization_system_list.html"):
+    return render(request, template_name,
+                  {"eeg_electrode_localization_systems": EEGElectrodeLocalizationSystem.objects.order_by('name')})
 
 
 @login_required
