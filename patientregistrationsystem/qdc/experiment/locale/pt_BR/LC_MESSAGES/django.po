@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2016-06-13 10:39-0300\n"
+"POT-Creation-Date: 2016-06-14 15:05-0300\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -237,6 +237,8 @@ msgid "EEG Electrode Net"
 msgstr "Rede de eletrodos de EEG"
 
 #: experiment/models.py:120 experiment/models.py:121
+#: experiment/templates/experiment/equipment_configuration.html:52
+#: experiment/templates/experiment/equipment_list_configuration.html:43
 msgid "Equipment"
 msgstr "Equipamento"
 
@@ -302,6 +304,8 @@ msgstr "EEG"
 #: experiment/templates/experiment/eegmachine_register.html:51
 #: experiment/templates/experiment/eegsolution_list.html:42
 #: experiment/templates/experiment/eegsolution_register.html:51
+#: experiment/templates/experiment/equipment_configuration.html:51
+#: experiment/templates/experiment/equipment_list_configuration.html:42
 #: experiment/templates/experiment/experiment_register.html:49
 #: experiment/templates/experiment/group_register.html:51
 #: experiment/templates/experiment/manufacturer_list.html:42
@@ -361,6 +365,7 @@ msgstr "Pesquisar"
 #: experiment/templates/experiment/eegmachine_register.html:75
 #: experiment/templates/experiment/eegsolution_list.html:58
 #: experiment/templates/experiment/eegsolution_register.html:93
+#: experiment/templates/experiment/equipment_configuration.html:71
 #: experiment/templates/experiment/manufacturer_list.html:43
 #: experiment/templates/experiment/manufacturer_register.html:52
 #: experiment/templates/experiment/manufacturer_register.html:71
@@ -442,6 +447,8 @@ msgstr "Número de série"
 #: experiment/templates/experiment/eegmachine_register.html:170
 #: experiment/templates/experiment/eegsolution_register.html:114
 #: experiment/templates/experiment/eegsolution_register.html:143
+#: experiment/templates/experiment/equipment_configuration.html:143
+#: experiment/templates/experiment/equipment_configuration.html:172
 #: experiment/templates/experiment/experiment_register.html:186
 #: experiment/templates/experiment/experiment_register.html:216
 #: experiment/templates/experiment/group_register.html:144
@@ -496,6 +503,8 @@ msgstr "Inserir"
 #: experiment/templates/experiment/eegmachine_register.html:169
 #: experiment/templates/experiment/eegsolution_register.html:123
 #: experiment/templates/experiment/eegsolution_register.html:142
+#: experiment/templates/experiment/equipment_configuration.html:152
+#: experiment/templates/experiment/equipment_configuration.html:171
 #: experiment/templates/experiment/experiment_register.html:195
 #: experiment/templates/experiment/experiment_register.html:214
 #: experiment/templates/experiment/group_register.html:320
@@ -530,6 +539,7 @@ msgstr "Cancelar"
 #: experiment/templates/experiment/eegfiltertype_register.html:118
 #: experiment/templates/experiment/eegmachine_register.html:154
 #: experiment/templates/experiment/eegsolution_register.html:127
+#: experiment/templates/experiment/equipment_configuration.html:156
 #: experiment/templates/experiment/experiment_register.html:199
 #: experiment/templates/experiment/group_register.html:324
 #: experiment/templates/experiment/manufacturer_register.html:109
@@ -576,6 +586,7 @@ msgstr "Novo conjunto de passos"
 #: experiment/templates/experiment/eegfiltertype_register.html:59
 #: experiment/templates/experiment/eegmachine_register.html:59
 #: experiment/templates/experiment/eegsolution_register.html:59
+#: experiment/templates/experiment/equipment_configuration.html:59
 #: experiment/templates/experiment/experiment_register.html:58
 #: experiment/templates/experiment/group_register.html:61
 #: experiment/templates/experiment/manufacturer_register.html:59
@@ -729,6 +740,7 @@ msgstr "não utilizado"
 #: experiment/templates/experiment/eegfiltertype_register.html:93
 #: experiment/templates/experiment/eegmachine_register.html:129
 #: experiment/templates/experiment/eegsolution_register.html:102
+#: experiment/templates/experiment/equipment_configuration.html:124
 #: experiment/templates/experiment/experiment_register.html:101
 #: experiment/templates/experiment/experiment_register.html:122
 #: experiment/templates/experiment/experiment_register.html:155
@@ -772,6 +784,8 @@ msgstr "Informações sobre esse uso do passo"
 #: experiment/templates/experiment/eegfiltertype_register.html:75
 #: experiment/templates/experiment/eegsolution_list.html:56
 #: experiment/templates/experiment/eegsolution_register.html:75
+#: experiment/templates/experiment/equipment_configuration.html:75
+#: experiment/templates/experiment/equipment_list_configuration.html:56
 #: experiment/templates/experiment/experiment_register.html:114
 #: experiment/templates/experiment/experiment_register.html:147
 #: experiment/templates/experiment/group_register.html:165
@@ -826,6 +840,7 @@ msgstr "Indefinido"
 #: experiment/templates/experiment/eegfiltertype_register.html:110
 #: experiment/templates/experiment/eegmachine_register.html:146
 #: experiment/templates/experiment/eegsolution_register.html:119
+#: experiment/templates/experiment/equipment_configuration.html:148
 #: experiment/templates/experiment/experiment_register.html:191
 #: experiment/templates/experiment/group_register.html:316
 #: experiment/templates/experiment/manufacturer_register.html:101
@@ -876,11 +891,11 @@ msgstr "Configuração de EEG"
 #: experiment/templates/experiment/eeg_electrode_localization_system_register.html:52
 #: experiment/templates/experiment/eeg_electrode_position_register.html:52
 msgid "EEG electrode localization system"
-msgstr "Sistema de localização de eletrodos"
+msgstr "Posição de eletrodo de EEG"
 
 #: experiment/templates/experiment/eeg_electrode_localization_system_list.html:51
 msgid "EEG electrode localization system list"
-msgstr "Lista de sistema de localização de eletrodo"
+msgstr "Lista de sistema de localização de eletrodo de EEG"
 
 #: experiment/templates/experiment/eeg_electrode_localization_system_list.html:58
 #: experiment/templates/experiment/eeg_electrode_localization_system_register.html:95
@@ -896,6 +911,7 @@ msgstr "Número de eletrodos"
 #: experiment/templates/experiment/eegfiltertype_list.html:64
 #: experiment/templates/experiment/eegmachine_list.html:67
 #: experiment/templates/experiment/eegsolution_list.html:65
+#: experiment/templates/experiment/equipment_list_configuration.html:65
 #: experiment/templates/experiment/manufacturer_list.html:63
 #: experiment/templates/experiment/material_list.html:64
 #: experiment/templates/experiment/research_project_list.html:65
@@ -914,6 +930,7 @@ msgstr "Inserir novo sistema de localização"
 #: experiment/templates/experiment/eegfiltertype_register.html:55
 #: experiment/templates/experiment/eegmachine_register.html:55
 #: experiment/templates/experiment/eegsolution_register.html:55
+#: experiment/templates/experiment/equipment_configuration.html:55
 #: experiment/templates/experiment/manufacturer_register.html:55
 #: experiment/templates/experiment/material_register.html:55
 #: experiment/templates/experiment/research_project_register.html:55
@@ -922,15 +939,15 @@ msgstr "Novo"
 
 #: experiment/templates/experiment/eeg_electrode_localization_system_register.html:71
 msgid "EEG electrode localization system basic information"
-msgstr "Informações básicas do sistema de localização"
+msgstr "Informação básica "
 
 #: experiment/templates/experiment/eeg_electrode_localization_system_register.html:105
 msgid "Map image file"
-msgstr "Arquivo de imagem do mapa de eletrodos"
+msgstr "Mapear arquivo de imagem"
 
 #: experiment/templates/experiment/eeg_electrode_localization_system_register.html:126
 msgid "Positions"
-msgstr "Posições"
+msgstr "Nome da posição"
 
 #: experiment/templates/experiment/eeg_electrode_localization_system_register.html:131
 #: experiment/templates/experiment/eeg_setting_electrode_position_status.html:32
@@ -946,7 +963,7 @@ msgstr "Coordenada (x,y)"
 #: experiment/templates/experiment/eeg_electrode_localization_system_register.html:133
 #: experiment/templates/experiment/eeg_electrode_position_register.html:111
 msgid "Position reference"
-msgstr "Posição de referência"
+msgstr "Referência da posição"
 
 #: experiment/templates/experiment/eeg_electrode_localization_system_register.html:159
 #: experiment/templates/experiment/eegamplifier_list.html:88
@@ -955,6 +972,7 @@ msgstr "Posição de referência"
 #: experiment/templates/experiment/eegfiltertype_list.html:82
 #: experiment/templates/experiment/eegmachine_list.html:92
 #: experiment/templates/experiment/eegsolution_list.html:86
+#: experiment/templates/experiment/equipment_list_configuration.html:90
 #: experiment/templates/experiment/experiment_register.html:136
 #: experiment/templates/experiment/experiment_register.html:169
 #: experiment/templates/experiment/manufacturer_list.html:78
@@ -973,7 +991,7 @@ msgstr "Nova posição"
 
 #: experiment/templates/experiment/eeg_electrode_position_register.html:77
 msgid "EEG electrode position basic information"
-msgstr "Informações básicas da posição de eletrodo"
+msgstr "Informação básica da posição do eletrodo de EEG"
 
 #: experiment/templates/experiment/eeg_electrode_position_register.html:91
 msgid "Coordinate X"
@@ -985,7 +1003,7 @@ msgstr "Coordenada Y"
 
 #: experiment/templates/experiment/eeg_electrode_position_register.html:159
 msgid "Are you sure you want to delete position?"
-msgstr "Tem certeza que deseja excluir a posição?"
+msgstr "Tem certeza que deseja excluir posição?"
 
 #: experiment/templates/experiment/eeg_setting_eeg_amplifier.html:6
 msgid "EEG amplifier settings"
@@ -1352,6 +1370,16 @@ msgstr "Solução de EEG"
 msgid "Are you sure you want to delete EEG solution?"
 msgstr "Tem certeza que deseja excluir a solução de EEG?"
 
+#: experiment/templates/experiment/equipment_configuration.html:168
+#: experiment/templates/experiment/manufacturer_register.html:121
+msgid "Are you sure you want to delete manufacturer?"
+msgstr "Tem certeza que deseja excluir o fabricante?"
+
+#: experiment/templates/experiment/equipment_list_configuration.html:51
+#: experiment/templates/experiment/manufacturer_list.html:51
+msgid "Manufacturer List"
+msgstr "Lista de fabricantes"
+
 #: experiment/templates/experiment/experiment_register.html:54
 msgid "New experiment"
 msgstr "Novo experimento"
@@ -1563,14 +1591,6 @@ msgstr "Texto da instrução"
 #: experiment/templates/experiment/keyword_ajax_search.html:8
 msgid "Add a new keyword"
 msgstr "Adicionar nova palavra-chave"
-
-#: experiment/templates/experiment/manufacturer_list.html:51
-msgid "Manufacturer List"
-msgstr "Lista de fabricantes"
-
-#: experiment/templates/experiment/manufacturer_register.html:121
-msgid "Are you sure you want to delete manufacturer?"
-msgstr "Tem certeza que deseja excluir o fabricante?"
 
 #: experiment/templates/experiment/material_list.html:51
 msgid "Material List"
@@ -2300,6 +2320,10 @@ msgstr "Anexo removido com sucesso."
 msgid "Step included successfully."
 msgstr "Passo incluído com sucesso."
 
+#: experiment/views.py:3944
+msgid "Use of step "
+msgstr "Uso do passo "
+
 #: experiment/views.py:4030
 msgid " years "
 msgstr " anos "
@@ -2398,22 +2422,23 @@ msgstr "Passos incluídos com sucesso."
 
 #: experiment/views.py:5058
 msgid "EEG electrode localization system created successfully."
-msgstr "Sistema de localização de eletrodo de EEG criado com sucesso."
+msgstr "Sistema de localização de eletrodo de EEG criada com sucesso."
 
 #: experiment/views.py:5102
 msgid "Error trying to delete localization system."
-msgstr "Erro ao deletar o sistema de localização"
+msgstr "Erro ao tentar excluir sistema de localização."
 
 #: experiment/views.py:5109
 msgid ""
 "Impossible to delete localization system because there is (are) Electrode "
 "Net associated."
 msgstr ""
-"Não foi possível excluir o sistema de localização, pois há rede(s) de eletrodos associada(s)."
+"Não foi possível excluir sistema de localização, pois há  rede de eletrodos "
+"associado."
 
 #: experiment/views.py:5143
 msgid "Localization system updated successfully."
-msgstr "Sistema de localização atualizado com sucesso."
+msgstr "Sistema de localização alterado com sucesso."
 
 #: experiment/views.py:5179
 msgid "EEG electrode position created successfully."
@@ -2425,14 +2450,14 @@ msgstr "Posição excluída com sucesso."
 
 #: experiment/views.py:5227
 msgid "Error trying to delete position."
-msgstr "Erro ao deletar a posição"
+msgstr "Erro ao tentar excluir a posição."
 
 #: experiment/views.py:5234
 msgid ""
 "Impossible to delete position because there is (are) Position Setting "
 "associated."
 msgstr ""
-"Não foi possível excluir a posição, pois há configuração(ões) associada(s)."
+"Não foi possível excluir posição, pois há configuração de posição associada."
 
 #: experiment/views.py:5264
 msgid "Position updated successfully."
