@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2016-06-13 10:39-0300\n"
+"POT-Creation-Date: 2016-06-14 15:05-0300\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -144,31 +144,19 @@ msgid "Name field must be filled."
 msgstr ""
 
 #: experiment/forms.py:484 experiment/forms.py:501 experiment/forms.py:524
-#: experiment/forms.py:592
+#: experiment/forms.py:581
 msgid "Manufacturer must be filled."
 msgstr ""
 
-#: experiment/forms.py:556 experiment/forms.py:609
-msgid "Material must be filled."
-msgstr ""
-
-#: experiment/forms.py:559
-msgid "Usability must be filled."
-msgstr ""
-
-#: experiment/forms.py:563
-msgid "Impedance must be filled."
-msgstr ""
-
-#: experiment/forms.py:566
-msgid "Impedance unit must be filled."
-msgstr ""
-
-#: experiment/forms.py:598
+#: experiment/forms.py:587
 msgid "Electrode model default must be filled in."
 msgstr ""
 
-#: experiment/forms.py:624
+#: experiment/forms.py:598
+msgid "Material must be filled."
+msgstr ""
+
+#: experiment/forms.py:613
 msgid "Electrode adjacent distance must be filled."
 msgstr ""
 
@@ -315,6 +303,8 @@ msgstr ""
 #: experiment/templates/experiment/eegmachine_register.html:51
 #: experiment/templates/experiment/eegsolution_list.html:42
 #: experiment/templates/experiment/eegsolution_register.html:51
+#: experiment/templates/experiment/equipment_configuration.html:51
+#: experiment/templates/experiment/equipment_list_configuration.html:42
 #: experiment/templates/experiment/experiment_register.html:49
 #: experiment/templates/experiment/group_register.html:51
 #: experiment/templates/experiment/manufacturer_list.html:42
@@ -374,6 +364,7 @@ msgstr ""
 #: experiment/templates/experiment/eegmachine_register.html:75
 #: experiment/templates/experiment/eegsolution_list.html:58
 #: experiment/templates/experiment/eegsolution_register.html:93
+#: experiment/templates/experiment/equipment_configuration.html:71
 #: experiment/templates/experiment/manufacturer_list.html:43
 #: experiment/templates/experiment/manufacturer_register.html:52
 #: experiment/templates/experiment/manufacturer_register.html:71
@@ -455,6 +446,8 @@ msgstr ""
 #: experiment/templates/experiment/eegmachine_register.html:170
 #: experiment/templates/experiment/eegsolution_register.html:114
 #: experiment/templates/experiment/eegsolution_register.html:143
+#: experiment/templates/experiment/equipment_configuration.html:143
+#: experiment/templates/experiment/equipment_configuration.html:172
 #: experiment/templates/experiment/experiment_register.html:186
 #: experiment/templates/experiment/experiment_register.html:216
 #: experiment/templates/experiment/group_register.html:144
@@ -509,20 +502,6 @@ msgstr ""
 #: experiment/templates/experiment/eegmachine_register.html:169
 #: experiment/templates/experiment/eegsolution_register.html:123
 #: experiment/templates/experiment/eegsolution_register.html:142
-#: experiment/templates/experiment/eeg_setting_type_template.html:109
-#: experiment/templates/experiment/eeg_setting_type_template.html:112
-#: experiment/templates/experiment/eegamplifier_register.html:142
-#: experiment/templates/experiment/eegamplifier_register.html:161
-#: experiment/templates/experiment/eegelectrodemodel_register.html:151
-#: experiment/templates/experiment/eegelectrodemodel_register.html:170
-#: experiment/templates/experiment/eegelectrodenet_register.html:232
-#: experiment/templates/experiment/eegelectrodenet_register.html:251
-#: experiment/templates/experiment/eegfiltertype_register.html:114
-#: experiment/templates/experiment/eegfiltertype_register.html:133
-#: experiment/templates/experiment/eegmachine_register.html:150
-#: experiment/templates/experiment/eegmachine_register.html:169
-#: experiment/templates/experiment/eegsolution_register.html:123
-#: experiment/templates/experiment/eegsolution_register.html:142
 #: experiment/templates/experiment/equipment_configuration.html:152
 #: experiment/templates/experiment/equipment_configuration.html:171
 #: experiment/templates/experiment/experiment_register.html:195
@@ -559,6 +538,7 @@ msgstr ""
 #: experiment/templates/experiment/eegfiltertype_register.html:118
 #: experiment/templates/experiment/eegmachine_register.html:154
 #: experiment/templates/experiment/eegsolution_register.html:127
+#: experiment/templates/experiment/equipment_configuration.html:156
 #: experiment/templates/experiment/experiment_register.html:199
 #: experiment/templates/experiment/group_register.html:324
 #: experiment/templates/experiment/manufacturer_register.html:109
@@ -605,6 +585,7 @@ msgstr ""
 #: experiment/templates/experiment/eegfiltertype_register.html:59
 #: experiment/templates/experiment/eegmachine_register.html:59
 #: experiment/templates/experiment/eegsolution_register.html:59
+#: experiment/templates/experiment/equipment_configuration.html:59
 #: experiment/templates/experiment/experiment_register.html:58
 #: experiment/templates/experiment/group_register.html:61
 #: experiment/templates/experiment/manufacturer_register.html:59
@@ -758,6 +739,7 @@ msgstr ""
 #: experiment/templates/experiment/eegfiltertype_register.html:93
 #: experiment/templates/experiment/eegmachine_register.html:129
 #: experiment/templates/experiment/eegsolution_register.html:102
+#: experiment/templates/experiment/equipment_configuration.html:124
 #: experiment/templates/experiment/experiment_register.html:101
 #: experiment/templates/experiment/experiment_register.html:122
 #: experiment/templates/experiment/experiment_register.html:155
@@ -795,12 +777,6 @@ msgstr ""
 #: experiment/templates/experiment/eeg_electrode_localization_system_register.html:75
 #: experiment/templates/experiment/eeg_electrode_position_register.html:81
 #: experiment/templates/experiment/eeg_setting_register.html:77
-#: experiment/templates/experiment/eegelectrodemodel_list.html:56
-#: experiment/templates/experiment/eegelectrodemodel_register.html:75
-#: experiment/templates/experiment/eegfiltertype_list.html:56
-#: experiment/templates/experiment/eegfiltertype_register.html:75
-#: experiment/templates/experiment/eegsolution_list.html:56
-#: experiment/templates/experiment/eegsolution_register.html:75
 #: experiment/templates/experiment/eegelectrodemodel_list.html:56
 #: experiment/templates/experiment/eegelectrodemodel_register.html:75
 #: experiment/templates/experiment/eegfiltertype_list.html:56
@@ -861,6 +837,7 @@ msgstr ""
 #: experiment/templates/experiment/eegfiltertype_register.html:110
 #: experiment/templates/experiment/eegmachine_register.html:146
 #: experiment/templates/experiment/eegsolution_register.html:119
+#: experiment/templates/experiment/equipment_configuration.html:148
 #: experiment/templates/experiment/experiment_register.html:191
 #: experiment/templates/experiment/group_register.html:316
 #: experiment/templates/experiment/manufacturer_register.html:101
@@ -928,6 +905,7 @@ msgstr ""
 #: experiment/templates/experiment/eegfiltertype_list.html:64
 #: experiment/templates/experiment/eegmachine_list.html:67
 #: experiment/templates/experiment/eegsolution_list.html:65
+#: experiment/templates/experiment/equipment_list_configuration.html:65
 #: experiment/templates/experiment/manufacturer_list.html:63
 #: experiment/templates/experiment/material_list.html:64
 #: experiment/templates/experiment/research_project_list.html:65
@@ -946,6 +924,7 @@ msgstr ""
 #: experiment/templates/experiment/eegfiltertype_register.html:55
 #: experiment/templates/experiment/eegmachine_register.html:55
 #: experiment/templates/experiment/eegsolution_register.html:55
+#: experiment/templates/experiment/equipment_configuration.html:55
 #: experiment/templates/experiment/manufacturer_register.html:55
 #: experiment/templates/experiment/material_register.html:55
 #: experiment/templates/experiment/research_project_register.html:55
@@ -987,6 +966,7 @@ msgstr ""
 #: experiment/templates/experiment/eegfiltertype_list.html:82
 #: experiment/templates/experiment/eegmachine_list.html:92
 #: experiment/templates/experiment/eegsolution_list.html:86
+#: experiment/templates/experiment/equipment_list_configuration.html:90
 #: experiment/templates/experiment/experiment_register.html:136
 #: experiment/templates/experiment/experiment_register.html:169
 #: experiment/templates/experiment/manufacturer_list.html:78
@@ -1384,6 +1364,16 @@ msgstr ""
 msgid "Are you sure you want to delete EEG solution?"
 msgstr ""
 
+#: experiment/templates/experiment/equipment_configuration.html:168
+#: experiment/templates/experiment/manufacturer_register.html:121
+msgid "Are you sure you want to delete manufacturer?"
+msgstr ""
+
+#: experiment/templates/experiment/equipment_list_configuration.html:51
+#: experiment/templates/experiment/manufacturer_list.html:51
+msgid "Manufacturer List"
+msgstr ""
+
 #: experiment/templates/experiment/experiment_register.html:54
 msgid "New experiment"
 msgstr ""
@@ -1587,14 +1577,6 @@ msgstr ""
 
 #: experiment/templates/experiment/keyword_ajax_search.html:8
 msgid "Add a new keyword"
-msgstr ""
-
-#: experiment/templates/experiment/manufacturer_list.html:51
-msgid "Manufacturer List"
-msgstr ""
-
-#: experiment/templates/experiment/manufacturer_register.html:121
-msgid "Are you sure you want to delete manufacturer?"
 msgstr ""
 
 #: experiment/templates/experiment/material_list.html:51
@@ -2041,7 +2023,7 @@ msgstr ""
 msgid "EEG setting was removed successfully."
 msgstr ""
 
-#: experiment/views.py:661
+#: experiment/views.py:669
 msgid "Setting was removed successfully."
 msgstr ""
 
@@ -2281,19 +2263,23 @@ msgstr ""
 msgid "EEG data file format validated."
 msgstr ""
 
-#: experiment/views.py:2281
+#: experiment/views.py:3435
 msgid "Not valid EEG file format."
 msgstr ""
 
-#: experiment/views.py:2330
+#: experiment/views.py:3484
 msgid "EEG data removed successfully."
 msgstr ""
 
-#: experiment/views.py:2378
+#: experiment/views.py:3562
 msgid "EEG data updated successfully."
 msgstr ""
 
-#: experiment/views.py:2423
+#: experiment/views.py:3572
+msgid "EEG position data updated successfully."
+msgstr ""
+
+#: experiment/views.py:3630
 msgid "Participant has already been inserted in this group."
 msgstr ""
 
@@ -2314,92 +2300,75 @@ msgstr ""
 msgid "Step included successfully."
 msgstr ""
 
-#: experiment/views.py:3897
+#: experiment/views.py:3944
 msgid "Use of step "
 msgstr ""
 
-#: experiment/views.py:3983
 #: experiment/views.py:4030
 msgid " years "
 msgstr ""
 
 #: experiment/views.py:4030
-#: experiment/views.py:3983
 msgid " year "
 msgstr ""
 
 #: experiment/views.py:4035
-#: experiment/views.py:3988
 msgid " months "
 msgstr ""
 
 #: experiment/views.py:4035
-#: experiment/views.py:3988
 msgid " month "
 msgstr ""
 
 #: experiment/views.py:4040
-#: experiment/views.py:3993
 msgid " weeks "
 msgstr ""
 
 #: experiment/views.py:4040
-#: experiment/views.py:3993
 msgid " week "
 msgstr ""
 
-#: experiment/views.py:3998
 #: experiment/views.py:4045
 msgid " days "
 msgstr ""
 
-#: experiment/views.py:3998
 #: experiment/views.py:4045
 msgid " day "
 msgstr ""
 
-#: experiment/views.py:4003
 #: experiment/views.py:4050
 msgid " hours "
 msgstr ""
 
-#: experiment/views.py:4003
 #: experiment/views.py:4050
 msgid " hour "
 msgstr ""
 
-#: experiment/views.py:4008
 #: experiment/views.py:4055
 msgid " minutes "
 msgstr ""
 
-#: experiment/views.py:4008
 #: experiment/views.py:4055
 msgid " minute "
 msgstr ""
 
-#: experiment/views.py:4013
 #: experiment/views.py:4060
 msgid " seconds "
 msgstr ""
 
-#: experiment/views.py:4013
 #: experiment/views.py:4060
 msgid " second "
 msgstr ""
 
-#: experiment/views.py:4018
 #: experiment/views.py:4065
 msgid " miliseconds "
 msgstr ""
 
 #: experiment/views.py:4065
-#: experiment/views.py:4018
 msgid " milisecond "
 msgstr ""
 
 #: experiment/views.py:4080
-#: experiment/views.py:4033
 msgid " and "
 msgstr ""
 
@@ -2412,15 +2381,6 @@ msgid "Copy"
 msgstr ""
 
 #: experiment/views.py:4375 experiment/views.py:4627
-#: experiment/views.py:4202 experiment/views.py:4216 experiment/views.py:4279
-msgid "Copy of"
-msgstr ""
-
-#: experiment/views.py:4281
-msgid "Copy"
-msgstr ""
-
-#: experiment/views.py:4328 experiment/views.py:4580
 msgid "Step use updated successfully."
 msgstr ""
 
