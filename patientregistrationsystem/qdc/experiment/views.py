@@ -3894,7 +3894,7 @@ def create_list_of_breadcrumbs(list_of_ids_of_components_and_configurations):
                 if cc.name is not None and cc.name != "":
                     name = cc.name
                 else:
-                    name = "Uso do passo " + cc.component.identification
+                    name = _("Use of step ") + cc.component.identification
 
                 view_name = "component_edit"
             else:
