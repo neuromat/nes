@@ -73,17 +73,16 @@
                                     {% endif %}
                                 </td>
                                 <td>
-                                    {{ equipment.usability }}
+                                    {{ equipment.usability|default:"" }}
                                  </td>
                                 <td>
-                                    {{ equipment.material }}
-
+                                    {{ equipment.material|default:"" }}
                                 </td>
                                 <td>
-                                    {{ equipment.impedance }}
+                                    {{ equipment.impedance|default:"" }}
                                 </td>
                                 <td>
-                                    {{ equipment.impedance_unit }}
+                                    {{ equipment.impedance_unit|default:"" }}
                                 </td>
                             </tr>
                         {% endfor %}

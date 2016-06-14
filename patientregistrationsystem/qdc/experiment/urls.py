@@ -78,6 +78,7 @@ urlpatterns = patterns(
     url(r'^eegelectrodenet/new/$', 'eegelectrodenet_create', name='eegelectrodenet_new'),
     url(r'^eegelectrodenet/(?P<eegelectrodenet_id>\d+)/$', 'eegelectrodenet_view', name='eegelectrodenet_view'),
     url(r'^eegelectrodenet/edit/(?P<eegelectrodenet_id>\d+)/$', 'eegelectrodenet_update', name='eegelectrodenet_edit'),
+    # url(r'^eeg_electrode_net/(?P<eegelectrodenet_id>\d+)/add_size/$', 'eegelectrodenet_update', name='eegelectrodenet_edit'),
 
     # Localization system and position
     url(r'^eeg_electrode_localization_system/list/$',
