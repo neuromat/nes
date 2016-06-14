@@ -34,7 +34,7 @@ from experiment.forms import ExperimentForm, QuestionnaireResponseForm, FileForm
     ComponentForm, StimulusForm, BlockForm, ComponentConfigurationForm, ResearchProjectForm, NumberOfUsesToInsertForm, \
     EEGDataForm, EEGSettingForm, EquipmentForm, EEGForm, EEGMachineForm, EEGMachineSettingForm, EEGAmplifierForm, \
     EEGAmplifierSettingForm, EEGSolutionForm, EEGFilterForm, EEGFilterSettingForm, \
-    EEGElectrodeLayoutSettingForm, EEGElectrodeLocalizationSystemForm, EEGElectrodeLocalizationSystemRegisterForm, \
+    EEGElectrodeLocalizationSystemRegisterForm, \
     ManufacturerRegisterForm, EEGMachineRegisterForm, EEGAmplifierRegisterForm, EEGSolutionRegisterForm, \
     EEGFilterTypeRegisterForm, EEGElectrodeModelRegisterForm, MaterialRegisterForm, EEGElectrodeNETRegisterForm, \
     EEGElectrodePositionForm, EEGElectrodeCapRegisterForm
@@ -813,8 +813,7 @@ def view_eeg_setting_type(request, eeg_setting_id, eeg_setting_type):
 
                 if eeg_setting_type == "eeg_electrode_net_system" \
                         and 'equipment_selection' in request.POST \
-                        and 'localization_system_selection' in request.POST \
-                        and 'number_of_electrodes' in request.POST:
+                        and 'localization_system_selection' in request.POST:
 
                     eeg_electrode_net = \
                         EEGElectrodeNet.objects.get(pk=request.POST['equipment_selection'])
@@ -829,7 +828,7 @@ def view_eeg_setting_type(request, eeg_setting_id, eeg_setting_type):
                     eeg_electrode_layout_setting = EEGElectrodeLayoutSetting()
                     eeg_electrode_layout_setting.eeg_setting = eeg_setting
                     eeg_electrode_layout_setting.eeg_electrode_net_system = eeg_electrode_net_system
-                    eeg_electrode_layout_setting.number_of_electrodes = request.POST['number_of_electrodes']
+                    # eeg_electrode_layout_setting.number_of_electrodes = request.POST['number_of_electrodes']
                     eeg_electrode_layout_setting.save()
 
                     if eeg_electrode_localization_system.electrode_positions:
@@ -931,24 +930,24 @@ def view_eeg_setting_type(request, eeg_setting_id, eeg_setting_type):
                 equipment_selected = setting.eeg_electrode_net_system.eeg_electrode_net
                 localization_system_selected = setting.eeg_electrode_net_system.eeg_electrode_localization_system
 
-                selection_form = EEGElectrodeLocalizationSystemForm(
-                    request.POST or None,
-                    initial={
-                        'number_of_electrodes':
-                        setting.eeg_electrode_net_system.eeg_electrode_localization_system.number_of_electrodes})
+                # selection_form = EEGElectrodeLocalizationSystemForm(
+                #     request.POST or None,
+                #     initial={
+                #         'number_of_electrodes':
+                #         setting.eeg_electrode_net_system.eeg_electrode_localization_system.number_of_electrodes})
 
-                setting_form = EEGElectrodeLayoutSettingForm(
-                    request.POST or None,
-                    initial={'number_of_electrodes': setting.number_of_electrodes})
+                # setting_form = EEGElectrodeLayoutSettingForm(
+                #     request.POST or None,
+                #     initial={'number_of_electrodes': setting.number_of_electrodes})
 
-                for field in setting_form.fields:
-                    setting_form.fields[field].widget.attrs['disabled'] = True
+                # for field in setting_form.fields:
+                #     setting_form.fields[field].widget.attrs['disabled'] = True
 
             else:
                 creating = True
 
-                selection_form = EEGElectrodeLocalizationSystemForm(request.POST or None)
-                setting_form = EEGElectrodeLayoutSettingForm(request.POST or None)
+                # selection_form = EEGElectrodeLocalizationSystemForm(request.POST or None)
+                # setting_form = EEGElectrodeLayoutSettingForm(request.POST or None)
 
         # Settings related to equipment
         if eeg_setting_type in ["eeg_machine", "eeg_amplifier", "eeg_electrode_net_system"]:
@@ -1107,8 +1106,7 @@ def edit_eeg_setting_type(request, eeg_setting_id, eeg_setting_type):
 
                 if eeg_setting_type == "eeg_electrode_net_system" \
                         and 'equipment_selection' in request.POST \
-                        and 'localization_system_selection' in request.POST \
-                        and 'number_of_electrodes' in request.POST:
+                        and 'localization_system_selection' in request.POST:
 
                     eeg_electrode_net = \
                         EEGElectrodeNet.objects.get(pk=request.POST['equipment_selection'])
@@ -1130,7 +1128,7 @@ def edit_eeg_setting_type(request, eeg_setting_id, eeg_setting_type):
                             position.delete()
 
                     eeg_electrode_layout_setting.eeg_electrode_net_system = eeg_electrode_net_system
-                    eeg_electrode_layout_setting.number_of_electrodes = request.POST['number_of_electrodes']
+                    # eeg_electrode_layout_setting.number_of_electrodes = request.POST['number_of_electrodes']
                     eeg_electrode_layout_setting.save()
 
                     if eeg_electrode_localization_system.electrode_positions:
@@ -1199,10 +1197,10 @@ def edit_eeg_setting_type(request, eeg_setting_id, eeg_setting_type):
 
             setting = eeg_setting.eeg_electrode_layout_setting
 
-            selection_form = EEGElectrodeLocalizationSystemForm(
-                request.POST or None,
-                instance=setting.eeg_electrode_net_system.eeg_electrode_localization_system)
-            setting_form = EEGElectrodeLayoutSettingForm(request.POST or None, instance=setting)
+            # selection_form = EEGElectrodeLocalizationSystemForm(
+            #     request.POST or None,
+            #     instance=setting.eeg_electrode_net_system.eeg_electrode_localization_system)
+            # setting_form = EEGElectrodeLayoutSettingForm(request.POST or None, instance=setting)
 
             equipment_selected = setting.eeg_electrode_net_system.eeg_electrode_net
             localization_system_selected = setting.eeg_electrode_net_system.eeg_electrode_localization_system
@@ -1314,17 +1312,17 @@ def get_json_filter_attributes(request, filter_id):
     return HttpResponse(json.dumps(response_data), content_type='application/json')
 
 
-@login_required
-@permission_required('experiment.change_experiment')
-def get_json_eeg_localization_system_attributes(request, eeg_localization_system_id):
-
-    eeg_localization_system = get_object_or_404(EEGElectrodeLocalizationSystem, pk=eeg_localization_system_id)
-
-    response_data = {
-        'number_of_electrodes': eeg_localization_system.number_of_electrodes,
-    }
-
-    return HttpResponse(json.dumps(response_data), content_type='application/json')
+# @login_required
+# @permission_required('experiment.change_experiment')
+# def get_json_eeg_localization_system_attributes(request, eeg_localization_system_id):
+#
+#     eeg_localization_system = get_object_or_404(EEGElectrodeLocalizationSystem, pk=eeg_localization_system_id)
+#
+#     response_data = {
+#         'number_of_electrodes': eeg_localization_system.number_of_electrodes,
+#     }
+#
+#     return HttpResponse(json.dumps(response_data), content_type='application/json')
 
 
 @login_required
@@ -1368,28 +1366,22 @@ def eeg_electrode_position_setting(request, eeg_setting_id,
                 'y': position_setting.eeg_electrode_position.coordinate_y
             })
 
-        # if request.method == "POST":
-        #     if request.POST['action'] in ["save", "save_and_next"]:
-        #         for position_setting in eeg_setting.eeg_electrode_layout_setting.positions_setting.all():
-        #             position_setting.used = 'position_status_' + str(position_setting.id) in request.POST
-        #             position_setting.save()
-        #
-        #         messages.success(request, _('Setting saved successfully.'))
-        #
-        #         if request.POST['action'] == "save_and_next":
-        #             redirect_url = reverse("eeg_electrode_position_setting_model", args=(eeg_setting_id,))
-        #             return HttpResponseRedirect(redirect_url)
-
         context = {
             "tab": "1",
             "editing": False,
             "eeg_setting": eeg_setting,
-            "json_list": json.dumps(positions)
+            "json_list": json.dumps(positions),
+            "number_of_used_electrodes": number_of_used_positions(eeg_setting)
         }
 
         return render(request, template_name, context)
     else:
         raise PermissionDenied
+
+
+def number_of_used_positions(eeg_setting):
+    return EEGElectrodePositionSetting.objects.filter(
+        eeg_electrode_layout_setting=eeg_setting.eeg_electrode_layout_setting, used=True).count()
 
 
 @login_required
@@ -1425,7 +1417,8 @@ def edit_eeg_electrode_position_setting(request, eeg_setting_id,
             "tab": "1",
             "editing": True,
             "eeg_setting": eeg_setting,
-            "json_list": json.dumps(positions)
+            "json_list": json.dumps(positions),
+            "number_of_used_electrodes": number_of_used_positions(eeg_setting)
         }
 
         return render(request, template_name, context)
@@ -1443,16 +1436,6 @@ def eeg_electrode_position_setting_model(request, eeg_setting_id,
     if get_can_change(request.user, eeg_setting.experiment.research_project):
 
         eeg_electrode_model_list = EEGElectrodeModel.objects.all()
-
-        # if request.method == "POST":
-        #     if request.POST['action'] == "save":
-        #
-        #         for position_setting in eeg_setting.eeg_electrode_layout_setting.positions_setting.all():
-        #             electrode_model_id = int(request.POST['electrode_model_' + str(position_setting.id)])
-        #             position_setting.electrode_model_id = electrode_model_id
-        #             position_setting.save()
-        #
-        #         messages.success(request, _('Setting saved successfully.'))
 
         context = {
             "tab": "2",

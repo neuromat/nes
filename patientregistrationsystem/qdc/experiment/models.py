@@ -193,7 +193,6 @@ def get_eeg_electrode_system_dir(instance, filename):
 class EEGElectrodeLocalizationSystem(models.Model):
     name = models.CharField(max_length=150)
     description = models.TextField(null=True, blank=True)
-    number_of_electrodes = models.IntegerField(null=True, blank=True)
     map_image_file = models.FileField(upload_to=get_eeg_electrode_system_dir, null=True, blank=True)
 
     def __str__(self):
@@ -257,7 +256,6 @@ class EEGFilterSetting(models.Model):
 class EEGElectrodeLayoutSetting(models.Model):
     eeg_setting = models.OneToOneField(EEGSetting, primary_key=True, related_name='eeg_electrode_layout_setting')
     eeg_electrode_net_system = models.ForeignKey(EEGElectrodeNetSystem)
-    number_of_electrodes = models.IntegerField()
 
 
 class EEGElectrodePositionSetting(models.Model):

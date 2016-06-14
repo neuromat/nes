@@ -1,7 +1,7 @@
 # coding=utf-8
 
 from django.forms import ModelForm, TextInput, Textarea, Select, DateInput, TypedChoiceField, RadioSelect,\
-    ValidationError, Form, IntegerField, NumberInput, CharField, MultipleChoiceField, CheckboxSelectMultiple
+    ValidationError, Form, IntegerField, NumberInput, CharField
 from django.shortcuts import get_object_or_404
 from django.utils.translation import ugettext_lazy as _
 
@@ -9,8 +9,7 @@ from experiment.models import Experiment, QuestionnaireResponse, SubjectOfGroup,
     Component, Stimulus, Block, Instruction, ComponentConfiguration, ResearchProject, EEGData, \
     EEGSetting, Equipment, EEG, EEGMachine, EEGMachineSetting, EEGAmplifier, EEGAmplifierSetting, \
     EEGSolution, EEGFilterSetting, EEGFilterType, EEGElectrodeLayoutSetting, EEGElectrodeLocalizationSystem, \
-    EEGCapSize, EEGElectrodeCap, EEGElectrodePosition, Manufacturer, EEGElectrodeModel, EEGElectrodeNet, \
-    EEGElectrodeNetSystem, Material
+    EEGCapSize, EEGElectrodeCap, EEGElectrodePosition, Manufacturer, EEGElectrodeModel, EEGElectrodeNet, Material
 
 
 class ExperimentForm(ModelForm):
@@ -411,38 +410,41 @@ class EEGFilterSettingForm(ModelForm):
         }
 
 
-class EEGElectrodeLocalizationSystemForm(ModelForm):
-    class Meta:
-        model = EEGElectrodeLocalizationSystem
-        fields = ['number_of_electrodes']
-        widgets = {
-            'number_of_electrodes': TextInput(attrs={'id': 'id_system_number_of_electrodes',
-                                                     'class': 'form-control', 'disabled': ''})
-        }
+# class EEGElectrodeLocalizationSystemForm(ModelForm):
+#     class Meta:
+#         model = EEGElectrodeLocalizationSystem
+#         # fields = ['number_of_electrodes']
+#         fields = []
+#         widgets = {
+#             # 'number_of_electrodes': TextInput(attrs={'id': 'id_system_number_of_electrodes',
+#             #                                          'class': 'form-control', 'disabled': ''})
+#         }
 
 
-class EEGElectrodeLayoutSettingForm(ModelForm):
-    class Meta:
-        model = EEGElectrodeLayoutSetting
-        fields = ['number_of_electrodes']
-        widgets = {
-            'number_of_electrodes': TextInput(attrs={'class': 'form-control',
-                                                     'required': "",
-                                                     'data-error': _('Description must be filled.')})
-        }
+# class EEGElectrodeLayoutSettingForm(ModelForm):
+#     class Meta:
+#         model = EEGElectrodeLayoutSetting
+#         # fields = ['number_of_electrodes']
+#         fields = []
+#         widgets = {
+#             # 'number_of_electrodes': TextInput(attrs={'class': 'form-control',
+#             #                                          'required': "",
+#             #                                          'data-error': _('Description must be filled.')})
+#         }
 
 
 class EEGElectrodeLocalizationSystemRegisterForm(ModelForm):
     class Meta:
         model = EEGElectrodeLocalizationSystem
-        fields = ['name', 'description', 'number_of_electrodes', 'map_image_file']
+        # fields = ['name', 'description', 'number_of_electrodes', 'map_image_file']
+        fields = ['name', 'description', 'map_image_file']
 
         widgets = {
             'name': TextInput(attrs={'class': 'form-control', 'required': "",
                                      'data-error': _('Name field must be filled.'),
                                      'autofocus': ''}),
-            'description': Textarea(attrs={'class': 'form-control', 'rows': '4',}),
-            'number_of_electrodes': TextInput(attrs={'class': 'form-control'}),
+            'description': Textarea(attrs={'class': 'form-control', 'rows': '4'}),
+            # 'number_of_electrodes': TextInput(attrs={'class': 'form-control'}),
         }
 
 
@@ -471,6 +473,7 @@ class ManufacturerRegisterForm(ModelForm):
                                      'required': "",
                                      'data-error': _('Name must be filled.')})
         }
+
 
 class EEGMachineRegisterForm(ModelForm):
     class Meta:
@@ -521,7 +524,7 @@ class EEGSolutionRegisterForm(ModelForm):
             'components': Textarea(attrs={'id': 'id_description', 'class': 'form-control', 'rows': '4'}),
 
             'manufacturer': Select(attrs={'class': 'form-control', 'required': "",
-                                             'data-error': _('Manufacturer must be filled.')}),
+                                          'data-error': _('Manufacturer must be filled.')}),
 
         }
 
@@ -608,24 +611,8 @@ class EEGCapSizeRegisterForm(ModelForm):
             'size': TextInput(attrs={'class': 'form-control',
                                      'required': "",
                                      'data-error': _('Name must be filled.')}),
-            'electrode_adjacent_distance': NumberInput(attrs={'class': 'form-control',
-                                                              'required': "",
-                                                              'data-error': _('Electrode adjacent distance must be filled.')}),
-
+            'electrode_adjacent_distance':
+                NumberInput(attrs={'class': 'form-control',
+                                   'required': "",
+                                   'data-error': _('Electrode adjacent distance must be filled.')}),
         }
-
-
-# class EEGElectrodeNetRegisterSystemForm(ModelForm):
-#
-#     # localization_system = MultipleChoiceField(widget=CheckboxSelectMultiple(attrs={'data-error': _('Localization system must be selected')}))
-#
-#     class Meta:
-#         model = EEGElectrodeNetSystem
-#         fields = ['eeg_electrode_localization_system', 'eeg_electrode_net']
-#         widgets = {
-#             'eeg_electrode_localization_system': CheckboxSelectMultiple(attrs={
-#                                      'data-error': _('EEG electrode localization system must be filled.')}),
-#
-#             'eeg_electrode_net': Select(attrs={'class': 'form-control',
-#                                      'data-error': _('Name must be filled.')}),
-#         }
