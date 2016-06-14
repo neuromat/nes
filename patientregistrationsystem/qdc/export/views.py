@@ -78,8 +78,8 @@ EXPORT_DIRECTORY = "export"
 
 
 patient_fields = [
-    {"field": 'id', "header": 'id', "description": _("Identification")},
-    {"field": 'name', "header": 'name', "description": _("Full name")},
+    # {"field": 'id', "header": 'id', "description": _("Identification")},
+    # {"field": 'name', "header": 'name', "description": _("Full name")},
     {"field": 'gender__name', "header": 'gender', "description": _("Gender")},
     {"field": 'date_birth', "header": 'date_birth', "description": _("Date of birth")},
     {"field": 'marital_status', "header": 'marital_status', "description": _("Marital status")},
