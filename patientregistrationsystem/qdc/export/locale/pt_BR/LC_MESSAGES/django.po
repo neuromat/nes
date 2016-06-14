@@ -109,7 +109,7 @@ msgstr "Informações de questionários"
 
 #: export/templates/export/export_data.html:202
 msgid "Fields available:"
-msgstr ""
+msgstr "Campos disponíveis:"
 
 #: export/templates/export/export_data.html:207
 msgid "Please, select a questionnaire from the list."
@@ -117,7 +117,7 @@ msgstr "Por favor, selecione um questionário da lista"
 
 #: export/templates/export/export_data.html:240
 msgid "Fields chosen:"
-msgstr ""
+msgstr "Campos escolhidos:"
 
 #: export/templates/export/export_data.html:270
 msgid "Participants"
@@ -235,7 +235,7 @@ msgstr "Anterior"
 
 #: export/views.py:81
 msgid "Identification"
-msgstr ""
+msgstr "Identificação"
 
 #: export/views.py:82
 msgid "Full name"
