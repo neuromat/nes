@@ -609,7 +609,6 @@ class EEGCapSizeRegisterForm(ModelForm):
                                      'required': "",
                                      'data-error': _('Name must be filled.')}),
             'electrode_adjacent_distance': NumberInput(attrs={'class': 'form-control',
-                                                              'required': "",
                                                               'data-error': _('Electrode adjacent distance must be filled.')}),
 
         }

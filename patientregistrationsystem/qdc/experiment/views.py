@@ -37,7 +37,7 @@ from experiment.forms import ExperimentForm, QuestionnaireResponseForm, FileForm
     EEGElectrodeLayoutSettingForm, EEGElectrodeLocalizationSystemForm, EEGElectrodeLocalizationSystemRegisterForm, \
     ManufacturerRegisterForm, EEGMachineRegisterForm, EEGAmplifierRegisterForm, EEGSolutionRegisterForm, \
     EEGFilterTypeRegisterForm, EEGElectrodeModelRegisterForm, MaterialRegisterForm, EEGElectrodeNETRegisterForm, \
-    EEGElectrodePositionForm, EEGElectrodeCapRegisterForm
+    EEGElectrodePositionForm, EEGElectrodeCapRegisterForm, EEGCapSizeRegisterForm
 
 
 from patient.models import Patient, QuestionnaireResponse as PatientQuestionnaireResponse
@@ -2418,7 +2418,7 @@ def eegelectrodenet_view(request, eegelectrodenet_id, template_name="experiment/
     eegelectrodenet = get_object_or_404(EEGElectrodeNet, pk=eegelectrodenet_id)
     eegelectrodenet_form = EEGElectrodeNETRegisterForm(request.POST or None, instance=eegelectrodenet)
 
-    cap_form = None
+    # cap_form = None
     cap = EEGElectrodeCap.objects.filter(id=eegelectrodenet_id)
     is_a_cap = False
     cap_size_list = None
@@ -2473,6 +2473,45 @@ def eegelectrodenet_view(request, eegelectrodenet_id, template_name="experiment/
     return render(request, template_name, context)
 
 
+@login_required
+@permission_required('experiment.view_eegelectrodenet')
+def eegelectrodenet_size_create(request, eegelectrode_cap_id,
+                             template_name="experiment/eegelectrodenet_size_register.html"):
+
+    cap = EEGElectrodeCap.objects.filter(id=eegelectrode_cap_id)
+    cap_size_form = EEGCapSizeRegisterForm(request.POST or None)
+
+    if request.method == "POST":
+
+        if request.POST['action'] == "save":
+
+            if cap_size_form.is_valid():
+
+                eegcapsize_added = cap_size_form.save(commit=False)
+                eegcapsize_added.eeg_electrode_cap_id = eegelectrode_cap_id
+                eegcapsize_added.save()
+
+                messages.success(request, _('EEG cap size created successfully.'))
+                redirect_url = reverse("eegelectrodenet_view", args=(eegelectrode_cap_id,))
+                return HttpResponseRedirect(redirect_url)
+
+            else:
+                messages.warning(request, _('Information not saved.'))
+
+        else:
+            messages.warning(request, _('Action not available.'))
+
+    context = {
+        "can_change": True,
+        "equipment": cap,
+        "equipment_form": cap_size_form,
+        # "cap_form": cap_form,
+        # "cap_size_list": cap_size_list,
+        # "eegelectrodelocalizationsystem": eegelectrodelocalizationsystem,
+    }
+
+    return render(request, template_name, context)
+
 # @login_required
 # @permission_required('experiment.add_equipment')
 # def equipment_configuration(request,
@@ -2491,7 +2530,6 @@ def eegelectrodenet_view(request, eegelectrodenet_id, template_name="experiment/
 #         }
 #
 #     return render(request, template_name, context)
-
 
 def search_cid10_ajax(request):
     cid_10_list = ''

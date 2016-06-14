@@ -163,17 +163,15 @@
                                     </div>
                                 </div>
 
-                                {% if is_a_cap %}
-                                    <div class="row" id="div_cap">
-                                        <div class="col-xs-12 col-sm-12">
-                                            <div class="form-group">
-                                                <label class="control-label">{% trans "Material" %} <b style="color: red;">*</b></label>
-                                                {{ cap_form.material}}
-                                                <div class="help-block with-errors"></div>
-                                            </div>
+                                <div class="row" id="div_cap">
+                                    <div class="col-xs-12 col-sm-12">
+                                        <div class="form-group">
+                                            <label class="control-label">{% trans "Material" %} <b style="color: red;">*</b></label>
+                                            {{ cap_form.material}}
+                                            <div class="help-block with-errors"></div>
                                         </div>
                                     </div>
-                                {% endif %}
+                                </div>
 
                                 {% if is_a_cap and not editing %}
 
