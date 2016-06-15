@@ -891,11 +891,11 @@ msgstr "Configuração de EEG"
 #: experiment/templates/experiment/eeg_electrode_localization_system_register.html:52
 #: experiment/templates/experiment/eeg_electrode_position_register.html:52
 msgid "EEG electrode localization system"
-msgstr "Posição de eletrodo de EEG"
+msgstr "Sistema de localização de eletrodos de EEG"
 
 #: experiment/templates/experiment/eeg_electrode_localization_system_list.html:51
 msgid "EEG electrode localization system list"
-msgstr "Lista de sistema de localização de eletrodo de EEG"
+msgstr "Lista de sistemas de localização de eletrodo de EEG"
 
 #: experiment/templates/experiment/eeg_electrode_localization_system_list.html:58
 #: experiment/templates/experiment/eeg_electrode_localization_system_register.html:95
@@ -939,7 +939,7 @@ msgstr "Novo"
 
 #: experiment/templates/experiment/eeg_electrode_localization_system_register.html:71
 msgid "EEG electrode localization system basic information"
-msgstr "Informação básica "
+msgstr "Informação básica do sistema de localização"
 
 #: experiment/templates/experiment/eeg_electrode_localization_system_register.html:105
 msgid "Map image file"
@@ -2422,7 +2422,7 @@ msgstr "Passos incluídos com sucesso."
 
 #: experiment/views.py:5058
 msgid "EEG electrode localization system created successfully."
-msgstr "Sistema de localização de eletrodo de EEG criada com sucesso."
+msgstr "Sistema de localização de eletrodo de EEG criado com sucesso."
 
 #: experiment/views.py:5102
 msgid "Error trying to delete localization system."

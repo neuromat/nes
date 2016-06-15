@@ -63,7 +63,7 @@
             </div>
             <div class="col-xs-11 col-sm-11">
                 <div class="form-group">
-                    <label class="control-label">{% trans "Electrode layout system" %} </label>
+                    <label class="control-label">{% trans "Electrode localization system" %} </label>
 
                     <select class="form-control" name="localization_system_selection" id="id_localization_system_selection" required {% if not editing and not creating %}disabled{% endif %}>
                         <option value>-------</option>
@@ -78,29 +78,29 @@
             </div>
         </div>
 
-        <div class="row">
-            <div class="col-xs-1 col-sm-1">
-            </div>
-            <div class="col-xs-11 col-sm-11">
-                <div class="form-group">
-                    <label class="control-label">{% trans "Number of electrodes" %} </label>
-                    {{ selection_form.number_of_electrodes }}
-                    <div class="help-block with-errors"></div>
-                </div>
-            </div>
-        </div>
-
-        <div class="row">
-            <div class="col-xs-1 col-sm-1">
-            </div>
-            <div class="col-xs-11 col-sm-11">
-                <div class="form-group">
-                    <label class="control-label">{% trans "Number of electrodes setted" %} </label>
-                    {{ setting_form.number_of_electrodes }}
-                    <div class="help-block with-errors"></div>
-                </div>
-            </div>
-        </div>
+{#        <div class="row">#}
+{#            <div class="col-xs-1 col-sm-1">#}
+{#            </div>#}
+{#            <div class="col-xs-11 col-sm-11">#}
+{#                <div class="form-group">#}
+{#                    <label class="control-label">{% trans "Number of electrodes" %} </label>#}
+{#                    {{ selection_form.number_of_electrodes }}#}
+{#                    <div class="help-block with-errors"></div>#}
+{#                </div>#}
+{#            </div>#}
+{#        </div>#}
+{##}
+{#        <div class="row">#}
+{#            <div class="col-xs-1 col-sm-1">#}
+{#            </div>#}
+{#            <div class="col-xs-11 col-sm-11">#}
+{#                <div class="form-group">#}
+{#                    <label class="control-label">{% trans "Number of electrodes setted" %} </label>#}
+{#                    {{ setting_form.number_of_electrodes }}#}
+{#                    <div class="help-block with-errors"></div>#}
+{#                </div>#}
+{#            </div>#}
+{#        </div>#}
 
         {% if not editing and not creating and can_change %}
             <div class="btn-toolbar pull-right">

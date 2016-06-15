@@ -48,6 +48,9 @@ function used(){
     var canvas = document.getElementById("electrodeMapCanvas");
     var context = canvas.getContext("2d");
     var eeg_positions = document.getElementById("eeg_electrode_position");
+    var used_positions_field = document.getElementById("used_positions");
+
+    var used_positions_counter = 0;
 
     positions = eval(eeg_positions.value);
 
@@ -60,11 +63,14 @@ function used(){
             delete positions[i];
             //init();
         }else{
+            used_positions_counter++;
             positions.push({
                 id:"position.id",
             });
         }
     }
+
+    used_positions_field.value = used_positions_counter;
 
     var canvas = document.getElementById("electrodeMapCanvas");
     var ctx = canvas.getContext("2d");
@@ -79,7 +85,6 @@ function used(){
     // imageObj.src = 'https://www.ant-neuro.com/sites/default/files/images/waveguard_layout_024ch.png';
     var map_file = document.getElementById("map_file");
     imageObj.src = map_file.value;
-
 
 }
 
