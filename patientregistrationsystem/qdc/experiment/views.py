@@ -107,11 +107,10 @@ def research_project_create(request, template_name="experiment/research_project_
         else:
             messages.warning(request, _('Action not available.'))
 
-    context = {
-        "research_project_form": research_project_form,
-        "creating": True,
-        "editing": True
-    }
+    context = {"research_project_form": research_project_form,
+               "creating": True,
+               "editing": True
+               }
 
     return render(request, template_name, context)
 
