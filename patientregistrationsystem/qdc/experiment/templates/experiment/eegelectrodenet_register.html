@@ -191,7 +191,7 @@
                                                             <tr>
                                                                 <td>
 {#                                                                    {{ cap_size.size }}#}
-                                                                     {% if perms.experiment.view_equipment %}
+                                                                     {% if perms.experiment.view_equipment and can_change %}
                                                                             <a data-toggle="tooltip" data-placement="left" title="{% trans "Visualize" %}"
                                                                                href="/experiment/eeg_electrode_net/{{ cap_size.id }}">
                                                                                 {{cap_size.size }}

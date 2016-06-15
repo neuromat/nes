@@ -2447,7 +2447,7 @@ def eegelectrodenet_cap_size_create(request, eegelectrode_cap_id,
                 eegcapsize_added.save()
 
                 messages.success(request, _('EEG cap size created successfully.'))
-                redirect_url = reverse("eegelectrodenet_edit", args=(eegelectrode_cap_id,))
+                redirect_url = reverse("eegelectrodenet_view", args=(eegelectrode_cap_id,))
                 return HttpResponseRedirect(redirect_url)
 
             else:
