@@ -173,7 +173,8 @@
                                     </div>
                                 </div>
 
-                                {% if is_a_cap and not editing %}
+{#                                {% if is_a_cap and not editing %}#}
+                                {% if is_a_cap %}
 
                                     <div class="row">
                                         <div class="col-xs-12 col-sm-12">
@@ -189,23 +190,43 @@
                                                         {% for cap_size in cap_size_list %}
                                                             <tr>
                                                                 <td>
-                                                                    {{ cap_size.size }}
+{#                                                                    {{ cap_size.size }}#}
+                                                                     {% if perms.experiment.view_equipment %}
+                                                                            <a data-toggle="tooltip" data-placement="left" title="{% trans "Visualize" %}"
+                                                                               href="/experiment/eeg_electrode_net/{{ cap_size.id }}">
+                                                                                {{cap_size.size }}
+                                                                            </a>
+                                                                        {% else %}
+                                                                            {{ cap_size.size }}
+                                                                        {% endif %}
+
                                                                 </td>
                                                                 <td>
                                                                     {{ cap_size.electrode_adjacent_distance|default:"" }}
+                                                                    {% if can_change %}
+                                                        <a href="/experiment/eeg_electrode_net/remove/{{ equipment.id }}/{{ cap_size.id }}"
+                                                           class="btn glyphicon glyphicon-remove" data-toggle="tooltip"
+                                                           data-placement="right"
+                                                           style="color: indianred; position: relative; float: right; padding: 0"
+                                                           title="{% trans "Unset cap size" %}"
+                                                           onclick="show_modal_remove_cap_size();">
+                                                        </a>
+                                                                    {% endif %}
+
                                                                 </td>
                                                             </tr>
                                                         {% endfor %}
                                                         </tbody>
                                                     </table>
-
+                                                {% if can_change %}
                                                     <div class="row" id="div_cap">
                                                         <div class="col-xs-12 col-sm-12">
                                                             <div class="form-group">
-                                                                <a disabled="" href="/experiment/eeg_electrode_net/{{ equipment.id }}/add_size" class="btn btn-primary">{% trans "Add size" %}</a>
+                                                                <a href="/experiment/eeg_electrode_net/{{ equipment.id }}/add_size" class="btn btn-primary">{% trans "Add size" %}</a>
                                                             </div>
                                                         </div>
                                                     </div>
+                                                {% endif %}
 
                                                 </div>
                                             </div>
@@ -264,6 +285,24 @@
             </div>
         </div>
     </div>
+
+    <div class="modal fade" id="modalRemoveCapSize" tabindex="-1" role="dialog" aria-labelledby="myModalLabel"
+         aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-body">
+                    {% trans "Are you sure you want to delete cap size?" %}
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-default" data-dismiss="modal" onclick="disableRemoveButton()">{% trans "Cancel" %}</button>
+                    <button type="submit" class="btn btn-danger" id="remove_button" value="remove_cap_size" disabled name="action">{% trans "Delete" %}</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+
+
 
 {% endblock %}
 
