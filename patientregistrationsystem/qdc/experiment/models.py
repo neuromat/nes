@@ -275,6 +275,7 @@ class Component(models.Model):
         ("task", _("Task for participant")),
         ("task_experiment", _("Task for experimenter")),
         ("eeg", _("EEG")),
+        ("emg", _("EMG")),
     )
 
     identification = models.CharField(null=False, max_length=50, blank=False)
@@ -336,6 +337,11 @@ class Block(Component):
 class EEG(Component):
     eeg_setting = models.ForeignKey(EEGSetting)
 
+    def save(self, *args, **kwargs):
+        super(Component, self).save(*args, **kwargs)
+
+
+class EMG(Component):
     def save(self, *args, **kwargs):
         super(Component, self).save(*args, **kwargs)
 

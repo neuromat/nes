@@ -11,7 +11,7 @@ from django.utils.translation import ugettext_lazy as _
 from .models import Experiment, Group, Subject, \
     QuestionnaireResponse, SubjectOfGroup, ComponentConfiguration, ResearchProject, Keyword, StimulusType, \
     Component, Task, TaskForTheExperimenter, Stimulus, Instruction, Pause, Questionnaire, Block, \
-    EEG, FileFormat, EEGData, EEGSetting, DataConfigurationTree
+    EEG, FileFormat, EEGData, EEGSetting, DataConfigurationTree, EMG
 from .views import experiment_update, upload_file, research_project_update
 
 from patient.models import ClassificationOfDiseases
@@ -166,6 +166,16 @@ class ExperimentalProtocolTest(TestCase):
         self.assertTrue("/experiment/" + str(experiment.id) + "/components" in response.url)
         self.assertTrue(TaskForTheExperimenter.objects.filter(description=description,
                                                               identification=identification).exists())
+
+        identification = 'EMG identification'
+        description = 'EMG description'
+        self.data = {'action': 'save', 'identification': identification, 'description': description}
+        response = self.client.post(reverse("component_new", args=(experiment.id, "emg")), self.data)
+        self.assertEqual(response.status_code, 302)
+        # Check if redirected to list of components
+        self.assertTrue("/experiment/" + str(experiment.id) + "/components" in response.url)
+        self.assertTrue(EMG.objects.filter(description=description,
+                                           identification=identification).exists())
 
         identification = 'EEG identification'
         description = 'EEG description'
