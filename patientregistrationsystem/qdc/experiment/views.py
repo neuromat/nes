@@ -158,13 +158,12 @@ def research_project_view(request, research_project_id, template_name="experimen
                 redirect_url = reverse("research_project_view", args=(research_project_id,))
                 return HttpResponseRedirect(redirect_url)
 
-    context = {
-        "can_change": get_can_change(request.user, research_project),
-        "experiments": research_project.experiment_set.order_by('title'),
-        "keywords": research_project.keywords.order_by('name'),
-        "research_project": research_project,
-        "research_project_form": research_project_form,
-    }
+    context = {"can_change": get_can_change(request.user, research_project),
+               "experiments": research_project.experiment_set.order_by('title'),
+               "keywords": research_project.keywords.order_by('name'),
+               "research_project": research_project,
+               "research_project_form": research_project_form,
+               }
 
     return render(request, template_name, context)
 
@@ -194,10 +193,10 @@ def research_project_update(request, research_project_id, template_name="experim
                     redirect_url = reverse("research_project_view", args=(research_project.id,))
                     return HttpResponseRedirect(redirect_url)
 
-        context = {
-            "research_project": research_project,
-            "research_project_form": research_project_form,
-            "editing": True}
+        context = {"research_project": research_project,
+                   "research_project_form": research_project_form,
+                   "editing": True
+                   }
 
         return render(request, template_name, context)
     else:
@@ -307,11 +306,11 @@ def experiment_create(request, research_project_id, template_name="experiment/ex
                     redirect_url = reverse("experiment_view", args=(experiment_added.id,))
                     return HttpResponseRedirect(redirect_url)
 
-        context = {
-            "research_project": ResearchProject.objects.get(id=research_project_id),
-            "experiment_form": experiment_form,
-            "creating": True,
-            "editing": True}
+        context = {"research_project": ResearchProject.objects.get(id=research_project_id),
+                   "experiment_form": experiment_form,
+                   "creating": True,
+                   "editing": True
+                   }
 
         return render(request, template_name, context)
     else:
@@ -358,14 +357,13 @@ def experiment_view(request, experiment_id, template_name="experiment/experiment
             else:
                 raise PermissionDenied
 
-    context = {
-        "can_change": get_can_change(request.user, experiment.research_project),
-        "experiment": experiment,
-        "experiment_form": experiment_form,
-        "group_list": group_list,
-        "eeg_setting_list": eeg_setting_list,
-        "research_project": experiment.research_project,
-    }
+    context = {"can_change": get_can_change(request.user, experiment.research_project),
+               "experiment": experiment,
+               "experiment_form": experiment_form,
+               "group_list": group_list,
+               "eeg_setting_list": eeg_setting_list,
+               "research_project": experiment.research_project
+               }
 
     return render(request, template_name, context)
 
@@ -391,12 +389,12 @@ def experiment_update(request, experiment_id, template_name="experiment/experime
                     redirect_url = reverse("experiment_view", args=(experiment_id,))
                     return HttpResponseRedirect(redirect_url)
 
-        context = {
-            "research_project": experiment.research_project,
-            "experiment_form": experiment_form,
-            "editing": True,
-            "group_list": group_list,
-            "experiment": experiment}
+        context = {"research_project": experiment.research_project,
+                   "experiment_form": experiment_form,
+                   "editing": True,
+                   "group_list": group_list,
+                   "experiment": experiment
+                   }
 
         return render(request, template_name, context)
     else:
@@ -423,11 +421,11 @@ def group_create(request, experiment_id, template_name="experiment/group_registe
                     redirect_url = reverse("group_view", args=(group_added.id,))
                     return HttpResponseRedirect(redirect_url)
 
-        context = {
-            "group_form": group_form,
-            "creating": True,
-            "editing": True,
-            "experiment": experiment}
+        context = {"group_form": group_form,
+                   "creating": True,
+                   "editing": True,
+                   "experiment": experiment
+                   }
 
         return render(request, template_name, context)
     else:
@@ -540,16 +538,15 @@ def group_view(request, group_id, template_name="experiment/group_register.html"
         else:
             raise PermissionDenied
 
-    context = {
-        "can_change": can_change,
-        "classification_of_diseases_list": group.classification_of_diseases.all(),
-        "group_form": group_form,
-        "questionnaires_configuration_list": list_of_questionnaires_configuration,
-        "experiment": group.experiment,
-        "group": group,
-        "editing": False,
-        "number_of_subjects": SubjectOfGroup.objects.all().filter(group=group).count()
-    }
+    context = {"can_change": can_change,
+               "classification_of_diseases_list": group.classification_of_diseases.all(),
+               "group_form": group_form,
+               "questionnaires_configuration_list": list_of_questionnaires_configuration,
+               "experiment": group.experiment,
+               "group": group,
+               "editing": False,
+               "number_of_subjects": SubjectOfGroup.objects.all().filter(group=group).count()
+               }
 
     return render(request, template_name, context)
 
@@ -574,12 +571,11 @@ def group_update(request, group_id, template_name="experiment/group_register.htm
                     redirect_url = reverse("group_view", args=(group_id,))
                     return HttpResponseRedirect(redirect_url)
 
-        context = {
-            "group_form": group_form,
-            "editing": True,
-            "experiment": group.experiment,
-            "group": group,
-        }
+        context = {"group_form": group_form,
+                   "editing": True,
+                   "experiment": group.experiment,
+                   "group": group
+                   }
 
         return render(request, template_name, context)
     else:
@@ -606,11 +602,11 @@ def eeg_setting_create(request, experiment_id, template_name="experiment/eeg_set
                     redirect_url = reverse("eeg_setting_view", args=(eeg_setting_added.id,))
                     return HttpResponseRedirect(redirect_url)
 
-        context = {
-            "eeg_setting_form": eeg_setting_form,
-            "creating": True,
-            "editing": True,
-            "experiment": experiment}
+        context = {"eeg_setting_form": eeg_setting_form,
+                   "creating": True,
+                   "editing": True,
+                   "experiment": experiment
+                   }
 
         return render(request, template_name, context)
     else:
@@ -673,14 +669,13 @@ def eeg_setting_view(request, eeg_setting_id, template_name="experiment/eeg_sett
 
     equipment_type_choices = Equipment.EQUIPMENT_TYPES
 
-    context = {
-        "can_change": can_change,
-        "eeg_setting_form": eeg_setting_form,
-        "experiment": eeg_setting.experiment,
-        "eeg_setting": eeg_setting,
-        "editing": False,
-        "equipment_type_choices": equipment_type_choices,
-    }
+    context = {"can_change": can_change,
+               "eeg_setting_form": eeg_setting_form,
+               "experiment": eeg_setting.experiment,
+               "eeg_setting": eeg_setting,
+               "editing": False,
+               "equipment_type_choices": equipment_type_choices
+               }
 
     return render(request, template_name, context)
 
@@ -705,12 +700,11 @@ def eeg_setting_update(request, eeg_setting_id, template_name="experiment/eeg_se
                     redirect_url = reverse("eeg_setting_view", args=(eeg_setting_id,))
                     return HttpResponseRedirect(redirect_url)
 
-        context = {
-            "eeg_setting_form": eeg_setting_form,
-            "editing": True,
-            "experiment": eeg_setting.experiment,
-            "eeg_setting": eeg_setting
-        }
+        context = {"eeg_setting_form": eeg_setting_form,
+                   "editing": True,
+                   "experiment": eeg_setting.experiment,
+                   "eeg_setting": eeg_setting
+                   }
 
         return render(request, template_name, context)
     else:
@@ -980,32 +974,31 @@ def view_eeg_setting_type(request, eeg_setting_id, eeg_setting_type):
             else:
                 equipment_form = EEGFilterForm(request.POST or None, instance=filter_selected)
 
-        context = {
-            "creating": creating,
-            "editing": False,
-            "tab": "0",
+        context = {"creating": creating,
+                   "editing": False,
+                   "tab": "0",
 
-            "can_change": True,
+                   "can_change": True,
 
-            "eeg_setting_type": eeg_setting_type,
+                   "eeg_setting_type": eeg_setting_type,
 
-            "eeg_setting": eeg_setting,
-            "equipment_selected": equipment_selected,
-            "solution_selected": solution_selected,
-            "filter_selected": filter_selected,
+                   "eeg_setting": eeg_setting,
+                   "equipment_selected": equipment_selected,
+                   "solution_selected": solution_selected,
+                   "filter_selected": filter_selected,
 
-            "manufacturer_list": manufacturer_list,
-            "equipment_list": equipment_list,
-            "solution_list": solution_list,
-            "filter_list": filter_list,
-            "equipment_form": equipment_form,
+                   "manufacturer_list": manufacturer_list,
+                   "equipment_list": equipment_list,
+                   "solution_list": solution_list,
+                   "filter_list": filter_list,
+                   "equipment_form": equipment_form,
 
-            "selection_form": selection_form,
-            "setting_form": setting_form,
+                   "selection_form": selection_form,
+                   "setting_form": setting_form,
 
-            "localization_system_list": localization_system_list,
-            "localization_system_selected": localization_system_selected
-        }
+                   "localization_system_list": localization_system_list,
+                   "localization_system_selected": localization_system_selected
+                   }
 
         return render(request, template_name, context)
     else:
@@ -1216,32 +1209,31 @@ def edit_eeg_setting_type(request, eeg_setting_id, eeg_setting_type):
 
             equipment_form = EquipmentForm(request.POST or None, instance=equipment_selected)
 
-        context = {
-            "creating": False,
-            "editing": True,
-            "tab": "0",
+        context = {"creating": False,
+                   "editing": True,
+                   "tab": "0",
 
-            "can_change": True,
+                   "can_change": True,
 
-            "eeg_setting_type": eeg_setting_type,
+                   "eeg_setting_type": eeg_setting_type,
 
-            "eeg_setting": eeg_setting,
-            "equipment_selected": equipment_selected,
-            "solution_selected": solution_selected,
-            "filter_selected": filter_selected,
+                   "eeg_setting": eeg_setting,
+                   "equipment_selected": equipment_selected,
+                   "solution_selected": solution_selected,
+                   "filter_selected": filter_selected,
 
-            "solution_list": solution_list,
-            "manufacturer_list": manufacturer_list,
-            "equipment_list": equipment_list,
-            "filter_list": filter_list,
-            "equipment_form": equipment_form,
+                   "solution_list": solution_list,
+                   "manufacturer_list": manufacturer_list,
+                   "equipment_list": equipment_list,
+                   "filter_list": filter_list,
+                   "equipment_form": equipment_form,
 
-            "selection_form": selection_form,
-            "setting_form": setting_form,
+                   "selection_form": selection_form,
+                   "setting_form": setting_form,
 
-            "localization_system_list": localization_system_list,
-            "localization_system_selected": localization_system_selected
-        }
+                   "localization_system_list": localization_system_list,
+                   "localization_system_selected": localization_system_selected
+                   }
 
         return render(request, template_name, context)
     else:
@@ -1367,13 +1359,12 @@ def eeg_electrode_position_setting(request, eeg_setting_id,
                 'y': position_setting.eeg_electrode_position.coordinate_y
             })
 
-        context = {
-            "tab": "1",
-            "editing": False,
-            "eeg_setting": eeg_setting,
-            "json_list": json.dumps(positions),
-            "number_of_used_electrodes": number_of_used_positions(eeg_setting)
-        }
+        context = {"tab": "1",
+                   "editing": False,
+                   "eeg_setting": eeg_setting,
+                   "json_list": json.dumps(positions),
+                   "number_of_used_electrodes": number_of_used_positions(eeg_setting)
+                   }
 
         return render(request, template_name, context)
     else:
@@ -1414,13 +1405,12 @@ def edit_eeg_electrode_position_setting(request, eeg_setting_id,
                 redirect_url = reverse("eeg_electrode_position_setting", args=(eeg_setting_id,))
                 return HttpResponseRedirect(redirect_url)
 
-        context = {
-            "tab": "1",
-            "editing": True,
-            "eeg_setting": eeg_setting,
-            "json_list": json.dumps(positions),
-            "number_of_used_electrodes": number_of_used_positions(eeg_setting)
-        }
+        context = {"tab": "1",
+                   "editing": True,
+                   "eeg_setting": eeg_setting,
+                   "json_list": json.dumps(positions),
+                   "number_of_used_electrodes": number_of_used_positions(eeg_setting)
+                   }
 
         return render(request, template_name, context)
     else:
@@ -1438,12 +1428,11 @@ def eeg_electrode_position_setting_model(request, eeg_setting_id,
 
         eeg_electrode_model_list = EEGElectrodeModel.objects.all()
 
-        context = {
-            "tab": "2",
-            "editing": False,
-            "eeg_setting": eeg_setting,
-            "eeg_electrode_model_list": eeg_electrode_model_list
-        }
+        context = {"tab": "2",
+                   "editing": False,
+                   "eeg_setting": eeg_setting,
+                   "eeg_electrode_model_list": eeg_electrode_model_list
+                   }
 
         return render(request, template_name, context)
     else:
@@ -1474,12 +1463,11 @@ def edit_eeg_electrode_position_setting_model(
                 redirect_url = reverse("eeg_electrode_position_setting_model", args=(eeg_setting_id,))
                 return HttpResponseRedirect(redirect_url)
 
-        context = {
-            "tab": "2",
-            "editing": True,
-            "eeg_setting": eeg_setting,
-            "eeg_electrode_model_list": eeg_electrode_model_list
-        }
+        context = {"tab": "2",
+                   "editing": True,
+                   "eeg_setting": eeg_setting,
+                   "eeg_electrode_model_list": eeg_electrode_model_list
+                   }
 
         return render(request, template_name, context)
     else:
@@ -1512,17 +1500,16 @@ def equipment_view(request, eeg_setting_id, equipment_id,
             if type_element == equipment.equipment_type:
                 equipment_type_name = type_name
 
-        context = {
-            "creating": False,
-            "editing": False,
-            "eeg_setting": eeg_setting,
-            "manufacturer_list": manufacturer_list,
-            "equipment_list": equipment_list,
-            "equipment_form": equipment_form,
-            "equipment_type": equipment.equipment_type,
-            "equipment_selected": equipment,
-            "equipment_type_name": equipment_type_name
-        }
+        context = {"creating": False,
+                   "editing": False,
+                   "eeg_setting": eeg_setting,
+                   "manufacturer_list": manufacturer_list,
+                   "equipment_list": equipment_list,
+                   "equipment_form": equipment_form,
+                   "equipment_type": equipment.equipment_type,
+                   "equipment_selected": equipment,
+                   "equipment_type_name": equipment_type_name
+                   }
 
         return render(request, template_name, context)
     else:
@@ -1560,11 +1547,10 @@ def manufacturer_create(request, template_name="experiment/manufacturer_register
         else:
             messages.warning(request, _('Action not available.'))
 
-    context = {
-        "equipment_form": manufacturer_form,
-        "creating": True,
-        "editing": True
-    }
+    context = {"equipment_form": manufacturer_form,
+               "creating": True,
+               "editing": True
+               }
 
     return render(request, template_name, context)
 
@@ -1588,10 +1574,10 @@ def manufacturer_update(request, manufacturer_id, template_name="experiment/manu
                 redirect_url = reverse("manufacturer_view", args=(manufacturer.id,))
                 return HttpResponseRedirect(redirect_url)
 
-    context = {
-        "equipment": manufacturer,
-        "equipment_form": manufacturer_form,
-        "editing": True}
+    context = {"equipment": manufacturer,
+               "equipment_form": manufacturer_form,
+               "editing": True
+               }
 
     return render(request, template_name, context)
 
@@ -1618,11 +1604,10 @@ def manufacturer_view(request, manufacturer_id, template_name="experiment/manufa
                 redirect_url = reverse("manufacturer_view", args=(manufacturer_id,))
                 return HttpResponseRedirect(redirect_url)
 
-    context = {
-        "can_change": True,
-        "equipment": manufacturer,
-        "equipment_form": manufacturer_form,
-    }
+    context = {"can_change": True,
+               "equipment": manufacturer,
+               "equipment_form": manufacturer_form
+               }
 
     return render(request, template_name, context)
 
@@ -1659,11 +1644,10 @@ def eegmachine_create(request, template_name="experiment/eegmachine_register.htm
         else:
             messages.warning(request, _('Action not available.'))
 
-    context = {
-        "equipment_form": eegmachine_form,
-        "creating": True,
-        "editing": True
-    }
+    context = {"equipment_form": eegmachine_form,
+               "creating": True,
+               "editing": True
+               }
 
     return render(request, template_name, context)
 
@@ -1691,10 +1675,10 @@ def eegmachine_update(request, eegmachine_id, template_name="experiment/eegmachi
                 redirect_url = reverse("eegmachine_view", args=(eegmachine.id,))
                 return HttpResponseRedirect(redirect_url)
 
-    context = {
-        "equipment": eegmachine,
-        "equipment_form": eegmachine_form,
-        "editing": True}
+    context = {"equipment": eegmachine,
+               "equipment_form": eegmachine_form,
+               "editing": True
+               }
 
     return render(request, template_name, context)
 
@@ -1721,11 +1705,10 @@ def eegmachine_view(request, eegmachine_id, template_name="experiment/eegmachine
                 redirect_url = reverse("eegmachine_view", args=(eegmachine_id,))
                 return HttpResponseRedirect(redirect_url)
 
-    context = {
-        "can_change": True,
-        "equipment": eegmachine,
-        "equipment_form": eegmachine_form,
-    }
+    context = {"can_change": True,
+               "equipment": eegmachine,
+               "equipment_form": eegmachine_form
+               }
 
     return render(request, template_name, context)
 
@@ -1762,11 +1745,10 @@ def eegamplifier_create(request, template_name="experiment/eegamplifier_register
         else:
             messages.warning(request, _('Action not available.'))
 
-    context = {
-        "equipment_form": eegamplifier_form,
-        "creating": True,
-        "editing": True
-    }
+    context = {"equipment_form": eegamplifier_form,
+               "creating": True,
+               "editing": True
+               }
 
     return render(request, template_name, context)
 
@@ -1790,10 +1772,10 @@ def eegamplifier_update(request, eegamplifier_id, template_name="experiment/eega
                 redirect_url = reverse("eegamplifier_view", args=(eegamplifier.id,))
                 return HttpResponseRedirect(redirect_url)
 
-    context = {
-        "equipment": eegamplifier,
-        "equipment_form": eegamplifier_form,
-        "editing": True}
+    context = {"equipment": eegamplifier,
+               "equipment_form": eegamplifier_form,
+               "editing": True
+               }
 
     return render(request, template_name, context)
 
@@ -1820,11 +1802,10 @@ def eegamplifier_view(request, eegamplifier_id, template_name="experiment/eegamp
                 redirect_url = reverse("eegamplifier_view", args=(eegamplifier_id,))
                 return HttpResponseRedirect(redirect_url)
 
-    context = {
-        "can_change": True,
-        "equipment": eegamplifier,
-        "equipment_form": eegamplifier_form,
-    }
+    context = {"can_change": True,
+               "equipment": eegamplifier,
+               "equipment_form": eegamplifier_form
+               }
 
     return render(request, template_name, context)
 
@@ -1860,11 +1841,10 @@ def eegsolution_create(request, template_name="experiment/eegsolution_register.h
         else:
             messages.warning(request, _('Action not available.'))
 
-    context = {
-        "equipment_form": eegsolution_form,
-        "creating": True,
-        "editing": True
-    }
+    context = {"equipment_form": eegsolution_form,
+               "creating": True,
+               "editing": True
+               }
 
     return render(request, template_name, context)
 
@@ -1892,10 +1872,10 @@ def eegsolution_update(request, eegsolution_id, template_name="experiment/eegsol
                 redirect_url = reverse("eegsolution_view", args=(eegsolution.id,))
                 return HttpResponseRedirect(redirect_url)
 
-    context = {
-        "equipment": eegsolution,
-        "equipment_form": eegsolution_form,
-        "editing": True}
+    context = {"equipment": eegsolution,
+               "equipment_form": eegsolution_form,
+               "editing": True
+               }
 
     return render(request, template_name, context)
 
@@ -1922,11 +1902,10 @@ def eegsolution_view(request, eegsolution_id, template_name="experiment/eegsolut
                 redirect_url = reverse("eegsolution_view", args=(eegsolution_id,))
                 return HttpResponseRedirect(redirect_url)
 
-    context = {
-        "can_change": True,
-        "equipment": eegsolution,
-        "equipment_form": eegsolution_form,
-    }
+    context = {"can_change": True,
+               "equipment": eegsolution,
+               "equipment_form": eegsolution_form
+               }
 
     return render(request, template_name, context)
 
@@ -1962,11 +1941,10 @@ def eegfiltertype_create(request, template_name="experiment/eegfiltertype_regist
         else:
             messages.warning(request, _('Action not available.'))
 
-    context = {
-        "equipment_form": eegfiltertype_form,
-        "creating": True,
-        "editing": True
-    }
+    context = {"equipment_form": eegfiltertype_form,
+               "creating": True,
+               "editing": True
+               }
 
     return render(request, template_name, context)
 
@@ -1991,10 +1969,10 @@ def eegfiltertype_update(request, eegfiltertype_id, template_name="experiment/ee
                 redirect_url = reverse("eegfiltertype_view", args=(eegfiltertype.id,))
                 return HttpResponseRedirect(redirect_url)
 
-    context = {
-        "equipment": eegfiltertype,
-        "equipment_form": eegfiltertype_form,
-        "editing": True}
+    context = {"equipment": eegfiltertype,
+               "equipment_form": eegfiltertype_form,
+               "editing": True
+               }
 
     return render(request, template_name, context)
 
@@ -2021,11 +1999,10 @@ def eegfiltertype_view(request, eegfiltertype_id, template_name="experiment/eegf
                 redirect_url = reverse("eegfiltertype_view", args=(eegfiltertype_id,))
                 return HttpResponseRedirect(redirect_url)
 
-    context = {
-        "can_change": True,
-        "equipment": eegfiltertype,
-        "equipment_form": eegfiltertype_form,
-    }
+    context = {"can_change": True,
+               "equipment": eegfiltertype,
+               "equipment_form": eegfiltertype_form
+               }
 
     return render(request, template_name, context)
 
@@ -2061,11 +2038,10 @@ def eegelectrodemodel_create(request, template_name="experiment/eegelectrodemode
         else:
             messages.warning(request, _('Action not available.'))
 
-    context = {
-        "equipment_form": eegelectrodemodel_form,
-        "creating": True,
-        "editing": True
-    }
+    context = {"equipment_form": eegelectrodemodel_form,
+               "creating": True,
+               "editing": True
+               }
 
     return render(request, template_name, context)
 
@@ -2090,10 +2066,10 @@ def eegelectrodemodel_update(request, eegelectrodemodel_id, template_name="exper
                 redirect_url = reverse("eegelectrodemodel_view", args=(eegelectrodemodel.id,))
                 return HttpResponseRedirect(redirect_url)
 
-    context = {
-        "equipment": eegelectrodemodel,
-        "equipment_form": eegelectrodemodel_form,
-        "editing": True}
+    context = {"equipment": eegelectrodemodel,
+               "equipment_form": eegelectrodemodel_form,
+               "editing": True
+               }
 
     return render(request, template_name, context)
 
@@ -2120,11 +2096,9 @@ def eegelectrodemodel_view(request, eegelectrodemodel_id, template_name="experim
                 redirect_url = reverse("eegelectrodemodel_view", args=(eegelectrodemodel_id,))
                 return HttpResponseRedirect(redirect_url)
 
-    context = {
-        "can_change": True,
-        "equipment": eegelectrodemodel,
-        "equipment_form": eegelectrodemodel_form,
-    }
+    context = {"can_change": True,
+               "equipment": eegelectrodemodel,
+               "equipment_form": eegelectrodemodel_form}
 
     return render(request, template_name, context)
 
