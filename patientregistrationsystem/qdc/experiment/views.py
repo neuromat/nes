@@ -24,7 +24,7 @@ from neo import io
 
 from experiment.models import Experiment, Subject, QuestionnaireResponse, SubjectOfGroup, Group, Component, \
     ComponentConfiguration, Questionnaire, Task, Stimulus, Pause, Instruction, Block, \
-    TaskForTheExperimenter, ClassificationOfDiseases, ResearchProject, Keyword, EEG, EEGData, FileFormat, \
+    TaskForTheExperimenter, ClassificationOfDiseases, ResearchProject, Keyword, EEG, EMG, EEGData, FileFormat, \
     EEGSetting, Equipment, Manufacturer, EEGMachine, EEGAmplifier, EEGElectrodeNet, DataConfigurationTree, \
     EEGMachineSetting, EEGAmplifierSetting, EEGSolutionSetting, EEGFilterSetting, EEGElectrodeLayoutSetting, \
     EEGFilterType, EEGSolution, EEGElectrodeLocalizationSystem, EEGElectrodeNetSystem, EEGElectrodePositionSetting, \
@@ -56,7 +56,8 @@ icon_class = {
     'stimulus': 'glyphicon glyphicon-headphones',
     'task': 'glyphicon glyphicon-check',
     'task_experiment': 'glyphicon glyphicon-wrench',
-    'eeg': 'glyphicon glyphicon-flash'
+    'eeg': 'glyphicon glyphicon-flash',
+    'emg': 'glyphicon glyphicon-stats'
 }
 
 delimiter = "-"
@@ -1122,7 +1123,8 @@ def edit_eeg_setting_type(request, eeg_setting_id, eeg_setting_type):
                     eeg_electrode_layout_setting = eeg_setting.eeg_electrode_layout_setting
 
                     # if the electrode localization system changed
-                    if eeg_electrode_layout_setting.eeg_electrode_net_system.eeg_electrode_localization_system != eeg_electrode_localization_system:
+                    if eeg_electrode_layout_setting.eeg_electrode_net_system.eeg_electrode_localization_system != \
+                            eeg_electrode_localization_system:
                         # remove all current position settings
                         for position in eeg_electrode_layout_setting.positions_setting.all():
                             position.delete()
@@ -3837,6 +3839,8 @@ def component_create(request, experiment_id, component_type):
                     new_specific_component = Task()
                 elif component_type == 'task_experiment':
                     new_specific_component = TaskForTheExperimenter()
+                elif component_type == 'emg':
+                    new_specific_component = EMG()
                 elif specific_form.is_valid():
                     new_specific_component = specific_form.save(commit=False)
 
@@ -4258,6 +4262,9 @@ def create_component(component, new_experiment):
         eeg = get_object_or_404(EEG, pk=component.id)
         clone = EEG(eeg_setting_id=eeg.eeg_setting_id)
 
+    elif component_type == 'emg':
+        clone = EMG()
+
     elif component_type == 'instruction':
         instruction = get_object_or_404(Instruction, pk=component.id)
         clone = Instruction(text=instruction.text)
@@ -4546,8 +4553,7 @@ def component_update(request, path_of_the_components):
             if request.POST['action'] == "save":
                 if configuration_form is None:
                     # There is no specific form for a these component types.
-                    if component.component_type == "questionnaire" or component.component_type == "task" or \
-                            component.component_type == "task_experiment" or component.component_type == 'pause':
+                    if component.component_type in ["questionnaire", "task", "task_experiment", 'pause', 'emg']:
                         if component_form.is_valid():
                             # Only save if there was a change.
                             if component_form.has_changed():
@@ -4746,7 +4752,7 @@ def component_add_new(request, path_of_the_components, component_type):
         elif component_type == 'eeg':
             specific_form = EEGForm(request.POST or None, initial={'experiment': experiment})
         elif component_type == 'questionnaire':
-            questionnaires_list = find_active_questionnaires(request.LANGUAGE_CODE)  # Questionnaires().find_all_active_questionnaires()
+            questionnaires_list = find_active_questionnaires(request.LANGUAGE_CODE)
         elif component_type == 'block':
             specific_form = BlockForm(request.POST or None, initial={'number_of_mandatory_components': None})
             duration_string = "0"
@@ -4770,6 +4776,8 @@ def component_add_new(request, path_of_the_components, component_type):
                 new_specific_component = Task()
             elif component_type == 'task_experiment':
                 new_specific_component = TaskForTheExperimenter()
+            elif component_type == 'emg':
+                new_specific_component = EMG()
             elif specific_form.is_valid():
                 new_specific_component = specific_form.save(commit=False)
 
@@ -4916,8 +4924,7 @@ def component_reuse(request, path_of_the_components, component_id):
             for field in component_form.fields:
                 component_form.fields[field].widget.attrs['disabled'] = True
 
-            if component_type != 'pause' and component_type != 'task' and \
-                    component_type != 'task_experiment':
+            if component_type not in ['pause', 'task', 'task_experiment', 'emg']:
                 for field in specific_form.fields:
                     specific_form.fields[field].widget.attrs['disabled'] = True
 
@@ -5062,8 +5069,9 @@ def eeg_electrode_localization_system_view(
                     return HttpResponseRedirect(redirect_url)
 
             else:
-                messages.error(request,
-                               _("Impossible to delete localization system because there is (are) Electrode Net associated."))
+                messages.error(
+                    request,
+                    _("Impossible to delete localization system because there is (are) Electrode Net associated."))
                 redirect_url = reverse("eeg_electrode_localization_system_view",
                                        args=(eeg_electrode_localization_system_id,))
                 return HttpResponseRedirect(redirect_url)
@@ -5101,7 +5109,8 @@ def eeg_electrode_localization_system_update(
                 else:
                     messages.success(request, _('There is no changes to save.'))
 
-                redirect_url = reverse("eeg_electrode_localization_system_view", args=(eeg_electrode_localization_system_id,))
+                redirect_url = reverse("eeg_electrode_localization_system_view",
+                                       args=(eeg_electrode_localization_system_id,))
                 return HttpResponseRedirect(redirect_url)
 
     context = {

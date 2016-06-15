@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2016-06-14 15:27-0300\n"
+"POT-Creation-Date: 2016-06-15 16:29-0300\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -134,7 +134,9 @@ msgstr "Por favor, selecione um participante da lista"
 #: export/templates/export/export_data.html:285
 #: export/templates/export/export_data.html:307
 msgid "* use ctrl-click to select more than one field. (command-click on Mac)"
-msgstr "* use control-click para selecionar mais do que um campo. (command-click em Mac)"
+msgstr ""
+"* use control-click para selecionar mais do que um campo. (command-click em "
+"Mac)"
 
 #: export/templates/export/export_data.html:293
 msgid "Diagnosis"
@@ -232,14 +234,6 @@ msgstr "Cidade"
 #: export/templates/export/show_selected_participants.html:87
 msgid "Previous"
 msgstr "Anterior"
-
-#: export/views.py:81
-msgid "Identification"
-msgstr "Identificação"
-
-#: export/views.py:82
-msgid "Full name"
-msgstr "Nome Completo"
 
 #: export/views.py:84
 msgid "Date of birth"
@@ -355,6 +349,12 @@ msgstr "Exportação não foi gerada."
 #: export/views.py:638
 msgid "No data was select. Export data was not generated."
 msgstr "Nenhum dado foi selecionado. Exportação não foi gerada."
+
+#~ msgid "Identification"
+#~ msgstr "Identificação"
+
+#~ msgid "Full name"
+#~ msgstr "Nome Completo"
 
 #~ msgid "Either one or both Per participant/Per questionnaire must be set."
 #~ msgstr "Opção Por participante e/ou Por questionário deve ser preenchida. "

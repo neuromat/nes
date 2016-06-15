@@ -31,7 +31,7 @@
                         <label class="control-label">{% trans "Used positions:" %}</label>
 
                         <input type="text" id="used_positions" value="{{ number_of_used_electrodes }}" disabled size="3" align="right" style="text-align: center">
-                        {% trans "de" %} {{ eeg_setting.eeg_electrode_layout_setting.eeg_electrode_net_system.eeg_electrode_localization_system.electrode_positions.count }}
+                        {% trans "of" %} {{ eeg_setting.eeg_electrode_layout_setting.eeg_electrode_net_system.eeg_electrode_localization_system.electrode_positions.count }}
 
                         <table class="table table-striped" style="margin-top:10px; margin-left:10px;">
                             <thead>

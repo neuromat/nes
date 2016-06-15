@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2016-06-14 15:27-0300\n"
+"POT-Creation-Date: 2016-06-15 16:29-0300\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -230,14 +230,6 @@ msgstr ""
 
 #: export/templates/export/show_selected_participants.html:87
 msgid "Previous"
-msgstr ""
-
-#: export/views.py:81
-msgid "Identification"
-msgstr ""
-
-#: export/views.py:82
-msgid "Full name"
 msgstr ""
 
 #: export/views.py:84
