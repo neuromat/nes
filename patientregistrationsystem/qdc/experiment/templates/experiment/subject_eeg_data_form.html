@@ -299,10 +299,12 @@
                             <div class="col-xs-12 col-sm-12">
                                 <div class="form-group {% if eeg_data_form.errors.file %}has-error{% endif %}">
                                     <label class="control-label">{% trans "File" %} <b style="color: red;">*</b></label>
+                                    <br/>
                                     {% if editing %}
                                         {{ eeg_data_form.file }}
                                     {% else %}
                                         {{ eeg_data_form.file.value }}
+                                        <button class="btn btn-default" type="button" onclick="location.href='{{ eeg_data.file.url }}'"><span class="glyphicon glyphicon-download-alt" style="color: royalblue"></span></button>
                                     {% endif %}
                                     <div class="help-block with-errors">
                                         {% for error in eeg_data_form.file.errors %}
