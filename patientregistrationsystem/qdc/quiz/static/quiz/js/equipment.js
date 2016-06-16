@@ -39,3 +39,14 @@ function showDialogAndEnableRemoveButton () {
 function disableRemoveButton() {
     $('#remove_button').prop('disabled', true);
 }
+
+
+function show_modal_remove_cap_size () {
+    // "When there is only one single-line text input field in a form, the user agent should accept Enter in that
+    // field as a request to submit the form."
+    // http://www.w3.org/MarkUp/html-spec/html-spec_8.html#SEC8.2
+    // That's why we need to keep the Exclude button disabled.
+    $('#remove_button').prop('disabled', false);
+
+    $('#modalRemoveCapSize').modal('show');
+}

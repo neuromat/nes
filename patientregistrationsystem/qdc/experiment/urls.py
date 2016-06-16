@@ -78,7 +78,17 @@ urlpatterns = patterns(
     url(r'^eegelectrodenet/new/$', 'eegelectrodenet_create', name='eegelectrodenet_new'),
     url(r'^eegelectrodenet/(?P<eegelectrodenet_id>\d+)/$', 'eegelectrodenet_view', name='eegelectrodenet_view'),
     url(r'^eegelectrodenet/edit/(?P<eegelectrodenet_id>\d+)/$', 'eegelectrodenet_update', name='eegelectrodenet_edit'),
-    # url(r'^eeg_electrode_net/(?P<eegelectrodenet_id>\d+)/add_size/$', 'eegelectrodenet_update', name='eegelectrodenet_edit'),
+
+
+    # register cap size
+    url(r'^eeg_electrode_net/(?P<eegelectrode_cap_id>\d+)/add_size/$',
+        'eegelectrodenet_cap_size_create',name='eegelectrodenet_add_size'),
+    url(r'^eeg_electrode_net/remove/(?P<eegelectrode_cap_id>\d+)/(?P<cap_size_id>\d+)/$',
+        'eegelectrodenet_cap_size_remove', name='cap_size_remove'),
+    url(r'^eeg_electrode_net/(?P<eegelectrode_cap_size_id>\d+)/$',
+        'eegelectrodenet_cap_size_view',name='eegelectrodenet_cap_size_view'),
+    url(r'^eeg_electrode_net/(?P<eegelectrode_cap_size_id>\d+)/edit/$',
+        'eegelectrodenet_cap_size_update',name='eegelectrodenet_cap_size_edit'),
 
     # Localization system and position
     url(r'^eeg_electrode_localization_system/list/$',
