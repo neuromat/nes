@@ -2395,15 +2395,25 @@ def eegelectrodenet_view(request, eegelectrodenet_id, template_name="experiment/
 
     if request.method == "POST":
         if request.POST['action'] == "remove":
-
-            try:
-                eegelectrodenet.delete()
-                messages.success(request, _('EEG electrode net removed successfully.'))
-                return redirect('eegelectrodenet_list')
-            except ProtectedError:
-                messages.error(request, _("Error trying to delete EEG Electrode Net."))
+            net_system = EEGElectrodeNetSystem.objects.filter(eeg_electrode_net=eegelectrodenet)
+            if net_system and EEGElectrodeLayoutSetting.objects.filter(eeg_electrode_net_system=net_system):
+                messages.error(request, _('EEG electrode net cannot be removed because it is used in EEG electrode system.'))
                 redirect_url = reverse("eegelectrodenet_view", args=(eegelectrodenet_id,))
                 return HttpResponseRedirect(redirect_url)
+            else:
+                try:
+                    if cap:
+                        if cap_size_list:
+                            cap_size_list.delete()
+                        cap.delete()
+                    else:
+                        eegelectrodenet.delete()
+                    messages.success(request, _('EEG electrode net removed successfully.'))
+                    return redirect('eegelectrodenet_list')
+                except ProtectedError:
+                    messages.error(request, _("Error trying to delete EEG Electrode Net."))
+                    redirect_url = reverse("eegelectrodenet_view", args=(eegelectrodenet_id,))
+                    return HttpResponseRedirect(redirect_url)
 
     for localization_system in eegelectrodelocalizationsystem:
         localization_system.checked = False
@@ -2433,7 +2443,7 @@ def eegelectrodenet_view(request, eegelectrodenet_id, template_name="experiment/
 def eegelectrodenet_cap_size_create(request, eegelectrode_cap_id,
                                 template_name="experiment/eegelectrodenet_size_register.html"):
 
-    cap = EEGElectrodeCap.objects.filter(id=eegelectrode_cap_id)
+    cap = get_object_or_404(EEGElectrodeCap, pk=eegelectrode_cap_id)
     cap_size_form = EEGCapSizeRegisterForm(request.POST or None)
 
     if request.method == "POST":
@@ -2456,36 +2466,33 @@ def eegelectrodenet_cap_size_create(request, eegelectrode_cap_id,
         else:
             messages.warning(request, _('Action not available.'))
 
-    context = {"equipment": cap,
+    context = {"eeg_cap": cap,
                "can_change": True,
                "equipment_form": cap_size_form,
                "creating": True,
                "editing": True
-        # "cap_form": cap_form,
-        # "cap_size_list": cap_size_list,
-        # "eegelectrodelocalizationsystem": eegelectrodelocalizationsystem,
-    }
+               }
 
     return render(request, template_name, context)
 
 
-@login_required
-@permission_required('experiment.view_eegelectrodenet')
-def eegelectrodenet_cap_size_remove(request, eegelectrode_cap_id, eegelectrode_cap_size_id,):
-    cap = get_object_or_404(EEGElectrodeCap, pk=eegelectrode_cap_id)
-
-    if request.method == "POST":
-    # if get_can_change(request.user, research_project):
-        if request.POST['action'] == "remove_cap_size":
-            cap_size = get_object_or_404(EEGCapSize, pk=eegelectrode_cap_size_id, eeg_electrode_cap=cap)
-            cap.cap_size.remove(cap_size)
-
-            messages.success(request, _('Cap size removed successfully.'))
-
-    redirect_url = reverse("eegelectrodenet_view", args=(eegelectrode_cap_id,))
-    return HttpResponseRedirect(redirect_url)
-    # else:
-    #     raise PermissionDenied
+# @login_required
+# @permission_required('experiment.view_eegelectrodenet')
+# def eegelectrodenet_cap_size_remove(request, eegelectrode_cap_size_id):
+#     # cap = get_object_or_404(EEGElectrodeCap, pk=eegelectrode_cap_id)
+#
+#     if request.method == "POST":
+#         if request.POST['action'] == "remove_cap_size":
+#             cap_size = get_object_or_404(EEGCapSize, pk=eegelectrode_cap_size_id)
+#             eegelectrode_cap_id = cap_size.eeg_electrode_cap.id
+#             cap_size.delete()
+#
+#             messages.success(request, _('Cap size removed successfully.'))
+#
+#             redirect_url = reverse("eegelectrodenet_view", args=(eegelectrode_cap_id,))
+#             return HttpResponseRedirect(redirect_url)
+#     # else:
+#     #     raise PermissionDenied
 
 
 @login_required
@@ -2534,7 +2541,8 @@ def eegelectrodenet_cap_size_view(request, eegelectrode_cap_size_id,
             try:
                 eegelectrode_cap_size.delete()
                 messages.success(request, _('Cap size removed successfully.'))
-                return redirect('eegelectrodenet_view', args=(eegelectrode_cap_size.eeg_electrode_cap_id,))
+                redirect_url = reverse('eegelectrodenet_view', args=(eegelectrode_cap_size.eeg_electrode_cap_id,))
+                return HttpResponseRedirect(redirect_url)
             except ProtectedError:
                 messages.error(request, _("Error trying to delete cap size."))
                 redirect_url = reverse("eegelectrodenet_cap_size_view", args=(eegelectrode_cap_size_id,))
@@ -2543,7 +2551,7 @@ def eegelectrodenet_cap_size_view(request, eegelectrode_cap_size_id,
     context = {"equipment_form": eegelectrode_cap_size_form,
                "can_change": True,
                "equipment": eegelectrode_cap_size,
-    }
+               }
 
     return render(request, template_name, context)
 
@@ -2565,6 +2573,7 @@ def eegelectrodenet_cap_size_view(request, eegelectrode_cap_size_id,
 #         }
 #
 #     return render(request, template_name, context)
+
 
 def search_cid10_ajax(request):
     cid_10_list = ''
