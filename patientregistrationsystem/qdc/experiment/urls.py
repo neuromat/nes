@@ -157,7 +157,8 @@ urlpatterns = patterns(
     # subject + questionnaire
     url(r'^group/(?P<group_id>\d+)/subject/(?P<subject_id>\d+)/$',
         'subject_questionnaire_view', name='subject_questionnaire'),
-    url(r'^group/(?P<group_id>\d+)/subject/(?P<subject_id>\d+)/questionnaire/(?P<questionnaire_id>[0-9-]+)/add_response/$',
+    url(r'^group/(?P<group_id>\d+)/subject/(?P<subject_id>\d+)/questionnaire/'
+        r'(?P<questionnaire_id>[0-9-]+)/add_response/$',
         'subject_questionnaire_response_create', name='subject_questionnaire_response'),
     url(r'^questionnaire_response/edit/(?P<questionnaire_response_id>\d+)/$',
         'questionnaire_response_edit', name='questionnaire_response_edit'),
@@ -175,6 +176,15 @@ urlpatterns = patterns(
     # eeg_data (ajax)
     url(r'^equipment/get_cap_size_list_from_eeg_setting/(?P<eeg_setting_id>\d+)/$',
         'get_cap_size_list_from_eeg_setting'),
+
+    # subject + additional data
+    url(r'^group/(?P<group_id>\d+)/subject/(?P<subject_id>\d+)/additional_data/$',
+        'subject_additional_data_view', name='subject_additional_data_view'),
+    url(r'^group/(?P<group_id>\d+)/subject/(?P<subject_id>\d+)/additional_data/'
+        r'(?P<path_of_configuration>[0-9-]+)/add/$',
+        'subject_additional_data_create', name='subject_additional_data_create'),
+    url(r'^additional_data/(?P<additional_data_id>\d+)/$', 'additional_data_view', name='additional_data_view'),
+    url(r'^additional_data/edit/(?P<additional_data_id>\d+)/$', 'additional_data_edit', name='additional_data_edit'),
 
     # experimental protocol components
     url(r'^(?P<experiment_id>\d+)/components/$', 'component_list', name='component_list'),

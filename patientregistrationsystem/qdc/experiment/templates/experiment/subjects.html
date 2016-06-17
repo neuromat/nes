@@ -127,7 +127,7 @@
                                             </div>
                                         </td>
                                         <td>
-                                            <a data-toggle="tooltip" title="{% trans "View/Add files" %}">{% trans "Additional files" %} <span class="glyphicon glyphicon-chevron-right"></span></a>
+                                            <a href='/experiment/group/{{ group.id }}/subject/{{ item.subject.id }}/additional_data' data-toggle="tooltip" title="{% trans "View/Add files" %}">{% trans "Additional files" %} <span class="glyphicon glyphicon-chevron-right"></span></a>
                                         </td>
                                         {% if experimental_protocol_info.number_of_questionnaires %}
                                         <td>

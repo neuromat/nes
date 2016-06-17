@@ -15,7 +15,6 @@ from django.core import serializers
 from django.core.urlresolvers import reverse
 from django.db.models import Q
 from django.db.models.deletion import ProtectedError
-# from django.db.models.query import QuerySet
 from django.http import HttpResponseRedirect, HttpResponse
 from django.shortcuts import get_object_or_404, redirect, render, render_to_response
 from django.utils.translation import ugettext as _
@@ -29,7 +28,7 @@ from experiment.models import Experiment, Subject, QuestionnaireResponse, Subjec
     EEGMachineSetting, EEGAmplifierSetting, EEGSolutionSetting, EEGFilterSetting, EEGElectrodeLayoutSetting, \
     EEGFilterType, EEGSolution, EEGElectrodeLocalizationSystem, EEGElectrodeNetSystem, EEGElectrodePositionSetting, \
     EEGElectrodeModel, EEGElectrodePositionCollectionStatus, EEGCapSize, EEGElectrodeCap, EEGElectrodePosition, \
-    Material
+    Material, AdditionalData
 from experiment.forms import ExperimentForm, QuestionnaireResponseForm, FileForm, GroupForm, InstructionForm, \
     ComponentForm, StimulusForm, BlockForm, ComponentConfigurationForm, ResearchProjectForm, NumberOfUsesToInsertForm, \
     EEGDataForm, EEGSettingForm, EquipmentForm, EEGForm, EEGMachineForm, EEGMachineSettingForm, EEGAmplifierForm, \
@@ -37,7 +36,7 @@ from experiment.forms import ExperimentForm, QuestionnaireResponseForm, FileForm
     EEGElectrodeLocalizationSystemRegisterForm, \
     ManufacturerRegisterForm, EEGMachineRegisterForm, EEGAmplifierRegisterForm, EEGSolutionRegisterForm, \
     EEGFilterTypeRegisterForm, EEGElectrodeModelRegisterForm, MaterialRegisterForm, EEGElectrodeNETRegisterForm, \
-    EEGElectrodePositionForm, EEGElectrodeCapRegisterForm, EEGCapSizeRegisterForm
+    EEGElectrodePositionForm, EEGElectrodeCapRegisterForm, EEGCapSizeRegisterForm, AdditionalDataForm
 
 
 from patient.models import Patient, QuestionnaireResponse as PatientQuestionnaireResponse
@@ -3636,6 +3635,194 @@ def eeg_data_edit(request, eeg_data_id, tab, template_name="experiment/subject_e
                    "eeg_setting_default_id": eeg_step.eeg_setting_id,
                    "editing": True,
                    "tab": tab
+                   }
+
+        return render(request, template_name, context)
+    else:
+        raise PermissionDenied
+
+
+@login_required
+@permission_required('experiment.view_researchproject')
+def subject_additional_data_view(request, group_id, subject_id,
+                                 template_name="experiment/additional_data_collection_list.html"):
+
+    group = get_object_or_404(Group, id=group_id)
+    subject = get_object_or_404(Subject, id=subject_id)
+    subject_of_group = get_object_or_404(SubjectOfGroup, group=group, subject=subject)
+
+    data_collections = []
+
+    list_of_paths = create_list_of_trees(group.experimental_protocol, None)
+
+    for path in list_of_paths:
+
+        component_configuration = ComponentConfiguration.objects.get(pk=path[-1][0])
+
+        data_configuration_tree_id = list_data_configuration_tree(component_configuration.id,
+                                                                  [item[0] for item in path])
+
+        additional_data_files = AdditionalData.objects.filter(subject_of_group=subject_of_group,
+                                                              data_configuration_tree__id=data_configuration_tree_id)
+
+        data_collections.append(
+            {'component_configuration': component_configuration,
+             'path': path,
+             'additional_data_files': additional_data_files,
+             'icon_class': icon_class[component_configuration.component.component_type]}
+        )
+
+    context = {"can_change": get_can_change(request.user, group.experiment.research_project),
+               'group': group,
+               'subject': subject,
+               'data_collections': data_collections
+               }
+
+    return render(request, template_name, context)
+
+
+@login_required
+@permission_required('experiment.add_questionnaireresponse')
+def subject_additional_data_create(request, group_id, subject_id, path_of_configuration,
+                                   template_name="experiment/subject_additional_data_form.html"):
+
+    group = get_object_or_404(Group, id=group_id)
+
+    if get_can_change(request.user, group.experiment.research_project):
+
+        list_of_path = [int(item) for item in path_of_configuration.split('-')]
+        component_configuration_id = list_of_path[-1]
+
+        component_configuration = get_object_or_404(ComponentConfiguration, id=component_configuration_id)
+
+        additional_data_form = AdditionalDataForm(None)
+
+        file_format_list = file_format_code()
+
+        if request.method == "POST":
+            if request.POST['action'] == "save":
+
+                additional_data_form = AdditionalDataForm(request.POST, request.FILES)
+
+                if additional_data_form.is_valid():
+
+                    data_configuration_tree_id = list_data_configuration_tree(component_configuration_id, list_of_path)
+                    if not data_configuration_tree_id:
+                        data_configuration_tree_id = create_data_configuration_tree(list_of_path)
+
+                    subject = get_object_or_404(Subject, pk=subject_id)
+                    subject_of_group = get_object_or_404(SubjectOfGroup, subject=subject, group_id=group_id)
+
+                    additional_data_added = additional_data_form.save(commit=False)
+                    additional_data_added.subject_of_group = subject_of_group
+                    additional_data_added.component_configuration = component_configuration
+                    additional_data_added.data_configuration_tree_id = data_configuration_tree_id
+
+                    # PS: it was necessary adding these 2 lines because Django raised, I do not why (Evandro),
+                    # the following error 'AdditionalData' object has no attribute 'group'
+                    additional_data_added.group = group
+                    additional_data_added.subject = subject
+
+                    additional_data_added.save()
+
+                    messages.success(request, _('Additional data collection created successfully.'))
+
+                    redirect_url = reverse("additional_data_view", args=(additional_data_added.id,))
+                    return HttpResponseRedirect(redirect_url)
+
+        context = {"can_change": True,
+                   "creating": True,
+                   "editing": True,
+                   "group": group,
+                   "component_configuration": component_configuration,
+                   "additional_data_form": additional_data_form,
+                   "file_format_list": file_format_list,
+                   "subject": get_object_or_404(Subject, pk=subject_id)
+                   }
+
+        return render(request, template_name, context)
+    else:
+        raise PermissionDenied
+
+
+@login_required
+@permission_required('experiment.change_experiment')
+def additional_data_view(request, additional_data_id, template_name="experiment/subject_additional_data_form.html"):
+
+    additional_data = get_object_or_404(AdditionalData, pk=additional_data_id)
+    additional_data_form = AdditionalDataForm(request.POST or None, instance=additional_data)
+
+    for field in additional_data_form.fields:
+        additional_data_form.fields[field].widget.attrs['disabled'] = True
+
+    file_format_list = file_format_code()
+
+    if request.method == "POST":
+        if request.POST['action'] == "remove":
+
+            if get_can_change(request.user, additional_data.subject_of_group.group.experiment.research_project):
+
+                subject_of_group = additional_data.subject_of_group
+                additional_data.file.delete()
+                additional_data.delete()
+                messages.success(request, _('Additional data removed successfully.'))
+                return redirect('subject_additional_data_view',
+                                group_id=subject_of_group.group_id,
+                                subject_id=subject_of_group.subject_id)
+            else:
+                raise PermissionDenied
+
+    context = {"can_change": get_can_change(request.user, additional_data.subject_of_group.group.experiment.research_project),
+               "editing": False,
+               "group": additional_data.subject_of_group.group,
+               "subject": additional_data.subject_of_group.subject,
+               "additional_data_form": additional_data_form,
+               "additional_data": additional_data,
+               "file_format_list": file_format_list,
+               }
+
+    return render(request, template_name, context)
+
+
+@login_required
+@permission_required('experiment.change_experiment')
+def additional_data_edit(request, additional_data_id, template_name="experiment/subject_additional_data_form.html"):
+
+    additional_data = get_object_or_404(AdditionalData, pk=additional_data_id)
+
+    file_format_list = file_format_code()
+
+    if get_can_change(request.user, additional_data.subject_of_group.group.experiment.research_project):
+
+        if request.method == "POST":
+
+            additional_data_form = AdditionalDataForm(request.POST, request.FILES, instance=additional_data)
+
+            if request.POST['action'] == "save":
+                if additional_data_form.is_valid():
+                    if additional_data_form.has_changed():
+
+                        additional_data_to_update = additional_data_form.save(commit=False)
+                        additional_data_to_update.group = additional_data.subject_of_group.group
+                        additional_data_to_update.subject = additional_data.subject_of_group.subject
+                        additional_data_to_update.save()
+
+                        messages.success(request, _('Additional data updated successfully.'))
+                    else:
+                        messages.success(request, _('There is no changes to save.'))
+
+                    redirect_url = reverse("additional_data_view", args=(additional_data_id,))
+                    return HttpResponseRedirect(redirect_url)
+
+        else:
+            additional_data_form = AdditionalDataForm(request.POST or None, instance=additional_data)
+
+        context = {"group": additional_data.subject_of_group.group,
+                   "subject": additional_data.subject_of_group.subject,
+                   "additional_data_form": additional_data_form,
+                   "additional_data": additional_data,
+                   "file_format_list": file_format_list,
+                   "editing": True,
                    }
 
         return render(request, template_name, context)
