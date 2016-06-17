@@ -82,6 +82,7 @@
                             <tr>
                                 <th>{% trans "Participant" %}</th>
                                 <th>{% trans "Term of consent" %}</th>
+                                <th>{% trans "Additional files uploaded" %}</th>
                                 {% if experimental_protocol_info.number_of_questionnaires %}
                                     <th>{% trans "Completed questionnaires" %}</th>
                                 {% endif %}
@@ -124,6 +125,9 @@
                                                     <span class="label label-warning">{% trans "No attachments" %}</span>
                                                 {% endif %}
                                             </div>
+                                        </td>
+                                        <td>
+                                            <a data-toggle="tooltip" title="{% trans "View/Add files" %}">{% trans "Additional files" %} <span class="glyphicon glyphicon-chevron-right"></span></a>
                                         </td>
                                         {% if experimental_protocol_info.number_of_questionnaires %}
                                         <td>

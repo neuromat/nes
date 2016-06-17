@@ -472,6 +472,11 @@ class EEGData(DataFile, DataCollection):
     eeg_cap_size = models.ForeignKey(EEGCapSize, null=True, blank=True)
 
 
+class AdditionalData(DataFile, DataCollection):
+    def __str__(self):
+        return self.description
+
+
 class EEGElectrodePositionCollectionStatus(models.Model):
     eeg_data = models.ForeignKey(EEGData, related_name='electrode_positions')
     eeg_electrode_position_setting = models.ForeignKey(EEGElectrodePositionSetting)
