@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2016-06-16 19:25-0300\n"
+"POT-Creation-Date: 2016-06-17 14:02-0300\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -29,7 +29,7 @@ msgid "Description must be filled."
 msgstr ""
 
 #: experiment/forms.py:59 experiment/forms.py:223 experiment/forms.py:226
-#: experiment/forms.py:262 experiment/views.py:2896
+#: experiment/forms.py:262 experiment/views.py:2901
 msgid "%m/%d/%Y"
 msgstr ""
 
@@ -471,8 +471,8 @@ msgstr ""
 #: experiment/templates/experiment/research_project_register.html:143
 #: experiment/templates/experiment/research_project_register.html:202
 #: experiment/templates/experiment/research_project_register.html:231
-#: experiment/templates/experiment/subject_eeg_data_form.html:377
-#: experiment/templates/experiment/subject_eeg_data_form.html:412
+#: experiment/templates/experiment/subject_eeg_data_form.html:379
+#: experiment/templates/experiment/subject_eeg_data_form.html:414
 #: experiment/templates/experiment/subject_questionnaire_response_form.html:239
 #: experiment/templates/experiment/subject_questionnaire_response_form.html:286
 #: experiment/templates/experiment/subjects.html:190
@@ -528,9 +528,9 @@ msgstr ""
 #: experiment/templates/experiment/material_register.html:133
 #: experiment/templates/experiment/research_project_register.html:211
 #: experiment/templates/experiment/research_project_register.html:230
-#: experiment/templates/experiment/subject_eeg_data_form.html:388
-#: experiment/templates/experiment/subject_eeg_data_form.html:391
-#: experiment/templates/experiment/subject_eeg_data_form.html:411
+#: experiment/templates/experiment/subject_eeg_data_form.html:390
+#: experiment/templates/experiment/subject_eeg_data_form.html:393
+#: experiment/templates/experiment/subject_eeg_data_form.html:413
 #: experiment/templates/experiment/subject_questionnaire_response_form.html:285
 #: experiment/templates/experiment/subjects.html:189
 #: experiment/templates/experiment/upload_consent_form.html:109
@@ -559,7 +559,7 @@ msgstr ""
 #: experiment/templates/experiment/questionnaire_view.html:227
 #: experiment/templates/experiment/research_project_register.html:215
 #: experiment/templates/experiment/subject_eeg_collection_list.html:136
-#: experiment/templates/experiment/subject_eeg_data_form.html:397
+#: experiment/templates/experiment/subject_eeg_data_form.html:399
 #: experiment/templates/experiment/subject_questionnaire_response_form.html:261
 #: experiment/templates/experiment/subject_questionnaire_response_form.html:265
 #: experiment/templates/experiment/subject_questionnaire_response_form.html:268
@@ -743,7 +743,7 @@ msgstr ""
 #: experiment/templates/experiment/configuration_line.html:49
 #: experiment/templates/experiment/eeg_electrode_localization_system_register.html:118
 #: experiment/templates/experiment/eeg_electrode_position_register.html:120
-#: experiment/templates/experiment/eeg_setting_electrode_position_status.html:66
+#: experiment/templates/experiment/eeg_setting_electrode_position_status.html:104
 #: experiment/templates/experiment/eeg_setting_electrode_position_status_model.html:59
 #: experiment/templates/experiment/eeg_setting_register.html:95
 #: experiment/templates/experiment/eeg_setting_type_template.html:95
@@ -766,8 +766,8 @@ msgstr ""
 #: experiment/templates/experiment/randon_configuration_line.html:10
 #: experiment/templates/experiment/randon_configuration_line.html:12
 #: experiment/templates/experiment/research_project_register.html:124
-#: experiment/templates/experiment/subject_eeg_data_form.html:318
-#: experiment/templates/experiment/subject_eeg_data_form.html:361
+#: experiment/templates/experiment/subject_eeg_data_form.html:320
+#: experiment/templates/experiment/subject_eeg_data_form.html:363
 msgid "Edit"
 msgstr ""
 
@@ -859,7 +859,7 @@ msgstr ""
 #: experiment/templates/experiment/manufacturer_register.html:101
 #: experiment/templates/experiment/material_register.html:110
 #: experiment/templates/experiment/research_project_register.html:207
-#: experiment/templates/experiment/subject_eeg_data_form.html:382
+#: experiment/templates/experiment/subject_eeg_data_form.html:384
 msgid "Save"
 msgstr ""
 
@@ -960,9 +960,9 @@ msgid "Positions"
 msgstr ""
 
 #: experiment/templates/experiment/eeg_electrode_localization_system_register.html:131
-#: experiment/templates/experiment/eeg_setting_electrode_position_status.html:39
+#: experiment/templates/experiment/eeg_setting_electrode_position_status.html:77
 #: experiment/templates/experiment/eeg_setting_electrode_position_status_model.html:23
-#: experiment/templates/experiment/subject_eeg_data_form.html:331
+#: experiment/templates/experiment/subject_eeg_data_form.html:333
 msgid "Position"
 msgstr ""
 
@@ -1038,13 +1038,13 @@ msgid "Electrode localization system"
 msgstr ""
 
 #: experiment/templates/experiment/eeg_setting_eeg_electrode_net_system.html:108
-#: experiment/templates/experiment/eeg_setting_electrode_position_status.html:72
+#: experiment/templates/experiment/eeg_setting_electrode_position_status.html:110
 #: experiment/templates/experiment/eeg_setting_electrode_position_status_model.html:66
 msgid "Previous"
 msgstr ""
 
 #: experiment/templates/experiment/eeg_setting_eeg_electrode_net_system.html:111
-#: experiment/templates/experiment/eeg_setting_electrode_position_status.html:75
+#: experiment/templates/experiment/eeg_setting_electrode_position_status.html:113
 #: experiment/templates/experiment/eeg_setting_electrode_position_status_model.html:69
 msgid "Next"
 msgstr ""
@@ -1108,21 +1108,21 @@ msgstr ""
 msgid "EEG solution settings"
 msgstr ""
 
-#: experiment/templates/experiment/eeg_setting_electrode_position_status.html:12
+#: experiment/templates/experiment/eeg_setting_electrode_position_status.html:49
 msgid "Step 2 of 3"
 msgstr ""
 
-#: experiment/templates/experiment/eeg_setting_electrode_position_status.html:31
+#: experiment/templates/experiment/eeg_setting_electrode_position_status.html:68
 msgid "Used positions:"
 msgstr ""
 
-#: experiment/templates/experiment/eeg_setting_electrode_position_status.html:34
+#: experiment/templates/experiment/eeg_setting_electrode_position_status.html:72
 msgid "of"
 msgstr ""
 
-#: experiment/templates/experiment/eeg_setting_electrode_position_status.html:40
+#: experiment/templates/experiment/eeg_setting_electrode_position_status.html:78
 #: experiment/templates/experiment/eeg_setting_electrode_position_status_model.html:24
-#: experiment/templates/experiment/subject_eeg_data_form.html:332
+#: experiment/templates/experiment/subject_eeg_data_form.html:334
 msgid "Used"
 msgstr ""
 
@@ -1131,7 +1131,7 @@ msgid "Step 3 of 3"
 msgstr ""
 
 #: experiment/templates/experiment/eeg_setting_electrode_position_status_model.html:22
-#: experiment/templates/experiment/subject_eeg_data_form.html:330
+#: experiment/templates/experiment/subject_eeg_data_form.html:332
 msgid "#"
 msgstr ""
 
@@ -1851,11 +1851,11 @@ msgstr ""
 msgid "File"
 msgstr ""
 
-#: experiment/templates/experiment/subject_eeg_data_form.html:333
+#: experiment/templates/experiment/subject_eeg_data_form.html:335
 msgid "Worked"
 msgstr ""
 
-#: experiment/templates/experiment/subject_eeg_data_form.html:408
+#: experiment/templates/experiment/subject_eeg_data_form.html:410
 msgid "Are you sure you want to delete EEG data?"
 msgstr ""
 
@@ -1979,16 +1979,16 @@ msgstr ""
 #: experiment/tests.py:1502 experiment/views.py:109 experiment/views.py:1549
 #: experiment/views.py:1646 experiment/views.py:1747 experiment/views.py:1843
 #: experiment/views.py:1941 experiment/views.py:2038 experiment/views.py:2134
-#: experiment/views.py:2258 experiment/views.py:2467 experiment/views.py:5108
-#: experiment/views.py:5229
+#: experiment/views.py:2258 experiment/views.py:2472 experiment/views.py:5113
+#: experiment/views.py:5234
 msgid "Action not available."
 msgstr ""
 
 #: experiment/tests.py:1513 experiment/views.py:106 experiment/views.py:1546
 #: experiment/views.py:1643 experiment/views.py:1744 experiment/views.py:1840
 #: experiment/views.py:1938 experiment/views.py:2035 experiment/views.py:2131
-#: experiment/views.py:2255 experiment/views.py:2464 experiment/views.py:5106
-#: experiment/views.py:5227
+#: experiment/views.py:2255 experiment/views.py:2469 experiment/views.py:5111
+#: experiment/views.py:5232
 msgid "Information not saved."
 msgstr ""
 
@@ -1996,7 +1996,7 @@ msgstr ""
 msgid "Study created successfully."
 msgstr ""
 
-#: experiment/views.py:149 experiment/views.py:5139
+#: experiment/views.py:149 experiment/views.py:5144
 msgid "Study removed successfully."
 msgstr ""
 
@@ -2017,9 +2017,9 @@ msgstr ""
 #: experiment/views.py:699 experiment/views.py:1573 experiment/views.py:1674
 #: experiment/views.py:1771 experiment/views.py:1869 experiment/views.py:1966
 #: experiment/views.py:2063 experiment/views.py:2159 experiment/views.py:2339
-#: experiment/views.py:2514 experiment/views.py:3614 experiment/views.py:4643
-#: experiment/views.py:4665 experiment/views.py:4675 experiment/views.py:5185
-#: experiment/views.py:5305
+#: experiment/views.py:2519 experiment/views.py:3619 experiment/views.py:4648
+#: experiment/views.py:4670 experiment/views.py:4680 experiment/views.py:5190
+#: experiment/views.py:5310
 msgid "There is no changes to save."
 msgstr ""
 
@@ -2250,255 +2250,261 @@ msgid ""
 "system."
 msgstr ""
 
-#: experiment/views.py:2411
+#: experiment/views.py:2409
+msgid ""
+"EEG electrode net cannot be removed because cap size is associated with EEG "
+"data."
+msgstr ""
+
+#: experiment/views.py:2416
 msgid "EEG electrode net removed successfully."
 msgstr ""
 
-#: experiment/views.py:2414
+#: experiment/views.py:2419
 msgid "Error trying to delete EEG Electrode Net."
 msgstr ""
 
-#: experiment/views.py:2459
+#: experiment/views.py:2464
 msgid "EEG cap size created successfully."
 msgstr ""
 
-#: experiment/views.py:2512
+#: experiment/views.py:2517
 msgid "Cap size updated successfully."
 msgstr ""
 
-#: experiment/views.py:2543
+#: experiment/views.py:2548
 msgid "Cap size removed successfully."
 msgstr ""
 
-#: experiment/views.py:2547
+#: experiment/views.py:2552
 msgid "Error trying to delete cap size."
 msgstr ""
 
-#: experiment/views.py:2836
+#: experiment/views.py:2841
 msgid "Participant deleted from experiment."
 msgstr ""
 
-#: experiment/views.py:2838
+#: experiment/views.py:2843
 msgid ""
 "It was not possible to delete participant, because there are answers or eeg "
 "data associated"
 msgstr ""
 
-#: experiment/views.py:2871
+#: experiment/views.py:2876
 msgid "Fill not available - Table of tokens was not started."
 msgstr ""
 
-#: experiment/views.py:2875
+#: experiment/views.py:2880
 msgid "Fill not available - Questionnaire is not activated."
 msgstr ""
 
-#: experiment/views.py:2879
+#: experiment/views.py:2884
 msgid "Fill not available - Questionnaire does not contain standard fields."
 msgstr ""
 
-#: experiment/views.py:2888
+#: experiment/views.py:2893
 msgid ""
 "Fail trying to generate token to answer questionnaire. Check if "
 "questionnaire is active."
 msgstr ""
 
-#: experiment/views.py:3017
+#: experiment/views.py:3022
 msgid "You will be redirected to questionnaire. Please wait."
 msgstr ""
 
-#: experiment/views.py:3039 experiment/views.py:3194
+#: experiment/views.py:3044 experiment/views.py:3199
 msgid "Fill deleted successfully."
 msgstr ""
 
-#: experiment/views.py:3041 experiment/views.py:3196
+#: experiment/views.py:3046 experiment/views.py:3201
 msgid "Error trying to delete fill"
 msgstr ""
 
-#: experiment/views.py:3455
+#: experiment/views.py:3460
 msgid "EEG data collection created successfully."
 msgstr ""
 
-#: experiment/views.py:3456
+#: experiment/views.py:3461
 msgid "Now you can configure each electrode position"
 msgstr ""
 
-#: experiment/views.py:3484
+#: experiment/views.py:3489
 msgid "EEG data file format validated."
 msgstr ""
 
-#: experiment/views.py:3486
+#: experiment/views.py:3491
 msgid "Not valid EEG file format."
 msgstr ""
 
-#: experiment/views.py:3535
+#: experiment/views.py:3540
 msgid "EEG data removed successfully."
 msgstr ""
 
-#: experiment/views.py:3612
+#: experiment/views.py:3617
 msgid "EEG data updated successfully."
 msgstr ""
 
-#: experiment/views.py:3622
+#: experiment/views.py:3627
 msgid "EEG position data updated successfully."
 msgstr ""
 
-#: experiment/views.py:3679
+#: experiment/views.py:3684
 msgid "Participant has already been inserted in this group."
 msgstr ""
 
-#: experiment/views.py:3725
+#: experiment/views.py:3730
 msgid "Consent term saved successfully."
 msgstr ""
 
-#: experiment/views.py:3730
+#: experiment/views.py:3735
 msgid "There are not attachments to save"
 msgstr ""
 
-#: experiment/views.py:3734
+#: experiment/views.py:3739
 msgid "Attachment deleted successfully."
 msgstr ""
 
-#: experiment/views.py:3942 experiment/views.py:4910 experiment/views.py:5020
-#: experiment/views.py:5044
+#: experiment/views.py:3947 experiment/views.py:4915 experiment/views.py:5025
+#: experiment/views.py:5049
 msgid "Step included successfully."
 msgstr ""
 
-#: experiment/views.py:3989
+#: experiment/views.py:3994
 msgid "Use of step "
 msgstr ""
 
-#: experiment/views.py:4075
+#: experiment/views.py:4080
 msgid " years "
 msgstr ""
 
-#: experiment/views.py:4075
+#: experiment/views.py:4080
 msgid " year "
 msgstr ""
 
-#: experiment/views.py:4080
+#: experiment/views.py:4085
 msgid " months "
 msgstr ""
 
-#: experiment/views.py:4080
+#: experiment/views.py:4085
 msgid " month "
 msgstr ""
 
-#: experiment/views.py:4085
+#: experiment/views.py:4090
 msgid " weeks "
 msgstr ""
 
-#: experiment/views.py:4085
+#: experiment/views.py:4090
 msgid " week "
 msgstr ""
 
-#: experiment/views.py:4090
+#: experiment/views.py:4095
 msgid " days "
 msgstr ""
 
-#: experiment/views.py:4090
+#: experiment/views.py:4095
 msgid " day "
 msgstr ""
 
-#: experiment/views.py:4095
+#: experiment/views.py:4100
 msgid " hours "
 msgstr ""
 
-#: experiment/views.py:4095
+#: experiment/views.py:4100
 msgid " hour "
 msgstr ""
 
-#: experiment/views.py:4100
+#: experiment/views.py:4105
 msgid " minutes "
 msgstr ""
 
-#: experiment/views.py:4100
+#: experiment/views.py:4105
 msgid " minute "
 msgstr ""
 
-#: experiment/views.py:4105
+#: experiment/views.py:4110
 msgid " seconds "
 msgstr ""
 
-#: experiment/views.py:4105
+#: experiment/views.py:4110
 msgid " second "
 msgstr ""
 
-#: experiment/views.py:4110
+#: experiment/views.py:4115
 msgid " miliseconds "
 msgstr ""
 
-#: experiment/views.py:4110
+#: experiment/views.py:4115
 msgid " milisecond "
 msgstr ""
 
-#: experiment/views.py:4125
+#: experiment/views.py:4130
 msgid " and "
 msgstr ""
 
-#: experiment/views.py:4294 experiment/views.py:4308 experiment/views.py:4374
+#: experiment/views.py:4299 experiment/views.py:4313 experiment/views.py:4379
 msgid "Copy of"
 msgstr ""
 
-#: experiment/views.py:4376
+#: experiment/views.py:4381
 msgid "Copy"
 msgstr ""
 
-#: experiment/views.py:4423 experiment/views.py:4673
+#: experiment/views.py:4428 experiment/views.py:4678
 msgid "Step use updated successfully."
 msgstr ""
 
-#: experiment/views.py:4429 experiment/views.py:4682
+#: experiment/views.py:4434 experiment/views.py:4687
 msgid "Component deleted successfully."
 msgstr ""
 
-#: experiment/views.py:4641 experiment/views.py:4663
+#: experiment/views.py:4646 experiment/views.py:4668
 msgid "Step updated successfully."
 msgstr ""
 
-#: experiment/views.py:4880
+#: experiment/views.py:4885
 msgid "Experimental protocol included successfully."
 msgstr ""
 
-#: experiment/views.py:4908 experiment/views.py:5042
+#: experiment/views.py:4913 experiment/views.py:5047
 msgid "Steps included successfully."
 msgstr ""
 
-#: experiment/views.py:5099
+#: experiment/views.py:5104
 msgid "EEG electrode localization system created successfully."
 msgstr ""
 
-#: experiment/views.py:5142
+#: experiment/views.py:5147
 msgid "Error trying to delete localization system."
 msgstr ""
 
-#: experiment/views.py:5150
+#: experiment/views.py:5155
 msgid ""
 "Impossible to delete localization system because there is (are) Electrode "
 "Net associated."
 msgstr ""
 
-#: experiment/views.py:5183
+#: experiment/views.py:5188
 msgid "Localization system updated successfully."
 msgstr ""
 
-#: experiment/views.py:5220
+#: experiment/views.py:5225
 msgid "EEG electrode position created successfully."
 msgstr ""
 
-#: experiment/views.py:5261
+#: experiment/views.py:5266
 msgid "Position removed successfully."
 msgstr ""
 
-#: experiment/views.py:5267
+#: experiment/views.py:5272
 msgid "Error trying to delete position."
 msgstr ""
 
-#: experiment/views.py:5274
+#: experiment/views.py:5279
 msgid ""
 "Impossible to delete position because there is (are) Position Setting "
 "associated."
 msgstr ""
 
-#: experiment/views.py:5303
+#: experiment/views.py:5308
 msgid "Position updated successfully."
 msgstr ""

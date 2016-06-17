@@ -2404,6 +2404,11 @@ def eegelectrodenet_view(request, eegelectrodenet_id, template_name="experiment/
                 try:
                     if cap:
                         if cap_size_list:
+                            eeg_data = EEGData.objects.filter(eeg_electrode_net=cap_size_list)
+                            if eeg_data:
+                                messages.error(request, _('EEG electrode net cannot be removed because cap size is associated with EEG data.'))
+                                redirect_url = reverse("eegelectrodenet_view", args=(eegelectrodenet_id,))
+                                return HttpResponseRedirect(redirect_url)
                             cap_size_list.delete()
                         cap.delete()
                     else:
