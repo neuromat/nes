@@ -2812,7 +2812,9 @@ def subjects(request, group_id, template_name="experiment/subjects.html"):
                  'consent': subject_of_group.consent_form,
                  'number_of_eeg_data_files_uploaded': number_of_eeg_data_files_uploaded,
                  'total_of_eeg_data_files': len(list_of_eeg_configuration),
-                 'percentage_of_eeg_data_files_uploaded': int(percentage_of_eeg_data_files_uploaded)},
+                 'percentage_of_eeg_data_files_uploaded': int(percentage_of_eeg_data_files_uploaded),
+                 'number_of_additional_data_uploaded':
+                     AdditionalData.objects.filter(subject_of_group=subject_of_group).count()},
             )
     else:
         for subject_of_group in subject_list:
