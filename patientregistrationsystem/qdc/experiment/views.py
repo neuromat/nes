@@ -3470,9 +3470,15 @@ def subject_eeg_data_create(request, group_id, subject_id, eeg_configuration_id,
 
                     eeg_data_added.save()
 
+                    has_position_status = False
+
                     # creating position status
                     if hasattr(eeg_data_added.eeg_setting, 'eeg_electrode_layout_setting'):
                         eeg_electrode_layout_setting = eeg_data_added.eeg_setting.eeg_electrode_layout_setting
+
+                        if eeg_electrode_layout_setting.positions_setting:
+                            has_position_status = True
+
                         for position_setting in eeg_electrode_layout_setting.positions_setting.all():
                             EEGElectrodePositionCollectionStatus(
                                 worked=position_setting.used,
@@ -3486,7 +3492,8 @@ def subject_eeg_data_create(request, group_id, subject_id, eeg_configuration_id,
                     messages.success(request, _('EEG data collection created successfully.'))
                     messages.info(request, _('Now you can configure each electrode position'))
 
-                    redirect_url = reverse("eeg_data_view", args=(eeg_data_added.id, 2))
+                    redirect_url = reverse("eeg_data_view", args=(eeg_data_added.id,
+                                                                  2 if has_position_status else 1))
                     return HttpResponseRedirect(redirect_url)
 
         context = {"can_change": True,

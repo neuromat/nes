@@ -109,10 +109,10 @@
                                         <td>
                                             <div class="col-xs-2 col-sm-2" >
                                                 {% if can_change %}
-                                                    <span>
-                                                        <a href='/experiment/group/{{ group.id }}/subject/{{ item.subject.id }}/upload_file' class="glyphicon glyphicon-paperclip"
-                                                           data-toggle="tooltip" data-placement="top" title="{% trans "Upload consent form" %}"></a>
-                                                    </span>
+                                                    <a href='/experiment/group/{{ group.id }}/subject/{{ item.subject.id }}/upload_file'
+                                                       data-toggle="tooltip" data-placement="top" title="{% trans "Upload consent form" %}">
+                                                        <span class="glyphicon glyphicon-paperclip"></span>
+                                                    </a>
                                                 {% endif %}
                                             </div>
                                             <div class="col-xs-10 col-sm-10" >
@@ -128,13 +128,15 @@
                                             <div class="row">
                                                 {% if limesurvey_available %}
                                                     <div class="col-xs-2 col-sm-2">
-                                                        <a href='/experiment/group/{{ group.id }}/subject/{{ item.subject.id }}/' class="glyphicon glyphicon-list-alt"
-                                                                data-toggle="tooltip" data-placement="top" title="{% trans "Fill questionnaires" %}"></a>
+                                                        <a href='/experiment/group/{{ group.id }}/subject/{{ item.subject.id }}/'
+                                                           data-toggle="tooltip" data-placement="top" title="{% trans "Fill questionnaires" %}">
+                                                            <span class="glyphicon glyphicon-list-alt"></span>
+                                                        </a>
                                                     </div>
                                                     <div class="col-xs-10 col-sm-10" >
                                                         <div class="progress">
                                                             <div class="progress-bar {% if item.percentage_of_questionnaires == 100.0 %}progress-bar-success{% else %}progress-bar-warning{% endif %}" role="progressbar" aria-valuenow="{{ item.number_of_questionnaires_filled }}" aria-valuemin="0" aria-valuemax="{{ item.total_of_questionnaires }}" style="color: #000000; width: {{ item.percentage_of_questionnaires }}%;">
-                                                                {{ item.number_of_questionnaires_filled }}/{{ item.total_of_questionnaires }}
+                                                                <span>{{ item.number_of_questionnaires_filled }}/{{ item.total_of_questionnaires }}</span>
                                                             </div>
                                                         </div>
                                                     </div>
@@ -156,7 +158,7 @@
                                                     <div class="col-xs-8 col-sm-8">
                                                         <div class="progress">
                                                             <div class="progress-bar {% if item.percentage_of_eeg_data_files_uploaded == 100.0 %}progress-bar-success{% else %}progress-bar-warning{% endif %}" role="progressbar" aria-valuenow="{{ item.number_of_eeg_data_files_uploaded }}" aria-valuemin="0" aria-valuemax="{{ item.total_of_eeg_data_files }}" style="color: #000000; width: {{ item.percentage_of_eeg_data_files_uploaded }}%;">
-                                                                {{ item.number_of_eeg_data_files_uploaded }}/{{ item.total_of_eeg_data_files }}
+                                                                <span>{{ item.number_of_eeg_data_files_uploaded }}/{{ item.total_of_eeg_data_files }}</span>
                                                             </div>
                                                         </div>
                                                     </div>
@@ -174,7 +176,7 @@
                                                     <div class="col-xs-8 col-sm-8">
                                                         <div class="progress">
                                                             <div class="progress-bar {% if item.percentage_of_emg_data_files_uploaded == 100.0 %}progress-bar-success{% else %}progress-bar-warning{% endif %}" role="progressbar" aria-valuenow="{{ item.number_of_emg_data_files_uploaded }}" aria-valuemin="0" aria-valuemax="{{ item.total_of_emg_data_files }}" style="color: #000000; width: {{ item.percentage_of_emg_data_files_uploaded }}%;">
-                                                                {{ item.number_of_emg_data_files_uploaded }}/{{ item.total_of_emg_data_files }}
+                                                                <span>{{ item.number_of_emg_data_files_uploaded }}/{{ item.total_of_emg_data_files }}</span>
                                                             </div>
                                                         </div>
                                                     </div>

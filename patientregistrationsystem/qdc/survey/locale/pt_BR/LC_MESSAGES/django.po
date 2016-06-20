@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2016-06-15 16:29-0300\n"
+"POT-Creation-Date: 2016-06-20 16:58-0300\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -159,11 +159,11 @@ msgstr "Questionário atualizado com sucesso."
 msgid "There are no changes to save."
 msgstr "Não há alterações para salvar."
 
-#: survey/views.py:397
+#: survey/views.py:399
 msgid "Questionnaire deleted successfully."
 msgstr "Questionário removido com sucesso."
 
-#: survey/views.py:400
+#: survey/views.py:402
 msgid ""
 "It was not possible to delete questionnaire, because there are experimental "
 "answers or steps associated."
@@ -171,19 +171,19 @@ msgstr ""
 "Não foi possível excluir o questionário, pois há respostas ou passos de "
 "experimento associados."
 
-#: survey/views.py:501
+#: survey/views.py:503
 msgid "Formula"
 msgstr "Fórmula"
 
-#: survey/views.py:579 survey/views.py:597 survey/views.py:623
+#: survey/views.py:581 survey/views.py:599 survey/views.py:625
 msgid "No answer"
 msgstr "Sem resposta"
 
-#: survey/views.py:641
+#: survey/views.py:643
 msgid "LimeSurvey did not find fill data for this questionnaire."
 msgstr ""
 "LimeSurvey não encontrou dados de preenchimento para este questionário."
 
-#: survey/views.py:653
+#: survey/views.py:655
 msgid "LimeSurvey unavailable. System running partially."
 msgstr "LimeSurvey indisponível. Sistema funcionando parcialmente."
