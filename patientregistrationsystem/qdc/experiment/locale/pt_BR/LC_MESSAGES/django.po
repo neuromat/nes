@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2016-06-20 16:58-0300\n"
+"POT-Creation-Date: 2016-06-20 17:28-0300\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -2072,11 +2072,11 @@ msgstr "Tem certeza que deseja excluir o participante?"
 #: experiment/templates/experiment/task_component.html:8
 #: experiment/templates/experiment/task_component.html:18
 #: experiment/templates/experiment/task_component.html:24
-msgid "New task for subject"
+msgid "New task for participant"
 msgstr "Nova tarefa para o participante"
 
 #: experiment/templates/experiment/task_component.html:13
-msgid "the task for subject"
+msgid "the task for participant"
 msgstr "a tarefa para o participante"
 
 #: experiment/templates/experiment/task_experiment_component.html:8
@@ -2663,6 +2663,12 @@ msgstr ""
 #: experiment/views.py:5726
 msgid "Position updated successfully."
 msgstr "Posição foi alterada com sucesso."
+
+#~ msgid "New task for subject"
+#~ msgstr "Nova tarefa para o participante"
+
+#~ msgid "the task for subject"
+#~ msgstr "a tarefa para o participante"
 
 #~ msgid "Electrode layout system"
 #~ msgstr "Sistema de layout de eletrodo"
