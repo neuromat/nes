@@ -20,18 +20,6 @@ function checkPass(){
     }
 }
 
-$(function(){
-    $("[data-toggle=tooltip]").tooltip();
-    $( "form" ).submit(function( event ) {
-        if(checkPass())
-            event.preventDefault();
-        if(passwordForce() < 20 && $('#id_new_password1').val()){
-            showErrorMessageTemporary(gettext("Password must contain at least 8 characters, including at least one uppercase letter, digit or special character."));
-            event.preventDefault();
-        }
-    })
-});
-
 function passwordForce(){
     var password = document.getElementById("id_new_password1").value;
     var force = 0;

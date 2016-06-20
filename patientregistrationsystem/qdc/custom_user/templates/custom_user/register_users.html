@@ -21,8 +21,23 @@
     </style>
 
     <script src="{% static 'quiz/js/password.js' %}"></script>
+    <script src="{% static 'quiz/js/password_register.js' %}"></script>
 
     <script type="text/javascript">
+
+
+        $(function(){
+            $("[data-toggle=tooltip]").tooltip();
+            $( "form" ).submit(function( event ) {
+                if(checkPassExt())
+                    event.preventDefault();
+                if(passwordForce() < 20 && $('#id_new_password1').val()){
+                    showErrorMessageTemporary(gettext("Password must contain at least 8 characters, including at least one uppercase letter, digit or special character."));
+                    event.preventDefault();
+                }
+            })
+        });
+
         function Validate(){
            if(!validateForm()){
                 showErrorMessage(gettext('You have to choose at least one user profile!'));
@@ -45,8 +60,10 @@
         $(function(){
             $("[data-toggle=tooltip]").tooltip();
             $( "form" ).submit(function( event ) {
-                if(checkPass())
+
+                if (checkPassExt()){
                     event.preventDefault();
+                }
                 if(!$('#email').val()){
                     showErrorMessage(gettext("E-mail have to be filled!"));
                     $('#mailDivId').addClass('has-error');
@@ -54,6 +71,22 @@
                 }
             })
         });
+{#       $(function(){#}
+{#            $("[data-toggle=tooltip]").tooltip();#}
+{#            $( "form" ).submit(function( event ) {#}
+{#                var password1 = $('#id_new_password1').val();#}
+{#                if(beginCheckPassword1 || password1)#}
+{#                    if (checkPass())#}
+{#                        event.preventDefault();#}
+{#                if(!$('#email').val()){#}
+{#                    showErrorMessage(gettext("E-mail have to be filled!"));#}
+{#                    $('#mailDivId').addClass('has-error');#}
+{#                    event.preventDefault();#}
+{#                }#}
+{#            })#}
+{#        });#}
+
+
     </script>
 {% endblock %}
 
@@ -151,7 +184,16 @@
                         </div>
                     </div>
                 </div>
-                <div class="row">
+{#                <div class="row">#}
+                                            <div class="row">
+                                    <div class="col-xs-12 col-sm-12">
+                                        <div class="form-group">
+                                            <input type="checkbox" id="password_flag" name="password_flag" {% if creating %}checked="checked" disabled {% endif %}> <b>{% trans "Update password" %}</b> </input>
+                                        </div>
+                                    </div>
+                                </div>
+
+                <div class="row" id="div_password">
                     <div class="col-xs-6 col-sm-6" data-toggle="tooltip" data-placement="left"
                             title="{% trans "Password must contain at least 8 characters, including at least one uppercase letter, digit or special character." %}" >
                         <div class="form-group {% if form.errors.password %}has-error{% endif %}" id="id_new_password1_form_group">
@@ -174,7 +216,8 @@
                             <div class="input-group input-group-sm has-feedback">
                                 <span class="input-group-addon"> <span class="glyphicon glyphicon-user"></span></span>
                                 <input class="form-control" id="id_new_password2" maxlength="128" name="password2" required = ""
-                                       placeholder="{% trans "Type password" %}" type="password" onkeyup="checkPass(); beginCheckPassword1=true;">
+                                       placeholder="{% trans "Type password" %}" type="password" onkeyup="checkPassExt(); beginCheckPassword1=true;">
+{#                                       placeholder="{% trans "Type password" %}" type="password" >#}
                             </div>
                             <div class="help-block with-errors">
                                 {% for error in form.errors.password %}
