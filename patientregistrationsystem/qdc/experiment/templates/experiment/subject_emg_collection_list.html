@@ -63,26 +63,25 @@
                         <table class="table table-striped">
                             <thead>
                             <tr>
-                                <th>{% trans "Additional data colletion path" %}</th>
-                                <th>{% trans "Additional data file" %}</th>
+                                <th>{% trans "EMG path" %}</th>
+                                <th>{% trans "EMG data file" %}</th>
                             </tr>
                             </thead>
                             <tbody>
-                            {% if not data_collections %}
+                            {% if not emg_collections %}
                                 <tr>
-                                    <td>{% trans "(No data collection)" %}</td>
+                                    <td>{% trans "(No EMG collection)" %}</td>
                                     <td></td>
                                 </tr>
                             {% else %}
-                                {% for data_collection in data_collections %}
+                                {% for emg_collection in emg_collections %}
                                     <tr>
                                         <td>
 
-                                            <span class="{{ data_collection.icon_class }}"></span>
-                                            <b>{{ data_collection.component_configuration.component.identification }}</b>
+                                            <b>{{ emg_collection.emg_configuration.component.identification }}</b>
                                              <blockquote>
                                                 <i><h6>
-                                                    {% for item in data_collection.path %}
+                                                    {% for item in emg_collection.path %}
                                                         {{ item.1 }} > {% if item.2 %}{{ item.2 }} > {% endif %} {% if forloop.last %}{{ item.3 }}{% endif %}
                                                     {% endfor %}
                                                 </h6></i>
@@ -91,28 +90,26 @@
                                         </td>
                                         <td>
                                             <table>
-                                                {% for additional_data_file in data_collection.additional_data_files %}
+                                                {% for emg_data_file in emg_collection.emg_data_files %}
                                                     <tr>
                                                         <td>
-                                                            <a href="/experiment/additional_data/{{ additional_data_file.id }}" data-toggle="tooltip" data-placement="left" title="{% trans "See details" %}">
-                                                                {{ additional_data_file.description }}
+                                                            <a href="/experiment/emg_data/{{ emg_data_file.id }}" data-toggle="tooltip" data-placement="left" title="{% trans "See details" %}">
+                                                                {{ emg_data_file.description }}
                                                             </a>
                                                         </td>
-                                                        <td>{{ additional_data_file.date }}</td>
-                                                        <td>{{ additional_data_file.file_format.name }}</td>
-                                                        <td>{{ additional_data_file.file.size|filesizeformat }}</td>
+                                                        <td>{{ emg_data_file.date }}</td>
+                                                        <td>{{ emg_data_file.file_format.name }}</td>
+                                                        <td>{{ emg_data_file.file.size|filesizeformat }}</td>
                                                     </tr>
                                                 {% endfor %}
                                                 <tr>
-{#                                                    <td colspan="5">#}
-{#                                                        <a href="/experiment/group/{{ group.id }}/subject/{{ subject.id }}/additional_data/{% for item in data_collection.path %}{{ item.0 }}{% if not forloop.last %}-{% endif %}{% endfor %}/add" class="btn btn-primary">#}
-{#                                                            {% trans "New additional data file" %}#}
+                                                    <td colspan="4">
+{#                                                        <a href="/experiment/group/{{ group.id }}/subject/{{ subject.id }}/emg/{% for item in emg_collection.path %}{{ item.0 }}{% if not forloop.last %}-{% endif %}{% endfor %}/add_emg_data" class="btn btn-primary">#}
+{#                                                            {% trans "New EMG data file" %}#}
 {#                                                        </a>#}
-{#                                                    </td>#}
-                                                    <td colspan="5">
-                                                        <a href="/experiment/group/{{ group.id }}/subject/{{ subject.id }}/additional_data/{% for item in data_collection.path %}{{ item.0 }}{% if not forloop.last %}-{% endif %}{% endfor %}/add">
-                                                            <span class="glyphicon glyphicon-plus-sign"></span>
-                                                            {% trans "New additional data file" %}
+                                                        <a href="/experiment/group/{{ group.id }}/subject/{{ subject.id }}/emg/{% for item in emg_collection.path %}{{ item.0 }}{% if not forloop.last %}-{% endif %}{% endfor %}/add_emg_data">
+                                                        <span class="glyphicon glyphicon-plus-sign"></span>
+                                                            {% trans "New EMG data file" %}
                                                         </a>
                                                     </td>
                                                 </tr>

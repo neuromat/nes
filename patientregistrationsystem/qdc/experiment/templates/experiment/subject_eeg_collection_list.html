@@ -114,8 +114,14 @@
                                                     </tr>
                                                 {% endfor %}
                                                 <tr>
-                                                    <td colspan="2">
-                                                        <a href="/experiment/group/{{ group.id }}/subject/{{ subject.id }}/eeg/{% for item in eeg_collection.path %}{{ item.0 }}{% if not forloop.last %}-{% endif %}{% endfor %}/add_eeg_data" class="btn btn-primary">
+{#                                                    <td colspan="5">#}
+{#                                                        <a href="/experiment/group/{{ group.id }}/subject/{{ subject.id }}/eeg/{% for item in eeg_collection.path %}{{ item.0 }}{% if not forloop.last %}-{% endif %}{% endfor %}/add_eeg_data" class="btn btn-primary">#}
+{#                                                            {% trans "New EEG data file" %}#}
+{#                                                        </a>#}
+{#                                                    </td>#}
+                                                    <td colspan="5">
+                                                        <a href="/experiment/group/{{ group.id }}/subject/{{ subject.id }}/eeg/{% for item in eeg_collection.path %}{{ item.0 }}{% if not forloop.last %}-{% endif %}{% endfor %}/add_eeg_data">
+                                                            <span class="glyphicon glyphicon-plus-sign"></span>
                                                             {% trans "New EEG data file" %}
                                                         </a>
                                                     </td>

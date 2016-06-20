@@ -471,8 +471,16 @@ class EEGData(DataFile, DataCollection):
     eeg_setting_reason_for_change = models.TextField(null=True, blank=True, default='')
     eeg_cap_size = models.ForeignKey(EEGCapSize, null=True, blank=True)
 
+    def __str__(self):
+        return self.description
+
 
 class AdditionalData(DataFile, DataCollection):
+    def __str__(self):
+        return self.description
+
+
+class EMGData(DataFile, DataCollection):
     def __str__(self):
         return self.description
 

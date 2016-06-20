@@ -162,6 +162,25 @@
                                                     </div>
                                                 </div>
                                             {% endif %}
+
+                                            {% if experimental_protocol_info.number_of_emg_data %}
+                                                <div class="row">
+                                                    <div class="col-xs-4 col-sm-4">
+                                                        <a href='/experiment/group/{{ group.id }}/subject/{{ item.subject.id }}/emg'
+                                                                data-toggle="tooltip" data-placement="top" title="{% trans "Uploaded EMG data files" %}">
+                                                            <span class="glyphicon glyphicon-stats"></span> {% trans "EMG" %}
+                                                        </a>
+                                                    </div>
+                                                    <div class="col-xs-8 col-sm-8">
+                                                        <div class="progress">
+                                                            <div class="progress-bar {% if item.percentage_of_emg_data_files_uploaded == 100.0 %}progress-bar-success{% else %}progress-bar-warning{% endif %}" role="progressbar" aria-valuenow="{{ item.number_of_emg_data_files_uploaded }}" aria-valuemin="0" aria-valuemax="{{ item.total_of_emg_data_files }}" style="color: #000000; width: {{ item.percentage_of_emg_data_files_uploaded }}%;">
+                                                                {{ item.number_of_emg_data_files_uploaded }}/{{ item.total_of_emg_data_files }}
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            {% endif %}
+
                                             <div class="row">
                                                 <div class="col-xs-12 col-sm-12">
                                                     <span style="background-color: steelblue" class="badge">{{ item.number_of_additional_data_uploaded }}</span>
