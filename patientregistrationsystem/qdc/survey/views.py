@@ -150,8 +150,10 @@ def create_list_of_trees(block_id, component_type):
 
     list_of_path = []
 
-    configurations = ComponentConfiguration.objects.filter(parent_id=block_id,
-                                                           component__component_type=component_type)
+    configurations = ComponentConfiguration.objects.filter(parent_id=block_id)
+
+    if component_type:
+        configurations = configurations.filter(component__component_type=component_type)
 
     for configuration in configurations:
         list_of_path.append(

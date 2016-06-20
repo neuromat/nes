@@ -324,7 +324,6 @@
                     </div>
 
                     <div id="electrode_position_status" {% if tab == '2' %}class="tab-pane fade in active"{% else %}class="tab-pane fade"{% endif %}>
-                        {% if eeg_data.electrode_positions.all %}
 
                             <table class="table table-striped" style="margin-top:10px; margin-left:10px;">
                                 <thead>
@@ -358,16 +357,12 @@
                                 </tbody>
                             </table>
 
-                            {% if not editing and can_change %}
+                            {% if not editing and can_change and eeg_data.electrode_positions.all %}
                                 <div class="btn-group pull-left">
                                     <a href="/experiment/eeg_data/edit/{{ eeg_data.id }}/2" class="btn btn-primary">{% trans "Edit" %}</a>
                                 </div>
                             {% endif %}
 
-
-                        {% else %}
-                            nao tem layout
-                        {% endif %}
                     </div>
                 </div>
 

@@ -1,6 +1,8 @@
 # -*- coding: UTF-8 -*-
 import datetime
 
+from os import path
+
 from django.db import models
 from django.core.exceptions import ValidationError
 from django.core.validators import MinValueValidator
@@ -393,6 +395,23 @@ def get_eeg_dir(instance, filename):
            (instance.group.experiment.id, instance.group.id, instance.subject.id, filename)
 
 
+def get_data_file_dir(instance, filename):
+    directory = 'data_files'
+    if isinstance(instance, DataCollection):
+        directory = path.join('data_collection_files',
+                              str(instance.subject_of_group.group.experiment.id),
+                              str(instance.subject_of_group.group.id),
+                              str(instance.subject_of_group.subject.id),
+                              str(instance.data_configuration_tree.id))
+        if isinstance(instance, EEGData):
+            directory = path.join(directory, 'eeg')
+        elif isinstance(instance, EMGData):
+            directory = path.join(directory, 'emg')
+        elif isinstance(instance, AdditionalData):
+            directory = path.join(directory, 'additional')
+    return path.join(directory, filename)
+
+
 class SubjectOfGroup(models.Model):
     subject = models.ForeignKey(Subject, null=False, blank=False)
     group = models.ForeignKey(Group, null=False, blank=False)
@@ -458,18 +477,35 @@ class FileFormat(models.Model):
 
 class DataFile(models.Model):
     description = models.TextField(null=False, blank=False)
-    file = models.FileField(upload_to=get_eeg_dir, null=False)
+    file = models.FileField(upload_to=get_data_file_dir, null=False)
     file_format = models.ForeignKey(FileFormat, null=False, blank=False)
     file_format_description = models.TextField(null=True, blank=True, default='')
 
     class Meta:
         abstract = True
 
+    def get_dir(self, filename):
+        return "eeg_data_files/%s/%s/%s/%s" % \
+               (self.group.experiment.id, self.group.id, self.subject.id, filename)
+
 
 class EEGData(DataFile, DataCollection):
     eeg_setting = models.ForeignKey(EEGSetting)
     eeg_setting_reason_for_change = models.TextField(null=True, blank=True, default='')
     eeg_cap_size = models.ForeignKey(EEGCapSize, null=True, blank=True)
+
+    def __str__(self):
+        return self.description
+
+
+class AdditionalData(DataFile, DataCollection):
+    def __str__(self):
+        return self.description
+
+
+class EMGData(DataFile, DataCollection):
+    def __str__(self):
+        return self.description
 
 
 class EEGElectrodePositionCollectionStatus(models.Model):
