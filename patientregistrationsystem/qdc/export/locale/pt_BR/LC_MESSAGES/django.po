@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2016-06-01 14:59-0300\n"
+"POT-Creation-Date: 2016-06-20 17:28-0300\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -18,8 +18,8 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=(n > 1);\n"
 
-#: export/export.py:66 export/export.py:67 export/views.py:126
-#: export/views.py:127 export/views.py:131 export/views.py:132
+#: export/export.py:66 export/export.py:67 export/views.py:127
+#: export/views.py:128 export/views.py:132 export/views.py:133
 msgid "Participation code"
 msgstr "Código de Participante"
 
@@ -109,7 +109,7 @@ msgstr "Informações de questionários"
 
 #: export/templates/export/export_data.html:202
 msgid "Fields available:"
-msgstr ""
+msgstr "Campos disponíveis:"
 
 #: export/templates/export/export_data.html:207
 msgid "Please, select a questionnaire from the list."
@@ -117,7 +117,7 @@ msgstr "Por favor, selecione um questionário da lista"
 
 #: export/templates/export/export_data.html:240
 msgid "Fields chosen:"
-msgstr ""
+msgstr "Campos escolhidos:"
 
 #: export/templates/export/export_data.html:270
 msgid "Participants"
@@ -131,23 +131,30 @@ msgstr "Campos de participante"
 msgid "Please, select a patient field from the list."
 msgstr "Por favor, selecione um participante da lista"
 
-#: export/templates/export/export_data.html:292
+#: export/templates/export/export_data.html:285
+#: export/templates/export/export_data.html:307
+msgid "* use ctrl-click to select more than one field. (command-click on Mac)"
+msgstr ""
+"* use control-click para selecionar mais do que um campo. (command-click em "
+"Mac)"
+
+#: export/templates/export/export_data.html:293
 msgid "Diagnosis"
 msgstr "Diagnóstico"
 
-#: export/templates/export/export_data.html:297
+#: export/templates/export/export_data.html:298
 msgid "Diagnosis fields"
 msgstr "Campos de diagnóstico"
 
-#: export/templates/export/export_data.html:300
+#: export/templates/export/export_data.html:301
 msgid "Please, select a diagnosis field from the list."
 msgstr "Por favor, selecione um campo de diagnóstico da lista"
 
-#: export/templates/export/export_data.html:315
+#: export/templates/export/export_data.html:317
 msgid "Run"
 msgstr "Executar"
 
-#: export/templates/export/export_data.html:319
+#: export/templates/export/export_data.html:321
 #: export/templates/export/participant_selection.html:111
 #: export/templates/export/show_selected_participants.html:92
 msgid "Cancel"
@@ -169,13 +176,13 @@ msgstr "Participantes selecionados"
 
 #: export/templates/export/participant_selection.html:54
 #: export/templates/export/show_selected_participants.html:48
-#: export/views.py:82
+#: export/views.py:83
 msgid "Gender"
 msgstr "Sexo"
 
 #: export/templates/export/participant_selection.html:65
 #: export/templates/export/show_selected_participants.html:52
-#: export/views.py:84
+#: export/views.py:85
 msgid "Marital status"
 msgstr "Estado civil"
 
@@ -210,17 +217,17 @@ msgid "Code"
 msgstr "Código"
 
 #: export/templates/export/show_selected_participants.html:49
-#: export/views.py:88
+#: export/views.py:89
 msgid "Country"
 msgstr "País"
 
 #: export/templates/export/show_selected_participants.html:50
-#: export/views.py:87
+#: export/views.py:88
 msgid "State"
 msgstr "Estado"
 
 #: export/templates/export/show_selected_participants.html:51
-#: export/views.py:86
+#: export/views.py:87
 msgid "City"
 msgstr "Cidade"
 
@@ -228,128 +235,126 @@ msgstr "Cidade"
 msgid "Previous"
 msgstr "Anterior"
 
-#: export/views.py:80
-msgid "Identification"
-msgstr ""
-
-#: export/views.py:81
-msgid "Full name"
-msgstr "Nome Completo"
-
-#: export/views.py:83
+#: export/views.py:84
 msgid "Date of birth"
 msgstr "Data de nascimento"
 
-#: export/views.py:85
+#: export/views.py:86
 msgid "Origin"
 msgstr "Origem"
 
-#: export/views.py:89
+#: export/views.py:90
 msgid "Natural of"
 msgstr "Natural de"
 
-#: export/views.py:90
+#: export/views.py:91
 msgid "Schooling"
 msgstr "Grau de instrução do chefe de família - Critério Brasil 2013"
 
-#: export/views.py:91
+#: export/views.py:92
 msgid "Profession"
 msgstr "Profissão"
 
-#: export/views.py:93
+#: export/views.py:94
 msgid "Calculated social class"
 msgstr "Classe social calculada"
 
-#: export/views.py:94
+#: export/views.py:95
 msgid "Occupation"
 msgstr "Ocupação"
 
-#: export/views.py:96
+#: export/views.py:97
 msgid "What form of payment of the treatment performed"
 msgstr "Qual a forma de pagamento do tratamento realizado?"
 
-#: export/views.py:97
+#: export/views.py:98
 msgid "Religion"
 msgstr "Religião"
 
-#: export/views.py:98
+#: export/views.py:99
 msgid "Flesh tone"
 msgstr "Cor da pele"
 
-#: export/views.py:99
+#: export/views.py:100
 msgid "Citizenship"
 msgstr "País de nascimento"
 
-#: export/views.py:101
+#: export/views.py:102
 msgid ""
 "Do you receive some benefit from the municipal level, state or federal "
 "government?"
 msgstr ""
 "Recebe algum benefício de escala municipal, estadual ou federal de governo?"
 
-#: export/views.py:102
+#: export/views.py:103
 msgid "Smoker"
 msgstr "Tabagismo"
 
-#: export/views.py:104
+#: export/views.py:105
 msgid "Cigarretes/Day"
 msgstr "Cigarros/Dia"
 
-#: export/views.py:105
+#: export/views.py:106
 msgid "Former smoker"
 msgstr "Ex-tabagista"
 
-#: export/views.py:106
+#: export/views.py:107
 msgid "Alcoholic"
 msgstr "Etilismo"
 
-#: export/views.py:107
+#: export/views.py:108
 msgid "Frequency"
 msgstr "Frequência"
 
-#: export/views.py:108
+#: export/views.py:109
 msgid "Period"
 msgstr "Período"
 
-#: export/views.py:109
+#: export/views.py:110
 msgid "Drugs"
 msgstr "Uso de drogas ilícitas"
 
-#: export/views.py:113
+#: export/views.py:114
 msgid "Date"
 msgstr "Data"
 
-#: export/views.py:115
+#: export/views.py:116
 msgid "Observation"
 msgstr "Observação"
 
-#: export/views.py:117
+#: export/views.py:118
 msgid "Disease code (ICD)"
 msgstr "Código da doença (CID)"
 
-#: export/views.py:119
+#: export/views.py:120
 msgid "Disease Description"
 msgstr "Descrição da doença"
 
-#: export/views.py:121
+#: export/views.py:122
 msgid "Disease Abbreviated Description"
 msgstr "Descrição da doença abreviada"
 
-#: export/views.py:357
+#: export/views.py:358
 msgid "Inconsistent data read from json file"
 msgstr "Dados inconsistentes do arquivo de entrada"
 
-#: export/views.py:606
+#: export/views.py:607
 msgid "Export was finished correctly"
 msgstr "Exportação foi finalizada com sucesso"
 
-#: export/views.py:624
+#: export/views.py:625
 msgid "Export data was not generated."
 msgstr "Exportação não foi gerada."
 
-#: export/views.py:637
+#: export/views.py:638
 msgid "No data was select. Export data was not generated."
 msgstr "Nenhum dado foi selecionado. Exportação não foi gerada."
+
+#~ msgid "Identification"
+#~ msgstr "Identificação"
+
+#~ msgid "Full name"
+#~ msgstr "Nome Completo"
 
 #~ msgid "Either one or both Per participant/Per questionnaire must be set."
 #~ msgstr "Opção Por participante e/ou Por questionário deve ser preenchida. "

@@ -299,10 +299,12 @@
                             <div class="col-xs-12 col-sm-12">
                                 <div class="form-group {% if eeg_data_form.errors.file %}has-error{% endif %}">
                                     <label class="control-label">{% trans "File" %} <b style="color: red;">*</b></label>
+                                    <br/>
                                     {% if editing %}
                                         {{ eeg_data_form.file }}
                                     {% else %}
                                         {{ eeg_data_form.file.value }}
+                                        <button class="btn btn-default" type="button" onclick="location.href='{{ eeg_data.file.url }}'"><span class="glyphicon glyphicon-download-alt" style="color: royalblue"></span></button>
                                     {% endif %}
                                     <div class="help-block with-errors">
                                         {% for error in eeg_data_form.file.errors %}
@@ -322,7 +324,6 @@
                     </div>
 
                     <div id="electrode_position_status" {% if tab == '2' %}class="tab-pane fade in active"{% else %}class="tab-pane fade"{% endif %}>
-                        {% if eeg_data.electrode_positions.all %}
 
                             <table class="table table-striped" style="margin-top:10px; margin-left:10px;">
                                 <thead>
@@ -356,16 +357,12 @@
                                 </tbody>
                             </table>
 
-                            {% if not editing and can_change %}
+                            {% if not editing and can_change and eeg_data.electrode_positions.all %}
                                 <div class="btn-group pull-left">
                                     <a href="/experiment/eeg_data/edit/{{ eeg_data.id }}/2" class="btn btn-primary">{% trans "Edit" %}</a>
                                 </div>
                             {% endif %}
 
-
-                        {% else %}
-                            nao tem layout
-                        {% endif %}
                     </div>
                 </div>
 

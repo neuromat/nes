@@ -54,6 +54,7 @@
                         <thead>
                             <tr>
                                 <th>{% trans "Identification" %}</th>
+                                <th>{% trans "Manufacturer" %}</th>
                                 <th>{% trans "Serial number" %}</th>
                                 <th>{% trans "Number of channels" %}</th>
                                 <th>{% trans "Software version" %}</th>
@@ -71,11 +72,12 @@
                                         {{ equipment.identification }}
                                     {% endif %}
                                 </td>
+                                <td>{{ equipment.manufacturer }}</td>
                                 <td>
                                     {{ equipment.serial_number }}
                                 </td>
                                 <td>
-                                    {% if equipment.number_of_channels %}{{ equipment.number_of_channels }}{% endif %}
+                                    {{ equipment.number_of_channels|default:"" }}
                                 </td>
                                 <td>
                                     {{ equipment.software_version }}

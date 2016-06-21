@@ -904,11 +904,7 @@ def exam_edit(request, patient_id, record_id, exam_id, template_name="patient/ex
                     if request.POST['action'] == "save":
                         messages.success(request, _('Exam successfully saved.'))
 
-                        if new_medical_record:
-                            redirect_url = reverse("medical_record_edit", args=(patient_id, record_id, ))
-                        else:
-                            redirect_url = reverse("medical_record_view", args=(patient_id, record_id, ))
-
+                        redirect_url = reverse("medical_record_edit", args=(patient_id, record_id, ))
                         return HttpResponseRedirect(redirect_url + "?status=" + status)
 
                     else:

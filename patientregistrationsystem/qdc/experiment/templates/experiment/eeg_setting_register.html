@@ -231,11 +231,11 @@
                                             <a role="menuitem" tabindex="-1" href="/experiment/eeg_setting/{{ eeg_setting.id }}/eeg_electrode_net_system">
                                                 {{ eeg_setting.eeg_electrode_layout_setting.eeg_electrode_net_system.eeg_electrode_localization_system.name }}
                                             </a>
-                                            <blockquote>
-                                                <i><h6>
-                                                    {% trans "Number of electrode:" %} {{ eeg_setting.eeg_electrode_layout_setting.number_of_electrodes }}
-                                                </h6></i>
-                                            </blockquote>
+{#                                            <blockquote>#}
+{#                                                <i><h6>#}
+{#                                                    {% trans "Number of used electrodes:" %} {{ eeg_setting.eeg_electrode_layout_setting.positions_setting.all.count }}#}
+{#                                                </h6></i>#}
+{#                                            </blockquote>#}
 
                                         {% else %}
                                             <a role="menuitem" tabindex="-1" href="/experiment/eeg_setting/{{ eeg_setting.id }}/eeg_electrode_net_system"> {% trans "+ Add setting" %}</a>

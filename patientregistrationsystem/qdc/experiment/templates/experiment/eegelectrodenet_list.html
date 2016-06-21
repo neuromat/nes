@@ -54,6 +54,8 @@
                         <thead>
                             <tr>
                                 <th>{% trans "Identification" %}</th>
+                                <th>{% trans "Manufacturer" %}</th>
+                                <th>{% trans "Is a cap" %}</th>
                                 <th>{% trans "Serial number" %}</th>
                                 <th>{% trans "Electrode model default" %}</th>
                             </tr>
@@ -70,6 +72,8 @@
                                         {{ equipment.identification }}
                                     {% endif %}
                                 </td>
+                                <td>{{ equipment.manufacturer.name }}</td>
+                                <td>{% if equipment.eegelectrodecap %}<span class="glyphicon glyphicon-ok" style="color: royalblue"></span>{% endif %}</td>
                                 <td>
                                     {{ equipment.serial_number }}
                                 </td>

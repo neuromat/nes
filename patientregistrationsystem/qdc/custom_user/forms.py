@@ -22,7 +22,7 @@ class UserForm(ModelForm):
                                          'placeholder': _('Type user name')}),
             'password': PasswordInput(attrs={'id': 'id_new_password1', 'required': "",
                                              'class': 'form-control', 'placeholder': _('Type password'),
-                                             'onkeyup': "passwordForce(); if(beginCheckPassword1)checkPass();"}),
+                                             'onkeyup': "passwordForce(); if(beginCheckPassword1)checkPassExt();"}),
             'email': TextInput(attrs={'class': 'form-control', 'required': "",
                                       'placeholder': _('Type e-mail'), 'id': "email",
                                       'type': 'email', 'data-error': "E-mail inválido",
@@ -46,7 +46,7 @@ class UserFormUpdate(UserForm):
                          widget=PasswordInput(attrs={'id': 'id_new_password1', 'class': 'form-control',
                                                      'placeholder': _('Type password'),
                                                      'onkeyup': "passwordForce(); "
-                                                                "if(beginCheckPassword1) checkPass();"}))
+                                                                "if(beginCheckPassword1) checkPassExt();"}))
 
     def clean_password(self):
         if self.cleaned_data['password']:

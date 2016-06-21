@@ -2,7 +2,44 @@
 {% load i18n admin_static %}
 
 {% block specific_header %}
+
     <script src="{% static 'quiz/js/eeg_electrode_position_map.js' %}"></script>
+
+    <style>
+        {#  based on tip from http://stackoverflow.com/questions/21168521/scrollable-table-with-fixed-header-in-bootstrap #}
+        .header-fixed {
+            width: 100%
+        }
+
+        .header-fixed > thead,
+        .header-fixed > tbody,
+        .header-fixed > thead > tr,
+        .header-fixed > tbody > tr,
+        .header-fixed > thead > tr > th,
+        .header-fixed > tbody > tr > td {
+            display: block;
+        }
+
+        .header-fixed > tbody > tr:after,
+        .header-fixed > thead > tr:after {
+            content: ' ';
+            display: block;
+            visibility: hidden;
+            clear: both;
+        }
+
+        .header-fixed > tbody {
+            overflow-y: auto;
+            height: 400px;
+        }
+
+        .header-fixed > tbody > tr > td,
+        .header-fixed > thead > tr > th {
+            width: 50%;
+            float: left;
+        }
+    </style>
+
 {% endblock %}
 
 {% block subcontent %}
@@ -25,8 +62,16 @@
                             </canvas>
                         </div>
                     </td>
+
                     <td width="20%" valign="top">
-                        <table class="table table-striped" style="margin-top:10px; margin-left:10px;">
+
+                        <label class="control-label" style="margin-left: 10px;">{% trans "Used positions:" %}</label>
+                        <br/>
+
+                        <input type="text" id="used_positions" value="{{ number_of_used_electrodes }}" disabled size="4" style="text-align: center; margin-left: 10px;">
+                        {% trans "of" %} {{ eeg_setting.eeg_electrode_layout_setting.eeg_electrode_net_system.eeg_electrode_localization_system.electrode_positions.count }}
+
+                        <table class="table table-striped header-fixed" style="margin-top:10px; margin-left:10px;">
                             <thead>
                                 <tr>
                                     <th>{% trans "Position" %}</th>

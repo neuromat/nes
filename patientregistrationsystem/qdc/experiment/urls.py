@@ -79,6 +79,16 @@ urlpatterns = patterns(
     url(r'^eegelectrodenet/(?P<eegelectrodenet_id>\d+)/$', 'eegelectrodenet_view', name='eegelectrodenet_view'),
     url(r'^eegelectrodenet/edit/(?P<eegelectrodenet_id>\d+)/$', 'eegelectrodenet_update', name='eegelectrodenet_edit'),
 
+    # register cap size
+    url(r'^eeg_electrode_cap_size/(?P<eegelectrode_cap_id>\d+)/add_size/$',
+        'eegelectrodenet_cap_size_create',name='eegelectrodenet_add_size'),
+    # url(r'^eeg_electrode_cap_size/remove/(?P<eegelectrode_cap_size_id>\d+)/$',
+    #     'eegelectrodenet_cap_size_remove', name='cap_size_remove'),
+    url(r'^eeg_electrode_cap_size/(?P<eegelectrode_cap_size_id>\d+)/$',
+        'eegelectrodenet_cap_size_view',name='eegelectrodenet_cap_size_view'),
+    url(r'^eeg_electrode_cap_size/(?P<eegelectrode_cap_size_id>\d+)/edit/$',
+        'eegelectrodenet_cap_size_update',name='eegelectrodenet_cap_size_edit'),
+
     # Localization system and position
     url(r'^eeg_electrode_localization_system/list/$',
         'eeg_electrode_localization_system_list', name='eeg_electrode_localization_system_list'),
@@ -120,8 +130,8 @@ urlpatterns = patterns(
     url(r'^equipment/(?P<equipment_id>\d+)/attributes/$', 'get_json_equipment_attributes'),
     url(r'^solution/(?P<solution_id>\d+)/attributes/$', 'get_json_solution_attributes'),
     url(r'^filter/(?P<filter_id>\d+)/attributes/$', 'get_json_filter_attributes'),
-    url(r'^eeg_localization_system/(?P<eeg_localization_system_id>\d+)/attributes/$',
-        'get_json_eeg_localization_system_attributes'),
+    # url(r'^eeg_localization_system/(?P<eeg_localization_system_id>\d+)/attributes/$',
+    #     'get_json_eeg_localization_system_attributes'),
     url(r'^equipment/get_localization_system_by_electrode_net/(?P<equipment_id>\d+)/$',
         'get_localization_system_by_electrode_net'),
     url(r'^equipment/get_equipment_by_manufacturer_and_localization_system/'
@@ -146,7 +156,8 @@ urlpatterns = patterns(
     # subject + questionnaire
     url(r'^group/(?P<group_id>\d+)/subject/(?P<subject_id>\d+)/$',
         'subject_questionnaire_view', name='subject_questionnaire'),
-    url(r'^group/(?P<group_id>\d+)/subject/(?P<subject_id>\d+)/questionnaire/(?P<questionnaire_id>[0-9-]+)/add_response/$',
+    url(r'^group/(?P<group_id>\d+)/subject/(?P<subject_id>\d+)/questionnaire/'
+        r'(?P<questionnaire_id>[0-9-]+)/add_response/$',
         'subject_questionnaire_response_create', name='subject_questionnaire_response'),
     url(r'^questionnaire_response/edit/(?P<questionnaire_response_id>\d+)/$',
         'questionnaire_response_edit', name='questionnaire_response_edit'),
@@ -164,6 +175,23 @@ urlpatterns = patterns(
     # eeg_data (ajax)
     url(r'^equipment/get_cap_size_list_from_eeg_setting/(?P<eeg_setting_id>\d+)/$',
         'get_cap_size_list_from_eeg_setting'),
+
+    # subject + emg data
+    url(r'^group/(?P<group_id>\d+)/subject/(?P<subject_id>\d+)/emg/$',
+        'subject_emg_view', name='subject_emg_view'),
+    url(r'^group/(?P<group_id>\d+)/subject/(?P<subject_id>\d+)/emg/(?P<emg_configuration_id>[0-9-]+)/add_emg_data/$',
+        'subject_emg_data_create', name='subject_emg_data_create'),
+    url(r'^emg_data/(?P<emg_data_id>\d+)/$', 'emg_data_view', name='emg_data_view'),
+    url(r'^emg_data/edit/(?P<emg_data_id>\d+)/$', 'emg_data_edit', name='emg_data_edit'),
+
+    # subject + additional data
+    url(r'^group/(?P<group_id>\d+)/subject/(?P<subject_id>\d+)/additional_data/$',
+        'subject_additional_data_view', name='subject_additional_data_view'),
+    url(r'^group/(?P<group_id>\d+)/subject/(?P<subject_id>\d+)/additional_data/'
+        r'(?P<path_of_configuration>[0-9-]+)/add/$',
+        'subject_additional_data_create', name='subject_additional_data_create'),
+    url(r'^additional_data/(?P<additional_data_id>\d+)/$', 'additional_data_view', name='additional_data_view'),
+    url(r'^additional_data/edit/(?P<additional_data_id>\d+)/$', 'additional_data_edit', name='additional_data_edit'),
 
     # experimental protocol components
     url(r'^(?P<experiment_id>\d+)/components/$', 'component_list', name='component_list'),

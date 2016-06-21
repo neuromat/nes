@@ -17,7 +17,7 @@ $(document).ready(function () {
     var gain = $("#id_gain");
 
     var select_localization_system = $("#id_localization_system_selection");
-    var system_number_of_electrodes = $("#id_system_number_of_electrodes");
+    // var system_number_of_electrodes = $("#id_system_number_of_electrodes");
 
     var equipment_type = eeg_setting_type;
     if (equipment_type == "eeg_electrode_net_system") {
@@ -115,15 +115,13 @@ $(document).ready(function () {
 
         var system_id = $(this).val();
 
-        if (system_id == "") {
-            system_number_of_electrodes.prop('value', "");
-        } else {
+        if (system_id != "") {
 
-            var url = "/experiment/eeg_localization_system/" + system_id + "/attributes";
-
-            $.getJSON(url, function(eeg_localization_system) {
-                system_number_of_electrodes.prop('value', eeg_localization_system['number_of_electrodes']);
-            });
+            // var url = "/experiment/eeg_localization_system/" + system_id + "/attributes";
+            //
+            // $.getJSON(url, function(eeg_localization_system) {
+            //     system_number_of_electrodes.prop('value', eeg_localization_system['number_of_electrodes']);
+            // });
 
             // When there is not Equipment selected
             if (select_equipment.val() == "") {
