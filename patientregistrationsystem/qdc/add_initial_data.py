@@ -173,6 +173,7 @@ PermissionTable = [
     _("Can export medical record"),
     _("Can export patient"),
     _("Can export questionnaire response"),
+    _("Can register equipment"),
 ]
 
 GroupTable = [
@@ -235,7 +236,7 @@ doctor_permission_list.append(Permission.objects.get(codename='add_medicalrecord
 for p in doctor_permission_list:
     g.permissions.add(p)
 
-g = Group(name='Junior Researcher')
+g = Group(name='Junior researcher')
 g.save()
 researchproject_content_type = ContentType.objects.get(app_label='experiment', model='researchproject')
 experiment_content_type = ContentType.objects.get(app_label='experiment', model='experiment')
@@ -268,7 +269,7 @@ junior_researcher_permission_list += [
 for p in junior_researcher_permission_list:
     g.permissions.add(p)
 
-g = Group(name='Senior Researcher')
+g = Group(name='Senior researcher')
 g.save()
 # Can do what a junior researcher does
 senior_researcher_permission_list = list(junior_researcher_permission_list)
