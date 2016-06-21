@@ -1517,13 +1517,13 @@ def equipment_view(request, eeg_setting_id, equipment_id,
 
 
 @login_required
-@permission_required('experiment.add_equipment')
+@permission_required('experiment.register_equipment')
 def manufacturer_list(request, template_name="experiment/manufacturer_list.html"):
     return render(request, template_name, {"equipments": Manufacturer.objects.order_by('name')})
 
 
 @login_required
-@permission_required('experiment.add_manufacturer')
+@permission_required('experiment.register_equipment')
 def manufacturer_create(request, template_name="experiment/manufacturer_register.html"):
 
     manufacturer_form = ManufacturerRegisterForm(request.POST or None)
@@ -1556,7 +1556,7 @@ def manufacturer_create(request, template_name="experiment/manufacturer_register
 
 
 @login_required
-@permission_required('experiment.change_manufacturer')
+@permission_required('experiment.register_equipment')
 def manufacturer_update(request, manufacturer_id, template_name="experiment/manufacturer_register.html"):
     manufacturer = get_object_or_404(Manufacturer, pk=manufacturer_id)
 
@@ -1583,7 +1583,7 @@ def manufacturer_update(request, manufacturer_id, template_name="experiment/manu
 
 
 @login_required
-@permission_required('experiment.view_manufacturer')
+@permission_required('experiment.register_equipment')
 def manufacturer_view(request, manufacturer_id, template_name="experiment/manufacturer_register.html"):
     manufacturer = get_object_or_404(Manufacturer, pk=manufacturer_id)
 
@@ -1613,13 +1613,13 @@ def manufacturer_view(request, manufacturer_id, template_name="experiment/manufa
 
 
 @login_required
-@permission_required('experiment.add_equipment')
+@permission_required('experiment.register_equipment')
 def eegmachine_list(request, template_name="experiment/eegmachine_list.html"):
     return render(request, template_name, {"equipments": EEGMachine.objects.all().order_by('identification')})
 
 
 @login_required
-@permission_required('experiment.add_eegmachine')
+@permission_required('experiment.register_equipment')
 def eegmachine_create(request, template_name="experiment/eegmachine_register.html"):
 
     eegmachine_form = EEGMachineRegisterForm(request.POST or None, initial={'equipment_type': 'eeg_machine'})
@@ -1653,7 +1653,7 @@ def eegmachine_create(request, template_name="experiment/eegmachine_register.htm
 
 
 @login_required
-@permission_required('experiment.change_eegmachine')
+@permission_required('experiment.register_equipment')
 def eegmachine_update(request, eegmachine_id, template_name="experiment/eegmachine_register.html"):
 
     eegmachine = get_object_or_404(EEGMachine, pk=eegmachine_id)
@@ -1684,7 +1684,7 @@ def eegmachine_update(request, eegmachine_id, template_name="experiment/eegmachi
 
 
 @login_required
-@permission_required('experiment.view_eegmachine')
+@permission_required('experiment.register_equipment')
 def eegmachine_view(request, eegmachine_id, template_name="experiment/eegmachine_register.html"):
     eegmachine = get_object_or_404(EEGMachine, pk=eegmachine_id)
 
@@ -1714,13 +1714,13 @@ def eegmachine_view(request, eegmachine_id, template_name="experiment/eegmachine
 
 
 @login_required
-@permission_required('experiment.add_equipment')
+@permission_required('experiment.register_equipment')
 def eegamplifier_list(request, template_name="experiment/eegamplifier_list.html"):
     return render(request, template_name, {"equipments": EEGAmplifier.objects.all().order_by('identification')})
 
 
 @login_required
-@permission_required('experiment.add_eegamplifier')
+@permission_required('experiment.register_equipment')
 def eegamplifier_create(request, template_name="experiment/eegamplifier_register.html"):
 
     eegamplifier_form = EEGAmplifierRegisterForm(request.POST or None, initial={'equipment_type': 'eeg_amplifier'})
@@ -1754,7 +1754,7 @@ def eegamplifier_create(request, template_name="experiment/eegamplifier_register
 
 
 @login_required
-@permission_required('experiment.change_eegamplifier')
+@permission_required('experiment.register_equipment')
 def eegamplifier_update(request, eegamplifier_id, template_name="experiment/eegamplifier_register.html"):
     eegamplifier = get_object_or_404(EEGAmplifier, pk=eegamplifier_id)
 
@@ -1781,7 +1781,7 @@ def eegamplifier_update(request, eegamplifier_id, template_name="experiment/eega
 
 
 @login_required
-@permission_required('experiment.view_eegamplifier')
+@permission_required('experiment.register_equipment')
 def eegamplifier_view(request, eegamplifier_id, template_name="experiment/eegamplifier_register.html"):
     eegamplifier = get_object_or_404(EEGAmplifier, pk=eegamplifier_id)
 
@@ -1811,13 +1811,13 @@ def eegamplifier_view(request, eegamplifier_id, template_name="experiment/eegamp
 
 
 @login_required
-@permission_required('experiment.add_equipment')
+@permission_required('experiment.register_equipment')
 def eegsolution_list(request, template_name="experiment/eegsolution_list.html"):
     return render(request, template_name, {"equipments": EEGSolution.objects.all().order_by('name')})
 
 
 @login_required
-@permission_required('experiment.add_eegsolution')
+@permission_required('experiment.register_equipment')
 def eegsolution_create(request, template_name="experiment/eegsolution_register.html"):
 
     eegsolution_form = EEGSolutionRegisterForm(request.POST or None)
@@ -1850,7 +1850,7 @@ def eegsolution_create(request, template_name="experiment/eegsolution_register.h
 
 
 @login_required
-@permission_required('experiment.change_eegsolution')
+@permission_required('experiment.register_equipment')
 def eegsolution_update(request, eegsolution_id, template_name="experiment/eegsolution_register.html"):
     eegsolution = get_object_or_404(EEGSolution, pk=eegsolution_id)
     eegsolution.equipment_type = 'eeg_solution'
@@ -1879,7 +1879,7 @@ def eegsolution_update(request, eegsolution_id, template_name="experiment/eegsol
 
 
 @login_required
-@permission_required('experiment.view_eegsolution')
+@permission_required('experiment.register_equipment')
 def eegsolution_view(request, eegsolution_id, template_name="experiment/eegsolution_register.html"):
     eegsolution = get_object_or_404(EEGSolution, pk=eegsolution_id)
 
@@ -1909,13 +1909,13 @@ def eegsolution_view(request, eegsolution_id, template_name="experiment/eegsolut
 
 
 @login_required
-@permission_required('experiment.add_equipment')
+@permission_required('experiment.register_equipment')
 def eegfiltertype_list(request, template_name="experiment/eegfiltertype_list.html"):
     return render(request, template_name, {"equipments": EEGFilterType.objects.all().order_by('name')})
 
 
 @login_required
-@permission_required('experiment.add_eegfiltertype')
+@permission_required('experiment.register_equipment')
 def eegfiltertype_create(request, template_name="experiment/eegfiltertype_register.html"):
 
     eegfiltertype_form = EEGFilterTypeRegisterForm(request.POST or None)
@@ -1948,7 +1948,7 @@ def eegfiltertype_create(request, template_name="experiment/eegfiltertype_regist
 
 
 @login_required
-@permission_required('experiment.change_eegfiltertype')
+@permission_required('experiment.register_equipment')
 def eegfiltertype_update(request, eegfiltertype_id, template_name="experiment/eegfiltertype_register.html"):
     eegfiltertype = get_object_or_404(EEGFilterType, pk=eegfiltertype_id)
 
@@ -1976,7 +1976,7 @@ def eegfiltertype_update(request, eegfiltertype_id, template_name="experiment/ee
 
 
 @login_required
-@permission_required('experiment.view_eegfiltertype')
+@permission_required('experiment.register_equipment')
 def eegfiltertype_view(request, eegfiltertype_id, template_name="experiment/eegfiltertype_register.html"):
     eegfiltertype = get_object_or_404(EEGFilterType, pk=eegfiltertype_id)
 
@@ -2006,13 +2006,13 @@ def eegfiltertype_view(request, eegfiltertype_id, template_name="experiment/eegf
 
 
 @login_required
-@permission_required('experiment.add_equipment')
+@permission_required('experiment.register_equipment')
 def eegelectrodemodel_list(request, template_name="experiment/eegelectrodemodel_list.html"):
     return render(request, template_name, {"equipments": EEGElectrodeModel.objects.all().order_by('name')})
 
 
 @login_required
-@permission_required('experiment.add_eegelectrodemodel')
+@permission_required('experiment.register_equipment')
 def eegelectrodemodel_create(request, template_name="experiment/eegelectrodemodel_register.html"):
 
     eegelectrodemodel_form = EEGElectrodeModelRegisterForm(request.POST or None)
@@ -2045,7 +2045,7 @@ def eegelectrodemodel_create(request, template_name="experiment/eegelectrodemode
 
 
 @login_required
-@permission_required('experiment.change_eegelectrodemodel')
+@permission_required('experiment.register_equipment')
 def eegelectrodemodel_update(request, eegelectrodemodel_id, template_name="experiment/eegelectrodemodel_register.html"):
     eegelectrodemodel = get_object_or_404(EEGElectrodeModel, pk=eegelectrodemodel_id)
 
@@ -2073,7 +2073,7 @@ def eegelectrodemodel_update(request, eegelectrodemodel_id, template_name="exper
 
 
 @login_required
-@permission_required('experiment.view_eegelectrodemodel')
+@permission_required('experiment.register_equipment')
 def eegelectrodemodel_view(request, eegelectrodemodel_id, template_name="experiment/eegelectrodemodel_register.html"):
     eegelectrodemodel = get_object_or_404(EEGElectrodeModel, pk=eegelectrodemodel_id)
 
@@ -2102,13 +2102,13 @@ def eegelectrodemodel_view(request, eegelectrodemodel_id, template_name="experim
 
 
 @login_required
-@permission_required('experiment.add_equipment')
+@permission_required('experiment.register_equipment')
 def material_list(request, template_name="experiment/material_list.html"):
     return render(request, template_name, {"equipments": Material.objects.all().order_by('name')})
 
 
 @login_required
-@permission_required('experiment.add_material')
+@permission_required('experiment.register_equipment')
 def material_create(request, template_name="experiment/material_register.html"):
 
     material_form = MaterialRegisterForm(request.POST or None)
@@ -2141,7 +2141,7 @@ def material_create(request, template_name="experiment/material_register.html"):
 
 
 @login_required
-@permission_required('experiment.change_material')
+@permission_required('experiment.register_equipment')
 def material_update(request, material_id, template_name="experiment/material_register.html"):
     material = get_object_or_404(Material, pk=material_id)
 
@@ -2169,7 +2169,7 @@ def material_update(request, material_id, template_name="experiment/material_reg
 
 
 @login_required
-@permission_required('experiment.view_material')
+@permission_required('experiment.register_equipment')
 def material_view(request, material_id, template_name="experiment/material_register.html"):
     material = get_object_or_404(Material, pk=material_id)
 
@@ -2199,13 +2199,13 @@ def material_view(request, material_id, template_name="experiment/material_regis
 
 
 @login_required
-@permission_required('experiment.add_equipment')
+@permission_required('experiment.register_equipment')
 def eegelectrodenet_list(request, template_name="experiment/eegelectrodenet_list.html"):
     return render(request, template_name, {"equipments": EEGElectrodeNet.objects.all().order_by('identification')})
 
 
 @login_required
-@permission_required('experiment.add_eegelectrodenet')
+@permission_required('experiment.register_equipment')
 def eegelectrodenet_create(request, template_name="experiment/eegelectrodenet_register.html"):
 
     eegelectrodenet_form = EEGElectrodeNETRegisterForm(request.POST or None)
@@ -2285,7 +2285,7 @@ def get_localization_system(data_post):
 
 
 @login_required
-@permission_required('experiment.change_eegelectrodenet')
+@permission_required('experiment.register_equipment')
 def eegelectrodenet_update(request, eegelectrodenet_id, template_name="experiment/eegelectrodenet_register.html"):
     eegelectrodenet = get_object_or_404(EEGElectrodeNet, pk=eegelectrodenet_id)
     eegelectrodenetsystem = EEGElectrodeNetSystem.objects.all()
@@ -2368,7 +2368,7 @@ def eegelectrodenet_update(request, eegelectrodenet_id, template_name="experimen
 
 
 @login_required
-@permission_required('experiment.view_eegelectrodenet')
+@permission_required('experiment.register_equipment')
 def eegelectrodenet_view(request, eegelectrodenet_id, template_name="experiment/eegelectrodenet_register.html"):
     eegelectrodenet = get_object_or_404(EEGElectrodeNet, pk=eegelectrodenet_id)
     eegelectrodenet_form = EEGElectrodeNETRegisterForm(request.POST or None, instance=eegelectrodenet)
@@ -2443,7 +2443,7 @@ def eegelectrodenet_view(request, eegelectrodenet_id, template_name="experiment/
 
 
 @login_required
-@permission_required('experiment.view_eegelectrodenet')
+@permission_required('experiment.register_equipment')
 def eegelectrodenet_cap_size_create(request, eegelectrode_cap_id,
                                 template_name="experiment/eegelectrodenet_size_register.html"):
 
@@ -2500,7 +2500,7 @@ def eegelectrodenet_cap_size_create(request, eegelectrode_cap_id,
 
 
 @login_required
-@permission_required('experiment.change_cap_size')
+@permission_required('experiment.register_equipment')
 def eegelectrodenet_cap_size_update(request, eegelectrode_cap_size_id,
                                     template_name="experiment/eegelectrodenet_size_register.html"):
     eegelectrode_cap_size = get_object_or_404(EEGCapSize, pk=eegelectrode_cap_size_id)
@@ -2529,7 +2529,7 @@ def eegelectrodenet_cap_size_update(request, eegelectrode_cap_size_id,
 
 
 @login_required
-@permission_required('experiment.view_cap_size')
+@permission_required('experiment.register_equipment')
 def eegelectrodenet_cap_size_view(request, eegelectrode_cap_size_id,
                                   template_name="experiment/eegelectrodenet_size_register.html"):
     eegelectrode_cap_size = get_object_or_404(EEGCapSize, pk=eegelectrode_cap_size_id)
