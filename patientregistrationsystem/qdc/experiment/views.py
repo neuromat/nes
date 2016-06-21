@@ -4182,13 +4182,13 @@ def remove_component_configuration(request, conf):
 
 def check_experiment(experiment):
     experiment_id = experiment.id
-    groups = Group.objects.filter(experiment_id=experiment_id)
     experiment_with_data = False
 
-    for group in groups:
+    for group in Group.objects.filter(experiment_id=experiment_id):
         subject_list = [item.pk for item in SubjectOfGroup.objects.filter(group=group)]
         eegdata_list = EEGData.objects.filter(subject_of_group_id__in=subject_list)
-        if eegdata_list:
+        questionnaire_response_list = QuestionnaireResponse.objects.filter(subject_of_group_id__in=subject_list)
+        if eegdata_list or questionnaire_response_list:
             experiment_with_data = True
 
     return experiment_with_data
@@ -4226,16 +4226,21 @@ def copy_experiment(experiment):
                 subject_of_group.group_id = group.id
                 subject_of_group.save()
 
-        # for key in orig_and_clone:
-        #     new_component_configuration = ComponentConfiguration.objects.filter(component_id=key)
-        #     if new_component_configuration:
-        #         for component_configuration in new_component_configuration:
-        #             component_configuration.pk = None
-        #             if component_configuration.name:
-        #                 component_configuration.name = _('Copy of') + ' ' + component_configuration.name
-        #             else:
-        #                 component_configuration.name = _('Copy')
-        #             component_configuration.save()
+    for component_configuration in ComponentConfiguration.objects.filter(
+            component_id__experiment_id=experiment_id).order_by('parent_id', 'order'):
+
+        component_id = component_configuration.component_id
+        parent_id = component_configuration.parent_id
+
+        component_configuration.pk = None
+        if component_configuration.name:
+            component_configuration.name = _('Copy of') + ' ' + component_configuration.name
+        else:
+            component_configuration.name = _('Copy')
+
+        component_configuration.component_id = orig_and_clone[component_id]
+        component_configuration.parent_id = orig_and_clone[parent_id]
+        component_configuration.save()
 
 
 def create_component(component, new_experiment):
@@ -4301,9 +4306,7 @@ def component_view(request, path_of_the_components):
         list_of_ids_of_components_and_configurations, list_of_breadcrumbs, group, back_cancel_url =\
         access_objects_for_view_and_update(request, path_of_the_components)
 
-    # experiment_in_use = check_experiment(experiment)
-    # if experiment_in_use:
-    #     copy_experiment(experiment)
+    experiment_in_use = check_experiment(experiment)
 
     block = get_object_or_404(Block, pk=component.id)
     block_form = BlockForm(request.POST or None, instance=block)
@@ -4357,6 +4360,11 @@ def component_view(request, path_of_the_components):
 
                 redirect_url = reverse("component_view", args=(path_of_the_components,))
                 return HttpResponseRedirect(redirect_url)
+            elif request.POST['action'] == "copy_experiment":
+                copy_experiment(experiment)
+                messages.success(request, _('The experiment was copied.'))
+                redirect_url = reverse("experiment_view", args=(experiment.id,))
+                return HttpResponseRedirect(redirect_url)
         else:
             raise PermissionDenied
 
@@ -4384,10 +4392,12 @@ def component_view(request, path_of_the_components):
         "component": block,
         "component_configuration": component_configuration,
         "component_form": component_form,
+        "component_type_choices": component_type_choices,
         "configuration_form": configuration_form,
         "configuration_list": configuration_list,
         "configuration_list_of_random_components": configuration_list_of_random_components,
         "experiment": experiment,
+        "experiment_in_use": experiment_in_use,
         "group": group,
         "has_unlimited": has_unlimited,
         "icon_class": icon_class,
@@ -4395,7 +4405,6 @@ def component_view(request, path_of_the_components):
         "path_of_the_components": path_of_the_components,
         "specific_form": block_form,
         "type_of_the_parent_block": type_of_the_parent_block,
-        "component_type_choices": component_type_choices,
     }
 
     return render(request, template_name, context)
@@ -4498,6 +4507,8 @@ def component_update(request, path_of_the_components):
     component, component_configuration, component_form, configuration_form, experiment, component_type, template_name,\
         list_of_ids_of_components_and_configurations, list_of_breadcrumbs, group, back_cancel_url =\
         access_objects_for_view_and_update(request, path_of_the_components, updating=True)
+
+    experiment_in_use = check_experiment(experiment)
 
     questionnaire_id = None
     questionnaire_title = None
@@ -4620,6 +4631,7 @@ def component_update(request, path_of_the_components):
         "configuration_list_of_random_components": configuration_list_of_random_components,
         "icon_class": icon_class,
         "experiment": experiment,
+        "experiment_in_use": experiment_in_use,
         "group": group,
         "has_unlimited": has_unlimited,
         "list_of_breadcrumbs": list_of_breadcrumbs,

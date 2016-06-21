@@ -154,10 +154,7 @@
                                                                                     </td>
                                                                                 {% endif %}
                                                                                 <td class="text-center col-md-1">
-                                                                                    <a class="btn glyphicon glyphicon-remove" style="color: indianred;"
-                                                                                       data-toggle="tooltip" data-placement="right"
-                                                                                    onclick="show_modal_remove_many('fixed', {{ forloop.counter0 }}, {{ accordion|length }});"
-                                                                                    title="{% trans "Delete uses from list" %}"></a>
+                                                                                    <a class="btn glyphicon glyphicon-remove" style="color: indianred;" data-toggle="tooltip" data-placement="right" {% if experiment_in_use %} onclick="$('#modalCopyExperiment').modal('show')" {% else %} onclick="show_modal_remove_many('fixed', {{ forloop.counter0 }}, {{ accordion|length }});" {% endif %} title="{% trans "Delete uses from list" %}"></a>
                                                                                 </td>
                                                                             {% else %}
                                                                                 <td class="col-md-5">
@@ -214,7 +211,7 @@
 
                     {% if not component_configuration and can_change %}
                         <div class="dropdown">
-                            <button class="btn btn-primary dropdown-toggle" type="button" id="dropdownMenu1" data-toggle="dropdown" aria-expanded="true">
+                            <button class="btn btn-primary dropdown-toggle" type="button" id="dropdownMenu1" data-toggle="dropdown" aria-expanded="true" {% if experiment_in_use %}onclick="$('#modalCopyExperiment').modal('show')"{% endif %}>
                                 {% trans "Insert step" %}
                                 <span class="caret"></span>
                             </button>
@@ -272,10 +269,7 @@
                                                                             </td>
                                                                             {% if not component_configuration and can_change %}
                                                                                 <td class="text-center col-md-1">
-                                                                                    <a class="btn glyphicon glyphicon-remove" style="color: indianred;"
-                                                                                       data-toggle="tooltip" data-placement="right"
-                                                                                    onclick="show_modal_remove_many('random', {{ forloop.counter0 }}, {{ accordion|length }});"
-                                                                                    title="{% trans "Delete uses from list" %}"></a>
+                                                                                    <a class="btn glyphicon glyphicon-remove" style="color: indianred;" data-toggle="tooltip" data-placement="right" {% if experiment_in_use %} onclick="$('#modalCopyExperiment').modal('show')" {% else %} onclick="show_modal_remove_many('random', {{ forloop.counter0 }}, {{ accordion|length }});" {% endif %} title="{% trans "Delete uses from list" %}"></a>
                                                                                 </td>
                                                                             {% endif %}
                                                                         </tr>
@@ -319,7 +313,7 @@
 
                         {% if not component_configuration and can_change %}
                             <div class="dropdown">
-                                <button class="btn btn-primary dropdown-toggle" type="button" id="dropdownMenu1" data-toggle="dropdown" aria-expanded="true">
+                                <button class="btn btn-primary dropdown-toggle" type="button" id="dropdownMenu1" data-toggle="dropdown" aria-expanded="true" {% if experiment_in_use %}onclick="$('#modalCopyExperiment').modal('show')"{% endif %}>
                                     {% trans "Insert step" %}
                                     <span class="caret"></span>
                                 </button>
@@ -352,6 +346,21 @@
                         {% trans "Delete" %}
                     </button>
 
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="modal fade" id="modalCopyExperiment" tabindex="-1" role="dialog" aria-labelledby="myModalLabel"
+         aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-body">
+                    {% trans "This experiment is in use, you can not change it! Do you want to copy this experiment?" %}
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-default" data-dismiss="modal">{% trans "Cancel" %}</button>
+                    <button type="submit" class="btn btn-primary" value="copy_experiment" name="action">{% trans "Copy experiment" %}</button>
                 </div>
             </div>
         </div>

@@ -151,7 +151,7 @@
                 {% if not component_configuration and not creating and not updating and can_change %}
                     <div class="row" style="padding-bottom: 1em">
                         <div class="col-xs-12 col-sm-12">
-                            <a href="/experiment/component/edit/{{ path_of_the_components }}" class="btn btn-primary">{% trans "Edit" %}</a>
+                            <a class="btn btn-primary" {% if experiment_in_use %} onclick="$('#modalCopyExperiment').modal('show')" {% else %} href="/experiment/component/edit/{{ path_of_the_components }}" {% endif %}>{% trans "Edit" %}</a>
                         </div>
                     </div>
                 {% endif %}
