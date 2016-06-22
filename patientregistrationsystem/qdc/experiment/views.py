@@ -520,7 +520,7 @@ def group_view(request, group_id, template_name="experiment/group_register.html"
         if can_change:
             if request.POST['action'] == "remove":
 
-                if QuestionnaireResponse.objects.filter(subject_of_group__group_id=group_id).count() == 0:
+                if not group_has_data_collection(group_id):
                     try:
                         group.delete()
                         messages.success(request, _('Group removed successfully.'))
@@ -560,6 +560,14 @@ def group_view(request, group_id, template_name="experiment/group_register.html"
                }
 
     return render(request, template_name, context)
+
+
+def group_has_data_collection(group_id):
+    return (
+        QuestionnaireResponse.objects.filter(subject_of_group__group_id=group_id).count() > 0 or
+        EEGData.objects.filter(subject_of_group__group_id=group_id).count() > 0 or
+        EMGData.objects.filter(subject_of_group__group_id=group_id).count() > 0 or
+        AdditionalData.objects.filter(subject_of_group__group_id=group_id).count() > 0)
 
 
 @login_required
@@ -5387,7 +5395,8 @@ def component_add_new(request, path_of_the_components, component_type):
                    "position": position,
                    "questionnaires_list": questionnaires_list,
                    "path_of_the_components": path_of_the_components,
-                   "specific_form": specific_form
+                   "specific_form": specific_form,
+                   "can_change": True
                    }
 
         return render(request, template_name, context)
