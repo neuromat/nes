@@ -9,7 +9,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2016-06-20 17:28-0300\n"
+"POT-Creation-Date: 2016-06-22 14:27-0300\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -121,39 +121,39 @@ msgstr "CPF %(CPF)s não é válido"
 msgid "Date of birth can't be greater than today date."
 msgstr "Data de nascimento não pode ser maior que a data de hoje."
 
-#: patient/models.py:174
+#: patient/models.py:175
 msgid "Cell phone"
 msgstr "Celular"
 
-#: patient/models.py:175
+#: patient/models.py:176
 msgid "Home phone"
 msgstr "Residencial"
 
-#: patient/models.py:176
+#: patient/models.py:177
 msgid "Business"
 msgstr "Comercial"
 
-#: patient/models.py:177
+#: patient/models.py:178
 msgid "Main"
 msgstr "Principal"
 
-#: patient/models.py:178
+#: patient/models.py:179
 msgid "Business fax"
 msgstr "Fax comercial"
 
-#: patient/models.py:179
+#: patient/models.py:180
 msgid "Home fax"
 msgstr "Fax residencial"
 
-#: patient/models.py:180
+#: patient/models.py:181
 msgid "Pager"
 msgstr ""
 
-#: patient/models.py:181
+#: patient/models.py:182
 msgid "Other"
 msgstr "Outros"
 
-#: patient/models.py:392
+#: patient/models.py:393
 msgid "token id: "
 msgstr ""
 

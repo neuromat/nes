@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2016-06-20 17:28-0300\n"
+"POT-Creation-Date: 2016-06-22 14:27-0300\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -242,52 +242,54 @@ msgid "EEG Electrode Net"
 msgstr "Rede de eletrodos de EEG"
 
 #: experiment/models.py:122 experiment/models.py:123
+#: experiment/templates/experiment/equipment_configuration.html:52
+#: experiment/templates/experiment/equipment_list_configuration.html:43
 msgid "Equipment"
 msgstr "Equipamento"
 
-#: experiment/models.py:156
+#: experiment/models.py:159
 msgid "Disposable"
 msgstr "Descartável"
 
-#: experiment/models.py:157
+#: experiment/models.py:160
 msgid "Reusable"
 msgstr "Reutilizável"
 
-#: experiment/models.py:272
+#: experiment/models.py:275
 msgid "Set of steps"
 msgstr "Conjunto de passos"
 
-#: experiment/models.py:273
+#: experiment/models.py:276
 msgid "Instruction"
 msgstr "Instrução"
 
-#: experiment/models.py:274
+#: experiment/models.py:277
 msgid "Pause"
 msgstr "Pausa"
 
-#: experiment/models.py:275
+#: experiment/models.py:278
 #: experiment/templates/experiment/subject_questionnaire_response_form.html:120
 #: experiment/templates/experiment/subject_questionnaire_response_list.html:66
 msgid "Questionnaire"
 msgstr "Questionário"
 
-#: experiment/models.py:276
+#: experiment/models.py:279
 msgid "Stimulus"
 msgstr "Estímulo"
 
-#: experiment/models.py:277
+#: experiment/models.py:280
 msgid "Task for participant"
 msgstr "Tarefa para o participante"
 
-#: experiment/models.py:278
+#: experiment/models.py:281
 msgid "Task for experimenter"
 msgstr "Tarefa para o experimentador"
 
-#: experiment/models.py:279 experiment/templates/experiment/subjects.html:155
+#: experiment/models.py:282 experiment/templates/experiment/subjects.html:155
 msgid "EEG"
 msgstr "EEG"
 
-#: experiment/models.py:280 experiment/templates/experiment/subjects.html:173
+#: experiment/models.py:283 experiment/templates/experiment/subjects.html:173
 msgid "EMG"
 msgstr "EMG"
 
@@ -313,6 +315,8 @@ msgstr "EMG"
 #: experiment/templates/experiment/eegmachine_register.html:51
 #: experiment/templates/experiment/eegsolution_list.html:42
 #: experiment/templates/experiment/eegsolution_register.html:51
+#: experiment/templates/experiment/equipment_configuration.html:51
+#: experiment/templates/experiment/equipment_list_configuration.html:42
 #: experiment/templates/experiment/experiment_register.html:49
 #: experiment/templates/experiment/group_register.html:51
 #: experiment/templates/experiment/manufacturer_list.html:42
@@ -379,6 +383,7 @@ msgstr "Pesquisar"
 #: experiment/templates/experiment/eegmachine_register.html:75
 #: experiment/templates/experiment/eegsolution_list.html:58
 #: experiment/templates/experiment/eegsolution_register.html:93
+#: experiment/templates/experiment/equipment_configuration.html:71
 #: experiment/templates/experiment/manufacturer_list.html:43
 #: experiment/templates/experiment/manufacturer_register.html:52
 #: experiment/templates/experiment/manufacturer_register.html:71
@@ -462,6 +467,8 @@ msgstr "Número de série"
 #: experiment/templates/experiment/eegmachine_register.html:170
 #: experiment/templates/experiment/eegsolution_register.html:114
 #: experiment/templates/experiment/eegsolution_register.html:143
+#: experiment/templates/experiment/equipment_configuration.html:143
+#: experiment/templates/experiment/equipment_configuration.html:172
 #: experiment/templates/experiment/experiment_register.html:186
 #: experiment/templates/experiment/experiment_register.html:216
 #: experiment/templates/experiment/group_register.html:144
@@ -522,6 +529,8 @@ msgstr "Inserir"
 #: experiment/templates/experiment/eegmachine_register.html:169
 #: experiment/templates/experiment/eegsolution_register.html:123
 #: experiment/templates/experiment/eegsolution_register.html:142
+#: experiment/templates/experiment/equipment_configuration.html:152
+#: experiment/templates/experiment/equipment_configuration.html:171
 #: experiment/templates/experiment/experiment_register.html:195
 #: experiment/templates/experiment/experiment_register.html:214
 #: experiment/templates/experiment/group_register.html:320
@@ -564,6 +573,7 @@ msgstr "Cancelar"
 #: experiment/templates/experiment/eegfiltertype_register.html:118
 #: experiment/templates/experiment/eegmachine_register.html:154
 #: experiment/templates/experiment/eegsolution_register.html:127
+#: experiment/templates/experiment/equipment_configuration.html:156
 #: experiment/templates/experiment/experiment_register.html:199
 #: experiment/templates/experiment/group_register.html:324
 #: experiment/templates/experiment/manufacturer_register.html:109
@@ -661,6 +671,7 @@ msgstr "Novo conjunto de passos"
 #: experiment/templates/experiment/eegfiltertype_register.html:59
 #: experiment/templates/experiment/eegmachine_register.html:59
 #: experiment/templates/experiment/eegsolution_register.html:59
+#: experiment/templates/experiment/equipment_configuration.html:59
 #: experiment/templates/experiment/experiment_register.html:58
 #: experiment/templates/experiment/group_register.html:61
 #: experiment/templates/experiment/manufacturer_register.html:59
@@ -815,6 +826,7 @@ msgstr "não utilizado"
 #: experiment/templates/experiment/eegfiltertype_register.html:93
 #: experiment/templates/experiment/eegmachine_register.html:129
 #: experiment/templates/experiment/eegsolution_register.html:102
+#: experiment/templates/experiment/equipment_configuration.html:124
 #: experiment/templates/experiment/experiment_register.html:101
 #: experiment/templates/experiment/experiment_register.html:122
 #: experiment/templates/experiment/experiment_register.html:155
@@ -860,6 +872,8 @@ msgstr "Informações sobre esse uso do passo"
 #: experiment/templates/experiment/eegfiltertype_register.html:75
 #: experiment/templates/experiment/eegsolution_list.html:56
 #: experiment/templates/experiment/eegsolution_register.html:75
+#: experiment/templates/experiment/equipment_configuration.html:75
+#: experiment/templates/experiment/equipment_list_configuration.html:56
 #: experiment/templates/experiment/experiment_register.html:114
 #: experiment/templates/experiment/experiment_register.html:147
 #: experiment/templates/experiment/group_register.html:165
@@ -915,6 +929,7 @@ msgstr "Indefinido"
 #: experiment/templates/experiment/eegfiltertype_register.html:110
 #: experiment/templates/experiment/eegmachine_register.html:146
 #: experiment/templates/experiment/eegsolution_register.html:119
+#: experiment/templates/experiment/equipment_configuration.html:148
 #: experiment/templates/experiment/experiment_register.html:191
 #: experiment/templates/experiment/group_register.html:316
 #: experiment/templates/experiment/manufacturer_register.html:101
@@ -986,6 +1001,7 @@ msgstr "Número de eletrodos"
 #: experiment/templates/experiment/eegfiltertype_list.html:64
 #: experiment/templates/experiment/eegmachine_list.html:67
 #: experiment/templates/experiment/eegsolution_list.html:65
+#: experiment/templates/experiment/equipment_list_configuration.html:65
 #: experiment/templates/experiment/manufacturer_list.html:63
 #: experiment/templates/experiment/material_list.html:64
 #: experiment/templates/experiment/research_project_list.html:65
@@ -1005,6 +1021,7 @@ msgstr "Inserir novo sistema de localização"
 #: experiment/templates/experiment/eegfiltertype_register.html:55
 #: experiment/templates/experiment/eegmachine_register.html:55
 #: experiment/templates/experiment/eegsolution_register.html:55
+#: experiment/templates/experiment/equipment_configuration.html:55
 #: experiment/templates/experiment/manufacturer_register.html:55
 #: experiment/templates/experiment/material_register.html:55
 #: experiment/templates/experiment/research_project_register.html:55
@@ -1046,6 +1063,7 @@ msgstr "Referência da posição"
 #: experiment/templates/experiment/eegfiltertype_list.html:82
 #: experiment/templates/experiment/eegmachine_list.html:92
 #: experiment/templates/experiment/eegsolution_list.html:86
+#: experiment/templates/experiment/equipment_list_configuration.html:90
 #: experiment/templates/experiment/experiment_register.html:136
 #: experiment/templates/experiment/experiment_register.html:169
 #: experiment/templates/experiment/manufacturer_list.html:78
@@ -1465,6 +1483,16 @@ msgstr "Novo EMG"
 msgid "the EMG"
 msgstr "o EMG"
 
+#: experiment/templates/experiment/equipment_configuration.html:168
+#: experiment/templates/experiment/manufacturer_register.html:121
+msgid "Are you sure you want to delete manufacturer?"
+msgstr "Tem certeza que deseja excluir o fabricante?"
+
+#: experiment/templates/experiment/equipment_list_configuration.html:51
+#: experiment/templates/experiment/manufacturer_list.html:51
+msgid "Manufacturer List"
+msgstr "Lista de fabricantes"
+
 #: experiment/templates/experiment/experiment_register.html:54
 msgid "New experiment"
 msgstr "Novo experimento"
@@ -1662,14 +1690,6 @@ msgstr "Texto da instrução"
 #: experiment/templates/experiment/keyword_ajax_search.html:8
 msgid "Add a new keyword"
 msgstr "Adicionar nova palavra-chave"
-
-#: experiment/templates/experiment/manufacturer_list.html:51
-msgid "Manufacturer List"
-msgstr "Lista de fabricantes"
-
-#: experiment/templates/experiment/manufacturer_register.html:121
-msgid "Are you sure you want to delete manufacturer?"
-msgstr "Tem certeza que deseja excluir o fabricante?"
 
 #: experiment/templates/experiment/material_list.html:51
 msgid "Material List"
