@@ -211,7 +211,7 @@
 
                     {% if not component_configuration and can_change %}
                         <div class="dropdown">
-                            <button class="btn btn-primary dropdown-toggle" type="button" id="dropdownMenu1" data-toggle="dropdown" aria-expanded="true" {% if experiment_in_use %}onclick="$('#modalCopyExperiment').modal('show')"{% endif %}>
+                            <button class="btn btn-primary dropdown-toggle" type="button" {% if experiment_in_use %} onclick="$('#modalCopyExperiment').modal('show')" {% else %} id="dropdownMenu1" data-toggle="dropdown" aria-expanded="true" {% endif %}>
                                 {% trans "Insert step" %}
                                 <span class="caret"></span>
                             </button>
@@ -313,7 +313,7 @@
 
                         {% if not component_configuration and can_change %}
                             <div class="dropdown">
-                                <button class="btn btn-primary dropdown-toggle" type="button" id="dropdownMenu1" data-toggle="dropdown" aria-expanded="true" {% if experiment_in_use %}onclick="$('#modalCopyExperiment').modal('show')"{% endif %}>
+                                <button class="btn btn-primary dropdown-toggle" type="button" {% if experiment_in_use %} onclick="$('#modalCopyExperiment').modal('show')" {% else %} id="dropdownMenu1" data-toggle="dropdown" aria-expanded="true" {% endif %}>
                                     {% trans "Insert step" %}
                                     <span class="caret"></span>
                                 </button>

@@ -487,6 +487,10 @@ def recursively_create_list_of_questionnaires_and_statistics(block_id,
 @permission_required('experiment.view_researchproject')
 def group_view(request, group_id, template_name="experiment/group_register.html"):
     group = get_object_or_404(Group, pk=group_id)
+
+    experiment = group.experiment
+    experiment_in_use = check_experiment(experiment)
+
     group_form = GroupForm(request.POST or None, instance=group)
 
     for field in group_form.fields:
@@ -535,6 +539,12 @@ def group_view(request, group_id, template_name="experiment/group_register.html"
             elif request.POST['action'] == "remove_experimental_protocol":
                 group.experimental_protocol = None
                 group.save()
+
+            elif request.POST['action'] == "copy_experiment":
+                copy_experiment(experiment)
+                messages.success(request, _('The experiment was copied.'))
+                redirect_url = reverse("experiment_view", args=(experiment.id,))
+                return HttpResponseRedirect(redirect_url)
         else:
             raise PermissionDenied
 
@@ -543,6 +553,7 @@ def group_view(request, group_id, template_name="experiment/group_register.html"
                "group_form": group_form,
                "questionnaires_configuration_list": list_of_questionnaires_configuration,
                "experiment": group.experiment,
+               "experiment_in_use": experiment_in_use,
                "group": group,
                "editing": False,
                "number_of_subjects": SubjectOfGroup.objects.all().filter(group=group).count()
@@ -4177,6 +4188,14 @@ def upload_file(request, subject_id, group_id, template_name="experiment/upload_
 def component_list(request, experiment_id, template_name="experiment/component_list.html"):
     experiment = get_object_or_404(Experiment, pk=experiment_id)
 
+    experiment_in_use = check_experiment(experiment)
+    if request.method == "POST":
+        if request.POST['action'] == "copy_experiment":
+            copy_experiment(experiment)
+            messages.success(request, _('The experiment was copied.'))
+            redirect_url = reverse("experiment_view", args=(experiment.id,))
+            return HttpResponseRedirect(redirect_url)
+
     # As it is not possible to sort_by get_component_type_display, filter without sorting and sort later.
     components = Component.objects.filter(experiment=experiment)
 
@@ -4216,7 +4235,8 @@ def component_list(request, experiment_id, template_name="experiment/component_l
     context = {"can_change": get_can_change(request.user, experiment.research_project),
                "component_list": components,
                "component_type_choices": component_type_choices,
-               "experiment": experiment
+               "experiment": experiment,
+               "experiment_in_use": experiment_in_use
                }
 
     return render(request, template_name, context)
@@ -4750,8 +4770,6 @@ def copy_experiment(experiment):
         component_configuration.pk = None
         if component_configuration.name:
             component_configuration.name = _('Copy of') + ' ' + component_configuration.name
-        else:
-            component_configuration.name = _('Copy')
 
         component_configuration.component_id = orig_and_clone[component_id]
         component_configuration.parent_id = orig_and_clone[parent_id]
@@ -4800,8 +4818,6 @@ def create_component(component, new_experiment):
 
     if component.identification:
         clone.identification = _('Copy of') + ' ' + component.identification
-    else:
-        clone.identification = _('Copy')
 
     clone.experiment = new_experiment
     clone.description = component.description
@@ -5115,8 +5131,16 @@ def component_update(request, path_of_the_components):
                                                                            path_of_the_components)
                 messages.success(request, _('Component deleted successfully.'))
                 return HttpResponseRedirect(redirect_url)
+            elif request.POST['action'] == "copy_experiment":
+                copy_experiment(experiment)
+                messages.success(request, _('The experiment was copied.'))
+                redirect_url = reverse("experiment_view", args=(experiment.id,))
+                return HttpResponseRedirect(redirect_url)
 
     type_of_the_parent_block = None
+
+    if experiment_in_use:
+        can_change = False
 
     # It is not possible to edit the component fields while editing a component configuration.
     if component_configuration or not can_change:
