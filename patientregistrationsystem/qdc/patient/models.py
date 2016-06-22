@@ -137,6 +137,7 @@ class Patient(models.Model):
         permissions = (
             ("view_patient", "Can view patient"),
             ("export_patient", "Can export patient"),
+            ("sensitive_data_patient", "Can view sensitive patient data"),
         )
 
     def get_absolute_url(self):

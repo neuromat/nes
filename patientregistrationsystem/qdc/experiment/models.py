@@ -122,6 +122,9 @@ class Equipment(models.Model):
         verbose_name = _('Equipment')
         verbose_name_plural = _('Equipment')
 
+        permissions = (
+            ("register_equipment", "Can register equipment"),
+        )
 
 class EEGMachine(Equipment):
     number_of_channels = models.IntegerField(null=True, blank=True)
