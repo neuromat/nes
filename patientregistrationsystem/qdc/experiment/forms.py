@@ -346,9 +346,13 @@ class EEGMachineSettingForm(ModelForm):
         fields = ['number_of_channels_used']
 
         widgets = {
-            'number_of_channels_used': TextInput(attrs={'class': 'form-control',
-                                                        'required': "",
-                                                        'data-error': _('Description must be filled.')})
+            'number_of_channels_used':
+                NumberInput(attrs={
+                    'class': 'form-control',
+                    'required': "",
+                    "min": "0",
+                    'data-error':
+                    _('Number of channels should be between 0 and the number of channels of the EEG machine.')})
         }
 
 

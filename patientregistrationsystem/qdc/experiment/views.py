@@ -532,7 +532,7 @@ def group_view(request, group_id, template_name="experiment/group_register.html"
                         return HttpResponseRedirect(redirect_url)
                 else:
                     messages.error(request,
-                                   _("Impossible to delete group because there is (are) questionnaire(s) answered."))
+                                   _("Impossible to delete group because there is (are) data collection associated."))
                     redirect_url = reverse("group_view", args=(group.id,))
                     return HttpResponseRedirect(redirect_url)
 

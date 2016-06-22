@@ -14,15 +14,18 @@ $(document).ready(function () {
     var description_field = $("#id_description");
     var software_version = $("#id_software_version");
     var number_of_channels = $("#id_number_of_channels");
+    var number_of_channels_used = $("#id_number_of_channels_used");
     var gain = $("#id_gain");
 
     var select_localization_system = $("#id_localization_system_selection");
-    // var system_number_of_electrodes = $("#id_system_number_of_electrodes");
 
     var equipment_type = eeg_setting_type;
     if (equipment_type == "eeg_electrode_net_system") {
         equipment_type = "eeg_electrode_net";
     }
+
+    // setting initially the max value of the number of channels
+    number_of_channels_used.prop('max', number_of_channels.prop('value'));
 
     select_manufacturer.change(function() {
 
@@ -83,6 +86,7 @@ $(document).ready(function () {
                     if (equipment_type == "eeg_machine") {
                         software_version.prop('value', equipment['software_version']);
                         number_of_channels.prop('value', equipment['number_of_channels']);
+                        number_of_channels_used.prop('max', equipment['number_of_channels']);
                     }
                     if(equipment_type == "eeg_amplifier"){
                         gain.prop('value', equipment['gain']);
@@ -104,10 +108,8 @@ $(document).ready(function () {
                         select_localization_system.html(options);
                         select_localization_system.change();
                     });
-
                 }
             }
-
         }
     });
     
@@ -116,12 +118,6 @@ $(document).ready(function () {
         var system_id = $(this).val();
 
         if (system_id != "") {
-
-            // var url = "/experiment/eeg_localization_system/" + system_id + "/attributes";
-            //
-            // $.getJSON(url, function(eeg_localization_system) {
-            //     system_number_of_electrodes.prop('value', eeg_localization_system['number_of_electrodes']);
-            // });
 
             // When there is not Equipment selected
             if (select_equipment.val() == "") {
@@ -143,10 +139,7 @@ $(document).ready(function () {
                     select_equipment.html(options);
                     select_equipment.change();
                 });
-
-
             }
-
         }
     });
     
