@@ -174,6 +174,7 @@ PermissionTable = [
     _("Can export patient"),
     _("Can export questionnaire response"),
     _("Can register equipment"),
+    _("Can view sensitive patient data"),
 ]
 
 GroupTable = [
