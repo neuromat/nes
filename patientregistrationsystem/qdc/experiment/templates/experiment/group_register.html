@@ -279,7 +279,11 @@
                                                            data-placement="right"
                                                            style="color: indianred; position: relative; float: right; padding: 0"
                                                            title="{% trans "UnConfigure experimental protocol" %}"
-                                                           onclick="show_modal_remove_experimental_protocol();">
+                                                           {% if experiment_in_use %}
+                                                           onclick="$('#modalCopyExperiment').modal('show')"
+                                                           {% else %}
+                                                           onclick="show_modal_remove_experimental_protocol();"
+                                                           {% endif %}>
                                                         </a>
                                                     {% endif %}
                                                 </td>
@@ -370,6 +374,21 @@
                     <button type="submit" class="btn btn-primary" value="remove_experimental_protocol" name="action"
                             style="background-color: indianred; color: #ffffff">{% trans "Unset" %}
                     </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="modal fade" id="modalCopyExperiment" tabindex="-1" role="dialog" aria-labelledby="myModalLabel"
+         aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-body">
+                    {% trans "This experiment is in use, you can not change it! Do you want to copy this experiment?" %}
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-default" data-dismiss="modal">{% trans "Cancel" %}</button>
+                    <button type="submit" class="btn btn-primary" value="copy_experiment" name="action">{% trans "Copy experiment" %}</button>
                 </div>
             </div>
         </div>

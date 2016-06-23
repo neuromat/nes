@@ -374,7 +374,7 @@ class ComponentConfiguration(models.Model):
         unique_together = ('parent', 'order',)
 
     def save(self, force_insert=False, force_update=False, using=None, update_fields=None):
-        if not self.pk:
+        if not self.pk and not self.order:
             top = ComponentConfiguration.objects.filter(parent=self.parent).order_by('-order').first()
             self.order = top.order + 1 if top else 1
         super(ComponentConfiguration, self).save()

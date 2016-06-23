@@ -488,6 +488,10 @@ def recursively_create_list_of_questionnaires_and_statistics(block_id,
 @permission_required('experiment.view_researchproject')
 def group_view(request, group_id, template_name="experiment/group_register.html"):
     group = get_object_or_404(Group, pk=group_id)
+
+    experiment = group.experiment
+    experiment_in_use = check_experiment(experiment)
+
     group_form = GroupForm(request.POST or None, instance=group)
 
     for field in group_form.fields:
@@ -517,7 +521,7 @@ def group_view(request, group_id, template_name="experiment/group_register.html"
         if can_change:
             if request.POST['action'] == "remove":
 
-                if QuestionnaireResponse.objects.filter(subject_of_group__group_id=group_id).count() == 0:
+                if not group_has_data_collection(group_id):
                     try:
                         group.delete()
                         messages.success(request, _('Group removed successfully.'))
@@ -529,13 +533,19 @@ def group_view(request, group_id, template_name="experiment/group_register.html"
                         return HttpResponseRedirect(redirect_url)
                 else:
                     messages.error(request,
-                                   _("Impossible to delete group because there is (are) questionnaire(s) answered."))
+                                   _("Impossible to delete group because there is (are) data collection associated."))
                     redirect_url = reverse("group_view", args=(group.id,))
                     return HttpResponseRedirect(redirect_url)
 
             elif request.POST['action'] == "remove_experimental_protocol":
                 group.experimental_protocol = None
                 group.save()
+
+            elif request.POST['action'] == "copy_experiment":
+                copy_experiment(experiment)
+                messages.success(request, _('The experiment was copied.'))
+                redirect_url = reverse("experiment_view", args=(experiment.id,))
+                return HttpResponseRedirect(redirect_url)
         else:
             raise PermissionDenied
 
@@ -544,12 +554,21 @@ def group_view(request, group_id, template_name="experiment/group_register.html"
                "group_form": group_form,
                "questionnaires_configuration_list": list_of_questionnaires_configuration,
                "experiment": group.experiment,
+               "experiment_in_use": experiment_in_use,
                "group": group,
                "editing": False,
                "number_of_subjects": SubjectOfGroup.objects.all().filter(group=group).count()
                }
 
     return render(request, template_name, context)
+
+
+def group_has_data_collection(group_id):
+    return (
+        QuestionnaireResponse.objects.filter(subject_of_group__group_id=group_id).count() > 0 or
+        EEGData.objects.filter(subject_of_group__group_id=group_id).count() > 0 or
+        EMGData.objects.filter(subject_of_group__group_id=group_id).count() > 0 or
+        AdditionalData.objects.filter(subject_of_group__group_id=group_id).count() > 0)
 
 
 @login_required
@@ -1187,9 +1206,6 @@ def edit_eeg_setting_type(request, eeg_setting_id, eeg_setting_type):
 
         if eeg_setting_type == "eeg_electrode_net_system":
 
-            localization_system_list = EEGElectrodeLocalizationSystem.objects.filter(
-                set_of_electrode_net_system__isnull=False)
-
             setting = eeg_setting.eeg_electrode_layout_setting
 
             # selection_form = EEGElectrodeLocalizationSystemForm(
@@ -1199,6 +1215,9 @@ def edit_eeg_setting_type(request, eeg_setting_id, eeg_setting_type):
 
             equipment_selected = setting.eeg_electrode_net_system.eeg_electrode_net
             localization_system_selected = setting.eeg_electrode_net_system.eeg_electrode_localization_system
+
+            localization_system_list = EEGElectrodeLocalizationSystem.objects.filter(
+                set_of_electrode_net_system__eeg_electrode_net_id=equipment_selected.id)
 
         # Settings related to equipment
         if eeg_setting_type in ["eeg_machine", "eeg_amplifier", "eeg_electrode_net_system"]:
@@ -4189,6 +4208,14 @@ def upload_file(request, subject_id, group_id, template_name="experiment/upload_
 def component_list(request, experiment_id, template_name="experiment/component_list.html"):
     experiment = get_object_or_404(Experiment, pk=experiment_id)
 
+    experiment_in_use = check_experiment(experiment)
+    if request.method == "POST":
+        if request.POST['action'] == "copy_experiment":
+            copy_experiment(experiment)
+            messages.success(request, _('The experiment was copied.'))
+            redirect_url = reverse("experiment_view", args=(experiment.id,))
+            return HttpResponseRedirect(redirect_url)
+
     # As it is not possible to sort_by get_component_type_display, filter without sorting and sort later.
     components = Component.objects.filter(experiment=experiment)
 
@@ -4228,7 +4255,8 @@ def component_list(request, experiment_id, template_name="experiment/component_l
     context = {"can_change": get_can_change(request.user, experiment.research_project),
                "component_list": components,
                "component_type_choices": component_type_choices,
-               "experiment": experiment
+               "experiment": experiment,
+               "experiment_in_use": experiment_in_use
                }
 
     return render(request, template_name, context)
@@ -4709,13 +4737,13 @@ def remove_component_configuration(request, conf):
 
 def check_experiment(experiment):
     experiment_id = experiment.id
-    groups = Group.objects.filter(experiment_id=experiment_id)
     experiment_with_data = False
 
-    for group in groups:
+    for group in Group.objects.filter(experiment_id=experiment_id):
         subject_list = [item.pk for item in SubjectOfGroup.objects.filter(group=group)]
         eegdata_list = EEGData.objects.filter(subject_of_group_id__in=subject_list)
-        if eegdata_list:
+        questionnaire_response_list = QuestionnaireResponse.objects.filter(subject_of_group_id__in=subject_list)
+        if eegdata_list or questionnaire_response_list:
             experiment_with_data = True
 
     return experiment_with_data
@@ -4753,16 +4781,19 @@ def copy_experiment(experiment):
                 subject_of_group.group_id = group.id
                 subject_of_group.save()
 
-        # for key in orig_and_clone:
-        #     new_component_configuration = ComponentConfiguration.objects.filter(component_id=key)
-        #     if new_component_configuration:
-        #         for component_configuration in new_component_configuration:
-        #             component_configuration.pk = None
-        #             if component_configuration.name:
-        #                 component_configuration.name = _('Copy of') + ' ' + component_configuration.name
-        #             else:
-        #                 component_configuration.name = _('Copy')
-        #             component_configuration.save()
+    for component_configuration in ComponentConfiguration.objects.filter(
+            component_id__experiment_id=experiment_id).order_by('parent_id', 'order'):
+
+        component_id = component_configuration.component_id
+        parent_id = component_configuration.parent_id
+
+        component_configuration.pk = None
+        if component_configuration.name:
+            component_configuration.name = _('Copy of') + ' ' + component_configuration.name
+
+        component_configuration.component_id = orig_and_clone[component_id]
+        component_configuration.parent_id = orig_and_clone[parent_id]
+        component_configuration.save()
 
 
 def create_component(component, new_experiment):
@@ -4807,8 +4838,6 @@ def create_component(component, new_experiment):
 
     if component.identification:
         clone.identification = _('Copy of') + ' ' + component.identification
-    else:
-        clone.identification = _('Copy')
 
     clone.experiment = new_experiment
     clone.description = component.description
@@ -4831,9 +4860,7 @@ def component_view(request, path_of_the_components):
         list_of_ids_of_components_and_configurations, list_of_breadcrumbs, group, back_cancel_url =\
         access_objects_for_view_and_update(request, path_of_the_components)
 
-    # experiment_in_use = check_experiment(experiment)
-    # if experiment_in_use:
-    #     copy_experiment(experiment)
+    experiment_in_use = check_experiment(experiment)
 
     block = get_object_or_404(Block, pk=component.id)
     block_form = BlockForm(request.POST or None, instance=block)
@@ -4887,6 +4914,11 @@ def component_view(request, path_of_the_components):
 
                 redirect_url = reverse("component_view", args=(path_of_the_components,))
                 return HttpResponseRedirect(redirect_url)
+            elif request.POST['action'] == "copy_experiment":
+                copy_experiment(experiment)
+                messages.success(request, _('The experiment was copied.'))
+                redirect_url = reverse("experiment_view", args=(experiment.id,))
+                return HttpResponseRedirect(redirect_url)
         else:
             raise PermissionDenied
 
@@ -4917,6 +4949,7 @@ def component_view(request, path_of_the_components):
                "configuration_list": configuration_list,
                "configuration_list_of_random_components": configuration_list_of_random_components,
                "experiment": experiment,
+               "experiment_in_use": experiment_in_use,
                "group": group,
                "has_unlimited": has_unlimited,
                "icon_class": icon_class,
@@ -5028,6 +5061,8 @@ def component_update(request, path_of_the_components):
         list_of_ids_of_components_and_configurations, list_of_breadcrumbs, group, back_cancel_url =\
         access_objects_for_view_and_update(request, path_of_the_components, updating=True)
 
+    experiment_in_use = check_experiment(experiment)
+
     questionnaire_id = None
     questionnaire_title = None
     configuration_list = []
@@ -5116,8 +5151,16 @@ def component_update(request, path_of_the_components):
                                                                            path_of_the_components)
                 messages.success(request, _('Component deleted successfully.'))
                 return HttpResponseRedirect(redirect_url)
+            elif request.POST['action'] == "copy_experiment":
+                copy_experiment(experiment)
+                messages.success(request, _('The experiment was copied.'))
+                redirect_url = reverse("experiment_view", args=(experiment.id,))
+                return HttpResponseRedirect(redirect_url)
 
     type_of_the_parent_block = None
+
+    if experiment_in_use:
+        can_change = False
 
     # It is not possible to edit the component fields while editing a component configuration.
     if component_configuration or not can_change:
@@ -5147,6 +5190,7 @@ def component_update(request, path_of_the_components):
                "configuration_list_of_random_components": configuration_list_of_random_components,
                "icon_class": icon_class,
                "experiment": experiment,
+               "experiment_in_use": experiment_in_use,
                "group": group,
                "has_unlimited": has_unlimited,
                "list_of_breadcrumbs": list_of_breadcrumbs,
@@ -5363,7 +5407,8 @@ def component_add_new(request, path_of_the_components, component_type):
                    "position": position,
                    "questionnaires_list": questionnaires_list,
                    "path_of_the_components": path_of_the_components,
-                   "specific_form": specific_form
+                   "specific_form": specific_form,
+                   "can_change": True
                    }
 
         return render(request, template_name, context)
