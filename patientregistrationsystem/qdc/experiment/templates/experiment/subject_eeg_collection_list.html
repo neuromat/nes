@@ -2,6 +2,7 @@
 {% block activeAdvancedResearchProject %}class="active"{% endblock %}
 
 {% load i18n admin_static %}
+{% load subjects_tags %}
 
 {% block header %}
     <script>
@@ -28,7 +29,7 @@
                 <li><a href="/experiment/{{ group.experiment.id }}">{{ group.experiment.title }}</a></li>
                 <li><a href="/experiment/group/{{ group.id }}">{{ group.title }}</a></li>
                 <li><a href="/experiment/group/{{ group.id }}/subjects/">{% trans "Participant" %}</a></li>
-                <li class="active">{{ subject.patient.name }}</li>
+                <li class="active">{% get_name_or_code subject.patient.id %}</li>
                 <li class="active">{% trans "EEG data files" %}</li>
             </ol>
         </div>

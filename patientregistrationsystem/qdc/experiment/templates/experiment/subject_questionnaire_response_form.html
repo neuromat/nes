@@ -4,6 +4,7 @@
 {% block activeAdvancedResearchProject %}{% if origin != 'subject' %}class="active"{% endif %}{% endblock %}
 
 {% load i18n admin_static %}
+{% load subjects_tags %}
 
 {% block header %}
 
@@ -39,7 +40,7 @@
 
                     {% if origin == 'experiment_subject' %}
                         <li><a href="/experiment/group/{{ group.id }}/subjects/">{% trans "Participant" %}</a></li>
-                        <li><a href="/experiment/group/{{ group.id }}/subject/{{ subject.id }}">{{ subject.patient.name }}</a></li>
+                        <li><a href="/experiment/group/{{ group.id }}/subject/{{ subject.id }}">{% get_name_or_code subject.patient.id %}</a></li>
                     {% else %}  {# origin == "experiment_questionnaire" #}
                         <li><a href="/experiment/group/{{ group.id }}/questionnaire/{{ questionnaire_configuration.id }}">{{ survey_title }}</a></li>
                     {% endif %}
@@ -138,7 +139,7 @@
                                        value="{{ patient.name }}" type="text" disabled>
                             {% else %}
                                 <input class="form-control" id="id_subject" name="subject"
-                                       value="{{ subject.patient.name }}" type="text" disabled>
+                                       value="{% get_name_or_code subject.patient.id %}" type="text" disabled>
                             {% endif %}
                         </div>
                     </div>

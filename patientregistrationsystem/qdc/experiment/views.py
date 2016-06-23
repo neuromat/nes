@@ -18,6 +18,7 @@ from django.db.models.deletion import ProtectedError
 from django.http import HttpResponseRedirect, HttpResponse
 from django.shortcuts import get_object_or_404, redirect, render, render_to_response
 from django.utils.translation import ugettext as _
+from django import template
 
 from neo import io
 
@@ -4116,16 +4117,27 @@ def search_patients_ajax(request):
         search_text = request.POST['search_text']
         group_id = request.POST['group_id']
 
-        if search_text:
-            if re.match('[a-zA-Z ]+', search_text):
-                patient_list = \
-                    Patient.objects.filter(name__icontains=search_text).exclude(removed=True).order_by('name')
-            else:
-                patient_list = \
-                    Patient.objects.filter(cpf__icontains=search_text).exclude(removed=True).order_by('name')
+        if request.user.has_perm('patient.sensitive_data_patient'):
+            if search_text:
+                if re.match('[a-zA-Z ]+', search_text):
+                    patient_list = \
+                        Patient.objects.filter(name__icontains=search_text).exclude(removed=True).order_by('name')
+                else:
+                    patient_list = \
+                        Patient.objects.filter(cpf__icontains=search_text).exclude(removed=True).order_by('name')
 
-        return render_to_response('experiment/ajax_search_patients.html',
-                                  {'patients': patient_list, 'group_id': group_id})
+            return render_to_response('experiment/ajax_search_patients.html',
+                                      {'patients': patient_list, 'group_id': group_id})
+        else:
+            if search_text:
+                patient_list = \
+                    Patient.objects.filter(code__iexact=search_text).exclude(removed=True).order_by('code')
+
+            return render_to_response('experiment/ajax_search_patients_not_sensitive.html',
+                                      {'patients': patient_list, 'group_id': group_id})
+
+
+
 
 
 @login_required

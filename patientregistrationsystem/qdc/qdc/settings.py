@@ -46,7 +46,6 @@ INSTALLED_APPS = (
 
     'simple_history',
     # 'cep',
-    'quiz.templatetags.qdc_tags',
     'jsonrpc_requests',
     # 'south'
 )
@@ -61,7 +60,13 @@ PROJECT_APPS = (
     'export',
 )
 
+PROJECT_TAGS_APPS = (
+    'quiz.templatetags.qdc_tags',
+    'experiment.templatetags.subjects_tags',
+)
+
 INSTALLED_APPS += PROJECT_APPS
+INSTALLED_APPS += PROJECT_TAGS_APPS
 
 MIDDLEWARE_CLASSES = (
     'django.contrib.sessions.middleware.SessionMiddleware',

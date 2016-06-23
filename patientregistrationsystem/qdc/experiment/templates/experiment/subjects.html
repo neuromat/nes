@@ -2,6 +2,9 @@
 
 {% load i18n admin_static %}
 
+{#information from http://stackoverflow.com/questions/6451304/django-simple-custom-template-tag-example#}
+{% load subjects_tags %}
+
 {% block activeAdvancedResearchProject %}class="active"{% endblock %}
 
 {% block header %}
@@ -63,8 +66,9 @@
 
                                 <div class="input-group input-group-sm">
                                     <span class="input-group-addon"> <span class="glyphicon glyphicon-search"></span></span>
-                                    <input class="form-control" placeholder="{% trans "Type name or CPF participant" %}"
-                                           id="subject_name" type="text" autofocus="true">
+                                    <input class="form-control" {% if perms.patient.sensitive_data_patient %}
+                                    placeholder="{% trans "Type participant name or CPF" %}" {% else %} placeholder="{% trans "Type participant code" %}"
+                                {% endif %} id="subject_name" type="text" autofocus="true">
                                 </div>
                                 {% csrf_token %}
                                 <ul id="search-results-subjects" style="list-style: none;">
@@ -104,7 +108,8 @@
                                                 <a class="btn glyphicon glyphicon-remove" data-toggle="tooltip" data-placement="left" title="{% trans "Delete participant" %}" style="color: indianred; vertical-align: -5%; padding-left: 0;"
                                                    onclick="show_modal_remove({{ item.subject.id }});"></a>
                                             {% endif %}
-                                            {{ item.subject.patient.name }}
+                                            {% get_name_or_code item.subject.patient.id %}
+
                                         </td>
                                         <td>
                                             <div class="col-xs-2 col-sm-2" >
