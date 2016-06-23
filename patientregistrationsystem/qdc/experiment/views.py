@@ -1205,9 +1205,6 @@ def edit_eeg_setting_type(request, eeg_setting_id, eeg_setting_type):
 
         if eeg_setting_type == "eeg_electrode_net_system":
 
-            localization_system_list = EEGElectrodeLocalizationSystem.objects.filter(
-                set_of_electrode_net_system__isnull=False)
-
             setting = eeg_setting.eeg_electrode_layout_setting
 
             # selection_form = EEGElectrodeLocalizationSystemForm(
@@ -1217,6 +1214,9 @@ def edit_eeg_setting_type(request, eeg_setting_id, eeg_setting_type):
 
             equipment_selected = setting.eeg_electrode_net_system.eeg_electrode_net
             localization_system_selected = setting.eeg_electrode_net_system.eeg_electrode_localization_system
+
+            localization_system_list = EEGElectrodeLocalizationSystem.objects.filter(
+                set_of_electrode_net_system__eeg_electrode_net_id=equipment_selected.id)
 
         # Settings related to equipment
         if eeg_setting_type in ["eeg_machine", "eeg_amplifier", "eeg_electrode_net_system"]:

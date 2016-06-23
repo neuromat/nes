@@ -94,18 +94,32 @@ $(document).ready(function () {
                 });
 
                 // In the EEG Electrode Net Setting, when there is not Localization System
-                if (equipment_type == "eeg_electrode_net" && select_localization_system.val() == "" ) {
+                // if (equipment_type == "eeg_electrode_net" && select_localization_system.val() == "" ) {
+                if (equipment_type == "eeg_electrode_net") {
 
                     // update the electrode net list
-
                     url = "/experiment/equipment/get_localization_system_by_electrode_net/" + equipment_id;
 
                     $.getJSON(url, function(all_localization_system) {
-                        var options = '<option value="" selected="selected">---------</option>';
+                        var first_option = '';
+                        var options = '';
+                        var has_selected = false;
+                        var string_selected = '';
                         for (var i = 0; i < all_localization_system.length; i++) {
-                            options += '<option value="' + all_localization_system[i].pk + '">' + all_localization_system[i].fields['name'] + '</option>';
+                            string_selected = '';
+                            if (parseInt(select_localization_system.val()) == all_localization_system[i].pk) {
+                                has_selected = true;
+                                string_selected = 'selected="selected"'
+                            }
+                            options += '<option value="' + all_localization_system[i].pk + '" ' + string_selected + '>' + all_localization_system[i].fields['name'] + '</option>';
                         }
-                        select_localization_system.html(options);
+                        if (has_selected) {
+                            first_option = '<option value="">---------</option>';
+                        } else {
+                            first_option = '<option value="" selected="selected">---------</option>';
+                        }
+
+                        select_localization_system.html(first_option + options);
                         select_localization_system.change();
                     });
                 }
