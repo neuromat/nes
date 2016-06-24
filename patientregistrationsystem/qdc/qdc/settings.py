@@ -63,6 +63,7 @@ PROJECT_APPS = (
 PROJECT_TAGS_APPS = (
     'quiz.templatetags.qdc_tags',
     'experiment.templatetags.subjects_tags',
+    'survey.templatetags.subjects_tags_survey',
 )
 
 INSTALLED_APPS += PROJECT_APPS

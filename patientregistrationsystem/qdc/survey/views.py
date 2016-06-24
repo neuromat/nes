@@ -227,6 +227,7 @@ def create_experiments_questionnaire_data_list(survey, surveys):
 
             if patient.id not in experiments_questionnaire_data_dictionary[use.id]['patients']:
                 experiments_questionnaire_data_dictionary[use.id]['patients'][patient.id] = {
+                    'patient_id': patient.id,
                     'patient_name': qr.subject_of_group.subject.patient.name,
                     'questionnaire_responses': []
                 }
@@ -335,6 +336,7 @@ def create_patients_questionnaire_data_list(survey, surveys):
     for response in PatientQuestionnaireResponse.objects.filter(survey=survey):
         if response.patient.id not in patients_questionnaire_data_dictionary:
             patients_questionnaire_data_dictionary[response.patient.id] = {
+                'patient_id': response.patient.id,
                 'patient_name': response.patient.name,
                 'questionnaire_responses': []
             }
