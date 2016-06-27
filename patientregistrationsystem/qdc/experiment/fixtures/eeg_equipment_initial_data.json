@@ -1675,6 +1675,17 @@
     "model": "experiment.eegelectrodeposition"
   },
   {
+    "pk": 136,
+    "fields": {
+      "position_reference": null,
+      "coordinate_y": 110,
+      "coordinate_x": 135,
+      "eeg_electrode_localization_system": 1,
+      "name": "128"
+    },
+    "model": "experiment.eegelectrodeposition"
+  },
+  {
     "pk": 4,
     "fields": {
       "manufacturer": 1,
