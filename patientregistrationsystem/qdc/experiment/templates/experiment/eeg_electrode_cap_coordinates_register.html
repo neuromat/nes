@@ -1,0 +1,93 @@
+{% load i18n admin_static %}
+
+{% block specific_header %}
+
+    <script src="{% static 'quiz/js/eeg_electrode_cap_coordinates.js' %}"></script>
+
+    <style>
+        {#  based on tip from http://stackoverflow.com/questions/21168521/scrollable-table-with-fixed-header-in-bootstrap #}
+        .header-fixed {
+            width: 100%
+        }
+
+        .header-fixed > thead,
+        .header-fixed > tbody,
+        .header-fixed > thead > tr,
+        .header-fixed > tbody > tr,
+        .header-fixed > thead > tr > th,
+        .header-fixed > tbody > tr > td {
+            display: block;
+        }
+
+        .header-fixed > tbody > tr:after,
+        .header-fixed > thead > tr:after {
+            content: ' ';
+            display: block;
+            visibility: hidden;
+            clear: both;
+        }
+
+        .header-fixed > tbody {
+            overflow-y: auto;
+            height: 400px;
+        }
+
+        .header-fixed > tbody > tr > td,
+        .header-fixed > thead > tr > th {
+            width: 50%;
+            float: left;
+        }
+    </style>
+
+{% endblock %}
+
+{% block subcontent %}
+
+        <div id="electrode_position" class="tab-pane fade in active">
+
+        <div hidden="hidden">
+            <input id="map_file" type="text" value="{{ eeg_setting.eeg_electrode_layout_setting.eeg_electrode_net_system.eeg_electrode_localization_system.map_image_file.url }}">
+        </div>
+
+        <div style="width:100%;">
+            <table>
+                <tr>
+                    <td width="80%">
+                        <div style="float:left; width: 80%">
+                            <canvas id="electrodeMapCanvas" width="700" height="500" style="border:1px solid #000000;">
+                            </canvas>
+                        </div>
+                    </td>
+
+                    <td width="20%" valign="top">
+                        <label class="control-label" style="margin-left: 10px;">{% trans "Electrode Cap Coordinates" %}</label>
+                        <br/>
+
+                        <table id="cap_positions" class="table table-striped header-fixed" style="margin-top:10px; margin-left:10px;">
+                            <thead>
+                                <tr>
+                                    <th>{% trans "Coordinates X - Y" %} </th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for position in eeg_setting.eeg_electrode_layout_setting.positions_setting.all %}
+                                <tr>
+                                    <td>
+                                        {{ position_setting.eeg_electrode_position.coordinate_x }}
+
+                                        {{ position_setting.eeg_electrode_position.coordinate_y }}
+                                    </td>
+                                </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+
+                    </td>
+
+                </tr>
+            </table>
+
+        </div>
+    </div>
+
+{% endblock %}

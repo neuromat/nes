@@ -118,12 +118,15 @@ urlpatterns = patterns(
         'equipment_view', name='equipment_view'),
     url(r'^eeg_setting/eeg_electrode_position_status/(?P<eeg_setting_id>\d+)/$',
         'eeg_electrode_position_setting', name='eeg_electrode_position_setting'),
+    url(r'^eeg_setting/eeg_electrode_cap/(?P<eeg_setting_id>\d+)/$',
+        'eeg_electrode_cap_setting', name='eeg_electrode_cap_setting'),
     url(r'^eeg_setting/eeg_electrode_position_status/edit/(?P<eeg_setting_id>\d+)/$',
         'edit_eeg_electrode_position_setting', name='edit_eeg_electrode_position_setting'),
     url(r'^eeg_setting/eeg_electrode_position_status_model/(?P<eeg_setting_id>\d+)/$',
         'eeg_electrode_position_setting_model', name='eeg_electrode_position_setting_model'),
     url(r'^eeg_setting/eeg_electrode_position_status_model/edit/(?P<eeg_setting_id>\d+)/$',
         'edit_eeg_electrode_position_setting_model', name='edit_eeg_electrode_position_setting_model'),
+
 
     # eeg setting (ajax)
     url(r'^equipment/get_equipment_by_manufacturer/(?P<equipment_type>\w+)/(?P<manufacturer_id>\d+)/$',

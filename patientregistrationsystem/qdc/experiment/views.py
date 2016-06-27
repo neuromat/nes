@@ -1379,6 +1379,23 @@ def number_of_used_positions(eeg_setting):
 
 @login_required
 @permission_required('experiment.change_experiment')
+def eeg_electrode_cap_setting(request, eeg_setting_id,
+                                        template_name="experiment/eeg_electrode_cap_coordinates_register.html"):
+
+    eeg_setting = get_object_or_404(EEGSetting, pk=eeg_setting_id)
+
+    if get_can_change(request.user, eeg_setting.experiment.research_project):
+
+        context = {
+                   "eeg_setting": eeg_setting,
+                   }
+
+        return render(request, template_name, context)
+    else:
+        raise PermissionDenied
+
+@login_required
+@permission_required('experiment.change_experiment')
 def edit_eeg_electrode_position_setting(request, eeg_setting_id,
                                         template_name="experiment/eeg_setting_electrode_position_status.html"):
 
