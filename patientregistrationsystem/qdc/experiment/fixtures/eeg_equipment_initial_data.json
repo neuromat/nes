@@ -132,18 +132,6 @@
     "model": "experiment.material"
   },
   {
-    "pk": 1,
-    "fields": {
-      "impedance": 12.0,
-      "description": "modelo_eletrodos_1",
-      "name": "modelo_eletrodos_1",
-      "material": 1,
-      "impedance_unit": "ohm",
-      "usability": "disposable"
-    },
-    "model": "experiment.eegelectrodemodel"
-  },
-  {
     "pk": 2,
     "fields": {
       "impedance": 10.0,
