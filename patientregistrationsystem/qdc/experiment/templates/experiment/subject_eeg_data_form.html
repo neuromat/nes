@@ -2,6 +2,7 @@
 {% block activeAdvancedResearchProject %}class="active"{% endblock %}
 
 {% load i18n admin_static %}
+{% load subjects_tags %}
 
 {% block header %}
     {% load static %}
@@ -153,7 +154,7 @@
                 <li><a href="/experiment/group/{{ group.id }}">{{ group.title }}</a></li>
                 <li><a href="/experiment/group/{{ group.id }}/subjects/">{% trans "Participant" %}</a></li>
 
-                <li><a href="/experiment/group/{{ group.id }}/subject/{{ subject.id }}/eeg">{{ subject.patient.name }}</a></li>
+                <li><a href="/experiment/group/{{ group.id }}/subject/{{ subject.id }}/eeg">{% get_name_or_code subject.patient.id %}</a></li>
 
                 {% if creating %}
                     <li class="active">{% trans "New EEG data file" %}</li>
@@ -324,7 +325,6 @@
                     </div>
 
                     <div id="electrode_position_status" {% if tab == '2' %}class="tab-pane fade in active"{% else %}class="tab-pane fade"{% endif %}>
-                        {% if eeg_data.electrode_positions.all %}
 
                             <table class="table table-striped" style="margin-top:10px; margin-left:10px;">
                                 <thead>
@@ -358,16 +358,12 @@
                                 </tbody>
                             </table>
 
-                            {% if not editing and can_change %}
+                            {% if not editing and can_change and eeg_data.electrode_positions.all %}
                                 <div class="btn-group pull-left">
                                     <a href="/experiment/eeg_data/edit/{{ eeg_data.id }}/2" class="btn btn-primary">{% trans "Edit" %}</a>
                                 </div>
                             {% endif %}
 
-
-                        {% else %}
-                            nao tem layout
-                        {% endif %}
                     </div>
                 </div>
 

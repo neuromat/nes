@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2016-06-17 14:02-0300\n"
+"POT-Creation-Date: 2016-06-27 09:36-0300\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -642,27 +642,35 @@ msgstr "Pode exportar participante"
 msgid "Can export questionnaire response"
 msgstr "Pode exportar respostas do questionário"
 
-#: add_initial_data.py:179
+#: add_initial_data.py:176
+msgid "Can register equipment"
+msgstr "Pode registrar experimento"
+
+#: add_initial_data.py:177
+msgid "Can view sensitive patient data"
+msgstr "Pode ver dados sensíveis de participante"
+
+#: add_initial_data.py:181
 msgid "Administrator"
 msgstr "Administrador"
 
-#: add_initial_data.py:180
+#: add_initial_data.py:182
 msgid "Attendant"
 msgstr "Atendente"
 
-#: add_initial_data.py:181
+#: add_initial_data.py:183
 msgid "Physiotherapist"
 msgstr "Fisioterapeuta"
 
-#: add_initial_data.py:182
+#: add_initial_data.py:184
 msgid "Doctor"
 msgstr "Médico"
 
-#: add_initial_data.py:183
+#: add_initial_data.py:185
 msgid "Junior researcher"
 msgstr "Pesquisador júnior"
 
-#: add_initial_data.py:184
+#: add_initial_data.py:186
 msgid "Senior researcher"
 msgstr "Pesquisador sênior"
 
@@ -683,8 +691,7 @@ msgid "Change password"
 msgstr "Alterar senha"
 
 #: templates/registration/change_password_custom.html:67
-#: templates/registration/password_reset_confirm.html:145
-#: templates/registration/password_reset_confirm_o.html:65
+#: templates/registration/password_reset_confirm.html:146
 msgid ""
 "Password must contain at least 8 characters, including at least one "
 "uppercase letter, digit or special character."
@@ -693,12 +700,10 @@ msgstr ""
 "maiúscula, dígito ou caractere especial."
 
 #: templates/registration/change_password_custom.html:109
-#: templates/registration/password_reset_confirm_o.html:108
 msgid "Save"
 msgstr "Salvar"
 
 #: templates/registration/change_password_custom.html:112
-#: templates/registration/password_reset_confirm_o.html:111
 msgid "Cancel"
 msgstr "Cancelar"
 
@@ -780,31 +785,28 @@ msgstr ""
 msgid "Access"
 msgstr "Acessar"
 
-#: templates/registration/password_reset_confirm.html:142
-#: templates/registration/password_reset_confirm_o.html:57
+#: templates/registration/password_reset_confirm.html:143
 #: templates/registration/password_reset_form.html:88
 msgid "Reset password"
 msgstr "Redefinir senha"
 
-#: templates/registration/password_reset_confirm.html:146
+#: templates/registration/password_reset_confirm.html:147
 msgid "New password"
 msgstr "Nova senha"
 
-#: templates/registration/password_reset_confirm.html:149
+#: templates/registration/password_reset_confirm.html:150
 msgid "Confirm password"
 msgstr "Confirmar senha"
 
-#: templates/registration/password_reset_confirm.html:151
+#: templates/registration/password_reset_confirm.html:152
 msgid "Confirm"
 msgstr "Confirmar"
 
-#: templates/registration/password_reset_confirm.html:154
-#: templates/registration/password_reset_confirm_o.html:118
+#: templates/registration/password_reset_confirm.html:155
 msgid "Password reset failed."
 msgstr "Redefinição de senha falhou."
 
-#: templates/registration/password_reset_confirm.html:155
-#: templates/registration/password_reset_confirm_o.html:119
+#: templates/registration/password_reset_confirm.html:156
 msgid ""
 "Invalid link for password reset, possibly because this link has already been "
 "used previously. <br/>\n"

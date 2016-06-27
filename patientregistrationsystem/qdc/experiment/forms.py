@@ -9,7 +9,8 @@ from experiment.models import Experiment, QuestionnaireResponse, SubjectOfGroup,
     Component, Stimulus, Block, Instruction, ComponentConfiguration, ResearchProject, EEGData, \
     EEGSetting, Equipment, EEG, EEGMachine, EEGMachineSetting, EEGAmplifier, EEGAmplifierSetting, \
     EEGSolution, EEGFilterSetting, EEGFilterType, EEGElectrodeLocalizationSystem, \
-    EEGCapSize, EEGElectrodeCap, EEGElectrodePosition, Manufacturer, EEGElectrodeModel, EEGElectrodeNet, Material
+    EEGCapSize, EEGElectrodeCap, EEGElectrodePosition, Manufacturer, EEGElectrodeModel, EEGElectrodeNet, Material, \
+    AdditionalData, EMGData
 
 
 class ExperimentForm(ModelForm):
@@ -345,9 +346,13 @@ class EEGMachineSettingForm(ModelForm):
         fields = ['number_of_channels_used']
 
         widgets = {
-            'number_of_channels_used': TextInput(attrs={'class': 'form-control',
-                                                        'required': "",
-                                                        'data-error': _('Description must be filled.')})
+            'number_of_channels_used':
+                NumberInput(attrs={
+                    'class': 'form-control',
+                    'required': "",
+                    "min": "0",
+                    'data-error':
+                    _('Number of channels should be between 0 and the number of channels of the EEG machine.')})
         }
 
 
@@ -408,29 +413,6 @@ class EEGFilterSettingForm(ModelForm):
 
 
         }
-
-
-# class EEGElectrodeLocalizationSystemForm(ModelForm):
-#     class Meta:
-#         model = EEGElectrodeLocalizationSystem
-#         # fields = ['number_of_electrodes']
-#         fields = []
-#         widgets = {
-#             # 'number_of_electrodes': TextInput(attrs={'id': 'id_system_number_of_electrodes',
-#             #                                          'class': 'form-control', 'disabled': ''})
-#         }
-
-
-# class EEGElectrodeLayoutSettingForm(ModelForm):
-#     class Meta:
-#         model = EEGElectrodeLayoutSetting
-#         # fields = ['number_of_electrodes']
-#         fields = []
-#         widgets = {
-#             # 'number_of_electrodes': TextInput(attrs={'class': 'form-control',
-#             #                                          'required': "",
-#             #                                          'data-error': _('Description must be filled.')})
-#         }
 
 
 class EEGElectrodeLocalizationSystemRegisterForm(ModelForm):
@@ -614,4 +596,52 @@ class EEGCapSizeRegisterForm(ModelForm):
             'electrode_adjacent_distance': NumberInput(attrs={'class': 'form-control',
                                                               'data-error': _('Electrode adjacent distance must be filled.')}),
 
+        }
+
+
+class EMGDataForm(ModelForm):
+    class Meta:
+        model = EMGData
+
+        fields = ['date', 'file_format', 'description', 'file', 'file_format_description']
+
+        widgets = {
+            'date': DateInput(format=_("%m/%d/%Y"),
+                              attrs={'class': 'form-control datepicker', 'placeholder': _('mm/dd/yyyy'),
+                                     'required': "",
+                                     'data-error': _("Fill date must be filled.")}, ),
+            'file_format': Select(attrs={'class': 'form-control', 'required': "",
+                                         'data-error': _('File format must be chosen.')}),
+            'description': Textarea(attrs={'class': 'form-control',
+                                           'rows': '4', 'required': "",
+                                           'data-error': _('Description must be filled.')}),
+            'file_format_description': Textarea(attrs={'class': 'form-control',
+                                                       'rows': '4', 'required': "",
+                                                       'data-error': _('File format description must be filled.')}),
+            # It is not possible to set the 'required' attribute because it affects the edit screen
+            # 'file': FileInput(attrs={'required': ""})
+        }
+
+
+class AdditionalDataForm(ModelForm):
+    class Meta:
+        model = AdditionalData
+
+        fields = ['date', 'file_format', 'description', 'file', 'file_format_description']
+
+        widgets = {
+            'date': DateInput(format=_("%m/%d/%Y"),
+                              attrs={'class': 'form-control datepicker', 'placeholder': _('mm/dd/yyyy'),
+                                     'required': "",
+                                     'data-error': _("Fill date must be filled.")}, ),
+            'file_format': Select(attrs={'class': 'form-control', 'required': "",
+                                         'data-error': _('File format must be chosen.')}),
+            'description': Textarea(attrs={'class': 'form-control',
+                                           'rows': '4', 'required': "",
+                                           'data-error': _('Description must be filled.')}),
+            'file_format_description': Textarea(attrs={'class': 'form-control',
+                                                       'rows': '4', 'required': "",
+                                                       'data-error': _('File format description must be filled.')}),
+            # It is not possible to set the 'required' attribute because it affects the edit screen
+            # 'file': FileInput(attrs={'required': ""})
         }

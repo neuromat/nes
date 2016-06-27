@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2016-06-15 16:29-0300\n"
+"POT-Creation-Date: 2016-06-27 09:36-0300\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -22,7 +22,7 @@ msgid "Name must be included"
 msgstr ""
 
 #: patient/forms.py:31 patient/forms.py:134 patient/forms.py:159
-#: patient/views.py:714 patient/views.py:1229
+#: patient/views.py:714 patient/views.py:1225
 msgid "%m/%d/%Y"
 msgstr ""
 
@@ -119,39 +119,39 @@ msgstr ""
 msgid "Date of birth can't be greater than today date."
 msgstr ""
 
-#: patient/models.py:174
+#: patient/models.py:175
 msgid "Cell phone"
 msgstr ""
 
-#: patient/models.py:175
+#: patient/models.py:176
 msgid "Home phone"
 msgstr ""
 
-#: patient/models.py:176
+#: patient/models.py:177
 msgid "Business"
 msgstr ""
 
-#: patient/models.py:177
+#: patient/models.py:178
 msgid "Main"
 msgstr ""
 
-#: patient/models.py:178
+#: patient/models.py:179
 msgid "Business fax"
 msgstr ""
 
-#: patient/models.py:179
+#: patient/models.py:180
 msgid "Home fax"
 msgstr ""
 
-#: patient/models.py:180
+#: patient/models.py:181
 msgid "Pager"
 msgstr ""
 
-#: patient/models.py:181
+#: patient/models.py:182
 msgid "Other"
 msgstr ""
 
-#: patient/models.py:392
+#: patient/models.py:393
 msgid "token id: "
 msgstr ""
 
@@ -364,7 +364,6 @@ msgstr ""
 
 #: patient/templates/patient/register.html:56
 #: patient/templates/patient/register.html:70
-#: patient/templates/patient/register_questionnaires.html:21
 msgid "Medical evaluation"
 msgstr ""
 
@@ -534,6 +533,10 @@ msgid ""
 "Participant has already been deleted.\n"
 "                        Click to restore registration or Cancel to register "
 "with same name."
+msgstr ""
+
+#: patient/templates/patient/register_questionnaires.html:21
+msgid "Entrance evaluation"
 msgstr ""
 
 #: patient/templates/patient/register_questionnaires.html:29
@@ -780,39 +783,39 @@ msgstr ""
 msgid "Exam successfully saved."
 msgstr ""
 
-#: patient/views.py:855 patient/views.py:919
+#: patient/views.py:855 patient/views.py:915
 msgid "It is not possible to save exam without files."
 msgstr ""
 
-#: patient/views.py:984
+#: patient/views.py:980
 msgid "Exam successfully deleted."
 msgstr ""
 
-#: patient/views.py:1008
+#: patient/views.py:1004
 msgid "Attachment successfully deleted."
 msgstr ""
 
-#: patient/views.py:1147 patient/views.py:1335
+#: patient/views.py:1143 patient/views.py:1331
 msgid "Fill deleted successfully"
 msgstr ""
 
-#: patient/views.py:1149 patient/views.py:1337
+#: patient/views.py:1145 patient/views.py:1333
 msgid "Error trying to delete"
 msgstr ""
 
-#: patient/views.py:1203
+#: patient/views.py:1199
 msgid "Not available filling - tokens table not started"
 msgstr ""
 
-#: patient/views.py:1208
+#: patient/views.py:1204
 msgid "Not available filling - questionnaire not active"
 msgstr ""
 
-#: patient/views.py:1213
+#: patient/views.py:1209
 msgid "Not available filling - questionnaire does not contain standard fields"
 msgstr ""
 
-#: patient/views.py:1222
+#: patient/views.py:1218
 msgid ""
 "Failed to generate token to answer the questionnaire. Make sure the "
 "questionnaire is active"

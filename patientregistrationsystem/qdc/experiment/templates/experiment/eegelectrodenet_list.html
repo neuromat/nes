@@ -63,7 +63,7 @@
                         <tbody>
                         {% for equipment in equipments %}
                             <tr>
-                                <td>{% if perms.experiment.view_equipment %}
+                                <td>{% if perms.experiment.register_equipment %}
                                         <a data-toggle="tooltip" data-placement="left" title="{% trans "Visualize" %}"
                                            href="/experiment/eegelectrodenet/{{ equipment.id }}">
                                             {{ equipment.identification }}
@@ -85,7 +85,7 @@
                         </tbody>
                     </table>
                 </div>
-                {% if perms.experiment.add_equipment %}
+                {% if perms.experiment.register_equipment %}
                     <div class="btn-group pull-left">
                         <a href="/experiment/eegelectrodenet/new/" class="btn btn-primary">{% trans "Insert new" %}</a>
                     </div>

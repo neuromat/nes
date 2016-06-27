@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2016-06-15 16:29-0300\n"
+"POT-Creation-Date: 2016-06-27 09:36-0300\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -31,7 +31,7 @@ msgid "Type user name"
 msgstr "Entrar nome do usuário"
 
 #: custom_user/forms.py:24 custom_user/forms.py:47
-#: custom_user/templates/custom_user/register_users.html:177
+#: custom_user/templates/custom_user/register_users.html:219
 msgid "Type password"
 msgstr "Entrar senha"
 
@@ -43,24 +43,28 @@ msgstr "Entra e-mail"
 msgid "E-mail is not registered"
 msgstr ""
 
-#: custom_user/templates/custom_user/register_users.html:99
+#: custom_user/templates/custom_user/register_users.html:132
 msgid "Basic Information"
 msgstr "Informações Básicas"
 
-#: custom_user/templates/custom_user/register_users.html:103
+#: custom_user/templates/custom_user/register_users.html:136
 msgid "First name"
 msgstr "Nome"
 
-#: custom_user/templates/custom_user/register_users.html:112
+#: custom_user/templates/custom_user/register_users.html:145
 msgid "Last name"
 msgstr "Sobrenome"
 
-#: custom_user/templates/custom_user/register_users.html:124
+#: custom_user/templates/custom_user/register_users.html:157
 #: custom_user/templates/custom_user/user_list.html:36
 msgid "User name"
 msgstr "Nome de usuário"
 
-#: custom_user/templates/custom_user/register_users.html:156
+#: custom_user/templates/custom_user/register_users.html:191
+msgid "Update password"
+msgstr "Alterar senha"
+
+#: custom_user/templates/custom_user/register_users.html:198
 msgid ""
 "Password must contain at least 8 characters, including at least one "
 "uppercase letter, digit or special character."
@@ -68,41 +72,41 @@ msgstr ""
 "Senha deve conter pelo menos 8 caracteres, incluindo ao menos uma letra "
 "maiúscula, dígito ou caractere especial."
 
-#: custom_user/templates/custom_user/register_users.html:158
+#: custom_user/templates/custom_user/register_users.html:200
 msgid "Password"
 msgstr "Senha"
 
-#: custom_user/templates/custom_user/register_users.html:173
+#: custom_user/templates/custom_user/register_users.html:215
 msgid "Please confirm password"
 msgstr "Confirmar senha"
 
-#: custom_user/templates/custom_user/register_users.html:193
+#: custom_user/templates/custom_user/register_users.html:236
 msgid "Profiles"
 msgstr "Perfis"
 
-#: custom_user/templates/custom_user/register_users.html:195
+#: custom_user/templates/custom_user/register_users.html:238
 msgid "In which these profiles does user identify?"
 msgstr "Em quais desses perfis o usuário se identifica?"
 
-#: custom_user/templates/custom_user/register_users.html:222
-#: custom_user/templates/custom_user/register_users.html:248
+#: custom_user/templates/custom_user/register_users.html:265
+#: custom_user/templates/custom_user/register_users.html:291
 msgid "Delete"
 msgstr "Remover"
 
-#: custom_user/templates/custom_user/register_users.html:226
+#: custom_user/templates/custom_user/register_users.html:269
 msgid "Save"
 msgstr "Salvar"
 
-#: custom_user/templates/custom_user/register_users.html:230
-#: custom_user/templates/custom_user/register_users.html:247
+#: custom_user/templates/custom_user/register_users.html:273
+#: custom_user/templates/custom_user/register_users.html:290
 msgid "Cancel"
 msgstr "Cancelar"
 
-#: custom_user/templates/custom_user/register_users.html:232
+#: custom_user/templates/custom_user/register_users.html:275
 msgid "Back"
 msgstr "Voltar"
 
-#: custom_user/templates/custom_user/register_users.html:244
+#: custom_user/templates/custom_user/register_users.html:287
 msgid "Are you sure you want to delete user?"
 msgstr "Tem certeza que deseja excluir o usuário?"
 
@@ -142,11 +146,11 @@ msgstr "Este nome de usuário já existe."
 msgid "This username already exists in an disabled user."
 msgstr "Este nome de usuário já existe em um usuário desabilitado."
 
-#: custom_user/views.py:89
+#: custom_user/views.py:91
 msgid "User updated successfully."
 msgstr "Usuário atualizado com sucesso."
 
-#: custom_user/views.py:97
+#: custom_user/views.py:99
 msgid "User deleted successfully."
 msgstr "Usuário removido com sucesso."
 

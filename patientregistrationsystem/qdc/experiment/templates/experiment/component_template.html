@@ -151,7 +151,7 @@
                 {% if not component_configuration and not creating and not updating and can_change %}
                     <div class="row" style="padding-bottom: 1em">
                         <div class="col-xs-12 col-sm-12">
-                            <a href="/experiment/component/edit/{{ path_of_the_components }}" class="btn btn-primary">{% trans "Edit" %}</a>
+                            <a class="btn btn-primary" {% if experiment_in_use %} onclick="$('#modalCopyExperiment').modal('show')" {% else %} href="/experiment/component/edit/{{ path_of_the_components }}" {% endif %}>{% trans "Edit" %}</a>
                         </div>
                     </div>
                 {% endif %}
@@ -162,10 +162,7 @@
                 {% if component_configuration %}
                     <div class="row" style="padding-bottom: 1em">
                         <div class="col-xs-12 col-sm-12">
-                            <a      href="/experiment/component/{% if component_configuration.component.component_type != "block" %}edit/{% endif %}{{ path_of_the_components }}-{{ component_configuration.component.id }}"
-                                    class="btn btn-primary">
-                                {% trans "Edit" %}
-                            </a>
+                            <a class="btn btn-primary" {% if experiment_in_use %} onclick="$('#modalCopyExperiment').modal('show')" {% else %} href="/experiment/component/{% if component_configuration.component.component_type != "block" %}edit/{% endif %}{{ path_of_the_components }}-{{ component_configuration.component.id }}" {% endif %}>{% trans "Edit" %}</a>
                         </div>
                     </div>
                 {% endif %}
@@ -227,12 +224,12 @@
                         <div class="col-xs-12 col-sm-3">
                             <label for="unlimited_number_of_repetitions" class="control-label">{% trans "Quantity of repetitions" %} <b style="color: red;">*</b></label>
                             <div class="radio" style="margin-top: 0px">
-                                <input id="id_repetitions_0" name="unlimited_number_of_repetitions" type="radio" value="unlimited">
+                                <input {% if not can_change %}disabled{% endif %} id="id_repetitions_0" name="unlimited_number_of_repetitions" type="radio" value="unlimited">
                                     {% trans "Unlimited" %}
                                 </input>
                             </div>
                             <label class="radio">
-                                <input id="id_repetitions_1" name="unlimited_number_of_repetitions" type="radio" value="limited">
+                                <input {% if not can_change %}disabled{% endif %} id="id_repetitions_1" name="unlimited_number_of_repetitions" type="radio" value="limited">
                                     <div class="col-xs-9 col-sm-9" style="padding-left: 0px">
                                         <div class="form-group" id="div_form_number_of_repetitions">
                                             {{ configuration_form.number_of_repetitions }}
@@ -246,12 +243,12 @@
                             <div class="col-xs-12 col-sm-6 col-sm-offset-1">
                                 <label for="undefined_interval" id="undefined_interval_label" class="control-label">{% trans "Interval among repetitions" %} <b style="color: red;">*</b></label>
                                 <div class="radio" style="margin-top: 0px">
-                                    <input id="id_interval_0" name="undefined_interval" type="radio" value="undefined">
+                                    <input {% if not can_change %}disabled{% endif %} id="id_interval_0" name="undefined_interval" type="radio" value="undefined">
                                         {% trans "Undefined" %}
                                     </input>
                                 </div>
                                 <label class="radio">
-                                    <input id="id_interval_1" name="undefined_interval" type="radio" value="limited">
+                                    <input {% if not can_change %}disabled{% endif %} id="id_interval_1" name="undefined_interval" type="radio" value="limited">
                                         <div class="col-xs-4 col-sm-4" style="padding-left: 0px">
                                             <div class="form-group" id="div_form_interval_between_repetitions_value">
                                                 {{ configuration_form.interval_between_repetitions_value }}
@@ -276,12 +273,12 @@
                 {# This div has to be out of the if so that the save and cancel buttons appear separated from each other. #}
                 <div class="btn-group pull-left">
                     {% if not component_configuration and can_change %}
-                        <button type="button" class="btn btn-danger" onclick="$('#modalRemove').modal('show')">{% trans "Delete" %}</button>
+                        <button type="button" class="btn btn-danger" {% if experiment_in_use %} onclick="$('#modalCopyExperiment').modal('show')" {% else %} onclick="$('#modalRemove').modal('show')" {% endif %}>{% trans "Delete" %}</button>
                     {% endif %}
                 </div>
                 {% if updating or creating or component_configuration %}
                     <div class="btn-group pull-right">
-                        <button type="submit" name="action" value="save" class="btn btn-primary" id="submit_button">
+                        <button {% if not can_change %}disabled{% endif %} type="submit" name="action" value="save" class="btn btn-primary" id="submit_button">
                             {% if reusing or can_reuse %}
                                 {% trans "Insert" %}
                             {% else %}
@@ -320,6 +317,20 @@
         </div>
     {% endif %}
 
+    <div class="modal fade" id="modalCopyExperiment" tabindex="-1" role="dialog" aria-labelledby="myModalLabel"
+         aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-body">
+                    {% trans "This experiment is in use, you can not change it! Do you want to copy this experiment?" %}
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-default" data-dismiss="modal">{% trans "Cancel" %}</button>
+                    <button type="submit" class="btn btn-primary" value="copy_experiment" name="action">{% trans "Copy experiment" %}</button>
+                </div>
+            </div>
+        </div>
+    </div>
 {% endblock %}
 
 {% block end_form %}

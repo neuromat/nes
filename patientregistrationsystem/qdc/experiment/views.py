@@ -15,10 +15,10 @@ from django.core import serializers
 from django.core.urlresolvers import reverse
 from django.db.models import Q
 from django.db.models.deletion import ProtectedError
-# from django.db.models.query import QuerySet
 from django.http import HttpResponseRedirect, HttpResponse
 from django.shortcuts import get_object_or_404, redirect, render, render_to_response
 from django.utils.translation import ugettext as _
+from django import template
 
 from neo import io
 
@@ -29,7 +29,7 @@ from experiment.models import Experiment, Subject, QuestionnaireResponse, Subjec
     EEGMachineSetting, EEGAmplifierSetting, EEGSolutionSetting, EEGFilterSetting, EEGElectrodeLayoutSetting, \
     EEGFilterType, EEGSolution, EEGElectrodeLocalizationSystem, EEGElectrodeNetSystem, EEGElectrodePositionSetting, \
     EEGElectrodeModel, EEGElectrodePositionCollectionStatus, EEGCapSize, EEGElectrodeCap, EEGElectrodePosition, \
-    Material
+    Material, AdditionalData, EMGData
 from experiment.forms import ExperimentForm, QuestionnaireResponseForm, FileForm, GroupForm, InstructionForm, \
     ComponentForm, StimulusForm, BlockForm, ComponentConfigurationForm, ResearchProjectForm, NumberOfUsesToInsertForm, \
     EEGDataForm, EEGSettingForm, EquipmentForm, EEGForm, EEGMachineForm, EEGMachineSettingForm, EEGAmplifierForm, \
@@ -37,7 +37,7 @@ from experiment.forms import ExperimentForm, QuestionnaireResponseForm, FileForm
     EEGElectrodeLocalizationSystemRegisterForm, \
     ManufacturerRegisterForm, EEGMachineRegisterForm, EEGAmplifierRegisterForm, EEGSolutionRegisterForm, \
     EEGFilterTypeRegisterForm, EEGElectrodeModelRegisterForm, MaterialRegisterForm, EEGElectrodeNETRegisterForm, \
-    EEGElectrodePositionForm, EEGElectrodeCapRegisterForm, EEGCapSizeRegisterForm
+    EEGElectrodePositionForm, EEGElectrodeCapRegisterForm, EEGCapSizeRegisterForm, AdditionalDataForm, EMGDataForm
 
 
 from patient.models import Patient, QuestionnaireResponse as PatientQuestionnaireResponse
@@ -488,6 +488,10 @@ def recursively_create_list_of_questionnaires_and_statistics(block_id,
 @permission_required('experiment.view_researchproject')
 def group_view(request, group_id, template_name="experiment/group_register.html"):
     group = get_object_or_404(Group, pk=group_id)
+
+    experiment = group.experiment
+    experiment_in_use = check_experiment(experiment)
+
     group_form = GroupForm(request.POST or None, instance=group)
 
     for field in group_form.fields:
@@ -517,7 +521,7 @@ def group_view(request, group_id, template_name="experiment/group_register.html"
         if can_change:
             if request.POST['action'] == "remove":
 
-                if QuestionnaireResponse.objects.filter(subject_of_group__group_id=group_id).count() == 0:
+                if not group_has_data_collection(group_id):
                     try:
                         group.delete()
                         messages.success(request, _('Group removed successfully.'))
@@ -529,13 +533,19 @@ def group_view(request, group_id, template_name="experiment/group_register.html"
                         return HttpResponseRedirect(redirect_url)
                 else:
                     messages.error(request,
-                                   _("Impossible to delete group because there is (are) questionnaire(s) answered."))
+                                   _("Impossible to delete group because there is (are) data collection associated."))
                     redirect_url = reverse("group_view", args=(group.id,))
                     return HttpResponseRedirect(redirect_url)
 
             elif request.POST['action'] == "remove_experimental_protocol":
                 group.experimental_protocol = None
                 group.save()
+
+            elif request.POST['action'] == "copy_experiment":
+                copy_experiment(experiment)
+                messages.success(request, _('The experiment was copied.'))
+                redirect_url = reverse("experiment_view", args=(experiment.id,))
+                return HttpResponseRedirect(redirect_url)
         else:
             raise PermissionDenied
 
@@ -544,12 +554,21 @@ def group_view(request, group_id, template_name="experiment/group_register.html"
                "group_form": group_form,
                "questionnaires_configuration_list": list_of_questionnaires_configuration,
                "experiment": group.experiment,
+               "experiment_in_use": experiment_in_use,
                "group": group,
                "editing": False,
                "number_of_subjects": SubjectOfGroup.objects.all().filter(group=group).count()
                }
 
     return render(request, template_name, context)
+
+
+def group_has_data_collection(group_id):
+    return (
+        QuestionnaireResponse.objects.filter(subject_of_group__group_id=group_id).count() > 0 or
+        EEGData.objects.filter(subject_of_group__group_id=group_id).count() > 0 or
+        EMGData.objects.filter(subject_of_group__group_id=group_id).count() > 0 or
+        AdditionalData.objects.filter(subject_of_group__group_id=group_id).count() > 0)
 
 
 @login_required
@@ -1187,9 +1206,6 @@ def edit_eeg_setting_type(request, eeg_setting_id, eeg_setting_type):
 
         if eeg_setting_type == "eeg_electrode_net_system":
 
-            localization_system_list = EEGElectrodeLocalizationSystem.objects.filter(
-                set_of_electrode_net_system__isnull=False)
-
             setting = eeg_setting.eeg_electrode_layout_setting
 
             # selection_form = EEGElectrodeLocalizationSystemForm(
@@ -1199,6 +1215,9 @@ def edit_eeg_setting_type(request, eeg_setting_id, eeg_setting_type):
 
             equipment_selected = setting.eeg_electrode_net_system.eeg_electrode_net
             localization_system_selected = setting.eeg_electrode_net_system.eeg_electrode_localization_system
+
+            localization_system_list = EEGElectrodeLocalizationSystem.objects.filter(
+                set_of_electrode_net_system__eeg_electrode_net_id=equipment_selected.id)
 
         # Settings related to equipment
         if eeg_setting_type in ["eeg_machine", "eeg_amplifier", "eeg_electrode_net_system"]:
@@ -1535,13 +1554,13 @@ def equipment_view(request, eeg_setting_id, equipment_id,
 
 
 @login_required
-@permission_required('experiment.add_equipment')
+@permission_required('experiment.register_equipment')
 def manufacturer_list(request, template_name="experiment/manufacturer_list.html"):
     return render(request, template_name, {"equipments": Manufacturer.objects.order_by('name')})
 
 
 @login_required
-@permission_required('experiment.add_manufacturer')
+@permission_required('experiment.register_equipment')
 def manufacturer_create(request, template_name="experiment/manufacturer_register.html"):
 
     manufacturer_form = ManufacturerRegisterForm(request.POST or None)
@@ -1574,7 +1593,7 @@ def manufacturer_create(request, template_name="experiment/manufacturer_register
 
 
 @login_required
-@permission_required('experiment.change_manufacturer')
+@permission_required('experiment.register_equipment')
 def manufacturer_update(request, manufacturer_id, template_name="experiment/manufacturer_register.html"):
     manufacturer = get_object_or_404(Manufacturer, pk=manufacturer_id)
 
@@ -1601,7 +1620,7 @@ def manufacturer_update(request, manufacturer_id, template_name="experiment/manu
 
 
 @login_required
-@permission_required('experiment.view_manufacturer')
+@permission_required('experiment.register_equipment')
 def manufacturer_view(request, manufacturer_id, template_name="experiment/manufacturer_register.html"):
     manufacturer = get_object_or_404(Manufacturer, pk=manufacturer_id)
 
@@ -1631,13 +1650,13 @@ def manufacturer_view(request, manufacturer_id, template_name="experiment/manufa
 
 
 @login_required
-@permission_required('experiment.add_equipment')
+@permission_required('experiment.register_equipment')
 def eegmachine_list(request, template_name="experiment/eegmachine_list.html"):
     return render(request, template_name, {"equipments": EEGMachine.objects.all().order_by('identification')})
 
 
 @login_required
-@permission_required('experiment.add_eegmachine')
+@permission_required('experiment.register_equipment')
 def eegmachine_create(request, template_name="experiment/eegmachine_register.html"):
 
     eegmachine_form = EEGMachineRegisterForm(request.POST or None, initial={'equipment_type': 'eeg_machine'})
@@ -1671,7 +1690,7 @@ def eegmachine_create(request, template_name="experiment/eegmachine_register.htm
 
 
 @login_required
-@permission_required('experiment.change_eegmachine')
+@permission_required('experiment.register_equipment')
 def eegmachine_update(request, eegmachine_id, template_name="experiment/eegmachine_register.html"):
 
     eegmachine = get_object_or_404(EEGMachine, pk=eegmachine_id)
@@ -1702,7 +1721,7 @@ def eegmachine_update(request, eegmachine_id, template_name="experiment/eegmachi
 
 
 @login_required
-@permission_required('experiment.view_eegmachine')
+@permission_required('experiment.register_equipment')
 def eegmachine_view(request, eegmachine_id, template_name="experiment/eegmachine_register.html"):
     eegmachine = get_object_or_404(EEGMachine, pk=eegmachine_id)
 
@@ -1732,13 +1751,13 @@ def eegmachine_view(request, eegmachine_id, template_name="experiment/eegmachine
 
 
 @login_required
-@permission_required('experiment.add_equipment')
+@permission_required('experiment.register_equipment')
 def eegamplifier_list(request, template_name="experiment/eegamplifier_list.html"):
     return render(request, template_name, {"equipments": EEGAmplifier.objects.all().order_by('identification')})
 
 
 @login_required
-@permission_required('experiment.add_eegamplifier')
+@permission_required('experiment.register_equipment')
 def eegamplifier_create(request, template_name="experiment/eegamplifier_register.html"):
 
     eegamplifier_form = EEGAmplifierRegisterForm(request.POST or None, initial={'equipment_type': 'eeg_amplifier'})
@@ -1772,7 +1791,7 @@ def eegamplifier_create(request, template_name="experiment/eegamplifier_register
 
 
 @login_required
-@permission_required('experiment.change_eegamplifier')
+@permission_required('experiment.register_equipment')
 def eegamplifier_update(request, eegamplifier_id, template_name="experiment/eegamplifier_register.html"):
     eegamplifier = get_object_or_404(EEGAmplifier, pk=eegamplifier_id)
 
@@ -1799,7 +1818,7 @@ def eegamplifier_update(request, eegamplifier_id, template_name="experiment/eega
 
 
 @login_required
-@permission_required('experiment.view_eegamplifier')
+@permission_required('experiment.register_equipment')
 def eegamplifier_view(request, eegamplifier_id, template_name="experiment/eegamplifier_register.html"):
     eegamplifier = get_object_or_404(EEGAmplifier, pk=eegamplifier_id)
 
@@ -1829,13 +1848,13 @@ def eegamplifier_view(request, eegamplifier_id, template_name="experiment/eegamp
 
 
 @login_required
-@permission_required('experiment.add_equipment')
+@permission_required('experiment.register_equipment')
 def eegsolution_list(request, template_name="experiment/eegsolution_list.html"):
     return render(request, template_name, {"equipments": EEGSolution.objects.all().order_by('name')})
 
 
 @login_required
-@permission_required('experiment.add_eegsolution')
+@permission_required('experiment.register_equipment')
 def eegsolution_create(request, template_name="experiment/eegsolution_register.html"):
 
     eegsolution_form = EEGSolutionRegisterForm(request.POST or None)
@@ -1868,7 +1887,7 @@ def eegsolution_create(request, template_name="experiment/eegsolution_register.h
 
 
 @login_required
-@permission_required('experiment.change_eegsolution')
+@permission_required('experiment.register_equipment')
 def eegsolution_update(request, eegsolution_id, template_name="experiment/eegsolution_register.html"):
     eegsolution = get_object_or_404(EEGSolution, pk=eegsolution_id)
     eegsolution.equipment_type = 'eeg_solution'
@@ -1897,7 +1916,7 @@ def eegsolution_update(request, eegsolution_id, template_name="experiment/eegsol
 
 
 @login_required
-@permission_required('experiment.view_eegsolution')
+@permission_required('experiment.register_equipment')
 def eegsolution_view(request, eegsolution_id, template_name="experiment/eegsolution_register.html"):
     eegsolution = get_object_or_404(EEGSolution, pk=eegsolution_id)
 
@@ -1927,13 +1946,13 @@ def eegsolution_view(request, eegsolution_id, template_name="experiment/eegsolut
 
 
 @login_required
-@permission_required('experiment.add_equipment')
+@permission_required('experiment.register_equipment')
 def eegfiltertype_list(request, template_name="experiment/eegfiltertype_list.html"):
     return render(request, template_name, {"equipments": EEGFilterType.objects.all().order_by('name')})
 
 
 @login_required
-@permission_required('experiment.add_eegfiltertype')
+@permission_required('experiment.register_equipment')
 def eegfiltertype_create(request, template_name="experiment/eegfiltertype_register.html"):
 
     eegfiltertype_form = EEGFilterTypeRegisterForm(request.POST or None)
@@ -1966,7 +1985,7 @@ def eegfiltertype_create(request, template_name="experiment/eegfiltertype_regist
 
 
 @login_required
-@permission_required('experiment.change_eegfiltertype')
+@permission_required('experiment.register_equipment')
 def eegfiltertype_update(request, eegfiltertype_id, template_name="experiment/eegfiltertype_register.html"):
     eegfiltertype = get_object_or_404(EEGFilterType, pk=eegfiltertype_id)
 
@@ -1994,7 +2013,7 @@ def eegfiltertype_update(request, eegfiltertype_id, template_name="experiment/ee
 
 
 @login_required
-@permission_required('experiment.view_eegfiltertype')
+@permission_required('experiment.register_equipment')
 def eegfiltertype_view(request, eegfiltertype_id, template_name="experiment/eegfiltertype_register.html"):
     eegfiltertype = get_object_or_404(EEGFilterType, pk=eegfiltertype_id)
 
@@ -2024,13 +2043,13 @@ def eegfiltertype_view(request, eegfiltertype_id, template_name="experiment/eegf
 
 
 @login_required
-@permission_required('experiment.add_equipment')
+@permission_required('experiment.register_equipment')
 def eegelectrodemodel_list(request, template_name="experiment/eegelectrodemodel_list.html"):
     return render(request, template_name, {"equipments": EEGElectrodeModel.objects.all().order_by('name')})
 
 
 @login_required
-@permission_required('experiment.add_eegelectrodemodel')
+@permission_required('experiment.register_equipment')
 def eegelectrodemodel_create(request, template_name="experiment/eegelectrodemodel_register.html"):
 
     eegelectrodemodel_form = EEGElectrodeModelRegisterForm(request.POST or None)
@@ -2063,7 +2082,7 @@ def eegelectrodemodel_create(request, template_name="experiment/eegelectrodemode
 
 
 @login_required
-@permission_required('experiment.change_eegelectrodemodel')
+@permission_required('experiment.register_equipment')
 def eegelectrodemodel_update(request, eegelectrodemodel_id, template_name="experiment/eegelectrodemodel_register.html"):
     eegelectrodemodel = get_object_or_404(EEGElectrodeModel, pk=eegelectrodemodel_id)
 
@@ -2091,7 +2110,7 @@ def eegelectrodemodel_update(request, eegelectrodemodel_id, template_name="exper
 
 
 @login_required
-@permission_required('experiment.view_eegelectrodemodel')
+@permission_required('experiment.register_equipment')
 def eegelectrodemodel_view(request, eegelectrodemodel_id, template_name="experiment/eegelectrodemodel_register.html"):
     eegelectrodemodel = get_object_or_404(EEGElectrodeModel, pk=eegelectrodemodel_id)
 
@@ -2120,13 +2139,13 @@ def eegelectrodemodel_view(request, eegelectrodemodel_id, template_name="experim
 
 
 @login_required
-@permission_required('experiment.add_equipment')
+@permission_required('experiment.register_equipment')
 def material_list(request, template_name="experiment/material_list.html"):
     return render(request, template_name, {"equipments": Material.objects.all().order_by('name')})
 
 
 @login_required
-@permission_required('experiment.add_material')
+@permission_required('experiment.register_equipment')
 def material_create(request, template_name="experiment/material_register.html"):
 
     material_form = MaterialRegisterForm(request.POST or None)
@@ -2159,7 +2178,7 @@ def material_create(request, template_name="experiment/material_register.html"):
 
 
 @login_required
-@permission_required('experiment.change_material')
+@permission_required('experiment.register_equipment')
 def material_update(request, material_id, template_name="experiment/material_register.html"):
     material = get_object_or_404(Material, pk=material_id)
 
@@ -2187,7 +2206,7 @@ def material_update(request, material_id, template_name="experiment/material_reg
 
 
 @login_required
-@permission_required('experiment.view_material')
+@permission_required('experiment.register_equipment')
 def material_view(request, material_id, template_name="experiment/material_register.html"):
     material = get_object_or_404(Material, pk=material_id)
 
@@ -2217,13 +2236,13 @@ def material_view(request, material_id, template_name="experiment/material_regis
 
 
 @login_required
-@permission_required('experiment.add_equipment')
+@permission_required('experiment.register_equipment')
 def eegelectrodenet_list(request, template_name="experiment/eegelectrodenet_list.html"):
     return render(request, template_name, {"equipments": EEGElectrodeNet.objects.all().order_by('identification')})
 
 
 @login_required
-@permission_required('experiment.add_eegelectrodenet')
+@permission_required('experiment.register_equipment')
 def eegelectrodenet_create(request, template_name="experiment/eegelectrodenet_register.html"):
 
     eegelectrodenet_form = EEGElectrodeNETRegisterForm(request.POST or None)
@@ -2303,7 +2322,7 @@ def get_localization_system(data_post):
 
 
 @login_required
-@permission_required('experiment.change_eegelectrodenet')
+@permission_required('experiment.register_equipment')
 def eegelectrodenet_update(request, eegelectrodenet_id, template_name="experiment/eegelectrodenet_register.html"):
     eegelectrodenet = get_object_or_404(EEGElectrodeNet, pk=eegelectrodenet_id)
     eegelectrodenetsystem = EEGElectrodeNetSystem.objects.all()
@@ -2386,7 +2405,7 @@ def eegelectrodenet_update(request, eegelectrodenet_id, template_name="experimen
 
 
 @login_required
-@permission_required('experiment.view_eegelectrodenet')
+@permission_required('experiment.register_equipment')
 def eegelectrodenet_view(request, eegelectrodenet_id, template_name="experiment/eegelectrodenet_register.html"):
     eegelectrodenet = get_object_or_404(EEGElectrodeNet, pk=eegelectrodenet_id)
     eegelectrodenet_form = EEGElectrodeNETRegisterForm(request.POST or None, instance=eegelectrodenet)
@@ -2461,7 +2480,7 @@ def eegelectrodenet_view(request, eegelectrodenet_id, template_name="experiment/
 
 
 @login_required
-@permission_required('experiment.view_eegelectrodenet')
+@permission_required('experiment.register_equipment')
 def eegelectrodenet_cap_size_create(request, eegelectrode_cap_id,
                                 template_name="experiment/eegelectrodenet_size_register.html"):
 
@@ -2518,7 +2537,7 @@ def eegelectrodenet_cap_size_create(request, eegelectrode_cap_id,
 
 
 @login_required
-@permission_required('experiment.change_cap_size')
+@permission_required('experiment.register_equipment')
 def eegelectrodenet_cap_size_update(request, eegelectrode_cap_size_id,
                                     template_name="experiment/eegelectrodenet_size_register.html"):
     eegelectrode_cap_size = get_object_or_404(EEGCapSize, pk=eegelectrode_cap_size_id)
@@ -2547,7 +2566,7 @@ def eegelectrodenet_cap_size_update(request, eegelectrode_cap_size_id,
 
 
 @login_required
-@permission_required('experiment.view_cap_size')
+@permission_required('experiment.register_equipment')
 def eegelectrodenet_cap_size_view(request, eegelectrode_cap_size_id,
                                   template_name="experiment/eegelectrodenet_size_register.html"):
     eegelectrode_cap_size = get_object_or_404(EEGCapSize, pk=eegelectrode_cap_size_id)
@@ -2721,7 +2740,8 @@ def questionnaire_view(request, group_id, component_configuration_id,
 def subjects(request, group_id, template_name="experiment/subjects.html"):
 
     experimental_protocol_info = {'number_of_questionnaires': 0,
-                                  'number_of_eeg_data': 0}
+                                  'number_of_eeg_data': 0,
+                                  'number_of_emg_data': 0}
 
     group = get_object_or_404(Group, id=group_id)
 
@@ -2746,9 +2766,11 @@ def subjects(request, group_id, template_name="experiment/subjects.html"):
         list_of_questionnaires_configuration = create_list_of_trees(group.experimental_protocol, "questionnaire")
 
         list_of_eeg_configuration = create_list_of_trees(group.experimental_protocol, "eeg")
+        list_of_emg_configuration = create_list_of_trees(group.experimental_protocol, "emg")
 
         experimental_protocol_info = {'number_of_questionnaires': len(list_of_questionnaires_configuration),
-                                      'number_of_eeg_data': len(list_of_eeg_configuration)}
+                                      'number_of_eeg_data': len(list_of_eeg_configuration),
+                                      'number_of_emg_data': len(list_of_emg_configuration)}
 
         # For each subject of the group...
         for subject_of_group in subject_list:
@@ -2805,8 +2827,7 @@ def subjects(request, group_id, template_name="experiment/subjects.html"):
 
             # EEG data files
             number_of_eeg_data_files_uploaded = 0
-
-            # for each component_configuration...
+            # for each component_configuration of eeg...
             for eeg_configuration in list_of_eeg_configuration:
                 path = [item[0] for item in eeg_configuration]
                 data_configuration_tree_id = list_data_configuration_tree(path[-1], path)
@@ -2817,14 +2838,32 @@ def subjects(request, group_id, template_name="experiment/subjects.html"):
                     number_of_eeg_data_files_uploaded += 1
 
             percentage_of_eeg_data_files_uploaded = 0
-
             if len(list_of_eeg_configuration) > 0:
                 percentage_of_eeg_data_files_uploaded = \
                     100 * number_of_eeg_data_files_uploaded / len(list_of_eeg_configuration)
 
+            # EMG data files
+            number_of_emg_data_files_uploaded = 0
+            # for each component_configuration of emg...
+            for emg_configuration in list_of_emg_configuration:
+                path = [item[0] for item in emg_configuration]
+                data_configuration_tree_id = list_data_configuration_tree(path[-1], path)
+                emg_data_files = \
+                    EMGData.objects.filter(subject_of_group=subject_of_group,
+                                           data_configuration_tree_id=data_configuration_tree_id)
+                if len(emg_data_files):
+                    number_of_emg_data_files_uploaded += 1
+
+            percentage_of_emg_data_files_uploaded = 0
+            if len(list_of_emg_configuration) > 0:
+                percentage_of_emg_data_files_uploaded = \
+                    100 * number_of_emg_data_files_uploaded / len(list_of_emg_configuration)
+
             # If any questionnaire has responses or any eeg data file was uploaded,
             # the subject can't be removed from the group.
-            if number_of_eeg_data_files_uploaded or number_of_questionnaires_filled:
+            if number_of_eeg_data_files_uploaded or \
+                    number_of_emg_data_files_uploaded or \
+                    number_of_questionnaires_filled:
                 can_remove = False
 
             subject_list_with_status.append(
@@ -2835,7 +2874,14 @@ def subjects(request, group_id, template_name="experiment/subjects.html"):
                  'consent': subject_of_group.consent_form,
                  'number_of_eeg_data_files_uploaded': number_of_eeg_data_files_uploaded,
                  'total_of_eeg_data_files': len(list_of_eeg_configuration),
-                 'percentage_of_eeg_data_files_uploaded': int(percentage_of_eeg_data_files_uploaded)},
+                 'percentage_of_eeg_data_files_uploaded': int(percentage_of_eeg_data_files_uploaded),
+
+                 'number_of_emg_data_files_uploaded': number_of_emg_data_files_uploaded,
+                 'total_of_emg_data_files': len(list_of_emg_configuration),
+                 'percentage_of_emg_data_files_uploaded': int(percentage_of_emg_data_files_uploaded),
+
+                 'number_of_additional_data_uploaded':
+                     AdditionalData.objects.filter(subject_of_group=subject_of_group).count()},
             )
     else:
         for subject_of_group in subject_list:
@@ -3461,9 +3507,15 @@ def subject_eeg_data_create(request, group_id, subject_id, eeg_configuration_id,
 
                     eeg_data_added.save()
 
+                    has_position_status = False
+
                     # creating position status
                     if hasattr(eeg_data_added.eeg_setting, 'eeg_electrode_layout_setting'):
                         eeg_electrode_layout_setting = eeg_data_added.eeg_setting.eeg_electrode_layout_setting
+
+                        if eeg_electrode_layout_setting.positions_setting:
+                            has_position_status = True
+
                         for position_setting in eeg_electrode_layout_setting.positions_setting.all():
                             EEGElectrodePositionCollectionStatus(
                                 worked=position_setting.used,
@@ -3477,7 +3529,8 @@ def subject_eeg_data_create(request, group_id, subject_id, eeg_configuration_id,
                     messages.success(request, _('EEG data collection created successfully.'))
                     messages.info(request, _('Now you can configure each electrode position'))
 
-                    redirect_url = reverse("eeg_data_view", args=(eeg_data_added.id, 2))
+                    redirect_url = reverse("eeg_data_view", args=(eeg_data_added.id,
+                                                                  2 if has_position_status else 1))
                     return HttpResponseRedirect(redirect_url)
 
         context = {"can_change": True,
@@ -3666,6 +3719,391 @@ def eeg_data_edit(request, eeg_data_id, tab, template_name="experiment/subject_e
 
 
 @login_required
+@permission_required('experiment.view_researchproject')
+def subject_emg_view(request, group_id, subject_id,
+                     template_name="experiment/subject_emg_collection_list.html"):
+
+    group = get_object_or_404(Group, id=group_id)
+    subject = get_object_or_404(Subject, id=subject_id)
+
+    emg_collections = []
+
+    list_of_paths = create_list_of_trees(group.experimental_protocol, "emg")
+
+    subject_of_group = get_object_or_404(SubjectOfGroup, group=group, subject=subject)
+
+    # for emg_configuration in list_of_emg_configuration:
+    for path in list_of_paths:
+
+        emg_configuration = ComponentConfiguration.objects.get(pk=path[-1][0])
+
+        data_configuration_tree_id = list_data_configuration_tree(emg_configuration.id, [item[0] for item in path])
+
+        emg_data_files = EMGData.objects.filter(subject_of_group=subject_of_group,
+                                                data_configuration_tree__id=data_configuration_tree_id)
+
+        emg_collections.append(
+            {'emg_configuration': emg_configuration,
+             'path': path,
+             'emg_data_files': emg_data_files}
+        )
+
+    context = {"can_change": get_can_change(request.user, group.experiment.research_project),
+               'group': group,
+               'subject': subject,
+               'emg_collections': emg_collections
+               }
+
+    return render(request, template_name, context)
+
+
+@login_required
+@permission_required('experiment.add_questionnaireresponse')
+def subject_emg_data_create(request, group_id, subject_id, emg_configuration_id,
+                            template_name="experiment/subject_emg_data_form.html"):
+
+    group = get_object_or_404(Group, id=group_id)
+
+    list_of_path = [int(item) for item in emg_configuration_id.split('-')]
+    emg_configuration_id = list_of_path[-1]
+
+    if get_can_change(request.user, group.experiment.research_project):
+
+        emg_configuration = get_object_or_404(ComponentConfiguration, id=emg_configuration_id)
+        emg_step = get_object_or_404(EMG, id=emg_configuration.component_id)
+
+        redirect_url = None
+        emg_data_id = None
+
+        emg_data_form = EMGDataForm(None)
+
+        file_format_list = file_format_code()
+
+        if request.method == "POST":
+            if request.POST['action'] == "save":
+
+                emg_data_form = EMGDataForm(request.POST, request.FILES)
+
+                if emg_data_form.is_valid():
+
+                    data_configuration_tree_id = list_data_configuration_tree(emg_configuration_id, list_of_path)
+                    if not data_configuration_tree_id:
+                        data_configuration_tree_id = create_data_configuration_tree(list_of_path)
+
+                    subject = get_object_or_404(Subject, pk=subject_id)
+                    subject_of_group = get_object_or_404(SubjectOfGroup, subject=subject, group_id=group_id)
+
+                    emg_data_added = emg_data_form.save(commit=False)
+                    emg_data_added.subject_of_group = subject_of_group
+                    emg_data_added.component_configuration = emg_configuration
+                    emg_data_added.data_configuration_tree_id = data_configuration_tree_id
+
+                    # PS: it was necessary adding these 2 lines because Django raised, I do not why (Evandro),
+                    # the following error 'EMGData' object has no attribute 'group'
+                    emg_data_added.group = group
+                    emg_data_added.subject = subject
+
+                    emg_data_added.save()
+
+                    messages.success(request, _('EMG data collection created successfully.'))
+
+                    redirect_url = reverse("emg_data_view", args=(emg_data_added.id,))
+                    # redirect_url = reverse("subjects", args=(group.id,))
+                    return HttpResponseRedirect(redirect_url)
+
+        context = {"can_change": True,
+                   "creating": True,
+                   "editing": True,
+                   "group": group,
+                   "emg_configuration": emg_configuration,
+                   "emg_data_form": emg_data_form,
+                   "emg_data_id": emg_data_id,
+                   "file_format_list": file_format_list,
+                   "subject": get_object_or_404(Subject, pk=subject_id),
+                   "URL": redirect_url,
+                   }
+
+        return render(request, template_name, context)
+    else:
+        raise PermissionDenied
+
+
+@login_required
+@permission_required('experiment.change_experiment')
+def emg_data_view(request, emg_data_id, template_name="experiment/subject_emg_data_form.html"):
+
+    emg_data = get_object_or_404(EMGData, pk=emg_data_id)
+
+    emg_data_form = EMGDataForm(request.POST or None, instance=emg_data)
+
+    for field in emg_data_form.fields:
+        emg_data_form.fields[field].widget.attrs['disabled'] = True
+
+    file_format_list = file_format_code()
+
+    if request.method == "POST":
+        if request.POST['action'] == "remove":
+
+            if get_can_change(request.user, emg_data.subject_of_group.group.experiment.research_project):
+
+                subject_of_group = emg_data.subject_of_group
+                emg_data.file.delete()
+                emg_data.delete()
+                messages.success(request, _('EMG data removed successfully.'))
+                return redirect('subject_emg_view',
+                                group_id=subject_of_group.group_id,
+                                subject_id=subject_of_group.subject_id)
+            else:
+                raise PermissionDenied
+
+    context = {"can_change": get_can_change(request.user, emg_data.subject_of_group.group.experiment.research_project),
+               "editing": False,
+               "group": emg_data.subject_of_group.group,
+               "subject": emg_data.subject_of_group.subject,
+               "emg_data_form": emg_data_form,
+               "emg_data": emg_data,
+               "file_format_list": file_format_list
+               }
+
+    return render(request, template_name, context)
+
+
+@login_required
+@permission_required('experiment.change_experiment')
+def emg_data_edit(request, emg_data_id, template_name="experiment/subject_emg_data_form.html"):
+
+    emg_data = get_object_or_404(EMGData, pk=emg_data_id)
+
+    file_format_list = file_format_code()
+
+    if get_can_change(request.user, emg_data.subject_of_group.group.experiment.research_project):
+
+        if request.method == "POST":
+
+            emg_data_form = EMGDataForm(request.POST, request.FILES, instance=emg_data)
+
+            if request.POST['action'] == "save":
+                if emg_data_form.is_valid():
+
+                    if emg_data_form.has_changed():
+
+                        emg_data_to_update = emg_data_form.save(commit=False)
+                        emg_data_to_update.group = emg_data.subject_of_group.group
+                        emg_data_to_update.subject = emg_data.subject_of_group.subject
+                        emg_data_to_update.save()
+
+                        messages.success(request, _('EMG data updated successfully.'))
+                    else:
+                        messages.success(request, _('There is no changes to save.'))
+
+                    redirect_url = reverse("emg_data_view", args=(emg_data_id,))
+                    return HttpResponseRedirect(redirect_url)
+
+        else:
+            emg_data_form = EMGDataForm(request.POST or None, instance=emg_data)
+
+        context = {"group": emg_data.subject_of_group.group,
+                   "subject": emg_data.subject_of_group.subject,
+                   "emg_data_form": emg_data_form,
+                   "emg_data": emg_data,
+                   "file_format_list": file_format_list,
+                   "editing": True
+                   }
+
+        return render(request, template_name, context)
+    else:
+        raise PermissionDenied
+
+
+@login_required
+@permission_required('experiment.view_researchproject')
+def subject_additional_data_view(request, group_id, subject_id,
+                                 template_name="experiment/additional_data_collection_list.html"):
+
+    group = get_object_or_404(Group, id=group_id)
+    subject = get_object_or_404(Subject, id=subject_id)
+    subject_of_group = get_object_or_404(SubjectOfGroup, group=group, subject=subject)
+
+    data_collections = []
+
+    list_of_paths = create_list_of_trees(group.experimental_protocol, None)
+
+    for path in list_of_paths:
+
+        component_configuration = ComponentConfiguration.objects.get(pk=path[-1][0])
+
+        data_configuration_tree_id = list_data_configuration_tree(component_configuration.id,
+                                                                  [item[0] for item in path])
+
+        additional_data_files = AdditionalData.objects.filter(subject_of_group=subject_of_group,
+                                                              data_configuration_tree__id=data_configuration_tree_id)
+
+        data_collections.append(
+            {'component_configuration': component_configuration,
+             'path': path,
+             'additional_data_files': additional_data_files,
+             'icon_class': icon_class[component_configuration.component.component_type]}
+        )
+
+    context = {"can_change": get_can_change(request.user, group.experiment.research_project),
+               'group': group,
+               'subject': subject,
+               'data_collections': data_collections
+               }
+
+    return render(request, template_name, context)
+
+
+@login_required
+@permission_required('experiment.add_questionnaireresponse')
+def subject_additional_data_create(request, group_id, subject_id, path_of_configuration,
+                                   template_name="experiment/subject_additional_data_form.html"):
+
+    group = get_object_or_404(Group, id=group_id)
+
+    if get_can_change(request.user, group.experiment.research_project):
+
+        list_of_path = [int(item) for item in path_of_configuration.split('-')]
+        component_configuration_id = list_of_path[-1]
+
+        component_configuration = get_object_or_404(ComponentConfiguration, id=component_configuration_id)
+
+        additional_data_form = AdditionalDataForm(None)
+
+        file_format_list = file_format_code()
+
+        if request.method == "POST":
+            if request.POST['action'] == "save":
+
+                additional_data_form = AdditionalDataForm(request.POST, request.FILES)
+
+                if additional_data_form.is_valid():
+
+                    data_configuration_tree_id = list_data_configuration_tree(component_configuration_id, list_of_path)
+                    if not data_configuration_tree_id:
+                        data_configuration_tree_id = create_data_configuration_tree(list_of_path)
+
+                    subject = get_object_or_404(Subject, pk=subject_id)
+                    subject_of_group = get_object_or_404(SubjectOfGroup, subject=subject, group_id=group_id)
+
+                    additional_data_added = additional_data_form.save(commit=False)
+                    additional_data_added.subject_of_group = subject_of_group
+                    additional_data_added.component_configuration = component_configuration
+                    additional_data_added.data_configuration_tree_id = data_configuration_tree_id
+
+                    # PS: it was necessary adding these 2 lines because Django raised, I do not why (Evandro),
+                    # the following error 'AdditionalData' object has no attribute 'group'
+                    additional_data_added.group = group
+                    additional_data_added.subject = subject
+
+                    additional_data_added.save()
+
+                    messages.success(request, _('Additional data collection created successfully.'))
+
+                    redirect_url = reverse("additional_data_view", args=(additional_data_added.id,))
+                    return HttpResponseRedirect(redirect_url)
+
+        context = {"can_change": True,
+                   "creating": True,
+                   "editing": True,
+                   "group": group,
+                   "component_configuration": component_configuration,
+                   "additional_data_form": additional_data_form,
+                   "file_format_list": file_format_list,
+                   "subject": get_object_or_404(Subject, pk=subject_id)
+                   }
+
+        return render(request, template_name, context)
+    else:
+        raise PermissionDenied
+
+
+@login_required
+@permission_required('experiment.change_experiment')
+def additional_data_view(request, additional_data_id, template_name="experiment/subject_additional_data_form.html"):
+
+    additional_data = get_object_or_404(AdditionalData, pk=additional_data_id)
+    additional_data_form = AdditionalDataForm(request.POST or None, instance=additional_data)
+
+    for field in additional_data_form.fields:
+        additional_data_form.fields[field].widget.attrs['disabled'] = True
+
+    file_format_list = file_format_code()
+
+    if request.method == "POST":
+        if request.POST['action'] == "remove":
+
+            if get_can_change(request.user, additional_data.subject_of_group.group.experiment.research_project):
+
+                subject_of_group = additional_data.subject_of_group
+                additional_data.file.delete()
+                additional_data.delete()
+                messages.success(request, _('Additional data removed successfully.'))
+                return redirect('subject_additional_data_view',
+                                group_id=subject_of_group.group_id,
+                                subject_id=subject_of_group.subject_id)
+            else:
+                raise PermissionDenied
+
+    context = {"can_change": get_can_change(request.user, additional_data.subject_of_group.group.experiment.research_project),
+               "editing": False,
+               "group": additional_data.subject_of_group.group,
+               "subject": additional_data.subject_of_group.subject,
+               "additional_data_form": additional_data_form,
+               "additional_data": additional_data,
+               "file_format_list": file_format_list,
+               }
+
+    return render(request, template_name, context)
+
+
+@login_required
+@permission_required('experiment.change_experiment')
+def additional_data_edit(request, additional_data_id, template_name="experiment/subject_additional_data_form.html"):
+
+    additional_data = get_object_or_404(AdditionalData, pk=additional_data_id)
+
+    file_format_list = file_format_code()
+
+    if get_can_change(request.user, additional_data.subject_of_group.group.experiment.research_project):
+
+        if request.method == "POST":
+
+            additional_data_form = AdditionalDataForm(request.POST, request.FILES, instance=additional_data)
+
+            if request.POST['action'] == "save":
+                if additional_data_form.is_valid():
+                    if additional_data_form.has_changed():
+
+                        additional_data_to_update = additional_data_form.save(commit=False)
+                        additional_data_to_update.group = additional_data.subject_of_group.group
+                        additional_data_to_update.subject = additional_data.subject_of_group.subject
+                        additional_data_to_update.save()
+
+                        messages.success(request, _('Additional data updated successfully.'))
+                    else:
+                        messages.success(request, _('There is no changes to save.'))
+
+                    redirect_url = reverse("additional_data_view", args=(additional_data_id,))
+                    return HttpResponseRedirect(redirect_url)
+
+        else:
+            additional_data_form = AdditionalDataForm(request.POST or None, instance=additional_data)
+
+        context = {"group": additional_data.subject_of_group.group,
+                   "subject": additional_data.subject_of_group.subject,
+                   "additional_data_form": additional_data_form,
+                   "additional_data": additional_data,
+                   "file_format_list": file_format_list,
+                   "editing": True,
+                   }
+
+        return render(request, template_name, context)
+    else:
+        raise PermissionDenied
+
+
+@login_required
 @permission_required('experiment.change_experiment')
 def get_cap_size_list_from_eeg_setting(request, eeg_setting_id):
     eeg_setting = get_object_or_404(EEGSetting, pk=eeg_setting_id)
@@ -3715,16 +4153,27 @@ def search_patients_ajax(request):
         search_text = request.POST['search_text']
         group_id = request.POST['group_id']
 
-        if search_text:
-            if re.match('[a-zA-Z ]+', search_text):
-                patient_list = \
-                    Patient.objects.filter(name__icontains=search_text).exclude(removed=True).order_by('name')
-            else:
-                patient_list = \
-                    Patient.objects.filter(cpf__icontains=search_text).exclude(removed=True).order_by('name')
+        if request.user.has_perm('patient.sensitive_data_patient'):
+            if search_text:
+                if re.match('[a-zA-Z ]+', search_text):
+                    patient_list = \
+                        Patient.objects.filter(name__icontains=search_text).exclude(removed=True).order_by('name')
+                else:
+                    patient_list = \
+                        Patient.objects.filter(cpf__icontains=search_text).exclude(removed=True).order_by('name')
 
-        return render_to_response('experiment/ajax_search_patients.html',
-                                  {'patients': patient_list, 'group_id': group_id})
+            return render_to_response('experiment/ajax_search_patients.html',
+                                      {'patients': patient_list, 'group_id': group_id})
+        else:
+            if search_text:
+                patient_list = \
+                    Patient.objects.filter(code__iexact=search_text).exclude(removed=True).order_by('code')
+
+            return render_to_response('experiment/ajax_search_patients_not_sensitive.html',
+                                      {'patients': patient_list, 'group_id': group_id})
+
+
+
 
 
 @login_required
@@ -3776,6 +4225,14 @@ def upload_file(request, subject_id, group_id, template_name="experiment/upload_
 def component_list(request, experiment_id, template_name="experiment/component_list.html"):
     experiment = get_object_or_404(Experiment, pk=experiment_id)
 
+    experiment_in_use = check_experiment(experiment)
+    if request.method == "POST":
+        if request.POST['action'] == "copy_experiment":
+            copy_experiment(experiment)
+            messages.success(request, _('The experiment was copied.'))
+            redirect_url = reverse("experiment_view", args=(experiment.id,))
+            return HttpResponseRedirect(redirect_url)
+
     # As it is not possible to sort_by get_component_type_display, filter without sorting and sort later.
     components = Component.objects.filter(experiment=experiment)
 
@@ -3815,7 +4272,8 @@ def component_list(request, experiment_id, template_name="experiment/component_l
     context = {"can_change": get_can_change(request.user, experiment.research_project),
                "component_list": components,
                "component_type_choices": component_type_choices,
-               "experiment": experiment
+               "experiment": experiment,
+               "experiment_in_use": experiment_in_use
                }
 
     return render(request, template_name, context)
@@ -4296,13 +4754,13 @@ def remove_component_configuration(request, conf):
 
 def check_experiment(experiment):
     experiment_id = experiment.id
-    groups = Group.objects.filter(experiment_id=experiment_id)
     experiment_with_data = False
 
-    for group in groups:
+    for group in Group.objects.filter(experiment_id=experiment_id):
         subject_list = [item.pk for item in SubjectOfGroup.objects.filter(group=group)]
         eegdata_list = EEGData.objects.filter(subject_of_group_id__in=subject_list)
-        if eegdata_list:
+        questionnaire_response_list = QuestionnaireResponse.objects.filter(subject_of_group_id__in=subject_list)
+        if eegdata_list or questionnaire_response_list:
             experiment_with_data = True
 
     return experiment_with_data
@@ -4340,16 +4798,19 @@ def copy_experiment(experiment):
                 subject_of_group.group_id = group.id
                 subject_of_group.save()
 
-        # for key in orig_and_clone:
-        #     new_component_configuration = ComponentConfiguration.objects.filter(component_id=key)
-        #     if new_component_configuration:
-        #         for component_configuration in new_component_configuration:
-        #             component_configuration.pk = None
-        #             if component_configuration.name:
-        #                 component_configuration.name = _('Copy of') + ' ' + component_configuration.name
-        #             else:
-        #                 component_configuration.name = _('Copy')
-        #             component_configuration.save()
+    for component_configuration in ComponentConfiguration.objects.filter(
+            component_id__experiment_id=experiment_id).order_by('parent_id', 'order'):
+
+        component_id = component_configuration.component_id
+        parent_id = component_configuration.parent_id
+
+        component_configuration.pk = None
+        if component_configuration.name:
+            component_configuration.name = _('Copy of') + ' ' + component_configuration.name
+
+        component_configuration.component_id = orig_and_clone[component_id]
+        component_configuration.parent_id = orig_and_clone[parent_id]
+        component_configuration.save()
 
 
 def create_component(component, new_experiment):
@@ -4394,8 +4855,6 @@ def create_component(component, new_experiment):
 
     if component.identification:
         clone.identification = _('Copy of') + ' ' + component.identification
-    else:
-        clone.identification = _('Copy')
 
     clone.experiment = new_experiment
     clone.description = component.description
@@ -4418,9 +4877,7 @@ def component_view(request, path_of_the_components):
         list_of_ids_of_components_and_configurations, list_of_breadcrumbs, group, back_cancel_url =\
         access_objects_for_view_and_update(request, path_of_the_components)
 
-    # experiment_in_use = check_experiment(experiment)
-    # if experiment_in_use:
-    #     copy_experiment(experiment)
+    experiment_in_use = check_experiment(experiment)
 
     block = get_object_or_404(Block, pk=component.id)
     block_form = BlockForm(request.POST or None, instance=block)
@@ -4474,6 +4931,11 @@ def component_view(request, path_of_the_components):
 
                 redirect_url = reverse("component_view", args=(path_of_the_components,))
                 return HttpResponseRedirect(redirect_url)
+            elif request.POST['action'] == "copy_experiment":
+                copy_experiment(experiment)
+                messages.success(request, _('The experiment was copied.'))
+                redirect_url = reverse("experiment_view", args=(experiment.id,))
+                return HttpResponseRedirect(redirect_url)
         else:
             raise PermissionDenied
 
@@ -4504,6 +4966,7 @@ def component_view(request, path_of_the_components):
                "configuration_list": configuration_list,
                "configuration_list_of_random_components": configuration_list_of_random_components,
                "experiment": experiment,
+               "experiment_in_use": experiment_in_use,
                "group": group,
                "has_unlimited": has_unlimited,
                "icon_class": icon_class,
@@ -4615,6 +5078,8 @@ def component_update(request, path_of_the_components):
         list_of_ids_of_components_and_configurations, list_of_breadcrumbs, group, back_cancel_url =\
         access_objects_for_view_and_update(request, path_of_the_components, updating=True)
 
+    experiment_in_use = check_experiment(experiment)
+
     questionnaire_id = None
     questionnaire_title = None
     configuration_list = []
@@ -4703,8 +5168,16 @@ def component_update(request, path_of_the_components):
                                                                            path_of_the_components)
                 messages.success(request, _('Component deleted successfully.'))
                 return HttpResponseRedirect(redirect_url)
+            elif request.POST['action'] == "copy_experiment":
+                copy_experiment(experiment)
+                messages.success(request, _('The experiment was copied.'))
+                redirect_url = reverse("experiment_view", args=(experiment.id,))
+                return HttpResponseRedirect(redirect_url)
 
     type_of_the_parent_block = None
+
+    if experiment_in_use:
+        can_change = False
 
     # It is not possible to edit the component fields while editing a component configuration.
     if component_configuration or not can_change:
@@ -4734,6 +5207,7 @@ def component_update(request, path_of_the_components):
                "configuration_list_of_random_components": configuration_list_of_random_components,
                "icon_class": icon_class,
                "experiment": experiment,
+               "experiment_in_use": experiment_in_use,
                "group": group,
                "has_unlimited": has_unlimited,
                "list_of_breadcrumbs": list_of_breadcrumbs,
@@ -4950,7 +5424,8 @@ def component_add_new(request, path_of_the_components, component_type):
                    "position": position,
                    "questionnaires_list": questionnaires_list,
                    "path_of_the_components": path_of_the_components,
-                   "specific_form": specific_form
+                   "specific_form": specific_form,
+                   "can_change": True
                    }
 
         return render(request, template_name, context)

@@ -1,6 +1,7 @@
 {% extends "quiz/template.html" %}
 
 {% load i18n admin_static %}
+{% load subjects_tags_survey %}
 
 {% block activeAdvancedSurvey %}class="active"{% endblock %}
 
@@ -123,7 +124,8 @@
                                 {% for patient_questionnaire in patients_questionnaire_data_list %}
                                     <tr>
                                         <td>
-                                            {{ patient_questionnaire.patient_name }}
+{#                                            {{ patient_questionnaire.patient_name }}#}
+                                            {% get_name_or_code patient_questionnaire.patient_id %}
 
                                             {% if patient_questionnaire.questionnaire_responses|length == 0 %}
                                                 <br/><span class="label label-warning">{% trans "It has to be filled" %}</span>
@@ -158,7 +160,7 @@
                     </div>
                 </div>
 
-                {% if perms.experiment.view_research_project %}
+                {% if perms.experiment.view_researchproject %}
                     <div class="container span6 offset3 well ">
                         <div class="row">
                             <div class="col-xs-12 col-md-12">
@@ -204,7 +206,8 @@
                                             {% for key, patient_questionnaire in dict.patients.items %}
                                                 <tr>
                                                     <td>
-                                                        {{ patient_questionnaire.patient_name }}
+{#                                                        {{ patient_questionnaire.patient_name }}#}
+                                                        {% get_name_or_code patient_questionnaire.patient_id %}
                                                     </td>
                                                     <td>
                                                         <table class="col-xs-12 col-md-12">

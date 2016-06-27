@@ -2,6 +2,7 @@
 {% block activeAdvancedResearchProject %}class="active"{% endblock %}
 
 {% load i18n admin_static %}
+{% load subjects_tags %}
 
 {% block header %}
     <script>
@@ -28,7 +29,8 @@
                 <li><a href="/experiment/{{ group.experiment.id }}">{{ group.experiment.title }}</a></li>
                 <li><a href="/experiment/group/{{ group.id }}">{{ group.title }}</a></li>
                 <li><a href="/experiment/group/{{ group.id }}/subjects/">{% trans "Participant" %}</a></li>
-                <li class="active">{{ subject.patient.name }}</li>
+                <li class="active">{% get_name_or_code subject.patient.id %}</li>
+                <li class="active">{% trans "EEG data files" %}</li>
             </ol>
         </div>
     </div>
@@ -114,8 +116,14 @@
                                                     </tr>
                                                 {% endfor %}
                                                 <tr>
-                                                    <td colspan="2">
-                                                        <a href="/experiment/group/{{ group.id }}/subject/{{ subject.id }}/eeg/{% for item in eeg_collection.path %}{{ item.0 }}{% if not forloop.last %}-{% endif %}{% endfor %}/add_eeg_data" class="btn btn-primary">
+{#                                                    <td colspan="5">#}
+{#                                                        <a href="/experiment/group/{{ group.id }}/subject/{{ subject.id }}/eeg/{% for item in eeg_collection.path %}{{ item.0 }}{% if not forloop.last %}-{% endif %}{% endfor %}/add_eeg_data" class="btn btn-primary">#}
+{#                                                            {% trans "New EEG data file" %}#}
+{#                                                        </a>#}
+{#                                                    </td>#}
+                                                    <td colspan="5">
+                                                        <a href="/experiment/group/{{ group.id }}/subject/{{ subject.id }}/eeg/{% for item in eeg_collection.path %}{{ item.0 }}{% if not forloop.last %}-{% endif %}{% endfor %}/add_eeg_data">
+                                                            <span class="glyphicon glyphicon-plus-sign"></span>
                                                             {% trans "New EEG data file" %}
                                                         </a>
                                                     </td>
