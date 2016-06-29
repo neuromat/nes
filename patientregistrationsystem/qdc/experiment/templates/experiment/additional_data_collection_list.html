@@ -103,14 +103,10 @@
                                                         <td>{{ additional_data_file.date }}</td>
                                                         <td>{{ additional_data_file.file_format.name }}</td>
                                                         <td>{{ additional_data_file.file.size|filesizeformat }}</td>
+                                                        <td><a href="{{ additional_data_file.file.url }}"><span class="glyphicon glyphicon-download"></span></a></td>
                                                     </tr>
                                                 {% endfor %}
                                                 <tr>
-{#                                                    <td colspan="5">#}
-{#                                                        <a href="/experiment/group/{{ group.id }}/subject/{{ subject.id }}/additional_data/{% for item in data_collection.path %}{{ item.0 }}{% if not forloop.last %}-{% endif %}{% endfor %}/add" class="btn btn-primary">#}
-{#                                                            {% trans "New additional data file" %}#}
-{#                                                        </a>#}
-{#                                                    </td>#}
                                                     <td colspan="5">
                                                         <a href="/experiment/group/{{ group.id }}/subject/{{ subject.id }}/additional_data/{% for item in data_collection.path %}{{ item.0 }}{% if not forloop.last %}-{% endif %}{% endfor %}/add">
                                                             <span class="glyphicon glyphicon-plus-sign"></span>
