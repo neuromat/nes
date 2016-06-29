@@ -126,6 +126,7 @@ class Equipment(models.Model):
             ("register_equipment", "Can register equipment"),
         )
 
+
 class EEGMachine(Equipment):
     number_of_channels = models.IntegerField(null=True, blank=True)
     software_version = models.CharField(max_length=150, null=True, blank=True)
@@ -430,7 +431,9 @@ class DataConfigurationTree(models.Model):
 
 
 class DataCollection(models.Model):
-    data_configuration_tree = models.ForeignKey(DataConfigurationTree)
+    # data_configuration_tree null means that the DataCollection is associated to the whole experimental protocol
+    data_configuration_tree = models.ForeignKey(DataConfigurationTree, null=True, blank=True)
+
     subject_of_group = models.ForeignKey(SubjectOfGroup)
     date = models.DateField(default=datetime.date.today, null=False,
                             validators=[validate_date_questionnaire_response])
@@ -502,6 +505,7 @@ class EEGData(DataFile, DataCollection):
 
 
 class AdditionalData(DataFile, DataCollection):
+
     def __str__(self):
         return self.description
 
