@@ -58,7 +58,8 @@ icon_class = {
     'task': 'glyphicon glyphicon-check',
     'task_experiment': 'glyphicon glyphicon-wrench',
     'eeg': 'glyphicon glyphicon-flash',
-    'emg': 'glyphicon glyphicon-stats'
+    'emg': 'glyphicon glyphicon-stats',
+    'experimental_protocol': 'glyphicon glyphicon-tasks'
 }
 
 delimiter = "-"
@@ -3924,7 +3925,14 @@ def subject_additional_data_view(request, group_id, subject_id,
     subject = get_object_or_404(Subject, id=subject_id)
     subject_of_group = get_object_or_404(SubjectOfGroup, group=group, subject=subject)
 
-    data_collections = []
+    # First element of the list is associated to the whole experimental protocol
+    data_collections = [
+        {'component_configuration': None,
+         'path': None,
+         'additional_data_files': AdditionalData.objects.filter(subject_of_group=subject_of_group,
+                                                                data_configuration_tree=None),
+         'icon_class': icon_class['experimental_protocol']}
+    ]
 
     list_of_paths = create_list_of_trees(group.experimental_protocol, None)
 
@@ -3963,11 +3971,6 @@ def subject_additional_data_create(request, group_id, subject_id, path_of_config
 
     if get_can_change(request.user, group.experiment.research_project):
 
-        list_of_path = [int(item) for item in path_of_configuration.split('-')]
-        component_configuration_id = list_of_path[-1]
-
-        component_configuration = get_object_or_404(ComponentConfiguration, id=component_configuration_id)
-
         additional_data_form = AdditionalDataForm(None)
 
         file_format_list = file_format_code()
@@ -3979,17 +3982,22 @@ def subject_additional_data_create(request, group_id, subject_id, path_of_config
 
                 if additional_data_form.is_valid():
 
-                    data_configuration_tree_id = list_data_configuration_tree(component_configuration_id, list_of_path)
-                    if not data_configuration_tree_id:
-                        data_configuration_tree_id = create_data_configuration_tree(list_of_path)
+                    data_configuration_tree = None
+                    if path_of_configuration != '0':
+                        list_of_path = [int(item) for item in path_of_configuration.split('-')]
+                        data_configuration_tree_id = list_data_configuration_tree(list_of_path[-1], list_of_path)
+                        if not data_configuration_tree_id:
+                            data_configuration_tree_id = create_data_configuration_tree(list_of_path)
+                        data_configuration_tree = get_object_or_404(DataConfigurationTree,
+                                                                    pk=data_configuration_tree_id)
 
                     subject = get_object_or_404(Subject, pk=subject_id)
                     subject_of_group = get_object_or_404(SubjectOfGroup, subject=subject, group_id=group_id)
 
                     additional_data_added = additional_data_form.save(commit=False)
                     additional_data_added.subject_of_group = subject_of_group
-                    additional_data_added.component_configuration = component_configuration
-                    additional_data_added.data_configuration_tree_id = data_configuration_tree_id
+                    if data_configuration_tree:
+                        additional_data_added.data_configuration_tree = data_configuration_tree
 
                     # PS: it was necessary adding these 2 lines because Django raised, I do not why (Evandro),
                     # the following error 'AdditionalData' object has no attribute 'group'
@@ -4007,7 +4015,6 @@ def subject_additional_data_create(request, group_id, subject_id, path_of_config
                    "creating": True,
                    "editing": True,
                    "group": group,
-                   "component_configuration": component_configuration,
                    "additional_data_form": additional_data_form,
                    "file_format_list": file_format_list,
                    "subject": get_object_or_404(Subject, pk=subject_id)

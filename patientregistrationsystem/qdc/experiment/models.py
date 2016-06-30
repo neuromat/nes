@@ -406,7 +406,7 @@ def get_data_file_dir(instance, filename):
                               str(instance.subject_of_group.group.experiment.id),
                               str(instance.subject_of_group.group.id),
                               str(instance.subject_of_group.subject.id),
-                              str(instance.data_configuration_tree.id))
+                              str(instance.data_configuration_tree.id if instance.data_configuration_tree else 0))
         if isinstance(instance, EEGData):
             directory = path.join(directory, 'eeg')
         elif isinstance(instance, EMGData):
