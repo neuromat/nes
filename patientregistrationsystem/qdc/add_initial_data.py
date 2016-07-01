@@ -186,14 +186,12 @@ GroupTable = [
     _("Senior researcher"),
 ]
 
-g = Group(name='Administrator')
-g.save()
+g, created = Group.objects.get_or_create(name='Administrator')
 g.permissions.add(Permission.objects.get(codename='add_user'),
                   Permission.objects.get(codename='change_user'),
                   Permission.objects.get(codename='delete_user'))
 
-g = Group(name='Attendant')
-g.save()
+g, created = Group.objects.get_or_create(name='Attendant')
 patient_content_type = ContentType.objects.get(app_label='patient', model='patient')
 attendant_permission_list = [Permission.objects.get(codename='add_patient', content_type=patient_content_type),
                              Permission.objects.get(codename='change_patient', content_type=patient_content_type),
@@ -202,8 +200,7 @@ attendant_permission_list = [Permission.objects.get(codename='add_patient', cont
 for p in attendant_permission_list:
     g.permissions.add(p)
 
-g = Group(name='Physiotherapist')
-g.save()
+g, created = Group.objects.get_or_create(name='Physiotherapist')
 medicalrecorddata_content_type = ContentType.objects.get(app_label='patient', model='medicalrecorddata')
 survey_content_type = ContentType.objects.get(app_label='survey', model='survey')
 patient_quest_response_content_type = ContentType.objects.get(app_label='patient', model='questionnaireresponse')
@@ -227,8 +224,7 @@ physiotherapist_permission_list += [
 for p in physiotherapist_permission_list:
     g.permissions.add(p)
 
-g = Group(name='Doctor')
-g.save()
+g, created = Group.objects.get_or_create(name='Doctor')
 # Can do what a physiotherapist does
 doctor_permission_list = list(physiotherapist_permission_list)
 # Plus
@@ -237,8 +233,7 @@ doctor_permission_list.append(Permission.objects.get(codename='add_medicalrecord
 for p in doctor_permission_list:
     g.permissions.add(p)
 
-g = Group(name='Junior researcher')
-g.save()
+g, created = Group.objects.get_or_create(name='Junior researcher')
 researchproject_content_type = ContentType.objects.get(app_label='experiment', model='researchproject')
 experiment_content_type = ContentType.objects.get(app_label='experiment', model='experiment')
 questionnaireresponse_content_type = ContentType.objects.get(app_label='experiment', model='questionnaireresponse')
@@ -270,8 +265,7 @@ junior_researcher_permission_list += [
 for p in junior_researcher_permission_list:
     g.permissions.add(p)
 
-g = Group(name='Senior researcher')
-g.save()
+g, created = Group.objects.get_or_create(name='Senior researcher')
 # Can do what a junior researcher does
 senior_researcher_permission_list = list(junior_researcher_permission_list)
 # Plus
