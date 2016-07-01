@@ -2455,16 +2455,19 @@ def eegelectrodenet_view(request, eegelectrodenet_id, template_name="experiment/
         if request.POST['action'] == "remove":
             net_system = EEGElectrodeNetSystem.objects.filter(eeg_electrode_net=eegelectrodenet)
             if net_system and EEGElectrodeLayoutSetting.objects.filter(eeg_electrode_net_system=net_system):
-                messages.error(request, _('EEG electrode net cannot be removed because it is used in EEG electrode system.'))
+                messages.error(request,
+                               _('EEG electrode net cannot be removed because it is used in EEG electrode system.'))
                 redirect_url = reverse("eegelectrodenet_view", args=(eegelectrodenet_id,))
                 return HttpResponseRedirect(redirect_url)
             else:
                 try:
                     if cap:
                         if cap_size_list:
-                            eeg_data = EEGData.objects.filter(eeg_electrode_net=cap_size_list)
+                            eeg_data = EEGData.objects.filter(eeg_cap_size__in=cap_size_list)
                             if eeg_data:
-                                messages.error(request, _('EEG electrode net cannot be removed because cap size is associated with EEG data.'))
+                                messages.error(request,
+                                               _('EEG electrode net cannot be removed because '
+                                                 'cap size is associated with EEG data.'))
                                 redirect_url = reverse("eegelectrodenet_view", args=(eegelectrodenet_id,))
                                 return HttpResponseRedirect(redirect_url)
                             cap_size_list.delete()
