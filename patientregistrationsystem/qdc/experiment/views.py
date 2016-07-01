@@ -4760,16 +4760,16 @@ def remove_component_configuration(request, conf):
 
 
 def check_experiment(experiment):
-    experiment_id = experiment.id
+    """
+    Checks if the experiment has data collection for some participant
+    :param experiment:
+    :return:
+    """
     experiment_with_data = False
-
-    for group in Group.objects.filter(experiment_id=experiment_id):
-        subject_list = [item.pk for item in SubjectOfGroup.objects.filter(group=group)]
-        eegdata_list = EEGData.objects.filter(subject_of_group_id__in=subject_list)
-        questionnaire_response_list = QuestionnaireResponse.objects.filter(subject_of_group_id__in=subject_list)
-        if eegdata_list or questionnaire_response_list:
+    for group in Group.objects.filter(experiment=experiment):
+        if group_has_data_collection(group.id):
             experiment_with_data = True
-
+            break
     return experiment_with_data
 
 
