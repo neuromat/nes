@@ -2343,34 +2343,55 @@ def eegelectrodenet_update(request, eegelectrodenet_id, template_name="experimen
     if request.method == "POST":
         if request.POST['action'] == "save":
             if eegelectrodenet_form.is_valid():
-                localization_systems = get_localization_system(request.POST)
-                if eegelectrodenet_form.has_changed() or localization_systems:
-                    if localization_systems:
-                        for localization_system_item in localization_systems:
-                            localization_system_id = localization_system_item.split("_")[-1]
-                            if request.POST[localization_system_item] == "on":
-                                eeg_electrode_net_system = EEGElectrodeNetSystem()
-                                eeg_electrode_net_system.eeg_electrode_net_id=eegelectrodenet.id
-                                eeg_electrode_net_system.eeg_electrode_localization_system_id=localization_system_id
-                                eeg_electrode_net_system.save()
-                            else:
-                                net_system = EEGElectrodeNetSystem.objects.filter(
-                                    eeg_electrode_net=eegelectrodenet,
-                                    eeg_electrode_localization_system=localization_system_item)
-                                if net_system:
-                                    messages.error(
-                                        request,
-                                        _('It is not possible to delete localization system, since it in use.'))
-                                else:
-                                    eeg_electrode_net_system = EEGElectrodeNetSystem.objects.get(
-                                        eeg_electrode_net_id=eegelectrodenet.id,
-                                        eeg_electrode_localization_system_id=localization_system_id)
-                                    eeg_electrode_net_system.delete()
 
-                    if is_a_cap and cap_form.has_changed():
-                        cap_form.save()
-                    if eegelectrodenet_form.has_changed():
-                        eegelectrodenet_form.save()
+                changed = False
+
+                new_localization_systems = get_localization_system(request.POST)
+
+                current_localization_systems = \
+                    [item.eeg_electrode_localization_system.id
+                     for item in EEGElectrodeNetSystem.objects.filter(eeg_electrode_net_id=eegelectrodenet_id)]
+
+                # Checking if some localization_system was unchecked
+                for item in current_localization_systems:
+
+                    if "localization_system_" + str(item) not in new_localization_systems:
+
+                        # get the net_system
+                        eeg_electrode_net_system = \
+                            EEGElectrodeNetSystem.objects.filter(
+                                eeg_electrode_net=eegelectrodenet, eeg_electrode_localization_system_id=item)[0]
+
+                        # check if the net_system is not been used by some layout_setting
+                        # (the used net_system was rendered as disabled)
+                        if not EEGElectrodeLayoutSetting.objects.filter(
+                                eeg_electrode_net_system=eeg_electrode_net_system).exists():
+                            eeg_electrode_net_system.delete()
+                            changed = True
+
+                # Checking if some localization_system was checked
+                for item in new_localization_systems:
+
+                    localization_system_id = item.split("_")[-1]
+
+                    if localization_system_id not in current_localization_systems:
+
+                        # create a new net_system
+                        eeg_electrode_net_system = EEGElectrodeNetSystem()
+                        eeg_electrode_net_system.eeg_electrode_net_id=eegelectrodenet.id
+                        eeg_electrode_net_system.eeg_electrode_localization_system_id=localization_system_id
+                        eeg_electrode_net_system.save()
+                        changed = True
+
+                if is_a_cap and cap_form.has_changed():
+                    cap_form.save()
+                    changed = True
+
+                if eegelectrodenet_form.has_changed():
+                    eegelectrodenet_form.save()
+                    changed = True
+
+                if changed:
                     messages.success(request, _('EEG electrode net updated successfully.'))
                 else:
                     messages.success(request, _('There is no changes to save.'))
