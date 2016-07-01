@@ -102,6 +102,7 @@
                                                         <td>{{ eeg_data_file.date }}</td>
                                                         <td>{{ eeg_data_file.file_format.name }}</td>
                                                         <td>{{ eeg_data_file.file.size|filesizeformat }}</td>
+                                                        <td><a href="{{ eeg_data_file.file.url }}"><span class="glyphicon glyphicon-download"></span></a></td>
                                                         <td>
                                                             {% if eeg_data_file.eeg_reading.file_format %}
                                                                 {% if eeg_data_file.eeg_reading.reading %}
@@ -116,12 +117,7 @@
                                                     </tr>
                                                 {% endfor %}
                                                 <tr>
-{#                                                    <td colspan="5">#}
-{#                                                        <a href="/experiment/group/{{ group.id }}/subject/{{ subject.id }}/eeg/{% for item in eeg_collection.path %}{{ item.0 }}{% if not forloop.last %}-{% endif %}{% endfor %}/add_eeg_data" class="btn btn-primary">#}
-{#                                                            {% trans "New EEG data file" %}#}
-{#                                                        </a>#}
-{#                                                    </td>#}
-                                                    <td colspan="5">
+                                                    <td colspan="6">
                                                         <a href="/experiment/group/{{ group.id }}/subject/{{ subject.id }}/eeg/{% for item in eeg_collection.path %}{{ item.0 }}{% if not forloop.last %}-{% endif %}{% endfor %}/add_eeg_data">
                                                             <span class="glyphicon glyphicon-plus-sign"></span>
                                                             {% trans "New EEG data file" %}

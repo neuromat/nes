@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2016-06-20 17:28-0300\n"
+"POT-Creation-Date: 2016-06-27 09:36-0300\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -22,12 +22,12 @@ msgid "List of questionnaires"
 msgstr ""
 
 #: survey/templates/survey/survey_list.html:48
-#: survey/templates/survey/survey_register.html:76
+#: survey/templates/survey/survey_register.html:77
 msgid "Questionnaire"
 msgstr ""
 
 #: survey/templates/survey/survey_list.html:49
-#: survey/templates/survey/survey_register.html:93
+#: survey/templates/survey/survey_register.html:94
 msgid "Entrance evaluation"
 msgstr ""
 
@@ -39,110 +39,110 @@ msgstr ""
 msgid "Insert new questionnaire"
 msgstr ""
 
-#: survey/templates/survey/survey_register.html:52
+#: survey/templates/survey/survey_register.html:53
 msgid "Home"
 msgstr ""
 
-#: survey/templates/survey/survey_register.html:53
+#: survey/templates/survey/survey_register.html:54
 msgid "Questionnaires"
 msgstr ""
 
-#: survey/templates/survey/survey_register.html:56
+#: survey/templates/survey/survey_register.html:57
 msgid "New"
 msgstr ""
 
-#: survey/templates/survey/survey_register.html:60
+#: survey/templates/survey/survey_register.html:61
 msgid "Editing"
 msgstr ""
 
-#: survey/templates/survey/survey_register.html:72
+#: survey/templates/survey/survey_register.html:73
 msgid "Questionnaire information"
 msgstr ""
 
-#: survey/templates/survey/survey_register.html:77
+#: survey/templates/survey/survey_register.html:78
 msgid "Please, select a questionnaire from the list."
 msgstr ""
 
-#: survey/templates/survey/survey_register.html:101
+#: survey/templates/survey/survey_register.html:102
 msgid "Edit"
 msgstr ""
 
-#: survey/templates/survey/survey_register.html:111
+#: survey/templates/survey/survey_register.html:112
 msgid "Answered as entrance evaluation"
 msgstr ""
 
-#: survey/templates/survey/survey_register.html:118
-#: survey/templates/survey/survey_register.html:199
+#: survey/templates/survey/survey_register.html:119
+#: survey/templates/survey/survey_register.html:201
 msgid "Participant"
 msgstr ""
 
-#: survey/templates/survey/survey_register.html:119
-#: survey/templates/survey/survey_register.html:200
+#: survey/templates/survey/survey_register.html:120
+#: survey/templates/survey/survey_register.html:202
 msgid "Fills"
 msgstr ""
 
-#: survey/templates/survey/survey_register.html:129
+#: survey/templates/survey/survey_register.html:131
 msgid "It has to be filled"
 msgstr ""
 
-#: survey/templates/survey/survey_register.html:142
-#: survey/templates/survey/survey_register.html:219
+#: survey/templates/survey/survey_register.html:144
+#: survey/templates/survey/survey_register.html:222
 msgid "Complete"
 msgstr ""
 
-#: survey/templates/survey/survey_register.html:144
-#: survey/templates/survey/survey_register.html:221
+#: survey/templates/survey/survey_register.html:146
+#: survey/templates/survey/survey_register.html:224
 msgid "Incomplete"
 msgstr ""
 
-#: survey/templates/survey/survey_register.html:147
-#: survey/templates/survey/survey_register.html:224
+#: survey/templates/survey/survey_register.html:149
+#: survey/templates/survey/survey_register.html:227
 msgid "No status"
 msgstr ""
 
-#: survey/templates/survey/survey_register.html:165
+#: survey/templates/survey/survey_register.html:167
 msgid "Used in experiments"
 msgstr ""
 
-#: survey/templates/survey/survey_register.html:172
+#: survey/templates/survey/survey_register.html:174
 msgid "Experiment:"
 msgstr ""
 
-#: survey/templates/survey/survey_register.html:176
+#: survey/templates/survey/survey_register.html:178
 msgid "Group:"
 msgstr ""
 
-#: survey/templates/survey/survey_register.html:182
+#: survey/templates/survey/survey_register.html:184
 msgid "Set of parent steps:"
 msgstr ""
 
-#: survey/templates/survey/survey_register.html:186
+#: survey/templates/survey/survey_register.html:188
 msgid "Step:"
 msgstr ""
 
-#: survey/templates/survey/survey_register.html:190
+#: survey/templates/survey/survey_register.html:192
 msgid "Name of the use:"
 msgstr ""
 
-#: survey/templates/survey/survey_register.html:246
-#: survey/templates/survey/survey_register.html:277
+#: survey/templates/survey/survey_register.html:249
+#: survey/templates/survey/survey_register.html:280
 msgid "Delete"
 msgstr ""
 
-#: survey/templates/survey/survey_register.html:252
+#: survey/templates/survey/survey_register.html:255
 msgid "Save"
 msgstr ""
 
-#: survey/templates/survey/survey_register.html:256
-#: survey/templates/survey/survey_register.html:276
+#: survey/templates/survey/survey_register.html:259
+#: survey/templates/survey/survey_register.html:279
 msgid "Cancel"
 msgstr ""
 
-#: survey/templates/survey/survey_register.html:260
+#: survey/templates/survey/survey_register.html:263
 msgid "Back"
 msgstr ""
 
-#: survey/templates/survey/survey_register.html:273
+#: survey/templates/survey/survey_register.html:276
 msgid "Are you sure you want to delete questionnaire?"
 msgstr ""
 
@@ -158,29 +158,29 @@ msgstr ""
 msgid "There are no changes to save."
 msgstr ""
 
-#: survey/views.py:399
+#: survey/views.py:401
 msgid "Questionnaire deleted successfully."
 msgstr ""
 
-#: survey/views.py:402
+#: survey/views.py:404
 msgid ""
 "It was not possible to delete questionnaire, because there are experimental "
 "answers or steps associated."
 msgstr ""
 
-#: survey/views.py:503
+#: survey/views.py:505
 msgid "Formula"
 msgstr ""
 
-#: survey/views.py:581 survey/views.py:599 survey/views.py:625
+#: survey/views.py:583 survey/views.py:601 survey/views.py:627
 msgid "No answer"
 msgstr ""
 
-#: survey/views.py:643
+#: survey/views.py:645
 msgid "LimeSurvey did not find fill data for this questionnaire."
 msgstr ""
 
-#: survey/views.py:655
+#: survey/views.py:657
 msgid "LimeSurvey unavailable. System running partially."
 msgstr ""
 

@@ -1,0 +1,1783 @@
+[
+  {
+    "pk": 1,
+    "fields": {
+      "name": "Electrical Geodesics Inc. (EGI)"
+    },
+    "model": "experiment.manufacturer"
+  },
+  {
+    "pk": 2,
+    "fields": {
+      "name": "Brain Vision"
+    },
+    "model": "experiment.manufacturer"
+  },
+  {
+    "pk": 3,
+    "fields": {
+      "name": "Cortech Solutions"
+    },
+    "model": "experiment.manufacturer"
+  },
+  {
+    "pk": 4,
+    "fields": {
+      "name": "Weaver and Company"
+    },
+    "model": "experiment.manufacturer"
+  },
+  {
+    "pk": 1,
+    "fields": {
+      "description": "Is a filter whose impulse response (or response to any finite length input) is of finite duration, because it settles to zero in finite time.",
+      "name": "Finite Impulse Response (FIR)"
+    },
+    "model": "experiment.eegfiltertype"
+  },
+  {
+    "pk": 2,
+    "fields": {
+      "description": "Systems with this property are known as IIR systems or IIR filters, and are distinguished by having an impulse response which does not become exactly zero past a certain point, but continues indefinitely.",
+      "name": "Infinite impulse response (IIR) "
+    },
+    "model": "experiment.eegfiltertype"
+  },
+  {
+    "pk": 3,
+    "fields": {
+      "description": "A Butterworth filter is a filter which has a maximally flat characteristic in the passband: the gain decreases gradually from the center of the passband towards the \u20133 dB point. No ripple is present in the stopband either. ",
+      "name": "Butterworth IIR"
+    },
+    "model": "experiment.eegfiltertype"
+  },
+  {
+    "pk": 4,
+    "fields": {
+      "description": "A Chebyshev filter has a constant ripple in the passband which oscillates between 1 and (1+\u03b5\u02c62)\u02c6-1/2 ; \u03b5 can be tuned. The number of ripples in the passband increases with filter order. There is a trade-off between the behaviour in passband and stopband. In comparison with a Butterworth filter, the stopband behaviour and fall-off of a Chebyshev are better. ",
+      "name": "Chebyshev IIR"
+    },
+    "model": "experiment.eegfiltertype"
+  },
+  {
+    "pk": 5,
+    "fields": {
+      "description": "An elliptic IIR filter has a ripple of constant height in both passband and stopband, the number increasing with filter order. In comparison with the Butterworth as well as the Chebyshev, at a given order, the fall-off is better for an elliptic filter. ",
+      "name": "Elliptic IIR"
+    },
+    "model": "experiment.eegfiltertype"
+  },
+    {
+    "fields": {
+      "description": "carbon fibers are embedded within a plastic substrate, and then coated with a tough silver-chloride surface.",
+      "name": "Silver chloride\u2013plated carbon-fiber"
+    },
+    "pk": 1,
+    "model": "experiment.material"
+  },
+  {
+    "fields": {
+      "description": "Gold is a chemical element with the symbol Au ",
+      "name": "Gold (Au)"
+    },
+    "pk": 2,
+    "model": "experiment.material"
+  },
+  {
+    "fields": {
+      "description": "Silver is the metallic element with the atomic number 47. Its symbol is Ag.",
+      "name": "Silver (Ag)"
+    },
+    "pk": 3,
+    "model": "experiment.material"
+  },
+  {
+    "fields": {
+      "description": "Platinum is a chemical element with symbol Pt.",
+      "name": "Platinum (Pt)"
+    },
+    "pk": 4,
+    "model": "experiment.material"
+  },
+  {
+    "fields": {
+      "description": "Glass-like carbon, often called glassy carbon or vitreous carbon, is a non-graphitizing, or nongraphitizable, carbon which combines glassy and ceramic properties with those of graphite. ",
+      "name": "Glassy carbon"
+    },
+    "pk": 5,
+    "model": "experiment.material"
+  },
+  {
+    "fields": {
+      "description": "Titanium nitride (TiN) (sometimes known as tinite) is an extremely hard ceramic material, often used as a coating on titanium alloys, steel, carbide, and aluminium components to improve the substrate's surface properties.",
+      "name": "Titanium nitride (TiN)"
+    },
+    "pk": 6,
+    "model": "experiment.material"
+  },
+  {
+    "fields": {
+      "description": "Silver chloride is a chemical compound with the chemical formula AgCl. This white crystalline solid is well known for its low solubility in water (this behavior being reminiscent of the chlorides of Tl+ and Pb2+). Upon illumination or heating, silver chloride converts to silver (and chlorine), which is signaled by greyish or purplish coloration to some samples. AgCl occurs naturally as a mineral chlorargyrite.",
+      "name": "Silver-silver chloride (Ag|AgCl)"
+    },
+    "pk": 7,
+    "model": "experiment.material"
+  },
+  {
+    "fields": {
+      "description": "Stainless steel, also known as inox steel or inox from French inoxydable, is a steel alloy with a minimum of 10.5% chromium content by mass.",
+      "name": "Stainless steel"
+    },
+    "pk": 8,
+    "model": "experiment.material"
+  },
+  {
+    "pk": 2,
+    "fields": {
+      "impedance": 10.0,
+      "description": "Dense array EEG is a method of recording electroencephalography (EEG) with many more electrodes (up to 256). The rationale for this approach is to enhance the spatial resolution of scalp EEG.",
+      "name": "HydroCel 130 LTML (Dense array)",
+      "material": 7,
+      "impedance_unit": "ohm",
+      "usability": "reusable"
+    },
+    "model": "experiment.eegelectrodemodel"
+  },
+  {
+    "pk": 3,
+    "fields": {
+      "impedance": 10.0,
+      "description": "",
+      "name": "ring electrode",
+      "material": 7,
+      "impedance_unit": "ohm",
+      "usability": "reusable"
+    },
+    "model": "experiment.eegelectrodemodel"
+  },
+  {
+    "pk": 4,
+    "fields": {
+      "impedance": 50.0,
+      "description": "The Geodesic Sensor Net (GSN) features EGI\u2019s patented dense-array EEG sensors held in a tension structure that stretches over the head.\r\nEach line between sensor pairs is a geodesic, the shortest distance between two points on the surface of a sphere.\r\nThe accurate geodesic tesselation of the head surface optimizes the sampling of the electrical field.",
+      "name": "Geodesic Sensor Net (GSN)",
+      "material": 7,
+      "impedance_unit": "kilohm",
+      "usability": "reusable"
+    },
+    "model": "experiment.eegelectrodemodel"
+  },
+  {
+    "pk": 5,
+    "fields": {
+      "impedance": 50.0,
+      "description": "The HCGSN\u2019s electrode is designed for low-noise electrophyiological recording.\r\nElectrochemical noise, created by varying half-cell potentials at the electrode\u2013electrolyte interface, is minimized by a proprietary technology in which carbon fibers are embedded within a plastic substrate, and then coated with a tough silver-chloride surface.",
+      "name": "Hydrocel GSN (HCGSN) with sponge",
+      "material": 1,
+      "impedance_unit": "kilohm",
+      "usability": "reusable"
+    },
+    "model": "experiment.eegelectrodemodel"
+  },
+  {
+    "pk": 6,
+    "fields": {
+      "impedance": 50.0,
+      "description": "The HCGSN\u2019s electrode is designed for low-noise electrophyiological recording.\r\nElectrochemical noise, created by varying half-cell potentials at the electrode\u2013electrolyte interface, is minimized by a proprietary technology in which carbon fibers are embedded within a plastic substrate, and then coated with a tough silver-chloride surface.",
+      "name": "Hydrocel GSN (HCGSN) without sponge",
+      "material": 1,
+      "impedance_unit": "kilohm",
+      "usability": "reusable"
+    },
+    "model": "experiment.eegelectrodemodel"
+  },
+  {
+    "pk": 1,
+    "fields": {
+      "manufacturer": 3,
+      "components": "Electro-Gel (32 oz). Specifically formulated for the use with Electro-Cap products. Other brands or types of gel will cause high electrode impedance and various types of electrode artifacts.",
+      "name": "CS-GP-EG32"
+    },
+    "model": "experiment.eegsolution"
+  },
+  {
+    "pk": 2,
+    "fields": {
+      "manufacturer": 3,
+      "components": "Spectra 360 250 g (8.8 oz) clear tube, box of 12 tubes",
+      "name": "CS-GP-EGSP250"
+    },
+    "model": "experiment.eegsolution"
+  },
+  {
+    "pk": 3,
+    "fields": {
+      "manufacturer": 4,
+      "components": "Water, Aluminum Oxide, 1,2 Propanediol, Sodium Polyacrylate, Methylparaben, Propylparaben, FD&C Blue 1, FD&C Red 40, FD&C Yellow 5.",
+      "name": "Nuprep Skin Prep Gel"
+    },
+    "model": "experiment.eegsolution"
+  },
+  {
+    "pk": 4,
+    "fields": {
+      "manufacturer": 2,
+      "components": "Chlorided, abrasive electrolyte gel",
+      "name": "Abralyt LIGHT (1000 gr.)"
+    },
+    "model": "experiment.eegsolution"
+  },
+  {
+    "pk": 5,
+    "fields": {
+      "manufacturer": 1,
+      "components": "This is the classic potassium chloride saline and surfactant solution used for rapid application. The HydroCel Saline comes in powder form and must be mixed with water before using. No subject cleanup is required.",
+      "name": "EGI's HydroCel Saline electrolyte solution for 2-hour recordings"
+    },
+    "model": "experiment.eegsolution"
+  },
+  {
+    "pk": 6,
+    "fields": {
+      "manufacturer": 1,
+      "components": "The HydroCel HS packet contains 1.0 gram of the HydroCel HS powder. The formulation is biodegradable and nontoxic. Individual electrode filling is required.",
+      "name": "EGI's HydroCel HS electrolyte formulation for 12-hour recordings"
+    },
+    "model": "experiment.eegsolution"
+  },
+  {
+    "pk": 1,
+    "fields": {
+      "map_image_file": "eeg_electrode_system_files/1/128 channel HCGSN v.1.0.png",
+      "description": "HydroCel Geodesic Sensor Net (HCGSN). Developed specifically for the head shape and sensitive skin of preterm infants. -no face straps, simplifying application, minimizing stress for infants, and making it less likely to interfere with other medical devices -Available in 32, 64, and 128 channel counts -Available in medium (30\u201332 cm) and large (32\u201334 cm) sizes",
+      "name": "128 channels HCGSN"
+    },
+    "model": "experiment.eegelectrodelocalizationsystem"
+  },
+  {
+    "pk": 1,
+    "fields": {
+      "position_reference": null,
+      "coordinate_y": 244,
+      "coordinate_x": 350,
+      "eeg_electrode_localization_system": 1,
+      "name": "VREF"
+    },
+    "model": "experiment.eegelectrodeposition"
+  },
+  {
+    "pk": 9,
+    "fields": {
+      "position_reference": null,
+      "coordinate_y": 118,
+      "coordinate_x": 528,
+      "eeg_electrode_localization_system": 1,
+      "name": "1"
+    },
+    "model": "experiment.eegelectrodeposition"
+  },
+  {
+    "pk": 10,
+    "fields": {
+      "position_reference": null,
+      "coordinate_y": 120,
+      "coordinate_x": 477,
+      "eeg_electrode_localization_system": 1,
+      "name": "2"
+    },
+    "model": "experiment.eegelectrodeposition"
+  },
+  {
+    "pk": 11,
+    "fields": {
+      "position_reference": null,
+      "coordinate_y": 131,
+      "coordinate_x": 436,
+      "eeg_electrode_localization_system": 1,
+      "name": "3"
+    },
+    "model": "experiment.eegelectrodeposition"
+  },
+  {
+    "pk": 12,
+    "fields": {
+      "position_reference": null,
+      "coordinate_y": 147,
+      "coordinate_x": 400,
+      "eeg_electrode_localization_system": 1,
+      "name": "4"
+    },
+    "model": "experiment.eegelectrodeposition"
+  },
+  {
+    "pk": 13,
+    "fields": {
+      "position_reference": null,
+      "coordinate_y": 168,
+      "coordinate_x": 374,
+      "eeg_electrode_localization_system": 1,
+      "name": "5"
+    },
+    "model": "experiment.eegelectrodeposition"
+  },
+  {
+    "pk": 14,
+    "fields": {
+      "position_reference": null,
+      "coordinate_y": 193,
+      "coordinate_x": 351,
+      "eeg_electrode_localization_system": 1,
+      "name": "6"
+    },
+    "model": "experiment.eegelectrodeposition"
+  },
+  {
+    "pk": 15,
+    "fields": {
+      "position_reference": null,
+      "coordinate_y": 224,
+      "coordinate_x": 328,
+      "eeg_electrode_localization_system": 1,
+      "name": "7"
+    },
+    "model": "experiment.eegelectrodeposition"
+  },
+  {
+    "pk": 16,
+    "fields": {
+      "position_reference": null,
+      "coordinate_y": 88,
+      "coordinate_x": 476,
+      "eeg_electrode_localization_system": 1,
+      "name": "8"
+    },
+    "model": "experiment.eegelectrodeposition"
+  },
+  {
+    "pk": 17,
+    "fields": {
+      "position_reference": null,
+      "coordinate_y": 100,
+      "coordinate_x": 432,
+      "eeg_electrode_localization_system": 1,
+      "name": "9"
+    },
+    "model": "experiment.eegelectrodeposition"
+  },
+  {
+    "pk": 18,
+    "fields": {
+      "position_reference": null,
+      "coordinate_y": 118,
+      "coordinate_x": 392,
+      "eeg_electrode_localization_system": 1,
+      "name": "10"
+    },
+    "model": "experiment.eegelectrodeposition"
+  },
+  {
+    "pk": 19,
+    "fields": {
+      "position_reference": null,
+      "coordinate_y": 139,
+      "coordinate_x": 351,
+      "eeg_electrode_localization_system": 1,
+      "name": "11"
+    },
+    "model": "experiment.eegelectrodeposition"
+  },
+  {
+    "pk": 20,
+    "fields": {
+      "position_reference": null,
+      "coordinate_y": 168,
+      "coordinate_x": 327,
+      "eeg_electrode_localization_system": 1,
+      "name": "12"
+    },
+    "model": "experiment.eegelectrodeposition"
+  },
+  {
+    "pk": 21,
+    "fields": {
+      "position_reference": null,
+      "coordinate_y": 201,
+      "coordinate_x": 311,
+      "eeg_electrode_localization_system": 1,
+      "name": "13"
+    },
+    "model": "experiment.eegelectrodeposition"
+  },
+  {
+    "pk": 22,
+    "fields": {
+      "position_reference": null,
+      "coordinate_y": 65,
+      "coordinate_x": 404,
+      "eeg_electrode_localization_system": 1,
+      "name": "14"
+    },
+    "model": "experiment.eegelectrodeposition"
+  },
+  {
+    "pk": 23,
+    "fields": {
+      "position_reference": null,
+      "coordinate_y": 84,
+      "coordinate_x": 350,
+      "eeg_electrode_localization_system": 1,
+      "name": "15"
+    },
+    "model": "experiment.eegelectrodeposition"
+  },
+  {
+    "pk": 24,
+    "fields": {
+      "position_reference": null,
+      "coordinate_y": 113,
+      "coordinate_x": 352,
+      "eeg_electrode_localization_system": 1,
+      "name": "16"
+    },
+    "model": "experiment.eegelectrodeposition"
+  },
+  {
+    "pk": 25,
+    "fields": {
+      "position_reference": null,
+      "coordinate_y": 35,
+      "coordinate_x": 349,
+      "eeg_electrode_localization_system": 1,
+      "name": "17"
+    },
+    "model": "experiment.eegelectrodeposition"
+  },
+  {
+    "pk": 26,
+    "fields": {
+      "position_reference": null,
+      "coordinate_y": 117,
+      "coordinate_x": 309,
+      "eeg_electrode_localization_system": 1,
+      "name": "18"
+    },
+    "model": "experiment.eegelectrodeposition"
+  },
+  {
+    "pk": 27,
+    "fields": {
+      "position_reference": null,
+      "coordinate_y": 147,
+      "coordinate_x": 300,
+      "eeg_electrode_localization_system": 1,
+      "name": "19"
+    },
+    "model": "experiment.eegelectrodeposition"
+  },
+  {
+    "pk": 28,
+    "fields": {
+      "position_reference": null,
+      "coordinate_y": 180,
+      "coordinate_x": 287,
+      "eeg_electrode_localization_system": 1,
+      "name": "20"
+    },
+    "model": "experiment.eegelectrodeposition"
+  },
+  {
+    "pk": 29,
+    "fields": {
+      "position_reference": null,
+      "coordinate_y": 66,
+      "coordinate_x": 295,
+      "eeg_electrode_localization_system": 1,
+      "name": "21"
+    },
+    "model": "experiment.eegelectrodeposition"
+  },
+  {
+    "pk": 30,
+    "fields": {
+      "position_reference": null,
+      "coordinate_y": 101,
+      "coordinate_x": 266,
+      "eeg_electrode_localization_system": 1,
+      "name": "22"
+    },
+    "model": "experiment.eegelectrodeposition"
+  },
+  {
+    "pk": 31,
+    "fields": {
+      "position_reference": null,
+      "coordinate_y": 130,
+      "coordinate_x": 265,
+      "eeg_electrode_localization_system": 1,
+      "name": "21"
+    },
+    "model": "experiment.eegelectrodeposition"
+  },
+  {
+    "pk": 32,
+    "fields": {
+      "position_reference": null,
+      "coordinate_y": 161,
+      "coordinate_x": 266,
+      "eeg_electrode_localization_system": 1,
+      "name": "24"
+    },
+    "model": "experiment.eegelectrodeposition"
+  },
+  {
+    "pk": 33,
+    "fields": {
+      "position_reference": null,
+      "coordinate_y": 88,
+      "coordinate_x": 224,
+      "eeg_electrode_localization_system": 1,
+      "name": "25"
+    },
+    "model": "experiment.eegelectrodeposition"
+  },
+  {
+    "pk": 34,
+    "fields": {
+      "position_reference": null,
+      "coordinate_y": 120,
+      "coordinate_x": 224,
+      "eeg_electrode_localization_system": 1,
+      "name": "26"
+    },
+    "model": "experiment.eegelectrodeposition"
+  },
+  {
+    "pk": 35,
+    "fields": {
+      "position_reference": null,
+      "coordinate_y": 153,
+      "coordinate_x": 224,
+      "eeg_electrode_localization_system": 1,
+      "name": "27"
+    },
+    "model": "experiment.eegelectrodeposition"
+  },
+  {
+    "pk": 36,
+    "fields": {
+      "position_reference": null,
+      "coordinate_y": 180,
+      "coordinate_x": 239,
+      "eeg_electrode_localization_system": 1,
+      "name": "28"
+    },
+    "model": "experiment.eegelectrodeposition"
+  },
+  {
+    "pk": 37,
+    "fields": {
+      "position_reference": null,
+      "coordinate_y": 203,
+      "coordinate_x": 260,
+      "eeg_electrode_localization_system": 1,
+      "name": "29"
+    },
+    "model": "experiment.eegelectrodeposition"
+  },
+  {
+    "pk": 38,
+    "fields": {
+      "position_reference": null,
+      "coordinate_y": 225,
+      "coordinate_x": 284,
+      "eeg_electrode_localization_system": 1,
+      "name": "30"
+    },
+    "model": "experiment.eegelectrodeposition"
+  },
+  {
+    "pk": 39,
+    "fields": {
+      "position_reference": null,
+      "coordinate_y": 251,
+      "coordinate_x": 316,
+      "eeg_electrode_localization_system": 1,
+      "name": "31"
+    },
+    "model": "experiment.eegelectrodeposition"
+  },
+  {
+    "pk": 40,
+    "fields": {
+      "position_reference": null,
+      "coordinate_y": 117,
+      "coordinate_x": 173,
+      "eeg_electrode_localization_system": 1,
+      "name": "32"
+    },
+    "model": "experiment.eegelectrodeposition"
+  },
+  {
+    "pk": 41,
+    "fields": {
+      "position_reference": null,
+      "coordinate_y": 153,
+      "coordinate_x": 179,
+      "eeg_electrode_localization_system": 1,
+      "name": "33"
+    },
+    "model": "experiment.eegelectrodeposition"
+  },
+  {
+    "pk": 42,
+    "fields": {
+      "position_reference": null,
+      "coordinate_y": 188,
+      "coordinate_x": 192,
+      "eeg_electrode_localization_system": 1,
+      "name": "34"
+    },
+    "model": "experiment.eegelectrodeposition"
+  },
+  {
+    "pk": 43,
+    "fields": {
+      "position_reference": null,
+      "coordinate_y": 212,
+      "coordinate_x": 217,
+      "eeg_electrode_localization_system": 1,
+      "name": "35"
+    },
+    "model": "experiment.eegelectrodeposition"
+  },
+  {
+    "pk": 44,
+    "fields": {
+      "position_reference": null,
+      "coordinate_y": 232,
+      "coordinate_x": 243,
+      "eeg_electrode_localization_system": 1,
+      "name": "36"
+    },
+    "model": "experiment.eegelectrodeposition"
+  },
+  {
+    "pk": 45,
+    "fields": {
+      "position_reference": null,
+      "coordinate_y": 260,
+      "coordinate_x": 283,
+      "eeg_electrode_localization_system": 1,
+      "name": "37"
+    },
+    "model": "experiment.eegelectrodeposition"
+  },
+  {
+    "pk": 46,
+    "fields": {
+      "position_reference": null,
+      "coordinate_y": 158,
+      "coordinate_x": 132,
+      "eeg_electrode_localization_system": 1,
+      "name": "38"
+    },
+    "model": "experiment.eegelectrodeposition"
+  },
+  {
+    "pk": 47,
+    "fields": {
+      "position_reference": null,
+      "coordinate_y": 196,
+      "coordinate_x": 149,
+      "eeg_electrode_localization_system": 1,
+      "name": "39"
+    },
+    "model": "experiment.eegelectrodeposition"
+  },
+  {
+    "pk": 48,
+    "fields": {
+      "position_reference": null,
+      "coordinate_y": 224,
+      "coordinate_x": 175,
+      "eeg_electrode_localization_system": 1,
+      "name": "T7"
+    },
+    "model": "experiment.eegelectrodeposition"
+  },
+  {
+    "pk": 49,
+    "fields": {
+      "position_reference": null,
+      "coordinate_y": 247,
+      "coordinate_x": 208,
+      "eeg_electrode_localization_system": 1,
+      "name": "41"
+    },
+    "model": "experiment.eegelectrodeposition"
+  },
+  {
+    "pk": 50,
+    "fields": {
+      "position_reference": null,
+      "coordinate_y": 268,
+      "coordinate_x": 250,
+      "eeg_electrode_localization_system": 1,
+      "name": "42"
+    },
+    "model": "experiment.eegelectrodeposition"
+  },
+  {
+    "pk": 51,
+    "fields": {
+      "position_reference": null,
+      "coordinate_y": 178,
+      "coordinate_x": 84,
+      "eeg_electrode_localization_system": 1,
+      "name": "43"
+    },
+    "model": "experiment.eegelectrodeposition"
+  },
+  {
+    "pk": 52,
+    "fields": {
+      "position_reference": null,
+      "coordinate_y": 218,
+      "coordinate_x": 107,
+      "eeg_electrode_localization_system": 1,
+      "name": "44"
+    },
+    "model": "experiment.eegelectrodeposition"
+  },
+  {
+    "pk": 53,
+    "fields": {
+      "position_reference": null,
+      "coordinate_y": 249,
+      "coordinate_x": 140,
+      "eeg_electrode_localization_system": 1,
+      "name": "45"
+    },
+    "model": "experiment.eegelectrodeposition"
+  },
+  {
+    "pk": 54,
+    "fields": {
+      "position_reference": null,
+      "coordinate_y": 265,
+      "coordinate_x": 177,
+      "eeg_electrode_localization_system": 1,
+      "name": "46"
+    },
+    "model": "experiment.eegelectrodeposition"
+  },
+  {
+    "pk": 55,
+    "fields": {
+      "position_reference": null,
+      "coordinate_y": 277,
+      "coordinate_x": 217,
+      "eeg_electrode_localization_system": 1,
+      "name": "47"
+    },
+    "model": "experiment.eegelectrodeposition"
+  },
+  {
+    "pk": 56,
+    "fields": {
+      "position_reference": null,
+      "coordinate_y": 175,
+      "coordinate_x": 41,
+      "eeg_electrode_localization_system": 1,
+      "name": "48"
+    },
+    "model": "experiment.eegelectrodeposition"
+  },
+  {
+    "pk": 57,
+    "fields": {
+      "position_reference": null,
+      "coordinate_y": 250,
+      "coordinate_x": 66,
+      "eeg_electrode_localization_system": 1,
+      "name": "49"
+    },
+    "model": "experiment.eegelectrodeposition"
+  },
+  {
+    "pk": 58,
+    "fields": {
+      "position_reference": null,
+      "coordinate_y": 289,
+      "coordinate_x": 148,
+      "eeg_electrode_localization_system": 1,
+      "name": "50"
+    },
+    "model": "experiment.eegelectrodeposition"
+  },
+  {
+    "pk": 59,
+    "fields": {
+      "position_reference": null,
+      "coordinate_y": 301,
+      "coordinate_x": 190,
+      "eeg_electrode_localization_system": 1,
+      "name": "51"
+    },
+    "model": "experiment.eegelectrodeposition"
+  },
+  {
+    "pk": 60,
+    "fields": {
+      "position_reference": null,
+      "coordinate_y": 305,
+      "coordinate_x": 236,
+      "eeg_electrode_localization_system": 1,
+      "name": "52"
+    },
+    "model": "experiment.eegelectrodeposition"
+  },
+  {
+    "pk": 61,
+    "fields": {
+      "position_reference": null,
+      "coordinate_y": 296,
+      "coordinate_x": 272,
+      "eeg_electrode_localization_system": 1,
+      "name": "53"
+    },
+    "model": "experiment.eegelectrodeposition"
+  },
+  {
+    "pk": 62,
+    "fields": {
+      "position_reference": null,
+      "coordinate_y": 284,
+      "coordinate_x": 306,
+      "eeg_electrode_localization_system": 1,
+      "name": "54"
+    },
+    "model": "experiment.eegelectrodeposition"
+  },
+  {
+    "pk": 63,
+    "fields": {
+      "position_reference": null,
+      "coordinate_y": 270,
+      "coordinate_x": 351,
+      "eeg_electrode_localization_system": 1,
+      "name": "55"
+    },
+    "model": "experiment.eegelectrodeposition"
+  },
+  {
+    "pk": 64,
+    "fields": {
+      "position_reference": null,
+      "coordinate_y": 302,
+      "coordinate_x": 79,
+      "eeg_electrode_localization_system": 1,
+      "name": "56"
+    },
+    "model": "experiment.eegelectrodeposition"
+  },
+  {
+    "pk": 65,
+    "fields": {
+      "position_reference": null,
+      "coordinate_y": 318,
+      "coordinate_x": 125,
+      "eeg_electrode_localization_system": 1,
+      "name": "57"
+    },
+    "model": "experiment.eegelectrodeposition"
+  },
+  {
+    "pk": 66,
+    "fields": {
+      "position_reference": null,
+      "coordinate_y": 328,
+      "coordinate_x": 175,
+      "eeg_electrode_localization_system": 1,
+      "name": "58"
+    },
+    "model": "experiment.eegelectrodeposition"
+  },
+  {
+    "pk": 67,
+    "fields": {
+      "position_reference": null,
+      "coordinate_y": 333,
+      "coordinate_x": 222,
+      "eeg_electrode_localization_system": 1,
+      "name": "59"
+    },
+    "model": "experiment.eegelectrodeposition"
+  },
+  {
+    "pk": 68,
+    "fields": {
+      "position_reference": null,
+      "coordinate_y": 329,
+      "coordinate_x": 268,
+      "eeg_electrode_localization_system": 1,
+      "name": "60"
+    },
+    "model": "experiment.eegelectrodeposition"
+  },
+  {
+    "pk": 69,
+    "fields": {
+      "position_reference": null,
+      "coordinate_y": 315,
+      "coordinate_x": 303,
+      "eeg_electrode_localization_system": 1,
+      "name": "61"
+    },
+    "model": "experiment.eegelectrodeposition"
+  },
+  {
+    "pk": 70,
+    "fields": {
+      "position_reference": null,
+      "coordinate_y": 324,
+      "coordinate_x": 350,
+      "eeg_electrode_localization_system": 1,
+      "name": "62"
+    },
+    "model": "experiment.eegelectrodeposition"
+  },
+  {
+    "pk": 71,
+    "fields": {
+      "position_reference": null,
+      "coordinate_y": 365,
+      "coordinate_x": 122,
+      "eeg_electrode_localization_system": 1,
+      "name": "63"
+    },
+    "model": "experiment.eegelectrodeposition"
+  },
+  {
+    "pk": 72,
+    "fields": {
+      "position_reference": null,
+      "coordinate_y": 369,
+      "coordinate_x": 173,
+      "eeg_electrode_localization_system": 1,
+      "name": "64"
+    },
+    "model": "experiment.eegelectrodeposition"
+  },
+  {
+    "pk": 73,
+    "fields": {
+      "position_reference": null,
+      "coordinate_y": 368,
+      "coordinate_x": 222,
+      "eeg_electrode_localization_system": 1,
+      "name": "65"
+    },
+    "model": "experiment.eegelectrodeposition"
+  },
+  {
+    "pk": 74,
+    "fields": {
+      "position_reference": null,
+      "coordinate_y": 359,
+      "coordinate_x": 270,
+      "eeg_electrode_localization_system": 1,
+      "name": "66"
+    },
+    "model": "experiment.eegelectrodeposition"
+  },
+  {
+    "pk": 75,
+    "fields": {
+      "position_reference": null,
+      "coordinate_y": 342,
+      "coordinate_x": 306,
+      "eeg_electrode_localization_system": 1,
+      "name": "67"
+    },
+    "model": "experiment.eegelectrodeposition"
+  },
+  {
+    "pk": 76,
+    "fields": {
+      "position_reference": null,
+      "coordinate_y": 410,
+      "coordinate_x": 183,
+      "eeg_electrode_localization_system": 1,
+      "name": "68"
+    },
+    "model": "experiment.eegelectrodeposition"
+  },
+  {
+    "pk": 77,
+    "fields": {
+      "position_reference": null,
+      "coordinate_y": 402,
+      "coordinate_x": 232,
+      "eeg_electrode_localization_system": 1,
+      "name": "69"
+    },
+    "model": "experiment.eegelectrodeposition"
+  },
+  {
+    "pk": 78,
+    "fields": {
+      "position_reference": null,
+      "coordinate_y": 391,
+      "coordinate_x": 283,
+      "eeg_electrode_localization_system": 1,
+      "name": "70"
+    },
+    "model": "experiment.eegelectrodeposition"
+  },
+  {
+    "pk": 79,
+    "fields": {
+      "position_reference": null,
+      "coordinate_y": 371,
+      "coordinate_x": 317,
+      "eeg_electrode_localization_system": 1,
+      "name": "71"
+    },
+    "model": "experiment.eegelectrodeposition"
+  },
+  {
+    "pk": 80,
+    "fields": {
+      "position_reference": null,
+      "coordinate_y": 349,
+      "coordinate_x": 351,
+      "eeg_electrode_localization_system": 1,
+      "name": "72"
+    },
+    "model": "experiment.eegelectrodeposition"
+  },
+  {
+    "pk": 81,
+    "fields": {
+      "position_reference": null,
+      "coordinate_y": 441,
+      "coordinate_x": 260,
+      "eeg_electrode_localization_system": 1,
+      "name": "73"
+    },
+    "model": "experiment.eegelectrodeposition"
+  },
+  {
+    "pk": 82,
+    "fields": {
+      "position_reference": null,
+      "coordinate_y": 422,
+      "coordinate_x": 306,
+      "eeg_electrode_localization_system": 1,
+      "name": "74"
+    },
+    "model": "experiment.eegelectrodeposition"
+  },
+  {
+    "pk": 83,
+    "fields": {
+      "position_reference": null,
+      "coordinate_y": 399,
+      "coordinate_x": 350,
+      "eeg_electrode_localization_system": 1,
+      "name": "75"
+    },
+    "model": "experiment.eegelectrodeposition"
+  },
+  {
+    "pk": 84,
+    "fields": {
+      "position_reference": null,
+      "coordinate_y": 371,
+      "coordinate_x": 381,
+      "eeg_electrode_localization_system": 1,
+      "name": "76"
+    },
+    "model": "experiment.eegelectrodeposition"
+  },
+  {
+    "pk": 85,
+    "fields": {
+      "position_reference": null,
+      "coordinate_y": 342,
+      "coordinate_x": 396,
+      "eeg_electrode_localization_system": 1,
+      "name": "77"
+    },
+    "model": "experiment.eegelectrodeposition"
+  },
+  {
+    "pk": 86,
+    "fields": {
+      "position_reference": null,
+      "coordinate_y": 313,
+      "coordinate_x": 395,
+      "eeg_electrode_localization_system": 1,
+      "name": "78"
+    },
+    "model": "experiment.eegelectrodeposition"
+  },
+  {
+    "pk": 87,
+    "fields": {
+      "position_reference": null,
+      "coordinate_y": 285,
+      "coordinate_x": 393,
+      "eeg_electrode_localization_system": 1,
+      "name": "79"
+    },
+    "model": "experiment.eegelectrodeposition"
+  },
+  {
+    "pk": 88,
+    "fields": {
+      "position_reference": null,
+      "coordinate_y": 251,
+      "coordinate_x": 383,
+      "eeg_electrode_localization_system": 1,
+      "name": "80"
+    },
+    "model": "experiment.eegelectrodeposition"
+  },
+  {
+    "pk": 89,
+    "fields": {
+      "position_reference": null,
+      "coordinate_y": 451,
+      "coordinate_x": 349,
+      "eeg_electrode_localization_system": 1,
+      "name": "81"
+    },
+    "model": "experiment.eegelectrodeposition"
+  },
+  {
+    "pk": 90,
+    "fields": {
+      "position_reference": null,
+      "coordinate_y": 422,
+      "coordinate_x": 393,
+      "eeg_electrode_localization_system": 1,
+      "name": "82"
+    },
+    "model": "experiment.eegelectrodeposition"
+  },
+  {
+    "pk": 91,
+    "fields": {
+      "position_reference": null,
+      "coordinate_y": 391,
+      "coordinate_x": 416,
+      "eeg_electrode_localization_system": 1,
+      "name": "83"
+    },
+    "model": "experiment.eegelectrodeposition"
+  },
+  {
+    "pk": 92,
+    "fields": {
+      "position_reference": null,
+      "coordinate_y": 360,
+      "coordinate_x": 430,
+      "eeg_electrode_localization_system": 1,
+      "name": "84"
+    },
+    "model": "experiment.eegelectrodeposition"
+  },
+  {
+    "pk": 93,
+    "fields": {
+      "position_reference": null,
+      "coordinate_y": 328,
+      "coordinate_x": 431,
+      "eeg_electrode_localization_system": 1,
+      "name": "85"
+    },
+    "model": "experiment.eegelectrodeposition"
+  },
+  {
+    "pk": 94,
+    "fields": {
+      "position_reference": null,
+      "coordinate_y": 296,
+      "coordinate_x": 428,
+      "eeg_electrode_localization_system": 1,
+      "name": "86"
+    },
+    "model": "experiment.eegelectrodeposition"
+  },
+  {
+    "pk": 95,
+    "fields": {
+      "position_reference": null,
+      "coordinate_y": 259,
+      "coordinate_x": 417,
+      "eeg_electrode_localization_system": 1,
+      "name": "87"
+    },
+    "model": "experiment.eegelectrodeposition"
+  },
+  {
+    "pk": 96,
+    "fields": {
+      "position_reference": null,
+      "coordinate_y": 441,
+      "coordinate_x": 437,
+      "eeg_electrode_localization_system": 1,
+      "name": "88"
+    },
+    "model": "experiment.eegelectrodeposition"
+  },
+  {
+    "pk": 97,
+    "fields": {
+      "position_reference": null,
+      "coordinate_y": 402,
+      "coordinate_x": 466,
+      "eeg_electrode_localization_system": 1,
+      "name": "89"
+    },
+    "model": "experiment.eegelectrodeposition"
+  },
+  {
+    "pk": 98,
+    "fields": {
+      "position_reference": null,
+      "coordinate_y": 366,
+      "coordinate_x": 480,
+      "eeg_electrode_localization_system": 1,
+      "name": "90"
+    },
+    "model": "experiment.eegelectrodeposition"
+  },
+  {
+    "pk": 99,
+    "fields": {
+      "position_reference": null,
+      "coordinate_y": 332,
+      "coordinate_x": 478,
+      "eeg_electrode_localization_system": 1,
+      "name": "91"
+    },
+    "model": "experiment.eegelectrodeposition"
+  },
+  {
+    "pk": 100,
+    "fields": {
+      "position_reference": null,
+      "coordinate_y": 305,
+      "coordinate_x": 463,
+      "eeg_electrode_localization_system": 1,
+      "name": "92"
+    },
+    "model": "experiment.eegelectrodeposition"
+  },
+  {
+    "pk": 101,
+    "fields": {
+      "position_reference": null,
+      "coordinate_y": 267,
+      "coordinate_x": 450,
+      "eeg_electrode_localization_system": 1,
+      "name": "93"
+    },
+    "model": "experiment.eegelectrodeposition"
+  },
+  {
+    "pk": 102,
+    "fields": {
+      "position_reference": null,
+      "coordinate_y": 409,
+      "coordinate_x": 519,
+      "eeg_electrode_localization_system": 1,
+      "name": "94"
+    },
+    "model": "experiment.eegelectrodeposition"
+  },
+  {
+    "pk": 103,
+    "fields": {
+      "position_reference": null,
+      "coordinate_y": 370,
+      "coordinate_x": 527,
+      "eeg_electrode_localization_system": 1,
+      "name": "95"
+    },
+    "model": "experiment.eegelectrodeposition"
+  },
+  {
+    "pk": 104,
+    "fields": {
+      "position_reference": null,
+      "coordinate_y": 328,
+      "coordinate_x": 525,
+      "eeg_electrode_localization_system": 1,
+      "name": "96"
+    },
+    "model": "experiment.eegelectrodeposition"
+  },
+  {
+    "pk": 105,
+    "fields": {
+      "position_reference": null,
+      "coordinate_y": 299,
+      "coordinate_x": 508,
+      "eeg_electrode_localization_system": 1,
+      "name": "97"
+    },
+    "model": "experiment.eegelectrodeposition"
+  },
+  {
+    "pk": 106,
+    "fields": {
+      "position_reference": null,
+      "coordinate_y": 276,
+      "coordinate_x": 483,
+      "eeg_electrode_localization_system": 1,
+      "name": "98"
+    },
+    "model": "experiment.eegelectrodeposition"
+  },
+  {
+    "pk": 107,
+    "fields": {
+      "position_reference": null,
+      "coordinate_y": 362,
+      "coordinate_x": 580,
+      "eeg_electrode_localization_system": 1,
+      "name": "99"
+    },
+    "model": "experiment.eegelectrodeposition"
+  },
+  {
+    "pk": 108,
+    "fields": {
+      "position_reference": null,
+      "coordinate_y": 319,
+      "coordinate_x": 574,
+      "eeg_electrode_localization_system": 1,
+      "name": "100"
+    },
+    "model": "experiment.eegelectrodeposition"
+  },
+  {
+    "pk": 109,
+    "fields": {
+      "position_reference": null,
+      "coordinate_y": 287,
+      "coordinate_x": 552,
+      "eeg_electrode_localization_system": 1,
+      "name": "101"
+    },
+    "model": "experiment.eegelectrodeposition"
+  },
+  {
+    "pk": 110,
+    "fields": {
+      "position_reference": null,
+      "coordinate_y": 264,
+      "coordinate_x": 524,
+      "eeg_electrode_localization_system": 1,
+      "name": "102"
+    },
+    "model": "experiment.eegelectrodeposition"
+  },
+  {
+    "pk": 111,
+    "fields": {
+      "position_reference": null,
+      "coordinate_y": 246,
+      "coordinate_x": 491,
+      "eeg_electrode_localization_system": 1,
+      "name": "103"
+    },
+    "model": "experiment.eegelectrodeposition"
+  },
+  {
+    "pk": 112,
+    "fields": {
+      "position_reference": null,
+      "coordinate_y": 231,
+      "coordinate_x": 457,
+      "eeg_electrode_localization_system": 1,
+      "name": "104"
+    },
+    "model": "experiment.eegelectrodeposition"
+  },
+  {
+    "pk": 113,
+    "fields": {
+      "position_reference": null,
+      "coordinate_y": 224,
+      "coordinate_x": 416,
+      "eeg_electrode_localization_system": 1,
+      "name": "105"
+    },
+    "model": "experiment.eegelectrodeposition"
+  },
+  {
+    "pk": 114,
+    "fields": {
+      "position_reference": null,
+      "coordinate_y": 222,
+      "coordinate_x": 371,
+      "eeg_electrode_localization_system": 1,
+      "name": "106"
+    },
+    "model": "experiment.eegelectrodeposition"
+  },
+  {
+    "pk": 115,
+    "fields": {
+      "position_reference": null,
+      "coordinate_y": 301,
+      "coordinate_x": 621,
+      "eeg_electrode_localization_system": 1,
+      "name": "107"
+    },
+    "model": "experiment.eegelectrodeposition"
+  },
+  {
+    "pk": 116,
+    "fields": {
+      "position_reference": null,
+      "coordinate_y": 246,
+      "coordinate_x": 559,
+      "eeg_electrode_localization_system": 1,
+      "name": "108"
+    },
+    "model": "experiment.eegelectrodeposition"
+  },
+  {
+    "pk": 117,
+    "fields": {
+      "position_reference": null,
+      "coordinate_y": 223,
+      "coordinate_x": 527,
+      "eeg_electrode_localization_system": 1,
+      "name": "109"
+    },
+    "model": "experiment.eegelectrodeposition"
+  },
+  {
+    "pk": 118,
+    "fields": {
+      "position_reference": null,
+      "coordinate_y": 211,
+      "coordinate_x": 482,
+      "eeg_electrode_localization_system": 1,
+      "name": "110"
+    },
+    "model": "experiment.eegelectrodeposition"
+  },
+  {
+    "pk": 119,
+    "fields": {
+      "position_reference": null,
+      "coordinate_y": 203,
+      "coordinate_x": 439,
+      "eeg_electrode_localization_system": 1,
+      "name": "111"
+    },
+    "model": "experiment.eegelectrodeposition"
+  },
+  {
+    "pk": 120,
+    "fields": {
+      "position_reference": null,
+      "coordinate_y": 199,
+      "coordinate_x": 389,
+      "eeg_electrode_localization_system": 1,
+      "name": "112"
+    },
+    "model": "experiment.eegelectrodeposition"
+  },
+  {
+    "pk": 121,
+    "fields": {
+      "position_reference": null,
+      "coordinate_y": 249,
+      "coordinate_x": 631,
+      "eeg_electrode_localization_system": 1,
+      "name": "113"
+    },
+    "model": "experiment.eegelectrodeposition"
+  },
+  {
+    "pk": 122,
+    "fields": {
+      "position_reference": null,
+      "coordinate_y": 215,
+      "coordinate_x": 592,
+      "eeg_electrode_localization_system": 1,
+      "name": "114"
+    },
+    "model": "experiment.eegelectrodeposition"
+  },
+  {
+    "pk": 123,
+    "fields": {
+      "position_reference": null,
+      "coordinate_y": 195,
+      "coordinate_x": 549,
+      "eeg_electrode_localization_system": 1,
+      "name": "115"
+    },
+    "model": "experiment.eegelectrodeposition"
+  },
+  {
+    "pk": 124,
+    "fields": {
+      "position_reference": null,
+      "coordinate_y": 185,
+      "coordinate_x": 506,
+      "eeg_electrode_localization_system": 1,
+      "name": "116"
+    },
+    "model": "experiment.eegelectrodeposition"
+  },
+  {
+    "pk": 125,
+    "fields": {
+      "position_reference": null,
+      "coordinate_y": 179,
+      "coordinate_x": 461,
+      "eeg_electrode_localization_system": 1,
+      "name": "117"
+    },
+    "model": "experiment.eegelectrodeposition"
+  },
+  {
+    "pk": 126,
+    "fields": {
+      "position_reference": null,
+      "coordinate_y": 180,
+      "coordinate_x": 413,
+      "eeg_electrode_localization_system": 1,
+      "name": "118"
+    },
+    "model": "experiment.eegelectrodeposition"
+  },
+  {
+    "pk": 127,
+    "fields": {
+      "position_reference": null,
+      "coordinate_y": 173,
+      "coordinate_x": 660,
+      "eeg_electrode_localization_system": 1,
+      "name": "119"
+    },
+    "model": "experiment.eegelectrodeposition"
+  },
+  {
+    "pk": 128,
+    "fields": {
+      "position_reference": null,
+      "coordinate_y": 176,
+      "coordinate_x": 616,
+      "eeg_electrode_localization_system": 1,
+      "name": "120"
+    },
+    "model": "experiment.eegelectrodeposition"
+  },
+  {
+    "pk": 129,
+    "fields": {
+      "position_reference": null,
+      "coordinate_y": 157,
+      "coordinate_x": 568,
+      "eeg_electrode_localization_system": 1,
+      "name": "121"
+    },
+    "model": "experiment.eegelectrodeposition"
+  },
+  {
+    "pk": 130,
+    "fields": {
+      "position_reference": null,
+      "coordinate_y": 151,
+      "coordinate_x": 522,
+      "eeg_electrode_localization_system": 1,
+      "name": "122"
+    },
+    "model": "experiment.eegelectrodeposition"
+  },
+  {
+    "pk": 131,
+    "fields": {
+      "position_reference": null,
+      "coordinate_y": 152,
+      "coordinate_x": 477,
+      "eeg_electrode_localization_system": 1,
+      "name": "123"
+    },
+    "model": "experiment.eegelectrodeposition"
+  },
+  {
+    "pk": 132,
+    "fields": {
+      "position_reference": null,
+      "coordinate_y": 159,
+      "coordinate_x": 434,
+      "eeg_electrode_localization_system": 1,
+      "name": "124"
+    },
+    "model": "experiment.eegelectrodeposition"
+  },
+  {
+    "pk": 133,
+    "fields": {
+      "position_reference": null,
+      "coordinate_y": 110,
+      "coordinate_x": 568,
+      "eeg_electrode_localization_system": 1,
+      "name": "125"
+    },
+    "model": "experiment.eegelectrodeposition"
+  },
+  {
+    "pk": 134,
+    "fields": {
+      "position_reference": null,
+      "coordinate_y": 17,
+      "coordinate_x": 393,
+      "eeg_electrode_localization_system": 1,
+      "name": "126"
+    },
+    "model": "experiment.eegelectrodeposition"
+  },
+  {
+    "pk": 135,
+    "fields": {
+      "position_reference": null,
+      "coordinate_y": 18,
+      "coordinate_x": 308,
+      "eeg_electrode_localization_system": 1,
+      "name": "127"
+    },
+    "model": "experiment.eegelectrodeposition"
+  },
+  {
+    "pk": 136,
+    "fields": {
+      "position_reference": null,
+      "coordinate_y": 110,
+      "coordinate_x": 135,
+      "eeg_electrode_localization_system": 1,
+      "name": "128"
+    },
+    "model": "experiment.eegelectrodeposition"
+  },
+  {
+    "pk": 4,
+    "fields": {
+      "manufacturer": 1,
+      "equipment_type": "eeg_machine",
+      "identification": "Geodesic EEGSystem 400",
+      "serial_number": "123412341234",
+      "description": "GES 400 \u2014 the core product of the GES 400 series, the GES 400 product introduces EGI\u2019s new ADAPT amplifier technology, which builds on-board computing directly into the amplifier and introduces several new hardware and firmware upgrades."
+    },
+    "model": "experiment.equipment"
+  },
+  {
+    "pk": 5,
+    "fields": {
+      "manufacturer": 1,
+      "equipment_type": "eeg_amplifier",
+      "identification": "Net Amps 400 series amplifiers",
+      "serial_number": "789078907890",
+      "description": "The Net Amps 400 series amplifiers are specifically designed for EEG acquisition using EGI's HydroCel Geodesic Sensor Net with 32, 64, 128, or 256 EEG channels, with additional capabilities for input from up to 32 bipolar channels. Three amplifier configurations allow you to choose the best one for your needs."
+    },
+    "model": "experiment.equipment"
+  },
+  {
+    "pk": 8,
+    "fields": {
+      "manufacturer": 2,
+      "equipment_type": "eeg_machine",
+      "identification": "BrainVision actiCHamp",
+      "serial_number": "123123123123",
+      "description": "The actiCHamp (active channel amplifier) is a 24-bit battery-supplied amplifier that can be used with 32, 64, 96, 128 and 160 EEG channels."
+    },
+    "model": "experiment.equipment"
+  },
+  {
+    "pk": 9,
+    "fields": {
+      "manufacturer": 2,
+      "equipment_type": "eeg_amplifier",
+      "identification": "BrainAmp Standard",
+      "serial_number": "567856785678",
+      "description": "Thanks to its 5 kHz sampling rate per channel, the BrainAmp can be used to record EEG, EOG, EMG signals as well as evoked potentials with a frequency up to 1 kHz. The 16 bit TTL trigger input allows the detection of a large number of markers from visual, accoustic, electrical, magnetic or other stimulation modalities."
+    },
+    "model": "experiment.equipment"
+  },
+  {
+    "pk": 11,
+    "fields": {
+      "manufacturer": 1,
+      "equipment_type": "eeg_electrode_net",
+      "identification": "128 channles HCGSN",
+      "serial_number": "",
+      "description": ""
+    },
+    "model": "experiment.equipment"
+  },
+  {
+    "pk": 4,
+    "fields": {
+      "software_version": "Net Station 5 suite",
+      "number_of_channels": 256
+    },
+    "model": "experiment.eegmachine"
+  },
+  {
+    "pk": 8,
+    "fields": {
+      "software_version": "PyCorder",
+      "number_of_channels": 160
+    },
+    "model": "experiment.eegmachine"
+  },
+  {
+    "pk": 5,
+    "fields": {
+      "gain": 60.0
+    },
+    "model": "experiment.eegamplifier"
+  },
+  {
+    "pk": 9,
+    "fields": {
+      "gain": 60.0
+    },
+    "model": "experiment.eegamplifier"
+  },
+  {
+    "pk": 11,
+    "fields": {
+      "electrode_model_default": 5
+    },
+    "model": "experiment.eegelectrodenet"
+  },
+  {
+    "pk": 11,
+    "fields": {
+      "material": 1
+    },
+    "model": "experiment.eegelectrodecap"
+  },
+  {
+    "pk": 6,
+    "fields": {
+      "eeg_electrode_net": 11,
+      "eeg_electrode_localization_system": 1
+    },
+    "model": "experiment.eegelectrodenetsystem"
+  }
+]

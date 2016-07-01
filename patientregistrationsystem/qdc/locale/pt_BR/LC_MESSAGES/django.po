@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2016-06-23 19:04-0300\n"
+"POT-Creation-Date: 2016-06-27 09:36-0300\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -692,7 +692,6 @@ msgstr "Alterar senha"
 
 #: templates/registration/change_password_custom.html:67
 #: templates/registration/password_reset_confirm.html:146
-#: templates/registration/password_reset_confirm_o.html:65
 msgid ""
 "Password must contain at least 8 characters, including at least one "
 "uppercase letter, digit or special character."
@@ -701,12 +700,10 @@ msgstr ""
 "maiúscula, dígito ou caractere especial."
 
 #: templates/registration/change_password_custom.html:109
-#: templates/registration/password_reset_confirm_o.html:108
 msgid "Save"
 msgstr "Salvar"
 
 #: templates/registration/change_password_custom.html:112
-#: templates/registration/password_reset_confirm_o.html:111
 msgid "Cancel"
 msgstr "Cancelar"
 
@@ -789,7 +786,6 @@ msgid "Access"
 msgstr "Acessar"
 
 #: templates/registration/password_reset_confirm.html:143
-#: templates/registration/password_reset_confirm_o.html:57
 #: templates/registration/password_reset_form.html:88
 msgid "Reset password"
 msgstr "Redefinir senha"
@@ -807,12 +803,10 @@ msgid "Confirm"
 msgstr "Confirmar"
 
 #: templates/registration/password_reset_confirm.html:155
-#: templates/registration/password_reset_confirm_o.html:118
 msgid "Password reset failed."
 msgstr "Redefinição de senha falhou."
 
 #: templates/registration/password_reset_confirm.html:156
-#: templates/registration/password_reset_confirm_o.html:119
 msgid ""
 "Invalid link for password reset, possibly because this link has already been "
 "used previously. <br/>\n"

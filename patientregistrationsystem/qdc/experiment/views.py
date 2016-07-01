@@ -58,7 +58,8 @@ icon_class = {
     'task': 'glyphicon glyphicon-check',
     'task_experiment': 'glyphicon glyphicon-wrench',
     'eeg': 'glyphicon glyphicon-flash',
-    'emg': 'glyphicon glyphicon-stats'
+    'emg': 'glyphicon glyphicon-stats',
+    'experimental_protocol': 'glyphicon glyphicon-tasks'
 }
 
 delimiter = "-"
@@ -1398,6 +1399,23 @@ def number_of_used_positions(eeg_setting):
 
 @login_required
 @permission_required('experiment.change_experiment')
+def eeg_electrode_cap_setting(request, eeg_setting_id,
+                                        template_name="experiment/eeg_electrode_cap_coordinates_register.html"):
+
+    eeg_setting = get_object_or_404(EEGSetting, pk=eeg_setting_id)
+
+    if get_can_change(request.user, eeg_setting.experiment.research_project):
+
+        context = {
+                   "eeg_setting": eeg_setting,
+                   }
+
+        return render(request, template_name, context)
+    else:
+        raise PermissionDenied
+
+@login_required
+@permission_required('experiment.change_experiment')
 def edit_eeg_electrode_position_setting(request, eeg_setting_id,
                                         template_name="experiment/eeg_setting_electrode_position_status.html"):
 
@@ -2325,34 +2343,55 @@ def eegelectrodenet_update(request, eegelectrodenet_id, template_name="experimen
     if request.method == "POST":
         if request.POST['action'] == "save":
             if eegelectrodenet_form.is_valid():
-                localization_systems = get_localization_system(request.POST)
-                if eegelectrodenet_form.has_changed() or localization_systems:
-                    if localization_systems:
-                        for localization_system_item in localization_systems:
-                            localization_system_id = localization_system_item.split("_")[-1]
-                            if request.POST[localization_system_item] == "on":
-                                eeg_electrode_net_system = EEGElectrodeNetSystem()
-                                eeg_electrode_net_system.eeg_electrode_net_id=eegelectrodenet.id
-                                eeg_electrode_net_system.eeg_electrode_localization_system_id=localization_system_id
-                                eeg_electrode_net_system.save()
-                            else:
-                                net_system = EEGElectrodeNetSystem.objects.filter(
-                                    eeg_electrode_net=eegelectrodenet,
-                                    eeg_electrode_localization_system=localization_system_item)
-                                if net_system:
-                                    messages.error(
-                                        request,
-                                        _('It is not possible to delete localization system, since it in use.'))
-                                else:
-                                    eeg_electrode_net_system = EEGElectrodeNetSystem.objects.get(
-                                        eeg_electrode_net_id=eegelectrodenet.id,
-                                        eeg_electrode_localization_system_id=localization_system_id)
-                                    eeg_electrode_net_system.delete()
 
-                    if is_a_cap and cap_form.has_changed():
-                        cap_form.save()
-                    if eegelectrodenet_form.has_changed():
-                        eegelectrodenet_form.save()
+                changed = False
+
+                new_localization_systems = get_localization_system(request.POST)
+
+                current_localization_systems = \
+                    [item.eeg_electrode_localization_system.id
+                     for item in EEGElectrodeNetSystem.objects.filter(eeg_electrode_net_id=eegelectrodenet_id)]
+
+                # Checking if some localization_system was unchecked
+                for item in current_localization_systems:
+
+                    if "localization_system_" + str(item) not in new_localization_systems:
+
+                        # get the net_system
+                        eeg_electrode_net_system = \
+                            EEGElectrodeNetSystem.objects.filter(
+                                eeg_electrode_net=eegelectrodenet, eeg_electrode_localization_system_id=item)[0]
+
+                        # check if the net_system is not been used by some layout_setting
+                        # (the used net_system was rendered as disabled)
+                        if not EEGElectrodeLayoutSetting.objects.filter(
+                                eeg_electrode_net_system=eeg_electrode_net_system).exists():
+                            eeg_electrode_net_system.delete()
+                            changed = True
+
+                # Checking if some localization_system was checked
+                for item in new_localization_systems:
+
+                    localization_system_id = item.split("_")[-1]
+
+                    if localization_system_id not in current_localization_systems:
+
+                        # create a new net_system
+                        eeg_electrode_net_system = EEGElectrodeNetSystem()
+                        eeg_electrode_net_system.eeg_electrode_net_id=eegelectrodenet.id
+                        eeg_electrode_net_system.eeg_electrode_localization_system_id=localization_system_id
+                        eeg_electrode_net_system.save()
+                        changed = True
+
+                if is_a_cap and cap_form.has_changed():
+                    cap_form.save()
+                    changed = True
+
+                if eegelectrodenet_form.has_changed():
+                    eegelectrodenet_form.save()
+                    changed = True
+
+                if changed:
                     messages.success(request, _('EEG electrode net updated successfully.'))
                 else:
                     messages.success(request, _('There is no changes to save.'))
@@ -2416,16 +2455,19 @@ def eegelectrodenet_view(request, eegelectrodenet_id, template_name="experiment/
         if request.POST['action'] == "remove":
             net_system = EEGElectrodeNetSystem.objects.filter(eeg_electrode_net=eegelectrodenet)
             if net_system and EEGElectrodeLayoutSetting.objects.filter(eeg_electrode_net_system=net_system):
-                messages.error(request, _('EEG electrode net cannot be removed because it is used in EEG electrode system.'))
+                messages.error(request,
+                               _('EEG electrode net cannot be removed because it is used in EEG electrode system.'))
                 redirect_url = reverse("eegelectrodenet_view", args=(eegelectrodenet_id,))
                 return HttpResponseRedirect(redirect_url)
             else:
                 try:
                     if cap:
                         if cap_size_list:
-                            eeg_data = EEGData.objects.filter(eeg_electrode_net=cap_size_list)
+                            eeg_data = EEGData.objects.filter(eeg_cap_size__in=cap_size_list)
                             if eeg_data:
-                                messages.error(request, _('EEG electrode net cannot be removed because cap size is associated with EEG data.'))
+                                messages.error(request,
+                                               _('EEG electrode net cannot be removed because '
+                                                 'cap size is associated with EEG data.'))
                                 redirect_url = reverse("eegelectrodenet_view", args=(eegelectrodenet_id,))
                                 return HttpResponseRedirect(redirect_url)
                             cap_size_list.delete()
@@ -3907,7 +3949,14 @@ def subject_additional_data_view(request, group_id, subject_id,
     subject = get_object_or_404(Subject, id=subject_id)
     subject_of_group = get_object_or_404(SubjectOfGroup, group=group, subject=subject)
 
-    data_collections = []
+    # First element of the list is associated to the whole experimental protocol
+    data_collections = [
+        {'component_configuration': None,
+         'path': None,
+         'additional_data_files': AdditionalData.objects.filter(subject_of_group=subject_of_group,
+                                                                data_configuration_tree=None),
+         'icon_class': icon_class['experimental_protocol']}
+    ]
 
     list_of_paths = create_list_of_trees(group.experimental_protocol, None)
 
@@ -3946,11 +3995,6 @@ def subject_additional_data_create(request, group_id, subject_id, path_of_config
 
     if get_can_change(request.user, group.experiment.research_project):
 
-        list_of_path = [int(item) for item in path_of_configuration.split('-')]
-        component_configuration_id = list_of_path[-1]
-
-        component_configuration = get_object_or_404(ComponentConfiguration, id=component_configuration_id)
-
         additional_data_form = AdditionalDataForm(None)
 
         file_format_list = file_format_code()
@@ -3962,17 +4006,22 @@ def subject_additional_data_create(request, group_id, subject_id, path_of_config
 
                 if additional_data_form.is_valid():
 
-                    data_configuration_tree_id = list_data_configuration_tree(component_configuration_id, list_of_path)
-                    if not data_configuration_tree_id:
-                        data_configuration_tree_id = create_data_configuration_tree(list_of_path)
+                    data_configuration_tree = None
+                    if path_of_configuration != '0':
+                        list_of_path = [int(item) for item in path_of_configuration.split('-')]
+                        data_configuration_tree_id = list_data_configuration_tree(list_of_path[-1], list_of_path)
+                        if not data_configuration_tree_id:
+                            data_configuration_tree_id = create_data_configuration_tree(list_of_path)
+                        data_configuration_tree = get_object_or_404(DataConfigurationTree,
+                                                                    pk=data_configuration_tree_id)
 
                     subject = get_object_or_404(Subject, pk=subject_id)
                     subject_of_group = get_object_or_404(SubjectOfGroup, subject=subject, group_id=group_id)
 
                     additional_data_added = additional_data_form.save(commit=False)
                     additional_data_added.subject_of_group = subject_of_group
-                    additional_data_added.component_configuration = component_configuration
-                    additional_data_added.data_configuration_tree_id = data_configuration_tree_id
+                    if data_configuration_tree:
+                        additional_data_added.data_configuration_tree = data_configuration_tree
 
                     # PS: it was necessary adding these 2 lines because Django raised, I do not why (Evandro),
                     # the following error 'AdditionalData' object has no attribute 'group'
@@ -3990,7 +4039,6 @@ def subject_additional_data_create(request, group_id, subject_id, path_of_config
                    "creating": True,
                    "editing": True,
                    "group": group,
-                   "component_configuration": component_configuration,
                    "additional_data_form": additional_data_form,
                    "file_format_list": file_format_list,
                    "subject": get_object_or_404(Subject, pk=subject_id)
@@ -4736,16 +4784,16 @@ def remove_component_configuration(request, conf):
 
 
 def check_experiment(experiment):
-    experiment_id = experiment.id
+    """
+    Checks if the experiment has data collection for some participant
+    :param experiment:
+    :return:
+    """
     experiment_with_data = False
-
-    for group in Group.objects.filter(experiment_id=experiment_id):
-        subject_list = [item.pk for item in SubjectOfGroup.objects.filter(group=group)]
-        eegdata_list = EEGData.objects.filter(subject_of_group_id__in=subject_list)
-        questionnaire_response_list = QuestionnaireResponse.objects.filter(subject_of_group_id__in=subject_list)
-        if eegdata_list or questionnaire_response_list:
+    for group in Group.objects.filter(experiment=experiment):
+        if group_has_data_collection(group.id):
             experiment_with_data = True
-
+            break
     return experiment_with_data
 
 

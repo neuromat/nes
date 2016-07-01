@@ -2,17 +2,11 @@
 {% load i18n admin_static %}
 
 {% block specific_header %}
-    <script src="{% static 'quiz/js/eeg_electrode_position_map.js' %}"></script>
 {% endblock %}
 
 {% block subcontent %}
 
     <div id="electrode_model" class="tab-pane fade in active">
-
-        <div hidden="hidden">
-            <input id="eeg_electrode_position" type="text" value="{{ json_list }}">
-            <input id="map_file" type="text" value="{{ eeg_setting.eeg_electrode_layout_setting.eeg_electrode_net_system.eeg_electrode_localization_system.map_image_file.url }}">
-        </div>
 
         <div style="width:100%;">
             <h4>{% trans "Step 3 of 3" %}</h4>

@@ -9,7 +9,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2016-06-23 19:04-0300\n"
+"POT-Creation-Date: 2016-06-27 09:36-0300\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -367,7 +367,6 @@ msgstr "História social"
 
 #: patient/templates/patient/register.html:56
 #: patient/templates/patient/register.html:70
-#: patient/templates/patient/register_questionnaires.html:21
 msgid "Medical evaluation"
 msgstr "Avaliações médicas"
 
@@ -545,6 +544,10 @@ msgstr ""
 "Participante já foi excluído anteriormente.\n"
 "                        Clique para restaurar cadastro ou Cancelar para "
 "cadastrar com mesmo nome."
+
+#: patient/templates/patient/register_questionnaires.html:21
+msgid "Entrance evaluation"
+msgstr "Avaliação de entrada"
 
 #: patient/templates/patient/register_questionnaires.html:29
 #: patient/templates/patient/register_questionnaires.html:125
