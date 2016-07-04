@@ -368,6 +368,7 @@ def patient_view_personal_data(request, patient, context):
         attrs={'data-country': 'id_country_state_address', 'id': 'id_chosen_state', 'disabled': 'true'})
 
     context.update({
+        'code': patient.code,
         'patient_form': patient_form,
         'telephone_formset': telephone_formset})
 
