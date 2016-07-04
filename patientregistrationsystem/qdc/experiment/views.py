@@ -945,24 +945,8 @@ def view_eeg_setting_type(request, eeg_setting_id, eeg_setting_type):
                 equipment_selected = setting.eeg_electrode_net_system.eeg_electrode_net
                 localization_system_selected = setting.eeg_electrode_net_system.eeg_electrode_localization_system
 
-                # selection_form = EEGElectrodeLocalizationSystemForm(
-                #     request.POST or None,
-                #     initial={
-                #         'number_of_electrodes':
-                #         setting.eeg_electrode_net_system.eeg_electrode_localization_system.number_of_electrodes})
-
-                # setting_form = EEGElectrodeLayoutSettingForm(
-                #     request.POST or None,
-                #     initial={'number_of_electrodes': setting.number_of_electrodes})
-
-                # for field in setting_form.fields:
-                #     setting_form.fields[field].widget.attrs['disabled'] = True
-
             else:
                 creating = True
-
-                # selection_form = EEGElectrodeLocalizationSystemForm(request.POST or None)
-                # setting_form = EEGElectrodeLayoutSettingForm(request.POST or None)
 
         # Settings related to equipment
         if eeg_setting_type in ["eeg_machine", "eeg_amplifier", "eeg_electrode_net_system"]:
