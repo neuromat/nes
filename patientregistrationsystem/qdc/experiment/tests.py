@@ -1658,17 +1658,19 @@ class EEGSettingTest(TestCase):
         self.assertEqual(response.status_code, 302)
         self.assertTrue(EEGSetting.objects.filter(name=name, description=description).exists())
 
+        eeg_setting = EEGSetting.objects.filter(name=name, description=description)[0]
+
         # screen to view a eeg_setting
-        response = self.client.get(reverse("eeg_setting_view", args=(self.experiment.id,)))
+        response = self.client.get(reverse("eeg_setting_view", args=(eeg_setting.id,)))
         self.assertEqual(response.status_code, 200)
 
         # screen to update a eeg_setting
-        response = self.client.get(reverse("eeg_setting_edit", args=(self.experiment.id,)))
+        response = self.client.get(reverse("eeg_setting_edit", args=(eeg_setting.id,)))
         self.assertEqual(response.status_code, 200)
 
         name = 'EEG setting name updated'
         description = 'EEG setting description updated'
         self.data = {'action': 'save', 'name': name, 'description': description}
-        response = self.client.post(reverse("eeg_setting_edit", args=(self.experiment.id,)), self.data)
+        response = self.client.post(reverse("eeg_setting_edit", args=(eeg_setting.id,)), self.data)
         self.assertEqual(response.status_code, 302)
         self.assertTrue(EEGSetting.objects.filter(name=name, description=description).exists())
