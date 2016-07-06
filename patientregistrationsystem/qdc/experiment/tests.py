@@ -113,7 +113,6 @@ class ExperimentalProtocolTest(TestCase):
 
     data = {}
 
-
     def setUp(self):
 
         logged, self.user, self.factory = ObjectsFactory.system_authentication(self)
@@ -1631,3 +1630,45 @@ class ResearchProjectTest(TestCase):
         self.assertEqual(response.status_code, 200)
         self.assertEqual(Keyword.objects.all().count(), 2)
         self.assertEqual(research_project2.keywords.count(), 1)
+
+
+class EEGSettingTest(TestCase):
+
+    data = {}
+
+    def setUp(self):
+
+        logged, self.user, self.factory = ObjectsFactory.system_authentication(self)
+        self.assertEqual(logged, True)
+
+        research_project = ObjectsFactory.create_research_project()
+
+        self.experiment = ObjectsFactory.create_experiment(research_project)
+
+    def test_crud_eeg_setting(self):
+
+        # screen to create a eeg_setting
+        response = self.client.get(reverse("eeg_setting_new", args=(self.experiment.id,)))
+        self.assertEqual(response.status_code, 200)
+
+        name = 'EEG setting name'
+        description = 'EEG setting description'
+        self.data = {'action': 'save', 'name': name, 'description': description}
+        response = self.client.post(reverse("eeg_setting_new", args=(self.experiment.id,)), self.data)
+        self.assertEqual(response.status_code, 302)
+        self.assertTrue(EEGSetting.objects.filter(name=name, description=description).exists())
+
+        # screen to view a eeg_setting
+        response = self.client.get(reverse("eeg_setting_view", args=(self.experiment.id,)))
+        self.assertEqual(response.status_code, 200)
+
+        # screen to update a eeg_setting
+        response = self.client.get(reverse("eeg_setting_edit", args=(self.experiment.id,)))
+        self.assertEqual(response.status_code, 200)
+
+        name = 'EEG setting name updated'
+        description = 'EEG setting description updated'
+        self.data = {'action': 'save', 'name': name, 'description': description}
+        response = self.client.post(reverse("eeg_setting_edit", args=(self.experiment.id,)), self.data)
+        self.assertEqual(response.status_code, 302)
+        self.assertTrue(EEGSetting.objects.filter(name=name, description=description).exists())
