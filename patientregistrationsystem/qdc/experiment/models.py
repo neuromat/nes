@@ -101,6 +101,13 @@ class Manufacturer(models.Model):
         return self.name
 
 
+class Tag(models.Model):
+    name = models.CharField(max_length=50, null=False, blank=False)
+
+    def __str__(self):
+        return self.name
+
+
 class Equipment(models.Model):
     EQUIPMENT_TYPES = (
         ("eeg_machine", _("EEG Machine")),
