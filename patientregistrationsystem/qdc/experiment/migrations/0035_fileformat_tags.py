@@ -7,7 +7,7 @@ from django.db import models, migrations
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('experiment', '0033_tag'),
+        ('experiment', '0034_refactoring_eeg_tables'),
     ]
 
     operations = [
