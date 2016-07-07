@@ -25,10 +25,10 @@ from neo import io
 from experiment.models import Experiment, Subject, QuestionnaireResponse, SubjectOfGroup, Group, Component, \
     ComponentConfiguration, Questionnaire, Task, Stimulus, Pause, Instruction, Block, \
     TaskForTheExperimenter, ClassificationOfDiseases, ResearchProject, Keyword, EEG, EMG, EEGData, FileFormat, \
-    EEGSetting, Equipment, Manufacturer, EEGMachine, EEGAmplifier, EEGElectrodeNet, DataConfigurationTree, \
+    EEGSetting, Equipment, Manufacturer, EEGMachine, Amplifier, EEGElectrodeNet, DataConfigurationTree, \
     EEGMachineSetting, EEGAmplifierSetting, EEGSolutionSetting, EEGFilterSetting, EEGElectrodeLayoutSetting, \
-    EEGFilterType, EEGSolution, EEGElectrodeLocalizationSystem, EEGElectrodeNetSystem, EEGElectrodePositionSetting, \
-    EEGElectrodeModel, EEGElectrodePositionCollectionStatus, EEGCapSize, EEGElectrodeCap, EEGElectrodePosition, \
+    FilterType, EEGSolution, EEGElectrodeLocalizationSystem, EEGElectrodeNetSystem, EEGElectrodePositionSetting, \
+    ElectrodeModel, EEGElectrodePositionCollectionStatus, EEGCapSize, EEGElectrodeCap, EEGElectrodePosition, \
     Material, AdditionalData, EMGData
 from experiment.forms import ExperimentForm, QuestionnaireResponseForm, FileForm, GroupForm, InstructionForm, \
     ComponentForm, StimulusForm, BlockForm, ComponentConfigurationForm, ResearchProjectForm, NumberOfUsesToInsertForm, \
@@ -783,7 +783,7 @@ def view_eeg_setting_type(request, eeg_setting_id, eeg_setting_type):
                         and 'equipment_selection' in request.POST \
                         and 'gain' in request.POST:
 
-                    eeg_amplifier = EEGAmplifier.objects.get(pk=request.POST['equipment_selection'])
+                    eeg_amplifier = Amplifier.objects.get(pk=request.POST['equipment_selection'])
 
                     eeg_amplifier_setting = EEGAmplifierSetting()
                     eeg_amplifier_setting.eeg_amplifier = eeg_amplifier
@@ -811,7 +811,7 @@ def view_eeg_setting_type(request, eeg_setting_id, eeg_setting_type):
                     return HttpResponseRedirect(redirect_url)
 
                 if 'filter_selection' in request.POST:
-                    eeg_filter = EEGFilterType.objects.get(pk=request.POST['filter_selection'])
+                    eeg_filter = FilterType.objects.get(pk=request.POST['filter_selection'])
 
                     eeg_filter_setting = EEGFilterSetting()
                     eeg_filter_setting.eeg_filter_type = eeg_filter
@@ -972,7 +972,7 @@ def view_eeg_setting_type(request, eeg_setting_id, eeg_setting_type):
                 equipment_form = EEGSolutionForm(request.POST or None, instance=solution_selected)
 
         if eeg_setting_type == "eeg_filter":
-            filter_list = EEGFilterType.objects.all()
+            filter_list = FilterType.objects.all()
 
             if creating:
                 equipment_form = EEGFilterForm(request.POST or None)
@@ -1057,7 +1057,7 @@ def edit_eeg_setting_type(request, eeg_setting_id, eeg_setting_type):
 
                 if 'equipment_selection' in request.POST and 'gain' in request.POST:
 
-                    eeg_amplifier = EEGAmplifier.objects.get(pk=request.POST['equipment_selection'])
+                    eeg_amplifier = Amplifier.objects.get(pk=request.POST['equipment_selection'])
 
                     eeg_amplifier_setting = eeg_setting.eeg_amplifier_setting
 
@@ -1086,7 +1086,7 @@ def edit_eeg_setting_type(request, eeg_setting_id, eeg_setting_type):
                     return HttpResponseRedirect(redirect_url)
 
                 if 'filter_selection' in request.POST:
-                    eeg_filter = EEGFilterType.objects.get(pk=request.POST['filter_selection'])
+                    eeg_filter = FilterType.objects.get(pk=request.POST['filter_selection'])
 
                     eeg_filter_setting = eeg_setting.eeg_filter_setting
 
@@ -1185,7 +1185,7 @@ def edit_eeg_setting_type(request, eeg_setting_id, eeg_setting_type):
             equipment_form = EEGSolutionForm(request.POST or None, instance=solution_selected)
 
         if eeg_setting_type == "eeg_filter":
-            filter_list = EEGFilterType.objects.all()
+            filter_list = FilterType.objects.all()
 
             equipment_form = EEGFilterForm(request.POST or None, instance=filter_selected)
 
@@ -1274,7 +1274,7 @@ def get_json_equipment_attributes(request, equipment_id):
         response_data['number_of_channels'] = equipment.number_of_channels
 
     elif equipment.equipment_type == "eeg_amplifier":
-        equipment = get_object_or_404(EEGAmplifier, pk=equipment_id)
+        equipment = get_object_or_404(Amplifier, pk=equipment_id)
         response_data['gain'] = equipment.gain
 
     # elif equipment.equipment_type == "eeg_electrode_net":
@@ -1301,7 +1301,7 @@ def get_json_solution_attributes(request, solution_id):
 @permission_required('experiment.change_experiment')
 def get_json_filter_attributes(request, filter_id):
 
-    filter_type = get_object_or_404(EEGFilterType, pk=filter_id)
+    filter_type = get_object_or_404(FilterType, pk=filter_id)
 
     response_data = {
         'description': filter_type.description,
@@ -1448,7 +1448,7 @@ def eeg_electrode_position_setting_model(request, eeg_setting_id,
 
     if get_can_change(request.user, eeg_setting.experiment.research_project):
 
-        eeg_electrode_model_list = EEGElectrodeModel.objects.all()
+        eeg_electrode_model_list = ElectrodeModel.objects.all()
 
         context = {"tab": "2",
                    "editing": False,
@@ -1470,7 +1470,7 @@ def edit_eeg_electrode_position_setting_model(
 
     if get_can_change(request.user, eeg_setting.experiment.research_project):
 
-        eeg_electrode_model_list = EEGElectrodeModel.objects.all()
+        eeg_electrode_model_list = ElectrodeModel.objects.all()
 
         if request.method == "POST":
             if request.POST['action'] == "save":
@@ -1738,7 +1738,7 @@ def eegmachine_view(request, eegmachine_id, template_name="experiment/eegmachine
 @login_required
 @permission_required('experiment.register_equipment')
 def eegamplifier_list(request, template_name="experiment/eegamplifier_list.html"):
-    return render(request, template_name, {"equipments": EEGAmplifier.objects.all().order_by('identification')})
+    return render(request, template_name, {"equipments": Amplifier.objects.all().order_by('identification')})
 
 
 @login_required
@@ -1778,7 +1778,7 @@ def eegamplifier_create(request, template_name="experiment/eegamplifier_register
 @login_required
 @permission_required('experiment.register_equipment')
 def eegamplifier_update(request, eegamplifier_id, template_name="experiment/eegamplifier_register.html"):
-    eegamplifier = get_object_or_404(EEGAmplifier, pk=eegamplifier_id)
+    eegamplifier = get_object_or_404(Amplifier, pk=eegamplifier_id)
 
     eegamplifier_form = EEGAmplifierRegisterForm(request.POST or None, instance=eegamplifier)
 
@@ -1805,7 +1805,7 @@ def eegamplifier_update(request, eegamplifier_id, template_name="experiment/eega
 @login_required
 @permission_required('experiment.register_equipment')
 def eegamplifier_view(request, eegamplifier_id, template_name="experiment/eegamplifier_register.html"):
-    eegamplifier = get_object_or_404(EEGAmplifier, pk=eegamplifier_id)
+    eegamplifier = get_object_or_404(Amplifier, pk=eegamplifier_id)
 
     eegamplifier_form = EEGAmplifierRegisterForm(request.POST or None, instance=eegamplifier)
 
@@ -1933,7 +1933,7 @@ def eegsolution_view(request, eegsolution_id, template_name="experiment/eegsolut
 @login_required
 @permission_required('experiment.register_equipment')
 def eegfiltertype_list(request, template_name="experiment/eegfiltertype_list.html"):
-    return render(request, template_name, {"equipments": EEGFilterType.objects.all().order_by('name')})
+    return render(request, template_name, {"equipments": FilterType.objects.all().order_by('name')})
 
 
 @login_required
@@ -1972,7 +1972,7 @@ def eegfiltertype_create(request, template_name="experiment/eegfiltertype_regist
 @login_required
 @permission_required('experiment.register_equipment')
 def eegfiltertype_update(request, eegfiltertype_id, template_name="experiment/eegfiltertype_register.html"):
-    eegfiltertype = get_object_or_404(EEGFilterType, pk=eegfiltertype_id)
+    eegfiltertype = get_object_or_404(FilterType, pk=eegfiltertype_id)
 
     eegfiltertype_form = EEGFilterTypeRegisterForm(request.POST or None, instance=eegfiltertype)
 
@@ -2000,7 +2000,7 @@ def eegfiltertype_update(request, eegfiltertype_id, template_name="experiment/ee
 @login_required
 @permission_required('experiment.register_equipment')
 def eegfiltertype_view(request, eegfiltertype_id, template_name="experiment/eegfiltertype_register.html"):
-    eegfiltertype = get_object_or_404(EEGFilterType, pk=eegfiltertype_id)
+    eegfiltertype = get_object_or_404(FilterType, pk=eegfiltertype_id)
 
     eegfiltertype_form = EEGFilterTypeRegisterForm(request.POST or None, instance=eegfiltertype)
 
@@ -2030,7 +2030,7 @@ def eegfiltertype_view(request, eegfiltertype_id, template_name="experiment/eegf
 @login_required
 @permission_required('experiment.register_equipment')
 def eegelectrodemodel_list(request, template_name="experiment/eegelectrodemodel_list.html"):
-    return render(request, template_name, {"equipments": EEGElectrodeModel.objects.all().order_by('name')})
+    return render(request, template_name, {"equipments": ElectrodeModel.objects.all().order_by('name')})
 
 
 @login_required
@@ -2069,7 +2069,7 @@ def eegelectrodemodel_create(request, template_name="experiment/eegelectrodemode
 @login_required
 @permission_required('experiment.register_equipment')
 def eegelectrodemodel_update(request, eegelectrodemodel_id, template_name="experiment/eegelectrodemodel_register.html"):
-    eegelectrodemodel = get_object_or_404(EEGElectrodeModel, pk=eegelectrodemodel_id)
+    eegelectrodemodel = get_object_or_404(ElectrodeModel, pk=eegelectrodemodel_id)
 
     eegelectrodemodel_form = EEGElectrodeModelRegisterForm(request.POST or None, instance=eegelectrodemodel)
 
@@ -2097,7 +2097,7 @@ def eegelectrodemodel_update(request, eegelectrodemodel_id, template_name="exper
 @login_required
 @permission_required('experiment.register_equipment')
 def eegelectrodemodel_view(request, eegelectrodemodel_id, template_name="experiment/eegelectrodemodel_register.html"):
-    eegelectrodemodel = get_object_or_404(EEGElectrodeModel, pk=eegelectrodemodel_id)
+    eegelectrodemodel = get_object_or_404(ElectrodeModel, pk=eegelectrodemodel_id)
 
     eegelectrodemodel_form = EEGElectrodeModelRegisterForm(request.POST or None, instance=eegelectrodemodel)
 
