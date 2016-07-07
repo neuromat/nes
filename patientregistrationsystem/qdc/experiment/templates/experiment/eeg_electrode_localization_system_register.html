@@ -113,13 +113,27 @@
                     </div>
                 </div>
 
-                {% if not editing %}
                     <div class="btn-group pull-left">
                         <a href="/experiment/eeg_electrode_localization_system/edit/{{ localization_system.id }}" class="btn btn-primary">{% trans "Edit" %}</a>
                     </div>
-                {% endif %}
 
             </div>
+
+            {% if not editing %}
+                <div class="container span6 offset3 well ">
+                    <h4>{% trans "Register electrode coordinates using image uploaded" %}</h4>
+                    <div class="form-group">
+                        <label class="control-label">{% trans "Map image file" %}</label>
+                        <br/>
+                        {{ localization_system_form.map_image_file.value }}
+                    </div>
+                    {% if perms.experiment.add_experiment %}
+                        <div class="btn-group pull-left">
+                            <a href="/experiment/eeg_electrode_localization_system/{{ localization_system.id }}/new_coordinates/" class="btn btn-primary">{% trans "Insert coordinates" %}</a>
+                        </div>
+                    {% endif %}
+                </div>
+            {% endif %}
 
             {% if not editing %}
                 <div class="container span6 offset3 well ">
