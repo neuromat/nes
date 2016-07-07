@@ -11,7 +11,7 @@ from django.utils.translation import ugettext_lazy as _
 from .models import Experiment, Group, Subject, \
     QuestionnaireResponse, SubjectOfGroup, ComponentConfiguration, ResearchProject, Keyword, StimulusType, \
     Component, Task, TaskForTheExperimenter, Stimulus, Instruction, Pause, Questionnaire, Block, \
-    EEG, FileFormat, EEGData, EEGSetting, DataConfigurationTree, EMG
+    EEG, FileFormat, EEGData, EEGSetting, DataConfigurationTree, EMG, Tag
 from .views import experiment_update, upload_file, research_project_update
 
 from patient.models import ClassificationOfDiseases
@@ -1339,12 +1339,14 @@ class SubjectTest(TestCase):
                          _("Date cannot be greater than today's date."))
 
         # create an eeg data file
+        tag_eeg = Tag.objects.get(name="EEG")
         file_format = FileFormat.objects.create(name='Text file', extension='txt')
+        file_format.tags.add(tag_eeg)
         file = SimpleUploadedFile('experiment/eeg/eeg_metadata.txt', b'rb')
         self.data = {'date': '29/08/2014', 'action': 'save',
                      'description': 'description of the file',
                      'file_format': file_format.id, 'file': file,
-                     'file_format_description': 'teste',
+                     'file_format_description': 'test',
                      'eeg_setting': eeg_setting.id}
         response = self.client.post(reverse('subject_eeg_data_create',
                                             args=(group.id, subject_mock.id, component_configuration.id)),
