@@ -224,8 +224,8 @@
                         {% trans "Are you sure you want to delete participant?" %}
                     </div>
                     <div class="modal-footer">
-                        <button type="button" class="btn btn-default" data-dismiss="modal">{% trans "Cancel" %}</button>
-                        <button type="submit" id="remove-participant" class="btn btn-danger" value="remove" name="action">{% trans "Delete" %}</button>
+                        <button onclick="disable_remove_button();" type="button" class="btn btn-default" data-dismiss="modal">{% trans "Cancel" %}</button>
+                        <button disabled="disabled" type="submit" id="remove-participant" class="btn btn-danger" value="remove" name="action">{% trans "Delete" %}</button>
                     </div>
                 </div>
             </div>
