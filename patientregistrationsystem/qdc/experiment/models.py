@@ -529,3 +529,153 @@ class EEGElectrodePositionCollectionStatus(models.Model):
 
     def __str__(self):
         return self.eeg_electrode_position_setting.eeg_electrode_position.name
+
+
+class Software(models.Model):
+    manufacturer = models.ForeignKey(Manufacturer)
+    name = models.CharField(max_length=150)
+    description = models.TextField(null=True, blank=True)
+
+    def __str__(self):
+        return self.name
+
+
+class SoftwareVersion(models.Model):
+    software = models.ForeignKey(Software)
+    name = models.CharField(max_length=150)
+
+    def __str__(self):
+        return self.name
+
+
+class ADConversor(Equipment):
+    signal_to_noise_rate = models.FloatField(null=True, blank=True)
+    sampling_rate = models.FloatField(null=True, blank=True)
+    resolution = models.FloatField(null=True, blank=True)
+
+
+class StandardizationSystem(models.Model):
+    name = models.CharField(max_length=150)
+    description = models.TextField(null=True, blank=True)
+
+    def __str__(self):
+        return self.name
+
+
+class Muscle(models.Model):
+    name = models.CharField(max_length=150)
+    anatomy_orign = models.TextField(null=True, blank=True)
+    anatomy_insertion = models.TextField(null=True, blank=True)
+    anatomy_function = models.TextField(null=True, blank=True)
+
+    def __str__(self):
+        return self.name
+
+
+class MuscleSubdivision(models.Model):
+    muscle = models.ForeignKey(Muscle)
+    name = models.CharField(max_length=150)
+
+    def __str__(self):
+        return self.name
+
+
+class MuscleSide(models.Model):
+    muscle = models.ForeignKey(Muscle)
+    name = models.CharField(max_length=150)
+
+    def __str__(self):
+        return self.name
+
+
+class EMGElectrodePlacement(models.Model):
+    standardization_system = models.ForeignKey(StandardizationSystem)
+    muscle_subdivision = models.ForeignKey(MuscleSubdivision)
+    placement_reference = models.ForeignKey(EMGElectrodePlacement)
+    photo = models.FileField(upload_to=get_emg_placement_dir, null=True, blank=True)
+    location = models.TextField(null=True, blank=True)
+
+
+def get_emg_placement_dir(instance, filename):
+    return "emg_placement_files/%s/%s" % \
+           (instance.id, filename)
+
+
+class EMGSurfacePlacement(EMGElectrodePlacement):
+    start_posture = models.TextField(null=True, blank=True)
+    orientation = models.TextField(null=True, blank=True)
+    fixation_on_the_skin = models.TextField(null=True, blank=True)
+    reference_electrode = models.TextField(null=True, blank=True)
+    clinical_test = models.TextField(null=True, blank=True)
+
+
+class EMGIntramuscularPlacement(EMGElectrodePlacement):
+    method_of_insertion = models.TextField(null=True, blank=True)
+    depth_of_insertion = models.TextField(null=True, blank=True)
+
+
+class EMGNeedlePlacement(EMGElectrodePlacement):
+    depth_of_insertion = models.TextField(null=True, blank=True)
+
+
+class EMGSetting(models.Model):
+    experiment = models.ForeignKey(Experiment)
+    name = models.CharField(max_length=150)
+    description = models.TextField()
+    copied_from = models.ForeignKey('self', null=True, related_name='children')
+    acquisition_software_version = models.ForeignKey(SoftwareVersion)
+
+    def __str__(self):
+        return self.name
+
+
+class EMGDigitalFilterSetting(models.Model):
+    emg_setting = models.OneToOneField(EMGSetting, primary_key=True, related_name='emg_digital_filter_setting')
+    filter_type = models.ForeignKey(FilterType)
+    low_pass = models.FloatField(null=True, blank=True)
+    high_pass = models.FloatField(null=True, blank=True)
+    band_pass = models.FloatField(null=True, blank=True)
+    notch = models.FloatField(null=True, blank=True)
+    order = models.IntegerField(null=True, blank=True)
+
+
+class EMGADConversorSetting(models.Model):
+    emg_setting = models.OneToOneField(EMGSetting, primary_key=True, related_name='emg_ad_conversor_setting')
+    ad_conversor = models.ForeignKey(ADConversor)
+    sampling_rate = models.FloatField(null=True, blank=True)
+
+
+class EMGElectrodeSetting(models.Model):
+    emg_setting = models.ForeignKey(EMGSetting, related_name='emg_electrode_settings')
+    electrode = models.ForeignKey(ElectrodeModel)
+
+
+class EMGPreamplifierSetting(models.Model):
+    emg_electrode_setting = models.OneToOneField(EMGElectrodeSetting,
+                                                 primary_key=True, related_name='emg_preamplifier_setting')
+    amplifier = models.ForeignKey(Amplifier)
+    gain = models.FloatField(null=True, blank=True)
+
+
+class EMGAmplifierSetting(models.Model):
+    emg_electrode_setting = models.OneToOneField(EMGElectrodeSetting,
+                                                 primary_key=True, related_name='emg_amplifier_setting')
+    amplifier = models.ForeignKey(Amplifier)
+    gain = models.FloatField(null=True, blank=True)
+
+
+class EMGAnalogFilterSetting(models.Model):
+    emg_electrode_setting = models.OneToOneField(EMGAmplifierSetting,
+                                                 primary_key=True, related_name='emg_analog_filter_setting')
+    low_pass = models.FloatField(null=True, blank=True)
+    high_pass = models.FloatField(null=True, blank=True)
+    band_pass = models.FloatField(null=True, blank=True)
+    notch = models.FloatField(null=True, blank=True)
+
+
+class EMGElectrodePlacementSetting(models.Model):
+    emg_electrode_setting = models.OneToOneField(EMGElectrodeSetting,
+                                                 primary_key=True, related_name='emg_electrode_placement_setting')
+    emg_electrode_placement = models.ForeignKey(EMGElectrodePlacement)
+    remarks = models.TextField()
+    muscle_side = models.ForeignKey(MuscleSide, null=True, blank=True)
