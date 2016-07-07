@@ -208,18 +208,12 @@ function getPosition(event){
 
 function sendPositions(){
     var url = "/experiment/eeg_electrode_localization_system/get_positions/" + localization_system_id;
-    //new_positions = [];
-    //for(var i in positions){
-    //    var position = positions[i];
-    //    if(position.id == ""){
-    //        new_positions.push(position);
-    //    }
-    //}
+    
     $.getJSON(
         url,
         {positions : JSON.stringify(positions)},
         function(data){
-            alert("Postions saved!")
+            alert(data[0].new + " positions saved! and " + data[0].delete + " positions deleted!")
         }
     );
 };
