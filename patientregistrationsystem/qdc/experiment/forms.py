@@ -10,7 +10,7 @@ from experiment.models import Experiment, QuestionnaireResponse, SubjectOfGroup,
     EEGSetting, Equipment, EEG, EEGMachine, EEGMachineSetting, Amplifier, EEGAmplifierSetting, \
     EEGSolution, EEGFilterSetting, FilterType, EEGElectrodeLocalizationSystem, \
     EEGCapSize, EEGElectrodeCap, EEGElectrodePosition, Manufacturer, ElectrodeModel, EEGElectrodeNet, Material, \
-    AdditionalData, EMGData
+    AdditionalData, EMGData, FileFormat
 
 
 class ExperimentForm(ModelForm):
@@ -287,6 +287,9 @@ class EEGDataForm(ModelForm):
 
     def __init__(self, *args, **kwargs):
         super(EEGDataForm, self).__init__(*args, **kwargs)
+
+        self.fields['file_format'].queryset = FileFormat.objects.filter(tags__name="EEG")
+
         initial = kwargs.get('initial')
         if initial and 'experiment' in initial:
             self.fields['eeg_setting'].queryset = EEGSetting.objects.filter(experiment=initial['experiment'])
@@ -621,6 +624,11 @@ class EMGDataForm(ModelForm):
             # It is not possible to set the 'required' attribute because it affects the edit screen
             # 'file': FileInput(attrs={'required': ""})
         }
+
+    def __init__(self, *args, **kwargs):
+        super(EMGDataForm, self).__init__(*args, **kwargs)
+
+        self.fields['file_format'].queryset = FileFormat.objects.filter(tags__name="EMG")
 
 
 class AdditionalDataForm(ModelForm):

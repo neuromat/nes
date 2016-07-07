@@ -3414,12 +3414,16 @@ def subject_eeg_view(request, group_id, subject_id,
     return render(request, template_name, context)
 
 
-def file_format_code():
+def file_format_code(tag=""):
     """
 
     :return: List of dicts. Each dict contains information about a file format.
     """
-    file_format = FileFormat.objects.all()
+    if tag:
+        file_format = FileFormat.objects.filter(tags__name=tag).distinct()
+    else:
+        file_format = FileFormat.objects.all()
+
     file_format_list = []
     for file_format_type in file_format:
         file_format_id = file_format_type.pk
@@ -3488,7 +3492,7 @@ def subject_eeg_data_create(request, group_id, subject_id, eeg_configuration_id,
         eeg_data_form = EEGDataForm(None, initial={'experiment': group.experiment,
                                                    'eeg_setting': eeg_step.eeg_setting_id})
 
-        file_format_list = file_format_code()
+        file_format_list = file_format_code("EEG")
 
         if request.method == "POST":
             if request.POST['action'] == "save":
@@ -3606,7 +3610,7 @@ def eeg_data_view(request, eeg_data_id, tab, template_name="experiment/subject_e
     for field in eeg_data_form.fields:
         eeg_data_form.fields[field].widget.attrs['disabled'] = True
 
-    file_format_list = file_format_code()
+    file_format_list = file_format_code("EEG")
 
     if request.method == "POST":
         if request.POST['action'] == "remove":
@@ -3648,7 +3652,6 @@ def eeg_data_edit(request, eeg_data_id, tab, template_name="experiment/subject_e
 
     eeg_step = get_object_or_404(EEG, id=eeg_data.data_configuration_tree.component_configuration.component.id)
 
-    file_format_list = file_format_code()
 
     if get_can_change(request.user, eeg_data.subject_of_group.group.experiment.research_project):
 
@@ -3711,6 +3714,8 @@ def eeg_data_edit(request, eeg_data_id, tab, template_name="experiment/subject_e
         else:
             eeg_data_form = EEGDataForm(request.POST or None, instance=eeg_data,
                                         initial={'experiment': eeg_data.subject_of_group.group.experiment})
+
+        file_format_list = file_format_code("EEG")
 
         context = {"group": eeg_data.subject_of_group.group,
                    "subject": eeg_data.subject_of_group.subject,
@@ -3786,7 +3791,7 @@ def subject_emg_data_create(request, group_id, subject_id, emg_configuration_id,
 
         emg_data_form = EMGDataForm(None)
 
-        file_format_list = file_format_code()
+        file_format_list = file_format_code("EMG")
 
         if request.method == "POST":
             if request.POST['action'] == "save":
@@ -3848,7 +3853,7 @@ def emg_data_view(request, emg_data_id, template_name="experiment/subject_emg_da
     for field in emg_data_form.fields:
         emg_data_form.fields[field].widget.attrs['disabled'] = True
 
-    file_format_list = file_format_code()
+    file_format_list = file_format_code("EMG")
 
     if request.method == "POST":
         if request.POST['action'] == "remove":
@@ -3883,8 +3888,6 @@ def emg_data_edit(request, emg_data_id, template_name="experiment/subject_emg_da
 
     emg_data = get_object_or_404(EMGData, pk=emg_data_id)
 
-    file_format_list = file_format_code()
-
     if get_can_change(request.user, emg_data.subject_of_group.group.experiment.research_project):
 
         if request.method == "POST":
@@ -3910,6 +3913,8 @@ def emg_data_edit(request, emg_data_id, template_name="experiment/subject_emg_da
 
         else:
             emg_data_form = EMGDataForm(request.POST or None, instance=emg_data)
+
+        file_format_list = file_format_code("EMG")
 
         context = {"group": emg_data.subject_of_group.group,
                    "subject": emg_data.subject_of_group.subject,
