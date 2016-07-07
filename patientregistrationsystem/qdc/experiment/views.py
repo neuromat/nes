@@ -25,10 +25,10 @@ from neo import io
 from experiment.models import Experiment, Subject, QuestionnaireResponse, SubjectOfGroup, Group, Component, \
     ComponentConfiguration, Questionnaire, Task, Stimulus, Pause, Instruction, Block, \
     TaskForTheExperimenter, ClassificationOfDiseases, ResearchProject, Keyword, EEG, EMG, EEGData, FileFormat, \
-    EEGSetting, Equipment, Manufacturer, EEGMachine, EEGAmplifier, EEGElectrodeNet, DataConfigurationTree, \
+    EEGSetting, Equipment, Manufacturer, EEGMachine, Amplifier, EEGElectrodeNet, DataConfigurationTree, \
     EEGMachineSetting, EEGAmplifierSetting, EEGSolutionSetting, EEGFilterSetting, EEGElectrodeLayoutSetting, \
-    EEGFilterType, EEGSolution, EEGElectrodeLocalizationSystem, EEGElectrodeNetSystem, EEGElectrodePositionSetting, \
-    EEGElectrodeModel, EEGElectrodePositionCollectionStatus, EEGCapSize, EEGElectrodeCap, EEGElectrodePosition, \
+    FilterType, EEGSolution, EEGElectrodeLocalizationSystem, EEGElectrodeNetSystem, EEGElectrodePositionSetting, \
+    ElectrodeModel, EEGElectrodePositionCollectionStatus, EEGCapSize, EEGElectrodeCap, EEGElectrodePosition, \
     Material, AdditionalData, EMGData
 from experiment.forms import ExperimentForm, QuestionnaireResponseForm, FileForm, GroupForm, InstructionForm, \
     ComponentForm, StimulusForm, BlockForm, ComponentConfigurationForm, ResearchProjectForm, NumberOfUsesToInsertForm, \
@@ -58,7 +58,8 @@ icon_class = {
     'task': 'glyphicon glyphicon-check',
     'task_experiment': 'glyphicon glyphicon-wrench',
     'eeg': 'glyphicon glyphicon-flash',
-    'emg': 'glyphicon glyphicon-stats'
+    'emg': 'glyphicon glyphicon-stats',
+    'experimental_protocol': 'glyphicon glyphicon-tasks'
 }
 
 delimiter = "-"
@@ -782,7 +783,7 @@ def view_eeg_setting_type(request, eeg_setting_id, eeg_setting_type):
                         and 'equipment_selection' in request.POST \
                         and 'gain' in request.POST:
 
-                    eeg_amplifier = EEGAmplifier.objects.get(pk=request.POST['equipment_selection'])
+                    eeg_amplifier = Amplifier.objects.get(pk=request.POST['equipment_selection'])
 
                     eeg_amplifier_setting = EEGAmplifierSetting()
                     eeg_amplifier_setting.eeg_amplifier = eeg_amplifier
@@ -810,7 +811,7 @@ def view_eeg_setting_type(request, eeg_setting_id, eeg_setting_type):
                     return HttpResponseRedirect(redirect_url)
 
                 if 'filter_selection' in request.POST:
-                    eeg_filter = EEGFilterType.objects.get(pk=request.POST['filter_selection'])
+                    eeg_filter = FilterType.objects.get(pk=request.POST['filter_selection'])
 
                     eeg_filter_setting = EEGFilterSetting()
                     eeg_filter_setting.eeg_filter_type = eeg_filter
@@ -944,24 +945,8 @@ def view_eeg_setting_type(request, eeg_setting_id, eeg_setting_type):
                 equipment_selected = setting.eeg_electrode_net_system.eeg_electrode_net
                 localization_system_selected = setting.eeg_electrode_net_system.eeg_electrode_localization_system
 
-                # selection_form = EEGElectrodeLocalizationSystemForm(
-                #     request.POST or None,
-                #     initial={
-                #         'number_of_electrodes':
-                #         setting.eeg_electrode_net_system.eeg_electrode_localization_system.number_of_electrodes})
-
-                # setting_form = EEGElectrodeLayoutSettingForm(
-                #     request.POST or None,
-                #     initial={'number_of_electrodes': setting.number_of_electrodes})
-
-                # for field in setting_form.fields:
-                #     setting_form.fields[field].widget.attrs['disabled'] = True
-
             else:
                 creating = True
-
-                # selection_form = EEGElectrodeLocalizationSystemForm(request.POST or None)
-                # setting_form = EEGElectrodeLayoutSettingForm(request.POST or None)
 
         # Settings related to equipment
         if eeg_setting_type in ["eeg_machine", "eeg_amplifier", "eeg_electrode_net_system"]:
@@ -987,7 +972,7 @@ def view_eeg_setting_type(request, eeg_setting_id, eeg_setting_type):
                 equipment_form = EEGSolutionForm(request.POST or None, instance=solution_selected)
 
         if eeg_setting_type == "eeg_filter":
-            filter_list = EEGFilterType.objects.all()
+            filter_list = FilterType.objects.all()
 
             if creating:
                 equipment_form = EEGFilterForm(request.POST or None)
@@ -1072,7 +1057,7 @@ def edit_eeg_setting_type(request, eeg_setting_id, eeg_setting_type):
 
                 if 'equipment_selection' in request.POST and 'gain' in request.POST:
 
-                    eeg_amplifier = EEGAmplifier.objects.get(pk=request.POST['equipment_selection'])
+                    eeg_amplifier = Amplifier.objects.get(pk=request.POST['equipment_selection'])
 
                     eeg_amplifier_setting = eeg_setting.eeg_amplifier_setting
 
@@ -1101,7 +1086,7 @@ def edit_eeg_setting_type(request, eeg_setting_id, eeg_setting_type):
                     return HttpResponseRedirect(redirect_url)
 
                 if 'filter_selection' in request.POST:
-                    eeg_filter = EEGFilterType.objects.get(pk=request.POST['filter_selection'])
+                    eeg_filter = FilterType.objects.get(pk=request.POST['filter_selection'])
 
                     eeg_filter_setting = eeg_setting.eeg_filter_setting
 
@@ -1200,7 +1185,7 @@ def edit_eeg_setting_type(request, eeg_setting_id, eeg_setting_type):
             equipment_form = EEGSolutionForm(request.POST or None, instance=solution_selected)
 
         if eeg_setting_type == "eeg_filter":
-            filter_list = EEGFilterType.objects.all()
+            filter_list = FilterType.objects.all()
 
             equipment_form = EEGFilterForm(request.POST or None, instance=filter_selected)
 
@@ -1310,7 +1295,7 @@ def get_json_equipment_attributes(request, equipment_id):
         response_data['number_of_channels'] = equipment.number_of_channels
 
     elif equipment.equipment_type == "eeg_amplifier":
-        equipment = get_object_or_404(EEGAmplifier, pk=equipment_id)
+        equipment = get_object_or_404(Amplifier, pk=equipment_id)
         response_data['gain'] = equipment.gain
 
     # elif equipment.equipment_type == "eeg_electrode_net":
@@ -1337,7 +1322,7 @@ def get_json_solution_attributes(request, solution_id):
 @permission_required('experiment.change_experiment')
 def get_json_filter_attributes(request, filter_id):
 
-    filter_type = get_object_or_404(EEGFilterType, pk=filter_id)
+    filter_type = get_object_or_404(FilterType, pk=filter_id)
 
     response_data = {
         'description': filter_type.description,
@@ -1484,7 +1469,7 @@ def eeg_electrode_position_setting_model(request, eeg_setting_id,
 
     if get_can_change(request.user, eeg_setting.experiment.research_project):
 
-        eeg_electrode_model_list = EEGElectrodeModel.objects.all()
+        eeg_electrode_model_list = ElectrodeModel.objects.all()
 
         context = {"tab": "2",
                    "editing": False,
@@ -1506,7 +1491,7 @@ def edit_eeg_electrode_position_setting_model(
 
     if get_can_change(request.user, eeg_setting.experiment.research_project):
 
-        eeg_electrode_model_list = EEGElectrodeModel.objects.all()
+        eeg_electrode_model_list = ElectrodeModel.objects.all()
 
         if request.method == "POST":
             if request.POST['action'] == "save":
@@ -1774,7 +1759,7 @@ def eegmachine_view(request, eegmachine_id, template_name="experiment/eegmachine
 @login_required
 @permission_required('experiment.register_equipment')
 def eegamplifier_list(request, template_name="experiment/eegamplifier_list.html"):
-    return render(request, template_name, {"equipments": EEGAmplifier.objects.all().order_by('identification')})
+    return render(request, template_name, {"equipments": Amplifier.objects.all().order_by('identification')})
 
 
 @login_required
@@ -1814,7 +1799,7 @@ def eegamplifier_create(request, template_name="experiment/eegamplifier_register
 @login_required
 @permission_required('experiment.register_equipment')
 def eegamplifier_update(request, eegamplifier_id, template_name="experiment/eegamplifier_register.html"):
-    eegamplifier = get_object_or_404(EEGAmplifier, pk=eegamplifier_id)
+    eegamplifier = get_object_or_404(Amplifier, pk=eegamplifier_id)
 
     eegamplifier_form = EEGAmplifierRegisterForm(request.POST or None, instance=eegamplifier)
 
@@ -1841,7 +1826,7 @@ def eegamplifier_update(request, eegamplifier_id, template_name="experiment/eega
 @login_required
 @permission_required('experiment.register_equipment')
 def eegamplifier_view(request, eegamplifier_id, template_name="experiment/eegamplifier_register.html"):
-    eegamplifier = get_object_or_404(EEGAmplifier, pk=eegamplifier_id)
+    eegamplifier = get_object_or_404(Amplifier, pk=eegamplifier_id)
 
     eegamplifier_form = EEGAmplifierRegisterForm(request.POST or None, instance=eegamplifier)
 
@@ -1969,7 +1954,7 @@ def eegsolution_view(request, eegsolution_id, template_name="experiment/eegsolut
 @login_required
 @permission_required('experiment.register_equipment')
 def eegfiltertype_list(request, template_name="experiment/eegfiltertype_list.html"):
-    return render(request, template_name, {"equipments": EEGFilterType.objects.all().order_by('name')})
+    return render(request, template_name, {"equipments": FilterType.objects.all().order_by('name')})
 
 
 @login_required
@@ -2008,7 +1993,7 @@ def eegfiltertype_create(request, template_name="experiment/eegfiltertype_regist
 @login_required
 @permission_required('experiment.register_equipment')
 def eegfiltertype_update(request, eegfiltertype_id, template_name="experiment/eegfiltertype_register.html"):
-    eegfiltertype = get_object_or_404(EEGFilterType, pk=eegfiltertype_id)
+    eegfiltertype = get_object_or_404(FilterType, pk=eegfiltertype_id)
 
     eegfiltertype_form = EEGFilterTypeRegisterForm(request.POST or None, instance=eegfiltertype)
 
@@ -2036,7 +2021,7 @@ def eegfiltertype_update(request, eegfiltertype_id, template_name="experiment/ee
 @login_required
 @permission_required('experiment.register_equipment')
 def eegfiltertype_view(request, eegfiltertype_id, template_name="experiment/eegfiltertype_register.html"):
-    eegfiltertype = get_object_or_404(EEGFilterType, pk=eegfiltertype_id)
+    eegfiltertype = get_object_or_404(FilterType, pk=eegfiltertype_id)
 
     eegfiltertype_form = EEGFilterTypeRegisterForm(request.POST or None, instance=eegfiltertype)
 
@@ -2066,7 +2051,7 @@ def eegfiltertype_view(request, eegfiltertype_id, template_name="experiment/eegf
 @login_required
 @permission_required('experiment.register_equipment')
 def eegelectrodemodel_list(request, template_name="experiment/eegelectrodemodel_list.html"):
-    return render(request, template_name, {"equipments": EEGElectrodeModel.objects.all().order_by('name')})
+    return render(request, template_name, {"equipments": ElectrodeModel.objects.all().order_by('name')})
 
 
 @login_required
@@ -2105,7 +2090,7 @@ def eegelectrodemodel_create(request, template_name="experiment/eegelectrodemode
 @login_required
 @permission_required('experiment.register_equipment')
 def eegelectrodemodel_update(request, eegelectrodemodel_id, template_name="experiment/eegelectrodemodel_register.html"):
-    eegelectrodemodel = get_object_or_404(EEGElectrodeModel, pk=eegelectrodemodel_id)
+    eegelectrodemodel = get_object_or_404(ElectrodeModel, pk=eegelectrodemodel_id)
 
     eegelectrodemodel_form = EEGElectrodeModelRegisterForm(request.POST or None, instance=eegelectrodemodel)
 
@@ -2133,7 +2118,7 @@ def eegelectrodemodel_update(request, eegelectrodemodel_id, template_name="exper
 @login_required
 @permission_required('experiment.register_equipment')
 def eegelectrodemodel_view(request, eegelectrodemodel_id, template_name="experiment/eegelectrodemodel_register.html"):
-    eegelectrodemodel = get_object_or_404(EEGElectrodeModel, pk=eegelectrodemodel_id)
+    eegelectrodemodel = get_object_or_404(ElectrodeModel, pk=eegelectrodemodel_id)
 
     eegelectrodemodel_form = EEGElectrodeModelRegisterForm(request.POST or None, instance=eegelectrodemodel)
 
@@ -2363,34 +2348,55 @@ def eegelectrodenet_update(request, eegelectrodenet_id, template_name="experimen
     if request.method == "POST":
         if request.POST['action'] == "save":
             if eegelectrodenet_form.is_valid():
-                localization_systems = get_localization_system(request.POST)
-                if eegelectrodenet_form.has_changed() or localization_systems:
-                    if localization_systems:
-                        for localization_system_item in localization_systems:
-                            localization_system_id = localization_system_item.split("_")[-1]
-                            if request.POST[localization_system_item] == "on":
-                                eeg_electrode_net_system = EEGElectrodeNetSystem()
-                                eeg_electrode_net_system.eeg_electrode_net_id=eegelectrodenet.id
-                                eeg_electrode_net_system.eeg_electrode_localization_system_id=localization_system_id
-                                eeg_electrode_net_system.save()
-                            else:
-                                net_system = EEGElectrodeNetSystem.objects.filter(
-                                    eeg_electrode_net=eegelectrodenet,
-                                    eeg_electrode_localization_system=localization_system_item)
-                                if net_system:
-                                    messages.error(
-                                        request,
-                                        _('It is not possible to delete localization system, since it in use.'))
-                                else:
-                                    eeg_electrode_net_system = EEGElectrodeNetSystem.objects.get(
-                                        eeg_electrode_net_id=eegelectrodenet.id,
-                                        eeg_electrode_localization_system_id=localization_system_id)
-                                    eeg_electrode_net_system.delete()
 
-                    if is_a_cap and cap_form.has_changed():
-                        cap_form.save()
-                    if eegelectrodenet_form.has_changed():
-                        eegelectrodenet_form.save()
+                changed = False
+
+                new_localization_systems = get_localization_system(request.POST)
+
+                current_localization_systems = \
+                    [item.eeg_electrode_localization_system.id
+                     for item in EEGElectrodeNetSystem.objects.filter(eeg_electrode_net_id=eegelectrodenet_id)]
+
+                # Checking if some localization_system was unchecked
+                for item in current_localization_systems:
+
+                    if "localization_system_" + str(item) not in new_localization_systems:
+
+                        # get the net_system
+                        eeg_electrode_net_system = \
+                            EEGElectrodeNetSystem.objects.filter(
+                                eeg_electrode_net=eegelectrodenet, eeg_electrode_localization_system_id=item)[0]
+
+                        # check if the net_system is not been used by some layout_setting
+                        # (the used net_system was rendered as disabled)
+                        if not EEGElectrodeLayoutSetting.objects.filter(
+                                eeg_electrode_net_system=eeg_electrode_net_system).exists():
+                            eeg_electrode_net_system.delete()
+                            changed = True
+
+                # Checking if some localization_system was checked
+                for item in new_localization_systems:
+
+                    localization_system_id = item.split("_")[-1]
+
+                    if localization_system_id not in current_localization_systems:
+
+                        # create a new net_system
+                        eeg_electrode_net_system = EEGElectrodeNetSystem()
+                        eeg_electrode_net_system.eeg_electrode_net_id=eegelectrodenet.id
+                        eeg_electrode_net_system.eeg_electrode_localization_system_id=localization_system_id
+                        eeg_electrode_net_system.save()
+                        changed = True
+
+                if is_a_cap and cap_form.has_changed():
+                    cap_form.save()
+                    changed = True
+
+                if eegelectrodenet_form.has_changed():
+                    eegelectrodenet_form.save()
+                    changed = True
+
+                if changed:
                     messages.success(request, _('EEG electrode net updated successfully.'))
                 else:
                     messages.success(request, _('There is no changes to save.'))
@@ -2454,16 +2460,19 @@ def eegelectrodenet_view(request, eegelectrodenet_id, template_name="experiment/
         if request.POST['action'] == "remove":
             net_system = EEGElectrodeNetSystem.objects.filter(eeg_electrode_net=eegelectrodenet)
             if net_system and EEGElectrodeLayoutSetting.objects.filter(eeg_electrode_net_system=net_system):
-                messages.error(request, _('EEG electrode net cannot be removed because it is used in EEG electrode system.'))
+                messages.error(request,
+                               _('EEG electrode net cannot be removed because it is used in EEG electrode system.'))
                 redirect_url = reverse("eegelectrodenet_view", args=(eegelectrodenet_id,))
                 return HttpResponseRedirect(redirect_url)
             else:
                 try:
                     if cap:
                         if cap_size_list:
-                            eeg_data = EEGData.objects.filter(eeg_electrode_net=cap_size_list)
+                            eeg_data = EEGData.objects.filter(eeg_cap_size__in=cap_size_list)
                             if eeg_data:
-                                messages.error(request, _('EEG electrode net cannot be removed because cap size is associated with EEG data.'))
+                                messages.error(request,
+                                               _('EEG electrode net cannot be removed because '
+                                                 'cap size is associated with EEG data.'))
                                 redirect_url = reverse("eegelectrodenet_view", args=(eegelectrodenet_id,))
                                 return HttpResponseRedirect(redirect_url)
                             cap_size_list.delete()
@@ -3945,7 +3954,14 @@ def subject_additional_data_view(request, group_id, subject_id,
     subject = get_object_or_404(Subject, id=subject_id)
     subject_of_group = get_object_or_404(SubjectOfGroup, group=group, subject=subject)
 
-    data_collections = []
+    # First element of the list is associated to the whole experimental protocol
+    data_collections = [
+        {'component_configuration': None,
+         'path': None,
+         'additional_data_files': AdditionalData.objects.filter(subject_of_group=subject_of_group,
+                                                                data_configuration_tree=None),
+         'icon_class': icon_class['experimental_protocol']}
+    ]
 
     list_of_paths = create_list_of_trees(group.experimental_protocol, None)
 
@@ -3984,11 +4000,6 @@ def subject_additional_data_create(request, group_id, subject_id, path_of_config
 
     if get_can_change(request.user, group.experiment.research_project):
 
-        list_of_path = [int(item) for item in path_of_configuration.split('-')]
-        component_configuration_id = list_of_path[-1]
-
-        component_configuration = get_object_or_404(ComponentConfiguration, id=component_configuration_id)
-
         additional_data_form = AdditionalDataForm(None)
 
         file_format_list = file_format_code()
@@ -4000,17 +4011,22 @@ def subject_additional_data_create(request, group_id, subject_id, path_of_config
 
                 if additional_data_form.is_valid():
 
-                    data_configuration_tree_id = list_data_configuration_tree(component_configuration_id, list_of_path)
-                    if not data_configuration_tree_id:
-                        data_configuration_tree_id = create_data_configuration_tree(list_of_path)
+                    data_configuration_tree = None
+                    if path_of_configuration != '0':
+                        list_of_path = [int(item) for item in path_of_configuration.split('-')]
+                        data_configuration_tree_id = list_data_configuration_tree(list_of_path[-1], list_of_path)
+                        if not data_configuration_tree_id:
+                            data_configuration_tree_id = create_data_configuration_tree(list_of_path)
+                        data_configuration_tree = get_object_or_404(DataConfigurationTree,
+                                                                    pk=data_configuration_tree_id)
 
                     subject = get_object_or_404(Subject, pk=subject_id)
                     subject_of_group = get_object_or_404(SubjectOfGroup, subject=subject, group_id=group_id)
 
                     additional_data_added = additional_data_form.save(commit=False)
                     additional_data_added.subject_of_group = subject_of_group
-                    additional_data_added.component_configuration = component_configuration
-                    additional_data_added.data_configuration_tree_id = data_configuration_tree_id
+                    if data_configuration_tree:
+                        additional_data_added.data_configuration_tree = data_configuration_tree
 
                     # PS: it was necessary adding these 2 lines because Django raised, I do not why (Evandro),
                     # the following error 'AdditionalData' object has no attribute 'group'
@@ -4028,7 +4044,6 @@ def subject_additional_data_create(request, group_id, subject_id, path_of_config
                    "creating": True,
                    "editing": True,
                    "group": group,
-                   "component_configuration": component_configuration,
                    "additional_data_form": additional_data_form,
                    "file_format_list": file_format_list,
                    "subject": get_object_or_404(Subject, pk=subject_id)
@@ -4774,16 +4789,16 @@ def remove_component_configuration(request, conf):
 
 
 def check_experiment(experiment):
-    experiment_id = experiment.id
+    """
+    Checks if the experiment has data collection for some participant
+    :param experiment:
+    :return:
+    """
     experiment_with_data = False
-
-    for group in Group.objects.filter(experiment_id=experiment_id):
-        subject_list = [item.pk for item in SubjectOfGroup.objects.filter(group=group)]
-        eegdata_list = EEGData.objects.filter(subject_of_group_id__in=subject_list)
-        questionnaire_response_list = QuestionnaireResponse.objects.filter(subject_of_group_id__in=subject_list)
-        if eegdata_list or questionnaire_response_list:
+    for group in Group.objects.filter(experiment=experiment):
+        if group_has_data_collection(group.id):
             experiment_with_data = True
-
+            break
     return experiment_with_data
 
 

@@ -70,25 +70,28 @@
                             </tr>
                             </thead>
                             <tbody>
-                            {% if not data_collections %}
-                                <tr>
-                                    <td>{% trans "(No data collection)" %}</td>
-                                    <td></td>
-                                </tr>
-                            {% else %}
                                 {% for data_collection in data_collections %}
                                     <tr>
                                         <td>
 
                                             <span class="{{ data_collection.icon_class }}"></span>
-                                            <b>{{ data_collection.component_configuration.component.identification }}</b>
-                                             <blockquote>
+
+                                            {% if data_collection.component_configuration %}
+
+                                                <b>{{ data_collection.component_configuration.component.identification }}</b>
+                                                <blockquote>
                                                 <i><h6>
                                                     {% for item in data_collection.path %}
                                                         {{ item.1 }} > {% if item.2 %}{{ item.2 }} > {% endif %} {% if forloop.last %}{{ item.3 }}{% endif %}
                                                     {% endfor %}
                                                 </h6></i>
-                                             </blockquote>
+                                                </blockquote>
+
+                                            {% else %}
+
+                                                <b>{% trans "Experimental protocol" %}</b>
+
+                                            {% endif %}
 
                                         </td>
                                         <td>
@@ -103,16 +106,12 @@
                                                         <td>{{ additional_data_file.date }}</td>
                                                         <td>{{ additional_data_file.file_format.name }}</td>
                                                         <td>{{ additional_data_file.file.size|filesizeformat }}</td>
+                                                        <td><a href="{{ additional_data_file.file.url }}"><span class="glyphicon glyphicon-download"></span></a></td>
                                                     </tr>
                                                 {% endfor %}
                                                 <tr>
-{#                                                    <td colspan="5">#}
-{#                                                        <a href="/experiment/group/{{ group.id }}/subject/{{ subject.id }}/additional_data/{% for item in data_collection.path %}{{ item.0 }}{% if not forloop.last %}-{% endif %}{% endfor %}/add" class="btn btn-primary">#}
-{#                                                            {% trans "New additional data file" %}#}
-{#                                                        </a>#}
-{#                                                    </td>#}
                                                     <td colspan="5">
-                                                        <a href="/experiment/group/{{ group.id }}/subject/{{ subject.id }}/additional_data/{% for item in data_collection.path %}{{ item.0 }}{% if not forloop.last %}-{% endif %}{% endfor %}/add">
+                                                        <a href="/experiment/group/{{ group.id }}/subject/{{ subject.id }}/additional_data/{% if data_collection.path %}{% for item in data_collection.path %}{{ item.0 }}{% if not forloop.last %}-{% endif %}{% endfor %}{% else %}0{% endif %}/add">
                                                             <span class="glyphicon glyphicon-plus-sign"></span>
                                                             {% trans "New additional data file" %}
                                                         </a>
@@ -123,7 +122,6 @@
 
                                     </tr>
                                 {% endfor %}
-                            {% endif %}
                             </tbody>
                         </table>
                     </div>

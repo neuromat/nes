@@ -7,9 +7,9 @@ from django.utils.translation import ugettext_lazy as _
 
 from experiment.models import Experiment, QuestionnaireResponse, SubjectOfGroup, Group, \
     Component, Stimulus, Block, Instruction, ComponentConfiguration, ResearchProject, EEGData, \
-    EEGSetting, Equipment, EEG, EEGMachine, EEGMachineSetting, EEGAmplifier, EEGAmplifierSetting, \
-    EEGSolution, EEGFilterSetting, EEGFilterType, EEGElectrodeLocalizationSystem, \
-    EEGCapSize, EEGElectrodeCap, EEGElectrodePosition, Manufacturer, EEGElectrodeModel, EEGElectrodeNet, Material, \
+    EEGSetting, Equipment, EEG, EEGMachine, EEGMachineSetting, Amplifier, EEGAmplifierSetting, \
+    EEGSolution, EEGFilterSetting, FilterType, EEGElectrodeLocalizationSystem, \
+    EEGCapSize, EEGElectrodeCap, EEGElectrodePosition, Manufacturer, ElectrodeModel, EEGElectrodeNet, Material, \
     AdditionalData, EMGData
 
 
@@ -358,7 +358,7 @@ class EEGMachineSettingForm(ModelForm):
 
 class EEGAmplifierForm(ModelForm):
     class Meta:
-        model = EEGAmplifier
+        model = Amplifier
         fields = ['gain']
 
         widgets = {
@@ -390,7 +390,7 @@ class EEGSolutionForm(ModelForm):
 
 class EEGFilterForm(ModelForm):
     class Meta:
-        model = EEGFilterType
+        model = FilterType
         fields = ['description']
 
         widgets = {
@@ -478,7 +478,7 @@ class EEGMachineRegisterForm(ModelForm):
 
 class EEGAmplifierRegisterForm(ModelForm):
     class Meta:
-        model = EEGAmplifier
+        model = Amplifier
         fields = ['manufacturer', 'identification', 'description', 'serial_number', 'gain']
 
         widgets = {
@@ -513,7 +513,7 @@ class EEGSolutionRegisterForm(ModelForm):
 
 class EEGFilterTypeRegisterForm(ModelForm):
     class Meta:
-        model = EEGFilterType
+        model = FilterType
         fields = ['name', 'description']
 
         widgets = {
@@ -527,7 +527,7 @@ class EEGFilterTypeRegisterForm(ModelForm):
 
 class EEGElectrodeModelRegisterForm(ModelForm):
     class Meta:
-        model = EEGElectrodeModel
+        model = ElectrodeModel
         fields = ['name', 'description', 'material', 'usability', 'impedance', 'impedance_unit']
 
         widgets = {

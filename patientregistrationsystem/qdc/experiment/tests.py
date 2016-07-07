@@ -11,7 +11,7 @@ from django.utils.translation import ugettext_lazy as _
 from .models import Experiment, Group, Subject, \
     QuestionnaireResponse, SubjectOfGroup, ComponentConfiguration, ResearchProject, Keyword, StimulusType, \
     Component, Task, TaskForTheExperimenter, Stimulus, Instruction, Pause, Questionnaire, Block, \
-    EEG, FileFormat, EEGData, EEGSetting, DataConfigurationTree, EMG
+    EEG, FileFormat, EEGData, EEGSetting, DataConfigurationTree, EMG, EEGMachine, Manufacturer
 from .views import experiment_update, upload_file, research_project_update
 
 from patient.models import ClassificationOfDiseases
@@ -99,6 +99,24 @@ class ObjectsFactory(object):
         return block
 
     @staticmethod
+    def create_manufacturer():
+        manufacturer = Manufacturer.objects.create(
+            name='Manufacturer name'
+        )
+        manufacturer.save()
+        return manufacturer
+
+    @staticmethod
+    def create_eeg_machine(manufacturer):
+        eeg_machine = EEGMachine.objects.create(
+            manufacturer=manufacturer,
+            equipment_type="eeg_machine",
+            identification="EEG machine identification"
+        )
+        eeg_machine.save()
+        return eeg_machine
+
+    @staticmethod
     def system_authentication(instance):
         user = User.objects.create_user(username=USER_USERNAME, email='test@dummy.com', password=USER_PWD)
         user.is_staff = True
@@ -112,7 +130,6 @@ class ObjectsFactory(object):
 class ExperimentalProtocolTest(TestCase):
 
     data = {}
-
 
     def setUp(self):
 
@@ -1631,3 +1648,90 @@ class ResearchProjectTest(TestCase):
         self.assertEqual(response.status_code, 200)
         self.assertEqual(Keyword.objects.all().count(), 2)
         self.assertEqual(research_project2.keywords.count(), 1)
+
+
+class EEGSettingTest(TestCase):
+
+    data = {}
+
+    def setUp(self):
+
+        logged, self.user, self.factory = ObjectsFactory.system_authentication(self)
+        self.assertEqual(logged, True)
+
+        research_project = ObjectsFactory.create_research_project()
+
+        self.experiment = ObjectsFactory.create_experiment(research_project)
+
+    def test_crud_eeg_setting(self):
+
+        # screen to create an eeg_setting
+        response = self.client.get(reverse("eeg_setting_new", args=(self.experiment.id,)))
+        self.assertEqual(response.status_code, 200)
+
+        name = 'EEG setting name'
+        description = 'EEG setting description'
+        self.data = {'action': 'save', 'name': name, 'description': description}
+        response = self.client.post(reverse("eeg_setting_new", args=(self.experiment.id,)), self.data)
+        self.assertEqual(response.status_code, 302)
+        self.assertTrue(EEGSetting.objects.filter(name=name, description=description).exists())
+
+        eeg_setting = EEGSetting.objects.filter(name=name, description=description)[0]
+
+        # screen to view an eeg_setting
+        response = self.client.get(reverse("eeg_setting_view", args=(eeg_setting.id,)))
+        self.assertEqual(response.status_code, 200)
+
+        # screen to update an eeg_setting
+        response = self.client.get(reverse("eeg_setting_edit", args=(eeg_setting.id,)))
+        self.assertEqual(response.status_code, 200)
+
+        # update with no changes
+        self.data = {'action': 'save', 'name': name, 'description': description}
+        response = self.client.post(reverse("eeg_setting_edit", args=(eeg_setting.id,)), self.data)
+        self.assertEqual(response.status_code, 302)
+        self.assertTrue(EEGSetting.objects.filter(name=name, description=description).exists())
+
+        name = 'EEG setting name updated'
+        description = 'EEG setting description updated'
+        self.data = {'action': 'save', 'name': name, 'description': description}
+        response = self.client.post(reverse("eeg_setting_edit", args=(eeg_setting.id,)), self.data)
+        self.assertEqual(response.status_code, 302)
+        self.assertTrue(EEGSetting.objects.filter(name=name, description=description).exists())
+
+        # remove an eeg_setting
+        self.data = {'action': 'remove'}
+        response = self.client.post(reverse("eeg_setting_view", args=(eeg_setting.id,)), self.data)
+        self.assertEqual(response.status_code, 302)
+
+    def test_eeg_setting_eeg_machine(self):
+
+        eeg_setting = ObjectsFactory.create_eeg_setting(self.experiment)
+
+        manufacturer = ObjectsFactory.create_manufacturer()
+        eeg_machine = ObjectsFactory.create_eeg_machine(manufacturer)
+
+        # screen to an (unexisting) eeg_machine_setting
+        response = self.client.get(reverse("view_eeg_setting_type", args=(eeg_setting.id, 'eeg_machine')))
+        self.assertEqual(response.status_code, 200)
+
+        # create an eeg_machine_setting
+        self.data = {'action': 'save', 'equipment_selection': eeg_machine.id, 'number_of_channels_used': "2"}
+        response = self.client.post(reverse("view_eeg_setting_type",
+                                            args=(eeg_setting.id, 'eeg_machine')), self.data)
+        self.assertEqual(response.status_code, 302)
+
+        # screen to view the eeg_machine_setting
+        response = self.client.get(reverse("view_eeg_setting_type", args=(eeg_setting.id, 'eeg_machine')))
+        self.assertEqual(response.status_code, 200)
+
+        # update the eeg_machine_setting
+        self.data = {'action': 'save', 'equipment_selection': eeg_machine.id, 'number_of_channels_used': "3"}
+        response = self.client.post(reverse("edit_eeg_setting_type",
+                                            args=(eeg_setting.id, 'eeg_machine')), self.data)
+        self.assertEqual(response.status_code, 302)
+
+        # remove an eeg_machine_setting
+        self.data = {'action': 'remove-eeg_machine'}
+        response = self.client.post(reverse("eeg_setting_view", args=(eeg_setting.id,)), self.data)
+        self.assertEqual(response.status_code, 302)

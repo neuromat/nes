@@ -102,13 +102,11 @@
                                                         <td>{{ emg_data_file.date }}</td>
                                                         <td>{{ emg_data_file.file_format.name }}</td>
                                                         <td>{{ emg_data_file.file.size|filesizeformat }}</td>
+                                                        <td><a href="{{ emg_data_file.file.url }}"><span class="glyphicon glyphicon-download"></span></a></td>
                                                     </tr>
                                                 {% endfor %}
                                                 <tr>
-                                                    <td colspan="4">
-{#                                                        <a href="/experiment/group/{{ group.id }}/subject/{{ subject.id }}/emg/{% for item in emg_collection.path %}{{ item.0 }}{% if not forloop.last %}-{% endif %}{% endfor %}/add_emg_data" class="btn btn-primary">#}
-{#                                                            {% trans "New EMG data file" %}#}
-{#                                                        </a>#}
+                                                    <td colspan="5">
                                                         <a href="/experiment/group/{{ group.id }}/subject/{{ subject.id }}/emg/{% for item in emg_collection.path %}{{ item.0 }}{% if not forloop.last %}-{% endif %}{% endfor %}/add_emg_data">
                                                         <span class="glyphicon glyphicon-plus-sign"></span>
                                                             {% trans "New EMG data file" %}

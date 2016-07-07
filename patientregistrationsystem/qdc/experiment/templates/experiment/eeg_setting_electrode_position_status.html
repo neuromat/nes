@@ -50,7 +50,13 @@
 
         <div hidden="hidden">
             <input id="eeg_electrode_position" type="text" value="{{ json_list }}">
-            <input id="map_file" type="text" value="{{ eeg_setting.eeg_electrode_layout_setting.eeg_electrode_net_system.eeg_electrode_localization_system.map_image_file.url }}">
+            <input id="map_file" type="text"
+                {% if eeg_setting.eeg_electrode_layout_setting.eeg_electrode_net_system.eeg_electrode_localization_system.map_image_file %}
+                    value="{{ eeg_setting.eeg_electrode_layout_setting.eeg_electrode_net_system.eeg_electrode_localization_system.map_image_file.url }}"
+               {% else %}
+                   value=""
+               {% endif %}
+            >
         </div>
 
         <div style="width:100%;">

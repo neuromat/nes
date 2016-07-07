@@ -15,7 +15,7 @@
                 <select class="form-control" name="manufacturer" id="id_manufacturer" {% if not editing and not creating %}disabled{% endif %}>
                     <option value>-------</option>
                     {% for manufacturer in manufacturer_list %}
-                        <option value="{{ manufacturer.id }}">{{ manufacturer.name }}</option>
+                        <option {% if manufacturer.id == solution_selected.manufacturer.id %}selected="selected"{% endif %} value="{{ manufacturer.id }}">{{ manufacturer.name }}</option>
                     {% endfor %}
                 </select>
 

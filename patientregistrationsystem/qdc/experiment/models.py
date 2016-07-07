@@ -101,6 +101,13 @@ class Manufacturer(models.Model):
         return self.name
 
 
+class Tag(models.Model):
+    name = models.CharField(max_length=50, null=False, blank=False)
+
+    def __str__(self):
+        return self.name
+
+
 class Equipment(models.Model):
     EQUIPMENT_TYPES = (
         ("eeg_machine", _("EEG Machine")),
@@ -126,12 +133,13 @@ class Equipment(models.Model):
             ("register_equipment", "Can register equipment"),
         )
 
+
 class EEGMachine(Equipment):
     number_of_channels = models.IntegerField(null=True, blank=True)
     software_version = models.CharField(max_length=150, null=True, blank=True)
 
 
-class EEGAmplifier(Equipment):
+class Amplifier(Equipment):
     gain = models.FloatField(null=True, blank=True)
 
 
@@ -141,7 +149,7 @@ class EEGSolution(models.Model):
     manufacturer = models.ForeignKey(Manufacturer, null=False, related_name="set_of_solution")
 
 
-class EEGFilterType(models.Model):
+class FilterType(models.Model):
     name = models.CharField(max_length=150)
     description = models.TextField(null=True, blank=True)
 
@@ -154,7 +162,7 @@ class Material(models.Model):
         return self.name
 
 
-class EEGElectrodeModel(models.Model):
+class ElectrodeModel(models.Model):
     USABILITY_TYPES = (
         ("disposable", _("Disposable")),
         ("reusable", _("Reusable")),
@@ -171,7 +179,7 @@ class EEGElectrodeModel(models.Model):
 
 
 class EEGElectrodeNet(Equipment):
-    electrode_model_default = models.ForeignKey(EEGElectrodeModel)
+    electrode_model_default = models.ForeignKey(ElectrodeModel)
 
     def __str__(self):
         return self.identification
@@ -241,7 +249,7 @@ class EEGMachineSetting(models.Model):
 
 class EEGAmplifierSetting(models.Model):
     eeg_setting = models.OneToOneField(EEGSetting, primary_key=True, related_name='eeg_amplifier_setting')
-    eeg_amplifier = models.ForeignKey(EEGAmplifier)
+    eeg_amplifier = models.ForeignKey(Amplifier)
     gain = models.FloatField(null=True, blank=True)
 
 
@@ -252,7 +260,7 @@ class EEGSolutionSetting(models.Model):
 
 class EEGFilterSetting(models.Model):
     eeg_setting = models.OneToOneField(EEGSetting, primary_key=True, related_name='eeg_filter_setting')
-    eeg_filter_type = models.ForeignKey(EEGFilterType)
+    eeg_filter_type = models.ForeignKey(FilterType)
     high_pass = models.FloatField(null=True, blank=True)
     low_pass = models.FloatField(null=True, blank=True)
     order = models.IntegerField(null=True, blank=True)
@@ -267,7 +275,7 @@ class EEGElectrodePositionSetting(models.Model):
     eeg_electrode_layout_setting = models.ForeignKey(EEGElectrodeLayoutSetting, related_name='positions_setting')
     eeg_electrode_position = models.ForeignKey(EEGElectrodePosition)
     used = models.BooleanField()
-    electrode_model = models.ForeignKey(EEGElectrodeModel)
+    electrode_model = models.ForeignKey(ElectrodeModel)
 
 
 class Component(models.Model):
@@ -405,7 +413,7 @@ def get_data_file_dir(instance, filename):
                               str(instance.subject_of_group.group.experiment.id),
                               str(instance.subject_of_group.group.id),
                               str(instance.subject_of_group.subject.id),
-                              str(instance.data_configuration_tree.id))
+                              str(instance.data_configuration_tree.id if instance.data_configuration_tree else 0))
         if isinstance(instance, EEGData):
             directory = path.join(directory, 'eeg')
         elif isinstance(instance, EMGData):
@@ -430,7 +438,9 @@ class DataConfigurationTree(models.Model):
 
 
 class DataCollection(models.Model):
-    data_configuration_tree = models.ForeignKey(DataConfigurationTree)
+    # data_configuration_tree null means that the DataCollection is associated to the whole experimental protocol
+    data_configuration_tree = models.ForeignKey(DataConfigurationTree, null=True, blank=True)
+
     subject_of_group = models.ForeignKey(SubjectOfGroup)
     date = models.DateField(default=datetime.date.today, null=False,
                             validators=[validate_date_questionnaire_response])
@@ -502,6 +512,7 @@ class EEGData(DataFile, DataCollection):
 
 
 class AdditionalData(DataFile, DataCollection):
+
     def __str__(self):
         return self.description
 
