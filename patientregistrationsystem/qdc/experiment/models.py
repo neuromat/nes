@@ -589,17 +589,17 @@ class MuscleSide(models.Model):
         return self.name
 
 
-class EMGElectrodePlacement(models.Model):
-    standardization_system = models.ForeignKey(StandardizationSystem)
-    muscle_subdivision = models.ForeignKey(MuscleSubdivision)
-    placement_reference = models.ForeignKey(EMGElectrodePlacement)
-    photo = models.FileField(upload_to=get_emg_placement_dir, null=True, blank=True)
-    location = models.TextField(null=True, blank=True)
-
-
 def get_emg_placement_dir(instance, filename):
     return "emg_placement_files/%s/%s" % \
            (instance.id, filename)
+
+
+class EMGElectrodePlacement(models.Model):
+    standardization_system = models.ForeignKey(StandardizationSystem)
+    muscle_subdivision = models.ForeignKey(MuscleSubdivision)
+    placement_reference = models.ForeignKey('self', null=True, related_name='children')
+    photo = models.FileField(upload_to=get_emg_placement_dir, null=True, blank=True)
+    location = models.TextField(null=True, blank=True)
 
 
 class EMGSurfacePlacement(EMGElectrodePlacement):
