@@ -552,7 +552,7 @@ class SoftwareVersion(models.Model):
         return self.name
 
 
-class ADConversor(Equipment):
+class ADConverter(Equipment):
     signal_to_noise_rate = models.FloatField(null=True, blank=True)
     sampling_rate = models.FloatField(null=True, blank=True)
     resolution = models.FloatField(null=True, blank=True)
@@ -643,9 +643,9 @@ class EMGDigitalFilterSetting(models.Model):
     order = models.IntegerField(null=True, blank=True)
 
 
-class EMGADConversorSetting(models.Model):
-    emg_setting = models.OneToOneField(EMGSetting, primary_key=True, related_name='emg_ad_conversor_setting')
-    ad_conversor = models.ForeignKey(ADConversor)
+class EMGADConverterSetting(models.Model):
+    emg_setting = models.OneToOneField(EMGSetting, primary_key=True, related_name='emg_ad_converter_setting')
+    ad_converter = models.ForeignKey(ADConverter)
     sampling_rate = models.FloatField(null=True, blank=True)
 
 

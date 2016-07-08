@@ -13,7 +13,7 @@ class Migration(migrations.Migration):
 
     operations = [
         migrations.CreateModel(
-            name='ADConversor',
+            name='ADConverter',
             fields=[
                 ('equipment_ptr', models.OneToOneField(primary_key=True, parent_link=True, auto_created=True,
                                                        serialize=False, to='experiment.Equipment')),
@@ -97,12 +97,12 @@ class Migration(migrations.Migration):
             ],
         ),
         migrations.CreateModel(
-            name='EMGADConversorSetting',
+            name='EMGADConverterSetting',
             fields=[
-                ('emg_setting', models.OneToOneField(primary_key=True, related_name='emg_ad_conversor_setting',
+                ('emg_setting', models.OneToOneField(primary_key=True, related_name='emg_ad_converter_setting',
                                                      serialize=False, to='experiment.EMGSetting')),
                 ('sampling_rate', models.FloatField(blank=True, null=True)),
-                ('ad_conversor', models.ForeignKey(to='experiment.ADConversor')),
+                ('ad_converter', models.ForeignKey(to='experiment.ADConverter')),
             ],
         ),
         migrations.CreateModel(

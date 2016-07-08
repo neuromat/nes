@@ -159,25 +159,25 @@
                                 <tr>
                                     <td>{% trans "A/D Converter" %}</td>
                                     <td>
-                                        {% if emg_setting.emg_ad_conversor_setting %}
+                                        {% if emg_setting.emg_ad_converter_setting %}
 
-                                            <a role="menuitem" tabindex="-1" href="/experiment/emg_setting/{{ emg_setting.id }}/ad_conversor">
-                                                {{ emg_setting.emg_ad_conversor_setting.ad_conversor.identification }}
+                                            <a role="menuitem" tabindex="-1" href="/experiment/emg_setting/{{ emg_setting.id }}/ad_converter">
+                                                {{ emg_setting.emg_ad_converter_setting.ad_converter.identification }}
                                             </a>
                                             <blockquote>
                                                 <i><h6>
-                                                    {% trans "Sampling rate:" %} {{ emg_setting.emg_ad_conversor_setting.sampling_rate }}
+                                                    {% trans "Sampling rate:" %} {{ emg_setting.emg_ad_converter_setting.sampling_rate }}
                                                 </h6></i>
                                             </blockquote>
 
                                         {% else %}
-                                            <a role="menuitem" tabindex="-1" href="/experiment/emg_setting/{{ emg_setting.id }}/ad_conversor"> {% trans "+ Add setting" %}</a>
+                                            <a role="menuitem" tabindex="-1" href="/experiment/emg_setting/{{ emg_setting.id }}/ad_converter"> {% trans "+ Add setting" %}</a>
                                         {% endif %}
                                     </td>
                                     <td>
-                                        {% if emg_setting.emg_ad_conversor_setting %}
+                                        {% if emg_setting.emg_ad_converter_setting %}
                                             <a class="btn glyphicon glyphicon-remove" data-toggle="tooltip" data-placement="right" title="{% trans "Delete setting from list" %}" style="color: indianred; vertical-align: -5%; padding-left: 0;"
-                                               onclick="show_modal_remove_equipment('ad_conversor');"></a>
+                                               onclick="show_modal_remove_equipment('ad_converter');"></a>
                                         {% endif %}
                                     </td>
                                 </tr>
