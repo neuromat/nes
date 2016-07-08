@@ -123,7 +123,6 @@ diagnosis_fields = [
 ]
 
 patient_fields_inclusion = [
-    # ["code", {"code": "participation_code", "full": g_("Participation code"), "abbreviated": g_("Participation code") }],
     ["code", {"code": "participation_code", "full": _("Participation code"),
               "abbreviated": _("Participation code")}],
 ]
@@ -684,7 +683,6 @@ def export_view(request, template_name="export/export_data.html"):
         for output_list in questionnaire["output_list"]:
             if (questionnaire["sid"], output_list["field"]) in selected_ev_quest:
                 output_list["selected"] = True
-
 
     # for field in questionnaires_fields_list:
     #     for questionnaire in questionnaires_list_final:

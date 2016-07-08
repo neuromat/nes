@@ -1,4 +1,3 @@
-__author__ = 'sueli'
 from django import template
 from patient.models import Patient
 

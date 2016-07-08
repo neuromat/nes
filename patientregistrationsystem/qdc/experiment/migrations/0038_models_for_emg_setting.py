@@ -15,7 +15,8 @@ class Migration(migrations.Migration):
         migrations.CreateModel(
             name='ADConversor',
             fields=[
-                ('equipment_ptr', models.OneToOneField(primary_key=True, parent_link=True, auto_created=True, serialize=False, to='experiment.Equipment')),
+                ('equipment_ptr', models.OneToOneField(primary_key=True, parent_link=True, auto_created=True,
+                                                       serialize=False, to='experiment.Equipment')),
                 ('signal_to_noise_rate', models.FloatField(blank=True, null=True)),
                 ('sampling_rate', models.FloatField(blank=True, null=True)),
                 ('resolution', models.FloatField(blank=True, null=True)),
@@ -98,7 +99,8 @@ class Migration(migrations.Migration):
         migrations.CreateModel(
             name='EMGADConversorSetting',
             fields=[
-                ('emg_setting', models.OneToOneField(primary_key=True, related_name='emg_ad_conversor_setting', serialize=False, to='experiment.EMGSetting')),
+                ('emg_setting', models.OneToOneField(primary_key=True, related_name='emg_ad_conversor_setting',
+                                                     serialize=False, to='experiment.EMGSetting')),
                 ('sampling_rate', models.FloatField(blank=True, null=True)),
                 ('ad_conversor', models.ForeignKey(to='experiment.ADConversor')),
             ],
@@ -106,14 +108,16 @@ class Migration(migrations.Migration):
         migrations.CreateModel(
             name='EMGAmplifierSetting',
             fields=[
-                ('emg_electrode_setting', models.OneToOneField(primary_key=True, related_name='emg_amplifier_setting', serialize=False, to='experiment.EMGElectrodeSetting')),
+                ('emg_electrode_setting', models.OneToOneField(primary_key=True, related_name='emg_amplifier_setting',
+                                                               serialize=False, to='experiment.EMGElectrodeSetting')),
                 ('gain', models.FloatField(blank=True, null=True)),
             ],
         ),
         migrations.CreateModel(
             name='EMGDigitalFilterSetting',
             fields=[
-                ('emg_setting', models.OneToOneField(primary_key=True, related_name='emg_digital_filter_setting', serialize=False, to='experiment.EMGSetting')),
+                ('emg_setting', models.OneToOneField(primary_key=True, related_name='emg_digital_filter_setting',
+                                                     serialize=False, to='experiment.EMGSetting')),
                 ('low_pass', models.FloatField(blank=True, null=True)),
                 ('high_pass', models.FloatField(blank=True, null=True)),
                 ('band_pass', models.FloatField(blank=True, null=True)),
@@ -125,14 +129,18 @@ class Migration(migrations.Migration):
         migrations.CreateModel(
             name='EMGElectrodePlacementSetting',
             fields=[
-                ('emg_electrode_setting', models.OneToOneField(primary_key=True, related_name='emg_electrode_placement_setting', serialize=False, to='experiment.EMGElectrodeSetting')),
+                ('emg_electrode_setting', models.OneToOneField(primary_key=True,
+                                                               related_name='emg_electrode_placement_setting',
+                                                               serialize=False, to='experiment.EMGElectrodeSetting')),
                 ('remarks', models.TextField()),
             ],
         ),
         migrations.CreateModel(
             name='EMGIntramuscularPlacement',
             fields=[
-                ('emgelectrodeplacement_ptr', models.OneToOneField(primary_key=True, parent_link=True, auto_created=True, serialize=False, to='experiment.EMGElectrodePlacement')),
+                ('emgelectrodeplacement_ptr', models.OneToOneField(primary_key=True, parent_link=True,
+                                                                   auto_created=True, serialize=False,
+                                                                   to='experiment.EMGElectrodePlacement')),
                 ('method_of_insertion', models.TextField(blank=True, null=True)),
                 ('depth_of_insertion', models.TextField(blank=True, null=True)),
             ],
@@ -141,7 +149,9 @@ class Migration(migrations.Migration):
         migrations.CreateModel(
             name='EMGNeedlePlacement',
             fields=[
-                ('emgelectrodeplacement_ptr', models.OneToOneField(primary_key=True, parent_link=True, auto_created=True, serialize=False, to='experiment.EMGElectrodePlacement')),
+                ('emgelectrodeplacement_ptr', models.OneToOneField(primary_key=True, parent_link=True,
+                                                                   auto_created=True, serialize=False,
+                                                                   to='experiment.EMGElectrodePlacement')),
                 ('depth_of_insertion', models.TextField(blank=True, null=True)),
             ],
             bases=('experiment.emgelectrodeplacement',),
@@ -149,7 +159,9 @@ class Migration(migrations.Migration):
         migrations.CreateModel(
             name='EMGPreamplifierSetting',
             fields=[
-                ('emg_electrode_setting', models.OneToOneField(primary_key=True, related_name='emg_preamplifier_setting', serialize=False, to='experiment.EMGElectrodeSetting')),
+                ('emg_electrode_setting', models.OneToOneField(primary_key=True,
+                                                               related_name='emg_preamplifier_setting',
+                                                               serialize=False, to='experiment.EMGElectrodeSetting')),
                 ('gain', models.FloatField(blank=True, null=True)),
                 ('amplifier', models.ForeignKey(to='experiment.Amplifier')),
             ],
@@ -157,7 +169,9 @@ class Migration(migrations.Migration):
         migrations.CreateModel(
             name='EMGSurfacePlacement',
             fields=[
-                ('emgelectrodeplacement_ptr', models.OneToOneField(primary_key=True, parent_link=True, auto_created=True, serialize=False, to='experiment.EMGElectrodePlacement')),
+                ('emgelectrodeplacement_ptr', models.OneToOneField(primary_key=True, parent_link=True,
+                                                                   auto_created=True, serialize=False,
+                                                                   to='experiment.EMGElectrodePlacement')),
                 ('start_posture', models.TextField(blank=True, null=True)),
                 ('orientation', models.TextField(blank=True, null=True)),
                 ('fixation_on_the_skin', models.TextField(blank=True, null=True)),
@@ -209,7 +223,9 @@ class Migration(migrations.Migration):
         migrations.CreateModel(
             name='EMGAnalogFilterSetting',
             fields=[
-                ('emg_electrode_setting', models.OneToOneField(primary_key=True, related_name='emg_analog_filter_setting', serialize=False, to='experiment.EMGAmplifierSetting')),
+                ('emg_electrode_setting', models.OneToOneField(primary_key=True,
+                                                               related_name='emg_analog_filter_setting',
+                                                               serialize=False, to='experiment.EMGAmplifierSetting')),
                 ('low_pass', models.FloatField(blank=True, null=True)),
                 ('high_pass', models.FloatField(blank=True, null=True)),
                 ('band_pass', models.FloatField(blank=True, null=True)),

@@ -510,7 +510,6 @@ def get_questionnaire_responses(language_code, lime_survey_id, token_id, request
                             'hidden': False
                         })
 
-
         # Reading from Limesurvey and...
         responses_string = surveys.get_responses_by_token(lime_survey_id, token, language)
 
@@ -546,7 +545,8 @@ def get_questionnaire_responses(language_code, lime_survey_id, token_id, request
 
                         if not question['hidden']:
 
-                            if isinstance(question['answer_options'], str) and question['answer_options'] == "super_question":
+                            if isinstance(question['answer_options'], str) and \
+                                            question['answer_options'] == "super_question":
 
                                 if question['question'] != '' and (question['question_id'] != last_super_question):
                                     last_super_question = question['question_id']

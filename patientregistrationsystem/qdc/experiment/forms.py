@@ -596,9 +596,9 @@ class EEGCapSizeRegisterForm(ModelForm):
             'size': TextInput(attrs={'class': 'form-control',
                                      'required': "",
                                      'data-error': _('Size must be filled.')}),
-            'electrode_adjacent_distance': NumberInput(attrs={'class': 'form-control',
-                                                              'data-error': _('Electrode adjacent distance must be filled.')}),
-
+            'electrode_adjacent_distance':
+                NumberInput(attrs={'class': 'form-control',
+                                   'data-error': _('Electrode adjacent distance must be filled.')}),
         }
 
 

@@ -373,6 +373,7 @@ class ExportQuestionnaireTest(TestCase):
             rename(new_dir_name, dir_name)
         print("fim teste")
 
+
 class JsonTest(TestCase):
     """ Cria um participante para ser utilizado durante os testes """
     user = ''
@@ -522,7 +523,7 @@ class InputExportTest(TestCase):
 
         build_complete_export_structure(1, 0, participant_field_header_list,
                                         diagnosis_field_header_list, questionnaires_list,
-                                        ["short","long"], "full",
+                                        ["short", "long"], "full",
                                         output_filename, "en")
 
         self.assertTrue(path.isfile(output_filename))

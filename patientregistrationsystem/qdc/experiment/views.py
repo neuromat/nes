@@ -843,7 +843,6 @@ def view_eeg_setting_type(request, eeg_setting_id, eeg_setting_type):
                     eeg_electrode_layout_setting = EEGElectrodeLayoutSetting()
                     eeg_electrode_layout_setting.eeg_setting = eeg_setting
                     eeg_electrode_layout_setting.eeg_electrode_net_system = eeg_electrode_net_system
-                    # eeg_electrode_layout_setting.number_of_electrodes = request.POST['number_of_electrodes']
                     eeg_electrode_layout_setting.save()
 
                     if eeg_electrode_localization_system.electrode_positions:
@@ -1384,7 +1383,7 @@ def number_of_used_positions(eeg_setting):
 @login_required
 @permission_required('experiment.change_experiment')
 def eeg_electrode_cap_setting(request, eeg_setting_id,
-                                        template_name="experiment/eeg_electrode_cap_coordinates_register.html"):
+                              template_name="experiment/eeg_electrode_cap_coordinates_register.html"):
 
     eeg_setting = get_object_or_404(EEGSetting, pk=eeg_setting_id)
 
@@ -1397,6 +1396,7 @@ def eeg_electrode_cap_setting(request, eeg_setting_id,
         return render(request, template_name, context)
     else:
         raise PermissionDenied
+
 
 @login_required
 @permission_required('experiment.change_experiment')
@@ -2362,8 +2362,8 @@ def eegelectrodenet_update(request, eegelectrodenet_id, template_name="experimen
 
                         # create a new net_system
                         eeg_electrode_net_system = EEGElectrodeNetSystem()
-                        eeg_electrode_net_system.eeg_electrode_net_id=eegelectrodenet.id
-                        eeg_electrode_net_system.eeg_electrode_localization_system_id=localization_system_id
+                        eeg_electrode_net_system.eeg_electrode_net_id = eegelectrodenet.id
+                        eeg_electrode_net_system.eeg_electrode_localization_system_id = localization_system_id
                         eeg_electrode_net_system.save()
                         changed = True
 
@@ -2491,7 +2491,7 @@ def eegelectrodenet_view(request, eegelectrodenet_id, template_name="experiment/
 @login_required
 @permission_required('experiment.register_equipment')
 def eegelectrodenet_cap_size_create(request, eegelectrode_cap_id,
-                                template_name="experiment/eegelectrodenet_size_register.html"):
+                                    template_name="experiment/eegelectrodenet_size_register.html"):
 
     cap = get_object_or_404(EEGElectrodeCap, pk=eegelectrode_cap_id)
     cap_size_form = EEGCapSizeRegisterForm(request.POST or None)
@@ -3652,7 +3652,6 @@ def eeg_data_edit(request, eeg_data_id, tab, template_name="experiment/subject_e
 
     eeg_step = get_object_or_404(EEG, id=eeg_data.data_configuration_tree.component_configuration.component.id)
 
-
     if get_can_change(request.user, eeg_data.subject_of_group.group.experiment.research_project):
 
         if request.method == "POST":
@@ -4065,7 +4064,8 @@ def additional_data_view(request, additional_data_id, template_name="experiment/
             else:
                 raise PermissionDenied
 
-    context = {"can_change": get_can_change(request.user, additional_data.subject_of_group.group.experiment.research_project),
+    context = {"can_change": get_can_change(request.user,
+                                            additional_data.subject_of_group.group.experiment.research_project),
                "editing": False,
                "group": additional_data.subject_of_group.group,
                "subject": additional_data.subject_of_group.subject,
@@ -4402,7 +4402,7 @@ def component_create(request, experiment_id, component_type):
         elif component_type == 'eeg':
             specific_form = EEGForm(request.POST or None, initial={'experiment': experiment})
         elif component_type == 'questionnaire':
-            questionnaires_list = find_active_questionnaires(request.LANGUAGE_CODE)  # Questionnaires().find_all_active_questionnaires()
+            questionnaires_list = find_active_questionnaires(request.LANGUAGE_CODE)
         elif component_type == 'block':
             specific_form = BlockForm(request.POST or None, initial={'number_of_mandatory_components': None})
             # component_form.fields['duration_value'].widget.attrs['disabled'] = True
@@ -4457,6 +4457,7 @@ def component_create(request, experiment_id, component_type):
         return render(request, template_name, context)
     else:
         raise PermissionDenied
+
 
 def find_active_questionnaires(language_code):
 

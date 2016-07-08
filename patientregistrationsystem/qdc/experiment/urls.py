@@ -65,7 +65,8 @@ urlpatterns = patterns(
     url(r'^eegelectrodemodel/list/$', 'eegelectrodemodel_list', name='eegelectrodemodel_list'),
     url(r'^eegelectrodemodel/new/$', 'eegelectrodemodel_create', name='eegelectrodemodel_new'),
     url(r'^eegelectrodemodel/(?P<eegelectrodemodel_id>\d+)/$', 'eegelectrodemodel_view', name='eegelectrodemodel_view'),
-    url(r'^eegelectrodemodel/edit/(?P<eegelectrodemodel_id>\d+)/$', 'eegelectrodemodel_update', name='eegelectrodemodel_edit'),
+    url(r'^eegelectrodemodel/edit/(?P<eegelectrodemodel_id>\d+)/$',
+        'eegelectrodemodel_update', name='eegelectrodemodel_edit'),
 
     # register material
     url(r'^material/list/$', 'material_list', name='material_list'),
@@ -81,13 +82,13 @@ urlpatterns = patterns(
 
     # register cap size
     url(r'^eeg_electrode_cap_size/(?P<eegelectrode_cap_id>\d+)/add_size/$',
-        'eegelectrodenet_cap_size_create',name='eegelectrodenet_add_size'),
+        'eegelectrodenet_cap_size_create', name='eegelectrodenet_add_size'),
     # url(r'^eeg_electrode_cap_size/remove/(?P<eegelectrode_cap_size_id>\d+)/$',
     #     'eegelectrodenet_cap_size_remove', name='cap_size_remove'),
     url(r'^eeg_electrode_cap_size/(?P<eegelectrode_cap_size_id>\d+)/$',
-        'eegelectrodenet_cap_size_view',name='eegelectrodenet_cap_size_view'),
+        'eegelectrodenet_cap_size_view', name='eegelectrodenet_cap_size_view'),
     url(r'^eeg_electrode_cap_size/(?P<eegelectrode_cap_size_id>\d+)/edit/$',
-        'eegelectrodenet_cap_size_update',name='eegelectrodenet_cap_size_edit'),
+        'eegelectrodenet_cap_size_update', name='eegelectrodenet_cap_size_edit'),
 
     # Localization system and position
     url(r'^eeg_electrode_localization_system/list/$',
