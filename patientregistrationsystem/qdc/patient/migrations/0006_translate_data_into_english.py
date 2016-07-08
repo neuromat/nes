@@ -9,9 +9,11 @@ from django.conf import settings
 from update_english_data import translate_fixtures_into_english, update_translated_data
 
 migration_commands_table = [
-   "UPDATE patient_alcoholfrequency set name_pt_br = name WHERE name <> '' and (name_pt_br = '' or name_pt_br is null);",
+   "UPDATE patient_alcoholfrequency set name_pt_br = name WHERE name <> '' and "
+   "(name_pt_br = '' or name_pt_br is null);",
    "UPDATE patient_alcoholperiod set name_pt_br = name WHERE name <> '' and (name_pt_br = '' or name_pt_br is null);",
-   "UPDATE patient_amountcigarettes set name_pt_br = name WHERE name <> '' and (name_pt_br = '' or name_pt_br is null);",
+   "UPDATE patient_amountcigarettes set name_pt_br = name WHERE name <> '' and "
+   "(name_pt_br = '' or name_pt_br is null);",
    "UPDATE patient_fleshtone set name_pt_br = name WHERE name <> '' and (name_pt_br = '' or name_pt_br is null);",
    "UPDATE patient_gender set name_pt_br = name WHERE name <> '' and (name_pt_br = '' or name_pt_br is null);",
    "UPDATE patient_maritalstatus set name_pt_br = name WHERE name <> '' and (name_pt_br = '' or name_pt_br is null);",
@@ -26,10 +28,8 @@ def backwards_data(apps, schema_editor):
 
 
 def load_data(apps, schema_editor):
-    filename = join(settings.BASE_DIR, join("patient", join("data_migrations",
-                                                               "0006_translate_data_into_english.json")))
-
-    # filename = join(settings.BASE_DIR, join("patient", join("fixtures", "load_initial_data_translation.json")))
+    filename = join(settings.BASE_DIR,
+                    join("patient", join("data_migrations", "0006_translate_data_into_english.json")))
 
     fixtures_formatted_data = translate_fixtures_into_english(filename)
     update_translated_data(fixtures_formatted_data)

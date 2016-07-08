@@ -32,7 +32,8 @@ class Migration(migrations.Migration):
         migrations.AlterField(
             model_name='eegelectrodeposition',
             name='position_reference',
-            field=models.ForeignKey(related_name='children', to='experiment.EEGElectrodePosition', null=True, blank=True),
+            field=models.ForeignKey(related_name='children',
+                                    to='experiment.EEGElectrodePosition', null=True, blank=True),
         ),
         migrations.AlterField(
             model_name='eegelectrodepositioncollectionstatus',

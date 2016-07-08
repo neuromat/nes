@@ -379,7 +379,7 @@ class SurveyTest(TestCase):
         component_configuration.save()
 
         data_configuration_tree = DataConfigurationTree.objects.create(
-            component_configuration = component_configuration
+            component_configuration=component_configuration
         )
         data_configuration_tree.save()
 

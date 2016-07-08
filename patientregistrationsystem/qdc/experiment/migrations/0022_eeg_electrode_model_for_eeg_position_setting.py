@@ -19,7 +19,8 @@ class Migration(migrations.Migration):
         migrations.AlterField(
             model_name='eegelectrodenetsystem',
             name='eeg_electrode_localization_system',
-            field=models.ForeignKey(to='experiment.EEGElectrodeLocalizationSystem', related_name='set_of_electrode_net_system'),
+            field=models.ForeignKey(to='experiment.EEGElectrodeLocalizationSystem',
+                                    related_name='set_of_electrode_net_system'),
         ),
         migrations.AlterField(
             model_name='eegelectrodenetsystem',
@@ -39,6 +40,10 @@ class Migration(migrations.Migration):
         migrations.AlterField(
             model_name='equipment',
             name='equipment_type',
-            field=models.CharField(blank=True, choices=[('eeg_machine', 'EEG Machine'), ('eeg_amplifier', 'EEG Amplifier'), ('eeg_solution', 'EEG Solution'), ('eeg_filter', 'EEG Filter'), ('eeg_electrode_net', 'EEG Electrode Net')], max_length=50, null=True),
+            field=models.CharField(blank=True,
+                                   choices=[('eeg_machine', 'EEG Machine'), ('eeg_amplifier', 'EEG Amplifier'),
+                                            ('eeg_solution', 'EEG Solution'), ('eeg_filter', 'EEG Filter'),
+                                            ('eeg_electrode_net', 'EEG Electrode Net')],
+                                   max_length=50, null=True),
         ),
     ]

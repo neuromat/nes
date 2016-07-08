@@ -67,7 +67,7 @@
     <div class="tab-pane fade in active" id="menuUserTab">
         <div class="col-md-10">
             <div class="container span6 offset3 well ">
-                <h4>{% trans "Basic experiment information" %}</h4>
+                <h4><span class="glyphicon glyphicon-info-sign"></span> {% trans "Basic experiment information" %}</h4>
                 <div class="row" {% if creating %}style="display: none;"{% endif %}>
                     <div class="col-xs-12 col-sm-12">
                         <div class="form-group">
@@ -105,7 +105,7 @@
 
             {% if not editing %}
                 <div class="container span6 offset3 well ">
-                <h4>{% trans "Groups" %}</h4>
+                <h4><span class="glyphicon glyphicon-user"></span> {% trans "Groups" %}</h4>
                     {% if group_list %}
                         <div class="form-group">
                             <table class="table table-striped">
@@ -138,7 +138,8 @@
                 </div>
 
                 <div class="container span6 offset3 well ">
-                <h4>{% trans "EEG Settings" %}</h4>
+                <h4><span class="glyphicon glyphicon-flash"></span> {% trans "EEG Settings" %}</h4>
+
                     {% if eeg_setting_list %}
                         <div class="form-group">
                             <table class="table table-striped">
@@ -171,7 +172,40 @@
                 </div>
 
                 <div class="container span6 offset3 well ">
-                    <h4>{% trans "Steps of experimental protocol" %}</h4>
+                <h4><span class="glyphicon glyphicon-stats"></span> {% trans "EMG Settings" %}</h4>
+                    {% if eeg_setting_list %}
+                        <div class="form-group">
+                            <table class="table table-striped">
+                                <thead>
+                                <tr>
+                                    <th>{% trans "Name" %}</th>
+                                    <th>{% trans "Description" %}</th>
+                                </tr>
+                                </thead>
+                                <tbody>
+                                {% for emg_setting in emg_setting_list %}
+                                    <tr>
+                                        <td>
+                                            <a data-toggle="tooltip" data-placement="left" title="{% trans "Edit" %}" href="/experiment/emg_setting/{{ emg_setting.id }}">
+                                            {{ emg_setting.name }}
+                                            </a>
+                                        </td>
+                                        <td>
+                                            {{ emg_setting.description }}
+                                        </td>
+                                    </tr>
+                                {% endfor %}
+                                </tbody>
+                            </table>
+                        </div>
+                    {% endif %}
+                    {% if perms.experiment.add_subject and can_change %}
+                        <a href="/experiment/{{ experiment.id }}/emg_setting/new" class="btn btn-primary">{% trans "Insert new" %}</a>
+                    {% endif %}
+                </div>
+
+                <div class="container span6 offset3 well ">
+                    <h4><span class="glyphicon glyphicon-tasks"></span> {% trans "Steps of experimental protocol" %}</h4>
                     <div class="row">
                         <div class="col-xs-6 col-sm-12">
                             <a href="/experiment/{{ experiment.id }}/components" class="btn btn-primary">{% trans "Manage" %}</a>
