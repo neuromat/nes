@@ -29,7 +29,8 @@ from experiment.models import Experiment, Subject, QuestionnaireResponse, Subjec
     FilterType, EEGSolution, EEGElectrodeLocalizationSystem, EEGElectrodeNetSystem, EEGElectrodePositionSetting, \
     ElectrodeModel, EEGElectrodePositionCollectionStatus, EEGCapSize, EEGElectrodeCap, EEGElectrodePosition, \
     Material, AdditionalData, \
-    EMGData, EMGSetting, SoftwareVersion, EMGDigitalFilterSetting, EMGADConverterSetting
+    EMGData, EMGSetting, SoftwareVersion, EMGDigitalFilterSetting, EMGADConverterSetting, \
+    EMGElectrodePlacement, EMGElectrodeSetting
 from experiment.forms import ExperimentForm, QuestionnaireResponseForm, FileForm, GroupForm, InstructionForm, \
     ComponentForm, StimulusForm, BlockForm, ComponentConfigurationForm, ResearchProjectForm, NumberOfUsesToInsertForm, \
     EEGDataForm, EEGSettingForm, EquipmentForm, EEGForm, EEGMachineForm, EEGMachineSettingForm, EEGAmplifierForm, \
@@ -38,7 +39,8 @@ from experiment.forms import ExperimentForm, QuestionnaireResponseForm, FileForm
     ManufacturerRegisterForm, EEGMachineRegisterForm, EEGAmplifierRegisterForm, EEGSolutionRegisterForm, \
     EEGFilterTypeRegisterForm, EEGElectrodeModelRegisterForm, MaterialRegisterForm, EEGElectrodeNETRegisterForm, \
     EEGElectrodePositionForm, EEGElectrodeCapRegisterForm, EEGCapSizeRegisterForm, AdditionalDataForm, \
-    EMGDataForm, EMGSettingForm, EMGDigitalFilterSettingForm, EMGADConverterSettingForm
+    EMGDataForm, EMGSettingForm, EMGDigitalFilterSettingForm, EMGADConverterSettingForm, \
+    EMGElectrodeSettingForm, EMGElectrodePlacementSettingForm
 
 
 from patient.models import Patient, QuestionnaireResponse as PatientQuestionnaireResponse
@@ -5904,21 +5906,17 @@ def emg_setting_view(request, emg_setting_id, template_name="experiment/emg_sett
                     setting_to_be_deleted = get_object_or_404(EMGDigitalFilterSetting, pk=emg_setting_id)
                 elif emg_setting_type == "ad_converter":
                     setting_to_be_deleted = get_object_or_404(EMGADConverterSetting, pk=emg_setting_id)
-                # elif emg_setting_type == "eeg_solution":
-                #     setting_to_be_deleted = get_object_or_404(EEGSolutionSetting, pk=eeg_setting_id)
-                # elif eeg_setting_type == "eeg_filter":
-                #     setting_to_be_deleted = get_object_or_404(EEGFilterSetting, pk=eeg_setting_id)
-                # elif eeg_setting_type == "eeg_electrode_net_system":
-                #     setting_to_be_deleted = get_object_or_404(EEGElectrodeLayoutSetting, pk=eeg_setting_id)
+                elif emg_setting_type[:10] == "electrode-":
+                    setting_to_be_deleted = get_object_or_404(EMGElectrodeSetting, pk=int(emg_setting_type[10:]))
 
                 # eeg_setting.eeg_machine_setting.delete()
                 if setting_to_be_deleted:
                     setting_to_be_deleted.delete()
 
-                # messages.success(request, _('Setting was removed successfully.'))
-                #
-                # redirect_url = reverse("eeg_setting_view", args=(eeg_setting.id,))
-                # return HttpResponseRedirect(redirect_url)
+                messages.success(request, _('Setting was removed successfully.'))
+
+                redirect_url = reverse("emg_setting_view", args=(emg_setting.id,))
+                return HttpResponseRedirect(redirect_url)
 
     context = {"can_change": can_change,
                "emg_setting_form": emg_setting_form,
@@ -6155,6 +6153,134 @@ def emg_setting_ad_converter_edit(request, emg_setting_id,
                    "can_change": True,
                    "emg_setting": emg_setting,
                    "emg_ad_converter_setting_form": emg_ad_converter_setting_form,
+                   }
+
+        return render(request, template_name, context)
+    else:
+        raise PermissionDenied
+
+
+@login_required
+@permission_required('experiment.change_experiment')
+def emg_setting_electrode_add(request, emg_setting_id,
+                              template_name="experiment/emg_setting_electrode.html"):
+
+    emg_setting = get_object_or_404(EMGSetting, pk=emg_setting_id)
+
+    if get_can_change(request.user, emg_setting.experiment.research_project):
+
+        emg_electrode_setting_form = EMGElectrodeSettingForm(request.POST or None)
+        emg_electrode_placement_setting_form = EMGElectrodePlacementSettingForm(request.POST or None)
+
+        if request.method == "POST":
+            if request.POST['action'] == "save":
+
+                if emg_electrode_setting_form.is_valid() and emg_electrode_placement_setting_form.is_valid():
+
+                    # if emg_ad_converter_setting_form.has_changed():
+
+                    new_emg_electrode_setting = emg_electrode_setting_form.save(commit=False)
+                    new_emg_electrode_setting.emg_setting = emg_setting
+                    new_emg_electrode_setting.save()
+
+                    new_emg_placement_setting = emg_electrode_placement_setting_form.save(commit=False)
+                    new_emg_placement_setting.emg_electrode_setting = new_emg_electrode_setting
+                    new_emg_placement_setting.save()
+
+                    messages.success(request, _('EMG electrode setting created successfully.'))
+
+                    redirect_url = reverse("emg_setting_view", args=(emg_setting_id,))
+                    return HttpResponseRedirect(redirect_url)
+
+        context = {"creating": True,
+                   "editing": False,
+                   "can_change": True,
+                   "emg_setting": emg_setting,
+                   "emg_electrode_setting_form": emg_electrode_setting_form,
+                   "emg_electrode_placement_setting_form": emg_electrode_placement_setting_form
+                   }
+
+        return render(request, template_name, context)
+    else:
+        raise PermissionDenied
+
+
+@login_required
+@permission_required('experiment.change_experiment')
+def emg_electrode_setting_view(request, emg_electrode_setting_id,
+                               template_name="experiment/emg_setting_electrode.html"):
+
+    emg_electrode_setting = get_object_or_404(EMGElectrodeSetting, pk=emg_electrode_setting_id)
+
+    if get_can_change(request.user, emg_electrode_setting.emg_setting.experiment.research_project):
+
+        emg_electrode_setting_form = EMGElectrodeSettingForm(request.POST or None,
+                                                             instance=emg_electrode_setting)
+        emg_electrode_placement_setting_form = EMGElectrodePlacementSettingForm(request.POST or None,
+                                                                                instance=emg_electrode_setting.emg_electrode_placement_setting)
+
+        for field in emg_electrode_setting_form.fields:
+            emg_electrode_setting_form.fields[field].widget.attrs['disabled'] = True
+
+        for field in emg_electrode_placement_setting_form.fields:
+            emg_electrode_placement_setting_form.fields[field].widget.attrs['disabled'] = True
+
+        context = {"creating": False,
+                   "editing": False,
+                   "can_change": True,
+                   "emg_setting": emg_electrode_setting.emg_setting,
+                   "emg_electrode_setting": emg_electrode_setting,
+                   "emg_electrode_setting_form": emg_electrode_setting_form,
+                   "emg_electrode_placement_setting_form": emg_electrode_placement_setting_form
+                   }
+
+        return render(request, template_name, context)
+    else:
+        raise PermissionDenied
+
+
+@login_required
+@permission_required('experiment.change_experiment')
+def emg_electrode_setting_edit(request, emg_electrode_setting_id,
+                               template_name="experiment/emg_setting_electrode.html"):
+
+    emg_electrode_setting = get_object_or_404(EMGElectrodeSetting, pk=emg_electrode_setting_id)
+
+    if get_can_change(request.user, emg_electrode_setting.emg_setting.experiment.research_project):
+
+        emg_electrode_setting_form = EMGElectrodeSettingForm(request.POST or None,
+                                                             instance=emg_electrode_setting)
+        emg_electrode_placement_setting_form = EMGElectrodePlacementSettingForm(request.POST or None,
+                                                                                instance=emg_electrode_setting.emg_electrode_placement_setting)
+        if request.method == "POST":
+            if request.POST['action'] == "save":
+
+                if emg_electrode_setting_form.is_valid() and emg_electrode_placement_setting_form.is_valid():
+                    # if emg_ad_converter_setting_form.has_changed():
+
+                    emg_electrode_setting_form.save()
+                    emg_electrode_placement_setting_form.save()
+
+                    # new_emg_electrode_setting = emg_electrode_setting_form.save(commit=False)
+                    # new_emg_electrode_setting.emg_setting = emg_setting
+                    # new_emg_electrode_setting.save()
+                    #
+                    # new_emg_placement_setting = emg_electrode_placement_setting_form.save(commit=False)
+                    # new_emg_placement_setting.emg_electrode_setting = new_emg_electrode_setting
+                    # new_emg_placement_setting.save()
+
+                    messages.success(request, _('EMG electrode setting was updated successfully.'))
+
+                    redirect_url = reverse("emg_electrode_setting_view", args=(emg_electrode_setting_id,))
+                    return HttpResponseRedirect(redirect_url)
+
+        context = {"creating": False,
+                   "editing": True,
+                   "can_change": True,
+                   "emg_setting": emg_electrode_setting.emg_setting,
+                   "emg_electrode_setting": emg_electrode_setting,
+                   "emg_electrode_setting_form": emg_electrode_setting_form,
+                   "emg_electrode_placement_setting_form": emg_electrode_placement_setting_form
                    }
 
         return render(request, template_name, context)

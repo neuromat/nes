@@ -153,6 +153,12 @@ urlpatterns = patterns(
         'emg_setting_ad_converter', name='emg_setting_ad_converter'),
     url(r'^emg_setting/(?P<emg_setting_id>\d+)/ad_converter/edit/$',
         'emg_setting_ad_converter_edit', name='emg_setting_ad_converter_edit'),
+    url(r'^emg_setting/(?P<emg_setting_id>\d+)/electrode/add/$',
+        'emg_setting_electrode_add', name='emg_setting_electrode_add'),
+    url(r'^emg_electrode_setting/(?P<emg_electrode_setting_id>\d+)/$',
+        'emg_electrode_setting_view', name='emg_electrode_setting_view'),
+    url(r'^emg_electrode_setting/(?P<emg_electrode_setting_id>\d+)/edit/$',
+        'emg_electrode_setting_edit', name='emg_electrode_setting_edit'),
 
     # cid
     url(r'^group_diseases/cid-10/$', 'search_cid10_ajax', name='cid10_search'),

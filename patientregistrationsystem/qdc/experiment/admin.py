@@ -3,7 +3,9 @@ from simple_history.admin import SimpleHistoryAdmin
 from modeltranslation.admin import TranslationAdmin
 
 from experiment.models import Experiment, QuestionnaireResponse, StimulusType, FileFormat, Tag, \
-    Software, SoftwareVersion, ADConverter
+    Software, SoftwareVersion, ADConverter, \
+    StandardizationSystem, EMGIntramuscularPlacement, EMGSurfacePlacement, EMGNeedlePlacement, \
+    Muscle, MuscleSubdivision, MuscleSide
 
 admin.site.register(Experiment, SimpleHistoryAdmin)
 admin.site.register(QuestionnaireResponse, SimpleHistoryAdmin)
@@ -22,3 +24,10 @@ admin.site.register(Tag)
 admin.site.register(Software)
 admin.site.register(SoftwareVersion)
 admin.site.register(ADConverter)
+admin.site.register(StandardizationSystem)
+admin.site.register(EMGIntramuscularPlacement)
+admin.site.register(EMGSurfacePlacement)
+admin.site.register(EMGNeedlePlacement)
+admin.site.register(Muscle)
+admin.site.register(MuscleSubdivision)
+admin.site.register(MuscleSide)

@@ -590,7 +590,7 @@ class MuscleSide(models.Model):
     name = models.CharField(max_length=150)
 
     def __str__(self):
-        return self.name
+        return self.muscle.name + ' - ' + self.name
 
 
 def get_emg_placement_dir(instance, filename):
@@ -601,9 +601,13 @@ def get_emg_placement_dir(instance, filename):
 class EMGElectrodePlacement(models.Model):
     standardization_system = models.ForeignKey(StandardizationSystem)
     muscle_subdivision = models.ForeignKey(MuscleSubdivision)
-    placement_reference = models.ForeignKey('self', null=True, related_name='children')
+    placement_reference = models.ForeignKey('self', null=True, blank=True, related_name='children')
     photo = models.FileField(upload_to=get_emg_placement_dir, null=True, blank=True)
     location = models.TextField(null=True, blank=True)
+
+    def __str__(self):
+        return self.standardization_system.name + ' - ' + \
+               self.muscle_subdivision.muscle.name + ' - ' + self.muscle_subdivision.name
 
 
 class EMGSurfacePlacement(EMGElectrodePlacement):
@@ -682,5 +686,5 @@ class EMGElectrodePlacementSetting(models.Model):
     emg_electrode_setting = models.OneToOneField(EMGElectrodeSetting,
                                                  primary_key=True, related_name='emg_electrode_placement_setting')
     emg_electrode_placement = models.ForeignKey(EMGElectrodePlacement)
-    remarks = models.TextField()
+    remarks = models.TextField(null=True, blank=True)
     muscle_side = models.ForeignKey(MuscleSide, null=True, blank=True)

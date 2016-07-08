@@ -10,7 +10,8 @@ from experiment.models import Experiment, QuestionnaireResponse, SubjectOfGroup,
     EEGSetting, Equipment, EEG, EEGMachine, EEGMachineSetting, Amplifier, EEGAmplifierSetting, \
     EEGSolution, EEGFilterSetting, FilterType, EEGElectrodeLocalizationSystem, \
     EEGCapSize, EEGElectrodeCap, EEGElectrodePosition, Manufacturer, ElectrodeModel, EEGElectrodeNet, Material, \
-    AdditionalData, EMGData, FileFormat, EMGSetting, EMGDigitalFilterSetting, EMGADConverterSetting
+    AdditionalData, EMGData, FileFormat, EMGSetting, EMGDigitalFilterSetting, EMGADConverterSetting, \
+    EMGElectrodeSetting, EMGElectrodePlacementSetting
 
 
 class ExperimentForm(ModelForm):
@@ -692,4 +693,30 @@ class EMGADConverterSettingForm(ModelForm):
             'ad_converter': Select(attrs={'class': 'form-control', 'required': "",
                                           'data-error': _('AD converter is required')}),
             'sampling_rate': TextInput(attrs={'class': 'form-control'})
+        }
+
+
+class EMGElectrodeSettingForm(ModelForm):
+    class Meta:
+        model = EMGElectrodeSetting
+
+        fields = ['electrode']
+
+        widgets = {
+            'electrode': Select(attrs={'class': 'form-control', 'required': "",
+                                       'data-error': _('Electrode is required')})
+        }
+
+
+class EMGElectrodePlacementSettingForm(ModelForm):
+    class Meta:
+        model = EMGElectrodePlacementSetting
+
+        fields = ['emg_electrode_placement', 'remarks', 'muscle_side']
+
+        widgets = {
+            'emg_electrode_placement': Select(attrs={'class': 'form-control', 'required': "",
+                                                     'data-error': _('Electrode placement is required')}),
+            'remarks': Textarea(attrs={'class': 'form-control', 'rows': '4'}),
+            'muscle_side': Select(attrs={'class': 'form-control'})
         }
