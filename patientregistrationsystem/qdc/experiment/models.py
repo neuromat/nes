@@ -114,7 +114,8 @@ class Equipment(models.Model):
         ("eeg_amplifier", _("EEG Amplifier")),
         ("eeg_solution", _("EEG Solution")),
         ("eeg_filter", _("EEG Filter")),
-        ("eeg_electrode_net", _("EEG Electrode Net"))
+        ("eeg_electrode_net", _("EEG Electrode Net")),
+        ("ad_converter", _("A/D Converter"))
     )
     manufacturer = models.ForeignKey(Manufacturer, null=False, related_name="set_of_equipment")
     equipment_type = models.CharField(null=True, blank=True, max_length=50, choices=EQUIPMENT_TYPES)

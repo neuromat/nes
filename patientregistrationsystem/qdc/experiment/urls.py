@@ -149,6 +149,10 @@ urlpatterns = patterns(
         'emg_setting_digital_filter', name='emg_setting_digital_filter'),
     url(r'^emg_setting/(?P<emg_setting_id>\d+)/digital_filter/edit/$',
         'emg_setting_digital_filter_edit', name='emg_setting_digital_filter_edit'),
+    url(r'^emg_setting/(?P<emg_setting_id>\d+)/ad_converter/$',
+        'emg_setting_ad_converter', name='emg_setting_ad_converter'),
+    url(r'^emg_setting/(?P<emg_setting_id>\d+)/ad_converter/edit/$',
+        'emg_setting_ad_converter_edit', name='emg_setting_ad_converter_edit'),
 
     # cid
     url(r'^group_diseases/cid-10/$', 'search_cid10_ajax', name='cid10_search'),

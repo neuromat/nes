@@ -10,7 +10,7 @@ from experiment.models import Experiment, QuestionnaireResponse, SubjectOfGroup,
     EEGSetting, Equipment, EEG, EEGMachine, EEGMachineSetting, Amplifier, EEGAmplifierSetting, \
     EEGSolution, EEGFilterSetting, FilterType, EEGElectrodeLocalizationSystem, \
     EEGCapSize, EEGElectrodeCap, EEGElectrodePosition, Manufacturer, ElectrodeModel, EEGElectrodeNet, Material, \
-    AdditionalData, EMGData, FileFormat, EMGSetting, EMGDigitalFilterSetting
+    AdditionalData, EMGData, FileFormat, EMGSetting, EMGDigitalFilterSetting, EMGADConverterSetting
 
 
 class ExperimentForm(ModelForm):
@@ -679,4 +679,17 @@ class EMGDigitalFilterSettingForm(ModelForm):
             'band_pass': TextInput(attrs={'class': 'form-control'}),
             'notch': TextInput(attrs={'class': 'form-control'}),
             'order': TextInput(attrs={'class': 'form-control'})
+        }
+
+
+class EMGADConverterSettingForm(ModelForm):
+    class Meta:
+        model = EMGADConverterSetting
+
+        fields = ['ad_converter', 'sampling_rate']
+
+        widgets = {
+            'ad_converter': Select(attrs={'class': 'form-control', 'required': "",
+                                          'data-error': _('AD converter is required')}),
+            'sampling_rate': TextInput(attrs={'class': 'form-control'})
         }
