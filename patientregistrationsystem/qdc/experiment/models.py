@@ -121,6 +121,7 @@ class Equipment(models.Model):
     identification = models.CharField(max_length=150)
     description = models.TextField(null=True, blank=True)
     serial_number = models.CharField(max_length=50, null=True, blank=True)
+    tags = models.ManyToManyField(Tag)
 
     def __str__(self):
         return self.identification

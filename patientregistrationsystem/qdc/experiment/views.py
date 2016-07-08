@@ -29,7 +29,7 @@ from experiment.models import Experiment, Subject, QuestionnaireResponse, Subjec
     EEGMachineSetting, EEGAmplifierSetting, EEGSolutionSetting, EEGFilterSetting, EEGElectrodeLayoutSetting, \
     FilterType, EEGSolution, EEGElectrodeLocalizationSystem, EEGElectrodeNetSystem, EEGElectrodePositionSetting, \
     ElectrodeModel, EEGElectrodePositionCollectionStatus, EEGCapSize, EEGElectrodeCap, EEGElectrodePosition, \
-    Material, AdditionalData, EMGData
+    Material, AdditionalData, EMGData, Tag
 from experiment.forms import ExperimentForm, QuestionnaireResponseForm, FileForm, GroupForm, InstructionForm, \
     ComponentForm, StimulusForm, BlockForm, ComponentConfigurationForm, ResearchProjectForm, NumberOfUsesToInsertForm, \
     EEGDataForm, EEGSettingForm, EquipmentForm, EEGForm, EEGMachineForm, EEGMachineSettingForm, EEGAmplifierForm, \
@@ -1655,6 +1655,9 @@ def eegmachine_create(request, template_name="experiment/eegmachine_register.htm
                 eegmachine_added = eegmachine_form.save(commit=False)
                 eegmachine_added.equipment_type = 'eeg_machine'
                 eegmachine_added.save()
+
+                tag = get_object_or_404(Tag, name="EEG")
+                eegmachine_added.equipment_ptr.tags.add(tag)
 
                 messages.success(request, _('EEG machine created successfully.'))
                 redirect_url = reverse("eegmachine_view", args=(eegmachine_added.id,))
