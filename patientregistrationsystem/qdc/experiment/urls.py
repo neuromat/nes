@@ -127,7 +127,6 @@ urlpatterns = patterns(
     url(r'^eeg_setting/eeg_electrode_position_status_model/edit/(?P<eeg_setting_id>\d+)/$',
         'edit_eeg_electrode_position_setting_model', name='edit_eeg_electrode_position_setting_model'),
 
-
     # eeg setting (ajax)
     url(r'^equipment/get_equipment_by_manufacturer/(?P<equipment_type>\w+)/(?P<manufacturer_id>\d+)/$',
         'get_json_equipment_by_manufacturer'),
@@ -141,6 +140,11 @@ urlpatterns = patterns(
     url(r'^equipment/get_equipment_by_manufacturer_and_localization_system/'
         r'(?P<manufacturer_id>\w+)/(?P<eeg_localization_system_id>\d+)/$',
         'get_equipment_by_manufacturer_and_localization_system'),
+
+    # emg setting
+    url(r'^(?P<experiment_id>\d+)/emg_setting/new/$', 'emg_setting_create', name='emg_setting_new'),
+    url(r'^emg_setting/(?P<emg_setting_id>\d+)/$', 'emg_setting_view', name='emg_setting_view'),
+    url(r'^emg_setting/edit/(?P<emg_setting_id>\d+)/$', 'emg_setting_update', name='emg_setting_edit'),
 
     # cid
     url(r'^group_diseases/cid-10/$', 'search_cid10_ajax', name='cid10_search'),

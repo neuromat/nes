@@ -18,7 +18,6 @@ from django.db.models.deletion import ProtectedError
 from django.http import HttpResponseRedirect, HttpResponse
 from django.shortcuts import get_object_or_404, redirect, render, render_to_response
 from django.utils.translation import ugettext as _
-from django import template
 
 from neo import io
 
@@ -29,7 +28,8 @@ from experiment.models import Experiment, Subject, QuestionnaireResponse, Subjec
     EEGMachineSetting, EEGAmplifierSetting, EEGSolutionSetting, EEGFilterSetting, EEGElectrodeLayoutSetting, \
     FilterType, EEGSolution, EEGElectrodeLocalizationSystem, EEGElectrodeNetSystem, EEGElectrodePositionSetting, \
     ElectrodeModel, EEGElectrodePositionCollectionStatus, EEGCapSize, EEGElectrodeCap, EEGElectrodePosition, \
-    Material, AdditionalData, EMGData
+    Material, AdditionalData, \
+    EMGData, EMGSetting, Software, SoftwareVersion
 from experiment.forms import ExperimentForm, QuestionnaireResponseForm, FileForm, GroupForm, InstructionForm, \
     ComponentForm, StimulusForm, BlockForm, ComponentConfigurationForm, ResearchProjectForm, NumberOfUsesToInsertForm, \
     EEGDataForm, EEGSettingForm, EquipmentForm, EEGForm, EEGMachineForm, EEGMachineSettingForm, EEGAmplifierForm, \
@@ -37,7 +37,8 @@ from experiment.forms import ExperimentForm, QuestionnaireResponseForm, FileForm
     EEGElectrodeLocalizationSystemRegisterForm, \
     ManufacturerRegisterForm, EEGMachineRegisterForm, EEGAmplifierRegisterForm, EEGSolutionRegisterForm, \
     EEGFilterTypeRegisterForm, EEGElectrodeModelRegisterForm, MaterialRegisterForm, EEGElectrodeNETRegisterForm, \
-    EEGElectrodePositionForm, EEGElectrodeCapRegisterForm, EEGCapSizeRegisterForm, AdditionalDataForm, EMGDataForm
+    EEGElectrodePositionForm, EEGElectrodeCapRegisterForm, EEGCapSizeRegisterForm, AdditionalDataForm, \
+    EMGDataForm, EMGSettingForm
 
 
 from patient.models import Patient, QuestionnaireResponse as PatientQuestionnaireResponse
@@ -325,6 +326,7 @@ def experiment_view(request, experiment_id, template_name="experiment/experiment
     experiment = get_object_or_404(Experiment, pk=experiment_id)
     group_list = Group.objects.filter(experiment=experiment)
     eeg_setting_list = EEGSetting.objects.filter(experiment=experiment)
+    emg_setting_list = EMGSetting.objects.filter(experiment=experiment)
     experiment_form = ExperimentForm(request.POST or None, instance=experiment)
 
     for field in experiment_form.fields:
@@ -364,6 +366,7 @@ def experiment_view(request, experiment_id, template_name="experiment/experiment
                "experiment_form": experiment_form,
                "group_list": group_list,
                "eeg_setting_list": eeg_setting_list,
+               "emg_setting_list": emg_setting_list,
                "research_project": experiment.research_project
                }
 
@@ -4193,9 +4196,6 @@ def search_patients_ajax(request):
                                       {'patients': patient_list, 'group_id': group_id})
 
 
-
-
-
 @login_required
 @permission_required('experiment.change_experiment')
 def upload_file(request, subject_id, group_id, template_name="experiment/upload_consent_form.html"):
@@ -5831,3 +5831,147 @@ def eeg_electrode_position_update(
                }
 
     return render(request, template_name, context)
+
+
+@login_required
+@permission_required('experiment.add_subject')
+def emg_setting_create(request, experiment_id, template_name="experiment/emg_setting_register.html"):
+    experiment = get_object_or_404(Experiment, pk=experiment_id)
+
+    if get_can_change(request.user, experiment.research_project):
+        emg_setting_form = EMGSettingForm(request.POST or None)
+
+        if request.method == "POST":
+            if request.POST['action'] == "save":
+                if emg_setting_form.is_valid() and 'software_version' in request.POST:
+                    emg_setting_added = emg_setting_form.save(commit=False)
+                    emg_setting_added.experiment_id = experiment_id
+                    emg_setting_added.acquisition_software_version_id = request.POST['software_version']
+                    emg_setting_added.save()
+
+                    messages.success(request, _('EMG setting included successfully.'))
+
+                    redirect_url = reverse("emg_setting_view", args=(emg_setting_added.id,))
+                    return HttpResponseRedirect(redirect_url)
+
+        context = {"emg_setting_form": emg_setting_form,
+                   "creating": True,
+                   "editing": True,
+                   "experiment": experiment,
+                   "software_version_list": SoftwareVersion.objects.all()
+                   }
+
+        return render(request, template_name, context)
+    else:
+        raise PermissionDenied
+
+
+@login_required
+@permission_required('experiment.view_researchproject')
+def emg_setting_view(request, emg_setting_id, template_name="experiment/emg_setting_register.html"):
+
+    emg_setting = get_object_or_404(EMGSetting, pk=emg_setting_id)
+    emg_setting_form = EMGSettingForm(request.POST or None, instance=emg_setting)
+
+    for field in emg_setting_form.fields:
+        emg_setting_form.fields[field].widget.attrs['disabled'] = True
+
+    can_change = get_can_change(request.user, emg_setting.experiment.research_project)
+
+    if request.method == "POST":
+        if can_change:
+            if request.POST['action'] == "remove":
+                # TODO: checking if there is some EEG Data using it
+
+                # TODO: checking if there is some EEG Step using it
+
+                experiment_id = emg_setting.experiment_id
+
+                emg_setting.delete()
+
+                messages.success(request, _('EMG setting was removed successfully.'))
+
+                redirect_url = reverse("experiment_view", args=(experiment_id,))
+                return HttpResponseRedirect(redirect_url)
+
+            # if request.POST['action'][:7] == "remove-":
+            #     # If action starts with 'remove-' it means that an equipment should be removed from the emg_setting.
+            #     emg_setting_type = request.POST['action'][7:]
+            #
+            #     setting_to_be_deleted = None
+            #
+            #     if eeg_setting_type == "eeg_machine":
+            #         setting_to_be_deleted = get_object_or_404(EEGMachineSetting, pk=eeg_setting_id)
+            #     elif eeg_setting_type == "eeg_amplifier":
+            #         setting_to_be_deleted = get_object_or_404(EEGAmplifierSetting, pk=eeg_setting_id)
+            #     elif eeg_setting_type == "eeg_solution":
+            #         setting_to_be_deleted = get_object_or_404(EEGSolutionSetting, pk=eeg_setting_id)
+            #     elif eeg_setting_type == "eeg_filter":
+            #         setting_to_be_deleted = get_object_or_404(EEGFilterSetting, pk=eeg_setting_id)
+            #     elif eeg_setting_type == "eeg_electrode_net_system":
+            #         setting_to_be_deleted = get_object_or_404(EEGElectrodeLayoutSetting, pk=eeg_setting_id)
+            #
+            #     # eeg_setting.eeg_machine_setting.delete()
+            #     if setting_to_be_deleted:
+            #         setting_to_be_deleted.delete()
+
+                # messages.success(request, _('Setting was removed successfully.'))
+                #
+                # redirect_url = reverse("eeg_setting_view", args=(eeg_setting.id,))
+                # return HttpResponseRedirect(redirect_url)
+
+    equipment_type_choices = Equipment.EQUIPMENT_TYPES
+
+    context = {"can_change": can_change,
+               "emg_setting_form": emg_setting_form,
+               "experiment": emg_setting.experiment,
+               "emg_setting": emg_setting,
+               "editing": False,
+               "software_version_list": SoftwareVersion.objects.filter(id=emg_setting.acquisition_software_version.id),
+               "equipment_type_choices": equipment_type_choices
+               }
+
+    return render(request, template_name, context)
+
+
+@login_required
+@permission_required('experiment.change_experiment')
+def emg_setting_update(request, emg_setting_id, template_name="experiment/emg_setting_register.html"):
+    emg_setting = get_object_or_404(EMGSetting, pk=emg_setting_id)
+
+    if get_can_change(request.user, emg_setting.experiment.research_project):
+        emg_setting_form = EMGSettingForm(request.POST or None, instance=emg_setting)
+
+        if request.method == "POST":
+            if request.POST['action'] == "save":
+                if emg_setting_form.is_valid() and 'software_version' in request.POST:
+
+                    changed = False
+
+                    if emg_setting_form.has_changed():
+                        emg_setting_form.save()
+                        changed = True
+
+                    if emg_setting.acquisition_software_version_id != int(request.POST['software_version']):
+                        emg_setting.acquisition_software_version_id = request.POST['software_version']
+                        emg_setting.save()
+                        changed = True
+
+                    if changed:
+                        messages.success(request, _('EMG setting updated successfully.'))
+                    else:
+                        messages.success(request, _('There is no changes to save.'))
+
+                    redirect_url = reverse("emg_setting_view", args=(emg_setting_id,))
+                    return HttpResponseRedirect(redirect_url)
+
+        context = {"emg_setting_form": emg_setting_form,
+                   "editing": True,
+                   "experiment": emg_setting.experiment,
+                   "emg_setting": emg_setting,
+                   "software_version_list": SoftwareVersion.objects.all()
+                   }
+
+        return render(request, template_name, context)
+    else:
+        raise PermissionDenied

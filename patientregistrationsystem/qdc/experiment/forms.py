@@ -10,7 +10,7 @@ from experiment.models import Experiment, QuestionnaireResponse, SubjectOfGroup,
     EEGSetting, Equipment, EEG, EEGMachine, EEGMachineSetting, Amplifier, EEGAmplifierSetting, \
     EEGSolution, EEGFilterSetting, FilterType, EEGElectrodeLocalizationSystem, \
     EEGCapSize, EEGElectrodeCap, EEGElectrodePosition, Manufacturer, ElectrodeModel, EEGElectrodeNet, Material, \
-    AdditionalData, EMGData, FileFormat
+    AdditionalData, EMGData, FileFormat, EMGSetting
 
 
 class ExperimentForm(ModelForm):
@@ -652,4 +652,21 @@ class AdditionalDataForm(ModelForm):
                                                        'data-error': _('File format description must be filled.')}),
             # It is not possible to set the 'required' attribute because it affects the edit screen
             # 'file': FileInput(attrs={'required': ""})
+        }
+
+
+class EMGSettingForm(ModelForm):
+    class Meta:
+        model = EMGSetting
+
+        fields = ['name', 'description']
+
+        widgets = {
+            'name': TextInput(attrs={'class': 'form-control',
+                                     'required': "",
+                                     'data-error': _('Name must be filled.'),
+                                     'autofocus': ''}),
+            'description': Textarea(attrs={'class': 'form-control',
+                                           'rows': '4', 'required': "",
+                                           'data-error': _('Description must be filled.')})
         }
