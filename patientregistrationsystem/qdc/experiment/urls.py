@@ -145,6 +145,10 @@ urlpatterns = patterns(
     url(r'^(?P<experiment_id>\d+)/emg_setting/new/$', 'emg_setting_create', name='emg_setting_new'),
     url(r'^emg_setting/(?P<emg_setting_id>\d+)/$', 'emg_setting_view', name='emg_setting_view'),
     url(r'^emg_setting/edit/(?P<emg_setting_id>\d+)/$', 'emg_setting_update', name='emg_setting_edit'),
+    url(r'^emg_setting/(?P<emg_setting_id>\d+)/digital_filter/$',
+        'emg_setting_digital_filter', name='emg_setting_digital_filter'),
+    url(r'^emg_setting/(?P<emg_setting_id>\d+)/digital_filter/edit/$',
+        'emg_setting_digital_filter_edit', name='emg_setting_digital_filter_edit'),
 
     # cid
     url(r'^group_diseases/cid-10/$', 'search_cid10_ajax', name='cid10_search'),

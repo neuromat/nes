@@ -10,7 +10,7 @@ from experiment.models import Experiment, QuestionnaireResponse, SubjectOfGroup,
     EEGSetting, Equipment, EEG, EEGMachine, EEGMachineSetting, Amplifier, EEGAmplifierSetting, \
     EEGSolution, EEGFilterSetting, FilterType, EEGElectrodeLocalizationSystem, \
     EEGCapSize, EEGElectrodeCap, EEGElectrodePosition, Manufacturer, ElectrodeModel, EEGElectrodeNet, Material, \
-    AdditionalData, EMGData, FileFormat, EMGSetting
+    AdditionalData, EMGData, FileFormat, EMGSetting, EMGDigitalFilterSetting
 
 
 class ExperimentForm(ModelForm):
@@ -407,21 +407,15 @@ class EEGFilterSettingForm(ModelForm):
         fields = ['high_pass', 'low_pass', 'order']
 
         widgets = {
-            'high_pass': TextInput(attrs={'class': 'form-control', 'required': "",
-                                          'data-error': _('Description must be filled.')}),
-            'low_pass': TextInput(attrs={'class': 'form-control', 'required': "",
-                                         'data-error': _('Description must be filled.')}),
-            'order': TextInput(attrs={'class': 'form-control', 'required': "",
-                                      'data-error': _('Description must be filled.')})
-
-
+            'high_pass': TextInput(attrs={'class': 'form-control'}),
+            'low_pass': TextInput(attrs={'class': 'form-control'}),
+            'order': TextInput(attrs={'class': 'form-control'})
         }
 
 
 class EEGElectrodeLocalizationSystemRegisterForm(ModelForm):
     class Meta:
         model = EEGElectrodeLocalizationSystem
-        # fields = ['name', 'description', 'number_of_electrodes', 'map_image_file']
         fields = ['name', 'description', 'map_image_file']
 
         widgets = {
@@ -429,7 +423,6 @@ class EEGElectrodeLocalizationSystemRegisterForm(ModelForm):
                                      'data-error': _('Name field must be filled.'),
                                      'autofocus': ''}),
             'description': Textarea(attrs={'class': 'form-control', 'rows': '4'}),
-            # 'number_of_electrodes': TextInput(attrs={'class': 'form-control'}),
         }
 
 
@@ -669,4 +662,21 @@ class EMGSettingForm(ModelForm):
             'description': Textarea(attrs={'class': 'form-control',
                                            'rows': '4', 'required': "",
                                            'data-error': _('Description must be filled.')})
+        }
+
+
+class EMGDigitalFilterSettingForm(ModelForm):
+    class Meta:
+        model = EMGDigitalFilterSetting
+
+        fields = ['filter_type', 'low_pass', 'high_pass', 'band_pass', 'notch', 'order']
+
+        widgets = {
+            'filter_type': Select(attrs={'class': 'form-control', 'required': "",
+                                         'data-error': _('Filter type is required')}),
+            'low_pass': TextInput(attrs={'class': 'form-control'}),
+            'high_pass': TextInput(attrs={'class': 'form-control'}),
+            'band_pass': TextInput(attrs={'class': 'form-control'}),
+            'notch': TextInput(attrs={'class': 'form-control'}),
+            'order': TextInput(attrs={'class': 'form-control'})
         }
