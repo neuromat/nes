@@ -132,7 +132,7 @@ class Migration(migrations.Migration):
                 ('emg_electrode_setting', models.OneToOneField(primary_key=True,
                                                                related_name='emg_electrode_placement_setting',
                                                                serialize=False, to='experiment.EMGElectrodeSetting')),
-                ('remarks', models.TextField()),
+                ('remarks', models.TextField(blank=True, null=True)),
             ],
         ),
         migrations.CreateModel(
