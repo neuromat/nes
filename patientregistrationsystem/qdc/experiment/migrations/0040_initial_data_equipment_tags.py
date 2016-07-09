@@ -12,12 +12,13 @@ def clear_equipment(apps, model_name):
         equipment.save()
 
 
-def update_equipment(apps, model_name):
+def update_equipment_tag(apps, model_name, tag_list):
     tag_model = apps.get_model("experiment", "Tag")
     equipment_model = apps.get_model("experiment", model_name)
 
+    tags = tag_model.objects.filter(name__in=tag_list)
     for equipment in equipment_model.objects.all():
-        for tag in tag_model.objects.all():
+        for tag in tags:
             equipment.tags.add(tag)
             equipment.save()
 
@@ -25,13 +26,15 @@ def update_equipment(apps, model_name):
 def backwards_data(apps, schema_editor):
     clear_equipment(apps, "EEGMachine")
     clear_equipment(apps, "Amplifier")
-    clear_equipment(apps, "ADConversor")
+    clear_equipment(apps, "ADConverter")
+    clear_equipment(apps, "EEGElectrodeNet")
 
 
 def load_data(apps, schema_editor):
-    update_equipment(apps, "EEGMachine")
-    update_equipment(apps, "Amplifier")
-    update_equipment(apps, "ADConversor")
+    update_equipment_tag(apps, "EEGMachine", ["EEG"])
+    update_equipment_tag(apps, "Amplifier", ["EEG", "EMG"])
+    update_equipment_tag(apps, "ADConverter", ["EMG"])
+    update_equipment_tag(apps, "EEGElectrodeNet", ["EEG"])
 
 
 class Migration(migrations.Migration):
