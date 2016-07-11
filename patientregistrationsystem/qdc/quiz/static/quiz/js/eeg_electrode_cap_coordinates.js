@@ -31,8 +31,19 @@ function init(){
     canvas.addEventListener("mousedown", getPosition, false);
 }
 
+function compare(a,b) {
+  if (a.position < b.position)
+    return -1;
+  if (a.position > b.position)
+    return 1;
+  return 0;
+}
+
+//objs.sort(compare);
+
 //cria dinamicamente a tabela e os checkboxs
 function  addSetted(){
+    positions.sort(compare);
     for(var i in positions){
         var position = positions[i];
         if(!position.delete){

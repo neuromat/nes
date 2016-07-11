@@ -11,6 +11,7 @@ function init(){
 
     var eeg_positions = document.getElementById("eeg_electrode_position");
     positions = eval(eeg_positions.value);
+    //positions.sort(compare);
 
     var imageObj = new Image();
 
@@ -23,6 +24,14 @@ function init(){
 
     //canvas.addEventListener("mousedown", getPosition, false);
 }
+
+//function compare(a,b) {
+//  if (a.position < b.position)
+//    return -1;
+//  if (a.position > b.position)
+//    return 1;
+//  return 0;
+//}
 
 function pintar(){
     var canvas = document.getElementById("electrodeMapCanvas");

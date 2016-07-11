@@ -3749,6 +3749,7 @@ def eeg_data_view(request, eeg_data_id, tab, template_name="experiment/subject_e
         image = True
 
     if request.method == "POST":
+
         if request.POST['action'] == "remove":
 
             if get_can_change(request.user, eeg_data.subject_of_group.group.experiment.research_project):
