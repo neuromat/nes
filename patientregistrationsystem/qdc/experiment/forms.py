@@ -11,7 +11,8 @@ from experiment.models import Experiment, QuestionnaireResponse, SubjectOfGroup,
     EEGSolution, EEGFilterSetting, FilterType, EEGElectrodeLocalizationSystem, \
     EEGCapSize, EEGElectrodeCap, EEGElectrodePosition, Manufacturer, ElectrodeModel, EEGElectrodeNet, Material, \
     AdditionalData, EMGData, FileFormat, EMGSetting, EMGDigitalFilterSetting, EMGADConverterSetting, \
-    EMGElectrodeSetting, EMGElectrodePlacementSetting
+    EMGElectrodeSetting, EMGElectrodePlacementSetting, \
+    EMGPreamplifierSetting, EMGAmplifierSetting, EMGAnalogFilterSetting
 
 
 class ExperimentForm(ModelForm):
@@ -719,4 +720,44 @@ class EMGElectrodePlacementSettingForm(ModelForm):
                                                      'data-error': _('Electrode placement is required')}),
             'remarks': Textarea(attrs={'class': 'form-control', 'rows': '4'}),
             'muscle_side': Select(attrs={'class': 'form-control'})
+        }
+
+
+class EMGPreamplifierSettingForm(ModelForm):
+    class Meta:
+        model = EMGPreamplifierSetting
+
+        fields = ['amplifier', 'gain']
+
+        widgets = {
+            'amplifier': Select(attrs={'class': 'form-control', 'required': "",
+                                       'data-error': _('Amplifier is required')}),
+            'gain': TextInput(attrs={'class': 'form-control'})
+        }
+
+
+class EMGAmplifierSettingForm(ModelForm):
+    class Meta:
+        model = EMGAmplifierSetting
+
+        fields = ['amplifier', 'gain']
+
+        widgets = {
+            'amplifier': Select(attrs={'class': 'form-control', 'required': "",
+                                       'data-error': _('Amplifier is required')}),
+            'gain': TextInput(attrs={'class': 'form-control'})
+        }
+
+
+class EMGAnalogFilterSettingForm(ModelForm):
+    class Meta:
+        model = EMGAnalogFilterSetting
+
+        fields = ['low_pass', 'high_pass', 'band_pass', 'notch']
+
+        widgets = {
+            'low_pass': TextInput(attrs={'class': 'form-control'}),
+            'high_pass': TextInput(attrs={'class': 'form-control'}),
+            'band_pass': TextInput(attrs={'class': 'form-control'}),
+            'notch': TextInput(attrs={'class': 'form-control'}),
         }
