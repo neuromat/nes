@@ -150,6 +150,7 @@ def is_patient_active(subject_id):
 
     return response
 
+
 class LogMessages:
     def __init__(self, user, file_name=path.join(settings.MEDIA_ROOT, "export_log")):
         self.user = user

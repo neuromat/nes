@@ -54,31 +54,53 @@
     "pk": 7
   },
   {
+    "model": "experiment.tag",
     "pk": 1,
     "fields": {
-      "name_pt_br": "Dados brutos de EEG",
-      "name": "Dados brutos de EEG",
-      "description_pt_br": null,
+      "name": "EMG"
+    }
+  },
+  {
+    "model": "experiment.tag",
+    "pk": 2,
+    "fields": {
+      "name": "EEG"
+    }
+  },
+  {
+    "fields": {
+      "tags": [
+        1,
+        2
+      ],
       "name_en": "EEG raw data",
+      "name": "Dados brutos de EEG",
       "description_en": null,
       "description": null,
+      "name_pt_br": "Dados brutos de EEG",
+      "extension": ".raw",
       "nes_code": "NEO-RawBinarySignalIO",
-      "extension": ".raw"
+      "description_pt_br": null
     },
+    "pk": 1,
     "model": "experiment.fileformat"
   },
   {
-    "pk": 2,
     "fields": {
-      "name_pt_br": "Outro",
-      "name": "Outro",
-      "description_pt_br": null,
+      "tags": [
+        1,
+        2
+      ],
       "name_en": "Other",
+      "name": "Outro",
       "description_en": null,
       "description": null,
+      "name_pt_br": "Outro",
+      "extension": "*.*",
       "nes_code": "other",
-      "extension": "*.*"
+      "description_pt_br": null
     },
+    "pk": 2,
     "model": "experiment.fileformat"
   }
 ]

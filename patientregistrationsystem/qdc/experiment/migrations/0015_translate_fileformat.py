@@ -11,7 +11,8 @@ from update_english_data import translate_fixtures_into_english, update_translat
 
 migration_commands_table = [
    "UPDATE experiment_fileformat set name_pt_br = name WHERE name <> '' and (name_pt_br = '' or name_pt_br is null);",
-   "UPDATE experiment_fileformat set description_pt_br = description WHERE description <> '' and (description_pt_br = '' or description_pt_br is null);",
+   "UPDATE experiment_fileformat set description_pt_br = description WHERE description <> '' and "
+   "(description_pt_br = '' or description_pt_br is null);",
 ]
 
 

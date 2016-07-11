@@ -13,6 +13,7 @@ class Migration(migrations.Migration):
     operations = [
         migrations.AlterModelOptions(
             name='patient',
-            options={'permissions': (('view_patient', 'Can view patient'), ('export_patient', 'Can export patient'), ('sensitive_data_patient', 'Can view sensitive patient data'))},
+            options={'permissions': (('view_patient', 'Can view patient'), ('export_patient', 'Can export patient'),
+                                     ('sensitive_data_patient', 'Can view sensitive patient data'))},
         ),
     ]

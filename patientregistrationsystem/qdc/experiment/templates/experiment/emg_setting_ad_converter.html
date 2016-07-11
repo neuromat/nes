@@ -1,0 +1,124 @@
+{% extends "quiz/template.html" %}
+{% block activeAdvancedResearchProject %}class="active"{% endblock %}
+
+{% load i18n admin_static %}
+
+{% block header %}
+    {% load static %}
+    {% block specific_header %}
+    {% endblock %}
+{% endblock %}
+
+{% block form %}
+    <div class="row">
+    <form id="emg_setting_form" method="post" data-toggle="validator">
+    {% csrf_token %}
+{% endblock %}
+
+{% block content %}
+
+    {% if messages %}
+        {% for message in messages %}
+
+            {% if message.tags == "success" %}
+                <script>showSuccessMessage('{{ message }}')</script>
+            {% endif %}
+
+            {% if message.tags == "warning" %}
+                <script>showWarningMessage('{{ message }}')</script>
+            {% endif %}
+
+            {% if message.tags == "error" %}
+                <script>showErrorMessage('{{ message }}')</script>
+            {% endif %}
+
+            {% if message.tags == "info" %}
+                <script>showInfoMessage('{{ message }}')</script>
+            {% endif %}
+
+        {% endfor %}
+    {% endif %}
+
+    {% if component_form.errors %}
+        <script type="text/javascript">
+            showErrorMessage(gettext('Please, correct fields highlighted.'))
+        </script>
+    {% endif %}
+
+
+    <div class="tab-pane fade in active" id="experimentBreadCrumb">
+        <div class="col-md-10">
+            <ol class="breadcrumb">
+                <li><a href="/home">{% trans "Home" %}</a></li>
+                <li><a href="/experiment/research_project/list">{% trans "Studies" %}</a></li>
+                <li><a href="/experiment/research_project/{{ emg_setting.experiment.research_project.id }}">{{ emg_setting.experiment.research_project.title }}</a></li>
+                <li><a href="/experiment/{{ emg_setting.experiment.id }}">{{ emg_setting.experiment.title }}</a></li>
+                <li><a href="/experiment/emg_setting/{{ emg_setting.id }}">{{ emg_setting.name }}</a></li>
+
+                {% if creating %}
+                    <li class="active">{% trans "Add A/D converter setting" %} </li>
+                {% else %}
+                    <li class="active"> {{ emg_setting.emg_ad_converter_setting.filter_type.name }} </li>
+                {% endif %}
+            </ol>
+        </div>
+    </div>
+
+    <div class="tab-pane fade in active" id="menuUserTab">
+        <div class="col-md-10">
+            <div class="container span6 offset3 well">
+
+                <h4>{% trans "EMG A/D converter settings" %}</h4>
+
+                <div class="row">
+                    <div class="col-xs-12 col-sm-12">
+                        <div class="form-group">
+                            <label class="control-label">{% trans "A/D converter" %} </label>
+                            {{ emg_ad_converter_setting_form.ad_converter }}
+                            <div class="help-block with-errors"></div>
+
+                        </div>
+                    </div>
+                </div>
+
+                <div class="row">
+                    <div class="col-xs-12 col-sm-12">
+                        <div class="form-group">
+                            <label class="control-label">{% trans "Sampling rate (Hz)" %} </label>
+                            {{ emg_ad_converter_setting_form.sampling_rate }}
+                        </div>
+                    </div>
+                </div>
+
+                {% if not editing and not creating and can_change %}
+                    <div class="btn-group pull-left">
+                        <a href="/experiment/emg_setting/{{ emg_setting.id }}/ad_converter/edit" class="btn btn-primary">{% trans "Edit" %}</a>
+                    </div>
+                {% endif %}
+
+            </div>
+
+            <div class="btn-toolbar">
+                {% if editing or creating%}
+                    <div class="btn-group pull-right">
+                        <button type="submit" name="action" value="save" class="btn btn-primary">{% trans "Save setting" %}</button>
+                    </div>
+                    <div class="btn-group pull-right">
+                        <a href="/experiment/emg_setting/{{ emg_setting.id }}{% if editing %}/ad_converter{% endif %}"
+                           class="btn" style="background-color: #f5f5f5">{% trans "Cancel" %}</a>
+                    </div>
+                {% else %}
+                    <div class="btn-group pull-right">
+                        <a href="/experiment/emg_setting/{{ emg_setting.id }}" class="btn" style="background-color: #f5f5f5">{% trans "Back" %}</a>
+                    </div>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+
+{% endblock %}
+
+{% block end_form %}
+    </form>
+</div>
+{% endblock %}

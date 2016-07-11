@@ -3,6 +3,7 @@ from __future__ import unicode_literals
 
 from django.db import models, migrations
 
+
 def get_permission_list_and_senior_research_group(apps, researcher_group_name):
 
     ContentType = apps.get_model("contenttypes", "ContentType")

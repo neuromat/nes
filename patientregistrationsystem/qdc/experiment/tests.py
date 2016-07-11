@@ -11,7 +11,9 @@ from django.utils.translation import ugettext_lazy as _
 from .models import Experiment, Group, Subject, \
     QuestionnaireResponse, SubjectOfGroup, ComponentConfiguration, ResearchProject, Keyword, StimulusType, \
     Component, Task, TaskForTheExperimenter, Stimulus, Instruction, Pause, Questionnaire, Block, \
-    EEG, FileFormat, EEGData, EEGSetting, DataConfigurationTree, EMG, EEGMachine, Manufacturer
+    EEG, FileFormat, EEGData, EEGSetting, DataConfigurationTree, EMG, EEGMachine, Manufacturer, Tag, Amplifier, \
+    EEGSolution, FilterType, ElectrodeModel, EEGElectrodeNet, EEGElectrodeNetSystem, EEGElectrodeLocalizationSystem, \
+    EEGElectrodePosition
 from .views import experiment_update, upload_file, research_project_update
 
 from patient.models import ClassificationOfDiseases
@@ -78,6 +80,7 @@ class ObjectsFactory(object):
     def create_group(experiment, experimental_protocol=None):
         """
         :param experiment: experiment
+        :param experimental_protocol: experimental protocol
         :return: group
         """
         group = Group.objects.create(experiment=experiment,
@@ -115,6 +118,78 @@ class ObjectsFactory(object):
         )
         eeg_machine.save()
         return eeg_machine
+
+    @staticmethod
+    def create_amplifier(manufacturer):
+        amplifier = Amplifier.objects.create(
+            manufacturer=manufacturer,
+            equipment_type="eeg_amplifier",
+            identification="Amplifier identification"
+        )
+        amplifier.save()
+        return amplifier
+
+    @staticmethod
+    def create_eeg_solution(manufacturer):
+        eeg_solution = EEGSolution.objects.create(
+            manufacturer=manufacturer,
+            name="Solution name"
+        )
+        eeg_solution.save()
+        return eeg_solution
+
+    @staticmethod
+    def create_filter_type():
+        filter_type = FilterType.objects.create(
+            name="Solution name"
+        )
+        filter_type.save()
+        return filter_type
+
+    @staticmethod
+    def create_electrode_model():
+        electrode_model = ElectrodeModel.objects.create(
+            name="Electrode Model name"
+        )
+        electrode_model.save()
+        return electrode_model
+
+    @staticmethod
+    def create_eeg_electrode_net(manufacturer, electrode_model_default):
+        eeg_electrode_net = EEGElectrodeNet.objects.create(
+            manufacturer=manufacturer,
+            equipment_type="eeg_electrode_net",
+            electrode_model_default=electrode_model_default,
+            identification="Electrode Net identification"
+        )
+        eeg_electrode_net.save()
+        return eeg_electrode_net
+
+    @staticmethod
+    def create_eeg_electrode_net_system(eeg_electrode_net, eeg_electrode_localization_system):
+        eeg_electrode_net_system = EEGElectrodeNetSystem.objects.create(
+            eeg_electrode_net=eeg_electrode_net,
+            eeg_electrode_localization_system=eeg_electrode_localization_system
+        )
+        eeg_electrode_net_system.save()
+        return eeg_electrode_net_system
+
+    @staticmethod
+    def create_eeg_electrode_localization_system():
+        eeg_electrode_net_system = EEGElectrodeLocalizationSystem.objects.create(
+            name="Localization System name"
+        )
+        eeg_electrode_net_system.save()
+        return eeg_electrode_net_system
+
+    @staticmethod
+    def create_eeg_electrode_position(eeg_electrode_localization_system):
+        eeg_electrode_position = EEGElectrodePosition.objects.create(
+            eeg_electrode_localization_system=eeg_electrode_localization_system,
+            name="Position name"
+        )
+        eeg_electrode_position.save()
+        return eeg_electrode_position
 
     @staticmethod
     def system_authentication(instance):
@@ -814,7 +889,7 @@ class ListOfQuestionnaireFromExperimentalProtocolOfAGroupTest(TestCase):
         component_configuration.save()
 
         data_configuration_tree = DataConfigurationTree.objects.create(
-            component_configuration = component_configuration
+            component_configuration=component_configuration
         )
         data_configuration_tree.save()
 
@@ -880,7 +955,7 @@ class ListOfQuestionnaireFromExperimentalProtocolOfAGroupTest(TestCase):
         component_configuration.save()
 
         data_configuration_tree = DataConfigurationTree.objects.create(
-            component_configuration = component_configuration
+            component_configuration=component_configuration
         )
         data_configuration_tree.save()
 
@@ -1000,7 +1075,7 @@ class SubjectTest(TestCase):
         component_configuration.save()
 
         data_configuration_tree = DataConfigurationTree.objects.create(
-            component_configuration = component_configuration
+            component_configuration=component_configuration
         )
         data_configuration_tree.save()
 
@@ -1356,12 +1431,14 @@ class SubjectTest(TestCase):
                          _("Date cannot be greater than today's date."))
 
         # create an eeg data file
+        tag_eeg = Tag.objects.get(name="EEG")
         file_format = FileFormat.objects.create(name='Text file', extension='txt')
+        file_format.tags.add(tag_eeg)
         file = SimpleUploadedFile('experiment/eeg/eeg_metadata.txt', b'rb')
         self.data = {'date': '29/08/2014', 'action': 'save',
                      'description': 'description of the file',
                      'file_format': file_format.id, 'file': file,
-                     'file_format_description': 'teste',
+                     'file_format_description': 'test',
                      'eeg_setting': eeg_setting.id}
         response = self.client.post(reverse('subject_eeg_data_create',
                                             args=(group.id, subject_mock.id, component_configuration.id)),
@@ -1726,6 +1803,9 @@ class EEGSettingTest(TestCase):
         self.assertEqual(response.status_code, 200)
 
         # update the eeg_machine_setting
+        response = self.client.get(reverse("edit_eeg_setting_type", args=(eeg_setting.id, 'eeg_machine')))
+        self.assertEqual(response.status_code, 200)
+
         self.data = {'action': 'save', 'equipment_selection': eeg_machine.id, 'number_of_channels_used': "3"}
         response = self.client.post(reverse("edit_eeg_setting_type",
                                             args=(eeg_setting.id, 'eeg_machine')), self.data)
@@ -1733,5 +1813,153 @@ class EEGSettingTest(TestCase):
 
         # remove an eeg_machine_setting
         self.data = {'action': 'remove-eeg_machine'}
+        response = self.client.post(reverse("eeg_setting_view", args=(eeg_setting.id,)), self.data)
+        self.assertEqual(response.status_code, 302)
+
+    def test_eeg_setting_amplifier(self):
+        eeg_setting = ObjectsFactory.create_eeg_setting(self.experiment)
+
+        manufacturer = ObjectsFactory.create_manufacturer()
+        eeg_amplifier = ObjectsFactory.create_amplifier(manufacturer)
+
+        # screen to an (unexisting) eeg_amplifier_setting
+        response = self.client.get(reverse("view_eeg_setting_type", args=(eeg_setting.id, 'eeg_amplifier')))
+        self.assertEqual(response.status_code, 200)
+
+        # create an eeg_amplifier_setting
+        self.data = {'action': 'save', 'equipment_selection': eeg_amplifier.id, 'gain': "10"}
+        response = self.client.post(reverse("view_eeg_setting_type",
+                                            args=(eeg_setting.id, 'eeg_amplifier')), self.data)
+        self.assertEqual(response.status_code, 302)
+
+        # screen to view the eeg_amplifier_setting
+        response = self.client.get(reverse("view_eeg_setting_type", args=(eeg_setting.id, 'eeg_amplifier')))
+        self.assertEqual(response.status_code, 200)
+
+        # update the eeg_amplifier_setting
+        response = self.client.get(reverse("edit_eeg_setting_type", args=(eeg_setting.id, 'eeg_amplifier')))
+        self.assertEqual(response.status_code, 200)
+
+        self.data = {'action': 'save', 'equipment_selection': eeg_amplifier.id, 'gain': "20"}
+        response = self.client.post(reverse("edit_eeg_setting_type",
+                                            args=(eeg_setting.id, 'eeg_amplifier')), self.data)
+        self.assertEqual(response.status_code, 302)
+
+        # remove an eeg_amplifier_setting
+        self.data = {'action': 'remove-eeg_amplifier'}
+        response = self.client.post(reverse("eeg_setting_view", args=(eeg_setting.id,)), self.data)
+        self.assertEqual(response.status_code, 302)
+
+    def test_eeg_setting_eeg_solution(self):
+        eeg_setting = ObjectsFactory.create_eeg_setting(self.experiment)
+
+        manufacturer = ObjectsFactory.create_manufacturer()
+        eeg_solution = ObjectsFactory.create_eeg_solution(manufacturer)
+
+        # screen to an (unexisting) eeg_solution_setting
+        response = self.client.get(reverse("view_eeg_setting_type", args=(eeg_setting.id, 'eeg_solution')))
+        self.assertEqual(response.status_code, 200)
+
+        # create an eeg_solution_setting
+        self.data = {'action': 'save', 'solution_selection': eeg_solution.id}
+        response = self.client.post(reverse("view_eeg_setting_type",
+                                            args=(eeg_setting.id, 'eeg_solution')), self.data)
+        self.assertEqual(response.status_code, 302)
+
+        # screen to view the eeg_solution_setting
+        response = self.client.get(reverse("view_eeg_setting_type", args=(eeg_setting.id, 'eeg_solution')))
+        self.assertEqual(response.status_code, 200)
+
+        # update the eeg_solution_setting
+        response = self.client.get(reverse("edit_eeg_setting_type", args=(eeg_setting.id, 'eeg_solution')))
+        self.assertEqual(response.status_code, 200)
+
+        self.data = {'action': 'save', 'solution_selection': eeg_solution.id}
+        response = self.client.post(reverse("edit_eeg_setting_type",
+                                            args=(eeg_setting.id, 'eeg_solution')), self.data)
+        self.assertEqual(response.status_code, 302)
+
+        # remove an eeg_solution_setting
+        self.data = {'action': 'remove-eeg_solution'}
+        response = self.client.post(reverse("eeg_setting_view", args=(eeg_setting.id,)), self.data)
+        self.assertEqual(response.status_code, 302)
+
+    def test_eeg_setting_eeg_filter(self):
+        eeg_setting = ObjectsFactory.create_eeg_setting(self.experiment)
+
+        filter_type = ObjectsFactory.create_filter_type()
+
+        # screen to an (unexisting) eeg_filter_setting
+        response = self.client.get(reverse("view_eeg_setting_type", args=(eeg_setting.id, 'eeg_filter')))
+        self.assertEqual(response.status_code, 200)
+
+        # create an eeg_filter_setting
+        self.data = {'action': 'save', 'filter_selection': filter_type.id,
+                     'high_pass': '80', 'low_pass': '20', 'order': '2'}
+        response = self.client.post(reverse("view_eeg_setting_type",
+                                            args=(eeg_setting.id, 'eeg_filter')), self.data)
+        self.assertEqual(response.status_code, 302)
+
+        # screen to view the eeg_filter_setting
+        response = self.client.get(reverse("view_eeg_setting_type", args=(eeg_setting.id, 'eeg_filter')))
+        self.assertEqual(response.status_code, 200)
+
+        # update the eeg_filter_setting
+        response = self.client.get(reverse("edit_eeg_setting_type", args=(eeg_setting.id, 'eeg_filter')))
+        self.assertEqual(response.status_code, 200)
+
+        self.data = {'action': 'save', 'filter_selection': filter_type.id,
+                     'high_pass': '90', 'low_pass': '20', 'order': '2'}
+        response = self.client.post(reverse("edit_eeg_setting_type",
+                                            args=(eeg_setting.id, 'eeg_filter')), self.data)
+        self.assertEqual(response.status_code, 302)
+
+        # remove an eeg_filter_setting
+        self.data = {'action': 'remove-eeg_filter'}
+        response = self.client.post(reverse("eeg_setting_view", args=(eeg_setting.id,)), self.data)
+        self.assertEqual(response.status_code, 302)
+
+    def test_eeg_setting_eeg_net_system(self):
+        eeg_setting = ObjectsFactory.create_eeg_setting(self.experiment)
+
+        manufacturer = ObjectsFactory.create_manufacturer()
+        electrode_model = ObjectsFactory.create_electrode_model()
+        eeg_electrode_net = ObjectsFactory.create_eeg_electrode_net(manufacturer, electrode_model)
+        eeg_localization_system = ObjectsFactory.create_eeg_electrode_localization_system()
+
+        # creating 2 positions to configure be configured when the setting is created
+        ObjectsFactory.create_eeg_electrode_position(eeg_localization_system)
+        ObjectsFactory.create_eeg_electrode_position(eeg_localization_system)
+
+        ObjectsFactory.create_eeg_electrode_net_system(eeg_electrode_net, eeg_localization_system)
+
+        # screen to an (unexisting) eeg_electrode_net_system_setting
+        response = self.client.get(reverse("view_eeg_setting_type", args=(eeg_setting.id, 'eeg_electrode_net_system')))
+        self.assertEqual(response.status_code, 200)
+
+        # create an eeg_electrode_net_system_setting
+        self.data = {'action': 'save', 'equipment_selection': eeg_electrode_net.id,
+                     'localization_system_selection': eeg_localization_system.id}
+        response = self.client.post(reverse("view_eeg_setting_type",
+                                            args=(eeg_setting.id, 'eeg_electrode_net_system')), self.data)
+        self.assertEqual(response.status_code, 302)
+
+        # screen to view the eeg_electrode_net_system_setting
+        response = self.client.get(reverse("view_eeg_setting_type", args=(eeg_setting.id, 'eeg_electrode_net_system')))
+        self.assertEqual(response.status_code, 200)
+
+        # update the eeg_electrode_net_system_setting
+        response = self.client.get(reverse("edit_eeg_setting_type",
+                                           args=(eeg_setting.id, 'eeg_electrode_net_system')))
+        self.assertEqual(response.status_code, 200)
+
+        self.data = {'action': 'save', 'equipment_selection': eeg_electrode_net.id,
+                     'localization_system_selection': eeg_localization_system.id}
+        response = self.client.post(reverse("edit_eeg_setting_type",
+                                            args=(eeg_setting.id, 'eeg_electrode_net_system')), self.data)
+        self.assertEqual(response.status_code, 302)
+
+        # remove an eeg_electrode_net_system_setting
+        self.data = {'action': 'remove-eeg_electrode_net_system'}
         response = self.client.post(reverse("eeg_setting_view", args=(eeg_setting.id,)), self.data)
         self.assertEqual(response.status_code, 302)

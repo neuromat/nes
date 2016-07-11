@@ -65,7 +65,8 @@ urlpatterns = patterns(
     url(r'^eegelectrodemodel/list/$', 'eegelectrodemodel_list', name='eegelectrodemodel_list'),
     url(r'^eegelectrodemodel/new/$', 'eegelectrodemodel_create', name='eegelectrodemodel_new'),
     url(r'^eegelectrodemodel/(?P<eegelectrodemodel_id>\d+)/$', 'eegelectrodemodel_view', name='eegelectrodemodel_view'),
-    url(r'^eegelectrodemodel/edit/(?P<eegelectrodemodel_id>\d+)/$', 'eegelectrodemodel_update', name='eegelectrodemodel_edit'),
+    url(r'^eegelectrodemodel/edit/(?P<eegelectrodemodel_id>\d+)/$',
+        'eegelectrodemodel_update', name='eegelectrodemodel_edit'),
 
     # register material
     url(r'^material/list/$', 'material_list', name='material_list'),
@@ -81,13 +82,13 @@ urlpatterns = patterns(
 
     # register cap size
     url(r'^eeg_electrode_cap_size/(?P<eegelectrode_cap_id>\d+)/add_size/$',
-        'eegelectrodenet_cap_size_create',name='eegelectrodenet_add_size'),
+        'eegelectrodenet_cap_size_create', name='eegelectrodenet_add_size'),
     # url(r'^eeg_electrode_cap_size/remove/(?P<eegelectrode_cap_size_id>\d+)/$',
     #     'eegelectrodenet_cap_size_remove', name='cap_size_remove'),
     url(r'^eeg_electrode_cap_size/(?P<eegelectrode_cap_size_id>\d+)/$',
-        'eegelectrodenet_cap_size_view',name='eegelectrodenet_cap_size_view'),
+        'eegelectrodenet_cap_size_view', name='eegelectrodenet_cap_size_view'),
     url(r'^eeg_electrode_cap_size/(?P<eegelectrode_cap_size_id>\d+)/edit/$',
-        'eegelectrodenet_cap_size_update',name='eegelectrodenet_cap_size_edit'),
+        'eegelectrodenet_cap_size_update', name='eegelectrodenet_cap_size_edit'),
 
     # Localization system and position
     url(r'^eeg_electrode_localization_system/list/$',
@@ -128,7 +129,6 @@ urlpatterns = patterns(
     url(r'^eeg_setting/eeg_electrode_position_status_model/edit/(?P<eeg_setting_id>\d+)/$',
         'edit_eeg_electrode_position_setting_model', name='edit_eeg_electrode_position_setting_model'),
 
-
     # eeg setting (ajax)
     url(r'^equipment/get_equipment_by_manufacturer/(?P<equipment_type>\w+)/(?P<manufacturer_id>\d+)/$',
         'get_json_equipment_by_manufacturer'),
@@ -144,6 +144,25 @@ urlpatterns = patterns(
         'get_equipment_by_manufacturer_and_localization_system'),
     url(r'^eeg_electrode_localization_system/get_positions/(?P<eeg_electrode_localization_system_id>\d+)/$',
         'get_json_positions'),
+
+    # emg setting
+    url(r'^(?P<experiment_id>\d+)/emg_setting/new/$', 'emg_setting_create', name='emg_setting_new'),
+    url(r'^emg_setting/(?P<emg_setting_id>\d+)/$', 'emg_setting_view', name='emg_setting_view'),
+    url(r'^emg_setting/edit/(?P<emg_setting_id>\d+)/$', 'emg_setting_update', name='emg_setting_edit'),
+    url(r'^emg_setting/(?P<emg_setting_id>\d+)/digital_filter/$',
+        'emg_setting_digital_filter', name='emg_setting_digital_filter'),
+    url(r'^emg_setting/(?P<emg_setting_id>\d+)/digital_filter/edit/$',
+        'emg_setting_digital_filter_edit', name='emg_setting_digital_filter_edit'),
+    url(r'^emg_setting/(?P<emg_setting_id>\d+)/ad_converter/$',
+        'emg_setting_ad_converter', name='emg_setting_ad_converter'),
+    url(r'^emg_setting/(?P<emg_setting_id>\d+)/ad_converter/edit/$',
+        'emg_setting_ad_converter_edit', name='emg_setting_ad_converter_edit'),
+    url(r'^emg_setting/(?P<emg_setting_id>\d+)/electrode/add/$',
+        'emg_setting_electrode_add', name='emg_setting_electrode_add'),
+    url(r'^emg_electrode_setting/(?P<emg_electrode_setting_id>\d+)/$',
+        'emg_electrode_setting_view', name='emg_electrode_setting_view'),
+    url(r'^emg_electrode_setting/(?P<emg_electrode_setting_id>\d+)/edit/$',
+        'emg_electrode_setting_edit', name='emg_electrode_setting_edit'),
 
     # cid
     url(r'^group_diseases/cid-10/$', 'search_cid10_ajax', name='cid10_search'),

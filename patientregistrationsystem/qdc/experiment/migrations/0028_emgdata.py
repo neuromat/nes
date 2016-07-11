@@ -17,7 +17,8 @@ class Migration(migrations.Migration):
             name='EMGData',
             fields=[
                 ('id', models.AutoField(serialize=False, verbose_name='ID', auto_created=True, primary_key=True)),
-                ('date', models.DateField(validators=[experiment.models.validate_date_questionnaire_response], default=datetime.date.today)),
+                ('date', models.DateField(validators=[experiment.models.validate_date_questionnaire_response],
+                                          default=datetime.date.today)),
                 ('description', models.TextField()),
                 ('file', models.FileField(upload_to=experiment.models.get_eeg_dir)),
                 ('file_format_description', models.TextField(null=True, default='', blank=True)),
