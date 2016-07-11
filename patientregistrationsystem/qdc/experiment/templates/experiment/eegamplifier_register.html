@@ -106,6 +106,39 @@
                         </div>
                     </div>
                 </div>
+
+                <div class="row">
+                    <div class="col-xs-12 col-sm-12">
+                        <div class="form-group">
+                            <label class="control-label">{% trans "Tag" %}</label>
+                            <div class="container span6 offset3 well ">
+                                <div class="form-group">
+                                    <table class="table table-striped">
+                                        <tbody>
+                                        {% for tag in tags %}
+                                            <tr>
+                                                <td>
+                                                    <input type="checkbox"
+                                                           id="tag_{{ tag.id }}"
+                                                           name="tag_{{ tag.id }}"
+                                                           {% if tag.checked %}checked="checked"{% endif %}
+                                                           {% if not editing %} disabled {% endif %} >
+                                                    {{ tag.name }}
+                                                    </input>
+                                                </td>
+
+                                            </tr>
+                                        {% endfor %}
+                                        </tbody>
+                                    </table>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+
+
                 <div class="row">
                     <div class="col-xs-12 col-sm-12">
                         <div class="form-group">

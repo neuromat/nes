@@ -14,6 +14,7 @@ from django.contrib.auth import PermissionDenied
 from django.core import serializers
 from django.core.urlresolvers import reverse
 from django.db.models import Q
+from django.db.models.loading import get_model
 from django.db.models.deletion import ProtectedError
 from django.http import HttpResponseRedirect, HttpResponse
 from django.shortcuts import get_object_or_404, redirect, render, render_to_response
@@ -28,7 +29,7 @@ from experiment.models import Experiment, Subject, QuestionnaireResponse, Subjec
     EEGMachineSetting, EEGAmplifierSetting, EEGSolutionSetting, EEGFilterSetting, EEGElectrodeLayoutSetting, \
     FilterType, EEGSolution, EEGElectrodeLocalizationSystem, EEGElectrodeNetSystem, EEGElectrodePositionSetting, \
     ElectrodeModel, EEGElectrodePositionCollectionStatus, EEGCapSize, EEGElectrodeCap, EEGElectrodePosition, \
-    Material, AdditionalData, \
+    Material, AdditionalData, Tag, \
     EMGData, EMGSetting, SoftwareVersion, EMGDigitalFilterSetting, EMGADConverterSetting, \
     EMGElectrodePlacement, EMGElectrodeSetting, EMGPreamplifierSetting, EMGAmplifierSetting, EMGAnalogFilterSetting
 from experiment.forms import ExperimentForm, QuestionnaireResponseForm, FileForm, GroupForm, InstructionForm, \
@@ -958,7 +959,7 @@ def view_eeg_setting_type(request, eeg_setting_id, eeg_setting_type):
 
             equipment_type = "eeg_electrode_net" if eeg_setting_type == "eeg_electrode_net_system" else eeg_setting_type
 
-            equipment_list = Equipment.objects.filter(equipment_type=equipment_type)
+            equipment_list = Equipment.objects.filter(equipment_type=equipment_type, tags__name="EEG")
             manufacturer_list = \
                 Manufacturer.objects.filter(set_of_equipment__equipment_type=equipment_type).distinct()
 
@@ -1662,6 +1663,9 @@ def eegmachine_create(request, template_name="experiment/eegmachine_register.htm
                 eegmachine_added.equipment_type = 'eeg_machine'
                 eegmachine_added.save()
 
+                tag = get_object_or_404(Tag, name="EEG")
+                eegmachine_added.equipment_ptr.tags.add(tag)
+
                 messages.success(request, _('EEG machine created successfully.'))
                 redirect_url = reverse("eegmachine_view", args=(eegmachine_added.id,))
                 return HttpResponseRedirect(redirect_url)
@@ -1741,6 +1745,82 @@ def eegmachine_view(request, eegmachine_id, template_name="experiment/eegmachine
     return render(request, template_name, context)
 
 
+def get_tag(data_post):
+
+    tag = []
+    for item in data_post:
+        if "tag" in item:
+            tag.append(item)
+    return tag
+
+
+def get_tag_ids_from_post(data_post):
+
+    tag_ids = []
+    for item in data_post:
+        if "tag" in item:
+            tag_ids.append(int(item.split("_")[-1]))
+    return tag_ids
+
+
+def equipment_tags_update(equipment_id, set_tags, model_name_str):
+
+    model_name = get_model('experiment', model_name_str)
+    changed = False
+
+    if model_name.objects.filter(id=equipment_id).exists():
+        current_tags_objects = model_name.objects.get(id=equipment_id).tags
+
+        current_tags = [item[0] for item in current_tags_objects.all().values_list("id")]
+
+        tags = Tag.objects.all()
+
+        for tag in tags:
+            if tag.id not in current_tags and tag.id in set_tags:
+                # nao estava e agora está: incluir
+                current_tags_objects.add(tag)
+                changed = True
+            elif tag.id in current_tags and (tag.id not in set_tags):
+                # estava e nao está mais: deletar
+                current_tags_objects.remove(tag)
+                changed = True
+            # caso contrario: manter
+    return changed
+
+
+def get_tags(equipment_id, model_name_str):
+
+    tags = None
+
+    model_name = get_model('experiment', model_name_str)
+
+    if model_name.objects.filter(id=equipment_id).exists():
+
+        current_tags_objects = model_name.objects.get(id=equipment_id).tags.all()
+
+        current_tags = [item[0] for item in current_tags_objects.values_list("id")]
+
+        tags = Tag.objects.all()
+
+        for tag in tags:
+
+            if tag.id in current_tags:
+                tag.checked = True
+            else:
+                tag.checked = False
+
+    return tags
+
+
+def set_all_tags():
+
+    tags = Tag.objects.all()
+
+    for tag in tags:
+        tag.checked = True
+
+    return tags
+
 @login_required
 @permission_required('experiment.register_equipment')
 def eegamplifier_list(request, template_name="experiment/eegamplifier_list.html"):
@@ -1753,6 +1833,8 @@ def eegamplifier_create(request, template_name="experiment/eegamplifier_register
 
     eegamplifier_form = EEGAmplifierRegisterForm(request.POST or None, initial={'equipment_type': 'eeg_amplifier'})
 
+    tags = set_all_tags()
+
     if request.method == "POST":
 
         if request.POST['action'] == "save":
@@ -1762,6 +1844,11 @@ def eegamplifier_create(request, template_name="experiment/eegamplifier_register
                 eegamplifier_added = eegamplifier_form.save(commit=False)
                 eegamplifier_added.equipment_type = 'eeg_amplifier'
                 eegamplifier_added.save()
+
+                on_tags = get_tag_ids_from_post(request.POST)
+                changed_tags = equipment_tags_update(eegamplifier_added.id, on_tags, "Amplifier")
+
+                tags = get_tags(eegamplifier_added.id, "Amplifier")
 
                 messages.success(request, _('EEG amplifier created successfully.'))
                 redirect_url = reverse("eegamplifier_view", args=(eegamplifier_added.id,))
@@ -1775,7 +1862,8 @@ def eegamplifier_create(request, template_name="experiment/eegamplifier_register
 
     context = {"equipment_form": eegamplifier_form,
                "creating": True,
-               "editing": True
+               "editing": True,
+               "tags": tags
                }
 
     return render(request, template_name, context)
@@ -1791,7 +1879,10 @@ def eegamplifier_update(request, eegamplifier_id, template_name="experiment/eega
     if request.method == "POST":
         if request.POST['action'] == "save":
             if eegamplifier_form.is_valid():
-                if eegamplifier_form.has_changed():
+                new_tags = get_tag_ids_from_post(request.POST)
+                changed_tags = equipment_tags_update(eegamplifier_id, new_tags, "Amplifier")
+
+                if eegamplifier_form.has_changed() or changed_tags:
                     eegamplifier_form.save()
                     messages.success(request, _('EEG amplifier updated successfully.'))
                 else:
@@ -1800,9 +1891,12 @@ def eegamplifier_update(request, eegamplifier_id, template_name="experiment/eega
                 redirect_url = reverse("eegamplifier_view", args=(eegamplifier.id,))
                 return HttpResponseRedirect(redirect_url)
 
+    tags = get_tags(eegamplifier_id, "Amplifier")
+
     context = {"equipment": eegamplifier,
                "equipment_form": eegamplifier_form,
-               "editing": True
+               "editing": True,
+               "tags": tags
                }
 
     return render(request, template_name, context)
@@ -1830,9 +1924,12 @@ def eegamplifier_view(request, eegamplifier_id, template_name="experiment/eegamp
                 redirect_url = reverse("eegamplifier_view", args=(eegamplifier_id,))
                 return HttpResponseRedirect(redirect_url)
 
+    tags = get_tags(eegamplifier_id, "Amplifier")
+
     context = {"can_change": True,
                "equipment": eegamplifier,
-               "equipment_form": eegamplifier_form
+               "equipment_form": eegamplifier_form,
+               "tags": tags
                }
 
     return render(request, template_name, context)
@@ -2263,6 +2360,9 @@ def eegelectrodenet_create(request, template_name="experiment/eegelectrodenet_re
                     cap_added.save()
 
                 equipment_added = cap_added if is_a_cap else eegelectrodenet_added
+
+                tag = get_object_or_404(Tag, name="EEG")
+                equipment_added.equipment_ptr.tags.add(tag)
 
                 localization_systems = get_localization_system(request.POST)
                 if localization_systems:
