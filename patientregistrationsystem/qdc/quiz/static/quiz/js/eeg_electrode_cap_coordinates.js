@@ -31,15 +31,16 @@ function init(){
     canvas.addEventListener("mousedown", getPosition, false);
 }
 
+//cria dinamicamente a tabela e os checkboxs
 function  addSetted(){
     for(var i in positions){
         var position = positions[i];
-        if(position.status){
+        if(!position.delete){
             id = position.id;
             name = position.position;
             x = parseInt(position.x);
             y = parseInt(position.y);
-            setted = position.setted;
+            used = position.used;
 
             var posTable = document.getElementById("cap_positions").getElementsByTagName('tbody')[0];
 
@@ -53,14 +54,14 @@ function  addSetted(){
             checknode.type = 'checkbox';
             checknode.id = id;
             checknode.setAttribute("checked", true);
-            if(setted) checknode.setAttribute("disabled", "disabled");
+            if(used) checknode.setAttribute("disabled", "disabled");
 
             checknode.onclick = function(event){
             //if(document.getElementById("cap_positions").getElementsByTagName('td')[1].getElementsByTagName('input')[0].checked)
             if(!this.checked){ //checked estava true
                 var i = this.parentNode.parentNode.rowIndex;
                 document.getElementById("cap_positions").deleteRow(i);
-                used(this.id);
+                setted(this.id);
             }
 
         };
@@ -79,8 +80,8 @@ function  addSetted(){
 
 }
 
-//Funcao que coloca status = false para posteriormente ser deletado do banco de dados
-function used(positionId){
+//Funcao que coloca delete = true para posteriormente ser deletado do banco de dados
+function setted(positionId){
     var canvas = document.getElementById("electrodeMapCanvas");
     var ctx = canvas.getContext("2d");
 
@@ -88,7 +89,7 @@ function used(positionId){
         var position = positions[i];
 
         if(position.id == positionId) {
-            positions[i].status = false;
+            positions[i].delete = true; //this point is deleted
             used_positions_counter--;
 
             var imageObj = new Image();
@@ -109,7 +110,7 @@ function pintar(){
 
     for(var i in positions){
         var position = positions[i];
-        if(position.status){
+        if(!position.delete){
             x = parseInt(position.x);
             y = parseInt(position.y);
 
@@ -147,7 +148,7 @@ function addRow(index){
         if(!this.checked){ //checked estava true
             var i = this.parentNode.parentNode.rowIndex;
             document.getElementById("cap_positions").deleteRow(i);
-            used(this.id);
+            setted(this.id);
         }
 
     };
@@ -184,18 +185,20 @@ function getPosition(event){
         var id = positions.length + 1;
         var name = prompt("Please enter the name this point", id);
         if(name != null){
+            id = localization_system_id + "_" + id;
             context.beginPath();
             context.arc(x, y, 5, 0, 2 * Math.PI);
             context.fillStyle = "red";
             context.fill();
             context.stroke();
             positions.push({
-                id : "",
+                id : id,
                 position: name,
                 x: x,
                 y: y,
-                setted: false,
-                status: true
+                used: false, //this point is not used by some layout
+                existInDB: false, //this point doesn't exist in the DB
+                delete: false //this point was not deleted
             });
             used_positions_counter++;
             var index = new Number();
@@ -208,7 +211,7 @@ function getPosition(event){
 
 function sendPositions(){
     var url = "/experiment/eeg_electrode_localization_system/get_positions/" + localization_system_id;
-    
+
     $.getJSON(
         url,
         {positions : JSON.stringify(positions)},
