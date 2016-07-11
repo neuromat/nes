@@ -2,19 +2,6 @@
  * Created by mruizo on 31/05/16.
  */
 
-//window.onload = function() {
-//    var c = document.getElementById("electrodeMapCanvas");
-//    var ctx = c.getContext("2d");
-//    var imageObj = new Image();
-//
-//    imageObj.onload = function(){
-//        ctx.drawImage(imageObj, 0,0,700,500);
-//   };
-////    //imageObj.src = 'http://www.html5canvastutorials.com/demos/assets/darth-vader.jpg';
-//    imageObj.src = 'https://www.ant-neuro.com/sites/default/files/images/waveguard_layout_024ch.png';
-////    //imageObj.src = document.getElementById("scream");
-////
-//}
 
 window.onload = function() {
     var eeg_positions = document.getElementById("eeg_electrode_position");

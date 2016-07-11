@@ -105,6 +105,8 @@ urlpatterns = patterns(
         'eeg_electrode_position_view', name='eeg_electrode_position_view'),
     url(r'^eeg_electrode_position/edit/(?P<eeg_electrode_position_id>\d+)/$',
         'eeg_electrode_position_update', name='eeg_electrode_position_edit'),
+    url(r'^eeg_electrode_localization_system/(?P<eeg_electrode_localization_system_id>\d+)/new_coordinates/$',
+        'eeg_electrode_coordinates_create', name='eeg_electrode_coordinates_create'),
 
     # eeg setting
     url(r'^(?P<experiment_id>\d+)/eeg_setting/new/$', 'eeg_setting_create', name='eeg_setting_new'),
@@ -140,6 +142,8 @@ urlpatterns = patterns(
     url(r'^equipment/get_equipment_by_manufacturer_and_localization_system/'
         r'(?P<manufacturer_id>\w+)/(?P<eeg_localization_system_id>\d+)/$',
         'get_equipment_by_manufacturer_and_localization_system'),
+    url(r'^eeg_electrode_localization_system/get_positions/(?P<eeg_electrode_localization_system_id>\d+)/$',
+        'get_json_positions'),
 
     # emg setting
     url(r'^(?P<experiment_id>\d+)/emg_setting/new/$', 'emg_setting_create', name='emg_setting_new'),
@@ -201,10 +205,12 @@ urlpatterns = patterns(
         'subject_eeg_data_create', name='subject_eeg_data_create'),
     url(r'^eeg_data/(?P<eeg_data_id>\d+)/(?P<tab>\d+)/$', 'eeg_data_view', name='eeg_data_view'),
     url(r'^eeg_data/edit/(?P<eeg_data_id>\d+)/(?P<tab>\d+)/$', 'eeg_data_edit', name='eeg_data_edit'),
+    url(r'^eeg_data/edit_image/(?P<eeg_data_id>\d+)/(?P<tab>\d+)/$', 'eeg_image_edit', name='eeg_image_edit'),
 
     # eeg_data (ajax)
     url(r'^equipment/get_cap_size_list_from_eeg_setting/(?P<eeg_setting_id>\d+)/$',
         'get_cap_size_list_from_eeg_setting'),
+    url(r'eeg_data/edit_image/set_worked_positions/$','set_worked_positions'),
 
     # subject + emg data
     url(r'^group/(?P<group_id>\d+)/subject/(?P<subject_id>\d+)/emg/$',

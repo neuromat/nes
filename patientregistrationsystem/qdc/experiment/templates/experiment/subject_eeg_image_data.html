@@ -1,0 +1,157 @@
+{% extends "quiz/template.html" %}
+
+{% load i18n admin_static %}
+{% load subjects_tags %}
+
+{% block header %}
+    <script src="{% static 'quiz/js/eeg_electrode_worked_setted.js' %}"></script>
+
+    <style>
+        {#  based on tip from http://stackoverflow.com/questions/21168521/scrollable-table-with-fixed-header-in-bootstrap #}
+        .header-fixed {
+            width: 100%
+        }
+
+        .header-fixed > thead,
+        .header-fixed > tbody,
+        .header-fixed > thead > tr,
+        .header-fixed > tbody > tr,
+        .header-fixed > thead > tr > th,
+        .header-fixed > tbody > tr > td {
+            display: block;
+        }
+
+        .header-fixed > tbody > tr:after,
+        .header-fixed > thead > tr:after {
+            content: ' ';
+            display: block;
+            visibility: hidden;
+            clear: both;
+        }
+
+        .header-fixed > tbody {
+            overflow-y: auto;
+            height: 400px;
+        }
+
+        .header-fixed > tbody > tr > td,
+        .header-fixed > thead > tr > th {
+            width: 50%;
+            float: left;
+        }
+    </style>
+{% endblock %}
+
+{% block form %}
+    <div class="row">
+    <form id="user_form" method="post" data-toggle="validator" enctype="multipart/form-data">
+    {% csrf_token %}
+{% endblock %}
+
+{% block content %}
+    <div class="tab-pane fade in active" id="eegDataProjectBreadCrumb">
+        <div class="col-md-10">
+            <ol class="breadcrumb">
+                <li><a href="/home">{% trans "Home" %}</a></li>
+                <li><a href="/experiment/research_project/list">{% trans "Studies" %}</a></li>
+                <li><a href="/experiment/research_project/{{ group.experiment.research_project.id }}">{{ group.experiment.research_project.title }}</a></li>
+                <li><a href="/experiment/{{ group.experiment.id }}">{{ group.experiment.title }}</a></li>
+                <li><a href="/experiment/group/{{ group.id }}">{{ group.title }}</a></li>
+                <li><a href="/experiment/group/{{ group.id }}/subjects/">{% trans "Participant" %}</a></li>
+
+                <li><a href="/experiment/group/{{ group.id }}/subject/{{ subject.id }}/eeg">{% get_name_or_code subject.patient.id %}</a></li>
+
+                {% if creating %}
+                    <li class="active">{% trans "New EEG data file" %}</li>
+                {% else %}
+                    <li class="active">{{ eeg_data_form.description.value }}</li>
+                {% endif %}
+
+            </ol>
+        </div>
+    </div>
+
+    {% if messages %}
+        {% for message in messages %}
+
+            {% if message.tags == "success" %}
+                <script>showSuccessMessage('{{ message }}')</script>
+            {% endif %}
+
+            {% if message.tags == "warning" %}
+                <script>showWarningMessage('{{ message }}')</script>
+            {% endif %}
+
+            {% if message.tags == "error" %}
+                <script>showErrorMessage('{{ message }}')</script>
+            {% endif %}
+
+            {% if message.tags == "info" %}
+                <script>showInfoMessage('{{ message }}')</script>
+            {% endif %}
+
+        {% endfor %}
+    {% endif %}
+
+    <div class="tab-pane fade in active" id="menuUserTab">
+        <div class="col-md-10">
+            <div hidden="hidden">
+                <input id="eeg_electrode_position" type="text" value="{{ json_list }}">
+                <input id="map_file" type="text" value="{{ eeg_data.eeg_setting.eeg_electrode_layout_setting.eeg_electrode_net_system.eeg_electrode_localization_system.map_image_file.url }}">
+            </div>
+            <div class="container span6 offset3 well ">
+                <h4>{% trans "EEG electrode localization system basic information" %}</h4>
+                <div class="row">
+                    <div style="width:100%;">
+                        <table>
+                            <tr>
+                                <td width="80%" valign="top">
+                                    <div style="float:left; width: 80%">
+                                        <canvas id="electrodeMapCanvas" width="700" height="500" style="border:1px solid #000000;">
+                                        </canvas>
+                                    </div>
+                                </td>
+                                <td width="20%" valign="top">
+                                    <table id="cap_positions"  class="table table-striped header-fixed" style="margin-top:10px; margin-left:10px;">
+                                        <thead>
+                                            <tr>
+                                                <th>{% trans "Position" %}</th>
+                                                <th>{% trans "Worked" %}</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            {% for position_status in eeg_data.electrode_positions.all %}
+                                            <tr>
+                                                <td>
+                                                    {{ position_status.eeg_electrode_position_setting.eeg_electrode_position.name }}
+                                                </td>
+                                                <td>
+                                                    <input type="checkbox" id="position_status_{{ position_status.id }}"
+                                                           {% if not editing or not position_status.eeg_electrode_position_setting.used %}disabled{% endif %}
+                                                           {% if position_status.worked %}checked="checked"{% endif %} onclick="worked()"/>
+                                                </td>
+                                            </tr>
+                                            {% endfor %}
+                                        </tbody>
+                                    </table>
+                                </td>
+                            </tr>
+                        </table>
+                    </div>
+                </div>
+            </div>
+            <div class="btn-toolbar">
+                <div class="btn-group pull-right">
+                    <button type="submit" id="save_button" name="action" value="save" class="btn btn-primary" onclick="sendWorkedPositions()">{% trans "Save" %}</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+
+{% endblock %}
+
+{% block end_form %}
+    </form>
+    </div>
+{% endblock %}

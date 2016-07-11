@@ -1250,6 +1250,33 @@ def edit_eeg_setting_type(request, eeg_setting_id, eeg_setting_type):
     else:
         raise PermissionDenied
 
+@login_required
+@permission_required('experiment.change_experiment')
+def get_json_positions(request, eeg_electrode_localization_system_id):
+    new_positions = json.loads(request.GET.get('positions'))
+    # if data is None:
+    localization_system = get_object_or_404(EEGElectrodeLocalizationSystem, pk=eeg_electrode_localization_system_id)
+    electrode_position_list = EEGElectrodePosition.objects.filter(eeg_electrode_localization_system_id = eeg_electrode_localization_system_id)
+    count_new = 0
+    count_delete = 0
+    for position in new_positions:
+        if(not position['delete'] and not position['existInDB']):
+            new_electrode_position = EEGElectrodePosition.objects.create(
+            eeg_electrode_localization_system_id=eeg_electrode_localization_system_id,
+            name=position['position'], coordinate_x=float(position['x']), coordinate_y=float(position['y']))
+            count_new = count_new + 1
+            new_electrode_position.save()
+        else:
+            if(position['existInDB'] and position['delete']):
+                get_object_or_404(EEGElectrodePosition,pk=position['id']).delete()
+                count_delete = count_delete + 1
+
+    json_response = []
+    json_response.append({
+            'new': count_new,
+            'delete': count_delete,
+        })
+    return HttpResponse(json.dumps(json_response), content_type='application/json')
 
 @login_required
 @permission_required('experiment.change_experiment')
@@ -3718,6 +3745,10 @@ def eeg_data_view(request, eeg_data_id, tab, template_name="experiment/subject_e
 
     file_format_list = file_format_code("EEG")
 
+    image = False
+    if hasattr(eeg_data.eeg_setting, 'eeg_electrode_layout_setting'):
+        image = True
+
     if request.method == "POST":
         if request.POST['action'] == "remove":
 
@@ -3741,7 +3772,8 @@ def eeg_data_view(request, eeg_data_id, tab, template_name="experiment/subject_e
                "eeg_data": eeg_data,
                "eeg_setting_default_id": eeg_step.eeg_setting_id,
                "file_format_list": file_format_list,
-               "tab": tab
+               "tab": tab,
+               "image": image
                }
 
     return render(request, template_name, context)
@@ -3835,6 +3867,49 @@ def eeg_data_edit(request, eeg_data_id, tab, template_name="experiment/subject_e
         return render(request, template_name, context)
     else:
         raise PermissionDenied
+
+@login_required
+@permission_required('experiment.change_experiment')
+def eeg_image_edit(request, eeg_data_id, tab, template_name="experiment/subject_eeg_image_data.html"):
+
+    eeg_data = get_object_or_404(EEGData, pk=eeg_data_id)
+
+    eeg_data_form = EEGDataForm(request.POST or None, instance=eeg_data)
+
+    # get the current before change
+    current_eeg_setting_id = eeg_data.eeg_setting.id
+    eeg_setting = eeg_data.eeg_setting
+    image = False
+    positions = []
+    if hasattr(eeg_setting, 'eeg_electrode_layout_setting'):
+
+        for position_status in eeg_data.electrode_positions.all().order_by("eeg_electrode_position_setting__eeg_electrode_position__name"):
+            point_setting = position_status.eeg_electrode_position_setting.eeg_electrode_position
+            positions.append({
+                'id': position_status.id,
+                'position': point_setting.name,
+                'x': point_setting.coordinate_x,
+                'y': point_setting.coordinate_y,
+                'status': True,  #this indicates if the point exist at the DB
+                'worked': position_status.worked
+            })
+
+    if request.method == "POST":
+        if request.POST['action'] == "save":
+
+            redirect_url = reverse("eeg_data_view", args=(eeg_data_id,tab))
+            return HttpResponseRedirect(redirect_url)
+
+    context = {"group": eeg_data.subject_of_group.group,
+               "subject": eeg_data.subject_of_group.subject,
+               "eeg_data": eeg_data,
+               "eeg_data_form": eeg_data_form,
+               "editing": True,
+               "json_list": json.dumps(positions),
+               "tab": tab
+              }
+
+    return render(request, template_name, context)
 
 
 @login_required
@@ -4241,6 +4316,20 @@ def get_cap_size_list_from_eeg_setting(request, eeg_setting_id):
             list_of_cap_size = EEGCapSize.objects.filter(eeg_electrode_cap_id=eeg_electrode_net_id)
     json_cap_size = serializers.serialize("json", list_of_cap_size)
     return HttpResponse(json_cap_size, content_type='application/json')
+
+@login_required
+@permission_required('experiment.change_experiment')
+def set_worked_positions(request):
+    worked_positions = json.loads(request.GET.get('positions'))
+
+    for position in worked_positions:
+            EEGElectrodePositionCollectionStatus.objects.filter(pk=position['id']).update(worked = position['worked'])
+
+    json_response = []
+    json_response.append({
+            'new': 128,
+        })
+    return HttpResponse(json.dumps(json_response), content_type='application/json')
 
 
 @login_required
@@ -5811,6 +5900,44 @@ def eeg_electrode_localization_system_update(
 
     context = {"localization_system": localization_system,
                "localization_system_form": localization_system_form,
+               "editing": True
+               }
+
+    return render(request, template_name, context)
+
+@login_required
+@permission_required('experiment.view_equipment')
+def eeg_electrode_coordinates_create(
+        request,
+        eeg_electrode_localization_system_id,
+        template_name="experiment/eeg_electrode_coordinates_register.html"):
+
+    localization_system = get_object_or_404(EEGElectrodeLocalizationSystem, pk=eeg_electrode_localization_system_id)
+
+    positions = []
+    for position_setting in localization_system.electrode_positions.all():
+        used = EEGElectrodePositionSetting.objects.filter(eeg_electrode_position_id=int(position_setting.id)).exists()
+
+        positions.append({
+            'id': position_setting.id,
+            'position': position_setting.name,
+            'x': position_setting.coordinate_x,
+            'y': position_setting.coordinate_y,
+            'used': used,  #this indicates when this point is used at least one by some layout
+            'existInDB': True,  #this indicates if the point exist at the DB
+            'delete': False  #if this point will be deleted
+        })
+
+    if request.method == "POST":
+        if request.POST['action'] == "save":
+            messages.success(request, _('EEG electrode positions updated successfully.'))
+            redirect_url = reverse("eeg_electrode_localization_system_view", args=(eeg_electrode_localization_system_id,))
+            return HttpResponseRedirect(redirect_url)
+
+    context = {
+               "localization_system": localization_system,
+               "json_list": json.dumps(positions),
+               "creating": True,
                "editing": True
                }
 

@@ -1,43 +1,72 @@
+{% extends "quiz/template.html" %}
+
 {% load i18n admin_static %}
 
-{% block specific_header %}
-
+{% block header %}
     <script src="{% static 'quiz/js/eeg_electrode_cap_coordinates.js' %}"></script>
+{% endblock %}
 
-    <style>
-        {#  based on tip from http://stackoverflow.com/questions/21168521/scrollable-table-with-fixed-header-in-bootstrap #}
-        .header-fixed {
-            width: 100%
-        }
+{% block form %}
+    <div class="row">
+    <form id="user_form" method="post" data-toggle="validator" enctype="multipart/form-data">
+    {% csrf_token %}
+{% endblock %}
 
-        .header-fixed > thead,
-        .header-fixed > tbody,
-        .header-fixed > thead > tr,
-        .header-fixed > tbody > tr,
-        .header-fixed > thead > tr > th,
-        .header-fixed > tbody > tr > td {
-            display: block;
-        }
+{% block content %}
 
-        .header-fixed > tbody > tr:after,
-        .header-fixed > thead > tr:after {
-            content: ' ';
-            display: block;
-            visibility: hidden;
-            clear: both;
-        }
+    {% if messages %}
+        {% for message in messages %}
 
-        .header-fixed > tbody {
-            overflow-y: auto;
-            height: 400px;
-        }
+            {% if message.tags == "success" %}
+                <script>showSuccessMessage('{{ message }}')</script>
+            {% endif %}
 
-        .header-fixed > tbody > tr > td,
-        .header-fixed > thead > tr > th {
-            width: 50%;
-            float: left;
-        }
-    </style>
+            {% if message.tags == "warning" %}
+                <script>showWarningMessage('{{ message }}')</script>
+            {% endif %}
+
+            {% if message.tags == "error" %}
+                <script>showErrorMessage('{{ message }}')</script>
+            {% endif %}
+
+            {% if message.tags == "info" %}
+                <script>showInfoMessage('{{ message }}')</script>
+            {% endif %}
+
+        {% endfor %}
+    {% endif %}
+
+    {% if position_form.errors %}
+        <script type="text/javascript">
+            showErrorMessage(gettext('Please, correct fields highlighted.'))
+        </script>
+    {% endif %}
+
+    <div class="tab-pane fade in active" id="breadCrumb">
+        <div class="col-md-10">
+            <ol class="breadcrumb">
+                <li><a href="/home">{% trans "Home" %}</a></li>
+                <li><a href="/experiment/eeg_electrode_localization_system/list">{% trans "EEG electrode localization system" %}</a></li>
+
+                {% if creating %}
+                    <li><a href="/experiment/eeg_electrode_localization_system/{{ localization_system.id }}">{{ localization_system.name }}</a></li>
+                {% else %}
+                    <li><a href="/experiment/eeg_electrode_localization_system/{{ position.eeg_electrode_localization_system.id }}">{{ position.eeg_electrode_localization_system.name }}</a></li>
+                {% endif %}
+
+                {% if creating %}
+                    <li class="active">{% trans "New electrode coordinates" %}</li>
+                {% else %}
+                    {% if editing %}
+                        <li><a href="/experiment/eeg_electrode_position/{{ position.id }}">{{ position.name }}</a></li>
+                        <li class="active">{% trans "Editing" %}</li>
+                    {% else %}
+                        <li class="active"> {{ position.name }} </li>
+                    {% endif %}
+                {% endif %}
+            </ol>
+        </div>
+    </div>
 
 {% endblock %}
 
@@ -46,7 +75,7 @@
         <div id="electrode_position" class="tab-pane fade in active">
 
         <div hidden="hidden">
-            <input id="map_file" type="text" value="{{ eeg_setting.eeg_electrode_layout_setting.eeg_electrode_net_system.eeg_electrode_localization_system.map_image_file.url }}">
+            <input id="map_file" type="text" value="{{ localization_system.map_image_file.url }}">
         </div>
 
         <div style="width:100%;">
@@ -70,12 +99,12 @@
                                 </tr>
                             </thead>
                             <tbody>
-                                {% for position in eeg_setting.eeg_electrode_layout_setting.positions_setting.all %}
+                                {% for position in localization_system.electrode_positions.all %}
                                 <tr>
                                     <td>
-                                        {{ position_setting.eeg_electrode_position.coordinate_x }}
+                                        {{ position.coordinate_x }}
 
-                                        {{ position_setting.eeg_electrode_position.coordinate_y }}
+                                        {{ position.coordinate_y }}
                                     </td>
                                 </tr>
                                 {% endfor %}
