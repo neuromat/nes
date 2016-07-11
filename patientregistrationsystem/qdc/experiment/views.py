@@ -30,7 +30,7 @@ from experiment.models import Experiment, Subject, QuestionnaireResponse, Subjec
     ElectrodeModel, EEGElectrodePositionCollectionStatus, EEGCapSize, EEGElectrodeCap, EEGElectrodePosition, \
     Material, AdditionalData, \
     EMGData, EMGSetting, SoftwareVersion, EMGDigitalFilterSetting, EMGADConverterSetting, \
-    EMGElectrodePlacement, EMGElectrodeSetting
+    EMGElectrodePlacement, EMGElectrodeSetting, EMGPreamplifierSetting, EMGAmplifierSetting, EMGAnalogFilterSetting
 from experiment.forms import ExperimentForm, QuestionnaireResponseForm, FileForm, GroupForm, InstructionForm, \
     ComponentForm, StimulusForm, BlockForm, ComponentConfigurationForm, ResearchProjectForm, NumberOfUsesToInsertForm, \
     EEGDataForm, EEGSettingForm, EquipmentForm, EEGForm, EEGMachineForm, EEGMachineSettingForm, EEGAmplifierForm, \
@@ -40,7 +40,8 @@ from experiment.forms import ExperimentForm, QuestionnaireResponseForm, FileForm
     EEGFilterTypeRegisterForm, EEGElectrodeModelRegisterForm, MaterialRegisterForm, EEGElectrodeNETRegisterForm, \
     EEGElectrodePositionForm, EEGElectrodeCapRegisterForm, EEGCapSizeRegisterForm, AdditionalDataForm, \
     EMGDataForm, EMGSettingForm, EMGDigitalFilterSettingForm, EMGADConverterSettingForm, \
-    EMGElectrodeSettingForm, EMGElectrodePlacementSettingForm
+    EMGElectrodeSettingForm, EMGElectrodePlacementSettingForm, \
+    EMGPreamplifierSettingForm, EMGAmplifierSettingForm, EMGAnalogFilterSettingForm
 
 
 from patient.models import Patient, QuestionnaireResponse as PatientQuestionnaireResponse
@@ -6225,6 +6226,28 @@ def emg_electrode_setting_view(request, emg_electrode_setting_id,
         for field in emg_electrode_placement_setting_form.fields:
             emg_electrode_placement_setting_form.fields[field].widget.attrs['disabled'] = True
 
+        if request.method == "POST":
+
+            if request.POST['action'][:7] == "remove-":
+                # If action starts with 'remove-' it means that a setting should be removed from the emg_setting.
+                emg_electrode_setting_type = request.POST['action'][7:]
+
+                setting_to_be_deleted = None
+
+                if emg_electrode_setting_type == "preamplifier":
+                    setting_to_be_deleted = get_object_or_404(EMGPreamplifierSetting, pk=emg_electrode_setting_id)
+                elif emg_electrode_setting_type == "preamplifier":
+                    setting_to_be_deleted = get_object_or_404(EMGAmplifierSetting, pk=emg_electrode_setting_id)
+
+                # eeg_setting.eeg_machine_setting.delete()
+                if setting_to_be_deleted:
+                    setting_to_be_deleted.delete()
+
+                messages.success(request, _('Setting was removed successfully.'))
+
+                redirect_url = reverse("emg_electrode_setting_view", args=(emg_electrode_setting.id,))
+                return HttpResponseRedirect(redirect_url)
+
         context = {"creating": False,
                    "editing": False,
                    "can_change": True,
@@ -6281,6 +6304,100 @@ def emg_electrode_setting_edit(request, emg_electrode_setting_id,
                    "emg_electrode_setting": emg_electrode_setting,
                    "emg_electrode_setting_form": emg_electrode_setting_form,
                    "emg_electrode_placement_setting_form": emg_electrode_placement_setting_form
+                   }
+
+        return render(request, template_name, context)
+    else:
+        raise PermissionDenied
+
+
+@login_required
+@permission_required('experiment.change_experiment')
+def emg_electrode_setting_preamplifier(request, emg_electrode_setting_id,
+                                       template_name="experiment/emg_electrode_setting_preamplifier.html"):
+
+    emg_electrode_setting = get_object_or_404(EMGElectrodeSetting, pk=emg_electrode_setting_id)
+
+    if get_can_change(request.user, emg_electrode_setting.emg_setting.experiment.research_project):
+
+        creating = False
+
+        if hasattr(emg_electrode_setting, 'emg_preamplifier_setting'):
+
+            emg_preamplifier_setting = EMGPreamplifierSetting.objects.get(emg_electrode_setting=emg_electrode_setting)
+
+            emg_preamplifier_setting_form = EMGPreamplifierSettingForm(request.POST or None,
+                                                                       instance=emg_preamplifier_setting)
+
+            for field in emg_preamplifier_setting_form.fields:
+                emg_preamplifier_setting_form.fields[field].widget.attrs['disabled'] = True
+
+        else:
+            creating = True
+            emg_preamplifier_setting_form = EMGPreamplifierSettingForm(request.POST or None)
+
+        if request.method == "POST":
+            if request.POST['action'] == "save":
+
+                if emg_preamplifier_setting_form.is_valid():
+
+                    if emg_preamplifier_setting_form.has_changed():
+
+                        new_setting = emg_preamplifier_setting_form.save(commit=False)
+                        new_setting.emg_electrode_setting = emg_electrode_setting
+                        new_setting.save()
+
+                        messages.success(request, _('EMG preamplifier setting created successfully.'))
+
+                        redirect_url = reverse("emg_electrode_setting_view", args=(emg_electrode_setting_id,))
+                        return HttpResponseRedirect(redirect_url)
+
+        context = {"creating": creating,
+                   "editing": False,
+                   "can_change": True,
+                   "emg_electrode_setting": emg_electrode_setting,
+                   "emg_preamplifier_setting_form": emg_preamplifier_setting_form
+                   }
+
+        return render(request, template_name, context)
+    else:
+        raise PermissionDenied
+
+
+@login_required
+@permission_required('experiment.change_experiment')
+def emg_electrode_setting_preamplifier_edit(request, emg_electrode_setting_id,
+                                            template_name="experiment/emg_electrode_setting_preamplifier.html"):
+
+    emg_electrode_setting = get_object_or_404(EMGElectrodeSetting, pk=emg_electrode_setting_id)
+
+    if get_can_change(request.user, emg_electrode_setting.emg_setting.experiment.research_project):
+
+        emg_preamplifier_setting = emg_electrode_setting.emg_preamplifier_setting
+        emg_preamplifier_setting_form = EMGPreamplifierSettingForm(request.POST or None,
+                                                                   instance=emg_preamplifier_setting)
+
+        if request.method == "POST":
+
+            if request.POST['action'] == "save":
+
+                if emg_preamplifier_setting_form.is_valid():
+
+                    if emg_preamplifier_setting_form.has_changed():
+                        emg_preamplifier_setting_form.save()
+
+                        messages.success(request, _('EMG Preamplifier setting updated successfully.'))
+                    else:
+                        messages.success(request, _('There is no changes to save.'))
+
+                    redirect_url = reverse("emg_electrode_setting_preamplifier", args=(emg_electrode_setting_id,))
+                    return HttpResponseRedirect(redirect_url)
+
+        context = {"creating": False,
+                   "editing": True,
+                   "can_change": True,
+                   "emg_electrode_setting": emg_electrode_setting,
+                   "emg_preamplifier_setting_form": emg_preamplifier_setting_form,
                    }
 
         return render(request, template_name, context)
