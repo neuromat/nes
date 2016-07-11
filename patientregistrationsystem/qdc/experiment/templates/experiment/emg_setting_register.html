@@ -143,6 +143,27 @@
                                                     {% if electrode_setting.emg_electrode_placement_setting.remarks %}
                                                         <br/>{% trans "Remarks:" %} {{ electrode_setting.emg_electrode_placement_setting.remarks }}
                                                     {% endif %}
+
+                                                    {% if electrode_setting.emg_preamplifier_setting %}
+                                                        <br/>
+                                                        {% trans "Preamplifier: " %}{{ electrode_setting.emg_preamplifier_setting.amplifier.identification }} - {% trans "gain: " %} {{ electrode_setting.emg_preamplifier_setting.gain|default:'' }}
+                                                    {% endif %}
+
+                                                    {% if electrode_setting.emg_amplifier_setting %}
+                                                        <br/>
+                                                        {% trans "Amplifier: " %}{{ electrode_setting.emg_amplifier_setting.amplifier.identification }} - {% trans "gain: " %} {{ electrode_setting.emg_amplifier_setting.gain|default:'' }}
+
+                                                        {% if electrode_setting.emg_amplifier_setting.emg_analog_filter_setting %}
+                                                            <br/>
+                                                            <br/>
+                                                            {% trans "Analog filter setting: " %}<br/>
+                                                            {% trans "low pass: " %} {{ electrode_setting.emg_amplifier_setting.emg_analog_filter_setting.low_pass|default:'' }}<br/>
+                                                            {% trans "high pass: " %} {{ electrode_setting.emg_amplifier_setting.emg_analog_filter_setting.high_pass|default:'' }}<br/>
+                                                            {% trans "band pass: " %} {{ electrode_setting.emg_amplifier_setting.emg_analog_filter_setting.band_pass|default:'' }}<br/>
+                                                            {% trans "notch: " %} {{ electrode_setting.emg_amplifier_setting.emg_analog_filter_setting.notch|default:'' }}
+                                                        {% endif %}
+                                                    {% endif %}
+
                                                 </h6></i>
                                             </blockquote>
                                         </td>

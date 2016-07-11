@@ -163,6 +163,10 @@ urlpatterns = patterns(
         'emg_electrode_setting_preamplifier', name='emg_electrode_setting_preamplifier'),
     url(r'^emg_electrode_setting/(?P<emg_electrode_setting_id>\d+)/preamplifier/edit/$',
         'emg_electrode_setting_preamplifier_edit', name='emg_electrode_setting_preamplifier_edit'),
+    url(r'^emg_electrode_setting/(?P<emg_electrode_setting_id>\d+)/amplifier/$',
+        'emg_electrode_setting_amplifier', name='emg_electrode_setting_amplifier'),
+    url(r'^emg_electrode_setting/(?P<emg_electrode_setting_id>\d+)/amplifier/edit/$',
+        'emg_electrode_setting_amplifier_edit', name='emg_electrode_setting_amplifier_edit'),
 
     # cid
     url(r'^group_diseases/cid-10/$', 'search_cid10_ajax', name='cid10_search'),

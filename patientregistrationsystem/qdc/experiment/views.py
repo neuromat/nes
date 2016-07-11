@@ -6290,11 +6290,11 @@ def emg_setting_electrode_add(request, emg_setting_id,
 
                     messages.success(request, _('EMG electrode setting created successfully.'))
 
-                    redirect_url = reverse("emg_setting_view", args=(emg_setting_id,))
+                    redirect_url = reverse("emg_electrode_setting_view", args=(new_emg_electrode_setting.id,))
                     return HttpResponseRedirect(redirect_url)
 
         context = {"creating": True,
-                   "editing": False,
+                   "editing": True,
                    "can_change": True,
                    "emg_setting": emg_setting,
                    "emg_electrode_setting_form": emg_electrode_setting_form,
@@ -6336,14 +6336,13 @@ def emg_electrode_setting_view(request, emg_electrode_setting_id,
 
                 if emg_electrode_setting_type == "preamplifier":
                     setting_to_be_deleted = get_object_or_404(EMGPreamplifierSetting, pk=emg_electrode_setting_id)
-                elif emg_electrode_setting_type == "preamplifier":
+                elif emg_electrode_setting_type == "amplifier":
                     setting_to_be_deleted = get_object_or_404(EMGAmplifierSetting, pk=emg_electrode_setting_id)
 
                 # eeg_setting.eeg_machine_setting.delete()
                 if setting_to_be_deleted:
                     setting_to_be_deleted.delete()
-
-                messages.success(request, _('Setting was removed successfully.'))
+                    messages.success(request, _('Setting was removed successfully.'))
 
                 redirect_url = reverse("emg_electrode_setting_view", args=(emg_electrode_setting.id,))
                 return HttpResponseRedirect(redirect_url)
@@ -6498,6 +6497,151 @@ def emg_electrode_setting_preamplifier_edit(request, emg_electrode_setting_id,
                    "can_change": True,
                    "emg_electrode_setting": emg_electrode_setting,
                    "emg_preamplifier_setting_form": emg_preamplifier_setting_form,
+                   }
+
+        return render(request, template_name, context)
+    else:
+        raise PermissionDenied
+
+
+@login_required
+@permission_required('experiment.change_experiment')
+def emg_electrode_setting_amplifier(request, emg_electrode_setting_id,
+                                    template_name="experiment/emg_electrode_setting_amplifier.html"):
+
+    emg_electrode_setting = get_object_or_404(EMGElectrodeSetting, pk=emg_electrode_setting_id)
+
+    if get_can_change(request.user, emg_electrode_setting.emg_setting.experiment.research_project):
+
+        creating = False
+
+        if hasattr(emg_electrode_setting, 'emg_amplifier_setting'):
+
+            emg_amplifier_setting = EMGAmplifierSetting.objects.get(emg_electrode_setting=emg_electrode_setting)
+
+            emg_amplifier_setting_form = EMGAmplifierSettingForm(request.POST or None,
+                                                                 instance=emg_amplifier_setting)
+
+            if hasattr(emg_amplifier_setting, 'emg_analog_filter_setting'):
+
+                emg_analog_filter_setting = EMGAnalogFilterSetting.objects.get(
+                    emg_electrode_setting=emg_amplifier_setting)
+
+                emg_analog_filter_setting_form = EMGAnalogFilterSettingForm(request.POST or None,
+                                                                            instance=emg_analog_filter_setting)
+            else:
+                emg_analog_filter_setting_form = EMGAnalogFilterSettingForm(request.POST or None)
+
+
+            for field in emg_amplifier_setting_form.fields:
+                emg_amplifier_setting_form.fields[field].widget.attrs['disabled'] = True
+
+            for field in emg_analog_filter_setting_form.fields:
+                emg_analog_filter_setting_form.fields[field].widget.attrs['disabled'] = True
+
+        else:
+            creating = True
+            emg_amplifier_setting_form = EMGAmplifierSettingForm(request.POST or None)
+            emg_analog_filter_setting_form = EMGAnalogFilterSettingForm(request.POST or None)
+
+        if request.method == "POST":
+            if request.POST['action'] == "save":
+
+                if emg_amplifier_setting_form.is_valid() and emg_analog_filter_setting_form.is_valid():
+
+                    changed = False
+
+                    if emg_amplifier_setting_form.has_changed() or emg_analog_filter_setting_form.has_changed():
+
+                        new_setting = emg_amplifier_setting_form.save(commit=False)
+                        new_setting.emg_electrode_setting = emg_electrode_setting
+                        new_setting.save()
+
+                        new_setting = emg_analog_filter_setting_form.save(commit=False)
+                        new_setting.emg_electrode_setting = emg_electrode_setting.emg_amplifier_setting
+                        new_setting.save()
+                        changed = True
+
+                    if changed:
+                        messages.success(request, _('EMG amplifier setting created successfully.'))
+                    else:
+                        messages.success(request, _('There is no changes to save.'))
+
+                    redirect_url = reverse("emg_electrode_setting_view", args=(emg_electrode_setting_id,))
+                    return HttpResponseRedirect(redirect_url)
+
+        context = {"creating": creating,
+                   "editing": False,
+                   "can_change": True,
+                   "emg_electrode_setting": emg_electrode_setting,
+                   "emg_amplifier_setting_form": emg_amplifier_setting_form,
+                   "emg_analog_filter_setting_form": emg_analog_filter_setting_form
+                   }
+
+        return render(request, template_name, context)
+    else:
+        raise PermissionDenied
+
+
+@login_required
+@permission_required('experiment.change_experiment')
+def emg_electrode_setting_amplifier_edit(request, emg_electrode_setting_id,
+                                         template_name="experiment/emg_electrode_setting_amplifier.html"):
+
+    emg_electrode_setting = get_object_or_404(EMGElectrodeSetting, pk=emg_electrode_setting_id)
+
+    if get_can_change(request.user, emg_electrode_setting.emg_setting.experiment.research_project):
+
+        emg_amplifier_setting = emg_electrode_setting.emg_amplifier_setting
+        emg_amplifier_setting_form = EMGAmplifierSettingForm(request.POST or None,
+                                                             instance=emg_amplifier_setting)
+
+        if hasattr(emg_amplifier_setting, 'emg_analog_filter_setting'):
+
+            emg_analog_filter_setting = emg_electrode_setting.emg_amplifier_setting.emg_analog_filter_setting
+            emg_analog_filter_setting_form = EMGAnalogFilterSettingForm(request.POST or None,
+                                                                        instance=emg_analog_filter_setting)
+        else:
+            emg_analog_filter_setting_form = EMGAnalogFilterSettingForm(request.POST or None)
+
+        if request.method == "POST":
+
+            if request.POST['action'] == "save":
+
+                if emg_amplifier_setting_form.is_valid():
+
+                    changed = False
+
+                    if emg_amplifier_setting_form.has_changed():
+                        emg_amplifier_setting_form.save()
+                        changed = True
+
+                    if emg_amplifier_setting_form.has_changed() or emg_analog_filter_setting_form.has_changed():
+
+                        if hasattr(emg_amplifier_setting, 'emg_analog_filter_setting'):
+                            emg_analog_filter_setting_form.save()
+                        else:
+                            new_setting = emg_analog_filter_setting_form.save(commit=False)
+                            new_setting.emg_electrode_setting = emg_amplifier_setting
+                            new_setting.save()
+
+                        changed = True
+
+                    if changed:
+
+                        messages.success(request, _('EMG Amplifier setting updated successfully.'))
+                    else:
+                        messages.success(request, _('There is no changes to save.'))
+
+                    redirect_url = reverse("emg_electrode_setting_amplifier", args=(emg_electrode_setting_id,))
+                    return HttpResponseRedirect(redirect_url)
+
+        context = {"creating": False,
+                   "editing": True,
+                   "can_change": True,
+                   "emg_electrode_setting": emg_electrode_setting,
+                   "emg_amplifier_setting_form": emg_amplifier_setting_form,
+                   "emg_analog_filter_setting_form": emg_analog_filter_setting_form,
                    }
 
         return render(request, template_name, context)
