@@ -9,7 +9,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2016-06-27 09:36-0300\n"
+"POT-Creation-Date: 2016-07-12 11:05-0300\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -24,7 +24,7 @@ msgid "Name must be included"
 msgstr "Nome deve ser preenchido"
 
 #: patient/forms.py:31 patient/forms.py:134 patient/forms.py:159
-#: patient/views.py:714 patient/views.py:1225
+#: patient/views.py:715 patient/views.py:1226
 msgid "%m/%d/%Y"
 msgstr "%d/%m/%Y"
 
@@ -248,7 +248,7 @@ msgstr ""
 #: patient/templates/patient/medical_record.html:136
 #: patient/templates/patient/medical_record.html:259
 #: patient/templates/patient/register.html:183
-#: patient/templates/patient/register_personal_data.html:271
+#: patient/templates/patient/register_personal_data.html:283
 msgid "Delete"
 msgstr "Excluir"
 
@@ -265,7 +265,7 @@ msgstr "Voltar"
 #: patient/templates/patient/register.html:126
 #: patient/templates/patient/register.html:128
 #: patient/templates/patient/register.html:154
-#: patient/templates/patient/register_personal_data.html:336
+#: patient/templates/patient/register_personal_data.html:348
 msgid "Save"
 msgstr "Salvar"
 
@@ -280,9 +280,9 @@ msgstr "Tem certeza que deseja excluir o exame?"
 #: patient/templates/patient/medical_record.html:258
 #: patient/templates/patient/register.html:152
 #: patient/templates/patient/register.html:181
-#: patient/templates/patient/register_personal_data.html:335
-#: patient/templates/patient/register_personal_data.html:353
-#: patient/templates/patient/register_personal_data.html:370
+#: patient/templates/patient/register_personal_data.html:347
+#: patient/templates/patient/register_personal_data.html:365
+#: patient/templates/patient/register_personal_data.html:382
 msgid "Cancel"
 msgstr "Cancelar"
 
@@ -332,7 +332,7 @@ msgstr "Detalhes"
 
 #: patient/templates/patient/medical_record.html:162
 #: patient/templates/patient/medical_record.html:163
-#: patient/templates/patient/register_personal_data.html:266
+#: patient/templates/patient/register_personal_data.html:278
 msgid "Observation"
 msgstr "Observação"
 
@@ -435,98 +435,102 @@ msgstr ""
 msgid "Insert medical record"
 msgstr "Inserir avaliação médica"
 
-#: patient/templates/patient/register_personal_data.html:21
+#: patient/templates/patient/register_personal_data.html:23
 #: patient/templates/patient/register_socialdemographic_data.html:11
 msgid "Basic Information"
 msgstr "Informações básicas"
 
-#: patient/templates/patient/register_personal_data.html:37
+#: patient/templates/patient/register_personal_data.html:27
+msgid "Code"
+msgstr "Código"
+
+#: patient/templates/patient/register_personal_data.html:49
 msgid "Full name"
 msgstr "Nome completo"
 
-#: patient/templates/patient/register_personal_data.html:48
+#: patient/templates/patient/register_personal_data.html:60
 msgid "Security id"
 msgstr "CPF"
 
-#: patient/templates/patient/register_personal_data.html:66
+#: patient/templates/patient/register_personal_data.html:78
 msgid "Origin"
 msgstr "Origem"
 
-#: patient/templates/patient/register_personal_data.html:76
+#: patient/templates/patient/register_personal_data.html:88
 msgid "Medical record"
 msgstr "Número do prontuário"
 
-#: patient/templates/patient/register_personal_data.html:88
+#: patient/templates/patient/register_personal_data.html:100
 msgid "Date of birth"
 msgstr "Data de nascimento"
 
-#: patient/templates/patient/register_personal_data.html:106
+#: patient/templates/patient/register_personal_data.html:118
 msgid "Gender"
 msgstr "Sexo"
 
-#: patient/templates/patient/register_personal_data.html:119
+#: patient/templates/patient/register_personal_data.html:131
 msgid "RG"
 msgstr ""
 
-#: patient/templates/patient/register_personal_data.html:128
+#: patient/templates/patient/register_personal_data.html:140
 msgid "Marital status"
 msgstr "Estado civil"
 
-#: patient/templates/patient/register_personal_data.html:140
-#: patient/templates/patient/register_personal_data.html:167
+#: patient/templates/patient/register_personal_data.html:152
+#: patient/templates/patient/register_personal_data.html:179
 msgid "Address"
 msgstr "Endereço"
 
-#: patient/templates/patient/register_personal_data.html:144
+#: patient/templates/patient/register_personal_data.html:156
 msgid "Country"
 msgstr "País"
 
-#: patient/templates/patient/register_personal_data.html:154
+#: patient/templates/patient/register_personal_data.html:166
 msgid "Zip code"
 msgstr "CEP"
 
-#: patient/templates/patient/register_personal_data.html:178
-#: patient/templates/patient/register_personal_data.html:256
+#: patient/templates/patient/register_personal_data.html:190
+#: patient/templates/patient/register_personal_data.html:268
 msgid "Number"
 msgstr "Número"
 
-#: patient/templates/patient/register_personal_data.html:189
+#: patient/templates/patient/register_personal_data.html:201
 msgid "Complement"
 msgstr "Complemento"
 
-#: patient/templates/patient/register_personal_data.html:202
+#: patient/templates/patient/register_personal_data.html:214
 msgid "District"
 msgstr "Bairro"
 
-#: patient/templates/patient/register_personal_data.html:213
+#: patient/templates/patient/register_personal_data.html:225
 msgid "City"
 msgstr "Cidade"
 
-#: patient/templates/patient/register_personal_data.html:223
+#: patient/templates/patient/register_personal_data.html:235
 msgid "State"
 msgstr "Estado"
 
-#: patient/templates/patient/register_personal_data.html:233
+#: patient/templates/patient/register_personal_data.html:245
 msgid "E-mail"
 msgstr ""
 
-#: patient/templates/patient/register_personal_data.html:248
+#: patient/templates/patient/register_personal_data.html:260
 msgid "Telephones"
 msgstr "Telefones"
 
-#: patient/templates/patient/register_personal_data.html:261
+#: patient/templates/patient/register_personal_data.html:273
 msgid "Type"
 msgstr "Tipo"
 
-#: patient/templates/patient/register_personal_data.html:320
+#: patient/templates/patient/register_personal_data.html:332
 msgid "Save and include more phones"
 msgstr "Salvar e incluir mais telefones"
 
-#: patient/templates/patient/register_personal_data.html:332
+#: patient/templates/patient/register_personal_data.html:344
 msgid "CPF is not filled in. Would you like saving?"
 msgstr "CPF não foi preenchido. Deseja salvar?"
 
-#: patient/templates/patient/register_personal_data.html:347
+#: patient/templates/patient/register_personal_data.html:359
 msgid ""
 "Participant is already registered\n"
 "                        Click to view record ou Cancel to go back to form."
@@ -535,7 +539,7 @@ msgstr ""
 "                            Clique para visualizar registro ou Cancelar para "
 "voltar ao formulário."
 
-#: patient/templates/patient/register_personal_data.html:364
+#: patient/templates/patient/register_personal_data.html:376
 msgid ""
 "Participant has already been deleted.\n"
 "                        Click to restore registration or Cancel to register "
@@ -768,68 +772,68 @@ msgstr ""
 "Classe Social não calculada, pois nem todos oscampos necessários para o "
 "cálculo foram preenchidos."
 
-#: patient/views.py:719
+#: patient/views.py:720
 msgid "Diagnosis details successfully changed."
 msgstr "Detalhes do diagnóstico alterados com sucesso."
 
-#: patient/views.py:725
+#: patient/views.py:726
 msgid "Incorrect date. Use format: mm/dd/yyyy"
 msgstr "Data incorreta. Utilize o formato dd/mm/yyyy."
 
-#: patient/views.py:746
+#: patient/views.py:747
 msgid "Medical evaluation successfully deleted."
 msgstr "Avaliação médica removida com sucesso."
 
-#: patient/views.py:759
+#: patient/views.py:760
 msgid "Diagnosis has already exist in this medical assessment."
 msgstr "Diagnóstico já existente nesta avaliação médica."
 
-#: patient/views.py:792
+#: patient/views.py:793
 msgid "Diagnosis can not be deleted. You must delete exams before."
 msgstr "Diagnóstico não pode ser removido. Remova os exames antes."
 
-#: patient/views.py:797
+#: patient/views.py:798
 msgid "Diagnosis successfully deleted."
 msgstr "Diagnóstico removido com sucesso."
 
-#: patient/views.py:839 patient/views.py:905
+#: patient/views.py:840 patient/views.py:906
 msgid "Exam successfully saved."
 msgstr "Exame salvo com sucesso."
 
-#: patient/views.py:855 patient/views.py:915
+#: patient/views.py:856 patient/views.py:916
 msgid "It is not possible to save exam without files."
 msgstr "Não é possível salvar exame sem arquivos."
 
-#: patient/views.py:980
+#: patient/views.py:981
 msgid "Exam successfully deleted."
 msgstr "Exame removido com sucesso."
 
-#: patient/views.py:1004
+#: patient/views.py:1005
 msgid "Attachment successfully deleted."
 msgstr "Anexo removido com sucesso."
 
-#: patient/views.py:1143 patient/views.py:1331
+#: patient/views.py:1144 patient/views.py:1332
 msgid "Fill deleted successfully"
 msgstr "Preenchimento removido com sucesso"
 
-#: patient/views.py:1145 patient/views.py:1333
+#: patient/views.py:1146 patient/views.py:1334
 msgid "Error trying to delete"
 msgstr "Erro ao deletar o preenchimento"
 
-#: patient/views.py:1199
+#: patient/views.py:1200
 msgid "Not available filling - tokens table not started"
 msgstr "Preenchimento não disponível - Tabela de tokens não iniciada"
 
-#: patient/views.py:1204
+#: patient/views.py:1205
 msgid "Not available filling - questionnaire not active"
 msgstr "Preenchimento não disponível - Questionário não está ativo"
 
-#: patient/views.py:1209
+#: patient/views.py:1210
 msgid "Not available filling - questionnaire does not contain standard fields"
 msgstr ""
 "Preenchimento não disponível - Questionário não contém campos padronizados"
 
-#: patient/views.py:1218
+#: patient/views.py:1219
 msgid ""
 "Failed to generate token to answer the questionnaire. Make sure the "
 "questionnaire is active"
