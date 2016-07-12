@@ -570,6 +570,11 @@ class EEGElectrodeNETRegisterForm(ModelForm):
                                                      'data-error': _('Electrode model default must be filled in.')}),
         }
 
+    def __init__(self, *args, **kwargs):
+        super(EEGElectrodeNETRegisterForm, self).__init__(*args, **kwargs)
+
+        self.fields['electrode_model_default'].queryset = ElectrodeModel.objects.filter(tags__name="EEG")
+
 
 class EEGElectrodeCapRegisterForm(ModelForm):
     class Meta:
@@ -708,6 +713,11 @@ class EMGElectrodeSettingForm(ModelForm):
                                        'data-error': _('Electrode is required')})
         }
 
+    def __init__(self, *args, **kwargs):
+        super(EMGElectrodeSettingForm, self).__init__(*args, **kwargs)
+
+        self.fields['electrode'].queryset = ElectrodeModel.objects.filter(tags__name="EMG")
+
 
 class EMGElectrodePlacementSettingForm(ModelForm):
     class Meta:
@@ -735,6 +745,11 @@ class EMGPreamplifierSettingForm(ModelForm):
             'gain': TextInput(attrs={'class': 'form-control'})
         }
 
+    def __init__(self, *args, **kwargs):
+        super(EMGPreamplifierSettingForm, self).__init__(*args, **kwargs)
+
+        self.fields['amplifier'].queryset = Amplifier.objects.filter(tags__name="EMG")
+
 
 class EMGAmplifierSettingForm(ModelForm):
     class Meta:
@@ -747,6 +762,11 @@ class EMGAmplifierSettingForm(ModelForm):
                                        'data-error': _('Amplifier is required')}),
             'gain': TextInput(attrs={'class': 'form-control'})
         }
+
+    def __init__(self, *args, **kwargs):
+        super(EMGAmplifierSettingForm, self).__init__(*args, **kwargs)
+
+        self.fields['amplifier'].queryset = Amplifier.objects.filter(tags__name="EMG")
 
 
 class EMGAnalogFilterSettingForm(ModelForm):

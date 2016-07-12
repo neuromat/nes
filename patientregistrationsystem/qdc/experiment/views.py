@@ -1214,7 +1214,7 @@ def edit_eeg_setting_type(request, eeg_setting_id, eeg_setting_type):
         if eeg_setting_type in ["eeg_machine", "eeg_amplifier", "eeg_electrode_net_system"]:
 
             equipment_type = "eeg_electrode_net" if eeg_setting_type == "eeg_electrode_net_system" else eeg_setting_type
-            equipment_list = Equipment.objects.filter(equipment_type=equipment_type)
+            equipment_list = Equipment.objects.filter(equipment_type=equipment_type, tags__name="EEG")
             manufacturer_list = Manufacturer.objects.filter(
                 set_of_equipment__equipment_type=equipment_type).distinct()
 
@@ -1482,7 +1482,7 @@ def eeg_electrode_position_setting_model(request, eeg_setting_id,
 
     if get_can_change(request.user, eeg_setting.experiment.research_project):
 
-        eeg_electrode_model_list = ElectrodeModel.objects.all()
+        eeg_electrode_model_list = ElectrodeModel.objects.filter(tags__name="EEG")
 
         context = {"tab": "2",
                    "editing": False,
@@ -1504,7 +1504,7 @@ def edit_eeg_electrode_position_setting_model(
 
     if get_can_change(request.user, eeg_setting.experiment.research_project):
 
-        eeg_electrode_model_list = ElectrodeModel.objects.all()
+        eeg_electrode_model_list = ElectrodeModel.objects.filter(tags__name="EEG")
 
         if request.method == "POST":
             if request.POST['action'] == "save":
@@ -2169,6 +2169,8 @@ def eegelectrodemodel_create(request, template_name="experiment/eegelectrodemode
 
     eegelectrodemodel_form = EEGElectrodeModelRegisterForm(request.POST or None)
 
+    tags = set_all_tags()
+
     if request.method == "POST":
 
         if request.POST['action'] == "save":
@@ -2177,6 +2179,11 @@ def eegelectrodemodel_create(request, template_name="experiment/eegelectrodemode
 
                 eegelectrodemodel_added = eegelectrodemodel_form.save(commit=False)
                 eegelectrodemodel_added.save()
+
+                on_tags = get_tag_ids_from_post(request.POST)
+                changed_tags = equipment_tags_update(eegelectrodemodel_added.id, on_tags, "ElectrodeModel")
+
+                tags = get_tags(eegelectrodemodel_added.id, "ElectrodeModel")
 
                 messages.success(request, _('EEG electrode model created successfully.'))
                 redirect_url = reverse("eegelectrodemodel_view", args=(eegelectrodemodel_added.id,))
@@ -2190,7 +2197,8 @@ def eegelectrodemodel_create(request, template_name="experiment/eegelectrodemode
 
     context = {"equipment_form": eegelectrodemodel_form,
                "creating": True,
-               "editing": True
+               "editing": True,
+               "tags": tags
                }
 
     return render(request, template_name, context)
@@ -2206,7 +2214,10 @@ def eegelectrodemodel_update(request, eegelectrodemodel_id, template_name="exper
     if request.method == "POST":
         if request.POST['action'] == "save":
             if eegelectrodemodel_form.is_valid():
-                if eegelectrodemodel_form.has_changed():
+                new_tags = get_tag_ids_from_post(request.POST)
+                changed_tags = equipment_tags_update(eegelectrodemodel_id, new_tags, "ElectrodeModel")
+
+                if eegelectrodemodel_form.has_changed() or changed_tags:
 
                     eegelectrodemodel_form.save()
                     messages.success(request, _('EEG electrode model updated successfully.'))
@@ -2216,9 +2227,12 @@ def eegelectrodemodel_update(request, eegelectrodemodel_id, template_name="exper
                 redirect_url = reverse("eegelectrodemodel_view", args=(eegelectrodemodel.id,))
                 return HttpResponseRedirect(redirect_url)
 
+    tags = get_tags(eegelectrodemodel_id, "ElectrodeModel")
+
     context = {"equipment": eegelectrodemodel,
                "equipment_form": eegelectrodemodel_form,
-               "editing": True
+               "editing": True,
+               "tags": tags
                }
 
     return render(request, template_name, context)
@@ -2246,9 +2260,13 @@ def eegelectrodemodel_view(request, eegelectrodemodel_id, template_name="experim
                 redirect_url = reverse("eegelectrodemodel_view", args=(eegelectrodemodel_id,))
                 return HttpResponseRedirect(redirect_url)
 
+    tags = get_tags(eegelectrodemodel_id, "ElectrodeModel")
+
     context = {"can_change": True,
                "equipment": eegelectrodemodel,
-               "equipment_form": eegelectrodemodel_form}
+               "equipment_form": eegelectrodemodel_form,
+               "tags": tags
+               }
 
     return render(request, template_name, context)
 

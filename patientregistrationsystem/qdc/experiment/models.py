@@ -178,6 +178,7 @@ class ElectrodeModel(models.Model):
     usability = models.CharField(null=True, blank=True, max_length=50, choices=USABILITY_TYPES)
     impedance = models.FloatField(null=True, blank=True)
     impedance_unit = models.CharField(null=True, blank=True, max_length=15, choices=IMPEDANCE_UNIT)
+    tags = models.ManyToManyField(Tag)
 
     def __str__(self):
         return self.name
