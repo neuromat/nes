@@ -4537,8 +4537,7 @@ def component_create(request, experiment_id, component_type):
                "creating": True,
                "experiment": experiment,
                "questionnaires_list": questionnaires_list,
-               "specific_form": specific_form
-               }
+               "specific_form": specific_form}
     return render(request, template_name, context)
 
 
@@ -5077,8 +5076,7 @@ def component_view(request, path_of_the_components):
                "path_of_the_components": path_of_the_components,
                "specific_form": block_form,
                "type_of_the_parent_block": type_of_the_parent_block,
-               "component_type_choices": component_type_choices
-               }
+               "component_type_choices": component_type_choices}
 
     return render(request, template_name, context)
 
@@ -5319,8 +5317,7 @@ def component_update(request, path_of_the_components):
                "questionnaire_title": questionnaire_title,
                "specific_form": specific_form,
                "updating": True,
-               "type_of_the_parent_block": type_of_the_parent_block
-               }
+               "type_of_the_parent_block": type_of_the_parent_block}
 
     return render(request, template_name, context)
 
@@ -5497,10 +5494,7 @@ def component_add_new(request, path_of_the_components, component_type):
                         new_configuration.parent = block
 
                         if position is not None:
-                            if position == 'random':
-                                new_configuration.random_position = True
-                            else:  # position == 'fixed'
-                                new_configuration.random_position = False
+                            new_configuration.random_position = True if position == 'random' else False
 
                         new_configuration.save()
 
@@ -5529,8 +5523,7 @@ def component_add_new(request, path_of_the_components, component_type):
                "questionnaires_list": questionnaires_list,
                "path_of_the_components": path_of_the_components,
                "specific_form": specific_form,
-               "can_change": True
-               }
+               "can_change": True}
 
     return render(request, template_name, context)
 
@@ -5629,10 +5622,7 @@ def component_reuse(request, path_of_the_components, component_id):
                     new_configuration.parent = block
 
                     if position is not None:
-                        if position == 'random':
-                            new_configuration.random_position = True
-                        else:  # position == 'fixed'
-                            new_configuration.random_position = False
+                        new_configuration.random_position = True if position == 'random' else False
 
                     new_configuration.save()
 
@@ -5662,8 +5652,7 @@ def component_reuse(request, path_of_the_components, component_id):
                "questionnaire_id": questionnaire_id,
                "questionnaire_title": questionnaire_title,
                "reusing": True,
-               "specific_form": specific_form
-               }
+               "specific_form": specific_form}
 
     return render(request, template_name, context)
 
@@ -5706,8 +5695,7 @@ def eeg_electrode_localization_system_create(
 
     context = {"localization_system_form": localization_system_form,
                "creating": True,
-               "editing": True
-               }
+               "editing": True}
 
     return render(request, template_name, context)
 
@@ -5750,8 +5738,7 @@ def eeg_electrode_localization_system_view(
                 return HttpResponseRedirect(redirect_url)
 
     context = {"localization_system": localization_system,
-               "localization_system_form": localization_system_form
-               }
+               "localization_system_form": localization_system_form}
 
     return render(request, template_name, context)
 
@@ -5787,8 +5774,7 @@ def eeg_electrode_localization_system_update(
 
     context = {"localization_system": localization_system,
                "localization_system_form": localization_system_form,
-               "editing": True
-               }
+               "editing": True}
 
     return render(request, template_name, context)
 
@@ -5829,12 +5815,10 @@ def eeg_electrode_coordinates_create(
                                    args=(eeg_electrode_localization_system_id,))
             return HttpResponseRedirect(redirect_url)
 
-    context = {
-               "localization_system": localization_system,
+    context = {"localization_system": localization_system,
                "json_list": json.dumps(positions),
                "creating": True,
-               "editing": True
-               }
+               "editing": True}
 
     return render(request, template_name, context)
 
