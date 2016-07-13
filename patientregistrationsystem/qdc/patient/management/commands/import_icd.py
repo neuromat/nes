@@ -2,7 +2,6 @@ from django.core.management.base import BaseCommand, CommandError
 from patient.models import ClassificationOfDiseases
 from django.utils.translation.trans_real import activate, deactivate
 from xml.etree import ElementTree
-from django.utils.translation import gettext as _
 
 
 def format_text_element(label_element):

@@ -210,7 +210,7 @@ urlpatterns = patterns(
     # eeg_data (ajax)
     url(r'^equipment/get_cap_size_list_from_eeg_setting/(?P<eeg_setting_id>\d+)/$',
         'get_cap_size_list_from_eeg_setting'),
-    url(r'eeg_data/edit_image/set_worked_positions/$','set_worked_positions'),
+    url(r'eeg_data/edit_image/set_worked_positions/$', 'set_worked_positions'),
 
     # subject + emg data
     url(r'^group/(?P<group_id>\d+)/subject/(?P<subject_id>\d+)/emg/$',
