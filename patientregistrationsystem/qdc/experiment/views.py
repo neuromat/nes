@@ -734,7 +734,7 @@ def view_eeg_setting_type(request, eeg_setting_id, eeg_setting_type):
 
     eeg_setting = get_object_or_404(EEGSetting, pk=eeg_setting_id)
 
-    check_can_change(request.user, eeg_setting.experiment.research_project)
+    can_change = get_can_change(request.user, eeg_setting.experiment.research_project)
 
     template_name = "experiment/eeg_setting_" + eeg_setting_type + ".html"
 
@@ -756,6 +756,9 @@ def view_eeg_setting_type(request, eeg_setting_id, eeg_setting_type):
     localization_system_selected = None
 
     if request.method == "POST":
+
+        check_can_change(request.user, eeg_setting.experiment.research_project)
+
         if request.POST['action'] == "save":
 
             if eeg_setting_type == "eeg_machine" \
@@ -978,7 +981,7 @@ def view_eeg_setting_type(request, eeg_setting_id, eeg_setting_type):
                "editing": False,
                "tab": "0",
 
-               "can_change": True,
+               "can_change": can_change,
 
                "eeg_setting_type": eeg_setting_type,
 
@@ -1358,7 +1361,7 @@ def eeg_electrode_position_setting(request, eeg_setting_id,
 
     eeg_setting = get_object_or_404(EEGSetting, pk=eeg_setting_id)
 
-    check_can_change(request.user, eeg_setting.experiment.research_project)
+    can_change = get_can_change(request.user, eeg_setting.experiment.research_project)
 
     positions = []
     for position_setting in eeg_setting.eeg_electrode_layout_setting.positions_setting.all():
@@ -1371,6 +1374,7 @@ def eeg_electrode_position_setting(request, eeg_setting_id,
 
     context = {"tab": "1",
                "editing": False,
+               "can_change": can_change,
                "eeg_setting": eeg_setting,
                "json_list": json.dumps(positions),
                "number_of_used_electrodes": number_of_used_positions(eeg_setting)
@@ -1440,12 +1444,13 @@ def eeg_electrode_position_setting_model(request, eeg_setting_id,
 
     eeg_setting = get_object_or_404(EEGSetting, pk=eeg_setting_id)
 
-    check_can_change(request.user, eeg_setting.experiment.research_project)
+    can_change = get_can_change(request.user, eeg_setting.experiment.research_project)
 
     eeg_electrode_model_list = ElectrodeModel.objects.filter(tags__name="EEG")
 
     context = {"tab": "2",
                "editing": False,
+               "can_change": can_change,
                "eeg_setting": eeg_setting,
                "eeg_electrode_model_list": eeg_electrode_model_list
                }
@@ -6157,7 +6162,7 @@ def emg_setting_digital_filter(request, emg_setting_id,
 
     emg_setting = get_object_or_404(EMGSetting, pk=emg_setting_id)
 
-    check_can_change(request.user, emg_setting.experiment.research_project)
+    can_change = get_can_change(request.user, emg_setting.experiment.research_project)
 
     creating = False
 
@@ -6193,7 +6198,7 @@ def emg_setting_digital_filter(request, emg_setting_id,
 
     context = {"creating": creating,
                "editing": False,
-               "can_change": True,
+               "can_change": can_change,
                "emg_setting": emg_setting,
                "emg_digital_filter_setting_form": emg_digital_filter_setting_form
                }
@@ -6247,7 +6252,7 @@ def emg_setting_ad_converter(request, emg_setting_id,
 
     emg_setting = get_object_or_404(EMGSetting, pk=emg_setting_id)
 
-    check_can_change(request.user, emg_setting.experiment.research_project)
+    can_change = get_can_change(request.user, emg_setting.experiment.research_project)
 
     creating = False
 
@@ -6283,7 +6288,7 @@ def emg_setting_ad_converter(request, emg_setting_id,
 
     context = {"creating": creating,
                "editing": False,
-               "can_change": True,
+               "can_change": can_change,
                "emg_setting": emg_setting,
                "emg_ad_converter_setting_form": emg_ad_converter_setting_form
                }
@@ -6380,7 +6385,7 @@ def emg_electrode_setting_view(request, emg_electrode_setting_id,
 
     emg_electrode_setting = get_object_or_404(EMGElectrodeSetting, pk=emg_electrode_setting_id)
 
-    check_can_change(request.user, emg_electrode_setting.emg_setting.experiment.research_project)
+    can_change = get_can_change(request.user, emg_electrode_setting.emg_setting.experiment.research_project)
 
     emg_electrode_setting_form = EMGElectrodeSettingForm(
         request.POST or None,
@@ -6419,7 +6424,7 @@ def emg_electrode_setting_view(request, emg_electrode_setting_id,
 
     context = {"creating": False,
                "editing": False,
-               "can_change": True,
+               "can_change": can_change,
                "emg_setting": emg_electrode_setting.emg_setting,
                "emg_electrode_setting": emg_electrode_setting,
                "emg_electrode_setting_form": emg_electrode_setting_form,
@@ -6487,7 +6492,7 @@ def emg_electrode_setting_preamplifier(request, emg_electrode_setting_id,
 
     emg_electrode_setting = get_object_or_404(EMGElectrodeSetting, pk=emg_electrode_setting_id)
 
-    check_can_change(request.user, emg_electrode_setting.emg_setting.experiment.research_project)
+    can_change = get_can_change(request.user, emg_electrode_setting.emg_setting.experiment.research_project)
 
     creating = False
 
@@ -6523,7 +6528,7 @@ def emg_electrode_setting_preamplifier(request, emg_electrode_setting_id,
 
     context = {"creating": creating,
                "editing": False,
-               "can_change": True,
+               "can_change": can_change,
                "emg_electrode_setting": emg_electrode_setting,
                "emg_preamplifier_setting_form": emg_preamplifier_setting_form
                }
@@ -6577,7 +6582,7 @@ def emg_electrode_setting_amplifier(request, emg_electrode_setting_id,
 
     emg_electrode_setting = get_object_or_404(EMGElectrodeSetting, pk=emg_electrode_setting_id)
 
-    check_can_change(request.user, emg_electrode_setting.emg_setting.experiment.research_project)
+    can_change = get_can_change(request.user, emg_electrode_setting.emg_setting.experiment.research_project)
 
     creating = False
 
@@ -6637,7 +6642,7 @@ def emg_electrode_setting_amplifier(request, emg_electrode_setting_id,
 
     context = {"creating": creating,
                "editing": False,
-               "can_change": True,
+               "can_change": can_change,
                "emg_electrode_setting": emg_electrode_setting,
                "emg_amplifier_setting_form": emg_amplifier_setting_form,
                "emg_analog_filter_setting_form": emg_analog_filter_setting_form

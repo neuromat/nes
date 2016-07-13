@@ -1948,13 +1948,19 @@ class EEGSettingTest(TestCase):
         response = self.client.get(reverse("view_eeg_setting_type", args=(eeg_setting.id, 'eeg_electrode_net_system')))
         self.assertEqual(response.status_code, 200)
 
-        # update the eeg_electrode_net_system_setting
+        # update the eeg_electrode_net_system_setting with another localization system
+
+        eeg_localization_system_new = ObjectsFactory.create_eeg_electrode_localization_system()
+        ObjectsFactory.create_eeg_electrode_position(eeg_localization_system_new)
+        ObjectsFactory.create_eeg_electrode_position(eeg_localization_system_new)
+        ObjectsFactory.create_eeg_electrode_net_system(eeg_electrode_net, eeg_localization_system_new)
+
         response = self.client.get(reverse("edit_eeg_setting_type",
                                            args=(eeg_setting.id, 'eeg_electrode_net_system')))
         self.assertEqual(response.status_code, 200)
 
         self.data = {'action': 'save', 'equipment_selection': eeg_electrode_net.id,
-                     'localization_system_selection': eeg_localization_system.id}
+                     'localization_system_selection': eeg_localization_system_new.id}
         response = self.client.post(reverse("edit_eeg_setting_type",
                                             args=(eeg_setting.id, 'eeg_electrode_net_system')), self.data)
         self.assertEqual(response.status_code, 302)
