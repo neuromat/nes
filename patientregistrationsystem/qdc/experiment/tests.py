@@ -1996,3 +1996,49 @@ class EEGSettingTest(TestCase):
         self.data = {'action': 'remove-eeg_electrode_net_system'}
         response = self.client.post(reverse("eeg_setting_view", args=(eeg_setting.id,)), self.data)
         self.assertEqual(response.status_code, 302)
+
+
+class EEGEquipmentRegisterTest(TestCase):
+
+    data = {}
+
+    def setUp(self):
+
+        logged, self.user, self.factory = ObjectsFactory.system_authentication(self)
+        self.assertEqual(logged, True)
+
+    def test_manufacturer_register(self):
+
+        # list manufacturers
+        response = self.client.get(reverse("manufacturer_list", args=()))
+        self.assertEqual(response.status_code, 200)
+
+        # create manufacturer
+        response = self.client.get(reverse("manufacturer_new", args=()))
+        self.assertEqual(response.status_code, 200)
+
+        self.data = {'action': 'save', 'name': 'Manufacturer name'}
+
+        response = self.client.post(reverse("manufacturer_new", args=()), self.data)
+        self.assertEqual(response.status_code, 302)
+        self.assertEqual(Manufacturer.objects.all().count(), 1)
+
+        # view manufacturer
+        manufacturer = Manufacturer.objects.all().first()
+
+        response = self.client.get(reverse("manufacturer_view", args=(manufacturer.id,)))
+        self.assertEqual(response.status_code, 200)
+
+        # update manufacturer
+        response = self.client.get(reverse("manufacturer_edit", args=(manufacturer.id,)))
+        self.assertEqual(response.status_code, 200)
+
+        self.data = {'action': 'save', 'name': 'Manufacturer name changed'}
+        response = self.client.post(reverse("manufacturer_edit", args=(manufacturer.id,)), self.data)
+        self.assertEqual(response.status_code, 302)
+
+        # remove manufacturer
+        self.data = {'action': 'remove'}
+        response = self.client.post(reverse("manufacturer_view", args=(manufacturer.id,)), self.data)
+        self.assertEqual(response.status_code, 302)
+        self.assertEqual(Manufacturer.objects.all().count(), 0)
