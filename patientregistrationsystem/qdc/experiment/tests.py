@@ -123,7 +123,7 @@ class ObjectsFactory(object):
     def create_amplifier(manufacturer):
         amplifier = Amplifier.objects.create(
             manufacturer=manufacturer,
-            equipment_type="eeg_amplifier",
+            equipment_type="amplifier",
             identification="Amplifier identification"
         )
         amplifier.save()
@@ -1823,26 +1823,26 @@ class EEGSettingTest(TestCase):
         eeg_amplifier = ObjectsFactory.create_amplifier(manufacturer)
 
         # screen to an (unexisting) eeg_amplifier_setting
-        response = self.client.get(reverse("view_eeg_setting_type", args=(eeg_setting.id, 'eeg_amplifier')))
+        response = self.client.get(reverse("view_eeg_setting_type", args=(eeg_setting.id, 'amplifier')))
         self.assertEqual(response.status_code, 200)
 
         # create an eeg_amplifier_setting
         self.data = {'action': 'save', 'equipment_selection': eeg_amplifier.id, 'gain': "10"}
         response = self.client.post(reverse("view_eeg_setting_type",
-                                            args=(eeg_setting.id, 'eeg_amplifier')), self.data)
+                                            args=(eeg_setting.id, 'amplifier')), self.data)
         self.assertEqual(response.status_code, 302)
 
         # screen to view the eeg_amplifier_setting
-        response = self.client.get(reverse("view_eeg_setting_type", args=(eeg_setting.id, 'eeg_amplifier')))
+        response = self.client.get(reverse("view_eeg_setting_type", args=(eeg_setting.id, 'amplifier')))
         self.assertEqual(response.status_code, 200)
 
         # update the eeg_amplifier_setting
-        response = self.client.get(reverse("edit_eeg_setting_type", args=(eeg_setting.id, 'eeg_amplifier')))
+        response = self.client.get(reverse("edit_eeg_setting_type", args=(eeg_setting.id, 'amplifier')))
         self.assertEqual(response.status_code, 200)
 
         self.data = {'action': 'save', 'equipment_selection': eeg_amplifier.id, 'gain': "20"}
         response = self.client.post(reverse("edit_eeg_setting_type",
-                                            args=(eeg_setting.id, 'eeg_amplifier')), self.data)
+                                            args=(eeg_setting.id, 'amplifier')), self.data)
         self.assertEqual(response.status_code, 302)
 
         # remove an eeg_amplifier_setting
@@ -1890,28 +1890,28 @@ class EEGSettingTest(TestCase):
         filter_type = ObjectsFactory.create_filter_type()
 
         # screen to an (unexisting) eeg_filter_setting
-        response = self.client.get(reverse("view_eeg_setting_type", args=(eeg_setting.id, 'eeg_filter')))
+        response = self.client.get(reverse("view_eeg_setting_type", args=(eeg_setting.id, 'filter')))
         self.assertEqual(response.status_code, 200)
 
         # create an eeg_filter_setting
         self.data = {'action': 'save', 'filter_selection': filter_type.id,
                      'high_pass': '80', 'low_pass': '20', 'order': '2'}
         response = self.client.post(reverse("view_eeg_setting_type",
-                                            args=(eeg_setting.id, 'eeg_filter')), self.data)
+                                            args=(eeg_setting.id, 'filter')), self.data)
         self.assertEqual(response.status_code, 302)
 
         # screen to view the eeg_filter_setting
-        response = self.client.get(reverse("view_eeg_setting_type", args=(eeg_setting.id, 'eeg_filter')))
+        response = self.client.get(reverse("view_eeg_setting_type", args=(eeg_setting.id, 'filter')))
         self.assertEqual(response.status_code, 200)
 
         # update the eeg_filter_setting
-        response = self.client.get(reverse("edit_eeg_setting_type", args=(eeg_setting.id, 'eeg_filter')))
+        response = self.client.get(reverse("edit_eeg_setting_type", args=(eeg_setting.id, 'filter')))
         self.assertEqual(response.status_code, 200)
 
         self.data = {'action': 'save', 'filter_selection': filter_type.id,
                      'high_pass': '90', 'low_pass': '20', 'order': '2'}
         response = self.client.post(reverse("edit_eeg_setting_type",
-                                            args=(eeg_setting.id, 'eeg_filter')), self.data)
+                                            args=(eeg_setting.id, 'filter')), self.data)
         self.assertEqual(response.status_code, 302)
 
         # remove an eeg_filter_setting

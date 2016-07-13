@@ -474,7 +474,7 @@ class EEGMachineRegisterForm(ModelForm):
         }
 
 
-class EEGAmplifierRegisterForm(ModelForm):
+class AmplifierRegisterForm(ModelForm):
     class Meta:
         model = Amplifier
         fields = ['manufacturer', 'identification', 'description', 'serial_number', 'gain']
@@ -509,7 +509,7 @@ class EEGSolutionRegisterForm(ModelForm):
         }
 
 
-class EEGFilterTypeRegisterForm(ModelForm):
+class FilterTypeRegisterForm(ModelForm):
     class Meta:
         model = FilterType
         fields = ['name', 'description']
@@ -523,7 +523,7 @@ class EEGFilterTypeRegisterForm(ModelForm):
         }
 
 
-class EEGElectrodeModelRegisterForm(ModelForm):
+class ElectrodeModelRegisterForm(ModelForm):
     class Meta:
         model = ElectrodeModel
         fields = ['name', 'description', 'material', 'usability', 'impedance', 'impedance_unit']

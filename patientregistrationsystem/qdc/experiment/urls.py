@@ -43,11 +43,11 @@ urlpatterns = patterns(
     url(r'^eegmachine/(?P<eegmachine_id>\d+)/$', 'eegmachine_view', name='eegmachine_view'),
     url(r'^eegmachine/edit/(?P<eegmachine_id>\d+)/$', 'eegmachine_update', name='eegmachine_edit'),
 
-    # register eeg amplifier
-    url(r'^eegamplifier/list/$', 'eegamplifier_list', name='eegamplifier_list'),
-    url(r'^eegamplifier/new/$', 'eegamplifier_create', name='eegamplifier_new'),
-    url(r'^eegamplifier/(?P<eegamplifier_id>\d+)/$', 'eegamplifier_view', name='eegamplifier_view'),
-    url(r'^eegamplifier/edit/(?P<eegamplifier_id>\d+)/$', 'eegamplifier_update', name='eegamplifier_edit'),
+    # register amplifier
+    url(r'^amplifier/list/$', 'amplifier_list', name='amplifier_list'),
+    url(r'^amplifier/new/$', 'amplifier_create', name='amplifier_new'),
+    url(r'^amplifier/(?P<amplifier_id>\d+)/$', 'amplifier_view', name='amplifier_view'),
+    url(r'^amplifier/edit/(?P<amplifier_id>\d+)/$', 'amplifier_update', name='amplifier_edit'),
 
     # register eeg solution
     url(r'^eegsolution/list/$', 'eegsolution_list', name='eegsolution_list'),
@@ -55,18 +55,18 @@ urlpatterns = patterns(
     url(r'^eegsolution/(?P<eegsolution_id>\d+)/$', 'eegsolution_view', name='eegsolution_view'),
     url(r'^eegsolution/edit/(?P<eegsolution_id>\d+)/$', 'eegsolution_update', name='eegsolution_edit'),
 
-    # register eeg filter type
-    url(r'^eegfiltertype/list/$', 'eegfiltertype_list', name='eegfiltertype_list'),
-    url(r'^eegfiltertype/new/$', 'eegfiltertype_create', name='eegfiltertype_new'),
-    url(r'^eegfiltertype/(?P<eegfiltertype_id>\d+)/$', 'eegfiltertype_view', name='eegfiltertype_view'),
-    url(r'^eegfiltertype/edit/(?P<eegfiltertype_id>\d+)/$', 'eegfiltertype_update', name='eegfiltertype_edit'),
+    # register filter type
+    url(r'^filtertype/list/$', 'filtertype_list', name='filtertype_list'),
+    url(r'^filtertype/new/$', 'filtertype_create', name='filtertype_new'),
+    url(r'^filtertype/(?P<filtertype_id>\d+)/$', 'filtertype_view', name='filtertype_view'),
+    url(r'^filtertype/edit/(?P<filtertype_id>\d+)/$', 'filtertype_update', name='filtertype_edit'),
 
-    # register eeg electrode model
-    url(r'^eegelectrodemodel/list/$', 'eegelectrodemodel_list', name='eegelectrodemodel_list'),
-    url(r'^eegelectrodemodel/new/$', 'eegelectrodemodel_create', name='eegelectrodemodel_new'),
-    url(r'^eegelectrodemodel/(?P<eegelectrodemodel_id>\d+)/$', 'eegelectrodemodel_view', name='eegelectrodemodel_view'),
-    url(r'^eegelectrodemodel/edit/(?P<eegelectrodemodel_id>\d+)/$',
-        'eegelectrodemodel_update', name='eegelectrodemodel_edit'),
+    # register electrode model
+    url(r'^electrodemodel/list/$', 'electrodemodel_list', name='electrodemodel_list'),
+    url(r'^electrodemodel/new/$', 'electrodemodel_create', name='electrodemodel_new'),
+    url(r'^electrodemodel/(?P<electrodemodel_id>\d+)/$', 'electrodemodel_view', name='electrodemodel_view'),
+    url(r'^electrodemodel/edit/(?P<electrodemodel_id>\d+)/$',
+        'electrodemodel_update', name='electrodemodel_edit'),
 
     # register material
     url(r'^material/list/$', 'material_list', name='material_list'),

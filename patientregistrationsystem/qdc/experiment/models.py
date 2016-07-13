@@ -111,9 +111,9 @@ class Tag(models.Model):
 class Equipment(models.Model):
     EQUIPMENT_TYPES = (
         ("eeg_machine", _("EEG Machine")),
-        ("eeg_amplifier", _("EEG Amplifier")),
+        ("amplifier", _("Amplifier")),
         ("eeg_solution", _("EEG Solution")),
-        ("eeg_filter", _("EEG Filter")),
+        ("filter", _("Filter")),
         ("eeg_electrode_net", _("EEG Electrode Net")),
         ("ad_converter", _("A/D Converter"))
     )
@@ -154,6 +154,7 @@ class EEGSolution(models.Model):
 class FilterType(models.Model):
     name = models.CharField(max_length=150)
     description = models.TextField(null=True, blank=True)
+    tags = models.ManyToManyField(Tag)
 
     def __str__(self):
         return self.name

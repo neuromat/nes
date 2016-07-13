@@ -37,8 +37,8 @@ from experiment.forms import ExperimentForm, QuestionnaireResponseForm, FileForm
     EEGDataForm, EEGSettingForm, EquipmentForm, EEGForm, EEGMachineForm, EEGMachineSettingForm, EEGAmplifierForm, \
     EEGAmplifierSettingForm, EEGSolutionForm, EEGFilterForm, EEGFilterSettingForm, \
     EEGElectrodeLocalizationSystemRegisterForm, \
-    ManufacturerRegisterForm, EEGMachineRegisterForm, EEGAmplifierRegisterForm, EEGSolutionRegisterForm, \
-    EEGFilterTypeRegisterForm, EEGElectrodeModelRegisterForm, MaterialRegisterForm, EEGElectrodeNETRegisterForm, \
+    ManufacturerRegisterForm, EEGMachineRegisterForm, AmplifierRegisterForm, EEGSolutionRegisterForm, \
+    FilterTypeRegisterForm, ElectrodeModelRegisterForm, MaterialRegisterForm, EEGElectrodeNETRegisterForm, \
     EEGElectrodePositionForm, EEGElectrodeCapRegisterForm, EEGCapSizeRegisterForm, AdditionalDataForm, \
     EMGDataForm, EMGSettingForm, EMGDigitalFilterSettingForm, EMGADConverterSettingForm, \
     EMGElectrodeSettingForm, EMGElectrodePlacementSettingForm, \
@@ -778,7 +778,7 @@ def view_eeg_setting_type(request, eeg_setting_id, eeg_setting_type):
                 redirect_url = reverse("eeg_setting_view", args=(eeg_setting_id,))
                 return HttpResponseRedirect(redirect_url)
 
-            if eeg_setting_type == "eeg_amplifier" \
+            if eeg_setting_type == "amplifier" \
                     and 'equipment_selection' in request.POST \
                     and 'gain' in request.POST:
 
@@ -879,7 +879,7 @@ def view_eeg_setting_type(request, eeg_setting_id, eeg_setting_type):
             selection_form = EEGMachineForm(request.POST or None)
             setting_form = EEGMachineSettingForm(request.POST or None)
 
-    if eeg_setting_type == "eeg_amplifier":
+    if eeg_setting_type == "amplifier":
 
         if hasattr(eeg_setting, 'eeg_amplifier_setting'):
 
@@ -912,7 +912,7 @@ def view_eeg_setting_type(request, eeg_setting_id, eeg_setting_type):
 
             selection_form = EEGSolutionForm(request.POST or None)
 
-    if eeg_setting_type == "eeg_filter":
+    if eeg_setting_type == "filter":
 
         if hasattr(eeg_setting, 'eeg_filter_setting'):
 
@@ -947,7 +947,7 @@ def view_eeg_setting_type(request, eeg_setting_id, eeg_setting_type):
             creating = True
 
     # Settings related to equipment
-    if eeg_setting_type in ["eeg_machine", "eeg_amplifier", "eeg_electrode_net_system"]:
+    if eeg_setting_type in ["eeg_machine", "amplifier", "eeg_electrode_net_system"]:
 
         equipment_type = "eeg_electrode_net" if eeg_setting_type == "eeg_electrode_net_system" else eeg_setting_type
 
@@ -969,8 +969,8 @@ def view_eeg_setting_type(request, eeg_setting_id, eeg_setting_type):
         else:
             equipment_form = EEGSolutionForm(request.POST or None, instance=solution_selected)
 
-    if eeg_setting_type == "eeg_filter":
-        filter_list = FilterType.objects.all()
+    if eeg_setting_type == "filter":
+        filter_list = FilterType.objects.filter(tags__name="EEG")
 
         if creating:
             equipment_form = EEGFilterForm(request.POST or None)
@@ -1153,7 +1153,7 @@ def edit_eeg_setting_type(request, eeg_setting_id, eeg_setting_type):
         setting_form = EEGMachineSettingForm(request.POST or None, instance=eeg_machine_setting)
         equipment_selected = eeg_machine_setting.eeg_machine
 
-    if eeg_setting_type == "eeg_amplifier":
+    if eeg_setting_type == "amplifier":
         eeg_amplifier_setting = eeg_setting.eeg_amplifier_setting
 
         selection_form = EEGAmplifierForm(request.POST or None, instance=eeg_amplifier_setting.eeg_amplifier)
@@ -1165,7 +1165,7 @@ def edit_eeg_setting_type(request, eeg_setting_id, eeg_setting_type):
 
         solution_selected = eeg_solution_setting.eeg_solution
 
-    if eeg_setting_type == "eeg_filter":
+    if eeg_setting_type == "filter":
         eeg_filter_setting = eeg_setting.eeg_filter_setting
 
         filter_selected = eeg_filter_setting.eeg_filter_type
@@ -1179,8 +1179,8 @@ def edit_eeg_setting_type(request, eeg_setting_id, eeg_setting_type):
 
         equipment_form = EEGSolutionForm(request.POST or None, instance=solution_selected)
 
-    if eeg_setting_type == "eeg_filter":
-        filter_list = FilterType.objects.all()
+    if eeg_setting_type == "filter":
+        filter_list = FilterType.objects.filter(tags__name="EEG")
 
         equipment_form = EEGFilterForm(request.POST or None, instance=filter_selected)
 
@@ -1195,7 +1195,7 @@ def edit_eeg_setting_type(request, eeg_setting_id, eeg_setting_type):
             set_of_electrode_net_system__eeg_electrode_net_id=equipment_selected.id)
 
     # Settings related to equipment
-    if eeg_setting_type in ["eeg_machine", "eeg_amplifier", "eeg_electrode_net_system"]:
+    if eeg_setting_type in ["eeg_machine", "amplifier", "eeg_electrode_net_system"]:
 
         equipment_type = "eeg_electrode_net" if eeg_setting_type == "eeg_electrode_net_system" else eeg_setting_type
         equipment_list = Equipment.objects.filter(equipment_type=equipment_type, tags__name="EEG")
@@ -1294,7 +1294,7 @@ def get_json_equipment_attributes(request, equipment_id):
         response_data['software_version'] = equipment.software_version,
         response_data['number_of_channels'] = equipment.number_of_channels
 
-    elif equipment.equipment_type == "eeg_amplifier":
+    elif equipment.equipment_type == "amplifier":
         equipment = get_object_or_404(Amplifier, pk=equipment_id)
         response_data['gain'] = equipment.gain
 
@@ -1810,15 +1810,15 @@ def set_all_tags():
 
 @login_required
 @permission_required('experiment.register_equipment')
-def eegamplifier_list(request, template_name="experiment/eegamplifier_list.html"):
+def amplifier_list(request, template_name="experiment/amplifier_list.html"):
     return render(request, template_name, {"equipments": Amplifier.objects.all().order_by('identification')})
 
 
 @login_required
 @permission_required('experiment.register_equipment')
-def eegamplifier_create(request, template_name="experiment/eegamplifier_register.html"):
+def amplifier_create(request, template_name="experiment/amplifier_register.html"):
 
-    eegamplifier_form = EEGAmplifierRegisterForm(request.POST or None, initial={'equipment_type': 'eeg_amplifier'})
+    amplifier_form = AmplifierRegisterForm(request.POST or None, initial={'equipment_type': 'amplifier'})
 
     tags = set_all_tags()
 
@@ -1826,19 +1826,19 @@ def eegamplifier_create(request, template_name="experiment/eegamplifier_register
 
         if request.POST['action'] == "save":
 
-            if eegamplifier_form.is_valid():
+            if amplifier_form.is_valid():
 
-                eegamplifier_added = eegamplifier_form.save(commit=False)
-                eegamplifier_added.equipment_type = 'eeg_amplifier'
-                eegamplifier_added.save()
+                amplifier_added = amplifier_form.save(commit=False)
+                amplifier_added.equipment_type = 'amplifier'
+                amplifier_added.save()
 
                 on_tags = get_tag_ids_from_post(request.POST)
-                changed_tags = equipment_tags_update(eegamplifier_added.id, on_tags, "Amplifier")
+                changed_tags = equipment_tags_update(amplifier_added.id, on_tags, "Amplifier")
 
-                tags = get_tags(eegamplifier_added.id, "Amplifier")
+                tags = get_tags(amplifier_added.id, "Amplifier")
 
-                messages.success(request, _('EEG amplifier created successfully.'))
-                redirect_url = reverse("eegamplifier_view", args=(eegamplifier_added.id,))
+                messages.success(request, _('Amplifier created successfully.'))
+                redirect_url = reverse("amplifier_view", args=(amplifier_added.id,))
                 return HttpResponseRedirect(redirect_url)
 
             else:
@@ -1847,7 +1847,7 @@ def eegamplifier_create(request, template_name="experiment/eegamplifier_register
         else:
             messages.warning(request, _('Action not available.'))
 
-    context = {"equipment_form": eegamplifier_form,
+    context = {"equipment_form": amplifier_form,
                "creating": True,
                "editing": True,
                "tags": tags
@@ -1858,30 +1858,30 @@ def eegamplifier_create(request, template_name="experiment/eegamplifier_register
 
 @login_required
 @permission_required('experiment.register_equipment')
-def eegamplifier_update(request, eegamplifier_id, template_name="experiment/eegamplifier_register.html"):
-    eegamplifier = get_object_or_404(Amplifier, pk=eegamplifier_id)
+def amplifier_update(request, amplifier_id, template_name="experiment/amplifier_register.html"):
+    amplifier = get_object_or_404(Amplifier, pk=amplifier_id)
 
-    eegamplifier_form = EEGAmplifierRegisterForm(request.POST or None, instance=eegamplifier)
+    amplifier_form = AmplifierRegisterForm(request.POST or None, instance=amplifier)
 
     if request.method == "POST":
         if request.POST['action'] == "save":
-            if eegamplifier_form.is_valid():
+            if amplifier_form.is_valid():
                 new_tags = get_tag_ids_from_post(request.POST)
-                changed_tags = equipment_tags_update(eegamplifier_id, new_tags, "Amplifier")
+                changed_tags = equipment_tags_update(amplifier_id, new_tags, "Amplifier")
 
-                if eegamplifier_form.has_changed() or changed_tags:
-                    eegamplifier_form.save()
-                    messages.success(request, _('EEG amplifier updated successfully.'))
+                if amplifier_form.has_changed() or changed_tags:
+                    amplifier_form.save()
+                    messages.success(request, _('Amplifier updated successfully.'))
                 else:
                     messages.success(request, _('There is no changes to save.'))
 
-                redirect_url = reverse("eegamplifier_view", args=(eegamplifier.id,))
+                redirect_url = reverse("amplifier_view", args=(amplifier.id,))
                 return HttpResponseRedirect(redirect_url)
 
-    tags = get_tags(eegamplifier_id, "Amplifier")
+    tags = get_tags(amplifier_id, "Amplifier")
 
-    context = {"equipment": eegamplifier,
-               "equipment_form": eegamplifier_form,
+    context = {"equipment": amplifier,
+               "equipment_form": amplifier_form,
                "editing": True,
                "tags": tags
                }
@@ -1891,31 +1891,31 @@ def eegamplifier_update(request, eegamplifier_id, template_name="experiment/eega
 
 @login_required
 @permission_required('experiment.register_equipment')
-def eegamplifier_view(request, eegamplifier_id, template_name="experiment/eegamplifier_register.html"):
-    eegamplifier = get_object_or_404(Amplifier, pk=eegamplifier_id)
+def amplifier_view(request, amplifier_id, template_name="experiment/amplifier_register.html"):
+    amplifier = get_object_or_404(Amplifier, pk=amplifier_id)
 
-    eegamplifier_form = EEGAmplifierRegisterForm(request.POST or None, instance=eegamplifier)
+    amplifier_form = AmplifierRegisterForm(request.POST or None, instance=amplifier)
 
-    for field in eegamplifier_form.fields:
-        eegamplifier_form.fields[field].widget.attrs['disabled'] = True
+    for field in amplifier_form.fields:
+        amplifier_form.fields[field].widget.attrs['disabled'] = True
 
     if request.method == "POST":
         if request.POST['action'] == "remove":
 
             try:
-                eegamplifier.delete()
-                messages.success(request, _('EEG amplifier removed successfully.'))
-                return redirect('eegamplifier_list')
+                amplifier.delete()
+                messages.success(request, _('Amplifier removed successfully.'))
+                return redirect('amplifier_list')
             except ProtectedError:
-                messages.error(request, _("Error trying to delete eegamplifier."))
-                redirect_url = reverse("eegamplifier_view", args=(eegamplifier_id,))
+                messages.error(request, _("Error trying to delete amplifier."))
+                redirect_url = reverse("amplifier_view", args=(amplifier_id,))
                 return HttpResponseRedirect(redirect_url)
 
-    tags = get_tags(eegamplifier_id, "Amplifier")
+    tags = get_tags(amplifier_id, "Amplifier")
 
     context = {"can_change": True,
-               "equipment": eegamplifier,
-               "equipment_form": eegamplifier_form,
+               "equipment": amplifier,
+               "equipment_form": amplifier_form,
                "tags": tags
                }
 
@@ -2022,112 +2022,15 @@ def eegsolution_view(request, eegsolution_id, template_name="experiment/eegsolut
 
 @login_required
 @permission_required('experiment.register_equipment')
-def eegfiltertype_list(request, template_name="experiment/eegfiltertype_list.html"):
+def filtertype_list(request, template_name="experiment/filtertype_list.html"):
     return render(request, template_name, {"equipments": FilterType.objects.all().order_by('name')})
 
 
 @login_required
 @permission_required('experiment.register_equipment')
-def eegfiltertype_create(request, template_name="experiment/eegfiltertype_register.html"):
+def filtertype_create(request, template_name="experiment/filtertype_register.html"):
 
-    eegfiltertype_form = EEGFilterTypeRegisterForm(request.POST or None)
-
-    if request.method == "POST":
-
-        if request.POST['action'] == "save":
-
-            if eegfiltertype_form.is_valid():
-
-                eegfiltertype_added = eegfiltertype_form.save(commit=False)
-                eegfiltertype_added.save()
-
-                messages.success(request, _('EEG filter type created successfully.'))
-                redirect_url = reverse("eegfiltertype_view", args=(eegfiltertype_added.id,))
-                return HttpResponseRedirect(redirect_url)
-
-            else:
-                messages.warning(request, _('Information not saved.'))
-
-        else:
-            messages.warning(request, _('Action not available.'))
-
-    context = {"equipment_form": eegfiltertype_form,
-               "creating": True,
-               "editing": True
-               }
-
-    return render(request, template_name, context)
-
-
-@login_required
-@permission_required('experiment.register_equipment')
-def eegfiltertype_update(request, eegfiltertype_id, template_name="experiment/eegfiltertype_register.html"):
-    eegfiltertype = get_object_or_404(FilterType, pk=eegfiltertype_id)
-
-    eegfiltertype_form = EEGFilterTypeRegisterForm(request.POST or None, instance=eegfiltertype)
-
-    if request.method == "POST":
-        if request.POST['action'] == "save":
-            if eegfiltertype_form.is_valid():
-                if eegfiltertype_form.has_changed():
-
-                    eegfiltertype_form.save()
-                    messages.success(request, _('EEG filter type updated successfully.'))
-                else:
-                    messages.success(request, _('There is no changes to save.'))
-
-                redirect_url = reverse("eegfiltertype_view", args=(eegfiltertype.id,))
-                return HttpResponseRedirect(redirect_url)
-
-    context = {"equipment": eegfiltertype,
-               "equipment_form": eegfiltertype_form,
-               "editing": True
-               }
-
-    return render(request, template_name, context)
-
-
-@login_required
-@permission_required('experiment.register_equipment')
-def eegfiltertype_view(request, eegfiltertype_id, template_name="experiment/eegfiltertype_register.html"):
-    eegfiltertype = get_object_or_404(FilterType, pk=eegfiltertype_id)
-
-    eegfiltertype_form = EEGFilterTypeRegisterForm(request.POST or None, instance=eegfiltertype)
-
-    for field in eegfiltertype_form.fields:
-        eegfiltertype_form.fields[field].widget.attrs['disabled'] = True
-
-    if request.method == "POST":
-        if request.POST['action'] == "remove":
-
-            try:
-                eegfiltertype.delete()
-                messages.success(request, _('EEG filter type removed successfully.'))
-                return redirect('eegfiltertype_list')
-            except ProtectedError:
-                messages.error(request, _("Error trying to delete EEG filter type."))
-                redirect_url = reverse("eegfiltertype_view", args=(eegfiltertype_id,))
-                return HttpResponseRedirect(redirect_url)
-
-    context = {"can_change": True,
-               "equipment": eegfiltertype,
-               "equipment_form": eegfiltertype_form
-               }
-
-    return render(request, template_name, context)
-
-
-@login_required
-@permission_required('experiment.register_equipment')
-def eegelectrodemodel_list(request, template_name="experiment/eegelectrodemodel_list.html"):
-    return render(request, template_name, {"equipments": ElectrodeModel.objects.all().order_by('name')})
-
-
-@login_required
-@permission_required('experiment.register_equipment')
-def eegelectrodemodel_create(request, template_name="experiment/eegelectrodemodel_register.html"):
-
-    eegelectrodemodel_form = EEGElectrodeModelRegisterForm(request.POST or None)
+    filtertype_form = FilterTypeRegisterForm(request.POST or None)
 
     tags = set_all_tags()
 
@@ -2135,18 +2038,18 @@ def eegelectrodemodel_create(request, template_name="experiment/eegelectrodemode
 
         if request.POST['action'] == "save":
 
-            if eegelectrodemodel_form.is_valid():
+            if filtertype_form.is_valid():
 
-                eegelectrodemodel_added = eegelectrodemodel_form.save(commit=False)
-                eegelectrodemodel_added.save()
+                filtertype_added = filtertype_form.save(commit=False)
+                filtertype_added.save()
 
                 on_tags = get_tag_ids_from_post(request.POST)
-                changed_tags = equipment_tags_update(eegelectrodemodel_added.id, on_tags, "ElectrodeModel")
+                changed_tags = equipment_tags_update(filtertype_added.id, on_tags, "FilterType")
 
-                tags = get_tags(eegelectrodemodel_added.id, "ElectrodeModel")
+                tags = get_tags(filtertype_added.id, "FilterType")
 
-                messages.success(request, _('EEG electrode model created successfully.'))
-                redirect_url = reverse("eegelectrodemodel_view", args=(eegelectrodemodel_added.id,))
+                messages.success(request, _('Filter type created successfully.'))
+                redirect_url = reverse("filtertype_view", args=(filtertype_added.id,))
                 return HttpResponseRedirect(redirect_url)
 
             else:
@@ -2155,7 +2058,7 @@ def eegelectrodemodel_create(request, template_name="experiment/eegelectrodemode
         else:
             messages.warning(request, _('Action not available.'))
 
-    context = {"equipment_form": eegelectrodemodel_form,
+    context = {"equipment_form": filtertype_form,
                "creating": True,
                "editing": True,
                "tags": tags
@@ -2166,31 +2069,31 @@ def eegelectrodemodel_create(request, template_name="experiment/eegelectrodemode
 
 @login_required
 @permission_required('experiment.register_equipment')
-def eegelectrodemodel_update(request, eegelectrodemodel_id, template_name="experiment/eegelectrodemodel_register.html"):
-    eegelectrodemodel = get_object_or_404(ElectrodeModel, pk=eegelectrodemodel_id)
+def filtertype_update(request, filtertype_id, template_name="experiment/filtertype_register.html"):
+    filtertype = get_object_or_404(FilterType, pk=filtertype_id)
 
-    eegelectrodemodel_form = EEGElectrodeModelRegisterForm(request.POST or None, instance=eegelectrodemodel)
+    filtertype_form = FilterTypeRegisterForm(request.POST or None, instance=filtertype)
 
     if request.method == "POST":
         if request.POST['action'] == "save":
-            if eegelectrodemodel_form.is_valid():
+            if filtertype_form.is_valid():
                 new_tags = get_tag_ids_from_post(request.POST)
-                changed_tags = equipment_tags_update(eegelectrodemodel_id, new_tags, "ElectrodeModel")
+                changed_tags = equipment_tags_update(filtertype_id, new_tags, "FilterType")
 
-                if eegelectrodemodel_form.has_changed() or changed_tags:
+                if filtertype_form.has_changed() or changed_tags:
 
-                    eegelectrodemodel_form.save()
-                    messages.success(request, _('EEG electrode model updated successfully.'))
+                    filtertype_form.save()
+                    messages.success(request, _('Filter type updated successfully.'))
                 else:
                     messages.success(request, _('There is no changes to save.'))
 
-                redirect_url = reverse("eegelectrodemodel_view", args=(eegelectrodemodel.id,))
+                redirect_url = reverse("filtertype_view", args=(filtertype.id,))
                 return HttpResponseRedirect(redirect_url)
 
-    tags = get_tags(eegelectrodemodel_id, "ElectrodeModel")
+    tags = get_tags(filtertype_id, "FilterType")
 
-    context = {"equipment": eegelectrodemodel,
-               "equipment_form": eegelectrodemodel_form,
+    context = {"equipment": filtertype,
+               "equipment_form": filtertype_form,
                "editing": True,
                "tags": tags
                }
@@ -2200,31 +2103,145 @@ def eegelectrodemodel_update(request, eegelectrodemodel_id, template_name="exper
 
 @login_required
 @permission_required('experiment.register_equipment')
-def eegelectrodemodel_view(request, eegelectrodemodel_id, template_name="experiment/eegelectrodemodel_register.html"):
-    eegelectrodemodel = get_object_or_404(ElectrodeModel, pk=eegelectrodemodel_id)
+def filtertype_view(request, filtertype_id, template_name="experiment/filtertype_register.html"):
+    filtertype = get_object_or_404(FilterType, pk=filtertype_id)
 
-    eegelectrodemodel_form = EEGElectrodeModelRegisterForm(request.POST or None, instance=eegelectrodemodel)
+    filtertype_form = FilterTypeRegisterForm(request.POST or None, instance=filtertype)
 
-    for field in eegelectrodemodel_form.fields:
-        eegelectrodemodel_form.fields[field].widget.attrs['disabled'] = True
+    for field in filtertype_form.fields:
+        filtertype_form.fields[field].widget.attrs['disabled'] = True
 
     if request.method == "POST":
         if request.POST['action'] == "remove":
 
             try:
-                eegelectrodemodel.delete()
-                messages.success(request, _('EEG electrode model removed successfully.'))
-                return redirect('eegelectrodemodel_list')
+                filtertype.delete()
+                messages.success(request, _('Filter type removed successfully.'))
+                return redirect('filtertype_list')
             except ProtectedError:
-                messages.error(request, _("Error trying to delete EEG electrode model."))
-                redirect_url = reverse("eegelectrodemodel_view", args=(eegelectrodemodel_id,))
+                messages.error(request, _("Error trying to delete filter type."))
+                redirect_url = reverse("filtertype_view", args=(filtertype_id,))
                 return HttpResponseRedirect(redirect_url)
 
-    tags = get_tags(eegelectrodemodel_id, "ElectrodeModel")
+    tags = get_tags(filtertype_id, "FilterType")
 
     context = {"can_change": True,
-               "equipment": eegelectrodemodel,
-               "equipment_form": eegelectrodemodel_form,
+               "equipment": filtertype,
+               "equipment_form": filtertype_form,
+               "tags": tags
+               }
+
+    return render(request, template_name, context)
+
+
+@login_required
+@permission_required('experiment.register_equipment')
+def electrodemodel_list(request, template_name="experiment/electrodemodel_list.html"):
+    return render(request, template_name, {"equipments": ElectrodeModel.objects.all().order_by('name')})
+
+
+@login_required
+@permission_required('experiment.register_equipment')
+def electrodemodel_create(request, template_name="experiment/electrodemodel_register.html"):
+
+    electrodemodel_form = ElectrodeModelRegisterForm(request.POST or None)
+
+    tags = set_all_tags()
+
+    if request.method == "POST":
+
+        if request.POST['action'] == "save":
+
+            if electrodemodel_form.is_valid():
+
+                electrodemodel_added = electrodemodel_form.save(commit=False)
+                electrodemodel_added.save()
+
+                on_tags = get_tag_ids_from_post(request.POST)
+                changed_tags = equipment_tags_update(electrodemodel_added.id, on_tags, "ElectrodeModel")
+
+                tags = get_tags(electrodemodel_added.id, "ElectrodeModel")
+
+                messages.success(request, _('Electrode model created successfully.'))
+                redirect_url = reverse("electrodemodel_view", args=(electrodemodel_added.id,))
+                return HttpResponseRedirect(redirect_url)
+
+            else:
+                messages.warning(request, _('Information not saved.'))
+
+        else:
+            messages.warning(request, _('Action not available.'))
+
+    context = {"equipment_form": electrodemodel_form,
+               "creating": True,
+               "editing": True,
+               "tags": tags
+               }
+
+    return render(request, template_name, context)
+
+
+@login_required
+@permission_required('experiment.register_equipment')
+def electrodemodel_update(request, electrodemodel_id, template_name="experiment/electrodemodel_register.html"):
+    electrodemodel = get_object_or_404(ElectrodeModel, pk=electrodemodel_id)
+
+    electrodemodel_form = ElectrodeModelRegisterForm(request.POST or None, instance=electrodemodel)
+
+    if request.method == "POST":
+        if request.POST['action'] == "save":
+            if electrodemodel_form.is_valid():
+                new_tags = get_tag_ids_from_post(request.POST)
+                changed_tags = equipment_tags_update(electrodemodel_id, new_tags, "ElectrodeModel")
+
+                if electrodemodel_form.has_changed() or changed_tags:
+
+                    electrodemodel_form.save()
+                    messages.success(request, _('Electrode model updated successfully.'))
+                else:
+                    messages.success(request, _('There is no changes to save.'))
+
+                redirect_url = reverse("electrodemodel_view", args=(electrodemodel.id,))
+                return HttpResponseRedirect(redirect_url)
+
+    tags = get_tags(electrodemodel_id, "ElectrodeModel")
+
+    context = {"equipment": electrodemodel,
+               "equipment_form": electrodemodel_form,
+               "editing": True,
+               "tags": tags
+               }
+
+    return render(request, template_name, context)
+
+
+@login_required
+@permission_required('experiment.register_equipment')
+def electrodemodel_view(request, electrodemodel_id, template_name="experiment/electrodemodel_register.html"):
+    electrodemodel = get_object_or_404(ElectrodeModel, pk=electrodemodel_id)
+
+    electrodemodel_form = ElectrodeModelRegisterForm(request.POST or None, instance=electrodemodel)
+
+    for field in electrodemodel_form.fields:
+        electrodemodel_form.fields[field].widget.attrs['disabled'] = True
+
+    if request.method == "POST":
+        if request.POST['action'] == "remove":
+
+            try:
+                electrodemodel.delete()
+                messages.success(request, _('Electrode model removed successfully.'))
+                return redirect('electrodemodel_list')
+            except ProtectedError:
+                messages.error(request, _("Error trying to delete electrode model."))
+                redirect_url = reverse("electrodemodel_view", args=(electrodemodel_id,))
+                return HttpResponseRedirect(redirect_url)
+
+    tags = get_tags(electrodemodel_id, "ElectrodeModel")
+
+    context = {"can_change": True,
+               "equipment": electrodemodel,
+               "equipment_form": electrodemodel_form,
                "tags": tags
                }
 

@@ -138,11 +138,11 @@
                                     </td>
                                 </tr>
                                 <tr>
-                                    <td>{% trans "EEG amplifier" %}</td>
+                                    <td>{% trans "Amplifier" %}</td>
                                     <td>
                                         {% if eeg_setting.eeg_amplifier_setting %}
 
-                                            <a role="menuitem" tabindex="-1" href="/experiment/eeg_setting/{{ eeg_setting.id }}/eeg_amplifier">
+                                            <a role="menuitem" tabindex="-1" href="/experiment/eeg_setting/{{ eeg_setting.id }}/amplifier">
                                                 {{ eeg_setting.eeg_amplifier_setting.eeg_amplifier.identification }}
                                             </a>
                                             <blockquote>
@@ -152,7 +152,7 @@
                                             </blockquote>
 
                                         {% else %}
-                                            <a role="menuitem" tabindex="-1" href="/experiment/eeg_setting/{{ eeg_setting.id }}/eeg_amplifier"> {% trans "+ Add setting" %}</a>
+                                            <a role="menuitem" tabindex="-1" href="/experiment/eeg_setting/{{ eeg_setting.id }}/amplifier"> {% trans "+ Add setting" %}</a>
                                         {% endif %}
                                     </td>
                                     <td>
@@ -183,11 +183,11 @@
                                     </td>
                                 </tr>
                                 <tr>
-                                    <td>{% trans "EEG filter" %}</td>
+                                    <td>{% trans "Filter" %}</td>
                                     <td>
                                         {% if eeg_setting.eeg_filter_setting %}
 
-                                            <a role="menuitem" tabindex="-1" href="/experiment/eeg_setting/{{ eeg_setting.id }}/eeg_filter">
+                                            <a role="menuitem" tabindex="-1" href="/experiment/eeg_setting/{{ eeg_setting.id }}/filter">
                                                 {{ eeg_setting.eeg_filter_setting.eeg_filter_type.name }}
                                             </a>
                                             <blockquote>
@@ -201,7 +201,7 @@
                                             </blockquote>
 
                                         {% else %}
-                                            <a role="menuitem" tabindex="-1" href="/experiment/eeg_setting/{{ eeg_setting.id }}/eeg_filter"> {% trans "+ Add setting" %}</a>
+                                            <a role="menuitem" tabindex="-1" href="/experiment/eeg_setting/{{ eeg_setting.id }}/filter"> {% trans "+ Add setting" %}</a>
                                         {% endif %}
                                     </td>
                                     <td>
