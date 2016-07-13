@@ -1951,8 +1951,8 @@ class EEGSettingTest(TestCase):
         # update the eeg_electrode_net_system_setting with another localization system
 
         eeg_localization_system_new = ObjectsFactory.create_eeg_electrode_localization_system()
-        ObjectsFactory.create_eeg_electrode_position(eeg_localization_system_new)
-        ObjectsFactory.create_eeg_electrode_position(eeg_localization_system_new)
+        electrode_position_1 = ObjectsFactory.create_eeg_electrode_position(eeg_localization_system_new)
+        electrode_position_2 = ObjectsFactory.create_eeg_electrode_position(eeg_localization_system_new)
         ObjectsFactory.create_eeg_electrode_net_system(eeg_electrode_net, eeg_localization_system_new)
 
         response = self.client.get(reverse("edit_eeg_setting_type",
@@ -1963,6 +1963,33 @@ class EEGSettingTest(TestCase):
                      'localization_system_selection': eeg_localization_system_new.id}
         response = self.client.post(reverse("edit_eeg_setting_type",
                                             args=(eeg_setting.id, 'eeg_electrode_net_system')), self.data)
+        self.assertEqual(response.status_code, 302)
+
+        # configuring the used electrodes
+        response = self.client.get(reverse("eeg_electrode_position_setting", args=(eeg_setting.id,)))
+        self.assertEqual(response.status_code, 200)
+
+        response = self.client.get(reverse("edit_eeg_electrode_position_setting", args=(eeg_setting.id,)))
+        self.assertEqual(response.status_code, 200)
+
+        self.data = {'action': 'save', 'position_status_' + str(electrode_position_1.id): 'on'}
+        response = self.client.post(reverse("edit_eeg_electrode_position_setting",
+                                            args=(eeg_setting.id,)), self.data)
+        self.assertEqual(response.status_code, 302)
+
+        # configuring the electrodes models
+
+        response = self.client.get(reverse("eeg_electrode_position_setting_model", args=(eeg_setting.id,)))
+        self.assertEqual(response.status_code, 200)
+
+        response = self.client.get(reverse("edit_eeg_electrode_position_setting_model", args=(eeg_setting.id,)))
+        self.assertEqual(response.status_code, 200)
+
+        self.data = {'action': 'save',
+                     'electrode_model_' + str(electrode_position_1.id): str(electrode_model.id),
+                     'electrode_model_' + str(electrode_position_2.id): str(electrode_model.id)}
+        response = self.client.post(reverse("edit_eeg_electrode_position_setting_model",
+                                            args=(eeg_setting.id,)), self.data)
         self.assertEqual(response.status_code, 302)
 
         # remove an eeg_electrode_net_system_setting

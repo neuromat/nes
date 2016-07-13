@@ -91,9 +91,11 @@
                 </div>
 
                 {% if not editing and not creating and can_change %}
-                    <div class="btn-group pull-left">
-                        <a href="/experiment/eeg_setting/{{ eeg_setting.id }}/{{ eeg_setting_type }}/edit" class="btn btn-primary">{% trans "Edit" %}</a>
-                    </div>
+                    {% if not tab or tab == '0' %}
+                        <div class="btn-group pull-left">
+                            <a href="/experiment/eeg_setting/{{ eeg_setting.id }}/{{ eeg_setting_type }}/edit" class="btn btn-primary">{% trans "Edit" %}</a>
+                        </div>
+                    {% endif %}
                 {% endif %}
 
             </div>

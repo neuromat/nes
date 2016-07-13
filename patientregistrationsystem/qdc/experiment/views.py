@@ -31,7 +31,7 @@ from experiment.models import Experiment, Subject, QuestionnaireResponse, Subjec
     ElectrodeModel, EEGElectrodePositionCollectionStatus, EEGCapSize, EEGElectrodeCap, EEGElectrodePosition, \
     Material, AdditionalData, Tag, \
     EMGData, EMGSetting, SoftwareVersion, EMGDigitalFilterSetting, EMGADConverterSetting, \
-    EMGElectrodePlacement, EMGElectrodeSetting, EMGPreamplifierSetting, EMGAmplifierSetting, EMGAnalogFilterSetting
+    EMGElectrodeSetting, EMGPreamplifierSetting, EMGAmplifierSetting, EMGAnalogFilterSetting
 from experiment.forms import ExperimentForm, QuestionnaireResponseForm, FileForm, GroupForm, InstructionForm, \
     ComponentForm, StimulusForm, BlockForm, ComponentConfigurationForm, ResearchProjectForm, NumberOfUsesToInsertForm, \
     EEGDataForm, EEGSettingForm, EquipmentForm, EEGForm, EEGMachineForm, EEGMachineSettingForm, EEGAmplifierForm, \
@@ -3410,8 +3410,7 @@ def questionnaire_response_view(request, questionnaire_response_id,
                "patient": subject.patient,  # This is needed when origin=subject
                "status": status,
                "subject": subject,
-               "survey_title": survey_title
-               }
+               "survey_title": survey_title}
 
     return render(request, template_name, context)
 
@@ -3420,21 +3419,13 @@ def questionnaire_response_view(request, questionnaire_response_id,
 @permission_required('experiment.view_researchproject')
 def subject_questionnaire_view(request, group_id, subject_id,
                                template_name="experiment/subject_questionnaire_response_list.html"):
-    group = get_object_or_404(Group, id=group_id)
-    subject = get_object_or_404(Subject, id=subject_id)
 
     subject_questionnaires = []
-
     surveys = Questionnaires()
-    limesurvey_available = check_limesurvey_access(request, surveys)
+    subject_of_group = get_object_or_404(SubjectOfGroup, group_id=group_id, subject_id=subject_id)
 
-    subject_of_group = get_object_or_404(SubjectOfGroup, group=group, subject=subject)
+    for path in create_list_of_trees(subject_of_group.group.experimental_protocol, "questionnaire"):
 
-    list_of_paths = create_list_of_trees(group.experimental_protocol, "questionnaire")
-
-    language_code = request.LANGUAGE_CODE
-
-    for path in list_of_paths:
         questionnaire_response = ComponentConfiguration.objects.get(pk=path[-1][0])
 
         data_configuration_tree_id = list_data_configuration_tree(questionnaire_response.id, [item[0] for item in path])
@@ -3457,24 +3448,24 @@ def subject_questionnaire_view(request, group_id, subject_id,
                  'completed': None if response_result is None else response_result != "N" and response_result != ""}
             )
 
-        language = get_questionnaire_language(surveys, questionnaire.survey.lime_survey_id, language_code)
         subject_questionnaires.append(
             {'questionnaire_configuration': questionnaire_configuration,
-             'title': surveys.get_survey_title(questionnaire.survey.lime_survey_id, language),
+             'title': surveys.get_survey_title(questionnaire.survey.lime_survey_id,
+                                               get_questionnaire_language(surveys,
+                                                                          questionnaire.survey.lime_survey_id,
+                                                                          request.LANGUAGE_CODE)),
              'path': path,
              'questionnaire_responses': questionnaire_responses_with_status}
         )
 
     surveys.release_session_key()
 
-    context = {"can_change": get_can_change(request.user, group.experiment.research_project),
-               'group': group,
-               'limesurvey_available': limesurvey_available,
-               'subject': subject,
-               'subject_questionnaires': subject_questionnaires
-               }
-
-    return render(request, template_name, context)
+    return render(request, template_name,
+                  {"can_change": get_can_change(request.user, subject_of_group.group.experiment.research_project),
+                   'group': subject_of_group.group,
+                   'limesurvey_available': check_limesurvey_access(request, surveys),
+                   'subject': subject_of_group.subject,
+                   'subject_questionnaires': subject_questionnaires})
 
 
 @login_required
