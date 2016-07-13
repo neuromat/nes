@@ -13,7 +13,7 @@ from .models import Experiment, Group, Subject, \
     Component, Task, TaskForTheExperimenter, Stimulus, Instruction, Pause, Questionnaire, Block, \
     EEG, FileFormat, EEGData, EEGSetting, DataConfigurationTree, EMG, EEGMachine, Manufacturer, Tag, Amplifier, \
     EEGSolution, FilterType, ElectrodeModel, EEGElectrodeNet, EEGElectrodeNetSystem, EEGElectrodeLocalizationSystem, \
-    EEGElectrodePosition
+    EEGElectrodePosition, Material
 from .views import experiment_update, upload_file, research_project_update
 
 from patient.models import ClassificationOfDiseases
@@ -1996,3 +1996,335 @@ class EEGSettingTest(TestCase):
         self.data = {'action': 'remove-eeg_electrode_net_system'}
         response = self.client.post(reverse("eeg_setting_view", args=(eeg_setting.id,)), self.data)
         self.assertEqual(response.status_code, 302)
+
+
+class EEGEquipmentRegisterTest(TestCase):
+
+    data = {}
+
+    def setUp(self):
+
+        logged, self.user, self.factory = ObjectsFactory.system_authentication(self)
+        self.assertEqual(logged, True)
+
+    def test_manufacturer_register(self):
+
+        # list
+        response = self.client.get(reverse("manufacturer_list", args=()))
+        self.assertEqual(response.status_code, 200)
+
+        # create
+        response = self.client.get(reverse("manufacturer_new", args=()))
+        self.assertEqual(response.status_code, 200)
+
+        name = 'Name'
+        self.data = {'action': 'save', 'name': name}
+
+        response = self.client.post(reverse("manufacturer_new", args=()), self.data)
+        self.assertEqual(response.status_code, 302)
+        self.assertEqual(Manufacturer.objects.all().count(), 1)
+
+        # view
+        manufacturer = Manufacturer.objects.all().first()
+
+        response = self.client.get(reverse("manufacturer_view", args=(manufacturer.id,)))
+        self.assertEqual(response.status_code, 200)
+
+        # update
+        response = self.client.get(reverse("manufacturer_edit", args=(manufacturer.id,)))
+        self.assertEqual(response.status_code, 200)
+
+        self.data = {'action': 'save', 'name': name}
+        response = self.client.post(reverse("manufacturer_edit", args=(manufacturer.id,)), self.data)
+        self.assertEqual(response.status_code, 302)
+
+        name = 'Name changed'
+        self.data = {'action': 'save', 'name': name}
+        response = self.client.post(reverse("manufacturer_edit", args=(manufacturer.id,)), self.data)
+        self.assertEqual(response.status_code, 302)
+
+        # remove
+        self.data = {'action': 'remove'}
+        response = self.client.post(reverse("manufacturer_view", args=(manufacturer.id,)), self.data)
+        self.assertEqual(response.status_code, 302)
+        self.assertEqual(Manufacturer.objects.all().count(), 0)
+
+    def test_eeg_machine_register(self):
+        manufacturer = ObjectsFactory.create_manufacturer()
+
+        # list
+        response = self.client.get(reverse("eegmachine_list", args=()))
+        self.assertEqual(response.status_code, 200)
+
+        # create
+        response = self.client.get(reverse("eegmachine_new", args=()))
+        self.assertEqual(response.status_code, 200)
+
+        identification = 'Identification'
+        self.data = {'action': 'save',
+                     'manufacturer': str(manufacturer.id),
+                     'identification': identification}
+
+        response = self.client.post(reverse("eegmachine_new", args=()), self.data)
+        self.assertEqual(response.status_code, 302)
+        self.assertEqual(EEGMachine.objects.all().count(), 1)
+
+        # view
+        eeg_machine = EEGMachine.objects.all().first()
+
+        response = self.client.get(reverse("eegmachine_view", args=(eeg_machine.id,)))
+        self.assertEqual(response.status_code, 200)
+
+        # update
+        response = self.client.get(reverse("eegmachine_edit", args=(eeg_machine.id,)))
+        self.assertEqual(response.status_code, 200)
+
+        self.data = {'action': 'save',
+                     'manufacturer': str(manufacturer.id),
+                     'identification': identification}
+        response = self.client.post(reverse("eegmachine_edit", args=(eeg_machine.id,)), self.data)
+        self.assertEqual(response.status_code, 302)
+
+        identification = 'Identification changed'
+        self.data = {'action': 'save',
+                     'manufacturer': str(manufacturer.id),
+                     'identification': identification}
+        response = self.client.post(reverse("eegmachine_edit", args=(eeg_machine.id,)), self.data)
+        self.assertEqual(response.status_code, 302)
+
+        # remove
+        self.data = {'action': 'remove'}
+        response = self.client.post(reverse("eegmachine_view", args=(eeg_machine.id,)), self.data)
+        self.assertEqual(response.status_code, 302)
+        self.assertEqual(EEGMachine.objects.all().count(), 0)
+
+    def test_amplifier_register(self):
+        manufacturer = ObjectsFactory.create_manufacturer()
+
+        # list
+        response = self.client.get(reverse("eegamplifier_list", args=()))
+        self.assertEqual(response.status_code, 200)
+
+        # create
+        response = self.client.get(reverse("eegamplifier_new", args=()))
+        self.assertEqual(response.status_code, 200)
+
+        identification = 'Identification'
+        self.data = {'action': 'save',
+                     'manufacturer': str(manufacturer.id),
+                     'identification': identification,
+                     'tag_1': 'on', 'tag_2': 'on'}
+
+        response = self.client.post(reverse("eegamplifier_new", args=()), self.data)
+        self.assertEqual(response.status_code, 302)
+        self.assertEqual(Amplifier.objects.all().count(), 1)
+
+        # view
+        amplifier = Amplifier.objects.all().first()
+
+        response = self.client.get(reverse("eegamplifier_view", args=(amplifier.id,)))
+        self.assertEqual(response.status_code, 200)
+
+        # update
+        response = self.client.get(reverse("eegamplifier_edit", args=(amplifier.id,)))
+        self.assertEqual(response.status_code, 200)
+
+        self.data = {'action': 'save',
+                     'manufacturer': str(manufacturer.id),
+                     'identification': identification,
+                     'tag_1': 'on', 'tag_2': 'on'}
+        response = self.client.post(reverse("eegamplifier_edit", args=(amplifier.id,)), self.data)
+        self.assertEqual(response.status_code, 302)
+
+        identification = 'Identification changed'
+        self.data = {'action': 'save',
+                     'manufacturer': str(manufacturer.id),
+                     'identification': identification,
+                     'tag_1': 'on', 'tag_2': 'on'}
+        response = self.client.post(reverse("eegamplifier_edit", args=(amplifier.id,)), self.data)
+        self.assertEqual(response.status_code, 302)
+
+        # remove
+        self.data = {'action': 'remove'}
+        response = self.client.post(reverse("eegamplifier_view", args=(amplifier.id,)), self.data)
+        self.assertEqual(response.status_code, 302)
+        self.assertEqual(Amplifier.objects.all().count(), 0)
+
+    def test_eeg_solution_register(self):
+        manufacturer = ObjectsFactory.create_manufacturer()
+
+        # list
+        response = self.client.get(reverse("eegsolution_list", args=()))
+        self.assertEqual(response.status_code, 200)
+
+        # create
+        response = self.client.get(reverse("eegsolution_new", args=()))
+        self.assertEqual(response.status_code, 200)
+
+        name = 'Name'
+        self.data = {'action': 'save',
+                     'manufacturer': str(manufacturer.id),
+                     'name': name}
+
+        response = self.client.post(reverse("eegsolution_new", args=()), self.data)
+        self.assertEqual(response.status_code, 302)
+        self.assertEqual(EEGSolution.objects.all().count(), 1)
+
+        # view
+        eeg_solution = EEGSolution.objects.all().first()
+
+        response = self.client.get(reverse("eegsolution_view", args=(eeg_solution.id,)))
+        self.assertEqual(response.status_code, 200)
+
+        # update
+        response = self.client.get(reverse("eegsolution_edit", args=(eeg_solution.id,)))
+        self.assertEqual(response.status_code, 200)
+
+        self.data = {'action': 'save',
+                     'manufacturer': str(manufacturer.id),
+                     'name': name}
+        response = self.client.post(reverse("eegsolution_edit", args=(eeg_solution.id,)), self.data)
+        self.assertEqual(response.status_code, 302)
+
+        name = 'Name changed'
+        self.data = {'action': 'save',
+                     'manufacturer': str(manufacturer.id),
+                     'name': name}
+        response = self.client.post(reverse("eegsolution_edit", args=(eeg_solution.id,)), self.data)
+        self.assertEqual(response.status_code, 302)
+
+        # remove
+        self.data = {'action': 'remove'}
+        response = self.client.post(reverse("eegsolution_view", args=(eeg_solution.id,)), self.data)
+        self.assertEqual(response.status_code, 302)
+        self.assertEqual(EEGSolution.objects.all().count(), 0)
+
+    def test_filter_type_register(self):
+        # list
+        response = self.client.get(reverse("eegfiltertype_list", args=()))
+        self.assertEqual(response.status_code, 200)
+
+        # create
+        response = self.client.get(reverse("eegfiltertype_new", args=()))
+        self.assertEqual(response.status_code, 200)
+
+        name = 'Name'
+        self.data = {'action': 'save',
+                     'name': name}
+
+        response = self.client.post(reverse("eegfiltertype_new", args=()), self.data)
+        self.assertEqual(response.status_code, 302)
+        self.assertEqual(FilterType.objects.all().count(), 1)
+
+        # view
+        filter_type = FilterType.objects.all().first()
+
+        response = self.client.get(reverse("eegfiltertype_view", args=(filter_type.id,)))
+        self.assertEqual(response.status_code, 200)
+
+        # update
+        response = self.client.get(reverse("eegfiltertype_edit", args=(filter_type.id,)))
+        self.assertEqual(response.status_code, 200)
+
+        self.data = {'action': 'save',
+                     'name': name}
+        response = self.client.post(reverse("eegfiltertype_edit", args=(filter_type.id,)), self.data)
+        self.assertEqual(response.status_code, 302)
+
+        name = 'Name changed'
+        self.data = {'action': 'save',
+                     'name': name}
+        response = self.client.post(reverse("eegfiltertype_edit", args=(filter_type.id,)), self.data)
+        self.assertEqual(response.status_code, 302)
+
+        # remove
+        self.data = {'action': 'remove'}
+        response = self.client.post(reverse("eegfiltertype_view", args=(filter_type.id,)), self.data)
+        self.assertEqual(response.status_code, 302)
+        self.assertEqual(FilterType.objects.all().count(), 0)
+
+    def test_electrode_model_register(self):
+        # list
+        response = self.client.get(reverse("eegelectrodemodel_list", args=()))
+        self.assertEqual(response.status_code, 200)
+
+        # create
+        response = self.client.get(reverse("eegelectrodemodel_new", args=()))
+        self.assertEqual(response.status_code, 200)
+
+        name = 'Name'
+        self.data = {'action': 'save',
+                     'name': name}
+        response = self.client.post(reverse("eegelectrodemodel_new", args=()), self.data)
+        self.assertEqual(response.status_code, 302)
+        self.assertEqual(ElectrodeModel.objects.all().count(), 1)
+
+        # view
+        electrode_model = ElectrodeModel.objects.all().first()
+
+        response = self.client.get(reverse("eegelectrodemodel_view", args=(electrode_model.id,)))
+        self.assertEqual(response.status_code, 200)
+
+        # update
+        response = self.client.get(reverse("eegelectrodemodel_edit", args=(electrode_model.id,)))
+        self.assertEqual(response.status_code, 200)
+
+        self.data = {'action': 'save',
+                     'name': name}
+        response = self.client.post(reverse("eegelectrodemodel_edit", args=(electrode_model.id,)), self.data)
+        self.assertEqual(response.status_code, 302)
+
+        name = 'Name changed'
+        self.data = {'action': 'save',
+                     'name': name}
+        response = self.client.post(reverse("eegelectrodemodel_edit", args=(electrode_model.id,)), self.data)
+        self.assertEqual(response.status_code, 302)
+
+        # remove
+        self.data = {'action': 'remove'}
+        response = self.client.post(reverse("eegelectrodemodel_view", args=(electrode_model.id,)), self.data)
+        self.assertEqual(response.status_code, 302)
+        self.assertEqual(ElectrodeModel.objects.all().count(), 0)
+
+    def test_material_register(self):
+        # list
+        response = self.client.get(reverse("material_list", args=()))
+        self.assertEqual(response.status_code, 200)
+
+        # create
+        response = self.client.get(reverse("material_new", args=()))
+        self.assertEqual(response.status_code, 200)
+
+        name = 'Name'
+        self.data = {'action': 'save',
+                     'name': name}
+        response = self.client.post(reverse("material_new", args=()), self.data)
+        self.assertEqual(response.status_code, 302)
+        self.assertEqual(Material.objects.all().count(), 1)
+
+        # view
+        material = Material.objects.all().first()
+
+        response = self.client.get(reverse("material_view", args=(material.id,)))
+        self.assertEqual(response.status_code, 200)
+
+        # update
+        response = self.client.get(reverse("material_edit", args=(material.id,)))
+        self.assertEqual(response.status_code, 200)
+
+        self.data = {'action': 'save',
+                     'name': name}
+        response = self.client.post(reverse("material_edit", args=(material.id,)), self.data)
+        self.assertEqual(response.status_code, 302)
+
+        name = 'Name changed'
+        self.data = {'action': 'save',
+                     'name': name}
+        response = self.client.post(reverse("material_edit", args=(material.id,)), self.data)
+        self.assertEqual(response.status_code, 302)
+
+        # remove
+        self.data = {'action': 'remove'}
+        response = self.client.post(reverse("material_view", args=(material.id,)), self.data)
+        self.assertEqual(response.status_code, 302)
+        self.assertEqual(Material.objects.all().count(), 0)
