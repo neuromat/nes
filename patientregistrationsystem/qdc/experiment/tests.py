@@ -2102,11 +2102,11 @@ class EEGEquipmentRegisterTest(TestCase):
         manufacturer = ObjectsFactory.create_manufacturer()
 
         # list
-        response = self.client.get(reverse("eegamplifier_list", args=()))
+        response = self.client.get(reverse("amplifier_list", args=()))
         self.assertEqual(response.status_code, 200)
 
         # create
-        response = self.client.get(reverse("eegamplifier_new", args=()))
+        response = self.client.get(reverse("amplifier_new", args=()))
         self.assertEqual(response.status_code, 200)
 
         identification = 'Identification'
@@ -2115,25 +2115,25 @@ class EEGEquipmentRegisterTest(TestCase):
                      'identification': identification,
                      'tag_1': 'on', 'tag_2': 'on'}
 
-        response = self.client.post(reverse("eegamplifier_new", args=()), self.data)
+        response = self.client.post(reverse("amplifier_new", args=()), self.data)
         self.assertEqual(response.status_code, 302)
         self.assertEqual(Amplifier.objects.all().count(), 1)
 
         # view
         amplifier = Amplifier.objects.all().first()
 
-        response = self.client.get(reverse("eegamplifier_view", args=(amplifier.id,)))
+        response = self.client.get(reverse("amplifier_view", args=(amplifier.id,)))
         self.assertEqual(response.status_code, 200)
 
         # update
-        response = self.client.get(reverse("eegamplifier_edit", args=(amplifier.id,)))
+        response = self.client.get(reverse("amplifier_edit", args=(amplifier.id,)))
         self.assertEqual(response.status_code, 200)
 
         self.data = {'action': 'save',
                      'manufacturer': str(manufacturer.id),
                      'identification': identification,
                      'tag_1': 'on', 'tag_2': 'on'}
-        response = self.client.post(reverse("eegamplifier_edit", args=(amplifier.id,)), self.data)
+        response = self.client.post(reverse("amplifier_edit", args=(amplifier.id,)), self.data)
         self.assertEqual(response.status_code, 302)
 
         identification = 'Identification changed'
@@ -2141,12 +2141,12 @@ class EEGEquipmentRegisterTest(TestCase):
                      'manufacturer': str(manufacturer.id),
                      'identification': identification,
                      'tag_1': 'on', 'tag_2': 'on'}
-        response = self.client.post(reverse("eegamplifier_edit", args=(amplifier.id,)), self.data)
+        response = self.client.post(reverse("amplifier_edit", args=(amplifier.id,)), self.data)
         self.assertEqual(response.status_code, 302)
 
         # remove
         self.data = {'action': 'remove'}
-        response = self.client.post(reverse("eegamplifier_view", args=(amplifier.id,)), self.data)
+        response = self.client.post(reverse("amplifier_view", args=(amplifier.id,)), self.data)
         self.assertEqual(response.status_code, 302)
         self.assertEqual(Amplifier.objects.all().count(), 0)
 
@@ -2201,88 +2201,88 @@ class EEGEquipmentRegisterTest(TestCase):
 
     def test_filter_type_register(self):
         # list
-        response = self.client.get(reverse("eegfiltertype_list", args=()))
+        response = self.client.get(reverse("filtertype_list", args=()))
         self.assertEqual(response.status_code, 200)
 
         # create
-        response = self.client.get(reverse("eegfiltertype_new", args=()))
+        response = self.client.get(reverse("filtertype_new", args=()))
         self.assertEqual(response.status_code, 200)
 
         name = 'Name'
         self.data = {'action': 'save',
                      'name': name}
 
-        response = self.client.post(reverse("eegfiltertype_new", args=()), self.data)
+        response = self.client.post(reverse("filtertype_new", args=()), self.data)
         self.assertEqual(response.status_code, 302)
         self.assertEqual(FilterType.objects.all().count(), 1)
 
         # view
         filter_type = FilterType.objects.all().first()
 
-        response = self.client.get(reverse("eegfiltertype_view", args=(filter_type.id,)))
+        response = self.client.get(reverse("filtertype_view", args=(filter_type.id,)))
         self.assertEqual(response.status_code, 200)
 
         # update
-        response = self.client.get(reverse("eegfiltertype_edit", args=(filter_type.id,)))
+        response = self.client.get(reverse("filtertype_edit", args=(filter_type.id,)))
         self.assertEqual(response.status_code, 200)
 
         self.data = {'action': 'save',
                      'name': name}
-        response = self.client.post(reverse("eegfiltertype_edit", args=(filter_type.id,)), self.data)
+        response = self.client.post(reverse("filtertype_edit", args=(filter_type.id,)), self.data)
         self.assertEqual(response.status_code, 302)
 
         name = 'Name changed'
         self.data = {'action': 'save',
                      'name': name}
-        response = self.client.post(reverse("eegfiltertype_edit", args=(filter_type.id,)), self.data)
+        response = self.client.post(reverse("filtertype_edit", args=(filter_type.id,)), self.data)
         self.assertEqual(response.status_code, 302)
 
         # remove
         self.data = {'action': 'remove'}
-        response = self.client.post(reverse("eegfiltertype_view", args=(filter_type.id,)), self.data)
+        response = self.client.post(reverse("filtertype_view", args=(filter_type.id,)), self.data)
         self.assertEqual(response.status_code, 302)
         self.assertEqual(FilterType.objects.all().count(), 0)
 
     def test_electrode_model_register(self):
         # list
-        response = self.client.get(reverse("eegelectrodemodel_list", args=()))
+        response = self.client.get(reverse("electrodemodel_list", args=()))
         self.assertEqual(response.status_code, 200)
 
         # create
-        response = self.client.get(reverse("eegelectrodemodel_new", args=()))
+        response = self.client.get(reverse("electrodemodel_new", args=()))
         self.assertEqual(response.status_code, 200)
 
         name = 'Name'
         self.data = {'action': 'save',
                      'name': name}
-        response = self.client.post(reverse("eegelectrodemodel_new", args=()), self.data)
+        response = self.client.post(reverse("electrodemodel_new", args=()), self.data)
         self.assertEqual(response.status_code, 302)
         self.assertEqual(ElectrodeModel.objects.all().count(), 1)
 
         # view
         electrode_model = ElectrodeModel.objects.all().first()
 
-        response = self.client.get(reverse("eegelectrodemodel_view", args=(electrode_model.id,)))
+        response = self.client.get(reverse("electrodemodel_view", args=(electrode_model.id,)))
         self.assertEqual(response.status_code, 200)
 
         # update
-        response = self.client.get(reverse("eegelectrodemodel_edit", args=(electrode_model.id,)))
+        response = self.client.get(reverse("electrodemodel_edit", args=(electrode_model.id,)))
         self.assertEqual(response.status_code, 200)
 
         self.data = {'action': 'save',
                      'name': name}
-        response = self.client.post(reverse("eegelectrodemodel_edit", args=(electrode_model.id,)), self.data)
+        response = self.client.post(reverse("electrodemodel_edit", args=(electrode_model.id,)), self.data)
         self.assertEqual(response.status_code, 302)
 
         name = 'Name changed'
         self.data = {'action': 'save',
                      'name': name}
-        response = self.client.post(reverse("eegelectrodemodel_edit", args=(electrode_model.id,)), self.data)
+        response = self.client.post(reverse("electrodemodel_edit", args=(electrode_model.id,)), self.data)
         self.assertEqual(response.status_code, 302)
 
         # remove
         self.data = {'action': 'remove'}
-        response = self.client.post(reverse("eegelectrodemodel_view", args=(electrode_model.id,)), self.data)
+        response = self.client.post(reverse("electrodemodel_view", args=(electrode_model.id,)), self.data)
         self.assertEqual(response.status_code, 302)
         self.assertEqual(ElectrodeModel.objects.all().count(), 0)
 
