@@ -33,7 +33,7 @@
       "description": "Is a filter whose impulse response (or response to any finite length input) is of finite duration, because it settles to zero in finite time.",
       "name": "Finite Impulse Response (FIR)"
     },
-    "model": "experiment.eegfiltertype"
+    "model": "experiment.filtertype"
   },
   {
     "pk": 2,
@@ -41,7 +41,7 @@
       "description": "Systems with this property are known as IIR systems or IIR filters, and are distinguished by having an impulse response which does not become exactly zero past a certain point, but continues indefinitely.",
       "name": "Infinite impulse response (IIR) "
     },
-    "model": "experiment.eegfiltertype"
+    "model": "experiment.filtertype"
   },
   {
     "pk": 3,
@@ -49,7 +49,7 @@
       "description": "A Butterworth filter is a filter which has a maximally flat characteristic in the passband: the gain decreases gradually from the center of the passband towards the \u20133 dB point. No ripple is present in the stopband either. ",
       "name": "Butterworth IIR"
     },
-    "model": "experiment.eegfiltertype"
+    "model": "experiment.filtertype"
   },
   {
     "pk": 4,
@@ -57,7 +57,7 @@
       "description": "A Chebyshev filter has a constant ripple in the passband which oscillates between 1 and (1+\u03b5\u02c62)\u02c6-1/2 ; \u03b5 can be tuned. The number of ripples in the passband increases with filter order. There is a trade-off between the behaviour in passband and stopband. In comparison with a Butterworth filter, the stopband behaviour and fall-off of a Chebyshev are better. ",
       "name": "Chebyshev IIR"
     },
-    "model": "experiment.eegfiltertype"
+    "model": "experiment.filtertype"
   },
   {
     "pk": 5,
@@ -65,7 +65,7 @@
       "description": "An elliptic IIR filter has a ripple of constant height in both passband and stopband, the number increasing with filter order. In comparison with the Butterworth as well as the Chebyshev, at a given order, the fall-off is better for an elliptic filter. ",
       "name": "Elliptic IIR"
     },
-    "model": "experiment.eegfiltertype"
+    "model": "experiment.filtertype"
   },
     {
     "fields": {
@@ -141,7 +141,7 @@
       "impedance_unit": "ohm",
       "usability": "reusable"
     },
-    "model": "experiment.eegelectrodemodel"
+    "model": "experiment.electrodemodel"
   },
   {
     "pk": 3,
@@ -153,7 +153,7 @@
       "impedance_unit": "ohm",
       "usability": "reusable"
     },
-    "model": "experiment.eegelectrodemodel"
+    "model": "experiment.electrodemodel"
   },
   {
     "pk": 4,
@@ -165,7 +165,7 @@
       "impedance_unit": "kilohm",
       "usability": "reusable"
     },
-    "model": "experiment.eegelectrodemodel"
+    "model": "experiment.electrodemodel"
   },
   {
     "pk": 5,
@@ -177,7 +177,7 @@
       "impedance_unit": "kilohm",
       "usability": "reusable"
     },
-    "model": "experiment.eegelectrodemodel"
+    "model": "experiment.electrodemodel"
   },
   {
     "pk": 6,
@@ -189,7 +189,7 @@
       "impedance_unit": "kilohm",
       "usability": "reusable"
     },
-    "model": "experiment.eegelectrodemodel"
+    "model": "experiment.electrodemodel"
   },
   {
     "pk": 1,
@@ -1688,7 +1688,7 @@
     "pk": 5,
     "fields": {
       "manufacturer": 1,
-      "equipment_type": "eeg_amplifier",
+      "equipment_type": "amplifier",
       "identification": "Net Amps 400 series amplifiers",
       "serial_number": "789078907890",
       "description": "The Net Amps 400 series amplifiers are specifically designed for EEG acquisition using EGI's HydroCel Geodesic Sensor Net with 32, 64, 128, or 256 EEG channels, with additional capabilities for input from up to 32 bipolar channels. Three amplifier configurations allow you to choose the best one for your needs."
@@ -1710,7 +1710,7 @@
     "pk": 9,
     "fields": {
       "manufacturer": 2,
-      "equipment_type": "eeg_amplifier",
+      "equipment_type": "amplifier",
       "identification": "BrainAmp Standard",
       "serial_number": "567856785678",
       "description": "Thanks to its 5 kHz sampling rate per channel, the BrainAmp can be used to record EEG, EOG, EMG signals as well as evoked potentials with a frequency up to 1 kHz. The 16 bit TTL trigger input allows the detection of a large number of markers from visual, accoustic, electrical, magnetic or other stimulation modalities."
@@ -1749,14 +1749,14 @@
     "fields": {
       "gain": 60.0
     },
-    "model": "experiment.eegamplifier"
+    "model": "experiment.amplifier"
   },
   {
     "pk": 9,
     "fields": {
       "gain": 60.0
     },
-    "model": "experiment.eegamplifier"
+    "model": "experiment.amplifier"
   },
   {
     "pk": 11,

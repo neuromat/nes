@@ -40,7 +40,7 @@
         <div class="col-md-10">
             <ol class="breadcrumb">
                 <li><a href="/home">{% trans "Home" %}</a></li>
-                <li class="active">{% trans "EEG Amplifier" %}</li>
+                <li class="active">{% trans "Filter type" %}</li>
             </ol>
         </div>
     </div>
@@ -48,15 +48,13 @@
     <div class="tab-pane fade in active" id="mainMenuUserTab">
         <div class="col-md-10">
             <div class="container span6 offset3 well ">
-                <h4>{% trans "EEG Amplifier List" %}</h4>
+                <h4>{% trans "Filter type List" %}</h4>
                 <div class="form-group">
                     <table class="table table-striped">
                         <thead>
                             <tr>
-                                <th>{% trans "Identification" %}</th>
-                                <th>{% trans "Manufacturer" %}</th>
-                                <th>{% trans "Serial number" %}</th>
-                                <th>{% trans "Gain" %}</th>
+                                <th>{% trans "Name" %}</th>
+                                <th>{% trans "Description" %}</th>
                             </tr>
                         </thead>
                         <tbody>
@@ -64,19 +62,15 @@
                             <tr>
                                 <td>{% if perms.experiment.register_equipment %}
                                         <a data-toggle="tooltip" data-placement="left" title="{% trans "Visualize" %}"
-                                           href="/experiment/eegamplifier/{{ equipment.id }}">
-                                            {{ equipment.identification }}
+                                           href="/experiment/filtertype/{{ equipment.id }}">
+                                            {{ equipment.name }}
                                         </a>
                                     {% else %}
-                                        {{ equipment.identification }}
+                                        {{ equipment.name }}
                                     {% endif %}
                                 </td>
-                                <td>{{ equipment.manufacturer }}</td>
                                 <td>
-                                    {{ equipment.serial_number }}
-                                </td>
-                                <td>
-                                    {{ equipment.gain|default:"" }}
+                                    {{ equipment.description }}
                                 </td>
                             </tr>
                         {% endfor %}
@@ -85,7 +79,7 @@
                 </div>
                 {% if perms.experiment.register_equipment %}
                     <div class="btn-group pull-left">
-                        <a href="/experiment/eegamplifier/new/" class="btn btn-primary">{% trans "Insert new" %}</a>
+                        <a href="/experiment/filtertype/new/" class="btn btn-primary">{% trans "Insert new" %}</a>
                     </div>
                 {% endif %}
             </div>

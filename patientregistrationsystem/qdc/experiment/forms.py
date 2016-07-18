@@ -7,7 +7,7 @@ from django.utils.translation import ugettext_lazy as _
 
 from experiment.models import Experiment, QuestionnaireResponse, SubjectOfGroup, Group, \
     Component, Stimulus, Block, Instruction, ComponentConfiguration, ResearchProject, EEGData, \
-    EEGSetting, Equipment, EEG, EEGMachine, EEGMachineSetting, Amplifier, EEGAmplifierSetting, \
+    EEGSetting, Equipment, EEG, EMG, EEGMachine, EEGMachineSetting, Amplifier, EEGAmplifierSetting, \
     EEGSolution, EEGFilterSetting, FilterType, EEGElectrodeLocalizationSystem, \
     EEGCapSize, EEGElectrodeCap, EEGElectrodePosition, Manufacturer, ElectrodeModel, EEGElectrodeNet, Material, \
     AdditionalData, EMGData, FileFormat, EMGSetting, EMGDigitalFilterSetting, EMGADConverterSetting, \
@@ -186,6 +186,24 @@ class EEGForm(ModelForm):
         initial = kwargs.get('initial')
         if initial:
             self.fields['eeg_setting'].queryset = EEGSetting.objects.filter(experiment=initial['experiment'])
+
+
+class EMGForm(ModelForm):
+
+    class Meta:
+        model = EMG
+        fields = ['emg_setting']
+
+        widgets = {
+            'emg_setting': Select(attrs={'class': 'form-control', 'required': "",
+                                         'data-error': _('EMG setting type must be filled.')})
+        }
+
+    def __init__(self, *args, **kwargs):
+        super(EMGForm, self).__init__(*args, **kwargs)
+        initial = kwargs.get('initial')
+        if initial:
+            self.fields['emg_setting'].queryset = EMGSetting.objects.filter(experiment=initial['experiment'])
 
 
 class BlockForm(ModelForm):
@@ -474,7 +492,7 @@ class EEGMachineRegisterForm(ModelForm):
         }
 
 
-class EEGAmplifierRegisterForm(ModelForm):
+class AmplifierRegisterForm(ModelForm):
     class Meta:
         model = Amplifier
         fields = ['manufacturer', 'identification', 'description', 'serial_number', 'gain']
@@ -509,7 +527,7 @@ class EEGSolutionRegisterForm(ModelForm):
         }
 
 
-class EEGFilterTypeRegisterForm(ModelForm):
+class FilterTypeRegisterForm(ModelForm):
     class Meta:
         model = FilterType
         fields = ['name', 'description']
@@ -523,7 +541,7 @@ class EEGFilterTypeRegisterForm(ModelForm):
         }
 
 
-class EEGElectrodeModelRegisterForm(ModelForm):
+class ElectrodeModelRegisterForm(ModelForm):
     class Meta:
         model = ElectrodeModel
         fields = ['name', 'description', 'material', 'usability', 'impedance', 'impedance_unit']
@@ -570,6 +588,11 @@ class EEGElectrodeNETRegisterForm(ModelForm):
                                                      'data-error': _('Electrode model default must be filled in.')}),
         }
 
+    def __init__(self, *args, **kwargs):
+        super(EEGElectrodeNETRegisterForm, self).__init__(*args, **kwargs)
+
+        self.fields['electrode_model_default'].queryset = ElectrodeModel.objects.filter(tags__name="EEG")
+
 
 class EEGElectrodeCapRegisterForm(ModelForm):
     class Meta:
@@ -601,13 +624,16 @@ class EMGDataForm(ModelForm):
     class Meta:
         model = EMGData
 
-        fields = ['date', 'file_format', 'description', 'file', 'file_format_description']
+        fields = ['date', 'file_format', 'emg_setting', 'description', 'file', 'file_format_description',
+                  'emg_setting_reason_for_change']
 
         widgets = {
             'date': DateInput(format=_("%m/%d/%Y"),
                               attrs={'class': 'form-control datepicker', 'placeholder': _('mm/dd/yyyy'),
                                      'required': "",
                                      'data-error': _("Fill date must be filled.")}, ),
+            'emg_setting': Select(attrs={'class': 'form-control', 'required': "",
+                                         'data-error': _('EMG setting type must be filled.')}),
             'file_format': Select(attrs={'class': 'form-control', 'required': "",
                                          'data-error': _('File format must be chosen.')}),
             'description': Textarea(attrs={'class': 'form-control',
@@ -616,6 +642,10 @@ class EMGDataForm(ModelForm):
             'file_format_description': Textarea(attrs={'class': 'form-control',
                                                        'rows': '4', 'required': "",
                                                        'data-error': _('File format description must be filled.')}),
+            'emg_setting_reason_for_change':
+                Textarea(attrs={'class': 'form-control', 'rows': '4',
+                                'required': "",
+                                'data-error': _('Reason for change must be filled.')}),
             # It is not possible to set the 'required' attribute because it affects the edit screen
             # 'file': FileInput(attrs={'required': ""})
         }
@@ -624,6 +654,11 @@ class EMGDataForm(ModelForm):
         super(EMGDataForm, self).__init__(*args, **kwargs)
 
         self.fields['file_format'].queryset = FileFormat.objects.filter(tags__name="EMG")
+        initial = kwargs.get('initial')
+        if initial and 'experiment' in initial:
+            self.fields['emg_setting'].queryset = EMGSetting.objects.filter(experiment=initial['experiment'])
+        if initial and 'emg_setting' in initial:
+            emg_setting = get_object_or_404(EMGSetting, pk=initial['emg_setting'])
 
 
 class AdditionalDataForm(ModelForm):
@@ -708,6 +743,11 @@ class EMGElectrodeSettingForm(ModelForm):
                                        'data-error': _('Electrode is required')})
         }
 
+    def __init__(self, *args, **kwargs):
+        super(EMGElectrodeSettingForm, self).__init__(*args, **kwargs)
+
+        self.fields['electrode'].queryset = ElectrodeModel.objects.filter(tags__name="EMG")
+
 
 class EMGElectrodePlacementSettingForm(ModelForm):
     class Meta:
@@ -735,6 +775,11 @@ class EMGPreamplifierSettingForm(ModelForm):
             'gain': TextInput(attrs={'class': 'form-control'})
         }
 
+    def __init__(self, *args, **kwargs):
+        super(EMGPreamplifierSettingForm, self).__init__(*args, **kwargs)
+
+        self.fields['amplifier'].queryset = Amplifier.objects.filter(tags__name="EMG")
+
 
 class EMGAmplifierSettingForm(ModelForm):
     class Meta:
@@ -747,6 +792,11 @@ class EMGAmplifierSettingForm(ModelForm):
                                        'data-error': _('Amplifier is required')}),
             'gain': TextInput(attrs={'class': 'form-control'})
         }
+
+    def __init__(self, *args, **kwargs):
+        super(EMGAmplifierSettingForm, self).__init__(*args, **kwargs)
+
+        self.fields['amplifier'].queryset = Amplifier.objects.filter(tags__name="EMG")
 
 
 class EMGAnalogFilterSettingForm(ModelForm):

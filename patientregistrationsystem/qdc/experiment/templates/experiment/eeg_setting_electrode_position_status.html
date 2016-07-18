@@ -105,11 +105,13 @@
     </div>
 
     {% if not editing %}
-        <div class="btn-toolbar pull-left">
-            <div class="btn-group">
-                <a href="/experiment/eeg_setting/eeg_electrode_position_status/edit/{{ eeg_setting.id }}" class="btn btn-primary">{% trans "Edit" %}</a>
+        {% if can_change %}
+            <div class="btn-toolbar pull-left">
+                <div class="btn-group">
+                    <a href="/experiment/eeg_setting/eeg_electrode_position_status/edit/{{ eeg_setting.id }}" class="btn btn-primary">{% trans "Edit" %}</a>
+                </div>
             </div>
-        </div>
+        {% endif %}
 
         <div class="btn-toolbar pull-right">
             <div class="btn-group">

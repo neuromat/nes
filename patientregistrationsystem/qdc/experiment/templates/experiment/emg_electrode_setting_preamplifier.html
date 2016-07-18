@@ -55,10 +55,17 @@
                 <li><a href="/experiment/{{ emg_electrode_setting.emg_setting.experiment.id }}">{{ emg_electrode_setting.emg_setting.experiment.title }}</a></li>
                 <li><a href="/experiment/emg_setting/{{ emg_electrode_setting.emg_setting.id }}">{{ emg_electrode_setting.emg_setting.name }}</a></li>
 
+                <li><a href="/experiment/emg_electrode_setting/{{ emg_electrode_setting.id }}">{{ emg_electrode_setting.emg_electrode_placement_setting.emg_electrode_placement }}</a></li>
+
                 {% if creating %}
                     <li class="active">{% trans "Add Preamplifier setting" %} </li>
                 {% else %}
-                    <li class="active"> {{ emg_electrode_setting.emg_preamplifier_setting.amplifier.identification }} </li>
+                    {% if editing %}
+                        <li><a href="/experiment/emg_electrode_setting/{{ emg_electrode_setting.id }}/preamplifier">{{ emg_electrode_setting.emg_preamplifier_setting.amplifier.identification }}</a></li>
+                        <li class="active">{% trans "Editing" %}</li>
+                    {% else %}
+                        <li class="active"> {{ emg_electrode_setting.emg_preamplifier_setting.amplifier.identification }} </li>
+                    {% endif %}
                 {% endif %}
             </ol>
         </div>

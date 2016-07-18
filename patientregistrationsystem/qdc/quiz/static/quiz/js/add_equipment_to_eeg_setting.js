@@ -88,7 +88,7 @@ $(document).ready(function () {
                         number_of_channels.prop('value', equipment['number_of_channels']);
                         number_of_channels_used.prop('max', equipment['number_of_channels']);
                     }
-                    if(equipment_type == "eeg_amplifier"){
+                    if(equipment_type == "amplifier"){
                         gain.prop('value', equipment['gain']);
                     }
                 });

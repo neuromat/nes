@@ -22,10 +22,8 @@ from os import path, makedirs
 from patient.models import Patient, QuestionnaireResponse
 
 from survey.abc_search_engine import Questionnaires
-# from survey.models import Survey
 from survey.views import is_limesurvey_available
 
-import sys
 
 DEFAULT_LANGUAGE = "pt-BR"
 

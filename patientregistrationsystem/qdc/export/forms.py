@@ -1,7 +1,6 @@
 # coding=utf-8
 from django.forms import ModelForm, Form, TextInput, CharField, BooleanField, MultipleChoiceField, \
-    CheckboxSelectMultiple, ValidationError, ChoiceField, SelectMultiple, IntegerField, NumberInput, \
-    RadioSelect, CheckboxInput
+    CheckboxSelectMultiple, ChoiceField, SelectMultiple, IntegerField, NumberInput, RadioSelect
 
 from django.utils.translation import ugettext_lazy as _
 

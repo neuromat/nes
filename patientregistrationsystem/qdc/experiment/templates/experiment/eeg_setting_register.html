@@ -127,22 +127,24 @@
                                             </blockquote>
 
                                         {% else %}
-                                            <a role="menuitem" tabindex="-1" href="/experiment/eeg_setting/{{ eeg_setting.id }}/eeg_machine"> {% trans "+ Add setting" %}</a>
+                                            {% if can_change %}
+                                                <a role="menuitem" tabindex="-1" href="/experiment/eeg_setting/{{ eeg_setting.id }}/eeg_machine"> {% trans "+ Add setting" %}</a>
+                                            {% endif %}
                                         {% endif %}
                                     </td>
                                     <td>
-                                        {% if eeg_setting.eeg_machine_setting %}
+                                        {% if eeg_setting.eeg_machine_setting and can_change %}
                                             <a class="btn glyphicon glyphicon-remove" data-toggle="tooltip" data-placement="right" title="{% trans "Delete setting from list" %}" style="color: indianred; vertical-align: -5%; padding-left: 0;"
                                                onclick="show_modal_remove_equipment('eeg_machine');"></a>
                                         {% endif %}
                                     </td>
                                 </tr>
                                 <tr>
-                                    <td>{% trans "EEG amplifier" %}</td>
+                                    <td>{% trans "Amplifier" %}</td>
                                     <td>
                                         {% if eeg_setting.eeg_amplifier_setting %}
 
-                                            <a role="menuitem" tabindex="-1" href="/experiment/eeg_setting/{{ eeg_setting.id }}/eeg_amplifier">
+                                            <a role="menuitem" tabindex="-1" href="/experiment/eeg_setting/{{ eeg_setting.id }}/amplifier">
                                                 {{ eeg_setting.eeg_amplifier_setting.eeg_amplifier.identification }}
                                             </a>
                                             <blockquote>
@@ -152,11 +154,13 @@
                                             </blockquote>
 
                                         {% else %}
-                                            <a role="menuitem" tabindex="-1" href="/experiment/eeg_setting/{{ eeg_setting.id }}/eeg_amplifier"> {% trans "+ Add setting" %}</a>
+                                            {% if can_change %}
+                                                <a role="menuitem" tabindex="-1" href="/experiment/eeg_setting/{{ eeg_setting.id }}/amplifier"> {% trans "+ Add setting" %}</a>
+                                            {% endif %}
                                         {% endif %}
                                     </td>
                                     <td>
-                                        {% if eeg_setting.eeg_amplifier_setting %}
+                                        {% if eeg_setting.eeg_amplifier_setting and can_change %}
                                             <a class="btn glyphicon glyphicon-remove" data-toggle="tooltip" data-placement="right" title="{% trans "Delete setting from list" %}" style="color: indianred; vertical-align: -5%; padding-left: 0;"
                                                onclick="show_modal_remove_equipment('eeg_amplifier');"></a>
                                         {% endif %}
@@ -172,22 +176,24 @@
                                             </a>
 
                                         {% else %}
-                                            <a role="menuitem" tabindex="-1" href="/experiment/eeg_setting/{{ eeg_setting.id }}/eeg_solution"> {% trans "+ Add setting" %}</a>
+                                            {% if can_change %}
+                                                <a role="menuitem" tabindex="-1" href="/experiment/eeg_setting/{{ eeg_setting.id }}/eeg_solution"> {% trans "+ Add setting" %}</a>
+                                            {% endif %}
                                         {% endif %}
                                     </td>
                                     <td>
-                                        {% if eeg_setting.eeg_solution_setting %}
+                                        {% if eeg_setting.eeg_solution_setting and can_change %}
                                             <a class="btn glyphicon glyphicon-remove" data-toggle="tooltip" data-placement="right" title="{% trans "Delete setting from list" %}" style="color: indianred; vertical-align: -5%; padding-left: 0;"
                                                onclick="show_modal_remove_equipment('eeg_solution');"></a>
                                         {% endif %}
                                     </td>
                                 </tr>
                                 <tr>
-                                    <td>{% trans "EEG filter" %}</td>
+                                    <td>{% trans "Filter" %}</td>
                                     <td>
                                         {% if eeg_setting.eeg_filter_setting %}
 
-                                            <a role="menuitem" tabindex="-1" href="/experiment/eeg_setting/{{ eeg_setting.id }}/eeg_filter">
+                                            <a role="menuitem" tabindex="-1" href="/experiment/eeg_setting/{{ eeg_setting.id }}/filter">
                                                 {{ eeg_setting.eeg_filter_setting.eeg_filter_type.name }}
                                             </a>
                                             <blockquote>
@@ -201,11 +207,13 @@
                                             </blockquote>
 
                                         {% else %}
-                                            <a role="menuitem" tabindex="-1" href="/experiment/eeg_setting/{{ eeg_setting.id }}/eeg_filter"> {% trans "+ Add setting" %}</a>
+                                            {% if can_change %}
+                                                <a role="menuitem" tabindex="-1" href="/experiment/eeg_setting/{{ eeg_setting.id }}/filter"> {% trans "+ Add setting" %}</a>
+                                            {% endif %}
                                         {% endif %}
                                     </td>
                                     <td>
-                                        {% if eeg_setting.eeg_filter_setting %}
+                                        {% if eeg_setting.eeg_filter_setting and can_change %}
                                             <a class="btn glyphicon glyphicon-remove" data-toggle="tooltip" data-placement="right" title="{% trans "Delete setting from list" %}" style="color: indianred; vertical-align: -5%; padding-left: 0;"
                                                onclick="show_modal_remove_equipment('eeg_filter');"></a>
                                         {% endif %}
@@ -231,18 +239,15 @@
                                             <a role="menuitem" tabindex="-1" href="/experiment/eeg_setting/{{ eeg_setting.id }}/eeg_electrode_net_system">
                                                 {{ eeg_setting.eeg_electrode_layout_setting.eeg_electrode_net_system.eeg_electrode_localization_system.name }}
                                             </a>
-{#                                            <blockquote>#}
-{#                                                <i><h6>#}
-{#                                                    {% trans "Number of used electrodes:" %} {{ eeg_setting.eeg_electrode_layout_setting.positions_setting.all.count }}#}
-{#                                                </h6></i>#}
-{#                                            </blockquote>#}
 
                                         {% else %}
-                                            <a role="menuitem" tabindex="-1" href="/experiment/eeg_setting/{{ eeg_setting.id }}/eeg_electrode_net_system"> {% trans "+ Add setting" %}</a>
+                                            {% if can_change %}
+                                                <a role="menuitem" tabindex="-1" href="/experiment/eeg_setting/{{ eeg_setting.id }}/eeg_electrode_net_system"> {% trans "+ Add setting" %}</a>
+                                            {% endif %}
                                         {% endif %}
                                     </td>
                                     <td>
-                                        {% if eeg_setting.eeg_electrode_layout_setting %}
+                                        {% if eeg_setting.eeg_electrode_layout_setting and can_change %}
                                             <a class="btn glyphicon glyphicon-remove" data-toggle="tooltip" data-placement="right" title="{% trans "Delete setting from list" %}" style="color: indianred; vertical-align: -5%; padding-left: 0;"
                                                onclick="show_modal_remove_equipment('eeg_electrode_net_system');"></a>
                                         {% endif %}
