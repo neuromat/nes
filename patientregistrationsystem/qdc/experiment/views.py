@@ -1811,7 +1811,7 @@ def amplifier_create(request, template_name="experiment/amplifier_register.html"
                 amplifier_added.save()
 
                 on_tags = get_tag_ids_from_post(request.POST)
- 
+
                 equipment_tags_update(amplifier_added.id, on_tags, "Amplifier")
 
                 tags = get_tags(amplifier_added.id, "Amplifier")
