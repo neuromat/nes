@@ -42,7 +42,7 @@ from experiment.forms import ExperimentForm, QuestionnaireResponseForm, FileForm
     EEGElectrodePositionForm, EEGElectrodeCapRegisterForm, EEGCapSizeRegisterForm, AdditionalDataForm, \
     EMGDataForm, EMGSettingForm, EMGDigitalFilterSettingForm, EMGADConverterSettingForm, \
     EMGElectrodeSettingForm, EMGElectrodePlacementSettingForm, \
-    EMGPreamplifierSettingForm, EMGAmplifierSettingForm, EMGAnalogFilterSettingForm
+    EMGPreamplifierSettingForm, EMGAmplifierSettingForm, EMGAnalogFilterSettingForm, EMGForm
 
 
 from patient.models import Patient, QuestionnaireResponse as PatientQuestionnaireResponse
@@ -3894,11 +3894,13 @@ def subject_emg_data_create(request, group_id, subject_id, emg_configuration_id,
     check_can_change(request.user, group.experiment.research_project)
 
     emg_configuration = get_object_or_404(ComponentConfiguration, id=emg_configuration_id)
+    emg_step = get_object_or_404(EMG, id=emg_configuration.component_id)
 
     redirect_url = None
     emg_data_id = None
 
-    emg_data_form = EMGDataForm(None)
+    emg_data_form = EMGDataForm(None, initial={'experiment': group.experiment,
+                                               'emg_setting': emg_step.emg_setting_id})
 
     file_format_list = file_format_code("EMG")
 
@@ -3942,6 +3944,7 @@ def subject_emg_data_create(request, group_id, subject_id, emg_configuration_id,
                "emg_data_form": emg_data_form,
                "emg_data_id": emg_data_id,
                "file_format_list": file_format_list,
+               "emg_setting_default_id": emg_step.emg_setting_id,
                "subject": get_object_or_404(Subject, pk=subject_id),
                "URL": redirect_url,
                }
@@ -3954,6 +3957,7 @@ def subject_emg_data_create(request, group_id, subject_id, emg_configuration_id,
 def emg_data_view(request, emg_data_id, template_name="experiment/subject_emg_data_form.html"):
 
     emg_data = get_object_or_404(EMGData, pk=emg_data_id)
+    emg_step = get_object_or_404(EMG, id=emg_data.data_configuration_tree.component_configuration.component.id)
 
     emg_data_form = EMGDataForm(request.POST or None, instance=emg_data)
 
@@ -3981,7 +3985,8 @@ def emg_data_view(request, emg_data_id, template_name="experiment/subject_emg_da
                "subject": emg_data.subject_of_group.subject,
                "emg_data_form": emg_data_form,
                "emg_data": emg_data,
-               "file_format_list": file_format_list
+               "file_format_list": file_format_list,
+               "emg_setting_default_id": emg_step.emg_setting_id,
                }
 
     return render(request, template_name, context)
@@ -3992,6 +3997,7 @@ def emg_data_view(request, emg_data_id, template_name="experiment/subject_emg_da
 def emg_data_edit(request, emg_data_id, template_name="experiment/subject_emg_data_form.html"):
 
     emg_data = get_object_or_404(EMGData, pk=emg_data_id)
+    emg_step = get_object_or_404(EMG, id=emg_data.data_configuration_tree.component_configuration.component.id)
 
     check_can_change(request.user, emg_data.subject_of_group.group.experiment.research_project)
 
@@ -4017,7 +4023,9 @@ def emg_data_edit(request, emg_data_id, template_name="experiment/subject_emg_da
                 return HttpResponseRedirect(redirect_url)
 
     else:
-        emg_data_form = EMGDataForm(request.POST or None, instance=emg_data)
+        emg_data_form = EMGDataForm(request.POST or None,
+                                    instance=emg_data,
+                                    initial={'experiment': emg_data.subject_of_group.group.experiment})
 
     file_format_list = file_format_code("EMG")
 
@@ -4026,6 +4034,7 @@ def emg_data_edit(request, emg_data_id, template_name="experiment/subject_emg_da
                "emg_data_form": emg_data_form,
                "emg_data": emg_data,
                "file_format_list": file_format_list,
+               "emg_setting_default_id": emg_step.emg_setting_id,
                "editing": True
                }
 
@@ -4509,6 +4518,8 @@ def component_create(request, experiment_id, component_type):
         specific_form = StimulusForm(request.POST or None)
     elif component_type == 'eeg':
         specific_form = EEGForm(request.POST or None, initial={'experiment': experiment})
+    elif component_type == 'emg':
+        specific_form = EMGForm(request.POST or None, initial={'experiment': experiment})
     elif component_type == 'questionnaire':
         questionnaires_list = find_active_questionnaires(request.LANGUAGE_CODE)
     elif component_type == 'block':
@@ -4532,8 +4543,6 @@ def component_create(request, experiment_id, component_type):
                 new_specific_component = Task()
             elif component_type == 'task_experiment':
                 new_specific_component = TaskForTheExperimenter()
-            elif component_type == 'emg':
-                new_specific_component = EMG()
             elif specific_form.is_valid():
                 new_specific_component = specific_form.save(commit=False)
 
@@ -4953,7 +4962,8 @@ def create_component(component, new_experiment):
         clone = EEG(eeg_setting_id=eeg.eeg_setting_id)
 
     elif component_type == 'emg':
-        clone = EMG()
+        emg = get_object_or_404(EMG, pk=component.id)
+        clone = EMG(emg_setting_id=emg.emg_setting_id)
 
     elif component_type == 'instruction':
         instruction = get_object_or_404(Instruction, pk=component.id)
@@ -5221,6 +5231,9 @@ def component_update(request, path_of_the_components):
     elif component_type == 'eeg':
         eeg = get_object_or_404(EEG, pk=component.id)
         specific_form = EEGForm(request.POST or None, instance=eeg, initial={'experiment': experiment})
+    elif component_type == 'emg':
+        emg = get_object_or_404(EMG, pk=component.id)
+        specific_form = EMGForm(request.POST or None, instance=emg, initial={'experiment': experiment})
     elif component_type == 'questionnaire':
         questionnaire = get_object_or_404(Questionnaire, pk=component.id)
         questionnaire_details = Questionnaires().find_questionnaire_by_id(questionnaire.survey.lime_survey_id)
@@ -5244,7 +5257,7 @@ def component_update(request, path_of_the_components):
             if request.POST['action'] == "save":
                 if configuration_form is None:
                     # There is no specific form for a these component types.
-                    if component.component_type in ["questionnaire", "task", "task_experiment", 'pause', 'emg']:
+                    if component.component_type in ["questionnaire", "task", "task_experiment", 'pause']:
                         if component_form.is_valid():
                             # Only save if there was a change.
                             if component_form.has_changed():
@@ -5450,6 +5463,8 @@ def component_add_new(request, path_of_the_components, component_type):
         specific_form = StimulusForm(request.POST or None)
     elif component_type == 'eeg':
         specific_form = EEGForm(request.POST or None, initial={'experiment': experiment})
+    elif component_type == 'emg':
+        specific_form = EMGForm(request.POST or None, initial={'experiment': experiment})
     elif component_type == 'questionnaire':
         questionnaires_list = find_active_questionnaires(request.LANGUAGE_CODE)
     elif component_type == 'block':
@@ -5475,8 +5490,6 @@ def component_add_new(request, path_of_the_components, component_type):
             new_specific_component = Task()
         elif component_type == 'task_experiment':
             new_specific_component = TaskForTheExperimenter()
-        elif component_type == 'emg':
-            new_specific_component = EMG()
         elif specific_form.is_valid():
             new_specific_component = specific_form.save(commit=False)
 
@@ -5597,6 +5610,9 @@ def component_reuse(request, path_of_the_components, component_id):
     elif component_type == 'eeg':
         eeg = get_object_or_404(EEG, pk=component_to_add.id)
         specific_form = EEGForm(request.POST or None, instance=eeg, initial={'experiment': experiment})
+    elif component_type == 'emg':
+        emg = get_object_or_404(EMG, pk=component_to_add.id)
+        specific_form = EMGForm(request.POST or None, instance=emg, initial={'experiment': experiment})
     elif component_type == 'questionnaire':
         questionnaire = get_object_or_404(Questionnaire, pk=component_to_add.id)
         questionnaire_details = Questionnaires().find_questionnaire_by_id(questionnaire.survey.lime_survey_id)
@@ -5618,7 +5634,7 @@ def component_reuse(request, path_of_the_components, component_id):
         for field in component_form.fields:
             component_form.fields[field].widget.attrs['disabled'] = True
 
-        if component_type not in ['pause', 'task', 'task_experiment', 'emg']:
+        if component_type not in ['pause', 'task', 'task_experiment']:
             for field in specific_form.fields:
                 specific_form.fields[field].widget.attrs['disabled'] = True
 

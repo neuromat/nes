@@ -25,4 +25,13 @@
 {% endblock %}
 
 {% block extra_fields %}
+    <div class="row">
+        <div class="col-xs-6 col-sm-6">
+            <div class="form-group">
+                <label class="control-label">{% trans "EMG setting" %}<b style="color: red;">*</b></label>
+                    {{ specific_form.emg_setting }}
+                <div class="help-block with-errors"></div>
+            </div>
+        </div>
+    </div>
 {% endblock %}
