@@ -3897,6 +3897,11 @@ def eeg_image_edit(request, eeg_data_id, tab, template_name="experiment/subject_
 
     if request.method == "POST":
         if request.POST['action'] == "save":
+            for position_status in eeg_data.electrode_positions.all():
+                    position_status.worked = 'position_status_' + str(position_status.id) in request.POST
+                    position_status.save()
+
+            messages.success(request, _('Setting saved successfully.'))
 
             redirect_url = reverse("eeg_data_view", args=(eeg_data_id,tab))
             return HttpResponseRedirect(redirect_url)
