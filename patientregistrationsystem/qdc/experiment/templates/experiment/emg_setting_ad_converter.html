@@ -58,7 +58,12 @@
                 {% if creating %}
                     <li class="active">{% trans "Add A/D converter setting" %} </li>
                 {% else %}
-                    <li class="active"> {{ emg_setting.emg_ad_converter_setting.filter_type.name }} </li>
+                    {% if editing %}
+                        <li><a href="/experiment/emg_setting/{{ emg_setting.id }}/ad_converter">{{ emg_setting.emg_ad_converter_setting.ad_converter.identification }}</a></li>
+                        <li class="active">{% trans "Editing" %}</li>
+                    {% else %}
+                        <li class="active"> {{ emg_setting.emg_ad_converter_setting.ad_converter.identification }} </li>
+                    {% endif %}
                 {% endif %}
             </ol>
         </div>
