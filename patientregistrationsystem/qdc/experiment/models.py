@@ -339,7 +339,7 @@ class MuscleSide(models.Model):
     name = models.CharField(max_length=150)
 
     def __str__(self):
-        return self.muscle.name + ' - ' + self.name
+        return self.name
 
 
 def get_emg_placement_dir(instance, filename):
