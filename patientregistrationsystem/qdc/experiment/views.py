@@ -31,7 +31,7 @@ from experiment.models import Experiment, Subject, QuestionnaireResponse, Subjec
     ElectrodeModel, EEGElectrodePositionCollectionStatus, EEGCapSize, EEGElectrodeCap, EEGElectrodePosition, \
     Material, AdditionalData, Tag, \
     EMGData, EMGSetting, SoftwareVersion, EMGDigitalFilterSetting, EMGADConverterSetting, \
-    EMGElectrodeSetting, EMGPreamplifierSetting, EMGAmplifierSetting, EMGAnalogFilterSetting
+    EMGElectrodeSetting, EMGPreamplifierSetting, EMGAmplifierSetting, EMGAnalogFilterSetting, MuscleSide
 from experiment.forms import ExperimentForm, QuestionnaireResponseForm, FileForm, GroupForm, InstructionForm, \
     ComponentForm, StimulusForm, BlockForm, ComponentConfigurationForm, ResearchProjectForm, NumberOfUsesToInsertForm, \
     EEGDataForm, EEGSettingForm, EquipmentForm, EEGForm, EEGMachineForm, EEGMachineSettingForm, EEGAmplifierForm, \
@@ -6309,6 +6309,17 @@ def emg_setting_ad_converter_edit(request, emg_setting_id,
                }
 
     return render(request, template_name, context)
+
+
+@login_required
+@permission_required('experiment.change_experiment')
+def get_json_muscle_side_by_electrode_placement(request, emg_electrode_placement_id):
+    # muscle_side_list = \
+    #     MuscleSide.objects.filter(muscle__musclesubdivision__emgelectrodeplacement_id=emg_electrode_placement_id)
+    muscle_side_list = \
+        MuscleSide.objects.filter(muscle__musclesubdivision__emgelectrodeplacement__in=emg_electrode_placement_id)
+    json_equipment = serializers.serialize("json", muscle_side_list)
+    return HttpResponse(json_equipment, content_type='application/json')
 
 
 @login_required
