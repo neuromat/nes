@@ -2022,7 +2022,7 @@ class EEGEquipmentRegisterTest(TestCase):
 
         response = self.client.post(reverse("manufacturer_new", args=()), self.data)
         self.assertEqual(response.status_code, 302)
-        self.assertEqual(Manufacturer.objects.all().count(), 1)
+        self.assertEqual(Manufacturer.objects.all().count(), 2)
 
         # view
         manufacturer = Manufacturer.objects.all().first()
