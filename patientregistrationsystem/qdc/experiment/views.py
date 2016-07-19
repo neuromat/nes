@@ -1249,10 +1249,17 @@ def get_json_positions(request, eeg_electrode_localization_system_id):
             if position['existInDB'] and position['delete']:
                 get_object_or_404(EEGElectrodePosition, pk=position['id']).delete()
                 count_delete += 1
+            else:
+                if position['existInDB'] and position['update']:
+                    update_electrode_position = get_object_or_404(EEGElectrodePosition, pk=position['id'])
+                    update_electrode_position.name=position['position']
+                    update_electrode_position.coordinate_x=position['x']
+                    update_electrode_position.coordinate_y=position['y']
+                    update_electrode_position.save()
 
-    json_response = []
-    json_response.append({'new': count_new, 'delete': count_delete})
-    return HttpResponse(json.dumps(json_response), content_type='application/json')
+    list_json_response = None
+    list_json_response.append({'new': count_new, 'delete': count_delete})
+    return HttpResponse(json.dumps(list_json_response), content_type='application/json')
 
 
 @login_required
@@ -5849,7 +5856,10 @@ def eeg_electrode_coordinates_create(
             'existInDB': True,
 
             # 'delete' indicates if this point will be deleted
-            'delete': False
+            'delete': False,
+
+            # 'update' indicates if this point will be updated
+            'update': False
         })
 
     if request.method == "POST":
