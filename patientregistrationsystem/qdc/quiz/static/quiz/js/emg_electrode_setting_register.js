@@ -18,8 +18,6 @@ $(document).ready(function () {
     var select_muscle_side = $("select#id_muscle_side");
     var muscle_side_field = $("#id_muscle_side");
 
-    // alert(muscle_side_field.prop("disabled"));
-    // refresh
     if (! select_muscle_side.val() || ! muscle_side_field.prop("disabled") ) {
         muscle_side_select_refresh();
     }
@@ -67,7 +65,6 @@ function muscle_side_select_refresh() {
         });
     }
 }
-
 
 function muscle_side_show_field(show) {
 
