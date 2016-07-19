@@ -9,6 +9,7 @@ var localization_system_id = 0;
 radio = 25;
 var can_update = false;
 var point_update = 0;
+var point_update_name = "";
 
 function init(){
     var canvas = document.getElementById("electrodeMapCanvas");
@@ -62,9 +63,22 @@ function  addSetted(){
             a = document.createElement('a');
             a.innerHTML = name;
             a.name = id;
-            if(used) a.setAttribute("disabled", "disabled");
-            a.onclick = function(){
+            if(used){
+                a.style.color = "#808080";
+                a.onclick = function(){false;}
+            }else a.onclick = function(){
                 update(this.name);
+            }
+
+            var btn_node = document.createElement('BUTTON');
+            btn_node.id = id;
+            var t = document.createTextNode("delete");
+            btn_node.appendChild(t);
+            if(used) btn_node.setAttribute("disabled", "disabled");
+            btn_node.onclick = function(event){
+                var i = this.parentNode.parentNode.rowIndex;
+                document.getElementById("cap_positions").deleteRow(i);
+                setted(this.id);
             }
 
             var textnode=document.createTextNode(name);
@@ -87,7 +101,7 @@ function  addSetted(){
         };
 
         cell1.appendChild(a);
-        cell2.appendChild(checknode);
+        cell2.appendChild(btn_node);
 
         row.appendChild(cell1);
         row.appendChild(cell2);
@@ -104,9 +118,15 @@ function update(positionId){
 
     can_update = true;
     point_update = positionId;
+
     alert('Please click on a new position on the image to update this point');
     for(var i in positions){
         var position = positions[i];
+        if(position.id == positionId){
+            position.update = true;
+            point_update_name = position.position;
+        }
+        refresh_Screen();
     }
 };
 
@@ -122,14 +142,6 @@ function setted(positionId){
             positions[i].delete = true; //this point is deleted
             used_positions_counter--;
             refresh_Screen();
-
-            //var imageObj = new Image();
-            //imageObj.onload = function(){
-            //    ctx.drawImage(imageObj, 0,0,700,500);
-            //    pintar();
-            //};
-            //var map_file = document.getElementById("map_file");
-            //imageObj.src = map_file.value;
         }
     }
 
@@ -169,6 +181,23 @@ function addRow(index){
     var cell1 = row.insertCell(0);
     var cell2 = row.insertCell(1);
 
+    a = document.createElement('a');
+    a.innerHTML = name;
+    a.name = id;
+    a.onclick = function(){
+        update(this.name);
+    }
+
+    var btn_node = document.createElement('BUTTON');
+    btn_node.id = id;
+    var t = document.createTextNode("delete");
+    btn_node.appendChild(t);
+    btn_node.onclick = function(event){
+        var i = this.parentNode.parentNode.rowIndex;
+        document.getElementById("cap_positions").deleteRow(i);
+        setted(this.id);
+    }
+
     var textnode=document.createTextNode(name);
     textnode.id = 'txt_' + id;
     var checknode = document.createElement('input');
@@ -184,8 +213,8 @@ function addRow(index){
         }
 
     };
-    cell1.appendChild(textnode);
-    cell2.appendChild(checknode);
+    cell1.appendChild(a);
+    cell2.appendChild(btn_node);
 
     row.appendChild(cell1);
     row.appendChild(cell2);
@@ -226,14 +255,10 @@ function validPosition(new_x, new_y){
                 if(position.used){
                     alert("This coodinates can't be modified because is being used by some EEG layout setting! ")
                 }else{
-                    chkbox = document.getElementById(position.id);
-                    if(chkbox.checked) {
-                        chkbox.checked = false;
-                        position.delete = true;
-                        var i = chkbox.parentNode.parentNode.rowIndex;
-                        document.getElementById("cap_positions").deleteRow(i);
-                        //setted(this.id);
-                    }
+                    btn = document.getElementById(position.id);
+                    position.delete = true;
+                    var i = btn.parentNode.parentNode.rowIndex;
+                    document.getElementById("cap_positions").deleteRow(i);
                 }
             }
         }
@@ -281,7 +306,8 @@ function getPosition(event){
                          y: y,
                          used: false, //this point is not used by some layout
                          existInDB: false, //this point doesn't exist in the DB
-                         delete: false //this point was not deleted
+                         delete: false, //this point was not deleted
+                         update: false  //this point is not updated
                      });
                      used_positions_counter++;
                      var index = new Number();
@@ -292,7 +318,25 @@ function getPosition(event){
              }
         }
     }else{
-        alert("o ponto atualizado foi " + point_update);
+        alert("Update point " + point_update_name);
+        can_update = false;
+        if (confirm("Confirms the coordinates? x: " + x + " and  y: " + y) == true) {
+            var name = prompt("Please enter the name this point", point_update_name);
+            if(name != null){
+                for(var i in positions){
+                    var position = positions[i];
+                    if(position.id == point_update){
+                        chkbox = document.getElementById(position.id);
+                        chkbox.checked = true;
+                        position.name = name,
+                        position.x = x,
+                        position.y = y,
+                        position.update = true
+                    }
+                }
+                refresh_Screen();
+            }
+        }
     }
 
 };

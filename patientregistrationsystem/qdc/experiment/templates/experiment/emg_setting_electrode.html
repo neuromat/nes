@@ -101,10 +101,10 @@
                     </div>
                 </div>
 
-                <div class="row">
+                <div class="row" id="div-muscle-side">
                     <div class="col-xs-12 col-sm-12">
                         <div class="form-group">
-                            <label class="control-label">{% trans "Muscle side" %} </label>
+                            <label class="control-label">{% trans "Muscle side" %} <b style="color: red;">*</b></label>
                             {{ emg_electrode_placement_setting_form.muscle_side }}
                             <div class="help-block with-errors"></div>
                         </div>

@@ -31,7 +31,7 @@ from experiment.models import Experiment, Subject, QuestionnaireResponse, Subjec
     ElectrodeModel, EEGElectrodePositionCollectionStatus, EEGCapSize, EEGElectrodeCap, EEGElectrodePosition, \
     Material, AdditionalData, Tag, \
     EMGData, EMGSetting, SoftwareVersion, EMGDigitalFilterSetting, EMGADConverterSetting, \
-    EMGElectrodeSetting, EMGPreamplifierSetting, EMGAmplifierSetting, EMGAnalogFilterSetting
+    EMGElectrodeSetting, EMGPreamplifierSetting, EMGAmplifierSetting, EMGAnalogFilterSetting, MuscleSide
 from experiment.forms import ExperimentForm, QuestionnaireResponseForm, FileForm, GroupForm, InstructionForm, \
     ComponentForm, StimulusForm, BlockForm, ComponentConfigurationForm, ResearchProjectForm, NumberOfUsesToInsertForm, \
     EEGDataForm, EEGSettingForm, EquipmentForm, EEGForm, EEGMachineForm, EEGMachineSettingForm, EEGAmplifierForm, \
@@ -1249,10 +1249,17 @@ def get_json_positions(request, eeg_electrode_localization_system_id):
             if position['existInDB'] and position['delete']:
                 get_object_or_404(EEGElectrodePosition, pk=position['id']).delete()
                 count_delete += 1
+            else:
+                if position['existInDB'] and position['update']:
+                    update_electrode_position = get_object_or_404(EEGElectrodePosition, pk=position['id'])
+                    update_electrode_position.name=position['position']
+                    update_electrode_position.coordinate_x=position['x']
+                    update_electrode_position.coordinate_y=position['y']
+                    update_electrode_position.save()
 
-    json_response = []
-    json_response.append({'new': count_new, 'delete': count_delete})
-    return HttpResponse(json.dumps(json_response), content_type='application/json')
+    list_json_response = None
+    list_json_response.append({'new': count_new, 'delete': count_delete})
+    return HttpResponse(json.dumps(list_json_response), content_type='application/json')
 
 
 @login_required
@@ -5849,7 +5856,10 @@ def eeg_electrode_coordinates_create(
             'existInDB': True,
 
             # 'delete' indicates if this point will be deleted
-            'delete': False
+            'delete': False,
+
+            # 'update' indicates if this point will be updated
+            'update': False
         })
 
     if request.method == "POST":
@@ -6299,6 +6309,17 @@ def emg_setting_ad_converter_edit(request, emg_setting_id,
                }
 
     return render(request, template_name, context)
+
+
+@login_required
+@permission_required('experiment.change_experiment')
+def get_json_muscle_side_by_electrode_placement(request, emg_electrode_placement_id):
+    # muscle_side_list = \
+    #     MuscleSide.objects.filter(muscle__musclesubdivision__emgelectrodeplacement_id=emg_electrode_placement_id)
+    muscle_side_list = \
+        MuscleSide.objects.filter(muscle__musclesubdivision__emgelectrodeplacement__in=emg_electrode_placement_id)
+    json_equipment = serializers.serialize("json", muscle_side_list)
+    return HttpResponse(json_equipment, content_type='application/json')
 
 
 @login_required

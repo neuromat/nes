@@ -759,7 +759,8 @@ class EMGElectrodePlacementSettingForm(ModelForm):
             'emg_electrode_placement': Select(attrs={'class': 'form-control', 'required': "",
                                                      'data-error': _('Electrode placement is required')}),
             'remarks': Textarea(attrs={'class': 'form-control', 'rows': '4'}),
-            'muscle_side': Select(attrs={'class': 'form-control'})
+            'muscle_side': Select(attrs={'class': 'form-control',
+                                         'required': "", 'data-error': _('Muscle side is required')})
         }
 
 

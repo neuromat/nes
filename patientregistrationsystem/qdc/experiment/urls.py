@@ -172,6 +172,10 @@ urlpatterns = patterns(
     url(r'^emg_electrode_setting/(?P<emg_electrode_setting_id>\d+)/amplifier/edit/$',
         'emg_electrode_setting_amplifier_edit', name='emg_electrode_setting_amplifier_edit'),
 
+    # emg setting (ajax)
+    url(r'^emg_setting/get_muscle_side_by_electrode_placement/(?P<emg_electrode_placement_id>\d+)/$',
+        'get_json_muscle_side_by_electrode_placement'),
+
     # cid
     url(r'^group_diseases/cid-10/$', 'search_cid10_ajax', name='cid10_search'),
 
