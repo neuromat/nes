@@ -2055,7 +2055,7 @@ class EEGEquipmentRegisterTest(TestCase):
 
         response = self.client.post(reverse("manufacturer_new", args=()), self.data)
         self.assertEqual(response.status_code, 302)
-        self.assertEqual(Manufacturer.objects.all().count(), 2)
+        self.assertEqual(Manufacturer.objects.all().count(), 1)
 
         # view
         manufacturer = Manufacturer.objects.all().first()
@@ -2361,3 +2361,14 @@ class EEGEquipmentRegisterTest(TestCase):
         response = self.client.post(reverse("material_view", args=(material.id,)), self.data)
         self.assertEqual(response.status_code, 302)
         self.assertEqual(Material.objects.all().count(), 0)
+
+
+class EMGEquipmentRegisterTest(TestCase):
+
+    data = {}
+
+    def setUp(self):
+
+        logged, self.user, self.factory = ObjectsFactory.system_authentication(self)
+        self.assertEqual(logged, True)
+
