@@ -56,9 +56,14 @@
                 <li><a href="/experiment/emg_setting/{{ emg_setting.id }}">{{ emg_setting.name }}</a></li>
 
                 {% if creating %}
-                    <li class="active">{% trans "Add digital setting" %} </li>
+                    <li class="active">{% trans "Add digital filter setting" %} </li>
                 {% else %}
-                    <li class="active"> {{ emg_setting.emg_digital_filter_setting.filter_type.name }} </li>
+                    {% if editing %}
+                        <li><a href="/experiment/emg_setting/{{ emg_setting.id }}/digital_filter">{{ emg_setting.emg_digital_filter_setting.filter_type.name }}</a></li>
+                        <li class="active">{% trans "Editing" %}</li>
+                    {% else %}
+                        <li class="active"> {{ emg_setting.emg_digital_filter_setting.filter_type.name }} </li>
+                    {% endif %}
                 {% endif %}
             </ol>
         </div>

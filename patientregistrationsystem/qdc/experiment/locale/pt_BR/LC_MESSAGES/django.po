@@ -2692,7 +2692,7 @@ msgstr ""
 
 #: experiment/views.py:1425 experiment/views.py:1480
 msgid "Setting saved successfully."
-msgstr "Configuração foi excluída com sucesso."
+msgstr "Configuração gravada com sucesso."
 
 #: experiment/views.py:1555
 msgid "Manufacturer created successfully."

@@ -119,18 +119,18 @@
                         $id_eeg_setting_reason_for_change.prop( "disabled", true );
                         $div_reason_for_change.hide();
                     }
-                }));
+            }));
 
-                $id_eeg_setting.on('change', (function() {
-                    if ($id_eeg_setting.val() == $eeg_setting_default_id){
-                        $id_eeg_setting_reason_for_change.prop( "disabled", true );
-                        $div_reason_for_change.hide();
-                    }
-                    else {
-                        $id_eeg_setting_reason_for_change.prop( "disabled", false );
-                        $div_reason_for_change.show();
-                    }
-                }));
+            $id_eeg_setting.on('change', (function() {
+                if ($id_eeg_setting.val() == $eeg_setting_default_id){
+                    $id_eeg_setting_reason_for_change.prop( "disabled", true );
+                    $div_reason_for_change.hide();
+                }
+                else {
+                    $id_eeg_setting_reason_for_change.prop( "disabled", false );
+                    $div_reason_for_change.show();
+                }
+            }));
         });
     </script>
 

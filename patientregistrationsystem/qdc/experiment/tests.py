@@ -13,7 +13,7 @@ from .models import Experiment, Group, Subject, \
     Component, Task, TaskForTheExperimenter, Stimulus, Instruction, Pause, Questionnaire, Block, \
     EEG, FileFormat, EEGData, EEGSetting, DataConfigurationTree, EMG, EEGMachine, Manufacturer, Tag, Amplifier, \
     EEGSolution, FilterType, ElectrodeModel, EEGElectrodeNet, EEGElectrodeNetSystem, EEGElectrodeLocalizationSystem, \
-    EEGElectrodePosition, Material
+    EEGElectrodePosition, Material, EMGSetting, Software, SoftwareVersion
 from .views import experiment_update, upload_file, research_project_update
 
 from patient.models import ClassificationOfDiseases
@@ -75,6 +75,15 @@ class ObjectsFactory(object):
                                                 description='EEG-Setting description')
         eeg_setting.save()
         return eeg_setting
+
+    @staticmethod
+    def create_emg_setting(experiment, acquisition_software_version):
+        emg_setting = EMGSetting.objects.create(experiment=experiment,
+                                                name='EMG-Setting name',
+                                                description='EMG-Setting description',
+                                                acquisition_software_version=acquisition_software_version,)
+        emg_setting.save()
+        return emg_setting
 
     @staticmethod
     def create_group(experiment, experimental_protocol=None):
@@ -192,6 +201,24 @@ class ObjectsFactory(object):
         return eeg_electrode_position
 
     @staticmethod
+    def create_software(manufacturer):
+        software = Software.objects.create(
+            manufacturer=manufacturer,
+            name="Software name"
+        )
+        software.save()
+        return software
+
+    @staticmethod
+    def create_software_version(software):
+        software_version = SoftwareVersion.objects.create(
+            software=software,
+            name="Software Version name"
+        )
+        software_version.save()
+        return software_version
+
+    @staticmethod
     def system_authentication(instance):
         user = User.objects.create_user(username=USER_USERNAME, email='test@dummy.com', password=USER_PWD)
         user.is_staff = True
@@ -216,6 +243,11 @@ class ExperimentalProtocolTest(TestCase):
         experiment = ObjectsFactory.create_experiment(research_project)
 
         self.eeg_setting = ObjectsFactory.create_eeg_setting(experiment)
+
+        manufacturer = ObjectsFactory.create_manufacturer()
+        software = ObjectsFactory.create_software(manufacturer)
+        software_version = ObjectsFactory.create_software_version(software)
+        self.emg_setting = ObjectsFactory.create_emg_setting(experiment, software_version)
 
     def test_component_list(self):
         experiment = Experiment.objects.first()
@@ -261,7 +293,8 @@ class ExperimentalProtocolTest(TestCase):
 
         identification = 'EMG identification'
         description = 'EMG description'
-        self.data = {'action': 'save', 'identification': identification, 'description': description}
+        self.data = {'action': 'save', 'identification': identification, 'description': description,
+                     'emg_setting': self.emg_setting.id}
         response = self.client.post(reverse("component_new", args=(experiment.id, "emg")), self.data)
         self.assertEqual(response.status_code, 302)
         # Check if redirected to list of components

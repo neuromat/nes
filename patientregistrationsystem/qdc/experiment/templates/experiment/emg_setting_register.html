@@ -210,11 +210,11 @@
                                             </a>
                                             <blockquote>
                                                 <i><h6>
-                                                    {% trans "Low pass:" %} {{ emg_setting.emg_digital_filter_setting.low_pass }}<br/>
-                                                    {% trans "High pass:" %} {{ emg_setting.emg_digital_filter_setting.high_pass }}<br/>
-                                                    {% trans "Band pass:" %} {{ emg_setting.emg_digital_filter_setting.band_pass }}<br/>
-                                                    {% trans "Notch:" %} {{ emg_setting.emg_digital_filter_setting.notch }}<br/>
-                                                    {% trans "order:" %} {{ emg_setting.emg_digital_filter_setting.order }}
+                                                    {% trans "Low pass:" %} {{ emg_setting.emg_digital_filter_setting.low_pass|default:"" }}<br/>
+                                                    {% trans "High pass:" %} {{ emg_setting.emg_digital_filter_setting.high_pass|default:"" }}<br/>
+                                                    {% trans "Band pass:" %} {{ emg_setting.emg_digital_filter_setting.band_pass|default:"" }}<br/>
+                                                    {% trans "Notch:" %} {{ emg_setting.emg_digital_filter_setting.notch|default:"" }}<br/>
+                                                    {% trans "order:" %} {{ emg_setting.emg_digital_filter_setting.order|default:"" }}
                                                 </h6></i>
                                             </blockquote>
 
@@ -239,7 +239,7 @@
                                             </a>
                                             <blockquote>
                                                 <i><h6>
-                                                    {% trans "Sampling rate:" %} {{ emg_setting.emg_ad_converter_setting.sampling_rate }}
+                                                    {% trans "Sampling rate:" %} {{ emg_setting.emg_ad_converter_setting.sampling_rate|default:"" }}
                                                 </h6></i>
                                             </blockquote>
 

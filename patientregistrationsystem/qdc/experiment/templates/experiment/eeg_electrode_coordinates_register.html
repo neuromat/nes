@@ -122,12 +122,6 @@
 
                                 <td width="20%" valign="top">
 
-{#                                    <label class="control-label" style="margin-left: 10px;">{% trans "Used positions:" %}</label>#}
-{#                                    <br/>#}
-{##}
-{#                                    <input type="text" id="used_positions" value="{{ number_of_used_electrodes }}" disabled size="4" style="text-align: center; margin-left: 10px;">#}
-{#                                    {% trans "of" %} {{ localization_system.electrode_positions.count }}#}
-
                                     <table id="cap_positions"  class="table table-striped header-fixed" style="margin-top:10px; margin-left:10px;">
                                         <thead>
                                             <tr>
@@ -136,22 +130,15 @@
                                             </tr>
                                         </thead>
                                         <tbody>
-{#                                            {% for position in localization_system.electrode_positions.all %}#}
-{#                                            <tr>#}
-{#                                                <td>#}
-{#                                                    {{ position.name }}#}
-{#                                                </td>#}
-{#                                                <td>#}
-{#                                                    <input {% if not editing %}disabled{% endif %} type="checkbox" name="position_status_{{ position.id }}" id="position_status_{{ position.id }}" {% if position.id %}checked="checked"{% endif %} onclick="used();" />#}
-{#                                                </td>#}
-{#                                            </tr>#}
-{#                                            {% endfor %}#}
+
                                         </tbody>
                                     </table>
                                 </td>
                             </tr>
                         </table>
-                        <label>{% trans "To mark a new coordinate, please click on the image map. To delete some coordinate, please disable the checkbox" %}</label>
+                        <label>{% trans "To mark a new coordinate, please click on the image map." %}</label>
+                        <label>{% trans "To delete some coordinate, please disable the checkbox or unmark on the image map" %}</label>
+                        <label>{% trans "Obs.: The checkbox is disabled when the corresponding position is used by some layout" %}</label>
                     </div>
                  </div>
             </div>
