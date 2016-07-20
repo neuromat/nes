@@ -1252,9 +1252,9 @@ def get_json_positions(request, eeg_electrode_localization_system_id):
             else:
                 if position['existInDB'] and position['update']:
                     update_electrode_position = get_object_or_404(EEGElectrodePosition, pk=position['id'])
-                    update_electrode_position.name=position['position']
-                    update_electrode_position.coordinate_x=position['x']
-                    update_electrode_position.coordinate_y=position['y']
+                    update_electrode_position.name = position['position']
+                    update_electrode_position.coordinate_x = position['x']
+                    update_electrode_position.coordinate_y = position['y']
                     update_electrode_position.save()
 
     list_json_response = None
@@ -6314,8 +6314,6 @@ def emg_setting_ad_converter_edit(request, emg_setting_id,
 @login_required
 @permission_required('experiment.change_experiment')
 def get_json_muscle_side_by_electrode_placement(request, emg_electrode_placement_id):
-    # muscle_side_list = \
-    #     MuscleSide.objects.filter(muscle__musclesubdivision__emgelectrodeplacement_id=emg_electrode_placement_id)
     muscle_side_list = \
         MuscleSide.objects.filter(muscle__musclesubdivision__emgelectrodeplacement__in=emg_electrode_placement_id)
     json_equipment = serializers.serialize("json", muscle_side_list)

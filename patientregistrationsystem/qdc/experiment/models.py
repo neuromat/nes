@@ -141,8 +141,28 @@ class EEGMachine(Equipment):
     software_version = models.CharField(max_length=150, null=True, blank=True)
 
 
+class AmplifierDetectionType(models.Model):
+    name = models.CharField(max_length=150)
+
+    def __str__(self):
+        return self.name
+
+
+class AmplifierSystem(models.Model):
+    name = models.CharField(max_length=150)
+
+    def __str__(self):
+        return self.name
+
+
 class Amplifier(Equipment):
     gain = models.FloatField(null=True, blank=True)
+    number_of_channels = models.IntegerField(null=True, blank=True)
+    common_mode_rejection_ratio = models.FloatField(null=True, blank=True)
+    input_impedance = models.FloatField(null=True, blank=True)
+    input_impedance_unit = models.CharField(null=True, blank=True, max_length=15, choices=IMPEDANCE_UNIT)
+    amplifier_detection_type = models.ForeignKey(AmplifierDetectionType, null=True, blank=True)
+    amplifier_system = models.ForeignKey(AmplifierSystem, null=True, blank=True)
 
 
 class EEGSolution(models.Model):
@@ -168,10 +188,26 @@ class Material(models.Model):
         return self.name
 
 
+class ElectrodeConfiguration(models.Model):
+    name = models.CharField(max_length=150)
+
+    def __str__(self):
+        return self.name
+
+
 class ElectrodeModel(models.Model):
     USABILITY_TYPES = (
         ("disposable", _("Disposable")),
         ("reusable", _("Reusable")),
+    )
+    ELECTRODE_TYPES = (
+        ("surface", _("Surface")),
+        ("intramuscular", _("Intramuscular")),
+        ("needle", _("Needle")),
+    )
+    ELECTRODE_DISTANCE_UNIT = (
+        ("mm", _("millimeter(s)")),
+        ("cm", _("centimeter(s)")),
     )
     name = models.CharField(max_length=150)
     description = models.TextField(null=True, blank=True)
@@ -180,9 +216,89 @@ class ElectrodeModel(models.Model):
     impedance = models.FloatField(null=True, blank=True)
     impedance_unit = models.CharField(null=True, blank=True, max_length=15, choices=IMPEDANCE_UNIT)
     tags = models.ManyToManyField(Tag)
+    inter_electrode_distance = models.FloatField(null=True, blank=True)
+    inter_electrode_distance_unit = models.CharField(null=True, blank=True, max_length=10,
+                                                     choices=ELECTRODE_DISTANCE_UNIT)
+    electrode_configuration = models.ForeignKey(ElectrodeConfiguration, null=True, blank=True)
+    electrode_type = models.CharField(null=True, blank=True, max_length=50, choices=ELECTRODE_TYPES)
 
     def __str__(self):
         return self.name
+
+
+class MeasureSystem(models.Model):
+    name = models.CharField(max_length=150)
+
+    def __str__(self):
+        return self.name
+
+
+class MeasureUnit(models.Model):
+    name = models.CharField(max_length=150)
+    measure_system = models.ForeignKey(MeasureSystem)
+
+    def __str__(self):
+        return self.name
+
+
+class ElectrodeShape(models.Model):
+    name = models.CharField(max_length=150)
+    measure_systems = models.ManyToManyField(MeasureSystem)
+
+    def __str__(self):
+        return self.name
+
+
+class SurfaceElectrode(ElectrodeModel):
+    CONDUCTION_TYPES = (
+        ("gelled", _("Gelled")),
+        ("dry", _("Dry")),
+    )
+    MODE_OPTIONS = (
+        ("active", _("Active")),
+        ("passive", _("Passive")),
+    )
+    conduction_type = models.CharField(max_length=20, choices=CONDUCTION_TYPES)
+    electrode_mode = models.CharField(max_length=20, choices=MODE_OPTIONS)
+    electrode_shape = models.ForeignKey(ElectrodeShape)
+
+    def save(self, *args, **kwargs):
+        super(ElectrodeModel, self).save(*args, **kwargs)
+
+
+class ElectrodeSurfaceShapeMeasure(models.Model):
+    electrode_surface = models.ForeignKey(SurfaceElectrode)
+    measure_unit = models.ForeignKey(MeasureUnit)
+    value = models.FloatField()
+
+
+class IntramuscularElectrode(ElectrodeModel):
+    STRAND_TYPES = (
+        ("single", _("Single")),
+        ("multi", _("Multi")),
+    )
+    # wire_material = models.ForeignKey(Material)
+    strand = models.CharField(max_length=20, choices=STRAND_TYPES)
+    insulation_material = models.ForeignKey(Material, null=True, blank=True)
+    length_of_exposed_tip = models.FloatField(null=True, blank=True)
+
+    def save(self, *args, **kwargs):
+        super(ElectrodeModel, self).save(*args, **kwargs)
+
+
+class NeedleElectrode(ElectrodeModel):
+    SIZE_UNIT = (
+        ("mm", _("millimeter(s)")),
+        ("cm", _("centimeter(s)")),
+    )
+    # material = models.ForeignKey(Material)
+    size = models.FloatField(null=True, blank=True)
+    size_unit = models.CharField(max_length=10, choices=SIZE_UNIT)
+    number_of_conductive_contact_points_at_the_tip = models.IntegerField(null=True, blank=True)
+    size_of_conductive_contact_points_at_the_tip = models.FloatField(null=True, blank=True)
+
+    def save(self, *args, **kwargs):
+        super(ElectrodeModel, self).save(*args, **kwargs)
 
 
 class EEGElectrodeNet(Equipment):
