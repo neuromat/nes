@@ -19,8 +19,6 @@ $(document).ready(function () {
     var muscle_side_field = $("#id_muscle_side");
     var select_electrode = $("select#id_electrode");
 
-    // alert(muscle_side_field.prop("disabled"));
-    // refresh
     if (! select_muscle_side.val() || ! muscle_side_field.prop("disabled") ) {
         muscle_side_select_refresh();
     }
@@ -83,7 +81,6 @@ function muscle_side_select_refresh() {
         });
     }
 }
-
 
 function muscle_side_show_field(show) {
 
