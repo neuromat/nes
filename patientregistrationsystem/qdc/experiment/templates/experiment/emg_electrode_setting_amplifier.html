@@ -5,6 +5,7 @@
 
 {% block header %}
     {% load static %}
+    <script src="{% static 'quiz/js/add_description_to_emg_setting.js' %}"></script>
     {% block specific_header %}
     {% endblock %}
 {% endblock %}
@@ -84,6 +85,16 @@
                             {{ emg_amplifier_setting_form.amplifier }}
                             <div class="help-block with-errors"></div>
 
+                        </div>
+                    </div>
+                </div>
+
+                <div class="row">
+                    <div class="col-xs-12 col-sm-12">
+                        <div class="form-group">
+                            <label class="control-label">{% trans "Description" %} </label>
+                            {{ equipment_form.description }}
+                            <div class="help-block with-errors"></div>
                         </div>
                     </div>
                 </div>

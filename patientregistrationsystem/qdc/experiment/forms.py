@@ -812,3 +812,19 @@ class EMGAnalogFilterSettingForm(ModelForm):
             'band_pass': TextInput(attrs={'class': 'form-control'}),
             'notch': TextInput(attrs={'class': 'form-control'}),
         }
+
+class ElectrodeModelForm(ModelForm):
+    class Meta:
+        model = ElectrodeModel
+
+        fields = ['name', 'description']
+
+        widgets = {
+            'name': TextInput(attrs={'class': 'form-control',
+                                     'required': "",
+                                     'data-error': _('Name must be filled.')}),
+            'description': Textarea(attrs={'class': 'form-control',
+                                           'rows': '4', 'required': "",
+                                           'data-error': _('Description must be filled.')}),
+        }
+
