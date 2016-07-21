@@ -266,7 +266,7 @@ class SurfaceElectrode(ElectrodeModel):
         super(ElectrodeModel, self).save(*args, **kwargs)
 
 
-class ElectrodeSurfaceShapeMeasure(models.Model):
+class ElectrodeSurfaceMeasure(models.Model):
     electrode_surface = models.ForeignKey(SurfaceElectrode)
     measure_unit = models.ForeignKey(MeasureUnit)
     value = models.FloatField()
@@ -277,7 +277,6 @@ class IntramuscularElectrode(ElectrodeModel):
         ("single", _("Single")),
         ("multi", _("Multi")),
     )
-    # wire_material = models.ForeignKey(Material)
     strand = models.CharField(max_length=20, choices=STRAND_TYPES)
     insulation_material = models.ForeignKey(Material, null=True, blank=True)
     length_of_exposed_tip = models.FloatField(null=True, blank=True)
@@ -291,7 +290,6 @@ class NeedleElectrode(ElectrodeModel):
         ("mm", _("millimeter(s)")),
         ("cm", _("centimeter(s)")),
     )
-    # material = models.ForeignKey(Material)
     size = models.FloatField(null=True, blank=True)
     size_unit = models.CharField(max_length=10, choices=SIZE_UNIT)
     number_of_conductive_contact_points_at_the_tip = models.IntegerField(null=True, blank=True)
@@ -434,9 +432,6 @@ class StandardizationSystem(models.Model):
 
 class Muscle(models.Model):
     name = models.CharField(max_length=150)
-    anatomy_orign = models.TextField(null=True, blank=True)
-    anatomy_insertion = models.TextField(null=True, blank=True)
-    anatomy_function = models.TextField(null=True, blank=True)
 
     def __str__(self):
         return self.name
@@ -445,6 +440,9 @@ class Muscle(models.Model):
 class MuscleSubdivision(models.Model):
     muscle = models.ForeignKey(Muscle)
     name = models.CharField(max_length=150)
+    anatomy_origin = models.TextField(null=True, blank=True)
+    anatomy_insertion = models.TextField(null=True, blank=True)
+    anatomy_function = models.TextField(null=True, blank=True)
 
     def __str__(self):
         return self.name
@@ -464,11 +462,17 @@ def get_emg_placement_dir(instance, filename):
 
 
 class EMGElectrodePlacement(models.Model):
+    PLACEMENT_TYPES = (
+        ("surface", _("Surface")),
+        ("intramuscular", _("Intramuscular")),
+        ("needle", _("Needle")),
+    )
     standardization_system = models.ForeignKey(StandardizationSystem)
     muscle_subdivision = models.ForeignKey(MuscleSubdivision)
     placement_reference = models.ForeignKey('self', null=True, blank=True, related_name='children')
     photo = models.FileField(upload_to=get_emg_placement_dir, null=True, blank=True)
     location = models.TextField(null=True, blank=True)
+    placement_type = models.CharField(null=True, blank=True, max_length=50, choices=PLACEMENT_TYPES)
 
     def __str__(self):
         return self.standardization_system.name + ' - ' + \
@@ -529,6 +533,16 @@ class EMGPreamplifierSetting(models.Model):
                                                  primary_key=True, related_name='emg_preamplifier_setting')
     amplifier = models.ForeignKey(Amplifier)
     gain = models.FloatField(null=True, blank=True)
+
+
+class EMGPreamplifierFilterSetting(models.Model):
+    emg_preamplifier_filter_setting = models.OneToOneField(EMGPreamplifierSetting,
+                                                           primary_key=True,
+                                                           related_name='emg_preamplifier_filter_setting')
+    low_pass = models.FloatField(null=True, blank=True)
+    high_pass = models.FloatField(null=True, blank=True)
+    band_pass = models.FloatField(null=True, blank=True)
+    notch = models.FloatField(null=True, blank=True)
 
 
 class EMGAmplifierSetting(models.Model):
