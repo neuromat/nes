@@ -17,6 +17,7 @@ $(document).ready(function () {
     var emg_electrode_placement = $("#id_emg_electrode_placement");
     var select_muscle_side = $("select#id_muscle_side");
     var muscle_side_field = $("#id_muscle_side");
+    var select_electrode = $("select#id_electrode");
 
     if (! select_muscle_side.val() || ! muscle_side_field.prop("disabled") ) {
         muscle_side_select_refresh();
@@ -24,6 +25,21 @@ $(document).ready(function () {
 
     emg_electrode_placement.change(function() {
         muscle_side_select_refresh();
+    });
+
+    select_electrode.change(function () {
+       var electrode_id = $(this).val();
+       var description_field = $("#id_description");
+
+       var url = "/experiment/emg_setting/get_electrode_model/" + electrode_id + "/attributes";
+
+       if(electrode_id == ""){
+           description_field.prop('value', "");
+       }else{
+           $.getJSON(url, function (electrode) {
+               description_field.prop('value', electrode['description']);
+           })
+       }
     });
 
 });

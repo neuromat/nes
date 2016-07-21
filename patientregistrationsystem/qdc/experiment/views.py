@@ -42,7 +42,7 @@ from experiment.forms import ExperimentForm, QuestionnaireResponseForm, FileForm
     EEGElectrodePositionForm, EEGElectrodeCapRegisterForm, EEGCapSizeRegisterForm, AdditionalDataForm, \
     EMGDataForm, EMGSettingForm, EMGDigitalFilterSettingForm, EMGADConverterSettingForm, \
     EMGElectrodeSettingForm, EMGElectrodePlacementSettingForm, \
-    EMGPreamplifierSettingForm, EMGAmplifierSettingForm, EMGAnalogFilterSettingForm, EMGForm
+    EMGPreamplifierSettingForm, EMGAmplifierSettingForm, EMGAnalogFilterSettingForm, EMGForm, ElectrodeModelForm
 
 
 from patient.models import Patient, QuestionnaireResponse as PatientQuestionnaireResponse
@@ -6142,6 +6142,8 @@ def emg_setting_digital_filter(request, emg_setting_id,
 
     creating = False
 
+    # equipment_form = None
+
     if hasattr(emg_setting, 'emg_digital_filter_setting'):
 
         emg_digital_filter_setting = EMGDigitalFilterSetting.objects.get(emg_setting=emg_setting)
@@ -6149,12 +6151,17 @@ def emg_setting_digital_filter(request, emg_setting_id,
         emg_digital_filter_setting_form = EMGDigitalFilterSettingForm(request.POST or None,
                                                                       instance=emg_digital_filter_setting)
 
+        filter_selected = emg_digital_filter_setting.filter_type
+
+        equipment_form = EEGFilterForm(request.POST or None, instance=filter_selected)
+
         for field in emg_digital_filter_setting_form.fields:
             emg_digital_filter_setting_form.fields[field].widget.attrs['disabled'] = True
 
     else:
         creating = True
         emg_digital_filter_setting_form = EMGDigitalFilterSettingForm(request.POST or None)
+        equipment_form = EEGFilterForm(request.POST or None)
 
     if request.method == "POST":
         if request.POST['action'] == "save":
@@ -6176,7 +6183,8 @@ def emg_setting_digital_filter(request, emg_setting_id,
                "editing": False,
                "can_change": can_change,
                "emg_setting": emg_setting,
-               "emg_digital_filter_setting_form": emg_digital_filter_setting_form
+               "emg_digital_filter_setting_form": emg_digital_filter_setting_form,
+               "equipment_form": equipment_form
                }
 
     return render(request, template_name, context)
@@ -6194,6 +6202,10 @@ def emg_setting_digital_filter_edit(request, emg_setting_id,
     emg_digital_filter_setting = emg_setting.emg_digital_filter_setting
     emg_digital_filter_setting_form = EMGDigitalFilterSettingForm(request.POST or None,
                                                                   instance=emg_digital_filter_setting)
+
+    filter_selected = emg_digital_filter_setting.filter_type
+
+    equipment_form = EEGFilterForm(request.POST or None, instance=filter_selected)
 
     if request.method == "POST":
 
@@ -6216,6 +6228,7 @@ def emg_setting_digital_filter_edit(request, emg_setting_id,
                "can_change": True,
                "emg_setting": emg_setting,
                "emg_digital_filter_setting_form": emg_digital_filter_setting_form,
+               "equipment_form": equipment_form
                }
 
     return render(request, template_name, context)
@@ -6239,12 +6252,17 @@ def emg_setting_ad_converter(request, emg_setting_id,
         emg_ad_converter_setting_form = EMGADConverterSettingForm(request.POST or None,
                                                                   instance=emg_ad_converter_setting)
 
+        emg_ad_converter_selected = emg_ad_converter_setting.ad_converter
+
+        equipment_form = EquipmentForm(request.POST or None, instance=emg_ad_converter_selected)
+
         for field in emg_ad_converter_setting_form.fields:
             emg_ad_converter_setting_form.fields[field].widget.attrs['disabled'] = True
 
     else:
         creating = True
         emg_ad_converter_setting_form = EMGADConverterSettingForm(request.POST or None)
+        equipment_form = EquipmentForm(request.POST or None)
 
     if request.method == "POST":
         if request.POST['action'] == "save":
@@ -6266,7 +6284,8 @@ def emg_setting_ad_converter(request, emg_setting_id,
                "editing": False,
                "can_change": can_change,
                "emg_setting": emg_setting,
-               "emg_ad_converter_setting_form": emg_ad_converter_setting_form
+               "emg_ad_converter_setting_form": emg_ad_converter_setting_form,
+               "equipment_form": equipment_form
                }
 
     return render(request, template_name, context)
@@ -6284,6 +6303,10 @@ def emg_setting_ad_converter_edit(request, emg_setting_id,
     emg_ad_converter_setting = emg_setting.emg_ad_converter_setting
     emg_ad_converter_setting_form = EMGADConverterSettingForm(request.POST or None,
                                                               instance=emg_ad_converter_setting)
+
+    emg_ad_converter_selected = emg_ad_converter_setting.ad_converter
+
+    equipment_form = EquipmentForm(request.POST or None, instance=emg_ad_converter_selected)
 
     if request.method == "POST":
 
@@ -6306,6 +6329,7 @@ def emg_setting_ad_converter_edit(request, emg_setting_id,
                "can_change": True,
                "emg_setting": emg_setting,
                "emg_ad_converter_setting_form": emg_ad_converter_setting_form,
+               "equipment_form": equipment_form
                }
 
     return render(request, template_name, context)
@@ -6319,6 +6343,16 @@ def get_json_muscle_side_by_electrode_placement(request, emg_electrode_placement
     json_equipment = serializers.serialize("json", muscle_side_list)
     return HttpResponse(json_equipment, content_type='application/json')
 
+@login_required
+@permission_required('experiment.change_experiment')
+def get_json_electrode_model(request, electrode_id):
+    electrode_model = get_object_or_404(ElectrodeModel, pk=electrode_id)
+
+    response_data = {
+        'description': electrode_model.description,
+    }
+
+    return HttpResponse(json.dumps(response_data), content_type='application/json')
 
 @login_required
 @permission_required('experiment.change_experiment')
@@ -6331,6 +6365,8 @@ def emg_setting_electrode_add(request, emg_setting_id,
 
     emg_electrode_setting_form = EMGElectrodeSettingForm(request.POST or None)
     emg_electrode_placement_setting_form = EMGElectrodePlacementSettingForm(request.POST or None)
+
+    emg_electrode_model_form = ElectrodeModelForm(request.POST or None)
 
     if request.method == "POST":
         if request.POST['action'] == "save":
@@ -6357,7 +6393,8 @@ def emg_setting_electrode_add(request, emg_setting_id,
                "can_change": True,
                "emg_setting": emg_setting,
                "emg_electrode_setting_form": emg_electrode_setting_form,
-               "emg_electrode_placement_setting_form": emg_electrode_placement_setting_form
+               "emg_electrode_placement_setting_form": emg_electrode_placement_setting_form,
+               "emg_electrode_model_form": emg_electrode_model_form,
                }
 
     return render(request, template_name, context)
@@ -6380,11 +6417,16 @@ def emg_electrode_setting_view(request, emg_electrode_setting_id,
         request.POST or None,
         instance=emg_electrode_setting.emg_electrode_placement_setting)
 
+    emg_electrode_model_form = ElectrodeModelForm(request.POST or None, instance=emg_electrode_setting.electrode)
+
     for field in emg_electrode_setting_form.fields:
         emg_electrode_setting_form.fields[field].widget.attrs['disabled'] = True
 
     for field in emg_electrode_placement_setting_form.fields:
         emg_electrode_placement_setting_form.fields[field].widget.attrs['disabled'] = True
+
+    for field in emg_electrode_model_form.fields:
+        emg_electrode_model_form.fields[field].widget.attrs['disabled'] = True
 
     if request.method == "POST":
 
@@ -6413,7 +6455,8 @@ def emg_electrode_setting_view(request, emg_electrode_setting_id,
                "emg_setting": emg_electrode_setting.emg_setting,
                "emg_electrode_setting": emg_electrode_setting,
                "emg_electrode_setting_form": emg_electrode_setting_form,
-               "emg_electrode_placement_setting_form": emg_electrode_placement_setting_form
+               "emg_electrode_placement_setting_form": emg_electrode_placement_setting_form,
+               "emg_electrode_model_form": emg_electrode_model_form
                }
 
     return render(request, template_name, context)
@@ -6435,6 +6478,9 @@ def emg_electrode_setting_edit(request, emg_electrode_setting_id,
     emg_electrode_placement_setting_form = EMGElectrodePlacementSettingForm(
         request.POST or None,
         instance=emg_electrode_setting.emg_electrode_placement_setting)
+
+    emg_electrode_model_form = ElectrodeModelForm(request.POST or None,
+        instance=emg_electrode_setting.electrode)
 
     if request.method == "POST":
         if request.POST['action'] == "save":
@@ -6464,7 +6510,8 @@ def emg_electrode_setting_edit(request, emg_electrode_setting_id,
                "emg_setting": emg_electrode_setting.emg_setting,
                "emg_electrode_setting": emg_electrode_setting,
                "emg_electrode_setting_form": emg_electrode_setting_form,
-               "emg_electrode_placement_setting_form": emg_electrode_placement_setting_form
+               "emg_electrode_placement_setting_form": emg_electrode_placement_setting_form,
+               "emg_electrode_model_form": emg_electrode_model_form
                }
 
     return render(request, template_name, context)
@@ -6488,12 +6535,17 @@ def emg_electrode_setting_preamplifier(request, emg_electrode_setting_id,
         emg_preamplifier_setting_form = EMGPreamplifierSettingForm(request.POST or None,
                                                                    instance=emg_preamplifier_setting)
 
+        equipment_selected = emg_preamplifier_setting.amplifier
+
+        equipment_form = EquipmentForm(request.POST or None, instance=equipment_selected)
+
         for field in emg_preamplifier_setting_form.fields:
             emg_preamplifier_setting_form.fields[field].widget.attrs['disabled'] = True
 
     else:
         creating = True
         emg_preamplifier_setting_form = EMGPreamplifierSettingForm(request.POST or None)
+        equipment_form = EquipmentForm(request.POST or None)
 
     if request.method == "POST":
         if request.POST['action'] == "save":
@@ -6515,7 +6567,8 @@ def emg_electrode_setting_preamplifier(request, emg_electrode_setting_id,
                "editing": False,
                "can_change": can_change,
                "emg_electrode_setting": emg_electrode_setting,
-               "emg_preamplifier_setting_form": emg_preamplifier_setting_form
+               "emg_preamplifier_setting_form": emg_preamplifier_setting_form,
+               "equipment_form": equipment_form
                }
 
     return render(request, template_name, context)
@@ -6533,6 +6586,10 @@ def emg_electrode_setting_preamplifier_edit(request, emg_electrode_setting_id,
     emg_preamplifier_setting = emg_electrode_setting.emg_preamplifier_setting
     emg_preamplifier_setting_form = EMGPreamplifierSettingForm(request.POST or None,
                                                                instance=emg_preamplifier_setting)
+
+    emg_preamplifier_selected = emg_preamplifier_setting.amplifier
+
+    equipment_form = EquipmentForm(request.POST or None, instance=emg_preamplifier_selected)
 
     if request.method == "POST":
 
@@ -6555,6 +6612,7 @@ def emg_electrode_setting_preamplifier_edit(request, emg_electrode_setting_id,
                "can_change": True,
                "emg_electrode_setting": emg_electrode_setting,
                "emg_preamplifier_setting_form": emg_preamplifier_setting_form,
+               "equipment_form": equipment_form
                }
 
     return render(request, template_name, context)
@@ -6578,6 +6636,10 @@ def emg_electrode_setting_amplifier(request, emg_electrode_setting_id,
         emg_amplifier_setting_form = EMGAmplifierSettingForm(request.POST or None,
                                                              instance=emg_amplifier_setting)
 
+        equipment_selected = emg_amplifier_setting.amplifier
+
+        equipment_form = EquipmentForm(request.POST or None, instance=equipment_selected)
+
         if hasattr(emg_amplifier_setting, 'emg_analog_filter_setting'):
 
             emg_analog_filter_setting = EMGAnalogFilterSetting.objects.get(
@@ -6585,6 +6647,7 @@ def emg_electrode_setting_amplifier(request, emg_electrode_setting_id,
 
             emg_analog_filter_setting_form = EMGAnalogFilterSettingForm(request.POST or None,
                                                                         instance=emg_analog_filter_setting)
+
         else:
             emg_analog_filter_setting_form = EMGAnalogFilterSettingForm(request.POST or None)
 
@@ -6598,6 +6661,7 @@ def emg_electrode_setting_amplifier(request, emg_electrode_setting_id,
         creating = True
         emg_amplifier_setting_form = EMGAmplifierSettingForm(request.POST or None)
         emg_analog_filter_setting_form = EMGAnalogFilterSettingForm(request.POST or None)
+        equipment_form = EquipmentForm(request.POST or None)
 
     if request.method == "POST":
         if request.POST['action'] == "save":
@@ -6630,7 +6694,8 @@ def emg_electrode_setting_amplifier(request, emg_electrode_setting_id,
                "can_change": can_change,
                "emg_electrode_setting": emg_electrode_setting,
                "emg_amplifier_setting_form": emg_amplifier_setting_form,
-               "emg_analog_filter_setting_form": emg_analog_filter_setting_form
+               "emg_analog_filter_setting_form": emg_analog_filter_setting_form,
+               "equipment_form": equipment_form
                }
 
     return render(request, template_name, context)
@@ -6648,6 +6713,10 @@ def emg_electrode_setting_amplifier_edit(request, emg_electrode_setting_id,
     emg_amplifier_setting = emg_electrode_setting.emg_amplifier_setting
     emg_amplifier_setting_form = EMGAmplifierSettingForm(request.POST or None,
                                                          instance=emg_amplifier_setting)
+
+    emg_amplifier_selected = emg_amplifier_setting.amplifier
+
+    equipment_form = EquipmentForm(request.POST or None, instance=emg_amplifier_selected)
 
     if hasattr(emg_amplifier_setting, 'emg_analog_filter_setting'):
 
@@ -6695,6 +6764,7 @@ def emg_electrode_setting_amplifier_edit(request, emg_electrode_setting_id,
                "emg_electrode_setting": emg_electrode_setting,
                "emg_amplifier_setting_form": emg_amplifier_setting_form,
                "emg_analog_filter_setting_form": emg_analog_filter_setting_form,
+               "equipment_form": equipment_form
                }
 
     return render(request, template_name, context)
