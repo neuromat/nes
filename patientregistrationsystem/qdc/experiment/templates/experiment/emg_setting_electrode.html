@@ -90,6 +90,16 @@
                 <div class="row">
                     <div class="col-xs-12 col-sm-12">
                         <div class="form-group">
+                            <label class="control-label">{% trans "Description" %} </label>
+                            {{ emg_electrode_model_form.description }}
+                            <div class="help-block with-errors"></div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="row">
+                    <div class="col-xs-12 col-sm-12">
+                        <div class="form-group">
 
                             <div class="form-group">
                                 <label class="control-label">{% trans "Electrode placement" %} <b style="color: red;">*</b></label>
