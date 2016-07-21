@@ -31,7 +31,8 @@ from experiment.models import Experiment, Subject, QuestionnaireResponse, Subjec
     ElectrodeModel, EEGElectrodePositionCollectionStatus, EEGCapSize, EEGElectrodeCap, EEGElectrodePosition, \
     Material, AdditionalData, Tag, \
     EMGData, EMGSetting, SoftwareVersion, EMGDigitalFilterSetting, EMGADConverterSetting, \
-    EMGElectrodeSetting, EMGPreamplifierSetting, EMGAmplifierSetting, EMGAnalogFilterSetting, MuscleSide
+    EMGElectrodeSetting, EMGPreamplifierSetting, EMGAmplifierSetting, EMGAnalogFilterSetting, MuscleSide, \
+    EMGElectrodePlacement, StandardizationSystem, MuscleSubdivision, Muscle
 from experiment.forms import ExperimentForm, QuestionnaireResponseForm, FileForm, GroupForm, InstructionForm, \
     ComponentForm, StimulusForm, BlockForm, ComponentConfigurationForm, ResearchProjectForm, NumberOfUsesToInsertForm, \
     EEGDataForm, EEGSettingForm, EquipmentForm, EEGForm, EEGMachineForm, EEGMachineSettingForm, EEGAmplifierForm, \
@@ -6353,6 +6354,30 @@ def get_json_electrode_model(request, electrode_id):
     }
 
     return HttpResponse(json.dumps(response_data), content_type='application/json')
+
+@login_required
+@permission_required('experiment.change_experiment')
+def get_json_electrode_by_type(request, electrode_type):
+    electrode_list = ElectrodeModel.objects.filter(electrode_type=electrode_type)
+
+    json_electrode_list = serializers.serialize("json", electrode_list)
+    return HttpResponse(json_electrode_list, content_type='application/json')
+
+@login_required
+@permission_required('experiment.change_experiment')
+def get_electrode_placement_by_type(request, electrode_type):
+    electrode_placement_list = EMGElectrodePlacement.objects.filter(placement_type=electrode_type)
+    placements = []
+
+    for electrode_placement in electrode_placement_list:
+        system_name = electrode_placement.standardization_system.name
+        muscle_subdivision_name = electrode_placement.muscle_subdivision.name
+        muscle_name = electrode_placement.muscle_subdivision.muscle.name
+        placements.append({
+            'description': system_name + " - " + muscle_name + " - " + muscle_subdivision_name
+        })
+
+    return HttpResponse(json.dumps(placements), content_type='application/json')
 
 @login_required
 @permission_required('experiment.change_experiment')
