@@ -544,7 +544,7 @@ class FilterTypeRegisterForm(ModelForm):
 class ElectrodeModelRegisterForm(ModelForm):
     class Meta:
         model = ElectrodeModel
-        fields = ['name', 'description', 'material', 'usability', 'impedance', 'impedance_unit']
+        fields = ['name', 'description', 'material', 'usability', 'impedance', 'impedance_unit', 'electrode_type']
 
         widgets = {
             'name': TextInput(attrs={'class': 'form-control',
@@ -555,6 +555,8 @@ class ElectrodeModelRegisterForm(ModelForm):
             'usability': Select(attrs={'class': 'form-control'}),
             'impedance': NumberInput(attrs={'class': 'form-control'}),
             'impedance_unit': Select(attrs={'class': 'form-control'}),
+            'electrode_type': Select(attrs={'class': 'form-control', 'required': "",
+                                                     'data-error': _('Electrode type is required')}),
         }
 
 
@@ -817,7 +819,7 @@ class ElectrodeModelForm(ModelForm):
     class Meta:
         model = ElectrodeModel
 
-        fields = ['name', 'description']
+        fields = ['name', 'description', 'electrode_type' ]
 
         widgets = {
             'name': TextInput(attrs={'class': 'form-control',
@@ -826,5 +828,7 @@ class ElectrodeModelForm(ModelForm):
             'description': Textarea(attrs={'class': 'form-control',
                                            'rows': '4', 'required': "",
                                            'data-error': _('Description must be filled.')}),
+            'electrode_type': Select(attrs={'class': 'form-control', 'required': "",
+                                                     'data-error': _('Electrode type is required')}),
         }
 
