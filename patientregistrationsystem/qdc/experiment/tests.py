@@ -13,7 +13,8 @@ from .models import Experiment, Group, Subject, \
     Component, Task, TaskForTheExperimenter, Stimulus, Instruction, Pause, Questionnaire, Block, \
     EEG, FileFormat, EEGData, EEGSetting, DataConfigurationTree, EMG, EEGMachine, Manufacturer, Tag, Amplifier, \
     EEGSolution, FilterType, ElectrodeModel, EEGElectrodeNet, EEGElectrodeNetSystem, EEGElectrodeLocalizationSystem, \
-    EEGElectrodePosition, Material, EMGSetting, Software, SoftwareVersion
+    EEGElectrodePosition, Material, EMGSetting, Software, SoftwareVersion, ADConverter, EMGElectrodeSetting, \
+    StandardizationSystem, MuscleSubdivision, Muscle, MuscleSide, EMGElectrodePlacement, EMGElectrodePlacementSetting
 from .views import experiment_update, upload_file, research_project_update
 
 from patient.models import ClassificationOfDiseases
@@ -86,6 +87,74 @@ class ObjectsFactory(object):
         return emg_setting
 
     @staticmethod
+    def create_emg_electrode_setting(emg_setting, electrode_model):
+        emg_electrode_setting = EMGElectrodeSetting.objects.create(emg_setting=emg_setting, electrode=electrode_model)
+
+        emg_electrode_setting.save()
+        return emg_electrode_setting
+
+    @staticmethod
+    def create_emg_electrode_placement_setting(emg_electrode_setting, electrode_placement, muscle_side):
+        emg_electrode_placement_setting = EMGElectrodePlacementSetting.objects.create(
+            emg_electrode_setting=emg_electrode_setting,
+            emg_electrode_placement=electrode_placement,
+            muscle_side=muscle_side,
+            remarks="Remarks electrode placement setting")
+
+        emg_electrode_placement_setting.save()
+        return emg_electrode_placement_setting
+
+    @staticmethod
+    def create_standardization_system():
+        standardization_system = StandardizationSystem.objects.create(
+            name='Standardization System identification',
+            description='Standardization System description'
+        )
+        standardization_system.save()
+        return standardization_system
+
+    @staticmethod
+    def create_muscle():
+        muscle = Muscle.objects.create(
+            name='Muscle identification'
+        )
+        muscle.save()
+        return muscle
+
+    @staticmethod
+    def create_muscle_subdivision(muscle):
+        muscle_subdivision = MuscleSubdivision.objects.create(
+            name='Muscle subdivision identification',
+            anatomy_origin='Anatomy origin description',
+            anatomy_insertion='Anatomy insertion description',
+            anatomy_function='Anatomy function description',
+            muscle=muscle
+        )
+        muscle_subdivision.save()
+        return muscle_subdivision
+
+    @staticmethod
+    def create_muscle_side(muscle):
+        muscle_side = MuscleSide.objects.create(
+            name='Muscle side identification',
+            muscle=muscle
+        )
+        muscle_side.save()
+        return muscle_side
+
+    @staticmethod
+    def create_emg_electrode_placement():
+
+        standardization_system = ObjectsFactory.create_standardization_system()
+        muscle = ObjectsFactory.create_muscle()
+        muscle_subdivision = ObjectsFactory.create_muscle_subdivision(muscle)
+        emg_electrode_placement = EMGElectrodePlacement.objects.create(standardization_system=standardization_system,
+                                                                       muscle_subdivision=muscle_subdivision)
+
+        emg_electrode_placement.save()
+        return emg_electrode_placement
+
+    @staticmethod
     def create_group(experiment, experimental_protocol=None):
         """
         :param experiment: experiment
@@ -150,7 +219,7 @@ class ObjectsFactory(object):
     @staticmethod
     def create_filter_type():
         filter_type = FilterType.objects.create(
-            name="Solution name"
+            name="Filter type name"
         )
         filter_type.save()
         return filter_type
@@ -217,6 +286,19 @@ class ObjectsFactory(object):
         )
         software_version.save()
         return software_version
+
+    @staticmethod
+    def create_ad_converter(manufacturer):
+        ad_converter = ADConverter.objects.create(
+            manufacturer=manufacturer,
+            equipment_type="ad_converter",
+            identification="AD Converter identification",
+            signal_to_noise_rate=20,
+            sampling_rate=10,
+            resolution=7
+        )
+        ad_converter.save()
+        return ad_converter
 
     @staticmethod
     def system_authentication(instance):
@@ -2361,3 +2443,252 @@ class EEGEquipmentRegisterTest(TestCase):
         response = self.client.post(reverse("material_view", args=(material.id,)), self.data)
         self.assertEqual(response.status_code, 302)
         self.assertEqual(Material.objects.all().count(), 0)
+
+
+class EMGSettingTest(TestCase):
+
+    data = {}
+
+    def setUp(self):
+
+        logged, self.user, self.factory = ObjectsFactory.system_authentication(self)
+        self.assertEqual(logged, True)
+
+        research_project = ObjectsFactory.create_research_project()
+
+        self.experiment = ObjectsFactory.create_experiment(research_project)
+
+        self.manufacturer = ObjectsFactory.create_manufacturer()
+        self.software = ObjectsFactory.create_software(self.manufacturer)
+        self.software_version = ObjectsFactory.create_software_version(self.software)
+
+    def test_crud_emg_setting(self):
+
+        # create emg setting
+        response = self.client.get(reverse("emg_setting_new", args=(self.experiment.id,)))
+        self.assertEqual(response.status_code, 200)
+
+        name = 'EMG setting name'
+        description = 'EMG setting description'
+        self.data = {'action': 'save', 'name': name, 'description': description,
+                     'software_version': self.software_version.id}
+        response = self.client.post(reverse("emg_setting_new", args=(self.experiment.id,)), self.data)
+        self.assertEqual(response.status_code, 302)
+        self.assertTrue(EMGSetting.objects.filter(name=name, description=description).exists())
+
+        emg_setting = EMGSetting.objects.filter(name=name, description=description)[0]
+
+        # view an emg setting
+        response = self.client.get(reverse("emg_setting_view", args=(emg_setting.id,)))
+        self.assertEqual(response.status_code, 200)
+
+        # update an emg setting
+        response = self.client.get(reverse("emg_setting_edit", args=(emg_setting.id,)))
+        self.assertEqual(response.status_code, 200)
+
+        # update with no changes
+        self.data = {'action': 'save', 'name': name, 'description': description,
+                     'software_version': self.software_version.id}
+        response = self.client.post(reverse("emg_setting_edit", args=(emg_setting.id,)), self.data)
+        self.assertEqual(response.status_code, 302)
+        self.assertTrue(EMGSetting.objects.filter(name=name, description=description).exists())
+
+        name = 'EMG setting name updated'
+        description = 'EMG setting description updated'
+        self.data = {'action': 'save', 'name': name, 'description': description,
+                     'software_version': self.software_version.id}
+        response = self.client.post(reverse("emg_setting_edit", args=(emg_setting.id,)), self.data)
+        self.assertEqual(response.status_code, 302)
+        self.assertTrue(EMGSetting.objects.filter(name=name, description=description).exists())
+
+        # remove an emg setting
+        self.data = {'action': 'remove'}
+        response = self.client.post(reverse("emg_setting_view", args=(emg_setting.id,)), self.data)
+        self.assertEqual(response.status_code, 302)
+
+    def test_emg_setting_digital_filter(self):
+        emg_setting = ObjectsFactory.create_emg_setting(self.experiment, self.software_version)
+
+        filter_type = ObjectsFactory.create_filter_type()
+
+        # create an emg digital filter setting
+        self.data = {'action': 'save', 'filter_type': filter_type.id,
+                     'high_pass': '80', 'low_pass': '20', 'band_pass':  '7',  'order': '2', 'notch': '5'}
+        response = self.client.post(reverse("emg_setting_digital_filter", args=(emg_setting.id,)), self.data)
+        self.assertEqual(response.status_code, 302)
+
+        # screen to view the emg digital filter setting
+        response = self.client.get(reverse("emg_setting_digital_filter", args=(emg_setting.id,)))
+        self.assertEqual(response.status_code, 200)
+
+        # update the emg digital filter setting
+        response = self.client.get(reverse("emg_setting_digital_filter_edit", args=(emg_setting.id,)))
+        self.assertEqual(response.status_code, 200)
+
+        self.data = {'action': 'save', 'filter_type': filter_type.id,
+                     'high_pass': '90', 'low_pass': '20', 'order': '2', 'notch': '7'}
+        response = self.client.post(reverse("emg_setting_digital_filter_edit",
+                                            args=(emg_setting.id,)), self.data)
+        self.assertEqual(response.status_code, 302)
+
+        # remove an emg digital filter setting
+        self.data = {'action': 'remove-digital_filter'}
+        response = self.client.post(reverse("emg_setting_view", args=(emg_setting.id,)), self.data)
+        self.assertEqual(response.status_code, 302)
+
+    def test_emg_setting_ad_converter(self):
+        emg_setting = ObjectsFactory.create_emg_setting(self.experiment, self.software_version)
+        manufacturer = ObjectsFactory.create_manufacturer()
+
+        ad_converter = ObjectsFactory.create_ad_converter(manufacturer)
+
+        # create an emg AD converter setting
+        self.data = {'action': 'save', 'ad_converter': ad_converter.id, 'sampling_rate': '10'}
+        response = self.client.post(reverse("emg_setting_ad_converter", args=(emg_setting.id,)), self.data)
+        self.assertEqual(response.status_code, 302)
+
+        # screen to view the emg AD converter  setting
+        response = self.client.get(reverse("emg_setting_ad_converter", args=(emg_setting.id,)))
+        self.assertEqual(response.status_code, 200)
+
+        # update the emg AD converter  setting
+        response = self.client.get(reverse("emg_setting_ad_converter_edit", args=(emg_setting.id,)))
+        self.assertEqual(response.status_code, 200)
+
+        self.data = {'action': 'save', 'ad_converter': ad_converter.id, 'sampling_rate': '20'}
+        response = self.client.post(reverse("emg_setting_ad_converter_edit",
+                                            args=(emg_setting.id,)), self.data)
+        self.assertEqual(response.status_code, 302)
+
+        # remove an emg AD converter setting
+        self.data = {'action': 'remove-ad_converter'}
+        response = self.client.post(reverse("emg_setting_view", args=(emg_setting.id,)), self.data)
+        self.assertEqual(response.status_code, 302)
+
+    def test_emg_setting_electrode(self):
+        emg_setting = ObjectsFactory.create_emg_setting(self.experiment, self.software_version)
+        electrode_model = ObjectsFactory.create_electrode_model()
+        tag_emg = Tag.objects.get(name="EMG")
+        electrode_model.tags.add(tag_emg)
+
+        electrode_placement = ObjectsFactory.create_emg_electrode_placement()
+        muscle_side = ObjectsFactory.create_muscle_side(electrode_placement.muscle_subdivision.muscle)
+
+        self.data = {'action': 'save', 'electrode': electrode_model.id,
+                     'emg_electrode_placement': electrode_placement.id,
+                     'remarks': "Remarks", 'muscle_side': muscle_side.id}
+
+        response = self.client.post(reverse("emg_setting_electrode_add", args=(emg_setting.id,)), self.data)
+        self.assertEqual(response.status_code, 302)
+
+        emg_electrode_setting = EMGElectrodeSetting.objects.all().first()
+
+        # screen to view the emg electrode  setting
+        response = self.client.get(reverse("emg_electrode_setting_view", args=(emg_electrode_setting.id,)))
+        self.assertEqual(response.status_code, 200)
+
+        # update the emg electrode setting
+        response = self.client.get(reverse("emg_electrode_setting_edit", args=(emg_electrode_setting.id,)))
+        self.assertEqual(response.status_code, 200)
+
+        self.data = {'action': 'save', 'electrode': electrode_model.id,
+                     'emg_electrode_placement': electrode_placement.id,
+                     'remarks': "Remarks", 'muscle_side': muscle_side.id}
+
+        response = self.client.post(reverse("emg_electrode_setting_edit",
+                                            args=(emg_electrode_setting.id,)), self.data)
+        self.assertEqual(response.status_code, 302)
+
+        # remove an emg electrode setting
+        self.data = {'action': 'remove-electrode-' + str(emg_electrode_setting.id)}
+
+        response = self.client.post(reverse("emg_setting_view", args=(emg_setting.id,)), self.data)
+        self.assertEqual(response.status_code, 302)
+
+    def test_emg_setting_preamplifier(self):
+        emg_setting = ObjectsFactory.create_emg_setting(self.experiment, self.software_version)
+        manufacturer = ObjectsFactory.create_manufacturer()
+        amplifier = ObjectsFactory.create_amplifier(manufacturer)
+        tag_emg = Tag.objects.get(name="EMG")
+        amplifier.tags.add(tag_emg)
+
+        electrode_model = ObjectsFactory.create_electrode_model()
+
+        emg_electrode_setting = ObjectsFactory.create_emg_electrode_setting(emg_setting, electrode_model)
+
+        electrode_placement = ObjectsFactory.create_emg_electrode_placement()
+        muscle_side = ObjectsFactory.create_muscle_side(electrode_placement.muscle_subdivision.muscle)
+        emg_electrode_placement_setting = ObjectsFactory.create_emg_electrode_placement_setting(emg_electrode_setting,
+                                                                                                electrode_placement,
+                                                                                                muscle_side)
+
+        # create an emg  preamplifier setting
+        self.data = {'action': 'save', 'amplifier': amplifier.id, 'gain': "10"}
+        response = self.client.post(reverse("emg_electrode_setting_preamplifier",
+                                            args=(emg_electrode_setting.id, )), self.data)
+        self.assertEqual(response.status_code, 302)
+
+        # screen to view the emg  preamplifier setting
+        response = self.client.get(reverse("emg_electrode_setting_preamplifier", args=(emg_electrode_setting.id,)))
+        self.assertEqual(response.status_code, 200)
+
+        # update the emg  preamplifier setting
+        response = self.client.get(reverse("emg_electrode_setting_preamplifier_edit",
+                                           args=(emg_electrode_setting.id,)))
+        self.assertEqual(response.status_code, 200)
+
+        self.data = {'action': 'save', 'amplifier': amplifier.id, 'gain': "20"}
+        response = self.client.post(reverse("emg_electrode_setting_preamplifier_edit",
+                                            args=(emg_electrode_setting.id,)), self.data)
+        self.assertEqual(response.status_code, 302)
+
+        # remove an emg  preamplifier setting
+        self.data = {'action': 'remove-preamplifier'}
+        response = self.client.post(reverse("emg_electrode_setting_view",
+                                            args=(emg_electrode_setting.id,)), self.data)
+        self.assertEqual(response.status_code, 302)
+
+    def test_emg_setting_amplifier(self):
+        emg_setting = ObjectsFactory.create_emg_setting(self.experiment, self.software_version)
+        manufacturer = ObjectsFactory.create_manufacturer()
+        amplifier = ObjectsFactory.create_amplifier(manufacturer)
+        tag_emg = Tag.objects.get(name="EMG")
+        amplifier.tags.add(tag_emg)
+
+        electrode_model = ObjectsFactory.create_electrode_model()
+        tag_emg = Tag.objects.get(name="EMG")
+        electrode_model.tags.add(tag_emg)
+
+        emg_electrode_setting = ObjectsFactory.create_emg_electrode_setting(emg_setting, electrode_model)
+
+        # create an emg amplifier setting
+        self.data = {'action': 'save', 'amplifier': amplifier.id, 'gain': "10"}
+        response = self.client.post(reverse("emg_electrode_setting_amplifier",
+                                            args=(emg_electrode_setting.id, )), self.data)
+        self.assertEqual(response.status_code, 302)
+
+        # screen to view the emg amplifier setting
+        response = self.client.get(reverse("emg_electrode_setting_amplifier", args=(emg_electrode_setting.id,)))
+        self.assertEqual(response.status_code, 200)
+
+        # update the emg amplifier setting
+        response = self.client.get(reverse("emg_electrode_setting_amplifier_edit",
+                                           args=(emg_electrode_setting.id,)))
+        self.assertEqual(response.status_code, 200)
+
+        self.data = {'action': 'save', 'amplifier': amplifier.id, 'gain': "20"}
+        response = self.client.post(reverse("emg_electrode_setting_amplifier_edit",
+                                            args=(emg_electrode_setting.id,)), self.data)
+        self.assertEqual(response.status_code, 302)
+
+        # remove an emg  amplifier setting
+
+        electrode_placement = ObjectsFactory.create_emg_electrode_placement()
+        muscle_side = ObjectsFactory.create_muscle_side(electrode_placement.muscle_subdivision.muscle)
+        emg_electrode_placement_setting = ObjectsFactory.create_emg_electrode_placement_setting(emg_electrode_setting,
+                                                                                                electrode_placement,
+                                                                                                muscle_side)
+        self.data = {'action': 'remove-amplifier'}
+        response = self.client.post(reverse("emg_electrode_setting_view",
+                                            args=(emg_electrode_setting.id,)), self.data)
+        self.assertEqual(response.status_code, 302)
