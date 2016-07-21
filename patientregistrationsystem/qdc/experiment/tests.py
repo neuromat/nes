@@ -116,10 +116,7 @@ class ObjectsFactory(object):
     @staticmethod
     def create_muscle():
         muscle = Muscle.objects.create(
-            name='Muscle identification',
-            anatomy_orign='Anatomy origin description',
-            anatomy_insertion='Anatomy insertion description',
-            anatomy_function='Anatomy function description'
+            name='Muscle identification'
         )
         muscle.save()
         return muscle
@@ -128,6 +125,9 @@ class ObjectsFactory(object):
     def create_muscle_subdivision(muscle):
         muscle_subdivision = MuscleSubdivision.objects.create(
             name='Muscle subdivision identification',
+            anatomy_origin='Anatomy origin description',
+            anatomy_insertion='Anatomy insertion description',
+            anatomy_function='Anatomy function description',
             muscle=muscle
         )
         muscle_subdivision.save()
@@ -135,7 +135,7 @@ class ObjectsFactory(object):
 
     @staticmethod
     def create_muscle_side(muscle):
-        muscle_side= MuscleSide.objects.create(
+        muscle_side = MuscleSide.objects.create(
             name='Muscle side identification',
             muscle=muscle
         )
@@ -2592,7 +2592,7 @@ class EMGSettingTest(TestCase):
         self.assertEqual(response.status_code, 200)
 
         self.data = {'action': 'save', 'electrode': electrode_model.id,
-                     'emg_electrode_placement':electrode_placement.id,
+                     'emg_electrode_placement': electrode_placement.id,
                      'remarks': "Remarks", 'muscle_side': muscle_side.id}
 
         response = self.client.post(reverse("emg_electrode_setting_edit",
@@ -2692,5 +2692,3 @@ class EMGSettingTest(TestCase):
         response = self.client.post(reverse("emg_electrode_setting_view",
                                             args=(emg_electrode_setting.id,)), self.data)
         self.assertEqual(response.status_code, 302)
-
-
