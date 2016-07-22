@@ -90,6 +90,30 @@ urlpatterns = patterns(
     url(r'^eeg_electrode_cap_size/(?P<eegelectrode_cap_size_id>\d+)/edit/$',
         'eegelectrodenet_cap_size_update', name='eegelectrodenet_cap_size_edit'),
 
+    # register A/D converter
+    url(r'^ad_converter/list/$', 'ad_converter_list', name='ad_converter_list'),
+    url(r'^ad_converter/new/$', 'ad_converter_create', name='ad_converter_new'),
+    url(r'^ad_converter/(?P<ad_converter_id>\d+)/$', 'ad_converter_view', name='ad_converter_view'),
+    url(r'^ad_converter/edit/(?P<ad_converter_id>\d+)/$', 'ad_converter_update', name='ad_converter_edit'),
+
+    # register Standardization system
+    url(r'^standardization_system/list/$', 'standardization_system_list', name='standardization_system_list'),
+    url(r'^standardization_system/new/$', 'standardization_system_create', name='standardization_system_new'),
+    url(r'^standardization_system/(?P<standardization_system_id>\d+)/$', 'standardization_system_view',
+        name='standardization_system_view'),
+    url(r'^standardization_system/edit/(?P<standardization_system_id>\d+)/$', 'standardization_system_update',
+        name='standardization_system_edit'),
+
+    # register muscle
+    url(r'^muscle/list/$', 'muscle_list', name='muscle_list'),
+    url(r'^muscle/new/$', 'muscle_create', name='muscle_new'),
+    url(r'^muscle/(?P<muscle_id>\d+)/$', 'muscle_view', name='muscle_view'),
+    url(r'^muscle/edit/(?P<muscle_id>\d+)/$', 'muscle_update', name='muscle_edit'),
+    url(r'^muscle/(?P<muscle_id>\d+)/new_subdivision/$', 'muscle_subdivision_create', name='muscle_subdivision_new'),
+    # register software
+
+    # register EMG electrode placement
+
     # Localization system and position
     url(r'^eeg_electrode_localization_system/list/$',
         'eeg_electrode_localization_system_list', name='eeg_electrode_localization_system_list'),

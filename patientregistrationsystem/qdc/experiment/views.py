@@ -31,7 +31,8 @@ from experiment.models import Experiment, Subject, QuestionnaireResponse, Subjec
     ElectrodeModel, EEGElectrodePositionCollectionStatus, EEGCapSize, EEGElectrodeCap, EEGElectrodePosition, \
     Material, AdditionalData, Tag, \
     EMGData, EMGSetting, SoftwareVersion, EMGDigitalFilterSetting, EMGADConverterSetting, \
-    EMGElectrodeSetting, EMGPreamplifierSetting, EMGAmplifierSetting, EMGAnalogFilterSetting, MuscleSide
+    EMGElectrodeSetting, EMGPreamplifierSetting, EMGAmplifierSetting, EMGAnalogFilterSetting, MuscleSide, \
+    ADConverter, StandardizationSystem, Muscle
 from experiment.forms import ExperimentForm, QuestionnaireResponseForm, FileForm, GroupForm, InstructionForm, \
     ComponentForm, StimulusForm, BlockForm, ComponentConfigurationForm, ResearchProjectForm, NumberOfUsesToInsertForm, \
     EEGDataForm, EEGSettingForm, EquipmentForm, EEGForm, EEGMachineForm, EEGMachineSettingForm, EEGAmplifierForm, \
@@ -42,7 +43,9 @@ from experiment.forms import ExperimentForm, QuestionnaireResponseForm, FileForm
     EEGElectrodePositionForm, EEGElectrodeCapRegisterForm, EEGCapSizeRegisterForm, AdditionalDataForm, \
     EMGDataForm, EMGSettingForm, EMGDigitalFilterSettingForm, EMGADConverterSettingForm, \
     EMGElectrodeSettingForm, EMGElectrodePlacementSettingForm, \
-    EMGPreamplifierSettingForm, EMGAmplifierSettingForm, EMGAnalogFilterSettingForm, EMGForm, ElectrodeModelForm
+    EMGPreamplifierSettingForm, EMGAmplifierSettingForm, EMGAnalogFilterSettingForm, EMGForm, ElectrodeModelForm, \
+    ADConverterRegisterForm, StandardizationSystemRegisterForm, \
+    MuscleRegisterForm, MuscleSubdivisionRegisterForm, MuscleSideRegisterForm
 
 
 from patient.models import Patient, QuestionnaireResponse as PatientQuestionnaireResponse
@@ -2118,6 +2121,248 @@ def filtertype_view(request, filtertype_id, template_name="experiment/filtertype
 
 @login_required
 @permission_required('experiment.register_equipment')
+def standardization_system_list(request, template_name="experiment/standardization_system_list.html"):
+    return render(request, template_name, {"equipments": StandardizationSystem.objects.all().order_by('name')})
+
+
+@login_required
+@permission_required('experiment.register_equipment')
+def standardization_system_create(request, template_name="experiment/standardization_system_register.html"):
+
+    standardization_system_form = StandardizationSystemRegisterForm(request.POST or None)
+
+    if request.method == "POST":
+
+        if request.POST['action'] == "save":
+
+            if standardization_system_form.is_valid():
+
+                standardization_system_added = standardization_system_form.save(commit=False)
+                standardization_system_added.save()
+
+                messages.success(request, _('Standardization system created successfully.'))
+                redirect_url = reverse("standardization_system_view", args=(standardization_system_added.id,))
+                return HttpResponseRedirect(redirect_url)
+
+            else:
+                messages.warning(request, _('Information not saved.'))
+
+        else:
+            messages.warning(request, _('Action not available.'))
+
+    context = {"equipment_form": standardization_system_form,
+               "creating": True,
+               "editing": True
+               }
+
+    return render(request, template_name, context)
+
+
+@login_required
+@permission_required('experiment.register_equipment')
+def standardization_system_update(request, standardization_system_id,
+                                  template_name="experiment/standardization_system_register.html"):
+    standardization_system = get_object_or_404(StandardizationSystem, pk=standardization_system_id)
+
+    standardization_system_form = StandardizationSystemRegisterForm(request.POST or None,
+                                                                    instance=standardization_system)
+
+    if request.method == "POST":
+        if request.POST['action'] == "save":
+            if standardization_system_form.is_valid():
+
+                if standardization_system_form.has_changed() :
+
+                    standardization_system_form.save()
+                    messages.success(request, _('Standardization system updated successfully.'))
+                else:
+                    messages.success(request, _('There is no changes to save.'))
+
+                redirect_url = reverse("standardization_system_view", args=(standardization_system.id,))
+                return HttpResponseRedirect(redirect_url)
+
+    context = {"equipment": standardization_system,
+               "equipment_form": standardization_system_form,
+               "editing": True
+               }
+
+    return render(request, template_name, context)
+
+
+@login_required
+@permission_required('experiment.register_equipment')
+def standardization_system_view(request, standardization_system_id,
+                                template_name="experiment/standardization_system_register.html"):
+    standardization_system = get_object_or_404(StandardizationSystem, pk=standardization_system_id)
+
+    standardization_system_form = StandardizationSystemRegisterForm(request.POST or None,
+                                                                    instance=standardization_system)
+
+    for field in standardization_system_form.fields:
+        standardization_system_form.fields[field].widget.attrs['disabled'] = True
+
+    if request.method == "POST":
+        if request.POST['action'] == "remove":
+
+            try:
+                standardization_system.delete()
+                messages.success(request, _('Standardization system removed successfully.'))
+                return redirect('standardization_system_list')
+            except ProtectedError:
+                messages.error(request, _("Error trying to delete standardization system."))
+                redirect_url = reverse("standardization_system_view", args=(standardization_system_id,))
+                return HttpResponseRedirect(redirect_url)
+
+    context = {"can_change": True,
+               "equipment": standardization_system,
+               "equipment_form": standardization_system_form
+               }
+
+    return render(request, template_name, context)
+
+
+@login_required
+@permission_required('experiment.register_equipment')
+def muscle_list(request, template_name="experiment/muscle_list.html"):
+    return render(request, template_name, {"equipments": Muscle.objects.all().order_by('name')})
+
+
+@login_required
+@permission_required('experiment.register_equipment')
+def muscle_create(request, template_name="experiment/muscle_register.html"):
+
+    muscle_form = MuscleRegisterForm(request.POST or None)
+
+    if request.method == "POST":
+
+        if request.POST['action'] == "save":
+
+            if muscle_form.is_valid():
+
+                muscle_added = muscle_form.save(commit=False)
+                muscle_added.save()
+
+                messages.success(request, _('Muscle created successfully.'))
+                redirect_url = reverse("muscle_view", args=(muscle_added.id,))
+                return HttpResponseRedirect(redirect_url)
+
+            else:
+                messages.warning(request, _('Information not saved.'))
+
+        else:
+            messages.warning(request, _('Action not available.'))
+
+    context = {"equipment_form": muscle_form,
+               "creating": True,
+               "editing": True
+               }
+
+    return render(request, template_name, context)
+
+
+@login_required
+@permission_required('experiment.register_equipment')
+def muscle_update(request, muscle_id,
+                  template_name="experiment/muscle_register.html"):
+    muscle = get_object_or_404(Muscle, pk=muscle_id)
+
+    muscle_form = MuscleRegisterForm(request.POST or None,
+                                     instance=muscle)
+
+    if request.method == "POST":
+        if request.POST['action'] == "save":
+            if muscle_form.is_valid():
+
+                if muscle_form.has_changed() :
+
+                    muscle_form.save()
+                    messages.success(request, _('Muscle updated successfully.'))
+                else:
+                    messages.success(request, _('There is no changes to save.'))
+
+                redirect_url = reverse("muscle_view", args=(muscle.id,))
+                return HttpResponseRedirect(redirect_url)
+
+    context = {"equipment": muscle,
+               "equipment_form": muscle_form,
+               "editing": True
+               }
+
+    return render(request, template_name, context)
+
+
+@login_required
+@permission_required('experiment.register_equipment')
+def muscle_view(request, muscle_id,
+                                template_name="experiment/muscle_register.html"):
+    muscle = get_object_or_404(Muscle, pk=muscle_id)
+
+    muscle_form = MuscleRegisterForm(request.POST or None, instance=muscle)
+
+    for field in muscle_form.fields:
+        muscle_form.fields[field].widget.attrs['disabled'] = True
+
+    if request.method == "POST":
+        if request.POST['action'] == "remove":
+
+            try:
+                muscle.delete()
+                messages.success(request, _('Muscle removed successfully.'))
+                return redirect('muscle_list')
+            except ProtectedError:
+                messages.error(request, _("Error trying to delete muscle."))
+                redirect_url = reverse("muscle_view", args=(muscle_id,))
+                return HttpResponseRedirect(redirect_url)
+
+    context = {"can_change": True,
+               "equipment": muscle,
+               "equipment_form": muscle_form
+               }
+
+    return render(request, template_name, context)
+
+
+
+@login_required
+@permission_required('experiment.register_equipment')
+def muscle_subdivision_create(request, muscle_id, template_name="experiment/muscle_subdivision_register.html"):
+
+    muscle_form = MuscleRegisterForm(request.POST or None)
+    muscle = get_object_or_404(Muscle, pk=muscle_id)
+
+    muscle_subdivision_form = MuscleSubdivisionRegisterForm(request.POST or None,
+                                                            instance=muscle)
+
+
+    if request.method == "POST":
+
+        if request.POST['action'] == "save":
+
+            if muscle_form.is_valid():
+
+                muscle_added = muscle_form.save(commit=False)
+                muscle_added.save()
+
+                messages.success(request, _('Muscle created successfully.'))
+                redirect_url = reverse("muscle_view", args=(muscle_added.id,))
+                return HttpResponseRedirect(redirect_url)
+
+            else:
+                messages.warning(request, _('Information not saved.'))
+
+        else:
+            messages.warning(request, _('Action not available.'))
+
+    context = {"equipment_form": muscle_form,
+               "creating": True,
+               "editing": True
+               }
+
+    return render(request, template_name, context)
+
+
+@login_required
+@permission_required('experiment.register_equipment')
 def electrodemodel_list(request, template_name="experiment/electrodemodel_list.html"):
     return render(request, template_name, {"equipments": ElectrodeModel.objects.all().order_by('name')})
 
@@ -2701,6 +2946,120 @@ def eegelectrodenet_cap_size_view(request, eegelectrode_cap_size_id,
     context = {"equipment_form": eegelectrode_cap_size_form,
                "can_change": True,
                "equipment": eegelectrode_cap_size}
+
+    return render(request, template_name, context)
+
+
+@login_required
+@permission_required('experiment.register_equipment')
+def ad_converter_list(request, template_name="experiment/ad_converter_list.html"):
+    return render(request, template_name, {"equipments": ADConverter.objects.all().order_by('identification')})
+
+
+@login_required
+@permission_required('experiment.register_equipment')
+def ad_converter_create(request, template_name="experiment/ad_converter_register.html"):
+
+    ad_converter_form = ADConverterRegisterForm(request.POST or None)
+
+    # tags = set_all_tags()
+
+    if request.method == "POST":
+
+        if request.POST['action'] == "save":
+
+            if ad_converter_form.is_valid():
+
+                ad_converter_added = ad_converter_form.save(commit=False)
+                ad_converter_added.save()
+
+                # on_tags = get_tag_ids_from_post(request.POST)
+                # changed_tags = equipment_tags_update(ad_converter_added.id, on_tags, "ADConverter")
+
+                # tags = get_tags(ad_converter_added.id, "ADConverter")
+
+                messages.success(request, _('A/D converter created successfully.'))
+                redirect_url = reverse("ad_converter_view", args=(ad_converter_added.id,))
+                return HttpResponseRedirect(redirect_url)
+
+            else:
+                messages.warning(request, _('Information not saved.'))
+
+        else:
+            messages.warning(request, _('Action not available.'))
+
+    context = {"equipment_form": ad_converter_form,
+               "creating": True,
+               "editing": True
+               # "tags": tags
+               }
+
+    return render(request, template_name, context)
+
+
+@login_required
+@permission_required('experiment.register_equipment')
+def ad_converter_update(request, ad_converter_id, template_name="experiment/ad_converter_register.html"):
+    ad_converter = get_object_or_404(ADConverter, pk=ad_converter_id)
+
+    ad_converter_form = ADConverterRegisterForm(request.POST or None, instance=ad_converter)
+
+    if request.method == "POST":
+        if request.POST['action'] == "save":
+            if ad_converter_form.is_valid():
+                # new_tags = get_tag_ids_from_post(request.POST)
+                # changed_tags = equipment_tags_update(ad_converter_id, new_tags, "FilterType")
+
+                # if ad_converter_form.has_changed() or changed_tags:
+                if ad_converter_form.has_changed():
+                    ad_converter_form.save()
+                    messages.success(request, _('A/D converter updated successfully.'))
+                else:
+                    messages.success(request, _('There is no changes to save.'))
+
+                redirect_url = reverse("ad_converter_view", args=(ad_converter.id,))
+                return HttpResponseRedirect(redirect_url)
+
+    # tags = get_tags(ad_converter_id, "FilterType")
+
+    context = {"equipment": ad_converter,
+               "equipment_form": ad_converter_form,
+               "editing": True
+               # "tags": tags
+               }
+
+    return render(request, template_name, context)
+
+
+@login_required
+@permission_required('experiment.register_equipment')
+def ad_converter_view(request, ad_converter_id, template_name="experiment/ad_converter_register.html"):
+    ad_converter = get_object_or_404(ADConverter, pk=ad_converter_id)
+
+    ad_converter_form = ADConverterRegisterForm(request.POST or None, instance=ad_converter)
+
+    for field in ad_converter_form.fields:
+        ad_converter_form.fields[field].widget.attrs['disabled'] = True
+
+    if request.method == "POST":
+        if request.POST['action'] == "remove":
+
+            try:
+                ad_converter.delete()
+                messages.success(request, _('A/D converter removed successfully.'))
+                return redirect('ad_converter_list')
+            except ProtectedError:
+                messages.error(request, _("Error trying to delete A/D converter."))
+                redirect_url = reverse("ad_converter_view", args=(ad_converter_id,))
+                return HttpResponseRedirect(redirect_url)
+
+    # tags = get_tags(ad_converter_id, "FilterType")
+
+    context = {"can_change": True,
+               "equipment": ad_converter,
+               "equipment_form": ad_converter_form
+               # "tags": tags
+               }
 
     return render(request, template_name, context)
 
