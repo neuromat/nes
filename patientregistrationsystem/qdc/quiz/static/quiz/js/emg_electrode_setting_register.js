@@ -67,7 +67,7 @@ $(document).ready(function () {
         $.getJSON(url, function(electrode_placement_list) {
             var options_placement = '<option value="" selected="selected">---------</option>';
             for (var i = 0; i < electrode_placement_list.length; i++) {
-                    options_placement += '<option value="' + electrode_placement_list[i].pk + '">' + electrode_placement_list[i].fields['description'] + '</option>';
+                    options_placement += '<option value="' + electrode_placement_list[i].pk + '">' + electrode_placement_list[i].description + '</option>';
             }
             emg_electrode_placement.html(options_placement);
             emg_electrode_placement.change();
