@@ -815,6 +815,7 @@ class EMGAnalogFilterSettingForm(ModelForm):
             'notch': TextInput(attrs={'class': 'form-control'}),
         }
 
+
 class ElectrodeModelForm(ModelForm):
     class Meta:
         model = ElectrodeModel
@@ -831,4 +832,3 @@ class ElectrodeModelForm(ModelForm):
             'electrode_type': Select(attrs={'class': 'form-control', 'required': "",
                                                      'data-error': _('Electrode type is required')}),
         }
-

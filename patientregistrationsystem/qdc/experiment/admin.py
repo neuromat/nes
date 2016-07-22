@@ -5,7 +5,8 @@ from modeltranslation.admin import TranslationAdmin
 from experiment.models import Experiment, QuestionnaireResponse, StimulusType, FileFormat, Tag, \
     Software, SoftwareVersion, ADConverter, \
     StandardizationSystem, EMGIntramuscularPlacement, EMGSurfacePlacement, EMGNeedlePlacement, \
-    Muscle, MuscleSubdivision, MuscleSide
+    Muscle, MuscleSubdivision, MuscleSide, \
+    ElectrodeShape, MeasureSystem, MeasureUnit, TetheringSystem, AmplifierDetectionType, ElectrodeConfiguration
 
 admin.site.register(Experiment, SimpleHistoryAdmin)
 admin.site.register(QuestionnaireResponse, SimpleHistoryAdmin)
@@ -21,6 +22,14 @@ class FileFormatAdmin(TranslationAdmin):
 admin.site.register(StimulusType, StimulusTypeAdmin)
 admin.site.register(FileFormat, FileFormatAdmin)
 admin.site.register(Tag)
+
+admin.site.register(ElectrodeShape)
+admin.site.register(MeasureSystem)
+admin.site.register(MeasureUnit)
+admin.site.register(TetheringSystem)
+admin.site.register(AmplifierDetectionType)
+admin.site.register(ElectrodeConfiguration)
+
 admin.site.register(Software)
 admin.site.register(SoftwareVersion)
 admin.site.register(ADConverter)

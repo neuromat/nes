@@ -6344,6 +6344,7 @@ def get_json_muscle_side_by_electrode_placement(request, emg_electrode_placement
     json_equipment = serializers.serialize("json", muscle_side_list)
     return HttpResponse(json_equipment, content_type='application/json')
 
+
 @login_required
 @permission_required('experiment.change_experiment')
 def get_json_electrode_model(request, electrode_id):
@@ -6354,6 +6355,7 @@ def get_json_electrode_model(request, electrode_id):
     }
 
     return HttpResponse(json.dumps(response_data), content_type='application/json')
+
 
 @login_required
 @permission_required('experiment.change_experiment')
@@ -6505,7 +6507,7 @@ def emg_electrode_setting_edit(request, emg_electrode_setting_id,
         instance=emg_electrode_setting.emg_electrode_placement_setting)
 
     emg_electrode_model_form = ElectrodeModelForm(request.POST or None,
-        instance=emg_electrode_setting.electrode)
+                                                  instance=emg_electrode_setting.electrode)
 
     if request.method == "POST":
         if request.POST['action'] == "save":
