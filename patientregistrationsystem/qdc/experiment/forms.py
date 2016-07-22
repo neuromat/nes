@@ -12,7 +12,7 @@ from experiment.models import Experiment, QuestionnaireResponse, SubjectOfGroup,
     EEGCapSize, EEGElectrodeCap, EEGElectrodePosition, Manufacturer, ElectrodeModel, EEGElectrodeNet, Material, \
     AdditionalData, EMGData, FileFormat, EMGSetting, EMGDigitalFilterSetting, EMGADConverterSetting, \
     EMGElectrodeSetting, EMGElectrodePlacementSetting, \
-    EMGPreamplifierSetting, EMGAmplifierSetting, EMGAnalogFilterSetting
+    EMGPreamplifierSetting, EMGAmplifierSetting, EMGAnalogFilterSetting, EMGSurfacePlacement
 
 
 class ExperimentForm(ModelForm):
@@ -831,4 +831,18 @@ class ElectrodeModelForm(ModelForm):
                                            'data-error': _('Description must be filled.')}),
             'electrode_type': Select(attrs={'class': 'form-control', 'required': "",
                                                      'data-error': _('Electrode type is required')}),
+        }
+
+class EMGSurfacePlacementForm(ModelForm):
+    class Meta:
+        model = EMGSurfacePlacement
+
+        fields = ['start_posture', 'orientation', 'fixation_on_the_skin', 'reference_electrode', 'clinical_test']
+
+        widgets = {
+            'start_posture': Textarea(attrs={'class': 'form-control', 'rows': '4', 'required': ""}),
+            'orientation': Textarea(attrs={'class': 'form-control', 'rows': '4', 'required': ""}),
+            'fixation_on_the_skin': Textarea(attrs={'class': 'form-control', 'rows': '4', 'required': ""}),
+            'reference_electrode': Textarea(attrs={'class': 'form-control', 'rows': '4', 'required': ""}),
+            'clinical_test': Textarea(attrs={'class': 'form-control', 'rows': '4', 'required': ""}),
         }
