@@ -148,7 +148,7 @@ class AmplifierDetectionType(models.Model):
         return self.name
 
 
-class AmplifierSystem(models.Model):
+class TetheringSystem(models.Model):
     name = models.CharField(max_length=150)
 
     def __str__(self):
@@ -162,7 +162,7 @@ class Amplifier(Equipment):
     input_impedance = models.FloatField(null=True, blank=True)
     input_impedance_unit = models.CharField(null=True, blank=True, max_length=15, choices=IMPEDANCE_UNIT)
     amplifier_detection_type = models.ForeignKey(AmplifierDetectionType, null=True, blank=True)
-    amplifier_system = models.ForeignKey(AmplifierSystem, null=True, blank=True)
+    tethering_system = models.ForeignKey(TetheringSystem, null=True, blank=True)
 
 
 class EEGSolution(models.Model):
