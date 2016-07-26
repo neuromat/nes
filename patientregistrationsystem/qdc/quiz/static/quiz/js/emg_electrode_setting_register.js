@@ -24,6 +24,10 @@ $(document).ready(function () {
         muscle_side_select_refresh();
     }
 
+    if (emg_electrode_placement.val()) {
+        surface_show_field(true);
+    }
+
     emg_electrode_placement.change(function() {
         muscle_side_select_refresh();
     });
@@ -93,35 +97,28 @@ function muscle_side_select_refresh() {
 
         $.getJSON(url, function(data_placement) {
 
-            if (data_placement.muscle_side.length > 0) {
+            if (data_placement.length > 0) {
 
                 muscle_side_show_field(true);
 
                 var string_selected = "";
 
                 var options = '<option value="">---------</option>';
-                sides = data_placement.muscle_side;
-                for (var i = 0; i < sides.length; i++) {
+
+                for (var i = 0; i < data_placement.length; i++) {
                     string_selected = "";
-                    if (sides[i].pk == select_muscle_side.val()) {
+                    if (data_placement[i].pk == select_muscle_side.val()) {
                         string_selected = ' selected="selected"';
                     }
-                    options += '<option value="' + sides[i].pk + '"' + string_selected + '>' + sides[i].name + '</option>';
+                    options += '<option value="' + data_placement[i].pk + '"' + string_selected + '>' + data_placement[i].fields['name'] + '</option>';
                 }
                 select_muscle_side.html(options);
             }else {
                 muscle_side_show_field(false);
             }
-
-            if(data_placement.anatomical_description_list.length > 0){
-                surface_show_field(true);
-                document.getElementById("id_start_posture").value = data_placement.anatomical_description_list[0].start_posture;
-                document.getElementById("id_orientation").value = data_placement.anatomical_description_list[0].orientation;
-            }else{
-                surface_show_field(false);
-            }
-
+            
         });
+        surface_show_field(true);
     }
 }
 
@@ -146,18 +143,50 @@ function surface_show_field(show) {
     var start_posture_field = $("#id_start_posture");
     var div_orientation = $("#div-orientation");
     var orientation_field = $("#id_orientation");
+    var fixation_on_the_skin_field = $("#id_fixation_on_the_skin");
+    var div_fixation_on_the_skin = $("#div-fixation_on_the_skin");
+    var reference_electrode_field = $("#id_reference_electrode");
+    var div_reference_electrode = $("#div-reference_electrode");
+    var clinical_test_field = $("#id_clinical_test");
+    var div_clinical_test = $("#div-clinical_test");
+
+    start_posture_field.prop( "disabled", true );
+    orientation_field.prop( "disabled", true );
+    fixation_on_the_skin_field.prop( "disabled", true );
+    reference_electrode_field.prop( "disabled", true );
+    clinical_test_field.prop( "disabled", true );
 
     if (show) {
-        //start_posture_field.prop( "disabled", false );
+        var emg_electrode_placement_id = $("#id_emg_electrode_placement").val();
+        var url = "/experiment/emg_setting/get_anatomical_description_by_placement/" + emg_electrode_placement_id;
+        $.getJSON(url, function(data_placement){
+            if(data_placement){
+                surface_show_field(true);
+                document.getElementById("id_start_posture").value = data_placement.start_posture;
+                document.getElementById("id_orientation").value = data_placement.orientation;
+                document.getElementById("id_fixation_on_the_skin").value = data_placement.fixation_on_the_skin;
+                document.getElementById("id_reference_electrode").value = data_placement.reference_electrode;
+                document.getElementById("id_clinical_test").value = data_placement.clinical_test;
+            }else{
+                surface_show_field(false);
+            }
+        });
         div_start_posture.show();
-        //orientation_field.prop( "disabled", false );
         div_orientation.show();
+        div_fixation_on_the_skin.show();
+        div_reference_electrode.show();
+        div_clinical_test.show();
+
     } else {
-        start_posture_field.prop( "disabled", true );
         div_start_posture.prop( "disabled", true );
         div_start_posture.hide();
-        orientation_field.prop( "disabled", true );
         div_orientation.prop( "disabled", true );
         div_orientation.hide();
+        div_fixation_on_the_skin.prop( "disabled", true );
+        div_fixation_on_the_skin.hide();
+        div_reference_electrode.prop( "disabled", true );
+        div_reference_electrode.hide();
+        div_clinical_test.prop( "disabled", true );
+        div_clinical_test.hide();
     }
 }
