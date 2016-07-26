@@ -32,7 +32,8 @@ from experiment.models import Experiment, Subject, QuestionnaireResponse, Subjec
     Material, AdditionalData, Tag, \
     EMGData, EMGSetting, SoftwareVersion, EMGDigitalFilterSetting, EMGADConverterSetting, \
     EMGElectrodeSetting, EMGPreamplifierSetting, EMGAmplifierSetting, EMGAnalogFilterSetting, MuscleSide, \
-    ADConverter, StandardizationSystem, Muscle, MuscleSubdivision, MuscleSide
+    ADConverter, StandardizationSystem, Muscle, MuscleSubdivision, MuscleSide, \
+    EMGElectrodePlacement, EMGSurfacePlacement
 from experiment.forms import ExperimentForm, QuestionnaireResponseForm, FileForm, GroupForm, InstructionForm, \
     ComponentForm, StimulusForm, BlockForm, ComponentConfigurationForm, ResearchProjectForm, NumberOfUsesToInsertForm, \
     EEGDataForm, EEGSettingForm, EquipmentForm, EEGForm, EEGMachineForm, EEGMachineSettingForm, EEGAmplifierForm, \
@@ -45,7 +46,7 @@ from experiment.forms import ExperimentForm, QuestionnaireResponseForm, FileForm
     EMGElectrodeSettingForm, EMGElectrodePlacementSettingForm, \
     EMGPreamplifierSettingForm, EMGAmplifierSettingForm, EMGAnalogFilterSettingForm, EMGForm, ElectrodeModelForm, \
     ADConverterRegisterForm, StandardizationSystemRegisterForm, \
-    MuscleRegisterForm, MuscleSubdivisionRegisterForm, MuscleSideRegisterForm
+    MuscleRegisterForm, MuscleSubdivisionRegisterForm, MuscleSideRegisterForm, EMGSurfacePlacementForm
 
 
 from patient.models import Patient, QuestionnaireResponse as PatientQuestionnaireResponse
@@ -6866,14 +6867,29 @@ def emg_setting_ad_converter_edit(request, emg_setting_id,
 
     return render(request, template_name, context)
 
+@login_required
+@permission_required('experiment.change_experiment')
+def get_anatomical_description_by_placement(request, emg_electrode_placement_id):
+    anatomical_description = EMGSurfacePlacement.objects.get(pk=emg_electrode_placement_id)
+
+    response_data = {
+        'start_posture': anatomical_description.start_posture,
+        'orientation': anatomical_description.orientation,
+        'fixation_on_the_skin': anatomical_description.fixation_on_the_skin,
+        'reference_electrode': anatomical_description.reference_electrode,
+        'clinical_test': anatomical_description.clinical_test
+    }
+
+    return HttpResponse(json.dumps(response_data), content_type='application/json')
 
 @login_required
 @permission_required('experiment.change_experiment')
 def get_json_muscle_side_by_electrode_placement(request, emg_electrode_placement_id):
     muscle_side_list = \
         MuscleSide.objects.filter(muscle__musclesubdivision__emgelectrodeplacement__in=emg_electrode_placement_id)
-    json_equipment = serializers.serialize("json", muscle_side_list)
-    return HttpResponse(json_equipment, content_type='application/json')
+
+    json_muscle_side = serializers.serialize("json", muscle_side_list)
+    return HttpResponse(json_muscle_side, content_type='application/json')
 
 
 @login_required
@@ -6890,6 +6906,52 @@ def get_json_electrode_model(request, electrode_id):
 
 @login_required
 @permission_required('experiment.change_experiment')
+def get_json_electrode_by_type(request, electrode_type):
+    electrode_list = ElectrodeModel.objects.filter(electrode_type=electrode_type)
+
+    json_electrode_list = serializers.serialize("json", electrode_list)
+    return HttpResponse(json_electrode_list, content_type='application/json')
+
+@login_required
+@permission_required('experiment.change_experiment')
+def get_electrode_placement_by_type(request, electrode_type):
+    electrode_placement_list = EMGElectrodePlacement.objects.filter(placement_type=electrode_type)
+    placements = []
+
+    for electrode_placement in electrode_placement_list:
+        system_name = electrode_placement.standardization_system.name
+        muscle_subdivision_name = electrode_placement.muscle_subdivision.name
+        muscle_name = electrode_placement.muscle_subdivision.muscle.name
+        muscle_subdivision_anatomy_function = electrode_placement.muscle_subdivision.anatomy_function
+        muscle_subdivision_anatomy_insertion = electrode_placement.muscle_subdivision.anatomy_insertion
+        muscle_subdivision_anatomy_origin = electrode_placement.muscle_subdivision.anatomy_origin
+
+        if electrode_type == "surface":
+            surface_placement = EMGSurfacePlacement.objects.filter(pk=electrode_placement.id)
+            for surface in surface_placement:
+                start_posture = surface.start_posture
+                orientation = surface.orientation
+                fixation_on_the_skin = surface.fixation_on_the_skin
+                reference_electrode = surface.reference_electrode
+                clinical_test = surface.clinical_test
+
+        placements.append({
+            'id': electrode_placement.id,
+            'description': system_name + " - " + muscle_name + " - " + muscle_subdivision_name,
+            'anatomy_function': muscle_subdivision_anatomy_function,
+            'anatomy_insertion': muscle_subdivision_anatomy_insertion,
+            'anatomy_origin': muscle_subdivision_anatomy_origin,
+            'start_posture': start_posture,
+            'orientation': orientation,
+            'fixation_on_the_skin': fixation_on_the_skin,
+            'reference_electrode': reference_electrode,
+            'clinical_test': clinical_test
+        })
+
+    return HttpResponse(json.dumps(placements), content_type='application/json')
+
+@login_required
+@permission_required('experiment.change_experiment')
 def emg_setting_electrode_add(request, emg_setting_id,
                               template_name="experiment/emg_setting_electrode.html"):
 
@@ -6901,6 +6963,8 @@ def emg_setting_electrode_add(request, emg_setting_id,
     emg_electrode_placement_setting_form = EMGElectrodePlacementSettingForm(request.POST or None)
 
     emg_electrode_model_form = ElectrodeModelForm(request.POST or None)
+
+    emg_surface_placement_form = EMGSurfacePlacementForm(request.POST or None)
 
     if request.method == "POST":
         if request.POST['action'] == "save":
@@ -6929,6 +6993,7 @@ def emg_setting_electrode_add(request, emg_setting_id,
                "emg_electrode_setting_form": emg_electrode_setting_form,
                "emg_electrode_placement_setting_form": emg_electrode_placement_setting_form,
                "emg_electrode_model_form": emg_electrode_model_form,
+               "emg_surface_placement_form": emg_surface_placement_form,
                }
 
     return render(request, template_name, context)
@@ -6952,6 +7017,8 @@ def emg_electrode_setting_view(request, emg_electrode_setting_id,
         instance=emg_electrode_setting.emg_electrode_placement_setting)
 
     emg_electrode_model_form = ElectrodeModelForm(request.POST or None, instance=emg_electrode_setting.electrode)
+
+    emg_surface_placement_form = EMGSurfacePlacementForm(request.POST or None)
 
     for field in emg_electrode_setting_form.fields:
         emg_electrode_setting_form.fields[field].widget.attrs['disabled'] = True
@@ -6990,7 +7057,8 @@ def emg_electrode_setting_view(request, emg_electrode_setting_id,
                "emg_electrode_setting": emg_electrode_setting,
                "emg_electrode_setting_form": emg_electrode_setting_form,
                "emg_electrode_placement_setting_form": emg_electrode_placement_setting_form,
-               "emg_electrode_model_form": emg_electrode_model_form
+               "emg_electrode_model_form": emg_electrode_model_form,
+               "emg_surface_placement_form": emg_surface_placement_form
                }
 
     return render(request, template_name, context)
@@ -7015,6 +7083,8 @@ def emg_electrode_setting_edit(request, emg_electrode_setting_id,
 
     emg_electrode_model_form = ElectrodeModelForm(request.POST or None,
                                                   instance=emg_electrode_setting.electrode)
+
+    emg_surface_placement_form = EMGSurfacePlacementForm(request.POST or None)
 
     if request.method == "POST":
         if request.POST['action'] == "save":
@@ -7045,7 +7115,8 @@ def emg_electrode_setting_edit(request, emg_electrode_setting_id,
                "emg_electrode_setting": emg_electrode_setting,
                "emg_electrode_setting_form": emg_electrode_setting_form,
                "emg_electrode_placement_setting_form": emg_electrode_placement_setting_form,
-               "emg_electrode_model_form": emg_electrode_model_form
+               "emg_electrode_model_form": emg_electrode_model_form,
+               "emg_surface_placement_form": emg_surface_placement_form,
                }
 
     return render(request, template_name, context)

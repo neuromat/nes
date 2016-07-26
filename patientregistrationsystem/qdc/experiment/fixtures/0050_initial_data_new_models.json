@@ -1,0 +1,256 @@
+[
+  {
+    "model": "experiment.tetheringsystem",
+    "pk": 1,
+    "fields": {
+      "name_en": "Wired",
+      "name_pt_br": "Com fio",
+      "name": "Com fio"
+    }
+  },
+  {
+    "model": "experiment.tetheringsystem",
+    "pk": 2,
+    "fields": {
+      "name_en": "Wireless",
+      "name_pt_br": "Sem fio",
+      "name": "Sem fio"
+    }
+  },
+  {
+    "model": "experiment.tetheringsystem",
+    "pk": 3,
+    "fields": {
+      "name_en": "Telemetric",
+      "name_pt_br": "Telem\u00e9trico",
+      "name": "Telem\u00e9trico"
+    }
+  },
+  {
+    "model": "experiment.amplifierdetectiontype",
+    "pk": 1,
+    "fields": {
+      "name_en": "Monopolar",
+      "name_pt_br": "Monopolar",
+      "name": "Monopolar"
+    }
+  },
+  {
+    "model": "experiment.amplifierdetectiontype",
+    "pk": 2,
+    "fields": {
+      "name_en": "Differential",
+      "name_pt_br": "Diferencial",
+      "name": "Diferencial"
+    }
+  },
+  {
+    "model": "experiment.amplifierdetectiontype",
+    "pk": 3,
+    "fields": {
+      "name_en": "Double differential",
+      "name_pt_br": "Diferencial duplo",
+      "name": "Diferencial duplo"
+    }
+  },
+  {
+    "model": "experiment.electrodeconfiguration",
+    "pk": 1,
+    "fields": {
+      "name_en": "Monopolar",
+      "name_pt_br": "Monopolar",
+      "name": "Monopolar"
+    }
+  },
+  {
+    "model": "experiment.electrodeconfiguration",
+    "pk": 2,
+    "fields": {
+      "name_en": "Bipolar",
+      "name_pt_br": "Bipolar",
+      "name": "Bipolar"
+    }
+  },
+  {
+    "model": "experiment.electrodeconfiguration",
+    "pk": 3,
+    "fields": {
+      "name_en": "Tripolar",
+      "name_pt_br": "Tripolar",
+      "name": "Tripolar"
+    }
+  },
+  {
+    "model": "experiment.electrodeconfiguration",
+    "pk": 4,
+    "fields": {
+      "name_en": "Multipolar",
+      "name_pt_br": "Multipolar",
+      "name": "Multipolar"
+    }
+  },
+  {
+    "model": "experiment.measuresystem",
+    "pk": 1,
+    "fields": {
+      "name_en": "Area",
+      "name_pt_br": "\u00c1rea",
+      "name": "\u00c1rea"
+    }
+  },
+  {
+    "model": "experiment.measuresystem",
+    "pk": 2,
+    "fields": {
+      "name_en": "Diameter",
+      "name_pt_br": "Di\u00e2metro",
+      "name": "Di\u00e2metro"
+    }
+  },
+  {
+    "model": "experiment.measuresystem",
+    "pk": 3,
+    "fields": {
+      "name_en": "Size",
+      "name_pt_br": "Tamanho",
+      "name": "Tamanho"
+    }
+  },
+  {
+    "model": "experiment.measuresystem",
+    "pk": 4,
+    "fields": {
+      "name_en": "Width",
+      "name_pt_br": "Largura",
+      "name": "Largura"
+    }
+  },
+  {
+    "model": "experiment.measuresystem",
+    "pk": 5,
+    "fields": {
+      "name_en": "Height",
+      "name_pt_br": "Altura",
+      "name": "Altura"
+    }
+  },
+  {
+    "model": "experiment.measureunit",
+    "pk": 1,
+    "fields": {
+      "measure_system": 1,
+      "name": "cm\u00b2"
+    }
+  },
+  {
+    "model": "experiment.measureunit",
+    "pk": 2,
+    "fields": {
+      "measure_system": 1,
+      "name": "mm\u00b2"
+    }
+  },
+  {
+    "model": "experiment.measureunit",
+    "pk": 3,
+    "fields": {
+      "measure_system": 2,
+      "name": "cm"
+    }
+  },
+  {
+    "model": "experiment.measureunit",
+    "pk": 4,
+    "fields": {
+      "measure_system": 2,
+      "name": "mm"
+    }
+  },
+  {
+    "model": "experiment.measureunit",
+    "pk": 5,
+    "fields": {
+      "measure_system": 3,
+      "name": "cm"
+    }
+  },
+  {
+    "model": "experiment.measureunit",
+    "pk": 6,
+    "fields": {
+      "measure_system": 3,
+      "name": "mm"
+    }
+  },
+  {
+    "model": "experiment.measureunit",
+    "pk": 7,
+    "fields": {
+      "measure_system": 4,
+      "name": "cm"
+    }
+  },
+  {
+    "model": "experiment.measureunit",
+    "pk": 8,
+    "fields": {
+      "measure_system": 4,
+      "name": "mm"
+    }
+  },
+  {
+    "model": "experiment.measureunit",
+    "pk": 9,
+    "fields": {
+      "measure_system": 5,
+      "name": "cm"
+    }
+  },
+  {
+    "model": "experiment.measureunit",
+    "pk": 10,
+    "fields": {
+      "measure_system": 5,
+      "name": "mm"
+    }
+  },
+  {
+    "model": "experiment.electrodeshape",
+    "pk": 1,
+    "fields": {
+      "name_en": "Disc",
+      "name_pt_br": "Disco",
+      "name": "Disco",
+      "measure_systems": [
+        1,
+        2
+      ]
+    }
+  },
+  {
+    "model": "experiment.electrodeshape",
+    "pk": 2,
+    "fields": {
+      "name_en": "Bar",
+      "name_pt_br": "Barra",
+      "name": "Barra",
+      "measure_systems": [
+        3
+      ]
+    }
+  },
+  {
+    "model": "experiment.electrodeshape",
+    "pk": 3,
+    "fields": {
+      "name_en": "Rectangle",
+      "name_pt_br": "Ret\u00e2ngulo",
+      "name": "Ret\u00e2ngulo",
+      "measure_systems": [
+        1,
+        4,
+        5
+      ]
+    }
+  }
+]

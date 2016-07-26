@@ -220,7 +220,7 @@ class ElectrodeModel(models.Model):
     inter_electrode_distance_unit = models.CharField(null=True, blank=True, max_length=10,
                                                      choices=ELECTRODE_DISTANCE_UNIT)
     electrode_configuration = models.ForeignKey(ElectrodeConfiguration, null=True, blank=True)
-    electrode_type = models.CharField(null=True, blank=True, max_length=50, choices=ELECTRODE_TYPES)
+    electrode_type = models.CharField(max_length=50, choices=ELECTRODE_TYPES)
 
     def __str__(self):
         return self.name
@@ -472,7 +472,7 @@ class EMGElectrodePlacement(models.Model):
     placement_reference = models.ForeignKey('self', null=True, blank=True, related_name='children')
     photo = models.FileField(upload_to=get_emg_placement_dir, null=True, blank=True)
     location = models.TextField(null=True, blank=True)
-    placement_type = models.CharField(null=True, blank=True, max_length=50, choices=PLACEMENT_TYPES)
+    placement_type = models.CharField(max_length=50, choices=PLACEMENT_TYPES)
 
     def __str__(self):
         return self.standardization_system.name + ' - ' + \

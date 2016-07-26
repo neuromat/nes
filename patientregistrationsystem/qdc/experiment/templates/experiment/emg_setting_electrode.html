@@ -79,6 +79,16 @@
                 <div class="row">
                     <div class="col-xs-12 col-sm-12">
                         <div class="form-group">
+                            <label class="control-label">{% trans "Electrode type" %} </label>
+                            {{ emg_electrode_model_form.electrode_type }}
+                            <div class="help-block with-errors"></div>
+
+                        </div>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-xs-12 col-sm-12">
+                        <div class="form-group">
                             <label class="control-label">{% trans "Electrode" %} </label>
                             {{ emg_electrode_setting_form.electrode }}
                             <div class="help-block with-errors"></div>
@@ -86,7 +96,6 @@
                         </div>
                     </div>
                 </div>
-
                 <div class="row">
                     <div class="col-xs-12 col-sm-12">
                         <div class="form-group">
@@ -96,7 +105,6 @@
                         </div>
                     </div>
                 </div>
-
                 <div class="row">
                     <div class="col-xs-12 col-sm-12">
                         <div class="form-group">
@@ -121,6 +129,51 @@
                     </div>
                 </div>
 
+                <div class="row" id="div-start_posture">
+                    <div class="col-xs-12 col-sm-12">
+                        <div class="form-group">
+                            <label class="control-label">{% trans "Start posture" %}</label>
+                            {{ emg_surface_placement_form.start_posture }}
+                            <div class="help-block with-errors"></div>
+                        </div>
+                    </div>
+                </div>
+                <div class="row" id="div-orientation">
+                    <div class="col-xs-12 col-sm-12">
+                        <div class="form-group">
+                            <label class="control-label">{% trans "Orientation" %} </label>
+                            {{ emg_surface_placement_form.orientation }}
+                            <div class="help-block with-errors"></div>
+                        </div>
+                    </div>
+                </div>
+                <div class="row" id="div-fixation_on_the_skin">
+                    <div class="col-xs-12 col-sm-12">
+                        <div class="form-group">
+                            <label class="control-label">{% trans "Fixation on the skin" %} </label>
+                            {{ emg_surface_placement_form.fixation_on_the_skin }}
+                            <div class="help-block with-errors"></div>
+                        </div>
+                    </div>
+                </div>
+                <div class="row" id="div-reference_electrode">
+                    <div class="col-xs-12 col-sm-12">
+                        <div class="form-group">
+                            <label class="control-label">{% trans "Reference electrode" %} </label>
+                            {{ emg_surface_placement_form.reference_electrode }}
+                            <div class="help-block with-errors"></div>
+                        </div>
+                    </div>
+                </div>
+                <div class="row" id="div-clinical_test">
+                    <div class="col-xs-12 col-sm-12">
+                        <div class="form-group">
+                            <label class="control-label">{% trans "Clinical test" %} </label>
+                            {{ emg_surface_placement_form.clinical_test }}
+                            <div class="help-block with-errors"></div>
+                        </div>
+                    </div>
+                </div>
                 <div class="row">
                     <div class="col-xs-12 col-sm-12">
                         <div class="form-group">
