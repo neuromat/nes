@@ -85,8 +85,8 @@
                 <div class="row">
                     <div class="col-xs-12 col-sm-12">
                         <div class="form-group">
-                            <label class="control-label">{% trans "Anatomy function" %}</label>
-                            {{ equipment_form.anatomy_function }}
+                            <label class="control-label">{% trans "Anatomy origin" %}</label>
+                            {{ equipment_form.anatomy_origin }}
                             <div class="help-block with-errors"></div>
                         </div>
                     </div>
@@ -100,16 +100,16 @@
                         </div>
                     </div>
                 </div>
+
                 <div class="row">
                     <div class="col-xs-12 col-sm-12">
                         <div class="form-group">
-                            <label class="control-label">{% trans "Anatomy origin" %}</label>
-                            {{ equipment_form.anatomy_origin }}
+                            <label class="control-label">{% trans "Anatomy function" %}</label>
+                            {{ equipment_form.anatomy_function }}
                             <div class="help-block with-errors"></div>
                         </div>
                     </div>
                 </div>
-
                 {% if not editing and can_change %}
                     <div class="btn-group pull-left">
                         <a href="/experiment/muscle_subdivision/{{ equipment.id }}/edit/" class="btn btn-primary">{% trans "Edit" %}</a>
