@@ -6502,6 +6502,8 @@ def emg_electrode_setting_view(request, emg_electrode_setting_id,
 
     emg_electrode_model_form = ElectrodeModelForm(request.POST or None, instance=emg_electrode_setting.electrode)
 
+    emg_surface_placement_form = EMGSurfacePlacementForm(request.POST or None)
+
     for field in emg_electrode_setting_form.fields:
         emg_electrode_setting_form.fields[field].widget.attrs['disabled'] = True
 
@@ -6539,7 +6541,8 @@ def emg_electrode_setting_view(request, emg_electrode_setting_id,
                "emg_electrode_setting": emg_electrode_setting,
                "emg_electrode_setting_form": emg_electrode_setting_form,
                "emg_electrode_placement_setting_form": emg_electrode_placement_setting_form,
-               "emg_electrode_model_form": emg_electrode_model_form
+               "emg_electrode_model_form": emg_electrode_model_form,
+               "emg_surface_placement_form": emg_surface_placement_form
                }
 
     return render(request, template_name, context)

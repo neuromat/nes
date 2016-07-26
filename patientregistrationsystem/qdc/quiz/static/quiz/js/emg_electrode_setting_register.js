@@ -19,7 +19,6 @@ $(document).ready(function () {
     var muscle_side_field = $("#id_muscle_side");
     var select_electrode = $("select#id_electrode");
     var select_electrode_type = $("select#id_electrode_type");
-    var start_posture_field = $("#id_start_posture");
 
     if (! select_muscle_side.val() || ! muscle_side_field.prop("disabled") ) {
         muscle_side_select_refresh();
@@ -32,6 +31,7 @@ $(document).ready(function () {
     select_electrode.change(function () {
        var electrode_id = $(this).val();
        var description_field = $("#id_description");
+        description_field.prop( "disabled", true );
 
        var url = "/experiment/emg_setting/get_electrode_model/" + electrode_id + "/attributes";
 
@@ -115,6 +115,8 @@ function muscle_side_select_refresh() {
 
             if(data_placement.anatomical_description_list.length > 0){
                 surface_show_field(true);
+                document.getElementById("id_start_posture").value = data_placement.anatomical_description_list[0].start_posture;
+                document.getElementById("id_orientation").value = data_placement.anatomical_description_list[0].orientation;
             }else{
                 surface_show_field(false);
             }
@@ -146,9 +148,9 @@ function surface_show_field(show) {
     var orientation_field = $("#id_orientation");
 
     if (show) {
-        start_posture_field.prop( "disabled", false );
+        //start_posture_field.prop( "disabled", false );
         div_start_posture.show();
-        orientation_field.prop( "disabled", false );
+        //orientation_field.prop( "disabled", false );
         div_orientation.show();
     } else {
         start_posture_field.prop( "disabled", true );
