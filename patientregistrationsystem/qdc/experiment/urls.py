@@ -109,7 +109,17 @@ urlpatterns = patterns(
     url(r'^muscle/new/$', 'muscle_create', name='muscle_new'),
     url(r'^muscle/(?P<muscle_id>\d+)/$', 'muscle_view', name='muscle_view'),
     url(r'^muscle/edit/(?P<muscle_id>\d+)/$', 'muscle_update', name='muscle_edit'),
-    url(r'^muscle/(?P<muscle_id>\d+)/new_subdivision/$', 'muscle_subdivision_create', name='muscle_subdivision_new'),
+    url(r'^muscle/(?P<muscle_id>\d+)/new_muscle_subdivision/$', 'muscle_subdivision_create', name='muscle_subdivision_new'),
+    url(r'^muscle_subdivision/(?P<muscle_subdivision_id>\d+)/$',
+        'muscle_subdivision_view', name='muscle_subdivision_view'),
+    url(r'^muscle_subdivision/(?P<muscle_subdivision_id>\d+)/edit/$',
+        'muscle_subdivision_update', name='muscle_subdivision_edit'),
+    url(r'^muscle/(?P<muscle_id>\d+)/new_muscle_side/$', 'muscle_side_create', name='muscle_side_new'),
+    url(r'^muscle_side/(?P<muscle_side_id>\d+)/$',
+        'muscle_side_view', name='muscle_side_view'),
+    url(r'^muscle_side/(?P<muscle_side_id>\d+)/edit/$',
+        'muscle_side_update', name='muscle_side_edit'),
+
     # register software
 
     # register EMG electrode placement

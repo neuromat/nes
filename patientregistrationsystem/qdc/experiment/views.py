@@ -32,7 +32,7 @@ from experiment.models import Experiment, Subject, QuestionnaireResponse, Subjec
     Material, AdditionalData, Tag, \
     EMGData, EMGSetting, SoftwareVersion, EMGDigitalFilterSetting, EMGADConverterSetting, \
     EMGElectrodeSetting, EMGPreamplifierSetting, EMGAmplifierSetting, EMGAnalogFilterSetting, MuscleSide, \
-    ADConverter, StandardizationSystem, Muscle
+    ADConverter, StandardizationSystem, Muscle, MuscleSubdivision, MuscleSide
 from experiment.forms import ExperimentForm, QuestionnaireResponseForm, FileForm, GroupForm, InstructionForm, \
     ComponentForm, StimulusForm, BlockForm, ComponentConfigurationForm, ResearchProjectForm, NumberOfUsesToInsertForm, \
     EEGDataForm, EEGSettingForm, EquipmentForm, EEGForm, EEGMachineForm, EEGMachineSettingForm, EEGAmplifierForm, \
@@ -2294,8 +2294,10 @@ def muscle_update(request, muscle_id,
 @login_required
 @permission_required('experiment.register_equipment')
 def muscle_view(request, muscle_id,
-                                template_name="experiment/muscle_register.html"):
+                template_name="experiment/muscle_register.html"):
     muscle = get_object_or_404(Muscle, pk=muscle_id)
+    musclesubdivisions = muscle.musclesubdivision_set.all()
+    musclesides = muscle.muscleside_set.all()
 
     muscle_form = MuscleRegisterForm(request.POST or None, instance=muscle)
 
@@ -2316,35 +2318,34 @@ def muscle_view(request, muscle_id,
 
     context = {"can_change": True,
                "equipment": muscle,
-               "equipment_form": muscle_form
+               "equipment_form": muscle_form,
+               "musclesubdivisions": musclesubdivisions,
+               "musclesides": musclesides
                }
 
     return render(request, template_name, context)
-
 
 
 @login_required
 @permission_required('experiment.register_equipment')
 def muscle_subdivision_create(request, muscle_id, template_name="experiment/muscle_subdivision_register.html"):
 
-    muscle_form = MuscleRegisterForm(request.POST or None)
     muscle = get_object_or_404(Muscle, pk=muscle_id)
 
-    muscle_subdivision_form = MuscleSubdivisionRegisterForm(request.POST or None,
-                                                            instance=muscle)
-
+    muscle_subdivision_form = MuscleSubdivisionRegisterForm(request.POST or None)
 
     if request.method == "POST":
 
         if request.POST['action'] == "save":
 
-            if muscle_form.is_valid():
+            if muscle_subdivision_form.is_valid():
 
-                muscle_added = muscle_form.save(commit=False)
+                muscle_added = muscle_subdivision_form.save(commit=False)
+                muscle_added.muscle = muscle
                 muscle_added.save()
 
-                messages.success(request, _('Muscle created successfully.'))
-                redirect_url = reverse("muscle_view", args=(muscle_added.id,))
+                messages.success(request, _('Muscle subdivision created successfully.'))
+                redirect_url = reverse("muscle_subdivision_view", args=(muscle_added.id,))
                 return HttpResponseRedirect(redirect_url)
 
             else:
@@ -2353,8 +2354,180 @@ def muscle_subdivision_create(request, muscle_id, template_name="experiment/musc
         else:
             messages.warning(request, _('Action not available.'))
 
-    context = {"equipment_form": muscle_form,
+    context = {"equipment_form": muscle_subdivision_form,
+               "muscle": muscle,
                "creating": True,
+               "editing": True
+               }
+
+    return render(request, template_name, context)
+
+
+@login_required
+@permission_required('experiment.register_equipment')
+def muscle_subdivision_view(request, muscle_subdivision_id,
+                     template_name="experiment/muscle_subdivision_register.html"):
+    muscle_subdivsion = get_object_or_404(MuscleSubdivision, pk=muscle_subdivision_id)
+
+    muscle_subdivision_form = MuscleSubdivisionRegisterForm(request.POST or None, instance=muscle_subdivsion)
+
+    for field in muscle_subdivision_form.fields:
+        muscle_subdivision_form.fields[field].widget.attrs['disabled'] = True
+
+    if request.method == "POST":
+        if request.POST['action'] == "remove":
+
+            try:
+                muscle_id = muscle_subdivsion.muscle.id
+                muscle_subdivsion.delete()
+                messages.success(request, _('Muscle side removed successfully.'))
+                redirect_url = reverse('muscle_view', args=(muscle_id,))
+                return HttpResponseRedirect(redirect_url)
+            except ProtectedError:
+                messages.error(request, _("Error trying to delete standardization system."))
+                redirect_url = reverse("muscle_subdivision_view", args=(muscle_subdivision_id,))
+                return HttpResponseRedirect(redirect_url)
+
+    context = {"can_change": True,
+               "equipment": muscle_subdivsion,
+               "equipment_form": muscle_subdivision_form
+               }
+
+    return render(request, template_name, context)
+
+
+@login_required
+@permission_required('experiment.register_equipment')
+def muscle_subdivision_update(request, muscle_subdivision_id,
+                              template_name="experiment/muscle_subdivision_register.html"):
+
+    # muscle = get_object_or_404(Muscle, pk=muscle_id)
+    muscle_subdivision = get_object_or_404(MuscleSubdivision, pk=muscle_subdivision_id)
+
+    muscle_subdivision_form = MuscleSubdivisionRegisterForm(request.POST or None,
+                                                            instance=muscle_subdivision)
+
+    # muscle_form = MuscleRegisterForm(request.POST or None,
+    #                                  instance=muscle)
+
+    if request.method == "POST":
+        if request.POST['action'] == "save":
+            if muscle_subdivision_form.is_valid():
+
+                if muscle_subdivision_form.has_changed() :
+
+                    muscle_subdivision_form.save()
+                    messages.success(request, _('Muscle subdivision updated successfully.'))
+                else:
+                    messages.success(request, _('There is no changes to save.'))
+
+                redirect_url = reverse("muscle_subdivision_view", args=(muscle_subdivision.id,))
+                return HttpResponseRedirect(redirect_url)
+
+    context = {"equipment": muscle_subdivision,
+               "equipment_form": muscle_subdivision_form,
+               "editing": True
+               }
+
+    return render(request, template_name, context)
+
+
+@login_required
+@permission_required('experiment.register_equipment')
+def muscle_side_create(request, muscle_id, template_name="experiment/muscle_side_register.html"):
+
+    muscle = get_object_or_404(Muscle, pk=muscle_id)
+
+    muscle_side_form = MuscleSideRegisterForm(request.POST or None)
+
+    if request.method == "POST":
+
+        if request.POST['action'] == "save":
+
+            if muscle_side_form.is_valid():
+
+                muscle_side_added = muscle_side_form.save(commit=False)
+                muscle_side_added.muscle = muscle
+                muscle_side_added.save()
+
+                messages.success(request, _('Muscle side created successfully.'))
+                redirect_url = reverse("muscle_view", args=(muscle.id,))
+                return HttpResponseRedirect(redirect_url)
+
+            else:
+                messages.warning(request, _('Information not saved.'))
+
+        else:
+            messages.warning(request, _('Action not available.'))
+
+    context = {"equipment_form": muscle_side_form,
+               "muscle": muscle,
+               "creating": True,
+               "editing": True
+               }
+
+    return render(request, template_name, context)
+
+
+@login_required
+@permission_required('experiment.register_equipment')
+def muscle_side_view(request, muscle_side_id,
+                     template_name="experiment/muscle_side_register.html"):
+    muscle_side = get_object_or_404(MuscleSide, pk=muscle_side_id)
+
+    muscle_side_form = MuscleSideRegisterForm(request.POST or None, instance=muscle_side)
+
+    for field in muscle_side_form.fields:
+        muscle_side_form.fields[field].widget.attrs['disabled'] = True
+
+    if request.method == "POST":
+        if request.POST['action'] == "remove":
+
+            try:
+                muscle_id = muscle_side.muscle.id
+                muscle_side.delete()
+                messages.success(request, _('Muscle side removed successfully.'))
+                redirect_url = reverse('muscle_view', args=(muscle_id,))
+                return HttpResponseRedirect(redirect_url)
+            except ProtectedError:
+                messages.error(request, _("Error trying to delete standardization system."))
+                redirect_url = reverse("muscle_side_view", args=(muscle_side_id,))
+                return HttpResponseRedirect(redirect_url)
+
+    context = {"can_change": True,
+               "equipment": muscle_side,
+               "equipment_form": muscle_side_form
+               }
+
+    return render(request, template_name, context)
+
+
+@login_required
+@permission_required('experiment.register_equipment')
+def muscle_side_update(request, muscle_side_id,
+                       template_name="experiment/muscle_side_register.html"):
+
+    muscle_side = get_object_or_404(MuscleSide, pk=muscle_side_id)
+
+    muscle_side_form = MuscleSideRegisterForm(request.POST or None,
+                                              instance=muscle_side)
+
+    if request.method == "POST":
+        if request.POST['action'] == "save":
+            if muscle_side_form.is_valid():
+
+                if muscle_side_form.has_changed() :
+
+                    muscle_side_form.save()
+                    messages.success(request, _('Muscle side updated successfully.'))
+                else:
+                    messages.success(request, _('There is no changes to save.'))
+
+                redirect_url = reverse("muscle_side_view", args=(muscle_side.id,))
+                return HttpResponseRedirect(redirect_url)
+
+    context = {"equipment": muscle_side,
+               "equipment_form": muscle_side_form,
                "editing": True
                }
 
