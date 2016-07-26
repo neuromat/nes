@@ -6376,7 +6376,7 @@ def get_json_electrode_model(request, electrode_id):
 @login_required
 @permission_required('experiment.change_experiment')
 def get_json_electrode_by_type(request, electrode_type):
-    electrode_list = ElectrodeModel.objects.filter(electrode_type=electrode_type)
+    electrode_list = ElectrodeModel.objects.filter(electrode_type=electrode_type, tags__name="EMG")
 
     json_electrode_list = serializers.serialize("json", electrode_list)
     return HttpResponse(json_electrode_list, content_type='application/json')

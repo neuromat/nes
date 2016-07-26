@@ -50,6 +50,10 @@ $(document).ready(function () {
     
     select_electrode_type.change(function() {
 
+        // surface_show_field(false);
+        // muscle_side_show_field(false);
+        document.getElementById("id_description").value = "";
+
         var electrode_type = $(this).val();
 
         if (electrode_type == "") {
@@ -64,7 +68,7 @@ $(document).ready(function () {
                     options += '<option value="' + electrode_type_list[i].pk + '">' + electrode_type_list[i].fields['name'] + '</option>';
             }
             select_electrode.html(options);
-            select_electrode.change();
+            //select_electrode.change();
         });
         
         var url = "/experiment/emg_setting/get_electrode_placement_by_type/" + electrode_type;
@@ -160,16 +164,11 @@ function surface_show_field(show) {
         var emg_electrode_placement_id = $("#id_emg_electrode_placement").val();
         var url = "/experiment/emg_setting/get_anatomical_description_by_placement/" + emg_electrode_placement_id;
         $.getJSON(url, function(data_placement){
-            if(data_placement){
-                surface_show_field(true);
-                document.getElementById("id_start_posture").value = data_placement.start_posture;
-                document.getElementById("id_orientation").value = data_placement.orientation;
-                document.getElementById("id_fixation_on_the_skin").value = data_placement.fixation_on_the_skin;
-                document.getElementById("id_reference_electrode").value = data_placement.reference_electrode;
-                document.getElementById("id_clinical_test").value = data_placement.clinical_test;
-            }else{
-                surface_show_field(false);
-            }
+            document.getElementById("id_start_posture").value = data_placement.start_posture;
+            document.getElementById("id_orientation").value = data_placement.orientation;
+            document.getElementById("id_fixation_on_the_skin").value = data_placement.fixation_on_the_skin;
+            document.getElementById("id_reference_electrode").value = data_placement.reference_electrode;
+            document.getElementById("id_clinical_test").value = data_placement.clinical_test;
         });
         div_start_posture.show();
         div_orientation.show();
