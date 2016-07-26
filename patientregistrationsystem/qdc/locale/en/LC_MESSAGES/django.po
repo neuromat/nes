@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2016-07-13 19:52-0300\n"
+"POT-Creation-Date: 2016-07-26 16:20-0300\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -719,24 +719,24 @@ msgstr ""
 msgid "Log in again"
 msgstr ""
 
-#: templates/registration/login.html:7
+#: templates/registration/login.html:8
 #: templates/registration/password_reset_form.html:9
 msgid "Neuroscience Experiments System - NES"
 msgstr ""
 
-#: templates/registration/login.html:88
+#: templates/registration/login.html:89
 msgid "User"
 msgstr ""
 
-#: templates/registration/login.html:92
+#: templates/registration/login.html:93
 msgid "Password"
 msgstr ""
 
-#: templates/registration/login.html:94
+#: templates/registration/login.html:95
 msgid "Login"
 msgstr ""
 
-#: templates/registration/login.html:100
+#: templates/registration/login.html:101
 msgid "I forgot my password"
 msgstr ""
 

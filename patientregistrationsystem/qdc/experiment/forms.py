@@ -12,7 +12,8 @@ from experiment.models import Experiment, QuestionnaireResponse, SubjectOfGroup,
     EEGCapSize, EEGElectrodeCap, EEGElectrodePosition, Manufacturer, ElectrodeModel, EEGElectrodeNet, Material, \
     AdditionalData, EMGData, FileFormat, EMGSetting, EMGDigitalFilterSetting, EMGADConverterSetting, \
     EMGElectrodeSetting, EMGElectrodePlacementSetting, \
-    EMGPreamplifierSetting, EMGAmplifierSetting, EMGAnalogFilterSetting, EMGSurfacePlacement
+    EMGPreamplifierSetting, EMGAmplifierSetting, EMGAnalogFilterSetting, EMGSurfacePlacement, \
+    ADConverter, StandardizationSystem, Muscle, MuscleSide, MuscleSubdivision
 
 
 class ExperimentForm(ModelForm):
@@ -619,6 +620,80 @@ class EEGCapSizeRegisterForm(ModelForm):
             'electrode_adjacent_distance':
                 NumberInput(attrs={'class': 'form-control',
                                    'data-error': _('Electrode adjacent distance must be filled.')}),
+        }
+
+
+class ADConverterRegisterForm(ModelForm):
+    class Meta:
+        model = ADConverter
+        fields = ['manufacturer', 'identification', 'description', 'serial_number',
+                  'signal_to_noise_rate', 'sampling_rate', 'resolution']
+
+        widgets = {
+            'manufacturer': Select(attrs={'class': 'form-control', 'required': "",
+                                          'data-error': _('Manufacturer must be filled.')}),
+            'identification': TextInput(attrs={'class': 'form-control', 'required': "",
+                                               'data-error': _('Identification must be filled.')}),
+            'description': Textarea(attrs={'class': 'form-control', 'rows': '4'}),
+            'serial_number': TextInput(attrs={'class': 'form-control'}),
+
+            'signal_to_noise_rate': TextInput(attrs={'class': 'form-control'}),
+            'sampling_rate': TextInput(attrs={'class': 'form-control',
+                                             }),
+            'resolution': TextInput(attrs={'class': 'form-control'})
+        }
+
+
+class StandardizationSystemRegisterForm(ModelForm):
+    class Meta:
+        model = StandardizationSystem
+        fields = ['name', 'description']
+
+        widgets = {
+            'name': TextInput(attrs={'class': 'form-control',
+                                     'required': "",
+                                     'data-error': _('Name must be filled.')}),
+
+            'description': Textarea(attrs={'class': 'form-control', 'rows': '4'})
+        }
+
+
+class MuscleRegisterForm(ModelForm):
+    class Meta:
+        model = Muscle
+        fields = ['name']
+
+        widgets = {
+            'name': TextInput(attrs={'class': 'form-control',
+                                     'required': "",
+                                     'data-error': _('Name must be filled.')}),
+        }
+
+
+class MuscleSubdivisionRegisterForm(ModelForm):
+    class Meta:
+        model = MuscleSubdivision
+        fields = ['name', 'anatomy_origin', 'anatomy_insertion', 'anatomy_function']
+
+        widgets = {
+            'name': TextInput(attrs={'class': 'form-control',
+                                     'required': "",
+                                     'data-error': _('Name must be filled.')}),
+            'anatomy_origin': Textarea(attrs={'class': 'form-control', 'rows': '4'}),
+            'anatomy_insertion': Textarea(attrs={'class': 'form-control', 'rows': '4'}),
+            'anatomy_function': Textarea(attrs={'class': 'form-control', 'rows': '4'})
+        }
+
+
+class MuscleSideRegisterForm(ModelForm):
+    class Meta:
+        model = MuscleSide
+        fields = ['name']
+
+        widgets = {
+            'name': TextInput(attrs={'class': 'form-control',
+                                     'required': "",
+                                     'data-error': _('Name must be filled.')}),
         }
 
 

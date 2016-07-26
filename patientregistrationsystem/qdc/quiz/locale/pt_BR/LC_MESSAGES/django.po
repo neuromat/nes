@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2016-06-27 09:36-0300\n"
+"POT-Creation-Date: 2016-07-26 16:20-0300\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -79,8 +79,8 @@ msgid "EEG machine"
 msgstr "Máquina de EEG"
 
 #: quiz/templates/quiz/template.html:260
-msgid "EEG amplifier"
-msgstr "Amplificador de EEG"
+msgid "Amplifier"
+msgstr "Amplificador"
 
 #: quiz/templates/quiz/template.html:265
 msgid "Solution"
@@ -105,3 +105,23 @@ msgstr "Material"
 #: quiz/templates/quiz/template.html:290
 msgid "Electrode Net"
 msgstr "Rede de eletrodos"
+
+#: quiz/templates/quiz/template.html:295
+msgid "A/D converter"
+msgstr "Conversor A/D"
+
+#: quiz/templates/quiz/template.html:300
+msgid "Software"
+msgstr ""
+
+#: quiz/templates/quiz/template.html:305
+msgid "Standardization system"
+msgstr "Sistema de padronização"
+
+#: quiz/templates/quiz/template.html:310
+msgid "Muscle"
+msgstr "Músculo"
+
+#: quiz/templates/quiz/template.html:315
+msgid "Electrode Placement"
+msgstr "Localização de eletrodos"

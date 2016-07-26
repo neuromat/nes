@@ -2369,7 +2369,8 @@ class EEGEquipmentRegisterTest(TestCase):
 
         name = 'Name'
         self.data = {'action': 'save',
-                     'name': name}
+                     'name': name,
+                     'electrode_type': 'surface'}
         response = self.client.post(reverse("electrodemodel_new", args=()), self.data)
         self.assertEqual(response.status_code, 302)
         self.assertEqual(ElectrodeModel.objects.all().count(), 1)
@@ -2385,13 +2386,15 @@ class EEGEquipmentRegisterTest(TestCase):
         self.assertEqual(response.status_code, 200)
 
         self.data = {'action': 'save',
-                     'name': name}
+                     'name': name,
+                     'electrode_type': 'surface'}
         response = self.client.post(reverse("electrodemodel_edit", args=(electrode_model.id,)), self.data)
         self.assertEqual(response.status_code, 302)
 
         name = 'Name changed'
         self.data = {'action': 'save',
-                     'name': name}
+                     'name': name,
+                     'electrode_type': 'surface'}
         response = self.client.post(reverse("electrodemodel_edit", args=(electrode_model.id,)), self.data)
         self.assertEqual(response.status_code, 302)
 

@@ -290,6 +290,31 @@
                                             {% trans "Electrode Net" %}
                                         </a>
                                     </li>
+                                    <li {% block activeADconverter %}{% endblock %}>
+                                        <a href="/experiment/ad_converter/list/">
+                                            {% trans "A/D converter" %}
+                                        </a>
+                                    </li>
+                                    <li {% block activeSoftware %}{% endblock %}>
+                                        <a href="/experiment/software/list/">
+                                            {% trans "Software" %}
+                                        </a>
+                                    </li>
+                                    <li {% block activeStandardizationSystem %}{% endblock %}>
+                                        <a href="/experiment/standardization_system/list/">
+                                            {% trans "Standardization system" %}
+                                        </a>
+                                    </li>
+                                    <li {% block activeMuscle %}{% endblock %}>
+                                        <a href="/experiment/muscle/list/">
+                                            {% trans "Muscle" %}
+                                        </a>
+                                    </li>
+                                    <li {% block activeElectrodePlacement %}{% endblock %}>
+                                        <a href="/experiment/electrode_placement/list/">
+                                            {% trans "Electrode Placement" %}
+                                        </a>
+                                    </li>
                                 </ul>
                             </div>
                         </div>
