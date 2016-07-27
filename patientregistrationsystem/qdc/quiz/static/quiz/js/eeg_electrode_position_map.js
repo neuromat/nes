@@ -19,16 +19,9 @@ function init(){
 
     imageObj.onload = function(){
         ctx.drawImage(imageObj, 0,0,700,500);
-        //pintar();
     };
     var map_file = document.getElementById("map_file");
-    //imageObj.src = "/media/eeg_electrode_system_files/3/10-20_system_for_EEG.png;
     imageObj.src = map_file.value;
-    //imageObj.src = 'https://www.ant-neuro.com/sites/default/files/images/waveguard_layout_024ch.png';
-    //canvas.addEventListener("mousedown", getPosition, false);
-    //canvas.addEventListener('mousedown',ev_canvas, false);
-    //canvas.addEventListener('mouseup',ev_canvas, false);
-
 }
 
 function used(){
@@ -45,10 +38,7 @@ function used(){
         var position = positions[i];
 
         if(document.getElementById(position.id).checked == false) {
-        // if(document.getElementById(position.id).checked == false) {
-            //context.clearRect(0, 0, canvas.width,canvas.height);
             delete positions[i];
-            //init();
         }else{
             used_positions_counter++;
             positions.push({
@@ -69,7 +59,6 @@ function used(){
         ctx.drawImage(imageObj, 0, 0, 700, 500);
         pintar(positions);
     };
-    // imageObj.src = 'https://www.ant-neuro.com/sites/default/files/images/waveguard_layout_024ch.png';
     var map_file = document.getElementById("map_file");
     imageObj.src = map_file.value;
 
@@ -137,16 +126,12 @@ function ev_canvas(ev) {
                             }
                         }
                     }//fim if ev.which == 3
-
                 }//fim func(ev)
 
 function pintar(positions){
     var canvas = document.getElementById("electrodeMapCanvas");
     var context = canvas.getContext("2d");
-    //context.clearRect(0, 0, canvas.width,canvas.height);
-    //init();
-    //var eeg_positions = document.getElementById("eeg_electrode_position");
-    //positions = eval(eeg_positions.value);
+    
     for(var i in positions){
         var position = positions[i];
         x = parseInt(position.x);
@@ -159,6 +144,4 @@ function pintar(positions){
         context.stroke();
 
     }
-
-
 } //fim function pintar

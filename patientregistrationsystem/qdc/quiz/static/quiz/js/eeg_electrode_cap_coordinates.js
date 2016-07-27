@@ -72,7 +72,7 @@ function  addSetted(){
 
             var btn_node = document.createElement('BUTTON');
             btn_node.id = id;
-            var t = document.createTextNode("delete");
+            var t = document.createTextNode(gettext("delete"));
             btn_node.appendChild(t);
             if(used) btn_node.setAttribute("disabled", "disabled");
             btn_node.onclick = function(event){
@@ -91,7 +91,6 @@ function  addSetted(){
             if(used) checknode.setAttribute("disabled", "disabled");
 
             checknode.onclick = function(event){
-            //if(document.getElementById("cap_positions").getElementsByTagName('td')[1].getElementsByTagName('input')[0].checked)
             if(!this.checked){ //checked estava true
                 var i = this.parentNode.parentNode.rowIndex;
                 document.getElementById("cap_positions").deleteRow(i);
@@ -102,48 +101,44 @@ function  addSetted(){
 
         cell1.appendChild(a);
         cell2.appendChild(btn_node);
-
         row.appendChild(cell1);
         row.appendChild(cell2);
-
         posTable.appendChild(row);
-
         }
-
     }
-
 }
 
-function update(positionId){
-
-    can_update = true;
+function update(positionId) {
     point_update = positionId;
-    var canvas = document.getElementById("electrodeMapCanvas");
-    var context = canvas.getContext("2d");
+    if (can_update) refresh_Screen();
+    else {
+        can_update = true;
+        var canvas = document.getElementById("electrodeMapCanvas");
+        var context = canvas.getContext("2d");
 
-    alert('Please click on a new position on the image to update this point');
-    for(var i in positions){
-        var position = positions[i];
-        if(position.id == positionId){
-            position.update = true;
-            point_update_name = position.position;
-            x = parseInt(position.x);
-            y = parseInt(position.y);
+        alert('Please click on a new position on the image to update this point');
+        for (var i in positions) {
+            var position = positions[i];
+            if (position.id == positionId) {
+                position.update = true;
+                point_update_name = position.position;
+                x = parseInt(position.x);
+                y = parseInt(position.y);
 
-            var gradient=context.createLinearGradient(0,0,0,170);
-            gradient.addColorStop(0,"magenta");
-            gradient.addColorStop(0.5,"blue");
-            gradient.addColorStop(1.0,"red");
+                var gradient = context.createLinearGradient(0, 0, 0, 170);
+                gradient.addColorStop(0, "magenta");
+                gradient.addColorStop(0.5, "red");
+                gradient.addColorStop(1.0, "blue");
 
-            context.beginPath();
-            context.strokeStyle = gradient;
-            //context.lineWidth = 2;
-            context.arc(x, y, 10, 0, 2 * Math.PI);
-
-            //context.fill();
-            context.stroke();
+                context.beginPath();
+                context.strokeStyle = gradient;
+                //context.lineWidth = 2;
+                context.arc(x, y, 10, 0, 2 * Math.PI);
+                context.closePath();
+                //context.fill();
+                context.stroke();
+            }
         }
-        //refresh_Screen();
     }
 };
 
@@ -179,29 +174,17 @@ function pintar(){
             if(position.used){
                 context.strokeStyle = "gray";
                 context.fillStyle = "gray";
-            } 
+            }
             else context.fillStyle = "red";
             context.arc(x, y, 5, 0, 2 * Math.PI);
+            context.closePath();
             context.fill();
             context.stroke();
         }
-        // if(can_update && position.update){
-        //     x = parseInt(position.x);
-        //     y = parseInt(position.y);
-        //
-        //     var gradient=context.createLinearGradient(0,0,0,170);
-        //     gradient.addColorStop("0","magenta");
-        //     gradient.addColorStop("0.5","blue");
-        //     gradient.addColorStop("1.0","red");
-        //
-        //     context.beginPath();
-        //     context.strokeStyle = gradient;
-        //     //context.lineWidth = 2;
-        //     context.arc(x, y, 10, 0, 2 * Math.PI);
-        //
-        //     //context.fill();
-        //     context.stroke();
-        // }
+    }
+    if(can_update){
+        can_update = false;
+        update(point_update);
     }
 }; //fim function pintar
 
@@ -228,7 +211,7 @@ function addRow(index){
 
     var btn_node = document.createElement('BUTTON');
     btn_node.id = id;
-    var t = document.createTextNode("delete");
+    var t = document.createTextNode(gettext("delete"));
     btn_node.appendChild(t);
     btn_node.onclick = function(event){
         var i = this.parentNode.parentNode.rowIndex;
@@ -243,7 +226,6 @@ function addRow(index){
     checknode.id = id;
     checknode.setAttribute("checked", true);
     checknode.onclick = function(event){
-        //if(document.getElementById("cap_positions").getElementsByTagName('td')[1].getElementsByTagName('input')[0].checked)
         if(!this.checked){ //checked estava true
             var i = this.parentNode.parentNode.rowIndex;
             document.getElementById("cap_positions").deleteRow(i);
@@ -291,7 +273,7 @@ function validPosition(new_x, new_y){
             if(dist < radio){
                 valid= true;
                 if(position.used){
-                    alert("This coodinates can't be modified because is being used by some EEG layout setting! ")
+                    alert(gettext("This coodinates can't be modified because is being used by some EEG layout setting! "));
                 }else{
                     btn = document.getElementById(position.id);
                     position.delete = true;
@@ -306,7 +288,6 @@ function validPosition(new_x, new_y){
 }
 
 function getPosition(event){
-
     var x = new Number();
     var y = new Number();
     var canvas = document.getElementById("electrodeMapCanvas");
@@ -314,13 +295,13 @@ function getPosition(event){
 
     var rect = this.getBoundingClientRect();
 
-    if (event.layerX || event.layerX == 0) { // Firefox
-        event._x = event.layerX;
-        event._y = event.layerY;
-    } else if (event.offsetX || event.offsetX == 0) { // Opera
-        event._x = event.offsetX;
-        event._y = event.offsetY;
-    }
+    // if (event.layerX || event.layerX == 0) { // Firefox
+    //     event._x = event.layerX;
+    //     event._y = event.layerY;
+    // } else if (event.offsetX || event.offsetX == 0) { // Opera
+    //     event._x = event.offsetX;
+    //     event._y = event.offsetY;
+    // }
 
     var coords = {
         x: event.clientX - rect.left,
@@ -336,9 +317,9 @@ function getPosition(event){
     if(!can_update){
         if(validPosition(x,y)) refresh_Screen();
         else{
-             if (confirm("Confirms the coordinates? x: " + x + " and  y: " + y) == true) {
+             if (confirm(gettext("Confirms the coordinates? x: " + x + " and  y: " + y)) == true) {
                  var id = positions.length + 1;
-                 var name = prompt("Please enter the name this point", id);
+                 var name = prompt(gettext("Please enter the name this point"), id);
                  if(name != null){
                      id = localization_system_id + "_" + id;
                      context.beginPath();
@@ -361,14 +342,13 @@ function getPosition(event){
                      index = positions.length;
                      addRow(index);
                  }
-
              }
         }
     }else{
-        alert("Updating point " + point_update_name);
+        alert(gettext("Updating point ") + point_update_name);
         can_update = false;
-        if (confirm("Confirms the coordinates? x: " + x + " and  y: " + y) == true) {
-            var name = prompt("Please enter the name of the point", point_update_name);
+        if (confirm(gettext("Confirms the coordinates? x: " + x + " and  y: " + y)) == true) {
+            var name = prompt(gettext("Please enter the name of the point"), point_update_name);
             if(name != null){
                 for(var i in positions){
                     var position = positions[i];
@@ -381,9 +361,9 @@ function getPosition(event){
                         position.update = true
                     }
                 }
-                refresh_Screen();
             }
         }
+        refresh_Screen();
     }
 
 };

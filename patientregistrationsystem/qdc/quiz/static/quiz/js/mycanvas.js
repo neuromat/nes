@@ -43,8 +43,8 @@
                     ctx.beginPath();
                     var gradient = ctx.createLinearGradient(0, 0, 170, 0);
                     gradient.addColorStop("0", "magenta");
-                    gradient.addColorStop("0.5", "blue");
-                    gradient.addColorStop("1.0", "red");
+                    gradient.addColorStop("0.5", "red");
+                    gradient.addColorStop("1.0", "blue");
 
                     // Fill with gradient
                     ctx.strokeStyle = gradient;
