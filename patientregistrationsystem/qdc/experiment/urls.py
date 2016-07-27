@@ -141,6 +141,8 @@ urlpatterns = patterns(
         'eeg_electrode_position_update', name='eeg_electrode_position_edit'),
     url(r'^eeg_electrode_localization_system/(?P<eeg_electrode_localization_system_id>\d+)/new_coordinates/$',
         'eeg_electrode_coordinates_create', name='eeg_electrode_coordinates_create'),
+    url(r'^eeg_electrode_localization_system/test/(?P<eeg_electrode_localization_system_id>\d+)/$',
+        'eeg_electrode_localization_system_test', name='eeg_electrode_localization_system_test'),
 
     # eeg setting
     url(r'^(?P<experiment_id>\d+)/eeg_setting/new/$', 'eeg_setting_create', name='eeg_setting_new'),

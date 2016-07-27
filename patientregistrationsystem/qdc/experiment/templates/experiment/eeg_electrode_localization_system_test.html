@@ -1,0 +1,81 @@
+{% extends "quiz/template.html" %}
+
+{% load i18n admin_static %}
+
+{% block activeEquipment %}class="active"{% endblock %}
+
+{% block header %}
+    <script src="{% static 'quiz/js/mycanvas.js' %}"></script>
+
+{% endblock %}
+
+{% block form %}
+    <div class="row">
+    <form id="user_form" method="post" data-toggle="validator" enctype="multipart/form-data">
+    {% csrf_token %}
+{% endblock %}
+
+{% block content %}
+
+    {% if messages %}
+        {% for message in messages %}
+
+            {% if message.tags == "success" %}
+                <script>showSuccessMessage('{{ message }}')</script>
+            {% endif %}
+
+            {% if message.tags == "warning" %}
+                <script>showWarningMessage('{{ message }}')</script>
+            {% endif %}
+
+            {% if message.tags == "error" %}
+                <script>showErrorMessage('{{ message }}')</script>
+            {% endif %}
+
+            {% if message.tags == "info" %}
+                <script>showInfoMessage('{{ message }}')</script>
+            {% endif %}
+
+        {% endfor %}
+    {% endif %}
+
+    <div class="tab-pane fade in active" id="breadCrumb">
+        <div class="col-md-10">
+            <ol class="breadcrumb">
+                <li><a href="/home">{% trans "Home" %}</a></li>
+                <li><a href="/experiment/eeg_electrode_localization_system/list">{% trans "EEG electrode localization system" %}</a></li>
+
+                {% if creating %}
+                    <li><a href="/experiment/eeg_electrode_localization_system/{{ localization_system.id }}">{{ localization_system.name }}</a></li>
+                {% else %}
+                    <li><a href="/experiment/eeg_electrode_localization_system/{{ position.eeg_electrode_localization_system.id }}">{{ position.eeg_electrode_localization_system.name }}</a></li>
+                {% endif %}
+
+                {% if creating %}
+                    <li class="active">{% trans "New electrode coordinates" %}</li>
+                {% else %}
+                    {% if editing %}
+                        <li><a href="/experiment/eeg_electrode_position/{{ position.id }}">{{ position.name }}</a></li>
+                        <li class="active">{% trans "Editing" %}</li>
+                    {% else %}
+                        <li class="active"> {{ position.name }} </li>
+                    {% endif %}
+                {% endif %}
+            </ol>
+        </div>
+    </div>
+
+    <div style="float:left; width: 80%">
+        <canvas id="canvasQuadrado" width="700" height="500" style="border:1px solid #000000;">
+        </canvas>
+    </div>
+
+{% endblock %}
+
+
+
+
+{% block end_form %}
+    </form>
+    </div>
+{% endblock %}

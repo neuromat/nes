@@ -118,6 +118,8 @@ function update(positionId){
 
     can_update = true;
     point_update = positionId;
+    var canvas = document.getElementById("electrodeMapCanvas");
+    var context = canvas.getContext("2d");
 
     alert('Please click on a new position on the image to update this point');
     for(var i in positions){
@@ -125,8 +127,23 @@ function update(positionId){
         if(position.id == positionId){
             position.update = true;
             point_update_name = position.position;
+            x = parseInt(position.x);
+            y = parseInt(position.y);
+
+            var gradient=context.createLinearGradient(0,0,0,170);
+            gradient.addColorStop(0,"magenta");
+            gradient.addColorStop(0.5,"blue");
+            gradient.addColorStop(1.0,"red");
+
+            context.beginPath();
+            context.strokeStyle = gradient;
+            //context.lineWidth = 2;
+            context.arc(x, y, 10, 0, 2 * Math.PI);
+
+            //context.fill();
+            context.stroke();
         }
-        refresh_Screen();
+        //refresh_Screen();
     }
 };
 
@@ -158,12 +175,33 @@ function pintar(){
             y = parseInt(position.y);
 
             context.beginPath();
-            context.arc(x, y, 5, 0, 2 * Math.PI);
-            if(position.used) context.fillStyle = "gray";
+            context.strokeStyle = "red";
+            if(position.used){
+                context.strokeStyle = "gray";
+                context.fillStyle = "gray";
+            } 
             else context.fillStyle = "red";
+            context.arc(x, y, 5, 0, 2 * Math.PI);
             context.fill();
             context.stroke();
         }
+        // if(can_update && position.update){
+        //     x = parseInt(position.x);
+        //     y = parseInt(position.y);
+        //
+        //     var gradient=context.createLinearGradient(0,0,0,170);
+        //     gradient.addColorStop("0","magenta");
+        //     gradient.addColorStop("0.5","blue");
+        //     gradient.addColorStop("1.0","red");
+        //
+        //     context.beginPath();
+        //     context.strokeStyle = gradient;
+        //     //context.lineWidth = 2;
+        //     context.arc(x, y, 10, 0, 2 * Math.PI);
+        //
+        //     //context.fill();
+        //     context.stroke();
+        // }
     }
 }; //fim function pintar
 
@@ -274,6 +312,7 @@ function getPosition(event){
     var canvas = document.getElementById("electrodeMapCanvas");
     context = canvas.getContext("2d");
 
+    var rect = this.getBoundingClientRect();
 
     if (event.layerX || event.layerX == 0) { // Firefox
         event._x = event.layerX;
@@ -283,8 +322,16 @@ function getPosition(event){
         event._y = event.offsetY;
     }
 
-    x = parseInt(event._x);
-    y = parseInt(event._y);
+    var coords = {
+        x: event.clientX - rect.left,
+        y: event.clientY - rect.top
+    };
+
+    // x = parseInt(event._x);
+    // y = parseInt(event._y);
+
+    x = parseInt(coords.x);
+    y = parseInt(coords.y);
 
     if(!can_update){
         if(validPosition(x,y)) refresh_Screen();
@@ -318,10 +365,10 @@ function getPosition(event){
              }
         }
     }else{
-        alert("Update point " + point_update_name);
+        alert("Updating point " + point_update_name);
         can_update = false;
         if (confirm("Confirms the coordinates? x: " + x + " and  y: " + y) == true) {
-            var name = prompt("Please enter the name this point", point_update_name);
+            var name = prompt("Please enter the name of the point", point_update_name);
             if(name != null){
                 for(var i in positions){
                     var position = positions[i];
@@ -348,7 +395,7 @@ function sendPositions(){
         url,
         {positions : JSON.stringify(positions)},
         function(data){
-            alert(data[0].new + " positions saved! and " + data[0].delete + " positions deleted!")
+            //alert(data[0].new + " positions saved! and " + data[0].delete + " positions deleted!")
         }
     );
 };

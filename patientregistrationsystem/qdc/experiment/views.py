@@ -1235,35 +1235,31 @@ def get_json_positions(request, eeg_electrode_localization_system_id):
 
     new_positions = json.loads(request.GET.get('positions'))
 
-    # if data is None:
-    # localization_system = get_object_or_404(EEGElectrodeLocalizationSystem, pk=eeg_electrode_localization_system_id)
-    # electrode_position_list = EEGElectrodePosition.objects.filter(
-    #     eeg_electrode_localization_system_id=eeg_electrode_localization_system_id)
-
     count_new = 0
     count_delete = 0
     for position in new_positions:
-        if not position['delete'] and not position['existInDB']:
+        if position['existInDB']:
+            if position['delete']:
+                get_object_or_404(EEGElectrodePosition, pk=position['id']).delete()
+                count_delete += 1
+            if position['update']:
+                update_electrode_position = get_object_or_404(EEGElectrodePosition, pk=position['id'])
+                update_electrode_position.name = position['position']
+                update_electrode_position.coordinate_x = position['x']
+                update_electrode_position.coordinate_y = position['y']
+                update_electrode_position.save()
+        else:
             new_electrode_position = EEGElectrodePosition.objects.create(
                 eeg_electrode_localization_system_id=eeg_electrode_localization_system_id,
                 name=position['position'], coordinate_x=float(position['x']), coordinate_y=float(position['y']))
             count_new += 1
             new_electrode_position.save()
-        else:
-            if position['existInDB'] and position['delete']:
-                get_object_or_404(EEGElectrodePosition, pk=position['id']).delete()
-                count_delete += 1
-            else:
-                if position['existInDB'] and position['update']:
-                    update_electrode_position = get_object_or_404(EEGElectrodePosition, pk=position['id'])
-                    update_electrode_position.name = position['position']
-                    update_electrode_position.coordinate_x = position['x']
-                    update_electrode_position.coordinate_y = position['y']
-                    update_electrode_position.save()
 
-    list_json_response = None
-    list_json_response.append({'new': count_new, 'delete': count_delete})
-    return HttpResponse(json.dumps(list_json_response), content_type='application/json')
+    # json_response = None
+    # list_json_response.append({'new': count_new, 'delete': count_delete})
+    # return HttpResponse(json.dumps(json_response), content_type='application/json')
+    redirect_url = reverse("eeg_electrode_localization_system_view", args=(eeg_electrode_localization_system_id,))
+    return HttpResponseRedirect(redirect_url)
 
 
 @login_required
@@ -6283,6 +6279,22 @@ def eeg_electrode_localization_system_create(
 
     return render(request, template_name, context)
 
+@login_required
+@permission_required('experiment.view_equipment')
+def eeg_electrode_localization_system_test(request, eeg_electrode_localization_system_id,
+                                           template_name="experiment/eeg_electrode_localization_system_test.html"):
+
+    localization_system = get_object_or_404(EEGElectrodeLocalizationSystem, pk=eeg_electrode_localization_system_id)
+    localization_system_form = EEGElectrodeLocalizationSystemRegisterForm(
+        request.POST or None, instance=localization_system)
+
+    for field in localization_system_form.fields:
+        localization_system_form.fields[field].widget.attrs['disabled'] = True
+
+    context = {"localization_system": localization_system,
+               "localization_system_form": localization_system_form}
+
+    return render(request, template_name, context)
 
 @login_required
 @permission_required('experiment.view_equipment')
