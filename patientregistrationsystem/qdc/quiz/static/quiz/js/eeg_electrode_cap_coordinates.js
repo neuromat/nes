@@ -116,7 +116,7 @@ function update(positionId) {
         var canvas = document.getElementById("electrodeMapCanvas");
         var context = canvas.getContext("2d");
 
-        alert('Please click on a new position on the image to update this point');
+        alert(gettext("Please click on a new position on the image to update this point"));
         for (var i in positions) {
             var position = positions[i];
             if (position.id == positionId) {
@@ -317,7 +317,7 @@ function getPosition(event){
     if(!can_update){
         if(validPosition(x,y)) refresh_Screen();
         else{
-             if (confirm(gettext("Confirms the coordinates? x: " + x + " and  y: " + y)) == true) {
+             if (confirm(gettext("Confirms the coordinates? x - y: ") + x + " - " + y) == true) {
                  var id = positions.length + 1;
                  var name = prompt(gettext("Please enter the name this point"), id);
                  if(name != null){
@@ -347,7 +347,7 @@ function getPosition(event){
     }else{
         alert(gettext("Updating point ") + point_update_name);
         can_update = false;
-        if (confirm(gettext("Confirms the coordinates? x: " + x + " and  y: " + y)) == true) {
+        if (confirm(gettext("Confirms the coordinates? x - y: ") + x + " - " + y) == true) {
             var name = prompt(gettext("Please enter the name of the point"), point_update_name);
             if(name != null){
                 for(var i in positions){

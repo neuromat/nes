@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2016-06-01 14:58-0300\n"
+"POT-Creation-Date: 2016-07-28 17:56-0300\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -22,7 +22,7 @@ msgid "Name must be included"
 msgstr ""
 
 #: patient/forms.py:31 patient/forms.py:134 patient/forms.py:159
-#: patient/views.py:713 patient/views.py:1226
+#: patient/views.py:715 patient/views.py:1226
 msgid "%m/%d/%Y"
 msgstr ""
 
@@ -118,39 +118,39 @@ msgstr ""
 msgid "Date of birth can't be greater than today date."
 msgstr ""
 
-#: patient/models.py:174
+#: patient/models.py:175
 msgid "Cell phone"
 msgstr ""
 
-#: patient/models.py:175
+#: patient/models.py:176
 msgid "Home phone"
 msgstr ""
 
-#: patient/models.py:176
+#: patient/models.py:177
 msgid "Business"
 msgstr ""
 
-#: patient/models.py:177
+#: patient/models.py:178
 msgid "Main"
 msgstr ""
 
-#: patient/models.py:178
+#: patient/models.py:179
 msgid "Business fax"
 msgstr ""
 
-#: patient/models.py:179
+#: patient/models.py:180
 msgid "Home fax"
 msgstr ""
 
-#: patient/models.py:180
+#: patient/models.py:181
 msgid "Pager"
 msgstr ""
 
-#: patient/models.py:181
+#: patient/models.py:182
 msgid "Other"
 msgstr ""
 
-#: patient/models.py:392
+#: patient/models.py:393
 msgid "token id: "
 msgstr ""
 
@@ -162,7 +162,7 @@ msgstr "Exam was not saved. Please, correct fields highlighted."
 msgid "Medical evaluation was not saved. Fields with (*) are obligatory."
 msgstr "Medical evaluation was not saved. Fields with (*) are obligatory."
 
-#: patient/templates/patient/register_personal_data.html:31
+#: patient/templates/patient/register_personal_data.html:41
 msgid "Participant was not saved. Please, correct fields highlighted."
 msgstr "Participant was not saved. Please, correct fields highlighted."
 
@@ -210,43 +210,43 @@ msgstr ""
 msgid "Social class was not calculated, "
 msgstr ""
 
-#: patient/views.py:718
+#: patient/views.py:720
 msgid "Diagnosis details successfully changed."
 msgstr ""
 
-#: patient/views.py:724
+#: patient/views.py:726
 msgid "Incorrect date. Use format: mm/dd/yyyy"
 msgstr ""
 
-#: patient/views.py:745
+#: patient/views.py:747
 msgid "Medical evaluation successfully deleted."
 msgstr ""
 
-#: patient/views.py:758
+#: patient/views.py:760
 msgid "Diagnosis has already exist in this medical assessment."
 msgstr ""
 
-#: patient/views.py:791
+#: patient/views.py:793
 msgid "Diagnosis can not be deleted. You must delete exams before."
 msgstr ""
 
-#: patient/views.py:796
+#: patient/views.py:798
 msgid "Diagnosis successfully deleted."
 msgstr ""
 
-#: patient/views.py:838 patient/views.py:904
+#: patient/views.py:840 patient/views.py:906
 msgid "Exam successfully saved."
 msgstr ""
 
-#: patient/views.py:854 patient/views.py:918
+#: patient/views.py:856 patient/views.py:916
 msgid "It is not possible to save exam without files."
 msgstr ""
 
-#: patient/views.py:983
+#: patient/views.py:981
 msgid "Exam successfully deleted."
 msgstr ""
 
-#: patient/views.py:1007
+#: patient/views.py:1005
 msgid "Attachment successfully deleted."
 msgstr ""
 

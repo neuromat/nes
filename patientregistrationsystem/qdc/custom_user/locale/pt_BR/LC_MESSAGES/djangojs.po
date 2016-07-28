@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2016-06-01 14:58-0300\n"
+"POT-Creation-Date: 2016-07-28 17:56-0300\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -42,15 +42,22 @@ msgstr ""
 msgid "E-mail is not registered"
 msgstr ""
 
-#: custom_user/templates/custom_user/register_users.html:28
+#: custom_user/templates/custom_user/register_users.html:35
+msgid ""
+"Password must contain at least 8 characters, including at least one "
+"uppercase letter, digit or special character."
+msgstr ""
+
+#: custom_user/templates/custom_user/register_users.html:43
 msgid "You have to choose at least one user profile!"
 msgstr "É necessário escolher pelo menos um perfil de usuário!"
 
-#: custom_user/templates/custom_user/register_users.html:51
+#: custom_user/templates/custom_user/register_users.html:68
+#: custom_user/templates/custom_user/register_users.html:82
 msgid "E-mail have to be filled!"
 msgstr "E-mail deve ser preenchido!"
 
-#: custom_user/templates/custom_user/register_users.html:92
+#: custom_user/templates/custom_user/register_users.html:125
 msgid "Please, correct the fields highlighted."
 msgstr "Por favor, corrija os campos em destaque."
 
@@ -75,11 +82,11 @@ msgstr ""
 msgid "This username already exists in an disabled user."
 msgstr ""
 
-#: custom_user/views.py:89
+#: custom_user/views.py:91
 msgid "User updated successfully."
 msgstr ""
 
-#: custom_user/views.py:97
+#: custom_user/views.py:99
 msgid "User deleted successfully."
 msgstr ""
 

@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2016-06-01 14:58-0300\n"
+"POT-Creation-Date: 2016-07-28 17:56-0300\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -642,27 +642,35 @@ msgstr ""
 msgid "Can export questionnaire response"
 msgstr ""
 
-#: add_initial_data.py:179
-msgid "Administrator"
+#: add_initial_data.py:176
+msgid "Can register equipment"
 msgstr ""
 
-#: add_initial_data.py:180
-msgid "Attendant"
+#: add_initial_data.py:177
+msgid "Can view sensitive patient data"
 msgstr ""
 
 #: add_initial_data.py:181
-msgid "Physiotherapist"
+msgid "Administrator"
 msgstr ""
 
 #: add_initial_data.py:182
-msgid "Doctor"
+msgid "Attendant"
 msgstr ""
 
 #: add_initial_data.py:183
-msgid "Junior researcher"
+msgid "Physiotherapist"
 msgstr ""
 
 #: add_initial_data.py:184
+msgid "Doctor"
+msgstr ""
+
+#: add_initial_data.py:185
+msgid "Junior researcher"
+msgstr ""
+
+#: add_initial_data.py:186
 msgid "Senior researcher"
 msgstr ""
 
@@ -830,28 +838,23 @@ msgstr "Mostrar"
 msgid "Hide"
 msgstr "Esconder"
 
-#: initial_ICD.py:210
-msgid "File name is not from ICD format"
-msgstr ""
-
 #: templates/registration/change_password_custom.html:35
-#: templates/registration/password_reset_confirm_o.html:49
 msgid "Invalid password. Please, try again."
 msgstr "Senha inválida. Por favor tente novamente."
 
-#: templates/registration/login.html:112
+#: templates/registration/login.html:115
 msgid "Invalid user or password."
 msgstr "Usuário ou senha inválidos."
 
-#: templates/registration/password_reset_confirm.html:37
+#: templates/registration/password_reset_confirm.html:38
 msgid "Passwords don't match"
 msgstr ""
 
-#: templates/registration/password_reset_confirm.html:64
+#: templates/registration/password_reset_confirm.html:65
 msgid "Password incompatible with defined standard."
 msgstr "Senha incompatível com o padrão definido."
 
-#: templates/registration/password_reset_confirm.html:162
+#: templates/registration/password_reset_confirm.html:163
 msgid "Invalid fill. Make sure the passwords entered are the same"
 msgstr "Preenchimento invalido. Verifique se as senhas digitadas sao iguais"
 

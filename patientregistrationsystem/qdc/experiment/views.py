@@ -4342,6 +4342,7 @@ def eeg_image_edit(request, eeg_data_id, tab, template_name="experiment/subject_
     eeg_data_form = EEGDataForm(request.POST or None, instance=eeg_data)
 
     # get the current before change
+
     eeg_setting = eeg_data.eeg_setting
     positions = []
     if hasattr(eeg_setting, 'eeg_electrode_layout_setting'):

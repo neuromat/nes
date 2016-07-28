@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2016-06-01 14:58-0300\n"
+"POT-Creation-Date: 2016-07-28 17:56-0300\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -41,33 +41,65 @@ msgstr "Are you sure you want to delete these "
 msgid "  uses of step from list?"
 msgstr "  uses of step from list?"
 
+#: quiz/static/quiz/js/eeg_electrode_cap_coordinates.js:75
+#: quiz/static/quiz/js/eeg_electrode_cap_coordinates.js:214
+msgid "delete"
+msgstr ""
+
+#: quiz/static/quiz/js/eeg_electrode_cap_coordinates.js:119
+msgid "Please click on a new position on the image to update this point"
+msgstr ""
+
+#: quiz/static/quiz/js/eeg_electrode_cap_coordinates.js:276
+msgid ""
+"This coodinates can't be modified because is being used by some EEG layout "
+"setting! "
+msgstr ""
+
+#: quiz/static/quiz/js/eeg_electrode_cap_coordinates.js:320
+#: quiz/static/quiz/js/eeg_electrode_cap_coordinates.js:350
+msgid "Confirms the coordinates? x - y: "
+msgstr ""
+
+#: quiz/static/quiz/js/eeg_electrode_cap_coordinates.js:322
+msgid "Please enter the name this point"
+msgstr ""
+
+#: quiz/static/quiz/js/eeg_electrode_cap_coordinates.js:348
+msgid "Updating point "
+msgstr ""
+
+#: quiz/static/quiz/js/eeg_electrode_cap_coordinates.js:351
+msgid "Please enter the name of the point"
+msgstr ""
+
 #: quiz/static/quiz/js/password.js:18
 msgid "Passwords don't match"
 msgstr "Passwords don't match"
 
-#: quiz/static/quiz/js/password.js:29
+#: quiz/static/quiz/js/password.js:52
+msgid "Weak"
+msgstr "Weak"
+
+#: quiz/static/quiz/js/password.js:58
+msgid "Fair"
+msgstr "Fair"
+
+#: quiz/static/quiz/js/password.js:64
+msgid "Strong"
+msgstr "Strong"
+
+#: quiz/static/quiz/js/password.js:70
+msgid "Excellent"
+msgstr "Excellent"
+
+#: quiz/static/quiz/js/password_ext.js:11
 msgid ""
 "Password must contain at least 8 characters, including at least one "
 "uppercase letter, digit or special character."
 msgstr ""
 "Password must contain at least 8 characters, including at least one "
 "uppercase letter, digit or special character."
-
-#: quiz/static/quiz/js/password.js:64
-msgid "Weak"
-msgstr "Weak"
-
-#: quiz/static/quiz/js/password.js:70
-msgid "Fair"
-msgstr "Fair"
-
-#: quiz/static/quiz/js/password.js:76
-msgid "Strong"
-msgstr "Strong"
-
-#: quiz/static/quiz/js/password.js:82
-msgid "Excellent"
-msgstr "Excellent"
 
 #: quiz/static/quiz/js/patient_personal_data.js:113
 #: quiz/static/quiz/js/register.js:75
@@ -78,11 +110,11 @@ msgstr "Obligatory fields must be filled."
 msgid "Please fill the fields correctly. E-mail is invalid"
 msgstr "Please fill the fields correctly. E-mail is invalid"
 
-#: quiz/static/quiz/js/questionnaire_export.js:79
+#: quiz/static/quiz/js/questionnaire_export.js:81
 msgid "Either one or both Per participant/Per questionnaire must be set."
 msgstr ""
 
-#: quiz/static/quiz/js/questionnaire_export.js:83
+#: quiz/static/quiz/js/questionnaire_export.js:85
 msgid "At least one questionnaire field have to be set."
 msgstr ""
 

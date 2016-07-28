@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2016-06-01 14:59-0300\n"
+"POT-Creation-Date: 2016-07-28 17:56-0300\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -18,46 +18,49 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=(n > 1);\n"
 
-#: survey/templates/survey/survey_register.html:43
+#: survey/templates/survey/survey_register.html:44
 msgid "Please, correct the highlighted fields."
 msgstr "Por favor, corrija os campos em destaque."
 
-#: survey/views.py:93
+#: survey/views.py:96
 msgid "Questionnaire created successfully."
-msgstr ""
+msgstr "Questionário criado com sucesso"
 
-#: survey/views.py:127
+#: survey/views.py:131
 msgid "Questionnaire updated successfully."
-msgstr ""
+msgstr "Questionário atualizado com sucesso"
 
-#: survey/views.py:129
+#: survey/views.py:133
 msgid "There are no changes to save."
-msgstr ""
+msgstr "Não há mudanças para salvar"
 
-#: survey/views.py:391
+#: survey/views.py:401
 msgid "Questionnaire deleted successfully."
-msgstr ""
+msgstr "Questionário removido com sucesso"
 
-#: survey/views.py:394
+#: survey/views.py:404
 msgid ""
 "It was not possible to delete questionnaire, because there are experimental "
 msgstr ""
+"Não foi possível remover questionário, por que existe um protocolo "
+"experimental associado"
 
-#: survey/views.py:495
+#: survey/views.py:505
 msgid "Formula"
-msgstr ""
+msgstr "Fórmula"
 
-#: survey/views.py:570 survey/views.py:588 survey/views.py:614
+#: survey/views.py:583 survey/views.py:601 survey/views.py:627
 msgid "No answer"
-msgstr ""
+msgstr "Sem resposta"
 
-#: survey/views.py:632
+#: survey/views.py:645
 msgid "LimeSurvey did not find fill data for this questionnaire."
-msgstr ""
+msgstr "LimeSurvey não encontrou dados para este questionário"
 
-#: survey/views.py:644
+#: survey/views.py:657
 msgid "LimeSurvey unavailable. System running partially."
 msgstr ""
+"LimeSurvey não disponível. O sistema está sendo executado parcialmente."
 
 #~ msgid "Por favor, corrija os campos em destaque."
 #~ msgstr "Por favor, corrija os campos em destaque."
