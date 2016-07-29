@@ -5044,7 +5044,7 @@ def component_change_the_order(request, path_of_the_components, component_config
 def component_create(request, experiment_id, component_type):
     experiment = get_object_or_404(Experiment, pk=experiment_id)
 
-    check_can_change(request.user, experiment.research_project)
+    can_change = get_can_change(request.user, experiment.research_project)
 
     template_name = "experiment/" + component_type + "_component.html"
     component_form = ComponentForm(request.POST or None)
@@ -5108,6 +5108,7 @@ def component_create(request, experiment_id, component_type):
     context = {"back_cancel_url": "/experiment/" + str(experiment.id) + "/components",
                "component_form": component_form,
                "creating": True,
+               "can_change": can_change,
                "experiment": experiment,
                "questionnaires_list": questionnaires_list,
                "specific_form": specific_form}

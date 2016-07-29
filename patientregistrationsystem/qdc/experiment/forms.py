@@ -496,6 +496,9 @@ class EEGMachineRegisterForm(ModelForm):
 class AmplifierRegisterForm(ModelForm):
     class Meta:
         model = Amplifier
+
+        localized_fields = ('gain',)
+
         fields = ['manufacturer', 'identification', 'description', 'serial_number', 'gain']
 
         widgets = {
