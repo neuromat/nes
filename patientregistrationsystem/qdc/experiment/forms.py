@@ -383,6 +383,7 @@ class EEGMachineSettingForm(ModelForm):
 class EEGAmplifierForm(ModelForm):
     class Meta:
         model = Amplifier
+        localized_fields = ('gain', )
         fields = ['gain']
 
         widgets = {
@@ -393,6 +394,7 @@ class EEGAmplifierForm(ModelForm):
 class EEGAmplifierSettingForm(ModelForm):
     class Meta:
         model = EEGAmplifierSetting
+        localized_fields = ('gain', )
         fields = ['gain']
 
         widgets = {
@@ -425,12 +427,13 @@ class EEGFilterForm(ModelForm):
 class EEGFilterSettingForm(ModelForm):
     class Meta:
         model = EEGFilterSetting
+        localized_fields = ('high_pass', 'low_pass')
         fields = ['high_pass', 'low_pass', 'order']
 
         widgets = {
             'high_pass': TextInput(attrs={'class': 'form-control'}),
             'low_pass': TextInput(attrs={'class': 'form-control'}),
-            'order': TextInput(attrs={'class': 'form-control'})
+            'order': NumberInput(attrs={'class': 'form-control'})
         }
 
 
@@ -847,7 +850,7 @@ class EMGElectrodePlacementSettingForm(ModelForm):
 class EMGPreamplifierSettingForm(ModelForm):
     class Meta:
         model = EMGPreamplifierSetting
-
+        localized_fields = ('gain',)
         fields = ['amplifier', 'gain']
 
         widgets = {
@@ -866,6 +869,7 @@ class EMGAmplifierSettingForm(ModelForm):
     class Meta:
         model = EMGAmplifierSetting
 
+        localized_fields = ('gain',)
         fields = ['amplifier', 'gain']
 
         widgets = {
@@ -884,6 +888,7 @@ class EMGAnalogFilterSettingForm(ModelForm):
     class Meta:
         model = EMGAnalogFilterSetting
 
+        localized_fields = ('low_pass', 'high_pass', 'band_pass', 'notch',)
         fields = ['low_pass', 'high_pass', 'band_pass', 'notch']
 
         widgets = {

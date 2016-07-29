@@ -156,7 +156,7 @@ class TetheringSystem(models.Model):
 
 
 class Amplifier(Equipment):
-    gain = models.FloatField(null=True, blank=True)
+    gain = models.FloatField(null=True, blank=True, validators=[MinValueValidator(1)])
     number_of_channels = models.IntegerField(null=True, blank=True)
     common_mode_rejection_ratio = models.FloatField(null=True, blank=True)
     input_impedance = models.FloatField(null=True, blank=True)
@@ -371,7 +371,7 @@ class EEGMachineSetting(models.Model):
 class EEGAmplifierSetting(models.Model):
     eeg_setting = models.OneToOneField(EEGSetting, primary_key=True, related_name='eeg_amplifier_setting')
     eeg_amplifier = models.ForeignKey(Amplifier)
-    gain = models.FloatField(null=True, blank=True)
+    gain = models.FloatField(null=True, blank=True, validators=[MinValueValidator(1)])
 
 
 class EEGSolutionSetting(models.Model):
@@ -532,7 +532,7 @@ class EMGPreamplifierSetting(models.Model):
     emg_electrode_setting = models.OneToOneField(EMGElectrodeSetting,
                                                  primary_key=True, related_name='emg_preamplifier_setting')
     amplifier = models.ForeignKey(Amplifier)
-    gain = models.FloatField(null=True, blank=True)
+    gain = models.FloatField(null=True, blank=True, validators=[MinValueValidator(1)])
 
 
 class EMGPreamplifierFilterSetting(models.Model):
@@ -549,7 +549,7 @@ class EMGAmplifierSetting(models.Model):
     emg_electrode_setting = models.OneToOneField(EMGElectrodeSetting,
                                                  primary_key=True, related_name='emg_amplifier_setting')
     amplifier = models.ForeignKey(Amplifier)
-    gain = models.FloatField(null=True, blank=True)
+    gain = models.FloatField(null=True, blank=True, validators=[MinValueValidator(1)])
 
 
 class EMGAnalogFilterSetting(models.Model):

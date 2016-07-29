@@ -6,6 +6,18 @@ $(function(){
     $("[data-toggle=tooltip]").tooltip();
 });
 
+function show_modal_remove_group(){
+    var  modal_remove = document.getElementById('remove-group');
+    modal_remove.removeAttribute("disabled");
+    $('#modalRemove').modal('show');
+}
+
+function disable_remove_button(){
+    var  modal_remove = document.getElementById('remove-group');
+    modal_remove.setAttribute("disabled", "disabled");
+    modal_remove.setAttribute("value", 'remove');
+}
+
 function show_modal_remove (group_id, classification_of_diseases_id){
     var  modal_remove = document.getElementById('removeClassificationOfDiseases');
     modal_remove.setAttribute( "href", '/experiment/diagnosis/delete/' + group_id + '/' + classification_of_diseases_id);

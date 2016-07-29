@@ -122,7 +122,7 @@
                                             </a>
                                             <blockquote>
                                                 <i><h6>
-                                                    {% trans "Number of channels setted:" %} {{ eeg_setting.eeg_machine_setting.number_of_channels_used }}
+                                                    {% trans "Number of used channels" %}: {{ eeg_setting.eeg_machine_setting.number_of_channels_used }}
                                                 </h6></i>
                                             </blockquote>
 
@@ -149,7 +149,7 @@
                                             </a>
                                             <blockquote>
                                                 <i><h6>
-                                                    {% trans "Gain:" %} {{ eeg_setting.eeg_amplifier_setting.gain }}
+                                                    {% trans "Gain" %}: {{ eeg_setting.eeg_amplifier_setting.gain }}
                                                 </h6></i>
                                             </blockquote>
 
@@ -198,11 +198,11 @@
                                             </a>
                                             <blockquote>
                                                 <i><h6>
-                                                    {% trans "High pass:" %} {{ eeg_setting.eeg_filter_setting.high_pass }}
+                                                    {% trans "High pass" %}: {{ eeg_setting.eeg_filter_setting.high_pass|default:'' }}
                                                     <br/>
-                                                    {% trans "Low pass:" %} {{ eeg_setting.eeg_filter_setting.low_pass }}
+                                                    {% trans "Low pass" %}: {{ eeg_setting.eeg_filter_setting.low_pass|default:'' }}
                                                     <br/>
-                                                    {% trans "Order:" %} {{ eeg_setting.eeg_filter_setting.order }}
+                                                    {% trans "Order" %}: {{ eeg_setting.eeg_filter_setting.order|default:'' }}
                                                 </h6></i>
                                             </blockquote>
 
