@@ -9,7 +9,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2016-07-12 11:05-0300\n"
+"POT-Creation-Date: 2016-07-28 11:09-0300\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -240,7 +240,7 @@ msgstr "(sem anexos)"
 
 #: patient/templates/patient/exams.html:194
 msgid "Upload"
-msgstr ""
+msgstr "Carregar"
 
 #: patient/templates/patient/exams.html:205
 #: patient/templates/patient/exams.html:236
@@ -429,7 +429,7 @@ msgstr "Responsável"
 
 #: patient/templates/patient/register_medical_record.html:24
 msgid "View"
-msgstr ""
+msgstr "Lista"
 
 #: patient/templates/patient/register_medical_record.html:58
 msgid "Insert medical record"

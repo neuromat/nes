@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2016-07-26 16:20-0300\n"
+"POT-Creation-Date: 2016-07-28 11:09-0300\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -20,7 +20,7 @@ msgstr ""
 
 #: quiz/templates/quiz/contato.html:35 quiz/templates/quiz/template.html:11
 msgid "Neuroscience Experiments System - NES"
-msgstr ""
+msgstr "Sistema de Experimentos de Neurociencia - NES"
 
 #: quiz/templates/quiz/contato.html:37
 msgid "System Registration and Socio-Demographic and Clinical Data Query"
@@ -48,7 +48,7 @@ msgstr "Sair"
 
 #: quiz/templates/quiz/template.html:196
 msgid "Home"
-msgstr "Home"
+msgstr "Inicio"
 
 #: quiz/templates/quiz/template.html:204
 msgid "Participants"

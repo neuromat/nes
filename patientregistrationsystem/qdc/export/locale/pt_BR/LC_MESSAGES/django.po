@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2016-06-27 09:36-0300\n"
+"POT-Creation-Date: 2016-07-28 11:09-0300\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -18,44 +18,44 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=(n > 1);\n"
 
-#: export/export.py:66 export/export.py:67 export/views.py:127
-#: export/views.py:128 export/views.py:132 export/views.py:133
+#: export/export.py:64 export/export.py:65 export/views.py:126
+#: export/views.py:127 export/views.py:131 export/views.py:132
 msgid "Participation code"
 msgstr "Código de Participante"
 
-#: export/export.py:127 export/tests.py:187
+#: export/export.py:125 export/tests.py:187
 msgid "Base path does not exist"
 msgstr "Diretório base não existe"
 
-#: export/forms.py:18
+#: export/forms.py:17
 msgid "Question code"
 msgstr "Código da questão"
 
-#: export/forms.py:19
+#: export/forms.py:18
 msgid "Full question text"
 msgstr "Texto completo da pergunta"
 
-#: export/forms.py:20
+#: export/forms.py:19
 msgid "Abbreviated question text"
 msgstr "Texto abreviado da pergunta"
 
-#: export/forms.py:24
+#: export/forms.py:23
 msgid "Answer codes"
 msgstr "Códigos de resposta"
 
-#: export/forms.py:25
+#: export/forms.py:24
 msgid "Full answers"
 msgstr "Respostas completas"
 
-#: export/forms.py:40
+#: export/forms.py:39
 msgid "Response must be selected"
 msgstr "Resposta deve ser selecionada"
 
-#: export/forms.py:89
+#: export/forms.py:88
 msgid "Min age must be filled."
 msgstr "Idade mínima deve ser preenchida."
 
-#: export/forms.py:92
+#: export/forms.py:91
 msgid "Max age must be filled."
 msgstr "Idade máxima deve ser preenchida."
 
@@ -334,19 +334,19 @@ msgstr "Descrição da doença"
 msgid "Disease Abbreviated Description"
 msgstr "Descrição da doença abreviada"
 
-#: export/views.py:358
+#: export/views.py:357
 msgid "Inconsistent data read from json file"
 msgstr "Dados inconsistentes do arquivo de entrada"
 
-#: export/views.py:607
+#: export/views.py:606
 msgid "Export was finished correctly"
 msgstr "Exportação foi finalizada com sucesso"
 
-#: export/views.py:625
+#: export/views.py:624
 msgid "Export data was not generated."
 msgstr "Exportação não foi gerada."
 
-#: export/views.py:638
+#: export/views.py:637
 msgid "No data was select. Export data was not generated."
 msgstr "Nenhum dado foi selecionado. Exportação não foi gerada."
 
