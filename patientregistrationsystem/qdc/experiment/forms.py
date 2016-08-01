@@ -738,6 +738,8 @@ class EMGDataForm(ModelForm):
     def __init__(self, *args, **kwargs):
         super(EMGDataForm, self).__init__(*args, **kwargs)
 
+        # emg_setting has no blank option
+        self.fields['emg_setting'].empty_label = None
         self.fields['file_format'].queryset = FileFormat.objects.filter(tags__name="EMG")
         initial = kwargs.get('initial')
         if initial and 'experiment' in initial:
