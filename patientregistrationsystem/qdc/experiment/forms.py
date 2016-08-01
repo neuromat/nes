@@ -563,7 +563,7 @@ class ElectrodeModelRegisterForm(ModelForm):
             'impedance': NumberInput(attrs={'class': 'form-control'}),
             'impedance_unit': Select(attrs={'class': 'form-control'}),
             'electrode_type': Select(attrs={'class': 'form-control', 'required': "",
-                                                     'data-error': _('Electrode type is required')}),
+                                            'data-error': _('Electrode type is required')}),
         }
 
 
@@ -644,8 +644,7 @@ class ADConverterRegisterForm(ModelForm):
             'serial_number': TextInput(attrs={'class': 'form-control'}),
 
             'signal_to_noise_rate': TextInput(attrs={'class': 'form-control'}),
-            'sampling_rate': TextInput(attrs={'class': 'form-control',
-                                             }),
+            'sampling_rate': TextInput(attrs={'class': 'form-control'}),
             'resolution': TextInput(attrs={'class': 'form-control'})
         }
 
@@ -903,7 +902,7 @@ class ElectrodeModelForm(ModelForm):
     class Meta:
         model = ElectrodeModel
 
-        fields = ['name', 'description', 'electrode_type' ]
+        fields = ['name', 'description', 'electrode_type']
 
         widgets = {
             'name': TextInput(attrs={'class': 'form-control',
@@ -913,8 +912,9 @@ class ElectrodeModelForm(ModelForm):
                                            'rows': '4', 'required': "",
                                            'data-error': _('Description must be filled.')}),
             'electrode_type': Select(attrs={'class': 'form-control', 'required': "",
-                                                     'data-error': _('Electrode type is required')}),
+                                            'data-error': _('Electrode type is required')}),
         }
+
 
 class EMGSurfacePlacementForm(ModelForm):
     class Meta:

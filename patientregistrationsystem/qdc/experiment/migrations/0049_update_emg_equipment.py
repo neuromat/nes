@@ -48,7 +48,11 @@ class Migration(migrations.Migration):
         migrations.CreateModel(
             name='EMGPreamplifierFilterSetting',
             fields=[
-                ('emg_preamplifier_filter_setting', models.OneToOneField(related_name='emg_preamplifier_filter_setting', serialize=False, primary_key=True, to='experiment.EMGPreamplifierSetting')),
+                ('emg_preamplifier_filter_setting', models.OneToOneField(
+                    related_name='emg_preamplifier_filter_setting',
+                    serialize=False,
+                    primary_key=True,
+                    to='experiment.EMGPreamplifierSetting')),
                 ('low_pass', models.FloatField(blank=True, null=True)),
                 ('high_pass', models.FloatField(blank=True, null=True)),
                 ('band_pass', models.FloatField(blank=True, null=True)),
@@ -58,7 +62,8 @@ class Migration(migrations.Migration):
         migrations.CreateModel(
             name='IntramuscularElectrode',
             fields=[
-                ('electrodemodel_ptr', models.OneToOneField(serialize=False, to='experiment.ElectrodeModel', parent_link=True, auto_created=True, primary_key=True)),
+                ('electrodemodel_ptr', models.OneToOneField(serialize=False, to='experiment.ElectrodeModel',
+                                                            parent_link=True, auto_created=True, primary_key=True)),
                 ('strand', models.CharField(choices=[('single', 'Single'), ('multi', 'Multi')], max_length=20)),
                 ('length_of_exposed_tip', models.FloatField(blank=True, null=True)),
                 ('insulation_material', models.ForeignKey(blank=True, null=True, to='experiment.Material')),
@@ -85,9 +90,11 @@ class Migration(migrations.Migration):
         migrations.CreateModel(
             name='NeedleElectrode',
             fields=[
-                ('electrodemodel_ptr', models.OneToOneField(serialize=False, to='experiment.ElectrodeModel', parent_link=True, auto_created=True, primary_key=True)),
+                ('electrodemodel_ptr', models.OneToOneField(serialize=False, to='experiment.ElectrodeModel',
+                                                            parent_link=True, auto_created=True, primary_key=True)),
                 ('size', models.FloatField(blank=True, null=True)),
-                ('size_unit', models.CharField(choices=[('mm', 'millimeter(s)'), ('cm', 'centimeter(s)')], max_length=10)),
+                ('size_unit', models.CharField(choices=[('mm', 'millimeter(s)'), ('cm', 'centimeter(s)')],
+                                               max_length=10)),
                 ('number_of_conductive_contact_points_at_the_tip', models.IntegerField(blank=True, null=True)),
                 ('size_of_conductive_contact_points_at_the_tip', models.FloatField(blank=True, null=True)),
             ],
@@ -96,9 +103,11 @@ class Migration(migrations.Migration):
         migrations.CreateModel(
             name='SurfaceElectrode',
             fields=[
-                ('electrodemodel_ptr', models.OneToOneField(serialize=False, to='experiment.ElectrodeModel', parent_link=True, auto_created=True, primary_key=True)),
+                ('electrodemodel_ptr', models.OneToOneField(serialize=False, to='experiment.ElectrodeModel',
+                                                            parent_link=True, auto_created=True, primary_key=True)),
                 ('conduction_type', models.CharField(choices=[('gelled', 'Gelled'), ('dry', 'Dry')], max_length=20)),
-                ('electrode_mode', models.CharField(choices=[('active', 'Active'), ('passive', 'Passive')], max_length=20)),
+                ('electrode_mode', models.CharField(choices=[('active', 'Active'), ('passive', 'Passive')],
+                                                    max_length=20)),
                 ('electrode_shape', models.ForeignKey(to='experiment.ElectrodeShape')),
             ],
             bases=('experiment.electrodemodel',),
@@ -137,7 +146,11 @@ class Migration(migrations.Migration):
         migrations.AddField(
             model_name='amplifier',
             name='input_impedance_unit',
-            field=models.CharField(blank=True, choices=[('ohm', 'Ohm(s)'), ('kilohm', 'Kilohm(s)'), ('megaohm', 'Megaohm(s)'), ('gigaohm', 'Gigaohm(s)')], null=True, max_length=15),
+            field=models.CharField(
+                blank=True,
+                choices=[('ohm', 'Ohm(s)'), ('kilohm', 'Kilohm(s)'),
+                         ('megaohm', 'Megaohm(s)'), ('gigaohm', 'Gigaohm(s)')],
+                null=True, max_length=15),
         ),
         migrations.AddField(
             model_name='amplifier',
@@ -147,7 +160,10 @@ class Migration(migrations.Migration):
         migrations.AddField(
             model_name='electrodemodel',
             name='electrode_type',
-            field=models.CharField(blank=True, choices=[('surface', 'Surface'), ('intramuscular', 'Intramuscular'), ('needle', 'Needle')], null=True, max_length=50),
+            field=models.CharField(
+                blank=True,
+                choices=[('surface', 'Surface'), ('intramuscular', 'Intramuscular'), ('needle', 'Needle')],
+                null=True, max_length=50),
         ),
         migrations.AddField(
             model_name='electrodemodel',
@@ -157,12 +173,16 @@ class Migration(migrations.Migration):
         migrations.AddField(
             model_name='electrodemodel',
             name='inter_electrode_distance_unit',
-            field=models.CharField(blank=True, choices=[('mm', 'millimeter(s)'), ('cm', 'centimeter(s)')], null=True, max_length=10),
+            field=models.CharField(blank=True, choices=[('mm', 'millimeter(s)'), ('cm', 'centimeter(s)')],
+                                   null=True, max_length=10),
         ),
         migrations.AddField(
             model_name='emgelectrodeplacement',
             name='placement_type',
-            field=models.CharField(blank=True, choices=[('surface', 'Surface'), ('intramuscular', 'Intramuscular'), ('needle', 'Needle')], null=True, max_length=50),
+            field=models.CharField(
+                blank=True,
+                choices=[('surface', 'Surface'), ('intramuscular', 'Intramuscular'), ('needle', 'Needle')],
+                null=True, max_length=50),
         ),
         migrations.AddField(
             model_name='musclesubdivision',

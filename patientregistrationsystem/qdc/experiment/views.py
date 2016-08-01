@@ -2168,7 +2168,7 @@ def standardization_system_update(request, standardization_system_id,
         if request.POST['action'] == "save":
             if standardization_system_form.is_valid():
 
-                if standardization_system_form.has_changed() :
+                if standardization_system_form.has_changed():
 
                     standardization_system_form.save()
                     messages.success(request, _('Standardization system updated successfully.'))
@@ -2270,7 +2270,7 @@ def muscle_update(request, muscle_id,
         if request.POST['action'] == "save":
             if muscle_form.is_valid():
 
-                if muscle_form.has_changed() :
+                if muscle_form.has_changed():
 
                     muscle_form.save()
                     messages.success(request, _('Muscle updated successfully.'))
@@ -2363,7 +2363,7 @@ def muscle_subdivision_create(request, muscle_id, template_name="experiment/musc
 @login_required
 @permission_required('experiment.register_equipment')
 def muscle_subdivision_view(request, muscle_subdivision_id,
-                     template_name="experiment/muscle_subdivision_register.html"):
+                            template_name="experiment/muscle_subdivision_register.html"):
     muscle_subdivsion = get_object_or_404(MuscleSubdivision, pk=muscle_subdivision_id)
 
     muscle_subdivision_form = MuscleSubdivisionRegisterForm(request.POST or None, instance=muscle_subdivsion)
@@ -2407,7 +2407,7 @@ def muscle_subdivision_update(request, muscle_subdivision_id,
         if request.POST['action'] == "save":
             if muscle_subdivision_form.is_valid():
 
-                if muscle_subdivision_form.has_changed() :
+                if muscle_subdivision_form.has_changed():
 
                     muscle_subdivision_form.save()
                     messages.success(request, _('Muscle subdivision updated successfully.'))
@@ -2509,7 +2509,7 @@ def muscle_side_update(request, muscle_side_id,
         if request.POST['action'] == "save":
             if muscle_side_form.is_valid():
 
-                if muscle_side_form.has_changed() :
+                if muscle_side_form.has_changed():
 
                     muscle_side_form.save()
                     messages.success(request, _('Muscle side updated successfully.'))
@@ -6220,6 +6220,7 @@ def eeg_electrode_localization_system_create(
 
     return render(request, template_name, context)
 
+
 @login_required
 @permission_required('experiment.view_equipment')
 def eeg_electrode_localization_system_test(request, eeg_electrode_localization_system_id,
@@ -6236,6 +6237,7 @@ def eeg_electrode_localization_system_test(request, eeg_electrode_localization_s
                "localization_system_form": localization_system_form}
 
     return render(request, template_name, context)
+
 
 @login_required
 @permission_required('experiment.view_equipment')
@@ -6818,6 +6820,7 @@ def emg_setting_ad_converter_edit(request, emg_setting_id,
 
     return render(request, template_name, context)
 
+
 @login_required
 @permission_required('experiment.change_experiment')
 def get_anatomical_description_by_placement(request, emg_electrode_placement_id):
@@ -6832,6 +6835,7 @@ def get_anatomical_description_by_placement(request, emg_electrode_placement_id)
     }
 
     return HttpResponse(json.dumps(response_data), content_type='application/json')
+
 
 @login_required
 @permission_required('experiment.change_experiment')
@@ -6862,6 +6866,7 @@ def get_json_electrode_by_type(request, electrode_type):
 
     json_electrode_list = serializers.serialize("json", electrode_list)
     return HttpResponse(json_electrode_list, content_type='application/json')
+
 
 @login_required
 @permission_required('experiment.change_experiment')
@@ -6900,6 +6905,7 @@ def get_electrode_placement_by_type(request, electrode_type):
         })
 
     return HttpResponse(json.dumps(placements), content_type='application/json')
+
 
 @login_required
 @permission_required('experiment.change_experiment')

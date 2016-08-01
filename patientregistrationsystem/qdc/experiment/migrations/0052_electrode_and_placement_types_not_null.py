@@ -14,11 +14,13 @@ class Migration(migrations.Migration):
         migrations.AlterField(
             model_name='electrodemodel',
             name='electrode_type',
-            field=models.CharField(max_length=50, choices=[('surface', 'Surface'), ('intramuscular', 'Intramuscular'), ('needle', 'Needle')]),
+            field=models.CharField(max_length=50, choices=[('surface', 'Surface'), ('intramuscular', 'Intramuscular'),
+                                                           ('needle', 'Needle')]),
         ),
         migrations.AlterField(
             model_name='emgelectrodeplacement',
             name='placement_type',
-            field=models.CharField(max_length=50, choices=[('surface', 'Surface'), ('intramuscular', 'Intramuscular'), ('needle', 'Needle')]),
+            field=models.CharField(max_length=50, choices=[('surface', 'Surface'), ('intramuscular', 'Intramuscular'),
+                                                           ('needle', 'Needle')]),
         ),
     ]
