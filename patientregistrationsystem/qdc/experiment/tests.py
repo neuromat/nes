@@ -2425,26 +2425,100 @@ class EEGEquipmentRegisterTest(TestCase):
 
         self.data = {'action': 'save',
                      'name': name}
-        response = self.client.post(reverse("standardization_system_edit", args=(standardization_system.id,)), self.data)
+        response = self.client.post(reverse("standardization_system_edit", args=(standardization_system.id,)),
+                                    self.data)
         self.assertEqual(response.status_code, 302)
 
         name = 'Name changed'
         self.data = {'action': 'save',
                      'name': name}
-        response = self.client.post(reverse("standardization_system_edit", args=(standardization_system.id,)), self.data)
+        response = self.client.post(reverse("standardization_system_edit", args=(standardization_system.id,)),
+                                    self.data)
         self.assertEqual(response.status_code, 302)
 
         # update (trying) but missing information
         self.data = {'action': 'save'}
-        response = self.client.post(reverse("standardization_system_edit", args=(standardization_system.id,)), self.data)
+        response = self.client.post(reverse("standardization_system_edit", args=(standardization_system.id,)),
+                                    self.data)
         self.assertEqual(response.status_code, 200)
         self.assertEqual(get_object_or_404(StandardizationSystem, pk=standardization_system.id).name, name)
 
         # remove
         self.data = {'action': 'remove'}
-        response = self.client.post(reverse("standardization_system_view", args=(standardization_system.id,)), self.data)
+        response = self.client.post(reverse("standardization_system_view", args=(standardization_system.id,)),
+                                    self.data)
         self.assertEqual(response.status_code, 302)
         self.assertEqual(StandardizationSystem.objects.all().count(), 0)
+
+    def test_muscle_register(self):
+        # list
+        response = self.client.get(reverse("muscle_list", args=()))
+        self.assertEqual(response.status_code, 200)
+
+        # create
+        response = self.client.get(reverse("muscle_new", args=()))
+        self.assertEqual(response.status_code, 200)
+
+        name = 'Name'
+        self.data = {'action': 'save',
+                     'name': name}
+
+        response = self.client.post(reverse("muscle_new", args=()), self.data)
+        self.assertEqual(response.status_code, 302)
+        self.assertEqual(Muscle.objects.all().count(), 1)
+
+        # create (trying) but missing information
+        self.data = {'action': 'save'}
+
+        response = self.client.post(reverse("muscle_new", args=()), self.data)
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(Muscle.objects.all().count(), 1)
+        self.assertEqual(str(list(response.context['messages'])[-1]), _('Information not saved.'))
+
+        # create with wrong action
+        self.data = {'action': 'wrong'}
+
+        response = self.client.post(reverse("muscle_new", args=()), self.data)
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(Muscle.objects.all().count(), 1)
+        self.assertEqual(str(list(response.context['messages'])[-1]), _('Action not available.'))
+
+        # view
+        muscle = Muscle.objects.all().first()
+
+        response = self.client.get(reverse("muscle_view", args=(muscle.id,)))
+        self.assertEqual(response.status_code, 200)
+
+        # update
+        response = self.client.get(reverse("muscle_edit", args=(muscle.id,)))
+        self.assertEqual(response.status_code, 200)
+
+        self.data = {'action': 'save',
+                     'name': name}
+        response = self.client.post(reverse("muscle_edit", args=(muscle.id,)),
+                                    self.data)
+        self.assertEqual(response.status_code, 302)
+
+        name = 'Name changed'
+        self.data = {'action': 'save',
+                     'name': name}
+        response = self.client.post(reverse("muscle_edit", args=(muscle.id,)),
+                                    self.data)
+        self.assertEqual(response.status_code, 302)
+
+        # update (trying) but missing information
+        self.data = {'action': 'save'}
+        response = self.client.post(reverse("muscle_edit", args=(muscle.id,)),
+                                    self.data)
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(get_object_or_404(Muscle, pk=muscle.id).name, name)
+
+        # remove
+        self.data = {'action': 'remove'}
+        response = self.client.post(reverse("muscle_view", args=(muscle.id,)),
+                                    self.data)
+        self.assertEqual(response.status_code, 302)
+        self.assertEqual(Muscle.objects.all().count(), 0)
 
     def test_electrode_model_register(self):
         # list
