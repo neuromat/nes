@@ -2331,6 +2331,22 @@ class EEGEquipmentRegisterTest(TestCase):
         self.assertEqual(response.status_code, 302)
         self.assertEqual(FilterType.objects.all().count(), 1)
 
+        # create (trying) but missing information
+        self.data = {'action': 'save'}
+
+        response = self.client.post(reverse("filtertype_new", args=()), self.data)
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(FilterType.objects.all().count(), 1)
+        self.assertEqual(str(list(response.context['messages'])[-1]), _('Information not saved.'))
+
+        # create with wrong action
+        self.data = {'action': 'wrong'}
+
+        response = self.client.post(reverse("filtertype_new", args=()), self.data)
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(FilterType.objects.all().count(), 1)
+        self.assertEqual(str(list(response.context['messages'])[-1]), _('Action not available.'))
+
         # view
         filter_type = FilterType.objects.all().first()
 
@@ -2352,11 +2368,83 @@ class EEGEquipmentRegisterTest(TestCase):
         response = self.client.post(reverse("filtertype_edit", args=(filter_type.id,)), self.data)
         self.assertEqual(response.status_code, 302)
 
+        # update (trying) but missing information
+        self.data = {'action': 'save'}
+        response = self.client.post(reverse("filtertype_edit", args=(filter_type.id,)), self.data)
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(get_object_or_404(FilterType, pk=filter_type.id).name, name)
+
         # remove
         self.data = {'action': 'remove'}
         response = self.client.post(reverse("filtertype_view", args=(filter_type.id,)), self.data)
         self.assertEqual(response.status_code, 302)
         self.assertEqual(FilterType.objects.all().count(), 0)
+
+    def test_standardization_system_register(self):
+        # list
+        response = self.client.get(reverse("standardization_system_list", args=()))
+        self.assertEqual(response.status_code, 200)
+
+        # create
+        response = self.client.get(reverse("standardization_system_new", args=()))
+        self.assertEqual(response.status_code, 200)
+
+        name = 'Name'
+        self.data = {'action': 'save',
+                     'name': name}
+
+        response = self.client.post(reverse("standardization_system_new", args=()), self.data)
+        self.assertEqual(response.status_code, 302)
+        self.assertEqual(StandardizationSystem.objects.all().count(), 1)
+
+        # create (trying) but missing information
+        self.data = {'action': 'save'}
+
+        response = self.client.post(reverse("standardization_system_new", args=()), self.data)
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(StandardizationSystem.objects.all().count(), 1)
+        self.assertEqual(str(list(response.context['messages'])[-1]), _('Information not saved.'))
+
+        # create with wrong action
+        self.data = {'action': 'wrong'}
+
+        response = self.client.post(reverse("standardization_system_new", args=()), self.data)
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(StandardizationSystem.objects.all().count(), 1)
+        self.assertEqual(str(list(response.context['messages'])[-1]), _('Action not available.'))
+
+        # view
+        standardization_system = StandardizationSystem.objects.all().first()
+
+        response = self.client.get(reverse("standardization_system_view", args=(standardization_system.id,)))
+        self.assertEqual(response.status_code, 200)
+
+        # update
+        response = self.client.get(reverse("standardization_system_edit", args=(standardization_system.id,)))
+        self.assertEqual(response.status_code, 200)
+
+        self.data = {'action': 'save',
+                     'name': name}
+        response = self.client.post(reverse("standardization_system_edit", args=(standardization_system.id,)), self.data)
+        self.assertEqual(response.status_code, 302)
+
+        name = 'Name changed'
+        self.data = {'action': 'save',
+                     'name': name}
+        response = self.client.post(reverse("standardization_system_edit", args=(standardization_system.id,)), self.data)
+        self.assertEqual(response.status_code, 302)
+
+        # update (trying) but missing information
+        self.data = {'action': 'save'}
+        response = self.client.post(reverse("standardization_system_edit", args=(standardization_system.id,)), self.data)
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(get_object_or_404(StandardizationSystem, pk=standardization_system.id).name, name)
+
+        # remove
+        self.data = {'action': 'remove'}
+        response = self.client.post(reverse("standardization_system_view", args=(standardization_system.id,)), self.data)
+        self.assertEqual(response.status_code, 302)
+        self.assertEqual(StandardizationSystem.objects.all().count(), 0)
 
     def test_electrode_model_register(self):
         # list
@@ -2621,9 +2709,7 @@ class EMGSettingTest(TestCase):
 
         electrode_placement = ObjectsFactory.create_emg_electrode_placement()
         muscle_side = ObjectsFactory.create_muscle_side(electrode_placement.muscle_subdivision.muscle)
-        emg_electrode_placement_setting = ObjectsFactory.create_emg_electrode_placement_setting(emg_electrode_setting,
-                                                                                                electrode_placement,
-                                                                                                muscle_side)
+        ObjectsFactory.create_emg_electrode_placement_setting(emg_electrode_setting, electrode_placement, muscle_side)
 
         # create an emg  preamplifier setting
         self.data = {'action': 'save', 'amplifier': amplifier.id, 'gain': "10"}
@@ -2688,9 +2774,7 @@ class EMGSettingTest(TestCase):
 
         electrode_placement = ObjectsFactory.create_emg_electrode_placement()
         muscle_side = ObjectsFactory.create_muscle_side(electrode_placement.muscle_subdivision.muscle)
-        emg_electrode_placement_setting = ObjectsFactory.create_emg_electrode_placement_setting(emg_electrode_setting,
-                                                                                                electrode_placement,
-                                                                                                muscle_side)
+        ObjectsFactory.create_emg_electrode_placement_setting(emg_electrode_setting, electrode_placement, muscle_side)
         self.data = {'action': 'remove-amplifier'}
         response = self.client.post(reverse("emg_electrode_setting_view",
                                             args=(emg_electrode_setting.id,)), self.data)
