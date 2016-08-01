@@ -106,61 +106,42 @@
                         </div>
                     </div>
                 </div>
-
-{#                <div class="row">#}
-{#                    <div class="col-xs-12 col-sm-12">#}
-{#                        <div class="form-group">#}
-{#                            <label class="control-label">{% trans "Category" %}</label>#}
-{#                            <div class="container span6 offset3 well ">#}
-{#                                <div class="form-group">#}
-{#                                    <table class="table table-striped">#}
-{#                                        <tbody>#}
-{#                                        {% for tag in tags %}#}
-{#                                            <tr>#}
-{#                                                <td>#}
-{#                                                    <input type="checkbox"#}
-{#                                                           id="tag_{{ tag.id }}"#}
-{#                                                           name="tag_{{ tag.id }}"#}
-{#                                                           {% if tag.checked %}checked="checked"{% endif %}#}
-{#                                                           {% if not editing %} disabled {% endif %} >#}
-{#                                                    {{ tag.name }}#}
-{#                                                    </input>#}
-{#                                                </td>#}
-{##}
-{#                                            </tr>#}
-{#                                        {% endfor %}#}
-{#                                        </tbody>#}
-{#                                    </table>#}
-{#                                </div>#}
-{#                            </div>#}
-{#                        </div>#}
-{#                    </div>#}
-{#                </div>#}
-
                 <div class="row">
                     <div class="col-xs-12 col-sm-12">
-                        <div class="form-group">
+                        <div class="form-group {% if equipment_form.signal_to_noise_rate.errors %}has-error{% endif %}">
                             <label class="control-label">{% trans "Signal_to_noise rate" %}</label>
                             {{ equipment_form.signal_to_noise_rate }}
-                            <div class="help-block with-errors"></div>
+                            <div class="help-block with-errors">
+                                {% for error in equipment_form.signal_to_noise_rate.errors %}
+                                    {{ error }}
+                                {% endfor %}
+                            </div>
                         </div>
                     </div>
                 </div>
                 <div class="row">
                     <div class="col-xs-12 col-sm-12">
-                        <div class="form-group">
+                        <div class="form-group {% if equipment_form.sampling_rate.errors %}has-error{% endif %}">
                             <label class="control-label">{% trans "Sampling rate" %}</label>
                             {{ equipment_form.sampling_rate }}
-                            <div class="help-block with-errors"></div>
+                            <div class="help-block with-errors">
+                                {% for error in equipment_form.sampling_rate.errors %}
+                                    {{ error }}
+                                {% endfor %}
+                            </div>
                         </div>
                     </div>
                 </div>
                 <div class="row">
                     <div class="col-xs-12 col-sm-12">
-                        <div class="form-group">
+                        <div class="form-group {% if equipment_form.resolution.errors %}has-error{% endif %}">
                             <label class="control-label">{% trans "Resolution" %}</label>
                             {{ equipment_form.resolution }}
-                            <div class="help-block with-errors"></div>
+                            <div class="help-block with-errors">
+                                {% for error in equipment_form.resolution.errors %}
+                                    {{ error }}
+                                {% endfor %}
+                            </div>
                         </div>
                     </div>
                 </div>

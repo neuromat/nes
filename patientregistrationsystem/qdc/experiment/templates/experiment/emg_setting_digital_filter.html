@@ -40,7 +40,7 @@
         {% endfor %}
     {% endif %}
 
-    {% if component_form.errors %}
+    {% if emg_digital_filter_setting_form.errors %}
         <script type="text/javascript">
             showErrorMessage(gettext('Please, correct fields highlighted.'))
         </script>
@@ -99,45 +99,70 @@
 
                 <div class="row">
                     <div class="col-xs-12 col-sm-12">
-                        <div class="form-group">
+                        <div class="form-group {% if emg_digital_filter_setting_form.low_pass.errors %}has-error{% endif %}">
                             <label class="control-label">{% trans "Low pass (Hz)" %} </label>
                             {{ emg_digital_filter_setting_form.low_pass }}
+                            <div class="help-block with-errors">
+                                {% for error in emg_digital_filter_setting_form.low_pass.errors %}
+                                    {{ error }}
+                                {% endfor %}
+                            </div>
                         </div>
                     </div>
                 </div>
 
                 <div class="row">
                     <div class="col-xs-12 col-sm-12">
-                        <div class="form-group">
+                        <div class="form-group {% if emg_digital_filter_setting_form.high_pass.errors %}has-error{% endif %}">
                             <label class="control-label">{% trans "High pass (Hz)" %} </label>
                             {{ emg_digital_filter_setting_form.high_pass }}
+                            <div class="help-block with-errors">
+                                {% for error in emg_digital_filter_setting_form.high_pass.errors %}
+                                    {{ error }}
+                                {% endfor %}
+                            </div>
                         </div>
                     </div>
                 </div>
 
                 <div class="row">
                     <div class="col-xs-12 col-sm-12">
-                        <div class="form-group">
+                        <div class="form-group {% if emg_digital_filter_setting_form.band_pass.errors %}has-error{% endif %}">
                             <label class="control-label">{% trans "Band pass (Hz)" %} </label>
                             {{ emg_digital_filter_setting_form.band_pass }}
+                            <div class="help-block with-errors">
+                                {% for error in emg_digital_filter_setting_form.band_pass.errors %}
+                                    {{ error }}
+                                {% endfor %}
+                            </div>
                         </div>
                     </div>
                 </div>
 
                 <div class="row">
                     <div class="col-xs-12 col-sm-12">
-                        <div class="form-group">
+                        <div class="form-group {% if emg_digital_filter_setting_form.notch.errors %}has-error{% endif %}">
                             <label class="control-label">{% trans "Notch (Hz)" %} </label>
                             {{ emg_digital_filter_setting_form.notch }}
+                            <div class="help-block with-errors">
+                                {% for error in emg_digital_filter_setting_form.notch.errors %}
+                                    {{ error }}
+                                {% endfor %}
+                            </div>
                         </div>
                     </div>
                 </div>
 
                 <div class="row">
                     <div class="col-xs-12 col-sm-12">
-                        <div class="form-group">
+                        <div class="form-group {% if emg_digital_filter_setting_form.order.errors %}has-error{% endif %}">
                             <label class="control-label">{% trans "Order" %} </label>
                             {{ emg_digital_filter_setting_form.order }}
+                            <div class="help-block with-errors">
+                                {% for error in emg_digital_filter_setting_form.order.errors %}
+                                    {{ error }}
+                                {% endfor %}
+                            </div>
                         </div>
                     </div>
                 </div>

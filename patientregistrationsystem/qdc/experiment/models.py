@@ -137,7 +137,7 @@ class Equipment(models.Model):
 
 
 class EEGMachine(Equipment):
-    number_of_channels = models.IntegerField(null=True, blank=True)
+    number_of_channels = models.IntegerField(null=True, blank=True, validators=[MinValueValidator(0)])
     software_version = models.CharField(max_length=150, null=True, blank=True)
 
 
@@ -156,10 +156,10 @@ class TetheringSystem(models.Model):
 
 
 class Amplifier(Equipment):
-    gain = models.FloatField(null=True, blank=True, validators=[MinValueValidator(1)])
-    number_of_channels = models.IntegerField(null=True, blank=True)
-    common_mode_rejection_ratio = models.FloatField(null=True, blank=True)
-    input_impedance = models.FloatField(null=True, blank=True)
+    gain = models.FloatField(null=True, blank=True, validators=[MinValueValidator(0)])
+    number_of_channels = models.IntegerField(null=True, blank=True, validators=[MinValueValidator(0)])
+    common_mode_rejection_ratio = models.FloatField(null=True, blank=True, validators=[MinValueValidator(0)])
+    input_impedance = models.FloatField(null=True, blank=True, validators=[MinValueValidator(0)])
     input_impedance_unit = models.CharField(null=True, blank=True, max_length=15, choices=IMPEDANCE_UNIT)
     amplifier_detection_type = models.ForeignKey(AmplifierDetectionType, null=True, blank=True)
     tethering_system = models.ForeignKey(TetheringSystem, null=True, blank=True)
@@ -213,10 +213,10 @@ class ElectrodeModel(models.Model):
     description = models.TextField(null=True, blank=True)
     material = models.ForeignKey(Material, null=True, blank=True)
     usability = models.CharField(null=True, blank=True, max_length=50, choices=USABILITY_TYPES)
-    impedance = models.FloatField(null=True, blank=True)
+    impedance = models.FloatField(null=True, blank=True, validators=[MinValueValidator(0)])
     impedance_unit = models.CharField(null=True, blank=True, max_length=15, choices=IMPEDANCE_UNIT)
     tags = models.ManyToManyField(Tag)
-    inter_electrode_distance = models.FloatField(null=True, blank=True)
+    inter_electrode_distance = models.FloatField(null=True, blank=True, validators=[MinValueValidator(0)])
     inter_electrode_distance_unit = models.CharField(null=True, blank=True, max_length=10,
                                                      choices=ELECTRODE_DISTANCE_UNIT)
     electrode_configuration = models.ForeignKey(ElectrodeConfiguration, null=True, blank=True)
@@ -269,7 +269,7 @@ class SurfaceElectrode(ElectrodeModel):
 class ElectrodeSurfaceMeasure(models.Model):
     electrode_surface = models.ForeignKey(SurfaceElectrode)
     measure_unit = models.ForeignKey(MeasureUnit)
-    value = models.FloatField()
+    value = models.FloatField(validators=[MinValueValidator(0)])
 
 
 class IntramuscularElectrode(ElectrodeModel):
@@ -279,7 +279,7 @@ class IntramuscularElectrode(ElectrodeModel):
     )
     strand = models.CharField(max_length=20, choices=STRAND_TYPES)
     insulation_material = models.ForeignKey(Material, null=True, blank=True)
-    length_of_exposed_tip = models.FloatField(null=True, blank=True)
+    length_of_exposed_tip = models.FloatField(null=True, blank=True, validators=[MinValueValidator(0)])
 
     def save(self, *args, **kwargs):
         super(ElectrodeModel, self).save(*args, **kwargs)
@@ -290,10 +290,12 @@ class NeedleElectrode(ElectrodeModel):
         ("mm", _("millimeter(s)")),
         ("cm", _("centimeter(s)")),
     )
-    size = models.FloatField(null=True, blank=True)
+    size = models.FloatField(null=True, blank=True, validators=[MinValueValidator(0)])
     size_unit = models.CharField(max_length=10, choices=SIZE_UNIT)
-    number_of_conductive_contact_points_at_the_tip = models.IntegerField(null=True, blank=True)
-    size_of_conductive_contact_points_at_the_tip = models.FloatField(null=True, blank=True)
+    number_of_conductive_contact_points_at_the_tip = models.IntegerField(null=True, blank=True,
+                                                                         validators=[MinValueValidator(0)])
+    size_of_conductive_contact_points_at_the_tip = models.FloatField(null=True, blank=True,
+                                                                     validators=[MinValueValidator(0)])
 
     def save(self, *args, **kwargs):
         super(ElectrodeModel, self).save(*args, **kwargs)
@@ -313,7 +315,7 @@ class EEGElectrodeCap(EEGElectrodeNet):
 class EEGCapSize(models.Model):
     eeg_electrode_cap = models.ForeignKey(EEGElectrodeCap)
     size = models.CharField(max_length=30)
-    electrode_adjacent_distance = models.FloatField(null=True, blank=True)
+    electrode_adjacent_distance = models.FloatField(null=True, blank=True, validators=[MinValueValidator(0)])
 
     def __str__(self):
         return self.size
@@ -337,8 +339,8 @@ class EEGElectrodePosition(models.Model):
     eeg_electrode_localization_system = models.ForeignKey(EEGElectrodeLocalizationSystem,
                                                           related_name="electrode_positions")
     name = models.CharField(max_length=150)
-    coordinate_x = models.IntegerField(null=True, blank=True)
-    coordinate_y = models.IntegerField(null=True, blank=True)
+    coordinate_x = models.IntegerField(null=True, blank=True, validators=[MinValueValidator(0)])
+    coordinate_y = models.IntegerField(null=True, blank=True, validators=[MinValueValidator(0)])
     position_reference = models.ForeignKey('self', null=True, blank=True, related_name='children')
 
     def __str__(self):
@@ -365,13 +367,13 @@ class EEGSetting(models.Model):
 class EEGMachineSetting(models.Model):
     eeg_setting = models.OneToOneField(EEGSetting, primary_key=True, related_name='eeg_machine_setting')
     eeg_machine = models.ForeignKey(EEGMachine)
-    number_of_channels_used = models.IntegerField()
+    number_of_channels_used = models.IntegerField(validators=[MinValueValidator(0)])
 
 
 class EEGAmplifierSetting(models.Model):
     eeg_setting = models.OneToOneField(EEGSetting, primary_key=True, related_name='eeg_amplifier_setting')
     eeg_amplifier = models.ForeignKey(Amplifier)
-    gain = models.FloatField(null=True, blank=True, validators=[MinValueValidator(1)])
+    gain = models.FloatField(null=True, blank=True, validators=[MinValueValidator(0)])
 
 
 class EEGSolutionSetting(models.Model):
@@ -382,9 +384,9 @@ class EEGSolutionSetting(models.Model):
 class EEGFilterSetting(models.Model):
     eeg_setting = models.OneToOneField(EEGSetting, primary_key=True, related_name='eeg_filter_setting')
     eeg_filter_type = models.ForeignKey(FilterType)
-    high_pass = models.FloatField(null=True, blank=True)
-    low_pass = models.FloatField(null=True, blank=True)
-    order = models.IntegerField(null=True, blank=True)
+    high_pass = models.FloatField(null=True, blank=True, validators=[MinValueValidator(0)])
+    low_pass = models.FloatField(null=True, blank=True, validators=[MinValueValidator(0)])
+    order = models.IntegerField(null=True, blank=True, validators=[MinValueValidator(0)])
 
 
 class EEGElectrodeLayoutSetting(models.Model):
@@ -417,9 +419,9 @@ class SoftwareVersion(models.Model):
 
 
 class ADConverter(Equipment):
-    signal_to_noise_rate = models.FloatField(null=True, blank=True)
-    sampling_rate = models.FloatField(null=True, blank=True)
-    resolution = models.FloatField(null=True, blank=True)
+    signal_to_noise_rate = models.FloatField(null=True, blank=True, validators=[MinValueValidator(0)])
+    sampling_rate = models.FloatField(null=True, blank=True, validators=[MinValueValidator(0)])
+    resolution = models.FloatField(null=True, blank=True, validators=[MinValueValidator(0)])
 
 
 class StandardizationSystem(models.Model):
@@ -510,17 +512,17 @@ class EMGSetting(models.Model):
 class EMGDigitalFilterSetting(models.Model):
     emg_setting = models.OneToOneField(EMGSetting, primary_key=True, related_name='emg_digital_filter_setting')
     filter_type = models.ForeignKey(FilterType)
-    low_pass = models.FloatField(null=True, blank=True)
-    high_pass = models.FloatField(null=True, blank=True)
-    band_pass = models.FloatField(null=True, blank=True)
-    notch = models.FloatField(null=True, blank=True)
-    order = models.IntegerField(null=True, blank=True)
+    low_pass = models.FloatField(null=True, blank=True, validators=[MinValueValidator(0)])
+    high_pass = models.FloatField(null=True, blank=True, validators=[MinValueValidator(0)])
+    band_pass = models.FloatField(null=True, blank=True, validators=[MinValueValidator(0)])
+    notch = models.FloatField(null=True, blank=True, validators=[MinValueValidator(0)])
+    order = models.IntegerField(null=True, blank=True, validators=[MinValueValidator(0)])
 
 
 class EMGADConverterSetting(models.Model):
     emg_setting = models.OneToOneField(EMGSetting, primary_key=True, related_name='emg_ad_converter_setting')
     ad_converter = models.ForeignKey(ADConverter)
-    sampling_rate = models.FloatField(null=True, blank=True)
+    sampling_rate = models.FloatField(null=True, blank=True, validators=[MinValueValidator(0)])
 
 
 class EMGElectrodeSetting(models.Model):
@@ -532,33 +534,33 @@ class EMGPreamplifierSetting(models.Model):
     emg_electrode_setting = models.OneToOneField(EMGElectrodeSetting,
                                                  primary_key=True, related_name='emg_preamplifier_setting')
     amplifier = models.ForeignKey(Amplifier)
-    gain = models.FloatField(null=True, blank=True, validators=[MinValueValidator(1)])
+    gain = models.FloatField(null=True, blank=True, validators=[MinValueValidator(0)])
 
 
 class EMGPreamplifierFilterSetting(models.Model):
     emg_preamplifier_filter_setting = models.OneToOneField(EMGPreamplifierSetting,
                                                            primary_key=True,
                                                            related_name='emg_preamplifier_filter_setting')
-    low_pass = models.FloatField(null=True, blank=True)
-    high_pass = models.FloatField(null=True, blank=True)
-    band_pass = models.FloatField(null=True, blank=True)
-    notch = models.FloatField(null=True, blank=True)
+    low_pass = models.FloatField(null=True, blank=True, validators=[MinValueValidator(0)])
+    high_pass = models.FloatField(null=True, blank=True, validators=[MinValueValidator(0)])
+    band_pass = models.FloatField(null=True, blank=True, validators=[MinValueValidator(0)])
+    notch = models.FloatField(null=True, blank=True, validators=[MinValueValidator(0)])
 
 
 class EMGAmplifierSetting(models.Model):
     emg_electrode_setting = models.OneToOneField(EMGElectrodeSetting,
                                                  primary_key=True, related_name='emg_amplifier_setting')
     amplifier = models.ForeignKey(Amplifier)
-    gain = models.FloatField(null=True, blank=True, validators=[MinValueValidator(1)])
+    gain = models.FloatField(null=True, blank=True, validators=[MinValueValidator(0)])
 
 
 class EMGAnalogFilterSetting(models.Model):
     emg_electrode_setting = models.OneToOneField(EMGAmplifierSetting,
                                                  primary_key=True, related_name='emg_analog_filter_setting')
-    low_pass = models.FloatField(null=True, blank=True)
-    high_pass = models.FloatField(null=True, blank=True)
-    band_pass = models.FloatField(null=True, blank=True)
-    notch = models.FloatField(null=True, blank=True)
+    low_pass = models.FloatField(null=True, blank=True, validators=[MinValueValidator(0)])
+    high_pass = models.FloatField(null=True, blank=True, validators=[MinValueValidator(0)])
+    band_pass = models.FloatField(null=True, blank=True, validators=[MinValueValidator(0)])
+    notch = models.FloatField(null=True, blank=True, validators=[MinValueValidator(0)])
 
 
 class EMGElectrodePlacementSetting(models.Model):
@@ -629,7 +631,7 @@ class Questionnaire(Component):
 class Block(Component):
     SEQUENCE = 'sequence'
     PARALLEL_BLOCK = 'parallel_block'
-    number_of_mandatory_components = models.IntegerField(null=True, blank=True)
+    number_of_mandatory_components = models.IntegerField(null=True, blank=True, validators=[MinValueValidator(0)])
     type = models.CharField(null=False, max_length=20,
                             choices=((SEQUENCE, "Sequence component"),
                                      (PARALLEL_BLOCK, "Parallel block component")))

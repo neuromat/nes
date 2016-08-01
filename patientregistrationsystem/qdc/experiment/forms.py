@@ -460,8 +460,8 @@ class EEGElectrodePositionForm(ModelForm):
             'name': TextInput(attrs={'class': 'form-control', 'required': "",
                                      'data-error': _('Name field must be filled.'),
                                      'autofocus': ''}),
-            'coordinate_x': TextInput(attrs={'class': 'form-control'}),
-            'coordinate_y': TextInput(attrs={'class': 'form-control'}),
+            'coordinate_x': NumberInput(attrs={'class': 'form-control'}),
+            'coordinate_y': NumberInput(attrs={'class': 'form-control'}),
             'position_reference': Select(attrs={'class': 'form-control'}),
         }
 
@@ -491,7 +491,7 @@ class EEGMachineRegisterForm(ModelForm):
                                                'data-error': _('Identification must be filled.')}),
             'description': Textarea(attrs={'class': 'form-control', 'rows': '4'}),
             'serial_number': TextInput(attrs={'class': 'form-control'}),
-            'number_of_channels': TextInput(attrs={'class': 'form-control'}),
+            'number_of_channels': NumberInput(attrs={'class': 'form-control'}),
             'software_version': TextInput(attrs={'class': 'form-control'})
         }
 
@@ -551,6 +551,7 @@ class FilterTypeRegisterForm(ModelForm):
 class ElectrodeModelRegisterForm(ModelForm):
     class Meta:
         model = ElectrodeModel
+        localized_fields = ('impedance',)
         fields = ['name', 'description', 'material', 'usability', 'impedance', 'impedance_unit', 'electrode_type']
 
         widgets = {
@@ -560,7 +561,7 @@ class ElectrodeModelRegisterForm(ModelForm):
             'description': Textarea(attrs={'class': 'form-control', 'rows': '4'}),
             'material': Select(attrs={'class': 'form-control'}),
             'usability': Select(attrs={'class': 'form-control'}),
-            'impedance': NumberInput(attrs={'class': 'form-control'}),
+            'impedance': TextInput(attrs={'class': 'form-control'}),
             'impedance_unit': Select(attrs={'class': 'form-control'}),
             'electrode_type': Select(attrs={'class': 'form-control', 'required': "",
                                             'data-error': _('Electrode type is required')}),
@@ -617,6 +618,7 @@ class EEGElectrodeCapRegisterForm(ModelForm):
 class EEGCapSizeRegisterForm(ModelForm):
     class Meta:
         model = EEGCapSize
+        localized_fields = ('electrode_adjacent_distance',)
         fields = ['size', 'electrode_adjacent_distance']
 
         widgets = {
@@ -624,14 +626,15 @@ class EEGCapSizeRegisterForm(ModelForm):
                                      'required': "",
                                      'data-error': _('Size must be filled.')}),
             'electrode_adjacent_distance':
-                NumberInput(attrs={'class': 'form-control',
-                                   'data-error': _('Electrode adjacent distance must be filled.')}),
+                TextInput(attrs={'class': 'form-control',
+                                 'data-error': _('Electrode adjacent distance must be filled.')}),
         }
 
 
 class ADConverterRegisterForm(ModelForm):
     class Meta:
         model = ADConverter
+        localized_fields = ('signal_to_noise_rate', 'sampling_rate', 'resolution')
         fields = ['manufacturer', 'identification', 'description', 'serial_number',
                   'signal_to_noise_rate', 'sampling_rate', 'resolution']
 
@@ -787,7 +790,7 @@ class EMGSettingForm(ModelForm):
 class EMGDigitalFilterSettingForm(ModelForm):
     class Meta:
         model = EMGDigitalFilterSetting
-
+        localized_fields = ('low_pass', 'high_pass', 'band_pass', 'notch', 'order')
         fields = ['filter_type', 'low_pass', 'high_pass', 'band_pass', 'notch', 'order']
 
         widgets = {
@@ -797,14 +800,14 @@ class EMGDigitalFilterSettingForm(ModelForm):
             'high_pass': TextInput(attrs={'class': 'form-control'}),
             'band_pass': TextInput(attrs={'class': 'form-control'}),
             'notch': TextInput(attrs={'class': 'form-control'}),
-            'order': TextInput(attrs={'class': 'form-control'})
+            'order': NumberInput(attrs={'class': 'form-control'})
         }
 
 
 class EMGADConverterSettingForm(ModelForm):
     class Meta:
         model = EMGADConverterSetting
-
+        localized_fields = ('sampling_rate',)
         fields = ['ad_converter', 'sampling_rate']
 
         widgets = {

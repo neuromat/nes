@@ -82,10 +82,14 @@
                 </div>
                 <div class="row">
                     <div class="col-xs-12 col-sm-12">
-                        <div class="form-group">
+                        <div class="form-group {% if equipment_form.electrode_adjacent_distance.errors %}has-error{% endif %}">
                             <label class="control-label">{% trans "Electrode adjacent distance" %}</label>
                             {{ equipment_form.electrode_adjacent_distance }}
-                            <div class="help-block with-errors"></div>
+                            <div class="help-block with-errors">
+                                {% for error in equipment_form.electrode_adjacent_distance.errors %}
+                                    {{ error }}
+                                {% endfor %}
+                            </div>
                         </div>
                     </div>
                 </div>

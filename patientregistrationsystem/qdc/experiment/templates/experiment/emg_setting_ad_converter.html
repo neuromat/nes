@@ -40,7 +40,7 @@
         {% endfor %}
     {% endif %}
 
-    {% if component_form.errors %}
+    {% if emg_ad_converter_setting_form.errors %}
         <script type="text/javascript">
             showErrorMessage(gettext('Please, correct fields highlighted.'))
         </script>
@@ -99,9 +99,14 @@
 
                 <div class="row">
                     <div class="col-xs-12 col-sm-12">
-                        <div class="form-group">
+                        <div class="form-group {% if emg_ad_converter_setting_form.sampling_rate.errors %}has-error{% endif %}">
                             <label class="control-label">{% trans "Sampling rate (Hz)" %} </label>
                             {{ emg_ad_converter_setting_form.sampling_rate }}
+                            <div class="help-block with-errors">
+                                {% for error in emg_ad_converter_setting_form.sampling_rate.errors %}
+                                    {{ error }}
+                                {% endfor %}
+                            </div>
                         </div>
                     </div>
                 </div>

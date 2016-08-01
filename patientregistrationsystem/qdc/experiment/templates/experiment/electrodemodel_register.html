@@ -108,10 +108,14 @@
                 </div>
                  <div class="row">
                     <div class="col-xs-6 col-sm-6">
-                        <div class="form-group">
+                        <div class="form-group {% if equipment_form.impedance.errors %}has-error{% endif %}">
                             <label class="control-label">{% trans "Impedance" %}</label>
                             {{ equipment_form.impedance }}
-                            <div class="help-block with-errors"></div>
+                            <div class="help-block with-errors">
+                                {% for error in equipment_form.impedance.errors %}
+                                    {{ error }}
+                                {% endfor %}
+                            </div>
                         </div>
                     </div>
                     <div class="col-xs-6 col-sm-6">
