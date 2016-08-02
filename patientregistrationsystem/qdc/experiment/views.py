@@ -2378,11 +2378,11 @@ def muscle_subdivision_view(request, muscle_subdivision_id,
             try:
                 muscle_id = muscle_subdivsion.muscle.id
                 muscle_subdivsion.delete()
-                messages.success(request, _('Muscle side removed successfully.'))
+                messages.success(request, _('Muscle subdivision removed successfully.'))
                 redirect_url = reverse('muscle_view', args=(muscle_id,))
                 return HttpResponseRedirect(redirect_url)
             except ProtectedError:
-                messages.error(request, _("Error trying to delete standardization system."))
+                messages.error(request, _("Error trying to delete muscle subdivision."))
                 redirect_url = reverse("muscle_subdivision_view", args=(muscle_subdivision_id,))
                 return HttpResponseRedirect(redirect_url)
 
@@ -2484,7 +2484,7 @@ def muscle_side_view(request, muscle_side_id,
                 redirect_url = reverse('muscle_view', args=(muscle_id,))
                 return HttpResponseRedirect(redirect_url)
             except ProtectedError:
-                messages.error(request, _("Error trying to delete standardization system."))
+                messages.error(request, _("Error trying to delete muscle side."))
                 redirect_url = reverse("muscle_side_view", args=(muscle_side_id,))
                 return HttpResponseRedirect(redirect_url)
 
