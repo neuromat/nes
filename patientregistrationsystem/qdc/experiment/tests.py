@@ -2673,6 +2673,22 @@ class EEGEquipmentRegisterTest(TestCase):
         self.assertEqual(response.status_code, 302)
         self.assertEqual(ElectrodeModel.objects.all().count(), 1)
 
+        # create (trying) but missing information
+        self.data = {'action': 'save'}
+
+        response = self.client.post(reverse("electrodemodel_new", args=()), self.data)
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(ElectrodeModel.objects.all().count(), 1)
+        self.assertEqual(str(list(response.context['messages'])[-1]), _('Information not saved.'))
+
+        # create with wrong action
+        self.data = {'action': 'wrong'}
+
+        response = self.client.post(reverse("electrodemodel_new", args=()), self.data)
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(ElectrodeModel.objects.all().count(), 1)
+        self.assertEqual(str(list(response.context['messages'])[-1]), _('Action not available.'))
+
         # view
         electrode_model = ElectrodeModel.objects.all().first()
 
@@ -2696,6 +2712,13 @@ class EEGEquipmentRegisterTest(TestCase):
         response = self.client.post(reverse("electrodemodel_edit", args=(electrode_model.id,)), self.data)
         self.assertEqual(response.status_code, 302)
 
+        # update (trying) but missing information
+        self.data = {'action': 'save'}
+        response = self.client.post(reverse("electrodemodel_edit", args=(electrode_model.id,)),
+                                    self.data)
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(get_object_or_404(ElectrodeModel, pk=electrode_model.id).name, name)
+
         # remove
         self.data = {'action': 'remove'}
         response = self.client.post(reverse("electrodemodel_view", args=(electrode_model.id,)), self.data)
@@ -2718,6 +2741,22 @@ class EEGEquipmentRegisterTest(TestCase):
         self.assertEqual(response.status_code, 302)
         self.assertEqual(Material.objects.all().count(), 1)
 
+        # create (trying) but missing information
+        self.data = {'action': 'save'}
+
+        response = self.client.post(reverse("material_new", args=()), self.data)
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(Material.objects.all().count(), 1)
+        self.assertEqual(str(list(response.context['messages'])[-1]), _('Information not saved.'))
+
+        # create with wrong action
+        self.data = {'action': 'wrong'}
+
+        response = self.client.post(reverse("material_new", args=()), self.data)
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(Material.objects.all().count(), 1)
+        self.assertEqual(str(list(response.context['messages'])[-1]), _('Action not available.'))
+
         # view
         material = Material.objects.all().first()
 
@@ -2738,6 +2777,13 @@ class EEGEquipmentRegisterTest(TestCase):
                      'name': name}
         response = self.client.post(reverse("material_edit", args=(material.id,)), self.data)
         self.assertEqual(response.status_code, 302)
+
+        # update (trying) but missing information
+        self.data = {'action': 'save'}
+        response = self.client.post(reverse("material_edit", args=(material.id,)),
+                                    self.data)
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(get_object_or_404(Material, pk=material.id).name, name)
 
         # remove
         self.data = {'action': 'remove'}
