@@ -13,6 +13,8 @@
     <script src="{% static 'quiz/toastr/toastr.js' %}"></script>
     <script src="{% static 'quiz/js/quiz.js' %}"></script>
 
+    <script type="text/javascript" src="{% url 'django.views.i18n.javascript_catalog' %}"></script>
+
 {% endblock %}
 {% block extrastyle %}
 
@@ -110,9 +112,11 @@
 
     </div>
 
-    {% if form.errors %}
+    {% if form.non_field_errors %}
         <script type="text/javascript">
-            showErrorMessageTemporary(gettext('Invalid user or password.'))
+            {% for error in form.non_field_errors %}
+                showErrorMessageTemporary(gettext('{{ error }}'));
+            {% endfor %}
         </script>
     {% endif %}
 

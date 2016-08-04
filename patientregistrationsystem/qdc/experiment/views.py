@@ -3,9 +3,14 @@ import re
 import datetime
 import json
 
+import nwb
+from nwb.nwbco import *
+
+from datetime import date, timedelta
 from functools import partial
 
 from operator import itemgetter
+from os import path
 
 from django.conf import settings
 from django.contrib import messages
@@ -18,6 +23,7 @@ from django.db.models.loading import get_model
 from django.db.models.deletion import ProtectedError
 from django.http import HttpResponseRedirect, HttpResponse
 from django.shortcuts import get_object_or_404, redirect, render, render_to_response
+from django.utils.encoding import smart_str
 from django.utils.translation import ugettext as _
 
 from neo import io
@@ -48,8 +54,9 @@ from experiment.forms import ExperimentForm, QuestionnaireResponseForm, FileForm
     ADConverterRegisterForm, StandardizationSystemRegisterForm, \
     MuscleRegisterForm, MuscleSubdivisionRegisterForm, MuscleSideRegisterForm, EMGSurfacePlacementForm
 
+from export.export import create_directory
 
-from patient.models import Patient, QuestionnaireResponse as PatientQuestionnaireResponse
+from patient.models import Patient, QuestionnaireResponse as PatientQuestionnaireResponse, SocialDemographicData
 
 from survey.abc_search_engine import Questionnaires
 from survey.models import Survey
@@ -4323,6 +4330,92 @@ def eeg_image_edit(request, eeg_data_id, tab, template_name="experiment/subject_
                "tab": tab}
 
     return render(request, template_name, context)
+
+
+@login_required
+@permission_required('experiment.change_experiment')
+def eeg_data_export_nwb(request, eeg_data_id):
+
+    eeg_data = get_object_or_404(EEGData, pk=eeg_data_id)
+
+    subject_of_group = eeg_data.subject_of_group
+
+    social_demographic_data = None
+    social_demographic_query = SocialDemographicData.objects.filter(patient=subject_of_group.subject.patient)
+    if social_demographic_query:
+        social_demographic_data = social_demographic_query.first()
+
+    ########################################################################
+    # create a new NWB file
+    # several settings are specified when doing so. these can be supplied within
+    #   the NWB constructor or defined in a dict, as in in this example
+
+    errors, path_complete = create_directory(settings.MEDIA_ROOT, "export_nwb")
+    errors, path_complete = create_directory(path_complete, str(request.user.id))
+
+    nwb_file_settings = dict()
+
+    nwb_file_settings["filename"] = \
+        path.join(path_complete, subject_of_group.subject.patient.code + "_" + str(eeg_data.id) + ".nwb")
+
+    # each file should have a descriptive globally unique identifier
+    #   that specifies the lab and this experiment session
+    # the function nwb.create_identifier() is recommended to use as it takes
+    #   the string and appends the present date and time
+    nwb_file_settings["identifier"] = nwb.create_identifier("Participant: " +
+                                                            subject_of_group.subject.patient.code +
+                                                            "; NES experiment id: " +
+                                                            str(eeg_data.subject_of_group.group.experiment.id))
+
+    # indicate that it's OK to overwrite exting file
+    nwb_file_settings["overwrite"] = True
+
+    # specify the start time of the experiment. all times in the NWB file
+    #   are relative to experiment start time
+    # if the start time is not specified the present time will be used
+    # settings["start_time"] = "Sat Jul 04 2015 3:14:16"
+    nwb_file_settings["start_time"] = eeg_data.date.strftime("%Y-%m-%d")
+
+    # provide one or two sentences that describe the experiment and what
+    #   data is in the file
+    nwb_file_settings["description"] = subject_of_group.group.experiment.description
+
+    # create the NWB object. this manages the file
+    print("Creating " + nwb_file_settings["filename"])
+    neurodata = nwb.NWB(**nwb_file_settings)
+
+    ########################################################################
+    # general metadata section
+    #
+    neurodata.set_metadata(EXPERIMENT_DESCRIPTION, subject_of_group.group.experiment.description)
+
+    neurodata.set_metadata(SUBJECT_ID, subject_of_group.subject.patient.code)
+    neurodata.set_metadata(SEX, subject_of_group.subject.patient.gender.name)
+    neurodata.set_metadata(SPECIES, "human")
+    neurodata.set_metadata(
+        AGE, str((date.today() - subject_of_group.subject.patient.date_birth) // timedelta(days=365.2425)))
+
+    if social_demographic_data:
+        neurodata.set_metadata(GENOTYPE, social_demographic_data.flesh_tone.name)
+        neurodata.set_metadata(SUBJECT, social_demographic_data.natural_of)
+
+    # when all data is entered, close the file
+    neurodata.close()
+
+    response = HttpResponse(
+        content_type='application/force-download')
+    response['Content-Disposition'] = 'attachment; filename=%s' % \
+                                      smart_str(subject_of_group.subject.patient.code + "_" + str(eeg_data.id) + ".nwb")
+    response['X-Sendfile'] = smart_str(nwb_file_settings["filename"])
+    # It's usually a good idea to set the 'Content-Length' header too.
+    # You can also set any other required headers: Cache-Control, etc.
+    return response
+
+    # messages.success(request, _('NWB file exported.'))
+    #
+    # return redirect('subject_eeg_view',
+    #                 group_id=subject_of_group.group_id,
+    #                 subject_id=subject_of_group.subject_id)
 
 
 @login_required

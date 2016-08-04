@@ -102,7 +102,8 @@
                                                         <td>{{ eeg_data_file.date }}</td>
                                                         <td>{{ eeg_data_file.file_format.name }}</td>
                                                         <td>{{ eeg_data_file.file.size|filesizeformat }}</td>
-                                                        <td><a href="{{ eeg_data_file.file.url }}"><span class="glyphicon glyphicon-download"></span></a></td>
+                                                        <td><a href="{{ eeg_data_file.file.url }}" data-toggle="tooltip" data-placement="top" title="{% trans "Download file" %}"><span class="glyphicon glyphicon-download"></span></a></td>
+                                                        <td><a href="/experiment/eeg_data/{{ eeg_data_file.id }}/export_nwb" data-toggle="tooltip" data-placement="top" title="{% trans "Export nwb file format" %}"><span class="glyphicon glyphicon-export"></span></a></td>
                                                         <td>
                                                             {% if eeg_data_file.eeg_reading.file_format %}
                                                                 {% if eeg_data_file.eeg_reading.reading %}
@@ -117,7 +118,7 @@
                                                     </tr>
                                                 {% endfor %}
                                                 <tr>
-                                                    <td colspan="6">
+                                                    <td colspan="7">
                                                         <a href="/experiment/group/{{ group.id }}/subject/{{ subject.id }}/eeg/{% for item in eeg_collection.path %}{{ item.0 }}{% if not forloop.last %}-{% endif %}{% endfor %}/add_eeg_data">
                                                             <span class="glyphicon glyphicon-plus-sign"></span>
                                                             {% trans "New EEG data file" %}
