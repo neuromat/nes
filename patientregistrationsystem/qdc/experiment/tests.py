@@ -229,6 +229,8 @@ class ObjectsFactory(object):
         electrode_model = ElectrodeModel.objects.create(
             name="Electrode Model name"
         )
+        for tag in Tag.objects.all():
+            electrode_model.tags.add(tag)
         electrode_model.save()
         return electrode_model
 
@@ -2234,6 +2236,22 @@ class EEGEquipmentRegisterTest(TestCase):
         self.assertEqual(response.status_code, 302)
         self.assertEqual(Amplifier.objects.all().count(), 1)
 
+        # create (trying) but missing information
+        self.data = {'action': 'save'}
+
+        response = self.client.post(reverse("amplifier_new", args=()), self.data)
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(Amplifier.objects.all().count(), 1)
+        self.assertEqual(str(list(response.context['messages'])[-1]), _('Information not saved.'))
+
+        # create with wrong action
+        self.data = {'action': 'wrong'}
+
+        response = self.client.post(reverse("amplifier_new", args=()), self.data)
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(Amplifier.objects.all().count(), 1)
+        self.assertEqual(str(list(response.context['messages'])[-1]), _('Action not available.'))
+
         # view
         amplifier = Amplifier.objects.all().first()
 
@@ -2258,6 +2276,13 @@ class EEGEquipmentRegisterTest(TestCase):
                      'tag_1': 'on', 'tag_2': 'on'}
         response = self.client.post(reverse("amplifier_edit", args=(amplifier.id,)), self.data)
         self.assertEqual(response.status_code, 302)
+
+        # update (trying) but missing information
+        self.data = {'action': 'save'}
+        response = self.client.post(reverse("amplifier_edit", args=(amplifier.id,)),
+                                    self.data)
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(get_object_or_404(Amplifier, pk=amplifier.id).identification, identification)
 
         # remove
         self.data = {'action': 'remove'}
@@ -2790,6 +2815,82 @@ class EEGEquipmentRegisterTest(TestCase):
         response = self.client.post(reverse("material_view", args=(material.id,)), self.data)
         self.assertEqual(response.status_code, 302)
         self.assertEqual(Material.objects.all().count(), 0)
+
+    def test_electrode_net_register(self):
+        manufacturer = ObjectsFactory.create_manufacturer()
+        electrode_model = ObjectsFactory.create_electrode_model()
+
+        # list
+        response = self.client.get(reverse("eegelectrodenet_list", args=()))
+        self.assertEqual(response.status_code, 200)
+
+        # create
+        response = self.client.get(reverse("eegelectrodenet_new", args=()))
+        self.assertEqual(response.status_code, 200)
+
+        identification = 'Identification'
+        self.data = {'action': 'save',
+                     'manufacturer': str(manufacturer.id),
+                     'identification': identification,
+                     'electrode_model_default': str(electrode_model.id)}
+
+        response = self.client.post(reverse("eegelectrodenet_new", args=()), self.data)
+        self.assertEqual(response.status_code, 302)
+        self.assertEqual(EEGElectrodeNet.objects.all().count(), 1)
+
+        # create (trying) but missing information
+        self.data = {'action': 'save'}
+
+        response = self.client.post(reverse("eegelectrodenet_new", args=()), self.data)
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(EEGElectrodeNet.objects.all().count(), 1)
+        self.assertEqual(str(list(response.context['messages'])[-1]), _('Information not saved.'))
+
+        # create with wrong action
+        self.data = {'action': 'wrong'}
+
+        response = self.client.post(reverse("eegelectrodenet_new", args=()), self.data)
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(EEGElectrodeNet.objects.all().count(), 1)
+        self.assertEqual(str(list(response.context['messages'])[-1]), _('Action not available.'))
+
+        # view
+        electrode_net = EEGElectrodeNet.objects.all().first()
+
+        response = self.client.get(reverse("eegelectrodenet_view", args=(electrode_net.id,)))
+        self.assertEqual(response.status_code, 200)
+
+        # update
+        response = self.client.get(reverse("eegelectrodenet_edit", args=(electrode_net.id,)))
+        self.assertEqual(response.status_code, 200)
+
+        self.data = {'action': 'save',
+                     'manufacturer': str(manufacturer.id),
+                     'identification': identification,
+                     'electrode_model_default': str(electrode_model.id)}
+        response = self.client.post(reverse("eegelectrodenet_edit", args=(electrode_net.id,)), self.data)
+        self.assertEqual(response.status_code, 302)
+
+        identification = 'Identification changed'
+        self.data = {'action': 'save',
+                     'manufacturer': str(manufacturer.id),
+                     'identification': identification,
+                     'electrode_model_default': str(electrode_model.id)}
+        response = self.client.post(reverse("eegelectrodenet_edit", args=(electrode_net.id,)), self.data)
+        self.assertEqual(response.status_code, 302)
+
+        # update (trying) but missing information
+        self.data = {'action': 'save'}
+        response = self.client.post(reverse("eegelectrodenet_edit", args=(electrode_net.id,)),
+                                    self.data)
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(get_object_or_404(EEGElectrodeNet, pk=electrode_net.id).identification, identification)
+
+        # remove
+        self.data = {'action': 'remove'}
+        response = self.client.post(reverse("eegelectrodenet_view", args=(electrode_net.id,)), self.data)
+        self.assertEqual(response.status_code, 302)
+        self.assertEqual(EEGElectrodeNet.objects.all().count(), 0)
 
 
 class EMGSettingTest(TestCase):
