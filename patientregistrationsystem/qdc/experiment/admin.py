@@ -7,7 +7,7 @@ from experiment.models import Experiment, QuestionnaireResponse, StimulusType, F
     StandardizationSystem, EMGIntramuscularPlacement, EMGSurfacePlacement, EMGNeedlePlacement, \
     Muscle, MuscleSubdivision, MuscleSide, \
     ElectrodeShape, MeasureSystem, MeasureUnit, TetheringSystem, AmplifierDetectionType, ElectrodeConfiguration, \
-    CoilShape
+    CoilShape, TMSDevice, CoilModel
 
 admin.site.register(Experiment, SimpleHistoryAdmin)
 admin.site.register(QuestionnaireResponse, SimpleHistoryAdmin)
@@ -43,3 +43,5 @@ admin.site.register(MuscleSubdivision)
 admin.site.register(MuscleSide)
 
 admin.site.register(CoilShape)
+admin.site.register(TMSDevice)
+admin.site.register(CoilModel)

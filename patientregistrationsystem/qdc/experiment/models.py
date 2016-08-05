@@ -115,7 +115,8 @@ class Equipment(models.Model):
         ("eeg_solution", _("EEG Solution")),
         ("filter", _("Filter")),
         ("eeg_electrode_net", _("EEG Electrode Net")),
-        ("ad_converter", _("A/D Converter"))
+        ("ad_converter", _("A/D Converter")),
+        ("tms_device", _("TMS device"))
     )
     manufacturer = models.ForeignKey(Manufacturer, null=False, related_name="set_of_equipment")
     equipment_type = models.CharField(null=True, blank=True, max_length=50, choices=EQUIPMENT_TYPES)
@@ -638,6 +639,7 @@ class Component(models.Model):
         ("task_experiment", _("Task for experimenter")),
         ("eeg", _("EEG")),
         ("emg", _("EMG")),
+        ("tms", _("TMS")),
     )
 
     identification = models.CharField(null=False, max_length=50, blank=False)

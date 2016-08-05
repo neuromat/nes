@@ -39,7 +39,7 @@ from experiment.models import Experiment, Subject, QuestionnaireResponse, Subjec
     EMGData, EMGSetting, SoftwareVersion, EMGDigitalFilterSetting, EMGADConverterSetting, \
     EMGElectrodeSetting, EMGPreamplifierSetting, EMGAmplifierSetting, EMGAnalogFilterSetting, \
     ADConverter, StandardizationSystem, Muscle, MuscleSubdivision, MuscleSide, \
-    EMGElectrodePlacement, EMGSurfacePlacement
+    EMGElectrodePlacement, EMGSurfacePlacement, TMS, TMSSetting, TMSDeviceSetting
 from experiment.forms import ExperimentForm, QuestionnaireResponseForm, FileForm, GroupForm, InstructionForm, \
     ComponentForm, StimulusForm, BlockForm, ComponentConfigurationForm, ResearchProjectForm, NumberOfUsesToInsertForm, \
     EEGDataForm, EEGSettingForm, EquipmentForm, EEGForm, EEGMachineForm, EEGMachineSettingForm, EEGAmplifierForm, \
@@ -52,7 +52,8 @@ from experiment.forms import ExperimentForm, QuestionnaireResponseForm, FileForm
     EMGElectrodeSettingForm, EMGElectrodePlacementSettingForm, \
     EMGPreamplifierSettingForm, EMGAmplifierSettingForm, EMGAnalogFilterSettingForm, EMGForm, ElectrodeModelForm, \
     ADConverterRegisterForm, StandardizationSystemRegisterForm, \
-    MuscleRegisterForm, MuscleSubdivisionRegisterForm, MuscleSideRegisterForm, EMGSurfacePlacementForm
+    MuscleRegisterForm, MuscleSubdivisionRegisterForm, MuscleSideRegisterForm, EMGSurfacePlacementForm, \
+    TMSForm, TMSSettingForm, TMSDeviceSettingForm
 
 from export.export import create_directory
 
@@ -75,6 +76,7 @@ icon_class = {
     'task_experiment': 'glyphicon glyphicon-wrench',
     'eeg': 'glyphicon glyphicon-flash',
     'emg': 'glyphicon glyphicon-stats',
+    'tms': 'glyphicon glyphicon-magnet',
     'experimental_protocol': 'glyphicon glyphicon-tasks'
 }
 
@@ -338,6 +340,7 @@ def experiment_view(request, experiment_id, template_name="experiment/experiment
     group_list = Group.objects.filter(experiment=experiment)
     eeg_setting_list = EEGSetting.objects.filter(experiment=experiment)
     emg_setting_list = EMGSetting.objects.filter(experiment=experiment)
+    tms_setting_list = TMSSetting.objects.filter(experiment=experiment)
     experiment_form = ExperimentForm(request.POST or None, instance=experiment)
 
     for field in experiment_form.fields:
@@ -375,6 +378,7 @@ def experiment_view(request, experiment_id, template_name="experiment/experiment
                "group_list": group_list,
                "eeg_setting_list": eeg_setting_list,
                "emg_setting_list": emg_setting_list,
+               "tms_setting_list": tms_setting_list,
                "research_project": experiment.research_project}
 
     return render(request, template_name, context)
@@ -5095,6 +5099,8 @@ def component_create(request, experiment_id, component_type):
         specific_form = EEGForm(request.POST or None, initial={'experiment': experiment})
     elif component_type == 'emg':
         specific_form = EMGForm(request.POST or None, initial={'experiment': experiment})
+    elif component_type == 'tms':
+        specific_form = TMSForm(request.POST or None, initial={'experiment': experiment})
     elif component_type == 'questionnaire':
         questionnaires_list = find_active_questionnaires(request.LANGUAGE_CODE)
     elif component_type == 'block':
@@ -5541,6 +5547,10 @@ def create_component(component, new_experiment):
         emg = get_object_or_404(EMG, pk=component.id)
         clone = EMG(emg_setting_id=emg.emg_setting_id)
 
+    elif component_type == 'tms':
+        tms = get_object_or_404(TMS, pk=component.id)
+        clone = TMS(emg_setting_id=tms.tms_setting_id)
+
     elif component_type == 'instruction':
         instruction = get_object_or_404(Instruction, pk=component.id)
         clone = Instruction(text=instruction.text)
@@ -5810,6 +5820,9 @@ def component_update(request, path_of_the_components):
     elif component_type == 'emg':
         emg = get_object_or_404(EMG, pk=component.id)
         specific_form = EMGForm(request.POST or None, instance=emg, initial={'experiment': experiment})
+    elif component_type == 'tms':
+        tms = get_object_or_404(TMS, pk=component.id)
+        specific_form = TMSForm(request.POST or None, instance=tms, initial={'experiment': experiment})
     elif component_type == 'questionnaire':
         questionnaire = get_object_or_404(Questionnaire, pk=component.id)
         questionnaire_details = Questionnaires().find_questionnaire_by_id(questionnaire.survey.lime_survey_id)
@@ -6041,6 +6054,8 @@ def component_add_new(request, path_of_the_components, component_type):
         specific_form = EEGForm(request.POST or None, initial={'experiment': experiment})
     elif component_type == 'emg':
         specific_form = EMGForm(request.POST or None, initial={'experiment': experiment})
+    elif component_type == 'tms':
+        specific_form = TMSForm(request.POST or None, initial={'experiment': experiment})
     elif component_type == 'questionnaire':
         questionnaires_list = find_active_questionnaires(request.LANGUAGE_CODE)
     elif component_type == 'block':
@@ -6189,6 +6204,9 @@ def component_reuse(request, path_of_the_components, component_id):
     elif component_type == 'emg':
         emg = get_object_or_404(EMG, pk=component_to_add.id)
         specific_form = EMGForm(request.POST or None, instance=emg, initial={'experiment': experiment})
+    elif component_type == 'tms':
+        tms = get_object_or_404(TMS, pk=component_to_add.id)
+        specific_form = TMSForm(request.POST or None, instance=tms, initial={'experiment': experiment})
     elif component_type == 'questionnaire':
         questionnaire = get_object_or_404(Questionnaire, pk=component_to_add.id)
         questionnaire_details = Questionnaires().find_questionnaire_by_id(questionnaire.survey.lime_survey_id)
@@ -7420,6 +7438,217 @@ def emg_electrode_setting_amplifier_edit(request, emg_electrode_setting_id,
                "emg_electrode_setting": emg_electrode_setting,
                "emg_amplifier_setting_form": emg_amplifier_setting_form,
                "emg_analog_filter_setting_form": emg_analog_filter_setting_form,
+               "equipment_form": equipment_form
+               }
+
+    return render(request, template_name, context)
+
+
+@login_required
+@permission_required('experiment.add_subject')
+def tms_setting_create(request, experiment_id, template_name="experiment/tms_setting_register.html"):
+    experiment = get_object_or_404(Experiment, pk=experiment_id)
+
+    check_can_change(request.user, experiment.research_project)
+
+    tms_setting_form = TMSSettingForm(request.POST or None)
+
+    if request.method == "POST":
+        if request.POST['action'] == "save":
+            if tms_setting_form.is_valid():
+                tms_setting_added = tms_setting_form.save(commit=False)
+                tms_setting_added.experiment_id = experiment_id
+                tms_setting_added.save()
+
+                messages.success(request, _('TMS setting included successfully.'))
+
+                redirect_url = reverse("tms_setting_view", args=(tms_setting_added.id,))
+                return HttpResponseRedirect(redirect_url)
+
+    context = {"tms_setting_form": tms_setting_form,
+               "creating": True,
+               "editing": True,
+               "experiment": experiment
+               }
+
+    return render(request, template_name, context)
+
+
+@login_required
+@permission_required('experiment.view_researchproject')
+def tms_setting_view(request, tms_setting_id, template_name="experiment/tms_setting_register.html"):
+
+    tms_setting = get_object_or_404(TMSSetting, pk=tms_setting_id)
+    tms_setting_form = TMSSettingForm(request.POST or None, instance=tms_setting)
+
+    for field in tms_setting_form.fields:
+        tms_setting_form.fields[field].widget.attrs['disabled'] = True
+
+    can_change = get_can_change(request.user, tms_setting.experiment.research_project)
+
+    if request.method == "POST":
+        if can_change:
+            if request.POST['action'] == "remove":
+
+                experiment_id = tms_setting.experiment_id
+
+                tms_setting.delete()
+
+                messages.success(request, _('TMS setting was removed successfully.'))
+
+                redirect_url = reverse("experiment_view", args=(experiment_id,))
+                return HttpResponseRedirect(redirect_url)
+
+            if request.POST['action'][:7] == "remove-":
+                # If action starts with 'remove-' it means that a setting should be removed from the tms_setting.
+                tms_setting_type = request.POST['action'][7:]
+
+                setting_to_be_deleted = None
+
+                if tms_setting_type == "tms_device":
+                    setting_to_be_deleted = get_object_or_404(TMSDeviceSetting, pk=tms_setting_id)
+
+                if setting_to_be_deleted:
+                    setting_to_be_deleted.delete()
+
+                messages.success(request, _('Setting was removed successfully.'))
+
+                redirect_url = reverse("tms_setting_view", args=(tms_setting.id,))
+                return HttpResponseRedirect(redirect_url)
+
+    context = {"can_change": can_change,
+               "tms_setting_form": tms_setting_form,
+               "experiment": tms_setting.experiment,
+               "tms_setting": tms_setting,
+               "editing": False
+               }
+
+    return render(request, template_name, context)
+
+
+@login_required
+@permission_required('experiment.change_experiment')
+def tms_setting_update(request, tms_setting_id, template_name="experiment/tms_setting_register.html"):
+    tms_setting = get_object_or_404(TMSSetting, pk=tms_setting_id)
+
+    check_can_change(request.user, tms_setting.experiment.research_project)
+
+    tms_setting_form = TMSSettingForm(request.POST or None, instance=tms_setting)
+
+    if request.method == "POST":
+        if request.POST['action'] == "save":
+            if tms_setting_form.is_valid():
+
+                if tms_setting_form.has_changed():
+                    tms_setting_form.save()
+                    messages.success(request, _('TMS setting updated successfully.'))
+                else:
+                    messages.success(request, _('There is no changes to save.'))
+
+                redirect_url = reverse("tms_setting_view", args=(tms_setting_id,))
+                return HttpResponseRedirect(redirect_url)
+
+    context = {"tms_setting_form": tms_setting_form,
+               "editing": True,
+               "experiment": tms_setting.experiment,
+               "tms_setting": tms_setting
+               }
+
+    return render(request, template_name, context)
+
+
+@login_required
+@permission_required('experiment.change_experiment')
+def tms_setting_tms_device(request, tms_setting_id,
+                           template_name="experiment/tms_setting_tms_device.html"):
+
+    tms_setting = get_object_or_404(TMSSetting, pk=tms_setting_id)
+
+    can_change = get_can_change(request.user, tms_setting.experiment.research_project)
+
+    creating = False
+
+    if hasattr(tms_setting, 'tms_device_setting'):
+
+        tms_device_setting = TMSDeviceSetting.objects.get(tms_setting=tms_setting)
+
+        tms_device_setting_form = TMSDeviceSettingForm(request.POST or None, instance=tms_device_setting)
+
+        tms_device_selected = tms_device_setting.tms_device
+
+        equipment_form = EquipmentForm(request.POST or None, instance=tms_device_selected)
+
+        for field in tms_device_setting_form.fields:
+            tms_device_setting_form.fields[field].widget.attrs['disabled'] = True
+
+    else:
+        creating = True
+        tms_device_setting_form = TMSDeviceSettingForm(request.POST or None)
+        equipment_form = EquipmentForm(request.POST or None)
+
+    if request.method == "POST":
+        if request.POST['action'] == "save":
+
+            if tms_device_setting_form.is_valid():
+
+                if tms_device_setting_form.has_changed():
+
+                    new_setting = tms_device_setting_form.save(commit=False)
+                    new_setting.tms_setting = tms_setting
+                    new_setting.save()
+
+                    messages.success(request, _('TMS device setting created successfully.'))
+
+                    redirect_url = reverse("tms_setting_view", args=(tms_setting_id,))
+                    return HttpResponseRedirect(redirect_url)
+
+    context = {"creating": creating,
+               "editing": False,
+               "can_change": can_change,
+               "tms_setting": tms_setting,
+               "tms_device_setting_form": tms_device_setting_form,
+               "equipment_form": equipment_form
+               }
+
+    return render(request, template_name, context)
+
+
+@login_required
+@permission_required('experiment.change_experiment')
+def tms_setting_tms_device_edit(request, tms_setting_id, template_name="experiment/tms_setting_tms_device.html"):
+
+    tms_setting = get_object_or_404(TMSSetting, pk=tms_setting_id)
+
+    check_can_change(request.user, tms_setting.experiment.research_project)
+
+    tms_device_setting = tms_setting.tms_device_setting
+    tms_device_setting_form = TMSDeviceSettingForm(request.POST or None, instance=tms_device_setting)
+
+    tms_device_selected = tms_device_setting.tms_device
+
+    equipment_form = EquipmentForm(request.POST or None, instance=tms_device_selected)
+
+    if request.method == "POST":
+
+        if request.POST['action'] == "save":
+
+            if tms_device_setting_form.is_valid():
+
+                if tms_device_setting_form.has_changed():
+                    tms_device_setting_form.save()
+
+                    messages.success(request, _('TMS device setting updated successfully.'))
+                else:
+                    messages.success(request, _('There is no changes to save.'))
+
+                redirect_url = reverse("tms_setting_tms_device", args=(tms_setting_id,))
+                return HttpResponseRedirect(redirect_url)
+
+    context = {"creating": False,
+               "editing": True,
+               "can_change": True,
+               "tms_setting": tms_setting,
+               "tms_device_setting_form": tms_device_setting_form,
                "equipment_form": equipment_form
                }
 

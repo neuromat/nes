@@ -205,6 +205,39 @@
                 </div>
 
                 <div class="container span6 offset3 well ">
+                <h4><span class="glyphicon glyphicon-magnet"></span> {% trans "TMS Settings" %}</h4>
+                    {% if emg_setting_list %}
+                        <div class="form-group">
+                            <table class="table table-striped">
+                                <thead>
+                                <tr>
+                                    <th>{% trans "Name" %}</th>
+                                    <th>{% trans "Description" %}</th>
+                                </tr>
+                                </thead>
+                                <tbody>
+                                {% for tms_setting in tms_setting_list %}
+                                    <tr>
+                                        <td>
+                                            <a data-toggle="tooltip" data-placement="left" title="{% trans "Edit" %}" href="/experiment/tms_setting/{{ tms_setting.id }}">
+                                            {{ tms_setting.name }}
+                                            </a>
+                                        </td>
+                                        <td>
+                                            {{ tms_setting.description }}
+                                        </td>
+                                    </tr>
+                                {% endfor %}
+                                </tbody>
+                            </table>
+                        </div>
+                    {% endif %}
+                    {% if perms.experiment.add_subject and can_change %}
+                        <a href="/experiment/{{ experiment.id }}/tms_setting/new" class="btn btn-primary">{% trans "Insert new" %}</a>
+                    {% endif %}
+                </div>
+
+                <div class="container span6 offset3 well ">
                     <h4><span class="glyphicon glyphicon-tasks"></span> {% trans "Steps of experimental protocol" %}</h4>
                     <div class="row">
                         <div class="col-xs-6 col-sm-12">

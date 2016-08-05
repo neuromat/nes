@@ -1,0 +1,37 @@
+{% extends "experiment/component_template.html" %}
+
+{% load i18n admin_static %}
+
+{% block breadcrumb %}
+
+    {% if creating %}
+        <li class="active">{% trans "New TMS" %}</li>
+    {% endif %}
+
+{% endblock %}
+
+{% block component_label %}{% trans "the TMS" %}{% endblock %}
+
+{% block component_add_new %}
+    <li role="presentation">
+        <a role="menuitem" tabindex="-1" onclick="redirect_with_number_of_uses('/experiment/component/{{ path_of_the_components }}/add_new/tms{% if position %}?position={{ position }}{% endif %}')">
+            << {% trans "New TMS" %} >>
+        </a>
+    </li>
+{% endblock %}
+
+{% block component_button_label %}
+    {% trans "New TMS" %}
+{% endblock %}
+
+{% block extra_fields %}
+    <div class="row">
+        <div class="col-xs-6 col-sm-6">
+            <div class="form-group">
+                <label class="control-label">{% trans "TMS setting" %}<b style="color: red;">*</b></label>
+                    {{ specific_form.tms_setting }}
+                <div class="help-block with-errors"></div>
+            </div>
+        </div>
+    </div>
+{% endblock %}

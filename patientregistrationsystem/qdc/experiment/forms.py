@@ -13,7 +13,7 @@ from experiment.models import Experiment, QuestionnaireResponse, SubjectOfGroup,
     AdditionalData, EMGData, FileFormat, EMGSetting, EMGDigitalFilterSetting, EMGADConverterSetting, \
     EMGElectrodeSetting, EMGElectrodePlacementSetting, \
     EMGPreamplifierSetting, EMGAmplifierSetting, EMGAnalogFilterSetting, EMGSurfacePlacement, \
-    ADConverter, StandardizationSystem, Muscle, MuscleSide, MuscleSubdivision
+    ADConverter, StandardizationSystem, Muscle, MuscleSide, MuscleSubdivision, TMS, TMSSetting, TMSDeviceSetting
 
 
 class ExperimentForm(ModelForm):
@@ -205,6 +205,24 @@ class EMGForm(ModelForm):
         initial = kwargs.get('initial')
         if initial:
             self.fields['emg_setting'].queryset = EMGSetting.objects.filter(experiment=initial['experiment'])
+
+
+class TMSForm(ModelForm):
+
+    class Meta:
+        model = TMS
+        fields = ['tms_setting']
+
+        widgets = {
+            'tms_setting': Select(attrs={'class': 'form-control', 'required': "",
+                                         'data-error': _('TMS setting type must be filled.')})
+        }
+
+    def __init__(self, *args, **kwargs):
+        super(TMSForm, self).__init__(*args, **kwargs)
+        initial = kwargs.get('initial')
+        if initial:
+            self.fields['tms_setting'].queryset = TMSSetting.objects.filter(experiment=initial['experiment'])
 
 
 class BlockForm(ModelForm):
@@ -933,4 +951,34 @@ class EMGSurfacePlacementForm(ModelForm):
             'fixation_on_the_skin': Textarea(attrs={'class': 'form-control', 'rows': '4', 'required': ""}),
             'reference_electrode': Textarea(attrs={'class': 'form-control', 'rows': '4', 'required': ""}),
             'clinical_test': Textarea(attrs={'class': 'form-control', 'rows': '4', 'required': ""}),
+        }
+
+
+class TMSSettingForm(ModelForm):
+    class Meta:
+        model = TMSSetting
+
+        fields = ['name', 'description']
+
+        widgets = {
+            'name': TextInput(attrs={'class': 'form-control',
+                                     'required': "",
+                                     'data-error': _('Name must be filled.'),
+                                     'autofocus': ''}),
+            'description': Textarea(attrs={'class': 'form-control',
+                                           'rows': '4', 'required': "",
+                                           'data-error': _('Description must be filled.')})
+        }
+
+
+class TMSDeviceSettingForm(ModelForm):
+    class Meta:
+        model = TMSDeviceSetting
+
+        fields = ['tms_device', 'pulse_stimulus_type']
+
+        widgets = {
+            'tms_device': Select(attrs={'class': 'form-control', 'required': "",
+                                        'data-error': _('TMD device is required')}),
+            'pulse_stimulus_type': Select(attrs={'class': 'form-control'})
         }

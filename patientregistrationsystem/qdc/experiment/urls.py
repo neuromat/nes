@@ -221,6 +221,15 @@ urlpatterns = patterns(
     url(r'^emg_setting/get_anatomical_description_by_placement/(?P<emg_electrode_placement_id>\d+)/$',
         'get_anatomical_description_by_placement'),
 
+    # tms setting
+    url(r'^(?P<experiment_id>\d+)/tms_setting/new/$', 'tms_setting_create', name='tms_setting_new'),
+    url(r'^tms_setting/(?P<tms_setting_id>\d+)/$', 'tms_setting_view', name='tms_setting_view'),
+    url(r'^tms_setting/edit/(?P<tms_setting_id>\d+)/$', 'tms_setting_update', name='tms_setting_edit'),
+    url(r'^tms_setting/(?P<tms_setting_id>\d+)/tms_device/$',
+        'tms_setting_tms_device', name='tms_setting_tms_device'),
+    url(r'^tms_setting/(?P<tms_setting_id>\d+)/tms_device/edit/$',
+        'tms_setting_tms_device_edit', name='tms_setting_tms_device_edit'),
+
     # cid
     url(r'^group_diseases/cid-10/$', 'search_cid10_ajax', name='cid10_search'),
 
