@@ -6,7 +6,8 @@ from experiment.models import Experiment, QuestionnaireResponse, StimulusType, F
     Software, SoftwareVersion, ADConverter, \
     StandardizationSystem, EMGIntramuscularPlacement, EMGSurfacePlacement, EMGNeedlePlacement, \
     Muscle, MuscleSubdivision, MuscleSide, \
-    ElectrodeShape, MeasureSystem, MeasureUnit, TetheringSystem, AmplifierDetectionType, ElectrodeConfiguration
+    ElectrodeShape, MeasureSystem, MeasureUnit, TetheringSystem, AmplifierDetectionType, ElectrodeConfiguration, \
+    CoilShape
 
 admin.site.register(Experiment, SimpleHistoryAdmin)
 admin.site.register(QuestionnaireResponse, SimpleHistoryAdmin)
@@ -40,3 +41,5 @@ admin.site.register(EMGNeedlePlacement)
 admin.site.register(Muscle)
 admin.site.register(MuscleSubdivision)
 admin.site.register(MuscleSide)
+
+admin.site.register(CoilShape)

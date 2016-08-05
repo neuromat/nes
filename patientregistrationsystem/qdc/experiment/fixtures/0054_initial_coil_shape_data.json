@@ -1,0 +1,37 @@
+[
+  {
+    "model": "experiment.coilshape",
+    "pk": 1,
+    "fields": {
+      "name": "Round coil"
+    }
+  },
+  {
+    "model": "experiment.coilshape",
+    "pk": 2,
+    "fields": {
+      "name": "Figure eight coil"
+    }
+  },
+  {
+    "model": "experiment.coilshape",
+    "pk": 3,
+    "fields": {
+      "name": "Double cone coil"
+    }
+  },
+  {
+    "model": "experiment.coilshape",
+    "pk": 4,
+    "fields": {
+      "name": "Four leaf coil"
+    }
+  },
+  {
+    "model": "experiment.coilshape",
+    "pk": 5,
+    "fields": {
+      "name": "H coil"
+    }
+  }
+]

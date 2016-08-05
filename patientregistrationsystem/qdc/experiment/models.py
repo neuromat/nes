@@ -353,6 +353,41 @@ class EEGElectrodeNetSystem(models.Model):
                                                           related_name='set_of_electrode_net_system')
 
 
+class CoilShape(models.Model):
+    name = models.CharField(max_length=150)
+
+    def __str__(self):
+        return self.name
+
+
+class CoilModel(models.Model):
+    COIL_DESIGN_OPTIONS = (
+        ("air_core_coil", _("Air core coil")),
+        ("solid_core_coil", _("Solid core coil")),
+    )
+    name = models.CharField(max_length=150)
+    description = models.TextField(null=True, blank=True)
+    coil_shape = models.ForeignKey(CoilShape)
+    material = models.ForeignKey(Material, null=True, blank=True)
+    coil_design = models.CharField(null=True, blank=True, max_length=50, choices=COIL_DESIGN_OPTIONS)
+
+    def __str__(self):
+        return self.name
+
+
+class TMSDevice(Equipment):
+    PULSE_TYPES = (
+        ("monophase", _("Monophase")),
+        ("biphase", _("Biphase")),
+    )
+
+    coil_model = models.ForeignKey(CoilModel)
+    pulse_type = models.CharField(null=True, blank=True, max_length=50, choices=PULSE_TYPES)
+
+    def __str__(self):
+        return self.identification
+
+
 class EEGSetting(models.Model):
     experiment = models.ForeignKey(Experiment)
     name = models.CharField(max_length=150)
@@ -571,6 +606,27 @@ class EMGElectrodePlacementSetting(models.Model):
     muscle_side = models.ForeignKey(MuscleSide, null=True, blank=True)
 
 
+class TMSSetting(models.Model):
+    experiment = models.ForeignKey(Experiment)
+    name = models.CharField(max_length=150)
+    description = models.TextField()
+    copied_from = models.ForeignKey('self', null=True, related_name='children')
+
+    def __str__(self):
+        return self.name
+
+
+class TMSDeviceSetting(models.Model):
+    PULSE_STIMULUS_TYPES = (
+        ("single_pulse", _("Single pulse")),
+        ("paired_pulse", _("Paired pulse")),
+        ("repetitive_pulse", _("Repetitive pulse"))
+    )
+    tms_setting = models.OneToOneField(TMSSetting, primary_key=True, related_name='tms_device_setting')
+    tms_device = models.ForeignKey(TMSDevice)
+    pulse_stimulus_type = models.CharField(null=True, blank=True, max_length=50, choices=PULSE_STIMULUS_TYPES)
+
+
 class Component(models.Model):
     COMPONENT_TYPES = (
         ("block", _("Set of steps")),
@@ -649,6 +705,13 @@ class EEG(Component):
 
 class EMG(Component):
     emg_setting = models.ForeignKey(EMGSetting)
+
+    def save(self, *args, **kwargs):
+        super(Component, self).save(*args, **kwargs)
+
+
+class TMS(Component):
+    tms_setting = models.ForeignKey(TMSSetting)
 
     def save(self, *args, **kwargs):
         super(Component, self).save(*args, **kwargs)
