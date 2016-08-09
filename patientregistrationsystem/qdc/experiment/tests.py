@@ -2916,8 +2916,10 @@ class EEGEquipmentRegisterTest(TestCase):
         manufacturer = ObjectsFactory.create_manufacturer()
         electrode_model = ObjectsFactory.create_electrode_model()
         material = ObjectsFactory.create_material()
+        material_2 = ObjectsFactory.create_material()
 
         electrode_localization_system = ObjectsFactory.create_eeg_electrode_localization_system()
+        electrode_localization_system_2 = ObjectsFactory.create_eeg_electrode_localization_system()
 
         # create a electrode_net (cap)
 
@@ -2954,8 +2956,8 @@ class EEGEquipmentRegisterTest(TestCase):
                      'identification': identification,
                      'electrode_model_default': str(electrode_model.id),
                      'cap_flag': 'on',
-                     'material': str(material.id),
-                     'localization_system_' + str(electrode_localization_system.id): 'on'}
+                     'material': str(material_2.id),
+                     'localization_system_' + str(electrode_localization_system_2.id): 'on'}
         response = self.client.post(reverse("eegelectrodenet_edit", args=(electrode_net.id,)), self.data)
         self.assertEqual(response.status_code, 302)
 
