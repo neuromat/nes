@@ -4357,10 +4357,10 @@ def eeg_data_export_nwb(request, eeg_data_id):
     errors, path_complete = create_directory(settings.MEDIA_ROOT, "export_nwb")
     errors, path_complete = create_directory(path_complete, str(request.user.id))
 
-    nwb_file_settings = dict()
+    file_name = subject_of_group.subject.patient.code + "_" + str(eeg_data.id) + ".nwb"
 
-    nwb_file_settings["filename"] = \
-        path.join(path_complete, subject_of_group.subject.patient.code + "_" + str(eeg_data.id) + ".nwb")
+    nwb_file_settings = dict()
+    nwb_file_settings["filename"] = path.join(path_complete, file_name)
 
     # each file should have a descriptive globally unique identifier
     #   that specifies the lab and this experiment session
@@ -4406,20 +4406,10 @@ def eeg_data_export_nwb(request, eeg_data_id):
     # when all data is entered, close the file
     neurodata.close()
 
-    response = HttpResponse(
-        content_type='application/force-download')
-    response['Content-Disposition'] = 'attachment; filename=%s' % \
-                                      smart_str(subject_of_group.subject.patient.code + "_" + str(eeg_data.id) + ".nwb")
-    response['X-Sendfile'] = smart_str(nwb_file_settings["filename"])
-    # It's usually a good idea to set the 'Content-Length' header too.
-    # You can also set any other required headers: Cache-Control, etc.
+    response = HttpResponse(open(nwb_file_settings["filename"], "rb").read())
+    response['Content-Type'] = 'application/force-download'
+    response['Content-Disposition'] = 'attachment; filename=%s' % smart_str(file_name)
     return response
-
-    # messages.success(request, _('NWB file exported.'))
-    #
-    # return redirect('subject_eeg_view',
-    #                 group_id=subject_of_group.group_id,
-    #                 subject_id=subject_of_group.subject_id)
 
 
 @login_required
