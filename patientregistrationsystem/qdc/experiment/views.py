@@ -5673,6 +5673,10 @@ def component_view(request, path_of_the_components):
             for field in configuration_form.fields:
                 configuration_form.fields[field].widget.attrs['disabled'] = True
 
+    surveys = Questionnaires()
+    # This method shows a message to the user if limesurvey is not available.
+    limesurvey_available = check_limesurvey_access(request, surveys)
+
     context = {"back_cancel_url": back_cancel_url,
                "block_duration": duration_string,
                "can_change": can_change,
@@ -5691,7 +5695,8 @@ def component_view(request, path_of_the_components):
                "path_of_the_components": path_of_the_components,
                "specific_form": block_form,
                "type_of_the_parent_block": type_of_the_parent_block,
-               "component_type_choices": component_type_choices}
+               "component_type_choices": component_type_choices,
+               "limesurvey_available": limesurvey_available}
 
     return render(request, template_name, context)
 
@@ -5819,13 +5824,6 @@ def component_update(request, path_of_the_components):
     elif component_type == 'tms':
         tms = get_object_or_404(TMS, pk=component.id)
         specific_form = TMSForm(request.POST or None, instance=tms, initial={'experiment': experiment})
-    elif component_type == 'questionnaire':
-        questionnaire = get_object_or_404(Questionnaire, pk=component.id)
-        questionnaire_details = Questionnaires().find_questionnaire_by_id(questionnaire.survey.lime_survey_id)
-
-        if questionnaire_details:
-            questionnaire_id = questionnaire_details['sid'],
-            questionnaire_title = questionnaire_details['surveyls_title']
     elif component_type == 'block':
         block = get_object_or_404(Block, pk=component.id)
         specific_form = BlockForm(request.POST or None, instance=block)
@@ -5902,6 +5900,26 @@ def component_update(request, path_of_the_components):
                 messages.success(request, _('The experiment was copied.'))
                 redirect_url = reverse("experiment_view", args=(experiment.id,))
                 return HttpResponseRedirect(redirect_url)
+
+    if component_type == 'questionnaire':
+        questionnaire = get_object_or_404(Questionnaire, pk=component.id)
+
+        questionnaire_id = questionnaire.survey.lime_survey_id
+        questionnaire_title = str(questionnaire.survey.lime_survey_id)
+
+        surveys = Questionnaires()
+
+        # This method shows a message to the user if limesurvey is not available.
+        limesurvey_available = check_limesurvey_access(request, surveys)
+
+        if limesurvey_available:
+            questionnaire_details = surveys.find_questionnaire_by_id(questionnaire.survey.lime_survey_id)
+
+            if questionnaire_details:
+                questionnaire_id = questionnaire_details['sid'],
+                questionnaire_title = questionnaire_details['surveyls_title']
+
+        surveys.release_session_key()
 
     type_of_the_parent_block = None
 
