@@ -14,7 +14,8 @@ from .models import Experiment, Group, Subject, \
     EEG, FileFormat, EEGData, EEGSetting, DataConfigurationTree, EMG, EEGMachine, Manufacturer, Tag, Amplifier, \
     EEGSolution, FilterType, ElectrodeModel, EEGElectrodeNet, EEGElectrodeNetSystem, EEGElectrodeLocalizationSystem, \
     EEGElectrodePosition, Material, EMGSetting, Software, SoftwareVersion, ADConverter, EMGElectrodeSetting, \
-    StandardizationSystem, MuscleSubdivision, Muscle, MuscleSide, EMGElectrodePlacement, EMGElectrodePlacementSetting
+    StandardizationSystem, MuscleSubdivision, Muscle, MuscleSide, EMGElectrodePlacement, EMGElectrodePlacementSetting, \
+    EEGElectrodeCap, EEGCapSize
 from .views import experiment_update, upload_file, research_project_update
 
 from patient.models import ClassificationOfDiseases
@@ -311,6 +312,24 @@ class ObjectsFactory(object):
         factory = RequestFactory()
         logged = instance.client.login(username=USER_USERNAME, password=USER_PWD)
         return logged, user, factory
+
+    @staticmethod
+    def create_material():
+        material = Material.objects.create(
+            name="Material name"
+        )
+        material.save()
+        return material
+
+    @staticmethod
+    def create_eeg_electrode_cap(manufacturer, electrode_model_default):
+        eeg_electrode_cap = EEGElectrodeCap.objects.create(
+            manufacturer=manufacturer,
+            identification="EEG electrode cap identification",
+            electrode_model_default=electrode_model_default
+        )
+        eeg_electrode_cap.save()
+        return eeg_electrode_cap
 
 
 class ExperimentalProtocolTest(TestCase):
@@ -2891,6 +2910,205 @@ class EEGEquipmentRegisterTest(TestCase):
         response = self.client.post(reverse("eegelectrodenet_view", args=(electrode_net.id,)), self.data)
         self.assertEqual(response.status_code, 302)
         self.assertEqual(EEGElectrodeNet.objects.all().count(), 0)
+
+    def test_electrode_net_register_cap(self):
+
+        manufacturer = ObjectsFactory.create_manufacturer()
+        electrode_model = ObjectsFactory.create_electrode_model()
+        material = ObjectsFactory.create_material()
+        material_2 = ObjectsFactory.create_material()
+
+        electrode_localization_system = ObjectsFactory.create_eeg_electrode_localization_system()
+        electrode_localization_system_2 = ObjectsFactory.create_eeg_electrode_localization_system()
+
+        # create a electrode_net (cap)
+
+        response = self.client.get(reverse("eegelectrodenet_new", args=()))
+        self.assertEqual(response.status_code, 200)
+
+        identification = 'Identification'
+        self.data = {'action': 'save',
+                     'manufacturer': str(manufacturer.id),
+                     'identification': identification,
+                     'electrode_model_default': str(electrode_model.id),
+                     'cap_flag': 'on',
+                     'material': str(material.id),
+                     'localization_system_' + str(electrode_localization_system.id): 'on'}
+
+        response = self.client.post(reverse("eegelectrodenet_new", args=()), self.data)
+        self.assertEqual(response.status_code, 302)
+        self.assertEqual(EEGElectrodeNet.objects.all().count(), 1)
+        self.assertEqual(EEGElectrodeCap.objects.all().count(), 1)
+
+        # view
+        electrode_net = EEGElectrodeCap.objects.all().first()
+
+        response = self.client.get(reverse("eegelectrodenet_view", args=(electrode_net.id,)))
+        self.assertEqual(response.status_code, 200)
+
+        # update
+        response = self.client.get(reverse("eegelectrodenet_edit", args=(electrode_net.id,)))
+        self.assertEqual(response.status_code, 200)
+
+        identification = 'Identification changed'
+        self.data = {'action': 'save',
+                     'manufacturer': str(manufacturer.id),
+                     'identification': identification,
+                     'electrode_model_default': str(electrode_model.id),
+                     'cap_flag': 'on',
+                     'material': str(material_2.id),
+                     'localization_system_' + str(electrode_localization_system_2.id): 'on'}
+        response = self.client.post(reverse("eegelectrodenet_edit", args=(electrode_net.id,)), self.data)
+        self.assertEqual(response.status_code, 302)
+
+        # remove
+        self.data = {'action': 'remove'}
+        response = self.client.post(reverse("eegelectrodenet_view", args=(electrode_net.id,)), self.data)
+        self.assertEqual(response.status_code, 302)
+        self.assertEqual(EEGElectrodeNet.objects.all().count(), 0)
+
+    def test_cap_size_register(self):
+
+        manufacturer = ObjectsFactory.create_manufacturer()
+        electrode_model = ObjectsFactory.create_electrode_model()
+        eeg_electrode_cap = ObjectsFactory.create_eeg_electrode_cap(manufacturer, electrode_model)
+
+        # create
+        response = self.client.get(reverse("eegelectrodenet_add_size", args=(eeg_electrode_cap.id,)))
+        self.assertEqual(response.status_code, 200)
+
+        size = 'Size'
+        self.data = {'action': 'save',
+                     'size': size}
+
+        response = self.client.post(reverse("eegelectrodenet_add_size", args=(eeg_electrode_cap.id,)), self.data)
+        self.assertEqual(response.status_code, 302)
+        self.assertEqual(EEGCapSize.objects.all().count(), 1)
+
+        # create (trying) but missing information
+        self.data = {'action': 'save'}
+
+        response = self.client.post(reverse("eegelectrodenet_add_size", args=(eeg_electrode_cap.id,)), self.data)
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(EEGCapSize.objects.all().count(), 1)
+        self.assertEqual(str(list(response.context['messages'])[-1]), _('Information not saved.'))
+
+        # create with wrong action
+        self.data = {'action': 'wrong'}
+
+        response = self.client.post(reverse("eegelectrodenet_add_size", args=(eeg_electrode_cap.id,)), self.data)
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(EEGCapSize.objects.all().count(), 1)
+        self.assertEqual(str(list(response.context['messages'])[-1]), _('Action not available.'))
+
+        # view
+        cap_size = EEGCapSize.objects.filter(eeg_electrode_cap=eeg_electrode_cap).first()
+
+        response = self.client.get(reverse("eegelectrodenet_cap_size_view", args=(cap_size.id,)))
+        self.assertEqual(response.status_code, 200)
+
+        # update
+        response = self.client.get(reverse("eegelectrodenet_cap_size_edit", args=(cap_size.id,)))
+        self.assertEqual(response.status_code, 200)
+
+        self.data = {'action': 'save',
+                     'size': size}
+        response = self.client.post(reverse("eegelectrodenet_cap_size_edit", args=(cap_size.id,)),
+                                    self.data)
+        self.assertEqual(response.status_code, 302)
+
+        size = 'Size changed'
+        self.data = {'action': 'save',
+                     'size': size}
+        response = self.client.post(reverse("eegelectrodenet_cap_size_edit", args=(cap_size.id,)),
+                                    self.data)
+        self.assertEqual(response.status_code, 302)
+
+        # update (trying) but missing information
+        self.data = {'action': 'save'}
+        response = self.client.post(reverse("eegelectrodenet_cap_size_edit", args=(cap_size.id,)),
+                                    self.data)
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(get_object_or_404(EEGCapSize, pk=cap_size.id).size, size)
+
+        # remove
+        self.data = {'action': 'remove'}
+        response = self.client.post(reverse("eegelectrodenet_cap_size_view", args=(cap_size.id,)),
+                                    self.data)
+        self.assertEqual(response.status_code, 302)
+        self.assertEqual(EEGCapSize.objects.all().count(), 0)
+
+    def test_ad_converter_register(self):
+        manufacturer = ObjectsFactory.create_manufacturer()
+
+        # list
+        response = self.client.get(reverse("ad_converter_list", args=()))
+        self.assertEqual(response.status_code, 200)
+
+        # create
+        response = self.client.get(reverse("ad_converter_new", args=()))
+        self.assertEqual(response.status_code, 200)
+
+        identification = 'Identification'
+        self.data = {'action': 'save',
+                     'manufacturer': str(manufacturer.id),
+                     'identification': identification}
+
+        response = self.client.post(reverse("ad_converter_new", args=()), self.data)
+        self.assertEqual(response.status_code, 302)
+        self.assertEqual(ADConverter.objects.all().count(), 1)
+
+        # create (trying) but missing information
+        self.data = {'action': 'save'}
+
+        response = self.client.post(reverse("ad_converter_new", args=()), self.data)
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(ADConverter.objects.all().count(), 1)
+        self.assertEqual(str(list(response.context['messages'])[-1]), _('Information not saved.'))
+
+        # create with wrong action
+        self.data = {'action': 'wrong'}
+
+        response = self.client.post(reverse("ad_converter_new", args=()), self.data)
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(ADConverter.objects.all().count(), 1)
+        self.assertEqual(str(list(response.context['messages'])[-1]), _('Action not available.'))
+
+        # view
+        ad_converter = ADConverter.objects.all().first()
+
+        response = self.client.get(reverse("ad_converter_view", args=(ad_converter.id,)))
+        self.assertEqual(response.status_code, 200)
+
+        # update
+        response = self.client.get(reverse("ad_converter_edit", args=(ad_converter.id,)))
+        self.assertEqual(response.status_code, 200)
+
+        self.data = {'action': 'save',
+                     'manufacturer': str(manufacturer.id),
+                     'identification': identification}
+        response = self.client.post(reverse("ad_converter_edit", args=(ad_converter.id,)), self.data)
+        self.assertEqual(response.status_code, 302)
+
+        identification = 'Identification changed'
+        self.data = {'action': 'save',
+                     'manufacturer': str(manufacturer.id),
+                     'identification': identification}
+        response = self.client.post(reverse("ad_converter_edit", args=(ad_converter.id,)), self.data)
+        self.assertEqual(response.status_code, 302)
+
+        # update (trying) but missing information
+        self.data = {'action': 'save'}
+        response = self.client.post(reverse("ad_converter_edit", args=(ad_converter.id,)),
+                                    self.data)
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(get_object_or_404(ADConverter, pk=ad_converter.id).identification, identification)
+
+        # remove
+        self.data = {'action': 'remove'}
+        response = self.client.post(reverse("ad_converter_view", args=(ad_converter.id,)), self.data)
+        self.assertEqual(response.status_code, 302)
+        self.assertEqual(ADConverter.objects.all().count(), 0)
 
 
 class EMGSettingTest(TestCase):

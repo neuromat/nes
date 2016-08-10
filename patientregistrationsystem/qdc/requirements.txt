@@ -9,3 +9,4 @@ pylint==1.5.4
 pep8==1.7.0
 python-dateutil==2.5.2
 neo==0.3.3
+h5py==2.6.0
