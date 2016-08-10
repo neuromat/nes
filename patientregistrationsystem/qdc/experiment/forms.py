@@ -163,7 +163,7 @@ class InstructionForm(ModelForm):
 class StimulusForm(ModelForm):
     class Meta:
         model = Stimulus
-        fields = ['stimulus_type']
+        fields = ['stimulus_type', 'media_file']
 
         widgets = {
             'stimulus_type': Select(attrs={'class': 'form-control', 'required': "",

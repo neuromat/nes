@@ -34,4 +34,23 @@
             </div>
         </div>
     </div>
+
+    <div class="row">
+        <div class="col-xs-12 col-sm-12">
+            <div class="form-group">
+                <label class="control-label">{% trans "Media file" %}</label>
+                <br/>
+                {% if reusing or not can_change or component_configuration %}
+                    {% if specific_form.media_file.value %}
+                        {{ specific_form.media_file.value }}
+                    {% else %}
+                        {% trans "No file configured" %}
+                    {% endif %}
+                {% else %}
+                    {{ specific_form.media_file }}
+                {% endif %}
+            </div>
+        </div>
+    </div>
+
 {% endblock %}

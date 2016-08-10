@@ -5084,7 +5084,7 @@ def component_create(request, experiment_id, component_type):
     if component_type == 'instruction':
         specific_form = InstructionForm(request.POST or None)
     elif component_type == 'stimulus':
-        specific_form = StimulusForm(request.POST or None)
+        specific_form = StimulusForm(request.POST or None, request.FILES)
     elif component_type == 'eeg':
         specific_form = EEGForm(request.POST or None, initial={'experiment': experiment})
     elif component_type == 'emg':
@@ -5426,6 +5426,12 @@ def remove_component_and_related_configurations(component,
         questionnaire = get_object_or_404(Questionnaire, pk=component.id)
         if not questionnaire.survey.is_initial_evaluation:
             survey_to_check = questionnaire.survey
+
+    if component.component_type == "stimulus":
+
+        stimulus = get_object_or_404(Stimulus, pk=component.id)
+        stimulus.media_file.delete()
+        stimulus.save()
 
     component.delete()
 
@@ -5848,6 +5854,13 @@ def component_update(request, path_of_the_components):
                             return HttpResponseRedirect(back_cancel_url)
 
                     elif specific_form.is_valid() and component_form.is_valid():
+
+                        # Stimulus has media files to read
+                        if component_type == 'stimulus':
+                            stimulus = get_object_or_404(Stimulus, pk=component.id)
+                            specific_form = StimulusForm(request.POST or None, request.FILES, instance=stimulus)
+                            # specific_form.save()
+
                         # Only save if there was a change.
                         if component_form.has_changed() or specific_form.has_changed():
                             if component.component_type == 'block':
@@ -6039,7 +6052,7 @@ def component_add_new(request, path_of_the_components, component_type):
     if component_type == 'instruction':
         specific_form = InstructionForm(request.POST or None)
     elif component_type == 'stimulus':
-        specific_form = StimulusForm(request.POST or None)
+        specific_form = StimulusForm(request.POST or None, request.FILES)
     elif component_type == 'eeg':
         specific_form = EEGForm(request.POST or None, initial={'experiment': experiment})
     elif component_type == 'emg':
@@ -6154,7 +6167,8 @@ def component_reuse(request, path_of_the_components, component_id):
         list_of_ids_of_components_and_configurations, back_cancel_url = \
         access_objects_for_add_new_and_reuse(component_type, path_of_the_components)
 
-    check_can_change(request.user, experiment.research_project)
+    # check_can_change(request.user, experiment.research_project)
+    can_change = get_can_change(request.user, experiment.research_project)
 
     # Fixed or random
     position = get_position(request)
@@ -6275,7 +6289,8 @@ def component_reuse(request, path_of_the_components, component_id):
                "questionnaire_id": questionnaire_id,
                "questionnaire_title": questionnaire_title,
                "reusing": True,
-               "specific_form": specific_form}
+               "specific_form": specific_form,
+               "can_change": can_change}
 
     return render(request, template_name, context)
 

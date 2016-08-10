@@ -672,8 +672,14 @@ class Pause(Component):
         super(Component, self).save(*args, **kwargs)
 
 
+def get_stimulus_media_file_dir(instance, filename):
+    return "stimulus_step/%s/%s" % \
+           (instance.id, filename)
+
+
 class Stimulus(Component):
     stimulus_type = models.ForeignKey(StimulusType, null=False, blank=False)
+    media_file = models.FileField(upload_to=get_stimulus_media_file_dir, null=True, blank=True)
 
     def save(self, *args, **kwargs):
         super(Component, self).save(*args, **kwargs)
