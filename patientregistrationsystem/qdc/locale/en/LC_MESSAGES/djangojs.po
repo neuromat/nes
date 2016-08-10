@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2016-07-28 17:56-0300\n"
+"POT-Creation-Date: 2016-08-10 11:55-0300\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -841,9 +841,9 @@ msgstr "Hide"
 msgid "Invalid password. Please, try again."
 msgstr "Invalid password. Please, try again."
 
-#: templates/registration/login.html:115
-msgid "Invalid user or password."
-msgstr "Invalid user or password."
+#: templates/registration/login.html:118
+msgid "{{ error }}"
+msgstr ""
 
 #: templates/registration/password_reset_confirm.html:38
 msgid "Passwords don't match"
@@ -856,6 +856,9 @@ msgstr "Password incompatible with defined standard."
 #: templates/registration/password_reset_confirm.html:163
 msgid "Invalid fill. Make sure the passwords entered are the same"
 msgstr "Invalid fill. Make sure the passwords entered are the same"
+
+#~ msgid "Invalid user or password."
+#~ msgstr "Invalid user or password."
 
 #~ msgid "Preenchimento invalido. Verifique se as senhas digitadas sao iguais"
 #~ msgstr "Invalid fill. Please, verify if passwords typed are equal"

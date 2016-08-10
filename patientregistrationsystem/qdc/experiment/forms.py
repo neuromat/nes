@@ -979,6 +979,6 @@ class TMSDeviceSettingForm(ModelForm):
 
         widgets = {
             'tms_device': Select(attrs={'class': 'form-control', 'required': "",
-                                        'data-error': _('TMD device is required')}),
+                                        'data-error': _('TMS device is required')}),
             'pulse_stimulus_type': Select(attrs={'class': 'form-control'})
         }
