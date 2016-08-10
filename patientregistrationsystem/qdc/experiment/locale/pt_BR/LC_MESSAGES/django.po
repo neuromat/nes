@@ -1366,7 +1366,10 @@ msgstr "Coordenadas X - Y"
 msgid "EEG electrode localization system basic information"
 msgstr "Informação básica do sistema de localização de eletrodo"
 
-#: experiment/templates/experiment/eeg_electrode_localization_system_register.html:134
+#: experiment/templates/experiment/eeg_electrode_coordinates_register.html:124
+msgid "List of positions"
+msgstr "Lista de posições"
+
 #: experiment/templates/experiment/eeg_setting_electrode_position_status.html:83
 #: experiment/templates/experiment/eeg_setting_electrode_position_status_model.html:17
 #: experiment/templates/experiment/subject_eeg_data_form.html:333
@@ -1374,11 +1377,11 @@ msgstr "Informação básica do sistema de localização de eletrodo"
 msgid "Position"
 msgstr "Posição"
 
-#: experiment/templates/experiment/eeg_electrode_coordinates_register.html:138
+#: experiment/templates/experiment/eeg_electrode_coordinates_register.html:133
 msgid "To mark a new coordinate, please click on the image map."
 msgstr "Para marcar uma nova coordenada, clique na imagem. "
 
-#: experiment/templates/experiment/eeg_electrode_coordinates_register.html:139
+#: experiment/templates/experiment/eeg_electrode_coordinates_register.html:134
 msgid ""
 "To delete some coordinate, please click on the delete button or unmark the "
 "point clicking on it"
@@ -1386,15 +1389,14 @@ msgstr ""
 "Para remover uma coordenada, clique no botão remover ou desmarque o "
 "ponto clickando nele."
 
-#: experiment/templates/experiment/eeg_electrode_coordinates_register.html:140
+#: experiment/templates/experiment/eeg_electrode_localization_system_register.html:135
 msgid ""
-"To update some coordinate, please click on the name of the point in the list "
-"and after click on the image to get the new coordinate"
+"To update some coordinate, please click on the name of the point in the positions list and after click on the image to get the new coordinate"
 msgstr ""
 "Para atualizar uma coordenada, por favor clique sobre o nome do ponto na lista "
 "e depois clique na imagem para obter a nova coordenada."
 
-#: experiment/templates/experiment/eeg_electrode_coordinates_register.html:141
+#: experiment/templates/experiment/eeg_electrode_coordinates_register.html:136
 msgid ""
 "Obs.: The delete button and the point on the image are disabled when the "
 "corresponding position is used by some layout"
