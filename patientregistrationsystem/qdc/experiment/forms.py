@@ -13,7 +13,8 @@ from experiment.models import Experiment, QuestionnaireResponse, SubjectOfGroup,
     AdditionalData, EMGData, FileFormat, EMGSetting, EMGDigitalFilterSetting, EMGADConverterSetting, \
     EMGElectrodeSetting, EMGElectrodePlacementSetting, \
     EMGPreamplifierSetting, EMGAmplifierSetting, EMGAnalogFilterSetting, EMGSurfacePlacement, \
-    ADConverter, StandardizationSystem, Muscle, MuscleSide, MuscleSubdivision, TMS, TMSSetting, TMSDeviceSetting
+    ADConverter, StandardizationSystem, Muscle, MuscleSide, MuscleSubdivision, TMS, TMSSetting, TMSDeviceSetting, \
+    Software, SoftwareVersion
 
 
 class ExperimentForm(ModelForm):
@@ -714,6 +715,33 @@ class MuscleSubdivisionRegisterForm(ModelForm):
 class MuscleSideRegisterForm(ModelForm):
     class Meta:
         model = MuscleSide
+        fields = ['name']
+
+        widgets = {
+            'name': TextInput(attrs={'class': 'form-control',
+                                     'required': "",
+                                     'data-error': _('Name must be filled.')}),
+        }
+
+
+class SoftwareRegisterForm(ModelForm):
+    class Meta:
+        model = Software
+        fields = ['manufacturer', 'name', 'description']
+
+        widgets = {
+            'manufacturer': Select(attrs={'class': 'form-control', 'required': "",
+                                          'data-error': _('Manufacturer must be filled.')}),
+            'name': TextInput(attrs={'class': 'form-control',
+                                     'required': "",
+                                     'data-error': _('Name must be filled.')}),
+            'description': Textarea(attrs={'class': 'form-control', 'rows': '4'})
+        }
+
+
+class SoftwareVersionRegisterForm(ModelForm):
+    class Meta:
+        model = SoftwareVersion
         fields = ['name']
 
         widgets = {

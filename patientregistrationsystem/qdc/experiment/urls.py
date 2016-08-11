@@ -122,6 +122,14 @@ urlpatterns = patterns(
         'muscle_side_update', name='muscle_side_edit'),
 
     # register software
+    url(r'^software/list/$', 'software_list', name='software_list'),
+    url(r'^software/new/$', 'software_create', name='software_new'),
+    url(r'^software/(?P<software_id>\d+)/$', 'software_view', name='software_view'),
+    url(r'^software/edit/(?P<software_id>\d+)/$', 'software_update', name='software_edit'),
+    url(r'^software/(?P<software_id>\d+)/new_version/$', 'software_version_create', name='software_version_new'),
+    url(r'^software_version/(?P<software_version_id>\d+)/$', 'software_version_view', name='software_version_view'),
+    url(r'^software_version/(?P<software_version_id>\d+)/edit/$',
+        'software_version_update', name='software_version_edit'),
 
     # register EMG electrode placement
 

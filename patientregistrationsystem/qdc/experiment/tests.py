@@ -2700,6 +2700,151 @@ class EEGEquipmentRegisterTest(TestCase):
         self.assertEqual(response.status_code, 302)
         self.assertEqual(MuscleSide.objects.all().count(), 0)
 
+    def test_software_register(self):
+        manufacturer = ObjectsFactory.create_manufacturer()
+
+        # list
+        response = self.client.get(reverse("software_list", args=()))
+        self.assertEqual(response.status_code, 200)
+
+        # create
+        response = self.client.get(reverse("software_new", args=()))
+        self.assertEqual(response.status_code, 200)
+
+        name = 'Name'
+        self.data = {'action': 'save',
+                     'manufacturer': str(manufacturer.id),
+                     'name': name}
+
+        response = self.client.post(reverse("software_new", args=()), self.data)
+        self.assertEqual(response.status_code, 302)
+        self.assertEqual(Software.objects.all().count(), 1)
+
+        # create (trying) but missing information
+        self.data = {'action': 'save'}
+
+        response = self.client.post(reverse("software_new", args=()), self.data)
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(Software.objects.all().count(), 1)
+        self.assertEqual(str(list(response.context['messages'])[-1]), _('Information not saved.'))
+
+        # create with wrong action
+        self.data = {'action': 'wrong'}
+
+        response = self.client.post(reverse("software_new", args=()), self.data)
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(Software.objects.all().count(), 1)
+        self.assertEqual(str(list(response.context['messages'])[-1]), _('Action not available.'))
+
+        # view
+        software = Software.objects.all().first()
+
+        response = self.client.get(reverse("software_view", args=(software.id,)))
+        self.assertEqual(response.status_code, 200)
+
+        # update
+        response = self.client.get(reverse("software_edit", args=(software.id,)))
+        self.assertEqual(response.status_code, 200)
+
+        self.data = {'action': 'save',
+                     'manufacturer': str(manufacturer.id),
+                     'name': name}
+        response = self.client.post(reverse("software_edit", args=(software.id,)),
+                                    self.data)
+        self.assertEqual(response.status_code, 302)
+
+        name = 'Name changed'
+        self.data = {'action': 'save',
+                     'manufacturer': str(manufacturer.id),
+                     'name': name}
+        response = self.client.post(reverse("software_edit", args=(software.id,)),
+                                    self.data)
+        self.assertEqual(response.status_code, 302)
+
+        # update (trying) but missing information
+        self.data = {'action': 'save'}
+        response = self.client.post(reverse("software_edit", args=(software.id,)),
+                                    self.data)
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(get_object_or_404(Software, pk=software.id).name, name)
+
+        # remove
+        self.data = {'action': 'remove'}
+        response = self.client.post(reverse("software_view", args=(software.id,)),
+                                    self.data)
+        self.assertEqual(response.status_code, 302)
+        self.assertEqual(Software.objects.all().count(), 0)
+
+    def test_software_version_register(self):
+
+        manufacturer = ObjectsFactory.create_manufacturer()
+        software = ObjectsFactory.create_software(manufacturer)
+
+        # create
+        response = self.client.get(reverse("software_version_new", args=(software.id,)))
+        self.assertEqual(response.status_code, 200)
+
+        name = 'Name'
+        self.data = {'action': 'save',
+                     'name': name}
+
+        response = self.client.post(reverse("software_version_new", args=(software.id,)), self.data)
+        self.assertEqual(response.status_code, 302)
+        self.assertEqual(SoftwareVersion.objects.all().count(), 1)
+
+        # create (trying) but missing information
+        self.data = {'action': 'save'}
+
+        response = self.client.post(reverse("software_version_new", args=(software.id,)), self.data)
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(SoftwareVersion.objects.all().count(), 1)
+        self.assertEqual(str(list(response.context['messages'])[-1]), _('Information not saved.'))
+
+        # create with wrong action
+        self.data = {'action': 'wrong'}
+
+        response = self.client.post(reverse("software_version_new", args=(software.id,)), self.data)
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(SoftwareVersion.objects.all().count(), 1)
+        self.assertEqual(str(list(response.context['messages'])[-1]), _('Action not available.'))
+
+        # view
+        software_version = SoftwareVersion.objects.filter(software=software).first()
+
+        response = self.client.get(reverse("software_version_view", args=(software_version.id,)))
+        self.assertEqual(response.status_code, 200)
+
+        # update
+        response = self.client.get(reverse("software_version_edit", args=(software_version.id,)))
+        self.assertEqual(response.status_code, 200)
+
+        self.data = {'action': 'save',
+                     'name': name}
+        response = self.client.post(reverse("software_version_edit", args=(software_version.id,)),
+                                    self.data)
+        self.assertEqual(response.status_code, 302)
+
+        name = 'Name changed'
+        self.data = {'action': 'save',
+                     'name': name}
+        response = self.client.post(reverse("software_version_edit", args=(software_version.id,)),
+                                    self.data)
+        self.assertEqual(response.status_code, 302)
+
+        # update (trying) but missing information
+        self.data = {'action': 'save'}
+        response = self.client.post(reverse("software_version_edit", args=(software_version.id,)),
+                                    self.data)
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(get_object_or_404(SoftwareVersion, pk=software_version.id).name, name)
+
+        # remove
+        self.data = {'action': 'remove'}
+        response = self.client.post(reverse("software_version_view", args=(software_version.id,)),
+                                    self.data)
+        self.assertEqual(response.status_code, 302)
+        self.assertEqual(SoftwareVersion.objects.all().count(), 0)
+
     def test_electrode_model_register(self):
         # list
         response = self.client.get(reverse("electrodemodel_list", args=()))

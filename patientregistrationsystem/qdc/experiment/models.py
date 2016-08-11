@@ -447,7 +447,7 @@ class Software(models.Model):
 
 
 class SoftwareVersion(models.Model):
-    software = models.ForeignKey(Software)
+    software = models.ForeignKey(Software, related_name='versions')
     name = models.CharField(max_length=150)
 
     def __str__(self):

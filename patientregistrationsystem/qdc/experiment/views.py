@@ -39,7 +39,7 @@ from experiment.models import Experiment, Subject, QuestionnaireResponse, Subjec
     EMGData, EMGSetting, SoftwareVersion, EMGDigitalFilterSetting, EMGADConverterSetting, \
     EMGElectrodeSetting, EMGPreamplifierSetting, EMGAmplifierSetting, EMGAnalogFilterSetting, \
     ADConverter, StandardizationSystem, Muscle, MuscleSubdivision, MuscleSide, \
-    EMGElectrodePlacement, EMGSurfacePlacement, TMS, TMSSetting, TMSDeviceSetting
+    EMGElectrodePlacement, EMGSurfacePlacement, TMS, TMSSetting, TMSDeviceSetting, Software
 from experiment.forms import ExperimentForm, QuestionnaireResponseForm, FileForm, GroupForm, InstructionForm, \
     ComponentForm, StimulusForm, BlockForm, ComponentConfigurationForm, ResearchProjectForm, NumberOfUsesToInsertForm, \
     EEGDataForm, EEGSettingForm, EquipmentForm, EEGForm, EEGMachineForm, EEGMachineSettingForm, EEGAmplifierForm, \
@@ -53,7 +53,7 @@ from experiment.forms import ExperimentForm, QuestionnaireResponseForm, FileForm
     EMGPreamplifierSettingForm, EMGAmplifierSettingForm, EMGAnalogFilterSettingForm, EMGForm, ElectrodeModelForm, \
     ADConverterRegisterForm, StandardizationSystemRegisterForm, \
     MuscleRegisterForm, MuscleSubdivisionRegisterForm, MuscleSideRegisterForm, EMGSurfacePlacementForm, \
-    TMSForm, TMSSettingForm, TMSDeviceSettingForm
+    TMSForm, TMSSettingForm, TMSDeviceSettingForm, SoftwareRegisterForm, SoftwareVersionRegisterForm
 
 from export.export import create_directory
 
@@ -2533,6 +2533,204 @@ def muscle_side_update(request, muscle_side_id,
 
     context = {"equipment": muscle_side,
                "equipment_form": muscle_side_form,
+               "editing": True
+               }
+
+    return render(request, template_name, context)
+
+
+@login_required
+@permission_required('experiment.register_equipment')
+def software_list(request, template_name="experiment/software_list.html"):
+    return render(request, template_name, {"softwares": Software.objects.all().order_by('name')})
+
+
+@login_required
+@permission_required('experiment.register_equipment')
+def software_create(request, template_name="experiment/software_register.html"):
+    software_form = SoftwareRegisterForm(request.POST or None)
+
+    if request.method == "POST":
+
+        if request.POST['action'] == "save":
+
+            if software_form.is_valid():
+
+                software_added = software_form.save(commit=False)
+                software_added.save()
+
+                messages.success(request, _('Software created successfully.'))
+                redirect_url = reverse("software_view", args=(software_added.id,))
+                return HttpResponseRedirect(redirect_url)
+
+            else:
+                messages.warning(request, _('Information not saved.'))
+
+        else:
+            messages.warning(request, _('Action not available.'))
+
+    context = {"software_form": software_form,
+               "creating": True,
+               "editing": True
+               }
+
+    return render(request, template_name, context)
+
+
+@login_required
+@permission_required('experiment.register_equipment')
+def software_view(request, software_id, template_name="experiment/software_register.html"):
+    software = get_object_or_404(Software, pk=software_id)
+    # musclesubdivisions = muscle.musclesubdivision_set.all()
+    # musclesides = muscle.muscleside_set.all()
+
+    software_form = SoftwareRegisterForm(request.POST or None, instance=software)
+
+    for field in software_form.fields:
+        software_form.fields[field].widget.attrs['disabled'] = True
+
+    if request.method == "POST":
+        if request.POST['action'] == "remove":
+
+            try:
+                software.delete()
+                messages.success(request, _('Software removed successfully.'))
+                return redirect('software_list')
+            except ProtectedError:
+                messages.error(request, _("Error trying to delete software."))
+                redirect_url = reverse("software_view", args=(software_id,))
+                return HttpResponseRedirect(redirect_url)
+
+    context = {"can_change": True,
+               "software": software,
+               "software_form": software_form,
+               # "musclesubdivisions": musclesubdivisions,
+               # "musclesides": musclesides
+               }
+
+    return render(request, template_name, context)
+
+
+@login_required
+@permission_required('experiment.register_equipment')
+def software_update(request, software_id, template_name="experiment/software_register.html"):
+    software = get_object_or_404(Software, pk=software_id)
+
+    software_form = SoftwareRegisterForm(request.POST or None, instance=software)
+
+    if request.method == "POST":
+        if request.POST['action'] == "save":
+            if software_form.is_valid():
+
+                if software_form.has_changed():
+                    software_form.save()
+                    messages.success(request, _('Software updated successfully.'))
+                else:
+                    messages.success(request, _('There is no changes to save.'))
+
+                redirect_url = reverse("software_view", args=(software.id,))
+                return HttpResponseRedirect(redirect_url)
+
+    context = {"software": software,
+               "software_form": software_form,
+               "editing": True
+               }
+
+    return render(request, template_name, context)
+
+
+@login_required
+@permission_required('experiment.register_equipment')
+def software_version_create(request, software_id, template_name="experiment/software_version_register.html"):
+    software = get_object_or_404(Software, pk=software_id)
+
+    software_version_form = SoftwareVersionRegisterForm(request.POST or None)
+
+    if request.method == "POST":
+
+        if request.POST['action'] == "save":
+
+            if software_version_form.is_valid():
+
+                version_added = software_version_form.save(commit=False)
+                version_added.software = software
+                version_added.save()
+
+                messages.success(request, _('Software version created successfully.'))
+                # redirect_url = reverse("software_version_view", args=(version_added.id,))
+                redirect_url = reverse("software_view", args=(version_added.software.id,))
+                return HttpResponseRedirect(redirect_url)
+
+            else:
+                messages.warning(request, _('Information not saved.'))
+
+        else:
+            messages.warning(request, _('Action not available.'))
+
+    context = {"software_version_form": software_version_form,
+               "software": software,
+               "creating": True,
+               "editing": True
+               }
+
+    return render(request, template_name, context)
+
+
+@login_required
+@permission_required('experiment.register_equipment')
+def software_version_view(request, software_version_id, template_name="experiment/software_version_register.html"):
+    software_version = get_object_or_404(SoftwareVersion, pk=software_version_id)
+
+    software_version_form = SoftwareVersionRegisterForm(request.POST or None, instance=software_version)
+
+    for field in software_version_form.fields:
+        software_version_form.fields[field].widget.attrs['disabled'] = True
+
+    if request.method == "POST":
+        if request.POST['action'] == "remove":
+
+            try:
+                software_id = software_version.software.id
+                software_version.delete()
+                messages.success(request, _('Software version removed successfully.'))
+                redirect_url = reverse('software_view', args=(software_id,))
+                return HttpResponseRedirect(redirect_url)
+            except ProtectedError:
+                messages.error(request, _("Error trying to delete software version."))
+                redirect_url = reverse("software_version_view", args=(software_version_id,))
+                return HttpResponseRedirect(redirect_url)
+
+    context = {"can_change": True,
+               "software_version": software_version,
+               "software_version_form": software_version_form
+               }
+
+    return render(request, template_name, context)
+
+
+@login_required
+@permission_required('experiment.register_equipment')
+def software_version_update(request, software_version_id, template_name="experiment/software_version_register.html"):
+    software_version = get_object_or_404(SoftwareVersion, pk=software_version_id)
+
+    software_version_form = SoftwareVersionRegisterForm(request.POST or None, instance=software_version)
+
+    if request.method == "POST":
+        if request.POST['action'] == "save":
+            if software_version_form.is_valid():
+
+                if software_version_form.has_changed():
+
+                    software_version_form.save()
+                    messages.success(request, _('Software version updated successfully.'))
+                else:
+                    messages.success(request, _('There is no changes to save.'))
+
+                redirect_url = reverse("software_version_view", args=(software_version.id,))
+                return HttpResponseRedirect(redirect_url)
+
+    context = {"software_version": software_version,
+               "software_version_form": software_version_form,
                "editing": True
                }
 
