@@ -14,7 +14,7 @@ from experiment.models import Experiment, QuestionnaireResponse, SubjectOfGroup,
     EMGElectrodeSetting, EMGElectrodePlacementSetting, \
     EMGPreamplifierSetting, EMGAmplifierSetting, EMGAnalogFilterSetting, EMGSurfacePlacement, \
     ADConverter, StandardizationSystem, Muscle, MuscleSide, MuscleSubdivision, TMS, TMSSetting, TMSDeviceSetting, \
-    Software, SoftwareVersion, EMGIntramuscularPlacement, EMGNeedlePlacement
+    Software, SoftwareVersion, EMGIntramuscularPlacement, EMGNeedlePlacement, CoilModel, TMSDevice
 
 
 class ExperimentForm(ModelForm):
@@ -600,6 +600,36 @@ class MaterialRegisterForm(ModelForm):
             'description': Textarea(attrs={'class': 'form-control', 'rows': '4'})
         }
 
+class CoilModelRegisterForm(ModelForm):
+    class Meta:
+        model = CoilModel
+        fields = ['name', 'description', 'material', 'coil_shape', 'coil_design']
+
+        widgets = {
+            'name': TextInput(attrs={'class': 'form-control',
+                                     'required': "",
+                                     'data-error': _('Name must be filled.')}),
+
+            'description': Textarea(attrs={'class': 'form-control', 'rows': '4'}),
+            'material': Select(attrs={'class': 'form-control'}),
+            'coil_shape': Select(attrs={'class': 'form-control'}),
+            'coil_design': Select(attrs={'class': 'form-control'})
+        }
+
+class TMSDeviceRegisterForm(ModelForm):
+    class Meta:
+        model = TMSDevice
+        fields = ['manufacturer', 'identification', 'description', 'coil_model', 'pulse_type']
+
+        widgets = {
+            'manufacturer': Select(attrs={'class': 'form-control', 'required': "",
+                                          'data-error': _('Manufacturer must be filled.')}),
+            'identification': TextInput(attrs={'class': 'form-control', 'required': "",
+                                               'data-error': _('Identification must be filled.')}),
+            'description': Textarea(attrs={'class': 'form-control', 'rows': '4'}),
+            'coil_model' : Select(attrs={'class': 'form-control'}),
+            'pulse_type' : Select(attrs={'class': 'form-control'})
+        }
 
 class EEGElectrodeNETRegisterForm(ModelForm):
     class Meta:

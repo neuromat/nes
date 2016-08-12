@@ -1,0 +1,95 @@
+{% extends "quiz/template.html" %}
+
+{% load i18n %}
+
+{% block header %}
+    <script>
+        $(function(){
+            $("[data-toggle=tooltip]").tooltip();
+        });
+    </script>
+{% endblock %}
+
+{% block activeEquipment %}class="active"{% endblock %}
+
+{% block content %}
+
+    {% if messages %}
+        {% for message in messages %}
+
+            {% if message.tags == "success" %}
+                <script>showSuccessMessage('{{ message }}')</script>
+            {% endif %}
+
+            {% if message.tags == "warning" %}
+                <script>showWarningMessage('{{ message }}')</script>
+            {% endif %}
+
+            {% if message.tags == "error" %}
+                <script>showErrorMessage('{{ message }}')</script>
+            {% endif %}
+
+            {% if message.tags == "info" %}
+                <script>showInfoMessage('{{ message }}')</script>
+            {% endif %}
+
+        {% endfor %}
+    {% endif %}
+
+    <div class="tab-pane fade in active" id="researchProjectBreadCrumb">
+        <div class="col-md-10">
+            <ol class="breadcrumb">
+                <li><a href="/home">{% trans "Home" %}</a></li>
+                <li class="active">{% trans "TMS Device" %}</li>
+            </ol>
+        </div>
+    </div>
+
+    <div class="tab-pane fade in active" id="mainMenuUserTab">
+        <div class="col-md-10">
+            <div class="container span6 offset3 well ">
+                <h4>{% trans "TMS Device List" %}</h4>
+                <div class="form-group">
+                    <table class="table table-striped">
+                        <thead>
+                            <tr>
+                                <th>{% trans "Identification" %}</th>
+                                <th>{% trans "Manufacturer" %}</th>
+                                <th>{% trans "Coil Model" %}</th>
+                                <th>{% trans "Pulse Type" %}</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                        {% for equipment in equipments %}
+                            <tr>
+                                <td>{% if perms.experiment.register_equipment %}
+                                        <a data-toggle="tooltip" data-placement="left" title="{% trans "Visualize" %}"
+                                           href="/experiment/tmsdevice/{{ equipment.id }}">
+                                            {{ equipment.identification }}
+                                        </a>
+                                    {% else %}
+                                        {{ equipment.identification }}
+                                    {% endif %}
+                                </td>
+                                <td>{{ equipment.manufacturer }}</td>
+                                <td>
+                                    {{ equipment.coil_model|default:"" }}
+                                </td>
+                                <td>
+                                    {{ equipment.pulse_type|default:"" }}
+                                </td>
+                            </tr>
+                        {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+                {% if perms.experiment.register_equipment %}
+                    <div class="btn-group pull-left">
+                        <a href="/experiment/tmsdevice/new/" class="btn btn-primary">{% trans "Insert new" %}</a>
+                    </div>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+
+{% endblock %}

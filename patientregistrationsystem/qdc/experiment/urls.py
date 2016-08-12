@@ -137,6 +137,18 @@ urlpatterns = patterns(
 
     # register EMG electrode placement
 
+    # register coil model
+    url(r'^coil/list/$', 'coil_list', name='coil_list'),
+    url(r'^coil/new/$', 'coil_create', name='coil_new'),
+    url(r'^coil/(?P<coil_id>\d+)/$', 'coil_view', name='coil_view'),
+    url(r'^coil/edit/(?P<coil_id>\d+)/$', 'coil_update', name='coil_edit'),
+
+    # register TMS device
+    url(r'^tmsdevice/list/$', 'tmsdevice_list', name='tmsdevice_list'),
+    url(r'^tmsdevice/new/$', 'tmsdevice_create', name='tmsdevice_new'),
+    url(r'^tmsdevice/(?P<tmsdevice_id>\d+)/$', 'tmsdevice_view', name='tmsdevice_view'),
+    url(r'^tmsdevice/edit/(?P<tmsdevice_id>\d+)/$', 'tmsdevice_update', name='tmsdevice_edit'),
+
     # Localization system and position
     url(r'^eeg_electrode_localization_system/list/$',
         'eeg_electrode_localization_system_list', name='eeg_electrode_localization_system_list'),
