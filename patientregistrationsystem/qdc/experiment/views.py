@@ -39,7 +39,7 @@ from experiment.models import Experiment, Subject, QuestionnaireResponse, Subjec
     EMGData, EMGSetting, SoftwareVersion, EMGDigitalFilterSetting, EMGADConverterSetting, \
     EMGElectrodeSetting, EMGPreamplifierSetting, EMGAmplifierSetting, EMGAnalogFilterSetting, \
     ADConverter, StandardizationSystem, Muscle, MuscleSubdivision, MuscleSide, \
-    EMGElectrodePlacement, EMGSurfacePlacement, TMS, TMSSetting, TMSDeviceSetting, TMSDevice
+    EMGElectrodePlacement, EMGSurfacePlacement, TMS, TMSSetting, TMSDeviceSetting, TMSDevice, Software
 from experiment.forms import ExperimentForm, QuestionnaireResponseForm, FileForm, GroupForm, InstructionForm, \
     ComponentForm, StimulusForm, BlockForm, ComponentConfigurationForm, ResearchProjectForm, NumberOfUsesToInsertForm, \
     EEGDataForm, EEGSettingForm, EquipmentForm, EEGForm, EEGMachineForm, EEGMachineSettingForm, EEGAmplifierForm, \
@@ -53,7 +53,8 @@ from experiment.forms import ExperimentForm, QuestionnaireResponseForm, FileForm
     EMGPreamplifierSettingForm, EMGAmplifierSettingForm, EMGAnalogFilterSettingForm, EMGForm, ElectrodeModelForm, \
     ADConverterRegisterForm, StandardizationSystemRegisterForm, \
     MuscleRegisterForm, MuscleSubdivisionRegisterForm, MuscleSideRegisterForm, EMGSurfacePlacementForm, \
-    TMSForm, TMSSettingForm, TMSDeviceSettingForm, CoilModelRegisterForm, TMSDeviceRegisterForm
+    TMSForm, TMSSettingForm, TMSDeviceSettingForm, CoilModelRegisterForm, TMSDeviceRegisterForm, \
+    SoftwareRegisterForm, SoftwareVersionRegisterForm
 
 from export.export import create_directory
 
@@ -2533,6 +2534,204 @@ def muscle_side_update(request, muscle_side_id,
 
     context = {"equipment": muscle_side,
                "equipment_form": muscle_side_form,
+               "editing": True
+               }
+
+    return render(request, template_name, context)
+
+
+@login_required
+@permission_required('experiment.register_equipment')
+def software_list(request, template_name="experiment/software_list.html"):
+    return render(request, template_name, {"softwares": Software.objects.all().order_by('name')})
+
+
+@login_required
+@permission_required('experiment.register_equipment')
+def software_create(request, template_name="experiment/software_register.html"):
+    software_form = SoftwareRegisterForm(request.POST or None)
+
+    if request.method == "POST":
+
+        if request.POST['action'] == "save":
+
+            if software_form.is_valid():
+
+                software_added = software_form.save(commit=False)
+                software_added.save()
+
+                messages.success(request, _('Software created successfully.'))
+                redirect_url = reverse("software_view", args=(software_added.id,))
+                return HttpResponseRedirect(redirect_url)
+
+            else:
+                messages.warning(request, _('Information not saved.'))
+
+        else:
+            messages.warning(request, _('Action not available.'))
+
+    context = {"software_form": software_form,
+               "creating": True,
+               "editing": True
+               }
+
+    return render(request, template_name, context)
+
+
+@login_required
+@permission_required('experiment.register_equipment')
+def software_view(request, software_id, template_name="experiment/software_register.html"):
+    software = get_object_or_404(Software, pk=software_id)
+    # musclesubdivisions = muscle.musclesubdivision_set.all()
+    # musclesides = muscle.muscleside_set.all()
+
+    software_form = SoftwareRegisterForm(request.POST or None, instance=software)
+
+    for field in software_form.fields:
+        software_form.fields[field].widget.attrs['disabled'] = True
+
+    if request.method == "POST":
+        if request.POST['action'] == "remove":
+
+            try:
+                software.delete()
+                messages.success(request, _('Software removed successfully.'))
+                return redirect('software_list')
+            except ProtectedError:
+                messages.error(request, _("Error trying to delete software."))
+                redirect_url = reverse("software_view", args=(software_id,))
+                return HttpResponseRedirect(redirect_url)
+
+    context = {"can_change": True,
+               "software": software,
+               "software_form": software_form,
+               # "musclesubdivisions": musclesubdivisions,
+               # "musclesides": musclesides
+               }
+
+    return render(request, template_name, context)
+
+
+@login_required
+@permission_required('experiment.register_equipment')
+def software_update(request, software_id, template_name="experiment/software_register.html"):
+    software = get_object_or_404(Software, pk=software_id)
+
+    software_form = SoftwareRegisterForm(request.POST or None, instance=software)
+
+    if request.method == "POST":
+        if request.POST['action'] == "save":
+            if software_form.is_valid():
+
+                if software_form.has_changed():
+                    software_form.save()
+                    messages.success(request, _('Software updated successfully.'))
+                else:
+                    messages.success(request, _('There is no changes to save.'))
+
+                redirect_url = reverse("software_view", args=(software.id,))
+                return HttpResponseRedirect(redirect_url)
+
+    context = {"software": software,
+               "software_form": software_form,
+               "editing": True
+               }
+
+    return render(request, template_name, context)
+
+
+@login_required
+@permission_required('experiment.register_equipment')
+def software_version_create(request, software_id, template_name="experiment/software_version_register.html"):
+    software = get_object_or_404(Software, pk=software_id)
+
+    software_version_form = SoftwareVersionRegisterForm(request.POST or None)
+
+    if request.method == "POST":
+
+        if request.POST['action'] == "save":
+
+            if software_version_form.is_valid():
+
+                version_added = software_version_form.save(commit=False)
+                version_added.software = software
+                version_added.save()
+
+                messages.success(request, _('Software version created successfully.'))
+                # redirect_url = reverse("software_version_view", args=(version_added.id,))
+                redirect_url = reverse("software_view", args=(version_added.software.id,))
+                return HttpResponseRedirect(redirect_url)
+
+            else:
+                messages.warning(request, _('Information not saved.'))
+
+        else:
+            messages.warning(request, _('Action not available.'))
+
+    context = {"software_version_form": software_version_form,
+               "software": software,
+               "creating": True,
+               "editing": True
+               }
+
+    return render(request, template_name, context)
+
+
+@login_required
+@permission_required('experiment.register_equipment')
+def software_version_view(request, software_version_id, template_name="experiment/software_version_register.html"):
+    software_version = get_object_or_404(SoftwareVersion, pk=software_version_id)
+
+    software_version_form = SoftwareVersionRegisterForm(request.POST or None, instance=software_version)
+
+    for field in software_version_form.fields:
+        software_version_form.fields[field].widget.attrs['disabled'] = True
+
+    if request.method == "POST":
+        if request.POST['action'] == "remove":
+
+            try:
+                software_id = software_version.software.id
+                software_version.delete()
+                messages.success(request, _('Software version removed successfully.'))
+                redirect_url = reverse('software_view', args=(software_id,))
+                return HttpResponseRedirect(redirect_url)
+            except ProtectedError:
+                messages.error(request, _("Error trying to delete software version."))
+                redirect_url = reverse("software_version_view", args=(software_version_id,))
+                return HttpResponseRedirect(redirect_url)
+
+    context = {"can_change": True,
+               "software_version": software_version,
+               "software_version_form": software_version_form
+               }
+
+    return render(request, template_name, context)
+
+
+@login_required
+@permission_required('experiment.register_equipment')
+def software_version_update(request, software_version_id, template_name="experiment/software_version_register.html"):
+    software_version = get_object_or_404(SoftwareVersion, pk=software_version_id)
+
+    software_version_form = SoftwareVersionRegisterForm(request.POST or None, instance=software_version)
+
+    if request.method == "POST":
+        if request.POST['action'] == "save":
+            if software_version_form.is_valid():
+
+                if software_version_form.has_changed():
+
+                    software_version_form.save()
+                    messages.success(request, _('Software version updated successfully.'))
+                else:
+                    messages.success(request, _('There is no changes to save.'))
+
+                redirect_url = reverse("software_version_view", args=(software_version.id,))
+                return HttpResponseRedirect(redirect_url)
+
+    context = {"software_version": software_version,
+               "software_version_form": software_version_form,
                "editing": True
                }
 
@@ -5307,7 +5506,7 @@ def component_create(request, experiment_id, component_type):
     if component_type == 'instruction':
         specific_form = InstructionForm(request.POST or None)
     elif component_type == 'stimulus':
-        specific_form = StimulusForm(request.POST or None)
+        specific_form = StimulusForm(request.POST or None, request.FILES)
     elif component_type == 'eeg':
         specific_form = EEGForm(request.POST or None, initial={'experiment': experiment})
     elif component_type == 'emg':
@@ -5650,6 +5849,12 @@ def remove_component_and_related_configurations(component,
         if not questionnaire.survey.is_initial_evaluation:
             survey_to_check = questionnaire.survey
 
+    if component.component_type == "stimulus":
+
+        stimulus = get_object_or_404(Stimulus, pk=component.id)
+        stimulus.media_file.delete()
+        stimulus.save()
+
     component.delete()
 
     # Checking if there is no other use
@@ -5890,6 +6095,10 @@ def component_view(request, path_of_the_components):
             for field in configuration_form.fields:
                 configuration_form.fields[field].widget.attrs['disabled'] = True
 
+    surveys = Questionnaires()
+    # This method shows a message to the user if limesurvey is not available.
+    limesurvey_available = check_limesurvey_access(request, surveys)
+
     context = {"back_cancel_url": back_cancel_url,
                "block_duration": duration_string,
                "can_change": can_change,
@@ -5908,7 +6117,8 @@ def component_view(request, path_of_the_components):
                "path_of_the_components": path_of_the_components,
                "specific_form": block_form,
                "type_of_the_parent_block": type_of_the_parent_block,
-               "component_type_choices": component_type_choices}
+               "component_type_choices": component_type_choices,
+               "limesurvey_available": limesurvey_available}
 
     return render(request, template_name, context)
 
@@ -6036,13 +6246,6 @@ def component_update(request, path_of_the_components):
     elif component_type == 'tms':
         tms = get_object_or_404(TMS, pk=component.id)
         specific_form = TMSForm(request.POST or None, instance=tms, initial={'experiment': experiment})
-    elif component_type == 'questionnaire':
-        questionnaire = get_object_or_404(Questionnaire, pk=component.id)
-        questionnaire_details = Questionnaires().find_questionnaire_by_id(questionnaire.survey.lime_survey_id)
-
-        if questionnaire_details:
-            questionnaire_id = questionnaire_details['sid'],
-            questionnaire_title = questionnaire_details['surveyls_title']
     elif component_type == 'block':
         block = get_object_or_404(Block, pk=component.id)
         specific_form = BlockForm(request.POST or None, instance=block)
@@ -6071,6 +6274,13 @@ def component_update(request, path_of_the_components):
                             return HttpResponseRedirect(back_cancel_url)
 
                     elif specific_form.is_valid() and component_form.is_valid():
+
+                        # Stimulus has media files to read
+                        if component_type == 'stimulus':
+                            stimulus = get_object_or_404(Stimulus, pk=component.id)
+                            specific_form = StimulusForm(request.POST or None, request.FILES, instance=stimulus)
+                            # specific_form.save()
+
                         # Only save if there was a change.
                         if component_form.has_changed() or specific_form.has_changed():
                             if component.component_type == 'block':
@@ -6112,6 +6322,26 @@ def component_update(request, path_of_the_components):
                 messages.success(request, _('The experiment was copied.'))
                 redirect_url = reverse("experiment_view", args=(experiment.id,))
                 return HttpResponseRedirect(redirect_url)
+
+    if component_type == 'questionnaire':
+        questionnaire = get_object_or_404(Questionnaire, pk=component.id)
+
+        questionnaire_id = questionnaire.survey.lime_survey_id
+        questionnaire_title = str(questionnaire.survey.lime_survey_id)
+
+        surveys = Questionnaires()
+
+        # This method shows a message to the user if limesurvey is not available.
+        limesurvey_available = check_limesurvey_access(request, surveys)
+
+        if limesurvey_available:
+            questionnaire_details = surveys.find_questionnaire_by_id(questionnaire.survey.lime_survey_id)
+
+            if questionnaire_details:
+                questionnaire_id = questionnaire_details['sid'],
+                questionnaire_title = questionnaire_details['surveyls_title']
+
+        surveys.release_session_key()
 
     type_of_the_parent_block = None
 
@@ -6262,7 +6492,7 @@ def component_add_new(request, path_of_the_components, component_type):
     if component_type == 'instruction':
         specific_form = InstructionForm(request.POST or None)
     elif component_type == 'stimulus':
-        specific_form = StimulusForm(request.POST or None)
+        specific_form = StimulusForm(request.POST or None, request.FILES)
     elif component_type == 'eeg':
         specific_form = EEGForm(request.POST or None, initial={'experiment': experiment})
     elif component_type == 'emg':
@@ -6377,7 +6607,8 @@ def component_reuse(request, path_of_the_components, component_id):
         list_of_ids_of_components_and_configurations, back_cancel_url = \
         access_objects_for_add_new_and_reuse(component_type, path_of_the_components)
 
-    check_can_change(request.user, experiment.research_project)
+    # check_can_change(request.user, experiment.research_project)
+    can_change = get_can_change(request.user, experiment.research_project)
 
     # Fixed or random
     position = get_position(request)
@@ -6498,7 +6729,8 @@ def component_reuse(request, path_of_the_components, component_id):
                "questionnaire_id": questionnaire_id,
                "questionnaire_title": questionnaire_title,
                "reusing": True,
-               "specific_form": specific_form}
+               "specific_form": specific_form,
+               "can_change": can_change}
 
     return render(request, template_name, context)
 
