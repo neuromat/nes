@@ -394,32 +394,42 @@
                                                             </canvas>
                                                         </div>
                                                     </td>
-                                                    <td width="20%" valign="top">
-                                                        <label>{% trans "List of positions" %}</label>
-                                                        <table id="cap_positions"  class="table table-striped header-fixed" style="margin-top:10px; margin-left:10px;">
-                                                            <thead>
-                                                                <tr>
-                                                                    <th>{% trans "Name" %}</th>
-                                                                    <th>{% trans "Worked" %}</th>
-                                                                </tr>
-                                                            </thead>
-                                                            <tbody>
-                                                                {% for position_status in eeg_data.electrode_positions.all %}
-                                                                <tr>
-                                                                    <td>
-                                                                        {{ position_status.eeg_electrode_position_setting.eeg_electrode_position.name }}
-                                                                    </td>
-                                                                    <td>
-                                                                        <input type="checkbox" id="position_worked_{{ position_worked_.id }}" name="position_worked_{{ position_worked_.id }}"
-                                                                               {% if not editing or not position_status_.eeg_electrode_position_setting.used %}disabled{% endif %}
-                                                                               {% if position_status_.worked %}checked="checked"{% endif %} onclick="worked()"/>
-                                                                    </td>
-                                                                </tr>
-                                                                {% endfor %}
-                                                            </tbody>
-                                                        </table>
+                                                    <td width="20%" valign="top" align="center">
+                                                        <div style="width: 20%">
+                                                            <table id="cap_positions"  class="table table-striped header-fixed" style="margin-top:10px; margin-left:10px;">
+                                                                <caption><b>{% trans "List of positions" %}</b></caption>
+                                                                <thead>
+                                                                    <tr>
+                                                                        <td>{% trans "Name" %}</td>
+                                                                        <td>{% trans "Worked" %}</td>
+                                                                    </tr>
+                                                                </thead>
+                                                                <tbody>
+                                                                    {% for position_status in eeg_data.electrode_positions.all %}
+                                                                    <tr>
+                                                                        <td align="center">
+                                                                            {{ position_status.eeg_electrode_position_setting.eeg_electrode_position.name }}
+                                                                        </td>
+                                                                        <td align="center">
+                                                                            <input type="checkbox" id="position_worked_{{ position_status.id }}" name="position_worked_{{ position_status.id }}"
+                                                                                   {% if not editing or not position_status.eeg_electrode_position_setting.used %}disabled{% endif %}
+                                                                                   {% if position_status.worked %}checked="checked"{% endif %} onclick="worked()"/>
+                                                                        </td>
+                                                                    </tr>
+                                                                    {% endfor %}
+                                                                </tbody>
+                                                            </table>
+                                                        </div>
                                                     </td>
                                                 </tr>
+                                                <tfoot>
+                                                    <tr>
+                                                        <td colspan="3">{% trans "To mark or unmark any position as 'worked' or 'did not worked' you can click on the image on the selected position" %}</td>
+                                                    </tr>
+                                                    <tr>
+                                                        <td>{% trans "or you can check or uncheck the checkbox selected in the list of positions. " %}</td>
+                                                    </tr>
+                                                </tfoot>
                                             </table>
                                         </div>
                                     </div>

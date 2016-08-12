@@ -143,6 +143,7 @@ function muscle_side_show_field(show) {
 
 function surface_show_field(show) {
 
+    var emg_electrode_type = $("#id_electrode_type").val();
     var div_start_posture = $("#div-start_posture");
     var start_posture_field = $("#id_start_posture");
     var div_orientation = $("#div-orientation");
@@ -153,39 +154,81 @@ function surface_show_field(show) {
     var div_reference_electrode = $("#div-reference_electrode");
     var clinical_test_field = $("#id_clinical_test");
     var div_clinical_test = $("#div-clinical_test");
+    var div_method_of_insertion = $("#div-method_of_insertion");
+    var method_of_insertion_field = $("#id_method_of_insertion");
+    var div_depth_of_insertion = $("#div-depth_of_insertion");
+    var depth_of_insertion_field = $("#id_depth_of_insertion");
 
     start_posture_field.prop( "disabled", true );
     orientation_field.prop( "disabled", true );
     fixation_on_the_skin_field.prop( "disabled", true );
     reference_electrode_field.prop( "disabled", true );
     clinical_test_field.prop( "disabled", true );
+    method_of_insertion_field.prop( "disabled", true );
+    depth_of_insertion_field.prop( "disabled", true );
 
     if (show) {
         var emg_electrode_placement_id = $("#id_emg_electrode_placement").val();
-        var url = "/experiment/emg_setting/get_anatomical_description_by_placement/" + emg_electrode_placement_id;
-        $.getJSON(url, function(data_placement){
-            document.getElementById("id_start_posture").value = data_placement.start_posture;
-            document.getElementById("id_orientation").value = data_placement.orientation;
-            document.getElementById("id_fixation_on_the_skin").value = data_placement.fixation_on_the_skin;
-            document.getElementById("id_reference_electrode").value = data_placement.reference_electrode;
-            document.getElementById("id_clinical_test").value = data_placement.clinical_test;
-        });
-        div_start_posture.show();
-        div_orientation.show();
-        div_fixation_on_the_skin.show();
-        div_reference_electrode.show();
-        div_clinical_test.show();
+        var url = "/experiment/emg_setting/get_description_by_placement/" + emg_electrode_type + "/" + emg_electrode_placement_id;
+        if(emg_electrode_type == "surface"){
+            $.getJSON(url, function(data_placement){
+                document.getElementById("id_start_posture").value = data_placement.start_posture;
+                document.getElementById("id_orientation").value = data_placement.orientation;
+                document.getElementById("id_fixation_on_the_skin").value = data_placement.fixation_on_the_skin;
+                document.getElementById("id_reference_electrode").value = data_placement.reference_electrode;
+                document.getElementById("id_clinical_test").value = data_placement.clinical_test;
+            });
+            div_start_posture.show();
+            div_orientation.show();
+            div_fixation_on_the_skin.show();
+            div_reference_electrode.show();
+            div_clinical_test.show();
+            div_method_of_insertion.hide();
+            div_method_of_insertion.prop( "disabled", true );
+            div_depth_of_insertion.hide();
+            div_depth_of_insertion.prop( "disabled", true );
+        }else if(emg_electrode_type == "intramuscular"){
+            $.getJSON(url, function(data_placement){
+                document.getElementById("id_method_of_insertion").value = data_placement.method_of_insertion;
+                document.getElementById("id_depth_of_insertion").value = data_placement.depth_of_insertion;
+            });
+            div_method_of_insertion.show();
+            div_depth_of_insertion.show();
+            div_start_posture.prop( "disabled", true );
+            div_start_posture.hide();
+            div_orientation.prop( "disabled", true );
+            div_orientation.hide();
+            div_fixation_on_the_skin.prop( "disabled", true );
+            div_fixation_on_the_skin.hide();
+            div_reference_electrode.prop( "disabled", true );
+            div_reference_electrode.hide();
+            div_clinical_test.prop( "disabled", true );
+            div_clinical_test.hide();
+        }else if(emg_electrode_type == "needle"){
+            $.getJSON(url, function(data_placement){
+                
+            });
+        }
 
     } else {
-        div_start_posture.prop( "disabled", true );
-        div_start_posture.hide();
-        div_orientation.prop( "disabled", true );
-        div_orientation.hide();
-        div_fixation_on_the_skin.prop( "disabled", true );
-        div_fixation_on_the_skin.hide();
-        div_reference_electrode.prop( "disabled", true );
-        div_reference_electrode.hide();
-        div_clinical_test.prop( "disabled", true );
-        div_clinical_test.hide();
+        if(emg_electrode_type == "surface"){
+            div_start_posture.prop( "disabled", true );
+            div_start_posture.hide();
+            div_orientation.prop( "disabled", true );
+            div_orientation.hide();
+            div_fixation_on_the_skin.prop( "disabled", true );
+            div_fixation_on_the_skin.hide();
+            div_reference_electrode.prop( "disabled", true );
+            div_reference_electrode.hide();
+            div_clinical_test.prop( "disabled", true );
+            div_clinical_test.hide();
+        }
+        if(emg_electrode_type == "intramuscular"){
+            div_method_of_insertion.hide();
+            div_method_of_insertion.prop( "disabled", true );
+            div_depth_of_insertion.hide();
+            div_depth_of_insertion.prop( "disabled", true );
+        }
+
     }
 }

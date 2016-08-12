@@ -129,11 +129,21 @@
                                     </table>
                                 </td>
                             </tr>
+                            <tfoot>
+                                <tr>
+                                    <td colspan="3">{% trans "To mark a new coordinate, please click on the image map." %}</td>
+                                </tr>
+                                <tr>
+                                    <td colspan="3">{% trans "To delete some coordinate, please click on the delete button or unmark the point clicking on it." %}</td>
+                                </tr>
+                                <tr>
+                                    <td colspan="3">{% trans "To update some coordinate, please click on the name of the point in the positions list and after click on the image to get the new coordinate." %}</td>
+                                </tr>
+                                <tr>
+                                    <td colspan="3"><b>Obs.:</b>{% trans " The delete button and the point on the image are disabled when the corresponding position is used by some layout." %}</td>
+                                </tr>
+                            </tfoot>
                         </table>
-                        <label>{% trans "To mark a new coordinate, please click on the image map." %}</label>
-                        <label>{% trans "To delete some coordinate, please click on the delete button or unmark the point clicking on it" %}</label>
-                        <label>{% trans "To update some coordinate, please click on the name of the point in the positions list and after click on the image to get the new coordinate" %}</label>
-                        <label>{% trans "Obs.: The delete button and the point on the image are disabled when the corresponding position is used by some layout" %}</label>
                     </div>
                  </div>
             </div>

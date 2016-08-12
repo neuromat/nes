@@ -14,7 +14,7 @@ from experiment.models import Experiment, QuestionnaireResponse, SubjectOfGroup,
     EMGElectrodeSetting, EMGElectrodePlacementSetting, \
     EMGPreamplifierSetting, EMGAmplifierSetting, EMGAnalogFilterSetting, EMGSurfacePlacement, \
     ADConverter, StandardizationSystem, Muscle, MuscleSide, MuscleSubdivision, TMS, TMSSetting, TMSDeviceSetting, \
-    Software, SoftwareVersion, CoilModel, TMSDevice
+    Software, SoftwareVersion, CoilModel, TMSDevice, EMGIntramuscularPlacement, EMGNeedlePlacement
 
 
 class ExperimentForm(ModelForm):
@@ -1011,6 +1011,26 @@ class EMGSurfacePlacementForm(ModelForm):
             'clinical_test': Textarea(attrs={'class': 'form-control', 'rows': '4', 'required': ""}),
         }
 
+class EMGIntramuscularPlacementForm(ModelForm):
+    class Meta:
+        model = EMGIntramuscularPlacement
+
+        fields = ['method_of_insertion', 'depth_of_insertion']
+
+        widgets = {
+            'method_of_insertion': Textarea(attrs={'class': 'form-control', 'rows': '4', 'required': ""}),
+            'depth_of_insertion': Textarea(attrs={'class': 'form-control', 'rows': '4', 'required': ""})
+        }
+
+class EMGNeedlePlacementForm(ModelForm):
+    class Meta:
+        model = EMGNeedlePlacement
+
+        fields = ['depth_of_insertion']
+
+        widgets = {
+            'depth_of_insertion': Textarea(attrs={'class': 'form-control', 'rows': '4', 'required': ""})
+        }
 
 class TMSSettingForm(ModelForm):
     class Meta:
