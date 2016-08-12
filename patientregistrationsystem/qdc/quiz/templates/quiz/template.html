@@ -315,6 +315,16 @@
                                             {% trans "Electrode Placement" %}
                                         </a>
                                     </li>
+                                    <li {% block activeTMSDevice %}{% endblock %}>
+                                        <a class="nav-link" href="/experiment/tmsdevice/list/">
+                                            {% trans "TMS Device" %}
+                                        </a>
+                                    </li>
+                                    <li {% block activeCoilModel %}{% endblock %}>
+                                        <a class="nav-link" href="/experiment/coil/list/">
+                                            {% trans "Coil model" %}
+                                        </a>
+                                    </li>
                                 </ul>
                             </div>
                         </div>

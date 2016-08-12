@@ -35,11 +35,11 @@ from experiment.models import Experiment, Subject, QuestionnaireResponse, Subjec
     EEGMachineSetting, EEGAmplifierSetting, EEGSolutionSetting, EEGFilterSetting, EEGElectrodeLayoutSetting, \
     FilterType, EEGSolution, EEGElectrodeLocalizationSystem, EEGElectrodeNetSystem, EEGElectrodePositionSetting, \
     ElectrodeModel, EEGElectrodePositionCollectionStatus, EEGCapSize, EEGElectrodeCap, EEGElectrodePosition, \
-    Material, AdditionalData, Tag, \
+    Material, AdditionalData, Tag, CoilModel, CoilShape, \
     EMGData, EMGSetting, SoftwareVersion, EMGDigitalFilterSetting, EMGADConverterSetting, \
     EMGElectrodeSetting, EMGPreamplifierSetting, EMGAmplifierSetting, EMGAnalogFilterSetting, \
     ADConverter, StandardizationSystem, Muscle, MuscleSubdivision, MuscleSide, \
-    EMGElectrodePlacement, EMGSurfacePlacement, TMS, TMSSetting, TMSDeviceSetting
+    EMGElectrodePlacement, EMGSurfacePlacement, TMS, TMSSetting, TMSDeviceSetting, TMSDevice
 from experiment.forms import ExperimentForm, QuestionnaireResponseForm, FileForm, GroupForm, InstructionForm, \
     ComponentForm, StimulusForm, BlockForm, ComponentConfigurationForm, ResearchProjectForm, NumberOfUsesToInsertForm, \
     EEGDataForm, EEGSettingForm, EquipmentForm, EEGForm, EEGMachineForm, EEGMachineSettingForm, EEGAmplifierForm, \
@@ -53,7 +53,7 @@ from experiment.forms import ExperimentForm, QuestionnaireResponseForm, FileForm
     EMGPreamplifierSettingForm, EMGAmplifierSettingForm, EMGAnalogFilterSettingForm, EMGForm, ElectrodeModelForm, \
     ADConverterRegisterForm, StandardizationSystemRegisterForm, \
     MuscleRegisterForm, MuscleSubdivisionRegisterForm, MuscleSideRegisterForm, EMGSurfacePlacementForm, \
-    TMSForm, TMSSettingForm, TMSDeviceSettingForm
+    TMSForm, TMSSettingForm, TMSDeviceSettingForm, CoilModelRegisterForm, TMSDeviceRegisterForm
 
 from export.export import create_directory
 
@@ -2654,6 +2654,186 @@ def electrodemodel_view(request, electrodemodel_id, template_name="experiment/el
 
 @login_required
 @permission_required('experiment.register_equipment')
+def coil_list(request, template_name="experiment/coil_list.html"):
+    return render(request, template_name, {"equipments": CoilModel.objects.all().order_by('name')})
+
+@login_required
+@permission_required('experiment.register_equipment')
+def coil_create(request, template_name="experiment/coil_register.html"):
+
+    coil_model_form = CoilModelRegisterForm(request.POST or None)
+
+    if request.method == "POST":
+
+        if request.POST['action'] == "save":
+
+            if coil_model_form.is_valid():
+
+                coil_model_added = coil_model_form.save(commit=False)
+                coil_model_added.save()
+
+                messages.success(request, _('Coil Model created successfully.'))
+                redirect_url = reverse("coil_view", args=(coil_model_added.id,))
+                return HttpResponseRedirect(redirect_url)
+
+            else:
+                messages.warning(request, _('Information not saved.'))
+
+        else:
+            messages.warning(request, _('Action not available.'))
+
+    context = {"equipment_form": coil_model_form,
+               "creating": True,
+               "editing": True}
+
+    return render(request, template_name, context)
+
+@login_required
+@permission_required('experiment.register_equipment')
+def coil_view(request, coil_id, template_name="experiment/coil_register.html"):
+    coilmodel = get_object_or_404(CoilModel, pk=coil_id)
+
+    coilmodel_form = CoilModelRegisterForm(request.POST or None, instance=coilmodel)
+
+    for field in coilmodel_form.fields:
+        coilmodel_form.fields[field].widget.attrs['disabled'] = True
+
+    if request.method == "POST":
+        if request.POST['action'] == "remove":
+
+            try:
+                coilmodel.delete()
+                messages.success(request, _('Coil model removed successfully.'))
+                return redirect('coil_list')
+            except ProtectedError:
+                messages.error(request, _("Error trying to delete coil model."))
+                redirect_url = reverse("coil_view", args=(coil_id,))
+                return HttpResponseRedirect(redirect_url)
+
+    context = {"can_change": True,
+               "equipment": coilmodel,
+               "equipment_form": coilmodel_form}
+
+    return render(request, template_name, context)
+
+@login_required
+@permission_required('experiment.register_equipment')
+def coil_update(request, coil_id, template_name="experiment/coil_register.html"):
+    coilmodel = get_object_or_404(CoilModel, pk=coil_id)
+
+    coilmodel_form = CoilModelRegisterForm(request.POST or None, instance=coilmodel)
+
+    if request.method == "POST":
+        if request.POST['action'] == "save":
+            if coilmodel_form.is_valid():
+                if coilmodel_form.has_changed():
+
+                    coilmodel_form.save()
+                    messages.success(request, _('Coil Model updated successfully.'))
+                else:
+                    messages.success(request, _('There is no changes to save.'))
+
+                redirect_url = reverse("coil_view", args=(coilmodel.id,))
+                return HttpResponseRedirect(redirect_url)
+
+    context = {"equipment": coilmodel,
+               "equipment_form": coilmodel_form,
+               "editing": True}
+
+    return render(request, template_name, context)
+
+@login_required
+@permission_required('experiment.register_equipment')
+def tmsdevice_list(request, template_name="experiment/tmsdevice_list.html"):
+    return render(request, template_name, {"equipments": TMSDevice.objects.all()})
+
+@login_required
+@permission_required('experiment.register_equipment')
+def tmsdevice_create(request, template_name="experiment/tmsdevice_register.html"):
+
+    tms_device_form = TMSDeviceRegisterForm(request.POST or None)
+
+    if request.method == "POST":
+
+        if request.POST['action'] == "save":
+
+            if tms_device_form.is_valid():
+
+                tms_device_added = tms_device_form.save(commit=False)
+                tms_device_added.save()
+
+                messages.success(request, _('TMS device created successfully.'))
+                redirect_url = reverse("tmsdevice_view", args=(tms_device_added.id,))
+                return HttpResponseRedirect(redirect_url)
+
+            else:
+                messages.warning(request, _('Information not saved.'))
+
+        else:
+            messages.warning(request, _('Action not available.'))
+
+    context = {"equipment_form": tms_device_form,
+               "creating": True,
+               "editing": True}
+
+    return render(request, template_name, context)
+
+@login_required
+@permission_required('experiment.register_equipment')
+def tmsdevice_view(request, tmsdevice_id, template_name="experiment/tmsdevice_register.html"):
+    tmsdevice = get_object_or_404(TMSDevice, pk=tmsdevice_id)
+
+    tmsdevice_form = TMSDeviceRegisterForm(request.POST or None, instance=tmsdevice)
+
+    for field in tmsdevice_form.fields:
+        tmsdevice_form.fields[field].widget.attrs['disabled'] = True
+
+    if request.method == "POST":
+        if request.POST['action'] == "remove":
+
+            try:
+                tmsdevice.delete()
+                messages.success(request, _('TMS device removed successfully.'))
+                return redirect('tmsdevice_list')
+            except ProtectedError:
+                messages.error(request, _("Error trying to delete TMS device."))
+                redirect_url = reverse("tmsdevice_view", args=(tmsdevice_id,))
+                return HttpResponseRedirect(redirect_url)
+
+    context = {"can_change": True,
+               "equipment": tmsdevice,
+               "equipment_form": tmsdevice_form}
+
+    return render(request, template_name, context)
+
+@login_required
+@permission_required('experiment.register_equipment')
+def tmsdevice_update(request, tmsdevice_id, template_name="experiment/tmsdevice_register.html"):
+    tmsdevice = get_object_or_404(TMSDevice, pk=tmsdevice_id)
+
+    tmsdevice_form = TMSDeviceRegisterForm(request.POST or None, instance=tmsdevice)
+
+    if request.method == "POST":
+        if request.POST['action'] == "save":
+            if tmsdevice_form.is_valid():
+                if tmsdevice_form.has_changed():
+
+                    tmsdevice_form.save()
+                    messages.success(request, _('TMS device updated successfully.'))
+                else:
+                    messages.success(request, _('There is no changes to save.'))
+
+                redirect_url = reverse("tmsdevice_view", args=(tmsdevice.id,))
+                return HttpResponseRedirect(redirect_url)
+
+    context = {"equipment": tmsdevice,
+               "equipment_form": tmsdevice_form,
+               "editing": True}
+
+    return render(request, template_name, context)
+
+@login_required
+@permission_required('experiment.register_equipment')
 def material_list(request, template_name="experiment/material_list.html"):
     return render(request, template_name, {"equipments": Material.objects.all().order_by('name')})
 
@@ -4165,8 +4345,22 @@ def eeg_data_view(request, eeg_data_id, tab, template_name="experiment/subject_e
     file_format_list = file_format_code("EEG")
 
     image = False
+    positions = []
     if hasattr(eeg_data.eeg_setting, 'eeg_electrode_layout_setting'):
-        image = True
+        for position_worked in eeg_data.electrode_positions.all().order_by(
+                "eeg_electrode_position_setting__eeg_electrode_position__name"):
+
+            point_setting = position_worked.eeg_electrode_position_setting.eeg_electrode_position
+            positions.append({
+                'id': position_worked.id,
+                'position': point_setting.name,
+                'x': point_setting.coordinate_x,
+                'y': point_setting.coordinate_y,
+                'status': True, # 'status' indicates if the point exist at the DB
+                'worked': position_worked.worked
+            })
+        if positions.__len__() > 0:
+            image = True
 
     if request.method == "POST":
 
@@ -4191,6 +4385,7 @@ def eeg_data_view(request, eeg_data_id, tab, template_name="experiment/subject_e
                "eeg_setting_default_id": eeg_step.eeg_setting_id,
                "file_format_list": file_format_list,
                "tab": tab,
+               "json_list": json.dumps(positions),
                "image": image}
 
     return render(request, template_name, context)
@@ -4254,8 +4449,14 @@ def eeg_data_edit(request, eeg_data_id, tab, template_name="experiment/subject_e
                     else:
                         messages.success(request, _('There is no changes to save.'))
 
-                else:
+                if tab == 3:
+                    for position_worked in eeg_data.electrode_positions.all():
+                        position_worked.worked = 'position_worked_' + str(position_worked.id) in request.POST
+                        position_worked.save()
 
+                    messages.success(request, _('EEG position data updated successfully.'))
+
+                else:
                     for position_status in eeg_data.electrode_positions.all():
                         position_status.worked = 'position_status_' + str(position_status.id) in request.POST
                         position_status.save()
@@ -4267,9 +4468,29 @@ def eeg_data_edit(request, eeg_data_id, tab, template_name="experiment/subject_e
 
     else:
         eeg_data_form = EEGDataForm(request.POST or None, instance=eeg_data,
-                                    initial={'experiment': eeg_data.subject_of_group.group.experiment})
+                            initial={'experiment': eeg_data.subject_of_group.group.experiment})
 
     file_format_list = file_format_code("EEG")
+
+    positions = []
+    image = False
+    if hasattr(eeg_data.eeg_setting, 'eeg_electrode_layout_setting'):
+        for position_status in eeg_data.electrode_positions.all().order_by(
+                "eeg_electrode_position_setting__eeg_electrode_position__name"):
+            point_setting = position_status.eeg_electrode_position_setting.eeg_electrode_position
+            positions.append({
+                'id': position_status.id,
+                'position': point_setting.name,
+                'x': point_setting.coordinate_x,
+                'y': point_setting.coordinate_y,
+
+                # 'status' indicates if the point exist at the DB
+                'status': True,
+
+                'worked': position_status.worked
+            })
+        if positions.__len__() > 0:
+            image = True
 
     context = {"group": eeg_data.subject_of_group.group,
                "subject": eeg_data.subject_of_group.subject,
@@ -4278,7 +4499,9 @@ def eeg_data_edit(request, eeg_data_id, tab, template_name="experiment/subject_e
                "file_format_list": file_format_list,
                "eeg_setting_default_id": eeg_step.eeg_setting_id,
                "editing": True,
-               "tab": tab
+               "tab": tab,
+               "json_list": json.dumps(positions),
+               "image": image
                }
 
     return render(request, template_name, context)
