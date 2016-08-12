@@ -55,7 +55,8 @@ from experiment.forms import ExperimentForm, QuestionnaireResponseForm, FileForm
     ADConverterRegisterForm, StandardizationSystemRegisterForm, \
     MuscleRegisterForm, MuscleSubdivisionRegisterForm, MuscleSideRegisterForm, EMGSurfacePlacementForm, \
     TMSForm, TMSSettingForm, TMSDeviceSettingForm, CoilModelRegisterForm, TMSDeviceRegisterForm, \
-    SoftwareRegisterForm, SoftwareVersionRegisterForm, EMGIntramuscularPlacementForm, EMGNeedlePlacementForm
+    SoftwareRegisterForm, SoftwareVersionRegisterForm, EMGIntramuscularPlacementForm, EMGNeedlePlacementForm, \
+EMGSurfacePlacementRegisterForm, EMGIntramuscularPlacementRegisterForm, EMGNeedlePlacementRegisterForm
 
 from export.export import create_directory
 
@@ -2202,6 +2203,159 @@ def standardization_system_update(request, standardization_system_id,
 
 @login_required
 @permission_required('experiment.register_equipment')
+def emg_electrode_placement_create(request, standardization_system_id, placement_type):
+
+    template_name="experiment/emg_" + placement_type + "_placement_register.html"
+
+    standardization_system = get_object_or_404(StandardizationSystem, pk=standardization_system_id)
+
+    emg_electrode_placement_form = None
+
+    if placement_type == "surface":
+        emg_electrode_placement_form = EMGSurfacePlacementRegisterForm(request.POST or None, request.FILES)
+    elif placement_type == "intramuscular":
+        emg_electrode_placement_form = EMGIntramuscularPlacementRegisterForm(request.POST or None, request.FILES)
+    elif placement_type == "needle":
+        emg_electrode_placement_form = EMGNeedlePlacementRegisterForm(request.POST or None, request.FILES)
+
+    if request.method == "POST":
+
+        if request.POST['action'] == "save":
+
+            if emg_electrode_placement_form.is_valid():
+
+                placement_added = emg_electrode_placement_form.save(commit=False)
+                placement_added.standardization_system = standardization_system
+                placement_added.placement_type = placement_type
+                placement_added.save()
+
+                messages.success(request, _('Electrode placement subdivision created successfully.'))
+                redirect_url = reverse("emg_electrode_placement_view", args=(placement_added.id,))
+                # redirect_url = reverse("standardization_system_view", args=(standardization_system_id,))
+                return HttpResponseRedirect(redirect_url)
+
+            else:
+                messages.warning(request, _('Information not saved.'))
+
+        else:
+            messages.warning(request, _('Action not available.'))
+
+    context = {"emg_electrode_placement_form": emg_electrode_placement_form,
+               "standardization_system": standardization_system,
+               "creating": True,
+               "editing": True
+               }
+
+    return render(request, template_name, context)
+
+
+@login_required
+@permission_required('experiment.register_equipment')
+def emg_electrode_placement_view(request, emg_electrode_placement_id):
+
+    emg_electrode_placement = get_object_or_404(EMGElectrodePlacement, pk=emg_electrode_placement_id)
+
+    template_name="experiment/emg_" + emg_electrode_placement.placement_type + "_placement_register.html"
+
+    emg_electrode_placement_form = None
+
+    if emg_electrode_placement.placement_type == "surface":
+        emg_electrode_placement = get_object_or_404(EMGSurfacePlacement, pk=emg_electrode_placement_id)
+        emg_electrode_placement_form = EMGSurfacePlacementRegisterForm(request.POST or None,
+                                                                       instance=emg_electrode_placement)
+    elif emg_electrode_placement.placement_type == "intramuscular":
+        emg_electrode_placement = get_object_or_404(EMGIntramuscularPlacement, pk=emg_electrode_placement_id)
+        emg_electrode_placement_form = EMGIntramuscularPlacementRegisterForm(request.POST or None,
+                                                                             instance=emg_electrode_placement)
+    elif emg_electrode_placement.placement_type == "needle":
+        emg_electrode_placement = get_object_or_404(EMGNeedlePlacement, pk=emg_electrode_placement_id)
+        emg_electrode_placement_form = EMGNeedlePlacementRegisterForm(request.POST or None,
+                                                                      instance=emg_electrode_placement)
+
+    for field in emg_electrode_placement_form.fields:
+        emg_electrode_placement_form.fields[field].widget.attrs['disabled'] = True
+
+    if request.method == "POST":
+        if request.POST['action'] == "remove":
+
+            try:
+                standardization_system = emg_electrode_placement.standardization_system
+                # emg_electrode_placement.photo.delete()
+                emg_electrode_placement.delete()
+                messages.success(request, _('EMG electrode placement removed successfully.'))
+                redirect_url = reverse('standardization_system_view', args=(standardization_system.id,))
+                return HttpResponseRedirect(redirect_url)
+            except ProtectedError:
+                messages.error(request, _("Error trying to delete EMG electrode placement."))
+                redirect_url = reverse("emg_electrode_placement_view", args=(emg_electrode_placement_id,))
+                return HttpResponseRedirect(redirect_url)
+
+    context = {"emg_electrode_placement_form": emg_electrode_placement_form,
+               "emg_electrode_placement": emg_electrode_placement,
+               "can_change": True
+               }
+
+    return render(request, template_name, context)
+
+
+@login_required
+@permission_required('experiment.register_equipment')
+def emg_electrode_placement_update(request, emg_electrode_placement_id):
+
+    emg_electrode_placement = get_object_or_404(EMGElectrodePlacement, pk=emg_electrode_placement_id)
+
+    template_name = "experiment/emg_" + emg_electrode_placement.placement_type + "_placement_register.html"
+
+    emg_electrode_placement_form = None
+
+    if emg_electrode_placement.placement_type == "surface":
+        emg_electrode_placement = get_object_or_404(EMGSurfacePlacement, pk=emg_electrode_placement_id)
+        emg_electrode_placement_form = EMGSurfacePlacementRegisterForm(request.POST or None,
+                                                                       instance=emg_electrode_placement)
+    elif emg_electrode_placement.placement_type == "intramuscular":
+        emg_electrode_placement = get_object_or_404(EMGIntramuscularPlacement, pk=emg_electrode_placement_id)
+        emg_electrode_placement_form = EMGIntramuscularPlacementRegisterForm(request.POST or None,
+                                                                             instance=emg_electrode_placement)
+    elif emg_electrode_placement.placement_type == "needle":
+        emg_electrode_placement = get_object_or_404(EMGNeedlePlacement, pk=emg_electrode_placement_id)
+        emg_electrode_placement_form = EMGNeedlePlacementRegisterForm(request.POST or None,
+                                                                      instance=emg_electrode_placement)
+
+    if request.method == "POST":
+        if request.POST['action'] == "save":
+
+            if emg_electrode_placement.placement_type == "surface":
+                emg_electrode_placement_form = EMGSurfacePlacementRegisterForm(
+                    request.POST or None, request.FILES, instance=emg_electrode_placement)
+            elif emg_electrode_placement.placement_type == "intramuscular":
+                emg_electrode_placement_form = EMGIntramuscularPlacementRegisterForm(
+                    request.POST or None, request.FILES, instance=emg_electrode_placement)
+            elif emg_electrode_placement.placement_type == "needle":
+                emg_electrode_placement_form = EMGNeedlePlacementRegisterForm(
+                    request.POST or None, request.FILES, instance=emg_electrode_placement)
+
+            if emg_electrode_placement_form.is_valid():
+
+                if emg_electrode_placement_form.has_changed():
+
+                    emg_electrode_placement_form.save()
+                    messages.success(request, _('EMG electrode placement was updated successfully.'))
+                else:
+                    messages.success(request, _('There is no changes to save.'))
+
+                redirect_url = reverse("emg_electrode_placement_view", args=(emg_electrode_placement_id,))
+                return HttpResponseRedirect(redirect_url)
+
+    context = {"emg_electrode_placement_form": emg_electrode_placement_form,
+               "emg_electrode_placement": emg_electrode_placement,
+               "editing": True
+               }
+
+    return render(request, template_name, context)
+
+
+@login_required
+@permission_required('experiment.register_equipment')
 def standardization_system_view(request, standardization_system_id,
                                 template_name="experiment/standardization_system_register.html"):
     standardization_system = get_object_or_404(StandardizationSystem, pk=standardization_system_id)
@@ -2224,9 +2378,14 @@ def standardization_system_view(request, standardization_system_id,
                 redirect_url = reverse("standardization_system_view", args=(standardization_system_id,))
                 return HttpResponseRedirect(redirect_url)
 
+    electrode_placement_choices = []
+    for type_element, type_name in EMGElectrodePlacement.PLACEMENT_TYPES:
+        electrode_placement_choices.append((type_element, type_name))
+
     context = {"can_change": True,
                "equipment": standardization_system,
-               "equipment_form": standardization_system_form
+               "equipment_form": standardization_system_form,
+               "electrode_placement_choices": electrode_placement_choices,
                }
 
     return render(request, template_name, context)

@@ -40,7 +40,7 @@
         <div class="col-md-10">
             <ol class="breadcrumb">
                 <li><a href="/home">{% trans "Home" %}</a></li>
-                <li class="active">{% trans "Standardization system" %}</li>
+                <li class="active">{% trans "EMG electrode placement system" %}</li>
             </ol>
         </div>
     </div>
@@ -48,13 +48,14 @@
     <div class="tab-pane fade in active" id="mainMenuUserTab">
         <div class="col-md-10">
             <div class="container span6 offset3 well ">
-                <h4>{% trans "Standardization System List" %}</h4>
+                <h4>{% trans "EMG Electrode Placement System List" %}</h4>
                 <div class="form-group">
                     <table class="table table-striped">
                         <thead>
                             <tr>
                                 <th>{% trans "Name" %}</th>
                                 <th>{% trans "Description" %}</th>
+                                <th>{% trans "Number of electrode placements" %}</th>
                             </tr>
                         </thead>
                         <tbody>
@@ -71,6 +72,9 @@
                                 </td>
                                 <td>
                                     {{ equipment.description }}
+                                </td>
+                                <td>
+                                    {{ equipment.electrode_placements.all.count }}
                                 </td>
                             </tr>
                         {% endfor %}

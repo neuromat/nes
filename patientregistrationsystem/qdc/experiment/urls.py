@@ -83,8 +83,6 @@ urlpatterns = patterns(
     # register cap size
     url(r'^eeg_electrode_cap_size/(?P<eegelectrode_cap_id>\d+)/add_size/$',
         'eegelectrodenet_cap_size_create', name='eegelectrodenet_add_size'),
-    # url(r'^eeg_electrode_cap_size/remove/(?P<eegelectrode_cap_size_id>\d+)/$',
-    #     'eegelectrodenet_cap_size_remove', name='cap_size_remove'),
     url(r'^eeg_electrode_cap_size/(?P<eegelectrode_cap_size_id>\d+)/$',
         'eegelectrodenet_cap_size_view', name='eegelectrodenet_cap_size_view'),
     url(r'^eeg_electrode_cap_size/(?P<eegelectrode_cap_size_id>\d+)/edit/$',
@@ -96,13 +94,19 @@ urlpatterns = patterns(
     url(r'^ad_converter/(?P<ad_converter_id>\d+)/$', 'ad_converter_view', name='ad_converter_view'),
     url(r'^ad_converter/edit/(?P<ad_converter_id>\d+)/$', 'ad_converter_update', name='ad_converter_edit'),
 
-    # register Standardization system
+    # register Standardization system (EMG Electrode Placement System)
     url(r'^standardization_system/list/$', 'standardization_system_list', name='standardization_system_list'),
     url(r'^standardization_system/new/$', 'standardization_system_create', name='standardization_system_new'),
     url(r'^standardization_system/(?P<standardization_system_id>\d+)/$', 'standardization_system_view',
         name='standardization_system_view'),
     url(r'^standardization_system/edit/(?P<standardization_system_id>\d+)/$', 'standardization_system_update',
         name='standardization_system_edit'),
+    url(r'^standardization_system/(?P<standardization_system_id>\d+)/new_placement/(?P<placement_type>\w+)/$',
+        'emg_electrode_placement_create', name='emg_electrode_placement_new'),
+    url(r'^emg_electrode_placement/(?P<emg_electrode_placement_id>\d+)/$',
+        'emg_electrode_placement_view', name='emg_electrode_placement_view'),
+    url(r'^emg_electrode_placement/(?P<emg_electrode_placement_id>\d+)/edit/$',
+        'emg_electrode_placement_update', name='emg_electrode_placement_edit'),
 
     # register muscle
     url(r'^muscle/list/$', 'muscle_list', name='muscle_list'),

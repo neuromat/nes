@@ -1,0 +1,49 @@
+{% extends "experiment/emg_placement_register_template.html" %}
+
+{% load i18n admin_static %}
+
+{% block breadcrumb %}
+
+    {% if creating %}
+        <li class="active">{% trans "New intramuscular placement" %}</li>
+    {% endif %}
+
+{% endblock %}
+
+{% block placement_label %}{% trans "the intramuscular placement" %}{% endblock %}
+
+{% block component_add_new %}
+    <li role="presentation">
+        <a role="menuitem" tabindex="-1" onclick="redirect_with_number_of_uses('/experiment/component/{{ path_of_the_components }}/add_new/task{% if position %}?position={{ position }}{% endif %}')">
+            << {% trans "New intramuscular placement" %} >>
+        </a>
+    </li>
+{% endblock %}
+
+{% block component_button_label %}
+    {% trans "New intramuscular placement" %}
+{% endblock %}
+
+{% block specialized_fields %}
+
+    <div class="row">
+        <div class="col-xs-12 col-sm-12">
+            <div class="form-group">
+                <label class="control-label">{% trans "Method of insertion" %}</label>
+                {{ emg_electrode_placement_form.method_of_insertion }}
+                <div class="help-block with-errors"></div>
+            </div>
+        </div>
+    </div>
+
+    <div class="row">
+        <div class="col-xs-12 col-sm-12">
+            <div class="form-group">
+                <label class="control-label">{% trans "Depth of insertion" %}</label>
+                {{ emg_electrode_placement_form.depth_of_insertion }}
+                <div class="help-block with-errors"></div>
+            </div>
+        </div>
+    </div>
+
+{% endblock %}

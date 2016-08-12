@@ -335,6 +335,10 @@ class EEGElectrodeLocalizationSystem(models.Model):
     def __str__(self):
         return self.name
 
+    def delete(self, *args, **kwargs):
+        self.map_image_file.delete()
+        super(EEGElectrodeLocalizationSystem, self).delete(*args, **kwargs)
+
 
 class EEGElectrodePosition(models.Model):
     eeg_electrode_localization_system = models.ForeignKey(EEGElectrodeLocalizationSystem,
@@ -483,7 +487,7 @@ class MuscleSubdivision(models.Model):
     anatomy_function = models.TextField(null=True, blank=True)
 
     def __str__(self):
-        return self.name
+        return self.muscle.name + ' - ' + self.name
 
 
 class MuscleSide(models.Model):
@@ -496,7 +500,7 @@ class MuscleSide(models.Model):
 
 def get_emg_placement_dir(instance, filename):
     return "emg_placement_files/%s/%s" % \
-           (instance.id, filename)
+           (instance.standardization_system.id, filename)
 
 
 class EMGElectrodePlacement(models.Model):
@@ -505,7 +509,7 @@ class EMGElectrodePlacement(models.Model):
         ("intramuscular", _("Intramuscular")),
         ("needle", _("Needle")),
     )
-    standardization_system = models.ForeignKey(StandardizationSystem)
+    standardization_system = models.ForeignKey(StandardizationSystem, related_name='electrode_placements')
     muscle_subdivision = models.ForeignKey(MuscleSubdivision)
     placement_reference = models.ForeignKey('self', null=True, blank=True, related_name='children')
     photo = models.FileField(upload_to=get_emg_placement_dir, null=True, blank=True)
@@ -515,6 +519,10 @@ class EMGElectrodePlacement(models.Model):
     def __str__(self):
         return self.standardization_system.name + ' - ' + \
                self.muscle_subdivision.muscle.name + ' - ' + self.muscle_subdivision.name
+
+    def delete(self, *args, **kwargs):
+        self.photo.delete()
+        super(EMGElectrodePlacement, self).delete(*args, **kwargs)
 
 
 class EMGSurfacePlacement(EMGElectrodePlacement):

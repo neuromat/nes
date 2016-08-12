@@ -715,6 +715,54 @@ class StandardizationSystemRegisterForm(ModelForm):
         }
 
 
+class EMGSurfacePlacementRegisterForm(ModelForm):
+    class Meta:
+        model = EMGSurfacePlacement
+
+        fields = ['muscle_subdivision', 'location', 'start_posture', 'orientation', 'fixation_on_the_skin',
+                  'reference_electrode', 'clinical_test', 'photo']
+
+        widgets = {
+            'muscle_subdivision': Select(attrs={'class': 'form-control', 'required': "",
+                                                'data-error': _('Muscle subdivision is required.')}),
+            'location': Textarea(attrs={'class': 'form-control', 'rows': '4'}),
+            'start_posture': Textarea(attrs={'class': 'form-control', 'rows': '4'}),
+            'orientation': Textarea(attrs={'class': 'form-control', 'rows': '4'}),
+            'fixation_on_the_skin': Textarea(attrs={'class': 'form-control', 'rows': '4'}),
+            'reference_electrode': Textarea(attrs={'class': 'form-control', 'rows': '4'}),
+            'clinical_test': Textarea(attrs={'class': 'form-control', 'rows': '4'}),
+        }
+
+
+class EMGIntramuscularPlacementRegisterForm(ModelForm):
+    class Meta:
+        model = EMGIntramuscularPlacement
+
+        fields = ['muscle_subdivision', 'location', 'method_of_insertion', 'depth_of_insertion', 'photo']
+
+        widgets = {
+            'muscle_subdivision': Select(attrs={'class': 'form-control', 'required': "",
+                                                'data-error': _('Muscle subdivision is required.')}),
+            'location': Textarea(attrs={'class': 'form-control', 'rows': '4'}),
+            'method_of_insertion': Textarea(attrs={'class': 'form-control', 'rows': '4'}),
+            'depth_of_insertion': Textarea(attrs={'class': 'form-control', 'rows': '4'}),
+        }
+
+
+class EMGNeedlePlacementRegisterForm(ModelForm):
+    class Meta:
+        model = EMGNeedlePlacement
+
+        fields = ['muscle_subdivision', 'location', 'depth_of_insertion', 'photo']
+
+        widgets = {
+            'muscle_subdivision': Select(attrs={'class': 'form-control', 'required': "",
+                                                'data-error': _('Muscle subdivision is required.')}),
+            'location': Textarea(attrs={'class': 'form-control', 'rows': '4'}),
+            'depth_of_insertion': Textarea(attrs={'class': 'form-control', 'rows': '4'}),
+        }
+
+
 class MuscleRegisterForm(ModelForm):
     class Meta:
         model = Muscle

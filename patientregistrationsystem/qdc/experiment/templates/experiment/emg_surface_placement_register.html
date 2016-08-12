@@ -1,0 +1,79 @@
+{% extends "experiment/emg_placement_register_template.html" %}
+
+{% load i18n admin_static %}
+
+{% block breadcrumb %}
+
+    {% if creating %}
+        <li class="active">{% trans "New surface placement" %}</li>
+    {% endif %}
+
+{% endblock %}
+
+{% block placement_label %}{% trans "the surface placement" %}{% endblock %}
+
+{% block component_add_new %}
+    <li role="presentation">
+        <a role="menuitem" tabindex="-1" onclick="redirect_with_number_of_uses('/experiment/component/{{ path_of_the_components }}/add_new/task{% if position %}?position={{ position }}{% endif %}')">
+            << {% trans "New surface placement" %} >>
+        </a>
+    </li>
+{% endblock %}
+
+{% block component_button_label %}
+    {% trans "New surface placement" %}
+{% endblock %}
+
+{% block specialized_fields %}
+
+    <div class="row">
+        <div class="col-xs-12 col-sm-12">
+            <div class="form-group">
+                <label class="control-label">{% trans "Start posture" %}</label>
+                {{ emg_electrode_placement_form.start_posture }}
+                <div class="help-block with-errors"></div>
+            </div>
+        </div>
+    </div>
+
+    <div class="row">
+        <div class="col-xs-12 col-sm-12">
+            <div class="form-group">
+                <label class="control-label">{% trans "Orientation" %}</label>
+                {{ emg_electrode_placement_form.orientation }}
+                <div class="help-block with-errors"></div>
+            </div>
+        </div>
+    </div>
+
+    <div class="row">
+        <div class="col-xs-12 col-sm-12">
+            <div class="form-group">
+                <label class="control-label">{% trans "Fixation on the skin" %}</label>
+                {{ emg_electrode_placement_form.fixation_on_the_skin }}
+                <div class="help-block with-errors"></div>
+            </div>
+        </div>
+    </div>
+
+    <div class="row">
+        <div class="col-xs-12 col-sm-12">
+            <div class="form-group">
+                <label class="control-label">{% trans "Reference electrode" %}</label>
+                {{ emg_electrode_placement_form.reference_electrode }}
+                <div class="help-block with-errors"></div>
+            </div>
+        </div>
+    </div>
+
+    <div class="row">
+        <div class="col-xs-12 col-sm-12">
+            <div class="form-group">
+                <label class="control-label">{% trans "Clinical test" %}</label>
+                {{ emg_electrode_placement_form.clinical_test }}
+                <div class="help-block with-errors"></div>
+            </div>
+        </div>
+    </div>
+
+{% endblock %}

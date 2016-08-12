@@ -2494,6 +2494,231 @@ class EEGEquipmentRegisterTest(TestCase):
         self.assertEqual(response.status_code, 302)
         self.assertEqual(StandardizationSystem.objects.all().count(), 0)
 
+    def test_emg_surface_electrode_placement_register(self):
+
+        standardization_system = ObjectsFactory.create_standardization_system()
+        muscle = ObjectsFactory.create_muscle()
+        muscle_subdivision = ObjectsFactory.create_muscle_subdivision(muscle)
+        muscle_subdivision_2 = ObjectsFactory.create_muscle_subdivision(muscle)
+
+        # create surface
+        response = self.client.get(reverse("emg_electrode_placement_new",
+                                           args=(standardization_system.id, 'surface')))
+        self.assertEqual(response.status_code, 200)
+
+        self.data = {'action': 'save',
+                     'muscle_subdivision': str(muscle_subdivision.id)}
+
+        response = self.client.post(reverse("emg_electrode_placement_new",
+                                            args=(standardization_system.id, 'surface')), self.data)
+        self.assertEqual(response.status_code, 302)
+        self.assertEqual(EMGElectrodePlacement.objects.all().count(), 1)
+
+        # create (trying) but missing information
+        self.data = {'action': 'save'}
+
+        response = self.client.post(reverse("emg_electrode_placement_new",
+                                            args=(standardization_system.id, 'surface')), self.data)
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(EMGElectrodePlacement.objects.all().count(), 1)
+        self.assertEqual(str(list(response.context['messages'])[-1]), _('Information not saved.'))
+
+        # create with wrong action
+        self.data = {'action': 'wrong'}
+
+        response = self.client.post(reverse("emg_electrode_placement_new",
+                                            args=(standardization_system.id, 'surface')), self.data)
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(EMGElectrodePlacement.objects.all().count(), 1)
+        self.assertEqual(str(list(response.context['messages'])[-1]), _('Action not available.'))
+
+        # view
+        emg_electrode_placement = EMGElectrodePlacement.objects.filter(standardization_system=standardization_system).first()
+
+        response = self.client.get(reverse("emg_electrode_placement_view", args=(emg_electrode_placement.id,)))
+        self.assertEqual(response.status_code, 200)
+
+        # update
+        response = self.client.get(reverse("emg_electrode_placement_edit", args=(emg_electrode_placement.id,)))
+        self.assertEqual(response.status_code, 200)
+
+        self.data = {'action': 'save',
+                     'muscle_subdivision': str(muscle_subdivision.id)}
+        response = self.client.post(reverse("emg_electrode_placement_edit", args=(emg_electrode_placement.id,)),
+                                    self.data)
+        self.assertEqual(response.status_code, 302)
+
+        self.data = {'action': 'save',
+                     'muscle_subdivision': str(muscle_subdivision_2.id)}
+        response = self.client.post(reverse("emg_electrode_placement_edit", args=(emg_electrode_placement.id,)),
+                                    self.data)
+        self.assertEqual(response.status_code, 302)
+
+        # update (trying) but missing information
+        self.data = {'action': 'save'}
+        response = self.client.post(reverse("emg_electrode_placement_edit", args=(emg_electrode_placement.id,)),
+                                    self.data)
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(get_object_or_404(EMGElectrodePlacement, pk=emg_electrode_placement.id).muscle_subdivision.id,
+                         muscle_subdivision_2.id)
+
+        # remove
+        self.data = {'action': 'remove'}
+        response = self.client.post(reverse("emg_electrode_placement_view", args=(emg_electrode_placement.id,)),
+                                    self.data)
+        self.assertEqual(response.status_code, 302)
+        self.assertEqual(EMGElectrodePlacement.objects.all().count(), 0)
+
+    def test_emg_intramuscular_electrode_placement_register(self):
+        standardization_system = ObjectsFactory.create_standardization_system()
+        muscle = ObjectsFactory.create_muscle()
+        muscle_subdivision = ObjectsFactory.create_muscle_subdivision(muscle)
+        muscle_subdivision_2 = ObjectsFactory.create_muscle_subdivision(muscle)
+
+        # create surface
+        response = self.client.get(reverse("emg_electrode_placement_new",
+                                           args=(standardization_system.id, 'intramuscular')))
+        self.assertEqual(response.status_code, 200)
+
+        self.data = {'action': 'save',
+                     'muscle_subdivision': str(muscle_subdivision.id)}
+
+        response = self.client.post(reverse("emg_electrode_placement_new",
+                                            args=(standardization_system.id, 'intramuscular')), self.data)
+        self.assertEqual(response.status_code, 302)
+        self.assertEqual(EMGElectrodePlacement.objects.all().count(), 1)
+
+        # create (trying) but missing information
+        self.data = {'action': 'save'}
+
+        response = self.client.post(reverse("emg_electrode_placement_new",
+                                            args=(standardization_system.id, 'intramuscular')), self.data)
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(EMGElectrodePlacement.objects.all().count(), 1)
+        self.assertEqual(str(list(response.context['messages'])[-1]), _('Information not saved.'))
+
+        # create with wrong action
+        self.data = {'action': 'wrong'}
+
+        response = self.client.post(reverse("emg_electrode_placement_new",
+                                            args=(standardization_system.id, 'intramuscular')), self.data)
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(EMGElectrodePlacement.objects.all().count(), 1)
+        self.assertEqual(str(list(response.context['messages'])[-1]), _('Action not available.'))
+
+        # view
+        emg_electrode_placement = EMGElectrodePlacement.objects.filter(
+            standardization_system=standardization_system).first()
+
+        response = self.client.get(reverse("emg_electrode_placement_view", args=(emg_electrode_placement.id,)))
+        self.assertEqual(response.status_code, 200)
+
+        # update
+        response = self.client.get(reverse("emg_electrode_placement_edit", args=(emg_electrode_placement.id,)))
+        self.assertEqual(response.status_code, 200)
+
+        self.data = {'action': 'save',
+                     'muscle_subdivision': str(muscle_subdivision.id)}
+        response = self.client.post(reverse("emg_electrode_placement_edit", args=(emg_electrode_placement.id,)),
+                                    self.data)
+        self.assertEqual(response.status_code, 302)
+
+        self.data = {'action': 'save',
+                     'muscle_subdivision': str(muscle_subdivision_2.id)}
+        response = self.client.post(reverse("emg_electrode_placement_edit", args=(emg_electrode_placement.id,)),
+                                    self.data)
+        self.assertEqual(response.status_code, 302)
+
+        # update (trying) but missing information
+        self.data = {'action': 'save'}
+        response = self.client.post(reverse("emg_electrode_placement_edit", args=(emg_electrode_placement.id,)),
+                                    self.data)
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(get_object_or_404(EMGElectrodePlacement, pk=emg_electrode_placement.id).muscle_subdivision.id,
+                         muscle_subdivision_2.id)
+
+        # remove
+        self.data = {'action': 'remove'}
+        response = self.client.post(reverse("emg_electrode_placement_view", args=(emg_electrode_placement.id,)),
+                                    self.data)
+        self.assertEqual(response.status_code, 302)
+        self.assertEqual(EMGElectrodePlacement.objects.all().count(), 0)
+
+    def test_emg_needle_electrode_placement_register(self):
+        standardization_system = ObjectsFactory.create_standardization_system()
+        muscle = ObjectsFactory.create_muscle()
+        muscle_subdivision = ObjectsFactory.create_muscle_subdivision(muscle)
+        muscle_subdivision_2 = ObjectsFactory.create_muscle_subdivision(muscle)
+
+        # create surface
+        response = self.client.get(reverse("emg_electrode_placement_new",
+                                           args=(standardization_system.id, 'needle')))
+        self.assertEqual(response.status_code, 200)
+
+        self.data = {'action': 'save',
+                     'muscle_subdivision': str(muscle_subdivision.id)}
+
+        response = self.client.post(reverse("emg_electrode_placement_new",
+                                            args=(standardization_system.id, 'needle')), self.data)
+        self.assertEqual(response.status_code, 302)
+        self.assertEqual(EMGElectrodePlacement.objects.all().count(), 1)
+
+        # create (trying) but missing information
+        self.data = {'action': 'save'}
+
+        response = self.client.post(reverse("emg_electrode_placement_new",
+                                            args=(standardization_system.id, 'needle')), self.data)
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(EMGElectrodePlacement.objects.all().count(), 1)
+        self.assertEqual(str(list(response.context['messages'])[-1]), _('Information not saved.'))
+
+        # create with wrong action
+        self.data = {'action': 'wrong'}
+
+        response = self.client.post(reverse("emg_electrode_placement_new",
+                                            args=(standardization_system.id, 'needle')), self.data)
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(EMGElectrodePlacement.objects.all().count(), 1)
+        self.assertEqual(str(list(response.context['messages'])[-1]), _('Action not available.'))
+
+        # view
+        emg_electrode_placement = EMGElectrodePlacement.objects.filter(
+            standardization_system=standardization_system).first()
+
+        response = self.client.get(reverse("emg_electrode_placement_view", args=(emg_electrode_placement.id,)))
+        self.assertEqual(response.status_code, 200)
+
+        # update
+        response = self.client.get(reverse("emg_electrode_placement_edit", args=(emg_electrode_placement.id,)))
+        self.assertEqual(response.status_code, 200)
+
+        self.data = {'action': 'save',
+                     'muscle_subdivision': str(muscle_subdivision.id)}
+        response = self.client.post(reverse("emg_electrode_placement_edit", args=(emg_electrode_placement.id,)),
+                                    self.data)
+        self.assertEqual(response.status_code, 302)
+
+        self.data = {'action': 'save',
+                     'muscle_subdivision': str(muscle_subdivision_2.id)}
+        response = self.client.post(reverse("emg_electrode_placement_edit", args=(emg_electrode_placement.id,)),
+                                    self.data)
+        self.assertEqual(response.status_code, 302)
+
+        # update (trying) but missing information
+        self.data = {'action': 'save'}
+        response = self.client.post(reverse("emg_electrode_placement_edit", args=(emg_electrode_placement.id,)),
+                                    self.data)
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(get_object_or_404(EMGElectrodePlacement, pk=emg_electrode_placement.id).muscle_subdivision.id,
+                         muscle_subdivision_2.id)
+
+        # remove
+        self.data = {'action': 'remove'}
+        response = self.client.post(reverse("emg_electrode_placement_view", args=(emg_electrode_placement.id,)),
+                                    self.data)
+        self.assertEqual(response.status_code, 302)
+        self.assertEqual(EMGElectrodePlacement.objects.all().count(), 0)
+
     def test_muscle_register(self):
         # list
         response = self.client.get(reverse("muscle_list", args=()))
