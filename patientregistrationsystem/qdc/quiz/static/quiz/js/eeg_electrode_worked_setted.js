@@ -23,7 +23,8 @@ function init(){
     var map_file = document.getElementById("map_file");
     imageObj.src = map_file.value;
 
-    canvas.addEventListener("mousedown", getPosition, false);
+    var editing = document.getElementById("image_status");
+    if(editing.value == "True") canvas.addEventListener("mousedown", getPosition, false);
 }
 
 function pintar(){
@@ -64,7 +65,7 @@ function worked(){
 
     for(var i in positions) {
         var position = positions[i];
-        chkboxname = "position_status_" + position.id;
+        chkboxname = "position_worked_" + position.id;
 
         if(!document.getElementById(chkboxname).checked)
             position.worked = false;
@@ -89,7 +90,7 @@ function validPosition(new_x, new_y){
         dist = Math.sqrt(dx*dx + dy*dy);
         if(dist < radio){
             valid= true;
-            chkboxname = "position_status_" + position.id;
+            chkboxname = "position_worked_" + position.id;
 
             chkbox = document.getElementById(chkboxname);
             if(chkbox.checked) {
@@ -112,16 +113,25 @@ function getPosition(event){
     context = canvas.getContext("2d");
 
 
-    if (event.layerX || event.layerX == 0) { // Firefox
-        event._x = event.layerX;
-        event._y = event.layerY;
-    } else if (event.offsetX || event.offsetX == 0) { // Opera
-        event._x = event.offsetX;
-        event._y = event.offsetY;
-    }
+    // if (event.layerX || event.layerX == 0) { // Firefox
+    //     event._x = event.layerX;
+    //     event._y = event.layerY;
+    // } else if (event.offsetX || event.offsetX == 0) { // Opera
+    //     event._x = event.offsetX;
+    //     event._y = event.offsetY;
+    // }
+    
+    var rect = this.getBoundingClientRect();
+    var coords = {
+        x: event.clientX - rect.left,
+        y: event.clientY - rect.top
+    };
 
-    x = parseInt(event._x);
-    y = parseInt(event._y);
+    // x = parseInt(event._x);
+    // y = parseInt(event._y);
+
+    x = parseInt(coords.x);
+    y = parseInt(coords.y);
 
     if(validPosition(x,y)) refresh_Screen();
 };

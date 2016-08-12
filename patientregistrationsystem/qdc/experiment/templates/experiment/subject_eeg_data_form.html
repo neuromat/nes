@@ -17,6 +17,7 @@
 
     <script src="{% static 'quiz/js/research_project.js' %}"></script>
     <script src="{% static 'quiz/js/subject_eeg_data_form.js' %}"></script>
+    <script src="{% static 'quiz/js/eeg_electrode_worked_setted.js' %}"></script>
 
     <script>
         $(document).ready(function () {
@@ -205,6 +206,7 @@
                     {% if creating or editing %}
                         <li {% if tab == '1' %}class="active"{% else %}class="disabled"{% endif %}><a href="#">{% trans "Data collection" %}</a></li>
                         <li {% if tab == '2' %}class="active"{% else %}class="disabled"{% endif %}><a href="#">{% trans "Electrode positions status" %}</a>
+                        <li {% if tab == '3' %}class="active"{% else %}class="disabled"{% endif %}><a href="#">{% trans "Image of the electrode positions" %}</a>
                         </li>
                     {% else %}
                         <li {% if tab == '1' %}class="active"{% endif %}>
@@ -212,6 +214,9 @@
                         </li>
                         <li {% if tab == '2' %}class="active"{% endif %}>
                             <a {% if not creating %}data-toggle="tab"{% endif %} href="#electrode_position_status">{% trans "Electrode positions status" %}</a>
+                        </li>
+                        <li {% if tab == '3' %}class="active"{% endif %}>
+                            <a {% if not creating %}data-toggle="tab"{% endif %} href="#image_electrode_position">{% trans "Image of the electrode positions" %}</a>
                         </li>
                     {% endif %}
 
@@ -325,7 +330,7 @@
                     </div>
 
                     <div id="electrode_position_status" {% if tab == '2' %}class="tab-pane fade in active"{% else %}class="tab-pane fade"{% endif %}>
-
+                        {% if image %}
                             <table class="table table-striped" style="margin-top:10px; margin-left:10px;">
                                 <thead>
                                     <tr>
@@ -362,16 +367,77 @@
                                 <div class="btn-group pull-left">
                                     <a href="/experiment/eeg_data/edit/{{ eeg_data.id }}/2" class="btn btn-primary">{% trans "Edit" %}</a>
                                 </div>
-                                {% if image %}
-                                    <div class="btn-group pull-right">
-                                        <a href="/experiment/eeg_data/edit_image/{{ eeg_data.id }}/2" class="btn btn-primary">{% trans "Edit using image" %}</a>
-                                    </div>
-                                {% endif %}
                             {% endif %}
 
+                        {% else %}
+                            <label>{% trans "There is not electrode position status data for this data collection" %}</label>
+                        {% endif %}
                     </div>
-                </div>
 
+                    <div id="image_electrode_position" {% if tab == '3' %}class="tab-pane fade in active"{% else %}class="tab-pane fade"{% endif %}>
+                        {% if image %}
+                            <div class="col-md-10">
+                                <div hidden="hidden">
+                                    <input id="eeg_electrode_position" type="text" value="{{ json_list }}">
+                                    <input id="image_status" type="text" value="{{ editing }}">
+                                    <input id="map_file" type="text" value="{{ eeg_data.eeg_setting.eeg_electrode_layout_setting.eeg_electrode_net_system.eeg_electrode_localization_system.map_image_file.url }}">
+                                </div>
+                                <div class="container span6 offset3 well ">
+                                    <h4>{% trans "EEG electrode localization system basic information" %}</h4>
+                                    <div class="row">
+                                        <div style="width:100%;">
+                                             <table>
+                                                <tr>
+                                                    <td width="80%" valign="top">
+                                                        <div style="float:left; width: 80%">
+                                                            <canvas id="electrodeMapCanvas" width="700" height="500" style="border:1px solid #000000;">
+                                                            </canvas>
+                                                        </div>
+                                                    </td>
+                                                    <td width="20%" valign="top">
+                                                        <label>{% trans "List of positions" %}</label>
+                                                        <table id="cap_positions"  class="table table-striped header-fixed" style="margin-top:10px; margin-left:10px;">
+                                                            <thead>
+                                                                <tr>
+                                                                    <th>{% trans "Name" %}</th>
+                                                                    <th>{% trans "Worked" %}</th>
+                                                                </tr>
+                                                            </thead>
+                                                            <tbody>
+                                                                {% for position_status in eeg_data.electrode_positions.all %}
+                                                                <tr>
+                                                                    <td>
+                                                                        {{ position_status.eeg_electrode_position_setting.eeg_electrode_position.name }}
+                                                                    </td>
+                                                                    <td>
+                                                                        <input type="checkbox" id="position_worked_{{ position_worked_.id }}" name="position_worked_{{ position_worked_.id }}"
+                                                                               {% if not editing or not position_status_.eeg_electrode_position_setting.used %}disabled{% endif %}
+                                                                               {% if position_status_.worked %}checked="checked"{% endif %} onclick="worked()"/>
+                                                                    </td>
+                                                                </tr>
+                                                                {% endfor %}
+                                                            </tbody>
+                                                        </table>
+                                                    </td>
+                                                </tr>
+                                            </table>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="btn-toolbar">
+                                    {% if not editing and can_change %}
+                                        <div class="btn-group pull-left">
+                                            <a href="/experiment/eeg_data/edit/{{ eeg_data.id }}/3" class="btn btn-primary">{% trans "Edit" %}</a>
+                                        </div>
+                                    {% endif %}
+                                </div>
+                            </div>
+                        </div>
+
+                        {% else %}
+                            <label>{% trans "There is not image" %}</label>
+                        {% endif %}
+                    </div>
             </div>
 
             <div class="btn-toolbar">
