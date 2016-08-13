@@ -600,6 +600,7 @@ class MaterialRegisterForm(ModelForm):
             'description': Textarea(attrs={'class': 'form-control', 'rows': '4'})
         }
 
+
 class CoilModelRegisterForm(ModelForm):
     class Meta:
         model = CoilModel
@@ -612,9 +613,11 @@ class CoilModelRegisterForm(ModelForm):
 
             'description': Textarea(attrs={'class': 'form-control', 'rows': '4'}),
             'material': Select(attrs={'class': 'form-control'}),
-            'coil_shape': Select(attrs={'class': 'form-control'}),
+            'coil_shape': Select(attrs={'class': 'form-control', 'required': "",
+                                        'data-error': _('Coil shape must be filled.')}),
             'coil_design': Select(attrs={'class': 'form-control'})
         }
+
 
 class TMSDeviceRegisterForm(ModelForm):
     class Meta:
@@ -627,9 +630,11 @@ class TMSDeviceRegisterForm(ModelForm):
             'identification': TextInput(attrs={'class': 'form-control', 'required': "",
                                                'data-error': _('Identification must be filled.')}),
             'description': Textarea(attrs={'class': 'form-control', 'rows': '4'}),
-            'coil_model' : Select(attrs={'class': 'form-control'}),
+            'coil_model' : Select(attrs={'class': 'form-control', 'required': "",
+                                         'data-error': _('Coil model must be filled.')}),
             'pulse_type' : Select(attrs={'class': 'form-control'})
         }
+
 
 class EEGElectrodeNETRegisterForm(ModelForm):
     class Meta:

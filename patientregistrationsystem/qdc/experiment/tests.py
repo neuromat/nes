@@ -15,7 +15,7 @@ from .models import Experiment, Group, Subject, \
     EEGSolution, FilterType, ElectrodeModel, EEGElectrodeNet, EEGElectrodeNetSystem, EEGElectrodeLocalizationSystem, \
     EEGElectrodePosition, Material, EMGSetting, Software, SoftwareVersion, ADConverter, EMGElectrodeSetting, \
     StandardizationSystem, MuscleSubdivision, Muscle, MuscleSide, EMGElectrodePlacement, EMGElectrodePlacementSetting, \
-    EEGElectrodeCap, EEGCapSize
+    EEGElectrodeCap, EEGCapSize, TMSDevice, CoilModel, CoilShape
 from .views import experiment_update, upload_file, research_project_update
 
 from patient.models import ClassificationOfDiseases
@@ -330,6 +330,15 @@ class ObjectsFactory(object):
         )
         eeg_electrode_cap.save()
         return eeg_electrode_cap
+
+    @staticmethod
+    def create_coil_model(coil_shape):
+        coil_model = CoilModel.objects.create(
+            name="Electrode Model name",
+            coil_shape=coil_shape
+        )
+        coil_model.save()
+        return coil_model
 
 
 class ExperimentalProtocolTest(TestCase):
@@ -3479,6 +3488,155 @@ class EEGEquipmentRegisterTest(TestCase):
         response = self.client.post(reverse("ad_converter_view", args=(ad_converter.id,)), self.data)
         self.assertEqual(response.status_code, 302)
         self.assertEqual(ADConverter.objects.all().count(), 0)
+
+    def test_coil_model_register(self):
+        coil_shape = CoilShape.objects.all().first()
+
+        # list
+        response = self.client.get(reverse("coil_list", args=()))
+        self.assertEqual(response.status_code, 200)
+
+        # create
+        response = self.client.get(reverse("coil_new", args=()))
+        self.assertEqual(response.status_code, 200)
+
+        name = 'Name'
+        self.data = {'action': 'save',
+                     'name': name,
+                     'coil_shape': str(coil_shape.id)}
+
+        response = self.client.post(reverse("coil_new", args=()), self.data)
+        self.assertEqual(response.status_code, 302)
+        self.assertEqual(CoilModel.objects.all().count(), 1)
+
+        # create (trying) but missing information
+        self.data = {'action': 'save'}
+
+        response = self.client.post(reverse("coil_new", args=()), self.data)
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(CoilModel.objects.all().count(), 1)
+        self.assertEqual(str(list(response.context['messages'])[-1]), _('Information not saved.'))
+
+        # create with wrong action
+        self.data = {'action': 'wrong'}
+
+        response = self.client.post(reverse("coil_new", args=()), self.data)
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(CoilModel.objects.all().count(), 1)
+        self.assertEqual(str(list(response.context['messages'])[-1]), _('Action not available.'))
+
+        # view
+        coil_model = CoilModel.objects.all().first()
+
+        response = self.client.get(reverse("coil_view", args=(coil_model.id,)))
+        self.assertEqual(response.status_code, 200)
+
+        # update
+        response = self.client.get(reverse("coil_edit", args=(coil_model.id,)))
+        self.assertEqual(response.status_code, 200)
+
+        self.data = {'action': 'save',
+                     'name': name,
+                     'coil_shape': str(coil_shape.id)}
+        response = self.client.post(reverse("coil_edit", args=(coil_model.id,)), self.data)
+        self.assertEqual(response.status_code, 302)
+
+        name = 'Name changed'
+        self.data = {'action': 'save',
+                     'name': name,
+                     'coil_shape': str(coil_shape.id)}
+        response = self.client.post(reverse("coil_edit", args=(coil_model.id,)), self.data)
+        self.assertEqual(response.status_code, 302)
+
+        # update (trying) but missing information
+        self.data = {'action': 'save'}
+        response = self.client.post(reverse("coil_edit", args=(coil_model.id,)),
+                                    self.data)
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(get_object_or_404(CoilModel, pk=coil_model.id).name, name)
+
+        # remove
+        self.data = {'action': 'remove'}
+        response = self.client.post(reverse("coil_view", args=(coil_model.id,)), self.data)
+        self.assertEqual(response.status_code, 302)
+        self.assertEqual(CoilModel.objects.all().count(), 0)
+
+    def test_tms_device_register(self):
+        manufacturer = ObjectsFactory.create_manufacturer()
+        coil_shape = CoilShape.objects.all().first()
+        coil_model = ObjectsFactory.create_coil_model(coil_shape)
+
+        # list
+        response = self.client.get(reverse("tmsdevice_list", args=()))
+        self.assertEqual(response.status_code, 200)
+
+        # create
+        response = self.client.get(reverse("tmsdevice_new", args=()))
+        self.assertEqual(response.status_code, 200)
+
+        identification = 'Identification'
+        self.data = {'action': 'save',
+                     'manufacturer': str(manufacturer.id),
+                     'identification': identification,
+                     'coil_model': str(coil_model.id)}
+
+        response = self.client.post(reverse("tmsdevice_new", args=()), self.data)
+        self.assertEqual(response.status_code, 302)
+        self.assertEqual(TMSDevice.objects.all().count(), 1)
+
+        # create (trying) but missing information
+        self.data = {'action': 'save'}
+
+        response = self.client.post(reverse("tmsdevice_new", args=()), self.data)
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(TMSDevice.objects.all().count(), 1)
+        self.assertEqual(str(list(response.context['messages'])[-1]), _('Information not saved.'))
+
+        # create with wrong action
+        self.data = {'action': 'wrong'}
+
+        response = self.client.post(reverse("tmsdevice_new", args=()), self.data)
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(TMSDevice.objects.all().count(), 1)
+        self.assertEqual(str(list(response.context['messages'])[-1]), _('Action not available.'))
+
+        # view
+        tms_device = TMSDevice.objects.all().first()
+
+        response = self.client.get(reverse("tmsdevice_view", args=(tms_device.id,)))
+        self.assertEqual(response.status_code, 200)
+
+        # update
+        response = self.client.get(reverse("tmsdevice_edit", args=(tms_device.id,)))
+        self.assertEqual(response.status_code, 200)
+
+        self.data = {'action': 'save',
+                     'manufacturer': str(manufacturer.id),
+                     'identification': identification,
+                     'coil_model': str(coil_model.id)}
+        response = self.client.post(reverse("tmsdevice_edit", args=(tms_device.id,)), self.data)
+        self.assertEqual(response.status_code, 302)
+
+        identification = 'Identification changed'
+        self.data = {'action': 'save',
+                     'manufacturer': str(manufacturer.id),
+                     'identification': identification,
+                     'coil_model': str(coil_model.id)}
+        response = self.client.post(reverse("tmsdevice_edit", args=(tms_device.id,)), self.data)
+        self.assertEqual(response.status_code, 302)
+
+        # update (trying) but missing information
+        self.data = {'action': 'save'}
+        response = self.client.post(reverse("tmsdevice_edit", args=(tms_device.id,)),
+                                    self.data)
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(get_object_or_404(TMSDevice, pk=tms_device.id).identification, identification)
+
+        # remove
+        self.data = {'action': 'remove'}
+        response = self.client.post(reverse("tmsdevice_view", args=(tms_device.id,)), self.data)
+        self.assertEqual(response.status_code, 302)
+        self.assertEqual(TMSDevice.objects.all().count(), 0)
 
 
 class EMGSettingTest(TestCase):
