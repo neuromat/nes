@@ -630,9 +630,9 @@ class TMSDeviceRegisterForm(ModelForm):
             'identification': TextInput(attrs={'class': 'form-control', 'required': "",
                                                'data-error': _('Identification must be filled.')}),
             'description': Textarea(attrs={'class': 'form-control', 'rows': '4'}),
-            'coil_model' : Select(attrs={'class': 'form-control', 'required': "",
+            'coil_model': Select(attrs={'class': 'form-control', 'required': "",
                                          'data-error': _('Coil model must be filled.')}),
-            'pulse_type' : Select(attrs={'class': 'form-control'})
+            'pulse_type': Select(attrs={'class': 'form-control'})
         }
 
 
@@ -1064,6 +1064,7 @@ class EMGSurfacePlacementForm(ModelForm):
             'clinical_test': Textarea(attrs={'class': 'form-control', 'rows': '4', 'required': ""}),
         }
 
+
 class EMGIntramuscularPlacementForm(ModelForm):
     class Meta:
         model = EMGIntramuscularPlacement
@@ -1075,6 +1076,7 @@ class EMGIntramuscularPlacementForm(ModelForm):
             'depth_of_insertion': Textarea(attrs={'class': 'form-control', 'rows': '4', 'required': ""})
         }
 
+
 class EMGNeedlePlacementForm(ModelForm):
     class Meta:
         model = EMGNeedlePlacement
@@ -1084,6 +1086,7 @@ class EMGNeedlePlacementForm(ModelForm):
         widgets = {
             'depth_of_insertion': Textarea(attrs={'class': 'form-control', 'rows': '4', 'required': ""})
         }
+
 
 class TMSSettingForm(ModelForm):
     class Meta:

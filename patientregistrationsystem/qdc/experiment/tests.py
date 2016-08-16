@@ -2542,7 +2542,8 @@ class EEGEquipmentRegisterTest(TestCase):
         self.assertEqual(str(list(response.context['messages'])[-1]), _('Action not available.'))
 
         # view
-        emg_electrode_placement = EMGElectrodePlacement.objects.filter(standardization_system=standardization_system).first()
+        emg_electrode_placement = EMGElectrodePlacement.objects.filter(
+            standardization_system=standardization_system).first()
 
         response = self.client.get(reverse("emg_electrode_placement_view", args=(emg_electrode_placement.id,)))
         self.assertEqual(response.status_code, 200)

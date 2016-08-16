@@ -55,8 +55,8 @@ from experiment.forms import ExperimentForm, QuestionnaireResponseForm, FileForm
     ADConverterRegisterForm, StandardizationSystemRegisterForm, \
     MuscleRegisterForm, MuscleSubdivisionRegisterForm, MuscleSideRegisterForm, EMGSurfacePlacementForm, \
     TMSForm, TMSSettingForm, TMSDeviceSettingForm, CoilModelRegisterForm, TMSDeviceRegisterForm, \
-    SoftwareRegisterForm, SoftwareVersionRegisterForm, EMGIntramuscularPlacementForm, EMGNeedlePlacementForm, \
-EMGSurfacePlacementRegisterForm, EMGIntramuscularPlacementRegisterForm, EMGNeedlePlacementRegisterForm
+    SoftwareRegisterForm, SoftwareVersionRegisterForm, EMGIntramuscularPlacementForm, \
+    EMGSurfacePlacementRegisterForm, EMGIntramuscularPlacementRegisterForm, EMGNeedlePlacementRegisterForm
 
 from export.export import create_directory
 
@@ -2205,7 +2205,7 @@ def standardization_system_update(request, standardization_system_id,
 @permission_required('experiment.register_equipment')
 def emg_electrode_placement_create(request, standardization_system_id, placement_type):
 
-    template_name="experiment/emg_" + placement_type + "_placement_register.html"
+    template_name = "experiment/emg_" + placement_type + "_placement_register.html"
 
     standardization_system = get_object_or_404(StandardizationSystem, pk=standardization_system_id)
 
@@ -2255,7 +2255,7 @@ def emg_electrode_placement_view(request, emg_electrode_placement_id):
 
     emg_electrode_placement = get_object_or_404(EMGElectrodePlacement, pk=emg_electrode_placement_id)
 
-    template_name="experiment/emg_" + emg_electrode_placement.placement_type + "_placement_register.html"
+    template_name = "experiment/emg_" + emg_electrode_placement.placement_type + "_placement_register.html"
 
     emg_electrode_placement_form = None
 
@@ -3016,6 +3016,7 @@ def electrodemodel_view(request, electrodemodel_id, template_name="experiment/el
 def coil_list(request, template_name="experiment/coil_list.html"):
     return render(request, template_name, {"equipments": CoilModel.objects.all().order_by('name')})
 
+
 @login_required
 @permission_required('experiment.register_equipment')
 def coil_create(request, template_name="experiment/coil_register.html"):
@@ -3047,6 +3048,7 @@ def coil_create(request, template_name="experiment/coil_register.html"):
 
     return render(request, template_name, context)
 
+
 @login_required
 @permission_required('experiment.register_equipment')
 def coil_view(request, coil_id, template_name="experiment/coil_register.html"):
@@ -3075,6 +3077,7 @@ def coil_view(request, coil_id, template_name="experiment/coil_register.html"):
 
     return render(request, template_name, context)
 
+
 @login_required
 @permission_required('experiment.register_equipment')
 def coil_update(request, coil_id, template_name="experiment/coil_register.html"):
@@ -3101,10 +3104,12 @@ def coil_update(request, coil_id, template_name="experiment/coil_register.html")
 
     return render(request, template_name, context)
 
+
 @login_required
 @permission_required('experiment.register_equipment')
 def tmsdevice_list(request, template_name="experiment/tmsdevice_list.html"):
     return render(request, template_name, {"equipments": TMSDevice.objects.all()})
+
 
 @login_required
 @permission_required('experiment.register_equipment')
@@ -3137,6 +3142,7 @@ def tmsdevice_create(request, template_name="experiment/tmsdevice_register.html"
 
     return render(request, template_name, context)
 
+
 @login_required
 @permission_required('experiment.register_equipment')
 def tmsdevice_view(request, tmsdevice_id, template_name="experiment/tmsdevice_register.html"):
@@ -3165,6 +3171,7 @@ def tmsdevice_view(request, tmsdevice_id, template_name="experiment/tmsdevice_re
 
     return render(request, template_name, context)
 
+
 @login_required
 @permission_required('experiment.register_equipment')
 def tmsdevice_update(request, tmsdevice_id, template_name="experiment/tmsdevice_register.html"):
@@ -3190,6 +3197,7 @@ def tmsdevice_update(request, tmsdevice_id, template_name="experiment/tmsdevice_
                "editing": True}
 
     return render(request, template_name, context)
+
 
 @login_required
 @permission_required('experiment.register_equipment')
@@ -4715,7 +4723,7 @@ def eeg_data_view(request, eeg_data_id, tab, template_name="experiment/subject_e
                 'position': point_setting.name,
                 'x': point_setting.coordinate_x,
                 'y': point_setting.coordinate_y,
-                'status': True, # 'status' indicates if the point exist at the DB
+                'status': True,  # 'status' indicates if the point exist at the DB
                 'worked': position_worked.worked
             })
         if positions.__len__() > 0:
@@ -4827,7 +4835,7 @@ def eeg_data_edit(request, eeg_data_id, tab, template_name="experiment/subject_e
 
     else:
         eeg_data_form = EEGDataForm(request.POST or None, instance=eeg_data,
-                            initial={'experiment': eeg_data.subject_of_group.group.experiment})
+                                    initial={'experiment': eeg_data.subject_of_group.group.experiment})
 
     file_format_list = file_format_code("EEG")
 
@@ -4974,6 +4982,20 @@ def eeg_data_export_nwb(request, eeg_data_id):
     # general metadata section
     #
     neurodata.set_metadata(EXPERIMENT_DESCRIPTION, subject_of_group.group.experiment.description)
+
+    history_data = eeg_data.history.all().order_by('history_date')
+    if history_data:
+        experimenter = history_data.last().history_user
+        experimenter_description = ""
+        if experimenter.last_name or experimenter.first_name:
+            experimenter_description = experimenter.last_name + ', ' + experimenter.first_name
+        else:
+            experimenter_description = experimenter.username
+
+        if experimenter.email:
+            experimenter_description += ' - ' + experimenter.email
+
+        neurodata.set_metadata(EXPERIMENTER, experimenter_description)
 
     neurodata.set_metadata(SUBJECT_ID, subject_of_group.subject.patient.code)
     neurodata.set_metadata(SEX, subject_of_group.subject.patient.gender.name)

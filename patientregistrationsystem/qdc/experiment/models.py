@@ -882,22 +882,58 @@ class EEGData(DataFile, DataCollection):
     eeg_setting_reason_for_change = models.TextField(null=True, blank=True, default='')
     eeg_cap_size = models.ForeignKey(EEGCapSize, null=True, blank=True)
 
+    # Audit trail - Simple History
+    history = HistoricalRecords()
+    # changed_by = models.ForeignKey('auth.User')
+
     def __str__(self):
         return self.description
+
+    @property
+    def _history_user(self):
+        return self.changed_by
+
+    @_history_user.setter
+    def _history_user(self, value):
+        self.changed_by = value
 
 
 class AdditionalData(DataFile, DataCollection):
 
+    # Audit trail - Simple History
+    history = HistoricalRecords()
+    # changed_by = models.ForeignKey('auth.User')
+
     def __str__(self):
         return self.description
+
+    @property
+    def _history_user(self):
+        return self.changed_by
+
+    @_history_user.setter
+    def _history_user(self, value):
+        self.changed_by = value
 
 
 class EMGData(DataFile, DataCollection):
     emg_setting = models.ForeignKey(EMGSetting)
     emg_setting_reason_for_change = models.TextField(null=True, blank=True, default='')
 
+    # Audit trail - Simple History
+    history = HistoricalRecords()
+    # changed_by = models.ForeignKey('auth.User')
+
     def __str__(self):
         return self.description
+
+    @property
+    def _history_user(self):
+        return self.changed_by
+
+    @_history_user.setter
+    def _history_user(self, value):
+        self.changed_by = value
 
 
 class EEGElectrodePositionCollectionStatus(models.Model):

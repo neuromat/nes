@@ -1364,7 +1364,7 @@ msgstr "Coordenadas X - Y"
 #: experiment/templates/experiment/eeg_electrode_localization_system_register.html:71
 #: experiment/templates/experiment/subject_eeg_image_data.html:103
 msgid "EEG electrode localization system basic information"
-msgstr "Informação básica do sistema de localização de eletrodo"
+msgstr "Informação básica do sistema de localização de eletrodo de EEG"
 
 #: experiment/templates/experiment/eeg_electrode_coordinates_register.html:124
 msgid "List of positions"
