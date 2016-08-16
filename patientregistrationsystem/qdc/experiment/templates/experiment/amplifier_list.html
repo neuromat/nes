@@ -10,7 +10,7 @@
     </script>
 {% endblock %}
 
-{% block activeEquipment %}class="active"{% endblock %}
+{% block activeSetup %}class="active"{% endblock %}
 
 {% block content %}
 
@@ -40,6 +40,7 @@
         <div class="col-md-10">
             <ol class="breadcrumb">
                 <li><a href="/home">{% trans "Home" %}</a></li>
+                <li><a href="/experiment/setup">{% trans "Set up" %}</a></li>
                 <li class="active">{% trans "Amplifier" %}</li>
             </ol>
         </div>
@@ -89,6 +90,13 @@
                     </div>
                 {% endif %}
             </div>
+
+            <div class="btn-toolbar">
+                <div class="btn-group pull-right">
+                    <a href="/experiment/setup" class="btn" style="background-color: #f5f5f5">{% trans "Back" %}</a>
+                </div>
+            </div>
+
         </div>
     </div>
 

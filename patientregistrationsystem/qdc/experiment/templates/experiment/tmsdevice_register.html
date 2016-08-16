@@ -6,7 +6,7 @@
     <script src="{% static 'quiz/js/equipment.js' %}"></script>
 {% endblock %}
 
-{% block activeEquipment %}class="active"{% endblock %}
+{% block activeSetup %}class="active"{% endblock %}
 
 {% block form %}
     <div class="row">
@@ -49,6 +49,7 @@
         <div class="col-md-10">
             <ol class="breadcrumb">
                 <li><a href="/home">{% trans "Home" %}</a></li>
+                <li><a href="/experiment/setup">{% trans "Set up" %}</a></li>
                 <li><a href="/experiment/tmsdevice/list">{% trans "TMS device" %}</a></li>
 
                 {% if creating %}

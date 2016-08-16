@@ -28,8 +28,7 @@ urlpatterns = patterns(
     url(r'^group/edit/(?P<group_id>\d+)/$', 'group_update', name='group_edit'),
 
     # equipment
-    # url(r'^equipment/list/$', 'equipment_list', name='equipment_list'),
-    # url(r'^equipment/configuration/$', 'equipment_configuration', name='equipment_configuration'),
+    url(r'^setup/$', 'setup_menu', name='setup_menu'),
 
     # register manufacturer
     url(r'^manufacturer/list/$', 'manufacturer_list', name='manufacturer_list'),

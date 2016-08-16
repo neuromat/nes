@@ -2231,7 +2231,6 @@ def emg_electrode_placement_create(request, standardization_system_id, placement
 
                 messages.success(request, _('Electrode placement subdivision created successfully.'))
                 redirect_url = reverse("emg_electrode_placement_view", args=(placement_added.id,))
-                # redirect_url = reverse("standardization_system_view", args=(standardization_system_id,))
                 return HttpResponseRedirect(redirect_url)
 
             else:
@@ -8345,5 +8344,96 @@ def tms_setting_tms_device_edit(request, tms_setting_id, template_name="experime
                "tms_device_setting_form": tms_device_setting_form,
                "equipment_form": equipment_form
                }
+
+    return render(request, template_name, context)
+
+
+@login_required
+@permission_required('experiment.view_researchproject')
+def setup_menu(request, template_name="experiment/setup_menu.html"):
+    basic_register_list = [
+        {
+            'item': _('Material'),
+            'href': reverse("material_list", args=()),
+            'quantity': Material.objects.all().count()
+        },
+        {
+            'item': _('Muscle'),
+            'href': reverse("muscle_list", args=()),
+            'quantity': Muscle.objects.all().count()
+        },
+        {
+            'item': _('EEG electrode localization system'),
+            'href': reverse("eeg_electrode_localization_system_list", args=()),
+            'quantity': EEGElectrodeLocalizationSystem.objects.all().count()
+        },
+        {
+            'item': _('EMG placement system'),
+            'href': reverse("standardization_system_list", args=()),
+            'quantity': StandardizationSystem.objects.all().count(),
+            # 'warn_list': [{'item': _('Muscle'), 'dependence': Muscle.objects.all().count()}]
+        },
+        {
+            'item': _('Manufacturer'),
+            'href': reverse("manufacturer_list", args=()),
+            'quantity': Manufacturer.objects.all().count()
+        },
+    ]
+
+    device_register_list = [
+        {
+            'item': _('EEG machine'),
+            'href': reverse("eegmachine_list", args=()),
+            'quantity': EEGMachine.objects.all().count()
+        },
+        {
+            'item': _('Electrode model'), 'href':
+            reverse("electrodemodel_list", args=()),
+            'quantity': ElectrodeModel.objects.all().count()
+        },
+        {
+            'item': _('EEG electrode net / Cap'), 'href':
+            reverse("eegelectrodenet_list", args=()),
+            'quantity': EEGElectrodeNet.objects.all().count()
+        },
+        {
+            'item': _('Solution'), 'href':
+            reverse("eegsolution_list", args=()),
+            'quantity': EEGSolution.objects.all().count()
+        },
+        {
+            'item': _('Amplifier'), 'href':
+            reverse("amplifier_list", args=()),
+            'quantity': Amplifier.objects.all().count()
+        },
+        {
+            'item': _('Filter type'), 'href':
+            reverse("filtertype_list", args=()),
+            'quantity': FilterType.objects.all().count()
+        },
+        {
+            'item': _('Software'), 'href':
+            reverse("software_list", args=()),
+            'quantity': Software.objects.all().count()
+        },
+        {
+            'item': _('A/D converter'), 'href':
+            reverse("ad_converter_list", args=()),
+            'quantity': ADConverter.objects.all().count()
+        },
+        {
+            'item': _('Coil model'), 'href':
+            reverse("coil_list", args=()),
+            'quantity': CoilModel.objects.all().count()
+        },
+        {
+            'item': _('TMS device'), 'href':
+            reverse("tmsdevice_list", args=()),
+            'quantity': TMSDevice.objects.all().count()
+        },
+    ]
+
+    context = {"basic_register_list": basic_register_list,
+               "device_register_list": device_register_list}
 
     return render(request, template_name, context)

@@ -1,0 +1,106 @@
+{% extends "quiz/template.html" %}
+
+{% load i18n %}
+
+{% block header %}
+    <script>
+        $(function(){
+            $("[data-toggle=tooltip]").tooltip();
+        });
+    </script>
+{% endblock %}
+
+{% block activeSetup %}class="active"{% endblock %}
+
+{% block content %}
+
+    {% if messages %}
+        {% for message in messages %}
+
+            {% if message.tags == "success" %}
+                <script>showSuccessMessage('{{ message }}')</script>
+            {% endif %}
+
+            {% if message.tags == "warning" %}
+                <script>showWarningMessage('{{ message }}')</script>
+            {% endif %}
+
+            {% if message.tags == "error" %}
+                <script>showErrorMessage('{{ message }}')</script>
+            {% endif %}
+
+            {% if message.tags == "info" %}
+                <script>showInfoMessage('{{ message }}')</script>
+            {% endif %}
+
+        {% endfor %}
+    {% endif %}
+
+    <div class="tab-pane fade in active" id="breadCrumb">
+        <div class="col-md-10">
+            <ol class="breadcrumb">
+                <li><a href="/home">{% trans "Home" %}</a></li>
+                <li class="active">{% trans "Set up" %}</li>
+            </ol>
+        </div>
+    </div>
+
+    <div class="tab-pane fade in active" id="mainMenuUserTab">
+        <div class="col-md-10">
+            <div class="container span6 offset3 well ">
+                <h4>{% trans "Basic registers" %}</h4>
+                <div class="form-group">
+                    <table class="table table-striped">
+                        <tbody>
+                        {% for basic_register in basic_register_list %}
+                            <tr>
+                                <td>
+                                    <a data-toggle="tooltip" data-placement="left" title="{% trans "List view" %}"
+                                       href="{{ basic_register.href }}">
+                                        {{ basic_register.item }}
+                                    </a>
+                                </td>
+{#                                <td>#}
+{#                                    {% if basic_register.warn_list %}#}
+{#                                        {% for warn in basic_register.warn_list %}#}
+{#                                            {% if warn.dependence == 0 %}#}
+{#                                                <span data-toggle="tooltip" data-placement="top" title="{% trans "Missing dependency" %}" class="label label-warning">{{ warn.item }}</span>#}
+{#                                            {% endif %}#}
+{#                                        {% endfor %}#}
+{#                                    {% endif %}#}
+{#                                </td>#}
+                                <td>{{ basic_register.quantity }}</td>
+                            </tr>
+                        {% endfor %}
+
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+            <div class="container span6 offset3 well ">
+                <h4>{% trans "Equipment / Device registers" %}</h4>
+                <div class="form-group">
+                    <table class="table table-striped">
+                        <tbody>
+                        {% for device_register in device_register_list %}
+                            <tr>
+                                <td>
+                                    <a data-toggle="tooltip" data-placement="left" title="{% trans "List view" %}"
+                                       href="{{ device_register.href }}">
+                                        {{ device_register.item }}
+                                    </a>
+                                </td>
+                                <td>{{ device_register.quantity }}</td>
+                            </tr>
+                        {% endfor %}
+
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+        </div>
+    </div>
+
+{% endblock %}

@@ -236,97 +236,105 @@
                 {% endif %}
 
                 {% if perms.experiment.register_equipment %}
-                    <li {% block activeEquipment %}{% endblock %}>
-                        <a  data-toggle="collapse" href="#collapseEquipment">
-                            <span class="glyphicon glyphicon-wrench"></span>
-                            {% trans "Equipment" %}
+                    <li {% block activeSetup %}{% endblock %}>
+                        <a href="/experiment/setup/">
+                            <span class="glyphicon glyphicon-cog"></span>
+                            {% trans "Set up" %}
                         </a>
-
-                        <div class="collapse" id="collapseEquipment">
-                            <div class="col-md-1"></div>
-                            <div class="col-md-11" style="padding-right: 0px">
-                                <ul class="nav">
-
-                                    <li {% block activeManufacturer %}{% endblock %}>
-                                        <a href="/experiment/manufacturer/list/">
-                                            {% trans "Manufacturer" %}
-                                        </a>
-                                    </li>
-                                    <li {% block activeEEGMachine %}{% endblock %}>
-                                        <a class="nav-link" href="/experiment/eegmachine/list/">
-                                            {% trans "EEG machine" %}
-                                        </a>
-                                    </li>
-                                    <li {% block activeAmplifier %}{% endblock %}>
-                                        <a href="/experiment/amplifier/list/">
-                                            {% trans "Amplifier" %}
-                                        </a>
-                                    </li>
-                                    <li {% block activeSolution %}{% endblock %}>
-                                        <a href="/experiment/eegsolution/list/">
-                                            {% trans "Solution" %}
-                                        </a>
-                                    </li>
-                                    <li {% block activeFilterType %}{% endblock %}>
-                                        <a href="/experiment/filtertype/list/">
-                                            {% trans "Filter Type" %}
-                                        </a>
-                                    </li>
-                                    <li {% block activeElectrodeLocalizationSystem %}{% endblock %}>
-                                        <a href="/experiment/eeg_electrode_localization_system/list/">
-                                            {% trans "EEG Electrode Localization System" %}
-                                        </a>
-                                    </li>
-                                    <li {% block activeElectrodeModel %}{% endblock %}>
-                                        <a href="/experiment/electrodemodel/list/">
-                                            {% trans "Electrode Model" %}
-                                        </a>
-                                    </li>
-                                    <li {% block activeMaterial %}{% endblock %}>
-                                        <a href="/experiment/material/list/">
-                                            {% trans "Material" %}
-                                        </a>
-                                    </li>
-                                    <li {% block activeElectrodeNet %}{% endblock %}>
-                                        <a href="/experiment/eegelectrodenet/list/">
-                                            {% trans "Electrode Net" %}
-                                        </a>
-                                    </li>
-                                    <li {% block activeADconverter %}{% endblock %}>
-                                        <a href="/experiment/ad_converter/list/">
-                                            {% trans "A/D converter" %}
-                                        </a>
-                                    </li>
-                                    <li {% block activeSoftware %}{% endblock %}>
-                                        <a href="/experiment/software/list/">
-                                            {% trans "Software" %}
-                                        </a>
-                                    </li>
-                                    <li {% block activeStandardizationSystem %}{% endblock %}>
-                                        <a href="/experiment/standardization_system/list/">
-                                            {% trans "EMG electrode placement system" %}
-                                        </a>
-                                    </li>
-                                    <li {% block activeMuscle %}{% endblock %}>
-                                        <a href="/experiment/muscle/list/">
-                                            {% trans "Muscle" %}
-                                        </a>
-                                    </li>
-                                    <li {% block activeTMSDevice %}{% endblock %}>
-                                        <a class="nav-link" href="/experiment/tmsdevice/list/">
-                                            {% trans "TMS Device" %}
-                                        </a>
-                                    </li>
-                                    <li {% block activeCoilModel %}{% endblock %}>
-                                        <a class="nav-link" href="/experiment/coil/list/">
-                                            {% trans "Coil model" %}
-                                        </a>
-                                    </li>
-                                </ul>
-                            </div>
-                        </div>
                     </li>
                 {% endif %}
+{#                {% if perms.experiment.register_equipment %}#}
+{#                    <li {% block activeEquipment %}{% endblock %}>#}
+{#                        <a  data-toggle="collapse" href="#collapseEquipment">#}
+{#                            <span class="glyphicon glyphicon-wrench"></span>#}
+{#                            {% trans "Equipment" %}#}
+{#                        </a>#}
+{##}
+{#                        <div class="collapse" id="collapseEquipment">#}
+{#                            <div class="col-md-1"></div>#}
+{#                            <div class="col-md-11" style="padding-right: 0px">#}
+{#                                <ul class="nav">#}
+{##}
+{#                                    <li {% block activeManufacturer %}{% endblock %}>#}
+{#                                        <a href="/experiment/manufacturer/list/">#}
+{#                                            {% trans "Manufacturer" %}#}
+{#                                        </a>#}
+{#                                    </li>#}
+{#                                    <li {% block activeEEGMachine %}{% endblock %}>#}
+{#                                        <a class="nav-link" href="/experiment/eegmachine/list/">#}
+{#                                            {% trans "EEG machine" %}#}
+{#                                        </a>#}
+{#                                    </li>#}
+{#                                    <li {% block activeAmplifier %}{% endblock %}>#}
+{#                                        <a href="/experiment/amplifier/list/">#}
+{#                                            {% trans "Amplifier" %}#}
+{#                                        </a>#}
+{#                                    </li>#}
+{#                                    <li {% block activeSolution %}{% endblock %}>#}
+{#                                        <a href="/experiment/eegsolution/list/">#}
+{#                                            {% trans "Solution" %}#}
+{#                                        </a>#}
+{#                                    </li>#}
+{#                                    <li {% block activeFilterType %}{% endblock %}>#}
+{#                                        <a href="/experiment/filtertype/list/">#}
+{#                                            {% trans "Filter Type" %}#}
+{#                                        </a>#}
+{#                                    </li>#}
+{#                                    <li {% block activeElectrodeLocalizationSystem %}{% endblock %}>#}
+{#                                        <a href="/experiment/eeg_electrode_localization_system/list/">#}
+{#                                            {% trans "EEG Electrode Localization System" %}#}
+{#                                        </a>#}
+{#                                    </li>#}
+{#                                    <li {% block activeElectrodeModel %}{% endblock %}>#}
+{#                                        <a href="/experiment/electrodemodel/list/">#}
+{#                                            {% trans "Electrode Model" %}#}
+{#                                        </a>#}
+{#                                    </li>#}
+{#                                    <li {% block activeMaterial %}{% endblock %}>#}
+{#                                        <a href="/experiment/material/list/">#}
+{#                                            {% trans "Material" %}#}
+{#                                        </a>#}
+{#                                    </li>#}
+{#                                    <li {% block activeElectrodeNet %}{% endblock %}>#}
+{#                                        <a href="/experiment/eegelectrodenet/list/">#}
+{#                                            {% trans "Electrode Net" %}#}
+{#                                        </a>#}
+{#                                    </li>#}
+{#                                    <li {% block activeADconverter %}{% endblock %}>#}
+{#                                        <a href="/experiment/ad_converter/list/">#}
+{#                                            {% trans "A/D converter" %}#}
+{#                                        </a>#}
+{#                                    </li>#}
+{#                                    <li {% block activeSoftware %}{% endblock %}>#}
+{#                                        <a href="/experiment/software/list/">#}
+{#                                            {% trans "Software" %}#}
+{#                                        </a>#}
+{#                                    </li>#}
+{#                                    <li {% block activeStandardizationSystem %}{% endblock %}>#}
+{#                                        <a href="/experiment/standardization_system/list/">#}
+{#                                            {% trans "EMG electrode placement system" %}#}
+{#                                        </a>#}
+{#                                    </li>#}
+{#                                    <li {% block activeMuscle %}{% endblock %}>#}
+{#                                        <a href="/experiment/muscle/list/">#}
+{#                                            {% trans "Muscle" %}#}
+{#                                        </a>#}
+{#                                    </li>#}
+{#                                    <li {% block activeTMSDevice %}{% endblock %}>#}
+{#                                        <a class="nav-link" href="/experiment/tmsdevice/list/">#}
+{#                                            {% trans "TMS Device" %}#}
+{#                                        </a>#}
+{#                                    </li>#}
+{#                                    <li {% block activeCoilModel %}{% endblock %}>#}
+{#                                        <a class="nav-link" href="/experiment/coil/list/">#}
+{#                                            {% trans "Coil model" %}#}
+{#                                        </a>#}
+{#                                    </li>#}
+{#                                </ul>#}
+{#                            </div>#}
+{#                        </div>#}
+{#                    </li>#}
+{#                {% endif %}#}
 
             </ul>
         </div>

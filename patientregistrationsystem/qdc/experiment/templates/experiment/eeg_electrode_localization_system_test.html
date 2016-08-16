@@ -2,7 +2,7 @@
 
 {% load i18n admin_static %}
 
-{% block activeEquipment %}class="active"{% endblock %}
+{% block activeSetup %}class="active"{% endblock %}
 
 {% block header %}
     <script src="{% static 'quiz/js/mycanvas.js' %}"></script>
@@ -43,6 +43,7 @@
         <div class="col-md-10">
             <ol class="breadcrumb">
                 <li><a href="/home">{% trans "Home" %}</a></li>
+                <li><a href="/experiment/setup">{% trans "Set up" %}</a></li>
                 <li><a href="/experiment/eeg_electrode_localization_system/list">{% trans "EEG electrode localization system" %}</a></li>
 
                 {% if creating %}
