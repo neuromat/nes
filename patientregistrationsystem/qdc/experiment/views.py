@@ -5007,6 +5007,47 @@ def eeg_data_export_nwb(request, eeg_data_id):
         neurodata.set_metadata(GENOTYPE, social_demographic_data.flesh_tone.name)
         neurodata.set_metadata(SUBJECT, social_demographic_data.natural_of)
 
+    ########################################################################
+    # stimulus section (ImageSeries)
+    # stimulus/presentation/
+    # image_series = neurodata.create_timeseries("OpticalSeries", "step_identification_plus_name_of_step", "stimulus")
+    # image_series.set_description("step_description")
+    # image_series.set_source("If TMS, TMS device. If Stimulus, stimulus type")
+    # image_series.set_value("num_samples", 1)
+    # # image_series.set_comment("Describe how the eeg data is linked to the stimulus")
+    # #
+    # # # # create some pretend data
+    # # # data = np.arange(4000).reshape(1000, 4)
+    # # #
+    # # # # add data to the time series. for now, ignore the last 3 parameters
+    # # # image_series.set_data(data)
+    # # # t = np.arange(1000) * 0.001
+    # # # image_series.set_time(t)
+    # #
+    # # # the time series must be finalized to be complete. this writes changes
+    # # #   to disk and allows freeing some memory resources
+    #
+    # # ok- 'num_samples'
+    # # 'data'
+    # # 'timestamps'( or 'starting_time')
+    # # 'starting_time'( or 'timestamps')
+    #
+    # image_series.finalize()
+
+    # annot = neurodata.create_timeseries("AnnotationSeries", "notes", "stimulus")
+    # annot.set_description("This is an AnnotationSeries with sample data")
+    # annot.set_comment("The comment and description fields can store arbitrary human-readable data")
+    # annot.set_source("Observation of Dr. J Doe")
+    # annot.add_annotation("Rat in bed, beginning sleep 1", 15.0)
+    # annot.add_annotation("Rat placed in enclosure, start run 1", 933.0)
+    # annot.add_annotation("Rat taken out of enclosure, end run 1", 1456.0)
+    # annot.add_annotation("Rat in bed, start sleep 2", 1461.0)
+    # annot.add_annotation("Rat placed in enclosure, start run 2", 2401.0)
+    # annot.add_annotation("Rat taken out of enclosure, end run 2", 3210.0)
+    # annot.add_annotation("Rat in bed, start sleep 3", 3218.0)
+    # annot.add_annotation("End sleep 3", 4193.0)
+    # annot.finalize()
+
     # when all data is entered, close the file
     neurodata.close()
 

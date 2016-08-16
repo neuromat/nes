@@ -631,7 +631,7 @@ class TMSDeviceRegisterForm(ModelForm):
                                                'data-error': _('Identification must be filled.')}),
             'description': Textarea(attrs={'class': 'form-control', 'rows': '4'}),
             'coil_model': Select(attrs={'class': 'form-control', 'required': "",
-                                         'data-error': _('Coil model must be filled.')}),
+                                        'data-error': _('Coil model must be filled.')}),
             'pulse_type': Select(attrs={'class': 'form-control'})
         }
 
