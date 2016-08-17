@@ -226,6 +226,17 @@
                                     </div>
                                 </div>
                             </div>
+                            <div class="col-xs-6 col-sm-6">
+                                <div class="form-group {% if emg_data_form.errors.time %}has-error{% endif %}">
+                                    <label class="control-label">{% trans "Hour" %}</label>
+                                    {{ emg_data_form.time }}
+                                    <div class="help-block with-errors">
+                                        {% for error in emg_data_form.time.errors %}
+                                            {{ error }}
+                                        {% endfor %}
+                                    </div>
+                                </div>
+                            </div>
                         </div>
 
                         <div class="row">

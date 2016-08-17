@@ -1,7 +1,7 @@
 # coding=utf-8
 
 from django.forms import ModelForm, TextInput, Textarea, Select, DateInput, TypedChoiceField, RadioSelect,\
-    ValidationError, Form, IntegerField, NumberInput, CharField
+    ValidationError, Form, IntegerField, NumberInput, CharField, TimeInput
 from django.shortcuts import get_object_or_404
 from django.utils.translation import ugettext_lazy as _
 
@@ -296,7 +296,7 @@ class EEGDataForm(ModelForm):
     class Meta:
         model = EEGData
 
-        fields = ['date', 'file_format', 'eeg_setting', 'eeg_cap_size', 'description', 'file',
+        fields = ['date', 'time', 'file_format', 'eeg_setting', 'eeg_cap_size', 'description', 'file',
                   'file_format_description', 'eeg_setting_reason_for_change']
 
         widgets = {
@@ -304,6 +304,7 @@ class EEGDataForm(ModelForm):
                               attrs={'class': 'form-control datepicker', 'placeholder': _('mm/dd/yyyy'),
                                      'required': "",
                                      'data-error': _("Fill date must be filled.")}, ),
+            'time': TimeInput(attrs={'class': 'form-control', 'placeholder': 'HH:mm:ss'}),
             'eeg_setting': Select(attrs={'class': 'form-control', 'required': "",
                                          'data-error': _('EEG setting type must be filled.')}),
             'eeg_cap_size': Select(attrs={'class': 'form-control', 'required': "",
@@ -838,7 +839,7 @@ class EMGDataForm(ModelForm):
     class Meta:
         model = EMGData
 
-        fields = ['date', 'file_format', 'emg_setting', 'description', 'file', 'file_format_description',
+        fields = ['date', 'time', 'file_format', 'emg_setting', 'description', 'file', 'file_format_description',
                   'emg_setting_reason_for_change']
 
         widgets = {
@@ -846,6 +847,7 @@ class EMGDataForm(ModelForm):
                               attrs={'class': 'form-control datepicker', 'placeholder': _('mm/dd/yyyy'),
                                      'required': "",
                                      'data-error': _("Fill date must be filled.")}, ),
+            'time': TimeInput(attrs={'class': 'form-control', 'placeholder': 'HH:mm:ss'}),
             'emg_setting': Select(attrs={'class': 'form-control', 'required': "",
                                          'data-error': _('EMG setting type must be filled.')}),
             'file_format': Select(attrs={'class': 'form-control', 'required': "",
