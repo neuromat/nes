@@ -5013,24 +5013,20 @@ def eeg_data_export_nwb(request, eeg_data_id):
     # image_series.set_description("step_description")
     # image_series.set_source("If TMS, TMS device. If Stimulus, stimulus type")
     # image_series.set_value("num_samples", 1)
-    # # image_series.set_comment("Describe how the eeg data is linked to the stimulus")
-    # #
-    # # # # create some pretend data
-    # # # data = np.arange(4000).reshape(1000, 4)
-    # # #
-    # # # # add data to the time series. for now, ignore the last 3 parameters
-    # # # image_series.set_data(data)
-    # # # t = np.arange(1000) * 0.001
-    # # # image_series.set_time(t)
-    # #
-    # # # the time series must be finalized to be complete. this writes changes
-    # # #   to disk and allows freeing some memory resources
+    # image_series.set_comments("Describe how the eeg data is linked to the stimulus")
+    # image_series.set_time_by_rate(0, 0)
+    # image_series.ignore_data()
     #
-    # # ok- 'num_samples'
-    # # 'data'
-    # # 'timestamps'( or 'starting_time')
-    # # 'starting_time'( or 'timestamps')
+    # # # create some pretend data
+    # # data = np.arange(4000).reshape(1000, 4)
+    # #
+    # # # add data to the time series. for now, ignore the last 3 parameters
+    # # image_series.set_data(data)
+    # # t = np.arange(1000) * 0.001
+    # # image_series.set_time(t)
     #
+    # # the time series must be finalized to be complete. this writes changes
+    # #   to disk and allows freeing some memory resources
     # image_series.finalize()
 
     # annot = neurodata.create_timeseries("AnnotationSeries", "notes", "stimulus")
