@@ -2096,8 +2096,8 @@ class EEGSettingTest(TestCase):
         # update the eeg_electrode_net_system_setting with another localization system
 
         eeg_localization_system_new = ObjectsFactory.create_eeg_electrode_localization_system()
-        electrode_position_1 = ObjectsFactory.create_eeg_electrode_position(eeg_localization_system_new)
-        electrode_position_2 = ObjectsFactory.create_eeg_electrode_position(eeg_localization_system_new)
+        ObjectsFactory.create_eeg_electrode_position(eeg_localization_system_new)
+        ObjectsFactory.create_eeg_electrode_position(eeg_localization_system_new)
         ObjectsFactory.create_eeg_electrode_net_system(eeg_electrode_net, eeg_localization_system_new)
 
         response = self.client.get(reverse("edit_eeg_setting_type",
@@ -2117,7 +2117,11 @@ class EEGSettingTest(TestCase):
         response = self.client.get(reverse("edit_eeg_electrode_position_setting", args=(eeg_setting.id,)))
         self.assertEqual(response.status_code, 200)
 
-        self.data = {'action': 'save', 'position_status_' + str(electrode_position_1.id): 'on'}
+        position_setting_list = []
+        for position_setting in eeg_setting.eeg_electrode_layout_setting.positions_setting.all():
+            position_setting_list.append(position_setting)
+
+        self.data = {'action': 'save', 'position_status_' + str(position_setting_list[0].id): 'on'}
         response = self.client.post(reverse("edit_eeg_electrode_position_setting",
                                             args=(eeg_setting.id,)), self.data)
         self.assertEqual(response.status_code, 302)
@@ -2131,8 +2135,8 @@ class EEGSettingTest(TestCase):
         self.assertEqual(response.status_code, 200)
 
         self.data = {'action': 'save',
-                     'electrode_model_' + str(electrode_position_1.id): str(electrode_model.id),
-                     'electrode_model_' + str(electrode_position_2.id): str(electrode_model.id)}
+                     'electrode_model_' + str(position_setting_list[0].id): str(electrode_model.id),
+                     'electrode_model_' + str(position_setting_list[1].id): str(electrode_model.id)}
         response = self.client.post(reverse("edit_eeg_electrode_position_setting_model",
                                             args=(eeg_setting.id,)), self.data)
         self.assertEqual(response.status_code, 302)
@@ -3638,6 +3642,145 @@ class EEGEquipmentRegisterTest(TestCase):
         response = self.client.post(reverse("tmsdevice_view", args=(tms_device.id,)), self.data)
         self.assertEqual(response.status_code, 302)
         self.assertEqual(TMSDevice.objects.all().count(), 0)
+
+    def test_eeg_electrode_localization_system_register(self):
+
+        # list
+        response = self.client.get(reverse("eeg_electrode_localization_system_list", args=()))
+        self.assertEqual(response.status_code, 200)
+
+        # create
+        response = self.client.get(reverse("eeg_electrode_localization_system_new", args=()))
+        self.assertEqual(response.status_code, 200)
+
+        name = 'Name'
+        self.data = {'action': 'save',
+                     'name': name}
+
+        response = self.client.post(reverse("eeg_electrode_localization_system_new", args=()), self.data)
+        self.assertEqual(response.status_code, 302)
+        self.assertEqual(EEGElectrodeLocalizationSystem.objects.all().count(), 1)
+
+        # create (trying) but missing information
+        self.data = {'action': 'save'}
+
+        response = self.client.post(reverse("eeg_electrode_localization_system_new", args=()), self.data)
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(EEGElectrodeLocalizationSystem.objects.all().count(), 1)
+        self.assertEqual(str(list(response.context['messages'])[-1]), _('Information not saved.'))
+
+        # create with wrong action
+        self.data = {'action': 'wrong'}
+
+        response = self.client.post(reverse("eeg_electrode_localization_system_new", args=()), self.data)
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(EEGElectrodeLocalizationSystem.objects.all().count(), 1)
+        self.assertEqual(str(list(response.context['messages'])[-1]), _('Action not available.'))
+
+        # view
+        eeg_electrode_localization_system = EEGElectrodeLocalizationSystem.objects.all().first()
+
+        response = self.client.get(reverse("eeg_electrode_localization_system_view", args=(eeg_electrode_localization_system.id,)))
+        self.assertEqual(response.status_code, 200)
+
+        # update
+        response = self.client.get(reverse("eeg_electrode_localization_system_edit", args=(eeg_electrode_localization_system.id,)))
+        self.assertEqual(response.status_code, 200)
+
+        self.data = {'action': 'save',
+                     'name': name}
+        response = self.client.post(reverse("eeg_electrode_localization_system_edit", args=(eeg_electrode_localization_system.id,)),
+                                    self.data)
+        self.assertEqual(response.status_code, 302)
+
+        name = 'Name changed'
+        self.data = {'action': 'save',
+                     'name': name}
+        response = self.client.post(reverse("eeg_electrode_localization_system_edit", args=(eeg_electrode_localization_system.id,)),
+                                    self.data)
+        self.assertEqual(response.status_code, 302)
+
+        # update (trying) but missing information
+        self.data = {'action': 'save'}
+        response = self.client.post(reverse("eeg_electrode_localization_system_edit", args=(eeg_electrode_localization_system.id,)),
+                                    self.data)
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(get_object_or_404(EEGElectrodeLocalizationSystem, pk=eeg_electrode_localization_system.id).name, name)
+
+        # remove
+        self.data = {'action': 'remove'}
+        response = self.client.post(reverse("eeg_electrode_localization_system_view", args=(eeg_electrode_localization_system.id,)),
+                                    self.data)
+        self.assertEqual(response.status_code, 302)
+        self.assertEqual(EEGElectrodeLocalizationSystem.objects.all().count(), 0)
+
+    def test_eeg_electrode_position_register(self):
+        eeg_electrode_localization_system = ObjectsFactory.create_eeg_electrode_localization_system()
+
+        # create
+        response = self.client.get(reverse("eeg_electrode_position_create", args=(eeg_electrode_localization_system.id,)))
+        self.assertEqual(response.status_code, 200)
+
+        name = 'Name'
+        self.data = {'action': 'save',
+                     'name': name}
+
+        response = self.client.post(reverse("eeg_electrode_position_create", args=(eeg_electrode_localization_system.id,)), self.data)
+        self.assertEqual(response.status_code, 302)
+        self.assertEqual(EEGElectrodePosition.objects.all().count(), 1)
+
+        # create (trying) but missing information
+        self.data = {'action': 'save'}
+
+        response = self.client.post(reverse("eeg_electrode_position_create", args=(eeg_electrode_localization_system.id,)), self.data)
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(EEGElectrodePosition.objects.all().count(), 1)
+        self.assertEqual(str(list(response.context['messages'])[-1]), _('Information not saved.'))
+
+        # create with wrong action
+        self.data = {'action': 'wrong'}
+
+        response = self.client.post(reverse("eeg_electrode_position_create", args=(eeg_electrode_localization_system.id,)), self.data)
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(EEGElectrodePosition.objects.all().count(), 1)
+        self.assertEqual(str(list(response.context['messages'])[-1]), _('Action not available.'))
+
+        # view
+        eeg_electrode_position = EEGElectrodePosition.objects.filter(eeg_electrode_localization_system=eeg_electrode_localization_system).first()
+
+        response = self.client.get(reverse("eeg_electrode_position_view", args=(eeg_electrode_position.id,)))
+        self.assertEqual(response.status_code, 200)
+
+        # update
+        response = self.client.get(reverse("eeg_electrode_position_edit", args=(eeg_electrode_position.id,)))
+        self.assertEqual(response.status_code, 200)
+
+        self.data = {'action': 'save',
+                     'name': name}
+        response = self.client.post(reverse("eeg_electrode_position_edit", args=(eeg_electrode_position.id,)),
+                                    self.data)
+        self.assertEqual(response.status_code, 302)
+
+        name = 'Name changed'
+        self.data = {'action': 'save',
+                     'name': name}
+        response = self.client.post(reverse("eeg_electrode_position_edit", args=(eeg_electrode_position.id,)),
+                                    self.data)
+        self.assertEqual(response.status_code, 302)
+
+        # update (trying) but missing information
+        self.data = {'action': 'save'}
+        response = self.client.post(reverse("eeg_electrode_position_edit", args=(eeg_electrode_position.id,)),
+                                    self.data)
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(get_object_or_404(EEGElectrodePosition, pk=eeg_electrode_position.id).name, name)
+
+        # remove
+        self.data = {'action': 'remove'}
+        response = self.client.post(reverse("eeg_electrode_position_view", args=(eeg_electrode_position.id,)),
+                                    self.data)
+        self.assertEqual(response.status_code, 302)
+        self.assertEqual(EEGElectrodePosition.objects.all().count(), 0)
 
 
 class EMGSettingTest(TestCase):
