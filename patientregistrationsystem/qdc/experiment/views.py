@@ -3,6 +3,8 @@ import re
 import datetime
 import json
 
+import numpy as np
+
 import nwb
 from nwb.nwbco import *
 
@@ -4931,6 +4933,18 @@ def eeg_data_export_nwb(request, eeg_data_id):
 
     eeg_data = get_object_or_404(EEGData, pk=eeg_data_id)
 
+    # Open and read signal with NEO
+    eeg_reading = eeg_data_reading(eeg_data)
+
+    segments = None
+
+    # Trying to read the signals
+    if eeg_reading and eeg_data.eeg_setting.eeg_machine_setting \
+            and eeg_data.eeg_setting.eeg_machine_setting.number_of_channels_used > 0:
+        segments = eeg_reading.reading.read_segment(
+            lazy=False, cascade=True,
+            nbchannel=eeg_data.eeg_setting.eeg_machine_setting.number_of_channels_used)
+
     subject_of_group = eeg_data.subject_of_group
 
     social_demographic_data = None
@@ -5006,6 +5020,37 @@ def eeg_data_export_nwb(request, eeg_data_id):
     if social_demographic_data:
         neurodata.set_metadata(GENOTYPE, social_demographic_data.flesh_tone.name)
         neurodata.set_metadata(SUBJECT, social_demographic_data.natural_of)
+
+    ########################################################################
+    # acquisition section
+    #
+    ########################################################################
+    if segments:
+        number_of_samples = len(segments.analogsignals[0])
+        number_of_channels = eeg_data.eeg_setting.eeg_machine_setting.number_of_channels_used
+
+        timestamps = np.arange(number_of_samples) * 0.0001
+        acquisition = neurodata.create_timeseries("ElectricalSeries", "data_collection", "acquisition")
+        acquisition.set_comment(eeg_data.description)
+
+        array_data = np.zeros((number_of_samples, number_of_channels))
+
+        # for index_value in range(number_of_samples):
+        #     for index_channel in range(number_of_channels):
+        #         array_data[index_value][index_channel] = segments.analogsignals[index_channel][index_value]
+
+        # for channel_data in segments.analogsignals:
+        #     for value in analog_signal:
+        #         array_data[] = value
+        acquisition.set_data(array_data, resolution=1.2345e-6)
+
+        # acquisition.set_data(np.zeros((10000, 4)), resolution=1.2345e-6)
+        # acquisition.set_data(np.zeros((number_of_samples, number_of_channels)), resolution=1.2345e-6)
+
+        acquisition.set_time(timestamps)
+        acquisition.set_value("num_samples", number_of_samples)
+        acquisition.set_value("electrode_idx", list(range(number_of_channels)))
+        acquisition.finalize()
 
     ########################################################################
     # stimulus section (ImageSeries)
