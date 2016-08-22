@@ -3680,36 +3680,43 @@ class EEGEquipmentRegisterTest(TestCase):
         # view
         eeg_electrode_localization_system = EEGElectrodeLocalizationSystem.objects.all().first()
 
-        response = self.client.get(reverse("eeg_electrode_localization_system_view", args=(eeg_electrode_localization_system.id,)))
+        response = self.client.get(reverse("eeg_electrode_localization_system_view",
+                                           args=(eeg_electrode_localization_system.id,)))
         self.assertEqual(response.status_code, 200)
 
         # update
-        response = self.client.get(reverse("eeg_electrode_localization_system_edit", args=(eeg_electrode_localization_system.id,)))
+        response = self.client.get(reverse("eeg_electrode_localization_system_edit",
+                                           args=(eeg_electrode_localization_system.id,)))
         self.assertEqual(response.status_code, 200)
 
         self.data = {'action': 'save',
                      'name': name}
-        response = self.client.post(reverse("eeg_electrode_localization_system_edit", args=(eeg_electrode_localization_system.id,)),
+        response = self.client.post(reverse("eeg_electrode_localization_system_edit",
+                                            args=(eeg_electrode_localization_system.id,)),
                                     self.data)
         self.assertEqual(response.status_code, 302)
 
         name = 'Name changed'
         self.data = {'action': 'save',
                      'name': name}
-        response = self.client.post(reverse("eeg_electrode_localization_system_edit", args=(eeg_electrode_localization_system.id,)),
+        response = self.client.post(reverse("eeg_electrode_localization_system_edit",
+                                            args=(eeg_electrode_localization_system.id,)),
                                     self.data)
         self.assertEqual(response.status_code, 302)
 
         # update (trying) but missing information
         self.data = {'action': 'save'}
-        response = self.client.post(reverse("eeg_electrode_localization_system_edit", args=(eeg_electrode_localization_system.id,)),
+        response = self.client.post(reverse("eeg_electrode_localization_system_edit",
+                                            args=(eeg_electrode_localization_system.id,)),
                                     self.data)
         self.assertEqual(response.status_code, 200)
-        self.assertEqual(get_object_or_404(EEGElectrodeLocalizationSystem, pk=eeg_electrode_localization_system.id).name, name)
+        self.assertEqual(get_object_or_404(EEGElectrodeLocalizationSystem,
+                                           pk=eeg_electrode_localization_system.id).name, name)
 
         # remove
         self.data = {'action': 'remove'}
-        response = self.client.post(reverse("eeg_electrode_localization_system_view", args=(eeg_electrode_localization_system.id,)),
+        response = self.client.post(reverse("eeg_electrode_localization_system_view",
+                                            args=(eeg_electrode_localization_system.id,)),
                                     self.data)
         self.assertEqual(response.status_code, 302)
         self.assertEqual(EEGElectrodeLocalizationSystem.objects.all().count(), 0)
@@ -3718,21 +3725,24 @@ class EEGEquipmentRegisterTest(TestCase):
         eeg_electrode_localization_system = ObjectsFactory.create_eeg_electrode_localization_system()
 
         # create
-        response = self.client.get(reverse("eeg_electrode_position_create", args=(eeg_electrode_localization_system.id,)))
+        response = self.client.get(reverse("eeg_electrode_position_create",
+                                           args=(eeg_electrode_localization_system.id,)))
         self.assertEqual(response.status_code, 200)
 
         name = 'Name'
         self.data = {'action': 'save',
                      'name': name}
 
-        response = self.client.post(reverse("eeg_electrode_position_create", args=(eeg_electrode_localization_system.id,)), self.data)
+        response = self.client.post(reverse("eeg_electrode_position_create",
+                                            args=(eeg_electrode_localization_system.id,)), self.data)
         self.assertEqual(response.status_code, 302)
         self.assertEqual(EEGElectrodePosition.objects.all().count(), 1)
 
         # create (trying) but missing information
         self.data = {'action': 'save'}
 
-        response = self.client.post(reverse("eeg_electrode_position_create", args=(eeg_electrode_localization_system.id,)), self.data)
+        response = self.client.post(reverse("eeg_electrode_position_create",
+                                            args=(eeg_electrode_localization_system.id,)), self.data)
         self.assertEqual(response.status_code, 200)
         self.assertEqual(EEGElectrodePosition.objects.all().count(), 1)
         self.assertEqual(str(list(response.context['messages'])[-1]), _('Information not saved.'))
@@ -3740,13 +3750,15 @@ class EEGEquipmentRegisterTest(TestCase):
         # create with wrong action
         self.data = {'action': 'wrong'}
 
-        response = self.client.post(reverse("eeg_electrode_position_create", args=(eeg_electrode_localization_system.id,)), self.data)
+        response = self.client.post(reverse("eeg_electrode_position_create",
+                                            args=(eeg_electrode_localization_system.id,)), self.data)
         self.assertEqual(response.status_code, 200)
         self.assertEqual(EEGElectrodePosition.objects.all().count(), 1)
         self.assertEqual(str(list(response.context['messages'])[-1]), _('Action not available.'))
 
         # view
-        eeg_electrode_position = EEGElectrodePosition.objects.filter(eeg_electrode_localization_system=eeg_electrode_localization_system).first()
+        eeg_electrode_position = EEGElectrodePosition.objects.filter(
+            eeg_electrode_localization_system=eeg_electrode_localization_system).first()
 
         response = self.client.get(reverse("eeg_electrode_position_view", args=(eeg_electrode_position.id,)))
         self.assertEqual(response.status_code, 200)

@@ -3,6 +3,8 @@ import re
 import datetime
 import json
 
+import numpy as np
+
 import nwb
 from nwb.nwbco import *
 
@@ -4931,6 +4933,18 @@ def eeg_data_export_nwb(request, eeg_data_id):
 
     eeg_data = get_object_or_404(EEGData, pk=eeg_data_id)
 
+    # Open and read signal with NEO
+    eeg_reading = eeg_data_reading(eeg_data)
+
+    segments = None
+
+    # Trying to read the signals
+    if eeg_reading and eeg_data.eeg_setting.eeg_machine_setting \
+            and eeg_data.eeg_setting.eeg_machine_setting.number_of_channels_used > 0:
+        segments = eeg_reading.reading.read_segment(
+            lazy=False, cascade=True,
+            nbchannel=eeg_data.eeg_setting.eeg_machine_setting.number_of_channels_used)
+
     subject_of_group = eeg_data.subject_of_group
 
     social_demographic_data = None
@@ -4967,7 +4981,8 @@ def eeg_data_export_nwb(request, eeg_data_id):
     #   are relative to experiment start time
     # if the start time is not specified the present time will be used
     # settings["start_time"] = "Sat Jul 04 2015 3:14:16"
-    nwb_file_settings["start_time"] = eeg_data.date.strftime("%Y-%m-%d")
+    nwb_file_settings["start_time"] = eeg_data.date.strftime("%Y-%m-%d") + \
+                                      (' ' + eeg_data.time.strftime('%H:%M:%S') if eeg_data.time else '')
 
     # provide one or two sentences that describe the experiment and what
     #   data is in the file
@@ -5007,30 +5022,57 @@ def eeg_data_export_nwb(request, eeg_data_id):
         neurodata.set_metadata(SUBJECT, social_demographic_data.natural_of)
 
     ########################################################################
+    # acquisition section
+    #
+    ########################################################################
+    if segments:
+        number_of_samples = len(segments.analogsignals[0])
+        number_of_channels = eeg_data.eeg_setting.eeg_machine_setting.number_of_channels_used
+
+        timestamps = np.arange(number_of_samples) * 0.0001
+        acquisition = neurodata.create_timeseries("ElectricalSeries", "data_collection", "acquisition")
+        acquisition.set_comment(eeg_data.description)
+
+        array_data = np.zeros((number_of_samples, number_of_channels))
+
+        # for index_value in range(number_of_samples):
+        #     for index_channel in range(number_of_channels):
+        #         array_data[index_value][index_channel] = segments.analogsignals[index_channel][index_value]
+
+        # for channel_data in segments.analogsignals:
+        #     for value in analog_signal:
+        #         array_data[] = value
+        acquisition.set_data(array_data, resolution=1.2345e-6)
+
+        # acquisition.set_data(np.zeros((10000, 4)), resolution=1.2345e-6)
+        # acquisition.set_data(np.zeros((number_of_samples, number_of_channels)), resolution=1.2345e-6)
+
+        acquisition.set_time(timestamps)
+        acquisition.set_value("num_samples", number_of_samples)
+        acquisition.set_value("electrode_idx", list(range(number_of_channels)))
+        acquisition.finalize()
+
+    ########################################################################
     # stimulus section (ImageSeries)
     # stimulus/presentation/
     # image_series = neurodata.create_timeseries("OpticalSeries", "step_identification_plus_name_of_step", "stimulus")
     # image_series.set_description("step_description")
     # image_series.set_source("If TMS, TMS device. If Stimulus, stimulus type")
     # image_series.set_value("num_samples", 1)
-    # # image_series.set_comment("Describe how the eeg data is linked to the stimulus")
-    # #
-    # # # # create some pretend data
-    # # # data = np.arange(4000).reshape(1000, 4)
-    # # #
-    # # # # add data to the time series. for now, ignore the last 3 parameters
-    # # # image_series.set_data(data)
-    # # # t = np.arange(1000) * 0.001
-    # # # image_series.set_time(t)
-    # #
-    # # # the time series must be finalized to be complete. this writes changes
-    # # #   to disk and allows freeing some memory resources
+    # image_series.set_comments("Describe how the eeg data is linked to the stimulus")
+    # image_series.set_time_by_rate(0, 0)
+    # image_series.ignore_data()
     #
-    # # ok- 'num_samples'
-    # # 'data'
-    # # 'timestamps'( or 'starting_time')
-    # # 'starting_time'( or 'timestamps')
+    # # # create some pretend data
+    # # data = np.arange(4000).reshape(1000, 4)
+    # #
+    # # # add data to the time series. for now, ignore the last 3 parameters
+    # # image_series.set_data(data)
+    # # t = np.arange(1000) * 0.001
+    # # image_series.set_time(t)
     #
+    # # the time series must be finalized to be complete. this writes changes
+    # #   to disk and allows freeing some memory resources
     # image_series.finalize()
 
     # annot = neurodata.create_timeseries("AnnotationSeries", "notes", "stimulus")

@@ -818,6 +818,7 @@ class DataCollection(models.Model):
     subject_of_group = models.ForeignKey(SubjectOfGroup)
     date = models.DateField(default=datetime.date.today, null=False,
                             validators=[validate_date_questionnaire_response])
+    time = models.TimeField(null=True, blank=True)
 
     class Meta:
         abstract = True
