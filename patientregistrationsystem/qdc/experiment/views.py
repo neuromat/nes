@@ -5022,6 +5022,59 @@ def eeg_data_export_nwb(request, eeg_data_id):
         neurodata.set_metadata(SUBJECT, social_demographic_data.natural_of)
 
     ########################################################################
+    # general devices section
+    #
+
+    # Filter device setting
+    if eeg_data.eeg_setting.eeg_filter_setting:
+        neurodata.set_metadata(EXTRA_FILTERING,
+                               get_nwb_eeg_filter_description(eeg_data.eeg_setting.eeg_filter_setting))
+
+    # Amplifier device setting
+    if eeg_data.eeg_setting.eeg_amplifier_setting:
+        device_identification = eeg_data.eeg_setting.eeg_amplifier_setting.eeg_amplifier.identification
+        neurodata.set_metadata(
+            EXTRA_SHANK_DESCRIPTION(device_identification),
+            eeg_data.eeg_setting.eeg_amplifier_setting.eeg_amplifier.description)
+        neurodata.set_metadata(
+            EXTRA_SHANK_DEVICE(device_identification),
+            _('Amplifier'))
+        neurodata.set_metadata(
+            EXTRA_SHANK_CUSTOM(device_identification, 'manufacturer'),
+            str(eeg_data.eeg_setting.eeg_amplifier_setting.eeg_amplifier.manufacturer.name))
+        neurodata.set_metadata(
+            EXTRA_SHANK_CUSTOM(device_identification, 'gain'),
+            str(eeg_data.eeg_setting.eeg_amplifier_setting.eeg_amplifier.gain))
+        if eeg_data.eeg_setting.eeg_amplifier_setting.eeg_amplifier.input_impedance:
+            neurodata.set_metadata(
+                EXTRA_SHANK_CUSTOM(device_identification, 'impedance'),
+                get_nwb_eeg_amplifier_impedance_description(eeg_data.eeg_setting.eeg_amplifier_setting))
+        if eeg_data.eeg_setting.eeg_amplifier_setting.eeg_amplifier.common_mode_rejection_ratio:
+            neurodata.set_metadata(
+                EXTRA_SHANK_CUSTOM(device_identification, 'common_mode_rejection_ratio'),
+                str(eeg_data.eeg_setting.eeg_amplifier_setting.eeg_amplifier.common_mode_rejection_ratio))
+
+    # EEG machine
+    if eeg_data.eeg_setting.eeg_machine_setting:
+        device_identification = eeg_data.eeg_setting.eeg_machine_setting.eeg_machine.identification
+        neurodata.set_metadata(
+            EXTRA_SHANK_DESCRIPTION(device_identification),
+            eeg_data.eeg_setting.eeg_machine_setting.eeg_machine.description)
+        neurodata.set_metadata(
+            EXTRA_SHANK_DEVICE(device_identification),
+            'EEG Machine')
+        neurodata.set_metadata(
+            EXTRA_SHANK_CUSTOM(device_identification, 'manufacturer'),
+            eeg_data.eeg_setting.eeg_machine_setting.eeg_machine.manufacturer.name)
+        neurodata.set_metadata(
+            EXTRA_SHANK_CUSTOM(device_identification, 'number_of_channels_used'),
+            str(eeg_data.eeg_setting.eeg_machine_setting.number_of_channels_used))
+        if eeg_data.eeg_setting.eeg_machine_setting.eeg_machine.software_version:
+            neurodata.set_metadata(
+                EXTRA_SHANK_CUSTOM(device_identification, 'software_version'),
+                str(eeg_data.eeg_setting.eeg_machine_setting.eeg_machine.software_version))
+
+    ########################################################################
     # acquisition section
     #
     ########################################################################
@@ -5095,6 +5148,27 @@ def eeg_data_export_nwb(request, eeg_data_id):
     response = HttpResponse(open(nwb_file_settings["filename"], "rb").read())
     response['Content-Type'] = 'application/force-download'
     response['Content-Disposition'] = 'attachment; filename=%s' % smart_str(file_name)
+    return response
+
+
+def get_nwb_eeg_filter_description(eeg_filter_setting):
+    response = _("Filter type:") + eeg_filter_setting.eeg_filter_type.name
+    if eeg_filter_setting.eeg_filter_type.description:
+        response += "(" + eeg_filter_setting.eeg_filter_type.description + ")"
+    response += "; "
+    if eeg_filter_setting.high_pass:
+        response += _("High pass: ") + str(eeg_filter_setting.high_pass) + " Hz; "
+    if eeg_filter_setting.low_pass:
+        response += _("Low pass: ") + str(eeg_filter_setting.high_pass) + " Hz; "
+    if eeg_filter_setting.order:
+        response += _("Order: ") + str(eeg_filter_setting.high_pass) + "; "
+    return response
+
+
+def get_nwb_eeg_amplifier_impedance_description(eeg_amplifier_setting):
+    response = str(eeg_amplifier_setting.eeg_amplifier.input_impedance)
+    if eeg_amplifier_setting.eeg_amplifier.input_impedance_unit:
+        response += " " + eeg_amplifier_setting.eeg_amplifier.input_impedance_unit
     return response
 
 
