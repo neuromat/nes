@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2016-07-28 11:09-0300\n"
+"POT-Creation-Date: 2016-08-22 10:28-0300\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -34,94 +34,80 @@ msgstr "Dúvidas e Sugestões"
 msgid "NES"
 msgstr ""
 
-#: quiz/templates/quiz/template.html:140
-msgid "Export"
-msgstr "Exportar"
-
-#: quiz/templates/quiz/template.html:175
+#: quiz/templates/quiz/template.html:168
 msgid "Change password"
 msgstr "Alterar senha"
 
-#: quiz/templates/quiz/template.html:176
+#: quiz/templates/quiz/template.html:169
 msgid "Logout"
 msgstr "Sair"
 
-#: quiz/templates/quiz/template.html:196
+#: quiz/templates/quiz/template.html:189
 msgid "Home"
 msgstr "Inicio"
 
-#: quiz/templates/quiz/template.html:204
+#: quiz/templates/quiz/template.html:197
 msgid "Participants"
 msgstr "Participantes"
 
-#: quiz/templates/quiz/template.html:213
+#: quiz/templates/quiz/template.html:206
 msgid "Studies"
 msgstr "Estudos"
 
-#: quiz/templates/quiz/template.html:222
+#: quiz/templates/quiz/template.html:215
 msgid "Questionnaires"
 msgstr "Questionários"
 
-#: quiz/templates/quiz/template.html:231
+#: quiz/templates/quiz/template.html:224
 msgid "Users"
 msgstr "Usuários"
 
-#: quiz/templates/quiz/template.html:240
-msgid "Equipment"
-msgstr "Equipamento"
+#: quiz/templates/quiz/template.html:233
+msgid "Export"
+msgstr "Exportar"
 
-#: quiz/templates/quiz/template.html:250
-msgid "Manufacturer"
-msgstr "Fabricante"
-
-#: quiz/templates/quiz/template.html:255
-msgid "EEG machine"
-msgstr "Máquina de EEG"
-
-#: quiz/templates/quiz/template.html:260
-msgid "Amplifier"
-msgstr "Amplificador"
-
-#: quiz/templates/quiz/template.html:265
-msgid "Solution"
-msgstr "Solução"
-
-#: quiz/templates/quiz/template.html:270
-msgid "Filter Type"
-msgstr "Tipo de filtro"
-
-#: quiz/templates/quiz/template.html:275
-msgid "Electrode Localization System"
-msgstr "Sistema de localização de eletrodos"
-
-#: quiz/templates/quiz/template.html:280
-msgid "Electrode Model"
-msgstr "Modelo de eletrodo"
-
-#: quiz/templates/quiz/template.html:285
-msgid "Material"
-msgstr "Material"
-
-#: quiz/templates/quiz/template.html:290
-msgid "Electrode Net"
-msgstr "Rede de eletrodos"
-
-#: quiz/templates/quiz/template.html:295
-msgid "A/D converter"
-msgstr "Conversor A/D"
-
-#: quiz/templates/quiz/template.html:300
-msgid "Software"
+#: quiz/templates/quiz/template.html:242
+msgid "Set up"
 msgstr ""
 
-#: quiz/templates/quiz/template.html:305
-msgid "Standardization system"
-msgstr "Sistema de padronização"
+#~ msgid "Equipment"
+#~ msgstr "Equipamento"
 
-#: quiz/templates/quiz/template.html:310
-msgid "Muscle"
-msgstr "Músculo"
+#~ msgid "Manufacturer"
+#~ msgstr "Fabricante"
 
-#: quiz/templates/quiz/template.html:315
-msgid "Electrode Placement"
-msgstr "Localização de eletrodos"
+#~ msgid "EEG machine"
+#~ msgstr "Máquina de EEG"
+
+#~ msgid "Amplifier"
+#~ msgstr "Amplificador"
+
+#~ msgid "Solution"
+#~ msgstr "Solução"
+
+#~ msgid "Filter Type"
+#~ msgstr "Tipo de filtro"
+
+#~ msgid "Electrode Localization System"
+#~ msgstr "Sistema de localização de eletrodos"
+
+#~ msgid "Electrode Model"
+#~ msgstr "Modelo de eletrodo"
+
+#~ msgid "Material"
+#~ msgstr "Material"
+
+#~ msgid "Electrode Net"
+#~ msgstr "Rede de eletrodos"
+
+#~ msgid "A/D converter"
+#~ msgstr "Conversor A/D"
+
+#~ msgid "Standardization system"
+#~ msgstr "Sistema de padronização"
+
+#~ msgid "Muscle"
+#~ msgstr "Músculo"
+
+#~ msgid "Electrode Placement"
+#~ msgstr "Localização de eletrodos"

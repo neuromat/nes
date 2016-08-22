@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2016-07-28 11:09-0300\n"
+"POT-Creation-Date: 2016-08-22 10:28-0300\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -59,14 +59,14 @@ msgid "Max age must be filled."
 msgstr ""
 
 #: export/templates/export/export_data.html:29
-#: export/templates/export/participant_selection.html:24
-#: export/templates/export/show_selected_participants.html:24
+#: export/templates/export/participant_selection.html:26
+#: export/templates/export/show_selected_participants.html:26
 msgid "Home"
 msgstr ""
 
 #: export/templates/export/export_data.html:30
-#: export/templates/export/participant_selection.html:25
-#: export/templates/export/show_selected_participants.html:25
+#: export/templates/export/participant_selection.html:27
+#: export/templates/export/show_selected_participants.html:27
 msgid "Export"
 msgstr ""
 
@@ -152,83 +152,83 @@ msgid "Run"
 msgstr ""
 
 #: export/templates/export/export_data.html:321
-#: export/templates/export/participant_selection.html:111
-#: export/templates/export/show_selected_participants.html:92
+#: export/templates/export/participant_selection.html:113
+#: export/templates/export/show_selected_participants.html:94
 msgid "Cancel"
 msgstr ""
 
-#: export/templates/export/participant_selection.html:26
-#: export/templates/export/participant_selection.html:34
+#: export/templates/export/participant_selection.html:28
+#: export/templates/export/participant_selection.html:36
 msgid "Participants selection"
 msgstr ""
 
-#: export/templates/export/participant_selection.html:40
+#: export/templates/export/participant_selection.html:42
 msgid "All participants"
 msgstr ""
 
-#: export/templates/export/participant_selection.html:45
-#: export/templates/export/show_selected_participants.html:26
+#: export/templates/export/participant_selection.html:47
+#: export/templates/export/show_selected_participants.html:28
 msgid "Selected participants"
 msgstr ""
 
-#: export/templates/export/participant_selection.html:54
-#: export/templates/export/show_selected_participants.html:48
+#: export/templates/export/participant_selection.html:56
+#: export/templates/export/show_selected_participants.html:50
 #: export/views.py:83
 msgid "Gender"
 msgstr ""
 
-#: export/templates/export/participant_selection.html:65
-#: export/templates/export/show_selected_participants.html:52
+#: export/templates/export/participant_selection.html:67
+#: export/templates/export/show_selected_participants.html:54
 #: export/views.py:85
 msgid "Marital status"
 msgstr ""
 
-#: export/templates/export/participant_selection.html:76
-#: export/templates/export/show_selected_participants.html:47
+#: export/templates/export/participant_selection.html:78
+#: export/templates/export/show_selected_participants.html:49
 msgid "Age"
 msgstr ""
 
-#: export/templates/export/participant_selection.html:86
+#: export/templates/export/participant_selection.html:88
 msgid "to"
 msgstr ""
 
-#: export/templates/export/participant_selection.html:105
-#: export/templates/export/show_selected_participants.html:79
+#: export/templates/export/participant_selection.html:107
+#: export/templates/export/show_selected_participants.html:81
 msgid "Next"
 msgstr ""
 
-#: export/templates/export/show_selected_participants.html:35
+#: export/templates/export/show_selected_participants.html:37
 msgid "List of participants"
 msgstr ""
 
-#: export/templates/export/show_selected_participants.html:38
+#: export/templates/export/show_selected_participants.html:40
 msgid "of"
 msgstr ""
 
-#: export/templates/export/show_selected_participants.html:38
+#: export/templates/export/show_selected_participants.html:40
 msgid "participants were selected"
 msgstr ""
 
-#: export/templates/export/show_selected_participants.html:46
+#: export/templates/export/show_selected_participants.html:48
 msgid "Code"
 msgstr ""
 
-#: export/templates/export/show_selected_participants.html:49
+#: export/templates/export/show_selected_participants.html:51
 #: export/views.py:89
 msgid "Country"
 msgstr ""
 
-#: export/templates/export/show_selected_participants.html:50
+#: export/templates/export/show_selected_participants.html:52
 #: export/views.py:88
 msgid "State"
 msgstr ""
 
-#: export/templates/export/show_selected_participants.html:51
+#: export/templates/export/show_selected_participants.html:53
 #: export/views.py:87
 msgid "City"
 msgstr ""
 
-#: export/templates/export/show_selected_participants.html:87
+#: export/templates/export/show_selected_participants.html:89
 msgid "Previous"
 msgstr ""
 

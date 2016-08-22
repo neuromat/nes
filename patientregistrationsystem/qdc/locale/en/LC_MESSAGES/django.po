@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2016-07-28 11:09-0300\n"
+"POT-Creation-Date: 2016-08-22 10:28-0300\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -721,19 +721,19 @@ msgstr ""
 msgid "Neuroscience Experiments System - NES"
 msgstr ""
 
-#: templates/registration/login.html:89
+#: templates/registration/login.html:91
 msgid "User"
 msgstr ""
 
-#: templates/registration/login.html:93
+#: templates/registration/login.html:95
 msgid "Password"
 msgstr ""
 
-#: templates/registration/login.html:95
+#: templates/registration/login.html:97
 msgid "Login"
 msgstr ""
 
-#: templates/registration/login.html:101
+#: templates/registration/login.html:103
 msgid "I forgot my password"
 msgstr ""
 
@@ -832,11 +832,6 @@ msgstr ""
 
 #: templates/registration/password_reset_form.html:83
 msgid "E-mail"
-msgstr ""
-
-#: templates/registration/password_reset_subject.txt:2
-#, python-format
-msgid "Password reset on %(site_name)s"
 msgstr ""
 
 #~ msgid "Alterar senha"
