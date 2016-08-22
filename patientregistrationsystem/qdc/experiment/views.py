@@ -5088,9 +5088,9 @@ def eeg_data_export_nwb(request, eeg_data_id):
 
         array_data = np.zeros((number_of_samples, number_of_channels))
 
-        # for index_value in range(number_of_samples):
-        #     for index_channel in range(number_of_channels):
-        #         array_data[index_value][index_channel] = segments.analogsignals[index_channel][index_value]
+        for index_value in range(number_of_samples):
+            for index_channel in range(number_of_channels):
+                array_data[index_value][index_channel] = segments.analogsignals[index_channel][index_value]
 
         # for channel_data in segments.analogsignals:
         #     for value in analog_signal:
