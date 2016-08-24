@@ -4929,7 +4929,7 @@ def eeg_image_edit(request, eeg_data_id, tab, template_name="experiment/subject_
 
 @login_required
 @permission_required('experiment.change_experiment')
-def eeg_data_export_nwb(request, eeg_data_id):
+def eeg_data_export_nwb(request, eeg_data_id, some_number):
 
     eeg_data = get_object_or_404(EEGData, pk=eeg_data_id)
 
@@ -4960,7 +4960,7 @@ def eeg_data_export_nwb(request, eeg_data_id):
     errors, path_complete = create_directory(settings.MEDIA_ROOT, "export_nwb")
     errors, path_complete = create_directory(path_complete, str(request.user.id))
 
-    file_name = subject_of_group.subject.patient.code + "_" + str(eeg_data.id) + ".nwb"
+    file_name = "EEG_" + subject_of_group.subject.patient.code + "_" + str(some_number) + ".nwb"
 
     nwb_file_settings = dict()
     nwb_file_settings["filename"] = path.join(path_complete, file_name)
@@ -4971,8 +4971,8 @@ def eeg_data_export_nwb(request, eeg_data_id):
     #   the string and appends the present date and time
     nwb_file_settings["identifier"] = nwb.create_identifier("Participant: " +
                                                             subject_of_group.subject.patient.code +
-                                                            "; NES experiment id: " +
-                                                            str(eeg_data.subject_of_group.group.experiment.id))
+                                                            "; NES experiment: " +
+                                                            str(eeg_data.subject_of_group.group.experiment.title))
 
     # indicate that it's OK to overwrite exting file
     nwb_file_settings["overwrite"] = True
@@ -7074,7 +7074,7 @@ def component_reuse(request, path_of_the_components, component_id):
 
 
 @login_required
-@permission_required('experiment.view_equipment')
+@permission_required('experiment.register_equipment')
 def eeg_electrode_localization_system_list(
         request, template_name="experiment/eeg_electrode_localization_system_list.html"):
     return render(request, template_name,
@@ -7082,7 +7082,7 @@ def eeg_electrode_localization_system_list(
 
 
 @login_required
-@permission_required('experiment.view_equipment')
+@permission_required('experiment.register_equipment')
 def eeg_electrode_localization_system_create(
         request,
         template_name="experiment/eeg_electrode_localization_system_register.html"):
@@ -7117,7 +7117,7 @@ def eeg_electrode_localization_system_create(
 
 
 @login_required
-@permission_required('experiment.view_equipment')
+@permission_required('experiment.register_equipment')
 def eeg_electrode_localization_system_test(request, eeg_electrode_localization_system_id,
                                            template_name="experiment/eeg_electrode_localization_system_test.html"):
 
@@ -7135,7 +7135,7 @@ def eeg_electrode_localization_system_test(request, eeg_electrode_localization_s
 
 
 @login_required
-@permission_required('experiment.view_equipment')
+@permission_required('experiment.register_equipment')
 def eeg_electrode_localization_system_view(
         request,
         eeg_electrode_localization_system_id,
@@ -7178,7 +7178,7 @@ def eeg_electrode_localization_system_view(
 
 
 @login_required
-@permission_required('experiment.view_equipment')
+@permission_required('experiment.register_equipment')
 def eeg_electrode_localization_system_update(
         request,
         eeg_electrode_localization_system_id,
@@ -7214,7 +7214,7 @@ def eeg_electrode_localization_system_update(
 
 
 @login_required
-@permission_required('experiment.view_equipment')
+@permission_required('experiment.register_equipment')
 def eeg_electrode_coordinates_create(
         request,
         eeg_electrode_localization_system_id,
@@ -7261,7 +7261,7 @@ def eeg_electrode_coordinates_create(
 
 
 @login_required
-@permission_required('experiment.view_equipment')
+@permission_required('experiment.register_equipment')
 def eeg_electrode_position_create(
         request,
         eeg_electrode_localization_system_id,
@@ -7302,7 +7302,7 @@ def eeg_electrode_position_create(
 
 
 @login_required
-@permission_required('experiment.view_equipment')
+@permission_required('experiment.register_equipment')
 def eeg_electrode_position_view(
         request,
         eeg_electrode_position_id,
@@ -7348,7 +7348,7 @@ def eeg_electrode_position_view(
 
 
 @login_required
-@permission_required('experiment.view_equipment')
+@permission_required('experiment.register_equipment')
 def eeg_electrode_position_update(
         request,
         eeg_electrode_position_id,
