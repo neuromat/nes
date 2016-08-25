@@ -6331,8 +6331,8 @@ def create_component(component, new_experiment):
     else:
         clone = Component()
 
-    # if component.identification:
-    #     clone.identification = _('Copy of') + ' ' + component.identification
+    # clone.identification = _('Copy of') + ' ' + component.identification
+    clone.identification = component.identification
 
     clone.experiment = new_experiment
     clone.description = component.description
