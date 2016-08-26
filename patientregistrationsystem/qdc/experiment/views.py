@@ -4933,7 +4933,7 @@ def eeg_image_edit(request, eeg_data_id, tab, template_name="experiment/subject_
 @permission_required('experiment.change_experiment')
 def eeg_data_get_process_requisition_status(request, process_requisition):
     status = request.session.get('process_requisition_status' + str(process_requisition))
-    message = request.session.get('process_requisition_message' + str(process_requisition))
+    message = request.session.get('process_requisition_message' + str(process_requisition), _('Waiting for status'))
     if status == "finished":
         del request.session['process_requisition_status' + str(process_requisition)]
         del request.session['process_requisition_message' + str(process_requisition)]
@@ -5054,11 +5054,6 @@ def eeg_data_export_nwb(request, eeg_data_id, some_number, process_requisition):
 
     update_process_requisition(request, process_requisition, 'reading_device_data', _('Reading device data'))
 
-    # Filter device setting
-    if eeg_data.eeg_setting.eeg_filter_setting:
-        neurodata.set_metadata(EXTRA_FILTERING,
-                               get_nwb_eeg_filter_description(eeg_data.eeg_setting.eeg_filter_setting))
-
     # Amplifier device setting
     if eeg_data.eeg_setting.eeg_amplifier_setting:
         device_identification = eeg_data.eeg_setting.eeg_amplifier_setting.eeg_amplifier.identification
@@ -5112,6 +5107,49 @@ def eeg_data_export_nwb(request, eeg_data_id, some_number, process_requisition):
 
         neurodata.set_metadata(DEVICE(device_identification), device_information)
 
+    # Ephys: Filter device setting
+    if eeg_data.eeg_setting.eeg_filter_setting:
+        neurodata.set_metadata(EXTRA_FILTERING,
+                               get_nwb_eeg_filter_description(eeg_data.eeg_setting.eeg_filter_setting))
+
+    # EEG Electrode NET
+    if eeg_data.eeg_setting.eeg_electrode_layout_setting:
+
+        eeg_electrode_net_system = eeg_data.eeg_setting.eeg_electrode_layout_setting.eeg_electrode_net_system
+
+        device_identification = eeg_electrode_net_system.eeg_electrode_net.identification
+        device_information = _("Device type: EEG Electrode Net; ")
+
+        if eeg_electrode_net_system.eeg_electrode_net.description:
+            device_information += \
+                _("Description: ") + \
+                eeg_electrode_net_system.eeg_electrode_net.description + "; "
+
+        device_information += \
+            _("Manufacturer: ") + \
+            eeg_electrode_net_system.eeg_electrode_net.manufacturer.name + "; "
+
+        neurodata.set_metadata(DEVICE(device_identification), device_information)
+
+        # Electrode map and group
+        electrode_map = []
+        electrode_group = []
+
+        for position in eeg_electrode_net_system.eeg_electrode_localization_system.electrode_positions.all():
+            electrode_group.append(position.name)
+            electrode_map.append([position.coordinate_x, position.coordinate_y, 0])
+            neurodata.set_metadata(EXTRA_SHANK_LOCATION(position.name),
+                                   _("Position: ") + position.name + "; " +
+                                   _("Coordinates: (") +
+                                   str(position.coordinate_x) + ", " +
+                                   str(position.coordinate_y) + "); " +
+                                   _("EEG electrode localization system: " +
+                                     eeg_electrode_net_system.eeg_electrode_localization_system.name))
+            neurodata.set_metadata(EXTRA_SHANK_DEVICE(position.name), device_identification)
+
+        neurodata.set_metadata(EXTRA_ELECTRODE_MAP, electrode_map)
+        neurodata.set_metadata(EXTRA_ELECTRODE_GROUP, electrode_group)
+
     ########################################################################
     # acquisition section
     #
@@ -5132,13 +5170,7 @@ def eeg_data_export_nwb(request, eeg_data_id, some_number, process_requisition):
             for index_channel in range(number_of_channels):
                 array_data[index_value][index_channel] = segments.analogsignals[index_channel][index_value]
 
-        # for channel_data in segments.analogsignals:
-        #     for value in analog_signal:
-        #         array_data[] = value
         acquisition.set_data(array_data, resolution=1.2345e-6)
-
-        # acquisition.set_data(np.zeros((10000, 4)), resolution=1.2345e-6)
-        # acquisition.set_data(np.zeros((number_of_samples, number_of_channels)), resolution=1.2345e-6)
 
         acquisition.set_time(timestamps)
         acquisition.set_value("num_samples", number_of_samples)

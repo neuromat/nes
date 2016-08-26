@@ -23,6 +23,7 @@ $(document).ready(function () {
 
 function handle_processing() {
     $('#pleaseWaitDialog').modal('show');
+    check_requisition();
     setTimeout(check_requisition, 1000);
 }
 
@@ -32,6 +33,7 @@ function check_requisition() {
         document.getElementById('label_process_requisition_status').innerHTML = response['message'];
         if(response['status'] == "finished"){
             $('#pleaseWaitDialog').modal('hide');
+        document.getElementById('label_process_requisition_status').innerHTML = "";
         } else {
             setTimeout(check_requisition, 1000);
         }
