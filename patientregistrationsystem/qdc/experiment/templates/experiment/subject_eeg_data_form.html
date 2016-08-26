@@ -407,7 +407,7 @@
                                                             </canvas>
                                                         </div>
                                                     </td>
-                                                    <td width="20%" valign="top" align="center">
+                                                    <td width="20%" valign="top">
                                                         <div style="width: 20%">
                                                             <table id="cap_positions"  class="table table-striped header-fixed" style="margin-top:10px; margin-left:10px;">
                                                                 <caption><b>{% trans "List of positions" %}</b></caption>
@@ -423,7 +423,7 @@
                                                                         <td align="center">
                                                                             {{ position_status.eeg_electrode_position_setting.eeg_electrode_position.name }}
                                                                         </td>
-                                                                        <td align="center">
+                                                                        <td>
                                                                             <input type="checkbox" id="position_worked_{{ position_status.id }}" name="position_worked_{{ position_status.id }}"
                                                                                    {% if not editing or not position_status.eeg_electrode_position_setting.used %}disabled{% endif %}
                                                                                    {% if position_status.worked %}checked="checked"{% endif %} onclick="worked()"/>
