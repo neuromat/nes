@@ -4933,16 +4933,20 @@ def eeg_image_edit(request, eeg_data_id, tab, template_name="experiment/subject_
 @permission_required('experiment.change_experiment')
 def eeg_data_get_process_requisition_status(request, process_requisition):
     status = request.session.get('process_requisition_status' + str(process_requisition))
+    message = request.session.get('process_requisition_message' + str(process_requisition))
     if status == "finished":
         del request.session['process_requisition_status' + str(process_requisition)]
+        del request.session['process_requisition_message' + str(process_requisition)]
     response_data = {
         'status': status,
+        'message': message
     }
     return HttpResponse(json.dumps(response_data), content_type='application/json')
 
 
-def update_process_requisition(request, process_requisition, value):
-    request.session['process_requisition_status' + str(process_requisition)] = value
+def update_process_requisition(request, process_requisition, status, message):
+    request.session['process_requisition_status' + str(process_requisition)] = status
+    request.session['process_requisition_message' + str(process_requisition)] = message
     request.session.save()
 
 
@@ -4950,7 +4954,7 @@ def update_process_requisition(request, process_requisition, value):
 @permission_required('experiment.change_experiment')
 def eeg_data_export_nwb(request, eeg_data_id, some_number, process_requisition):
 
-    update_process_requisition(request, process_requisition, 'started')
+    update_process_requisition(request, process_requisition, 'reading_source_file', _('Reading source file'))
 
     eeg_data = get_object_or_404(EEGData, pk=eeg_data_id)
 
@@ -5016,6 +5020,8 @@ def eeg_data_export_nwb(request, eeg_data_id, some_number, process_requisition):
     ########################################################################
     # general metadata section
     #
+    update_process_requisition(request, process_requisition, 'reading_metadata', _('Reading metadata'))
+
     neurodata.set_metadata(EXPERIMENT_DESCRIPTION, subject_of_group.group.experiment.description)
 
     history_data = eeg_data.history.all().order_by('history_date')
@@ -5046,6 +5052,8 @@ def eeg_data_export_nwb(request, eeg_data_id, some_number, process_requisition):
     # general devices section
     #
 
+    update_process_requisition(request, process_requisition, 'reading_device_data', _('Reading device data'))
+
     # Filter device setting
     if eeg_data.eeg_setting.eeg_filter_setting:
         neurodata.set_metadata(EXTRA_FILTERING,
@@ -5054,51 +5062,62 @@ def eeg_data_export_nwb(request, eeg_data_id, some_number, process_requisition):
     # Amplifier device setting
     if eeg_data.eeg_setting.eeg_amplifier_setting:
         device_identification = eeg_data.eeg_setting.eeg_amplifier_setting.eeg_amplifier.identification
-        neurodata.set_metadata(
-            EXTRA_SHANK_DESCRIPTION(device_identification),
-            eeg_data.eeg_setting.eeg_amplifier_setting.eeg_amplifier.description)
-        neurodata.set_metadata(
-            EXTRA_SHANK_DEVICE(device_identification),
-            _('Amplifier'))
-        neurodata.set_metadata(
-            EXTRA_SHANK_CUSTOM(device_identification, 'manufacturer'),
-            str(eeg_data.eeg_setting.eeg_amplifier_setting.eeg_amplifier.manufacturer.name))
-        neurodata.set_metadata(
-            EXTRA_SHANK_CUSTOM(device_identification, 'gain'),
-            str(eeg_data.eeg_setting.eeg_amplifier_setting.eeg_amplifier.gain))
+        device_information = _("Device type: Amplifier; ")
+
+        if eeg_data.eeg_setting.eeg_amplifier_setting.eeg_amplifier.description:
+            device_information += _("Description: ") + \
+                                  eeg_data.eeg_setting.eeg_amplifier_setting.eeg_amplifier.description + "; "
+
+        device_information += \
+            _("Manufacturer: ") + \
+            eeg_data.eeg_setting.eeg_amplifier_setting.eeg_amplifier.manufacturer.name  + "; "
+
+        device_information += _('Gain: ') + str(eeg_data.eeg_setting.eeg_amplifier_setting.eeg_amplifier.gain) + "; "
+
         if eeg_data.eeg_setting.eeg_amplifier_setting.eeg_amplifier.input_impedance:
-            neurodata.set_metadata(
-                EXTRA_SHANK_CUSTOM(device_identification, 'impedance'),
-                get_nwb_eeg_amplifier_impedance_description(eeg_data.eeg_setting.eeg_amplifier_setting))
+            device_information += \
+                _('Impedance: ') + \
+                get_nwb_eeg_amplifier_impedance_description(eeg_data.eeg_setting.eeg_amplifier_setting) + "; "
+
         if eeg_data.eeg_setting.eeg_amplifier_setting.eeg_amplifier.common_mode_rejection_ratio:
-            neurodata.set_metadata(
-                EXTRA_SHANK_CUSTOM(device_identification, 'common_mode_rejection_ratio'),
-                str(eeg_data.eeg_setting.eeg_amplifier_setting.eeg_amplifier.common_mode_rejection_ratio))
+            device_information += \
+                _('Common mode rejection ratio: ') + \
+                str(eeg_data.eeg_setting.eeg_amplifier_setting.eeg_amplifier.common_mode_rejection_ratio) + "; "
+
+        neurodata.set_metadata(DEVICE(device_identification), device_information)
 
     # EEG machine
     if eeg_data.eeg_setting.eeg_machine_setting:
+
         device_identification = eeg_data.eeg_setting.eeg_machine_setting.eeg_machine.identification
-        neurodata.set_metadata(
-            EXTRA_SHANK_DESCRIPTION(device_identification),
-            eeg_data.eeg_setting.eeg_machine_setting.eeg_machine.description)
-        neurodata.set_metadata(
-            EXTRA_SHANK_DEVICE(device_identification),
-            'EEG Machine')
-        neurodata.set_metadata(
-            EXTRA_SHANK_CUSTOM(device_identification, 'manufacturer'),
-            eeg_data.eeg_setting.eeg_machine_setting.eeg_machine.manufacturer.name)
-        neurodata.set_metadata(
-            EXTRA_SHANK_CUSTOM(device_identification, 'number_of_channels_used'),
-            str(eeg_data.eeg_setting.eeg_machine_setting.number_of_channels_used))
+        device_information = _("Device type: EEG Machine; ")
+
+        if eeg_data.eeg_setting.eeg_machine_setting.eeg_machine.description:
+            device_information += \
+                _("Description: ") + \
+                eeg_data.eeg_setting.eeg_machine_setting.eeg_machine.description + "; "
+
+        device_information += \
+            _("Manufacturer: ") + \
+            eeg_data.eeg_setting.eeg_machine_setting.eeg_machine.manufacturer.name + "; "
+
+        device_information += \
+            _("Number of used channels: ") + \
+            str(eeg_data.eeg_setting.eeg_machine_setting.number_of_channels_used) + "; "
+
         if eeg_data.eeg_setting.eeg_machine_setting.eeg_machine.software_version:
-            neurodata.set_metadata(
-                EXTRA_SHANK_CUSTOM(device_identification, 'software_version'),
-                str(eeg_data.eeg_setting.eeg_machine_setting.eeg_machine.software_version))
+            device_information += \
+                _("Software version: ") + \
+                str(eeg_data.eeg_setting.eeg_machine_setting.eeg_machine.software_version) + "; "
+
+        neurodata.set_metadata(DEVICE(device_identification), device_information)
 
     ########################################################################
     # acquisition section
     #
     ########################################################################
+    update_process_requisition(request, process_requisition, 'reading_acquisition_data', _('Reading acquisition data'))
+
     if segments:
         number_of_samples = len(segments.analogsignals[0])
         number_of_channels = eeg_data.eeg_setting.eeg_machine_setting.number_of_channels_used
@@ -5170,7 +5189,7 @@ def eeg_data_export_nwb(request, eeg_data_id, some_number, process_requisition):
     response['Content-Type'] = 'application/force-download'
     response['Content-Disposition'] = 'attachment; filename=%s' % smart_str(file_name)
 
-    update_process_requisition(request, process_requisition, 'finished')
+    update_process_requisition(request, process_requisition, 'finished', _('Finished'))
 
     return response
 

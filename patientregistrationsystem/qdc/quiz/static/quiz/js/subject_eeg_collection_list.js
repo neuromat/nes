@@ -29,10 +29,10 @@ function handle_processing() {
 function check_requisition() {
     var url = "/experiment/eeg_data/get_process_requisition_status/" + requisition_id;
     $.getJSON(url, function (response) {
+        document.getElementById('label_process_requisition_status').innerHTML = response['message'];
         if(response['status'] == "finished"){
             $('#pleaseWaitDialog').modal('hide');
         } else {
-            // document.getElementById('label_process_requisition_status').innerHTML = response['status'];
             setTimeout(check_requisition, 1000);
         }
     });
