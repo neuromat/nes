@@ -2,6 +2,7 @@
 import re
 import datetime
 import json
+import random
 
 import numpy as np
 
@@ -4519,7 +4520,8 @@ def subject_eeg_view(request, group_id, subject_id,
     context = {"can_change": get_can_change(request.user, group.experiment.research_project),
                'group': group,
                'subject': subject,
-               'eeg_collections': eeg_collections}
+               'eeg_collections': eeg_collections,
+               'process_requisition': int(random.random() * 10000)}
 
     return render(request, template_name, context)
 
@@ -4929,7 +4931,26 @@ def eeg_image_edit(request, eeg_data_id, tab, template_name="experiment/subject_
 
 @login_required
 @permission_required('experiment.change_experiment')
-def eeg_data_export_nwb(request, eeg_data_id, some_number):
+def eeg_data_get_process_requisition_status(request, process_requisition):
+    status = request.session.get('process_requisition_status' + str(process_requisition))
+    if status == "finished":
+        del request.session['process_requisition_status' + str(process_requisition)]
+    response_data = {
+        'status': status,
+    }
+    return HttpResponse(json.dumps(response_data), content_type='application/json')
+
+
+def update_process_requisition(request, process_requisition, value):
+    request.session['process_requisition_status' + str(process_requisition)] = value
+    request.session.save()
+
+
+@login_required
+@permission_required('experiment.change_experiment')
+def eeg_data_export_nwb(request, eeg_data_id, some_number, process_requisition):
+
+    update_process_requisition(request, process_requisition, 'started')
 
     eeg_data = get_object_or_404(EEGData, pk=eeg_data_id)
 
@@ -5148,6 +5169,9 @@ def eeg_data_export_nwb(request, eeg_data_id, some_number):
     response = HttpResponse(open(nwb_file_settings["filename"], "rb").read())
     response['Content-Type'] = 'application/force-download'
     response['Content-Disposition'] = 'attachment; filename=%s' % smart_str(file_name)
+
+    update_process_requisition(request, process_requisition, 'finished')
+
     return response
 
 

@@ -287,12 +287,15 @@ urlpatterns = patterns(
     url(r'^eeg_data/(?P<eeg_data_id>\d+)/(?P<tab>\d+)/$', 'eeg_data_view', name='eeg_data_view'),
     url(r'^eeg_data/edit/(?P<eeg_data_id>\d+)/(?P<tab>\d+)/$', 'eeg_data_edit', name='eeg_data_edit'),
     url(r'^eeg_data/edit_image/(?P<eeg_data_id>\d+)/(?P<tab>\d+)/$', 'eeg_image_edit', name='eeg_image_edit'),
-    url(r'^eeg_data/(?P<eeg_data_id>\d+)/export_nwb/(?P<some_number>\d+)/$', 'eeg_data_export_nwb', name='eeg_data_export_nwb'),
+    url(r'^eeg_data/(?P<eeg_data_id>\d+)/export_nwb/(?P<some_number>\d+)/(?P<process_requisition>\d+)/$',
+        'eeg_data_export_nwb', name='eeg_data_export_nwb'),
 
     # eeg_data (ajax)
     url(r'^equipment/get_cap_size_list_from_eeg_setting/(?P<eeg_setting_id>\d+)/$',
         'get_cap_size_list_from_eeg_setting'),
     url(r'eeg_data/edit_image/set_worked_positions/$', 'set_worked_positions'),
+    url(r'^eeg_data/get_process_requisition_status/(?P<process_requisition>\d+)/$',
+        'eeg_data_get_process_requisition_status'),
 
     # subject + emg data
     url(r'^group/(?P<group_id>\d+)/subject/(?P<subject_id>\d+)/emg/$',
