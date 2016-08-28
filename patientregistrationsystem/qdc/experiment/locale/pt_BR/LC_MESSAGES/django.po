@@ -3027,12 +3027,12 @@ msgstr "Coleta de dados de EEG"
 #: experiment/templates/experiment/subject_eeg_data_form.html:208
 #: experiment/templates/experiment/subject_eeg_data_form.html:216
 msgid "Electrode positions status"
-msgstr "Status de posições de eletrodo"
+msgstr "Status das posições dos eletrodos"
 
 #: experiment/templates/experiment/subject_eeg_data_form.html:209
 #: experiment/templates/experiment/subject_eeg_data_form.html:219
 msgid "Image of the electrode positions"
-msgstr "Imagem da posição do eletrodo"
+msgstr "Imagem das posições dos eletrodos"
 
 #: experiment/templates/experiment/subject_eeg_data_form.html:257
 msgid "Reason for change the EEG setting"
