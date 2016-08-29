@@ -5006,8 +5006,8 @@ def eeg_data_export_nwb(request, eeg_data_id, some_number, process_requisition):
     #   are relative to experiment start time
     # if the start time is not specified the present time will be used
     # settings["start_time"] = "Sat Jul 04 2015 3:14:16"
-    nwb_file_settings["start_time"] = eeg_data.date.strftime("%Y-%m-%d") + \
-                                      (' ' + eeg_data.time.strftime('%H:%M:%S') if eeg_data.time else '')
+    nwb_file_settings["start_time"] = \
+        eeg_data.date.strftime("%Y-%m-%d") + (' ' + eeg_data.time.strftime('%H:%M:%S') if eeg_data.time else '')
 
     # provide one or two sentences that describe the experiment and what
     #   data is in the file
@@ -5065,7 +5065,7 @@ def eeg_data_export_nwb(request, eeg_data_id, some_number, process_requisition):
 
         device_information += \
             _("Manufacturer: ") + \
-            eeg_data.eeg_setting.eeg_amplifier_setting.eeg_amplifier.manufacturer.name  + "; "
+            eeg_data.eeg_setting.eeg_amplifier_setting.eeg_amplifier.manufacturer.name + "; "
 
         device_information += _('Gain: ') + str(eeg_data.eeg_setting.eeg_amplifier_setting.eeg_amplifier.gain) + "; "
 
