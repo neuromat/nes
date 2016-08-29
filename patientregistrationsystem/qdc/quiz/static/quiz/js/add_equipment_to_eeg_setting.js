@@ -72,7 +72,7 @@ $(document).ready(function () {
                 $.getJSON(url, function (solution) {
                     description_field.prop('value', solution['description']);
                 });
-            } else if (equipment_type == "eeg_filter") {
+            } else if (equipment_type == "filter") {
                 var url = "/experiment/filter/" + equipment_id + "/attributes";
 
                 $.getJSON(url, function (filter) {
