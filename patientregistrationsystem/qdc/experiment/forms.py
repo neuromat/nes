@@ -414,13 +414,12 @@ class EEGAmplifierForm(ModelForm):
 class EEGAmplifierSettingForm(ModelForm):
     class Meta:
         model = EEGAmplifierSetting
-        localized_fields = ('gain', )
-        fields = ['gain']
+        localized_fields = ('gain', 'sampling_rate', )
+        fields = ['gain', 'sampling_rate']
 
         widgets = {
-            'gain': TextInput(attrs={'class': 'form-control',
-                                     'required': "",
-                                     'data-error': _('Description must be filled.')})
+            'gain': TextInput(attrs={'class': 'form-control'}),
+            'sampling_rate': TextInput(attrs={'class': 'form-control'})
         }
 
 

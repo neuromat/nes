@@ -77,10 +77,26 @@
         </div>
         <div class="col-xs-11 col-sm-11">
             <div class="form-group {% if setting_form.gain.errors %}has-error{% endif %}">
-                <label class="control-label">{% trans "Configured gain" %} </label>
+                <label class="control-label">{% trans "Configured gain (times)" %} </label>
                 {{ setting_form.gain }}
                 <div class="help-block with-errors">
                     {% for error in setting_form.gain.errors %}
+                        {{ error }}
+                    {% endfor %}
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="row">
+        <div class="col-xs-1 col-sm-1">
+        </div>
+        <div class="col-xs-11 col-sm-11">
+            <div class="form-group {% if setting_form.sampling_rate.errors %}has-error{% endif %}">
+                <label class="control-label">{% trans "Sampling rate (Hz)" %} </label>
+                {{ setting_form.sampling_rate }}
+                <div class="help-block with-errors">
+                    {% for error in setting_form.sampling_rate.errors %}
                         {{ error }}
                     {% endfor %}
                 </div>
