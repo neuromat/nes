@@ -107,7 +107,7 @@
                             {% for subdivision in musclesubdivisions %}
                                 <tr>
                                     <td>
-                                        <a data-toggle="tooltip" data-placement="left" title="{% trans "Visualize" %}" href="/experiment/muscle_subdivision/{{ subdivision.id }}/edit/">{{ subdivision.name }}</a>
+                                        <a data-toggle="tooltip" data-placement="left" title="{% trans "Visualize" %}" href="/experiment/muscle_subdivision/{{ subdivision.id }}/">{{ subdivision.name }}</a>
                                     </td>
 
                                     <td>
@@ -145,7 +145,7 @@
                             {% for side in musclesides %}
                                 <tr>
                                     <td>
-                                        <a data-toggle="tooltip" data-placement="left" title="{% trans "Visualize" %}" href="/experiment/muscle_side/{{ side.id}}/edit/">{{ side.name }}</a>
+                                        <a data-toggle="tooltip" data-placement="left" title="{% trans "Visualize" %}" href="/experiment/muscle_side/{{ side.id}}/">{{ side.name }}</a>
                                     </td>
                                 </tr>
                             {% endfor %}
