@@ -5160,7 +5160,11 @@ def eeg_data_export_nwb(request, eeg_data_id, some_number, process_requisition):
         number_of_samples = len(segments.analogsignals[0])
         number_of_channels = eeg_data.eeg_setting.eeg_machine_setting.number_of_channels_used
 
-        timestamps = np.arange(number_of_samples) * 0.0001
+        sampling_rate = 0
+        if eeg_data.eeg_setting.eeg_amplifier_setting and eeg_data.eeg_setting.eeg_amplifier_setting.sampling_rate:
+            sampling_rate = eeg_data.eeg_setting.eeg_amplifier_setting.sampling_rate
+
+        timestamps = np.arange(number_of_samples) * ((1/sampling_rate) if sampling_rate else 0)
         acquisition = neurodata.create_timeseries("ElectricalSeries", "data_collection", "acquisition")
         acquisition.set_comment(eeg_data.description)
 
