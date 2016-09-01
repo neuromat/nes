@@ -61,7 +61,7 @@
         </div>
         <div class="col-xs-11 col-sm-11">
             <div class="form-group">
-                <label class="control-label">{% trans "Gain" %} </label>
+                <label class="control-label">{% trans "Gain (times)" %} </label>
                 {{ selection_form.gain }}
                 <div class="help-block with-errors"></div>
             </div>
@@ -77,7 +77,7 @@
         </div>
         <div class="col-xs-11 col-sm-11">
             <div class="form-group {% if setting_form.gain.errors %}has-error{% endif %}">
-                <label class="control-label">{% trans "Configured gain" %} </label>
+                <label class="control-label">{% trans "Configured gain (times)" %} </label>
                 {{ setting_form.gain }}
                 <div class="help-block with-errors">
                     {% for error in setting_form.gain.errors %}
