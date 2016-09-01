@@ -414,6 +414,7 @@ class EEGAmplifierSetting(models.Model):
     eeg_setting = models.OneToOneField(EEGSetting, primary_key=True, related_name='eeg_amplifier_setting')
     eeg_amplifier = models.ForeignKey(Amplifier)
     gain = models.FloatField(null=True, blank=True, validators=[MinValueValidator(0)])
+    sampling_rate = models.FloatField(null=True, blank=True, validators=[MinValueValidator(0)])
 
 
 class EEGSolutionSetting(models.Model):

@@ -103,7 +103,15 @@
                                                         <td>{{ eeg_data_file.file_format.name }}</td>
                                                         <td>{{ eeg_data_file.file.size|filesizeformat }}</td>
                                                         <td><a href="{{ eeg_data_file.file.url }}" data-toggle="tooltip" data-placement="top" title="{% trans "Download file" %}"><span class="glyphicon glyphicon-download"></span></a></td>
-                                                        <td><a onclick="handle_processing();" href="/experiment/eeg_data/{{ eeg_data_file.id }}/export_nwb/{{ eeg_collection.eeg_configuration.id }}{{ forloop.counter }}/{{ process_requisition }}" data-toggle="tooltip" data-placement="top" title="{% trans "Export nwb file format" %}"><span class="glyphicon glyphicon-export"></span></a></td>
+                                                        <td>
+                                                            {% if eeg_data_file.eeg_reading.file_format and eeg_data_file.eeg_reading.reading and eeg_data_file.eeg_setting.eeg_machine_setting and eeg_data_file.eeg_setting.eeg_machine_setting.number_of_channels_used %}
+                                                                <a onclick="handle_processing();" href="/experiment/eeg_data/{{ eeg_data_file.id }}/export_nwb/{{ eeg_collection.eeg_configuration.id }}{{ forloop.counter }}/{{ process_requisition }}" data-toggle="tooltip" data-placement="top" title="{% trans "Export nwb file format" %}">
+                                                                    <span class="glyphicon glyphicon-export"></span>
+                                                                </a>
+                                                            {% else %}
+                                                                <span data-toggle="tooltip" data-placement="top" title="{% trans "Unable to export as nwb file. The uploaded data file is not an EEG file. Its format is not valid, or the number of channels is not set." %}" style="color: grey" class="glyphicon glyphicon-export"></span>
+                                                            {% endif %}
+                                                        </td>
                                                         <td>
                                                             {% if eeg_data_file.eeg_reading.file_format %}
                                                                 {% if eeg_data_file.eeg_reading.reading %}

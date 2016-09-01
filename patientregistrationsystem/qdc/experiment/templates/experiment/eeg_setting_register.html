@@ -149,7 +149,9 @@
                                             </a>
                                             <blockquote>
                                                 <i><h6>
-                                                    {% trans "Gain" %}: {{ eeg_setting.eeg_amplifier_setting.gain }}
+                                                    {% trans "Gain" %}: {{ eeg_setting.eeg_amplifier_setting.gain|default:'' }}
+                                                    <br/>
+                                                    {% trans "Sampling rate" %}: {{ eeg_setting.eeg_amplifier_setting.sampling_rate|default:'' }}
                                                 </h6></i>
                                             </blockquote>
 
