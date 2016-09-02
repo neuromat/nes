@@ -2450,16 +2450,18 @@ class EEGEquipmentRegisterTest(TestCase):
         self.data = {'action': 'save',
                      'name': name}
 
+        number_of_registers = StandardizationSystem.objects.all().count()
+
         response = self.client.post(reverse("standardization_system_new", args=()), self.data)
         self.assertEqual(response.status_code, 302)
-        self.assertEqual(StandardizationSystem.objects.all().count(), 1)
+        self.assertEqual(StandardizationSystem.objects.all().count(), number_of_registers + 1)
 
         # create (trying) but missing information
         self.data = {'action': 'save'}
 
         response = self.client.post(reverse("standardization_system_new", args=()), self.data)
         self.assertEqual(response.status_code, 200)
-        self.assertEqual(StandardizationSystem.objects.all().count(), 1)
+        self.assertEqual(StandardizationSystem.objects.all().count(), number_of_registers + 1)
         self.assertEqual(str(list(response.context['messages'])[-1]), _('Information not saved.'))
 
         # create with wrong action
@@ -2467,7 +2469,7 @@ class EEGEquipmentRegisterTest(TestCase):
 
         response = self.client.post(reverse("standardization_system_new", args=()), self.data)
         self.assertEqual(response.status_code, 200)
-        self.assertEqual(StandardizationSystem.objects.all().count(), 1)
+        self.assertEqual(StandardizationSystem.objects.all().count(), number_of_registers + 1)
         self.assertEqual(str(list(response.context['messages'])[-1]), _('Action not available.'))
 
         # view
@@ -2505,7 +2507,7 @@ class EEGEquipmentRegisterTest(TestCase):
         response = self.client.post(reverse("standardization_system_view", args=(standardization_system.id,)),
                                     self.data)
         self.assertEqual(response.status_code, 302)
-        self.assertEqual(StandardizationSystem.objects.all().count(), 0)
+        self.assertEqual(StandardizationSystem.objects.all().count(), number_of_registers)
 
     def test_emg_surface_electrode_placement_register(self):
 
@@ -2522,10 +2524,12 @@ class EEGEquipmentRegisterTest(TestCase):
         self.data = {'action': 'save',
                      'muscle_subdivision': str(muscle_subdivision.id)}
 
+        number_of_registers = EMGElectrodePlacement.objects.all().count()
+
         response = self.client.post(reverse("emg_electrode_placement_new",
                                             args=(standardization_system.id, 'surface')), self.data)
         self.assertEqual(response.status_code, 302)
-        self.assertEqual(EMGElectrodePlacement.objects.all().count(), 1)
+        self.assertEqual(EMGElectrodePlacement.objects.all().count(), number_of_registers + 1)
 
         # create (trying) but missing information
         self.data = {'action': 'save'}
@@ -2533,7 +2537,7 @@ class EEGEquipmentRegisterTest(TestCase):
         response = self.client.post(reverse("emg_electrode_placement_new",
                                             args=(standardization_system.id, 'surface')), self.data)
         self.assertEqual(response.status_code, 200)
-        self.assertEqual(EMGElectrodePlacement.objects.all().count(), 1)
+        self.assertEqual(EMGElectrodePlacement.objects.all().count(), number_of_registers + 1)
         self.assertEqual(str(list(response.context['messages'])[-1]), _('Information not saved.'))
 
         # create with wrong action
@@ -2542,7 +2546,7 @@ class EEGEquipmentRegisterTest(TestCase):
         response = self.client.post(reverse("emg_electrode_placement_new",
                                             args=(standardization_system.id, 'surface')), self.data)
         self.assertEqual(response.status_code, 200)
-        self.assertEqual(EMGElectrodePlacement.objects.all().count(), 1)
+        self.assertEqual(EMGElectrodePlacement.objects.all().count(), number_of_registers + 1)
         self.assertEqual(str(list(response.context['messages'])[-1]), _('Action not available.'))
 
         # view
@@ -2581,7 +2585,7 @@ class EEGEquipmentRegisterTest(TestCase):
         response = self.client.post(reverse("emg_electrode_placement_view", args=(emg_electrode_placement.id,)),
                                     self.data)
         self.assertEqual(response.status_code, 302)
-        self.assertEqual(EMGElectrodePlacement.objects.all().count(), 0)
+        self.assertEqual(EMGElectrodePlacement.objects.all().count(), number_of_registers)
 
     def test_emg_intramuscular_electrode_placement_register(self):
         standardization_system = ObjectsFactory.create_standardization_system()
@@ -2597,10 +2601,12 @@ class EEGEquipmentRegisterTest(TestCase):
         self.data = {'action': 'save',
                      'muscle_subdivision': str(muscle_subdivision.id)}
 
+        number_of_registers = EMGElectrodePlacement.objects.all().count()
+
         response = self.client.post(reverse("emg_electrode_placement_new",
                                             args=(standardization_system.id, 'intramuscular')), self.data)
         self.assertEqual(response.status_code, 302)
-        self.assertEqual(EMGElectrodePlacement.objects.all().count(), 1)
+        self.assertEqual(EMGElectrodePlacement.objects.all().count(), number_of_registers + 1)
 
         # create (trying) but missing information
         self.data = {'action': 'save'}
@@ -2608,7 +2614,7 @@ class EEGEquipmentRegisterTest(TestCase):
         response = self.client.post(reverse("emg_electrode_placement_new",
                                             args=(standardization_system.id, 'intramuscular')), self.data)
         self.assertEqual(response.status_code, 200)
-        self.assertEqual(EMGElectrodePlacement.objects.all().count(), 1)
+        self.assertEqual(EMGElectrodePlacement.objects.all().count(), number_of_registers + 1)
         self.assertEqual(str(list(response.context['messages'])[-1]), _('Information not saved.'))
 
         # create with wrong action
@@ -2617,7 +2623,7 @@ class EEGEquipmentRegisterTest(TestCase):
         response = self.client.post(reverse("emg_electrode_placement_new",
                                             args=(standardization_system.id, 'intramuscular')), self.data)
         self.assertEqual(response.status_code, 200)
-        self.assertEqual(EMGElectrodePlacement.objects.all().count(), 1)
+        self.assertEqual(EMGElectrodePlacement.objects.all().count(), number_of_registers + 1)
         self.assertEqual(str(list(response.context['messages'])[-1]), _('Action not available.'))
 
         # view
@@ -2656,7 +2662,7 @@ class EEGEquipmentRegisterTest(TestCase):
         response = self.client.post(reverse("emg_electrode_placement_view", args=(emg_electrode_placement.id,)),
                                     self.data)
         self.assertEqual(response.status_code, 302)
-        self.assertEqual(EMGElectrodePlacement.objects.all().count(), 0)
+        self.assertEqual(EMGElectrodePlacement.objects.all().count(), number_of_registers)
 
     def test_emg_needle_electrode_placement_register(self):
         standardization_system = ObjectsFactory.create_standardization_system()
@@ -2672,10 +2678,12 @@ class EEGEquipmentRegisterTest(TestCase):
         self.data = {'action': 'save',
                      'muscle_subdivision': str(muscle_subdivision.id)}
 
+        number_of_registers = EMGElectrodePlacement.objects.all().count()
+
         response = self.client.post(reverse("emg_electrode_placement_new",
                                             args=(standardization_system.id, 'needle')), self.data)
         self.assertEqual(response.status_code, 302)
-        self.assertEqual(EMGElectrodePlacement.objects.all().count(), 1)
+        self.assertEqual(EMGElectrodePlacement.objects.all().count(), number_of_registers + 1)
 
         # create (trying) but missing information
         self.data = {'action': 'save'}
@@ -2683,7 +2691,7 @@ class EEGEquipmentRegisterTest(TestCase):
         response = self.client.post(reverse("emg_electrode_placement_new",
                                             args=(standardization_system.id, 'needle')), self.data)
         self.assertEqual(response.status_code, 200)
-        self.assertEqual(EMGElectrodePlacement.objects.all().count(), 1)
+        self.assertEqual(EMGElectrodePlacement.objects.all().count(), number_of_registers + 1)
         self.assertEqual(str(list(response.context['messages'])[-1]), _('Information not saved.'))
 
         # create with wrong action
@@ -2692,7 +2700,7 @@ class EEGEquipmentRegisterTest(TestCase):
         response = self.client.post(reverse("emg_electrode_placement_new",
                                             args=(standardization_system.id, 'needle')), self.data)
         self.assertEqual(response.status_code, 200)
-        self.assertEqual(EMGElectrodePlacement.objects.all().count(), 1)
+        self.assertEqual(EMGElectrodePlacement.objects.all().count(), number_of_registers + 1)
         self.assertEqual(str(list(response.context['messages'])[-1]), _('Action not available.'))
 
         # view
@@ -2731,7 +2739,7 @@ class EEGEquipmentRegisterTest(TestCase):
         response = self.client.post(reverse("emg_electrode_placement_view", args=(emg_electrode_placement.id,)),
                                     self.data)
         self.assertEqual(response.status_code, 302)
-        self.assertEqual(EMGElectrodePlacement.objects.all().count(), 0)
+        self.assertEqual(EMGElectrodePlacement.objects.all().count(), number_of_registers)
 
     def test_muscle_register(self):
         # list
@@ -2742,20 +2750,22 @@ class EEGEquipmentRegisterTest(TestCase):
         response = self.client.get(reverse("muscle_new", args=()))
         self.assertEqual(response.status_code, 200)
 
+        number_of_registers = Muscle.objects.all().count()
+
         name = 'Name'
         self.data = {'action': 'save',
                      'name': name}
 
         response = self.client.post(reverse("muscle_new", args=()), self.data)
         self.assertEqual(response.status_code, 302)
-        self.assertEqual(Muscle.objects.all().count(), 1)
+        self.assertEqual(Muscle.objects.all().count(), number_of_registers + 1)
 
         # create (trying) but missing information
         self.data = {'action': 'save'}
 
         response = self.client.post(reverse("muscle_new", args=()), self.data)
         self.assertEqual(response.status_code, 200)
-        self.assertEqual(Muscle.objects.all().count(), 1)
+        self.assertEqual(Muscle.objects.all().count(), number_of_registers + 1)
         self.assertEqual(str(list(response.context['messages'])[-1]), _('Information not saved.'))
 
         # create with wrong action
@@ -2763,7 +2773,7 @@ class EEGEquipmentRegisterTest(TestCase):
 
         response = self.client.post(reverse("muscle_new", args=()), self.data)
         self.assertEqual(response.status_code, 200)
-        self.assertEqual(Muscle.objects.all().count(), 1)
+        self.assertEqual(Muscle.objects.all().count(), number_of_registers + 1)
         self.assertEqual(str(list(response.context['messages'])[-1]), _('Action not available.'))
 
         # view
@@ -2801,7 +2811,7 @@ class EEGEquipmentRegisterTest(TestCase):
         response = self.client.post(reverse("muscle_view", args=(muscle.id,)),
                                     self.data)
         self.assertEqual(response.status_code, 302)
-        self.assertEqual(Muscle.objects.all().count(), 0)
+        self.assertEqual(Muscle.objects.all().count(), number_of_registers)
 
     def test_muscle_subdivision_register(self):
         muscle = ObjectsFactory.create_muscle()
@@ -2810,20 +2820,22 @@ class EEGEquipmentRegisterTest(TestCase):
         response = self.client.get(reverse("muscle_subdivision_new", args=(muscle.id,)))
         self.assertEqual(response.status_code, 200)
 
+        number_of_registers = MuscleSubdivision.objects.all().count()
+
         name = 'Name'
         self.data = {'action': 'save',
                      'name': name}
 
         response = self.client.post(reverse("muscle_subdivision_new", args=(muscle.id,)), self.data)
         self.assertEqual(response.status_code, 302)
-        self.assertEqual(MuscleSubdivision.objects.all().count(), 1)
+        self.assertEqual(MuscleSubdivision.objects.all().count(), number_of_registers + 1)
 
         # create (trying) but missing information
         self.data = {'action': 'save'}
 
         response = self.client.post(reverse("muscle_subdivision_new", args=(muscle.id,)), self.data)
         self.assertEqual(response.status_code, 200)
-        self.assertEqual(MuscleSubdivision.objects.all().count(), 1)
+        self.assertEqual(MuscleSubdivision.objects.all().count(), number_of_registers + 1)
         self.assertEqual(str(list(response.context['messages'])[-1]), _('Information not saved.'))
 
         # create with wrong action
@@ -2831,7 +2843,7 @@ class EEGEquipmentRegisterTest(TestCase):
 
         response = self.client.post(reverse("muscle_subdivision_new", args=(muscle.id,)), self.data)
         self.assertEqual(response.status_code, 200)
-        self.assertEqual(MuscleSubdivision.objects.all().count(), 1)
+        self.assertEqual(MuscleSubdivision.objects.all().count(), number_of_registers + 1)
         self.assertEqual(str(list(response.context['messages'])[-1]), _('Action not available.'))
 
         # view
@@ -2869,7 +2881,7 @@ class EEGEquipmentRegisterTest(TestCase):
         response = self.client.post(reverse("muscle_subdivision_view", args=(muscle_subdivision.id,)),
                                     self.data)
         self.assertEqual(response.status_code, 302)
-        self.assertEqual(MuscleSubdivision.objects.all().count(), 0)
+        self.assertEqual(MuscleSubdivision.objects.all().count(), number_of_registers)
 
     def test_muscle_side_register(self):
         muscle = ObjectsFactory.create_muscle()
@@ -2878,20 +2890,22 @@ class EEGEquipmentRegisterTest(TestCase):
         response = self.client.get(reverse("muscle_side_new", args=(muscle.id,)))
         self.assertEqual(response.status_code, 200)
 
+        number_of_registers = MuscleSide.objects.all().count()
+
         name = 'Name'
         self.data = {'action': 'save',
                      'name': name}
 
         response = self.client.post(reverse("muscle_side_new", args=(muscle.id,)), self.data)
         self.assertEqual(response.status_code, 302)
-        self.assertEqual(MuscleSide.objects.all().count(), 1)
+        self.assertEqual(MuscleSide.objects.all().count(), number_of_registers + 1)
 
         # create (trying) but missing information
         self.data = {'action': 'save'}
 
         response = self.client.post(reverse("muscle_side_new", args=(muscle.id,)), self.data)
         self.assertEqual(response.status_code, 200)
-        self.assertEqual(MuscleSide.objects.all().count(), 1)
+        self.assertEqual(MuscleSide.objects.all().count(), number_of_registers + 1)
         self.assertEqual(str(list(response.context['messages'])[-1]), _('Information not saved.'))
 
         # create with wrong action
@@ -2899,7 +2913,7 @@ class EEGEquipmentRegisterTest(TestCase):
 
         response = self.client.post(reverse("muscle_side_new", args=(muscle.id,)), self.data)
         self.assertEqual(response.status_code, 200)
-        self.assertEqual(MuscleSide.objects.all().count(), 1)
+        self.assertEqual(MuscleSide.objects.all().count(), number_of_registers + 1)
         self.assertEqual(str(list(response.context['messages'])[-1]), _('Action not available.'))
 
         # view
@@ -2937,7 +2951,7 @@ class EEGEquipmentRegisterTest(TestCase):
         response = self.client.post(reverse("muscle_side_view", args=(muscle_side.id,)),
                                     self.data)
         self.assertEqual(response.status_code, 302)
-        self.assertEqual(MuscleSide.objects.all().count(), 0)
+        self.assertEqual(MuscleSide.objects.all().count(), number_of_registers)
 
     def test_software_register(self):
         manufacturer = ObjectsFactory.create_manufacturer()
