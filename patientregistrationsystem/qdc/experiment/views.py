@@ -38,7 +38,7 @@ from experiment.models import Experiment, Subject, QuestionnaireResponse, Subjec
     EEGMachineSetting, EEGAmplifierSetting, EEGSolutionSetting, EEGFilterSetting, EEGElectrodeLayoutSetting, \
     FilterType, EEGSolution, EEGElectrodeLocalizationSystem, EEGElectrodeNetSystem, EEGElectrodePositionSetting, \
     ElectrodeModel, EEGElectrodePositionCollectionStatus, EEGCapSize, EEGElectrodeCap, EEGElectrodePosition, \
-    Material, AdditionalData, Tag, CoilModel, CoilShape, \
+    Material, AdditionalData, Tag, CoilModel, \
     EMGData, EMGSetting, SoftwareVersion, EMGDigitalFilterSetting, EMGADConverterSetting, \
     EMGElectrodeSetting, EMGPreamplifierSetting, EMGAmplifierSetting, EMGAnalogFilterSetting, \
     ADConverter, StandardizationSystem, Muscle, MuscleSubdivision, MuscleSide, \
@@ -361,6 +361,14 @@ def experiment_view(request, experiment_id, template_name="experiment/experiment
 
             if QuestionnaireResponse.objects.filter(
                     subject_of_group__group__experiment_id=experiment_id).count() == 0:
+
+                # Check if there is component_configuration
+                for component_configuration in ComponentConfiguration.objects.filter(component__experiment=experiment):
+                    if not remove_data_configuration_tree(component_configuration):
+                        messages.error(request,
+                                       _("It was not possible to exclude because there is data collection associated."))
+                        redirect_url = reverse("experiment_view", args=(experiment_id,))
+                        return HttpResponseRedirect(redirect_url)
 
                 try:
                     experiment.delete()
@@ -6301,25 +6309,63 @@ def remove_component_and_related_configurations(component,
     return redirect_url
 
 
-def remove_component_configuration(request, conf):
-    order_of_removed = conf.order
-    parent_of_removed = conf.parent_id
+def remove_component_configuration(request, component_configuration):
+    order_of_removed = component_configuration.order
+    parent_of_removed = component_configuration.parent_id
 
-    try:
-        conf.delete()
+    # Try to remove the data_configuration_tree (if there is no data-collection associated)
+    if not remove_data_configuration_tree(component_configuration):
+        messages.error(request, _("It was not possible to exclude because there is data collection associated."))
 
-        if conf.random_position:
-            last_conf = ComponentConfiguration.objects.filter(
-                parent_id=parent_of_removed, random_position=True).order_by('order').last()
+    component_configuration.delete()
 
-            # If the order of the removed component is smaller than the order of the last random-positioned
-            # element, assign the order of the removed to the last random-positioned element. This way, for
-            # the user, it is like removing the last position for random components.
-            if last_conf is not None and last_conf.order > order_of_removed:
-                last_conf.order = order_of_removed
-                last_conf.save()
-    except ProtectedError:
-        messages.error(request, "Não foi possível excluir o uso, pois há dados associados")
+    if component_configuration.random_position:
+        last_conf = ComponentConfiguration.objects.filter(
+            parent_id=parent_of_removed, random_position=True).order_by('order').last()
+
+        # If the order of the removed component is smaller than the order of the last random-positioned
+        # element, assign the order of the removed to the last random-positioned element. This way, for
+        # the user, it is like removing the last position for random components.
+        if last_conf is not None and last_conf.order > order_of_removed:
+            last_conf.order = order_of_removed
+            last_conf.save()
+
+
+def remove_data_configuration_tree(component_configuration):
+    # Should not exists DataConfigurationTree
+    data_configuration_tree_list = DataConfigurationTree.objects.filter(component_configuration=component_configuration)
+    if data_configuration_tree_list:
+
+        for data_configuration_tree in data_configuration_tree_list:
+
+            # before remove the data_configuration_tree, check if some node has no datacollection
+            current = data_configuration_tree
+
+            # search the leaf of the path
+            child = DataConfigurationTree.objects.filter(parent=current)
+            while child:
+                current = child[0]
+                child = DataConfigurationTree.objects.filter(parent=current)
+
+            leaf = current
+
+            # search from leaf to root
+            while current:
+                if EEGData.objects.filter(data_configuration_tree=current) or \
+                        EMGData.objects.filter(data_configuration_tree=current) or \
+                        AdditionalData.objects.filter(data_configuration_tree=current) or \
+                        QuestionnaireResponse.objects.filter(data_configuration_tree=current):
+                    return False
+
+                current = current.parent
+
+            # delete data_configuration_tree (from leaf)
+            parent = leaf.parent
+            leaf.delete()
+            while parent:
+                parent = leaf.parent
+                leaf.delete()
+    return True
 
 
 def check_experiment(experiment):
