@@ -43,7 +43,7 @@ from experiment.models import Experiment, Subject, QuestionnaireResponse, Subjec
     EMGElectrodeSetting, EMGPreamplifierSetting, EMGAmplifierSetting, EMGAnalogFilterSetting, \
     ADConverter, StandardizationSystem, Muscle, MuscleSubdivision, MuscleSide, \
     EMGElectrodePlacement, EMGSurfacePlacement, TMS, TMSSetting, TMSDeviceSetting, TMSDevice, Software, \
-    EMGIntramuscularPlacement, EMGNeedlePlacement
+    EMGIntramuscularPlacement, EMGNeedlePlacement, SubjectStepData
 from experiment.forms import ExperimentForm, QuestionnaireResponseForm, FileForm, GroupForm, InstructionForm, \
     ComponentForm, StimulusForm, BlockForm, ComponentConfigurationForm, ResearchProjectForm, NumberOfUsesToInsertForm, \
     EEGDataForm, EEGSettingForm, EquipmentForm, EEGForm, EEGMachineForm, EEGMachineSettingForm, EEGAmplifierForm, \
@@ -59,7 +59,8 @@ from experiment.forms import ExperimentForm, QuestionnaireResponseForm, FileForm
     MuscleRegisterForm, MuscleSubdivisionRegisterForm, MuscleSideRegisterForm, EMGSurfacePlacementForm, \
     TMSForm, TMSSettingForm, TMSDeviceSettingForm, CoilModelRegisterForm, TMSDeviceRegisterForm, \
     SoftwareRegisterForm, SoftwareVersionRegisterForm, EMGIntramuscularPlacementForm, \
-    EMGSurfacePlacementRegisterForm, EMGIntramuscularPlacementRegisterForm, EMGNeedlePlacementRegisterForm
+    EMGSurfacePlacementRegisterForm, EMGIntramuscularPlacementRegisterForm, EMGNeedlePlacementRegisterForm, \
+    SubjectStepDataForm
 
 from export.export import create_directory
 
@@ -5485,11 +5486,14 @@ def subject_additional_data_view(request, group_id, subject_id,
     subject_of_group = get_object_or_404(SubjectOfGroup, group=group, subject=subject)
 
     # First element of the list is associated to the whole experimental protocol
+    subject_step_data_query = \
+        SubjectStepData.objects.filter(subject_of_group=subject_of_group, data_configuration_tree=None)
     data_collections = [
         {'component_configuration': None,
          'path': None,
-         'additional_data_files': AdditionalData.objects.filter(subject_of_group=subject_of_group,
-                                                                data_configuration_tree=None),
+         'subject_step_data': subject_step_data_query[0] if subject_step_data_query else None,
+         'additional_data_files': AdditionalData.objects.filter(
+             subject_of_group=subject_of_group, data_configuration_tree=None),
          'icon_class': icon_class['experimental_protocol']}
     ]
 
@@ -5502,20 +5506,24 @@ def subject_additional_data_view(request, group_id, subject_id,
         data_configuration_tree_id = list_data_configuration_tree(component_configuration.id,
                                                                   [item[0] for item in path])
 
-        additional_data_files = AdditionalData.objects.filter(subject_of_group=subject_of_group,
-                                                              data_configuration_tree__id=data_configuration_tree_id)
+        subject_step_data_query = \
+            SubjectStepData.objects.filter(subject_of_group=subject_of_group,
+                                           data_configuration_tree=data_configuration_tree_id)
 
         data_collections.append(
             {'component_configuration': component_configuration,
              'path': path,
-             'additional_data_files': additional_data_files,
+             'subject_step_data': subject_step_data_query[0] if subject_step_data_query else None,
+             'additional_data_files': AdditionalData.objects.filter(
+                 subject_of_group=subject_of_group, data_configuration_tree__id=data_configuration_tree_id),
              'icon_class': icon_class[component_configuration.component.component_type]}
         )
 
     context = {"can_change": get_can_change(request.user, group.experiment.research_project),
                'group': group,
                'subject': subject,
-               'data_collections': data_collections
+               'data_collections': data_collections,
+               'required_steps_to_set_time_period': ['pause', 'task', 'task_experiment', 'eeg', 'emg', 'tms']
                }
 
     return render(request, template_name, context)
@@ -5658,6 +5666,102 @@ def additional_data_edit(request, additional_data_id, template_name="experiment/
                "additional_data_form": additional_data_form,
                "additional_data": additional_data,
                "file_format_list": file_format_list,
+               "editing": True,
+               }
+
+    return render(request, template_name, context)
+
+
+@login_required
+@permission_required('experiment.add_questionnaireresponse')
+def subject_step_data_create(request, group_id, subject_id, path_of_configuration,
+                             template_name="experiment/subject_step_data_form.html"):
+
+    group = get_object_or_404(Group, id=group_id)
+    subject = get_object_or_404(Subject, pk=subject_id)
+
+    subject_step_data_form = SubjectStepDataForm(None)
+
+    if request.method == "POST":
+        if request.POST['action'] == "save":
+
+            subject_step_data_form = SubjectStepDataForm(request.POST)
+
+            if subject_step_data_form.is_valid():
+
+                data_configuration_tree = None
+                if path_of_configuration != '0':
+                    list_of_path = [int(item) for item in path_of_configuration.split('-')]
+                    data_configuration_tree_id = list_data_configuration_tree(list_of_path[-1], list_of_path)
+                    if not data_configuration_tree_id:
+                        data_configuration_tree_id = create_data_configuration_tree(list_of_path)
+                    data_configuration_tree = get_object_or_404(DataConfigurationTree,
+                                                                pk=data_configuration_tree_id)
+
+                subject_of_group = get_object_or_404(SubjectOfGroup, subject=subject, group=group)
+
+                subject_step_data_added = subject_step_data_form.save(commit=False)
+                subject_step_data_added.subject_of_group = subject_of_group
+                if data_configuration_tree:
+                    subject_step_data_added.data_configuration_tree = data_configuration_tree
+
+                # PS: it was necessary adding these 2 lines because Django raised, I do not why (Evandro),
+                # the following error 'AdditionalData' object has no attribute 'group'
+                subject_step_data_added.group = group
+                subject_step_data_added.subject = subject
+
+                subject_step_data_added.save()
+
+                messages.success(request, _('Subject step data was created successfully.'))
+
+                redirect_url = reverse("subject_additional_data_view", args=(group_id, subject_id,))
+                return HttpResponseRedirect(redirect_url)
+
+    context = {"creating": True,
+               "editing": True,
+               "group": group,
+               "subject_step_data_form": subject_step_data_form,
+               "subject": subject
+               }
+
+    return render(request, template_name, context)
+
+
+@login_required
+@permission_required('experiment.change_experiment')
+def subject_step_data_edit(request, subject_step_data_id, template_name="experiment/subject_step_data_form.html"):
+
+    subject_step_data = get_object_or_404(SubjectStepData, pk=subject_step_data_id)
+
+    if request.method == "POST":
+
+        subject_step_data_form = SubjectStepDataForm(request.POST, request.FILES, instance=subject_step_data)
+
+        if request.POST['action'] == "save":
+            if subject_step_data_form.is_valid():
+                if subject_step_data_form.has_changed():
+
+                    subject_step_data_to_update = subject_step_data_form.save(commit=False)
+                    subject_step_data_to_update.group = subject_step_data.subject_of_group.group
+                    subject_step_data_to_update.subject = subject_step_data.subject_of_group.subject
+                    subject_step_data_to_update.save()
+
+                    messages.success(request, _('Subject step data updated successfully.'))
+                else:
+                    messages.success(request, _('There is no changes to save.'))
+
+                redirect_url = reverse("subject_additional_data_view",
+                                       args=(subject_step_data.subject_of_group.group.id,
+                                             subject_step_data.subject_of_group.subject.id))
+                return HttpResponseRedirect(redirect_url)
+
+    else:
+        subject_step_data_form = SubjectStepDataForm(request.POST or None, instance=subject_step_data)
+
+    context = {"group": subject_step_data.subject_of_group.group,
+               "subject": subject_step_data.subject_of_group.subject,
+               "subject_step_data_form": subject_step_data_form,
+               "subject_step_data": subject_step_data,
                "editing": True,
                }
 

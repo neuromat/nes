@@ -812,6 +812,21 @@ class DataConfigurationTree(models.Model):
     parent = models.ForeignKey('self', null=True, related_name='children')
 
 
+class SubjectStepData(models.Model):
+    # data_configuration_tree null means that the DataCollection is associated to the whole experimental protocol
+    data_configuration_tree = models.ForeignKey(DataConfigurationTree, null=True, blank=True)
+
+    subject_of_group = models.ForeignKey(SubjectOfGroup)
+
+    start_date = models.DateField(default=datetime.date.today, null=True, blank=True,
+                                  validators=[validate_date_questionnaire_response])
+    start_time = models.TimeField(null=True, blank=True)
+
+    end_date = models.DateField(default=datetime.date.today, null=True, blank=True,
+                                validators=[validate_date_questionnaire_response])
+    end_time = models.TimeField(null=True, blank=True)
+
+
 class DataCollection(models.Model):
     # data_configuration_tree null means that the DataCollection is associated to the whole experimental protocol
     data_configuration_tree = models.ForeignKey(DataConfigurationTree, null=True, blank=True)

@@ -313,6 +313,11 @@ urlpatterns = patterns(
         'subject_additional_data_create', name='subject_additional_data_create'),
     url(r'^additional_data/(?P<additional_data_id>\d+)/$', 'additional_data_view', name='additional_data_view'),
     url(r'^additional_data/edit/(?P<additional_data_id>\d+)/$', 'additional_data_edit', name='additional_data_edit'),
+    url(r'^group/(?P<group_id>\d+)/subject/(?P<subject_id>\d+)/subject_step_data/'
+        r'(?P<path_of_configuration>[0-9-]+)/add/$',
+        'subject_step_data_create', name='subject_step_data_create'),
+    url(r'^subject_step_data/edit/(?P<subject_step_data_id>\d+)/$',
+        'subject_step_data_edit', name='subject_step_data_edit'),
 
     # experimental protocol components
     url(r'^(?P<experiment_id>\d+)/components/$', 'component_list', name='component_list'),
