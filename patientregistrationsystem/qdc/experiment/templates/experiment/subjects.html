@@ -113,11 +113,13 @@
                                         </td>
                                         <td>
                                             <div class="col-xs-2 col-sm-2" >
-                                                {% if can_change %}
+                                                {% if can_change and perms.patient.sensitive_data_patient %}
                                                     <a href='/experiment/group/{{ group.id }}/subject/{{ item.subject.id }}/upload_file'
                                                        data-toggle="tooltip" data-placement="top" title="{% trans "Upload consent form" %}">
                                                         <span class="glyphicon glyphicon-paperclip"></span>
                                                     </a>
+                                                {% else %}
+                                                    <span class="glyphicon glyphicon-paperclip"></span>
                                                 {% endif %}
                                             </div>
                                             <div class="col-xs-10 col-sm-10" >
