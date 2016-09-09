@@ -14,7 +14,7 @@ from experiment.models import Experiment, QuestionnaireResponse, SubjectOfGroup,
     EMGElectrodeSetting, EMGElectrodePlacementSetting, \
     EMGPreamplifierSetting, EMGAmplifierSetting, EMGAnalogFilterSetting, EMGSurfacePlacement, \
     ADConverter, StandardizationSystem, Muscle, MuscleSide, MuscleSubdivision, TMS, TMSSetting, TMSDeviceSetting, \
-    Software, SoftwareVersion, CoilModel, TMSDevice, EMGIntramuscularPlacement, EMGNeedlePlacement
+    Software, SoftwareVersion, CoilModel, TMSDevice, EMGIntramuscularPlacement, EMGNeedlePlacement, SubjectStepData
 
 
 class ExperimentForm(ModelForm):
@@ -899,6 +899,24 @@ class AdditionalDataForm(ModelForm):
                                                        'data-error': _('File format description must be filled.')}),
             # It is not possible to set the 'required' attribute because it affects the edit screen
             # 'file': FileInput(attrs={'required': ""})
+        }
+
+
+class SubjectStepDataForm(ModelForm):
+    class Meta:
+        model = SubjectStepData
+
+        fields = ['start_date', 'start_time', 'end_date', 'end_time']
+
+        widgets = {
+            'start_date': DateInput(format=_("%m/%d/%Y"),
+                                    attrs={'class': 'form-control datepicker', 'placeholder': _('mm/dd/yyyy'),
+                                           'required': "", 'data-error': _("Start date must be filled.")}, ),
+            'start_time': TimeInput(attrs={'class': 'form-control', 'placeholder': 'HH:mm:ss'}),
+            'end_date': DateInput(format=_("%m/%d/%Y"),
+                                  attrs={'class': 'form-control datepicker', 'placeholder': _('mm/dd/yyyy'),
+                                         'required': "", 'data-error': _("End date must be filled.")}, ),
+            'end_time': TimeInput(attrs={'class': 'form-control', 'placeholder': 'HH:mm:ss'}),
         }
 
 
