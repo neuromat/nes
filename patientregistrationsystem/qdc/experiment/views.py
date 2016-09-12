@@ -8359,6 +8359,8 @@ def emg_electrode_setting_amplifier(request, emg_electrode_setting_id,
 
     creating = False
 
+    list_of_manufacturers = Manufacturer.objects.filter(set_of_equipment__equipment_type="amplifier").distinct()
+
     if hasattr(emg_electrode_setting, 'emg_amplifier_setting'):
 
         emg_amplifier_setting = EMGAmplifierSetting.objects.get(emg_electrode_setting=emg_electrode_setting)
@@ -8425,7 +8427,8 @@ def emg_electrode_setting_amplifier(request, emg_electrode_setting_id,
                "emg_electrode_setting": emg_electrode_setting,
                "emg_amplifier_setting_form": emg_amplifier_setting_form,
                "emg_analog_filter_setting_form": emg_analog_filter_setting_form,
-               "equipment_form": equipment_form
+               "equipment_form": equipment_form,
+               "manufacturer_list": list_of_manufacturers
                }
 
     return render(request, template_name, context)
