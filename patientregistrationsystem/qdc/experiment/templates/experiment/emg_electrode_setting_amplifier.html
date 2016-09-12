@@ -99,29 +99,11 @@
                     <div class="col-xs-12 col-sm-12">
                         <div class="form-group">
                             <label class="control-label">{% trans "Amplifier" %} </label>
-
-                            <select class="form-control" name="equipment_selection" id="id_equipment_selection" required {% if not editing and not creating %}disabled{% endif %}>
-                                <option value>-------</option>
-                                {% for equipment in equipment_list %}
-                                    <option {% if not creating and equipment_selected.id == equipment.id %}selected="selected"{% endif %} value="{{ equipment.id }}">{{ equipment.identification }}</option>
-                                {% endfor %}
-                            </select>
-
+                            {{ emg_amplifier_setting_form.amplifier }}
                             <div class="help-block with-errors"></div>
-
                         </div>
                     </div>
                 </div>
-
-{#                <div class="row">#}
-{#                    <div class="col-xs-12 col-sm-12">#}
-{#                        <div class="form-group">#}
-{#                            <label class="control-label">{% trans "Amplifier" %} </label>#}
-{#                            {{ emg_amplifier_setting_form.amplifier }}#}
-{#                            <div class="help-block with-errors"></div>#}
-{#                        </div>#}
-{#                    </div>#}
-{#                </div>#}
 
                 <div class="row">
                     <div class="col-xs-12 col-sm-12">

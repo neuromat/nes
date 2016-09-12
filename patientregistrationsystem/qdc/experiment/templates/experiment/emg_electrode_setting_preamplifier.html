@@ -81,6 +81,22 @@
                 <div class="row">
                     <div class="col-xs-12 col-sm-12">
                         <div class="form-group">
+                            <label class="control-label">{% trans "Manufacturer" %} </label>
+                            <select class="form-control" name="manufacturer" id="id_manufacturer" {% if not editing and not creating %}disabled{% endif %}>
+                                <option value>-------</option>
+                                {% for manufacturer in manufacturer_list %}
+                                    <option {% if manufacturer.id == equipment_selected.manufacturer.id %}selected="selected"{% endif %} value="{{ manufacturer.id }}">{{ manufacturer.name }}</option>
+                                {% endfor %}
+                            </select>
+                            <div class="help-block with-errors"></div>
+
+                        </div>
+                    </div>
+                </div>
+
+                <div class="row">
+                    <div class="col-xs-12 col-sm-12">
+                        <div class="form-group">
                             <label class="control-label">{% trans "Preamplifier" %} </label>
                             {{ emg_preamplifier_setting_form.amplifier }}
                             <div class="help-block with-errors"></div>

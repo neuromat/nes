@@ -97,24 +97,25 @@
                         </div>
                     </div>
                 </div>
-                <div class="row">
-                    <div class="col-xs-12 col-sm-12">
-                        <div class="form-group">
-                            <label class="control-label">{% trans "Coil model" %} <b style="color: red;">*</b></label>
-                            {{ equipment_form.coil_model }}
-                            <div class="help-block with-errors"></div>
-                        </div>
-                    </div>
-                </div>
-                <div class="row">
-                    <div class="col-xs-12 col-sm-12">
-                        <div class="form-group">
-                            <label class="control-label">{% trans "Pulse type" %}</label>
-                            {{ equipment_form.pulse_type }}
-                            <div class="help-block with-errors"></div>
-                        </div>
-                    </div>
-                </div>
+
+{#                <div class="row">#}
+{#                    <div class="col-xs-12 col-sm-12">#}
+{#                        <div class="form-group">#}
+{#                            <label class="control-label">{% trans "Coil model" %} <b style="color: red;">*</b></label>#}
+{#                            {{ equipment_form.coil_model }}#}
+{#                            <div class="help-block with-errors"></div>#}
+{#                        </div>#}
+{#                    </div>#}
+{#                </div>#}
+{#                <div class="row">#}
+{#                    <div class="col-xs-12 col-sm-12">#}
+{#                        <div class="form-group">#}
+{#                            <label class="control-label">{% trans "Pulse type" %}</label>#}
+{#                            {{ equipment_form.pulse_type }}#}
+{#                            <div class="help-block with-errors"></div>#}
+{#                        </div>#}
+{#                    </div>#}
+{#                </div>#}
 
                 {% if not editing and can_change %}
                     <div class="btn-group pull-left">
@@ -124,7 +125,34 @@
 
             </div>
             {% if not editing %}
+                <div class="container span6 offset3 well ">
+                    <h4>{% trans "Coil Model" %}</h4>
+                    <div class="form-group">
+                        <table class="table table-striped">
+                            <thead>
+                                <tr>
+                                    <th>{% trans "Coil model" %}</th>
+                                    <th>{% trans "Pulse type" %}</th>
+                                </tr>
+                            </thead>
+                            <tbody>
 
+                            {% for version in software.versions.all %}
+                                <tr>
+                                    <td>
+{#                                        <a data-toggle="tooltip" data-placement="left" title="{% trans "Visualize" %}" href="/experiment/software_version/{{ version.id }}/">{{ version.name }}</a>#}
+                                    </td>
+                                </tr>
+                            {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                    {% if perms.experiment.add_experiment %}
+                        <div class="btn-group pull-left">
+                            <a href="/experiment/tmsdevice/{{ equipment.id }}/new_coilmodel/" class="btn btn-primary">{% trans "Insert new coil model" %}</a>
+                        </div>
+                    {% endif %}
+                </div>
             {% endif %}
 
             <div class="btn-toolbar">

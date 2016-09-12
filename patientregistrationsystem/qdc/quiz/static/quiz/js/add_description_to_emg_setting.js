@@ -24,8 +24,11 @@ $(document).ready(function () {
             for (var i = 0; i < all_equipment.length; i++) {
                     options += '<option value="' + all_equipment[i].pk + '">' + all_equipment[i].fields['identification'] + '</option>';
             }
-            select_equipment.html(options);
-            select_equipment.change();
+            // select_equipment.html(options);
+            // select_equipment.change();
+
+            select_preamplifier.html(options);
+            select_preamplifier.change();
         });
     });
 
@@ -82,14 +85,17 @@ $(document).ready(function () {
     select_preamplifier.change(function () {
        var preamplifier_id = $(this).val();
        var description_field = $("#id_description");
+        var gain = $("#id_gain");
         
        var url = "/experiment/equipment/" + preamplifier_id + "/attributes";
         
        if(preamplifier_id == ""){
            description_field.prop('value', "");
+           gain.prop('value', "");
        }else{
            $.getJSON(url, function (preamplifier) {
                description_field.prop('value', preamplifier['description']);
+               gain.prop('value', preamplifier['gain']);
            })
        }
     });

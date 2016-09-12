@@ -984,6 +984,10 @@ def view_eeg_setting_type(request, eeg_setting_id, eeg_setting_type):
         list_of_manufacturers = \
             Manufacturer.objects.filter(set_of_equipment__equipment_type=equipment_type).distinct()
 
+        if eeg_setting_type == "amplifier":
+            list_of_manufacturers = \
+                Manufacturer.objects.filter(set_of_equipment__equipment_type=equipment_type, set_of_equipment__tags__name="EEG").distinct()
+
         if creating:
             equipment_form = EquipmentForm(request.POST or None)
         else:
@@ -1239,6 +1243,10 @@ def edit_eeg_setting_type(request, eeg_setting_id, eeg_setting_type):
         equipment_list = Equipment.objects.filter(equipment_type=equipment_type, tags__name="EEG")
         list_of_manufacturers = Manufacturer.objects.filter(
             set_of_equipment__equipment_type=equipment_type).distinct()
+
+        if eeg_setting_type == "amplifier":
+            list_of_manufacturers = \
+                Manufacturer.objects.filter(set_of_equipment__equipment_type=equipment_type, set_of_equipment__tags__name="EEG").distinct()
 
         equipment_form = EquipmentForm(request.POST or None, instance=equipment_selected)
 
@@ -3121,6 +3129,13 @@ def coil_update(request, coil_id, template_name="experiment/coil_register.html")
 def tmsdevice_list(request, template_name="experiment/tmsdevice_list.html"):
     return render(request, template_name, {"equipments": TMSDevice.objects.all()})
 
+@login_required
+@permission_required('experiment.register_equipment')
+def tmsdevice_coilmodel_create(request, tmsdevice_id, template_name="experiment/tmsdevice_register.html"):
+
+    context = {}
+
+    return render(request, template_name, context)
 
 @login_required
 @permission_required('experiment.register_equipment')
@@ -7419,7 +7434,8 @@ def eeg_electrode_localization_system_view(
                 return HttpResponseRedirect(redirect_url)
 
     context = {"localization_system": localization_system,
-               "localization_system_form": localization_system_form}
+               "localization_system_form": localization_system_form,
+               "editing": False}
 
     return render(request, template_name, context)
 
@@ -8258,6 +8274,8 @@ def emg_electrode_setting_preamplifier(request, emg_electrode_setting_id,
 
     creating = False
 
+    list_of_manufacturers = Manufacturer.objects.filter(set_of_equipment__equipment_type="amplifier", set_of_equipment__tags__name="EMG").distinct()
+
     if hasattr(emg_electrode_setting, 'emg_preamplifier_setting'):
 
         emg_preamplifier_setting = EMGPreamplifierSetting.objects.get(emg_electrode_setting=emg_electrode_setting)
@@ -8298,7 +8316,8 @@ def emg_electrode_setting_preamplifier(request, emg_electrode_setting_id,
                "can_change": can_change,
                "emg_electrode_setting": emg_electrode_setting,
                "emg_preamplifier_setting_form": emg_preamplifier_setting_form,
-               "equipment_form": equipment_form
+               "equipment_form": equipment_form,
+               "manufacturer_list": list_of_manufacturers
                }
 
     return render(request, template_name, context)
@@ -8321,6 +8340,8 @@ def emg_electrode_setting_preamplifier_edit(request, emg_electrode_setting_id,
 
     equipment_form = EquipmentForm(request.POST or None, instance=emg_preamplifier_selected)
 
+    list_of_manufacturers = Manufacturer.objects.filter(set_of_equipment__equipment_type="amplifier", set_of_equipment__tags__name="EMG").distinct()
+
     if request.method == "POST":
 
         if request.POST['action'] == "save":
@@ -8342,11 +8363,38 @@ def emg_electrode_setting_preamplifier_edit(request, emg_electrode_setting_id,
                "can_change": True,
                "emg_electrode_setting": emg_electrode_setting,
                "emg_preamplifier_setting_form": emg_preamplifier_setting_form,
-               "equipment_form": equipment_form
+               "equipment_form": equipment_form,
+               "manufacturer_list": list_of_manufacturers
                }
 
     return render(request, template_name, context)
 
+# @login_required
+# @permission_required('experiment.change_experiment')
+# def emg_electrode_setting_amplifier(request, emg_electrode_setting_id,
+#                                     template_name="experiment/emg_electrode_setting_amplifier.html"):
+#     emg_electrode_setting = get_object_or_404(EMGElectrodeSetting, pk=emg_electrode_setting_id)
+#
+#     can_change = get_can_change(request.user, emg_electrode_setting.emg_setting.experiment.research_project)
+#
+#     creating = False
+#     equipment_selected = None
+#
+#     list_of_manufacturers = Manufacturer.objects.filter(set_of_equipment__equipment_type="amplifier").distinct()
+#
+#
+#     context = {"creating": creating,
+#                "editing": False,
+#                "can_change": can_change,
+#                "emg_electrode_setting": emg_electrode_setting,
+#                # "emg_amplifier_setting_form": emg_amplifier_setting_form,
+#                "emg_analog_filter_setting_form": emg_analog_filter_setting_form,
+#                "equipment_form": equipment_form,
+#                "manufacturer_list": list_of_manufacturers,
+#                "equipment_selected": equipment_selected
+#                }
+#
+#     return render(request, template_name, context)
 
 @login_required
 @permission_required('experiment.change_experiment')
@@ -8359,7 +8407,7 @@ def emg_electrode_setting_amplifier(request, emg_electrode_setting_id,
 
     creating = False
 
-    list_of_manufacturers = Manufacturer.objects.filter(set_of_equipment__equipment_type="amplifier").distinct()
+    list_of_manufacturers = Manufacturer.objects.filter(set_of_equipment__equipment_type="amplifier", set_of_equipment__tags__name="EMG").distinct()
 
     if hasattr(emg_electrode_setting, 'emg_amplifier_setting'):
 
@@ -8451,6 +8499,8 @@ def emg_electrode_setting_amplifier_edit(request, emg_electrode_setting_id,
 
     equipment_form = EquipmentForm(request.POST or None, instance=emg_amplifier_selected)
 
+    list_of_manufacturers = Manufacturer.objects.filter(set_of_equipment__equipment_type="amplifier", set_of_equipment__tags__name="EMG").distinct()
+
     if hasattr(emg_amplifier_setting, 'emg_analog_filter_setting'):
 
         emg_analog_filter_setting = emg_electrode_setting.emg_amplifier_setting.emg_analog_filter_setting
@@ -8497,7 +8547,8 @@ def emg_electrode_setting_amplifier_edit(request, emg_electrode_setting_id,
                "emg_electrode_setting": emg_electrode_setting,
                "emg_amplifier_setting_form": emg_amplifier_setting_form,
                "emg_analog_filter_setting_form": emg_analog_filter_setting_form,
-               "equipment_form": equipment_form
+               "equipment_form": equipment_form,
+               "manufacturer_list": list_of_manufacturers
                }
 
     return render(request, template_name, context)
