@@ -372,20 +372,6 @@ class EquipmentForm(ModelForm):
             'description': Textarea(attrs={'class': 'form-control', 'rows': '4', 'disabled': ''})
         }
 
-class EquipmentTMSDeviceForm(ModelForm):
-    class Meta:
-        model = Equipment
-        fields = ['manufacturer', 'identification','description', 'serial_number', 'equipment_type']
-
-        widgets = {
-            'manufacturer': Select(attrs={'class': 'form-control', 'required': "",
-                                          'data-error': _('Manufacturer must be filled.')}),
-            'identification': TextInput(attrs={'class': 'form-control', 'required': "",
-                                               'data-error': _('Identification must be filled.')}),
-            'description': Textarea(attrs={'class': 'form-control', 'rows': '4'}),
-            'serial_number': TextInput(attrs={'class': 'form-control'})
-        }
-
 
 class EEGMachineForm(ModelForm):
     class Meta:
@@ -637,7 +623,7 @@ class TMSDeviceRegisterForm(ModelForm):
     class Meta:
         model = TMSDevice
         # fields = ['manufacturer', 'identification', 'description', 'coil_model', 'pulse_type']
-        fields = ['manufacturer', 'identification', 'description', 'pulse_type']
+        fields = ['manufacturer', 'identification', 'description', 'pulse_type', 'serial_number']
 
         widgets = {
             'manufacturer': Select(attrs={'class': 'form-control', 'required': "",
@@ -647,7 +633,8 @@ class TMSDeviceRegisterForm(ModelForm):
             'description': Textarea(attrs={'class': 'form-control', 'rows': '4'}),
             # 'coil_model': Select(attrs={'class': 'form-control', 'required': "",
             #                             'data-error': _('Coil model must be filled.')}),
-            'pulse_type': Select(attrs={'class': 'form-control'})
+            'pulse_type': Select(attrs={'class': 'form-control'}),
+            'serial_number': TextInput(attrs={'class': 'form-control'})
         }
 
 

@@ -60,7 +60,7 @@ from experiment.forms import ExperimentForm, QuestionnaireResponseForm, FileForm
     TMSForm, TMSSettingForm, TMSDeviceSettingForm, CoilModelRegisterForm, TMSDeviceRegisterForm, \
     SoftwareRegisterForm, SoftwareVersionRegisterForm, EMGIntramuscularPlacementForm, \
     EMGSurfacePlacementRegisterForm, EMGIntramuscularPlacementRegisterForm, EMGNeedlePlacementRegisterForm, \
-    SubjectStepDataForm, EquipmentTMSDeviceForm
+    SubjectStepDataForm
 
 from export.export import create_directory
 
@@ -3128,13 +3128,13 @@ def coil_update(request, coil_id, template_name="experiment/coil_register.html")
 @permission_required('experiment.register_equipment')
 def tmsdevice_list(request, template_name="experiment/tmsdevice_list.html"):
     return render(request, template_name, {"equipments": TMSDevice.objects.all()})
-    # return render(request, template_name, {"equipments": Equipment.objects.filter(equipment_type='tms_device')})
 
 @login_required
 @permission_required('experiment.register_equipment')
-def tmsdevice_equipment_create(request, template_name="experiment/tmsdevice_new.html"):
+def tmsdevice_create(request, template_name="experiment/tmsdevice_register.html"):
 
-    tms_device_form = EquipmentTMSDeviceForm(request.POST or None)
+    tms_device_form = TMSDeviceRegisterForm(request.POST or None)
+
 
     if request.method == "POST":
 
@@ -3145,9 +3145,6 @@ def tmsdevice_equipment_create(request, template_name="experiment/tmsdevice_new.
                 tms_device_added = tms_device_form.save(commit=False)
                 tms_device_added.equipment_type = 'tms_device'
                 tms_device_added.save()
-
-                # tag = get_object_or_404(Tag, name="TMS")
-                # tms_device_added.equipment_ptr.tags.add(tag)
 
                 messages.success(request, _('TMS device created successfully.'))
                 redirect_url = reverse("tmsdevice_view", args=(tms_device_added.id,))
@@ -3165,12 +3162,13 @@ def tmsdevice_equipment_create(request, template_name="experiment/tmsdevice_new.
 
     return render(request, template_name, context)
 
+
 @login_required
 @permission_required('experiment.register_equipment')
-def tmsdevice_view(request, tmsdevice_id, template_name="experiment/tmsdevice_new.html"):
-    tmsdevice = get_object_or_404(Equipment, pk=tmsdevice_id)
+def tmsdevice_view(request, tmsdevice_id, template_name="experiment/tmsdevice_register.html"):
+    tmsdevice = get_object_or_404(TMSDevice, pk=tmsdevice_id)
 
-    tmsdevice_form = EquipmentTMSDeviceForm(request.POST or None, instance=tmsdevice)
+    tmsdevice_form = TMSDeviceRegisterForm(request.POST or None, instance=tmsdevice)
 
     for field in tmsdevice_form.fields:
         tmsdevice_form.fields[field].widget.attrs['disabled'] = True
@@ -3193,78 +3191,13 @@ def tmsdevice_view(request, tmsdevice_id, template_name="experiment/tmsdevice_ne
 
     return render(request, template_name, context)
 
-@login_required
-@permission_required('experiment.register_equipment')
-def tmsdevice_create(request, template_name="experiment/tmsdevice_register.html"):
-
-    tms_device_form = TMSDeviceRegisterForm(request.POST or None)
-
-
-    if request.method == "POST":
-
-        if request.POST['action'] == "save":
-
-            if tms_device_form.is_valid():
-
-                tms_device_added = tms_device_form.save(commit=False)
-                tms_device_added.save()
-
-                messages.success(request, _('TMS device created successfully.'))
-                redirect_url = reverse("tmsdevice_view", args=(tms_device_added.id,))
-                return HttpResponseRedirect(redirect_url)
-
-            else:
-                messages.warning(request, _('Information not saved.'))
-
-        else:
-            messages.warning(request, _('Action not available.'))
-
-    context = {"equipment_form": tms_device_form,
-               "creating": True,
-               "editing": True}
-
-    return render(request, template_name, context)
-
-
-# @login_required
-# @permission_required('experiment.register_equipment')
-# def tmsdevice_view(request, tmsdevice_id, template_name="experiment/tmsdevice_register.html"):
-#     tmsdevice = get_object_or_404(TMSDevice, pk=tmsdevice_id)
-#
-#     tmsdevice_form = TMSDeviceRegisterForm(request.POST or None, instance=tmsdevice)
-#
-#     for field in tmsdevice_form.fields:
-#         tmsdevice_form.fields[field].widget.attrs['disabled'] = True
-#
-#     if request.method == "POST":
-#         if request.POST['action'] == "remove":
-#
-#             try:
-#                 tmsdevice.delete()
-#                 messages.success(request, _('TMS device removed successfully.'))
-#                 return redirect('tmsdevice_list')
-#             except ProtectedError:
-#                 messages.error(request, _("Error trying to delete TMS device."))
-#                 redirect_url = reverse("tmsdevice_view", args=(tmsdevice_id,))
-#                 return HttpResponseRedirect(redirect_url)
-#
-#     context = {"can_change": True,
-#                "equipment": tmsdevice,
-#                "equipment_form": tmsdevice_form}
-#
-#     return render(request, template_name, context)
-
 
 @login_required
 @permission_required('experiment.register_equipment')
-def tmsdevice_update(request, tmsdevice_id, template_name="experiment/tmsdevice_new.html"):
-    # tmsdevice = get_object_or_404(TMSDevice, pk=tmsdevice_id)
-    #
-    # tmsdevice_form = TMSDeviceRegisterForm(request.POST or None, instance=tmsdevice)
+def tmsdevice_update(request, tmsdevice_id, template_name="experiment/tmsdevice_register.html"):
+    tmsdevice = get_object_or_404(TMSDevice, pk=tmsdevice_id)
 
-    tmsdevice = get_object_or_404(Equipment, pk=tmsdevice_id)
-
-    tmsdevice_form = EquipmentTMSDeviceForm(request.POST or None, instance=tmsdevice)
+    tmsdevice_form = TMSDeviceRegisterForm(request.POST or None, instance=tmsdevice)
 
     if request.method == "POST":
         if request.POST['action'] == "save":
