@@ -324,7 +324,7 @@ msgstr "Conversor A/D"
 #: experiment/templates/experiment/tmsdevice_register.html:72
 #: experiment/views.py:8430
 msgid "TMS device"
-msgstr ""
+msgstr "Dispositivo TMS"
 
 #: experiment/models.py:132 experiment/models.py:133
 msgid "Equipment"

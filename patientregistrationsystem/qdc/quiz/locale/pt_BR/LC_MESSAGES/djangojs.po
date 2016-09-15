@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2016-08-22 10:26-0300\n"
+"POT-Creation-Date: 2016-09-15 16:19-0300\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -42,18 +42,18 @@ msgstr "Tem certeza que deseja excluir estes "
 msgid "  uses of step from list?"
 msgstr " usos de passo da lista?"
 
-#: quiz/static/quiz/js/eeg_electrode_cap_coordinates.js:75
-#: quiz/static/quiz/js/eeg_electrode_cap_coordinates.js:214
+#: quiz/static/quiz/js/eeg_electrode_cap_coordinates.js:77
+#: quiz/static/quiz/js/eeg_electrode_cap_coordinates.js:218
 msgid "delete"
 msgstr "remover"
 
-#: quiz/static/quiz/js/eeg_electrode_cap_coordinates.js:119
+#: quiz/static/quiz/js/eeg_electrode_cap_coordinates.js:122
 msgid "Please click on a new position on the image to update this point"
 msgstr ""
 "Por favor, clique em uma nova posição sobre a imagem para atualizar este "
 "ponto"
 
-#: quiz/static/quiz/js/eeg_electrode_cap_coordinates.js:276
+#: quiz/static/quiz/js/eeg_electrode_cap_coordinates.js:283
 msgid ""
 "This coodinates can't be modified because is being used by some EEG layout "
 "setting! "
@@ -61,21 +61,24 @@ msgstr ""
 "Esta coordenada não pode ser modificada porque esta sendo usada por alguma "
 "configuração de EEG!"
 
-#: quiz/static/quiz/js/eeg_electrode_cap_coordinates.js:320
-#: quiz/static/quiz/js/eeg_electrode_cap_coordinates.js:350
-msgid "Confirms the coordinates? x - y: "
-msgstr "Confirma as coordenadas? x - y: "
-
-#: quiz/static/quiz/js/eeg_electrode_cap_coordinates.js:322
-msgid "Please enter the name this point"
-msgstr "Por favor insira o nome do ponto"
-
-#: quiz/static/quiz/js/eeg_electrode_cap_coordinates.js:348
+#: quiz/static/quiz/js/eeg_electrode_cap_coordinates.js:291
+#: quiz/static/quiz/js/eeg_electrode_cap_coordinates.js:332
 msgid "Updating point "
 msgstr "Atualizando ponto "
 
-#: quiz/static/quiz/js/eeg_electrode_cap_coordinates.js:351
+#: quiz/static/quiz/js/eeg_electrode_cap_coordinates.js:292
+#: quiz/static/quiz/js/eeg_electrode_cap_coordinates.js:334
+#: quiz/static/quiz/js/eeg_electrode_cap_coordinates.js:355
+msgid "Confirms the coordinates? x - y: "
+msgstr "Confirma as coordenadas? x - y: "
+
+#: quiz/static/quiz/js/eeg_electrode_cap_coordinates.js:293
+#: quiz/static/quiz/js/eeg_electrode_cap_coordinates.js:335
 msgid "Please enter the name of the point"
+msgstr "Por favor insira o nome do ponto"
+
+#: quiz/static/quiz/js/eeg_electrode_cap_coordinates.js:357
+msgid "Please enter the name this point"
 msgstr "Por favor insira o nome do ponto"
 
 #: quiz/static/quiz/js/password.js:18
