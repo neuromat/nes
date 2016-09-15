@@ -144,10 +144,10 @@ urlpatterns = patterns(
 
     # register TMS device
     url(r'^tmsdevice/list/$', 'tmsdevice_list', name='tmsdevice_list'),
-    url(r'^tmsdevice/new/$', 'tmsdevice_create', name='tmsdevice_new'),
+    # url(r'^tmsdevice/new/$', 'tmsdevice_create', name='tmsdevice_new'),
+    url(r'^tmsdevice/new/$', 'tmsdevice_equipment_create', name='tmsdevice_equipment_new'),
     url(r'^tmsdevice/(?P<tmsdevice_id>\d+)/$', 'tmsdevice_view', name='tmsdevice_view'),
     url(r'^tmsdevice/edit/(?P<tmsdevice_id>\d+)/$', 'tmsdevice_update', name='tmsdevice_edit'),
-    url(r'^tmsdevice/(?P<tmsdevice_id>\d+)/new_coilmodel/$', 'tmsdevice_coilmodel_create', name='tmsdevice_coilmodel_new'),
 
     # Localization system and position
     url(r'^eeg_electrode_localization_system/list/$',
