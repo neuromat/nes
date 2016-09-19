@@ -134,7 +134,7 @@ class ComponentConfigurationForm(ModelForm):
     class Meta:
         model = ComponentConfiguration
         fields = ['name', 'random_position', 'number_of_repetitions', 'interval_between_repetitions_value',
-                  'interval_between_repetitions_unit']
+                  'interval_between_repetitions_unit', 'requires_start_and_end_datetime']
 
         widgets = {
             'name': TextInput(attrs={'class': 'form-control'}),

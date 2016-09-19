@@ -5531,8 +5531,7 @@ def subject_additional_data_view(request, group_id, subject_id,
     context = {"can_change": get_can_change(request.user, group.experiment.research_project),
                'group': group,
                'subject': subject,
-               'data_collections': data_collections,
-               'required_steps_to_set_time_period': ['pause', 'task', 'task_experiment', 'eeg', 'emg', 'tms']
+               'data_collections': data_collections
                }
 
     return render(request, template_name, context)

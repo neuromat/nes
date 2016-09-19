@@ -99,8 +99,8 @@
                                                         </a>
                                                     {% endif %}
 
-                                                    {% if data_collection.component_configuration and not data_collection.subject_step_data.start_time and not data_collection.subject_step_data.end_time and data_collection.component_configuration.component.component_type in required_steps_to_set_time_period %}
-                                                        <span class="label label-warning">{% trans "not set" %}</span>
+                                                    {% if data_collection.component_configuration and not data_collection.subject_step_data.start_time and not data_collection.subject_step_data.end_time and data_collection.component_configuration.requires_start_and_end_datetime %}
+                                                        <span class="label label-warning">{% trans "required" %}</span>
                                                     {% endif %}
                                                 </h6>
 
