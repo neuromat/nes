@@ -202,14 +202,10 @@ msgid "Muscle subdivision is required."
 msgstr "A subdivisão do músculo é necessário"
 
 #: experiment/forms.py:916
-#, fuzzy
-#| msgid "Initial date must be filled."
 msgid "Start date must be filled."
 msgstr "Data inicial deve ser preenchida."
 
 #: experiment/forms.py:920
-#, fuzzy
-#| msgid "Fill date must be filled."
 msgid "End date must be filled."
 msgstr "Data de preechimento deve ser preenchida."
 
@@ -579,13 +575,9 @@ msgid "Experiment created successfully."
 msgstr "Experimento criado com sucesso."
 
 #: experiment/views.py:370 experiment/views.py:6431
-#, fuzzy
-#| msgid ""
-#| "Impossible to delete group because there is (are) data collection "
-#| "associated."
 msgid ""
 "It was not possible to exclude because there is data collection associated."
-msgstr "Impossível remover grupo porque existe coleção de dados associado(s)."
+msgstr "Não foi possível remover porque existe coleta de dados associada."
 
 #: experiment/views.py:376
 msgid "Experiment removed successfully."
@@ -1086,16 +1078,11 @@ msgid "Finished"
 msgstr ""
 
 #: experiment/views.py:5001
-#, fuzzy
-#| msgid ""
-#| "It was not possible to open the questionnaire. Please, enable pop-ups for "
-#| "this site."
 msgid ""
 "It was not possible to open the data file. Check if the number of channels "
 "configured is correct."
 msgstr ""
-"Não foi possível abrir o questionário. Por favor, habilite pop-ups paraeste "
-"site."
+"Não foi possível abrir o arquivo de dados. Verifique se o número de canais configurado está correto."
 
 #: experiment/views.py:5058
 msgid "Reading metadata"
@@ -1110,14 +1097,10 @@ msgid "Device type: Amplifier; "
 msgstr ""
 
 #: experiment/views.py:5098 experiment/views.py:5127 experiment/views.py:5160
-#, fuzzy
-#| msgid "Description must be filled."
 msgid "Description: "
 msgstr "Descrição deve ser preenchida."
 
 #: experiment/views.py:5102 experiment/views.py:5131 experiment/views.py:5164
-#, fuzzy
-#| msgid "Manufacturer"
 msgid "Manufacturer: "
 msgstr "Fabricante"
 
@@ -1142,16 +1125,12 @@ msgid "Number of used channels: "
 msgstr ""
 
 #: experiment/views.py:5140
-#, fuzzy
-#| msgid "Software version created successfully."
 msgid "Software version: "
-msgstr "Versão do Software criado com sucesso."
+msgstr "Versão do software: "
 
 #: experiment/views.py:5156
-#, fuzzy
-#| msgid "EEG Electrode Net"
 msgid "Device type: EEG Electrode Net; "
-msgstr "Rede de eletrodos de EEG"
+msgstr "Tipo de dispositivo: rede de eletrodos de EEG; "
 
 #: experiment/views.py:5178
 msgid "Position: "
@@ -1162,20 +1141,16 @@ msgid "Coordinates: ("
 msgstr ""
 
 #: experiment/views.py:5182
-#, fuzzy
-#| msgid "EEG electrode localization system"
 msgid "EEG electrode localization system: "
-msgstr "Sistema de localização de eletrodos de EEG criada com sucesso."
+msgstr "Sistema de localização de eletrodos de EEG: "
 
 #: experiment/views.py:5193
 msgid "Reading acquisition data"
 msgstr ""
 
 #: experiment/views.py:5270
-#, fuzzy
-#| msgid "Filter type"
 msgid "Filter type:"
-msgstr "Tipo de Filtro"
+msgstr "Tipo de Filtro:"
 
 #: experiment/views.py:5275
 msgid "High pass: "
@@ -1214,16 +1189,12 @@ msgid "Additional data updated successfully."
 msgstr "Dados adicionais atualizados com sucesso."
 
 #: experiment/views.py:5724
-#, fuzzy
-#| msgid "Study created successfully."
 msgid "Subject step data was created successfully."
-msgstr "Estudo criado com sucesso."
+msgstr "Dados do passo do participante criados com sucesso."
 
 #: experiment/views.py:5758
-#, fuzzy
-#| msgid "Step updated successfully."
 msgid "Subject step data updated successfully."
-msgstr "Passo atualizado com sucesso."
+msgstr "Dados do passo do participante atualizados com sucesso."
 
 #: experiment/views.py:5829
 msgid "Participant has already been inserted in this group."
