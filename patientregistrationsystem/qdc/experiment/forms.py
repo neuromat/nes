@@ -7,7 +7,7 @@ from django.utils.translation import ugettext_lazy as _
 
 from experiment.models import Experiment, QuestionnaireResponse, SubjectOfGroup, Group, \
     Component, Stimulus, Block, Instruction, ComponentConfiguration, ResearchProject, EEGData, \
-    EEGSetting, Equipment, EEG, EMG, EEGMachine, EEGMachineSetting, Amplifier, EEGAmplifierSetting, \
+    EEGSetting, Equipment, EEG, EMG, Amplifier, EEGAmplifierSetting, \
     EEGSolution, EEGFilterSetting, FilterType, EEGElectrodeLocalizationSystem, \
     EEGCapSize, EEGElectrodeCap, EEGElectrodePosition, Manufacturer, ElectrodeModel, EEGElectrodeNet, Material, \
     AdditionalData, EMGData, FileFormat, EMGSetting, EMGDigitalFilterSetting, EMGADConverterSetting, \
@@ -373,53 +373,36 @@ class EquipmentForm(ModelForm):
         }
 
 
-class EEGMachineForm(ModelForm):
-    class Meta:
-        model = EEGMachine
-        fields = ['number_of_channels', 'software_version']
-
-        widgets = {
-            'number_of_channels': TextInput(attrs={'class': 'form-control', 'disabled': ''}),
-            'software_version': TextInput(attrs={'class': 'form-control', 'disabled': ''})
-        }
-
-
-class EEGMachineSettingForm(ModelForm):
-    class Meta:
-        model = EEGMachineSetting
-        fields = ['number_of_channels_used']
-
-        widgets = {
-            'number_of_channels_used':
-                NumberInput(attrs={
-                    'class': 'form-control',
-                    'required': "",
-                    "min": "0",
-                    'data-error':
-                    _('Number of channels should be between 0 and the number of channels of the EEG machine.')})
-        }
-
-
 class EEGAmplifierForm(ModelForm):
     class Meta:
         model = Amplifier
-        localized_fields = ('gain', )
-        fields = ['gain']
+        localized_fields = ('gain', 'number_of_channels')
+        fields = ['gain', 'number_of_channels']
 
         widgets = {
-            'gain': TextInput(attrs={'class': 'form-control', 'disabled': ''})
+            'gain': TextInput(attrs={'class': 'form-control', 'disabled': ''}),
+            'number_of_channels': TextInput(attrs={'class': 'form-control', 'disabled': ''}),
         }
 
 
 class EEGAmplifierSettingForm(ModelForm):
     class Meta:
         model = EEGAmplifierSetting
-        localized_fields = ('gain', 'sampling_rate', )
-        fields = ['gain', 'sampling_rate']
+        localized_fields = ('gain', 'sampling_rate', 'number_of_channels_used')
+        fields = ['gain', 'sampling_rate', 'number_of_channels_used']
 
         widgets = {
             'gain': TextInput(attrs={'class': 'form-control'}),
-            'sampling_rate': TextInput(attrs={'class': 'form-control'})
+            'sampling_rate': TextInput(attrs={'class': 'form-control'}),
+            'number_of_channels_used':
+                NumberInput(attrs={
+                    'class': 'form-control',
+                    'required': "",
+                    "min": "0",
+                    'data-error':
+                        _('Number of channels should be between 0 and the number of channels of the EEG machine.')}),
+
+
         }
 
 
@@ -496,32 +479,33 @@ class ManufacturerRegisterForm(ModelForm):
         }
 
 
-class EEGMachineRegisterForm(ModelForm):
-    class Meta:
-        model = EEGMachine
-        fields = ['manufacturer', 'identification', 'description', 'serial_number',
-                  'number_of_channels', 'software_version']
-
-        widgets = {
-
-            'manufacturer': Select(attrs={'class': 'form-control', 'required': "",
-                                          'data-error': _('Manufacturer must be filled.')}),
-            'identification': TextInput(attrs={'class': 'form-control', 'required': "",
-                                               'data-error': _('Identification must be filled.')}),
-            'description': Textarea(attrs={'class': 'form-control', 'rows': '4'}),
-            'serial_number': TextInput(attrs={'class': 'form-control'}),
-            'number_of_channels': NumberInput(attrs={'class': 'form-control'}),
-            'software_version': TextInput(attrs={'class': 'form-control'})
-        }
+# class EEGMachineRegisterForm(ModelForm):
+#     class Meta:
+#         model = EEGMachine
+#         fields = ['manufacturer', 'identification', 'description', 'serial_number',
+#                   'number_of_channels', 'software_version']
+#
+#         widgets = {
+#
+#             'manufacturer': Select(attrs={'class': 'form-control', 'required': "",
+#                                           'data-error': _('Manufacturer must be filled.')}),
+#             'identification': TextInput(attrs={'class': 'form-control', 'required': "",
+#                                                'data-error': _('Identification must be filled.')}),
+#             'description': Textarea(attrs={'class': 'form-control', 'rows': '4'}),
+#             'serial_number': TextInput(attrs={'class': 'form-control'}),
+#             'number_of_channels': NumberInput(attrs={'class': 'form-control'}),
+#             'software_version': TextInput(attrs={'class': 'form-control'})
+#         }
 
 
 class AmplifierRegisterForm(ModelForm):
     class Meta:
         model = Amplifier
 
-        localized_fields = ('gain',)
+        localized_fields = ('gain','common_mode_rejection_ratio', 'input_impedance')
 
-        fields = ['manufacturer', 'identification', 'description', 'serial_number', 'gain']
+        fields = ['manufacturer', 'identification', 'description', 'serial_number', 'gain', 'number_of_channels',
+                  'common_mode_rejection_ratio', 'input_impedance', 'input_impedance_unit']
 
         widgets = {
             'manufacturer': Select(attrs={'class': 'form-control', 'required': "",
@@ -530,7 +514,11 @@ class AmplifierRegisterForm(ModelForm):
                                                'data-error': _('Identification must be filled.')}),
             'description': Textarea(attrs={'class': 'form-control', 'rows': '4'}),
             'serial_number': TextInput(attrs={'class': 'form-control'}),
-            'gain': TextInput(attrs={'class': 'form-control'})
+            'gain': TextInput(attrs={'class': 'form-control'}),
+            'number_of_channels': NumberInput(attrs={'class': 'form-control'}),
+            'common_mode_rejection_ratio': TextInput(attrs={'class': 'form-control'}),
+            'input_impedance': TextInput(attrs={'class': 'form-control'}),
+            'input_impedance_unit': Select(attrs={'class': 'form-control'}),
         }
 
 

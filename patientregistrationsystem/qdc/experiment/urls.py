@@ -36,12 +36,6 @@ urlpatterns = patterns(
     url(r'^manufacturer/(?P<manufacturer_id>\d+)/$', 'manufacturer_view', name='manufacturer_view'),
     url(r'^manufacturer/edit/(?P<manufacturer_id>\d+)/$', 'manufacturer_update', name='manufacturer_edit'),
 
-    # register eeg machine
-    url(r'^eegmachine/list/$', 'eegmachine_list', name='eegmachine_list'),
-    url(r'^eegmachine/new/$', 'eegmachine_create', name='eegmachine_new'),
-    url(r'^eegmachine/(?P<eegmachine_id>\d+)/$', 'eegmachine_view', name='eegmachine_view'),
-    url(r'^eegmachine/edit/(?P<eegmachine_id>\d+)/$', 'eegmachine_update', name='eegmachine_edit'),
-
     # register amplifier
     url(r'^amplifier/list/$', 'amplifier_list', name='amplifier_list'),
     url(r'^amplifier/new/$', 'amplifier_create', name='amplifier_new'),
@@ -176,8 +170,6 @@ urlpatterns = patterns(
         'view_eeg_setting_type', name='view_eeg_setting_type'),
     url(r'^eeg_setting/(?P<eeg_setting_id>\d+)/(?P<eeg_setting_type>\w+)/edit/$',
         'edit_eeg_setting_type', name='edit_eeg_setting_type'),
-    # url(r'^eeg_setting/(?P<eeg_setting_id>\d+)/equipment/(?P<equipment_id>\d+)/$',
-    #     'equipment_view', name='equipment_view'),
     url(r'^eeg_setting/eeg_electrode_position_status/(?P<eeg_setting_id>\d+)/$',
         'eeg_electrode_position_setting', name='eeg_electrode_position_setting'),
     url(r'^eeg_setting/eeg_electrode_cap/(?P<eeg_setting_id>\d+)/$',
@@ -195,8 +187,6 @@ urlpatterns = patterns(
     url(r'^equipment/(?P<equipment_id>\d+)/attributes/$', 'get_json_equipment_attributes'),
     url(r'^solution/(?P<solution_id>\d+)/attributes/$', 'get_json_solution_attributes'),
     url(r'^filter/(?P<filter_id>\d+)/attributes/$', 'get_json_filter_attributes'),
-    # url(r'^eeg_localization_system/(?P<eeg_localization_system_id>\d+)/attributes/$',
-    #     'get_json_eeg_localization_system_attributes'),
     url(r'^equipment/get_localization_system_by_electrode_net/(?P<equipment_id>\d+)/$',
         'get_localization_system_by_electrode_net'),
     url(r'^equipment/get_equipment_by_manufacturer_and_localization_system/'
