@@ -7,7 +7,7 @@ from django.db import migrations, models
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('experiment', '0063_tmsdevicesetting_coilmodel_null'),
+        ('experiment', '0066_delete_models_EEGMachine_EEGMachineSetting'),
     ]
 
     operations = [
