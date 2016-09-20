@@ -111,34 +111,6 @@
                             </tr>
                             </thead>
                             <tbody>
-
-                                <tr>
-                                    <td>{% trans "EEG machine" %}</td>
-                                    <td>
-                                        {% if eeg_setting.eeg_machine_setting %}
-
-                                            <a role="menuitem" tabindex="-1" href="/experiment/eeg_setting/{{ eeg_setting.id }}/eeg_machine">
-                                                {{ eeg_setting.eeg_machine_setting.eeg_machine.identification }}
-                                            </a>
-                                            <blockquote>
-                                                <i><h6>
-                                                    {% trans "Number of used channels" %}: {{ eeg_setting.eeg_machine_setting.number_of_channels_used }}
-                                                </h6></i>
-                                            </blockquote>
-
-                                        {% else %}
-                                            {% if can_change %}
-                                                <a role="menuitem" tabindex="-1" href="/experiment/eeg_setting/{{ eeg_setting.id }}/eeg_machine"> {% trans "+ Add setting" %}</a>
-                                            {% endif %}
-                                        {% endif %}
-                                    </td>
-                                    <td>
-                                        {% if eeg_setting.eeg_machine_setting and can_change %}
-                                            <a class="btn glyphicon glyphicon-remove" data-toggle="tooltip" data-placement="right" title="{% trans "Delete setting from list" %}" style="color: indianred; vertical-align: -5%; padding-left: 0;"
-                                               onclick="show_modal_remove_equipment('eeg_machine');"></a>
-                                        {% endif %}
-                                    </td>
-                                </tr>
                                 <tr>
                                     <td>{% trans "Amplifier" %}</td>
                                     <td>

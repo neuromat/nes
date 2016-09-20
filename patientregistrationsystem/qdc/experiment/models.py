@@ -137,11 +137,6 @@ class Equipment(models.Model):
         )
 
 
-class EEGMachine(Equipment):
-    number_of_channels = models.IntegerField(null=True, blank=True, validators=[MinValueValidator(0)])
-    software_version = models.CharField(max_length=150, null=True, blank=True)
-
-
 class AmplifierDetectionType(models.Model):
     name = models.CharField(max_length=150)
 
@@ -403,17 +398,12 @@ class EEGSetting(models.Model):
         return self.name
 
 
-class EEGMachineSetting(models.Model):
-    eeg_setting = models.OneToOneField(EEGSetting, primary_key=True, related_name='eeg_machine_setting')
-    eeg_machine = models.ForeignKey(EEGMachine)
-    number_of_channels_used = models.IntegerField(validators=[MinValueValidator(0)])
-
-
 class EEGAmplifierSetting(models.Model):
     eeg_setting = models.OneToOneField(EEGSetting, primary_key=True, related_name='eeg_amplifier_setting')
     eeg_amplifier = models.ForeignKey(Amplifier)
     gain = models.FloatField(null=True, blank=True, validators=[MinValueValidator(0)])
     sampling_rate = models.FloatField(null=True, blank=True, validators=[MinValueValidator(0)])
+    number_of_channels_used = models.IntegerField(null=True, validators=[MinValueValidator(0)])
 
 
 class EEGSolutionSetting(models.Model):
