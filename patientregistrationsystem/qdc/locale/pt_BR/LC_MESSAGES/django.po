@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2016-08-22 10:28-0300\n"
+"POT-Creation-Date: 2016-09-19 11:18-0300\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -869,8 +869,10 @@ msgstr ""
 msgid "E-mail"
 msgstr ""
 
-#~ msgid "Password reset on %(site_name)s"
-#~ msgstr "Alterar senha em %(site_name)s"
+#: templates/registration/password_reset_subject.txt:2
+#, python-format
+msgid "Password reset on %(site_name)s"
+msgstr "Alterar senha em %(site_name)s"
 
 #~ msgid "Export was finished correctly"
 #~ msgstr "Exportação foi finalizada com sucesso"

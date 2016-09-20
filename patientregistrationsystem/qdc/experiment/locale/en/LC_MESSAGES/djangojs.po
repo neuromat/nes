@@ -1071,16 +1071,10 @@ msgid "Finished"
 msgstr ""
 
 #: experiment/views.py:5001
-#, fuzzy
-#| msgid ""
-#| "It was not possible to open the questionnaire. Please, enable pop-ups for "
-#| "this site."
 msgid ""
 "It was not possible to open the data file. Check if the number of channels "
 "configured is correct."
 msgstr ""
-"It was not possible to open the questionnaire. Please, enable pop-ups for "
-"this site."
 
 #: experiment/views.py:5058
 msgid "Reading metadata"

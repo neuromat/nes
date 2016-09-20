@@ -743,6 +743,8 @@ class ComponentConfiguration(models.Model):
     # This is null when the parent is a parallel block.
     random_position = models.NullBooleanField(blank=True)
 
+    requires_start_and_end_datetime = models.BooleanField(default=False)
+
     class Meta:
         unique_together = ('parent', 'order',)
 
