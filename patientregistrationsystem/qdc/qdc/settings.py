@@ -58,6 +58,7 @@ PROJECT_APPS = (
     'survey',
     'cep',
     'export',
+    'team',
 )
 
 PROJECT_TAGS_APPS = (
