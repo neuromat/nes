@@ -11,7 +11,7 @@ from django.http import HttpResponseRedirect, HttpResponse
 from django.shortcuts import get_object_or_404, render, redirect
 from django.utils.translation import ugettext as _
 
-from .forms import PersonRegisterForm
+from .forms import PersonRegisterForm, TeamRegisterForm
 from .models import Person, Team
 
 
@@ -26,7 +26,7 @@ def registers(request, template_name="team/registers.html"):
         },
         {
             'item': _('Teams'),
-            'href': reverse("person_list", args=()),
+            'href': reverse("team_list", args=()),
             'quantity': Team.objects.all().count()
         },
     ]
@@ -144,3 +144,102 @@ def get_json_user_attributes(request, user_id):
     }
 
     return HttpResponse(json.dumps(response_data), content_type='application/json')
+
+
+@login_required
+@permission_required('team.change_team')
+def team_list(request, template_name='team/team_list.html'):
+    return render(request, template_name, context={"teams": Team.objects.all().order_by('name')})
+
+
+@login_required
+@permission_required('team.change_team')
+def team_create(request, template_name="team/team_register.html"):
+
+    team_form = TeamRegisterForm(request.POST or None)
+
+    if request.method == "POST":
+
+        if request.POST['action'] == "save":
+
+            if team_form.is_valid():
+
+                team_added = team_form.save()
+
+                # sync user
+                # if person_added.user:
+                #     person_added.user.first_name = person_added.first_name
+                #     person_added.user.last_name = person_added.last_name
+                #     person_added.user.save()
+
+                messages.success(request, _('Team created successfully.'))
+#                redirect_url = reverse("team_view", args=(team_added.id,))
+                redirect_url = reverse("team_list", args=())
+                return HttpResponseRedirect(redirect_url)
+
+            else:
+                messages.warning(request, _('Information not saved.'))
+
+        else:
+            messages.warning(request, _('Action not available.'))
+
+    context = {"team_form": team_form,
+               "creating": True,
+               "editing": True}
+
+    return render(request, template_name, context)
+
+
+@login_required
+@permission_required('team.change_team')
+def team_view(request, team_id, template_name="team/team_register.html"):
+    team = get_object_or_404(Team, pk=team_id)
+
+    team_form = TeamRegisterForm(request.POST or None, instance=team)
+
+    for field in team_form.fields:
+        team_form.fields[field].widget.attrs['disabled'] = True
+
+    if request.method == "POST":
+        if request.POST['action'] == "remove":
+
+            try:
+                team.delete()
+                messages.success(request, _('Team removed successfully.'))
+                return redirect('team_list')
+            except ProtectedError:
+                messages.error(request, _("Error trying to delete a team."))
+                redirect_url = reverse("team_view", args=(team_id,))
+                return HttpResponseRedirect(redirect_url)
+
+    context = {"can_change": True,
+               "team": team,
+               "team_form": team_form}
+
+    return render(request, template_name, context)
+
+
+@login_required
+@permission_required('team.change_team')
+def team_update(request, team_id, template_name="team/team_register.html"):
+    team = get_object_or_404(Team, pk=team_id)
+
+    team_form = TeamRegisterForm(request.POST or None, instance=team)
+
+    if request.method == "POST":
+        if request.POST['action'] == "save":
+            if team_form.is_valid():
+                if team_form.has_changed():
+                    team_form.save()
+                    messages.success(request, _('Team updated successfully.'))
+                else:
+                    messages.success(request, _('There is no changes to save.'))
+
+                redirect_url = reverse("team_view", args=(team.id,))
+                return HttpResponseRedirect(redirect_url)
+
+    context = {"team": team,
+               "team_form": team_form,
+               "editing": True}
+
+    return render(request, template_name, context)

@@ -11,7 +11,7 @@ class Person(models.Model):
 
 
 class Team(models.Model):
-    name = models.CharField(max_length=150),
+    name = models.CharField(max_length=150)
     acronym = models.CharField(max_length=20)
 
 

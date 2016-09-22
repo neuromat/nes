@@ -13,4 +13,10 @@ urlpatterns = patterns(
 
     # register person (ajax)
     url(r'^person/get_user_attributes/(?P<user_id>\d+)/$', 'get_json_user_attributes'),
+
+    url(r'^team/list/$', 'team_list', name='team_list'),
+    url(r'^team/new/$', 'team_create', name='team_new'),
+    url(r'^team/(?P<team_id>\d+)/$', 'team_view', name='team_view'),
+    url(r'^team/edit/(?P<team_id>\d+)/$', 'team_update', name='team_edit'),
+
 )
