@@ -1,8 +1,13 @@
+# coding=utf-8
+
+import json
+
 from django.contrib import messages
+from django.contrib.auth.models import User
 from django.contrib.auth.decorators import login_required, permission_required
 from django.core.urlresolvers import reverse
 from django.db.models.deletion import ProtectedError
-from django.http import HttpResponseRedirect
+from django.http import HttpResponseRedirect, HttpResponse
 from django.shortcuts import get_object_or_404, render, redirect
 from django.utils.translation import ugettext as _
 
@@ -125,3 +130,17 @@ def person_update(request, person_id, template_name="team/person_register.html")
                "editing": True}
 
     return render(request, template_name, context)
+
+
+@login_required
+@permission_required('team.change_team')
+def get_json_user_attributes(request, user_id):
+    user = get_object_or_404(User, pk=user_id)
+
+    response_data = {
+        'first_name': user.first_name,
+        'last_name': user.last_name,
+        'email': user.email
+    }
+
+    return HttpResponse(json.dumps(response_data), content_type='application/json')

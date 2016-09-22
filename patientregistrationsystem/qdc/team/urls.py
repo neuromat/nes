@@ -11,4 +11,6 @@ urlpatterns = patterns(
     url(r'^person/(?P<person_id>\d+)/$', 'person_view', name='person_view'),
     url(r'^person/edit/(?P<person_id>\d+)/$', 'person_update', name='person_edit'),
 
+    # register person (ajax)
+    url(r'^person/get_user_attributes/(?P<user_id>\d+)/$', 'get_json_user_attributes'),
 )
