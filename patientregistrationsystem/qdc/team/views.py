@@ -49,6 +49,12 @@ def person_create(request, template_name="team/person_register.html"):
 
                 person_added = person_form.save()
 
+                # sync user
+                if person_added.user:
+                    person_added.user.first_name = person_added.first_name
+                    person_added.user.last_name = person_added.last_name
+                    person_added.user.save()
+
                 messages.success(request, _('Person created successfully.'))
                 redirect_url = reverse("person_view", args=(person_added.id,))
                 return HttpResponseRedirect(redirect_url)

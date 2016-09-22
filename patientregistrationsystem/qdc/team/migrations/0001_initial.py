@@ -15,24 +15,24 @@ class Migration(migrations.Migration):
         migrations.CreateModel(
             name='Person',
             fields=[
-                ('id', models.AutoField(primary_key=True, auto_created=True, verbose_name='ID', serialize=False)),
-                ('first_name', models.CharField(verbose_name='first name', max_length=30)),
-                ('last_name', models.CharField(verbose_name='last name', max_length=30)),
-                ('email', models.EmailField(verbose_name='email address', max_length=254)),
-                ('user', models.ForeignKey(to=settings.AUTH_USER_MODEL, blank=True, null=True)),
+                ('id', models.AutoField(verbose_name='ID', serialize=False, auto_created=True, primary_key=True)),
+                ('first_name', models.CharField(max_length=30, verbose_name='first name')),
+                ('last_name', models.CharField(max_length=30, verbose_name='last name')),
+                ('email', models.EmailField(max_length=254, verbose_name='email address')),
+                ('user', models.OneToOneField(null=True, to=settings.AUTH_USER_MODEL, blank=True)),
             ],
         ),
         migrations.CreateModel(
             name='Team',
             fields=[
-                ('id', models.AutoField(primary_key=True, auto_created=True, verbose_name='ID', serialize=False)),
+                ('id', models.AutoField(verbose_name='ID', serialize=False, auto_created=True, primary_key=True)),
                 ('acronym', models.CharField(max_length=20)),
             ],
         ),
         migrations.CreateModel(
             name='TeamPerson',
             fields=[
-                ('id', models.AutoField(primary_key=True, auto_created=True, verbose_name='ID', serialize=False)),
+                ('id', models.AutoField(verbose_name='ID', serialize=False, auto_created=True, primary_key=True)),
                 ('is_coordinator', models.BooleanField()),
                 ('person', models.ForeignKey(related_name='team_persons', to='team.Person')),
                 ('team', models.ForeignKey(related_name='team_persons', to='team.Team')),

@@ -1,7 +1,7 @@
 # coding=utf-8
 
+from django.contrib.auth.models import User
 from django.forms import ModelForm, TextInput, EmailInput, Select
-from django.utils.translation import ugettext_lazy as _
 
 from .models import Person
 
@@ -17,3 +17,14 @@ class PersonRegisterForm(ModelForm):
             'last_name': TextInput(attrs={'class': 'form-control', 'required': ""}),
             'email': EmailInput(attrs={'class': 'form-control', 'required': ""}),
         }
+
+    def __init__(self, *args, **kwargs):
+        super(PersonRegisterForm, self).__init__(*args, **kwargs)
+
+        selected_user_list = User.objects.exclude(person=None)
+
+        instance = kwargs.get('instance')
+        if instance:
+            selected_user_list = selected_user_list.exclude(person=instance)
+
+        self.fields['user'].queryset = User.objects.exclude(pk__in=selected_user_list)

@@ -7,7 +7,7 @@ class Person(models.Model):
     first_name = models.CharField(_('first name'), max_length=30)
     last_name = models.CharField(_('last name'), max_length=30)
     email = models.EmailField(_('email address'))
-    user = models.ForeignKey(User, null=True, blank=True)
+    user = models.OneToOneField(User, null=True, blank=True, related_name='person')
 
 
 class Team(models.Model):

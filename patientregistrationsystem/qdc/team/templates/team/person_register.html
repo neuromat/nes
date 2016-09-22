@@ -72,11 +72,16 @@
 
                 <h4>{% trans "Person" %}</h4>
 
-                <div class="row">
+                <div class="row {% if person_form.user.errors %}has-error{% endif %}">
                     <div class="col-xs-6 col-sm-6">
                         <div class="form-group">
                             <label class="control-label">{% trans "Existent user" %} </label>
                             {{ person_form.user }}
+                            <div class="help-block with-errors">
+                                {% for error in person_form.user.errors %}
+                                    {{ error }}<br/>
+                                {% endfor %}
+                            </div>
                         </div>
                     </div>
                 </div>
