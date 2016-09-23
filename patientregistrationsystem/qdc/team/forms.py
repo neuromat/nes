@@ -3,7 +3,7 @@
 from django.contrib.auth.models import User
 from django.forms import ModelForm, TextInput, EmailInput, Select
 
-from .models import Person, Team
+from .models import Person, Team, TeamPerson
 
 
 class PersonRegisterForm(ModelForm):
@@ -40,3 +40,20 @@ class TeamRegisterForm(ModelForm):
             'acronym': TextInput(attrs={'class': 'form-control'}),
         }
 
+
+class TeamPersonRegisterForm(ModelForm):
+    class Meta:
+        model = TeamPerson
+        fields = ['person', 'is_coordinator']
+
+        widgets = {
+            'person': Select(attrs={'class': 'form-control'}),
+        }
+
+    def __init__(self, *args, **kwargs):
+        super(TeamPersonRegisterForm, self).__init__(*args, **kwargs)
+
+        initial = kwargs.get('initial')
+        if initial:
+            team = initial['team']
+            self.fields['person'].queryset = Person.objects.exclude(team_persons__team=team)

@@ -19,4 +19,12 @@ urlpatterns = patterns(
     url(r'^team/(?P<team_id>\d+)/$', 'team_view', name='team_view'),
     url(r'^team/edit/(?P<team_id>\d+)/$', 'team_update', name='team_edit'),
 
+
+    url(r'^team/team_person_register/(?P<team_id>\d+)/new_person/$','team_person_create', name='team_person_new'),
+#    url(r'^team/team_person/(?P<team_id>\d+)/new_person/$', 'team_person_create', name='team_person_new'),
+
+#    http://localhost:8000/team/team_person/2/new_person/
+#url(r'^software/(?P<software_id>\d+)/new_version/$', 'software_version_create', name='software_version_new'),
+
+
 )

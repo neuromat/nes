@@ -98,10 +98,89 @@
 
             </div>
 
+<!-- -->
+            {% if not editing %}
+                <div class="container span6 offset3 well ">
+                    <h4>{% trans "Persons" %}</h4>
+                    <div class="form-group">
+                        <table class="table table-striped">
+                            <thead>
+                                <tr>
+                                    <th>{% trans "First Name" %}</th>
+                                    <th>{% trans "Last Name" %}</th>
+                                    <th>{% trans "E-mail" %}</th>
+                                    <th>{% trans "Is coordinator" %}</th>
+                                    <th>{% trans "Remove" %}</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+
+                            {% for team_person in team.team_persons.all %}
+                                <tr>
+                                    <td>
+                                        <a data-toggle="tooltip" data-placement="left" title="{% trans "Visualize" %}" href="/team/team_person/{{ team_person.id }}/">{{ team_person.person.first_name }}</a>
+                                    </td>
+                                    <td>
+                                        <a data-toggle="tooltip" data-placement="left" title="{% trans "Visualize" %}" href="/team/team_person/{{ team_person.id }}/">{{ team_person.person.last_name }}</a>
+                                    </td>
+                                    <td>
+                                        {{ team_person.person.email }}
+                                    </td>
+                                    <td>
+                                        {% if team_person.is_coordinator %}<span class="glyphicon glyphicon-ok"></span>{% endif %}
+                                    </td>
+{#                                    <td>#}
+{#                                        <a data-toggle="tooltip" data-placement="left" title="{% trans "Visualize" %}" href="/team/team_person/{{ team_person.id }}/">{{ team_person.person.first_name }}</a>#}
+{#                                    </td>#}
+                                </tr>
+                            {% endfor %}
+                            </tbody>
+                        </table>
+                        {% if perms.experiment.add_experiment %}
+                            <button type="button" class="btn btn-primary" data-toggle="collapse" data-target="#insert_new_person">Insert new person</button>
+                            <div id="insert_new_person" class="collapse">
+                                <div class="row">
+                                    <br/>
+                                    <div class="col-xs-1 col-sm-1"></div>
+                                    <div class="col-xs-4 col-sm-4">
+                                        <div class="form-group">
+{#                                            <label class="control-label">{% trans "Person" %}</label>#}
+                                            {{ team_person_form.person }}
+                                            <div class="help-block with-errors"></div>
+                                        </div>
+                                    </div>
+                                    <div class="col-xs-4 col-sm-4">
+                                        <div class="form-group">
+                                            <label class="control-label">{% trans "is coordinator" %} </label>
+                                            {{ team_person_form.is_coordinator }}
+                                            <div class="help-block with-errors"></div>
+                                        </div>
+                                    </div>
+                                    <div class="col-xs-2 col-sm-2">
+                                        <div class="btn-group pull-left">
+                                            <button type="submit" name="action" value="insert_new" class="btn btn-primary">{% trans "Insert" %}</button>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        {% endif %}
+
+                    </div>
+{#                    {% if perms.experiment.add_experiment %}#}
+{#                        <div class="btn-group pull-left">#}
+{#                            <a href="/team/team/team_person_register/{{ team.id }}/new_person/" class="btn btn-primary">{% trans "Insert new" %}</a>#}
+{#                        </div>#}
+{#                    {% endif %}#}
+                </div>
+
+            {% endif %}
+
+<!-- -->
+
             <div class="btn-toolbar">
                 <div class="btn-group pull-left">
                     {% if not editing and perms.team.change_team and can_change %}
-                        <button type="button" class="btn btn-danger" onclick="showDialogAndEnableRemoveButton()">{% trans "Delete" %}</button>
+                        <button type="button" class="btn btn-danger" onclick="showDialogAndEnableRemoveButton()">{% trans "Delete team" %}</button>
                     {% endif %}
                 </div>
                 {% if editing %}

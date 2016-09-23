@@ -9,6 +9,9 @@ class Person(models.Model):
     email = models.EmailField(_('email address'))
     user = models.OneToOneField(User, null=True, blank=True, related_name='person')
 
+    def __str__(self):
+        return self.first_name + ' ' + self.last_name
+
 
 class Team(models.Model):
     name = models.CharField(max_length=150)

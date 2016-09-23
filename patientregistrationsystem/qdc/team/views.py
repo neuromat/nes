@@ -11,8 +11,8 @@ from django.http import HttpResponseRedirect, HttpResponse
 from django.shortcuts import get_object_or_404, render, redirect
 from django.utils.translation import ugettext as _
 
-from .forms import PersonRegisterForm, TeamRegisterForm
-from .models import Person, Team
+from .forms import PersonRegisterForm, TeamRegisterForm, TeamPersonRegisterForm
+from .models import Person, Team, TeamPerson
 
 
 @login_required
@@ -196,6 +196,7 @@ def team_view(request, team_id, template_name="team/team_register.html"):
     team = get_object_or_404(Team, pk=team_id)
 
     team_form = TeamRegisterForm(request.POST or None, instance=team)
+    team_person_form = TeamPersonRegisterForm(request.POST or None, initial={'team': team})
 
     for field in team_form.fields:
         team_form.fields[field].widget.attrs['disabled'] = True
@@ -212,9 +213,19 @@ def team_view(request, team_id, template_name="team/team_register.html"):
                 redirect_url = reverse("team_view", args=(team_id,))
                 return HttpResponseRedirect(redirect_url)
 
+        if request.POST['action'] == "insert_new":
+            if team_person_form.is_valid():
+                team_person_added = team_person_form.save(commit=False)
+                team_person_added.team = team
+                team_person_added.save()
+                messages.success(request, _('Person added to the team successfully.'))
+                redirect_url = reverse("team_view", args=(team_id,))
+                return HttpResponseRedirect(redirect_url)
+
     context = {"can_change": True,
                "team": team,
-               "team_form": team_form}
+               "team_form": team_form,
+               "team_person_form": team_person_form}
 
     return render(request, template_name, context)
 
@@ -243,3 +254,46 @@ def team_update(request, team_id, template_name="team/team_register.html"):
                "editing": True}
 
     return render(request, template_name, context)
+
+
+
+#############################
+
+@login_required
+@permission_required('team.team_person')
+def team_person_create(request, team_id, template_name="team/team_person_register.html"):
+    team = get_object_or_404(Team, pk=team_id)
+
+    team_person_form = TeamPersonRegisterForm(request.POST or None)
+
+    if request.method == "POST":
+
+        if request.POST['action'] == "save":
+
+            if team_person_form.is_valid():
+
+                person_added = team_person_form.save(commit=False)
+                person_added.team = team
+                person_added.save()
+
+                messages.success(request, _('Team person created successfully.'))
+                # redirect_url = reverse("software_version_view", args=(version_added.id,))
+                redirect_url = reverse("team_view", args=(person_added.team.id,))
+                return HttpResponseRedirect(redirect_url)
+
+            else:
+                messages.warning(request, _('Information not saved.'))
+
+        else:
+            messages.warning(request, _('Action not available.'))
+
+    context = {"team_person_form": team_person_form,
+               "team": team,
+               "creating": True,
+               "editing": True
+               }
+
+    return render(request, template_name, context)
+
+#############################
+
