@@ -3,6 +3,7 @@ from __future__ import unicode_literals
 
 from django.db import migrations, models
 
+
 def backwards_data(apps, schema_editor):
     eeg_amplifier_setting_model = apps.get_model("experiment", "EEGAmplifierSetting")
 
@@ -16,8 +17,10 @@ def load_data(apps, schema_editor):
 
     for eeg_amplifier_setting in eeg_amplifier_setting_model.objects.all():
         if hasattr(eeg_amplifier_setting.eeg_setting, "eeg_machine_setting"):
-            eeg_amplifier_setting.number_of_channels_used = eeg_amplifier_setting.eeg_setting.eeg_machine_setting.number_of_channels_used
+            eeg_amplifier_setting.number_of_channels_used = \
+                eeg_amplifier_setting.eeg_setting.eeg_machine_setting.number_of_channels_used
             eeg_amplifier_setting.save()
+
 
 class Migration(migrations.Migration):
 

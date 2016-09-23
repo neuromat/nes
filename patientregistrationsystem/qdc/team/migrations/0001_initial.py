@@ -19,7 +19,8 @@ class Migration(migrations.Migration):
                 ('first_name', models.CharField(verbose_name='first name', max_length=30)),
                 ('last_name', models.CharField(verbose_name='last name', max_length=30)),
                 ('email', models.EmailField(verbose_name='email address', max_length=254)),
-                ('user', models.OneToOneField(null=True, blank=True, related_name='person', to=settings.AUTH_USER_MODEL)),
+                ('user', models.OneToOneField(null=True, blank=True,
+                                              related_name='person', to=settings.AUTH_USER_MODEL)),
             ],
         ),
         migrations.CreateModel(
