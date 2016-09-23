@@ -8211,7 +8211,6 @@ def emg_electrode_setting_preamplifier_edit(request, emg_electrode_setting_id,
     return render(request, template_name, context)
 
 
-
 @login_required
 @permission_required('experiment.change_experiment')
 def emg_electrode_setting_amplifier(request, emg_electrode_setting_id,

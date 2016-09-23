@@ -342,6 +342,10 @@ class EEGElectrodePosition(models.Model):
     coordinate_x = models.IntegerField(null=True, blank=True, validators=[MinValueValidator(0)])
     coordinate_y = models.IntegerField(null=True, blank=True, validators=[MinValueValidator(0)])
     position_reference = models.ForeignKey('self', null=True, blank=True, related_name='children')
+    channel_default_index = models.IntegerField()
+
+    class Meta:
+        unique_together = ('eeg_electrode_localization_system', 'channel_default_index')
 
     def __str__(self):
         return self.eeg_electrode_localization_system.name + ' - ' + self.name
@@ -429,6 +433,10 @@ class EEGElectrodePositionSetting(models.Model):
     eeg_electrode_position = models.ForeignKey(EEGElectrodePosition)
     used = models.BooleanField()
     electrode_model = models.ForeignKey(ElectrodeModel)
+    channel_index = models.IntegerField()
+
+    class Meta:
+        unique_together = ('eeg_electrode_layout_setting', 'channel_index')
 
 
 class Software(models.Model):
@@ -949,6 +957,10 @@ class EEGElectrodePositionCollectionStatus(models.Model):
     eeg_data = models.ForeignKey(EEGData, related_name='electrode_positions')
     eeg_electrode_position_setting = models.ForeignKey(EEGElectrodePositionSetting)
     worked = models.BooleanField()
+    channel_index = models.IntegerField()
+
+    class Meta:
+        unique_together = ('eeg_data', 'channel_index')
 
     def __str__(self):
         return self.eeg_electrode_position_setting.eeg_electrode_position.name

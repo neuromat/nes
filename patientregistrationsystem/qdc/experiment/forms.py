@@ -502,7 +502,7 @@ class AmplifierRegisterForm(ModelForm):
     class Meta:
         model = Amplifier
 
-        localized_fields = ('gain','common_mode_rejection_ratio', 'input_impedance')
+        localized_fields = ('gain', 'common_mode_rejection_ratio', 'input_impedance')
 
         fields = ['manufacturer', 'identification', 'description', 'serial_number', 'gain', 'number_of_channels',
                   'common_mode_rejection_ratio', 'input_impedance', 'input_impedance_unit']

@@ -39,4 +39,3 @@ class TeamRegisterForm(ModelForm):
             'name': TextInput(attrs={'class': 'form-control', 'required': ""}),
             'acronym': TextInput(attrs={'class': 'form-control'}),
         }
-
