@@ -350,6 +350,15 @@ class EEGElectrodePosition(models.Model):
     def __str__(self):
         return self.eeg_electrode_localization_system.name + ' - ' + self.name
 
+    def save(self, force_insert=False, force_update=False, using=None, update_fields=None):
+        if not self.pk and not self.channel_default_index:
+            top = \
+                EEGElectrodePosition.objects.filter(
+                    eeg_electrode_localization_system=self.eeg_electrode_localization_system).order_by(
+                    '-channel_default_index').first()
+            self.channel_default_index = top.channel_default_index + 1 if top else 1
+        super(EEGElectrodePosition, self).save()
+
 
 class EEGElectrodeNetSystem(models.Model):
     eeg_electrode_net = models.ForeignKey(EEGElectrodeNet, related_name="set_of_electrode_net_system")

@@ -374,18 +374,19 @@
                             <table class="table table-striped" style="margin-top:10px; margin-left:10px;">
                                 <thead>
                                     <tr>
-                                        <th>{% trans "#" %}</th>
+                                        <th>{% trans "Channel index" %}</th>
                                         <th>{% trans "Position" %}</th>
                                         <th>{% trans "Used" %}</th>
                                         <th>{% trans "Worked" %}</th>
+                                        <th colspan="2" style="text-align: center">{% trans "Order" %}</th>
                                         <th></th>
                                     </tr>
                                 </thead>
                                 <tbody>
-                                    {% for position_status in eeg_data.electrode_positions.all %}
+                                    {% for position_status in eeg_data.electrode_positions.all|dictsort:"channel_index" %}
                                     <tr>
                                         <td>
-                                            {{ forloop.counter }}
+                                            {{ position_status.channel_index }}
                                         </td>
                                         <td>
                                             {{ position_status.eeg_electrode_position_setting.eeg_electrode_position.name }}
@@ -398,6 +399,18 @@
                                                    {% if not editing or not position_status.eeg_electrode_position_setting.used %}disabled{% endif %}
                                                    {% if position_status.worked %}checked="checked"{% endif %}/>
                                         </td>
+
+                                        <td class="text-right col-md-1">
+                                            {% if not forloop.last %}
+                                                <a class="btn glyphicon glyphicon-arrow-down" href="/experiment/eeg_electrode_position_collection_status/change_the_order/{{ position_status.id }}/down/"></a>
+                                            {% endif %}
+                                        </td>
+                                        <td class="col-md-1">
+                                            {% if not forloop.first %}
+                                                <a class="btn glyphicon glyphicon-arrow-up" href="/experiment/eeg_electrode_position_collection_status/change_the_order/{{ position_status.id }}/up/"></a>
+                                            {% endif %}
+                                        </td>
+
                                     </tr>
                                     {% endfor %}
                                 </tbody>

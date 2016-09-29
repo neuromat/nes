@@ -856,6 +856,7 @@ def view_eeg_setting_type(request, eeg_setting_id, eeg_setting_type):
                         new_position_setting.eeg_electrode_position = position
                         new_position_setting.used = True
                         new_position_setting.electrode_model = eeg_electrode_net.electrode_model_default
+                        new_position_setting.channel_index = position.channel_default_index
                         new_position_setting.save()
 
                 messages.info(request, _('Now you can set each electrode position.'))
@@ -1143,6 +1144,7 @@ def edit_eeg_setting_type(request, eeg_setting_id, eeg_setting_type):
                             new_position_setting.eeg_electrode_position = position
                             new_position_setting.used = True
                             new_position_setting.electrode_model = eeg_electrode_net.electrode_model_default
+                            new_position_setting.channel_index = position.channel_default_index
                             new_position_setting.save()
 
                 messages.success(request, _('EEG electrode net system setting updated sucessfully.'))
@@ -1475,6 +1477,43 @@ def edit_eeg_electrode_position_setting_model(
                "eeg_electrode_model_list": eeg_electrode_model_list}
 
     return render(request, template_name, context)
+
+
+@login_required
+@permission_required('experiment.change_experiment')
+def eeg_electrode_position_setting_change_the_order(request, eeg_electrode_position_setting_id, command):
+    position_setting = get_object_or_404(EEGElectrodePositionSetting, pk=eeg_electrode_position_setting_id)
+
+    all_position_settings = EEGElectrodePositionSetting.objects.filter(
+        eeg_electrode_layout_setting=position_setting.eeg_electrode_layout_setting)
+
+    if command == "down":
+        position_setting_to_change = \
+            all_position_settings.filter(
+                channel_index__gt=position_setting.channel_index).order_by('channel_index').first()
+    else:
+        position_setting_to_change = \
+            all_position_settings.filter(
+                channel_index__lt=position_setting.channel_index).order_by('-channel_index').first()
+
+    bottom_position_setting = all_position_settings.order_by('-channel_index').first()
+
+    channel_index_current = position_setting.channel_index
+    channel_index_to_change = position_setting_to_change.channel_index
+
+    position_setting_to_change.channel_index = bottom_position_setting.channel_index + 1
+    position_setting_to_change.save()
+
+    position_setting.channel_index = channel_index_to_change
+    position_setting.save()
+
+    position_setting_to_change.channel_index = channel_index_current
+    position_setting_to_change.save()
+
+    redirect_url = reverse("eeg_electrode_position_setting_model",
+                           args=(position_setting.eeg_electrode_layout_setting.eeg_setting_id,))
+
+    return HttpResponseRedirect(redirect_url)
 
 
 # TODO: check if this view is used
@@ -5142,6 +5181,43 @@ def get_nwb_eeg_amplifier_impedance_description(eeg_amplifier_setting):
 
 
 @login_required
+@permission_required('experiment.change_experiment')
+def eeg_electrode_position_collection_status_change_the_order(request,
+                                                              eeg_electrode_position_collection_status_id, command):
+    position_status = get_object_or_404(EEGElectrodePositionCollectionStatus,
+                                        pk=eeg_electrode_position_collection_status_id)
+
+    all_position_status = EEGElectrodePositionCollectionStatus.objects.filter(eeg_data=position_status.eeg_data)
+
+    if command == "down":
+        position_status_to_change = \
+            all_position_status.filter(
+                channel_index__gt=position_status.channel_index).order_by('channel_index').first()
+    else:
+        position_status_to_change = \
+            all_position_status.filter(
+                channel_index__lt=position_status.channel_index).order_by('-channel_index').first()
+
+    bottom_position_setting = all_position_status.order_by('-channel_index').first()
+
+    channel_index_current = position_status.channel_index
+    channel_index_to_change = position_status_to_change.channel_index
+
+    position_status_to_change.channel_index = bottom_position_setting.channel_index + 1
+    position_status_to_change.save()
+
+    position_status.channel_index = channel_index_to_change
+    position_status.save()
+
+    position_status_to_change.channel_index = channel_index_current
+    position_status_to_change.save()
+
+    redirect_url = reverse("eeg_data_view", args=(position_status.eeg_data_id, '2'))
+
+    return HttpResponseRedirect(redirect_url)
+
+
+@login_required
 @permission_required('experiment.view_researchproject')
 def subject_emg_view(request, group_id, subject_id,
                      template_name="experiment/subject_emg_collection_list.html"):
@@ -7241,6 +7317,45 @@ def eeg_electrode_localization_system_test(request, eeg_electrode_localization_s
                "localization_system_form": localization_system_form}
 
     return render(request, template_name, context)
+
+
+@login_required
+@permission_required('experiment.change_experiment')
+def eeg_electrode_position_change_the_order(request, eeg_electrode_position_id, command):
+    eeg_electrode_position = get_object_or_404(EEGElectrodePosition, pk=eeg_electrode_position_id)
+
+    all_positions = EEGElectrodePosition.objects.filter(
+        eeg_electrode_localization_system=eeg_electrode_position.eeg_electrode_localization_system)
+
+    if command == "down":
+        position_to_change = \
+            all_positions.filter(
+                channel_default_index__gt=
+                eeg_electrode_position.channel_default_index).order_by('channel_default_index').first()
+    else:
+        position_to_change = \
+            all_positions.filter(
+                channel_default_index__lt=
+                eeg_electrode_position.channel_default_index).order_by('-channel_default_index').first()
+
+    bottom_position = all_positions.order_by('-channel_default_index').first()
+
+    channel_index_current = eeg_electrode_position.channel_default_index
+    channel_index_to_change = position_to_change.channel_default_index
+
+    position_to_change.channel_default_index = bottom_position.channel_default_index + 1
+    position_to_change.save()
+
+    eeg_electrode_position.channel_default_index = channel_index_to_change
+    eeg_electrode_position.save()
+
+    position_to_change.channel_default_index = channel_index_current
+    position_to_change.save()
+
+    redirect_url = reverse("eeg_electrode_localization_system_view",
+                           args=(eeg_electrode_position.eeg_electrode_localization_system_id,))
+
+    return HttpResponseRedirect(redirect_url)
 
 
 @login_required
