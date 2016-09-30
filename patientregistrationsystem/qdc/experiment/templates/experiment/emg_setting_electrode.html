@@ -263,10 +263,10 @@
                                                     {% trans "gain:" %} {{ emg_electrode_setting.emg_amplifier_setting.gain|default:'' }}
                                                     {% if emg_electrode_setting.emg_amplifier_setting.emg_analog_filter_setting %}
                                                         <br/>
-                                                        {% trans "low pass:" %} {{ emg_electrode_setting.emg_amplifier_setting.emg_analog_filter_setting.low_pass|default:'' }}<br/>
-                                                        {% trans "high pass:" %} {{ emg_electrode_setting.emg_amplifier_setting.emg_analog_filter_setting.high_pass|default:'' }}<br/>
-                                                        {% trans "band pass:" %} {{ emg_electrode_setting.emg_amplifier_setting.emg_analog_filter_setting.band_pass|default:'' }}<br/>
-                                                        {% trans "notch:" %} {{ emg_electrode_setting.emg_amplifier_setting.emg_analog_filter_setting.notch|default:'' }}
+                                                        {% trans "low pass (Hz):" %} {{ emg_electrode_setting.emg_amplifier_setting.emg_analog_filter_setting.low_pass|default:'' }}<br/>
+                                                        {% trans "high pass (Hz):" %} {{ emg_electrode_setting.emg_amplifier_setting.emg_analog_filter_setting.high_pass|default:'' }}<br/>
+                                                        {% trans "band pass (Hz):" %} {{ emg_electrode_setting.emg_amplifier_setting.emg_analog_filter_setting.band_pass|default:'' }}<br/>
+                                                        {% trans "notch: (Hz)" %} {{ emg_electrode_setting.emg_amplifier_setting.emg_analog_filter_setting.notch|default:'' }}
                                                     {% endif %}
                                                 </h6></i>
                                             </blockquote>
