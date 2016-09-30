@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2016-09-30 12:13-0300\n"
+"POT-Creation-Date: 2016-09-30 17:27-0300\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -4070,7 +4070,7 @@ msgstr ""
 msgid "Attachment deleted successfully."
 msgstr ""
 
-#: experiment/views.py:6037 experiment/views.py:7097 experiment/views.py:7213
+#: experiment/views.py:6037 experiment/views.py:7095 experiment/views.py:7213
 #: experiment/views.py:7234
 msgid "Step included successfully."
 msgstr ""
@@ -4163,11 +4163,11 @@ msgstr ""
 msgid "Step updated successfully."
 msgstr ""
 
-#: experiment/views.py:7070
+#: experiment/views.py:7068
 msgid "Experimental protocol included successfully."
 msgstr ""
 
-#: experiment/views.py:7095 experiment/views.py:7232
+#: experiment/views.py:7093 experiment/views.py:7232
 msgid "Steps included successfully."
 msgstr ""
 

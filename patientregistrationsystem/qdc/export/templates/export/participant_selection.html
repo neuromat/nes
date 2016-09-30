@@ -32,7 +32,7 @@
 
     <div class="tab-pane fade in active" id="mainMenuUserTab">
         <div class="col-md-10">
-            <div class="container span6 offset3 well ">
+            <div id="participants_container" class="container span6 offset3 well ">
                 <h4>{% trans "Participants selection" %}</h4>
 
                 <div class="form-group">
@@ -49,7 +49,7 @@
                     </div>
 
                     <div class="col-md-1"></div>
-                    <div class="col-md-11" id="participants_filter_div" style="visibility: hidden">
+                    <div class="col-md-11 collapse" id="participants_filter_div" style="visibility: hidden">
 
                         <div class="form-group">
                             <input id="id_gender_checkbox" name="gender_checkbox" type="checkbox" value="gender_selected">

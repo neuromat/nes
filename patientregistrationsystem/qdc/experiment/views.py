@@ -7330,13 +7330,13 @@ def eeg_electrode_position_change_the_order(request, eeg_electrode_position_id, 
     if command == "down":
         position_to_change = \
             all_positions.filter(
-                channel_default_index__gt=
-                eeg_electrode_position.channel_default_index).order_by('channel_default_index').first()
+                channel_default_index__gt=eeg_electrode_position.channel_default_index
+            ).order_by('channel_default_index').first()
     else:
         position_to_change = \
             all_positions.filter(
-                channel_default_index__lt=
-                eeg_electrode_position.channel_default_index).order_by('-channel_default_index').first()
+                channel_default_index__lt=eeg_electrode_position.channel_default_index
+            ).order_by('-channel_default_index').first()
 
     bottom_position = all_positions.order_by('-channel_default_index').first()
 
