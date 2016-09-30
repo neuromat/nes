@@ -6858,11 +6858,9 @@ def component_update(request, path_of_the_components):
         limesurvey_available = check_limesurvey_access(request, surveys)
 
         if limesurvey_available:
-            questionnaire_details = surveys.find_questionnaire_by_id(questionnaire.survey.lime_survey_id)
-
-            if questionnaire_details:
-                questionnaire_id = questionnaire_details['sid'],
-                questionnaire_title = questionnaire_details['surveyls_title']
+            questionnaire_title = surveys.get_survey_title(
+                questionnaire.survey.lime_survey_id,
+                get_questionnaire_language(surveys,questionnaire.survey.lime_survey_id, request.LANGUAGE_CODE))
 
         surveys.release_session_key()
 
@@ -7176,11 +7174,13 @@ def component_reuse(request, path_of_the_components, component_id):
         specific_form = TMSForm(request.POST or None, instance=tms, initial={'experiment': experiment})
     elif component_type == 'questionnaire':
         questionnaire = get_object_or_404(Questionnaire, pk=component_to_add.id)
-        questionnaire_details = Questionnaires().find_questionnaire_by_id(questionnaire.survey.lime_survey_id)
+        questionnaire_id = questionnaire.survey.lime_survey_id
+        questionnaire_title = Questionnaires().get_survey_title(
+            questionnaire.survey.lime_survey_id,
+            get_questionnaire_language(Questionnaires(),
+                                       questionnaire.survey.lime_survey_id,
+                                       request.LANGUAGE_CODE))
 
-        if questionnaire_details:
-            questionnaire_id = questionnaire_details['sid'],
-            questionnaire_title = questionnaire_details['surveyls_title']
     elif component_type == 'block':
         sub_block = get_object_or_404(Block, pk=component_id)
         specific_form = BlockForm(request.POST or None, instance=sub_block)
