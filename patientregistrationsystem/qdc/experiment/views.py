@@ -8246,8 +8246,8 @@ def emg_electrode_setting_preamplifier(request, emg_electrode_setting_id,
             emg_preamplifier_filter_setting = EMGPreamplifierFilterSetting.objects.get(
                 emg_electrode_setting=emg_preamplifier_setting)
 
-            emg_preamplifier_filter_setting_form = EMGPreamplifierFilterSettingForm(request.POST or None,
-                                                                            instance=emg_preamplifier_filter_setting)
+            emg_preamplifier_filter_setting_form = EMGPreamplifierFilterSettingForm(
+                request.POST or None, instance=emg_preamplifier_filter_setting)
 
         else:
             emg_preamplifier_filter_setting_form = EMGPreamplifierFilterSettingForm(request.POST or None)
@@ -8277,10 +8277,10 @@ def emg_electrode_setting_preamplifier(request, emg_electrode_setting_id,
                     new_setting.emg_electrode_setting = emg_electrode_setting
                     new_setting.save()
 
-                    new_setting = emg_preamplifier_filter_setting_form.save(commit=False)
-                    new_setting.emg_electrode_setting = emg_electrode_setting.emg_preamplifier_setting
-                    new_setting.save()
-                    changed = True
+                    # new_setting = emg_preamplifier_filter_setting_form.save(commit=False)
+                    # new_setting.emg_electrode_setting = emg_electrode_setting.emg_preamplifier_setting
+                    # new_setting.save()
+                    # changed = True
 
                     if changed:
                         messages.success(request, _('EMG preamplifier setting created successfully.'))
