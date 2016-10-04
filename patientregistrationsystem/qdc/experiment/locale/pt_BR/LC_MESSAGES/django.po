@@ -2442,15 +2442,15 @@ msgstr "passa-baixa (Hz)"
 
 #: experiment/templates/experiment/emg_setting_register.html:161
 msgid "high pass (Hz): "
-msgstr "passa-alta (Hz)"
+msgstr "passa-alta (Hz):"
 
 #: experiment/templates/experiment/emg_setting_register.html:162
 msgid "band pass (Hz): "
-msgstr "passa banda (Hz)"
+msgstr "passa banda (Hz):"
 
 #: experiment/templates/experiment/emg_setting_register.html:163
 msgid "notch (Hz): "
-msgstr "notch (Hz)"
+msgstr "notch (Hz):"
 
 #: experiment/templates/experiment/emg_setting_register.html:183
 msgid "Add new"
@@ -2466,19 +2466,19 @@ msgstr "Filtro digital"
 
 #: experiment/templates/experiment/emg_setting_register.html:213
 msgid "Low pass (Hz):"
-msgstr "Passa-baixa (Hz)"
+msgstr "Passa-baixa (Hz):"
 
 #: experiment/templates/experiment/emg_setting_register.html:214
 msgid "High pass (Hz):"
-msgstr "Passa-alta (Hz)"
+msgstr "Passa-alta (Hz):"
 
 #: experiment/templates/experiment/emg_setting_register.html:215
 msgid "Band pass (Hz):"
-msgstr "Passa banda (Hz)"
+msgstr "Passa banda (Hz):"
 
 #: experiment/templates/experiment/emg_setting_register.html:216
 msgid "Notch (Hz):"
-msgstr "Notch (Hz)"
+msgstr "Notch (Hz):"
 
 #: experiment/templates/experiment/emg_setting_register.html:217
 msgid "order:"
