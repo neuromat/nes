@@ -14,7 +14,8 @@ from experiment.models import Experiment, QuestionnaireResponse, SubjectOfGroup,
     EMGElectrodeSetting, EMGElectrodePlacementSetting, \
     EMGPreamplifierSetting, EMGAmplifierSetting, EMGAnalogFilterSetting, EMGSurfacePlacement, \
     ADConverter, StandardizationSystem, Muscle, MuscleSide, MuscleSubdivision, TMS, TMSSetting, TMSDeviceSetting, \
-    Software, SoftwareVersion, CoilModel, TMSDevice, EMGIntramuscularPlacement, EMGNeedlePlacement, SubjectStepData
+    Software, SoftwareVersion, CoilModel, TMSDevice, EMGIntramuscularPlacement, EMGNeedlePlacement, SubjectStepData, \
+    EMGPreamplifierFilterSetting
 
 
 class ExperimentForm(ModelForm):
@@ -1035,6 +1036,24 @@ class EMGAmplifierSettingForm(ModelForm):
 class EMGAnalogFilterSettingForm(ModelForm):
     class Meta:
         model = EMGAnalogFilterSetting
+
+        localized_fields = ('low_pass', 'high_pass', 'low_band_pass', 'low_notch', 'high_band_pass', 'high_notch')
+        fields = ['low_pass', 'high_pass', 'low_band_pass', 'low_notch', 'high_band_pass', 'high_notch', 'order']
+
+        widgets = {
+            'low_pass': TextInput(attrs={'class': 'form-control'}),
+            'high_pass': TextInput(attrs={'class': 'form-control'}),
+            'low_band_pass': TextInput(attrs={'class': 'form-control'}),
+            'low_notch': TextInput(attrs={'class': 'form-control'}),
+            'high_band_pass': TextInput(attrs={'class': 'form-control'}),
+            'high_notch': TextInput(attrs={'class': 'form-control'}),
+            'order': NumberInput(attrs={'class': 'form-control'})
+        }
+
+
+class EMGPreamplifierFilterSettingForm(ModelForm):
+    class Meta:
+        model = EMGPreamplifierFilterSetting
 
         localized_fields = ('low_pass', 'high_pass', 'low_band_pass', 'low_notch', 'high_band_pass', 'high_notch')
         fields = ['low_pass', 'high_pass', 'low_band_pass', 'low_notch', 'high_band_pass', 'high_notch', 'order']
