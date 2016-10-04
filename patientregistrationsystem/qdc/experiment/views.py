@@ -43,7 +43,8 @@ from experiment.models import Experiment, Subject, QuestionnaireResponse, Subjec
     EMGElectrodeSetting, EMGPreamplifierSetting, EMGAmplifierSetting, EMGAnalogFilterSetting, \
     ADConverter, StandardizationSystem, Muscle, MuscleSubdivision, MuscleSide, \
     EMGElectrodePlacement, EMGSurfacePlacement, TMS, TMSSetting, TMSDeviceSetting, TMSDevice, Software, \
-    EMGIntramuscularPlacement, EMGNeedlePlacement, SubjectStepData
+    EMGIntramuscularPlacement, EMGNeedlePlacement, SubjectStepData, EMGPreamplifierFilterSetting, \
+    EMGElectrodePlacementSetting
 from experiment.forms import ExperimentForm, QuestionnaireResponseForm, FileForm, GroupForm, InstructionForm, \
     ComponentForm, StimulusForm, BlockForm, ComponentConfigurationForm, ResearchProjectForm, NumberOfUsesToInsertForm, \
     EEGDataForm, EEGSettingForm, EquipmentForm, EEGForm, EEGAmplifierForm, \
@@ -6443,7 +6444,8 @@ def copy_experiment(experiment):
         subject_list = [item.pk for item in SubjectOfGroup.objects.filter(group=group)]
         new_group = group
         new_group.pk = None
-        new_group.title = _('Copy of') + ' ' + new_group.title
+        # new_group.title = _('Copy of') + ' ' + new_group.title
+        new_group.title = new_group.title
         new_group.experiment_id = new_experiment.id
         if experimental_protocol_id in orig_and_clone:
             new_group.experimental_protocol_id = orig_and_clone[experimental_protocol_id]
@@ -6464,11 +6466,136 @@ def copy_experiment(experiment):
 
         component_configuration.pk = None
         if component_configuration.name:
-            component_configuration.name = _('Copy of') + ' ' + component_configuration.name
+            # component_configuration.name = _('Copy of') + ' ' + component_configuration.name
+            component_configuration.name = component_configuration.name
 
         component_configuration.component_id = orig_and_clone[component_id]
         component_configuration.parent_id = orig_and_clone[parent_id]
         component_configuration.save()
+
+    # eeg_setting
+    for eeg_setting in EEGSetting.objects.filter(experiment_id=experiment_id):
+        copy_eeg_setting(eeg_setting, new_experiment)
+
+    # emg setting
+    for emg_setting in EMGSetting.objects.filter(experiment_id=experiment_id):
+        copy_emg_setting(emg_setting, new_experiment)
+
+    # tms setting
+
+
+def copy_eeg_setting(eeg_setting, new_experiment):
+    eeg_setting_id = eeg_setting.id
+    new_eeg_setting = eeg_setting
+    new_eeg_setting.pk = None
+    new_eeg_setting.experiment = new_experiment
+    new_eeg_setting.save()
+
+    # eeg_layout_setting
+    if EEGElectrodeLayoutSetting.objects.filter(eeg_setting_id=eeg_setting_id).exists():
+        new_eeg_electrode_layout_setting = get_object_or_404(EEGElectrodeLayoutSetting, pk=eeg_setting_id)
+        new_eeg_electrode_layout_setting.pk = None
+        new_eeg_electrode_layout_setting.eeg_setting = new_eeg_setting
+        new_eeg_electrode_layout_setting.save()
+
+        for position_setting in EEGElectrodePositionSetting.objects.filter(
+                eeg_electrode_layout_setting_id=eeg_setting_id):
+            new_position_setting = position_setting
+            new_position_setting.pk = None
+            new_position_setting.eeg_electrode_layout_setting = new_eeg_electrode_layout_setting
+            new_position_setting.save()
+
+    # eeg_amplifier_setting
+    if EEGAmplifierSetting.objects.filter(eeg_setting_id=eeg_setting_id).exists():
+        new_eeg_amplifier_setting = get_object_or_404(EEGAmplifierSetting, pk=eeg_setting_id)
+        new_eeg_amplifier_setting.pk = None
+        new_eeg_amplifier_setting.eeg_setting = new_eeg_setting
+        new_eeg_amplifier_setting.save()
+
+    # eeg_solution_setting
+    if EEGSolutionSetting.objects.filter(eeg_setting_id=eeg_setting_id).exists():
+        new_eeg_solution_setting = get_object_or_404(EEGSolutionSetting, pk=eeg_setting_id)
+        new_eeg_solution_setting.pk = None
+        new_eeg_solution_setting.eeg_setting = new_eeg_setting
+        new_eeg_solution_setting.save()
+
+    # eeg_filter_setting
+    if EEGFilterSetting.objects.filter(eeg_setting_id=eeg_setting_id).exists():
+        new_eeg_filter_setting = get_object_or_404(EEGFilterSetting, pk=eeg_setting_id)
+        new_eeg_filter_setting.pk = None
+        new_eeg_filter_setting.eeg_setting = new_eeg_setting
+        new_eeg_filter_setting.save()
+
+
+def copy_emg_setting(emg_setting, new_experiment):
+    emg_setting_id = emg_setting.id
+    new_emg_setting = emg_setting
+    new_emg_setting.pk = None
+    new_emg_setting.experiment = new_experiment
+    new_emg_setting.save()
+
+    # EMGDigitalFilterSetting
+    if EMGDigitalFilterSetting.objects.filter(emg_setting_id=emg_setting_id).exists():
+        new_emg_digital_filter_setting = get_object_or_404(EMGDigitalFilterSetting, pk=emg_setting_id)
+        new_emg_digital_filter_setting.pk = None
+        new_emg_digital_filter_setting.emg_setting = new_emg_setting
+        new_emg_digital_filter_setting.save()
+
+    # EMGADConverterSetting
+    if EMGADConverterSetting.objects.filter(emg_setting_id=emg_setting_id).exists():
+        new_emg_ad_converter_filter_setting = get_object_or_404(EMGADConverterSetting, pk=emg_setting_id)
+        new_emg_ad_converter_filter_setting.pk = None
+        new_emg_ad_converter_filter_setting.emg_setting = new_emg_setting
+        new_emg_ad_converter_filter_setting.save()
+
+    # EMGElectrodeSetting
+    for emg_electrode_setting in EMGElectrodeSetting.objects.filter(emg_setting_id=emg_setting_id):
+        emg_electrode_setting_id = emg_electrode_setting.id
+
+        new_emg_electrode_setting = emg_electrode_setting
+        new_emg_electrode_setting.pk = None
+        new_emg_electrode_setting.emg_setting = new_emg_setting
+        new_emg_electrode_setting.save()
+
+        # EMGPreamplifierSetting
+        if EMGPreamplifierSetting.objects.filter(emg_electrode_setting_id=emg_electrode_setting_id).exists():
+            new_emg_preamplifier_setting = get_object_or_404(EMGPreamplifierSetting, pk=emg_electrode_setting_id)
+            new_emg_preamplifier_setting.pk = None
+            new_emg_preamplifier_setting.emg_electrode_setting_id = new_emg_electrode_setting.id
+            new_emg_preamplifier_setting.save()
+
+            # EMGPreamplifierFilterSetting
+            if EMGPreamplifierFilterSetting.objects.filter(
+                    emg_preamplifier_filter_setting_id=emg_electrode_setting_id).exists():
+                new_emg_preamplifier_filter_setting = get_object_or_404(EMGPreamplifierFilterSetting,
+                                                                        pk=emg_electrode_setting_id)
+                new_emg_preamplifier_filter_setting.pk = None
+                new_emg_preamplifier_filter_setting.emg_preamplifier_filter_setting = new_emg_preamplifier_setting
+                new_emg_preamplifier_filter_setting.save()
+
+        # EMGAmplifierSetting
+        if EMGAmplifierSetting.objects.filter(emg_electrode_setting_id=emg_electrode_setting_id).exists():
+            new_emg_amplifier_setting = get_object_or_404(EMGAmplifierSetting, pk=emg_electrode_setting_id)
+            new_emg_amplifier_setting.pk = None
+            new_emg_amplifier_setting.emg_electrode_setting_id = new_emg_electrode_setting.id
+            new_emg_amplifier_setting.save()
+
+            # EMGAnalogFilterSetting
+            if EMGAnalogFilterSetting.objects.filter(
+                    emg_amplifier_filter_setting_id=emg_electrode_setting_id).exists():
+                new_emg_analog_filter_setting = get_object_or_404(EMGAnalogFilterSetting, pk=emg_electrode_setting_id)
+                new_emg_analog_filter_setting.pk = None
+                new_emg_analog_filter_setting.emg_electrode_setting = new_emg_amplifier_setting
+                new_emg_analog_filter_setting.save()
+
+        # EMGElectrodePlacementSetting
+        if EMGElectrodePlacementSetting.objects.filter(
+                emg_electrode_setting_id=emg_electrode_setting_id).exists():
+            new_emg_electrode_placement_setting = get_object_or_404(EMGElectrodePlacementSetting,
+                                                                    pk=emg_electrode_setting_id)
+            new_emg_electrode_placement_setting.pk = None
+            new_emg_electrode_placement_setting.emg_electrode_setting_id = new_emg_electrode_setting.id
+            new_emg_electrode_placement_setting.save()
 
 
 def create_component(component, new_experiment):
