@@ -429,6 +429,10 @@ class EEGFilterSetting(models.Model):
     eeg_filter_type = models.ForeignKey(FilterType)
     high_pass = models.FloatField(null=True, blank=True, validators=[MinValueValidator(0)])
     low_pass = models.FloatField(null=True, blank=True, validators=[MinValueValidator(0)])
+    high_band_pass = models.FloatField(null=True, blank=True, validators=[MinValueValidator(0)])
+    low_band_pass = models.FloatField(null=True, blank=True, validators=[MinValueValidator(0)])
+    high_notch = models.FloatField(null=True, blank=True, validators=[MinValueValidator(0)])
+    low_notch = models.FloatField(null=True, blank=True, validators=[MinValueValidator(0)])
     order = models.IntegerField(null=True, blank=True, validators=[MinValueValidator(0)])
 
 
@@ -565,8 +569,10 @@ class EMGDigitalFilterSetting(models.Model):
     filter_type = models.ForeignKey(FilterType)
     low_pass = models.FloatField(null=True, blank=True, validators=[MinValueValidator(0)])
     high_pass = models.FloatField(null=True, blank=True, validators=[MinValueValidator(0)])
-    band_pass = models.FloatField(null=True, blank=True, validators=[MinValueValidator(0)])
-    notch = models.FloatField(null=True, blank=True, validators=[MinValueValidator(0)])
+    low_band_pass = models.FloatField(null=True, blank=True, validators=[MinValueValidator(0)])
+    high_band_pass = models.FloatField(null=True, blank=True, validators=[MinValueValidator(0)])
+    low_notch = models.FloatField(null=True, blank=True, validators=[MinValueValidator(0)])
+    high_notch = models.FloatField(null=True, blank=True, validators=[MinValueValidator(0)])
     order = models.IntegerField(null=True, blank=True, validators=[MinValueValidator(0)])
 
 
@@ -594,8 +600,11 @@ class EMGPreamplifierFilterSetting(models.Model):
                                                            related_name='emg_preamplifier_filter_setting')
     low_pass = models.FloatField(null=True, blank=True, validators=[MinValueValidator(0)])
     high_pass = models.FloatField(null=True, blank=True, validators=[MinValueValidator(0)])
-    band_pass = models.FloatField(null=True, blank=True, validators=[MinValueValidator(0)])
-    notch = models.FloatField(null=True, blank=True, validators=[MinValueValidator(0)])
+    low_band_pass = models.FloatField(null=True, blank=True, validators=[MinValueValidator(0)])
+    low_notch = models.FloatField(null=True, blank=True, validators=[MinValueValidator(0)])
+    high_band_pass = models.FloatField(null=True, blank=True, validators=[MinValueValidator(0)])
+    high_notch = models.FloatField(null=True, blank=True, validators=[MinValueValidator(0)])
+    order = models.IntegerField(null=True, blank=True, validators=[MinValueValidator(0)])
 
 
 class EMGAmplifierSetting(models.Model):
@@ -610,8 +619,11 @@ class EMGAnalogFilterSetting(models.Model):
                                                  primary_key=True, related_name='emg_analog_filter_setting')
     low_pass = models.FloatField(null=True, blank=True, validators=[MinValueValidator(0)])
     high_pass = models.FloatField(null=True, blank=True, validators=[MinValueValidator(0)])
-    band_pass = models.FloatField(null=True, blank=True, validators=[MinValueValidator(0)])
-    notch = models.FloatField(null=True, blank=True, validators=[MinValueValidator(0)])
+    low_band_pass = models.FloatField(null=True, blank=True, validators=[MinValueValidator(0)])
+    low_notch = models.FloatField(null=True, blank=True, validators=[MinValueValidator(0)])
+    high_band_pass = models.FloatField(null=True, blank=True, validators=[MinValueValidator(0)])
+    high_notch = models.FloatField(null=True, blank=True, validators=[MinValueValidator(0)])
+    order = models.IntegerField(null=True, blank=True, validators=[MinValueValidator(0)])
 
 
 class EMGElectrodePlacementSetting(models.Model):

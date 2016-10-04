@@ -14,7 +14,8 @@ from experiment.models import Experiment, QuestionnaireResponse, SubjectOfGroup,
     EMGElectrodeSetting, EMGElectrodePlacementSetting, \
     EMGPreamplifierSetting, EMGAmplifierSetting, EMGAnalogFilterSetting, EMGSurfacePlacement, \
     ADConverter, StandardizationSystem, Muscle, MuscleSide, MuscleSubdivision, TMS, TMSSetting, TMSDeviceSetting, \
-    Software, SoftwareVersion, CoilModel, TMSDevice, EMGIntramuscularPlacement, EMGNeedlePlacement, SubjectStepData
+    Software, SoftwareVersion, CoilModel, TMSDevice, EMGIntramuscularPlacement, EMGNeedlePlacement, SubjectStepData, \
+    EMGPreamplifierFilterSetting
 
 
 class ExperimentForm(ModelForm):
@@ -429,12 +430,16 @@ class EEGFilterForm(ModelForm):
 class EEGFilterSettingForm(ModelForm):
     class Meta:
         model = EEGFilterSetting
-        localized_fields = ('high_pass', 'low_pass')
-        fields = ['high_pass', 'low_pass', 'order']
+        localized_fields = ('high_pass', 'low_pass', 'low_band_pass', 'high_band_pass', 'low_notch', 'high_notch')
+        fields = ['high_pass', 'low_pass', 'low_band_pass', 'high_band_pass', 'low_notch', 'high_notch', 'order']
 
         widgets = {
             'high_pass': TextInput(attrs={'class': 'form-control'}),
             'low_pass': TextInput(attrs={'class': 'form-control'}),
+            'low_band_pass': TextInput(attrs={'class': 'form-control'}),
+            'high_band_pass': TextInput(attrs={'class': 'form-control'}),
+            'low_notch': TextInput(attrs={'class': 'form-control'}),
+            'high_notch': TextInput(attrs={'class': 'form-control'}),
             'order': NumberInput(attrs={'class': 'form-control'})
         }
 
@@ -930,16 +935,18 @@ class EMGSettingForm(ModelForm):
 class EMGDigitalFilterSettingForm(ModelForm):
     class Meta:
         model = EMGDigitalFilterSetting
-        localized_fields = ('low_pass', 'high_pass', 'band_pass', 'notch', 'order')
-        fields = ['filter_type', 'low_pass', 'high_pass', 'band_pass', 'notch', 'order']
+        localized_fields = ('low_pass', 'high_pass', 'low_band_pass', 'high_band_pass', 'low_notch', 'high_notch', 'order')
+        fields = ['filter_type', 'low_pass', 'high_pass', 'low_band_pass', 'high_band_pass', 'low_notch', 'high_notch', 'order']
 
         widgets = {
             'filter_type': Select(attrs={'class': 'form-control', 'required': "",
                                          'data-error': _('Filter type is required')}),
             'low_pass': TextInput(attrs={'class': 'form-control'}),
             'high_pass': TextInput(attrs={'class': 'form-control'}),
-            'band_pass': TextInput(attrs={'class': 'form-control'}),
-            'notch': TextInput(attrs={'class': 'form-control'}),
+            'low_band_pass': TextInput(attrs={'class': 'form-control'}),
+            'low_notch': TextInput(attrs={'class': 'form-control'}),
+            'high_band_pass': TextInput(attrs={'class': 'form-control'}),
+            'high_notch': TextInput(attrs={'class': 'form-control'}),
             'order': NumberInput(attrs={'class': 'form-control'})
         }
 
@@ -1030,14 +1037,35 @@ class EMGAnalogFilterSettingForm(ModelForm):
     class Meta:
         model = EMGAnalogFilterSetting
 
-        localized_fields = ('low_pass', 'high_pass', 'band_pass', 'notch',)
-        fields = ['low_pass', 'high_pass', 'band_pass', 'notch']
+        localized_fields = ('low_pass', 'high_pass', 'low_band_pass', 'low_notch', 'high_band_pass', 'high_notch')
+        fields = ['low_pass', 'high_pass', 'low_band_pass', 'low_notch', 'high_band_pass', 'high_notch', 'order']
 
         widgets = {
             'low_pass': TextInput(attrs={'class': 'form-control'}),
             'high_pass': TextInput(attrs={'class': 'form-control'}),
-            'band_pass': TextInput(attrs={'class': 'form-control'}),
-            'notch': TextInput(attrs={'class': 'form-control'}),
+            'low_band_pass': TextInput(attrs={'class': 'form-control'}),
+            'low_notch': TextInput(attrs={'class': 'form-control'}),
+            'high_band_pass': TextInput(attrs={'class': 'form-control'}),
+            'high_notch': TextInput(attrs={'class': 'form-control'}),
+            'order': NumberInput(attrs={'class': 'form-control'})
+        }
+
+
+class EMGPreamplifierFilterSettingForm(ModelForm):
+    class Meta:
+        model = EMGPreamplifierFilterSetting
+
+        localized_fields = ('low_pass', 'high_pass', 'low_band_pass', 'low_notch', 'high_band_pass', 'high_notch')
+        fields = ['low_pass', 'high_pass', 'low_band_pass', 'low_notch', 'high_band_pass', 'high_notch', 'order']
+
+        widgets = {
+            'low_pass': TextInput(attrs={'class': 'form-control'}),
+            'high_pass': TextInput(attrs={'class': 'form-control'}),
+            'low_band_pass': TextInput(attrs={'class': 'form-control'}),
+            'low_notch': TextInput(attrs={'class': 'form-control'}),
+            'high_band_pass': TextInput(attrs={'class': 'form-control'}),
+            'high_notch': TextInput(attrs={'class': 'form-control'}),
+            'order': NumberInput(attrs={'class': 'form-control'})
         }
 
 

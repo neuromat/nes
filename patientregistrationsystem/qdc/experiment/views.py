@@ -61,7 +61,7 @@ from experiment.forms import ExperimentForm, QuestionnaireResponseForm, FileForm
     TMSForm, TMSSettingForm, TMSDeviceSettingForm, CoilModelRegisterForm, TMSDeviceRegisterForm, \
     SoftwareRegisterForm, SoftwareVersionRegisterForm, EMGIntramuscularPlacementForm, \
     EMGSurfacePlacementRegisterForm, EMGIntramuscularPlacementRegisterForm, EMGNeedlePlacementRegisterForm, \
-    SubjectStepDataForm
+    SubjectStepDataForm, EMGPreamplifierFilterSettingForm
 
 from export.export import create_directory
 
@@ -8369,26 +8369,50 @@ def emg_electrode_setting_preamplifier(request, emg_electrode_setting_id,
 
         equipment_form = EquipmentForm(request.POST or None, instance=equipment_selected)
 
+        if hasattr(emg_preamplifier_setting, 'emg_preamplifier_filter_setting'):
+            emg_preamplifier_filter_setting = EMGPreamplifierFilterSetting.objects.get(
+                emg_electrode_setting=emg_preamplifier_setting)
+
+            emg_preamplifier_filter_setting_form = EMGPreamplifierFilterSettingForm(
+                request.POST or None, instance=emg_preamplifier_filter_setting)
+
+        else:
+            emg_preamplifier_filter_setting_form = EMGPreamplifierFilterSettingForm(request.POST or None)
+
         for field in emg_preamplifier_setting_form.fields:
             emg_preamplifier_setting_form.fields[field].widget.attrs['disabled'] = True
+
+        for field in emg_preamplifier_filter_setting_form.fields:
+            emg_preamplifier_filter_setting_form.fields[field].widget.attrs['disabled'] = True
 
     else:
         creating = True
         emg_preamplifier_setting_form = EMGPreamplifierSettingForm(request.POST or None)
+        emg_preamplifier_filter_setting_form = EMGPreamplifierFilterSettingForm(request.POST or None)
         equipment_form = EquipmentForm(request.POST or None)
 
     if request.method == "POST":
         if request.POST['action'] == "save":
 
-            if emg_preamplifier_setting_form.is_valid():
+            if emg_preamplifier_setting_form.is_valid() and emg_preamplifier_filter_setting_form.is_valid():
 
-                if emg_preamplifier_setting_form.has_changed():
+                changed = False
+
+                if emg_preamplifier_setting_form.has_changed() or emg_preamplifier_filter_setting_form.has_changed():
 
                     new_setting = emg_preamplifier_setting_form.save(commit=False)
                     new_setting.emg_electrode_setting = emg_electrode_setting
                     new_setting.save()
 
-                    messages.success(request, _('EMG preamplifier setting created successfully.'))
+                    # new_setting = emg_preamplifier_filter_setting_form.save(commit=False)
+                    # new_setting.emg_electrode_setting = emg_electrode_setting.emg_preamplifier_setting
+                    # new_setting.save()
+                    # changed = True
+
+                    if changed:
+                        messages.success(request, _('EMG preamplifier setting created successfully.'))
+                    else:
+                        messages.success(request, _('There is no changes to save.'))
 
                     redirect_url = reverse("emg_electrode_setting_view", args=(emg_electrode_setting_id,))
                     return HttpResponseRedirect(redirect_url)
@@ -8398,6 +8422,7 @@ def emg_electrode_setting_preamplifier(request, emg_electrode_setting_id,
                "can_change": can_change,
                "emg_electrode_setting": emg_electrode_setting,
                "emg_preamplifier_setting_form": emg_preamplifier_setting_form,
+               "emg_preamplifier_filter_setting_form": emg_preamplifier_filter_setting_form,
                "equipment_form": equipment_form,
                "manufacturer_list": list_of_manufacturers
                }
