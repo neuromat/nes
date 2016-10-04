@@ -6482,6 +6482,8 @@ def copy_experiment(experiment):
         copy_emg_setting(emg_setting, new_experiment)
 
     # tms setting
+    for tms_setting in TMSSetting.objects.filter(experiment_id=experiment_id):
+        copy_tms_setting(tms_setting, new_experiment)
 
 
 def copy_eeg_setting(eeg_setting, new_experiment):
@@ -6582,7 +6584,7 @@ def copy_emg_setting(emg_setting, new_experiment):
 
             # EMGAnalogFilterSetting
             if EMGAnalogFilterSetting.objects.filter(
-                    emg_amplifier_filter_setting_id=emg_electrode_setting_id).exists():
+                    emg_electrode_setting=emg_electrode_setting_id).exists():
                 new_emg_analog_filter_setting = get_object_or_404(EMGAnalogFilterSetting, pk=emg_electrode_setting_id)
                 new_emg_analog_filter_setting.pk = None
                 new_emg_analog_filter_setting.emg_electrode_setting = new_emg_amplifier_setting
@@ -6596,6 +6598,14 @@ def copy_emg_setting(emg_setting, new_experiment):
             new_emg_electrode_placement_setting.pk = None
             new_emg_electrode_placement_setting.emg_electrode_setting_id = new_emg_electrode_setting.id
             new_emg_electrode_placement_setting.save()
+
+
+def copy_tms_setting(tms_setting, new_experiment):
+    # tms_setting_id = tms_setting.id
+    new_tms_setting = tms_setting
+    new_tms_setting.pk = None
+    new_tms_setting.experiment = new_experiment
+    new_tms_setting.save()
 
 
 def create_component(component, new_experiment):
