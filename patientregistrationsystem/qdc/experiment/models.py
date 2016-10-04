@@ -600,6 +600,8 @@ class EMGPreamplifierFilterSetting(models.Model):
                                                            related_name='emg_preamplifier_filter_setting')
     low_pass = models.FloatField(null=True, blank=True, validators=[MinValueValidator(0)])
     high_pass = models.FloatField(null=True, blank=True, validators=[MinValueValidator(0)])
+    # band_pass = models.FloatField(null=True, blank=True, validators=[MinValueValidator(0)])
+    # notch = models.FloatField(null=True, blank=True, validators=[MinValueValidator(0)])
     low_band_pass = models.FloatField(null=True, blank=True, validators=[MinValueValidator(0)])
     low_notch = models.FloatField(null=True, blank=True, validators=[MinValueValidator(0)])
     high_band_pass = models.FloatField(null=True, blank=True, validators=[MinValueValidator(0)])
