@@ -61,7 +61,7 @@ from experiment.forms import ExperimentForm, QuestionnaireResponseForm, FileForm
     TMSForm, TMSSettingForm, TMSDeviceSettingForm, CoilModelRegisterForm, TMSDeviceRegisterForm, \
     SoftwareRegisterForm, SoftwareVersionRegisterForm, EMGIntramuscularPlacementForm, \
     EMGSurfacePlacementRegisterForm, EMGIntramuscularPlacementRegisterForm, EMGNeedlePlacementRegisterForm, \
-    SubjectStepDataForm, EMGPreamplifierFilterSettingForm
+    SubjectStepDataForm, EMGPreamplifierFilterSettingForm, CoilModelForm
 
 from export.export import create_directory
 
@@ -8735,6 +8735,9 @@ def tms_setting_view(request, tms_setting_id, template_name="experiment/tms_sett
                 if tms_setting_type == "tms_device":
                     setting_to_be_deleted = get_object_or_404(TMSDeviceSetting, pk=tms_setting_id)
 
+                if tms_setting_type == "coil_model":
+                    setting_to_be_deleted = get_object_or_404(TMSDeviceSetting, pk=tms_setting_id)
+
                 if setting_to_be_deleted:
                     setting_to_be_deleted.delete()
 
@@ -8786,6 +8789,26 @@ def tms_setting_update(request, tms_setting_id, template_name="experiment/tms_se
 
 @login_required
 @permission_required('experiment.change_experiment')
+def tms_setting_coil_model(request, tms_setting_id, template_name="experiment/tms_setting_coil_model.html"):
+
+    tms_setting = get_object_or_404(TMSSetting, pk=tms_setting_id)
+
+    can_change = get_can_change(request.user, tms_setting.experiment.research_project)
+
+    creating = False
+
+    context = {"creating": creating,
+               "editing": False,
+               "can_change": can_change,
+               "tms_setting": tms_setting,
+
+               }
+
+    return render(request, template_name, context)
+
+
+@login_required
+@permission_required('experiment.change_experiment')
 def tms_setting_tms_device(request, tms_setting_id,
                            template_name="experiment/tms_setting_tms_device.html"):
 
@@ -8805,6 +8828,10 @@ def tms_setting_tms_device(request, tms_setting_id,
 
         equipment_form = EquipmentForm(request.POST or None, instance=tms_device_selected)
 
+        coil_model_selected = tms_device_setting.coil_model
+
+        coil_model_form = CoilModelForm(request.POST or None, instance=coil_model_selected)
+
         for field in tms_device_setting_form.fields:
             tms_device_setting_form.fields[field].widget.attrs['disabled'] = True
 
@@ -8812,6 +8839,7 @@ def tms_setting_tms_device(request, tms_setting_id,
         creating = True
         tms_device_setting_form = TMSDeviceSettingForm(request.POST or None)
         equipment_form = EquipmentForm(request.POST or None)
+        coil_model_form = CoilModelForm(request.POST or None)
 
     if request.method == "POST":
         if request.POST['action'] == "save":
@@ -8834,7 +8862,8 @@ def tms_setting_tms_device(request, tms_setting_id,
                "can_change": can_change,
                "tms_setting": tms_setting,
                "tms_device_setting_form": tms_device_setting_form,
-               "equipment_form": equipment_form
+               "equipment_form": equipment_form,
+               "coil_model_form": coil_model_form
                }
 
     return render(request, template_name, context)
@@ -8855,6 +8884,10 @@ def tms_setting_tms_device_edit(request, tms_setting_id, template_name="experime
 
     equipment_form = EquipmentForm(request.POST or None, instance=tms_device_selected)
 
+    coil_model_selected = tms_device_setting.coil_model
+
+    coil_model_form = CoilModelForm(request.POST or None, instance=coil_model_selected)
+
     if request.method == "POST":
 
         if request.POST['action'] == "save":
@@ -8868,7 +8901,7 @@ def tms_setting_tms_device_edit(request, tms_setting_id, template_name="experime
                 else:
                     messages.success(request, _('There is no changes to save.'))
 
-                redirect_url = reverse("tms_setting_tms_device", args=(tms_setting_id,))
+                redirect_url = reverse("tms_setting_view", args=(tms_setting_id,))
                 return HttpResponseRedirect(redirect_url)
 
     context = {"creating": False,
@@ -8876,7 +8909,8 @@ def tms_setting_tms_device_edit(request, tms_setting_id, template_name="experime
                "can_change": True,
                "tms_setting": tms_setting,
                "tms_device_setting_form": tms_device_setting_form,
-               "equipment_form": equipment_form
+               "equipment_form": equipment_form,
+               "coil_model_form": coil_model_form
                }
 
     return render(request, template_name, context)

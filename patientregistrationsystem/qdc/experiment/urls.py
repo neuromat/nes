@@ -247,6 +247,8 @@ urlpatterns = patterns(
         'tms_setting_tms_device', name='tms_setting_tms_device'),
     url(r'^tms_setting/(?P<tms_setting_id>\d+)/tms_device/edit/$',
         'tms_setting_tms_device_edit', name='tms_setting_tms_device_edit'),
+    url(r'^tms_setting/(?P<tms_setting_id>\d+)/coil_model/$',
+        'tms_setting_coil_model', name='tms_setting_coil_model'),
 
     # cid
     url(r'^group_diseases/cid-10/$', 'search_cid10_ajax', name='cid10_search'),

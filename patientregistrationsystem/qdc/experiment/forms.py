@@ -1149,10 +1149,23 @@ class TMSDeviceSettingForm(ModelForm):
     class Meta:
         model = TMSDeviceSetting
 
-        fields = ['tms_device', 'pulse_stimulus_type']
+        fields = ['tms_device', 'pulse_stimulus_type', 'coil_model']
 
         widgets = {
             'tms_device': Select(attrs={'class': 'form-control', 'required': "",
                                         'data-error': _('TMS device is required')}),
+            'coil_model': Select(attrs={'class': 'form-control', 'required': "",
+                                        'data-error': _('Coil model is required')}),
             'pulse_stimulus_type': Select(attrs={'class': 'form-control'})
+        }
+
+
+class CoilModelForm(ModelForm):
+    class Meta:
+        model = CoilModel
+
+        fields = ['description']
+
+        widgets = {
+            'description': Textarea(attrs={'class': 'form-control', 'rows': '4', 'disabled': ''})
         }
