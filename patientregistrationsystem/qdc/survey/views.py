@@ -581,8 +581,6 @@ def get_questionnaire_responses(language_code, lime_survey_id, token_id, request
                                             else:
                                                 # Sem resposta
                                                 answer += _('No answer')
-                                            # else:
-                                            #     answer += 'Sem resposta'
 
                                         answer_list.append(answer)
 
@@ -599,8 +597,6 @@ def get_questionnaire_responses(language_code, lime_survey_id, token_id, request
                                             else:
                                                 # Sem resposta
                                                 answer += _('No answer')
-                                            # else:
-                                            #     answer += 'Sem resposta'
 
                                         answer_list.append(answer)
 
@@ -619,12 +615,16 @@ def get_questionnaire_responses(language_code, lime_survey_id, token_id, request
 
                                             if isinstance(answer_options, dict):
 
-                                                if responses_list[1][index] in answer_options:
-                                                    answer_option = answer_options[responses_list[1][index]]
-                                                    answer = answer_option['answer']
+                                                # type "M" means "Multiple choice"
+                                                if question['type'] == 'M':
+                                                    answer = responses_list[1][index]
                                                 else:
-                                                    # Sem resposta
-                                                    answer = _('No answer')
+                                                    if responses_list[1][index] in answer_options:
+                                                        answer_option = answer_options[responses_list[1][index]]
+                                                        answer = answer_option['answer']
+                                                    else:
+                                                        # Sem resposta
+                                                        answer = _('No answer')
                                             else:
                                                 # type "D" means "Date/Time"
                                                 if question['type'] == 'D':
