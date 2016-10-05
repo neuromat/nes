@@ -8244,7 +8244,7 @@ def emg_electrode_setting_preamplifier(request, emg_electrode_setting_id,
 
         if hasattr(emg_preamplifier_setting, 'emg_preamplifier_filter_setting'):
             emg_preamplifier_filter_setting = EMGPreamplifierFilterSetting.objects.get(
-                emg_electrode_setting=emg_preamplifier_setting)
+                emg_preamplifier_filter_setting=emg_preamplifier_setting)
 
             emg_preamplifier_filter_setting_form = EMGPreamplifierFilterSettingForm(
                 request.POST or None, instance=emg_preamplifier_filter_setting)
@@ -8277,10 +8277,10 @@ def emg_electrode_setting_preamplifier(request, emg_electrode_setting_id,
                     new_setting.emg_electrode_setting = emg_electrode_setting
                     new_setting.save()
 
-                    # new_setting = emg_preamplifier_filter_setting_form.save(commit=False)
-                    # new_setting.emg_electrode_setting = emg_electrode_setting.emg_preamplifier_setting
-                    # new_setting.save()
-                    # changed = True
+                    new_setting = emg_preamplifier_filter_setting_form.save(commit=False)
+                    new_setting.emg_preamplifier_filter_setting = emg_electrode_setting.emg_preamplifier_setting
+                    new_setting.save()
+                    changed = True
 
                     if changed:
                         messages.success(request, _('EMG preamplifier setting created successfully.'))
@@ -8323,15 +8323,37 @@ def emg_electrode_setting_preamplifier_edit(request, emg_electrode_setting_id,
     list_of_manufacturers = Manufacturer.objects.filter(set_of_equipment__equipment_type="amplifier",
                                                         set_of_equipment__tags__name="EMG").distinct()
 
+    if hasattr(emg_preamplifier_setting, 'emg_preamplifier_filter_setting'):
+
+        emg_preamplifier_filter_setting = emg_electrode_setting.emg_preamplifier_setting.emg_preamplifier_filter_setting
+        emg_preamplifier_filter_setting_form = EMGPreamplifierFilterSettingForm(request.POST or None,
+                                                                    instance=emg_preamplifier_filter_setting)
+    else:
+        emg_preamplifier_filter_setting_form = EMGPreamplifierFilterSettingForm(request.POST or None)
+
     if request.method == "POST":
 
         if request.POST['action'] == "save":
 
             if emg_preamplifier_setting_form.is_valid():
+                changed = False
 
                 if emg_preamplifier_setting_form.has_changed():
                     emg_preamplifier_setting_form.save()
+                    changed = True
 
+                if emg_preamplifier_filter_setting_form.has_changed() or emg_preamplifier_filter_setting_form.has_changed():
+
+                    if hasattr(emg_preamplifier_setting, 'emg_preamplifier_filter_setting'):
+                        emg_preamplifier_filter_setting_form.save()
+                    else:
+                        new_setting = emg_preamplifier_filter_setting_form.save(commit=False)
+                        new_setting.emg_preamplifier_filter_setting = emg_preamplifier_setting
+                        new_setting.save()
+
+                    changed = True
+
+                if changed:
                     messages.success(request, _('EMG Preamplifier setting updated successfully.'))
                 else:
                     messages.success(request, _('There is no changes to save.'))
@@ -8344,6 +8366,7 @@ def emg_electrode_setting_preamplifier_edit(request, emg_electrode_setting_id,
                "can_change": True,
                "emg_electrode_setting": emg_electrode_setting,
                "emg_preamplifier_setting_form": emg_preamplifier_setting_form,
+               "emg_preamplifier_filter_setting_form": emg_preamplifier_filter_setting_form,
                "equipment_form": equipment_form,
                "manufacturer_list": list_of_manufacturers
                }

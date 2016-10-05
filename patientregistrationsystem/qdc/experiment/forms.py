@@ -1014,6 +1014,24 @@ class EMGPreamplifierSettingForm(ModelForm):
         self.fields['amplifier'].queryset = Amplifier.objects.filter(tags__name="EMG")
 
 
+class EMGPreamplifierFilterSettingForm(ModelForm):
+    class Meta:
+        model = EMGPreamplifierFilterSetting
+
+        localized_fields = ('low_pass', 'high_pass', 'low_band_pass', 'low_notch', 'high_band_pass', 'high_notch')
+        fields = ['low_pass', 'high_pass', 'low_band_pass', 'low_notch', 'high_band_pass', 'high_notch', 'order']
+
+        widgets = {
+            'low_pass': TextInput(attrs={'class': 'form-control'}),
+            'high_pass': TextInput(attrs={'class': 'form-control'}),
+            'low_band_pass': TextInput(attrs={'class': 'form-control'}),
+            'low_notch': TextInput(attrs={'class': 'form-control'}),
+            'high_band_pass': TextInput(attrs={'class': 'form-control'}),
+            'high_notch': TextInput(attrs={'class': 'form-control'}),
+            'order': NumberInput(attrs={'class': 'form-control'})
+        }
+
+
 class EMGAmplifierSettingForm(ModelForm):
     class Meta:
         model = EMGAmplifierSetting
@@ -1036,24 +1054,6 @@ class EMGAmplifierSettingForm(ModelForm):
 class EMGAnalogFilterSettingForm(ModelForm):
     class Meta:
         model = EMGAnalogFilterSetting
-
-        localized_fields = ('low_pass', 'high_pass', 'low_band_pass', 'low_notch', 'high_band_pass', 'high_notch')
-        fields = ['low_pass', 'high_pass', 'low_band_pass', 'low_notch', 'high_band_pass', 'high_notch', 'order']
-
-        widgets = {
-            'low_pass': TextInput(attrs={'class': 'form-control'}),
-            'high_pass': TextInput(attrs={'class': 'form-control'}),
-            'low_band_pass': TextInput(attrs={'class': 'form-control'}),
-            'low_notch': TextInput(attrs={'class': 'form-control'}),
-            'high_band_pass': TextInput(attrs={'class': 'form-control'}),
-            'high_notch': TextInput(attrs={'class': 'form-control'}),
-            'order': NumberInput(attrs={'class': 'form-control'})
-        }
-
-
-class EMGPreamplifierFilterSettingForm(ModelForm):
-    class Meta:
-        model = EMGPreamplifierFilterSetting
 
         localized_fields = ('low_pass', 'high_pass', 'low_band_pass', 'low_notch', 'high_band_pass', 'high_notch')
         fields = ['low_pass', 'high_pass', 'low_band_pass', 'low_notch', 'high_band_pass', 'high_notch', 'order']
