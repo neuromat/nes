@@ -510,7 +510,8 @@ class AmplifierRegisterForm(ModelForm):
         localized_fields = ('gain', 'common_mode_rejection_ratio', 'input_impedance')
 
         fields = ['manufacturer', 'identification', 'description', 'serial_number', 'gain', 'number_of_channels',
-                  'common_mode_rejection_ratio', 'input_impedance', 'input_impedance_unit']
+                  'common_mode_rejection_ratio', 'input_impedance', 'input_impedance_unit', 'amplifier_detection_type',
+                  'tethering_system']
 
         widgets = {
             'manufacturer': Select(attrs={'class': 'form-control', 'required': "",
@@ -524,6 +525,8 @@ class AmplifierRegisterForm(ModelForm):
             'common_mode_rejection_ratio': TextInput(attrs={'class': 'form-control'}),
             'input_impedance': TextInput(attrs={'class': 'form-control'}),
             'input_impedance_unit': Select(attrs={'class': 'form-control'}),
+            'tethering_system': Select(attrs={'class': 'form-control'}),
+            'amplifier_detection_type': Select(attrs={'class': 'form-control'})
         }
 
 
