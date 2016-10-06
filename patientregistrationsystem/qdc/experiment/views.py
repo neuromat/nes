@@ -8080,6 +8080,18 @@ def emg_setting_ad_converter_edit(request, emg_setting_id,
 
 @login_required
 @permission_required('experiment.change_experiment')
+def get_json_coilmodel_attributes(request, coilmodel_id):
+    coil_model = get_object_or_404(CoilModel, pk=coilmodel_id)
+
+    response_data = {
+        'description': coil_model.description
+    }
+
+    return HttpResponse(json.dumps(response_data), content_type='application/json')
+
+
+@login_required
+@permission_required('experiment.change_experiment')
 def get_anatomical_description_by_placement(request, emg_electrode_type, emg_electrode_placement_id):
     response_data = []
     if emg_electrode_type == "surface":

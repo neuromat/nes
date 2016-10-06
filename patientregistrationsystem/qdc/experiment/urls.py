@@ -238,6 +238,7 @@ urlpatterns = patterns(
         'get_electrode_placement_by_type'),
     url(r'^emg_setting/get_description_by_placement/(?P<emg_electrode_type>\w+)/(?P<emg_electrode_placement_id>\d+)/$',
         'get_anatomical_description_by_placement'),
+    url(r'^coilmodel/(?P<coilmodel_id>\d+)/attributes/$', 'get_json_coilmodel_attributes'),
 
     # tms setting
     url(r'^(?P<experiment_id>\d+)/tms_setting/new/$', 'tms_setting_create', name='tms_setting_new'),

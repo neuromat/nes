@@ -1167,5 +1167,6 @@ class CoilModelForm(ModelForm):
         fields = ['description']
 
         widgets = {
-            'description': Textarea(attrs={'class': 'form-control', 'rows': '4', 'disabled': ''})
+            'description': Textarea(attrs={'class': 'form-control', 'rows': '4', 'disabled': '',
+                                           'id':'id_coil_description'})
         }

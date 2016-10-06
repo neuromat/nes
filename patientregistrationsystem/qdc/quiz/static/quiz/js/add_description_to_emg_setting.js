@@ -134,12 +134,12 @@ $(document).ready(function () {
     });
     
     select_coilmodel.change(function () {
-       var tmsdevice_id = $(this).val();
-       var description_field = $("#id_description");
+       var coilmodel_id = $(this).val();
+       var description_field = $("#id_coil_description");
 
-       var url = "/experiment/equipment/" + tmsdevice_id + "/attributes";
+       var url = "/experiment/coilmodel/" + coilmodel_id + "/attributes";
 
-       if(tmsdevice_id == ""){
+       if(coilmodel_id == ""){
            description_field.prop('value', "");
        }else{
            $.getJSON(url, function (equipment) {
