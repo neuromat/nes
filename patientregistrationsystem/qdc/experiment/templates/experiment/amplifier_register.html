@@ -200,6 +200,24 @@
                         </div>
                     </div>
                 </div>
+                <div class="row">
+                    <div class="col-xs-12 col-sm-12">
+                        <div class="form-group">
+                            <label class="control-label">{% trans "Tethering system" %} </label>
+                            {{ equipment_form.tethering_system }}
+                            <div class="help-block with-errors"></div>
+                        </div>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-xs-12 col-sm-12">
+                        <div class="form-group">
+                            <label class="control-label">{% trans "Amplifier detection type" %} </label>
+                            {{ equipment_form.amplifier_detection_type }}
+                            <div class="help-block with-errors"></div>
+                        </div>
+                    </div>
+                </div>
                 {% if not editing and can_change %}
                     <div class="btn-group pull-left">
                         <a href="/experiment/amplifier/edit/{{ equipment.id }}" class="btn btn-primary">{% trans "Edit" %}</a>

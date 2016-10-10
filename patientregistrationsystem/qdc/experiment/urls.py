@@ -238,6 +238,7 @@ urlpatterns = patterns(
         'get_electrode_placement_by_type'),
     url(r'^emg_setting/get_description_by_placement/(?P<emg_electrode_type>\w+)/(?P<emg_electrode_placement_id>\d+)/$',
         'get_anatomical_description_by_placement'),
+    url(r'^coilmodel/(?P<coilmodel_id>\d+)/attributes/$', 'get_json_coilmodel_attributes'),
 
     # tms setting
     url(r'^(?P<experiment_id>\d+)/tms_setting/new/$', 'tms_setting_create', name='tms_setting_new'),
@@ -247,6 +248,8 @@ urlpatterns = patterns(
         'tms_setting_tms_device', name='tms_setting_tms_device'),
     url(r'^tms_setting/(?P<tms_setting_id>\d+)/tms_device/edit/$',
         'tms_setting_tms_device_edit', name='tms_setting_tms_device_edit'),
+    url(r'^tms_setting/(?P<tms_setting_id>\d+)/coil_model/$',
+        'tms_setting_coil_model', name='tms_setting_coil_model'),
 
     # cid
     url(r'^group_diseases/cid-10/$', 'search_cid10_ajax', name='cid10_search'),

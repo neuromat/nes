@@ -572,7 +572,7 @@ msgstr "Inicio"
 #: experiment/templates/experiment/tmsdevice_new.html:52
 #: experiment/templates/experiment/tmsdevice_register.html:52
 msgid "Set up"
-msgstr ""
+msgstr "Cadastros"
 
 #: experiment/templates/experiment/ad_converter_list.html:44
 #: experiment/templates/experiment/ad_converter_register.html:53
@@ -1308,7 +1308,7 @@ msgstr "a"
 
 #: experiment/templates/experiment/additional_data_collection_list.html:103
 msgid "required"
-msgstr ""
+msgstr "obrigatório"
 
 #: experiment/templates/experiment/additional_data_collection_list.html:122
 #: experiment/templates/experiment/questionnaire_view.html:182
@@ -1545,12 +1545,12 @@ msgstr "Nome"
 #: experiment/templates/experiment/coil_list.html:59
 #: experiment/templates/experiment/coil_register.html:94
 msgid "Coil shape"
-msgstr ""
+msgstr "Forma da bobina"
 
 #: experiment/templates/experiment/coil_list.html:60
 #: experiment/templates/experiment/coil_register.html:103
 msgid "Coil design"
-msgstr ""
+msgstr "Desenho da bobina"
 
 #: experiment/templates/experiment/coil_list.html:61
 #: experiment/templates/experiment/coil_register.html:112
@@ -2221,11 +2221,11 @@ msgstr "Pré-amplificador"
 #: experiment/templates/experiment/emg_intramuscular_placement_register.html:18
 #: experiment/templates/experiment/emg_intramuscular_placement_register.html:24
 msgid "New intramuscular placement"
-msgstr ""
+msgstr "Novo posicionamento intramuscular"
 
 #: experiment/templates/experiment/emg_intramuscular_placement_register.html:13
 msgid "the intramuscular placement"
-msgstr ""
+msgstr "O posicionamento intramuscular"
 
 #: experiment/templates/experiment/emg_intramuscular_placement_register.html:32
 #: experiment/templates/experiment/emg_setting_electrode.html:180
@@ -3093,7 +3093,7 @@ msgstr "Exportar arquivo no formato NWB"
 
 #: experiment/templates/experiment/subject_eeg_collection_list.html:164
 msgid "Waiting for status..."
-msgstr ""
+msgstr "Aguardando..."
 
 #: experiment/templates/experiment/subject_eeg_data_form.html:229
 msgid "EEG data collection"
@@ -3117,7 +3117,7 @@ msgstr "Imagem das posições dos eletrodos"
 #: experiment/templates/experiment/subject_eeg_data_form.html:272
 #: experiment/templates/experiment/subject_emg_data_form.html:231
 msgid "Hour"
-msgstr ""
+msgstr "Hora"
 
 #: experiment/templates/experiment/subject_eeg_data_form.html:297
 msgid "Reason for change the EEG setting"
@@ -3139,18 +3139,19 @@ msgstr "Funcionou"
 
 #: experiment/templates/experiment/subject_eeg_data_form.html:426
 msgid "There is not electrode position status data for this data collection"
-msgstr ""
+msgstr "Não há dados de status de posição de eletrodo para esta coleção de dados"
 
 #: experiment/templates/experiment/subject_eeg_data_form.html:480
 msgid ""
 "To mark or unmark any position as 'worked' or 'did not worked' you can click "
 "on the image on the selected position"
-msgstr ""
+msgstr "Para marcar ou desmarcar qualquer posição como 'trabalhou' ou 'não funcionou' você pode clicar"
+" na imagem na posição selecionada"
 
 #: experiment/templates/experiment/subject_eeg_data_form.html:483
 msgid ""
 "or you can check or uncheck the checkbox selected in the list of positions. "
-msgstr ""
+msgstr "ou você pode marcar ou desmarcar checkbox selecionado na lista de posições"
 
 #: experiment/templates/experiment/subject_eeg_data_form.html:499
 msgid "There is not image"
@@ -3243,7 +3244,7 @@ msgstr "indefinido"
 #: experiment/templates/experiment/subject_step_data_form.html:34
 #: experiment/templates/experiment/subject_step_data_form.html:72
 msgid "Subject step data"
-msgstr ""
+msgstr "Dado de passo do sujeito"
 
 #: experiment/templates/experiment/subject_step_data_form.html:77
 msgid "Start date"

@@ -510,7 +510,8 @@ class AmplifierRegisterForm(ModelForm):
         localized_fields = ('gain', 'common_mode_rejection_ratio', 'input_impedance')
 
         fields = ['manufacturer', 'identification', 'description', 'serial_number', 'gain', 'number_of_channels',
-                  'common_mode_rejection_ratio', 'input_impedance', 'input_impedance_unit']
+                  'common_mode_rejection_ratio', 'input_impedance', 'input_impedance_unit', 'amplifier_detection_type',
+                  'tethering_system']
 
         widgets = {
             'manufacturer': Select(attrs={'class': 'form-control', 'required': "",
@@ -524,6 +525,8 @@ class AmplifierRegisterForm(ModelForm):
             'common_mode_rejection_ratio': TextInput(attrs={'class': 'form-control'}),
             'input_impedance': TextInput(attrs={'class': 'form-control'}),
             'input_impedance_unit': Select(attrs={'class': 'form-control'}),
+            'tethering_system': Select(attrs={'class': 'form-control'}),
+            'amplifier_detection_type': Select(attrs={'class': 'form-control'})
         }
 
 
@@ -1014,6 +1017,24 @@ class EMGPreamplifierSettingForm(ModelForm):
         self.fields['amplifier'].queryset = Amplifier.objects.filter(tags__name="EMG")
 
 
+class EMGPreamplifierFilterSettingForm(ModelForm):
+    class Meta:
+        model = EMGPreamplifierFilterSetting
+
+        localized_fields = ('low_pass', 'high_pass', 'low_band_pass', 'low_notch', 'high_band_pass', 'high_notch')
+        fields = ['low_pass', 'high_pass', 'low_band_pass', 'low_notch', 'high_band_pass', 'high_notch', 'order']
+
+        widgets = {
+            'low_pass': TextInput(attrs={'class': 'form-control'}),
+            'high_pass': TextInput(attrs={'class': 'form-control'}),
+            'low_band_pass': TextInput(attrs={'class': 'form-control'}),
+            'low_notch': TextInput(attrs={'class': 'form-control'}),
+            'high_band_pass': TextInput(attrs={'class': 'form-control'}),
+            'high_notch': TextInput(attrs={'class': 'form-control'}),
+            'order': NumberInput(attrs={'class': 'form-control'})
+        }
+
+
 class EMGAmplifierSettingForm(ModelForm):
     class Meta:
         model = EMGAmplifierSetting
@@ -1036,24 +1057,6 @@ class EMGAmplifierSettingForm(ModelForm):
 class EMGAnalogFilterSettingForm(ModelForm):
     class Meta:
         model = EMGAnalogFilterSetting
-
-        localized_fields = ('low_pass', 'high_pass', 'low_band_pass', 'low_notch', 'high_band_pass', 'high_notch')
-        fields = ['low_pass', 'high_pass', 'low_band_pass', 'low_notch', 'high_band_pass', 'high_notch', 'order']
-
-        widgets = {
-            'low_pass': TextInput(attrs={'class': 'form-control'}),
-            'high_pass': TextInput(attrs={'class': 'form-control'}),
-            'low_band_pass': TextInput(attrs={'class': 'form-control'}),
-            'low_notch': TextInput(attrs={'class': 'form-control'}),
-            'high_band_pass': TextInput(attrs={'class': 'form-control'}),
-            'high_notch': TextInput(attrs={'class': 'form-control'}),
-            'order': NumberInput(attrs={'class': 'form-control'})
-        }
-
-
-class EMGPreamplifierFilterSettingForm(ModelForm):
-    class Meta:
-        model = EMGPreamplifierFilterSetting
 
         localized_fields = ('low_pass', 'high_pass', 'low_band_pass', 'low_notch', 'high_band_pass', 'high_notch')
         fields = ['low_pass', 'high_pass', 'low_band_pass', 'low_notch', 'high_band_pass', 'high_notch', 'order']
@@ -1146,10 +1149,24 @@ class TMSDeviceSettingForm(ModelForm):
     class Meta:
         model = TMSDeviceSetting
 
-        fields = ['tms_device', 'pulse_stimulus_type']
+        fields = ['tms_device', 'pulse_stimulus_type', 'coil_model']
 
         widgets = {
             'tms_device': Select(attrs={'class': 'form-control', 'required': "",
                                         'data-error': _('TMS device is required')}),
+            'coil_model': Select(attrs={'class': 'form-control', 'required': "",
+                                        'data-error': _('Coil model is required')}),
             'pulse_stimulus_type': Select(attrs={'class': 'form-control'})
+        }
+
+
+class CoilModelForm(ModelForm):
+    class Meta:
+        model = CoilModel
+
+        fields = ['description']
+
+        widgets = {
+            'description': Textarea(attrs={'class': 'form-control', 'rows': '4', 'disabled': '',
+                                           'id':'id_coil_description'})
         }

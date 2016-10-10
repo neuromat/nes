@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2016-09-15 16:19-0300\n"
+"POT-Creation-Date: 2016-10-06 11:11-0300\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -837,6 +837,84 @@ msgstr "Mostrar"
 #: admin/js/collapse.js:16 admin/js/collapse.min.js:1
 msgid "Hide"
 msgstr "Esconder"
+
+#: team/models.py:7
+msgid "first name"
+msgstr ""
+
+#: team/models.py:8
+msgid "last name"
+msgstr ""
+
+#: team/models.py:9
+msgid "email address"
+msgstr ""
+
+#: team/templates/team/person_register.html:43
+#: team/templates/team/team_person_register.html:43
+#: team/templates/team/team_register.html:43
+msgid "Please, correct fields highlighted."
+msgstr ""
+
+#: team/views.py:23
+msgid "Persons"
+msgstr ""
+
+#: team/views.py:28
+msgid "Teams"
+msgstr ""
+
+#: team/views.py:63
+msgid "Person created successfully."
+msgstr ""
+
+#: team/views.py:68 team/views.py:181 team/views.py:285
+msgid "Information not saved."
+msgstr ""
+
+#: team/views.py:71 team/views.py:184 team/views.py:288
+msgid "Action not available."
+msgstr ""
+
+#: team/views.py:95
+msgid "Person removed successfully."
+msgstr ""
+
+#: team/views.py:98
+msgid "Error trying to delete person."
+msgstr ""
+
+#: team/views.py:121
+msgid "Person updated successfully."
+msgstr ""
+
+#: team/views.py:123 team/views.py:247
+msgid "There is no changes to save."
+msgstr ""
+
+#: team/views.py:175
+msgid "Team created successfully."
+msgstr ""
+
+#: team/views.py:209
+msgid "Team removed successfully."
+msgstr ""
+
+#: team/views.py:212
+msgid "Error trying to delete a team."
+msgstr ""
+
+#: team/views.py:221
+msgid "Person added to the team successfully."
+msgstr ""
+
+#: team/views.py:245
+msgid "Team updated successfully."
+msgstr ""
+
+#: team/views.py:279
+msgid "Team person created successfully."
+msgstr ""
 
 #: templates/registration/change_password_custom.html:35
 msgid "Invalid password. Please, try again."
