@@ -25,7 +25,6 @@
 
     <script type="text/javascript">
 
-
         $(function(){
             $("[data-toggle=tooltip]").tooltip();
             $( "form" ).submit(function( event ) {
@@ -48,7 +47,7 @@
 
         function validateForm()
         {
-           var c=document.getElementsByTagName('input');
+           var c=document.getElementsByName('groups');
            for (var i = 0; i<c.length; i++){
                if (c[i].type=='checkbox') {
                     if (c[i].checked){return true}
@@ -71,21 +70,6 @@
                 }
             })
         });
-{#       $(function(){#}
-{#            $("[data-toggle=tooltip]").tooltip();#}
-{#            $( "form" ).submit(function( event ) {#}
-{#                var password1 = $('#id_new_password1').val();#}
-{#                if(beginCheckPassword1 || password1)#}
-{#                    if (checkPass())#}
-{#                        event.preventDefault();#}
-{#                if(!$('#email').val()){#}
-{#                    showErrorMessage(gettext("E-mail have to be filled!"));#}
-{#                    $('#mailDivId').addClass('has-error');#}
-{#                    event.preventDefault();#}
-{#                }#}
-{#            })#}
-{#        });#}
-
 
     </script>
 {% endblock %}
