@@ -1,7 +1,7 @@
-__author__ = 'mori'
 from django.contrib.auth.forms import PasswordChangeForm
 from django.forms import PasswordInput
 from django.utils.translation import ugettext_lazy as _
+
 
 class PasswordChangeFormCustomized(PasswordChangeForm):
     def __init__(self, *args, **kwargs):
