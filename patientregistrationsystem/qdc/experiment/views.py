@@ -9,6 +9,8 @@ import numpy as np
 import nwb
 from nwb.nwbco import *
 
+import mne
+
 from datetime import date, timedelta
 from functools import partial
 
@@ -4421,7 +4423,19 @@ def subject_eeg_view(request, group_id, subject_id,
                                                 data_configuration_tree__id=data_configuration_tree_id)
 
         for eeg_data_file in eeg_data_files:
-            eeg_data_file.eeg_reading = eeg_data_reading(eeg_data_file)
+
+            eeg_data_file.eeg_reading = eeg_data_reading(eeg_data_file, preload=False)
+            eeg_data_file.can_export_to_nwb = False
+
+            # # can export to nwb?
+            # if eeg_data_file.eeg_reading.file_format:
+            #     if eeg_data_file.eeg_reading.file_format.nes_code == "MNE-RawFromEGI" and \
+            #             eeg_data_file.eeg_setting.eeg_amplifier_setting and \
+            #             eeg_data_file.eeg_setting.eeg_amplifier_setting.number_of_channels_used and \
+            #             eeg_data_file.eeg_setting.eeg_amplifier_setting.number_of_channels_used == \
+            #             len(mne.pick_types(eeg_data_file.eeg_reading.reading.info, eeg=True)):
+            #
+            #         eeg_data_file.can_export_to_nwb = True
 
         eeg_collections.append(
             {'eeg_configuration': eeg_configuration,
@@ -4588,21 +4602,32 @@ def reading_for_eeg_validation(eeg_data_added, request):
             messages.warning(request, _('Not valid EEG file format.'))
 
 
-def eeg_data_reading(eeg_data):
+def eeg_data_reading(eeg_data, preload=False):
 
     eeg_reading = EEGReading()
 
     # For known formats, try to access data in order to validate the format
 
-    if eeg_data.file_format.nes_code == "NEO-RawBinarySignalIO":
+    if eeg_data.file_format.nes_code == "MNE-RawFromEGI":
 
         eeg_reading.file_format = eeg_data.file_format
 
+        try:
+            # Trying to read the segments
+            reading = mne.io.read_raw_egi(eeg_data.file.path, preload=preload)
+        except:
+            reading = None
+
+        eeg_reading.reading = reading
+
+    if eeg_data.file_format.nes_code == "NEO-RawBinarySignalIO":
+
+        eeg_reading.file_format = eeg_data.file_format
         reading = io.RawBinarySignalIO(filename=eeg_data.file.path)
 
         try:
             # Trying to read the segments
-            reading.read_segment(lazy=False, cascade=True, )
+            reading.read_segment(lazy=(not preload), cascade=True, )
         except:
             reading = None
 
@@ -4875,28 +4900,41 @@ def eeg_data_export_nwb(request, eeg_data_id, some_number, process_requisition):
     eeg_data = get_object_or_404(EEGData, pk=eeg_data_id)
 
     # Open and read signal with NEO
-    eeg_reading = eeg_data_reading(eeg_data)
+    eeg_reading = eeg_data_reading(eeg_data, preload=True)
 
+    # Was it open properly?
+    ok_opening = False
     segments = None
 
-    # Trying to read the signals
-    if eeg_reading and eeg_data.eeg_setting.eeg_amplifier_setting \
-            and eeg_data.eeg_setting.eeg_amplifier_setting.number_of_channels_used > 0:
+    if eeg_reading:
 
-        try:
-            segments = eeg_reading.reading.read_segment(
-                lazy=False, cascade=True,
-                nbchannel=eeg_data.eeg_setting.eeg_amplifier_setting.number_of_channels_used)
-        except:
-            update_process_requisition(request, process_requisition, 'finished', _('Finished'))
+        if eeg_reading.file_format.nes_code == "MNE-RawFromEGI":
+            ok_opening = True
 
-            messages.error(
-                request,
-                _("It was not possible to open the data file. Check if the number of channels configured is correct."))
+        if eeg_reading.file_format.nes_code == "NEO-RawBinarySignalIO":
 
-            return redirect('subject_eeg_view',
-                            group_id=eeg_data.subject_of_group.group_id,
-                            subject_id=eeg_data.subject_of_group.subject_id)
+            # Trying to read the signals
+            if eeg_reading and eeg_data.eeg_setting.eeg_amplifier_setting \
+                    and eeg_data.eeg_setting.eeg_amplifier_setting.number_of_channels_used > 0:
+
+                try:
+                    segments = eeg_reading.reading.read_segment(
+                        lazy=False, cascade=True,
+                        nbchannel=eeg_data.eeg_setting.eeg_amplifier_setting.number_of_channels_used)
+                    ok_opening = True
+                except:
+                    ok_opening = False
+
+    if not ok_opening:
+        update_process_requisition(request, process_requisition, 'finished', _('Finished'))
+
+        messages.error(
+            request,
+            _("It was not possible to open the data file. Check if the number of channels configured is correct."))
+
+        return redirect('subject_eeg_view',
+                        group_id=eeg_data.subject_of_group.group_id,
+                        subject_id=eeg_data.subject_of_group.subject_id)
 
     subject_of_group = eeg_data.subject_of_group
 
@@ -5023,7 +5061,7 @@ def eeg_data_export_nwb(request, eeg_data_id, some_number, process_requisition):
 
         device_information += \
             _("Manufacturer: ") + \
-            clean(eeg_data.eeg_setting.eeg_amplifier_setting.eeg_amplifier.name) + "; "
+            clean(eeg_data.eeg_setting.eeg_amplifier_setting.eeg_amplifier.manufacturer.name) + "; "
 
         device_information += \
             _("Number of used channels: ") + \
@@ -5086,30 +5124,51 @@ def eeg_data_export_nwb(request, eeg_data_id, some_number, process_requisition):
     ########################################################################
     update_process_requisition(request, process_requisition, 'reading_acquisition_data', _('Reading acquisition data'))
 
-    if segments:
-        number_of_samples = len(segments.analogsignals[0])
-        number_of_channels = eeg_data.eeg_setting.eeg_amplifier_setting.number_of_channels_used
+    if eeg_reading:
 
-        sampling_rate = 0
-        if eeg_data.eeg_setting.eeg_amplifier_setting and eeg_data.eeg_setting.eeg_amplifier_setting.sampling_rate:
-            sampling_rate = eeg_data.eeg_setting.eeg_amplifier_setting.sampling_rate
+        # if eeg_reading.file_format.nes_code == "MNE-RawFromEGI":
+        #     ok_opening = True
+        #
+        #     number_of_samples = len(eeg_reading.reading._data[0])
+        #     sampling_rate = 0
+        #     if eeg_data.eeg_setting.eeg_amplifier_setting and \
+        #             eeg_data.eeg_setting.eeg_amplifier_setting.sampling_rate:
+        #         sampling_rate = eeg_data.eeg_setting.eeg_amplifier_setting.sampling_rate
+        #     timestamps = np.arange(number_of_samples) * ((1 / sampling_rate) if sampling_rate else 0)
+        #
+        #
+        #     acquisition = neurodata.create_timeseries("ElectricalSeries", "data_collection", "acquisition")
+        #
+        #     acquisition.set_time(timestamps)
+        #     acquisition.set_value("num_samples", number_of_samples)
 
-        timestamps = np.arange(number_of_samples) * ((1/sampling_rate) if sampling_rate else 0)
-        acquisition = neurodata.create_timeseries("ElectricalSeries", "data_collection", "acquisition")
-        acquisition.set_comment(clean(eeg_data.description))
+        if eeg_reading.file_format.nes_code == "NEO-RawBinarySignalIO":
 
-        array_data = np.zeros((number_of_samples, number_of_channels))
+            if segments:
+                number_of_samples = len(segments.analogsignals[0])
+                number_of_channels = eeg_data.eeg_setting.eeg_amplifier_setting.number_of_channels_used
 
-        for index_value in range(number_of_samples):
-            for index_channel in range(number_of_channels):
-                array_data[index_value][index_channel] = segments.analogsignals[index_channel][index_value]
+                sampling_rate = 0
+                if eeg_data.eeg_setting.eeg_amplifier_setting and \
+                        eeg_data.eeg_setting.eeg_amplifier_setting.sampling_rate:
+                    sampling_rate = eeg_data.eeg_setting.eeg_amplifier_setting.sampling_rate
 
-        acquisition.set_data(array_data, resolution=1.2345e-6)
+                timestamps = np.arange(number_of_samples) * ((1/sampling_rate) if sampling_rate else 0)
+                acquisition = neurodata.create_timeseries("ElectricalSeries", "data_collection", "acquisition")
+                acquisition.set_comment(clean(eeg_data.description))
 
-        acquisition.set_time(timestamps)
-        acquisition.set_value("num_samples", number_of_samples)
-        acquisition.set_value("electrode_idx", list(range(number_of_channels)))
-        acquisition.finalize()
+                array_data = np.zeros((number_of_samples, number_of_channels))
+
+                for index_value in range(number_of_samples):
+                    for index_channel in range(number_of_channels):
+                        array_data[index_value][index_channel] = segments.analogsignals[index_channel][index_value]
+
+                acquisition.set_data(array_data, resolution=1.2345e-6)
+
+                acquisition.set_time(timestamps)
+                acquisition.set_value("num_samples", number_of_samples)
+                acquisition.set_value("electrode_idx", list(range(number_of_channels)))
+                acquisition.finalize()
 
     ########################################################################
     # stimulus section (ImageSeries)
