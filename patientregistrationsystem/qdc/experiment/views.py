@@ -9,7 +9,7 @@ import numpy as np
 import nwb
 from nwb.nwbco import *
 
-import mne
+# import mne
 
 from datetime import date, timedelta
 from functools import partial
@@ -4608,17 +4608,17 @@ def eeg_data_reading(eeg_data, preload=False):
 
     # For known formats, try to access data in order to validate the format
 
-    if eeg_data.file_format.nes_code == "MNE-RawFromEGI":
-
-        eeg_reading.file_format = eeg_data.file_format
-
-        try:
-            # Trying to read the segments
-            reading = mne.io.read_raw_egi(eeg_data.file.path, preload=preload)
-        except:
-            reading = None
-
-        eeg_reading.reading = reading
+    # if eeg_data.file_format.nes_code == "MNE-RawFromEGI":
+    #
+    #     eeg_reading.file_format = eeg_data.file_format
+    #
+    #     try:
+    #         # Trying to read the segments
+    #         reading = mne.io.read_raw_egi(eeg_data.file.path, preload=preload)
+    #     except:
+    #         reading = None
+    #
+    #     eeg_reading.reading = reading
 
     if eeg_data.file_format.nes_code == "NEO-RawBinarySignalIO":
 
@@ -4908,8 +4908,8 @@ def eeg_data_export_nwb(request, eeg_data_id, some_number, process_requisition):
 
     if eeg_reading:
 
-        if eeg_reading.file_format.nes_code == "MNE-RawFromEGI":
-            ok_opening = True
+        # if eeg_reading.file_format.nes_code == "MNE-RawFromEGI":
+        #     ok_opening = True
 
         if eeg_reading.file_format.nes_code == "NEO-RawBinarySignalIO":
 
