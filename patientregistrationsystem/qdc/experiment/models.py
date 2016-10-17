@@ -656,6 +656,58 @@ class TMSDeviceSetting(models.Model):
     coil_model = models.ForeignKey(CoilModel)
 
 
+def get_tms_brain_area_dir(instance, filename):
+    return "tms_brain_area_files/%s/%s" % \
+           (instance.id, filename)
+
+
+class BrainAreaSystem(models.Model):
+    name = models.CharField(null=False, max_length=50, blank=False)
+    description = models.TextField(null=True, blank=True)
+
+    def __str__(self):
+        return self.name
+
+
+class BrainAreaSystemPerspective(models.Model):
+    brain_area_image = models.FileField(upload_to=get_tms_brain_area_dir, null=True, blank=True)
+    brain_area_system = models.ForeignKey(BrainAreaSystem)
+
+
+def get_tms_localization_system_dir(instance, filename):
+    return "tms_localization_system_files/%s/%s" % \
+           (instance.id, filename)
+
+
+class TMSLocalizationSystem(models.Model):
+    name = models.CharField(null=False, max_length=50, blank=False)
+    description = models.TextField(null=True, blank=True)
+    tms_localization_system_image = models.FileField(upload_to=get_tms_localization_system_dir, null=True, blank=True)
+
+    def __str__(self):
+        return self.name
+
+
+class BrainArea(models.Model):
+    tms_localization_system = models.OneToOneField(TMSLocalizationSystem, primary_key=True, related_name='brain_area')
+    name = models.CharField(null=False, max_length=50, blank=False)
+    description = models.TextField(null=True, blank=True)
+    brain_area_system = models.ForeignKey(BrainAreaSystem)
+
+    def __str__(self):
+        return self.name
+
+
+class TMSPosition(models.Model):
+    name = models.CharField(null=False, max_length=50, blank=False)
+    tms_localization_system = models.ForeignKey(TMSLocalizationSystem, related_name='tms_position')
+
+    def __str__(self):
+        return self.name
+
+
+
+
 class Component(models.Model):
     COMPONENT_TYPES = (
         ("block", _("Set of steps")),
