@@ -679,16 +679,6 @@ def get_tms_localization_system_dir(instance, filename):
            (instance.id, filename)
 
 
-class TMSLocalizationSystem(models.Model):
-    name = models.CharField(null=False, max_length=50, blank=False)
-    description = models.TextField(null=True, blank=True)
-    tms_localization_system_image = models.FileField(upload_to=get_tms_localization_system_dir, null=True, blank=True)
-    brain_area = models.OneToOneField(BrainArea, primary_key=True)
-
-    def __str__(self):
-        return self.name
-
-
 class BrainArea(models.Model):
     name = models.CharField(null=False, max_length=50, blank=False)
     description = models.TextField(null=True, blank=True)
@@ -698,18 +688,22 @@ class BrainArea(models.Model):
         return self.name
 
 
-class TMSPosition(models.Model):
+class TMSLocalizationSystem(models.Model):
     name = models.CharField(null=False, max_length=50, blank=False)
-    tms_localization_system = models.ForeignKey(TMSLocalizationSystem, related_name='tms_position')
+    description = models.TextField(null=True, blank=True)
+    tms_localization_system_image = models.FileField(upload_to=get_tms_localization_system_dir, null=True, blank=True)
+    brain_area = models.ForeignKey(BrainArea)
 
     def __str__(self):
         return self.name
 
 
-class HotSpot(models.Model):
-    coordinate_x = models.IntegerField(null=True, blank=True, validators=[MinValueValidator(0)])
-    coordinate_y = models.IntegerField(null=True, blank=True, validators=[MinValueValidator(0)])
-    tms_position = models.OneToOneField(TMSPosition, primary_key=True)
+class TMSPosition(models.Model):
+    name = models.CharField(null=False, max_length=50, blank=False)
+    tms_localization_system = models.ForeignKey(TMSLocalizationSystem, related_name='tms_positions')
+
+    def __str__(self):
+        return self.name
 
 
 class CoilOrientation(models.Model):
@@ -1017,12 +1011,34 @@ class TMSData(DataFile, DataCollection):
     time_between_mep_trials_unit = models.CharField(null=True, blank=True, max_length=15, choices=TIME_UNITS)
     repetitive_pulse_frequency = models.IntegerField(null=True, blank=True, validators=[MinValueValidator(0)])
     coil_position_angle = models.FloatField(null=True, blank=True, validators=[MinValueValidator(0)])
-    hot_spot = models.OneToOneField(HotSpot, primary_key=True)
-    coil_orientation = models.OneToOneField(CoilOrientation, primary_key=True)
-    direction_of_induced_current = models.OneToOneField(DirectionOfTheInducedCurrent, primary_key=True)
+    coil_orientation = models.ForeignKey(CoilOrientation, null=True, blank=True)
+    direction_of_induced_current = models.ForeignKey(DirectionOfTheInducedCurrent, null=True, blank=True)
 
     # Audit trail - Simple History
     history = HistoricalRecords()
+    # changed_by = models.ForeignKey('auth.User')
+
+    def __str__(self):
+        return self.description
+
+    @property
+    def _history_user(self):
+        return self.changed_by
+
+    @_history_user.setter
+    def _history_user(self, value):
+        self.changed_by = value
+
+
+class HotSpot(models.Model):
+    coordinate_x = models.IntegerField(null=True, blank=True, validators=[MinValueValidator(0)])
+    coordinate_y = models.IntegerField(null=True, blank=True, validators=[MinValueValidator(0)])
+    tms_position = models.ForeignKey(TMSPosition)
+    tms_data = models.OneToOneField(TMSData, primary_key=True)
+
+    # Audit trail - Simple History
+    history = HistoricalRecords()
+
     # changed_by = models.ForeignKey('auth.User')
 
     def __str__(self):
