@@ -683,13 +683,13 @@ class TMSLocalizationSystem(models.Model):
     name = models.CharField(null=False, max_length=50, blank=False)
     description = models.TextField(null=True, blank=True)
     tms_localization_system_image = models.FileField(upload_to=get_tms_localization_system_dir, null=True, blank=True)
+    brain_area = models.OneToOneField(BrainArea, primary_key=True)
 
     def __str__(self):
         return self.name
 
 
 class BrainArea(models.Model):
-    tms_localization_system = models.OneToOneField(TMSLocalizationSystem, primary_key=True, related_name='brain_area')
     name = models.CharField(null=False, max_length=50, blank=False)
     description = models.TextField(null=True, blank=True)
     brain_area_system = models.ForeignKey(BrainAreaSystem)
@@ -706,6 +706,24 @@ class TMSPosition(models.Model):
         return self.name
 
 
+class HotSpot(models.Model):
+    coordinate_x = models.IntegerField(null=True, blank=True, validators=[MinValueValidator(0)])
+    coordinate_y = models.IntegerField(null=True, blank=True, validators=[MinValueValidator(0)])
+    tms_position = models.OneToOneField(TMSPosition, primary_key=True)
+
+
+class CoilOrientation(models.Model):
+    name = models.CharField(max_length=150)
+
+    def __str__(self):
+        return self.name
+
+
+class DirectionOfTheInducedCurrent(models.Model):
+    name = models.CharField(max_length=150)
+
+    def __str__(self):
+        return self.name
 
 
 class Component(models.Model):
@@ -971,6 +989,37 @@ class EEGData(DataFile, DataCollection):
     eeg_setting = models.ForeignKey(EEGSetting)
     eeg_setting_reason_for_change = models.TextField(null=True, blank=True, default='')
     eeg_cap_size = models.ForeignKey(EEGCapSize, null=True, blank=True)
+
+    # Audit trail - Simple History
+    history = HistoricalRecords()
+    # changed_by = models.ForeignKey('auth.User')
+
+    def __str__(self):
+        return self.description
+
+    @property
+    def _history_user(self):
+        return self.changed_by
+
+    @_history_user.setter
+    def _history_user(self, value):
+        self.changed_by = value
+
+
+class TMSData(DataFile, DataCollection):
+    tms_setting = models.ForeignKey(TMSSetting)
+    resting_motor_threshold = models.FloatField(null=True, blank=True, validators=[MinValueValidator(0)])
+    test_pulse_intensity_of_simulation = models.FloatField(null=True, blank=True, validators=[MinValueValidator(0)])
+    interval_between_pulses = models.IntegerField(null=True, blank=True, validators=[MinValueValidator(0)])
+    interval_between_pulses_unit = models.CharField(null=True, blank=True, max_length=15, choices=TIME_UNITS)
+    time_between_mep_trials_low = models.IntegerField(null=True, blank=True, validators=[MinValueValidator(0)])
+    time_between_mep_trials_high = models.IntegerField(null=True, blank=True, validators=[MinValueValidator(0)])
+    time_between_mep_trials_unit = models.CharField(null=True, blank=True, max_length=15, choices=TIME_UNITS)
+    repetitive_pulse_frequency = models.IntegerField(null=True, blank=True, validators=[MinValueValidator(0)])
+    coil_position_angle = models.FloatField(null=True, blank=True, validators=[MinValueValidator(0)])
+    hot_spot = models.OneToOneField(HotSpot, primary_key=True)
+    coil_orientation = models.OneToOneField(CoilOrientation, primary_key=True)
+    direction_of_induced_current = models.OneToOneField(DirectionOfTheInducedCurrent, primary_key=True)
 
     # Audit trail - Simple History
     history = HistoricalRecords()
