@@ -61,6 +61,8 @@
 
     <script src="{% static 'quiz/js/quiz.js' %}"></script>
 
+    <link rel="stylesheet" href="{% static 'quiz/font-awesome-4.6.3/css/font-awesome.min.css' %}">
+
     <script type="text/javascript" src="{% url 'django.views.i18n.javascript_catalog' %}"></script>
 
     <style type="text/css">
@@ -202,7 +204,8 @@
                 {% if perms.experiment.view_researchproject %}
                     <li {% block activeAdvancedResearchProject %}{% endblock %}>
                         <a href="/experiment/research_project/list/">
-                            <span class="glyphicon glyphicon-book"></span>
+{#                            <span class="glyphicon glyphicon-book"></span>#}
+                            <span class="fa fa-graduation-cap"></span>
                             {% trans "Studies" %}
                         </a>
                     </li>
@@ -229,8 +232,7 @@
                 {% if perms.team.change_team %}
                     <li {% block activeTeam %}{% endblock %}>
                         <a href="/team/registers/">
-                            <span class="glyphicon glyphicon-user"></span>
-                            <span class="glyphicon glyphicon-user"></span>
+                            <span class="fa fa-users"></span>
                             {% trans "Teams" %}
                         </a>
                     </li>
