@@ -9,8 +9,6 @@ $(document).ready(function () {
     var select_electrodo = $("select#id_electrodo");
     var select_manufacturer = $("select#id_manufacturer");
     var select_equipment = $("select#id_equipment_selection");
-    var select_tmsdevice = $("select#id_tms_device");
-    var select_coilmodel = $("select#id_coil_model");
 
     select_manufacturer.change(function() {
         var manufacturer_id = $(this).val();
@@ -26,8 +24,6 @@ $(document).ready(function () {
             for (var i = 0; i < all_equipment.length; i++) {
                     options += '<option value="' + all_equipment[i].pk + '">' + all_equipment[i].fields['identification'] + '</option>';
             }
-            // select_equipment.html(options);
-            // select_equipment.change();
 
             select_preamplifier.html(options);
             select_preamplifier.change();
@@ -117,36 +113,6 @@ $(document).ready(function () {
        }
     });
 
-    select_tmsdevice.change(function () {
-       var tmsdevice_id = $(this).val();
-       var description_field = $("#id_description");
-
-       var url = "/experiment/equipment/" + tmsdevice_id + "/attributes";
-
-       if(tmsdevice_id == ""){
-           description_field.prop('value', "");
-       }else{
-           $.getJSON(url, function (equipment) {
-               description_field.prop('value', equipment['description']);
-           })
-       }
-
-    });
     
-    select_coilmodel.change(function () {
-       var coilmodel_id = $(this).val();
-       var description_field = $("#id_coil_description");
-
-       var url = "/experiment/coilmodel/" + coilmodel_id + "/attributes";
-
-       if(coilmodel_id == ""){
-           description_field.prop('value', "");
-       }else{
-           $.getJSON(url, function (equipment) {
-               description_field.prop('value', equipment['description']);
-           })
-       }
-
-    });
     
 });

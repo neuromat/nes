@@ -1633,6 +1633,7 @@ def manufacturer_view(request, manufacturer_id, template_name="experiment/manufa
         manufacturer_form.fields[field].widget.attrs['disabled'] = True
 
     if request.method == "POST":
+
         if request.POST['action'] == "remove":
 
             try:
@@ -8889,6 +8890,8 @@ def tms_setting_tms_device(request, tms_setting_id,
 
     creating = False
 
+    list_of_manufacturers = Manufacturer.objects.filter(set_of_equipment__equipment_type="tms_device").distinct()
+
     if hasattr(tms_setting, 'tms_device_setting'):
 
         tms_device_setting = TMSDeviceSetting.objects.get(tms_setting=tms_setting)
@@ -8934,7 +8937,8 @@ def tms_setting_tms_device(request, tms_setting_id,
                "tms_setting": tms_setting,
                "tms_device_setting_form": tms_device_setting_form,
                "equipment_form": equipment_form,
-               "coil_model_form": coil_model_form
+               "coil_model_form": coil_model_form,
+               "manufacturer_list": list_of_manufacturers
                }
 
     return render(request, template_name, context)
