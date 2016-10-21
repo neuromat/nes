@@ -4565,7 +4565,8 @@ def subject_eeg_data_create(request, group_id, subject_id, eeg_configuration_id,
                         EEGElectrodePositionCollectionStatus(
                             worked=position_setting.used,
                             eeg_data=eeg_data_added,
-                            eeg_electrode_position_setting=position_setting
+                            eeg_electrode_position_setting=position_setting,
+                            channel_index=position_setting.channel_index
                         ).save()
 
                 # Validate known eeg file formats
