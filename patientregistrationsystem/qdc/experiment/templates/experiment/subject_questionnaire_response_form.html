@@ -220,6 +220,10 @@
                                                     {% if question_response.answer != '' %}
                                                         <input class="form-control" value="{{ question_response.answer }}" type="text" disabled>
                                                     {% endif %}
+                                                    {% if question_response.type == '|' and question_response.link %}
+{#                                                        <input class="form-control" value="{{ question_response.link }}" type="text" disabled>#}
+                                                        <a target="_blank" href="{{ question_response.link }}" >{% trans "Uploaded file (LimeSurvey login required)" %}</a>
+                                                    {% endif %}
                                                 {% endif %}
                                             {% endif %}
                                         {% endif %}
