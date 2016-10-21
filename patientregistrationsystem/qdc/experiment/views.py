@@ -5480,10 +5480,12 @@ def emg_data_edit(request, emg_data_id, template_name="experiment/subject_emg_da
 @permission_required('experiment.view_researchproject')
 def subject_additional_data_view(request, group_id, subject_id,
                                  template_name="experiment/additional_data_collection_list.html"):
-
     group = get_object_or_404(Group, id=group_id)
     subject = get_object_or_404(Subject, id=subject_id)
     subject_of_group = get_object_or_404(SubjectOfGroup, group=group, subject=subject)
+
+    # teste
+    # arvore = get_block_tree(group.experimental_protocol.id)
 
     # First element of the list is associated to the whole experimental protocol
     subject_step_data_query = \
@@ -5526,6 +5528,41 @@ def subject_additional_data_view(request, group_id, subject_id,
                }
 
     return render(request, template_name, context)
+
+
+def get_block_tree(component_id):
+
+    component = get_object_or_404(Component, id=component_id)
+
+    list_of_component_configuration = []
+
+    if component.component_type == 'block':
+        configurations = ComponentConfiguration.objects.filter(parent_id=component_id).order_by('order')
+        for configuration in configurations:
+            list_of_component_configuration.append(get_block_tree(configuration.component_id))
+
+    attributes = get_component_attributes(component)
+    attributes = [
+        {'key': 'identification', 'value': component.identification}
+    ]
+
+    return {'component_type': component.component_type,
+            'attributes': attributes,
+            'list_of_component_configuration': list_of_component_configuration}
+
+
+def get_component_attributes(component):
+    attributes = []
+    for attribute in get_general_component_attributes(component):
+        attributes.append(attribute)
+    return attributes
+
+
+def get_general_component_attributes(component):
+    attributes = [{'identification': component.identification}]
+    if component.description:
+        attributes.append({'description': component.identification})
+    return attributes
 
 
 @login_required
