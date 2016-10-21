@@ -40,13 +40,13 @@ from experiment.models import Experiment, Subject, QuestionnaireResponse, Subjec
     EEGAmplifierSetting, EEGSolutionSetting, EEGFilterSetting, EEGElectrodeLayoutSetting, \
     FilterType, EEGSolution, EEGElectrodeLocalizationSystem, EEGElectrodeNetSystem, EEGElectrodePositionSetting, \
     ElectrodeModel, EEGElectrodePositionCollectionStatus, EEGCapSize, EEGElectrodeCap, EEGElectrodePosition, \
-    Material, AdditionalData, Tag, CoilModel, \
+    Material, AdditionalData, Tag, CoilModel, TMS, \
     EMGData, EMGSetting, SoftwareVersion, EMGDigitalFilterSetting, EMGADConverterSetting, \
     EMGElectrodeSetting, EMGPreamplifierSetting, EMGAmplifierSetting, EMGAnalogFilterSetting, \
     ADConverter, StandardizationSystem, Muscle, MuscleSubdivision, MuscleSide, \
     EMGElectrodePlacement, EMGSurfacePlacement, TMS, TMSSetting, TMSDeviceSetting, TMSDevice, Software, \
     EMGIntramuscularPlacement, EMGNeedlePlacement, SubjectStepData, EMGPreamplifierFilterSetting, \
-    EMGElectrodePlacementSetting
+    EMGElectrodePlacementSetting, TMSData, CoilOrientation
 from experiment.forms import ExperimentForm, QuestionnaireResponseForm, FileForm, GroupForm, InstructionForm, \
     ComponentForm, StimulusForm, BlockForm, ComponentConfigurationForm, ResearchProjectForm, NumberOfUsesToInsertForm, \
     EEGDataForm, EEGSettingForm, EquipmentForm, EEGForm, EEGAmplifierForm, \
@@ -63,7 +63,7 @@ from experiment.forms import ExperimentForm, QuestionnaireResponseForm, FileForm
     TMSForm, TMSSettingForm, TMSDeviceSettingForm, CoilModelRegisterForm, TMSDeviceRegisterForm, \
     SoftwareRegisterForm, SoftwareVersionRegisterForm, EMGIntramuscularPlacementForm, \
     EMGSurfacePlacementRegisterForm, EMGIntramuscularPlacementRegisterForm, EMGNeedlePlacementRegisterForm, \
-    SubjectStepDataForm, EMGPreamplifierFilterSettingForm, CoilModelForm
+    SubjectStepDataForm, EMGPreamplifierFilterSettingForm, CoilModelForm, TMSDataForm
 
 from export.export import create_directory
 
@@ -1633,6 +1633,7 @@ def manufacturer_view(request, manufacturer_id, template_name="experiment/manufa
         manufacturer_form.fields[field].widget.attrs['disabled'] = True
 
     if request.method == "POST":
+
         if request.POST['action'] == "remove":
 
             try:
@@ -3792,7 +3793,8 @@ def subjects(request, group_id, template_name="experiment/subjects.html"):
 
     experimental_protocol_info = {'number_of_questionnaires': 0,
                                   'number_of_eeg_data': 0,
-                                  'number_of_emg_data': 0}
+                                  'number_of_emg_data': 0,
+                                  'number_of_tms_data': 0}
 
     group = get_object_or_404(Group, id=group_id)
 
@@ -3818,10 +3820,12 @@ def subjects(request, group_id, template_name="experiment/subjects.html"):
 
         list_of_eeg_configuration = create_list_of_trees(group.experimental_protocol, "eeg")
         list_of_emg_configuration = create_list_of_trees(group.experimental_protocol, "emg")
+        list_of_tms_configuration = create_list_of_trees(group.experimental_protocol, "tms")
 
         experimental_protocol_info = {'number_of_questionnaires': len(list_of_questionnaires_configuration),
                                       'number_of_eeg_data': len(list_of_eeg_configuration),
-                                      'number_of_emg_data': len(list_of_emg_configuration)}
+                                      'number_of_emg_data': len(list_of_emg_configuration),
+                                      'number_of_tms_data': len(list_of_tms_configuration)}
 
         # For each subject of the group...
         for subject_of_group in subject_list:
@@ -3910,10 +3914,28 @@ def subjects(request, group_id, template_name="experiment/subjects.html"):
                 percentage_of_emg_data_files_uploaded = \
                     100 * number_of_emg_data_files_uploaded / len(list_of_emg_configuration)
 
-            # If any questionnaire has responses or any eeg data file was uploaded,
+            # TMS data files
+            number_of_tms_data_files_uploaded = 0
+            # for each component_configuration of tms...
+            for tms_configuration in list_of_tms_configuration:
+                path = [item[0] for item in tms_configuration]
+                data_configuration_tree_id = list_data_configuration_tree(path[-1], path)
+                tms_data_files = \
+                    TMSData.objects.filter(subject_of_group=subject_of_group,
+                                           data_configuration_tree_id=data_configuration_tree_id)
+                if len(tms_data_files):
+                    number_of_tms_data_files_uploaded += 1
+
+            percentage_of_tms_data_files_uploaded = 0
+            if len(list_of_tms_configuration) > 0:
+                percentage_of_tms_data_files_uploaded = \
+                    100 * number_of_tms_data_files_uploaded / len(list_of_tms_configuration)
+
+            # If any questionnaire has responses or any eeg/emg/tms data file was uploaded,
             # the subject can't be removed from the group.
             if number_of_eeg_data_files_uploaded or \
                     number_of_emg_data_files_uploaded or \
+                    number_of_tms_data_files_uploaded or \
                     number_of_questionnaires_filled:
                 can_remove = False
 
@@ -3930,6 +3952,10 @@ def subjects(request, group_id, template_name="experiment/subjects.html"):
                  'number_of_emg_data_files_uploaded': number_of_emg_data_files_uploaded,
                  'total_of_emg_data_files': len(list_of_emg_configuration),
                  'percentage_of_emg_data_files_uploaded': int(percentage_of_emg_data_files_uploaded),
+
+                 'number_of_tms_data_files_uploaded': number_of_tms_data_files_uploaded,
+                 'total_of_tms_data_files': len(list_of_tms_configuration),
+                 'percentage_of_tms_data_files_uploaded': int(percentage_of_tms_data_files_uploaded),
 
                  'number_of_additional_data_uploaded':
                      AdditionalData.objects.filter(subject_of_group=subject_of_group).count()},
@@ -5276,6 +5302,203 @@ def eeg_electrode_position_collection_status_change_the_order(request,
     redirect_url = reverse("eeg_data_view", args=(position_status.eeg_data_id, '2'))
 
     return HttpResponseRedirect(redirect_url)
+
+
+@login_required
+@permission_required('experiment.view_researchproject')
+def subject_tms_view(request, group_id, subject_id, template_name="experiment/subject_tms_collection_list.html"):
+    group = get_object_or_404(Group, id=group_id)
+    subject = get_object_or_404(Subject, id=subject_id)
+
+    tms_collections = []
+
+    list_of_paths = create_list_of_trees(group.experimental_protocol, "tms")
+
+    subject_of_group = get_object_or_404(SubjectOfGroup, group=group, subject=subject)
+
+    for path in list_of_paths:
+
+        tms_configuration = ComponentConfiguration.objects.get(pk=path[-1][0])
+
+        data_configuration_tree_id = list_data_configuration_tree(tms_configuration.id, [item[0] for item in path])
+
+        tms_data_files = TMSData.objects.filter(subject_of_group=subject_of_group,
+                                                data_configuration_tree__id=data_configuration_tree_id)
+
+        tms_collections.append(
+            {'tms_configuration': tms_configuration,
+             'path': path,
+             'tms_data_files': tms_data_files}
+        )
+
+    context = {"can_change": get_can_change(request.user, group.experiment.research_project),
+               'group': group,
+               'subject': subject,
+               'tms_collections': tms_collections
+               }
+
+    return render(request, template_name, context)
+
+
+@login_required
+@permission_required('experiment.add_questionnaireresponse')
+def subject_tms_data_create(request, group_id, subject_id, tms_configuration_id,
+                            template_name="experiment/subject_tms_data_form.html"):
+
+    group = get_object_or_404(Group, id=group_id)
+
+    list_of_path = [int(item) for item in tms_configuration_id.split('-')]
+    tms_configuration_id = list_of_path[-1]
+
+    check_can_change(request.user, group.experiment.research_project)
+
+    tms_configuration = get_object_or_404(ComponentConfiguration, id=tms_configuration_id)
+    tms_step = get_object_or_404(TMS, id=tms_configuration.component_id)
+
+    redirect_url = None
+    tms_data_id = None
+
+    tms_data_form = TMSDataForm(None, initial={'experiment': group.experiment,
+                                               'tms_setting': tms_step.tms_setting_id})
+
+    file_format_list = file_format_code("TMS")
+
+    if request.method == "POST":
+        if request.POST['action'] == "save":
+
+            tms_data_form = TMSDataForm(request.POST, request.FILES)
+
+            if tms_data_form.is_valid():
+
+                data_configuration_tree_id = list_data_configuration_tree(tms_configuration_id, list_of_path)
+                if not data_configuration_tree_id:
+                    data_configuration_tree_id = create_data_configuration_tree(list_of_path)
+
+                subject = get_object_or_404(Subject, pk=subject_id)
+                subject_of_group = get_object_or_404(SubjectOfGroup, subject=subject, group_id=group_id)
+
+                tms_data_added = tms_data_form.save(commit=False)
+                tms_data_added.subject_of_group = subject_of_group
+                tms_data_added.component_configuration = tms_configuration
+                tms_data_added.data_configuration_tree_id = data_configuration_tree_id
+
+                # PS: it was necessary adding these 2 lines because Django raised, I do not why (Evandro),
+                # the following error 'TMSData' object has no attribute 'group'
+                tms_data_added.group = group
+                tms_data_added.subject = subject
+
+                tms_data_added.save()
+
+                messages.success(request, _('TMS data collection created successfully.'))
+
+                redirect_url = reverse("tms_data_view", args=(tms_data_added.id,))
+                # redirect_url = reverse("subjects", args=(group.id,))
+                return HttpResponseRedirect(redirect_url)
+
+    context = {"can_change": True,
+               "creating": True,
+               "editing": True,
+               "group": group,
+               "tms_configuration": tms_configuration,
+               "tms_data_form": tms_data_form,
+               "tms_data_id": tms_data_id,
+               "file_format_list": file_format_list,
+               "tms_setting_default_id": tms_step.tms_setting_id,
+               "subject": get_object_or_404(Subject, pk=subject_id),
+               "URL": redirect_url,
+               "tab": "1"
+               }
+
+    return render(request, template_name, context)
+
+
+@login_required
+@permission_required('experiment.change_experiment')
+def tms_data_view(request, tms_data_id, template_name="experiment/subject_tms_data_form.html"):
+
+    tms_data = get_object_or_404(TMSData, pk=tms_data_id)
+    tms_step = get_object_or_404(TMS, id=tms_data.data_configuration_tree.component_configuration.component.id)
+
+    tms_data_form = TMSDataForm(request.POST or None, instance=tms_data)
+
+    for field in tms_data_form.fields:
+        tms_data_form.fields[field].widget.attrs['disabled'] = True
+
+    file_format_list = file_format_code("TMS")
+
+    if request.method == "POST":
+        if request.POST['action'] == "remove":
+
+            check_can_change(request.user, tms_data.subject_of_group.group.experiment.research_project)
+
+            subject_of_group = tms_data.subject_of_group
+            tms_data.file.delete()
+            tms_data.delete()
+            messages.success(request, _('TMS data removed successfully.'))
+            return redirect('subject_tms_view',
+                            group_id=subject_of_group.group_id,
+                            subject_id=subject_of_group.subject_id)
+
+    context = {"can_change": get_can_change(request.user, tms_data.subject_of_group.group.experiment.research_project),
+               "editing": False,
+               "group": tms_data.subject_of_group.group,
+               "subject": tms_data.subject_of_group.subject,
+               "tms_data_form": tms_data_form,
+               "tms_data": tms_data,
+               "file_format_list": file_format_list,
+               "tms_setting_default_id": tms_step.tms_setting_id,
+               }
+
+    return render(request, template_name, context)
+
+
+@login_required
+@permission_required('experiment.change_experiment')
+def tms_data_edit(request, tms_data_id, template_name="experiment/subject_tms_data_form.html"):
+
+    tms_data = get_object_or_404(TMSData, pk=tms_data_id)
+    tms_step = get_object_or_404(TMS, id=tms_data.data_configuration_tree.component_configuration.component.id)
+
+    check_can_change(request.user, tms_data.subject_of_group.group.experiment.research_project)
+
+    if request.method == "POST":
+
+        tms_data_form = TMSDataForm(request.POST, request.FILES, instance=tms_data)
+
+        if request.POST['action'] == "save":
+            if tms_data_form.is_valid():
+
+                if tms_data_form.has_changed():
+
+                    tms_data_to_update = tms_data_form.save(commit=False)
+                    tms_data_to_update.group = tms_data.subject_of_group.group
+                    tms_data_to_update.subject = tms_data.subject_of_group.subject
+                    tms_data_to_update.save()
+
+                    messages.success(request, _('TMS data updated successfully.'))
+                else:
+                    messages.success(request, _('There is no changes to save.'))
+
+                redirect_url = reverse("emg_data_view", args=(tms_data_id,))
+                return HttpResponseRedirect(redirect_url)
+
+    else:
+        tms_data_form = TMSDataForm(request.POST or None,
+                                    instance=tms_data,
+                                    initial={'experiment': tms_data.subject_of_group.group.experiment})
+
+    file_format_list = file_format_code("TMS")
+
+    context = {"group": tms_data.subject_of_group.group,
+               "subject": tms_data.subject_of_group.subject,
+               "emg_data_form": tms_data_form,
+               "emg_data": tms_data,
+               "file_format_list": file_format_list,
+               "emg_setting_default_id": tms_step.tms_setting_id,
+               "editing": True
+               }
+
+    return render(request, template_name, context)
 
 
 @login_required
@@ -8927,6 +9150,8 @@ def tms_setting_tms_device(request, tms_setting_id,
 
     creating = False
 
+    list_of_manufacturers = Manufacturer.objects.filter(set_of_equipment__equipment_type="tms_device").distinct()
+
     if hasattr(tms_setting, 'tms_device_setting'):
 
         tms_device_setting = TMSDeviceSetting.objects.get(tms_setting=tms_setting)
@@ -8972,7 +9197,8 @@ def tms_setting_tms_device(request, tms_setting_id,
                "tms_setting": tms_setting,
                "tms_device_setting_form": tms_device_setting_form,
                "equipment_form": equipment_form,
-               "coil_model_form": coil_model_form
+               "coil_model_form": coil_model_form,
+               "manufacturer_list": list_of_manufacturers
                }
 
     return render(request, template_name, context)

@@ -15,7 +15,7 @@ from experiment.models import Experiment, QuestionnaireResponse, SubjectOfGroup,
     EMGPreamplifierSetting, EMGAmplifierSetting, EMGAnalogFilterSetting, EMGSurfacePlacement, \
     ADConverter, StandardizationSystem, Muscle, MuscleSide, MuscleSubdivision, TMS, TMSSetting, TMSDeviceSetting, \
     Software, SoftwareVersion, CoilModel, TMSDevice, EMGIntramuscularPlacement, EMGNeedlePlacement, SubjectStepData, \
-    EMGPreamplifierFilterSetting
+    EMGPreamplifierFilterSetting, TMSData, HotSpot, CoilOrientation, DirectionOfTheInducedCurrent
 
 
 class ExperimentForm(ModelForm):
@@ -1126,6 +1126,57 @@ class EMGNeedlePlacementForm(ModelForm):
         widgets = {
             'depth_of_insertion': Textarea(attrs={'class': 'form-control', 'rows': '4', 'required': ""})
         }
+
+
+class TMSDataForm(ModelForm):
+    class Meta:
+        model = TMSData
+
+        fields = ['date', 'time', 'file_format', 'tms_setting', 'coil_orientation', 'description', 'file',
+                  'file_format_description', 'direction_of_induced_current', 'resting_motor_threshold',
+                  'test_pulse_intensity_of_simulation', 'interval_between_pulses', 'interval_between_pulses_unit',
+                  'time_between_mep_trials_high', 'time_between_mep_trials_low', 'time_between_mep_trials_unit',
+                  'repetitive_pulse_frequency', 'coil_position_angle']
+
+        widgets = {
+            'date': DateInput(format=_("%m/%d/%Y"),
+                              attrs={'class': 'form-control datepicker', 'placeholder': _('mm/dd/yyyy'),
+                                     'required': "",
+                                     'data-error': _("Fill date must be filled.")}, ),
+            'time': TimeInput(attrs={'class': 'form-control', 'placeholder': 'HH:mm:ss'}),
+            'tms_setting': Select(attrs={'class': 'form-control', 'required': "",
+                                         'data-error': _('TMS setting type must be filled.')}),
+            'coil_orientation': Select(attrs={'class': 'form-control', 'required': ""}),
+            'direction_of_induced_current': Select(attrs={'class': 'form-control', 'required': ""}),
+            'file_format': Select(attrs={'class': 'form-control', 'required': "",
+                                         'data-error': _('File format must be chosen.')}),
+            'description': Textarea(attrs={'class': 'form-control',
+                                           'rows': '4', 'required': "",
+                                           'data-error': _('Description must be filled.')}),
+            'file_format_description': Textarea(attrs={'class': 'form-control',
+                                                       'rows': '4', 'required': "",
+                                                       'data-error': _('File format description must be filled.')}),
+            'tms_setting_reason_for_change':
+                Textarea(attrs={'class': 'form-control', 'rows': '4',
+                                'required': "",
+                                'data-error': _('Reason for change must be filled.')}),
+
+            # It is not possible to set the 'required' attribute because it affects the edit screen
+            # 'file': FileInput(attrs={'required': ""})
+        }
+
+    def __init__(self, *args, **kwargs):
+        super(TMSDataForm, self).__init__(*args, **kwargs)
+
+        self.fields['file_format'].queryset = FileFormat.objects.filter(tags__name="TMS")
+
+        initial = kwargs.get('initial')
+        if initial and 'experiment' in initial:
+            self.fields['tms_setting'].queryset = TMSSetting.objects.filter(experiment=initial['experiment'])
+        if initial and 'tms_setting' in initial:
+            tms_setting = get_object_or_404(TMSSetting, pk=initial['tms_setting'])
+            self.fields['coil_orientation'].queryset = CoilOrientation.objects.all()
+            self.fields['direction_of_induced_current'].queryset = DirectionOfTheInducedCurrent.objects.all()
 
 
 class TMSSettingForm(ModelForm):

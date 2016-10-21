@@ -308,6 +308,14 @@ urlpatterns = patterns(
     url(r'^emg_data/(?P<emg_data_id>\d+)/$', 'emg_data_view', name='emg_data_view'),
     url(r'^emg_data/edit/(?P<emg_data_id>\d+)/$', 'emg_data_edit', name='emg_data_edit'),
 
+    # subject + tms_data
+    url(r'^group/(?P<group_id>\d+)/subject/(?P<subject_id>\d+)/tms/$',
+        'subject_tms_view', name='subject_tms_view'),
+    url(r'^group/(?P<group_id>\d+)/subject/(?P<subject_id>\d+)/tms/(?P<tms_configuration_id>[0-9-]+)/add_tms_data/$',
+        'subject_tms_data_create', name='subject_tms_data_create'),
+    url(r'^tms_data/(?P<tms_data_id>\d+)/$', 'tms_data_view', name='tms_data_view'),
+    url(r'^tms_data/edit/(?P<tms_data_id>\d+)/$', 'tms_data_edit', name='tms_data_edit'),
+
     # subject + additional data
     url(r'^group/(?P<group_id>\d+)/subject/(?P<subject_id>\d+)/additional_data/$',
         'subject_additional_data_view', name='subject_additional_data_view'),
