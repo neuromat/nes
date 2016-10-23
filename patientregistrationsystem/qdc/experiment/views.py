@@ -5447,6 +5447,7 @@ def tms_data_view(request, tms_data_id, template_name="experiment/subject_tms_da
                "tms_data": tms_data,
                "file_format_list": file_format_list,
                "tms_setting_default_id": tms_step.tms_setting_id,
+               "tab": "1"
                }
 
     return render(request, template_name, context)
