@@ -15,7 +15,8 @@ from experiment.models import Experiment, QuestionnaireResponse, SubjectOfGroup,
     EMGPreamplifierSetting, EMGAmplifierSetting, EMGAnalogFilterSetting, EMGSurfacePlacement, \
     ADConverter, StandardizationSystem, Muscle, MuscleSide, MuscleSubdivision, TMS, TMSSetting, TMSDeviceSetting, \
     Software, SoftwareVersion, CoilModel, TMSDevice, EMGIntramuscularPlacement, EMGNeedlePlacement, SubjectStepData, \
-    EMGPreamplifierFilterSetting, TMSData, HotSpot, CoilOrientation, DirectionOfTheInducedCurrent
+    EMGPreamplifierFilterSetting, TMSData, HotSpot, CoilOrientation, DirectionOfTheInducedCurrent, \
+    TMSLocalizationSystem
 
 
 class ExperimentForm(ModelForm):
@@ -454,6 +455,20 @@ class EEGElectrodeLocalizationSystemRegisterForm(ModelForm):
                                      'data-error': _('Name field must be filled.'),
                                      'autofocus': ''}),
             'description': Textarea(attrs={'class': 'form-control', 'rows': '4'}),
+        }
+
+
+class TMSLocalizationSystemForm(ModelForm):
+    class Meta:
+        model = TMSLocalizationSystem
+        fields = ['name', 'description', 'tms_localization_system_image', 'brain_area']
+
+        widgets = {
+            'name': TextInput(attrs={'class': 'form-control', 'required': "",
+                                     'data-error': _('Name field must be filled.'),
+                                     'autofocus': ''}),
+            'description': Textarea(attrs={'class': 'form-control', 'rows':'4'}),
+            'brain_area': Select(attrs={'class': 'form-control'}),
         }
 
 

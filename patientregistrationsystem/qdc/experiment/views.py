@@ -46,7 +46,7 @@ from experiment.models import Experiment, Subject, QuestionnaireResponse, Subjec
     ADConverter, StandardizationSystem, Muscle, MuscleSubdivision, MuscleSide, \
     EMGElectrodePlacement, EMGSurfacePlacement, TMS, TMSSetting, TMSDeviceSetting, TMSDevice, Software, \
     EMGIntramuscularPlacement, EMGNeedlePlacement, SubjectStepData, EMGPreamplifierFilterSetting, \
-    EMGElectrodePlacementSetting, TMSData, CoilOrientation
+    EMGElectrodePlacementSetting, TMSData, CoilOrientation, TMSLocalizationSystem
 from experiment.forms import ExperimentForm, QuestionnaireResponseForm, FileForm, GroupForm, InstructionForm, \
     ComponentForm, StimulusForm, BlockForm, ComponentConfigurationForm, ResearchProjectForm, NumberOfUsesToInsertForm, \
     EEGDataForm, EEGSettingForm, EquipmentForm, EEGForm, EEGAmplifierForm, \
@@ -63,7 +63,7 @@ from experiment.forms import ExperimentForm, QuestionnaireResponseForm, FileForm
     TMSForm, TMSSettingForm, TMSDeviceSettingForm, CoilModelRegisterForm, TMSDeviceRegisterForm, \
     SoftwareRegisterForm, SoftwareVersionRegisterForm, EMGIntramuscularPlacementForm, \
     EMGSurfacePlacementRegisterForm, EMGIntramuscularPlacementRegisterForm, EMGNeedlePlacementRegisterForm, \
-    SubjectStepDataForm, EMGPreamplifierFilterSettingForm, CoilModelForm, TMSDataForm
+    SubjectStepDataForm, EMGPreamplifierFilterSettingForm, CoilModelForm, TMSDataForm, TMSLocalizationSystemForm
 
 from export.export import create_directory
 
@@ -5426,6 +5426,8 @@ def tms_data_view(request, tms_data_id, template_name="experiment/subject_tms_da
 
     file_format_list = file_format_code("TMS")
 
+    tms_localization_system_list = TMSLocalizationSystem.objects.all()
+
     if request.method == "POST":
         if request.POST['action'] == "remove":
 
@@ -5447,6 +5449,7 @@ def tms_data_view(request, tms_data_id, template_name="experiment/subject_tms_da
                "tms_data": tms_data,
                "file_format_list": file_format_list,
                "tms_setting_default_id": tms_step.tms_setting_id,
+               "tms_localization_system_list": tms_localization_system_list,
                "tab": "1"
                }
 
@@ -5455,9 +5458,10 @@ def tms_data_view(request, tms_data_id, template_name="experiment/subject_tms_da
 
 @login_required
 @permission_required('experiment.change_experiment')
-def tms_data_edit(request, tms_data_id, template_name="experiment/subject_tms_data_form.html"):
+def tms_data_edit(request, tms_data_id, tab, template_name="experiment/subject_tms_data_form.html"):
 
     tms_data = get_object_or_404(TMSData, pk=tms_data_id)
+
     tms_step = get_object_or_404(TMS, id=tms_data.data_configuration_tree.component_configuration.component.id)
 
     check_can_change(request.user, tms_data.subject_of_group.group.experiment.research_project)
@@ -5469,18 +5473,24 @@ def tms_data_edit(request, tms_data_id, template_name="experiment/subject_tms_da
         if request.POST['action'] == "save":
             if tms_data_form.is_valid():
 
-                if tms_data_form.has_changed():
+                if tab == "1":
 
-                    tms_data_to_update = tms_data_form.save(commit=False)
-                    tms_data_to_update.group = tms_data.subject_of_group.group
-                    tms_data_to_update.subject = tms_data.subject_of_group.subject
-                    tms_data_to_update.save()
+                    if tms_data_form.has_changed():
 
-                    messages.success(request, _('TMS data updated successfully.'))
-                else:
-                    messages.success(request, _('There is no changes to save.'))
+                        tms_data_to_update = tms_data_form.save(commit=False)
+                        tms_data_to_update.group = tms_data.subject_of_group.group
+                        tms_data_to_update.subject = tms_data.subject_of_group.subject
+                        tms_data_to_update.save()
 
-                redirect_url = reverse("emg_data_view", args=(tms_data_id,))
+                        messages.success(request, _('TMS data updated successfully.'))
+                    else:
+                        messages.success(request, _('There is no changes to save.'))
+
+                if tab == "2":
+
+                    messages.success(request, _('TMS position updated sucessfully.'))
+
+                redirect_url = reverse("tms_data_view", args=(tms_data_id,))
                 return HttpResponseRedirect(redirect_url)
 
     else:
@@ -5492,11 +5502,12 @@ def tms_data_edit(request, tms_data_id, template_name="experiment/subject_tms_da
 
     context = {"group": tms_data.subject_of_group.group,
                "subject": tms_data.subject_of_group.subject,
-               "emg_data_form": tms_data_form,
-               "emg_data": tms_data,
+               "tms_data_form": tms_data_form,
+               "tms_data": tms_data,
                "file_format_list": file_format_list,
-               "emg_setting_default_id": tms_step.tms_setting_id,
-               "editing": True
+               "tms_setting_default_id": tms_step.tms_setting_id,
+               "editing": True,
+               "tab": tab
                }
 
     return render(request, template_name, context)
@@ -9253,6 +9264,119 @@ def tms_setting_tms_device_edit(request, tms_setting_id, template_name="experime
 
 
 @login_required
+@permission_required('experiment.register_equipment')
+def tms_localization_system_list(
+        request, template_name="experiment/tms_localization_system_list.html"):
+    return render(request, template_name,
+                  {"tms_localization_systems": TMSLocalizationSystem.objects.order_by('name')})
+
+
+@login_required
+@permission_required('experiment.register_equipment')
+def tms_localization_system_create(
+        request,
+        template_name="experiment/tms_localization_system_register.html"):
+
+    localization_system_form = TMSLocalizationSystemForm(request.POST or None)
+
+    if request.method == "POST":
+
+        if request.POST['action'] == "save":
+
+            localization_system_form = TMSLocalizationSystemForm(request.POST, request.FILES)
+
+            if localization_system_form.is_valid():
+
+                localization_system_added = localization_system_form.save()
+
+                messages.success(request, _('TMS localization system created successfully.'))
+
+                redirect_url = reverse("tms_localization_system_view", args=(localization_system_added.id,))
+                return HttpResponseRedirect(redirect_url)
+
+            else:
+                messages.warning(request, _('Information not saved.'))
+        else:
+            messages.warning(request, _('Action not available.'))
+
+    context = {"localization_system_form": localization_system_form,
+               "creating": True,
+               "editing": True}
+
+    return render(request, template_name, context)
+
+
+@login_required
+@permission_required('experiment.register_equipment')
+def tms_localization_system_view(
+        request,
+        tms_localization_system_id,
+        template_name="experiment/tms_localization_system_register.html"):
+
+    localization_system = get_object_or_404(TMSLocalizationSystem, pk=tms_localization_system_id)
+    localization_system_form = TMSLocalizationSystemForm(
+        request.POST or None, instance=localization_system)
+
+    for field in localization_system_form.fields:
+        localization_system_form.fields[field].widget.attrs['disabled'] = True
+
+    if request.method == "POST":
+        if request.POST['action'] == "remove":
+
+            try:
+                localization_system.delete()
+                messages.success(request, _('Study removed successfully.'))
+                return redirect('tms_localization_system_list')
+            except ProtectedError:
+                messages.error(request, _("Error trying to delete localization system."))
+                redirect_url = reverse("tms_localization_system_view",
+                                           args=(tms_localization_system_id,))
+                return HttpResponseRedirect(redirect_url)
+
+    context = {"localization_system": localization_system,
+               "localization_system_form": localization_system_form,
+               "editing": False}
+
+    return render(request, template_name, context)
+
+
+@login_required
+@permission_required('experiment.register_equipment')
+def tms_localization_system_update(
+        request,
+        tms_localization_system_id,
+        template_name="experiment/tms_localization_system_register.html"):
+
+    localization_system = get_object_or_404(TMSLocalizationSystem, pk=tms_localization_system_id)
+    localization_system_form = \
+        TMSLocalizationSystemForm(request.POST or None, instance=localization_system)
+
+    if request.method == "POST":
+
+        if request.POST['action'] == "save":
+
+            localization_system_form = \
+                TMSLocalizationSystemForm(request.POST, request.FILES, instance=localization_system)
+
+            if localization_system_form.is_valid():
+                if localization_system_form.has_changed():
+                    localization_system_form.save()
+                    messages.success(request, _('Localization system updated successfully.'))
+                else:
+                    messages.success(request, _('There is no changes to save.'))
+
+                redirect_url = reverse("tms_localization_system_view",
+                                       args=(tms_localization_system_id,))
+                return HttpResponseRedirect(redirect_url)
+
+    context = {"localization_system": localization_system,
+               "localization_system_form": localization_system_form,
+               "editing": True}
+
+    return render(request, template_name, context)
+
+
+@login_required
 @permission_required('experiment.view_researchproject')
 def setup_menu(request, template_name="experiment/setup_menu.html"):
     basic_register_list = [
@@ -9276,6 +9400,11 @@ def setup_menu(request, template_name="experiment/setup_menu.html"):
             'href': reverse("standardization_system_list", args=()),
             'quantity': StandardizationSystem.objects.all().count(),
             # 'warn_list': [{'item': _('Muscle'), 'dependence': Muscle.objects.all().count()}]
+        },
+        {
+            'item': _('TMS localization system'),
+            'href': reverse("tms_localization_system_list", args=()),
+            'quantity': TMSLocalizationSystem.objects.all().count(),
         },
         {
             'item': _('Manufacturer'),
