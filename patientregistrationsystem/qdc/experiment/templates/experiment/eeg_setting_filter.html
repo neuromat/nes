@@ -8,7 +8,7 @@
     <div class="row">
         <div class="col-xs-1 col-sm-1">
         </div>
-        <div class="col-xs-11 col-sm-11">
+        <div class="col-xs-10 col-sm-10">
             <div class="form-group">
                 <label class="control-label">{% trans "Filter type" %} </label>
 
@@ -28,7 +28,7 @@
     <div class="row">
         <div class="col-xs-1 col-sm-1">
         </div>
-        <div class="col-xs-11 col-sm-11">
+        <div class="col-xs-10 col-sm-10">
             <div class="form-group">
                 <label class="control-label">{% trans "Description" %} </label>
                 {{ equipment_form.description }}
@@ -43,7 +43,7 @@
     <div class="row">
         <div class="col-xs-1 col-sm-1">
         </div>
-        <div class="col-xs-11 col-sm-11">
+        <div class="col-xs-10 col-sm-10">
             <div class="form-group {% if setting_form.high_pass.errors %}has-error{% endif %}">
                 <label class="control-label">{% trans "High pass cutoff (Hz)" %} </label>
                 {{ setting_form.high_pass }}
@@ -59,7 +59,7 @@
     <div class="row">
         <div class="col-xs-1 col-sm-1">
         </div>
-        <div class="col-xs-11 col-sm-11">
+        <div class="col-xs-10 col-sm-10">
             <div class="form-group {% if setting_form.low_pass.errors %}has-error{% endif %}">
                 <label class="control-label">{% trans "Low pass cutoff (Hz)" %} </label>
                 {{ setting_form.low_pass }}
@@ -75,7 +75,63 @@
     <div class="row">
         <div class="col-xs-1 col-sm-1">
         </div>
-        <div class="col-xs-11 col-sm-11">
+        <div class="col-xs-5 col-sm-5">
+            <div class="form-group {% if setting_form.low_band_pass.errors %}has-error{% endif %}">
+                <label class="control-label">{% trans "Low band pass (Hz)" %}</label>
+                {{ setting_form.low_band_pass }}
+                <div class="help-block with-errors">
+                    {% for error in setting_form.low_band_pass.errors %}
+                        {{ error }}
+                    {% endfor %}
+                </div>
+            </div>
+        </div>
+
+        <div class="col-xs-5 col-sm-5">
+            <div class="form-group {% if setting_form.high_band_pass.errors %}has-error{% endif %}">
+                <label class="control-label">{% trans "High band pass (Hz)" %}</label>
+                {{ setting_form.high_band_pass }}
+                <div class="help-block with-errors">
+                    {% for error in setting_form.high_band_pass.errors %}
+                        {{ error }}
+                    {% endfor %}
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="row">
+        <div class="col-xs-1 col-sm-1">
+        </div>
+        <div class="col-xs-5 col-sm-5">
+            <div class="form-group {% if setting_form.low_notch.errors %}has-error{% endif %}">
+                <label class="control-label">{% trans "Low notch (Hz)" %}</label>
+                {{ setting_form.low_notch }}
+                <div class="help-block with-errors">
+                    {% for error in setting_form.low_notch.errors %}
+                        {{ error }}
+                    {% endfor %}
+                </div>
+            </div>
+        </div>
+
+        <div class="col-xs-5 col-sm-5">
+            <div class="form-group {% if setting_form.high_notch.errors %}has-error{% endif %}">
+                <label class="control-label">{% trans "High notch (Hz)" %}</label>
+                {{ setting_form.high_notch }}
+                <div class="help-block with-errors">
+                    {% for error in setting_form.high_notch.errors %}
+                        {{ error }}
+                    {% endfor %}
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="row">
+        <div class="col-xs-1 col-sm-1">
+        </div>
+        <div class="col-xs-10 col-sm-10">
             <div class="form-group {% if setting_form.order.errors %}has-error{% endif %}">
                 <label class="control-label">{% trans "Order" %} </label>
                 {{ setting_form.order }}

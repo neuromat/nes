@@ -4,10 +4,12 @@
 import re
 import csv
 import datetime
+import json
 
 from io import StringIO
 from operator import itemgetter
 
+from django.conf import settings
 from django.contrib import messages
 from django.contrib.auth.decorators import login_required, permission_required
 from django.core.urlresolvers import reverse
@@ -472,6 +474,8 @@ def get_questionnaire_responses(language_code, lime_survey_id, token_id, request
 
                         if isinstance(properties['subquestions'], dict):
                             question_properties.append({
+                                'gid': group['id']['gid'],
+                                'qid': question,
                                 'question': properties['question'],
                                 'question_id': properties['title'],
                                 'answer_options': 'super_question',
@@ -482,6 +486,8 @@ def get_questionnaire_responses(language_code, lime_survey_id, token_id, request
                             })
                             for key, value in sorted(properties['subquestions'].items()):
                                 question_properties.append({
+                                    'gid': group['id']['gid'],
+                                    'qid': question,
                                     'question': value['question'],
                                     'question_id': properties['title'] + '[' + value['title'] + ']',
                                     'answer_options': properties['answeroptions'],
@@ -492,6 +498,8 @@ def get_questionnaire_responses(language_code, lime_survey_id, token_id, request
                                 })
                         else:
                             question_properties.append({
+                                'gid': group['id']['gid'],
+                                'qid': question,
                                 'question': properties['question'],
                                 'question_id': properties['title'],
                                 'answer_options': properties['answeroptions'],
@@ -502,6 +510,8 @@ def get_questionnaire_responses(language_code, lime_survey_id, token_id, request
                             })
                     else:
                         question_properties.append({
+                            'gid': group['id']['gid'],
+                            'qid': question,
                             'question':  _("Formula") + " (" + properties['title'] + ")",
                             'question_id': properties['title'],
                             'answer_options': properties['answeroptions'],
@@ -581,8 +591,6 @@ def get_questionnaire_responses(language_code, lime_survey_id, token_id, request
                                             else:
                                                 # Sem resposta
                                                 answer += _('No answer')
-                                            # else:
-                                            #     answer += 'Sem resposta'
 
                                         answer_list.append(answer)
 
@@ -599,8 +607,6 @@ def get_questionnaire_responses(language_code, lime_survey_id, token_id, request
                                             else:
                                                 # Sem resposta
                                                 answer += _('No answer')
-                                            # else:
-                                            #     answer += 'Sem resposta'
 
                                         answer_list.append(answer)
 
@@ -611,6 +617,7 @@ def get_questionnaire_responses(language_code, lime_survey_id, token_id, request
                                         })
                                     else:
 
+                                        link = ''
                                         if question['question_id'] in responses_list[0]:
 
                                             index = responses_list[0].index(question['question_id'])
@@ -619,12 +626,16 @@ def get_questionnaire_responses(language_code, lime_survey_id, token_id, request
 
                                             if isinstance(answer_options, dict):
 
-                                                if responses_list[1][index] in answer_options:
-                                                    answer_option = answer_options[responses_list[1][index]]
-                                                    answer = answer_option['answer']
+                                                # type "M" means "Multiple choice"
+                                                if question['type'] == 'M':
+                                                    answer = responses_list[1][index]
                                                 else:
-                                                    # Sem resposta
-                                                    answer = _('No answer')
+                                                    if responses_list[1][index] in answer_options:
+                                                        answer_option = answer_options[responses_list[1][index]]
+                                                        answer = answer_option['answer']
+                                                    else:
+                                                        # Sem resposta
+                                                        answer = _('No answer')
                                             else:
                                                 # type "D" means "Date/Time"
                                                 if question['type'] == 'D':
@@ -634,12 +645,25 @@ def get_questionnaire_responses(language_code, lime_survey_id, token_id, request
                                                     else:
                                                         answer = ''
                                                 else:
+
                                                     answer = responses_list[1][index]
+
+                                                    if question['type'] == '|':
+                                                        link = settings.LIMESURVEY['URL_WEB'] + \
+                                                               '/index.php/admin/responses/sa/browse/fieldname/' + \
+                                                               str(lime_survey_id) + 'X' + \
+                                                               str(question['gid']) + 'X' + \
+                                                               str(question['qid']) + \
+                                                               '/id/' + responses_list[1][0] + \
+                                                               '/surveyid/' + str(lime_survey_id) + \
+                                                               '/downloadindividualfile/' + \
+                                                               json.loads(answer[1:-1])['name']
 
                                         questionnaire_responses.append({
                                             'question': question['question'],
                                             'answer': answer,
-                                            'type': question['type']
+                                            'type': question['type'],
+                                            'link': link
                                         })
         else:
             messages.error(request, _("LimeSurvey did not find fill data for this questionnaire."))

@@ -134,25 +134,36 @@
                         <table class="table table-striped">
                             <thead>
                                 <tr>
-                                    <th>{% trans "Position" %}</th>
-                                    <th>{% trans "Coordinate (x,y)" %}</th>
-                                    <th>{% trans "Position reference" %}</th>
-
+                                    <th style="text-align: center">{% trans "Channel index" %}</th>
+                                    <th style="text-align: center">{% trans "Position" %}</th>
+                                    <th style="text-align: center">{% trans "Coordinate (x,y)" %}</th>
+                                    <th style="text-align: center">{% trans "Position reference" %}</th>
+                                    <th colspan="2" style="text-align: center">{% trans "Order" %}</th>
                                 </tr>
                             </thead>
                             <tbody>
-                            {% for position in localization_system.electrode_positions.all %}
+                            {% for position in localization_system.electrode_positions.all|dictsort:"channel_default_index" %}
                                 <tr>
-                                    <td>
+                                    <td style="text-align: center">{{ position.channel_default_index }}</td>
+                                    <td style="text-align: center">
                                         <a data-toggle="tooltip" data-placement="left" title="{% trans "Visualize" %}" href="/experiment/eeg_electrode_position/{{ position.id }}">{{ position.name }}</a>
                                     </td>
-                                    <td>
+                                    <td style="text-align: center">
                                         ({{ position.coordinate_x }}, {{ position.coordinate_y }})
                                     </td>
-                                    <td>
+                                    <td style="text-align: center">
                                         {% if position.position_reference %}
-{#                                            {% trans "Position reference: " %} #}
                                             {{ position.position_reference.eeg_electrode_localization_system.name }} / {{ position.position_reference.name }}
+                                        {% endif %}
+                                    </td>
+                                    <td class="text-right col-md-1">
+                                        {% if not forloop.last %}
+                                            <a class="btn glyphicon glyphicon-arrow-down" href="/experiment/eeg_electrode_position/change_the_order/{{ position.id }}/down/"></a>
+                                        {% endif %}
+                                    </td>
+                                    <td class="col-md-1">
+                                        {% if not forloop.first %}
+                                            <a class="btn glyphicon glyphicon-arrow-up" href="/experiment/eeg_electrode_position/change_the_order/{{ position.id }}/up/"></a>
                                         {% endif %}
                                     </td>
                                 </tr>

@@ -61,6 +61,8 @@
 
     <script src="{% static 'quiz/js/quiz.js' %}"></script>
 
+    <link rel="stylesheet" href="{% static 'quiz/font-awesome-4.6.3/css/font-awesome.min.css' %}">
+
     <script type="text/javascript" src="{% url 'django.views.i18n.javascript_catalog' %}"></script>
 
     <style type="text/css">
@@ -165,8 +167,8 @@
                         <span class="caret"></span>
                     </a>
                     <ul class="dropdown dropdown-user dropdown-menu" role="menu">
-                        <li><a href="/password_change">{% trans "Change password" %}</a></li>
-                        <li><a href="/logout">{% trans "Logout" %}</a></li>
+                        <li><a href="/password_change"><span class="fa fa-key"></span> {% trans "Change password" %}</a></li>
+                        <li><a href="/logout"><span class="fa fa-power-off"></span> {% trans "Logout" %}</a></li>
                     </ul>
 
                 </li>
@@ -202,7 +204,8 @@
                 {% if perms.experiment.view_researchproject %}
                     <li {% block activeAdvancedResearchProject %}{% endblock %}>
                         <a href="/experiment/research_project/list/">
-                            <span class="glyphicon glyphicon-book"></span>
+{#                            <span class="glyphicon glyphicon-book"></span>#}
+                            <span class="fa fa-graduation-cap"></span>
                             {% trans "Studies" %}
                         </a>
                     </li>
@@ -229,8 +232,7 @@
                 {% if perms.team.change_team %}
                     <li {% block activeTeam %}{% endblock %}>
                         <a href="/team/registers/">
-                            <span class="glyphicon glyphicon-user"></span>
-                            <span class="glyphicon glyphicon-user"></span>
+                            <span class="fa fa-users"></span>
                             {% trans "Teams" %}
                         </a>
                     </li>

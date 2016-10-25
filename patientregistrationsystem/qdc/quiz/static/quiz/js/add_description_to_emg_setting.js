@@ -24,8 +24,6 @@ $(document).ready(function () {
             for (var i = 0; i < all_equipment.length; i++) {
                     options += '<option value="' + all_equipment[i].pk + '">' + all_equipment[i].fields['identification'] + '</option>';
             }
-            // select_equipment.html(options);
-            // select_equipment.change();
 
             select_preamplifier.html(options);
             select_preamplifier.change();
@@ -114,5 +112,7 @@ $(document).ready(function () {
            })
        }
     });
+
+    
     
 });

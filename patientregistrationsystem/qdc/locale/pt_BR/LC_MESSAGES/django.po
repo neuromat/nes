@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2016-09-21 15:06-0300\n"
+"POT-Creation-Date: 2016-09-30 17:27-0300\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -686,6 +686,257 @@ msgstr ""
 msgid "email address"
 msgstr ""
 
+#: team/templates/team/person_list.html:42
+#: team/templates/team/person_register.html:51
+#: team/templates/team/registers.html:42 team/templates/team/team_list.html:42
+#: team/templates/team/team_person_register.html:51
+#: team/templates/team/team_register.html:51
+#: templates/registration/logged_out.html:4
+msgid "Home"
+msgstr "Home"
+
+#: team/templates/team/person_list.html:43
+#: team/templates/team/person_register.html:52
+#: team/templates/team/registers.html:43 team/templates/team/team_list.html:43
+#: team/templates/team/team_list.html:44
+#: team/templates/team/team_register.html:52
+#: team/templates/team/team_register.html:53 team/views.py:28
+msgid "Teams"
+msgstr "Equipes"
+
+#: team/templates/team/person_list.html:44
+#: team/templates/team/person_register.html:53
+#: team/templates/team/team_register.html:104 team/views.py:23
+msgid "Persons"
+msgstr "Pessoas"
+
+#: team/templates/team/person_list.html:52
+msgid "Person list"
+msgstr "Lista de pessoas"
+
+#: team/templates/team/person_list.html:57
+#: team/templates/team/person_register.html:92
+msgid "First name"
+msgstr "Nome"
+
+#: team/templates/team/person_list.html:58
+#: team/templates/team/person_register.html:99
+msgid "Last name"
+msgstr "Sobrenome"
+
+#: team/templates/team/person_list.html:59
+#: team/templates/team/person_register.html:110
+#: team/templates/team/team_register.html:111
+#: templates/registration/password_reset_form.html:83
+msgid "E-mail"
+msgstr "E-mail"
+
+#: team/templates/team/person_list.html:60 templates/registration/login.html:91
+msgid "User"
+msgstr "Usuário"
+
+#: team/templates/team/person_list.html:67
+#: team/templates/team/team_list.html:65
+#: team/templates/team/team_register.html:121
+#: team/templates/team/team_register.html:124
+msgid "Visualize"
+msgstr "Visualizar"
+
+#: team/templates/team/person_list.html:86
+#: team/templates/team/team_list.html:81
+msgid "Insert new"
+msgstr "Inserir novo"
+
+#: team/templates/team/person_list.html:93
+#: team/templates/team/person_register.html:145
+#: team/templates/team/team_list.html:88
+#: team/templates/team/team_person_register.html:125
+#: team/templates/team/team_register.html:196
+msgid "Back"
+msgstr "Voltar"
+
+#: team/templates/team/person_register.html:56
+#: team/templates/team/team_person_register.html:55
+#: team/templates/team/team_register.html:56
+msgid "New"
+msgstr "Novo"
+
+#: team/templates/team/person_register.html:60
+#: team/templates/team/team_register.html:60
+msgid "Editing"
+msgstr "Edição"
+
+#: team/templates/team/person_register.html:73
+msgid "Person"
+msgstr "Pessoa"
+
+#: team/templates/team/person_register.html:78
+msgid "Existent user"
+msgstr "Usuário existente"
+
+#: team/templates/team/person_register.html:123
+#: team/templates/team/team_person_register.html:103
+#: team/templates/team/team_register.html:95
+msgid "Edit"
+msgstr "Editar"
+
+#: team/templates/team/person_register.html:132
+#: team/templates/team/person_register.html:161
+#: team/templates/team/team_person_register.html:112
+#: team/templates/team/team_person_register.html:141
+#: team/templates/team/team_register.html:212
+msgid "Delete"
+msgstr "Remover"
+
+#: team/templates/team/person_register.html:137
+#: team/templates/team/team_person_register.html:117
+#: team/templates/team/team_register.html:188
+#: templates/registration/change_password_custom.html:109
+msgid "Save"
+msgstr "Salvar"
+
+#: team/templates/team/person_register.html:141
+#: team/templates/team/person_register.html:160
+#: team/templates/team/team_person_register.html:121
+#: team/templates/team/team_person_register.html:140
+#: team/templates/team/team_register.html:192
+#: team/templates/team/team_register.html:211
+#: templates/registration/change_password_custom.html:112
+msgid "Cancel"
+msgstr "Cancelar"
+
+#: team/templates/team/person_register.html:157
+#: team/templates/team/team_person_register.html:137
+msgid "Are you sure you want to delete person?"
+msgstr "Tem certeza que deseja remover esta pessoa"
+
+#: team/templates/team/registers.html:51
+msgid "Registers"
+msgstr "Cadastros"
+
+#: team/templates/team/registers.html:58
+msgid "List view"
+msgstr "Exibição da lista"
+
+#: team/templates/team/team_list.html:52
+msgid "Team list"
+msgstr "Lista de equipes"
+
+#: team/templates/team/team_list.html:57
+#: team/templates/team/team_register.html:78
+msgid "Name"
+msgstr "Nome"
+
+#: team/templates/team/team_list.html:58
+#: team/templates/team/team_register.html:85
+msgid "Acronym"
+msgstr "Acrônimo"
+
+#: team/templates/team/team_person_register.html:52
+msgid "TeamPersons"
+msgstr ""
+
+#: team/templates/team/team_person_register.html:67
+msgid "TeamPerson"
+msgstr ""
+
+#: team/templates/team/team_person_register.html:72
+msgid "Existent team_person"
+msgstr ""
+
+#: team/templates/team/team_person_register.html:86
+#: team/templates/team/team_person_register.html:93
+msgid "Is_coordinator"
+msgstr "É coordenador"
+
+#: team/templates/team/team_register.html:73
+msgid "Team"
+msgstr "Equipme"
+
+#: team/templates/team/team_register.html:109
+msgid "First Name"
+msgstr "Nome"
+
+#: team/templates/team/team_register.html:110
+msgid "Last Name"
+msgstr "Sobrenome"
+
+#: team/templates/team/team_register.html:112
+msgid "Is coordinator"
+msgstr "É coordenador"
+
+#: team/templates/team/team_register.html:113
+msgid "Remove"
+msgstr "Remover"
+
+#: team/templates/team/team_register.html:154
+msgid "is coordinator"
+msgstr "é coordenador"
+
+#: team/templates/team/team_register.html:161
+msgid "Insert"
+msgstr "Inserir"
+
+#: team/templates/team/team_register.html:183
+msgid "Delete team"
+msgstr "Remover equipe"
+
+#: team/templates/team/team_register.html:208
+msgid "Are you sure you want to delete this team?"
+msgstr "Tem certeza que deseja remover esta equipe?"
+
+#: team/views.py:63
+msgid "Person created successfully."
+msgstr "Pessoa criada com sucesso."
+
+#: team/views.py:68 team/views.py:181 team/views.py:285
+msgid "Information not saved."
+msgstr "Informação não salva."
+
+#: team/views.py:71 team/views.py:184 team/views.py:288
+msgid "Action not available."
+msgstr "Ação não disponível."
+
+#: team/views.py:95
+msgid "Person removed successfully."
+msgstr "Pessoa removida com sucesso."
+
+#: team/views.py:98
+msgid "Error trying to delete person."
+msgstr "Erro ao tentar remover pessoa."
+
+#: team/views.py:121
+msgid "Person updated successfully."
+msgstr "Pessoa atualizada com sucesso."
+
+#: team/views.py:123 team/views.py:247
+msgid "There is no changes to save."
+msgstr "Não há alteração para salvar."
+
+#: team/views.py:175
+msgid "Team created successfully."
+msgstr "Equipe criada com sucesso."
+
+#: team/views.py:209
+msgid "Team removed successfully."
+msgstr "Equipe removida com sucesso."
+
+#: team/views.py:212
+msgid "Error trying to delete a team."
+msgstr "Erro ao tentar remover uma equipe"
+
+#: team/views.py:221
+msgid "Person added to the team successfully."
+msgstr "Pessoa adicionada à equipe com suscesso."
+
+#: team/views.py:245
+msgid "Team updated successfully."
+msgstr "Equipe atualizada com sucesso."
+
+#: team/views.py:279
+msgid "Team person created successfully."
+msgstr "Pessoa inserida na equipe com sucesso."
+
 #: templates/admin/base_site.html:4
 msgid "QDC site admin test"
 msgstr "QDC site admin teste"
@@ -711,18 +962,6 @@ msgstr ""
 "Senha deve conter pelo menos 8 caracteres, incluindo ao menos uma letra "
 "maiúscula, dígito ou caractere especial."
 
-#: templates/registration/change_password_custom.html:109
-msgid "Save"
-msgstr "Salvar"
-
-#: templates/registration/change_password_custom.html:112
-msgid "Cancel"
-msgstr "Cancelar"
-
-#: templates/registration/logged_out.html:4
-msgid "Home"
-msgstr "Home"
-
 #: templates/registration/logged_out.html:8
 msgid "Thanks for spending some quality time with the Web site today."
 msgstr "Obrigado por passar momentos de qualidade com o site hoje."
@@ -735,10 +974,6 @@ msgstr "Faça login novamente"
 #: templates/registration/password_reset_form.html:9
 msgid "Neuroscience Experiments System - NES"
 msgstr "Sistema de Experimentos de Neurociencia - NES"
-
-#: templates/registration/login.html:91
-msgid "User"
-msgstr "Usuário"
 
 #: templates/registration/login.html:95
 msgid "Password"
@@ -876,10 +1111,6 @@ msgstr ""
 msgid "Please enter your e-mail to receive instructions for password reset."
 msgstr ""
 "Especifique seu e-mail para receber as instruções para redefinição de senha."
-
-#: templates/registration/password_reset_form.html:83
-msgid "E-mail"
-msgstr ""
 
 #: templates/registration/password_reset_subject.txt:2
 #, python-format

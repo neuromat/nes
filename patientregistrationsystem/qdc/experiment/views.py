@@ -9,6 +9,8 @@ import numpy as np
 import nwb
 from nwb.nwbco import *
 
+# import mne
+
 from datetime import date, timedelta
 from functools import partial
 
@@ -38,12 +40,13 @@ from experiment.models import Experiment, Subject, QuestionnaireResponse, Subjec
     EEGAmplifierSetting, EEGSolutionSetting, EEGFilterSetting, EEGElectrodeLayoutSetting, \
     FilterType, EEGSolution, EEGElectrodeLocalizationSystem, EEGElectrodeNetSystem, EEGElectrodePositionSetting, \
     ElectrodeModel, EEGElectrodePositionCollectionStatus, EEGCapSize, EEGElectrodeCap, EEGElectrodePosition, \
-    Material, AdditionalData, Tag, CoilModel, \
+    Material, AdditionalData, Tag, CoilModel, TMS, \
     EMGData, EMGSetting, SoftwareVersion, EMGDigitalFilterSetting, EMGADConverterSetting, \
     EMGElectrodeSetting, EMGPreamplifierSetting, EMGAmplifierSetting, EMGAnalogFilterSetting, \
     ADConverter, StandardizationSystem, Muscle, MuscleSubdivision, MuscleSide, \
     EMGElectrodePlacement, EMGSurfacePlacement, TMS, TMSSetting, TMSDeviceSetting, TMSDevice, Software, \
-    EMGIntramuscularPlacement, EMGNeedlePlacement, SubjectStepData
+    EMGIntramuscularPlacement, EMGNeedlePlacement, SubjectStepData, EMGPreamplifierFilterSetting, \
+    EMGElectrodePlacementSetting, TMSData, CoilOrientation
 from experiment.forms import ExperimentForm, QuestionnaireResponseForm, FileForm, GroupForm, InstructionForm, \
     ComponentForm, StimulusForm, BlockForm, ComponentConfigurationForm, ResearchProjectForm, NumberOfUsesToInsertForm, \
     EEGDataForm, EEGSettingForm, EquipmentForm, EEGForm, EEGAmplifierForm, \
@@ -60,7 +63,7 @@ from experiment.forms import ExperimentForm, QuestionnaireResponseForm, FileForm
     TMSForm, TMSSettingForm, TMSDeviceSettingForm, CoilModelRegisterForm, TMSDeviceRegisterForm, \
     SoftwareRegisterForm, SoftwareVersionRegisterForm, EMGIntramuscularPlacementForm, \
     EMGSurfacePlacementRegisterForm, EMGIntramuscularPlacementRegisterForm, EMGNeedlePlacementRegisterForm, \
-    SubjectStepDataForm
+    SubjectStepDataForm, EMGPreamplifierFilterSettingForm, CoilModelForm, TMSDataForm
 
 from export.export import create_directory
 
@@ -856,6 +859,7 @@ def view_eeg_setting_type(request, eeg_setting_id, eeg_setting_type):
                         new_position_setting.eeg_electrode_position = position
                         new_position_setting.used = True
                         new_position_setting.electrode_model = eeg_electrode_net.electrode_model_default
+                        new_position_setting.channel_index = position.channel_default_index
                         new_position_setting.save()
 
                 messages.info(request, _('Now you can set each electrode position.'))
@@ -1143,6 +1147,7 @@ def edit_eeg_setting_type(request, eeg_setting_id, eeg_setting_type):
                             new_position_setting.eeg_electrode_position = position
                             new_position_setting.used = True
                             new_position_setting.electrode_model = eeg_electrode_net.electrode_model_default
+                            new_position_setting.channel_index = position.channel_default_index
                             new_position_setting.save()
 
                 messages.success(request, _('EEG electrode net system setting updated sucessfully.'))
@@ -1477,6 +1482,43 @@ def edit_eeg_electrode_position_setting_model(
     return render(request, template_name, context)
 
 
+@login_required
+@permission_required('experiment.change_experiment')
+def eeg_electrode_position_setting_change_the_order(request, eeg_electrode_position_setting_id, command):
+    position_setting = get_object_or_404(EEGElectrodePositionSetting, pk=eeg_electrode_position_setting_id)
+
+    all_position_settings = EEGElectrodePositionSetting.objects.filter(
+        eeg_electrode_layout_setting=position_setting.eeg_electrode_layout_setting)
+
+    if command == "down":
+        position_setting_to_change = \
+            all_position_settings.filter(
+                channel_index__gt=position_setting.channel_index).order_by('channel_index').first()
+    else:
+        position_setting_to_change = \
+            all_position_settings.filter(
+                channel_index__lt=position_setting.channel_index).order_by('-channel_index').first()
+
+    bottom_position_setting = all_position_settings.order_by('-channel_index').first()
+
+    channel_index_current = position_setting.channel_index
+    channel_index_to_change = position_setting_to_change.channel_index
+
+    position_setting_to_change.channel_index = bottom_position_setting.channel_index + 1
+    position_setting_to_change.save()
+
+    position_setting.channel_index = channel_index_to_change
+    position_setting.save()
+
+    position_setting_to_change.channel_index = channel_index_current
+    position_setting_to_change.save()
+
+    redirect_url = reverse("eeg_electrode_position_setting_model",
+                           args=(position_setting.eeg_electrode_layout_setting.eeg_setting_id,))
+
+    return HttpResponseRedirect(redirect_url)
+
+
 # TODO: check if this view is used
 # @login_required
 # @permission_required('experiment.change_experiment')
@@ -1591,6 +1633,7 @@ def manufacturer_view(request, manufacturer_id, template_name="experiment/manufa
         manufacturer_form.fields[field].widget.attrs['disabled'] = True
 
     if request.method == "POST":
+
         if request.POST['action'] == "remove":
 
             try:
@@ -3750,7 +3793,8 @@ def subjects(request, group_id, template_name="experiment/subjects.html"):
 
     experimental_protocol_info = {'number_of_questionnaires': 0,
                                   'number_of_eeg_data': 0,
-                                  'number_of_emg_data': 0}
+                                  'number_of_emg_data': 0,
+                                  'number_of_tms_data': 0}
 
     group = get_object_or_404(Group, id=group_id)
 
@@ -3776,10 +3820,12 @@ def subjects(request, group_id, template_name="experiment/subjects.html"):
 
         list_of_eeg_configuration = create_list_of_trees(group.experimental_protocol, "eeg")
         list_of_emg_configuration = create_list_of_trees(group.experimental_protocol, "emg")
+        list_of_tms_configuration = create_list_of_trees(group.experimental_protocol, "tms")
 
         experimental_protocol_info = {'number_of_questionnaires': len(list_of_questionnaires_configuration),
                                       'number_of_eeg_data': len(list_of_eeg_configuration),
-                                      'number_of_emg_data': len(list_of_emg_configuration)}
+                                      'number_of_emg_data': len(list_of_emg_configuration),
+                                      'number_of_tms_data': len(list_of_tms_configuration)}
 
         # For each subject of the group...
         for subject_of_group in subject_list:
@@ -3868,10 +3914,28 @@ def subjects(request, group_id, template_name="experiment/subjects.html"):
                 percentage_of_emg_data_files_uploaded = \
                     100 * number_of_emg_data_files_uploaded / len(list_of_emg_configuration)
 
-            # If any questionnaire has responses or any eeg data file was uploaded,
+            # TMS data files
+            number_of_tms_data_files_uploaded = 0
+            # for each component_configuration of tms...
+            for tms_configuration in list_of_tms_configuration:
+                path = [item[0] for item in tms_configuration]
+                data_configuration_tree_id = list_data_configuration_tree(path[-1], path)
+                tms_data_files = \
+                    TMSData.objects.filter(subject_of_group=subject_of_group,
+                                           data_configuration_tree_id=data_configuration_tree_id)
+                if len(tms_data_files):
+                    number_of_tms_data_files_uploaded += 1
+
+            percentage_of_tms_data_files_uploaded = 0
+            if len(list_of_tms_configuration) > 0:
+                percentage_of_tms_data_files_uploaded = \
+                    100 * number_of_tms_data_files_uploaded / len(list_of_tms_configuration)
+
+            # If any questionnaire has responses or any eeg/emg/tms data file was uploaded,
             # the subject can't be removed from the group.
             if number_of_eeg_data_files_uploaded or \
                     number_of_emg_data_files_uploaded or \
+                    number_of_tms_data_files_uploaded or \
                     number_of_questionnaires_filled:
                 can_remove = False
 
@@ -3888,6 +3952,10 @@ def subjects(request, group_id, template_name="experiment/subjects.html"):
                  'number_of_emg_data_files_uploaded': number_of_emg_data_files_uploaded,
                  'total_of_emg_data_files': len(list_of_emg_configuration),
                  'percentage_of_emg_data_files_uploaded': int(percentage_of_emg_data_files_uploaded),
+
+                 'number_of_tms_data_files_uploaded': number_of_tms_data_files_uploaded,
+                 'total_of_tms_data_files': len(list_of_tms_configuration),
+                 'percentage_of_tms_data_files_uploaded': int(percentage_of_tms_data_files_uploaded),
 
                  'number_of_additional_data_uploaded':
                      AdditionalData.objects.filter(subject_of_group=subject_of_group).count()},
@@ -4381,7 +4449,19 @@ def subject_eeg_view(request, group_id, subject_id,
                                                 data_configuration_tree__id=data_configuration_tree_id)
 
         for eeg_data_file in eeg_data_files:
-            eeg_data_file.eeg_reading = eeg_data_reading(eeg_data_file)
+
+            eeg_data_file.eeg_reading = eeg_data_reading(eeg_data_file, preload=False)
+            eeg_data_file.can_export_to_nwb = False
+
+            # # can export to nwb?
+            # if eeg_data_file.eeg_reading.file_format:
+            #     if eeg_data_file.eeg_reading.file_format.nes_code == "MNE-RawFromEGI" and \
+            #             eeg_data_file.eeg_setting.eeg_amplifier_setting and \
+            #             eeg_data_file.eeg_setting.eeg_amplifier_setting.number_of_channels_used and \
+            #             eeg_data_file.eeg_setting.eeg_amplifier_setting.number_of_channels_used == \
+            #             len(mne.pick_types(eeg_data_file.eeg_reading.reading.info, eeg=True)):
+            #
+            #         eeg_data_file.can_export_to_nwb = True
 
         eeg_collections.append(
             {'eeg_configuration': eeg_configuration,
@@ -4511,7 +4591,8 @@ def subject_eeg_data_create(request, group_id, subject_id, eeg_configuration_id,
                         EEGElectrodePositionCollectionStatus(
                             worked=position_setting.used,
                             eeg_data=eeg_data_added,
-                            eeg_electrode_position_setting=position_setting
+                            eeg_electrode_position_setting=position_setting,
+                            channel_index=position_setting.channel_index
                         ).save()
 
                 # Validate known eeg file formats
@@ -4548,21 +4629,32 @@ def reading_for_eeg_validation(eeg_data_added, request):
             messages.warning(request, _('Not valid EEG file format.'))
 
 
-def eeg_data_reading(eeg_data):
+def eeg_data_reading(eeg_data, preload=False):
 
     eeg_reading = EEGReading()
 
     # For known formats, try to access data in order to validate the format
 
+    # if eeg_data.file_format.nes_code == "MNE-RawFromEGI":
+    #
+    #     eeg_reading.file_format = eeg_data.file_format
+    #
+    #     try:
+    #         # Trying to read the segments
+    #         reading = mne.io.read_raw_egi(eeg_data.file.path, preload=preload)
+    #     except:
+    #         reading = None
+    #
+    #     eeg_reading.reading = reading
+
     if eeg_data.file_format.nes_code == "NEO-RawBinarySignalIO":
 
         eeg_reading.file_format = eeg_data.file_format
-
         reading = io.RawBinarySignalIO(filename=eeg_data.file.path)
 
         try:
             # Trying to read the segments
-            reading.read_segment(lazy=False, cascade=True, )
+            reading.read_segment(lazy=(not preload), cascade=True, )
         except:
             reading = None
 
@@ -4835,28 +4927,41 @@ def eeg_data_export_nwb(request, eeg_data_id, some_number, process_requisition):
     eeg_data = get_object_or_404(EEGData, pk=eeg_data_id)
 
     # Open and read signal with NEO
-    eeg_reading = eeg_data_reading(eeg_data)
+    eeg_reading = eeg_data_reading(eeg_data, preload=True)
 
+    # Was it open properly?
+    ok_opening = False
     segments = None
 
-    # Trying to read the signals
-    if eeg_reading and eeg_data.eeg_setting.eeg_amplifier_setting \
-            and eeg_data.eeg_setting.eeg_amplifier_setting.number_of_channels_used > 0:
+    if eeg_reading:
 
-        try:
-            segments = eeg_reading.reading.read_segment(
-                lazy=False, cascade=True,
-                nbchannel=eeg_data.eeg_setting.eeg_amplifier_setting.number_of_channels_used)
-        except:
-            update_process_requisition(request, process_requisition, 'finished', _('Finished'))
+        # if eeg_reading.file_format.nes_code == "MNE-RawFromEGI":
+        #     ok_opening = True
 
-            messages.error(
-                request,
-                _("It was not possible to open the data file. Check if the number of channels configured is correct."))
+        if eeg_reading.file_format.nes_code == "NEO-RawBinarySignalIO":
 
-            return redirect('subject_eeg_view',
-                            group_id=eeg_data.subject_of_group.group_id,
-                            subject_id=eeg_data.subject_of_group.subject_id)
+            # Trying to read the signals
+            if eeg_reading and eeg_data.eeg_setting.eeg_amplifier_setting \
+                    and eeg_data.eeg_setting.eeg_amplifier_setting.number_of_channels_used > 0:
+
+                try:
+                    segments = eeg_reading.reading.read_segment(
+                        lazy=False, cascade=True,
+                        nbchannel=eeg_data.eeg_setting.eeg_amplifier_setting.number_of_channels_used)
+                    ok_opening = True
+                except:
+                    ok_opening = False
+
+    if not ok_opening:
+        update_process_requisition(request, process_requisition, 'finished', _('Finished'))
+
+        messages.error(
+            request,
+            _("It was not possible to open the data file. Check if the number of channels configured is correct."))
+
+        return redirect('subject_eeg_view',
+                        group_id=eeg_data.subject_of_group.group_id,
+                        subject_id=eeg_data.subject_of_group.subject_id)
 
     subject_of_group = eeg_data.subject_of_group
 
@@ -4983,7 +5088,7 @@ def eeg_data_export_nwb(request, eeg_data_id, some_number, process_requisition):
 
         device_information += \
             _("Manufacturer: ") + \
-            clean(eeg_data.eeg_setting.eeg_amplifier_setting.eeg_amplifier.name) + "; "
+            clean(eeg_data.eeg_setting.eeg_amplifier_setting.eeg_amplifier.manufacturer.name) + "; "
 
         device_information += \
             _("Number of used channels: ") + \
@@ -5046,30 +5151,51 @@ def eeg_data_export_nwb(request, eeg_data_id, some_number, process_requisition):
     ########################################################################
     update_process_requisition(request, process_requisition, 'reading_acquisition_data', _('Reading acquisition data'))
 
-    if segments:
-        number_of_samples = len(segments.analogsignals[0])
-        number_of_channels = eeg_data.eeg_setting.eeg_amplifier_setting.number_of_channels_used
+    if eeg_reading:
 
-        sampling_rate = 0
-        if eeg_data.eeg_setting.eeg_amplifier_setting and eeg_data.eeg_setting.eeg_amplifier_setting.sampling_rate:
-            sampling_rate = eeg_data.eeg_setting.eeg_amplifier_setting.sampling_rate
+        # if eeg_reading.file_format.nes_code == "MNE-RawFromEGI":
+        #     ok_opening = True
+        #
+        #     number_of_samples = len(eeg_reading.reading._data[0])
+        #     sampling_rate = 0
+        #     if eeg_data.eeg_setting.eeg_amplifier_setting and \
+        #             eeg_data.eeg_setting.eeg_amplifier_setting.sampling_rate:
+        #         sampling_rate = eeg_data.eeg_setting.eeg_amplifier_setting.sampling_rate
+        #     timestamps = np.arange(number_of_samples) * ((1 / sampling_rate) if sampling_rate else 0)
+        #
+        #
+        #     acquisition = neurodata.create_timeseries("ElectricalSeries", "data_collection", "acquisition")
+        #
+        #     acquisition.set_time(timestamps)
+        #     acquisition.set_value("num_samples", number_of_samples)
 
-        timestamps = np.arange(number_of_samples) * ((1/sampling_rate) if sampling_rate else 0)
-        acquisition = neurodata.create_timeseries("ElectricalSeries", "data_collection", "acquisition")
-        acquisition.set_comment(clean(eeg_data.description))
+        if eeg_reading.file_format.nes_code == "NEO-RawBinarySignalIO":
 
-        array_data = np.zeros((number_of_samples, number_of_channels))
+            if segments:
+                number_of_samples = len(segments.analogsignals[0])
+                number_of_channels = eeg_data.eeg_setting.eeg_amplifier_setting.number_of_channels_used
 
-        for index_value in range(number_of_samples):
-            for index_channel in range(number_of_channels):
-                array_data[index_value][index_channel] = segments.analogsignals[index_channel][index_value]
+                sampling_rate = 0
+                if eeg_data.eeg_setting.eeg_amplifier_setting and \
+                        eeg_data.eeg_setting.eeg_amplifier_setting.sampling_rate:
+                    sampling_rate = eeg_data.eeg_setting.eeg_amplifier_setting.sampling_rate
 
-        acquisition.set_data(array_data, resolution=1.2345e-6)
+                timestamps = np.arange(number_of_samples) * ((1/sampling_rate) if sampling_rate else 0)
+                acquisition = neurodata.create_timeseries("ElectricalSeries", "data_collection", "acquisition")
+                acquisition.set_comment(clean(eeg_data.description))
 
-        acquisition.set_time(timestamps)
-        acquisition.set_value("num_samples", number_of_samples)
-        acquisition.set_value("electrode_idx", list(range(number_of_channels)))
-        acquisition.finalize()
+                array_data = np.zeros((number_of_samples, number_of_channels))
+
+                for index_value in range(number_of_samples):
+                    for index_channel in range(number_of_channels):
+                        array_data[index_value][index_channel] = segments.analogsignals[index_channel][index_value]
+
+                acquisition.set_data(array_data, resolution=1.2345e-6)
+
+                acquisition.set_time(timestamps)
+                acquisition.set_value("num_samples", number_of_samples)
+                acquisition.set_value("electrode_idx", list(range(number_of_channels)))
+                acquisition.finalize()
 
     ########################################################################
     # stimulus section (ImageSeries)
@@ -5139,6 +5265,241 @@ def get_nwb_eeg_amplifier_impedance_description(eeg_amplifier_setting):
     if eeg_amplifier_setting.eeg_amplifier.input_impedance_unit:
         response += " " + eeg_amplifier_setting.eeg_amplifier.input_impedance_unit
     return response
+
+
+@login_required
+@permission_required('experiment.change_experiment')
+def eeg_electrode_position_collection_status_change_the_order(request,
+                                                              eeg_electrode_position_collection_status_id, command):
+    position_status = get_object_or_404(EEGElectrodePositionCollectionStatus,
+                                        pk=eeg_electrode_position_collection_status_id)
+
+    all_position_status = EEGElectrodePositionCollectionStatus.objects.filter(eeg_data=position_status.eeg_data)
+
+    if command == "down":
+        position_status_to_change = \
+            all_position_status.filter(
+                channel_index__gt=position_status.channel_index).order_by('channel_index').first()
+    else:
+        position_status_to_change = \
+            all_position_status.filter(
+                channel_index__lt=position_status.channel_index).order_by('-channel_index').first()
+
+    bottom_position_setting = all_position_status.order_by('-channel_index').first()
+
+    channel_index_current = position_status.channel_index
+    channel_index_to_change = position_status_to_change.channel_index
+
+    position_status_to_change.channel_index = bottom_position_setting.channel_index + 1
+    position_status_to_change.save()
+
+    position_status.channel_index = channel_index_to_change
+    position_status.save()
+
+    position_status_to_change.channel_index = channel_index_current
+    position_status_to_change.save()
+
+    redirect_url = reverse("eeg_data_view", args=(position_status.eeg_data_id, '2'))
+
+    return HttpResponseRedirect(redirect_url)
+
+
+@login_required
+@permission_required('experiment.view_researchproject')
+def subject_tms_view(request, group_id, subject_id, template_name="experiment/subject_tms_collection_list.html"):
+    group = get_object_or_404(Group, id=group_id)
+    subject = get_object_or_404(Subject, id=subject_id)
+
+    tms_collections = []
+
+    list_of_paths = create_list_of_trees(group.experimental_protocol, "tms")
+
+    subject_of_group = get_object_or_404(SubjectOfGroup, group=group, subject=subject)
+
+    for path in list_of_paths:
+
+        tms_configuration = ComponentConfiguration.objects.get(pk=path[-1][0])
+
+        data_configuration_tree_id = list_data_configuration_tree(tms_configuration.id, [item[0] for item in path])
+
+        tms_data_files = TMSData.objects.filter(subject_of_group=subject_of_group,
+                                                data_configuration_tree__id=data_configuration_tree_id)
+
+        tms_collections.append(
+            {'tms_configuration': tms_configuration,
+             'path': path,
+             'tms_data_files': tms_data_files}
+        )
+
+    context = {"can_change": get_can_change(request.user, group.experiment.research_project),
+               'group': group,
+               'subject': subject,
+               'tms_collections': tms_collections
+               }
+
+    return render(request, template_name, context)
+
+
+@login_required
+@permission_required('experiment.add_questionnaireresponse')
+def subject_tms_data_create(request, group_id, subject_id, tms_configuration_id,
+                            template_name="experiment/subject_tms_data_form.html"):
+
+    group = get_object_or_404(Group, id=group_id)
+
+    list_of_path = [int(item) for item in tms_configuration_id.split('-')]
+    tms_configuration_id = list_of_path[-1]
+
+    check_can_change(request.user, group.experiment.research_project)
+
+    tms_configuration = get_object_or_404(ComponentConfiguration, id=tms_configuration_id)
+    tms_step = get_object_or_404(TMS, id=tms_configuration.component_id)
+
+    redirect_url = None
+    tms_data_id = None
+
+    tms_data_form = TMSDataForm(None, initial={'experiment': group.experiment,
+                                               'tms_setting': tms_step.tms_setting_id})
+
+    file_format_list = file_format_code("TMS")
+
+    if request.method == "POST":
+        if request.POST['action'] == "save":
+
+            tms_data_form = TMSDataForm(request.POST, request.FILES)
+
+            if tms_data_form.is_valid():
+
+                data_configuration_tree_id = list_data_configuration_tree(tms_configuration_id, list_of_path)
+                if not data_configuration_tree_id:
+                    data_configuration_tree_id = create_data_configuration_tree(list_of_path)
+
+                subject = get_object_or_404(Subject, pk=subject_id)
+                subject_of_group = get_object_or_404(SubjectOfGroup, subject=subject, group_id=group_id)
+
+                tms_data_added = tms_data_form.save(commit=False)
+                tms_data_added.subject_of_group = subject_of_group
+                tms_data_added.component_configuration = tms_configuration
+                tms_data_added.data_configuration_tree_id = data_configuration_tree_id
+
+                # PS: it was necessary adding these 2 lines because Django raised, I do not why (Evandro),
+                # the following error 'TMSData' object has no attribute 'group'
+                tms_data_added.group = group
+                tms_data_added.subject = subject
+
+                tms_data_added.save()
+
+                messages.success(request, _('TMS data collection created successfully.'))
+
+                redirect_url = reverse("tms_data_view", args=(tms_data_added.id,))
+                # redirect_url = reverse("subjects", args=(group.id,))
+                return HttpResponseRedirect(redirect_url)
+
+    context = {"can_change": True,
+               "creating": True,
+               "editing": True,
+               "group": group,
+               "tms_configuration": tms_configuration,
+               "tms_data_form": tms_data_form,
+               "tms_data_id": tms_data_id,
+               "file_format_list": file_format_list,
+               "tms_setting_default_id": tms_step.tms_setting_id,
+               "subject": get_object_or_404(Subject, pk=subject_id),
+               "URL": redirect_url,
+               "tab": "1"
+               }
+
+    return render(request, template_name, context)
+
+
+@login_required
+@permission_required('experiment.change_experiment')
+def tms_data_view(request, tms_data_id, template_name="experiment/subject_tms_data_form.html"):
+
+    tms_data = get_object_or_404(TMSData, pk=tms_data_id)
+    tms_step = get_object_or_404(TMS, id=tms_data.data_configuration_tree.component_configuration.component.id)
+
+    tms_data_form = TMSDataForm(request.POST or None, instance=tms_data)
+
+    for field in tms_data_form.fields:
+        tms_data_form.fields[field].widget.attrs['disabled'] = True
+
+    file_format_list = file_format_code("TMS")
+
+    if request.method == "POST":
+        if request.POST['action'] == "remove":
+
+            check_can_change(request.user, tms_data.subject_of_group.group.experiment.research_project)
+
+            subject_of_group = tms_data.subject_of_group
+            tms_data.file.delete()
+            tms_data.delete()
+            messages.success(request, _('TMS data removed successfully.'))
+            return redirect('subject_tms_view',
+                            group_id=subject_of_group.group_id,
+                            subject_id=subject_of_group.subject_id)
+
+    context = {"can_change": get_can_change(request.user, tms_data.subject_of_group.group.experiment.research_project),
+               "editing": False,
+               "group": tms_data.subject_of_group.group,
+               "subject": tms_data.subject_of_group.subject,
+               "tms_data_form": tms_data_form,
+               "tms_data": tms_data,
+               "file_format_list": file_format_list,
+               "tms_setting_default_id": tms_step.tms_setting_id,
+               "tab": "1"
+               }
+
+    return render(request, template_name, context)
+
+
+@login_required
+@permission_required('experiment.change_experiment')
+def tms_data_edit(request, tms_data_id, template_name="experiment/subject_tms_data_form.html"):
+
+    tms_data = get_object_or_404(TMSData, pk=tms_data_id)
+    tms_step = get_object_or_404(TMS, id=tms_data.data_configuration_tree.component_configuration.component.id)
+
+    check_can_change(request.user, tms_data.subject_of_group.group.experiment.research_project)
+
+    if request.method == "POST":
+
+        tms_data_form = TMSDataForm(request.POST, request.FILES, instance=tms_data)
+
+        if request.POST['action'] == "save":
+            if tms_data_form.is_valid():
+
+                if tms_data_form.has_changed():
+
+                    tms_data_to_update = tms_data_form.save(commit=False)
+                    tms_data_to_update.group = tms_data.subject_of_group.group
+                    tms_data_to_update.subject = tms_data.subject_of_group.subject
+                    tms_data_to_update.save()
+
+                    messages.success(request, _('TMS data updated successfully.'))
+                else:
+                    messages.success(request, _('There is no changes to save.'))
+
+                redirect_url = reverse("emg_data_view", args=(tms_data_id,))
+                return HttpResponseRedirect(redirect_url)
+
+    else:
+        tms_data_form = TMSDataForm(request.POST or None,
+                                    instance=tms_data,
+                                    initial={'experiment': tms_data.subject_of_group.group.experiment})
+
+    file_format_list = file_format_code("TMS")
+
+    context = {"group": tms_data.subject_of_group.group,
+               "subject": tms_data.subject_of_group.subject,
+               "emg_data_form": tms_data_form,
+               "emg_data": tms_data,
+               "file_format_list": file_format_list,
+               "emg_setting_default_id": tms_step.tms_setting_id,
+               "editing": True
+               }
+
+    return render(request, template_name, context)
 
 
 @login_required
@@ -5343,10 +5704,12 @@ def emg_data_edit(request, emg_data_id, template_name="experiment/subject_emg_da
 @permission_required('experiment.view_researchproject')
 def subject_additional_data_view(request, group_id, subject_id,
                                  template_name="experiment/additional_data_collection_list.html"):
-
     group = get_object_or_404(Group, id=group_id)
     subject = get_object_or_404(Subject, id=subject_id)
     subject_of_group = get_object_or_404(SubjectOfGroup, group=group, subject=subject)
+
+    # teste
+    # arvore = get_block_tree(group.experimental_protocol.id)
 
     # First element of the list is associated to the whole experimental protocol
     subject_step_data_query = \
@@ -5389,6 +5752,41 @@ def subject_additional_data_view(request, group_id, subject_id,
                }
 
     return render(request, template_name, context)
+
+
+def get_block_tree(component_id):
+
+    component = get_object_or_404(Component, id=component_id)
+
+    list_of_component_configuration = []
+
+    if component.component_type == 'block':
+        configurations = ComponentConfiguration.objects.filter(parent_id=component_id).order_by('order')
+        for configuration in configurations:
+            list_of_component_configuration.append(get_block_tree(configuration.component_id))
+
+    attributes = get_component_attributes(component)
+    attributes = [
+        {'key': 'identification', 'value': component.identification}
+    ]
+
+    return {'component_type': component.component_type,
+            'attributes': attributes,
+            'list_of_component_configuration': list_of_component_configuration}
+
+
+def get_component_attributes(component):
+    attributes = []
+    for attribute in get_general_component_attributes(component):
+        attributes.append(attribute)
+    return attributes
+
+
+def get_general_component_attributes(component):
+    attributes = [{'identification': component.identification}]
+    if component.description:
+        attributes.append({'description': component.identification})
+    return attributes
 
 
 @login_required
@@ -6367,7 +6765,8 @@ def copy_experiment(experiment):
         subject_list = [item.pk for item in SubjectOfGroup.objects.filter(group=group)]
         new_group = group
         new_group.pk = None
-        new_group.title = _('Copy of') + ' ' + new_group.title
+        # new_group.title = _('Copy of') + ' ' + new_group.title
+        new_group.title = new_group.title
         new_group.experiment_id = new_experiment.id
         if experimental_protocol_id in orig_and_clone:
             new_group.experimental_protocol_id = orig_and_clone[experimental_protocol_id]
@@ -6388,11 +6787,146 @@ def copy_experiment(experiment):
 
         component_configuration.pk = None
         if component_configuration.name:
-            component_configuration.name = _('Copy of') + ' ' + component_configuration.name
+            # component_configuration.name = _('Copy of') + ' ' + component_configuration.name
+            component_configuration.name = component_configuration.name
 
         component_configuration.component_id = orig_and_clone[component_id]
         component_configuration.parent_id = orig_and_clone[parent_id]
         component_configuration.save()
+
+    # eeg_setting
+    for eeg_setting in EEGSetting.objects.filter(experiment_id=experiment_id):
+        copy_eeg_setting(eeg_setting, new_experiment)
+
+    # emg setting
+    for emg_setting in EMGSetting.objects.filter(experiment_id=experiment_id):
+        copy_emg_setting(emg_setting, new_experiment)
+
+    # tms setting
+    for tms_setting in TMSSetting.objects.filter(experiment_id=experiment_id):
+        copy_tms_setting(tms_setting, new_experiment)
+
+
+def copy_eeg_setting(eeg_setting, new_experiment):
+    eeg_setting_id = eeg_setting.id
+    new_eeg_setting = eeg_setting
+    new_eeg_setting.pk = None
+    new_eeg_setting.experiment = new_experiment
+    new_eeg_setting.save()
+
+    # eeg_layout_setting
+    if EEGElectrodeLayoutSetting.objects.filter(eeg_setting_id=eeg_setting_id).exists():
+        new_eeg_electrode_layout_setting = get_object_or_404(EEGElectrodeLayoutSetting, pk=eeg_setting_id)
+        new_eeg_electrode_layout_setting.pk = None
+        new_eeg_electrode_layout_setting.eeg_setting = new_eeg_setting
+        new_eeg_electrode_layout_setting.save()
+
+        for position_setting in EEGElectrodePositionSetting.objects.filter(
+                eeg_electrode_layout_setting_id=eeg_setting_id):
+            new_position_setting = position_setting
+            new_position_setting.pk = None
+            new_position_setting.eeg_electrode_layout_setting = new_eeg_electrode_layout_setting
+            new_position_setting.save()
+
+    # eeg_amplifier_setting
+    if EEGAmplifierSetting.objects.filter(eeg_setting_id=eeg_setting_id).exists():
+        new_eeg_amplifier_setting = get_object_or_404(EEGAmplifierSetting, pk=eeg_setting_id)
+        new_eeg_amplifier_setting.pk = None
+        new_eeg_amplifier_setting.eeg_setting = new_eeg_setting
+        new_eeg_amplifier_setting.save()
+
+    # eeg_solution_setting
+    if EEGSolutionSetting.objects.filter(eeg_setting_id=eeg_setting_id).exists():
+        new_eeg_solution_setting = get_object_or_404(EEGSolutionSetting, pk=eeg_setting_id)
+        new_eeg_solution_setting.pk = None
+        new_eeg_solution_setting.eeg_setting = new_eeg_setting
+        new_eeg_solution_setting.save()
+
+    # eeg_filter_setting
+    if EEGFilterSetting.objects.filter(eeg_setting_id=eeg_setting_id).exists():
+        new_eeg_filter_setting = get_object_or_404(EEGFilterSetting, pk=eeg_setting_id)
+        new_eeg_filter_setting.pk = None
+        new_eeg_filter_setting.eeg_setting = new_eeg_setting
+        new_eeg_filter_setting.save()
+
+
+def copy_emg_setting(emg_setting, new_experiment):
+    emg_setting_id = emg_setting.id
+    new_emg_setting = emg_setting
+    new_emg_setting.pk = None
+    new_emg_setting.experiment = new_experiment
+    new_emg_setting.save()
+
+    # EMGDigitalFilterSetting
+    if EMGDigitalFilterSetting.objects.filter(emg_setting_id=emg_setting_id).exists():
+        new_emg_digital_filter_setting = get_object_or_404(EMGDigitalFilterSetting, pk=emg_setting_id)
+        new_emg_digital_filter_setting.pk = None
+        new_emg_digital_filter_setting.emg_setting = new_emg_setting
+        new_emg_digital_filter_setting.save()
+
+    # EMGADConverterSetting
+    if EMGADConverterSetting.objects.filter(emg_setting_id=emg_setting_id).exists():
+        new_emg_ad_converter_filter_setting = get_object_or_404(EMGADConverterSetting, pk=emg_setting_id)
+        new_emg_ad_converter_filter_setting.pk = None
+        new_emg_ad_converter_filter_setting.emg_setting = new_emg_setting
+        new_emg_ad_converter_filter_setting.save()
+
+    # EMGElectrodeSetting
+    for emg_electrode_setting in EMGElectrodeSetting.objects.filter(emg_setting_id=emg_setting_id):
+        emg_electrode_setting_id = emg_electrode_setting.id
+
+        new_emg_electrode_setting = emg_electrode_setting
+        new_emg_electrode_setting.pk = None
+        new_emg_electrode_setting.emg_setting = new_emg_setting
+        new_emg_electrode_setting.save()
+
+        # EMGPreamplifierSetting
+        if EMGPreamplifierSetting.objects.filter(emg_electrode_setting_id=emg_electrode_setting_id).exists():
+            new_emg_preamplifier_setting = get_object_or_404(EMGPreamplifierSetting, pk=emg_electrode_setting_id)
+            new_emg_preamplifier_setting.pk = None
+            new_emg_preamplifier_setting.emg_electrode_setting_id = new_emg_electrode_setting.id
+            new_emg_preamplifier_setting.save()
+
+            # EMGPreamplifierFilterSetting
+            if EMGPreamplifierFilterSetting.objects.filter(
+                    emg_preamplifier_filter_setting_id=emg_electrode_setting_id).exists():
+                new_emg_preamplifier_filter_setting = get_object_or_404(EMGPreamplifierFilterSetting,
+                                                                        pk=emg_electrode_setting_id)
+                new_emg_preamplifier_filter_setting.pk = None
+                new_emg_preamplifier_filter_setting.emg_preamplifier_filter_setting = new_emg_preamplifier_setting
+                new_emg_preamplifier_filter_setting.save()
+
+        # EMGAmplifierSetting
+        if EMGAmplifierSetting.objects.filter(emg_electrode_setting_id=emg_electrode_setting_id).exists():
+            new_emg_amplifier_setting = get_object_or_404(EMGAmplifierSetting, pk=emg_electrode_setting_id)
+            new_emg_amplifier_setting.pk = None
+            new_emg_amplifier_setting.emg_electrode_setting_id = new_emg_electrode_setting.id
+            new_emg_amplifier_setting.save()
+
+            # EMGAnalogFilterSetting
+            if EMGAnalogFilterSetting.objects.filter(
+                    emg_electrode_setting=emg_electrode_setting_id).exists():
+                new_emg_analog_filter_setting = get_object_or_404(EMGAnalogFilterSetting, pk=emg_electrode_setting_id)
+                new_emg_analog_filter_setting.pk = None
+                new_emg_analog_filter_setting.emg_electrode_setting = new_emg_amplifier_setting
+                new_emg_analog_filter_setting.save()
+
+        # EMGElectrodePlacementSetting
+        if EMGElectrodePlacementSetting.objects.filter(
+                emg_electrode_setting_id=emg_electrode_setting_id).exists():
+            new_emg_electrode_placement_setting = get_object_or_404(EMGElectrodePlacementSetting,
+                                                                    pk=emg_electrode_setting_id)
+            new_emg_electrode_placement_setting.pk = None
+            new_emg_electrode_placement_setting.emg_electrode_setting_id = new_emg_electrode_setting.id
+            new_emg_electrode_placement_setting.save()
+
+
+def copy_tms_setting(tms_setting, new_experiment):
+    # tms_setting_id = tms_setting.id
+    new_tms_setting = tms_setting
+    new_tms_setting.pk = None
+    new_tms_setting.experiment = new_experiment
+    new_tms_setting.save()
 
 
 def create_component(component, new_experiment):
@@ -6782,11 +7316,9 @@ def component_update(request, path_of_the_components):
         limesurvey_available = check_limesurvey_access(request, surveys)
 
         if limesurvey_available:
-            questionnaire_details = surveys.find_questionnaire_by_id(questionnaire.survey.lime_survey_id)
-
-            if questionnaire_details:
-                questionnaire_id = questionnaire_details['sid'],
-                questionnaire_title = questionnaire_details['surveyls_title']
+            questionnaire_title = surveys.get_survey_title(
+                questionnaire.survey.lime_survey_id,
+                get_questionnaire_language(surveys,questionnaire.survey.lime_survey_id, request.LANGUAGE_CODE))
 
         surveys.release_session_key()
 
@@ -7100,11 +7632,13 @@ def component_reuse(request, path_of_the_components, component_id):
         specific_form = TMSForm(request.POST or None, instance=tms, initial={'experiment': experiment})
     elif component_type == 'questionnaire':
         questionnaire = get_object_or_404(Questionnaire, pk=component_to_add.id)
-        questionnaire_details = Questionnaires().find_questionnaire_by_id(questionnaire.survey.lime_survey_id)
+        questionnaire_id = questionnaire.survey.lime_survey_id
+        questionnaire_title = Questionnaires().get_survey_title(
+            questionnaire.survey.lime_survey_id,
+            get_questionnaire_language(Questionnaires(),
+                                       questionnaire.survey.lime_survey_id,
+                                       request.LANGUAGE_CODE))
 
-        if questionnaire_details:
-            questionnaire_id = questionnaire_details['sid'],
-            questionnaire_title = questionnaire_details['surveyls_title']
     elif component_type == 'block':
         sub_block = get_object_or_404(Block, pk=component_id)
         specific_form = BlockForm(request.POST or None, instance=sub_block)
@@ -7241,6 +7775,45 @@ def eeg_electrode_localization_system_test(request, eeg_electrode_localization_s
                "localization_system_form": localization_system_form}
 
     return render(request, template_name, context)
+
+
+@login_required
+@permission_required('experiment.change_experiment')
+def eeg_electrode_position_change_the_order(request, eeg_electrode_position_id, command):
+    eeg_electrode_position = get_object_or_404(EEGElectrodePosition, pk=eeg_electrode_position_id)
+
+    all_positions = EEGElectrodePosition.objects.filter(
+        eeg_electrode_localization_system=eeg_electrode_position.eeg_electrode_localization_system)
+
+    if command == "down":
+        position_to_change = \
+            all_positions.filter(
+                channel_default_index__gt=eeg_electrode_position.channel_default_index
+            ).order_by('channel_default_index').first()
+    else:
+        position_to_change = \
+            all_positions.filter(
+                channel_default_index__lt=eeg_electrode_position.channel_default_index
+            ).order_by('-channel_default_index').first()
+
+    bottom_position = all_positions.order_by('-channel_default_index').first()
+
+    channel_index_current = eeg_electrode_position.channel_default_index
+    channel_index_to_change = position_to_change.channel_default_index
+
+    position_to_change.channel_default_index = bottom_position.channel_default_index + 1
+    position_to_change.save()
+
+    eeg_electrode_position.channel_default_index = channel_index_to_change
+    eeg_electrode_position.save()
+
+    position_to_change.channel_default_index = channel_index_current
+    position_to_change.save()
+
+    redirect_url = reverse("eeg_electrode_localization_system_view",
+                           args=(eeg_electrode_position.eeg_electrode_localization_system_id,))
+
+    return HttpResponseRedirect(redirect_url)
 
 
 @login_required
@@ -7828,6 +8401,18 @@ def emg_setting_ad_converter_edit(request, emg_setting_id,
 
 @login_required
 @permission_required('experiment.change_experiment')
+def get_json_coilmodel_attributes(request, coilmodel_id):
+    coil_model = get_object_or_404(CoilModel, pk=coilmodel_id)
+
+    response_data = {
+        'description': coil_model.description
+    }
+
+    return HttpResponse(json.dumps(response_data), content_type='application/json')
+
+
+@login_required
+@permission_required('experiment.change_experiment')
 def get_anatomical_description_by_placement(request, emg_electrode_type, emg_electrode_placement_id):
     response_data = []
     if emg_electrode_type == "surface":
@@ -8127,26 +8712,50 @@ def emg_electrode_setting_preamplifier(request, emg_electrode_setting_id,
 
         equipment_form = EquipmentForm(request.POST or None, instance=equipment_selected)
 
+        if hasattr(emg_preamplifier_setting, 'emg_preamplifier_filter_setting'):
+            emg_preamplifier_filter_setting = EMGPreamplifierFilterSetting.objects.get(
+                emg_preamplifier_filter_setting=emg_preamplifier_setting)
+
+            emg_preamplifier_filter_setting_form = EMGPreamplifierFilterSettingForm(
+                request.POST or None, instance=emg_preamplifier_filter_setting)
+
+        else:
+            emg_preamplifier_filter_setting_form = EMGPreamplifierFilterSettingForm(request.POST or None)
+
         for field in emg_preamplifier_setting_form.fields:
             emg_preamplifier_setting_form.fields[field].widget.attrs['disabled'] = True
+
+        for field in emg_preamplifier_filter_setting_form.fields:
+            emg_preamplifier_filter_setting_form.fields[field].widget.attrs['disabled'] = True
 
     else:
         creating = True
         emg_preamplifier_setting_form = EMGPreamplifierSettingForm(request.POST or None)
+        emg_preamplifier_filter_setting_form = EMGPreamplifierFilterSettingForm(request.POST or None)
         equipment_form = EquipmentForm(request.POST or None)
 
     if request.method == "POST":
         if request.POST['action'] == "save":
 
-            if emg_preamplifier_setting_form.is_valid():
+            if emg_preamplifier_setting_form.is_valid() and emg_preamplifier_filter_setting_form.is_valid():
 
-                if emg_preamplifier_setting_form.has_changed():
+                changed = False
+
+                if emg_preamplifier_setting_form.has_changed() or emg_preamplifier_filter_setting_form.has_changed():
 
                     new_setting = emg_preamplifier_setting_form.save(commit=False)
                     new_setting.emg_electrode_setting = emg_electrode_setting
                     new_setting.save()
 
-                    messages.success(request, _('EMG preamplifier setting created successfully.'))
+                    new_setting = emg_preamplifier_filter_setting_form.save(commit=False)
+                    new_setting.emg_preamplifier_filter_setting = emg_electrode_setting.emg_preamplifier_setting
+                    new_setting.save()
+                    changed = True
+
+                    if changed:
+                        messages.success(request, _('EMG preamplifier setting created successfully.'))
+                    else:
+                        messages.success(request, _('There is no changes to save.'))
 
                     redirect_url = reverse("emg_electrode_setting_view", args=(emg_electrode_setting_id,))
                     return HttpResponseRedirect(redirect_url)
@@ -8156,6 +8765,7 @@ def emg_electrode_setting_preamplifier(request, emg_electrode_setting_id,
                "can_change": can_change,
                "emg_electrode_setting": emg_electrode_setting,
                "emg_preamplifier_setting_form": emg_preamplifier_setting_form,
+               "emg_preamplifier_filter_setting_form": emg_preamplifier_filter_setting_form,
                "equipment_form": equipment_form,
                "manufacturer_list": list_of_manufacturers
                }
@@ -8183,15 +8793,37 @@ def emg_electrode_setting_preamplifier_edit(request, emg_electrode_setting_id,
     list_of_manufacturers = Manufacturer.objects.filter(set_of_equipment__equipment_type="amplifier",
                                                         set_of_equipment__tags__name="EMG").distinct()
 
+    if hasattr(emg_preamplifier_setting, 'emg_preamplifier_filter_setting'):
+
+        emg_preamplifier_filter_setting = emg_electrode_setting.emg_preamplifier_setting.emg_preamplifier_filter_setting
+        emg_preamplifier_filter_setting_form = EMGPreamplifierFilterSettingForm(request.POST or None,
+                                                                    instance=emg_preamplifier_filter_setting)
+    else:
+        emg_preamplifier_filter_setting_form = EMGPreamplifierFilterSettingForm(request.POST or None)
+
     if request.method == "POST":
 
         if request.POST['action'] == "save":
 
             if emg_preamplifier_setting_form.is_valid():
+                changed = False
 
                 if emg_preamplifier_setting_form.has_changed():
                     emg_preamplifier_setting_form.save()
+                    changed = True
 
+                if emg_preamplifier_filter_setting_form.has_changed() or emg_preamplifier_filter_setting_form.has_changed():
+
+                    if hasattr(emg_preamplifier_setting, 'emg_preamplifier_filter_setting'):
+                        emg_preamplifier_filter_setting_form.save()
+                    else:
+                        new_setting = emg_preamplifier_filter_setting_form.save(commit=False)
+                        new_setting.emg_preamplifier_filter_setting = emg_preamplifier_setting
+                        new_setting.save()
+
+                    changed = True
+
+                if changed:
                     messages.success(request, _('EMG Preamplifier setting updated successfully.'))
                 else:
                     messages.success(request, _('There is no changes to save.'))
@@ -8204,6 +8836,7 @@ def emg_electrode_setting_preamplifier_edit(request, emg_electrode_setting_id,
                "can_change": True,
                "emg_electrode_setting": emg_electrode_setting,
                "emg_preamplifier_setting_form": emg_preamplifier_setting_form,
+               "emg_preamplifier_filter_setting_form": emg_preamplifier_filter_setting_form,
                "equipment_form": equipment_form,
                "manufacturer_list": list_of_manufacturers
                }
@@ -8435,6 +9068,9 @@ def tms_setting_view(request, tms_setting_id, template_name="experiment/tms_sett
                 if tms_setting_type == "tms_device":
                     setting_to_be_deleted = get_object_or_404(TMSDeviceSetting, pk=tms_setting_id)
 
+                if tms_setting_type == "coil_model":
+                    setting_to_be_deleted = get_object_or_404(TMSDeviceSetting, pk=tms_setting_id)
+
                 if setting_to_be_deleted:
                     setting_to_be_deleted.delete()
 
@@ -8486,6 +9122,26 @@ def tms_setting_update(request, tms_setting_id, template_name="experiment/tms_se
 
 @login_required
 @permission_required('experiment.change_experiment')
+def tms_setting_coil_model(request, tms_setting_id, template_name="experiment/tms_setting_coil_model.html"):
+
+    tms_setting = get_object_or_404(TMSSetting, pk=tms_setting_id)
+
+    can_change = get_can_change(request.user, tms_setting.experiment.research_project)
+
+    creating = False
+
+    context = {"creating": creating,
+               "editing": False,
+               "can_change": can_change,
+               "tms_setting": tms_setting,
+
+               }
+
+    return render(request, template_name, context)
+
+
+@login_required
+@permission_required('experiment.change_experiment')
 def tms_setting_tms_device(request, tms_setting_id,
                            template_name="experiment/tms_setting_tms_device.html"):
 
@@ -8494,6 +9150,8 @@ def tms_setting_tms_device(request, tms_setting_id,
     can_change = get_can_change(request.user, tms_setting.experiment.research_project)
 
     creating = False
+
+    list_of_manufacturers = Manufacturer.objects.filter(set_of_equipment__equipment_type="tms_device").distinct()
 
     if hasattr(tms_setting, 'tms_device_setting'):
 
@@ -8505,6 +9163,10 @@ def tms_setting_tms_device(request, tms_setting_id,
 
         equipment_form = EquipmentForm(request.POST or None, instance=tms_device_selected)
 
+        coil_model_selected = tms_device_setting.coil_model
+
+        coil_model_form = CoilModelForm(request.POST or None, instance=coil_model_selected)
+
         for field in tms_device_setting_form.fields:
             tms_device_setting_form.fields[field].widget.attrs['disabled'] = True
 
@@ -8512,6 +9174,7 @@ def tms_setting_tms_device(request, tms_setting_id,
         creating = True
         tms_device_setting_form = TMSDeviceSettingForm(request.POST or None)
         equipment_form = EquipmentForm(request.POST or None)
+        coil_model_form = CoilModelForm(request.POST or None)
 
     if request.method == "POST":
         if request.POST['action'] == "save":
@@ -8534,7 +9197,9 @@ def tms_setting_tms_device(request, tms_setting_id,
                "can_change": can_change,
                "tms_setting": tms_setting,
                "tms_device_setting_form": tms_device_setting_form,
-               "equipment_form": equipment_form
+               "equipment_form": equipment_form,
+               "coil_model_form": coil_model_form,
+               "manufacturer_list": list_of_manufacturers
                }
 
     return render(request, template_name, context)
@@ -8555,6 +9220,10 @@ def tms_setting_tms_device_edit(request, tms_setting_id, template_name="experime
 
     equipment_form = EquipmentForm(request.POST or None, instance=tms_device_selected)
 
+    coil_model_selected = tms_device_setting.coil_model
+
+    coil_model_form = CoilModelForm(request.POST or None, instance=coil_model_selected)
+
     if request.method == "POST":
 
         if request.POST['action'] == "save":
@@ -8568,7 +9237,7 @@ def tms_setting_tms_device_edit(request, tms_setting_id, template_name="experime
                 else:
                     messages.success(request, _('There is no changes to save.'))
 
-                redirect_url = reverse("tms_setting_tms_device", args=(tms_setting_id,))
+                redirect_url = reverse("tms_setting_view", args=(tms_setting_id,))
                 return HttpResponseRedirect(redirect_url)
 
     context = {"creating": False,
@@ -8576,7 +9245,8 @@ def tms_setting_tms_device_edit(request, tms_setting_id, template_name="experime
                "can_change": True,
                "tms_setting": tms_setting,
                "tms_device_setting_form": tms_device_setting_form,
-               "equipment_form": equipment_form
+               "equipment_form": equipment_form,
+               "coil_model_form": coil_model_form
                }
 
     return render(request, template_name, context)

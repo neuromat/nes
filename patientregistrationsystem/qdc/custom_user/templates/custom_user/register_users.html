@@ -47,7 +47,7 @@
 
         function validateForm()
         {
-           var c=document.getElementsByTagName('input');
+           var c=document.getElementsByName('groups');
            for (var i = 0; i<c.length; i++){
                if (c[i].type=='checkbox') {
                     if (c[i].checked){return true}
@@ -168,7 +168,7 @@
                         </div>
                     </div>
                 </div>
-{#                <div class="row">#}
+
                 <div class="row">
                     <div class="col-xs-12 col-sm-12">
                         <div class="form-group">
@@ -200,8 +200,7 @@
                             <div class="input-group input-group-sm has-feedback">
                                 <span class="input-group-addon"> <span class="glyphicon glyphicon-user"></span></span>
                                 <input class="form-control" id="id_new_password2" maxlength="128" name="password2" required = ""
-                                       placeholder="{% trans "Type password" %}" type="password" onkeyup=checkPassExt(); beginCheckPassword1=true;">
-{#                                       placeholder="{% trans "Type password" %}" type="password" >#}
+                                       placeholder="{% trans "Type password" %}" type="password" onkeyup="checkPassExt(); beginCheckPassword1=true;">
                             </div>
                             <div class="help-block with-errors">
                                 {% for error in form.errors.password %}

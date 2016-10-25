@@ -98,51 +98,53 @@
 
             {% if not editing %}
 
-{#                <div class="container span6 offset3 well ">#}
-{#                    <h4><span class="glyphicon glyphicon-cog"></span> {% trans "Settings:" %}</h4>#}
-{#                    <div class="form-group">#}
-{#                        <table class="table table-striped col-xs-12 col-md-12">#}
-{#                            <thead>#}
-{#                            <tr>#}
-{#                                <th>{% trans "Type" %}</th>#}
-{#                                <th>{% trans "Setting" %}</th>#}
-{#                                <th>{% trans "Delete" %}</th>#}
-{#                            </tr>#}
-{#                            </thead>#}
-{#                            <tbody>#}
-{##}
-{#                                <tr>#}
-{#                                    <td>{% trans "TMS device" %}</td>#}
-{#                                    <td>#}
-{#                                        {% if tms_setting.tms_device_setting %}#}
-{##}
-{#                                            <a role="menuitem" tabindex="-1" href="/experiment/tms_setting/{{ tms_setting.id }}/tms_device">#}
-{#                                                {{ tms_setting.tms_device_setting.tms_device.identification }}#}
-{#                                            </a>#}
-{#                                            <blockquote>#}
-{#                                                <i><h6>#}
-{#                                                    {% trans "Coil name" %}: {{ tms_setting.tms_device_setting.tms_device.coil_model.name }}<br/>#}
-{#                                                    {% trans "Coil shape" %}: {{ tms_setting.tms_device_setting.tms_device.coil_model.coil_shape.name }}#}
-{#                                                </h6></i>#}
-{#                                            </blockquote>#}
-{##}
-{#                                        {% else %}#}
-{#                                            <a role="menuitem" tabindex="-1" href="/experiment/tms_setting/{{ tms_setting.id }}/tms_device"> {% trans "+ Add setting" %}</a>#}
-{#                                        {% endif %}#}
-{#                                    </td>#}
-{#                                    <td>#}
-{#                                        {% if tms_setting.tms_device_setting %}#}
-{#                                            <a class="btn glyphicon glyphicon-remove" data-toggle="tooltip" data-placement="right" title="{% trans "Delete setting from list" %}" style="color: indianred; vertical-align: -5%; padding-left: 0;"#}
-{#                                               onclick="show_modal_remove_setting('tms_device');"></a>#}
-{#                                        {% endif %}#}
-{#                                    </td>#}
-{#                                </tr>#}
-{##}
-{#                            </tbody>#}
-{#                        </table>#}
-{##}
-{#                    </div>#}
-{#                </div>#}
+                <div class="container span6 offset3 well ">
+                    <h4><span class="glyphicon glyphicon-cog"></span> {% trans "Settings:" %}</h4>
+                    <div class="form-group">
+                        <table class="table table-striped col-xs-12 col-md-12">
+                            <thead>
+                            <tr>
+                                <th>{% trans "Type" %}</th>
+                                <th>{% trans "Setting" %}</th>
+                                <th>{% trans "Delete" %}</th>
+                            </tr>
+                            </thead>
+                            <tbody>
+
+                                <tr>
+                                    <td>{% trans "TMS device" %}</td>
+                                    <td>
+                                        {% if tms_setting.tms_device_setting %}
+
+                                            <a role="menuitem" tabindex="-1" href="/experiment/tms_setting/{{ tms_setting.id }}/tms_device">
+                                                {{ tms_setting.tms_device_setting.tms_device.identification }}
+                                            </a>
+                                            <blockquote>
+                                                <i><h6>
+                                                    {% trans "Manufacturer" %}: {{ tms_setting.tms_device_setting.tms_device.manufacturer.name }}<br/>
+                                                    {% trans "TMS device" %}: {{ tms_setting.tms_device_setting.tms_device.identification }}<br/>
+                                                    {% trans "Coil model" %}: {{ tms_setting.tms_device_setting.coil_model.name }}<br/>
+                                                    {% trans "Pulse type" %}: {{ tms_setting.tms_device_setting.pulse_stimulus_type }}
+                                                </h6></i>
+                                            </blockquote>
+
+                                        {% else %}
+                                            <a role="menuitem" tabindex="-1" href="/experiment/tms_setting/{{ tms_setting.id }}/tms_device"> {% trans "+ Add setting" %}</a>
+                                        {% endif %}
+                                    </td>
+                                    <td>
+                                        {% if tms_setting.tms_device_setting %}
+                                            <a class="btn glyphicon glyphicon-remove" data-toggle="tooltip" data-placement="right" title="{% trans "Delete setting from list" %}" style="color: indianred; vertical-align: -5%; padding-left: 0;"
+                                               onclick="show_modal_remove_setting('tms_device');"></a>
+                                        {% endif %}
+                                    </td>
+                                </tr>
+
+                            </tbody>
+                        </table>
+
+                    </div>
+                </div>
 
             {% endif %}
 

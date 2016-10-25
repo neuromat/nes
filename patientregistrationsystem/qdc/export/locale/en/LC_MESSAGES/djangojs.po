@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2016-09-15 16:19-0300\n"
+"POT-Creation-Date: 2016-10-06 11:11-0300\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -18,8 +18,8 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 
 #: export/export.py:64 export/export.py:65 export/export.py:71
-#: export/views.py:126 export/views.py:127 export/views.py:131
-#: export/views.py:132
+#: export/views.py:128 export/views.py:129 export/views.py:133
+#: export/views.py:134
 msgid "Participation code"
 msgstr ""
 
@@ -119,100 +119,104 @@ msgstr ""
 msgid "Schooling"
 msgstr ""
 
-#: export/views.py:92
-msgid "Profession"
+#: export/views.py:93
+msgid "Schooling of the patient"
 msgstr ""
 
 #: export/views.py:94
+msgid "Profession"
+msgstr ""
+
+#: export/views.py:96
 msgid "Calculated social class"
 msgstr ""
 
-#: export/views.py:95
+#: export/views.py:97
 msgid "Occupation"
 msgstr ""
 
-#: export/views.py:97
+#: export/views.py:99
 msgid "What form of payment of the treatment performed"
 msgstr ""
 
-#: export/views.py:98
+#: export/views.py:100
 msgid "Religion"
 msgstr ""
 
-#: export/views.py:99
+#: export/views.py:101
 msgid "Flesh tone"
 msgstr ""
 
-#: export/views.py:100
+#: export/views.py:102
 msgid "Citizenship"
 msgstr ""
 
-#: export/views.py:102
+#: export/views.py:104
 msgid ""
 "Do you receive some benefit from the municipal level, state or federal "
 "government?"
 msgstr ""
 
-#: export/views.py:103
+#: export/views.py:105
 msgid "Smoker"
 msgstr ""
 
-#: export/views.py:105
+#: export/views.py:107
 msgid "Cigarretes/Day"
 msgstr ""
 
-#: export/views.py:106
+#: export/views.py:108
 msgid "Former smoker"
 msgstr ""
 
-#: export/views.py:107
+#: export/views.py:109
 msgid "Alcoholic"
 msgstr ""
 
-#: export/views.py:108
+#: export/views.py:110
 msgid "Frequency"
 msgstr ""
 
-#: export/views.py:109
+#: export/views.py:111
 msgid "Period"
 msgstr ""
 
-#: export/views.py:110
+#: export/views.py:112
 msgid "Drugs"
 msgstr ""
 
-#: export/views.py:114
+#: export/views.py:116
 msgid "Date"
 msgstr ""
 
-#: export/views.py:116
+#: export/views.py:118
 msgid "Observation"
 msgstr ""
 
-#: export/views.py:118
+#: export/views.py:120
 msgid "Disease code (ICD)"
 msgstr ""
 
-#: export/views.py:120
+#: export/views.py:122
 msgid "Disease Description"
 msgstr ""
 
-#: export/views.py:122
+#: export/views.py:124
 msgid "Disease Abbreviated Description"
 msgstr ""
 
-#: export/views.py:357
+#: export/views.py:359
 msgid "Inconsistent data read from json file"
 msgstr ""
 
-#: export/views.py:606
+#: export/views.py:608
 msgid "Export was finished correctly"
 msgstr ""
 
-#: export/views.py:624
+#: export/views.py:626
 msgid "Export data was not generated."
 msgstr ""
 
-#: export/views.py:637
+#: export/views.py:639
 msgid "No data was select. Export data was not generated."
 msgstr ""
