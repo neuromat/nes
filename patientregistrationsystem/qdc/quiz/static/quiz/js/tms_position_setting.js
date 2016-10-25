@@ -5,12 +5,13 @@
 window.onload = function() {
     var select_localization_system = $("#id_localization_system_selection");
     var div_localization_system_image = $("#div-localization_system_image");
+    var tms_position_localization_system_id = $("#tms_position_localization_system_id")
 
     select_localization_system.change(function () {
         var tms_localization_system = $(this).val();
 
         var split = tms_localization_system.split(",");
-        var tms_localization_system_id = split[0];
+        tms_position_localization_system_id.value = parseInt(split[0]);
         var tms_localization_system_image = split[1];
 
         if(tms_localization_system_image==""){
@@ -41,6 +42,9 @@ function getPosition(event) {
     var x = new Number();
     var y = new Number();
     var canvas = document.getElementById("tmsMapCanvas");
+    var hotspot_x = document.getElementById("id_coordinate_x");
+    var hotspot_y = document.getElementById("id_coordinate_y");
+
     context = canvas.getContext("2d");
 
     var rect = this.getBoundingClientRect();
@@ -54,7 +58,16 @@ function getPosition(event) {
     y = parseInt(coords.y);
 
     if (confirm(gettext("Confirms the coordinates? x - y: ") + x + " - " + y) == true) {
-        var name = prompt(gettext("Please enter the name this point"), id);
+        hotspot_x.value = x;
+        hotspot_y.value = y;
+
+        context.beginPath();
+        context.arc(x, y, 5, 0, 2 * Math.PI);
+        context.fillStyle = "red";
+        context.fill();
+        context.stroke();
+        
+        //var name = prompt(gettext("Please enter the name this point"), id);
         // if (name != null) {
         //     id = localization_system_id + "_" + id;
         //     context.beginPath();

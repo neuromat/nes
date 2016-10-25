@@ -16,7 +16,7 @@ from experiment.models import Experiment, QuestionnaireResponse, SubjectOfGroup,
     ADConverter, StandardizationSystem, Muscle, MuscleSide, MuscleSubdivision, TMS, TMSSetting, TMSDeviceSetting, \
     Software, SoftwareVersion, CoilModel, TMSDevice, EMGIntramuscularPlacement, EMGNeedlePlacement, SubjectStepData, \
     EMGPreamplifierFilterSetting, TMSData, HotSpot, CoilOrientation, DirectionOfTheInducedCurrent, \
-    TMSLocalizationSystem
+    TMSLocalizationSystem, TMSPosition
 
 
 class ExperimentForm(ModelForm):
@@ -1201,6 +1201,37 @@ class TMSDataForm(ModelForm):
             tms_setting = get_object_or_404(TMSSetting, pk=initial['tms_setting'])
             self.fields['coil_orientation'].queryset = CoilOrientation.objects.all()
             self.fields['direction_of_induced_current'].queryset = DirectionOfTheInducedCurrent.objects.all()
+
+
+class TMSPositionForm(ModelForm):
+    class Meta:
+        model = TMSPosition
+
+        fields = ['name']
+
+        widgets = {
+            'name': TextInput(attrs={'class': 'form-control',
+                                     'required': "",
+                                     'data-error': _('Name must be filled.')}),
+            # 'tms_localization_system': Select(attrs={'class': 'form-control', 'required': "",
+            #                                  'data-error': _('TMS localization system must be filled.')}),
+        }
+
+
+class HotSpotForm(ModelForm):
+    class Meta:
+        model = HotSpot
+
+        fields = ['coordinate_x', 'coordinate_y']
+
+        widgets = {
+            'coordinate_x': TextInput(attrs={'class': 'form-control',
+                                             'required': "",
+                                             'data-error': _('The coordinate must be filled.')}),
+            'coordinate_y': TextInput(attrs={'class': 'form-control',
+                                             'required': "",
+                                             'data-error': _('The coordinate must be filled.')}),
+        }
 
 
 class TMSSettingForm(ModelForm):

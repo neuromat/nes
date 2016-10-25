@@ -63,7 +63,8 @@ from experiment.forms import ExperimentForm, QuestionnaireResponseForm, FileForm
     TMSForm, TMSSettingForm, TMSDeviceSettingForm, CoilModelRegisterForm, TMSDeviceRegisterForm, \
     SoftwareRegisterForm, SoftwareVersionRegisterForm, EMGIntramuscularPlacementForm, \
     EMGSurfacePlacementRegisterForm, EMGIntramuscularPlacementRegisterForm, EMGNeedlePlacementRegisterForm, \
-    SubjectStepDataForm, EMGPreamplifierFilterSettingForm, CoilModelForm, TMSDataForm, TMSLocalizationSystemForm
+    SubjectStepDataForm, EMGPreamplifierFilterSettingForm, CoilModelForm, TMSDataForm, TMSLocalizationSystemForm, \
+    TMSPositionForm, HotSpotForm
 
 from export.export import create_directory
 
@@ -5426,8 +5427,6 @@ def tms_data_view(request, tms_data_id, template_name="experiment/subject_tms_da
 
     file_format_list = file_format_code("TMS")
 
-    # tms_localization_system_list = TMSLocalizationSystem.objects.all()
-
     if request.method == "POST":
         if request.POST['action'] == "remove":
 
@@ -5449,7 +5448,6 @@ def tms_data_view(request, tms_data_id, template_name="experiment/subject_tms_da
                "tms_data": tms_data,
                "file_format_list": file_format_list,
                "tms_setting_default_id": tms_step.tms_setting_id,
-               # "tms_localization_system_list": tms_localization_system_list,
                "tab": "1"
                }
 
@@ -5514,7 +5512,7 @@ def tms_data_edit(request, tms_data_id, tab, template_name="experiment/subject_t
 
 
 @login_required
-@permission_required('experiment.view_researchproject')
+@permission_required('experiment.change_experiment')
 def tms_data_position_setting(request, tms_data_id, template_name="experiment/tms_data_position_setting.html"):
     tms_data = get_object_or_404(TMSData, pk=tms_data_id)
 
@@ -5522,7 +5520,39 @@ def tms_data_position_setting(request, tms_data_id, template_name="experiment/tm
 
     check_can_change(request.user, tms_data.subject_of_group.group.experiment.research_project)
 
-    tms_localization_system_list = TMSLocalizationSystem.objects.all();
+    localization_system_list = TMSLocalizationSystem.objects.all();
+
+    tms_position_form = TMSPositionForm(request.POST or None)
+
+    hotspot_form = HotSpotForm(request.POST or None)
+
+    tms_localization_system_form = TMSLocalizationSystemForm(request.POST or None)
+
+    if request.method == "POST":
+
+            if request.POST['action'] == "save":
+
+                if tms_position_form.is_valid() and hotspot_form.is_valid() and 'localization_system_selection':
+                    if tms_position_form.has_changed():
+                        localization_system_val = request.POST['localization_system_selection']
+                        localization_system_split = localization_system_val.split(",")
+                        tms_localization_system = TMSLocalizationSystem.objects.get(pk=localization_system_split[0])
+                        tms_position_to_update = tms_position_form.save(commit=False)
+                        tms_position_to_update.tms_localization_system = tms_localization_system
+                        tms_position_to_update.save()
+
+                        hotspot_to_update = hotspot_form.save(commit=False)
+                        hotspot_to_update.tms_position = tms_position_to_update
+                        hotspot_to_update.tms_data = tms_data
+                        hotspot_to_update.save()
+
+                        messages.success(request, _('TMS position updated successfully.'))
+
+                    else:
+                        messages.success(request, _('There is no changes to save.'))
+
+                redirect_url = reverse("tms_data_position_setting", args=(tms_data_id,))
+                return HttpResponseRedirect(redirect_url)
 
     context = {
         "can_change": True,
@@ -5532,7 +5562,9 @@ def tms_data_position_setting(request, tms_data_id, template_name="experiment/tm
         "subject": tms_data.subject_of_group.subject,
         "tms_data": tms_data,
         "tms_setting_default_id": tms_step.tms_setting_id,
-        "tms_localization_system_list": tms_localization_system_list,
+        "tms_localization_system_list": localization_system_list,
+        "tms_position_form": tms_position_form,
+        "hotspot_form": hotspot_form,
         "tab": "2"
     }
 

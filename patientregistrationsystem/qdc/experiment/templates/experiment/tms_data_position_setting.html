@@ -12,12 +12,13 @@
         <h4>{% trans "Position setting" %}</h4>
 
         <div hidden="hidden">
+            <input id="tms_position_localization_system_id" type="text" value="{{ tms_position_form.tms_localization_system }}">
         </div>
 
         <div class="row">
-            <div class="col-xs-11 col-sm-11">
+            <div class="col-xs-10 col-sm-10">
                 <div class="form-group">
-                    <label class="control-label">{% trans "TMS localization system" %} </label>
+                    <label class="control-label">{% trans "TMS localization system" %}<b style="color: red;">*</b> </label>
 
                     <select class="form-control" name="localization_system_selection" id="id_localization_system_selection" required {% if not editing and not creating %}disabled{% endif %}>
                         <option value>-------</option>
@@ -28,14 +29,36 @@
 
                     <div class="help-block with-errors"></div>
 
+               </div>
+            </div>
+        </div>
+
+        <div class="row">
+            <div class="col-xs-10 col-sm-10">
+                <div class="form-group">
+                    <label class="control-label">{% trans "TMS Position" %}<b style="color: red;">*</b> </label>
+                    {{ tms_position_form.name }}
+
+                    <div class="help-block with-errors"></div>
+
                 </div>
             </div>
         </div>
 
         <div class="row">
-            <div class="col-xs-11 col-sm-11">
+            <div class="col-xs-5 col-sm-5">
                 <div class="form-group">
-                    <label class="control-label">{% trans "TMS Position" %} </label>
+                    <label class="control-label">{% trans "Coordinate X" %}<b style="color: red;">*</b> </label>
+                    {{ hotspot_form.coordinate_x }}
+
+                    <div class="help-block with-errors"></div>
+
+                </div>
+            </div>
+            <div class="col-xs-5 col-sm-5">
+                <div class="form-group">
+                    <label class="control-label">{% trans "Coordinate Y" %}<b style="color: red;">*</b> </label>
+                    {{ hotspot_form.coordinate_y }}
 
                     <div class="help-block with-errors"></div>
 
