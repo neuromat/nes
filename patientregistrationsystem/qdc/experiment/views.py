@@ -578,6 +578,9 @@ def group_view(request, group_id, template_name="experiment/group_register.html"
         else:
             raise PermissionDenied
 
+    experimental_protocol_description = get_experimental_protocol_description(group.experimental_protocol,
+                                                                              request.LANGUAGE_CODE)
+
     context = {"can_change": can_change,
                "classification_of_diseases_list": group.classification_of_diseases.all(),
                "group_form": group_form,
@@ -586,6 +589,7 @@ def group_view(request, group_id, template_name="experiment/group_register.html"
                "experiment_in_use": experiment_in_use,
                "group": group,
                "editing": False,
+               "experimental_protocol_description": experimental_protocol_description,
                "number_of_subjects": SubjectOfGroup.objects.all().filter(group=group).count()}
 
     return render(request, template_name, context)
@@ -5708,9 +5712,6 @@ def subject_additional_data_view(request, group_id, subject_id,
     subject = get_object_or_404(Subject, id=subject_id)
     subject_of_group = get_object_or_404(SubjectOfGroup, group=group, subject=subject)
 
-    # teste
-    # arvore = get_block_tree(group.experimental_protocol.id)
-
     # First element of the list is associated to the whole experimental protocol
     subject_step_data_query = \
         SubjectStepData.objects.filter(subject_of_group=subject_of_group, data_configuration_tree=None)
@@ -5754,38 +5755,184 @@ def subject_additional_data_view(request, group_id, subject_id,
     return render(request, template_name, context)
 
 
-def get_block_tree(component_id):
+def get_experimental_protocol_description(experimental_protocol, language_code):
+
+    tree = get_block_tree(experimental_protocol.id, language_code)
+
+    return get_description_from_experimental_protocol_tree(tree)
+
+
+def get_description_from_experimental_protocol_tree(component, numeration='', component_configuration_attributes=[]):
+    description = numeration if numeration else _('Main step')
+    description += ': ' + get_component_name(component['component_type']) + "\n"
+
+    # component attributes
+    for attribute in component['attributes']:
+        for key in list(attribute.keys()):
+            description += '\t-' + _(key) + ': ' + str(attribute[key]) + '\n'
+
+    # component configuration attributes
+    for attribute in component_configuration_attributes:
+        for key in list(attribute.keys()):
+            description += '\t-' + _(key) + ': ' + str(attribute[key]) + '\n'
+
+    # Sub-steps
+    num_of_sub_steps = len(component['list_of_component_configuration'])
+    if num_of_sub_steps > 0:
+        description += '\t-' + _('Sub-steps: ( ')
+        for item in range(1, num_of_sub_steps + 1):
+            description += (numeration + '.' if numeration else '') + str(item)
+            description += ', ' if item != num_of_sub_steps else ''
+        description += ')\n'
+
+        counter = 1
+        for component_configuration in component['list_of_component_configuration']:
+            description += get_description_from_experimental_protocol_tree(
+                component_configuration['component'],
+                (numeration + '.' if numeration else _('Step') + ' ') + str(counter),
+                component_configuration['component_configuration_attributes']
+            )
+            counter += 1
+
+    return description
+
+
+def get_component_name(component_type):
+    component_name = ''
+    for type_element, type_name in Component.COMPONENT_TYPES:
+        if type_element == component_type:
+            component_name = str(type_name)
+            break
+    return component_name if component_name else component_type
+
+
+def get_block_tree(component_id, language_code=None):
 
     component = get_object_or_404(Component, id=component_id)
 
-    list_of_component_configuration = []
+    attributes = get_component_attributes(component, language_code)
 
+    list_of_component_configuration = []
     if component.component_type == 'block':
         configurations = ComponentConfiguration.objects.filter(parent_id=component_id).order_by('order')
         for configuration in configurations:
-            list_of_component_configuration.append(get_block_tree(configuration.component_id))
-
-    attributes = get_component_attributes(component)
-    attributes = [
-        {'key': 'identification', 'value': component.identification}
-    ]
+            component_configuration_attributes = get_component_configuration_attributes(configuration)
+            component_info = get_block_tree(configuration.component_id, language_code)
+            list_of_component_configuration.append(
+                {'component_configuration_attributes': component_configuration_attributes,
+                 'component': component_info})
 
     return {'component_type': component.component_type,
             'attributes': attributes,
             'list_of_component_configuration': list_of_component_configuration}
 
 
-def get_component_attributes(component):
+def get_component_attributes(component, language_code):
     attributes = []
     for attribute in get_general_component_attributes(component):
         attributes.append(attribute)
+
+    specific_attributes = []
+    if component.component_type == 'block':
+        specific_attributes = get_block_component_attributes(component)
+    elif component.component_type == 'instruction':
+        specific_attributes = get_instruction_component_attributes(component)
+    elif component.component_type == 'pause':
+        specific_attributes = []
+    elif component.component_type == 'questionnaire':
+        specific_attributes = get_questionnaire_component_attributes(component, language_code)
+    elif component.component_type == 'stimulus':
+        specific_attributes = get_stimulus_component_attributes(component)
+    elif component.component_type == 'task':
+        specific_attributes = []
+    elif component.component_type == 'task_experiment':
+        specific_attributes = []
+    elif component.component_type == 'eeg':
+        specific_attributes = []
+    elif component.component_type == 'emg':
+        specific_attributes = []
+    elif component.component_type == 'tms':
+        specific_attributes = []
+
+    for attribute in specific_attributes:
+        attributes.append(attribute)
+
     return attributes
 
 
 def get_general_component_attributes(component):
-    attributes = [{'identification': component.identification}]
+    attributes = [{_('Identification'): component.identification}]
     if component.description:
-        attributes.append({'description': component.identification})
+        attributes.append({_('Description'): component.description})
+    if component.duration_value:
+        attributes.append({_('Duration value'): component.duration_value})
+        if component.duration_unit:
+            attributes.append({_('Duration unit'): component.duration_unit})
+    return attributes
+
+
+def get_block_component_attributes(component):
+    block = get_object_or_404(Block, id=component.id)
+    attributes = [{_('Type'): get_block_type_name(block.type)}]
+    if block.number_of_mandatory_components:
+        attributes.append({_('Number of mandatory components'): block.number_of_mandatory_components})
+    return attributes
+
+
+def get_instruction_component_attributes(component):
+    instruction = get_object_or_404(Instruction, id=component.id)
+    attributes = [{_('Text'): instruction.text}]
+    return attributes
+
+
+def get_questionnaire_component_attributes(component, language_code):
+    questionnaire = get_object_or_404(Questionnaire, id=component.id)
+    attributes = [{_('LimeSurvey ID'): questionnaire.survey.lime_survey_id}]
+
+    surveys = Questionnaires()
+    questionnaire_title = surveys.get_survey_title(
+        questionnaire.survey.lime_survey_id,
+        get_questionnaire_language(surveys, questionnaire.survey.lime_survey_id, language_code))
+    surveys.release_session_key()
+
+    attributes.append({_('Questionnaire title'): questionnaire_title})
+
+    return attributes
+
+
+def get_stimulus_component_attributes(component):
+    stimulus = get_object_or_404(Stimulus, id=component.id)
+    attributes = [{_('Stimulus type'): stimulus.stimulus_type.name}]
+    if stimulus.media_file:
+        attributes.append({_('Media file'): stimulus.media_file})
+    return attributes
+
+
+def get_block_type_name(block_type):
+    block_type_name = ''
+    for type_element, type_name in Block.BLOCK_TYPES:
+        if type_element == block_type:
+            block_type_name = str(type_name)
+            break
+    return block_type_name if block_type_name else block_type
+
+
+def get_component_configuration_attributes(configuration):
+    attributes = []
+    if configuration.name:
+        attributes.append({_('Name of use'): configuration.name})
+    if configuration.number_of_repetitions:
+        attributes.append({_('Number of repetitions'): configuration.number_of_repetitions})
+    if configuration.interval_between_repetitions_value:
+        attributes.append({_('Interval between repetitions value'): configuration.interval_between_repetitions_value})
+        if configuration.interval_between_repetitions_unit:
+            attributes.append({_('Interval between repetitions unit'): configuration.interval_between_repetitions_unit})
+    attributes.append({_('Order'): configuration.order})
+    attributes.append({
+        _('Position in the set of steps '): _('Random') if configuration.random_position else _('Fixed')})
+    attributes.append({
+        _('Requires start and end datetime'): _('Yes') if configuration.requires_start_and_end_datetime else _('No') })
+
     return attributes
 
 
