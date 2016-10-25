@@ -5426,7 +5426,7 @@ def tms_data_view(request, tms_data_id, template_name="experiment/subject_tms_da
 
     file_format_list = file_format_code("TMS")
 
-    tms_localization_system_list = TMSLocalizationSystem.objects.all()
+    # tms_localization_system_list = TMSLocalizationSystem.objects.all()
 
     if request.method == "POST":
         if request.POST['action'] == "remove":
@@ -5449,7 +5449,7 @@ def tms_data_view(request, tms_data_id, template_name="experiment/subject_tms_da
                "tms_data": tms_data,
                "file_format_list": file_format_list,
                "tms_setting_default_id": tms_step.tms_setting_id,
-               "tms_localization_system_list": tms_localization_system_list,
+               # "tms_localization_system_list": tms_localization_system_list,
                "tab": "1"
                }
 
@@ -5509,6 +5509,32 @@ def tms_data_edit(request, tms_data_id, tab, template_name="experiment/subject_t
                "editing": True,
                "tab": tab
                }
+
+    return render(request, template_name, context)
+
+
+@login_required
+@permission_required('experiment.view_researchproject')
+def tms_data_position_setting(request, tms_data_id, template_name="experiment/tms_data_position_setting.html"):
+    tms_data = get_object_or_404(TMSData, pk=tms_data_id)
+
+    tms_step = get_object_or_404(TMS, id=tms_data.data_configuration_tree.component_configuration.component.id)
+
+    check_can_change(request.user, tms_data.subject_of_group.group.experiment.research_project)
+
+    tms_localization_system_list = TMSLocalizationSystem.objects.all();
+
+    context = {
+        "can_change": True,
+        "creating": True,
+        "editing": True,
+        "group": tms_data.subject_of_group.group,
+        "subject": tms_data.subject_of_group.subject,
+        "tms_data": tms_data,
+        "tms_setting_default_id": tms_step.tms_setting_id,
+        "tms_localization_system_list": tms_localization_system_list,
+        "tab": "2"
+    }
 
     return render(request, template_name, context)
 

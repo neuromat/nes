@@ -1,0 +1,58 @@
+{% extends "experiment/subject_tms_data_form.html" %}
+{% load i18n admin_static %}
+
+{% block header %}
+    {% load static %}
+    <script src="{% static 'quiz/js/tms_position_setting.js' %}"></script>
+{% endblock %}
+
+{% block subcontent %}
+
+    <div id="position_setting" class="tab-pane fade in active">
+        <h4>{% trans "Position setting" %}</h4>
+
+        <div hidden="hidden">
+        </div>
+
+        <div class="row">
+            <div class="col-xs-11 col-sm-11">
+                <div class="form-group">
+                    <label class="control-label">{% trans "TMS localization system" %} </label>
+
+                    <select class="form-control" name="localization_system_selection" id="id_localization_system_selection" required {% if not editing and not creating %}disabled{% endif %}>
+                        <option value>-------</option>
+                        {% for localization_system in tms_localization_system_list %}
+                            <option {% if not creating and localization_system_selected.id == localization_system.id %}selected="selected"{% endif %} value="{{ localization_system.id }},{{ localization_system.tms_localization_system_image.url }}">{{ localization_system.name }}</option>
+                        {% endfor %}
+                    </select>
+
+                    <div class="help-block with-errors"></div>
+
+                </div>
+            </div>
+        </div>
+
+        <div class="row">
+            <div class="col-xs-11 col-sm-11">
+                <div class="form-group">
+                    <label class="control-label">{% trans "TMS Position" %} </label>
+
+                    <div class="help-block with-errors"></div>
+
+                </div>
+            </div>
+        </div>
+
+    </div>
+
+    <div id="div-localization_system_image">
+        <canvas id="tmsMapCanvas" width="600" height="600" style="border:1px solid #000000;"></canvas>
+    </div>
+
+    {% if not editing and can_change %}
+        <div class="btn-group pull-left">
+            <a href="/experiment/tms_data/edit/{{ tms_data.id }}/3" class="btn btn-primary">{% trans "Edit" %}</a>
+        </div>
+    {% endif %}
+
+{% endblock %}
