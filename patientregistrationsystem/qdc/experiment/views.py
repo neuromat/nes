@@ -46,7 +46,7 @@ from experiment.models import Experiment, Subject, QuestionnaireResponse, Subjec
     ADConverter, StandardizationSystem, Muscle, MuscleSubdivision, MuscleSide, \
     EMGElectrodePlacement, EMGSurfacePlacement, TMS, TMSSetting, TMSDeviceSetting, TMSDevice, Software, \
     EMGIntramuscularPlacement, EMGNeedlePlacement, SubjectStepData, EMGPreamplifierFilterSetting, \
-    EMGElectrodePlacementSetting, TMSData, CoilOrientation, TMSLocalizationSystem
+    EMGElectrodePlacementSetting, TMSData, CoilOrientation, TMSLocalizationSystem, HotSpot, TMSPosition
 from experiment.forms import ExperimentForm, QuestionnaireResponseForm, FileForm, GroupForm, InstructionForm, \
     ComponentForm, StimulusForm, BlockForm, ComponentConfigurationForm, ResearchProjectForm, NumberOfUsesToInsertForm, \
     EEGDataForm, EEGSettingForm, EquipmentForm, EEGForm, EEGAmplifierForm, \
@@ -5530,8 +5530,6 @@ def tms_data_position_setting(request, tms_data_id, template_name="experiment/tm
 
     hotspot_form = HotSpotForm(request.POST or None)
 
-    tms_localization_system_form = TMSLocalizationSystemForm(request.POST or None)
-
     if request.method == "POST":
 
             if request.POST['action'] == "save":
@@ -5549,13 +5547,14 @@ def tms_data_position_setting(request, tms_data_id, template_name="experiment/tm
                         hotspot_to_update.tms_position = tms_position_to_update
                         hotspot_to_update.tms_data = tms_data
                         hotspot_to_update.save()
+                        # Se der erro aqui, como fazer reverse de tms_position????
 
                         messages.success(request, _('TMS position updated successfully.'))
 
                     else:
                         messages.success(request, _('There is no changes to save.'))
 
-                redirect_url = reverse("tms_data_position_setting", args=(tms_data_id,))
+                redirect_url = reverse("tms_data_position_setting_view", args=(tms_data_id, tms_position_to_update.id))
                 return HttpResponseRedirect(redirect_url)
 
     context = {
@@ -5571,6 +5570,38 @@ def tms_data_position_setting(request, tms_data_id, template_name="experiment/tm
         "hotspot_form": hotspot_form,
         "tab": "2"
     }
+
+    return render(request, template_name, context)
+
+
+@login_required
+@permission_required('experiment.change_experiment')
+def tms_data_position_setting_view(request, tms_data_id, tms_position_id,
+                                   template_name="experiment/tms_data_position_setting.html"):
+
+    tms_data = get_object_or_404(TMSData, pk=tms_data_id)
+
+    tms_step = get_object_or_404(TMS, id=tms_data.data_configuration_tree.component_configuration.component.id)
+
+    check_can_change(request.user, tms_data.subject_of_group.group.experiment.research_project)
+
+    if(hasattr(tms_data, 'hotspot')):
+        hotspot_form = HotSpotForm(request.POST or None, instance=tms_data.hotspot)
+
+    tms_position = get_object_or_404(TMSPosition, pk=tms_position_id)
+
+    tms_position_form = TMSPositionForm(request.POST or None, instance=tms_position)
+
+    context = {"can_change": get_can_change(request.user, tms_data.subject_of_group.group.experiment.research_project),
+               "editing": False,
+               "group": tms_data.subject_of_group.group,
+               "subject": tms_data.subject_of_group.subject,
+               "tms_data": tms_data,
+               "tms_setting_default_id": tms_step.tms_setting_id,
+               "tms_position_form": tms_position_form,
+               "hotspot_form": hotspot_form,
+               "tab": "2"
+               }
 
     return render(request, template_name, context)
 

@@ -1036,22 +1036,6 @@ class HotSpot(models.Model):
     tms_position = models.ForeignKey(TMSPosition)
     tms_data = models.OneToOneField(TMSData, primary_key=True)
 
-    # Audit trail - Simple History
-    history = HistoricalRecords()
-
-    # changed_by = models.ForeignKey('auth.User')
-
-    def __str__(self):
-        return self.description
-
-    @property
-    def _history_user(self):
-        return self.changed_by
-
-    @_history_user.setter
-    def _history_user(self, value):
-        self.changed_by = value
-
 
 class AdditionalData(DataFile, DataCollection):
 

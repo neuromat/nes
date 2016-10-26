@@ -324,7 +324,10 @@ urlpatterns = patterns(
         'subject_tms_data_create', name='subject_tms_data_create'),
     url(r'^tms_data/(?P<tms_data_id>\d+)/$', 'tms_data_view', name='tms_data_view'),
     url(r'^tms_data/edit/(?P<tms_data_id>\d+)/(?P<tab>\d+)/$', 'tms_data_edit', name='tms_data_edit'),
-    url(r'^tms_data/(?P<tms_data_id>\d+)/position_setting/$', 'tms_data_position_setting', name='tms_data_position_setting'),
+    url(r'^tms_data/(?P<tms_data_id>\d+)/position_setting/$', 'tms_data_position_setting',
+        name='tms_data_position_setting'),
+    url(r'^tms_data/(?P<tms_data_id>\d+)/position_setting/(?P<tms_position_id>\d+)/$',
+        'tms_data_position_setting_view', name='tms_data_position_setting_view'),
 
     # subject + additional data
     url(r'^group/(?P<group_id>\d+)/subject/(?P<subject_id>\d+)/additional_data/$',
