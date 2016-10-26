@@ -12,7 +12,7 @@
         <h4>{% trans "Position setting" %}</h4>
 
         <div hidden="hidden">
-            <input id="tms_position_localization_system_id" type="text" value="{{ tms_position_form.tms_localization_system }}">
+            <input id="localization_system_selected_id" type="text" value="{{ localization_system_selected.tms_localization_system_image.url }}">
         </div>
 
         <div class="row">
@@ -74,7 +74,13 @@
 
     {% if not editing and can_change %}
         <div class="btn-group pull-left">
-            <a href="/experiment/tms_data/edit/{{ tms_data.id }}/3" class="btn btn-primary">{% trans "Edit" %}</a>
+            <a href="/experiment/tms_data/edit/{{ tms_data.id }}/2" class="btn btn-primary">{% trans "Edit" %}</a>
+        </div>
+
+        <div class="btn-toolbar pull-right">
+            <div class="btn-group">
+                <a href="/experiment/tms_data/{{ tms_data.id }}/" class="btn btn-default">{% trans "Previous" %} <span class="glyphicon glyphicon-chevron-left"></span></a>
+            </div>
         </div>
     {% endif %}
 

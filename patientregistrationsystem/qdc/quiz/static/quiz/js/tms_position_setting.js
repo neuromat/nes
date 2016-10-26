@@ -5,7 +5,29 @@
 window.onload = function() {
     var select_localization_system = $("#id_localization_system_selection");
     var div_localization_system_image = $("#div-localization_system_image");
-    var tms_position_localization_system_id = $("#tms_position_localization_system_id")
+    var tms_position_localization_system_id = $("#tms_position_localization_system_id");
+    var localization_system_selected_id = $("#localization_system_selected_id");
+
+    if(localization_system_selected_id.val()){
+        var canvas = document.getElementById("tmsMapCanvas");
+        var ctx = canvas.getContext("2d");
+        var imageObj = new Image();
+        hotspot_x = $("#id_coordinate_x");
+        hotspot_y = $("#id_coordinate_y");
+
+        var x = parseInt(hotspot_x.val());
+        var y = parseInt(hotspot_y.val());
+
+        imageObj.onload = function(){
+            ctx.drawImage(imageObj, 0,0,600,600);
+            ctx.beginPath();
+            ctx.arc(x, y, 5, 0, 2 * Math.PI);
+            ctx.fillStyle = "red";
+            ctx.fill();
+            ctx.stroke();
+        };
+        imageObj.src = localization_system_selected_id.val();
+    }
 
     select_localization_system.change(function () {
         var tms_localization_system = $(this).val();

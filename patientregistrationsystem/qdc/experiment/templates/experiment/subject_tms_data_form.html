@@ -233,14 +233,17 @@
                     {% if creating or editing %}
                         <li {% if tab == '1' %}class="active"{% else %}class="disabled"{% endif %}><a href="#">{% trans "Data collection" %}</a></li>
 {#                        <li {% if tab == '2' %}class="active"{% else %}class="disabled"{% endif %}><a href="#">{% trans "Coil orientation" %}</a>#}
-                        <li {% if tab == '2' %}class="active"{% else %}class="disabled"{% endif %}><a href="#">{% trans "Position setting" %}</a>
+                        <li {% if tab == '2' %}class="active"{% else %}class="disabled"{% endif %}>
+{#                            <a href="#">{% trans "Position setting" %}</a>#}
+                            <a href="/experiment/tms_data/{{ tms_data.id }}/position_setting_register">{% trans "Position setting" %}</a>
                         </li>
                     {% else %}
                         <li {% if tab == '1' %}class="active"{% endif %}>
-                            <a data-toggle="tab" href="#data_collection">{% trans "Data collection" %}</a>
+{#                            <a data-toggle="tab" href="#data_collection">{% trans "Data collection" %}</a>#}
+                            <a href="/experiment/tms_data/{{ tms_data.id }}">{% trans "Data collection" %}</a>
                         </li>
                         <li {% if tab == '2' %}class="active" {% endif %}>
-                            <a href="/experiment/tms_data/{{ tms_data.id }}/position_setting">{% trans "Position setting" %}</a>
+                            <a href="/experiment/tms_data/{{ tms_data.id }}/position_setting_view">{% trans "Position setting" %}</a>
                         </li>
                     {% endif %}
 
@@ -458,10 +461,7 @@
 {#                        {% if not editing and not creating and can_change %}#}
                             <div class="btn-toolbar pull-right">
                                 <div class="btn-group">
-                                    <a disabled="" href="#" class="btn btn-default"><span class="glyphicon glyphicon-chevron-left"></span> {% trans "Previous" %}</a>
-                                </div>
-                                <div class="btn-group">
-                                    <a href="/experiment/tms_data/{{ tms_data.id }}/position_setting" class="btn btn-default">{% trans "Next" %} <span class="glyphicon glyphicon-chevron-right"></span></a>
+                                    <a href="/experiment/tms_data/{{ tms_data.id }}/position_setting_view" class="btn btn-default">{% trans "Next" %} <span class="glyphicon glyphicon-chevron-right"></span></a>
                                 </div>
                             </div>
                         {% endif %}
@@ -492,8 +492,14 @@
                             <a href="/experiment/group/{{ group.id }}/subject/{{ subject.id }}/tms"
                                class="btn" style="background-color: #f5f5f5">{% trans "Cancel" %}</a>
                         {% else %}
-                            <a href="/experiment/tms_data/{{ tms_data.id }}/{{ tab }}"
-                               class="btn" style="background-color: #f5f5f5">{% trans "Cancel" %}</a>
+                            {% if tab == '1' %}
+                                <a href="/experiment/tms_data/{{ tms_data.id }}/"
+                                   class="btn" style="background-color: #f5f5f5">{% trans "Cancel" %}</a>
+                            {% endif %}
+                            {% if tab == '2' %}
+                                <a href="/experiment/tms_data/{{ tms_data.id }}/position_setting_view/"
+                                   class="btn" style="background-color: #f5f5f5">{% trans "Cancel" %}</a>
+                            {% endif %}
                         {% endif %}
 
                     </div>
