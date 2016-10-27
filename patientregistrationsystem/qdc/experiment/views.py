@@ -5481,10 +5481,7 @@ def tms_data_edit(request, tms_data_id, tab):
         localization_system_selected = get_object_or_404(TMSLocalizationSystem,
                                                      pk=tms_position.tms_localization_system_id)
 
-    # tms_data_form = None
-    # hotspot_form = None
-    # tms_position_form = None
-    # localization_system_selected = None
+    # localization_system_list = TMSLocalizationSystem.objects.all();
 
     if request.method == "POST":
 
@@ -5545,8 +5542,9 @@ def tms_data_edit(request, tms_data_id, tab):
                "tms_data": tms_data,
                "file_format_list": file_format_list,
                "tms_setting_default_id": tms_step.tms_setting_id,
-               "hotspot_form": hotspot_form,
                "tms_position_form": tms_position_form,
+               "hotspot_form": hotspot_form,
+               "tms_localization_system_list": TMSLocalizationSystem.objects.all(),
                "localization_system_selected": localization_system_selected,
                "editing": True,
                "tab": tab
@@ -5631,12 +5629,9 @@ def tms_data_position_setting_view(request, tms_data_id, template_name="experime
 
         localization_system_selected = get_object_or_404(TMSLocalizationSystem,
                                                          pk=tms_position.tms_localization_system_id)
-
-    # tms_position = get_object_or_404(TMSPosition, pk=tms_position_id)
-    #
-    # tms_position_form = TMSPositionForm(request.POST or None, instance=tms_position)
-
-    # localization_system_selected = get_object_or_404(TMSLocalizationSystem, pk=tms_position.tms_localization_system_id)
+    else:
+        redirect_url = reverse("tms_data_position_setting_register", args=(tms_data_id,))
+        return HttpResponseRedirect(redirect_url)
 
     context = {"can_change": get_can_change(request.user, tms_data.subject_of_group.group.experiment.research_project),
                "editing": False,
