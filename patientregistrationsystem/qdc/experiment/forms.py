@@ -1213,8 +1213,6 @@ class TMSPositionForm(ModelForm):
             'name': TextInput(attrs={'class': 'form-control',
                                      'required': "",
                                      'data-error': _('Name must be filled.')}),
-            # 'tms_localization_system': Select(attrs={'class': 'form-control', 'required': "",
-            #                                  'data-error': _('TMS localization system must be filled.')}),
         }
 
 

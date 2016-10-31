@@ -151,6 +151,12 @@ urlpatterns = patterns(
         'tms_localization_system_view', name='tms_localization_system_view'),
     url(r'^tms_localization_system/edit/(?P<tms_localization_system_id>\d+)/$',
         'tms_localization_system_update', name='tms_localization_system_update'),
+    url(r'^tms_localization_system/(?P<tms_localization_system_id>\d+)/new_tms_position/$',
+        'tms_localization_system_position_create', name='tms_localization_system_position_create'),
+    url(r'^tms_localization_system/(?P<tms_localization_system_id>\d+)/tms_position/(?P<tms_position_id>\d+)$',
+        'tms_localization_system_position_view', name='tms_localization_system_position_view'),
+    url(r'^tms_localization_system/(?P<tms_localization_system_id>\d+)/tms_position/edit/(?P<tms_position_id>\d+)$',
+        'tms_localization_system_position_update', name='tms_localization_system_position_update'),
 
     # Localization system and position
     url(r'^eeg_electrode_localization_system/list/$',
