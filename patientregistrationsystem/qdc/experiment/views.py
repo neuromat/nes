@@ -5468,21 +5468,6 @@ def tms_data_edit(request, tms_data_id, tab):
 
     check_can_change(request.user, tms_data.subject_of_group.group.experiment.research_project)
 
-    if tab == "1":
-        template_name = "experiment/subject_tms_data_form.html"
-        hotspot_form = None
-        tms_position_form = None
-        localization_system_selected = None
-    else:
-        template_name = "experiment/tms_data_position_setting.html"
-        hotspot_form = HotSpotForm(request.POST or None, instance=tms_data.hotspot)
-        tms_position = get_object_or_404(TMSPosition, pk=tms_data.hotspot.tms_position_id)
-        tms_position_form = TMSPositionForm(request.POST or None, instance=tms_position)
-        localization_system_selected = get_object_or_404(TMSLocalizationSystem,
-                                                     pk=tms_position.tms_localization_system_id)
-
-    # localization_system_list = TMSLocalizationSystem.objects.all();
-
     if request.method == "POST":
 
         if request.POST['action'] == "save":
@@ -5503,21 +5488,15 @@ def tms_data_edit(request, tms_data_id, tab):
                 redirect_url = reverse("tms_data_view", args=(tms_data_id,))
 
             if tab == "2":
-                hotspot_form = HotSpotForm(request.POST or None, instance=tms_data.hotspot)
-                tms_position = get_object_or_404(TMSPosition, pk=tms_data.hotspot.tms_position_id)
-                tms_position_form = TMSPositionForm(request.POST or None, instance=tms_position)
+                hotspot_form = HotSpotForm(request.POST or None)
 
-                if hotspot_form.is_valid() and tms_position_form.is_valid() and 'localization_system_selection':
-                    if tms_position_form.has_changed():
-                        localization_system_val = request.POST['localization_system_selection']
-                        localization_system_split = localization_system_val.split(",")
-                        tms_localization_system = TMSLocalizationSystem.objects.get(pk=localization_system_split[0])
-                        tms_position_to_update = tms_position_form.save(commit=False)
-                        tms_position_to_update.tms_localization_system = tms_localization_system
-                        tms_position_to_update.save()
+                if hotspot_form.is_valid() and 'localization_system_selection':
+                    if hotspot_form.has_changed():
+                        tms_position_val = request.POST['tms_position_selection']
+                        tms_position = TMSPosition.objects.get(pk=tms_position_val)
 
                         hotspot_to_update = hotspot_form.save(commit=False)
-                        hotspot_to_update.tms_position = tms_position_to_update
+                        hotspot_to_update.tms_position = tms_position
                         hotspot_to_update.tms_data = tms_data
                         hotspot_to_update.save()
 
@@ -5531,8 +5510,29 @@ def tms_data_edit(request, tms_data_id, tab):
         return HttpResponseRedirect(redirect_url)
 
     else:
+
         tms_data_form = TMSDataForm(request.POST or None, instance=tms_data,
                                     initial={'experiment': tms_data.subject_of_group.group.experiment})
+
+        if tab == "1":
+            template_name = "experiment/subject_tms_data_form.html"
+            hotspot_form = None
+            tms_position_form = None
+            localization_system_selected = None
+        else:
+            template_name = "experiment/tms_data_position_setting.html"
+            if hasattr(tms_data, 'hotspot'):
+                hotspot_form = HotSpotForm(request.POST or None, instance=tms_data.hotspot)
+                tms_position = get_object_or_404(TMSPosition, pk=tms_data.hotspot.tms_position_id)
+                tms_position_form = TMSPositionForm(request.POST or None, instance=tms_position)
+                localization_system_selected = get_object_or_404(TMSLocalizationSystem,
+                                                                 pk=tms_position.tms_localization_system_id)
+                tms_position_selected = get_object_or_404(TMSPosition, pk=tms_data.hotspot.tms_position_id)
+            else:
+                hotspot_form = HotSpotForm(request.POST or None)
+                tms_position_form = TMSPositionForm(request.POST or None)
+                localization_system_selected = None
+                tms_position_selected = None
 
     file_format_list = file_format_code("TMS")
 
@@ -5546,6 +5546,8 @@ def tms_data_edit(request, tms_data_id, tab):
                "hotspot_form": hotspot_form,
                "tms_localization_system_list": TMSLocalizationSystem.objects.all(),
                "localization_system_selected": localization_system_selected,
+               "tms_position_selected": tms_position_selected,
+               "tms_position_list": TMSPosition.objects.all(),
                "editing": True,
                "tab": tab
                }
@@ -5618,28 +5620,52 @@ def tms_data_position_setting_view(request, tms_data_id, template_name="experime
 
     check_can_change(request.user, tms_data.subject_of_group.group.experiment.research_project)
 
-    if hasattr(tms_data, 'hotspot'):
-        hotspot_form = HotSpotForm(request.POST or None, instance=tms_data.hotspot)
+    if request.method == "POST":
+        if request.POST['action'] == "remove":
+            check_can_change(request.user, tms_data.subject_of_group.group.experiment.research_project)
+
+            subject_of_group = tms_data.subject_of_group
+            tms_data.file.delete()
+            tms_data.delete()
+            messages.success(request, _('TMS data removed successfully.'))
+            return redirect('subject_tms_view',
+                            group_id=subject_of_group.group_id,
+                            subject_id=subject_of_group.subject_id)
+
+    else:
+
+        if hasattr(tms_data, 'hotspot'):
+            hotspot_form = HotSpotForm(request.POST or None, instance=tms_data.hotspot)
+
+            tms_position = get_object_or_404(TMSPosition, pk=tms_data.hotspot.tms_position_id)
+
+            tms_position_selected = get_object_or_404(TMSPosition, pk=tms_data.hotspot.tms_position_id)
+            localization_system_selected = get_object_or_404(TMSLocalizationSystem, pk=tms_position.tms_localization_system_id)
+
+        else:
+            hotspot_form = HotSpotForm(request.POST or None)
+            tms_position = None
+            tms_position_selected = None
+            localization_system_selected = None
+
         for field in hotspot_form.fields:
             hotspot_form.fields[field].widget.attrs['disabled'] = True
 
-        tms_position = get_object_or_404(TMSPosition, pk=tms_data.hotspot.tms_position_id)
-        tms_position_form = TMSPositionForm(request.POST or None, instance=tms_position)
-
-        localization_system_selected = get_object_or_404(TMSLocalizationSystem,
-                                                         pk=tms_position.tms_localization_system_id)
-    else:
-        redirect_url = reverse("tms_data_position_setting_register", args=(tms_data_id,))
-        return HttpResponseRedirect(redirect_url)
+        tms_position_list = TMSPosition.objects.all()
+        tms_localization_system_list = TMSLocalizationSystem.objects.all()
 
     context = {"can_change": get_can_change(request.user, tms_data.subject_of_group.group.experiment.research_project),
                "editing": False,
+               "creating": False,
                "group": tms_data.subject_of_group.group,
                "subject": tms_data.subject_of_group.subject,
                "tms_data": tms_data,
                "tms_setting_default_id": tms_step.tms_setting_id,
-               "tms_position_form": tms_position_form,
+               "tms_position": tms_position,
                "hotspot_form": hotspot_form,
+               "tms_position_selected": tms_position_selected,
+               "tms_position_list": tms_position_list,
+               "tms_localization_system_list": tms_localization_system_list,
                "localization_system_selected": localization_system_selected,
                "tab": "2"
                }

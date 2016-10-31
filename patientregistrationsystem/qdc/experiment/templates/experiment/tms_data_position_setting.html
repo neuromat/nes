@@ -4,6 +4,7 @@
 {% block header %}
     {% load static %}
     <script src="{% static 'quiz/js/tms_position_setting.js' %}"></script>
+    <script src="{% static 'quiz/js/research_project.js' %}"></script>
 {% endblock %}
 
 {% block subcontent %}
@@ -13,6 +14,7 @@
 
         <div hidden="hidden">
             <input id="localization_system_selected_id" type="text" value="{{ localization_system_selected.tms_localization_system_image.url }}">
+            <input id="editing_id" type="text" value="{{ editing }}">
         </div>
 
         <div class="row">

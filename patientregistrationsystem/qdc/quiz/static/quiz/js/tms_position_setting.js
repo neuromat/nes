@@ -9,6 +9,7 @@ window.onload = function() {
     var localization_system_selected_id = $("#localization_system_selected_id");
     var localization_system_selected = localization_system_selected_id.val();
     var select_tms_position_selection = $("#id_tms_position_selection");
+    var editing_id = $("#editing_id");
     map_file="";
 
     if(localization_system_selected == "") {
@@ -29,7 +30,8 @@ window.onload = function() {
         };
         imageObj.src = localization_system_selected_id.val();
         map_file = imageObj.src;
-        canvas.addEventListener("mousedown", getPosition, false);
+        if(editing_id.val() == "True")
+            canvas.addEventListener("mousedown", getPosition, false);
     }
 
     select_localization_system.change(function () {

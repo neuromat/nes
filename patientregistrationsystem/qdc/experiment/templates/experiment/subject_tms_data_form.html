@@ -8,7 +8,7 @@
     {% load static %}
 
     <script src="{% static 'quiz/js/research_project.js' %}"></script>
-{#    <script src="{% static 'quiz/js/subject_tms_data_form.js' %}"></script>#}
+{#    <script src="{% static 'quiz/js/equipment.js' %}"></script>#}
 
 
     <script>
@@ -478,7 +478,8 @@
 
             <div class="btn-toolbar">
                 <div class="btn-group pull-left">
-                    {% if not editing and perms.experiment.delete_researchproject and can_change %}
+{#                    {% if not editing and perms.experiment.delete_researchproject and can_change %}#}
+                    {% if not editing and can_change %}
                         <button type="button" class="btn btn-danger" onclick="showDialogAndEnableRemoveButton()">{% trans "Delete" %}</button>
                     {% endif %}
                 </div>
