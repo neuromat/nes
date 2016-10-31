@@ -5562,9 +5562,9 @@ def tms_data_position_setting_register(request, tms_data_id, template_name="expe
 
     check_can_change(request.user, tms_data.subject_of_group.group.experiment.research_project)
 
-    localization_system_list = TMSLocalizationSystem.objects.all();
+    localization_system_list = TMSLocalizationSystem.objects.all()
 
-    tms_position_form = TMSPositionForm(request.POST or None)
+    tms_position_list = TMSPosition.objects.all()
 
     hotspot_form = HotSpotForm(request.POST or None)
 
@@ -5572,17 +5572,13 @@ def tms_data_position_setting_register(request, tms_data_id, template_name="expe
 
             if request.POST['action'] == "save":
 
-                if tms_position_form.is_valid() and hotspot_form.is_valid() and 'localization_system_selection':
-                    if tms_position_form.has_changed():
-                        localization_system_val = request.POST['localization_system_selection']
-                        localization_system_split = localization_system_val.split(",")
-                        tms_localization_system = TMSLocalizationSystem.objects.get(pk=localization_system_split[0])
-                        tms_position_to_update = tms_position_form.save(commit=False)
-                        tms_position_to_update.tms_localization_system = tms_localization_system
-                        tms_position_to_update.save()
+                if hotspot_form.is_valid() and 'tms_position_selection':
+                    if hotspot_form.has_changed():
+                        tms_position_val = request.POST['tms_position_selection']
+                        tms_position = TMSPosition.objects.get(pk=tms_position_val)
 
                         hotspot_to_update = hotspot_form.save(commit=False)
-                        hotspot_to_update.tms_position = tms_position_to_update
+                        hotspot_to_update.tms_position = tms_position
                         hotspot_to_update.tms_data = tms_data
                         hotspot_to_update.save()
                         # Se der erro aqui, como fazer reverse de tms_position????
@@ -5604,7 +5600,7 @@ def tms_data_position_setting_register(request, tms_data_id, template_name="expe
         "tms_data": tms_data,
         "tms_setting_default_id": tms_step.tms_setting_id,
         "tms_localization_system_list": localization_system_list,
-        "tms_position_form": tms_position_form,
+        "tms_position_list": tms_position_list,
         "hotspot_form": hotspot_form,
         "tab": "2"
     }
@@ -5624,6 +5620,9 @@ def tms_data_position_setting_view(request, tms_data_id, template_name="experime
 
     if hasattr(tms_data, 'hotspot'):
         hotspot_form = HotSpotForm(request.POST or None, instance=tms_data.hotspot)
+        for field in hotspot_form.fields:
+            hotspot_form.fields[field].widget.attrs['disabled'] = True
+
         tms_position = get_object_or_404(TMSPosition, pk=tms_data.hotspot.tms_position_id)
         tms_position_form = TMSPositionForm(request.POST or None, instance=tms_position)
 
@@ -5646,6 +5645,17 @@ def tms_data_position_setting_view(request, tms_data_id, template_name="experime
                }
 
     return render(request, template_name, context)
+
+
+@login_required
+@permission_required('experiment.change_experiment')
+def get_tms_position_localization_system(request, tms_position_localization_system_id):
+    localization_system = get_object_or_404(TMSLocalizationSystem, pk=tms_position_localization_system_id)
+    tms_position_localization_system_list = TMSPosition.objects.filter(tms_localization_system=localization_system)
+
+    json_list = serializers.serialize("json", tms_position_localization_system_list)
+    return HttpResponse(json_list, content_type='application/json')
+
 
 
 @login_required

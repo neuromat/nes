@@ -335,6 +335,10 @@ urlpatterns = patterns(
     url(r'^tms_data/(?P<tms_data_id>\d+)/position_setting_view/$', 'tms_data_position_setting_view',
         name='tms_data_position_setting_view'),
 
+    #tms_data(ajax)
+    url(r'^get_tms_position_localization_system/(?P<tms_position_localization_system_id>\d+)/$',
+        'get_tms_position_localization_system'),
+
     # subject + additional data
     url(r'^group/(?P<group_id>\d+)/subject/(?P<subject_id>\d+)/additional_data/$',
         'subject_additional_data_view', name='subject_additional_data_view'),
