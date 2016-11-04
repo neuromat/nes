@@ -5468,6 +5468,8 @@ def tms_data_edit(request, tms_data_id, tab):
 
     check_can_change(request.user, tms_data.subject_of_group.group.experiment.research_project)
 
+    tms_position_selected = None
+
     if request.method == "POST":
 
         if request.POST['action'] == "save":

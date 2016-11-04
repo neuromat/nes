@@ -301,155 +301,176 @@
                             </div>
                         </div>
 
-                        <div class="row">
-                            <div class="col-xs-6 col-sm-6">
-                                <div class="form-group">
-                                    <label class="control-label">{% trans "Resting motor threshold - RMT (%)" %}</label>
-                                        {{ tms_data_form.resting_motor_threshold }}
-                                    <div class="help-block with-errors"></div>
-                                </div>
-                            </div>
+                        <div class="panel panel-default" style="border:1px solid lightgray;">
+                            <div class="panel-heading"><b>{% trans "Stimulation Settings" %}</b></div>
+                            <div class="panel-body" style="background-color: whitesmoke">
 
-                            <div class="col-xs-6 col-sm-6">
-                                <div class="form-group">
-                                    <label class="control-label">{% trans "Test pulse intensity of simulation (% over the %RMT)" %}</label>
-                                        {{ tms_data_form.test_pulse_intensity_of_simulation }}
-                                    <div class="help-block with-errors"></div>
-                                </div>
-                            </div>
-                        </div>
+                                <div class="row">
+                                    <div class="col-xs-6 col-sm-6">
+                                        <div class="form-group">
+                                            <label class="control-label">{% trans "Resting motor threshold - RMT (%)" %}</label>
+                                                {{ tms_data_form.resting_motor_threshold }}
+                                            <div class="help-block with-errors"></div>
+                                        </div>
+                                    </div>
 
-                        <div class="row">
-                            <div class="col-xs-6 col-sm-6">
-                                <div class="form-group">
-                                    <label class="control-label">{% trans "Interval between pulses" %}</label>
-                                        {{ tms_data_form.interval_between_pulses }}
-                                    <div class="help-block with-errors"></div>
-                                </div>
-                            </div>
-
-                            <div class="col-xs-6 col-sm-6">
-                                <div class="form-group">
-                                    <label class="control-label">{% trans "Interval between pulses unit" %}</label>
-                                        {{ tms_data_form.interval_between_pulses_unit }}
-                                    <div class="help-block with-errors"></div>
-                                </div>
-                            </div>
-                        </div>
-
-                        <div class="row">
-                            <div class="col-xs-4 col-sm-4">
-                                <div class="form-group">
-                                    <label class="control-label">{% trans "Time between mep trials low" %}</label>
-                                        {{ tms_data_form.time_between_mep_trials_low }}
-                                    <div class="help-block with-errors"></div>
-                                </div>
-                            </div>
-
-                            <div class="col-xs-4 col-sm-4">
-                                <div class="form-group">
-                                    <label class="control-label">{% trans "Time between mep trials high" %}</label>
-                                        {{ tms_data_form.time_between_mep_trials_high }}
-                                    <div class="help-block with-errors"></div>
-                                </div>
-                            </div>
-
-                            <div class="col-xs-4 col-sm-4">
-                                <div class="form-group">
-                                    <label class="control-label">{% trans "Time between mep trials unit" %}</label>
-                                        {{ tms_data_form.time_between_mep_trials_unit }}
-                                    <div class="help-block with-errors"></div>
-                                </div>
-                            </div>
-                        </div>
-
-                        <div class="row">
-                            <div class="col-xs-6 col-sm-6">
-                                <div class="form-group">
-                                    <label class="control-label">{% trans "Repetitive pulse frequency (Hz)" %}</label>
-                                        {{ tms_data_form.repetitive_pulse_frequency }}
-                                    <div class="help-block with-errors"></div>
-                                </div>
-                            </div>
-                        </div>
-
-                        <div class="row">
-                            <div class="col-xs-6 col-sm-6">
-                                <div class="form-group">
-                                    <label class="control-label">{% trans "Coil orientation" %}</label>
-                                        {{ tms_data_form.coil_orientation }}
-                                    <div class="help-block with-errors"></div>
-                                </div>
-                            </div>
-                        </div>
-
-                        <div class="row">
-                            <div class="col-xs-6 col-sm-6">
-                                <div class="form-group">
-                                    <label class="control-label">{% trans "Coil position angle (graus)" %}</label>
-                                        {{ tms_data_form.coil_position_angle }}
-                                    <div class="help-block with-errors"></div>
-                                </div>
-                            </div>
-                        </div>
-
-                        <div class="row">
-                            <div class="col-xs-6 col-sm-6">
-                                <div class="form-group">
-                                    <label class="control-label">{% trans "Direction of induced current" %}</label>
-                                        {{ tms_data_form.direction_of_induced_current }}
-                                    <div class="help-block with-errors"></div>
-                                </div>
-                            </div>
-                        </div>
-
-                        <div class="row">
-                            <div class="col-xs-6 col-sm-6">
-                                <div class="form-group">
-                                    <label class="control-label">{% trans "File format" %} <b style="color: red;">*</b></label>
-                                    {{ tms_data_form.file_format }}
-                                    <div class="help-block with-errors"></div>
-                                </div>
-                            </div>
-                        </div>
-
-                        <div class="row" id="div-file-format-description">
-                            <div class="col-xs-12 col-sm-12">
-                                <div class="form-group">
-                                    <label class="control-label">{% trans "File format description" %} <b style="color: red;">*</b></label>
-                                    {{ tms_data_form.file_format_description }}
-                                    <div class="help-block with-errors"></div>
-                                </div>
-                            </div>
-                        </div>
-
-                        <div class="row">
-                            <div class="col-xs-12 col-sm-12">
-                                <div class="form-group">
-                                    <label class="control-label">{% trans "TMS data collection description" %} <b style="color: red;">*</b></label>
-                                    {{ tms_data_form.description }}
-                                    <div class="help-block with-errors"></div>
-                                </div>
-                            </div>
-                        </div>
-
-                        <div class="row">
-                            <div class="col-xs-12 col-sm-12">
-                                <div class="form-group {% if tms_data_form.errors.file %}has-error{% endif %}">
-                                    <label class="control-label">{% trans "File" %} <b style="color: red;">*</b></label>
-                                    <br/>
-                                    {% if editing %}
-                                        {{ tms_data_form.file }}
-                                    {% else %}
-                                        {{ tms_data_form.file.value }}
-                                        <button class="btn btn-default" type="button" onclick="location.href='{{ tms_data.file.url }}'"><span class="glyphicon glyphicon-download-alt" style="color: royalblue"></span></button>
-                                    {% endif %}
-                                    <div class="help-block with-errors">
-                                        {% for error in tms_data_form.file.errors %}
-                                            {{ error }}
-                                        {% endfor %}
+                                    <div class="col-xs-6 col-sm-6">
+                                        <div class="form-group">
+                                            <label class="control-label">{% trans "Test pulse intensity of simulation (% over the %RMT)" %}</label>
+                                                {{ tms_data_form.test_pulse_intensity_of_simulation }}
+                                            <div class="help-block with-errors"></div>
+                                        </div>
                                     </div>
                                 </div>
+
+                                <div class="row">
+                                    <div class="col-xs-6 col-sm-6">
+                                        <div class="form-group">
+                                            <label class="control-label">{% trans "Interval between pulses" %}</label>
+                                                {{ tms_data_form.interval_between_pulses }}
+                                            <div class="help-block with-errors"></div>
+                                        </div>
+                                    </div>
+
+                                    <div class="col-xs-6 col-sm-6">
+                                        <div class="form-group">
+                                            <label class="control-label">{% trans "Interval between pulses unit" %}</label>
+                                                {{ tms_data_form.interval_between_pulses_unit }}
+                                            <div class="help-block with-errors"></div>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div class="row">
+                                    <div class="col-xs-4 col-sm-4">
+                                        <div class="form-group">
+                                            <label class="control-label">{% trans "Time between mep trials low" %}</label>
+                                                {{ tms_data_form.time_between_mep_trials_low }}
+                                            <div class="help-block with-errors"></div>
+                                        </div>
+                                    </div>
+
+                                    <div class="col-xs-4 col-sm-4">
+                                        <div class="form-group">
+                                            <label class="control-label">{% trans "Time between mep trials high" %}</label>
+                                                {{ tms_data_form.time_between_mep_trials_high }}
+                                            <div class="help-block with-errors"></div>
+                                        </div>
+                                    </div>
+
+                                    <div class="col-xs-4 col-sm-4">
+                                        <div class="form-group">
+                                            <label class="control-label">{% trans "Time between mep trials unit" %}</label>
+                                                {{ tms_data_form.time_between_mep_trials_unit }}
+                                            <div class="help-block with-errors"></div>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div class="row">
+                                    <div class="col-xs-6 col-sm-6">
+                                        <div class="form-group">
+                                            <label class="control-label">{% trans "Repetitive pulse frequency (Hz)" %}</label>
+                                                {{ tms_data_form.repetitive_pulse_frequency }}
+                                            <div class="help-block with-errors"></div>
+                                        </div>
+                                    </div>
+                                </div>
+
+                            </div>
+                        </div>
+
+                        <div class="panel panel-default" style="border:1px solid lightgray;">
+                            <div class="panel-heading"><b>{% trans "Coil orientation Settings" %}</b></div>
+                            <div class="panel-body" style="background-color: whitesmoke">
+
+                                <div class="row">
+                                    <div class="col-xs-6 col-sm-6">
+                                        <div class="form-group">
+                                            <label class="control-label">{% trans "Coil orientation" %}</label>
+                                                {{ tms_data_form.coil_orientation }}
+                                            <div class="help-block with-errors"></div>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div class="row">
+                                    <div class="col-xs-6 col-sm-6">
+                                        <div class="form-group">
+                                            <label class="control-label">{% trans "Coil position angle (graus)" %}</label>
+                                                {{ tms_data_form.coil_position_angle }}
+                                            <div class="help-block with-errors"></div>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div class="row">
+                                    <div class="col-xs-6 col-sm-6">
+                                        <div class="form-group">
+                                            <label class="control-label">{% trans "Direction of induced current" %}</label>
+                                                {{ tms_data_form.direction_of_induced_current }}
+                                            <div class="help-block with-errors"></div>
+                                        </div>
+                                    </div>
+                                </div>
+
+                            </div>
+                        </div>
+
+                        <div class="panel panel-default" style="border:1px solid lightgray;">
+                            <div class="panel-heading"><b>{% trans "File Settings" %}</b></div>
+                            <div class="panel-body" style="background-color: whitesmoke">
+
+                                <div class="row">
+                                    <div class="col-xs-6 col-sm-6">
+                                        <div class="form-group">
+                                            <label class="control-label">{% trans "File format" %} <b style="color: red;">*</b></label>
+                                            {{ tms_data_form.file_format }}
+                                            <div class="help-block with-errors"></div>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div class="row" id="div-file-format-description">
+                                    <div class="col-xs-12 col-sm-12">
+                                        <div class="form-group">
+                                            <label class="control-label">{% trans "File format description" %} <b style="color: red;">*</b></label>
+                                            {{ tms_data_form.file_format_description }}
+                                            <div class="help-block with-errors"></div>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div class="row">
+                                    <div class="col-xs-12 col-sm-12">
+                                        <div class="form-group">
+                                            <label class="control-label">{% trans "TMS data collection description" %} <b style="color: red;">*</b></label>
+                                            {{ tms_data_form.description }}
+                                            <div class="help-block with-errors"></div>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div class="row">
+                                    <div class="col-xs-12 col-sm-12">
+                                        <div class="form-group {% if tms_data_form.errors.file %}has-error{% endif %}">
+                                            <label class="control-label">{% trans "File" %} <b style="color: red;">*</b></label>
+                                            <br/>
+                                            {% if editing %}
+                                                {{ tms_data_form.file }}
+                                            {% else %}
+                                                {{ tms_data_form.file.value }}
+                                                <button class="btn btn-default" type="button" onclick="location.href='{{ tms_data.file.url }}'"><span class="glyphicon glyphicon-download-alt" style="color: royalblue"></span></button>
+                                            {% endif %}
+                                            <div class="help-block with-errors">
+                                                {% for error in tms_data_form.file.errors %}
+                                                    {{ error }}
+                                                {% endfor %}
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+
                             </div>
                         </div>
 
