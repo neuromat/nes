@@ -6052,7 +6052,7 @@ def get_experimental_protocol_picture(experimental_protocol, language_code):
     graph.add_edge(pydot.Edge(node_c2_end, node_c4_start))
 
     # writing
-    graph.write_png('quiz/static/quiz/example1_graph.png')
+    graph.write_png('media/example1_graph.png')
 
     return None
 
