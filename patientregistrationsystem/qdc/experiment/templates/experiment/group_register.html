@@ -299,16 +299,16 @@
                                             <textarea class="form-control" rows="30" disabled>{{ experimental_protocol_description }}</textarea>
                                         </div>
                                         <div class="col-md-6">
-                                            <div class="w3-container">
-                                            <img src="/media/example1_graph.png" style="width:100%;cursor:zoom-in" onclick="document.getElementById('modal01').style.display='block'">
+                                            {% if experimental_protocol_picture %}
+                                                <img src="{{ experimental_protocol_picture }}" style="width:100%;cursor:zoom-in" onclick="document.getElementById('modal01').style.display='block'">
 
-                                            <div id="modal01" class="w3-modal" onclick="this.style.display='none'">
-                                                <span class="w3-closebtn w3-hover-red w3-container w3-padding-16 w3-display-topright">&times;</span>
-                                                <div class="w3-modal-content w3-animate-zoom">
-                                                    <img src="/media/example1_graph.png" style="width:100%">
+                                                <div id="modal01" class="w3-modal" onclick="this.style.display='none'">
+                                                    <span class="w3-closebtn w3-hover-red w3-container w3-padding-16 w3-display-topright">&times;</span>
+                                                    <div class="w3-modal-content w3-animate-zoom">
+                                                        <img src="{{ experimental_protocol_picture }}" style="width:100%">
+                                                    </div>
                                                 </div>
-                                            </div>
-                                            </div>
+                                            {% endif %}
                                         </div>
                                     </div>
 

@@ -585,7 +585,7 @@ def group_view(request, group_id, template_name="experiment/group_register.html"
     experimental_protocol_description = get_experimental_protocol_description(group.experimental_protocol,
                                                                               request.LANGUAGE_CODE)
 
-    get_experimental_protocol_picture(group.experimental_protocol, request.LANGUAGE_CODE)
+    experimental_protocol_picture = get_experimental_protocol_picture(group.experimental_protocol, request.LANGUAGE_CODE)
 
     context = {"can_change": can_change,
                "classification_of_diseases_list": group.classification_of_diseases.all(),
@@ -596,7 +596,8 @@ def group_view(request, group_id, template_name="experiment/group_register.html"
                "group": group,
                "editing": False,
                "experimental_protocol_description": experimental_protocol_description,
-               "number_of_subjects": SubjectOfGroup.objects.all().filter(group=group).count()}
+               "number_of_subjects": SubjectOfGroup.objects.all().filter(group=group).count(),
+               "experimental_protocol_picture": experimental_protocol_picture}
 
     return render(request, template_name, context)
 
@@ -6051,10 +6052,14 @@ def get_experimental_protocol_picture(experimental_protocol, language_code):
 
     graph.add_edge(pydot.Edge(node_c2_end, node_c4_start))
 
-    # writing
-    graph.write_png('media/example1_graph.png')
+    # graph file name
+    file_name = "experimental_erotocol_" + str(experimental_protocol.id) + ".png"
 
-    return None
+    # writing
+    errors, path_complete = create_directory(settings.MEDIA_ROOT, "temp")
+    graph.write_png(path.join(path_complete, file_name))
+
+    return path.join(path.join(settings.MEDIA_URL, "temp"), file_name)
 
 
 def get_nodes_from_experimental_protocol_tree(component):
