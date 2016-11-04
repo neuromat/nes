@@ -7,6 +7,9 @@ import random
 import numpy as np
 
 import nwb
+
+import pydot
+
 from nwb.nwbco import *
 
 # import mne
@@ -582,6 +585,8 @@ def group_view(request, group_id, template_name="experiment/group_register.html"
     experimental_protocol_description = get_experimental_protocol_description(group.experimental_protocol,
                                                                               request.LANGUAGE_CODE)
 
+    experimental_protocol_picture = get_experimental_protocol_picture(group.experimental_protocol, request.LANGUAGE_CODE)
+
     context = {"can_change": can_change,
                "classification_of_diseases_list": group.classification_of_diseases.all(),
                "group_form": group_form,
@@ -591,7 +596,8 @@ def group_view(request, group_id, template_name="experiment/group_register.html"
                "group": group,
                "editing": False,
                "experimental_protocol_description": experimental_protocol_description,
-               "number_of_subjects": SubjectOfGroup.objects.all().filter(group=group).count()}
+               "number_of_subjects": SubjectOfGroup.objects.all().filter(group=group).count(),
+               "experimental_protocol_picture": experimental_protocol_picture}
 
     return render(request, template_name, context)
 
@@ -5942,6 +5948,136 @@ def get_experimental_protocol_description(experimental_protocol, language_code):
     return get_description_from_experimental_protocol_tree(tree)
 
 
+def get_experimental_protocol_picture(experimental_protocol, language_code):
+
+    # tree = get_block_tree(experimental_protocol.id, language_code)
+
+    # nodes = get_nodes_from_experimental_protocol_tree(tree)
+
+    graph = pydot.Dot(graph_type='digraph')
+
+    # 'A'
+    subgraph_a = pydot.Cluster(graph_name='A', label='Root of the experimental protocol')
+    graph.add_subgraph(subgraph_a)
+
+    # 'B'
+    node_b = pydot.Node('B', label='Initial instruction\n(instruction)')
+    subgraph_a.add_node(node_b)
+
+    # 'C-1'
+    subgraph_c1 = pydot.Cluster(graph_name='C1', label='Experiment - Training')
+    subgraph_a.add_subgraph(subgraph_c1)
+
+    node_c1_start = pydot.Node('+', label='', style="filled", shape='diamond', fillcolor='turquoise4', height=.1, width=.1)
+    node_c1_end = pydot.Node('.', label='', style="filled", shape='diamond', fillcolor='turquoise4', height=.1, width=.1)
+    node_e1 = pydot.Node('E1', label='EEG collect\n(eeg)')
+    node_f1 = pydot.Node('F1', label='Video about butterflies\n(stimulus)')
+    subgraph_c1.add_node(node_c1_start)
+    subgraph_c1.add_node(node_c1_end)
+    subgraph_c1.add_node(node_e1)
+    subgraph_c1.add_node(node_f1)
+
+    subgraph_c1.add_edge(pydot.Edge(node_c1_start, node_e1))
+    subgraph_c1.add_edge(pydot.Edge(node_c1_start, node_f1))
+    subgraph_c1.add_edge(pydot.Edge(node_e1, node_c1_end))
+    subgraph_c1.add_edge(pydot.Edge(node_f1, node_c1_end))
+
+    graph.add_edge(pydot.Edge(node_b, node_c1_start))
+
+    # 'D'
+    node_d = pydot.Node('D', label='Session pause\n(pause)')
+    subgraph_a.add_node(node_d)
+
+    graph.add_edge(pydot.Edge(node_c1_end, node_d))
+
+    # 'C-2'
+    subgraph_c2 = pydot.Cluster(graph_name='C2', label='Experiment - Execution')
+    subgraph_a.add_subgraph(subgraph_c2)
+
+    node_c2_start = pydot.Node('i2', label='', style="filled", shape='diamond', fillcolor='turquoise4', height=.1, width=.1)
+    node_c2_end = pydot.Node('f2',  label='', style="filled", shape='diamond', fillcolor='turquoise4', height=.1, width=.1)
+    node_e2 = pydot.Node('E2', label='EEG collect\n(eeg)')
+    node_f2 = pydot.Node('F2', label='Video about butterflies\n(stimulus)')
+    subgraph_c2.add_node(node_c2_start)
+    subgraph_c2.add_node(node_c2_end)
+    subgraph_c2.add_node(node_e2)
+    subgraph_c2.add_node(node_f2)
+
+    subgraph_c2.add_edge(pydot.Edge(node_c2_start, node_e2))
+    subgraph_c2.add_edge(pydot.Edge(node_c2_start, node_f2))
+    subgraph_c2.add_edge(pydot.Edge(node_e2, node_c2_end))
+    subgraph_c2.add_edge(pydot.Edge(node_f2, node_c2_end))
+
+    graph.add_edge(pydot.Edge(node_d, node_c2_start))
+
+    # 'C-3'
+    subgraph_c3 = pydot.Cluster(graph_name='C3', label='Experiment - Execution2')
+    subgraph_a.add_subgraph(subgraph_c3)
+
+    node_c3_start = pydot.Node('i3', label='', style="filled", shape='diamond', fillcolor='turquoise4', height=.1,
+                               width=.1)
+    node_c3_end = pydot.Node('f3', label='', style="filled", shape='diamond', fillcolor='turquoise4', height=.1,
+                             width=.1)
+    node_e3 = pydot.Node('E3', label='EEG collect\n(eeg)')
+    node_f3 = pydot.Node('F3', label='Video about butterflies\n(stimulus)')
+    subgraph_c3.add_node(node_c3_start)
+    subgraph_c3.add_node(node_c3_end)
+    subgraph_c3.add_node(node_e3)
+    subgraph_c3.add_node(node_f3)
+
+    subgraph_c3.add_edge(pydot.Edge(node_c3_start, node_e3))
+    subgraph_c3.add_edge(pydot.Edge(node_c3_start, node_f3))
+    subgraph_c3.add_edge(pydot.Edge(node_e3, node_c3_end))
+    subgraph_c3.add_edge(pydot.Edge(node_f3, node_c3_end))
+
+    graph.add_edge(pydot.Edge(node_c2_end, node_c3_start))
+
+    # 'C-4'
+    subgraph_c4 = pydot.Cluster(graph_name='C4', label='Experiment - Execution3')
+    subgraph_a.add_subgraph(subgraph_c4)
+
+    node_c4_start = pydot.Node('i4', label='', style="filled", shape='diamond', fillcolor='turquoise4', height=.1,
+                               width=.1)
+    node_c4_end = pydot.Node('f4', label='', style="filled", shape='diamond', fillcolor='turquoise4', height=.1,
+                             width=.1)
+    node_e4 = pydot.Node('E4', label='EEG collect\n(eeg)')
+    node_f4 = pydot.Node('F4', label='Video about butterflies\n(stimulus)')
+    subgraph_c4.add_node(node_c4_start)
+    subgraph_c4.add_node(node_c4_end)
+    subgraph_c4.add_node(node_e4)
+    subgraph_c4.add_node(node_f4)
+
+    subgraph_c4.add_edge(pydot.Edge(node_c4_start, node_e4))
+    subgraph_c4.add_edge(pydot.Edge(node_c4_start, node_f4))
+    subgraph_c4.add_edge(pydot.Edge(node_e4, node_c4_end))
+    subgraph_c4.add_edge(pydot.Edge(node_f4, node_c4_end))
+
+    graph.add_edge(pydot.Edge(node_c2_end, node_c4_start))
+
+    # graph file name
+    file_name = "experimental_erotocol_" + str(experimental_protocol.id) + ".png"
+
+    # writing
+    errors, path_complete = create_directory(settings.MEDIA_ROOT, "temp")
+    graph.write_png(path.join(path_complete, file_name))
+
+    return path.join(path.join(settings.MEDIA_URL, "temp"), file_name)
+
+
+def get_nodes_from_experimental_protocol_tree(component):
+    identification = component.identification
+    nodes = []
+
+    # Sub-steps
+    if len(component['list_of_component_configuration']) > 0:
+
+        for component_configuration in component['list_of_component_configuration']:
+            nodes.append((identification, component_configuration['component'].identification))
+            # nodes = get_nodes_from_experimental_protocol_tree(component_configuration['component'])
+
+    return nodes
+
+
 def get_description_from_experimental_protocol_tree(component, numeration='', component_configuration_attributes=[]):
     description = numeration if numeration else _('Main step')
     description += ': ' + get_component_name(component['component_type']) + "\n"
@@ -6002,7 +6138,8 @@ def get_block_tree(component_id, language_code=None):
                 {'component_configuration_attributes': component_configuration_attributes,
                  'component': component_info})
 
-    return {'component_type': component.component_type,
+    return {'identificaton': component.identification,
+            'component_type': component.component_type,
             'attributes': attributes,
             'list_of_component_configuration': list_of_component_configuration}
 
