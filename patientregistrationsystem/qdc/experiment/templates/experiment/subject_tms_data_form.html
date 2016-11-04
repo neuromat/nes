@@ -383,36 +383,45 @@
                         <div class="panel panel-default" style="border:1px solid lightgray;">
                             <div class="panel-heading"><b>{% trans "Coil orientation Settings" %}</b></div>
                             <div class="panel-body" style="background-color: whitesmoke">
+                                <table>
+                                    <tr>
+                                        <td>
+                                            <div class="row">
+                                                <div class="col-xs-6 col-sm-6">
+                                                    <div class="form-group">
+                                                        <label class="control-label">{% trans "Coil orientation" %}</label>
+                                                            {{ tms_data_form.coil_orientation }}
+                                                        <div class="help-block with-errors"></div>
+                                                    </div>
+                                                </div>
+                                            </div>
 
-                                <div class="row">
-                                    <div class="col-xs-6 col-sm-6">
-                                        <div class="form-group">
-                                            <label class="control-label">{% trans "Coil orientation" %}</label>
-                                                {{ tms_data_form.coil_orientation }}
-                                            <div class="help-block with-errors"></div>
-                                        </div>
-                                    </div>
-                                </div>
+                                            <div class="row">
+                                                <div class="col-xs-6 col-sm-6">
+                                                    <div class="form-group">
+                                                        <label class="control-label">{% trans "Coil position angle (graus)" %}</label>
+                                                            {{ tms_data_form.coil_position_angle }}
+                                                        <div class="help-block with-errors"></div>
+                                                    </div>
+                                                </div>
+                                            </div>
 
-                                <div class="row">
-                                    <div class="col-xs-6 col-sm-6">
-                                        <div class="form-group">
-                                            <label class="control-label">{% trans "Coil position angle (graus)" %}</label>
-                                                {{ tms_data_form.coil_position_angle }}
-                                            <div class="help-block with-errors"></div>
-                                        </div>
-                                    </div>
-                                </div>
+                                            <div class="row">
+                                                <div class="col-xs-6 col-sm-6">
+                                                    <div class="form-group">
+                                                        <label class="control-label">{% trans "Direction of induced current" %}</label>
+                                                            {{ tms_data_form.direction_of_induced_current }}
+                                                        <div class="help-block with-errors"></div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </td>
+                                        <td>
+                                            <img src="/Users/mruizo/PycharmProjects/nes/patientregistrationsystem/qdc/quiz/static/quiz/imgs/Coil_orientation.svg" class="img-responsive" alt="Cinque Terre" width="304" height="236">
+                                        </td>
+                                    </tr>
 
-                                <div class="row">
-                                    <div class="col-xs-6 col-sm-6">
-                                        <div class="form-group">
-                                            <label class="control-label">{% trans "Direction of induced current" %}</label>
-                                                {{ tms_data_form.direction_of_induced_current }}
-                                            <div class="help-block with-errors"></div>
-                                        </div>
-                                    </div>
-                                </div>
+                                </table>
 
                             </div>
                         </div>
