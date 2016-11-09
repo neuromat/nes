@@ -291,6 +291,17 @@
                             </div>
                         </div>
 
+                        <div class="row">
+                            <div class="col-xs-12 col-sm-12">
+                                <div class="form-group">
+                                    <label class="control-label">{% trans "TMS data collection description" %} <b style="color: red;">*</b></label>
+                                        {{ tms_data_form.description }}
+                                    <div class="help-block with-errors"></div>
+                                </div>
+                            </div>
+                        </div>
+
+
                         <div class="row" id="div-reason-for-change">
                             <div class="col-xs-12 col-sm-12">
                                 <div class="form-group">
@@ -399,16 +410,6 @@
                                         <div class="row">
                                             <div class="col-xs-12 col-sm-12">
                                                 <div class="form-group">
-                                                    <label class="control-label">{% trans "Coil position angle (graus)" %}</label>
-                                                        {{ tms_data_form.coil_position_angle }}
-                                                    <div class="help-block with-errors"></div>
-                                                </div>
-                                            </div>
-                                        </div>
-
-                                        <div class="row">
-                                            <div class="col-xs-12 col-sm-12">
-                                                <div class="form-group">
                                                     <label class="control-label">{% trans "Direction of induced current" %}</label>
                                                         {{ tms_data_form.direction_of_induced_current }}
                                                     <div class="help-block with-errors"></div>
@@ -423,63 +424,6 @@
                                         </div>
                                     </div>
 
-                                </div>
-
-                            </div>
-                        </div>
-
-                        <div class="panel panel-default" style="border:1px solid lightgray;">
-                            <div class="panel-heading"><b>{% trans "File Settings" %}</b></div>
-                            <div class="panel-body" style="background-color: whitesmoke">
-
-                                <div class="row">
-                                    <div class="col-xs-6 col-sm-6">
-                                        <div class="form-group">
-                                            <label class="control-label">{% trans "File format" %} <b style="color: red;">*</b></label>
-                                            {{ tms_data_form.file_format }}
-                                            <div class="help-block with-errors"></div>
-                                        </div>
-                                    </div>
-                                </div>
-
-                                <div class="row" id="div-file-format-description">
-                                    <div class="col-xs-12 col-sm-12">
-                                        <div class="form-group">
-                                            <label class="control-label">{% trans "File format description" %} <b style="color: red;">*</b></label>
-                                            {{ tms_data_form.file_format_description }}
-                                            <div class="help-block with-errors"></div>
-                                        </div>
-                                    </div>
-                                </div>
-
-                                <div class="row">
-                                    <div class="col-xs-12 col-sm-12">
-                                        <div class="form-group">
-                                            <label class="control-label">{% trans "TMS data collection description" %} <b style="color: red;">*</b></label>
-                                            {{ tms_data_form.description }}
-                                            <div class="help-block with-errors"></div>
-                                        </div>
-                                    </div>
-                                </div>
-
-                                <div class="row">
-                                    <div class="col-xs-12 col-sm-12">
-                                        <div class="form-group {% if tms_data_form.errors.file %}has-error{% endif %}">
-                                            <label class="control-label">{% trans "File" %} <b style="color: red;">*</b></label>
-                                            <br/>
-                                            {% if editing %}
-                                                {{ tms_data_form.file }}
-                                            {% else %}
-                                                {{ tms_data_form.file.value }}
-                                                <button class="btn btn-default" type="button" onclick="location.href='{{ tms_data.file.url }}'"><span class="glyphicon glyphicon-download-alt" style="color: royalblue"></span></button>
-                                            {% endif %}
-                                            <div class="help-block with-errors">
-                                                {% for error in tms_data_form.file.errors %}
-                                                    {{ error }}
-                                                {% endfor %}
-                                            </div>
-                                        </div>
-                                    </div>
                                 </div>
 
                             </div>

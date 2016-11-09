@@ -1147,11 +1147,10 @@ class TMSDataForm(ModelForm):
     class Meta:
         model = TMSData
 
-        fields = ['date', 'time', 'file_format', 'tms_setting', 'coil_orientation', 'description', 'file',
-                  'file_format_description', 'direction_of_induced_current', 'resting_motor_threshold',
-                  'test_pulse_intensity_of_simulation', 'interval_between_pulses', 'interval_between_pulses_unit',
-                  'time_between_mep_trials_high', 'time_between_mep_trials_low', 'time_between_mep_trials_unit',
-                  'repetitive_pulse_frequency', 'coil_position_angle']
+        fields = ['date', 'time', 'tms_setting', 'coil_orientation', 'direction_of_induced_current',
+                  'resting_motor_threshold', 'test_pulse_intensity_of_simulation', 'interval_between_pulses',
+                  'interval_between_pulses_unit', 'time_between_mep_trials_high', 'time_between_mep_trials_low',
+                  'time_between_mep_trials_unit', 'repetitive_pulse_frequency', 'description']
 
         widgets = {
             'date': DateInput(format=_("%m/%d/%Y"),
@@ -1171,15 +1170,15 @@ class TMSDataForm(ModelForm):
             'time_between_mep_trials_high': TextInput(attrs={'class': 'form-control'}),
             'time_between_mep_trials_unit': Select(attrs={'class': 'form-control'}),
             'repetitive_pulse_frequency': TextInput(attrs={'class': 'form-control'}),
-            'coil_position_angle': TextInput(attrs={'class': 'form-control'}),
-            'file_format': Select(attrs={'class': 'form-control', 'required': "",
-                                         'data-error': _('File format must be chosen.')}),
+            # 'coil_position_angle': TextInput(attrs={'class': 'form-control'}),
+            # 'file_format': Select(attrs={'class': 'form-control', 'required': "",
+            #                              'data-error': _('File format must be chosen.')}),
             'description': Textarea(attrs={'class': 'form-control',
                                            'rows': '4', 'required': "",
                                            'data-error': _('Description must be filled.')}),
-            'file_format_description': Textarea(attrs={'class': 'form-control',
-                                                       'rows': '4', 'required': "",
-                                                       'data-error': _('File format description must be filled.')}),
+            # 'file_format_description': Textarea(attrs={'class': 'form-control',
+            #                                            'rows': '4', 'required': "",
+            #                                            'data-error': _('File format description must be filled.')}),
             'tms_setting_reason_for_change':
                 Textarea(attrs={'class': 'form-control', 'rows': '4',
                                 'required': "",
@@ -1192,7 +1191,7 @@ class TMSDataForm(ModelForm):
     def __init__(self, *args, **kwargs):
         super(TMSDataForm, self).__init__(*args, **kwargs)
 
-        self.fields['file_format'].queryset = FileFormat.objects.filter(tags__name="TMS")
+        # self.fields['file_format'].queryset = FileFormat.objects.filter(tags__name="TMS")
 
         initial = kwargs.get('initial')
         if initial and 'experiment' in initial:

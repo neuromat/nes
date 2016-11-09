@@ -1000,7 +1000,7 @@ class EEGData(DataFile, DataCollection):
         self.changed_by = value
 
 
-class TMSData(DataFile, DataCollection):
+class TMSData(DataCollection):
     tms_setting = models.ForeignKey(TMSSetting)
     resting_motor_threshold = models.FloatField(null=True, blank=True, validators=[MinValueValidator(0)])
     test_pulse_intensity_of_simulation = models.FloatField(null=True, blank=True, validators=[MinValueValidator(0)])
@@ -1010,9 +1010,9 @@ class TMSData(DataFile, DataCollection):
     time_between_mep_trials_high = models.IntegerField(null=True, blank=True, validators=[MinValueValidator(0)])
     time_between_mep_trials_unit = models.CharField(null=True, blank=True, max_length=15, choices=TIME_UNITS)
     repetitive_pulse_frequency = models.IntegerField(null=True, blank=True, validators=[MinValueValidator(0)])
-    coil_position_angle = models.FloatField(null=True, blank=True, validators=[MinValueValidator(0)])
     coil_orientation = models.ForeignKey(CoilOrientation, null=True, blank=True)
     direction_of_induced_current = models.ForeignKey(DirectionOfTheInducedCurrent, null=True, blank=True)
+    description = models.TextField(null=False, blank=False)
 
     # Audit trail - Simple History
     history = HistoricalRecords()

@@ -589,7 +589,7 @@ def group_view(request, group_id, template_name="experiment/group_register.html"
         experimental_protocol_description = get_experimental_protocol_description(group.experimental_protocol,
                                                                                   request.LANGUAGE_CODE)
 
-        experimental_protocol_picture = get_experimental_protocol_picture(group.experimental_protocol, request.LANGUAGE_CODE)
+        # experimental_protocol_picture = get_experimental_protocol_picture(group.experimental_protocol, request.LANGUAGE_CODE)
 
     context = {"can_change": can_change,
                "classification_of_diseases_list": group.classification_of_diseases.all(),
@@ -5376,8 +5376,6 @@ def subject_tms_data_create(request, group_id, subject_id, tms_configuration_id,
     tms_data_form = TMSDataForm(None, initial={'experiment': group.experiment,
                                                'tms_setting': tms_step.tms_setting_id})
 
-    file_format_list = file_format_code("TMS")
-
     if request.method == "POST":
         if request.POST['action'] == "save":
 
@@ -5417,7 +5415,6 @@ def subject_tms_data_create(request, group_id, subject_id, tms_configuration_id,
                "tms_configuration": tms_configuration,
                "tms_data_form": tms_data_form,
                "tms_data_id": tms_data_id,
-               "file_format_list": file_format_list,
                "tms_setting_default_id": tms_step.tms_setting_id,
                "subject": get_object_or_404(Subject, pk=subject_id),
                "URL": redirect_url,
@@ -5439,15 +5436,12 @@ def tms_data_view(request, tms_data_id, template_name="experiment/subject_tms_da
     for field in tms_data_form.fields:
         tms_data_form.fields[field].widget.attrs['disabled'] = True
 
-    file_format_list = file_format_code("TMS")
-
     if request.method == "POST":
         if request.POST['action'] == "remove":
 
             check_can_change(request.user, tms_data.subject_of_group.group.experiment.research_project)
 
             subject_of_group = tms_data.subject_of_group
-            tms_data.file.delete()
             tms_data.delete()
             messages.success(request, _('TMS data removed successfully.'))
             return redirect('subject_tms_view',
@@ -5460,7 +5454,6 @@ def tms_data_view(request, tms_data_id, template_name="experiment/subject_tms_da
                "subject": tms_data.subject_of_group.subject,
                "tms_data_form": tms_data_form,
                "tms_data": tms_data,
-               "file_format_list": file_format_list,
                "tms_setting_default_id": tms_step.tms_setting_id,
                "tab": "1"
                }
@@ -5546,13 +5539,10 @@ def tms_data_edit(request, tms_data_id, tab):
                 localization_system_selected = None
                 tms_position_selected = None
 
-    file_format_list = file_format_code("TMS")
-
     context = {"group": tms_data.subject_of_group.group,
                "subject": tms_data.subject_of_group.subject,
                "tms_data_form": tms_data_form,
                "tms_data": tms_data,
-               "file_format_list": file_format_list,
                "tms_setting_default_id": tms_step.tms_setting_id,
                "tms_position_form": tms_position_form,
                "hotspot_form": hotspot_form,
@@ -5637,7 +5627,6 @@ def tms_data_position_setting_view(request, tms_data_id, template_name="experime
             check_can_change(request.user, tms_data.subject_of_group.group.experiment.research_project)
 
             subject_of_group = tms_data.subject_of_group
-            tms_data.file.delete()
             tms_data.delete()
             messages.success(request, _('TMS data removed successfully.'))
             return redirect('subject_tms_view',
@@ -5693,7 +5682,6 @@ def get_tms_position_localization_system(request, tms_position_localization_syst
 
     json_list = serializers.serialize("json", tms_position_localization_system_list)
     return HttpResponse(json_list, content_type='application/json')
-
 
 
 @login_required
