@@ -589,7 +589,7 @@ def group_view(request, group_id, template_name="experiment/group_register.html"
         experimental_protocol_description = get_experimental_protocol_description(group.experimental_protocol,
                                                                                   request.LANGUAGE_CODE)
 
-        # experimental_protocol_picture = get_experimental_protocol_picture(group.experimental_protocol, request.LANGUAGE_CODE)
+        experimental_protocol_picture = get_experimental_protocol_picture(group.experimental_protocol, request.LANGUAGE_CODE)
 
     context = {"can_change": can_change,
                "classification_of_diseases_list": group.classification_of_diseases.all(),
