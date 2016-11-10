@@ -396,37 +396,34 @@
                             <div class="panel-body" style="background-color: whitesmoke">
 
                                 <div class="row">
-                                    <div class="col-md-6">
-                                        <div class="row">
-                                            <div class="col-xs-12 col-sm-12">
-                                                <div class="form-group">
-                                                    <label class="control-label">{% trans "Coil orientation" %}</label>
-                                                        {{ tms_data_form.coil_orientation }}
-                                                    <div class="help-block with-errors"></div>
-                                                </div>
-                                            </div>
-                                        </div>
-
-                                        <div class="row">
-                                            <div class="col-xs-12 col-sm-12">
-                                                <div class="form-group">
-                                                    <label class="control-label">{% trans "Direction of induced current" %}</label>
-                                                        {{ tms_data_form.direction_of_induced_current }}
-                                                    <div class="help-block with-errors"></div>
-                                                </div>
-                                            </div>
-                                        </div>
-
-                                    </div>
-                                    <div class="col-md-6">
-                                        <div class="panel-body" style="background-color: whitesmoke;">
-                                            <img src="{% static 'quiz/imgs/Coil_orientation.svg' %}" class="img-responsive" alt="Cinque Terre" width="304" height="236" border="1" >
+                                    <div class="col-xs-6 col-sm-6">
+                                        <div class="form-group">
+                                            <label class="control-label">{% trans "Coil orientation" %}</label>
+                                                {{ tms_data_form.coil_orientation }}
+                                            <div class="help-block with-errors"></div>
                                         </div>
                                     </div>
+
+                                    <div class="col-xs-6 col-sm-6">
+                                        <div class="form-group">
+                                            <label class="control-label">{% trans "Direction of induced current" %}</label>
+                                                {{ tms_data_form.direction_of_induced_current }}
+                                            <div class="help-block with-errors"></div>
+                                        </div>
+                                     </div>
 
                                 </div>
 
+                                <div class="row">
+{#                                    <div class="col-md-12">#}
+                                        <div class="panel-body" style="align-content: center;">
+                                            <img src="{% static 'quiz/imgs/coil_orientation.svg' %}" class="img-responsive" width="604" height="536" border="1" >
+                                        </div>
+{#                                    </div>#}
+                                </div>
+
                             </div>
+
                         </div>
 
                         {% if not editing and can_change %}
