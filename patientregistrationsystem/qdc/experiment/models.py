@@ -698,14 +698,6 @@ class TMSLocalizationSystem(models.Model):
         return self.name
 
 
-class TMSPosition(models.Model):
-    name = models.CharField(null=False, max_length=50, blank=False)
-    tms_localization_system = models.ForeignKey(TMSLocalizationSystem, related_name='tms_positions')
-
-    def __str__(self):
-        return self.name
-
-
 class CoilOrientation(models.Model):
     name = models.CharField(max_length=150)
 
@@ -1031,10 +1023,14 @@ class TMSData(DataCollection):
 
 
 class HotSpot(models.Model):
+    name = models.CharField(max_length=50)
     coordinate_x = models.IntegerField(null=True, blank=True, validators=[MinValueValidator(0)])
     coordinate_y = models.IntegerField(null=True, blank=True, validators=[MinValueValidator(0)])
-    tms_position = models.ForeignKey(TMSPosition)
     tms_data = models.OneToOneField(TMSData, primary_key=True)
+    tms_localization_system = models.ForeignKey(TMSLocalizationSystem, related_name='hotspots')
+
+    def __str__(self):
+        return self.name
 
 
 class AdditionalData(DataFile, DataCollection):

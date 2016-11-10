@@ -16,7 +16,7 @@ from experiment.models import Experiment, QuestionnaireResponse, SubjectOfGroup,
     ADConverter, StandardizationSystem, Muscle, MuscleSide, MuscleSubdivision, TMS, TMSSetting, TMSDeviceSetting, \
     Software, SoftwareVersion, CoilModel, TMSDevice, EMGIntramuscularPlacement, EMGNeedlePlacement, SubjectStepData, \
     EMGPreamplifierFilterSetting, TMSData, HotSpot, CoilOrientation, DirectionOfTheInducedCurrent, \
-    TMSLocalizationSystem, TMSPosition
+    TMSLocalizationSystem
 
 
 class ExperimentForm(ModelForm):
@@ -1202,26 +1202,27 @@ class TMSDataForm(ModelForm):
             self.fields['direction_of_induced_current'].queryset = DirectionOfTheInducedCurrent.objects.all()
 
 
-class TMSPositionForm(ModelForm):
-    class Meta:
-        model = TMSPosition
-
-        fields = ['name']
-
-        widgets = {
-            'name': TextInput(attrs={'class': 'form-control',
-                                     'required': "",
-                                     'data-error': _('Name must be filled.')}),
-        }
+# class TMSPositionForm(ModelForm):
+#     class Meta:
+#         model = TMSPosition
+#
+#         fields = ['name']
+#
+#         widgets = {
+#             'name': TextInput(attrs={'class': 'form-control',
+#                                      'required': "",
+#                                      'data-error': _('Name must be filled.')}),
+#         }
 
 
 class HotSpotForm(ModelForm):
     class Meta:
         model = HotSpot
 
-        fields = ['coordinate_x', 'coordinate_y']
+        fields = ['name','coordinate_x', 'coordinate_y']
 
         widgets = {
+            'name': TextInput(attrs={'class': 'form-control'}),
             'coordinate_x': TextInput(attrs={'class': 'form-control',
                                              'required': "",
                                              'data-error': _('The coordinate must be filled.')}),
