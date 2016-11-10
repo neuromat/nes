@@ -6003,48 +6003,70 @@ def get_experimental_protocol_picture(experimental_protocol, language_code):
     graph.add_edge(pydot.Edge(node_d, node_c2_start))
 
     # 'C-3'
-    subgraph_c3 = pydot.Cluster(graph_name='C3', label='Experiment - Execution2')
-    subgraph_a.add_subgraph(subgraph_c3)
-
-    node_c3_start = pydot.Node('i3', label='', style="filled", shape='diamond', fillcolor='turquoise4', height=.1,
-                               width=.1)
-    node_c3_end = pydot.Node('f3', label='', style="filled", shape='diamond', fillcolor='turquoise4', height=.1,
-                             width=.1)
-    node_e3 = pydot.Node('E3', label='EEG collect\n(eeg)')
-    node_f3 = pydot.Node('F3', label='Video about butterflies\n(stimulus)')
-    subgraph_c3.add_node(node_c3_start)
-    subgraph_c3.add_node(node_c3_end)
-    subgraph_c3.add_node(node_e3)
-    subgraph_c3.add_node(node_f3)
-
-    subgraph_c3.add_edge(pydot.Edge(node_c3_start, node_e3))
-    subgraph_c3.add_edge(pydot.Edge(node_c3_start, node_f3))
-    subgraph_c3.add_edge(pydot.Edge(node_e3, node_c3_end))
-    subgraph_c3.add_edge(pydot.Edge(node_f3, node_c3_end))
-
-    graph.add_edge(pydot.Edge(node_c2_end, node_c3_start))
+    # subgraph_c3 = pydot.Cluster(graph_name='C3', label='Experiment - Execution2')
+    # subgraph_a.add_subgraph(subgraph_c3)
+    #
+    # node_c3_start = pydot.Node('i3', label='', style="filled", shape='diamond', fillcolor='turquoise4', height=.1,
+    #                            width=.1)
+    # node_c3_end = pydot.Node('f3', label='', style="filled", shape='diamond', fillcolor='turquoise4', height=.1,
+    #                          width=.1)
+    # node_e3 = pydot.Node('E3', label='EEG collect\n(eeg)')
+    # node_f3 = pydot.Node('F3', label='Video about butterflies\n(stimulus)')
+    # subgraph_c3.add_node(node_c3_start)
+    # subgraph_c3.add_node(node_c3_end)
+    # subgraph_c3.add_node(node_e3)
+    # subgraph_c3.add_node(node_f3)
+    #
+    # subgraph_c3.add_edge(pydot.Edge(node_c3_start, node_e3))
+    # subgraph_c3.add_edge(pydot.Edge(node_c3_start, node_f3))
+    # subgraph_c3.add_edge(pydot.Edge(node_e3, node_c3_end))
+    # subgraph_c3.add_edge(pydot.Edge(node_f3, node_c3_end))
+    #
+    # graph.add_edge(pydot.Edge(node_c2_end, node_c3_start))
 
     # 'C-4'
-    subgraph_c4 = pydot.Cluster(graph_name='C4', label='Experiment - Execution3')
-    subgraph_a.add_subgraph(subgraph_c4)
+    # subgraph_c4 = pydot.Cluster(graph_name='C4', label='Experiment - Execution3')
+    # subgraph_a.add_subgraph(subgraph_c4)
+    #
+    # node_c4_start = pydot.Node('i4', label='', style="filled", shape='diamond', fillcolor='turquoise4', height=.1,
+    #                            width=.1)
+    # node_c4_end = pydot.Node('f4', label='', style="filled", shape='diamond', fillcolor='turquoise4', height=.1,
+    #                          width=.1)
+    # node_e4 = pydot.Node('E4', label='EEG collect\n(eeg)')
+    # node_f4 = pydot.Node('F4', label='Video about butterflies\n(stimulus)')
+    # subgraph_c4.add_node(node_c4_start)
+    # subgraph_c4.add_node(node_c4_end)
+    # subgraph_c4.add_node(node_e4)
+    # subgraph_c4.add_node(node_f4)
+    #
+    # subgraph_c4.add_edge(pydot.Edge(node_c4_start, node_e4))
+    # subgraph_c4.add_edge(pydot.Edge(node_c4_start, node_f4))
+    # subgraph_c4.add_edge(pydot.Edge(node_e4, node_c4_end))
+    # subgraph_c4.add_edge(pydot.Edge(node_f4, node_c4_end))
+    #
+    # graph.add_edge(pydot.Edge(node_c2_end, node_c4_start))
 
-    node_c4_start = pydot.Node('i4', label='', style="filled", shape='diamond', fillcolor='turquoise4', height=.1,
-                               width=.1)
-    node_c4_end = pydot.Node('f4', label='', style="filled", shape='diamond', fillcolor='turquoise4', height=.1,
-                             width=.1)
-    node_e4 = pydot.Node('E4', label='EEG collect\n(eeg)')
-    node_f4 = pydot.Node('F4', label='Video about butterflies\n(stimulus)')
-    subgraph_c4.add_node(node_c4_start)
-    subgraph_c4.add_node(node_c4_end)
-    subgraph_c4.add_node(node_e4)
-    subgraph_c4.add_node(node_f4)
+    # 'C-5'
+    subgraph_c5 = pydot.Cluster(graph_name='C5', label='Transcranial Magnetic Stimulation')
+    subgraph_a.add_subgraph(subgraph_c5)
 
-    subgraph_c4.add_edge(pydot.Edge(node_c4_start, node_e4))
-    subgraph_c4.add_edge(pydot.Edge(node_c4_start, node_f4))
-    subgraph_c4.add_edge(pydot.Edge(node_e4, node_c4_end))
-    subgraph_c4.add_edge(pydot.Edge(node_f4, node_c4_end))
+    # node_c3_start = pydot.Node('i3', label='', style="filled", shape='diamond', fillcolor='turquoise4', height=.1,
+    #                            width=.1)
+    # node_c3_end = pydot.Node('f3', label='', style="filled", shape='diamond', fillcolor='turquoise4', height=.1,
+    #                          width=.1)
+    node_g = pydot.Node('G', label='TMS stimulation\n(tms)')
+    # node_f3 = pydot.Node('F3', label='Video about butterflies\n(stimulus)')
+    # subgraph_c3.add_node(node_c3_start)
+    # subgraph_c3.add_node(node_c3_end)
+    subgraph_c5.add_node(node_g)
+    # subgraph_c3.add_node(node_f3)
 
-    graph.add_edge(pydot.Edge(node_c2_end, node_c4_start))
+    # subgraph_c5.add_edge(pydot.Edge(node_g_start, node_e3))
+    # subgraph_c5.add_edge(pydot.Edge(node_c3_start, node_f3))
+    # subgraph_c5.add_edge(pydot.Edge(node_g, node_c3_end))
+    # subgraph_c5.add_edge(pydot.Edge(node_f3, node_c3_end))
+
+    graph.add_edge(pydot.Edge(node_d, node_g))
 
     # graph file name
     file_name = "experimental_erotocol_" + str(experimental_protocol.id) + ".png"
