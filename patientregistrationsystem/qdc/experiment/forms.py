@@ -1179,10 +1179,10 @@ class TMSDataForm(ModelForm):
             # 'file_format_description': Textarea(attrs={'class': 'form-control',
             #                                            'rows': '4', 'required': "",
             #                                            'data-error': _('File format description must be filled.')}),
-            'tms_setting_reason_for_change':
-                Textarea(attrs={'class': 'form-control', 'rows': '4',
-                                'required': "",
-                                'data-error': _('Reason for change must be filled.')}),
+            # 'tms_setting_reason_for_change':
+            #     Textarea(attrs={'class': 'form-control', 'rows': '4',
+            #                     'required': "",
+            #                     'data-error': _('Reason for change must be filled.')}),
 
             # It is not possible to set the 'required' attribute because it affects the edit screen
             # 'file': FileInput(attrs={'required': ""})

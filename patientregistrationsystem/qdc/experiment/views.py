@@ -5376,6 +5376,10 @@ def subject_tms_data_create(request, group_id, subject_id, tms_configuration_id,
     tms_data_form = TMSDataForm(None, initial={'experiment': group.experiment,
                                                'tms_setting': tms_step.tms_setting_id})
 
+    tms_setting = get_object_or_404(TMSSetting,id=tms_step.tms_setting_id)
+
+    pulse_stimulus = get_pulse_stimulus_name(tms_setting.tms_device_setting.pulse_stimulus_type)
+
     if request.method == "POST":
         if request.POST['action'] == "save":
 
@@ -5417,6 +5421,7 @@ def subject_tms_data_create(request, group_id, subject_id, tms_configuration_id,
                "tms_data_id": tms_data_id,
                "tms_setting_default_id": tms_step.tms_setting_id,
                "subject": get_object_or_404(Subject, pk=subject_id),
+               "pulse_stimulus": pulse_stimulus,
                "URL": redirect_url,
                "tab": "1"
                }
@@ -5570,6 +5575,16 @@ def get_pulse_stimulus_name(pulse_stimulus_type):
             pulse_stimulus_name = str(type_name)
             break
     return pulse_stimulus_name if pulse_stimulus_name else pulse_stimulus_type
+
+
+@login_required
+@permission_required('experiment.change_experiment')
+def get_pulse_by_tms_setting(tms_setting_id):
+
+    tms_setting = get_object_or_404(TMSSetting, pk=tms_setting_id)
+    response_data = get_pulse_stimulus_name(tms_setting.tms_device_setting.pulse_stimulus_type)
+
+    return HttpResponse(json.dumps(response_data), content_type='application/json')
 
 
 @login_required
