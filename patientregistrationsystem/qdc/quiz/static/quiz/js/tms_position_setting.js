@@ -43,15 +43,15 @@ window.onload = function() {
             var split = tms_localization_system.split(",");
             tms_position_localization_system_id.value = parseInt(split[0]);
             var tms_localization_system_image = split[1];
-            var url = "/experiment/get_tms_position_localization_system/" + tms_position_localization_system_id.value;
-
-            $.getJSON(url, function (all_positions) {
-                var options = '<option value="" selected="selected">---------</option>';
-                for (var i = 0; i < all_positions.length; i++) {
-                    options += '<option value="' + all_positions[i].pk + '">' + all_positions[i].fields['name'] + '</option>';
-                }
-                select_tms_position_selection.html(options);
-            });
+            // var url = "/experiment/get_tms_position_localization_system/" + tms_position_localization_system_id.value;
+            //
+            // $.getJSON(url, function (all_positions) {
+            //     var options = '<option value="" selected="selected">---------</option>';
+            //     for (var i = 0; i < all_positions.length; i++) {
+            //         options += '<option value="' + all_positions[i].pk + '">' + all_positions[i].fields['name'] + '</option>';
+            //     }
+            //     select_tms_position_selection.html(options);
+            // });
 
             if(tms_localization_system_image==""){
                 div_localization_system_image.hide();
@@ -121,6 +121,7 @@ function getPosition(event) {
     var canvas = document.getElementById("tmsMapCanvas");
     var hotspot_x = document.getElementById("id_coordinate_x");
     var hotspot_y = document.getElementById("id_coordinate_y");
+    var tms_position = document.getElementById("id_tms_position");
 
     context = canvas.getContext("2d");
 
@@ -135,10 +136,14 @@ function getPosition(event) {
     y = parseInt(coords.y);
 
     if (confirm(gettext("Confirms the coordinates? x - y: ") + x + " - " + y) == true) {
-        hotspot_x.value = x;
-        hotspot_y.value = y;
+        var name = prompt(gettext("Please enter the name of the position"));
+        if(name != null){
+            hotspot_x.value = x;
+            hotspot_y.value = y;
+            tms_position.value = name;
 
-        refresh_Screen(x,y);
+            refresh_Screen(x,y);
+        }
 
     }
 

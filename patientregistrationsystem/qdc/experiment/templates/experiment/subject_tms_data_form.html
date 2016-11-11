@@ -8,121 +8,26 @@
     {% load static %}
 
     <script src="{% static 'quiz/js/research_project.js' %}"></script>
-{#    <script src="{% static 'quiz/js/equipment.js' %}"></script>#}
+{#    <script src="{% static 'quiz/js/tms_position_setting.js' %}"></script>#}
 
 
     <script>
         $(document).ready(function () {
-            var $id_file_format = $("#id_file_format");
-            var $id_file_format_description = $("#id_file_format_description");
-            var $div_file_format_description = $("#div-file-format-description");
-            var $id_file = $("#id_file");
-            var $div_reason_for_change = $("#div-reason-for-change");
-            var $id_tms_setting_reason_for_change = $("#id_tms_setting_reason_for_change");
             var $id_tms_setting = $("#id_tms_setting");
+            var $id_pulse_stimulus = $("#id_pulse_stimulus");
 
             {% if tms_setting_default_id %}
                 var $tms_setting_default_id = {{ tms_setting_default_id }};
             {% endif %}
 
-            var $other_code = null;
-            var $txt_code = null;
-            var $txt_extension = null;
-            var $raw_code = null;
-            var $raw_extension = null;
-
-            {% if file_format_list %}
-                {% for item in file_format_list %}
-                    {% if item.code == 'other' %}
-                        $other_code = {{ item.id }};
-                    {% elif item.code == 'txt' %}
-                        $txt_code = {{ item.id }};
-                        $txt_extension = "{{ item.extension }}";
-                    {% elif item.code == 'NEO-RawBinarySignalIO' %}
-                        $raw_code = {{ item.id }};
-                        $raw_extension = "{{ item.extension }}";
-                    {% endif %}
-                {% endfor %}
-
-                $id_file_format.each((function() {
-                    if ($id_file_format.val() == $other_code)
-                    {
-                        $id_file.removeAttr("accept");
-                        {% if editing %}
-                            $id_file_format_description.prop( "disabled", false );
-                            $div_file_format_description.show();
-                        {% else %}
-                            $id_file_format_description.prop( "disabled", true );
-                            $div_file_format_description.show();
-                        {% endif %}
-                    }
-                    else if ($id_file_format.val() == $txt_code)
-                    {
-                        $id_file.attr("accept", $txt_extension);
-                        $id_file_format_description.prop( "disabled", true );
-                        $div_file_format_description.hide();
-                    }
-                    else if ($id_file_format.val() == $raw_code)
-                    {
-                        $id_file.attr("accept", $raw_extension);
-                        $id_file_format_description.prop( "disabled", true );
-                        $div_file_format_description.hide();
-                    }
-                    else
-                    {
-                        $id_file.removeAttr("accept");
-                        $id_file_format_description.prop( "disabled", true );
-                        $div_file_format_description.hide();
-                    }
-                }));
-
-                $id_file_format.on('change', (function() {
-                    if ($id_file_format.val() == $other_code)
-                    {
-                        $id_file.removeAttr("accept");
-                        $id_file_format_description.prop( "disabled", false );
-                        $div_file_format_description.show();
-                    }
-                    else if ($id_file_format.val() == $txt_code)
-                    {
-                        $id_file.attr("accept", $txt_extension);
-                        $id_file_format_description.prop( "disabled", true );
-                        $div_file_format_description.hide();
-                    }
-                    else if ($id_file_format.val() == $raw_code)
-                    {
-                        $id_file.attr("accept", $raw_extension);
-                        $id_file_format_description.prop( "disabled", true );
-                        $div_file_format_description.hide();
-                    }
-                    else
-                    {
-                        $id_file.removeAttr("accept");
-                        $id_file_format_description.prop( "disabled", true );
-                        $div_file_format_description.hide();
-                    }
-                }));
-            {% else %}
-                $id_file_format_description.prop( "disabled", true );
-                $div_file_format_description.hide();
-            {% endif %}
-
-            $id_tms_setting.each((function() {
-                    if ($id_tms_setting.val() == $tms_setting_default_id){
-                        $id_tms_setting_reason_for_change.prop( "disabled", true );
-                        $div_reason_for_change.hide();
-                    }
-            }));
-
             $id_tms_setting.on('change', (function() {
-                if ($id_tms_setting.val() == $tms_setting_default_id){
-                    $id_tms_setting_reason_for_change.prop( "disabled", true );
-                    $div_reason_for_change.hide();
-                }
-                else {
-                    $id_tms_setting_reason_for_change.prop( "disabled", false );
-                    $div_reason_for_change.show();
-                }
+                var url = "/experiment/get_pulse_by_tms_setting/" + $id_tms_setting.val();
+
+                $.getJSON(url, function (name) {
+                    $id_pulse_stimulus.value = name;
+                    select_tms_position_selection.html(options);
+                });
+
             }));
         });
     </script>
@@ -185,7 +90,7 @@
                 <li><a href="/experiment/group/{{ group.id }}/subject/{{ subject.id }}/tms">{% get_name_or_code subject.patient.id %}</a></li>
 
                 {% if creating %}
-                    <li class="active">{% trans "New TMS data file" %}</li>
+                    <li class="active">{% trans "New TMS stimulation setting" %}</li>
                 {% else %}
                     <li class="active">{{ tms_data_form.description.value }}</li>
                 {% endif %}
@@ -226,24 +131,24 @@
         <div class="col-md-10">
             <div class="container span6 offset3 well ">
 
-                <h4>{% trans "TMS data collection" %}</h4>
+                <h4>{% trans "TMS stimulation setting" %}</h4>
 
                 <ul class="nav nav-tabs">
 
                     {% if creating or editing %}
-                        <li {% if tab == '1' %}class="active"{% else %}class="disabled"{% endif %}><a href="#">{% trans "Data collection" %}</a></li>
+                        <li {% if tab == '1' %}class="active"{% else %}class="disabled"{% endif %}><a href="#">{% trans "Stimulation description" %}</a></li>
 {#                        <li {% if tab == '2' %}class="active"{% else %}class="disabled"{% endif %}><a href="#">{% trans "Coil orientation" %}</a>#}
                         <li {% if tab == '2' %}class="active"{% else %}class="disabled"{% endif %}>
 {#                            <a href="#">{% trans "Position setting" %}</a>#}
-                            <a href="/experiment/tms_data/{{ tms_data.id }}/position_setting_register">{% trans "Position setting" %}</a>
+                            <a href="/experiment/tms_data/{{ tms_data.id }}/position_setting_register">{% trans "Hotspot position" %}</a>
                         </li>
                     {% else %}
                         <li {% if tab == '1' %}class="active"{% endif %}>
 {#                            <a data-toggle="tab" href="#data_collection">{% trans "Data collection" %}</a>#}
-                            <a href="/experiment/tms_data/{{ tms_data.id }}">{% trans "Data collection" %}</a>
+                            <a href="/experiment/tms_data/{{ tms_data.id }}">{% trans "Stimulation description" %}</a>
                         </li>
                         <li {% if tab == '2' %}class="active" {% endif %}>
-                            <a href="/experiment/tms_data/{{ tms_data.id }}/position_setting_view">{% trans "Position setting" %}</a>
+                            <a href="/experiment/tms_data/{{ tms_data.id }}/position_setting_view">{% trans "Hotspot position" %}</a>
                         </li>
                     {% endif %}
 
@@ -291,19 +196,38 @@
                             </div>
                         </div>
 
-                        <div class="row" id="div-reason-for-change">
+                        <div class="row">
                             <div class="col-xs-12 col-sm-12">
                                 <div class="form-group">
-                                    <label class="control-label">{% trans "Reason for change the TMS setting" %} <b style="color: red;">*</b></label>
-                                    {{ eeg_data_form.tms_setting_reason_for_change }}
+                                    <label class="control-label">{% trans "TMS stimulation description" %} <b style="color: red;">*</b></label>
+                                        {{ tms_data_form.description }}
                                     <div class="help-block with-errors"></div>
                                 </div>
                             </div>
                         </div>
 
-                        <div class="panel panel-default" style="border:1px solid lightgray;">
-                            <div class="panel-heading"><b>{% trans "Stimulation Settings" %}</b></div>
+
+{#                        <div class="row" id="div-reason-for-change">#}
+{#                            <div class="col-xs-12 col-sm-12">#}
+{#                                <div class="form-group">#}
+{#                                    <label class="control-label">{% trans "Reason for change the TMS setting" %} <b style="color: red;">*</b></label>#}
+{#                                    {{ eeg_data_form.tms_setting_reason_for_change }}#}
+{#                                    <div class="help-block with-errors"></div>#}
+{#                                </div>#}
+{#                            </div>#}
+{#                        </div>#}
+
+                        <div id="id_stimulation_setting" class="panel panel-default" style="border:1px solid lightgray;">
+                            <div class="panel-heading"><b>{% trans "Stimulation Settings" %} -
+                                <label id="id_pulse_stimulus">{{ pulse_stimulus }}</label>
+                                </b></div>
                             <div class="panel-body" style="background-color: whitesmoke">
+{#                                <div class="row">#}
+{#                                    <div class="col-xs-6 col-sm-6">#}
+{#                                        <label>{% trans "Pulse stimulus type: " %}</label>#}
+{#                                            {{ tms_data.tms_setting.tms_device_setting.pulse_stimulus_type }}#}
+{#                                        </div>#}
+{#                                </div>#}
 
                                 <div class="row">
                                     <div class="col-xs-6 col-sm-6">
@@ -323,166 +247,106 @@
                                     </div>
                                 </div>
 
-                                <div class="row">
-                                    <div class="col-xs-6 col-sm-6">
-                                        <div class="form-group">
-                                            <label class="control-label">{% trans "Interval between pulses" %}</label>
-                                                {{ tms_data_form.interval_between_pulses }}
-                                            <div class="help-block with-errors"></div>
+                                {% if not tms_data.tms_setting.tms_device_setting.pulse_stimulus_type == 'repetitive_pulse' %}
+
+                                    <div class="row">
+                                        <div class="col-xs-6 col-sm-6">
+                                            <div class="form-group">
+                                                <label class="control-label">{% trans "Interval between pulses" %}</label>
+                                                    {{ tms_data_form.interval_between_pulses }}
+                                                <div class="help-block with-errors"></div>
+                                            </div>
+                                        </div>
+
+                                        <div class="col-xs-6 col-sm-6">
+                                            <div class="form-group">
+                                                <label class="control-label">{% trans "Interval between pulses unit" %}</label>
+                                                    {{ tms_data_form.interval_between_pulses_unit }}
+                                                <div class="help-block with-errors"></div>
+                                            </div>
                                         </div>
                                     </div>
 
-                                    <div class="col-xs-6 col-sm-6">
-                                        <div class="form-group">
-                                            <label class="control-label">{% trans "Interval between pulses unit" %}</label>
-                                                {{ tms_data_form.interval_between_pulses_unit }}
-                                            <div class="help-block with-errors"></div>
-                                        </div>
-                                    </div>
-                                </div>
+                                {% endif %}
 
-                                <div class="row">
-                                    <div class="col-xs-4 col-sm-4">
-                                        <div class="form-group">
-                                            <label class="control-label">{% trans "Time between mep trials low" %}</label>
-                                                {{ tms_data_form.time_between_mep_trials_low }}
-                                            <div class="help-block with-errors"></div>
+                                {% if tms_data.tms_setting.tms_device_setting.pulse_stimulus_type == 'paired_pulse' %}
+
+                                    <div class="row">
+                                        <div class="col-xs-4 col-sm-4">
+                                            <div class="form-group">
+                                                <label class="control-label">{% trans "Time between mep trials low" %}</label>
+                                                    {{ tms_data_form.time_between_mep_trials_low }}
+                                                <div class="help-block with-errors"></div>
+                                            </div>
+                                        </div>
+
+                                        <div class="col-xs-4 col-sm-4">
+                                            <div class="form-group">
+                                                <label class="control-label">{% trans "Time between mep trials high" %}</label>
+                                                    {{ tms_data_form.time_between_mep_trials_high }}
+                                                <div class="help-block with-errors"></div>
+                                            </div>
+                                        </div>
+
+                                        <div class="col-xs-4 col-sm-4">
+                                            <div class="form-group">
+                                                <label class="control-label">{% trans "Time between mep trials unit" %}</label>
+                                                    {{ tms_data_form.time_between_mep_trials_unit }}
+                                                <div class="help-block with-errors"></div>
+                                            </div>
                                         </div>
                                     </div>
 
-                                    <div class="col-xs-4 col-sm-4">
-                                        <div class="form-group">
-                                            <label class="control-label">{% trans "Time between mep trials high" %}</label>
-                                                {{ tms_data_form.time_between_mep_trials_high }}
-                                            <div class="help-block with-errors"></div>
+                                {% endif %}
+
+                                {% if tms_data.tms_setting.tms_device_setting.pulse_stimulus_type == 'repetitive_pulse' %}
+
+                                    <div class="row">
+                                        <div class="col-xs-6 col-sm-6">
+                                            <div class="form-group">
+                                                <label class="control-label">{% trans "Repetitive pulse frequency (Hz)" %}</label>
+                                                    {{ tms_data_form.repetitive_pulse_frequency }}
+                                                <div class="help-block with-errors"></div>
+                                            </div>
                                         </div>
                                     </div>
 
-                                    <div class="col-xs-4 col-sm-4">
-                                        <div class="form-group">
-                                            <label class="control-label">{% trans "Time between mep trials unit" %}</label>
-                                                {{ tms_data_form.time_between_mep_trials_unit }}
-                                            <div class="help-block with-errors"></div>
-                                        </div>
-                                    </div>
-                                </div>
-
-                                <div class="row">
-                                    <div class="col-xs-6 col-sm-6">
-                                        <div class="form-group">
-                                            <label class="control-label">{% trans "Repetitive pulse frequency (Hz)" %}</label>
-                                                {{ tms_data_form.repetitive_pulse_frequency }}
-                                            <div class="help-block with-errors"></div>
-                                        </div>
-                                    </div>
-                                </div>
+                                {% endif %}
 
                             </div>
                         </div>
 
-                        <div class="panel panel-default" style="border:1px solid lightgray;">
+                        <div id="id_coil_orientation" class="panel panel-default" style="border:1px solid lightgray;">
                             <div class="panel-heading"><b>{% trans "Coil orientation Settings" %}</b></div>
                             <div class="panel-body" style="background-color: whitesmoke">
 
                                 <div class="row">
-                                    <div class="col-md-6">
-                                        <div class="row">
-                                            <div class="col-xs-12 col-sm-12">
-                                                <div class="form-group">
-                                                    <label class="control-label">{% trans "Coil orientation" %}</label>
-                                                        {{ tms_data_form.coil_orientation }}
-                                                    <div class="help-block with-errors"></div>
-                                                </div>
-                                            </div>
-                                        </div>
-
-                                        <div class="row">
-                                            <div class="col-xs-12 col-sm-12">
-                                                <div class="form-group">
-                                                    <label class="control-label">{% trans "Coil position angle (graus)" %}</label>
-                                                        {{ tms_data_form.coil_position_angle }}
-                                                    <div class="help-block with-errors"></div>
-                                                </div>
-                                            </div>
-                                        </div>
-
-                                        <div class="row">
-                                            <div class="col-xs-12 col-sm-12">
-                                                <div class="form-group">
-                                                    <label class="control-label">{% trans "Direction of induced current" %}</label>
-                                                        {{ tms_data_form.direction_of_induced_current }}
-                                                    <div class="help-block with-errors"></div>
-                                                </div>
-                                            </div>
-                                        </div>
-
-                                    </div>
-                                    <div class="col-md-6">
-                                        <div class="panel-body" style="background-color: whitesmoke;">
-                                            <img src="{% static 'quiz/imgs/Coil_orientation.svg' %}" class="img-responsive" alt="Cinque Terre" width="304" height="236" border="1" >
-                                        </div>
-                                    </div>
-
-                                </div>
-
-                            </div>
-                        </div>
-
-                        <div class="panel panel-default" style="border:1px solid lightgray;">
-                            <div class="panel-heading"><b>{% trans "File Settings" %}</b></div>
-                            <div class="panel-body" style="background-color: whitesmoke">
-
-                                <div class="row">
                                     <div class="col-xs-6 col-sm-6">
                                         <div class="form-group">
-                                            <label class="control-label">{% trans "File format" %} <b style="color: red;">*</b></label>
-                                            {{ tms_data_form.file_format }}
+                                            <label class="control-label">{% trans "Coil orientation" %}</label>
+                                                {{ tms_data_form.coil_orientation }}
                                             <div class="help-block with-errors"></div>
                                         </div>
                                     </div>
-                                </div>
 
-                                <div class="row" id="div-file-format-description">
-                                    <div class="col-xs-12 col-sm-12">
+                                    <div class="col-xs-6 col-sm-6">
                                         <div class="form-group">
-                                            <label class="control-label">{% trans "File format description" %} <b style="color: red;">*</b></label>
-                                            {{ tms_data_form.file_format_description }}
+                                            <label class="control-label">{% trans "Direction of induced current" %}</label>
+                                                {{ tms_data_form.direction_of_induced_current }}
                                             <div class="help-block with-errors"></div>
                                         </div>
-                                    </div>
+                                     </div>
+
                                 </div>
 
                                 <div class="row">
-                                    <div class="col-xs-12 col-sm-12">
-                                        <div class="form-group">
-                                            <label class="control-label">{% trans "TMS data collection description" %} <b style="color: red;">*</b></label>
-                                            {{ tms_data_form.description }}
-                                            <div class="help-block with-errors"></div>
-                                        </div>
-                                    </div>
-                                </div>
-
-                                <div class="row">
-                                    <div class="col-xs-12 col-sm-12">
-                                        <div class="form-group {% if tms_data_form.errors.file %}has-error{% endif %}">
-                                            <label class="control-label">{% trans "File" %} <b style="color: red;">*</b></label>
-                                            <br/>
-                                            {% if editing %}
-                                                {{ tms_data_form.file }}
-                                            {% else %}
-                                                {{ tms_data_form.file.value }}
-                                                <button class="btn btn-default" type="button" onclick="location.href='{{ tms_data.file.url }}'"><span class="glyphicon glyphicon-download-alt" style="color: royalblue"></span></button>
-                                            {% endif %}
-                                            <div class="help-block with-errors">
-                                                {% for error in tms_data_form.file.errors %}
-                                                    {{ error }}
-                                                {% endfor %}
-                                            </div>
-                                        </div>
+                                    <div class="panel-body">
+                                        <img src="{% static 'quiz/imgs/coil_orientation2.svg' %}" class="img-responsive center-block" width="800" height="600" style="margin: auto" >
                                     </div>
                                 </div>
 
                             </div>
+
                         </div>
 
                         {% if not editing and can_change %}
