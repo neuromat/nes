@@ -589,8 +589,8 @@ def group_view(request, group_id, template_name="experiment/group_register.html"
         experimental_protocol_description = get_experimental_protocol_description(
             group.experimental_protocol, request.LANGUAGE_CODE)
 
-        experimental_protocol_image = get_experimental_protocol_image(
-            group.experimental_protocol, request.LANGUAGE_CODE)
+        # experimental_protocol_image = get_experimental_protocol_image(
+        #     group.experimental_protocol, request.LANGUAGE_CODE)
 
     context = {"can_change": can_change,
                "classification_of_diseases_list": group.classification_of_diseases.all(),
@@ -5608,20 +5608,20 @@ def tms_data_position_setting_register(request, tms_data_id, template_name="expe
             if request.POST['action'] == "save":
 
                 if hotspot_form.is_valid() and 'localization_system_selection':
-                    if hotspot_form.has_changed():
-                        localization_system_val = request.POST['localization_system_selection']
-                        localization_system = TMSLocalizationSystem.objects.get(pk=localization_system_val)
+                    # if hotspot_form.has_changed():
+                    localization_system_val = request.POST['localization_system_selection']
+                    localization_system = TMSLocalizationSystem.objects.get(pk=localization_system_val)
 
-                        hotspot_to_update = hotspot_form.save(commit=False)
-                        hotspot_to_update.tms_localization_system = localization_system
-                        hotspot_to_update.tms_data = tms_data
-                        hotspot_to_update.save()
+                    hotspot_to_update = hotspot_form.save(commit=False)
+                    hotspot_to_update.tms_localization_system = localization_system
+                    hotspot_to_update.tms_data = tms_data
+                    hotspot_to_update.save()
                         # Se der erro aqui, como fazer reverse de tms_position????
 
-                        messages.success(request, _('TMS position updated successfully.'))
+                    messages.success(request, _('TMS position updated successfully.'))
 
-                    else:
-                        messages.success(request, _('There is no changes to save.'))
+                else:
+                    messages.success(request, _('There is no changes to save.'))
 
                 redirect_url = reverse("tms_data_position_setting_view", args=(tms_data_id,))
                 return HttpResponseRedirect(redirect_url)
@@ -5680,9 +5680,11 @@ def tms_data_position_setting_view(request, tms_data_id, template_name="experime
             # tms_position = None
             # tms_position_selected = None
             localization_system_selected = None
+            redirect_url = reverse("tms_data_position_setting_register", args=(tms_data_id,))
+            return HttpResponseRedirect(redirect_url)
 
-        for field in hotspot_form.fields:
-            hotspot_form.fields[field].widget.attrs['disabled'] = True
+        # for field in hotspot_form.fields:
+        #     hotspot_form.fields[field].widget.attrs['disabled'] = True
 
         # tms_position_list = TMSPosition.objects.all()
         tms_localization_system_list = TMSLocalizationSystem.objects.all()
