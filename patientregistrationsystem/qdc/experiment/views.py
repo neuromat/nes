@@ -5980,8 +5980,10 @@ def get_subgraph(block: Block, node_identifier=""):
     # create a subgraph
     subgraph = pydot.Cluster(graph_name='subgraph_' + node_identifier, label=block.identification)
 
+    # Paralel blocks have additional start and end points
     if block.type == Block.PARALLEL_BLOCK:
-        # start and end points
+
+        # create start and end points
         start_node = pydot.Node('start_' + node_identifier, label='', style="filled", shape='diamond',
                                 fillcolor='turquoise4', height=.1, width=.1)
         end_node = pydot.Node('end_' + node_identifier, label='', style="filled", shape='diamond',
@@ -5989,9 +5991,11 @@ def get_subgraph(block: Block, node_identifier=""):
         subgraph.add_node(start_node)
         subgraph.add_node(end_node)
 
+        # defining first and last nodes
         first_node = start_node
         last_node = end_node
 
+    # For each use of step
     previous_node = None
     for component_configuration in ComponentConfiguration.objects.filter(parent_id=block.id).order_by('order'):
 
@@ -6000,27 +6004,61 @@ def get_subgraph(block: Block, node_identifier=""):
 
         # create node or subgraph
         if component.component_type == "block":
+
             new_subgraph, new_first_node, new_last_node = \
                 get_subgraph(get_object_or_404(Block, id=component.id),
                              node_identifier + '_' + str(component_configuration.id))
             subgraph.add_subgraph(new_subgraph)
+
+            if block.type == Block.PARALLEL_BLOCK:
+                subgraph.add_edge(pydot.Edge(start_node, new_first_node))
+                subgraph.add_edge(pydot.Edge(new_last_node, end_node))
+            else:
+                if previous_node:
+                    subgraph.add_edge(pydot.Edge(previous_node, new_first_node))
+                previous_node = new_last_node
+
+                last_node = new_last_node
+                if not first_node:
+                    first_node = new_first_node
+
         else:
+
+            color_node = "gainsboro"
+            if component.component_type == "instruction":
+                color_node = "AntiqueWhite1"
+            elif component.component_type == "questionnaire":
+                color_node = "PaleGreen2"
+            elif component.component_type == "stimulus":
+                color_node = "tan1"
+            elif component.component_type == "task":
+                color_node = "#ffffba"
+            elif component.component_type == "task_experiment":
+                color_node = "#f9d62e"
+            elif component.component_type == "eeg":
+                color_node = "#99ccff"
+            elif component.component_type == "emg":
+                color_node = "#d7c6cf"
+            elif component.component_type == "tms":
+                color_node = "#fe8181"
+
             new_node = pydot.Node('node_' + node_identifier + '_' + str(component_configuration.id),
                                   label=component.identification + '\n(' + component.component_type + ')',
-                                  shape='square')
+                                  style="filled", fillcolor=color_node,
+                                  shape='rectangle')
             subgraph.add_node(new_node)
 
-        if block.type == Block.PARALLEL_BLOCK:
-            subgraph.add_edge(pydot.Edge(start_node, new_node))
-            subgraph.add_edge(pydot.Edge(new_node, end_node))
-        else:
-            if previous_node:
-                subgraph.add_edge(pydot.Edge(previous_node, new_node))
-            previous_node = new_node
+            if block.type == Block.PARALLEL_BLOCK:
+                subgraph.add_edge(pydot.Edge(start_node, new_node))
+                subgraph.add_edge(pydot.Edge(new_node, end_node))
+            else:
+                if previous_node:
+                    subgraph.add_edge(pydot.Edge(previous_node, new_node))
+                previous_node = new_node
 
-            last_node = new_node
-            if not first_node:
-                first_node = new_node
+                last_node = new_node
+                if not first_node:
+                    first_node = new_node
 
     return subgraph, first_node, last_node
 
