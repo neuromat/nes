@@ -46,7 +46,7 @@ from experiment.models import Experiment, Subject, QuestionnaireResponse, Subjec
     ADConverter, StandardizationSystem, Muscle, MuscleSubdivision, MuscleSide, \
     EMGElectrodePlacement, EMGSurfacePlacement, TMS, TMSSetting, TMSDeviceSetting, TMSDevice, Software, \
     EMGIntramuscularPlacement, EMGNeedlePlacement, SubjectStepData, EMGPreamplifierFilterSetting, \
-    EMGElectrodePlacementSetting, TMSData, CoilOrientation
+    EMGElectrodePlacementSetting, TMSData, CoilOrientation, ResearchProjectCollaboration
 from experiment.forms import ExperimentForm, QuestionnaireResponseForm, FileForm, GroupForm, InstructionForm, \
     ComponentForm, StimulusForm, BlockForm, ComponentConfigurationForm, ResearchProjectForm, NumberOfUsesToInsertForm, \
     EEGDataForm, EEGSettingForm, EquipmentForm, EEGForm, EEGAmplifierForm, \
@@ -63,7 +63,7 @@ from experiment.forms import ExperimentForm, QuestionnaireResponseForm, FileForm
     TMSForm, TMSSettingForm, TMSDeviceSettingForm, CoilModelRegisterForm, TMSDeviceRegisterForm, \
     SoftwareRegisterForm, SoftwareVersionRegisterForm, EMGIntramuscularPlacementForm, \
     EMGSurfacePlacementRegisterForm, EMGIntramuscularPlacementRegisterForm, EMGNeedlePlacementRegisterForm, \
-    SubjectStepDataForm, EMGPreamplifierFilterSettingForm, CoilModelForm, TMSDataForm
+    SubjectStepDataForm, EMGPreamplifierFilterSettingForm, CoilModelForm, TMSDataForm, CollaborationForm
 
 from export.export import create_directory
 
@@ -170,6 +170,28 @@ def research_project_view(request, research_project_id, template_name="experimen
         research_project_form.fields[field].widget.attrs['disabled'] = True
 
     if request.method == "POST":
+
+        if request.POST['action'][:20] == "change_collaborator-":
+            collaborator = get_object_or_404(ResearchProjectCollaboration, pk=request.POST['action'][20:])
+            try:
+                collaborator.is_coordinator = not collaborator.is_coordinator
+                collaborator.save()
+                messages.success(request, _('Is coordinator status successfully changed.'))
+            except ProtectedError:
+                messages.error(request, _("Error trying to the status of the coordinator."))
+            redirect_url = reverse("research_project_view", args=(research_project_id,))
+            return HttpResponseRedirect(redirect_url)
+
+        if request.POST['action'][:20] == "remove_collaborator-":
+            collaborator = get_object_or_404(ResearchProjectCollaboration, pk=request.POST['action'][20:])
+            try:
+                collaborator.delete()
+                messages.success(request, _('Collaborator removed successfully from the Research Project.'))
+            except ProtectedError:
+                messages.error(request, _("Error trying to delete a collaborator from the Research Project."))
+            redirect_url = reverse("research_project_view", args=(research_project_id,))
+            return HttpResponseRedirect(redirect_url)
+
         if request.POST['action'] == "remove":
             if QuestionnaireResponse.objects.filter(
                     subject_of_group__group__experiment__research_project_id=research_project_id).count() == 0:
@@ -194,6 +216,7 @@ def research_project_view(request, research_project_id, template_name="experimen
 
     context = {"can_change": get_can_change(request.user, research_project),
                "experiments": research_project.experiment_set.order_by('title'),
+               "collaborators": research_project.collaborators.order_by('team_person__person__first_name'),
                "keywords": research_project.keywords.order_by('name'),
                "research_project": research_project,
                "research_project_form": research_project_form}
@@ -314,6 +337,35 @@ def keyword_remove_ajax(request, research_project_id, keyword_id):
 
     redirect_url = reverse("research_project_view", args=(research_project_id,))
     return HttpResponseRedirect(redirect_url)
+
+
+@login_required
+@permission_required('experiment.add_experiment')
+def collaborator_create(request, research_project_id, template_name="experiment/collaborator_register.html"):
+    research_project = get_object_or_404(ResearchProject, pk=research_project_id)
+
+    check_can_change(request.user, research_project)
+
+    collaborator_form = CollaborationForm(request.POST or None, initial={'research_project': research_project_id})
+
+    if request.method == "POST":
+        if request.POST['action'] == "save":
+            if collaborator_form.is_valid():
+                collaborator_added = collaborator_form.save(commit=False)
+                collaborator_added.research_project = research_project
+                collaborator_added.save()
+
+                messages.success(request, _('Collaborator created successfully.'))
+
+                redirect_url = reverse("research_project_view", args=(research_project_id,))
+                return HttpResponseRedirect(redirect_url)
+
+    context = {"research_project": ResearchProject.objects.get(id=research_project_id),
+               "collaborator_form": collaborator_form,
+               "creating": True,
+               "editing": True}
+
+    return render(request, template_name, context)
 
 
 @login_required

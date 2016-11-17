@@ -331,6 +331,17 @@ def team_view(request, team_id, template_name="team/team_register.html"):
 
     if request.method == "POST":
 
+        if request.POST['action'][:7] == "change-":
+            team_person = get_object_or_404(TeamPerson, pk=request.POST['action'][7:])
+            try:
+                team_person.is_coordinator = not team_person.is_coordinator
+                team_person.save()
+                messages.success(request, _('Is coordinator status successfully changed.'))
+            except ProtectedError:
+                messages.error(request, _("Error trying to the status of the coordinator."))
+            redirect_url = reverse("team_view", args=(team_id,))
+            return HttpResponseRedirect(redirect_url)
+
         if request.POST['action'][:7] == "remove-":
             team_person = get_object_or_404(TeamPerson, pk=request.POST['action'][7:])
             try:
@@ -395,7 +406,7 @@ def team_update(request, team_id, template_name="team/team_register.html"):
     return render(request, template_name, context)
 
 @login_required
-@permission_required('team.team_person')
+@permission_required('team.add_team')
 def team_person_create(request, team_id, template_name="team/team_person_register.html"):
     team = get_object_or_404(Team, pk=team_id)
     team_person_form = TeamPersonRegisterForm(request.POST or None)

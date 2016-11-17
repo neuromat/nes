@@ -12,6 +12,8 @@ from simple_history.models import HistoricalRecords
 
 from patient.models import Patient, ClassificationOfDiseases
 from survey.models import Survey
+from team.models import TeamPerson
+
 
 TIME_UNITS = (
     ("ms", _("milisecond(s)")),
@@ -71,6 +73,12 @@ class ResearchProject(models.Model):
             ("view_researchproject", "Can view research project"),
             ("change_researchproject_from_others", "Can change research project created by others"),
         )
+
+
+class ResearchProjectCollaboration(models.Model):
+    team_person = models.ForeignKey(TeamPerson, related_name='collaborators')
+    research_project = models.ForeignKey(ResearchProject, related_name='collaborators')
+    is_coordinator = models.BooleanField()
 
 
 class Experiment(models.Model):
