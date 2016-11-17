@@ -6107,11 +6107,13 @@ def get_experimental_protocol_image(experimental_protocol, language_code):
     ending_node = pydot.Node('ending_node', label='', style="filled", shape='circle', fillcolor='red')
     subgraph.add_node(initial_node)
     subgraph.add_node(ending_node)
-    subgraph.add_edge(pydot.Edge(initial_node, first_node))
-    subgraph.add_edge(pydot.Edge(last_node, ending_node))
+    if first_node:
+        subgraph.add_edge(pydot.Edge(initial_node, first_node))
+    if last_node:
+        subgraph.add_edge(pydot.Edge(last_node, ending_node))
 
     # graph file name
-    file_name = "experimental_erotocol_" + str(experimental_protocol.id) + ".png"
+    file_name = "experimental_protocol_" + str(experimental_protocol.id) + ".png"
 
     # writing
     errors, path_complete = create_directory(settings.MEDIA_ROOT, "temp")
