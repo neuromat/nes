@@ -5482,8 +5482,6 @@ def tms_data_edit(request, tms_data_id, tab):
 
     pulse_stimulus = get_pulse_stimulus_name(tms_data.tms_setting.tms_device_setting.pulse_stimulus_type)
 
-    # tms_position_selected = None
-
     if request.method == "POST":
 
         if request.POST['action'] == "save":
@@ -5508,7 +5506,7 @@ def tms_data_edit(request, tms_data_id, tab):
 
                 if hotspot_form.is_valid() and 'localization_system_selection':
                     if hotspot_form.has_changed():
-                        localization_system_val = request.POST['localization_system_selection']
+                        localization_system_val = request.POST['localization_system_selection'].split(',')[0]
                         localization_system = TMSLocalizationSystem.objects.get(pk=localization_system_val)
 
                         hotspot_to_update = hotspot_form.save(commit=False)
@@ -5533,22 +5531,18 @@ def tms_data_edit(request, tms_data_id, tab):
         if tab == "1":
             template_name = "experiment/subject_tms_data_form.html"
             hotspot_form = None
-            # tms_position_form = None
             localization_system_selected = None
         else:
             template_name = "experiment/tms_data_position_setting.html"
             if hasattr(tms_data, 'hotspot'):
                 hotspot_form = HotSpotForm(request.POST or None, instance=tms_data.hotspot)
-                # tms_position = get_object_or_404(TMSPosition, pk=tms_data.hotspot.tms_position_id)
-                # tms_position_form = TMSPositionForm(request.POST or None, instance=tms_position)
-                # localization_system_selected = get_object_or_404(TMSLocalizationSystem,
-                #                                                  pk=tms_position.tms_localization_system_id)
-                # tms_position_selected = get_object_or_404(TMSPosition, pk=tms_data.hotspot.tms_position_id)
+
+                localization_system_selected = get_object_or_404(TMSLocalizationSystem,
+                                                                 pk=tms_data.hotspot.tms_localization_system_id)
             else:
                 hotspot_form = HotSpotForm(request.POST or None)
-                # tms_position_form = TMSPositionForm(request.POST or None)
                 localization_system_selected = None
-                # tms_position_selected = None
+
 
     context = {"group": tms_data.subject_of_group.group,
                "subject": tms_data.subject_of_group.subject,
@@ -5556,12 +5550,9 @@ def tms_data_edit(request, tms_data_id, tab):
                "tms_data": tms_data,
                "pulse_stimulus": pulse_stimulus,
                "tms_setting_default_id": tms_step.tms_setting_id,
-               # "tms_position_form": tms_position_form,
                "hotspot_form": hotspot_form,
                "tms_localization_system_list": TMSLocalizationSystem.objects.all(),
                "localization_system_selected": localization_system_selected,
-               # "tms_position_selected": tms_position_selected,
-               # "tms_position_list": TMSPosition.objects.all(),
                "editing": True,
                "tab": tab
                }
@@ -5580,10 +5571,15 @@ def get_pulse_stimulus_name(pulse_stimulus_type):
 
 @login_required
 @permission_required('experiment.change_experiment')
-def get_pulse_by_tms_setting(tms_setting_id):
+def get_pulse_by_tms_setting(request, tms_setting_id):
 
     tms_setting = get_object_or_404(TMSSetting, pk=tms_setting_id)
-    response_data = get_pulse_stimulus_name(tms_setting.tms_device_setting.pulse_stimulus_type)
+    stimulus_name = get_pulse_stimulus_name(tms_setting.tms_device_setting.pulse_stimulus_type)
+
+    response_data = {
+        'type': tms_setting.tms_device_setting.pulse_stimulus_type,
+        'name': stimulus_name
+    }
 
     return HttpResponse(json.dumps(response_data), content_type='application/json')
 
@@ -5608,9 +5604,8 @@ def tms_data_position_setting_register(request, tms_data_id, template_name="expe
             if request.POST['action'] == "save":
 
                 if hotspot_form.is_valid() and 'localization_system_selection':
-                    # if hotspot_form.has_changed():
                     localization_system_val = request.POST['localization_system_selection']
-                    localization_system = TMSLocalizationSystem.objects.get(pk=localization_system_val)
+                    localization_system = TMSLocalizationSystem.objects.get(pk=localization_system_val.split(',')[0])
 
                     hotspot_to_update = hotspot_form.save(commit=False)
                     hotspot_to_update.tms_localization_system = localization_system
@@ -5635,7 +5630,6 @@ def tms_data_position_setting_register(request, tms_data_id, template_name="expe
         "tms_data": tms_data,
         "tms_setting_default_id": tms_step.tms_setting_id,
         "tms_localization_system_list": localization_system_list,
-        # "tms_position_list": tms_position_list,
         "hotspot_form": hotspot_form,
         "tab": "2"
     }
@@ -5669,24 +5663,15 @@ def tms_data_position_setting_view(request, tms_data_id, template_name="experime
         if hasattr(tms_data, 'hotspot'):
             hotspot_form = HotSpotForm(request.POST or None, instance=tms_data.hotspot)
 
-            # tms_position = get_object_or_404(TMSPosition, pk=tms_data.hotspot.tms_position_id)
-
-            # tms_position_selected = get_object_or_404(TMSPosition, pk=tms_data.hotspot.tms_position_id)
             localization_system_selected = get_object_or_404(TMSLocalizationSystem,
                                                              pk=tms_data.hotspot.tms_localization_system_id)
 
         else:
             hotspot_form = HotSpotForm(request.POST or None)
-            # tms_position = None
-            # tms_position_selected = None
             localization_system_selected = None
             redirect_url = reverse("tms_data_position_setting_register", args=(tms_data_id,))
             return HttpResponseRedirect(redirect_url)
 
-        # for field in hotspot_form.fields:
-        #     hotspot_form.fields[field].widget.attrs['disabled'] = True
-
-        # tms_position_list = TMSPosition.objects.all()
         tms_localization_system_list = TMSLocalizationSystem.objects.all()
 
     context = {"can_change": get_can_change(request.user, tms_data.subject_of_group.group.experiment.research_project),
@@ -5696,10 +5681,7 @@ def tms_data_position_setting_view(request, tms_data_id, template_name="experime
                "subject": tms_data.subject_of_group.subject,
                "tms_data": tms_data,
                "tms_setting_default_id": tms_step.tms_setting_id,
-               # "tms_position": tms_position,
                "hotspot_form": hotspot_form,
-               # "tms_position_selected": tms_position_selected,
-               # "tms_position_list": tms_position_list,
                "tms_localization_system_list": tms_localization_system_list,
                "localization_system_selected": localization_system_selected,
                "tab": "2"
