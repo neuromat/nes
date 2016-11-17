@@ -145,6 +145,22 @@ urlpatterns = patterns(
     url(r'^tmsdevice/(?P<tmsdevice_id>\d+)/$', 'tmsdevice_view', name='tmsdevice_view'),
     url(r'^tmsdevice/edit/(?P<tmsdevice_id>\d+)/$', 'tmsdevice_update', name='tmsdevice_edit'),
 
+    #TMS Localization system and position
+    url(r'^tms_localization_system/list/$',
+        'tms_localization_system_list', name='tms_localization_system_list'),
+    url(r'^tms_localization_system/new/$',
+        'tms_localization_system_create', name='tms_localization_system_new'),
+    url(r'^tms_localization_system/(?P<tms_localization_system_id>\d+)/$',
+        'tms_localization_system_view', name='tms_localization_system_view'),
+    url(r'^tms_localization_system/edit/(?P<tms_localization_system_id>\d+)/$',
+        'tms_localization_system_update', name='tms_localization_system_update'),
+    # url(r'^tms_localization_system/(?P<tms_localization_system_id>\d+)/new_tms_position/$',
+    #     'tms_localization_system_position_create', name='tms_localization_system_position_create'),
+    # url(r'^tms_localization_system/(?P<tms_localization_system_id>\d+)/tms_position/(?P<tms_position_id>\d+)$',
+    #     'tms_localization_system_position_view', name='tms_localization_system_position_view'),
+    # url(r'^tms_localization_system/(?P<tms_localization_system_id>\d+)/tms_position/edit/(?P<tms_position_id>\d+)$',
+    #     'tms_localization_system_position_update', name='tms_localization_system_position_update'),
+
     # Localization system and position
     url(r'^eeg_electrode_localization_system/list/$',
         'eeg_electrode_localization_system_list', name='eeg_electrode_localization_system_list'),
@@ -295,7 +311,6 @@ urlpatterns = patterns(
         'eeg_electrode_position_collection_status_change_the_order',
         name='eeg_electrode_position_collection_status_change_the_order'),
 
-
     # eeg_data (ajax)
     url(r'^equipment/get_cap_size_list_from_eeg_setting/(?P<eeg_setting_id>\d+)/$',
         'get_cap_size_list_from_eeg_setting'),
@@ -317,7 +332,14 @@ urlpatterns = patterns(
     url(r'^group/(?P<group_id>\d+)/subject/(?P<subject_id>\d+)/tms/(?P<tms_configuration_id>[0-9-]+)/add_tms_data/$',
         'subject_tms_data_create', name='subject_tms_data_create'),
     url(r'^tms_data/(?P<tms_data_id>\d+)/$', 'tms_data_view', name='tms_data_view'),
-    url(r'^tms_data/edit/(?P<tms_data_id>\d+)/$', 'tms_data_edit', name='tms_data_edit'),
+    url(r'^tms_data/edit/(?P<tms_data_id>\d+)/(?P<tab>\d+)/$', 'tms_data_edit', name='tms_data_edit'),
+    url(r'^tms_data/(?P<tms_data_id>\d+)/position_setting_register/$', 'tms_data_position_setting_register',
+        name='tms_data_position_setting_register'),
+    url(r'^tms_data/(?P<tms_data_id>\d+)/position_setting_view/$', 'tms_data_position_setting_view',
+        name='tms_data_position_setting_view'),
+
+    #tms_data(ajax)
+    url(r'^get_pulse_by_tms_setting/(?P<tms_setting_id>\d+)/$', 'get_pulse_by_tms_setting'),
 
     # subject + additional data
     url(r'^group/(?P<group_id>\d+)/subject/(?P<subject_id>\d+)/additional_data/$',

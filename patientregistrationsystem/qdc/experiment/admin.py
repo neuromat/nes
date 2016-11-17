@@ -7,7 +7,7 @@ from experiment.models import Experiment, QuestionnaireResponse, StimulusType, F
     StandardizationSystem, EMGIntramuscularPlacement, EMGSurfacePlacement, EMGNeedlePlacement, \
     Muscle, MuscleSubdivision, MuscleSide, \
     ElectrodeShape, MeasureSystem, MeasureUnit, TetheringSystem, AmplifierDetectionType, ElectrodeConfiguration, \
-    CoilShape, TMSDevice, CoilModel, CoilOrientation, DirectionOfTheInducedCurrent
+    CoilShape, TMSDevice, CoilModel, CoilOrientation, DirectionOfTheInducedCurrent, BrainArea, BrainAreaSystem
 
 admin.site.register(Experiment, SimpleHistoryAdmin)
 admin.site.register(QuestionnaireResponse, SimpleHistoryAdmin)
@@ -47,3 +47,5 @@ admin.site.register(TMSDevice)
 admin.site.register(CoilModel)
 admin.site.register(CoilOrientation)
 admin.site.register(DirectionOfTheInducedCurrent)
+admin.site.register(BrainArea)
+admin.site.register(BrainAreaSystem)

@@ -16,7 +16,7 @@ from experiment.models import Experiment, QuestionnaireResponse, SubjectOfGroup,
     ADConverter, StandardizationSystem, Muscle, MuscleSide, MuscleSubdivision, TMS, TMSSetting, TMSDeviceSetting, \
     Software, SoftwareVersion, CoilModel, TMSDevice, EMGIntramuscularPlacement, EMGNeedlePlacement, SubjectStepData, \
     EMGPreamplifierFilterSetting, TMSData, HotSpot, CoilOrientation, DirectionOfTheInducedCurrent, \
-    ResearchProjectCollaboration
+    ResearchProjectCollaboration, TMSLocalizationSystem
 
 
 class ExperimentForm(ModelForm):
@@ -466,6 +466,20 @@ class EEGElectrodeLocalizationSystemRegisterForm(ModelForm):
                                      'data-error': _('Name field must be filled.'),
                                      'autofocus': ''}),
             'description': Textarea(attrs={'class': 'form-control', 'rows': '4'}),
+        }
+
+
+class TMSLocalizationSystemForm(ModelForm):
+    class Meta:
+        model = TMSLocalizationSystem
+        fields = ['name', 'description', 'tms_localization_system_image', 'brain_area']
+
+        widgets = {
+            'name': TextInput(attrs={'class': 'form-control', 'required': "",
+                                     'data-error': _('Name field must be filled.'),
+                                     'autofocus': ''}),
+            'description': Textarea(attrs={'class': 'form-control', 'rows':'4'}),
+            'brain_area': Select(attrs={'class': 'form-control'}),
         }
 
 
@@ -1144,11 +1158,10 @@ class TMSDataForm(ModelForm):
     class Meta:
         model = TMSData
 
-        fields = ['date', 'time', 'file_format', 'tms_setting', 'coil_orientation', 'description', 'file',
-                  'file_format_description', 'direction_of_induced_current', 'resting_motor_threshold',
-                  'test_pulse_intensity_of_simulation', 'interval_between_pulses', 'interval_between_pulses_unit',
-                  'time_between_mep_trials_high', 'time_between_mep_trials_low', 'time_between_mep_trials_unit',
-                  'repetitive_pulse_frequency', 'coil_position_angle']
+        fields = ['date', 'time', 'tms_setting', 'coil_orientation', 'direction_of_induced_current',
+                  'resting_motor_threshold', 'test_pulse_intensity_of_simulation', 'interval_between_pulses',
+                  'interval_between_pulses_unit', 'time_between_mep_trials_high', 'time_between_mep_trials_low',
+                  'time_between_mep_trials_unit', 'repetitive_pulse_frequency', 'description']
 
         widgets = {
             'date': DateInput(format=_("%m/%d/%Y"),
@@ -1158,29 +1171,29 @@ class TMSDataForm(ModelForm):
             'time': TimeInput(attrs={'class': 'form-control', 'placeholder': 'HH:mm:ss'}),
             'tms_setting': Select(attrs={'class': 'form-control', 'required': "",
                                          'data-error': _('TMS setting type must be filled.')}),
-            'coil_orientation': Select(attrs={'class': 'form-control', 'required': ""}),
-            'direction_of_induced_current': Select(attrs={'class': 'form-control', 'required': ""}),
+            'coil_orientation': Select(attrs={'class': 'form-control'}),
+            'direction_of_induced_current': Select(attrs={'class': 'form-control'}),
             'resting_motor_threshold': TextInput(attrs={'class': 'form-control'}),
             'test_pulse_intensity_of_simulation': TextInput(attrs={'class': 'form-control'}),
             'interval_between_pulses': TextInput(attrs={'class': 'form-control'}),
-            'interval_between_pulses_unit': Select(attrs={'class': 'form-control', 'required': ""}),
+            'interval_between_pulses_unit': Select(attrs={'class': 'form-control'}),
             'time_between_mep_trials_low': TextInput(attrs={'class': 'form-control'}),
             'time_between_mep_trials_high': TextInput(attrs={'class': 'form-control'}),
-            'time_between_mep_trials_unit': Select(attrs={'class': 'form-control', 'required': ""}),
+            'time_between_mep_trials_unit': Select(attrs={'class': 'form-control'}),
             'repetitive_pulse_frequency': TextInput(attrs={'class': 'form-control'}),
-            'coil_position_angle': TextInput(attrs={'class': 'form-control'}),
-            'file_format': Select(attrs={'class': 'form-control', 'required': "",
-                                         'data-error': _('File format must be chosen.')}),
+            # 'coil_position_angle': TextInput(attrs={'class': 'form-control'}),
+            # 'file_format': Select(attrs={'class': 'form-control', 'required': "",
+            #                              'data-error': _('File format must be chosen.')}),
             'description': Textarea(attrs={'class': 'form-control',
                                            'rows': '4', 'required': "",
                                            'data-error': _('Description must be filled.')}),
-            'file_format_description': Textarea(attrs={'class': 'form-control',
-                                                       'rows': '4', 'required': "",
-                                                       'data-error': _('File format description must be filled.')}),
-            'tms_setting_reason_for_change':
-                Textarea(attrs={'class': 'form-control', 'rows': '4',
-                                'required': "",
-                                'data-error': _('Reason for change must be filled.')}),
+            # 'file_format_description': Textarea(attrs={'class': 'form-control',
+            #                                            'rows': '4', 'required': "",
+            #                                            'data-error': _('File format description must be filled.')}),
+            # 'tms_setting_reason_for_change':
+            #     Textarea(attrs={'class': 'form-control', 'rows': '4',
+            #                     'required': "",
+            #                     'data-error': _('Reason for change must be filled.')}),
 
             # It is not possible to set the 'required' attribute because it affects the edit screen
             # 'file': FileInput(attrs={'required': ""})
@@ -1189,7 +1202,7 @@ class TMSDataForm(ModelForm):
     def __init__(self, *args, **kwargs):
         super(TMSDataForm, self).__init__(*args, **kwargs)
 
-        self.fields['file_format'].queryset = FileFormat.objects.filter(tags__name="TMS")
+        # self.fields['file_format'].queryset = FileFormat.objects.filter(tags__name="TMS")
 
         initial = kwargs.get('initial')
         if initial and 'experiment' in initial:
@@ -1198,6 +1211,36 @@ class TMSDataForm(ModelForm):
             tms_setting = get_object_or_404(TMSSetting, pk=initial['tms_setting'])
             self.fields['coil_orientation'].queryset = CoilOrientation.objects.all()
             self.fields['direction_of_induced_current'].queryset = DirectionOfTheInducedCurrent.objects.all()
+
+
+# class TMSPositionForm(ModelForm):
+#     class Meta:
+#         model = TMSPosition
+#
+#         fields = ['name']
+#
+#         widgets = {
+#             'name': TextInput(attrs={'class': 'form-control',
+#                                      'required': "",
+#                                      'data-error': _('Name must be filled.')}),
+#         }
+
+
+class HotSpotForm(ModelForm):
+    class Meta:
+        model = HotSpot
+
+        fields = ['name','coordinate_x', 'coordinate_y']
+
+        widgets = {
+            'name': TextInput(attrs={'class': 'form-control'}),
+            'coordinate_x': TextInput(attrs={'class': 'form-control',
+                                             'required': "",
+                                             'data-error': _('The coordinate must be filled.')}),
+            'coordinate_y': TextInput(attrs={'class': 'form-control',
+                                             'required': "",
+                                             'data-error': _('The coordinate must be filled.')}),
+        }
 
 
 class TMSSettingForm(ModelForm):

@@ -1,0 +1,101 @@
+{% extends "experiment/subject_tms_data_form.html" %}
+{% load i18n admin_static %}
+
+{% block header %}
+    {% load static %}
+    <script src="{% static 'quiz/js/tms_position_setting.js' %}"></script>
+    <script src="{% static 'quiz/js/research_project.js' %}"></script>
+{% endblock %}
+
+{% block subcontent %}
+
+    <div id="position_setting" class="tab-pane fade in active">
+        <h4>{% trans "Position setting" %}</h4>
+
+        <div hidden="hidden">
+            <input id="localization_system_selected_id" type="text" value="{{ localization_system_selected.tms_localization_system_image.url }}">
+            <input id="editing_id" type="text" value="{{ editing }}">
+            <input id="id_coordinate_x" type="text" value="{{ hotspot_form.coordinate_x }}">
+            <input id="id_coordinate_y" type="text" value="{{ hotspot_form.coordinate_x }}">
+            <input id="id_tms_position" type="text" value="{{ tms_position.name }}">
+        </div>
+
+        <div class="row">
+            <div class="col-xs-10 col-sm-10">
+                <div class="form-group">
+                    <label class="control-label">{% trans "TMS localization system" %}<b style="color: red;">*</b> </label>
+
+                    <select class="form-control" name="localization_system_selection" id="id_localization_system_selection" required {% if not editing and not creating %}disabled{% endif %}>
+                        <option value>-------</option>
+                        {% for localization_system in tms_localization_system_list %}
+                            <option {% if not creating and localization_system_selected.id == localization_system.id %}selected="selected"{% endif %} value="{{ localization_system.id }},{{ localization_system.tms_localization_system_image.url }}">{{ localization_system.name }}</option>
+                        {% endfor %}
+                    </select>
+
+                    <div class="help-block with-errors"></div>
+
+               </div>
+            </div>
+        </div>
+
+        <div id="div-localization_system_image">
+            <canvas id="tmsMapCanvas" width="600" height="600" style="margin: auto; border:1px solid #000000;"></canvas>
+        </div>
+
+    {% if not editing and can_change %}
+        <div class="btn-group pull-left">
+            <a href="/experiment/tms_data/edit/{{ tms_data.id }}/2" class="btn btn-primary">{% trans "Edit" %}</a>
+        </div>
+
+        <div class="btn-toolbar pull-right">
+            <div class="btn-group">
+                <a href="/experiment/tms_data/{{ tms_data.id }}/" class="btn btn-default">{% trans "Previous" %} <span class="glyphicon glyphicon-chevron-left"></span></a>
+            </div>
+        </div>
+    {% endif %}
+
+{#        <div class="row">#}
+{#            <div class="col-xs-10 col-sm-10" style="visibility: hidden">#}
+{#                <div class="form-group">#}
+{#                    <label class="control-label">{% trans "TMS Position" %} </label>#}
+{#                        {{ tms_position.name }}#}
+
+{#                    <select class="form-control" name="tms_position_selection" id="id_tms_position_selection" required {% if not editing and not creating %}disabled{% endif %}>#}
+{#                        <option value>-------</option>#}
+{#                        {% for tms_position in tms_position_list %}#}
+{#                            <option {% if not creating and tms_position_selected.id == tms_position.id %}selected="selected"{% endif %} value="{{ tms_position.id }}">{{ tms_position.name }}</option>#}
+{#                        {% endfor %}#}
+{#                    </select>#}
+
+{#                    <div class="help-block with-errors"></div>#}
+{##}
+{#                </div>#}
+{#            </div>#}
+{#        </div>#}
+
+{#        <div class="row">#}
+{#            <div class="col-xs-5 col-sm-5" style="visibility: hidden">#}
+{#                <div class="form-group">#}
+{#                    <label class="control-label">{% trans "Coordinate X" %}<b style="color: red;">*</b> </label>#}
+{#                    {{ hotspot_form.coordinate_x }}#}
+{##}
+{#                    <div class="help-block with-errors"></div>#}
+{##}
+{#                </div>#}
+{#            </div>#}
+{#            <div class="col-xs-5 col-sm-5" style="visibility: hidden">#}
+{#                <div class="form-group">#}
+{#                    <label class="control-label">{% trans "Coordinate Y" %}<b style="color: red;">*</b> </label>#}
+{#                    {{ hotspot_form.coordinate_y }}#}
+{##}
+{#                    <div class="help-block with-errors"></div>#}
+{##}
+{#                </div>#}
+{#            </div>#}
+{#        </div>#}
+
+    </div>
+
+
+
+{% endblock %}

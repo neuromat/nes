@@ -706,14 +706,6 @@ class TMSLocalizationSystem(models.Model):
         return self.name
 
 
-class TMSPosition(models.Model):
-    name = models.CharField(null=False, max_length=50, blank=False)
-    tms_localization_system = models.ForeignKey(TMSLocalizationSystem, related_name='tms_positions')
-
-    def __str__(self):
-        return self.name
-
-
 class CoilOrientation(models.Model):
     name = models.CharField(max_length=150)
 
@@ -795,10 +787,10 @@ class Questionnaire(Component):
 class Block(Component):
     SEQUENCE = 'sequence'
     PARALLEL_BLOCK = 'parallel_block'
+    BLOCK_TYPES = ((SEQUENCE, _("Sequence")), (PARALLEL_BLOCK, _("Parallel")))
     number_of_mandatory_components = models.IntegerField(null=True, blank=True, validators=[MinValueValidator(0)])
     type = models.CharField(null=False, max_length=20,
-                            choices=((SEQUENCE, "Sequence component"),
-                                     (PARALLEL_BLOCK, "Parallel block component")))
+                            choices=BLOCK_TYPES)
 
     def save(self, *args, **kwargs):
         super(Component, self).save(*args, **kwargs)
@@ -1008,7 +1000,7 @@ class EEGData(DataFile, DataCollection):
         self.changed_by = value
 
 
-class TMSData(DataFile, DataCollection):
+class TMSData(DataCollection):
     tms_setting = models.ForeignKey(TMSSetting)
     resting_motor_threshold = models.FloatField(null=True, blank=True, validators=[MinValueValidator(0)])
     test_pulse_intensity_of_simulation = models.FloatField(null=True, blank=True, validators=[MinValueValidator(0)])
@@ -1018,9 +1010,9 @@ class TMSData(DataFile, DataCollection):
     time_between_mep_trials_high = models.IntegerField(null=True, blank=True, validators=[MinValueValidator(0)])
     time_between_mep_trials_unit = models.CharField(null=True, blank=True, max_length=15, choices=TIME_UNITS)
     repetitive_pulse_frequency = models.IntegerField(null=True, blank=True, validators=[MinValueValidator(0)])
-    coil_position_angle = models.FloatField(null=True, blank=True, validators=[MinValueValidator(0)])
     coil_orientation = models.ForeignKey(CoilOrientation, null=True, blank=True)
     direction_of_induced_current = models.ForeignKey(DirectionOfTheInducedCurrent, null=True, blank=True)
+    description = models.TextField(null=False, blank=False)
 
     # Audit trail - Simple History
     history = HistoricalRecords()
@@ -1039,26 +1031,14 @@ class TMSData(DataFile, DataCollection):
 
 
 class HotSpot(models.Model):
+    name = models.CharField(max_length=50)
     coordinate_x = models.IntegerField(null=True, blank=True, validators=[MinValueValidator(0)])
     coordinate_y = models.IntegerField(null=True, blank=True, validators=[MinValueValidator(0)])
-    tms_position = models.ForeignKey(TMSPosition)
     tms_data = models.OneToOneField(TMSData, primary_key=True)
-
-    # Audit trail - Simple History
-    history = HistoricalRecords()
-
-    # changed_by = models.ForeignKey('auth.User')
+    tms_localization_system = models.ForeignKey(TMSLocalizationSystem, related_name='hotspots')
 
     def __str__(self):
-        return self.description
-
-    @property
-    def _history_user(self):
-        return self.changed_by
-
-    @_history_user.setter
-    def _history_user(self, value):
-        self.changed_by = value
+        return self.name
 
 
 class AdditionalData(DataFile, DataCollection):

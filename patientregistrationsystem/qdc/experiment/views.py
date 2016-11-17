@@ -7,6 +7,9 @@ import random
 import numpy as np
 
 import nwb
+
+import pydot
+
 from nwb.nwbco import *
 
 # import mne
@@ -46,7 +49,7 @@ from experiment.models import Experiment, Subject, QuestionnaireResponse, Subjec
     ADConverter, StandardizationSystem, Muscle, MuscleSubdivision, MuscleSide, \
     EMGElectrodePlacement, EMGSurfacePlacement, TMS, TMSSetting, TMSDeviceSetting, TMSDevice, Software, \
     EMGIntramuscularPlacement, EMGNeedlePlacement, SubjectStepData, EMGPreamplifierFilterSetting, \
-    EMGElectrodePlacementSetting, TMSData, CoilOrientation, ResearchProjectCollaboration
+    EMGElectrodePlacementSetting, TMSData, CoilOrientation, ResearchProjectCollaboration, TMSLocalizationSystem, HotSpot
 from experiment.forms import ExperimentForm, QuestionnaireResponseForm, FileForm, GroupForm, InstructionForm, \
     ComponentForm, StimulusForm, BlockForm, ComponentConfigurationForm, ResearchProjectForm, NumberOfUsesToInsertForm, \
     EEGDataForm, EEGSettingForm, EquipmentForm, EEGForm, EEGAmplifierForm, \
@@ -63,7 +66,8 @@ from experiment.forms import ExperimentForm, QuestionnaireResponseForm, FileForm
     TMSForm, TMSSettingForm, TMSDeviceSettingForm, CoilModelRegisterForm, TMSDeviceRegisterForm, \
     SoftwareRegisterForm, SoftwareVersionRegisterForm, EMGIntramuscularPlacementForm, \
     EMGSurfacePlacementRegisterForm, EMGIntramuscularPlacementRegisterForm, EMGNeedlePlacementRegisterForm, \
-    SubjectStepDataForm, EMGPreamplifierFilterSettingForm, CoilModelForm, TMSDataForm, CollaborationForm
+    SubjectStepDataForm, EMGPreamplifierFilterSettingForm, CoilModelForm, TMSDataForm, TMSLocalizationSystemForm, \
+    HotSpotForm, CollaborationForm
 
 from export.export import create_directory
 
@@ -630,6 +634,16 @@ def group_view(request, group_id, template_name="experiment/group_register.html"
         else:
             raise PermissionDenied
 
+    experimental_protocol_description = None
+    experimental_protocol_image = None
+
+    if group.experimental_protocol:
+        experimental_protocol_description = get_experimental_protocol_description(
+            group.experimental_protocol, request.LANGUAGE_CODE)
+
+        experimental_protocol_image = get_experimental_protocol_image(
+            group.experimental_protocol, request.LANGUAGE_CODE)
+
     context = {"can_change": can_change,
                "classification_of_diseases_list": group.classification_of_diseases.all(),
                "group_form": group_form,
@@ -638,7 +652,9 @@ def group_view(request, group_id, template_name="experiment/group_register.html"
                "experiment_in_use": experiment_in_use,
                "group": group,
                "editing": False,
-               "number_of_subjects": SubjectOfGroup.objects.all().filter(group=group).count()}
+               "experimental_protocol_description": experimental_protocol_description,
+               "number_of_subjects": SubjectOfGroup.objects.all().filter(group=group).count(),
+               "experimental_protocol_image": experimental_protocol_image}
 
     return render(request, template_name, context)
 
@@ -5413,7 +5429,9 @@ def subject_tms_data_create(request, group_id, subject_id, tms_configuration_id,
     tms_data_form = TMSDataForm(None, initial={'experiment': group.experiment,
                                                'tms_setting': tms_step.tms_setting_id})
 
-    file_format_list = file_format_code("TMS")
+    tms_setting = get_object_or_404(TMSSetting,id=tms_step.tms_setting_id)
+
+    pulse_stimulus = get_pulse_stimulus_name(tms_setting.tms_device_setting.pulse_stimulus_type)
 
     if request.method == "POST":
         if request.POST['action'] == "save":
@@ -5454,9 +5472,9 @@ def subject_tms_data_create(request, group_id, subject_id, tms_configuration_id,
                "tms_configuration": tms_configuration,
                "tms_data_form": tms_data_form,
                "tms_data_id": tms_data_id,
-               "file_format_list": file_format_list,
                "tms_setting_default_id": tms_step.tms_setting_id,
                "subject": get_object_or_404(Subject, pk=subject_id),
+               "pulse_stimulus": pulse_stimulus,
                "URL": redirect_url,
                "tab": "1"
                }
@@ -5473,10 +5491,10 @@ def tms_data_view(request, tms_data_id, template_name="experiment/subject_tms_da
 
     tms_data_form = TMSDataForm(request.POST or None, instance=tms_data)
 
+    pulse_stimulus = get_pulse_stimulus_name(tms_data.tms_setting.tms_device_setting.pulse_stimulus_type)
+
     for field in tms_data_form.fields:
         tms_data_form.fields[field].widget.attrs['disabled'] = True
-
-    file_format_list = file_format_code("TMS")
 
     if request.method == "POST":
         if request.POST['action'] == "remove":
@@ -5484,7 +5502,6 @@ def tms_data_view(request, tms_data_id, template_name="experiment/subject_tms_da
             check_can_change(request.user, tms_data.subject_of_group.group.experiment.research_project)
 
             subject_of_group = tms_data.subject_of_group
-            tms_data.file.delete()
             tms_data.delete()
             messages.success(request, _('TMS data removed successfully.'))
             return redirect('subject_tms_view',
@@ -5497,7 +5514,7 @@ def tms_data_view(request, tms_data_id, template_name="experiment/subject_tms_da
                "subject": tms_data.subject_of_group.subject,
                "tms_data_form": tms_data_form,
                "tms_data": tms_data,
-               "file_format_list": file_format_list,
+               "pulse_stimulus": pulse_stimulus,
                "tms_setting_default_id": tms_step.tms_setting_id,
                "tab": "1"
                }
@@ -5507,21 +5524,25 @@ def tms_data_view(request, tms_data_id, template_name="experiment/subject_tms_da
 
 @login_required
 @permission_required('experiment.change_experiment')
-def tms_data_edit(request, tms_data_id, template_name="experiment/subject_tms_data_form.html"):
+def tms_data_edit(request, tms_data_id, tab):
 
     tms_data = get_object_or_404(TMSData, pk=tms_data_id)
+
     tms_step = get_object_or_404(TMS, id=tms_data.data_configuration_tree.component_configuration.component.id)
 
     check_can_change(request.user, tms_data.subject_of_group.group.experiment.research_project)
 
+    pulse_stimulus = get_pulse_stimulus_name(tms_data.tms_setting.tms_device_setting.pulse_stimulus_type)
+
+    # tms_position_selected = None
+
     if request.method == "POST":
 
-        tms_data_form = TMSDataForm(request.POST, request.FILES, instance=tms_data)
-
         if request.POST['action'] == "save":
-            if tms_data_form.is_valid():
 
-                if tms_data_form.has_changed():
+            if tab == "1":
+                tms_data_form = TMSDataForm(request.POST, request.FILES, instance=tms_data)
+                if tms_data_form.is_valid() and tms_data_form.has_changed():
 
                     tms_data_to_update = tms_data_form.save(commit=False)
                     tms_data_to_update.group = tms_data.subject_of_group.group
@@ -5532,26 +5553,221 @@ def tms_data_edit(request, tms_data_id, template_name="experiment/subject_tms_da
                 else:
                     messages.success(request, _('There is no changes to save.'))
 
-                redirect_url = reverse("emg_data_view", args=(tms_data_id,))
-                return HttpResponseRedirect(redirect_url)
+                redirect_url = reverse("tms_data_view", args=(tms_data_id,))
+
+            if tab == "2":
+                hotspot_form = HotSpotForm(request.POST or None)
+
+                if hotspot_form.is_valid() and 'localization_system_selection':
+                    if hotspot_form.has_changed():
+                        localization_system_val = request.POST['localization_system_selection']
+                        localization_system = TMSLocalizationSystem.objects.get(pk=localization_system_val)
+
+                        hotspot_to_update = hotspot_form.save(commit=False)
+                        hotspot_to_update.tms_localization_system = localization_system
+                        hotspot_to_update.tms_data = tms_data
+                        hotspot_to_update.save()
+
+                        messages.success(request, _('TMS position updated sucessfully.'))
+
+                    else:
+                        messages.success(request, _('There is no changes to save'))
+
+                redirect_url = reverse("tms_data_position_setting_view", args=(tms_data_id,))
+
+        return HttpResponseRedirect(redirect_url)
 
     else:
-        tms_data_form = TMSDataForm(request.POST or None,
-                                    instance=tms_data,
+
+        tms_data_form = TMSDataForm(request.POST or None, instance=tms_data,
                                     initial={'experiment': tms_data.subject_of_group.group.experiment})
 
-    file_format_list = file_format_code("TMS")
+        if tab == "1":
+            template_name = "experiment/subject_tms_data_form.html"
+            hotspot_form = None
+            # tms_position_form = None
+            localization_system_selected = None
+        else:
+            template_name = "experiment/tms_data_position_setting.html"
+            if hasattr(tms_data, 'hotspot'):
+                hotspot_form = HotSpotForm(request.POST or None, instance=tms_data.hotspot)
+                # tms_position = get_object_or_404(TMSPosition, pk=tms_data.hotspot.tms_position_id)
+                # tms_position_form = TMSPositionForm(request.POST or None, instance=tms_position)
+                # localization_system_selected = get_object_or_404(TMSLocalizationSystem,
+                #                                                  pk=tms_position.tms_localization_system_id)
+                # tms_position_selected = get_object_or_404(TMSPosition, pk=tms_data.hotspot.tms_position_id)
+            else:
+                hotspot_form = HotSpotForm(request.POST or None)
+                # tms_position_form = TMSPositionForm(request.POST or None)
+                localization_system_selected = None
+                # tms_position_selected = None
 
     context = {"group": tms_data.subject_of_group.group,
                "subject": tms_data.subject_of_group.subject,
-               "emg_data_form": tms_data_form,
-               "emg_data": tms_data,
-               "file_format_list": file_format_list,
-               "emg_setting_default_id": tms_step.tms_setting_id,
-               "editing": True
+               "tms_data_form": tms_data_form,
+               "tms_data": tms_data,
+               "pulse_stimulus": pulse_stimulus,
+               "tms_setting_default_id": tms_step.tms_setting_id,
+               # "tms_position_form": tms_position_form,
+               "hotspot_form": hotspot_form,
+               "tms_localization_system_list": TMSLocalizationSystem.objects.all(),
+               "localization_system_selected": localization_system_selected,
+               # "tms_position_selected": tms_position_selected,
+               # "tms_position_list": TMSPosition.objects.all(),
+               "editing": True,
+               "tab": tab
                }
 
     return render(request, template_name, context)
+
+
+def get_pulse_stimulus_name(pulse_stimulus_type):
+    pulse_stimulus_name = ''
+    for type_element, type_name in TMSDeviceSetting.PULSE_STIMULUS_TYPES:
+        if type_element == pulse_stimulus_type:
+            pulse_stimulus_name = str(type_name)
+            break
+    return pulse_stimulus_name if pulse_stimulus_name else pulse_stimulus_type
+
+
+@login_required
+@permission_required('experiment.change_experiment')
+def get_pulse_by_tms_setting(tms_setting_id):
+
+    tms_setting = get_object_or_404(TMSSetting, pk=tms_setting_id)
+    response_data = get_pulse_stimulus_name(tms_setting.tms_device_setting.pulse_stimulus_type)
+
+    return HttpResponse(json.dumps(response_data), content_type='application/json')
+
+
+@login_required
+@permission_required('experiment.change_experiment')
+def tms_data_position_setting_register(request, tms_data_id, template_name="experiment/tms_data_position_setting.html"):
+    tms_data = get_object_or_404(TMSData, pk=tms_data_id)
+
+    tms_step = get_object_or_404(TMS, id=tms_data.data_configuration_tree.component_configuration.component.id)
+
+    check_can_change(request.user, tms_data.subject_of_group.group.experiment.research_project)
+
+    localization_system_list = TMSLocalizationSystem.objects.all()
+
+    # tms_position_list = TMSPosition.objects.all()
+
+    hotspot_form = HotSpotForm(request.POST or None)
+
+    if request.method == "POST":
+
+            if request.POST['action'] == "save":
+
+                if hotspot_form.is_valid() and 'localization_system_selection':
+                    # if hotspot_form.has_changed():
+                    localization_system_val = request.POST['localization_system_selection']
+                    localization_system = TMSLocalizationSystem.objects.get(pk=localization_system_val)
+
+                    hotspot_to_update = hotspot_form.save(commit=False)
+                    hotspot_to_update.tms_localization_system = localization_system
+                    hotspot_to_update.tms_data = tms_data
+                    hotspot_to_update.save()
+                        # Se der erro aqui, como fazer reverse de tms_position????
+
+                    messages.success(request, _('TMS position updated successfully.'))
+
+                else:
+                    messages.success(request, _('There is no changes to save.'))
+
+                redirect_url = reverse("tms_data_position_setting_view", args=(tms_data_id,))
+                return HttpResponseRedirect(redirect_url)
+
+    context = {
+        "can_change": True,
+        "creating": True,
+        "editing": True,
+        "group": tms_data.subject_of_group.group,
+        "subject": tms_data.subject_of_group.subject,
+        "tms_data": tms_data,
+        "tms_setting_default_id": tms_step.tms_setting_id,
+        "tms_localization_system_list": localization_system_list,
+        # "tms_position_list": tms_position_list,
+        "hotspot_form": hotspot_form,
+        "tab": "2"
+    }
+
+    return render(request, template_name, context)
+
+
+@login_required
+@permission_required('experiment.change_experiment')
+def tms_data_position_setting_view(request, tms_data_id, template_name="experiment/tms_data_position_setting.html"):
+
+    tms_data = get_object_or_404(TMSData, pk=tms_data_id)
+
+    tms_step = get_object_or_404(TMS, id=tms_data.data_configuration_tree.component_configuration.component.id)
+
+    check_can_change(request.user, tms_data.subject_of_group.group.experiment.research_project)
+
+    if request.method == "POST":
+        if request.POST['action'] == "remove":
+            check_can_change(request.user, tms_data.subject_of_group.group.experiment.research_project)
+
+            subject_of_group = tms_data.subject_of_group
+            tms_data.delete()
+            messages.success(request, _('TMS data removed successfully.'))
+            return redirect('subject_tms_view',
+                            group_id=subject_of_group.group_id,
+                            subject_id=subject_of_group.subject_id)
+
+    else:
+
+        if hasattr(tms_data, 'hotspot'):
+            hotspot_form = HotSpotForm(request.POST or None, instance=tms_data.hotspot)
+
+            # tms_position = get_object_or_404(TMSPosition, pk=tms_data.hotspot.tms_position_id)
+
+            # tms_position_selected = get_object_or_404(TMSPosition, pk=tms_data.hotspot.tms_position_id)
+            localization_system_selected = get_object_or_404(TMSLocalizationSystem,
+                                                             pk=tms_data.hotspot.tms_localization_system_id)
+
+        else:
+            hotspot_form = HotSpotForm(request.POST or None)
+            # tms_position = None
+            # tms_position_selected = None
+            localization_system_selected = None
+            redirect_url = reverse("tms_data_position_setting_register", args=(tms_data_id,))
+            return HttpResponseRedirect(redirect_url)
+
+        # for field in hotspot_form.fields:
+        #     hotspot_form.fields[field].widget.attrs['disabled'] = True
+
+        # tms_position_list = TMSPosition.objects.all()
+        tms_localization_system_list = TMSLocalizationSystem.objects.all()
+
+    context = {"can_change": get_can_change(request.user, tms_data.subject_of_group.group.experiment.research_project),
+               "editing": False,
+               "creating": False,
+               "group": tms_data.subject_of_group.group,
+               "subject": tms_data.subject_of_group.subject,
+               "tms_data": tms_data,
+               "tms_setting_default_id": tms_step.tms_setting_id,
+               # "tms_position": tms_position,
+               "hotspot_form": hotspot_form,
+               # "tms_position_selected": tms_position_selected,
+               # "tms_position_list": tms_position_list,
+               "tms_localization_system_list": tms_localization_system_list,
+               "localization_system_selected": localization_system_selected,
+               "tab": "2"
+               }
+
+    return render(request, template_name, context)
+
+
+# @login_required
+# @permission_required('experiment.change_experiment')
+# def get_tms_position_localization_system(request, tms_position_localization_system_id):
+#     localization_system = get_object_or_404(TMSLocalizationSystem, pk=tms_position_localization_system_id)
+#     tms_position_localization_system_list = TMSPosition.objects.filter(tms_localization_system=localization_system)
+#
+#     json_list = serializers.serialize("json", tms_position_localization_system_list)
+#     return HttpResponse(json_list, content_type='application/json')
 
 
 @login_required
@@ -5760,9 +5976,6 @@ def subject_additional_data_view(request, group_id, subject_id,
     subject = get_object_or_404(Subject, id=subject_id)
     subject_of_group = get_object_or_404(SubjectOfGroup, group=group, subject=subject)
 
-    # teste
-    # arvore = get_block_tree(group.experimental_protocol.id)
-
     # First element of the list is associated to the whole experimental protocol
     subject_step_data_query = \
         SubjectStepData.objects.filter(subject_of_group=subject_of_group, data_configuration_tree=None)
@@ -5806,38 +6019,333 @@ def subject_additional_data_view(request, group_id, subject_id,
     return render(request, template_name, context)
 
 
-def get_block_tree(component_id):
+def get_experimental_protocol_description(experimental_protocol, language_code):
+
+    tree = get_block_tree(experimental_protocol.id, language_code)
+
+    return get_description_from_experimental_protocol_tree(tree)
+
+
+def get_subgraph(block: Block, node_identifier=""):
+
+    first_node = None
+    last_node = None
+
+    # create a subgraph
+    subgraph = pydot.Cluster(graph_name='subgraph_' + node_identifier, label=block.identification,
+                             labeljust="left", pencolor="#757575")
+
+    # Paralel blocks have additional start and end points
+    if block.type == Block.PARALLEL_BLOCK:
+
+        # create start and end points
+        start_node = pydot.Node('start_' + node_identifier, label='', style="filled", shape='diamond',
+                                fillcolor='turquoise4', height=.1, width=.1)
+        end_node = pydot.Node('end_' + node_identifier, label='', style="filled", shape='diamond',
+                              fillcolor='turquoise4', height=.1, width=.1)
+        subgraph.add_node(start_node)
+        subgraph.add_node(end_node)
+
+        # defining first and last nodes
+        first_node = start_node
+        last_node = end_node
+
+    # For each use of step
+    previous_node = None
+    for component_configuration in ComponentConfiguration.objects.filter(parent_id=block.id).order_by('order'):
+
+        # get the component
+        component = component_configuration.component
+
+        # create node or subgraph
+        if component.component_type == "block":
+
+            new_subgraph, new_first_node, new_last_node = \
+                get_subgraph(get_object_or_404(Block, id=component.id),
+                             node_identifier + '_' + str(component_configuration.id))
+            subgraph.add_subgraph(new_subgraph)
+
+            if block.type == Block.PARALLEL_BLOCK:
+                subgraph.add_edge(pydot.Edge(start_node, new_first_node))
+                subgraph.add_edge(pydot.Edge(new_last_node, end_node))
+            else:
+                if previous_node:
+                    subgraph.add_edge(pydot.Edge(previous_node, new_first_node))
+                previous_node = new_last_node
+
+                last_node = new_last_node
+                if not first_node:
+                    first_node = new_first_node
+
+        else:
+
+            color_node = "gainsboro"
+            if component.component_type == "instruction":
+                color_node = "AntiqueWhite1"
+            elif component.component_type == "questionnaire":
+                color_node = "PaleGreen2"
+            elif component.component_type == "stimulus":
+                color_node = "tan1"
+            elif component.component_type == "task":
+                color_node = "#ffffba"
+            elif component.component_type == "task_experiment":
+                color_node = "#f9d62e"
+            elif component.component_type == "eeg":
+                color_node = "#99ccff"
+            elif component.component_type == "emg":
+                color_node = "#f1cbff"
+            elif component.component_type == "tms":
+                color_node = "#fe8181"
+
+            new_node = pydot.Node(
+                'node_' + node_identifier + '_' + str(component_configuration.id),
+                label=split_node_identification_for_graph(component.identification + ' (' + get_component_name(component.component_type) + ')'),
+                style="filled", fillcolor=color_node, shape='rectangle')
+
+            subgraph.add_node(new_node)
+
+            if block.type == Block.PARALLEL_BLOCK:
+                subgraph.add_edge(pydot.Edge(start_node, new_node))
+                subgraph.add_edge(pydot.Edge(new_node, end_node))
+            else:
+                if previous_node:
+                    subgraph.add_edge(pydot.Edge(previous_node, new_node))
+                previous_node = new_node
+
+                last_node = new_node
+                if not first_node:
+                    first_node = new_node
+
+    return subgraph, first_node, last_node
+
+
+def split_node_identification_for_graph(identification):
+
+    result = []
+    current_line = ''
+
+    for item in identification.split():
+
+        if not current_line:
+            current_line = item
+        else:
+            if len(current_line + item) > 10:
+                result.append(current_line)
+                current_line = item
+            else:
+                current_line += ' ' + item
+
+    result.append(current_line)
+
+    return '\n'.join(result)
+
+
+def get_experimental_protocol_image(experimental_protocol, language_code):
+
+    graph = pydot.Dot(graph_type='digraph')
+
+    subgraph, first_node, last_node = get_subgraph(get_object_or_404(Block, id=experimental_protocol.id))
+    graph.add_subgraph(subgraph)
+
+    # main cluster
+    # subgraph = pydot.Cluster(graph_name='Component' + str(experimental_protocol.id),
+    #                          label=experimental_protocol.identification)
+    # graph.add_subgraph(subgraph)
+    #
+    # node_b = pydot.Node('B', label='Initial instruction\n(instruction)', shape='square')
+    # subgraph.add_node(node_b)
+
+    initial_node = pydot.Node('initial_node', label='', style="filled", shape='circle', fillcolor='green')
+    ending_node = pydot.Node('ending_node', label='', style="filled", shape='circle', fillcolor='red')
+    subgraph.add_node(initial_node)
+    subgraph.add_node(ending_node)
+    if first_node:
+        subgraph.add_edge(pydot.Edge(initial_node, first_node))
+    if last_node:
+        subgraph.add_edge(pydot.Edge(last_node, ending_node))
+
+    # graph file name
+    file_name = "experimental_protocol_" + str(experimental_protocol.id) + ".png"
+
+    # writing
+    errors, path_complete = create_directory(settings.MEDIA_ROOT, "temp")
+    graph.write_png(path.join(path_complete, file_name))
+
+    return path.join(path.join(settings.MEDIA_URL, "temp"), file_name)
+
+
+def get_description_from_experimental_protocol_tree(component, numeration='', component_configuration_attributes=[]):
+    description = numeration if numeration else _('Main step')
+    description += ': ' + get_component_name(component['component_type']) + "\n"
+
+    # component attributes
+    for attribute in component['attributes']:
+        for key in list(attribute.keys()):
+            description += '\t-' + _(key) + ': ' + str(attribute[key]) + '\n'
+
+    # component configuration attributes
+    for attribute in component_configuration_attributes:
+        for key in list(attribute.keys()):
+            description += '\t-' + _(key) + ': ' + str(attribute[key]) + '\n'
+
+    # Sub-steps
+    num_of_sub_steps = len(component['list_of_component_configuration'])
+    if num_of_sub_steps > 0:
+        description += '\t-' + _('Sub-steps: (')
+        for item in range(1, num_of_sub_steps + 1):
+            description += (numeration + '.' if numeration else '') + str(item)
+            description += ', ' if item != num_of_sub_steps else ''
+        description += ')\n'
+
+        counter = 1
+        for component_configuration in component['list_of_component_configuration']:
+            description += get_description_from_experimental_protocol_tree(
+                component_configuration['component'],
+                (numeration + '.' if numeration else _('Step') + ' ') + str(counter),
+                component_configuration['component_configuration_attributes']
+            )
+            counter += 1
+
+    return description
+
+
+def get_component_name(component_type):
+    component_name = ''
+    for type_element, type_name in Component.COMPONENT_TYPES:
+        if type_element == component_type:
+            component_name = str(type_name)
+            break
+    return component_name if component_name else component_type
+
+
+def get_block_tree(component_id, language_code=None):
 
     component = get_object_or_404(Component, id=component_id)
 
-    list_of_component_configuration = []
+    attributes = get_component_attributes(component, language_code)
 
+    list_of_component_configuration = []
     if component.component_type == 'block':
         configurations = ComponentConfiguration.objects.filter(parent_id=component_id).order_by('order')
         for configuration in configurations:
-            list_of_component_configuration.append(get_block_tree(configuration.component_id))
+            component_configuration_attributes = get_component_configuration_attributes(configuration)
+            component_info = get_block_tree(configuration.component_id, language_code)
+            list_of_component_configuration.append(
+                {'component_configuration_attributes': component_configuration_attributes,
+                 'component': component_info})
 
-    attributes = get_component_attributes(component)
-    attributes = [
-        {'key': 'identification', 'value': component.identification}
-    ]
-
-    return {'component_type': component.component_type,
+    return {'identification': component.identification,
+            'component_type': component.component_type,
             'attributes': attributes,
             'list_of_component_configuration': list_of_component_configuration}
 
 
-def get_component_attributes(component):
+def get_component_attributes(component, language_code):
     attributes = []
     for attribute in get_general_component_attributes(component):
         attributes.append(attribute)
+
+    specific_attributes = []
+    if component.component_type == 'block':
+        specific_attributes = get_block_component_attributes(component)
+    elif component.component_type == 'instruction':
+        specific_attributes = get_instruction_component_attributes(component)
+    elif component.component_type == 'pause':
+        specific_attributes = []
+    elif component.component_type == 'questionnaire':
+        specific_attributes = get_questionnaire_component_attributes(component, language_code)
+    elif component.component_type == 'stimulus':
+        specific_attributes = get_stimulus_component_attributes(component)
+    elif component.component_type == 'task':
+        specific_attributes = []
+    elif component.component_type == 'task_experiment':
+        specific_attributes = []
+    elif component.component_type == 'eeg':
+        specific_attributes = []
+    elif component.component_type == 'emg':
+        specific_attributes = []
+    elif component.component_type == 'tms':
+        specific_attributes = []
+
+    for attribute in specific_attributes:
+        attributes.append(attribute)
+
     return attributes
 
 
 def get_general_component_attributes(component):
-    attributes = [{'identification': component.identification}]
+    attributes = [{_('Identification'): component.identification}]
     if component.description:
-        attributes.append({'description': component.identification})
+        attributes.append({_('Description'): component.description})
+    if component.duration_value:
+        attributes.append({_('Duration value'): component.duration_value})
+        if component.duration_unit:
+            attributes.append({_('Duration unit'): component.duration_unit})
+    return attributes
+
+
+def get_block_component_attributes(component):
+    block = get_object_or_404(Block, id=component.id)
+    attributes = [{_('Type'): get_block_type_name(block.type)}]
+    if block.number_of_mandatory_components:
+        attributes.append({_('Number of mandatory components'): block.number_of_mandatory_components})
+    return attributes
+
+
+def get_instruction_component_attributes(component):
+    instruction = get_object_or_404(Instruction, id=component.id)
+    attributes = [{_('Text'): instruction.text}]
+    return attributes
+
+
+def get_questionnaire_component_attributes(component, language_code):
+    questionnaire = get_object_or_404(Questionnaire, id=component.id)
+    attributes = [{_('LimeSurvey ID'): questionnaire.survey.lime_survey_id}]
+
+    surveys = Questionnaires()
+    questionnaire_title = surveys.get_survey_title(
+        questionnaire.survey.lime_survey_id,
+        get_questionnaire_language(surveys, questionnaire.survey.lime_survey_id, language_code))
+    surveys.release_session_key()
+
+    attributes.append({_('Questionnaire title'): questionnaire_title})
+
+    return attributes
+
+
+def get_stimulus_component_attributes(component):
+    stimulus = get_object_or_404(Stimulus, id=component.id)
+    attributes = [{_('Stimulus type'): stimulus.stimulus_type.name}]
+    if stimulus.media_file:
+        attributes.append({_('Media file'): stimulus.media_file})
+    return attributes
+
+
+def get_block_type_name(block_type):
+    block_type_name = ''
+    for type_element, type_name in Block.BLOCK_TYPES:
+        if type_element == block_type:
+            block_type_name = str(type_name)
+            break
+    return block_type_name if block_type_name else block_type
+
+
+def get_component_configuration_attributes(configuration):
+    attributes = []
+    if configuration.name:
+        attributes.append({_('Name of use'): configuration.name})
+    if configuration.number_of_repetitions:
+        attributes.append({_('Number of repetitions'): configuration.number_of_repetitions})
+    if configuration.interval_between_repetitions_value:
+        attributes.append({_('Interval between repetitions value'): configuration.interval_between_repetitions_value})
+        if configuration.interval_between_repetitions_unit:
+            attributes.append({_('Interval between repetitions unit'): configuration.interval_between_repetitions_unit})
+    attributes.append({_('Order'): configuration.order})
+    attributes.append({
+        _('Position in the set of steps '): _('Random') if configuration.random_position else _('Fixed')})
+    attributes.append({
+        _('Requires start and end datetime'): _('Yes') if configuration.requires_start_and_end_datetime else _('No') })
+
     return attributes
 
 
@@ -9305,6 +9813,229 @@ def tms_setting_tms_device_edit(request, tms_setting_id, template_name="experime
 
 
 @login_required
+@permission_required('experiment.register_equipment')
+def tms_localization_system_list(
+        request, template_name="experiment/tms_localization_system_list.html"):
+    return render(request, template_name,
+                  {"tms_localization_systems": TMSLocalizationSystem.objects.order_by('name')})
+
+
+@login_required
+@permission_required('experiment.register_equipment')
+def tms_localization_system_create(
+        request,
+        template_name="experiment/tms_localization_system_register.html"):
+
+    localization_system_form = TMSLocalizationSystemForm(request.POST or None)
+
+    if request.method == "POST":
+
+        if request.POST['action'] == "save":
+
+            localization_system_form = TMSLocalizationSystemForm(request.POST, request.FILES)
+
+            if localization_system_form.is_valid():
+
+                localization_system_added = localization_system_form.save()
+
+                messages.success(request, _('TMS localization system created successfully.'))
+
+                redirect_url = reverse("tms_localization_system_view", args=(localization_system_added.id,))
+                return HttpResponseRedirect(redirect_url)
+
+            else:
+                messages.warning(request, _('Information not saved.'))
+        else:
+            messages.warning(request, _('Action not available.'))
+
+    context = {"localization_system_form": localization_system_form,
+               "creating": True,
+               "editing": True}
+
+    return render(request, template_name, context)
+
+
+@login_required
+@permission_required('experiment.register_equipment')
+def tms_localization_system_view(
+        request,
+        tms_localization_system_id,
+        template_name="experiment/tms_localization_system_register.html"):
+
+    localization_system = get_object_or_404(TMSLocalizationSystem, pk=tms_localization_system_id)
+    localization_system_form = TMSLocalizationSystemForm(
+        request.POST or None, instance=localization_system)
+
+    for field in localization_system_form.fields:
+        localization_system_form.fields[field].widget.attrs['disabled'] = True
+
+    if request.method == "POST":
+        if request.POST['action'] == "remove":
+
+            try:
+                localization_system.delete()
+                messages.success(request, _('Study removed successfully.'))
+                return redirect('tms_localization_system_list')
+            except ProtectedError:
+                messages.error(request, _("Error trying to delete localization system."))
+                redirect_url = reverse("tms_localization_system_view",
+                                           args=(tms_localization_system_id,))
+                return HttpResponseRedirect(redirect_url)
+
+    context = {"can_change": True,
+               "localization_system": localization_system,
+               "localization_system_form": localization_system_form,
+               "editing": False}
+
+    return render(request, template_name, context)
+
+
+@login_required
+@permission_required('experiment.register_equipment')
+def tms_localization_system_update(
+        request,
+        tms_localization_system_id,
+        template_name="experiment/tms_localization_system_register.html"):
+
+    localization_system = get_object_or_404(TMSLocalizationSystem, pk=tms_localization_system_id)
+    localization_system_form = \
+        TMSLocalizationSystemForm(request.POST or None, instance=localization_system)
+
+    if request.method == "POST":
+
+        if request.POST['action'] == "save":
+
+            localization_system_form = \
+                TMSLocalizationSystemForm(request.POST, request.FILES, instance=localization_system)
+
+            if localization_system_form.is_valid():
+                if localization_system_form.has_changed():
+                    localization_system_form.save()
+                    messages.success(request, _('Localization system updated successfully.'))
+                else:
+                    messages.success(request, _('There is no changes to save.'))
+
+                redirect_url = reverse("tms_localization_system_view",
+                                       args=(tms_localization_system_id,))
+                return HttpResponseRedirect(redirect_url)
+
+    context = {"localization_system": localization_system,
+               "localization_system_form": localization_system_form,
+               "editing": True}
+
+    return render(request, template_name, context)
+
+
+# @login_required
+# @permission_required('experiment.register_equipment')
+# def tms_localization_system_position_create(request,tms_localization_system_id,
+#                                             template_name="experiment/tms_localization_system_position.html"):
+#
+#     localization_system = get_object_or_404(TMSLocalizationSystem, pk=tms_localization_system_id)
+#     localization_system_form = TMSLocalizationSystemForm(request.POST or None, instance=localization_system)
+#     tms_position_form = TMSPositionForm(request.POST or None)
+#
+#     if request.method == "POST":
+#
+#         if request.POST['action'] == "save":
+#
+#             if tms_position_form.is_valid():
+#
+#                 tms_position_added = tms_position_form.save(commit=False)
+#                 tms_position_added.tms_localization_system = localization_system
+#                 tms_position_added.save()
+#
+#                 messages.success(request, _('TMS position created successfully.'))
+#                 redirect_url = reverse("tms_localization_system_view", args=(localization_system.id,))
+#                 return HttpResponseRedirect(redirect_url)
+#
+#             else:
+#                 messages.warning(request, _('Information not saved.'))
+#
+#         else:
+#             messages.warning(request, _('Action not available.'))
+#
+#     context = {"localization_system": localization_system,
+#                "localization_system_form": localization_system_form,
+#                "tms_position_form": tms_position_form,
+#                "creating": True,
+#                "editing": True}
+#
+#     return render(request, template_name, context)
+
+
+# @login_required
+# @permission_required('experiment.register_equipment')
+# def tms_localization_system_position_update(request,tms_localization_system_id,tms_position_id,
+#                                             template_name="experiment/tms_localization_system_position.html"):
+#
+#     tms_position = get_object_or_404(TMSPosition, pk=tms_position_id)
+#     tms_position_form = TMSPositionForm(request.POST or None, instance=tms_position)
+#     localization_system = get_object_or_404(TMSLocalizationSystem, pk=tms_localization_system_id)
+#     localization_system_form = TMSLocalizationSystemForm(request.POST or None, instance=localization_system)
+#
+#     if request.method == "POST":
+#
+#         if request.POST['action'] == "save":
+#
+#             if tms_position_form.is_valid():
+#                 if tms_position_form.has_changed():
+#                     tms_position_form.save()
+#                     messages.success(request, _('TMS position updated successfully.'))
+#                 else:
+#                     messages.success(request, _('There is no changes to save.'))
+#
+#                 redirect_url = reverse("tms_localization_system_view",
+#                                        args=(tms_localization_system_id,))
+#                 return HttpResponseRedirect(redirect_url)
+#
+#     context = {"localization_system": localization_system,
+#                "localization_system_form": localization_system_form,
+#                "tms_position_form": tms_position_form,
+#                "creating": False,
+#                "editing": True}
+#
+#     return render(request, template_name, context)
+
+
+# @login_required
+# @permission_required('experiment.register_equipment')
+# def tms_localization_system_position_view(request, tms_localization_system_id, tms_position_id,
+#                                           template_name="experiment/tms_localization_system_position.html"):
+#
+#     localization_system = get_object_or_404(TMSLocalizationSystem, pk=tms_localization_system_id)
+#     localization_system_form = TMSLocalizationSystemForm(request.POST or None, instance=localization_system)
+#     tms_position = get_object_or_404(TMSPosition, pk=tms_position_id)
+#     tms_position_form = TMSPositionForm(request.POST or None, instance=tms_position)
+#
+#     for field in tms_position_form.fields:
+#         tms_position_form.fields[field].widget.attrs['disabled'] = True
+#
+#     if request.method == "POST":
+#         if request.POST['action'] == "remove":
+#
+#             try:
+#                 tms_position.delete()
+#                 messages.success(request, _('TMS Position removed successfully.'))
+#                 redirect_url = reverse("tms_localization_system_view", args=(localization_system.id,))
+#                 return HttpResponseRedirect(redirect_url)
+#             except ProtectedError:
+#                 messages.error(request, _("Error trying to delete TMS Position."))
+#                 redirect_url = reverse("tms_localization_system_view",
+#                                            args=(tms_localization_system_id,))
+#                 return HttpResponseRedirect(redirect_url)
+#
+#     context = {"can_change": True,
+#                "localization_system": localization_system,
+#                "localization_system_form": localization_system_form,
+#                "tms_position": tms_position,
+#                "tms_position_form": tms_position_form,
+#                "editing": False}
+#
+#     return render(request, template_name, context)
+
+
+@login_required
 @permission_required('experiment.view_researchproject')
 def setup_menu(request, template_name="experiment/setup_menu.html"):
     basic_register_list = [
@@ -9328,6 +10059,11 @@ def setup_menu(request, template_name="experiment/setup_menu.html"):
             'href': reverse("standardization_system_list", args=()),
             'quantity': StandardizationSystem.objects.all().count(),
             # 'warn_list': [{'item': _('Muscle'), 'dependence': Muscle.objects.all().count()}]
+        },
+        {
+            'item': _('TMS localization system'),
+            'href': reverse("tms_localization_system_list", args=()),
+            'quantity': TMSLocalizationSystem.objects.all().count(),
         },
         {
             'item': _('Manufacturer'),
