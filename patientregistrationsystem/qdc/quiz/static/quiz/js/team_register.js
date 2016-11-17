@@ -17,7 +17,12 @@ function show_modal_remove_team_person(team_person_id) {
     var  modal_remove = document.getElementById('removeTeamPerson');
     modal_remove.setAttribute("value", 'remove-' + team_person_id);
 
-    // $("#modalRemoveMessage").html(gettext("Are you sure you want to delete this use of step from list?"));
-
     $('#modalComponentConfigurationRemove').modal('show');
+}
+
+function show_modal_alter_is_coordinator(team_person_id) {
+    var  modal_change_is_coordinator = document.getElementById('changeIsCoordinator');
+    modal_change_is_coordinator.setAttribute("value", 'change-' + team_person_id);
+
+    $('#modalComponentIs_coordinator').modal('show');
 }

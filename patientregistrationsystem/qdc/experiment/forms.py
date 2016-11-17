@@ -16,7 +16,7 @@ from experiment.models import Experiment, QuestionnaireResponse, SubjectOfGroup,
     ADConverter, StandardizationSystem, Muscle, MuscleSide, MuscleSubdivision, TMS, TMSSetting, TMSDeviceSetting, \
     Software, SoftwareVersion, CoilModel, TMSDevice, EMGIntramuscularPlacement, EMGNeedlePlacement, SubjectStepData, \
     EMGPreamplifierFilterSetting, TMSData, HotSpot, CoilOrientation, DirectionOfTheInducedCurrent, \
-    TMSLocalizationSystem
+    ResearchProjectCollaboration, TMSLocalizationSystem
 
 
 class ExperimentForm(ModelForm):
@@ -34,6 +34,17 @@ class ExperimentForm(ModelForm):
             'description': Textarea(attrs={'class': 'form-control',
                                            'rows': '4', 'required': "",
                                            'data-error': _('Description must be filled.')}),
+        }
+
+
+class CollaborationForm(ModelForm):
+    class Meta:
+        model = ResearchProjectCollaboration
+
+        fields = ['team_person', 'is_coordinator']
+
+        widgets = {
+            'team_person': Select(attrs={'class': 'form-control', 'required': ''}),
         }
 
 

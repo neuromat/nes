@@ -851,7 +851,7 @@ msgstr "É coordenador"
 
 #: team/templates/team/team_register.html:73
 msgid "Team"
-msgstr "Equipme"
+msgstr "Equipe"
 
 #: team/templates/team/team_register.html:109
 msgid "First Name"
