@@ -6,6 +6,7 @@ from django.forms import ModelForm, TextInput, EmailInput, Select, PasswordInput
 from django.utils.translation import ugettext as _
 
 from .models import Person, Team, TeamPerson
+    # , Country
 
 class PersonRegisterForm(ModelForm):
     class Meta:
@@ -62,3 +63,26 @@ class TeamPersonRegisterForm(ModelForm):
         if initial:
             team = initial['team']
             self.fields['person'].queryset = Person.objects.exclude(team_persons__team=team)
+
+
+# class CountryForm(ModelForm):
+#     class Meta:
+#         model = Country
+#         fields = ['name', 'code']
+#
+#         widgets = {
+#             'name': TextInput(attrs={'class': 'form-control', 'required': ""}),
+#             'code': TextInput(attrs={'class': 'form-control'}),
+#         }
+#
+# class InstitutionForm(ModelForm):
+#     class Meta:
+#         model = Institution
+#         fields = ['name', 'acronym']
+#
+#         widgets = {
+#             'name': TextInput(attrs={'class': 'form-control', 'required': ""}),
+#             'acronym': TextInput(attrs={'class': 'form-control'}),
+#         }
+
+
