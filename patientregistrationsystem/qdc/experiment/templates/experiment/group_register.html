@@ -7,14 +7,12 @@
 {% block header %}
     <script src="{% static 'quiz/js/group_register.js' %}"></script>
 
-{#    <link rel="stylesheet" href="{% static 'quiz/w3/w3.css' %}">#}
-
     <link rel="stylesheet" href="{% static 'quiz/magnific-popup/magnific-popup.css' %}">
     <script src="{% static 'quiz/magnific-popup/jquery.magnific-popup.js' %}"></script>
 
     <script>
         $(document).ready(function() {
-            $('.test-popup-link').magnificPopup({
+            $('.experimental-protocol-image-popup-link').magnificPopup({
                 type: 'image',
                 closeBtnInside: false,
                 closeOnContentClick: false,
@@ -317,21 +315,12 @@
                                         </div>
                                         <div class="col-md-5">
 
-                                            {% if experimental_protocol_picture %}
+                                            {% if experimental_protocol_image %}
 
                                                 <label class="control-label">{% trans "Graph representation" %}</label>
 
-{#                                                <img src="{{ experimental_protocol_picture }}" style="width:100%;cursor:zoom-in" onclick="document.getElementById('modal01').style.display='block'">#}
-{##}
-{#                                                <div id="modal01" class="w3-modal" onclick="this.style.display='none'">#}
-{#                                                    <span class="w3-closebtn w3-hover-red w3-container w3-padding-16 w3-display-topright">&times;</span>#}
-{#                                                    <div class="w3-modal-content w3-animate-zoom">#}
-{#                                                        <img src="{{ experimental_protocol_picture }}" style="width:100%">#}
-{#                                                    </div>#}
-{#                                                </div>#}
-
-                                                <a class="test-popup-link" href="{{ experimental_protocol_picture }}">
-                                                    <img src="{{ experimental_protocol_picture }}" style="width: 100%" />
+                                                <a class="experimental-protocol-image-popup-link" href="{{ experimental_protocol_image }}">
+                                                    <img src="{{ experimental_protocol_image }}" style="width: 100%" />
                                                 </a>
 
                                             {% endif %}

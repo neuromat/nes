@@ -105,31 +105,31 @@
                         <table class="table table-striped">
                             <thead>
                                 <tr>
-                                    <th>{% trans "First Name" %}</th>
-                                    <th>{% trans "Last Name" %}</th>
+                                    <th>{% trans "Name" %}</th>
                                     <th>{% trans "E-mail" %}</th>
-                                    <th>{% trans "Is coordinator" %}</th>
-                                    <th>{% trans "Remove" %}</th>
+                                    <th style="text-align: center">{% trans "Is coordinator" %}</th>
+                                    <th style="text-align: center">{% trans "Remove" %}</th>
                                 </tr>
                             </thead>
                             <tbody>
                             {% for team_person in team.team_persons.all %}
                                 <tr>
                                     <td>
-                                        <a data-toggle="tooltip" data-placement="left" title="{% trans "Visualize" %}" href="/team/team_person/{{ team_person.id }}/">{{ team_person.person.first_name }}</a>
-                                    </td>
-                                    <td>
-                                        <a data-toggle="tooltip" data-placement="left" title="{% trans "Visualize" %}" href="/team/team_person/{{ team_person.id }}/">{{ team_person.person.last_name }}</a>
+                                        {{ team_person.person.first_name }} {{ team_person.person.last_name }}
                                     </td>
                                     <td>
                                         {{ team_person.person.email }}
                                     </td>
-                                    <td>
-                                        {% if team_person.is_coordinator %}<span class="glyphicon glyphicon-ok"></span>{% endif %}
+                                    <td style="text-align: center">
+                                        {% if team_person.is_coordinator %}
+                                            <a href="#"><span class="glyphicon glyphicon-check" onclick="show_modal_alter_is_coordinator({{ team_person.id }});"></span></a>
+                                        {% else %}
+                                            <a href="#"><span class="glyphicon glyphicon-unchecked"  onclick="show_modal_alter_is_coordinator({{ team_person.id }});"></span></a>
+                                        {% endif %}
                                     </td>
-                                    <td>
+                                    <td style="text-align: center">
                                       {% if not creating and perms.auth.delete_person and team_person_id == person.id %}
-                                        <a class="btn glyphicon glyphicon-remove" style="color: indianred;" data-toggle="tooltip" data-placement="right" onclick="show_modal_remove_team_person({{ team_person.id }});" title="{% trans "Delete person from the team" %}"></a>
+                                         <a class="btn glyphicon glyphicon-remove" style="color: indianred;" data-toggle="tooltip" data-placement="right" onclick="show_modal_remove_team_person({{ team_person.id }});" title="{% trans "Delete person from the team" %}"></a>
                                       {% endif %}
                                     </td>
                                 </tr>
@@ -224,6 +224,28 @@
             </div>
         </div>
     </div>
+
+
+    <div class="modal fade" id="modalComponentIs_coordinator" tabindex="-1" role="dialog" aria-labelledby="myModalLabel"
+         aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-body" id="modalIs_coordinatorMessage">
+                    {% trans "Are you sure you want to change the coordinator status for this person?" %}
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-default" data-dismiss="modal">{% trans "Cancel" %}</button>
+
+                    <button class="btn btn-primary" type="submit" name="action" value="is_coordinator-" id="changeIsCoordinator" style="background-color: indianred; color: #ffffff">
+                        {% trans "Change Is_coordinator" %}
+                    </button>
+
+                </div>
+            </div>
+        </div>
+    </div>
+
+
 
 {% endblock %}
 

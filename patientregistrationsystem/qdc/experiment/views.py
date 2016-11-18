@@ -49,7 +49,7 @@ from experiment.models import Experiment, Subject, QuestionnaireResponse, Subjec
     ADConverter, StandardizationSystem, Muscle, MuscleSubdivision, MuscleSide, \
     EMGElectrodePlacement, EMGSurfacePlacement, TMS, TMSSetting, TMSDeviceSetting, TMSDevice, Software, \
     EMGIntramuscularPlacement, EMGNeedlePlacement, SubjectStepData, EMGPreamplifierFilterSetting, \
-    EMGElectrodePlacementSetting, TMSData, CoilOrientation, TMSLocalizationSystem, HotSpot
+    EMGElectrodePlacementSetting, TMSData, CoilOrientation, ResearchProjectCollaboration, TMSLocalizationSystem, HotSpot
 from experiment.forms import ExperimentForm, QuestionnaireResponseForm, FileForm, GroupForm, InstructionForm, \
     ComponentForm, StimulusForm, BlockForm, ComponentConfigurationForm, ResearchProjectForm, NumberOfUsesToInsertForm, \
     EEGDataForm, EEGSettingForm, EquipmentForm, EEGForm, EEGAmplifierForm, \
@@ -67,7 +67,7 @@ from experiment.forms import ExperimentForm, QuestionnaireResponseForm, FileForm
     SoftwareRegisterForm, SoftwareVersionRegisterForm, EMGIntramuscularPlacementForm, \
     EMGSurfacePlacementRegisterForm, EMGIntramuscularPlacementRegisterForm, EMGNeedlePlacementRegisterForm, \
     SubjectStepDataForm, EMGPreamplifierFilterSettingForm, CoilModelForm, TMSDataForm, TMSLocalizationSystemForm, \
-    HotSpotForm
+    HotSpotForm, CollaborationForm
 
 from export.export import create_directory
 
@@ -174,6 +174,28 @@ def research_project_view(request, research_project_id, template_name="experimen
         research_project_form.fields[field].widget.attrs['disabled'] = True
 
     if request.method == "POST":
+
+        if request.POST['action'][:20] == "change_collaborator-":
+            collaborator = get_object_or_404(ResearchProjectCollaboration, pk=request.POST['action'][20:])
+            try:
+                collaborator.is_coordinator = not collaborator.is_coordinator
+                collaborator.save()
+                messages.success(request, _('Is coordinator status successfully changed.'))
+            except ProtectedError:
+                messages.error(request, _("Error trying to the status of the coordinator."))
+            redirect_url = reverse("research_project_view", args=(research_project_id,))
+            return HttpResponseRedirect(redirect_url)
+
+        if request.POST['action'][:20] == "remove_collaborator-":
+            collaborator = get_object_or_404(ResearchProjectCollaboration, pk=request.POST['action'][20:])
+            try:
+                collaborator.delete()
+                messages.success(request, _('Collaborator removed successfully from the Research Project.'))
+            except ProtectedError:
+                messages.error(request, _("Error trying to delete a collaborator from the Research Project."))
+            redirect_url = reverse("research_project_view", args=(research_project_id,))
+            return HttpResponseRedirect(redirect_url)
+
         if request.POST['action'] == "remove":
             if QuestionnaireResponse.objects.filter(
                     subject_of_group__group__experiment__research_project_id=research_project_id).count() == 0:
@@ -198,6 +220,7 @@ def research_project_view(request, research_project_id, template_name="experimen
 
     context = {"can_change": get_can_change(request.user, research_project),
                "experiments": research_project.experiment_set.order_by('title'),
+               "collaborators": research_project.collaborators.order_by('team_person__person__first_name'),
                "keywords": research_project.keywords.order_by('name'),
                "research_project": research_project,
                "research_project_form": research_project_form}
@@ -318,6 +341,35 @@ def keyword_remove_ajax(request, research_project_id, keyword_id):
 
     redirect_url = reverse("research_project_view", args=(research_project_id,))
     return HttpResponseRedirect(redirect_url)
+
+
+@login_required
+@permission_required('experiment.add_experiment')
+def collaborator_create(request, research_project_id, template_name="experiment/collaborator_register.html"):
+    research_project = get_object_or_404(ResearchProject, pk=research_project_id)
+
+    check_can_change(request.user, research_project)
+
+    collaborator_form = CollaborationForm(request.POST or None, initial={'research_project': research_project_id})
+
+    if request.method == "POST":
+        if request.POST['action'] == "save":
+            if collaborator_form.is_valid():
+                collaborator_added = collaborator_form.save(commit=False)
+                collaborator_added.research_project = research_project
+                collaborator_added.save()
+
+                messages.success(request, _('Collaborator created successfully.'))
+
+                redirect_url = reverse("research_project_view", args=(research_project_id,))
+                return HttpResponseRedirect(redirect_url)
+
+    context = {"research_project": ResearchProject.objects.get(id=research_project_id),
+               "collaborator_form": collaborator_form,
+               "creating": True,
+               "editing": True}
+
+    return render(request, template_name, context)
 
 
 @login_required
@@ -583,13 +635,14 @@ def group_view(request, group_id, template_name="experiment/group_register.html"
             raise PermissionDenied
 
     experimental_protocol_description = None
-    experimental_protocol_picture = None
+    experimental_protocol_image = None
 
     if group.experimental_protocol:
-        experimental_protocol_description = get_experimental_protocol_description(group.experimental_protocol,
-                                                                                  request.LANGUAGE_CODE)
+        experimental_protocol_description = get_experimental_protocol_description(
+            group.experimental_protocol, request.LANGUAGE_CODE)
 
-        experimental_protocol_picture = get_experimental_protocol_picture(group.experimental_protocol, request.LANGUAGE_CODE)
+        experimental_protocol_image = get_experimental_protocol_image(
+            group.experimental_protocol, request.LANGUAGE_CODE)
 
     context = {"can_change": can_change,
                "classification_of_diseases_list": group.classification_of_diseases.all(),
@@ -601,7 +654,7 @@ def group_view(request, group_id, template_name="experiment/group_register.html"
                "editing": False,
                "experimental_protocol_description": experimental_protocol_description,
                "number_of_subjects": SubjectOfGroup.objects.all().filter(group=group).count(),
-               "experimental_protocol_picture": experimental_protocol_picture}
+               "experimental_protocol_image": experimental_protocol_image}
 
     return render(request, template_name, context)
 
@@ -5481,8 +5534,6 @@ def tms_data_edit(request, tms_data_id, tab):
 
     pulse_stimulus = get_pulse_stimulus_name(tms_data.tms_setting.tms_device_setting.pulse_stimulus_type)
 
-    # tms_position_selected = None
-
     if request.method == "POST":
 
         if request.POST['action'] == "save":
@@ -5507,7 +5558,7 @@ def tms_data_edit(request, tms_data_id, tab):
 
                 if hotspot_form.is_valid() and 'localization_system_selection':
                     if hotspot_form.has_changed():
-                        localization_system_val = request.POST['localization_system_selection']
+                        localization_system_val = request.POST['localization_system_selection'].split(',')[0]
                         localization_system = TMSLocalizationSystem.objects.get(pk=localization_system_val)
 
                         hotspot_to_update = hotspot_form.save(commit=False)
@@ -5532,22 +5583,18 @@ def tms_data_edit(request, tms_data_id, tab):
         if tab == "1":
             template_name = "experiment/subject_tms_data_form.html"
             hotspot_form = None
-            # tms_position_form = None
             localization_system_selected = None
         else:
             template_name = "experiment/tms_data_position_setting.html"
             if hasattr(tms_data, 'hotspot'):
                 hotspot_form = HotSpotForm(request.POST or None, instance=tms_data.hotspot)
-                # tms_position = get_object_or_404(TMSPosition, pk=tms_data.hotspot.tms_position_id)
-                # tms_position_form = TMSPositionForm(request.POST or None, instance=tms_position)
-                # localization_system_selected = get_object_or_404(TMSLocalizationSystem,
-                #                                                  pk=tms_position.tms_localization_system_id)
-                # tms_position_selected = get_object_or_404(TMSPosition, pk=tms_data.hotspot.tms_position_id)
+
+                localization_system_selected = get_object_or_404(TMSLocalizationSystem,
+                                                                 pk=tms_data.hotspot.tms_localization_system_id)
             else:
                 hotspot_form = HotSpotForm(request.POST or None)
-                # tms_position_form = TMSPositionForm(request.POST or None)
                 localization_system_selected = None
-                # tms_position_selected = None
+
 
     context = {"group": tms_data.subject_of_group.group,
                "subject": tms_data.subject_of_group.subject,
@@ -5555,12 +5602,9 @@ def tms_data_edit(request, tms_data_id, tab):
                "tms_data": tms_data,
                "pulse_stimulus": pulse_stimulus,
                "tms_setting_default_id": tms_step.tms_setting_id,
-               # "tms_position_form": tms_position_form,
                "hotspot_form": hotspot_form,
                "tms_localization_system_list": TMSLocalizationSystem.objects.all(),
                "localization_system_selected": localization_system_selected,
-               # "tms_position_selected": tms_position_selected,
-               # "tms_position_list": TMSPosition.objects.all(),
                "editing": True,
                "tab": tab
                }
@@ -5579,10 +5623,15 @@ def get_pulse_stimulus_name(pulse_stimulus_type):
 
 @login_required
 @permission_required('experiment.change_experiment')
-def get_pulse_by_tms_setting(tms_setting_id):
+def get_pulse_by_tms_setting(request, tms_setting_id):
 
     tms_setting = get_object_or_404(TMSSetting, pk=tms_setting_id)
-    response_data = get_pulse_stimulus_name(tms_setting.tms_device_setting.pulse_stimulus_type)
+    stimulus_name = get_pulse_stimulus_name(tms_setting.tms_device_setting.pulse_stimulus_type)
+
+    response_data = {
+        'type': tms_setting.tms_device_setting.pulse_stimulus_type,
+        'name': stimulus_name
+    }
 
     return HttpResponse(json.dumps(response_data), content_type='application/json')
 
@@ -5607,20 +5656,19 @@ def tms_data_position_setting_register(request, tms_data_id, template_name="expe
             if request.POST['action'] == "save":
 
                 if hotspot_form.is_valid() and 'localization_system_selection':
-                    if hotspot_form.has_changed():
-                        localization_system_val = request.POST['localization_system_selection']
-                        localization_system = TMSLocalizationSystem.objects.get(pk=localization_system_val)
+                    localization_system_val = request.POST['localization_system_selection']
+                    localization_system = TMSLocalizationSystem.objects.get(pk=localization_system_val.split(',')[0])
 
-                        hotspot_to_update = hotspot_form.save(commit=False)
-                        hotspot_to_update.tms_localization_system = localization_system
-                        hotspot_to_update.tms_data = tms_data
-                        hotspot_to_update.save()
+                    hotspot_to_update = hotspot_form.save(commit=False)
+                    hotspot_to_update.tms_localization_system = localization_system
+                    hotspot_to_update.tms_data = tms_data
+                    hotspot_to_update.save()
                         # Se der erro aqui, como fazer reverse de tms_position????
 
-                        messages.success(request, _('TMS position updated successfully.'))
+                    messages.success(request, _('TMS position updated successfully.'))
 
-                    else:
-                        messages.success(request, _('There is no changes to save.'))
+                else:
+                    messages.success(request, _('There is no changes to save.'))
 
                 redirect_url = reverse("tms_data_position_setting_view", args=(tms_data_id,))
                 return HttpResponseRedirect(redirect_url)
@@ -5634,7 +5682,6 @@ def tms_data_position_setting_register(request, tms_data_id, template_name="expe
         "tms_data": tms_data,
         "tms_setting_default_id": tms_step.tms_setting_id,
         "tms_localization_system_list": localization_system_list,
-        # "tms_position_list": tms_position_list,
         "hotspot_form": hotspot_form,
         "tab": "2"
     }
@@ -5668,22 +5715,15 @@ def tms_data_position_setting_view(request, tms_data_id, template_name="experime
         if hasattr(tms_data, 'hotspot'):
             hotspot_form = HotSpotForm(request.POST or None, instance=tms_data.hotspot)
 
-            # tms_position = get_object_or_404(TMSPosition, pk=tms_data.hotspot.tms_position_id)
-
-            # tms_position_selected = get_object_or_404(TMSPosition, pk=tms_data.hotspot.tms_position_id)
             localization_system_selected = get_object_or_404(TMSLocalizationSystem,
                                                              pk=tms_data.hotspot.tms_localization_system_id)
 
         else:
             hotspot_form = HotSpotForm(request.POST or None)
-            # tms_position = None
-            # tms_position_selected = None
             localization_system_selected = None
+            redirect_url = reverse("tms_data_position_setting_register", args=(tms_data_id,))
+            return HttpResponseRedirect(redirect_url)
 
-        for field in hotspot_form.fields:
-            hotspot_form.fields[field].widget.attrs['disabled'] = True
-
-        # tms_position_list = TMSPosition.objects.all()
         tms_localization_system_list = TMSLocalizationSystem.objects.all()
 
     context = {"can_change": get_can_change(request.user, tms_data.subject_of_group.group.experiment.research_project),
@@ -5693,10 +5733,7 @@ def tms_data_position_setting_view(request, tms_data_id, template_name="experime
                "subject": tms_data.subject_of_group.subject,
                "tms_data": tms_data,
                "tms_setting_default_id": tms_step.tms_setting_id,
-               # "tms_position": tms_position,
                "hotspot_form": hotspot_form,
-               # "tms_position_selected": tms_position_selected,
-               # "tms_position_list": tms_position_list,
                "tms_localization_system_list": tms_localization_system_list,
                "localization_system_selected": localization_system_selected,
                "tab": "2"
@@ -5971,156 +6008,153 @@ def get_experimental_protocol_description(experimental_protocol, language_code):
     return get_description_from_experimental_protocol_tree(tree)
 
 
-def get_experimental_protocol_picture(experimental_protocol, language_code):
+def get_subgraph(block: Block, node_identifier=""):
 
-    # tree = get_block_tree(experimental_protocol.id, language_code)
+    first_node = None
+    last_node = None
 
-    # nodes = get_nodes_from_experimental_protocol_tree(tree)
+    # create a subgraph
+    subgraph = pydot.Cluster(graph_name='subgraph_' + node_identifier, label=clean(block.identification),
+                             labeljust="left", pencolor="#757575")
+
+    # Paralel blocks have additional start and end points
+    if block.type == Block.PARALLEL_BLOCK:
+
+        # create start and end points
+        start_node = pydot.Node('start_' + node_identifier, label='', style="filled", shape='diamond',
+                                fillcolor='turquoise4', height=.1, width=.1)
+        end_node = pydot.Node('end_' + node_identifier, label='', style="filled", shape='diamond',
+                              fillcolor='turquoise4', height=.1, width=.1)
+        subgraph.add_node(start_node)
+        subgraph.add_node(end_node)
+
+        # defining first and last nodes
+        first_node = start_node
+        last_node = end_node
+
+    # For each use of step
+    previous_node = None
+    for component_configuration in ComponentConfiguration.objects.filter(parent_id=block.id).order_by('order'):
+
+        # get the component
+        component = component_configuration.component
+
+        # create node or subgraph
+        if component.component_type == "block":
+
+            new_subgraph, new_first_node, new_last_node = \
+                get_subgraph(get_object_or_404(Block, id=component.id),
+                             node_identifier + '_' + str(component_configuration.id))
+            subgraph.add_subgraph(new_subgraph)
+
+            if block.type == Block.PARALLEL_BLOCK:
+                subgraph.add_edge(pydot.Edge(start_node, new_first_node))
+                subgraph.add_edge(pydot.Edge(new_last_node, end_node))
+            else:
+                if previous_node:
+                    subgraph.add_edge(pydot.Edge(previous_node, new_first_node))
+                previous_node = new_last_node
+
+                last_node = new_last_node
+                if not first_node:
+                    first_node = new_first_node
+
+        else:
+
+            color_node = "gainsboro"
+            if component.component_type == "instruction":
+                color_node = "AntiqueWhite1"
+            elif component.component_type == "questionnaire":
+                color_node = "PaleGreen2"
+            elif component.component_type == "stimulus":
+                color_node = "tan1"
+            elif component.component_type == "task":
+                color_node = "#ffffba"
+            elif component.component_type == "task_experiment":
+                color_node = "#f9d62e"
+            elif component.component_type == "eeg":
+                color_node = "#99ccff"
+            elif component.component_type == "emg":
+                color_node = "#f1cbff"
+            elif component.component_type == "tms":
+                color_node = "#fe8181"
+
+            new_node = pydot.Node(
+                'node_' + node_identifier + '_' + str(component_configuration.id),
+                label=clean(split_node_identification_for_graph(component.identification + ' (' +
+                                                                get_component_name(component.component_type) + ')')),
+                style="filled", fillcolor=color_node, shape='rectangle')
+
+            subgraph.add_node(new_node)
+
+            if block.type == Block.PARALLEL_BLOCK:
+                subgraph.add_edge(pydot.Edge(start_node, new_node))
+                subgraph.add_edge(pydot.Edge(new_node, end_node))
+            else:
+                if previous_node:
+                    subgraph.add_edge(pydot.Edge(previous_node, new_node))
+                previous_node = new_node
+
+                last_node = new_node
+                if not first_node:
+                    first_node = new_node
+
+    return subgraph, first_node, last_node
+
+
+def split_node_identification_for_graph(identification):
+
+    result = []
+    current_line = ''
+
+    for item in identification.split():
+
+        if not current_line:
+            current_line = item
+        else:
+            if len(current_line + item) > 10:
+                result.append(current_line)
+                current_line = item
+            else:
+                current_line += ' ' + item
+
+    result.append(current_line)
+
+    return '\n'.join(result)
+
+
+def get_experimental_protocol_image(experimental_protocol, language_code):
 
     graph = pydot.Dot(graph_type='digraph')
 
-    # 'A'
-    subgraph_a = pydot.Cluster(graph_name='A', label='Root of the experimental protocol')
-    graph.add_subgraph(subgraph_a)
+    subgraph, first_node, last_node = get_subgraph(get_object_or_404(Block, id=experimental_protocol.id))
+    graph.add_subgraph(subgraph)
 
-    # 'B'
-    node_b = pydot.Node('B', label='Initial instruction\n(instruction)')
-    subgraph_a.add_node(node_b)
-
-    # 'C-1'
-    subgraph_c1 = pydot.Cluster(graph_name='C1', label='Experiment - Training')
-    subgraph_a.add_subgraph(subgraph_c1)
-
-    node_c1_start = pydot.Node('+', label='', style="filled", shape='diamond', fillcolor='turquoise4', height=.1, width=.1)
-    node_c1_end = pydot.Node('.', label='', style="filled", shape='diamond', fillcolor='turquoise4', height=.1, width=.1)
-    node_e1 = pydot.Node('E1', label='EEG collect\n(eeg)')
-    node_f1 = pydot.Node('F1', label='Video about butterflies\n(stimulus)')
-    subgraph_c1.add_node(node_c1_start)
-    subgraph_c1.add_node(node_c1_end)
-    subgraph_c1.add_node(node_e1)
-    subgraph_c1.add_node(node_f1)
-
-    subgraph_c1.add_edge(pydot.Edge(node_c1_start, node_e1))
-    subgraph_c1.add_edge(pydot.Edge(node_c1_start, node_f1))
-    subgraph_c1.add_edge(pydot.Edge(node_e1, node_c1_end))
-    subgraph_c1.add_edge(pydot.Edge(node_f1, node_c1_end))
-
-    graph.add_edge(pydot.Edge(node_b, node_c1_start))
-
-    # 'D'
-    node_d = pydot.Node('D', label='Session pause\n(pause)')
-    subgraph_a.add_node(node_d)
-
-    graph.add_edge(pydot.Edge(node_c1_end, node_d))
-
-    # 'C-2'
-    subgraph_c2 = pydot.Cluster(graph_name='C2', label='Experiment - Execution')
-    subgraph_a.add_subgraph(subgraph_c2)
-
-    node_c2_start = pydot.Node('i2', label='', style="filled", shape='diamond', fillcolor='turquoise4', height=.1, width=.1)
-    node_c2_end = pydot.Node('f2',  label='', style="filled", shape='diamond', fillcolor='turquoise4', height=.1, width=.1)
-    node_e2 = pydot.Node('E2', label='EEG collect\n(eeg)')
-    node_f2 = pydot.Node('F2', label='Video about butterflies\n(stimulus)')
-    subgraph_c2.add_node(node_c2_start)
-    subgraph_c2.add_node(node_c2_end)
-    subgraph_c2.add_node(node_e2)
-    subgraph_c2.add_node(node_f2)
-
-    subgraph_c2.add_edge(pydot.Edge(node_c2_start, node_e2))
-    subgraph_c2.add_edge(pydot.Edge(node_c2_start, node_f2))
-    subgraph_c2.add_edge(pydot.Edge(node_e2, node_c2_end))
-    subgraph_c2.add_edge(pydot.Edge(node_f2, node_c2_end))
-
-    graph.add_edge(pydot.Edge(node_d, node_c2_start))
-
-    # 'C-3'
-    # subgraph_c3 = pydot.Cluster(graph_name='C3', label='Experiment - Execution2')
-    # subgraph_a.add_subgraph(subgraph_c3)
+    # main cluster
+    # subgraph = pydot.Cluster(graph_name='Component' + str(experimental_protocol.id),
+    #                          label=experimental_protocol.identification)
+    # graph.add_subgraph(subgraph)
     #
-    # node_c3_start = pydot.Node('i3', label='', style="filled", shape='diamond', fillcolor='turquoise4', height=.1,
-    #                            width=.1)
-    # node_c3_end = pydot.Node('f3', label='', style="filled", shape='diamond', fillcolor='turquoise4', height=.1,
-    #                          width=.1)
-    # node_e3 = pydot.Node('E3', label='EEG collect\n(eeg)')
-    # node_f3 = pydot.Node('F3', label='Video about butterflies\n(stimulus)')
-    # subgraph_c3.add_node(node_c3_start)
-    # subgraph_c3.add_node(node_c3_end)
-    # subgraph_c3.add_node(node_e3)
-    # subgraph_c3.add_node(node_f3)
-    #
-    # subgraph_c3.add_edge(pydot.Edge(node_c3_start, node_e3))
-    # subgraph_c3.add_edge(pydot.Edge(node_c3_start, node_f3))
-    # subgraph_c3.add_edge(pydot.Edge(node_e3, node_c3_end))
-    # subgraph_c3.add_edge(pydot.Edge(node_f3, node_c3_end))
-    #
-    # graph.add_edge(pydot.Edge(node_c2_end, node_c3_start))
+    # node_b = pydot.Node('B', label='Initial instruction\n(instruction)', shape='square')
+    # subgraph.add_node(node_b)
 
-    # 'C-4'
-    # subgraph_c4 = pydot.Cluster(graph_name='C4', label='Experiment - Execution3')
-    # subgraph_a.add_subgraph(subgraph_c4)
-    #
-    # node_c4_start = pydot.Node('i4', label='', style="filled", shape='diamond', fillcolor='turquoise4', height=.1,
-    #                            width=.1)
-    # node_c4_end = pydot.Node('f4', label='', style="filled", shape='diamond', fillcolor='turquoise4', height=.1,
-    #                          width=.1)
-    # node_e4 = pydot.Node('E4', label='EEG collect\n(eeg)')
-    # node_f4 = pydot.Node('F4', label='Video about butterflies\n(stimulus)')
-    # subgraph_c4.add_node(node_c4_start)
-    # subgraph_c4.add_node(node_c4_end)
-    # subgraph_c4.add_node(node_e4)
-    # subgraph_c4.add_node(node_f4)
-    #
-    # subgraph_c4.add_edge(pydot.Edge(node_c4_start, node_e4))
-    # subgraph_c4.add_edge(pydot.Edge(node_c4_start, node_f4))
-    # subgraph_c4.add_edge(pydot.Edge(node_e4, node_c4_end))
-    # subgraph_c4.add_edge(pydot.Edge(node_f4, node_c4_end))
-    #
-    # graph.add_edge(pydot.Edge(node_c2_end, node_c4_start))
-
-    # 'C-5'
-    subgraph_c5 = pydot.Cluster(graph_name='C5', label='Transcranial Magnetic Stimulation')
-    subgraph_a.add_subgraph(subgraph_c5)
-
-    # node_c3_start = pydot.Node('i3', label='', style="filled", shape='diamond', fillcolor='turquoise4', height=.1,
-    #                            width=.1)
-    # node_c3_end = pydot.Node('f3', label='', style="filled", shape='diamond', fillcolor='turquoise4', height=.1,
-    #                          width=.1)
-    node_g = pydot.Node('G', label='TMS stimulation\n(tms)')
-    # node_f3 = pydot.Node('F3', label='Video about butterflies\n(stimulus)')
-    # subgraph_c3.add_node(node_c3_start)
-    # subgraph_c3.add_node(node_c3_end)
-    subgraph_c5.add_node(node_g)
-    # subgraph_c3.add_node(node_f3)
-
-    # subgraph_c5.add_edge(pydot.Edge(node_g_start, node_e3))
-    # subgraph_c5.add_edge(pydot.Edge(node_c3_start, node_f3))
-    # subgraph_c5.add_edge(pydot.Edge(node_g, node_c3_end))
-    # subgraph_c5.add_edge(pydot.Edge(node_f3, node_c3_end))
-
-    graph.add_edge(pydot.Edge(node_d, node_g))
+    initial_node = pydot.Node('initial_node', label='', style="filled", shape='circle', fillcolor='green')
+    ending_node = pydot.Node('ending_node', label='', style="filled", shape='circle', fillcolor='red')
+    subgraph.add_node(initial_node)
+    subgraph.add_node(ending_node)
+    if first_node:
+        subgraph.add_edge(pydot.Edge(initial_node, first_node))
+    if last_node:
+        subgraph.add_edge(pydot.Edge(last_node, ending_node))
 
     # graph file name
-    file_name = "experimental_erotocol_" + str(experimental_protocol.id) + ".png"
+    file_name = "experimental_protocol_" + str(experimental_protocol.id) + ".png"
 
     # writing
     errors, path_complete = create_directory(settings.MEDIA_ROOT, "temp")
     graph.write_png(path.join(path_complete, file_name))
 
     return path.join(path.join(settings.MEDIA_URL, "temp"), file_name)
-
-
-def get_nodes_from_experimental_protocol_tree(component):
-    identification = component.identification
-    nodes = []
-
-    # Sub-steps
-    if len(component['list_of_component_configuration']) > 0:
-
-        for component_configuration in component['list_of_component_configuration']:
-            nodes.append((identification, component_configuration['component'].identification))
-            # nodes = get_nodes_from_experimental_protocol_tree(component_configuration['component'])
-
-    return nodes
 
 
 def get_description_from_experimental_protocol_tree(component, numeration='', component_configuration_attributes=[]):
@@ -6140,7 +6174,7 @@ def get_description_from_experimental_protocol_tree(component, numeration='', co
     # Sub-steps
     num_of_sub_steps = len(component['list_of_component_configuration'])
     if num_of_sub_steps > 0:
-        description += '\t-' + _('Sub-steps: ( ')
+        description += '\t-' + _('Sub-steps: (')
         for item in range(1, num_of_sub_steps + 1):
             description += (numeration + '.' if numeration else '') + str(item)
             description += ', ' if item != num_of_sub_steps else ''
@@ -6183,7 +6217,7 @@ def get_block_tree(component_id, language_code=None):
                 {'component_configuration_attributes': component_configuration_attributes,
                  'component': component_info})
 
-    return {'identificaton': component.identification,
+    return {'identification': component.identification,
             'component_type': component.component_type,
             'attributes': attributes,
             'list_of_component_configuration': list_of_component_configuration}

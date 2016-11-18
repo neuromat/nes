@@ -17,6 +17,9 @@ urlpatterns = patterns(
     url(r'^research_project/edit/(?P<research_project_id>\d+)/$', 'research_project_update',
         name='research_project_edit'),
 
+    # collaborator
+    url(r'^research_project/(?P<research_project_id>\d+)/new_collaborator/$', 'collaborator_create', name='collaborator_new'),
+
     # experiment
     url(r'^research_project/(?P<research_project_id>\d+)/new_experiment/$', 'experiment_create', name='experiment_new'),
     url(r'^(?P<experiment_id>\d+)/$', 'experiment_view', name='experiment_view'),

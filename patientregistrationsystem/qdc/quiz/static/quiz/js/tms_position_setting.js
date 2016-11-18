@@ -16,22 +16,27 @@ window.onload = function() {
         div_localization_system_image.hide();
     }else{
         var canvas = document.getElementById("tmsMapCanvas");
-        var ctx = canvas.getContext("2d");
-        var imageObj = new Image();
-        hotspot_x = $("#id_coordinate_x");
-        hotspot_y = $("#id_coordinate_y");
+        if(canvas != null){
+            var ctx = canvas.getContext("2d");
+            var imageObj = new Image();
+            hotspot_x = $("#id_coordinate_x");
+            hotspot_y = $("#id_coordinate_y");
+            tms_name = $("#id_name");
 
-        var x = parseInt(hotspot_x.val());
-        var y = parseInt(hotspot_y.val());
+            var x = parseInt(hotspot_x.val());
+            var y = parseInt(hotspot_y.val());
+            var name = tms_name.val();
 
-        imageObj.onload = function(){
-            ctx.drawImage(imageObj, 0,0,600,600);
-            pintar(x,y);
-        };
-        imageObj.src = localization_system_selected_id.val();
-        map_file = imageObj.src;
-        if(editing_id.val() == "True")
-            canvas.addEventListener("mousedown", getPosition, false);
+            imageObj.onload = function(){
+                ctx.drawImage(imageObj, 0,0,600,600);
+                pintar(x,y,name);
+            };
+            imageObj.src = localization_system_selected_id.val();
+            map_file = imageObj.src;
+            if(editing_id.val() == "True")
+                canvas.addEventListener("mousedown", getPosition, false);
+        }
+        
     }
 
     select_localization_system.change(function () {
@@ -76,7 +81,7 @@ window.onload = function() {
 
 };
 
-function pintar(x,y)
+function pintar(x,y,name)
 {
     var canvas = document.getElementById("tmsMapCanvas");
     var ctx = canvas.getContext("2d");
@@ -85,10 +90,12 @@ function pintar(x,y)
     ctx.fillStyle = "red";
     ctx.fill();
     ctx.stroke();
+    ctx.font="18px sans-serif";
+    ctx.fillText(name, x+5, y-5);
 };
 
 // função que recarrega a imagem no canvas
-function refresh_Screen(x,y){
+function refresh_Screen(x,y,name){
     var canvas = document.getElementById("tmsMapCanvas");
     var ctx = canvas.getContext("2d");
     ctx.clearRect(0, 0, canvas.width,canvas.height);
@@ -97,7 +104,7 @@ function refresh_Screen(x,y){
 
     imageObj.onload = function() {
         ctx.drawImage(imageObj, 0, 0, 600, 600);
-        pintar(x,y);
+        pintar(x,y,name);
     };
     // if(localization_system_selected_id.value == ""){
     //     var select_localization_system = $("#id_localization_system_selection");
@@ -121,7 +128,7 @@ function getPosition(event) {
     var canvas = document.getElementById("tmsMapCanvas");
     var hotspot_x = document.getElementById("id_coordinate_x");
     var hotspot_y = document.getElementById("id_coordinate_y");
-    var tms_position = document.getElementById("id_tms_position");
+    var tms_position = document.getElementById("id_name");
 
     context = canvas.getContext("2d");
 
@@ -142,7 +149,7 @@ function getPosition(event) {
             hotspot_y.value = y;
             tms_position.value = name;
 
-            refresh_Screen(x,y);
+            refresh_Screen(x,y,name);
         }
 
     }
