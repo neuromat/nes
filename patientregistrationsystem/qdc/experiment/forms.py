@@ -1181,22 +1181,9 @@ class TMSDataForm(ModelForm):
             'time_between_mep_trials_high': TextInput(attrs={'class': 'form-control'}),
             'time_between_mep_trials_unit': Select(attrs={'class': 'form-control'}),
             'repetitive_pulse_frequency': TextInput(attrs={'class': 'form-control'}),
-            # 'coil_position_angle': TextInput(attrs={'class': 'form-control'}),
-            # 'file_format': Select(attrs={'class': 'form-control', 'required': "",
-            #                              'data-error': _('File format must be chosen.')}),
             'description': Textarea(attrs={'class': 'form-control',
                                            'rows': '4', 'required': "",
                                            'data-error': _('Description must be filled.')}),
-            # 'file_format_description': Textarea(attrs={'class': 'form-control',
-            #                                            'rows': '4', 'required': "",
-            #                                            'data-error': _('File format description must be filled.')}),
-            # 'tms_setting_reason_for_change':
-            #     Textarea(attrs={'class': 'form-control', 'rows': '4',
-            #                     'required': "",
-            #                     'data-error': _('Reason for change must be filled.')}),
-
-            # It is not possible to set the 'required' attribute because it affects the edit screen
-            # 'file': FileInput(attrs={'required': ""})
         }
 
     def __init__(self, *args, **kwargs):

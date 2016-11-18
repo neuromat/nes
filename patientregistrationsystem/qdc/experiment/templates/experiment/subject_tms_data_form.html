@@ -13,22 +13,48 @@
 
     <script>
         $(document).ready(function () {
-            var $id_tms_setting = $("#id_tms_setting");
-            var $id_pulse_stimulus = $("#id_pulse_stimulus");
+            var select_tms_setting = $("#id_tms_setting");
+            var pulse_type = $("#pulse_type");
+            var div_paired_pulse = $("#div_paired_pulse");
+            var div_repetitive_pulse = $("#div_repetitive_pulse");
+            var div_interval_pulses = $("#div_interval_pulses");
 
             {% if tms_setting_default_id %}
                 var $tms_setting_default_id = {{ tms_setting_default_id }};
             {% endif %}
 
-            $id_tms_setting.on('change', (function() {
-                var url = "/experiment/get_pulse_by_tms_setting/" + $id_tms_setting.val();
+            if(pulse_type.val() == 'paired_pulse'){
+                div_paired_pulse.show();
+            }else{
+                div_paired_pulse.hide();
+            }
 
-                $.getJSON(url, function (name) {
-                    $id_pulse_stimulus.value = name;
-                    select_tms_position_selection.html(options);
+            if(pulse_type.val() == 'repetitive_pulse'){
+                div_repetitive_pulse.show();
+                div_interval_pulses.hide();
+            }else{
+                div_repetitive_pulse.hide();
+                div_interval_pulses.show();
+            }
+
+            select_tms_setting.change(function () {
+                tms_setting_id = $(this).val();
+                var url = "/experiment/get_pulse_by_tms_setting/" + tms_setting_id;
+
+                $.getJSON(url, function (pulse_stimulus) {
+                    document.getElementById('id_pulse_stimulus').innerHTML = pulse_stimulus['name'];
+                    if(pulse_stimulus['type'] == 'paired_pulse') div_paired_pulse.show();
+                    else div_paired_pulse.hide();
+                    if(pulse_stimulus['type'] == 'repetitive_pulse'){
+                        div_repetitive_pulse.show();
+                        div_interval_pulses.hide();
+                    }else{
+                        div_repetitive_pulse.hide();
+                        div_interval_pulses.show();
+                    }
                 });
 
-            }));
+            });
         });
     </script>
 
@@ -159,6 +185,9 @@
                     <div id="data_collection" {% if tab == '1' %}class="tab-pane fade in active"{% else %}class="tab-pane fade"{% endif %}>
 
                         <h4></h4>
+                        <div hidden="hidden">
+                            <input id="pulse_type" type="text" value="{{ tms_data.tms_setting.tms_device_setting.pulse_stimulus_type }}">
+                        </div>
                         <div class="row">
                             <div class="col-xs-6 col-sm-6">
                                 <div class="form-group {% if tms_data_form.errors.date %}has-error{% endif %}">
@@ -206,28 +235,12 @@
                             </div>
                         </div>
 
-
-{#                        <div class="row" id="div-reason-for-change">#}
-{#                            <div class="col-xs-12 col-sm-12">#}
-{#                                <div class="form-group">#}
-{#                                    <label class="control-label">{% trans "Reason for change the TMS setting" %} <b style="color: red;">*</b></label>#}
-{#                                    {{ eeg_data_form.tms_setting_reason_for_change }}#}
-{#                                    <div class="help-block with-errors"></div>#}
-{#                                </div>#}
-{#                            </div>#}
-{#                        </div>#}
-
                         <div id="id_stimulation_setting" class="panel panel-default" style="border:1px solid lightgray;">
                             <div class="panel-heading"><b>{% trans "Stimulation Settings" %} -
                                 <label id="id_pulse_stimulus">{{ pulse_stimulus }}</label>
+
                                 </b></div>
                             <div class="panel-body" style="background-color: whitesmoke">
-{#                                <div class="row">#}
-{#                                    <div class="col-xs-6 col-sm-6">#}
-{#                                        <label>{% trans "Pulse stimulus type: " %}</label>#}
-{#                                            {{ tms_data.tms_setting.tms_device_setting.pulse_stimulus_type }}#}
-{#                                        </div>#}
-{#                                </div>#}
 
                                 <div class="row">
                                     <div class="col-xs-6 col-sm-6">
@@ -247,8 +260,8 @@
                                     </div>
                                 </div>
 
-                                {% if not tms_data.tms_setting.tms_device_setting.pulse_stimulus_type == 'repetitive_pulse' %}
-
+{#                                {% if not tms_data.tms_setting.tms_device_setting.pulse_stimulus_type == 'repetitive_pulse' %}#}
+                                <div id="div_interval_pulses">
                                     <div class="row">
                                         <div class="col-xs-6 col-sm-6">
                                             <div class="form-group">
@@ -266,11 +279,11 @@
                                             </div>
                                         </div>
                                     </div>
+                                </div>
+{#                                {% endif %}#}
 
-                                {% endif %}
-
-                                {% if tms_data.tms_setting.tms_device_setting.pulse_stimulus_type == 'paired_pulse' %}
-
+{#                                {% if tms_data.tms_setting.tms_device_setting.pulse_stimulus_type == 'paired_pulse' %}#}
+                                <div id="div_paired_pulse">
                                     <div class="row">
                                         <div class="col-xs-4 col-sm-4">
                                             <div class="form-group">
@@ -296,11 +309,11 @@
                                             </div>
                                         </div>
                                     </div>
+                                </div>
+{#                                {% endif %}#}
 
-                                {% endif %}
-
-                                {% if tms_data.tms_setting.tms_device_setting.pulse_stimulus_type == 'repetitive_pulse' %}
-
+{#                                {% if tms_data.tms_setting.tms_device_setting.pulse_stimulus_type == 'repetitive_pulse' %}#}
+                                <div id="div_repetitive_pulse">
                                     <div class="row">
                                         <div class="col-xs-6 col-sm-6">
                                             <div class="form-group">
@@ -310,8 +323,8 @@
                                             </div>
                                         </div>
                                     </div>
-
-                                {% endif %}
+                                </div>
+{#                                {% endif %}#}
 
                             </div>
                         </div>
