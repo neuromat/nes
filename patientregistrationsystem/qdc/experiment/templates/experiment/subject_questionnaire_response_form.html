@@ -7,7 +7,7 @@
 {% load subjects_tags %}
 
 {% block header %}
-
+    <script src="{% static 'quiz/js/subject_questionnaire_response_form.js' %}"></script>
 {% endblock %}
 
 {% block form %}
@@ -185,28 +185,34 @@
         </div>
 
         {% if completed %}
+
+            <div style="text-align: right; color: steelblue">
+                <input type="checkbox" id="id_show_unanswered_checkbox"> <label >{% trans "show unanswered questions" %}</label>
+            </div>
+
+            {% for group_of_questions in groups_of_questions %}
+
             <div class="container span6 offset3 well ">
                 <div class="col-md-10">
-                    {% for question_response in questionnaire_responses %}
-                        <div class="row">
+
+                    <h4><span class="glyphicon glyphicon-tag"></span> {{ group_of_questions.name }}</h4>
+                    <br/>
+
+                    {% for question_response in group_of_questions.questionnaire_responses %}
+                        <div class="row{% if question_response.no_response_flag %} no-response{% endif %}">
                             <div class="col-xs-12 col-sm-12">
                                 <div class="form-group">
                                     <div class="input-group input-group-sm">
-{#                                        <label>{{ question_response.question }}</label>#}
                                         {% if question_response.type == 'M' %}
                                             <label>
                                             {% if question_response.answer == 'Y'%}
-{#                                                <br/><input type="checkbox" value="answer" checked disabled>#}
                                                 <input type="checkbox" value="answer" checked disabled>
-
                                             {% else%}
-{#                                                <br/><input type="checkbox" value="answer" disabled>#}
                                                 <input type="checkbox" value="answer" disabled>
-
                                             {% endif %}
-                                             {{ question_response.question }}</label>
+                                            {{ question_response.question }}</label>
                                         {% else %}
-                                          <label>{{ question_response.question }}</label>
+                                            <label>{{ question_response.question }}</label>
                                             {% if question_response.type == 'D' %}
                                                 <input class="form-control" value="{{ question_response.answer|date:"d/m/Y" }}" type="text" disabled>
                                             {% else %}
@@ -221,13 +227,11 @@
                                                         <input class="form-control" value="{{ question_response.answer }}" type="text" disabled>
                                                     {% endif %}
                                                     {% if question_response.type == '|' and question_response.link %}
-{#                                                        <input class="form-control" value="{{ question_response.link }}" type="text" disabled>#}
                                                         <a target="_blank" href="{{ question_response.link }}" >{% trans "Uploaded file (LimeSurvey login required)" %}</a>
                                                     {% endif %}
                                                 {% endif %}
                                             {% endif %}
                                         {% endif %}
-{#                                    <label>{{ question_response.question }}</label>#}
                                     </div>
                                 </div>
                             </div>
@@ -235,6 +239,7 @@
                     {% endfor %}
                 </div>
             </div>
+            {% endfor %}
         {% endif %}
 
         <div class="btn-toolbar">

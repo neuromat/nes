@@ -4374,8 +4374,7 @@ def questionnaire_response_view(request, questionnaire_response_id,
     language_code = request.LANGUAGE_CODE
 
     # Get the responses for each question of the questionnaire.
-    survey_title, questionnaire_responses = get_questionnaire_responses(language_code, lime_survey_id, token_id,
-                                                                        request)
+    survey_title, groups_of_questions = get_questionnaire_responses(language_code, lime_survey_id, token_id, request)
 
     origin = get_origin(request)
 
@@ -4430,7 +4429,7 @@ def questionnaire_response_view(request, questionnaire_response_id,
                "questionnaire_response": questionnaire_response,
                "questionnaire_response_form": questionnaire_response_form,
                "questionnaire_response_id": questionnaire_response_id,
-               "questionnaire_responses": questionnaire_responses,
+               "groups_of_questions": groups_of_questions,
                "questionnaire_responsible": questionnaire_response.questionnaire_responsible,
                "patient": subject.patient,  # This is needed when origin=subject
                "status": status,

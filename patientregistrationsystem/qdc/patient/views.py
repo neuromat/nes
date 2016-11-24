@@ -1348,8 +1348,7 @@ def questionnaire_response_view(request, questionnaire_response_id,
     token_id = questionnaire_response.token_id
     language_code = request.LANGUAGE_CODE
 
-    survey_title, questionnaire_responses = get_questionnaire_responses(language_code, lime_survey_id, token_id,
-                                                                        request)
+    survey_title, groups_of_questions = get_questionnaire_responses(language_code, lime_survey_id, token_id, request)
 
     context = {
         "questionnaire_response_form": questionnaire_response_form,
@@ -1362,7 +1361,7 @@ def questionnaire_response_view(request, questionnaire_response_id,
         "origin": origin,
         "patient": questionnaire_response.patient,
         "questionnaire": questionnaire_response.survey,
-        "questionnaire_responses": questionnaire_responses,
+        "groups_of_questions": groups_of_questions,
         "questionnaire_title": survey_title,
         "showing": showing,
         "updating": True,
