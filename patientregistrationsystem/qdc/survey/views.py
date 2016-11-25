@@ -434,7 +434,6 @@ def survey_view(request, survey_id, template_name="survey/survey_register.html")
 def get_questionnaire_responses(language_code, lime_survey_id, token_id, request):
 
     groups_of_questions = []
-    questionnaire_responses = []
 
     surveys = Questionnaires()
     token = surveys.get_participant_properties(lime_survey_id, token_id, "token")
@@ -685,7 +684,6 @@ def get_questionnaire_responses(language_code, lime_survey_id, token_id, request
 
     surveys.release_session_key()
 
-    # return survey_title, questionnaire_responses
     return survey_title, groups_of_questions
 
 
