@@ -4,7 +4,7 @@ import datetime
 import json
 import random
 
-import numpy as np
+# import numpy as np
 
 import nwb
 
@@ -5209,28 +5209,28 @@ def eeg_data_export_nwb(request, eeg_data_id, some_number, process_requisition):
 
             number_of_channels = len(mne.pick_types(eeg_reading.reading.info, eeg=True))
 
-            number_of_samples = len(eeg_reading.reading._data[0])
-
-            sampling_rate = 0
-            if eeg_data.eeg_setting.eeg_amplifier_setting and \
-                    eeg_data.eeg_setting.eeg_amplifier_setting.sampling_rate:
-                sampling_rate = eeg_data.eeg_setting.eeg_amplifier_setting.sampling_rate
-
-            timestamps = np.arange(number_of_samples) * ((1 / sampling_rate) if sampling_rate else 0)
-
-            array_data = np.zeros((number_of_samples, number_of_channels))
-            for index_channel in range(number_of_channels):
-                channel_reading = \
-                    eeg_reading.reading._data[mne.pick_types(eeg_reading.reading.info, eeg=True)[index_channel]]
-                for index, value in enumerate(channel_reading):
-                    array_data[index][index_channel] = value
-
-            acquisition = neurodata.create_timeseries("ElectricalSeries", "data_collection", "acquisition")
-            acquisition.set_data(array_data, resolution=1.2345e-6)
-            acquisition.set_time(timestamps)
-            acquisition.set_value("num_samples", number_of_samples)
-            acquisition.set_value("electrode_idx", list(range(number_of_channels)))
-            acquisition.finalize()
+            # number_of_samples = len(eeg_reading.reading._data[0])
+            #
+            # sampling_rate = 0
+            # if eeg_data.eeg_setting.eeg_amplifier_setting and \
+            #         eeg_data.eeg_setting.eeg_amplifier_setting.sampling_rate:
+            #     sampling_rate = eeg_data.eeg_setting.eeg_amplifier_setting.sampling_rate
+            #
+            # timestamps = np.arange(number_of_samples) * ((1 / sampling_rate) if sampling_rate else 0)
+            #
+            # array_data = np.zeros((number_of_samples, number_of_channels))
+            # for index_channel in range(number_of_channels):
+            #     channel_reading = \
+            #         eeg_reading.reading._data[mne.pick_types(eeg_reading.reading.info, eeg=True)[index_channel]]
+            #     for index, value in enumerate(channel_reading):
+            #         array_data[index][index_channel] = value
+            #
+            # acquisition = neurodata.create_timeseries("ElectricalSeries", "data_collection", "acquisition")
+            # acquisition.set_data(array_data, resolution=1.2345e-6)
+            # acquisition.set_time(timestamps)
+            # acquisition.set_value("num_samples", number_of_samples)
+            # acquisition.set_value("electrode_idx", list(range(number_of_channels)))
+            # acquisition.finalize()
 
         # if eeg_reading.file_format.nes_code == "NEO-RawBinarySignalIO":
         #
