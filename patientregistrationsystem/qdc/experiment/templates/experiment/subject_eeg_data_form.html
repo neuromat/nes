@@ -360,6 +360,16 @@
                             </div>
                         </div>
 
+                        {% if sensors_image != "" %}
+                            <div class="row">
+                                <div class="col-xs-12 col-sm-12">
+                                    <div class="form-group">
+                                        <img src="{% static sensors_image %}" class="img-responsive center-block" width="800" height="600" style="margin: auto" >
+                                    </div>
+                                </div>
+                            </div>
+                        {% endif %}
+
                         {% if not editing and can_change %}
                             <div class="btn-group pull-left">
                                 <a href="/experiment/eeg_data/edit/{{ eeg_data.id }}/1" class="btn btn-primary">{% trans "Edit" %}</a>

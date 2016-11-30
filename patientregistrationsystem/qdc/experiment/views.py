@@ -4519,14 +4519,14 @@ def subject_eeg_view(request, group_id, subject_id,
             eeg_data_file.can_export_to_nwb = False
 
             # can export to nwb?
-            if eeg_data_file.eeg_reading.file_format:
-                if eeg_data_file.eeg_reading.file_format.nes_code == "MNE-RawFromEGI" and \
-                        eeg_data_file.eeg_setting.eeg_amplifier_setting and \
-                        eeg_data_file.eeg_setting.eeg_amplifier_setting.number_of_channels_used and \
-                        eeg_data_file.eeg_setting.eeg_amplifier_setting.number_of_channels_used == \
-                        len(mne.pick_types(eeg_data_file.eeg_reading.reading.info, eeg=True)):
-
-                    eeg_data_file.can_export_to_nwb = True
+            # if eeg_data_file.eeg_reading.file_format:
+            #     if eeg_data_file.eeg_reading.file_format.nes_code == "MNE-RawFromEGI" and \
+            #             eeg_data_file.eeg_setting.eeg_amplifier_setting and \
+            #             eeg_data_file.eeg_setting.eeg_amplifier_setting.number_of_channels_used and \
+            #             eeg_data_file.eeg_setting.eeg_amplifier_setting.number_of_channels_used == \
+            #             len(mne.pick_types(eeg_data_file.eeg_reading.reading.info, eeg=True)):
+            #
+            #         eeg_data_file.can_export_to_nwb = True
 
         eeg_collections.append(
             {'eeg_configuration': eeg_configuration,
@@ -4663,9 +4663,6 @@ def subject_eeg_data_create(request, group_id, subject_id, eeg_configuration_id,
                 # Validate known eeg file formats
                 reading_for_eeg_validation(eeg_data_added, request)
 
-                # Geração da imagem de localização dos electrodos
-                # file_name = eeg_data_added
-
                 messages.success(request, _('EEG data collection created successfully.'))
                 messages.info(request, _('Now you can configure each electrode position'))
 
@@ -4695,6 +4692,48 @@ def reading_for_eeg_validation(eeg_data_added, request):
             messages.success(request, _('EEG data file format validated.'))
         else:
             messages.warning(request, _('Not valid EEG file format.'))
+
+
+def get_sensors_position(eeg_data):
+    # Geração da imagem de localização dos electrodos
+    raw = mne.io.read_raw_egi(eeg_data.file.path, preload=False)
+    picks = mne.pick_types(raw.info, eeg=True)
+    ch_names = raw.info['ch_names']
+    channels = len(picks)
+    montage = mne.channels.read_montage('GSN-HydroCel-129')
+    # label_names = montage.ch_names
+    i = 0
+    list1 = []
+    list2 = []
+
+    for ch_name in ch_names:
+        i = i + 1
+        if i < 10:
+            label = 'EEG' + ' 00' + str(i)
+        if i > 9 and i < 100:
+            label = 'EEG' + ' 0' + str(i)
+        if i > 99 and i < channels:
+            label = 'EEG' + ' ' + str(i)
+
+        if ch_name == label:
+            list1.insert(i, 'E' + str(i))
+            list2.insert(i, ch_name)
+
+    list1.insert(i + 1, 'Cz')
+    list2.insert(i + 1, 'EEG ' + str(channels))
+    mapping = dict(zip(list2, list1))
+
+    raw.rename_channels(mapping)
+    raw.set_montage(montage)
+
+    file_name = 'sensors_position_' + str(eeg_data.id) + ".png"
+    # writing
+    errors, path_complete = create_directory(settings.MEDIA_ROOT, "temp")
+
+    fig = raw.plot_sensors(ch_type='eeg', show_names=True, show=False)
+    fig.savefig(path.join(path_complete, file_name))
+
+    return path.join(path.join(settings.MEDIA_URL, "temp"), file_name)
 
 
 def eeg_data_reading(eeg_data, preload=False):
@@ -4764,6 +4803,9 @@ def eeg_data_view(request, eeg_data_id, tab, template_name="experiment/subject_e
         if positions.__len__() > 0:
             image = True
 
+    # Geração da imagem de localização dos electrodos
+    sensors_positions_image = get_sensors_position(eeg_data)
+
     if request.method == "POST":
 
         if request.POST['action'] == "remove":
@@ -4788,7 +4830,8 @@ def eeg_data_view(request, eeg_data_id, tab, template_name="experiment/subject_e
                "file_format_list": file_format_list,
                "tab": tab,
                "json_list": json.dumps(positions),
-               "image": image}
+               "image": image,
+               "sensors_image": sensors_positions_image}
 
     return render(request, template_name, context)
 
