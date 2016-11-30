@@ -4696,10 +4696,12 @@ def reading_for_eeg_validation(eeg_data_added, request):
 
 def get_sensors_position(eeg_data):
     # Geração da imagem de localização dos electrodos
+    # if EGI
     raw = mne.io.read_raw_egi(eeg_data.file.path, preload=False)
     picks = mne.pick_types(raw.info, eeg=True)
     ch_names = raw.info['ch_names']
     channels = len(picks)
+    # If EGI 129 channels
     montage = mne.channels.read_montage('GSN-HydroCel-129')
     # label_names = montage.ch_names
     i = 0
@@ -4730,7 +4732,7 @@ def get_sensors_position(eeg_data):
     # writing
     errors, path_complete = create_directory(settings.MEDIA_ROOT, "temp")
 
-    fig = raw.plot_sensors(ch_type='eeg', show_names=True, show=False)
+    fig = raw.plot_sensors(ch_type='eeg', show_names=True, show=False, title="Sensor positions")
     fig.savefig(path.join(path_complete, file_name))
 
     return path.join(path.join(settings.MEDIA_URL, "temp"), file_name)
