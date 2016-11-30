@@ -4005,7 +4005,7 @@ msgstr "Descrição:"
 
 #: experiment/views.py:4995 experiment/views.py:5024 experiment/views.py:5057
 msgid "Manufacturer: "
-msgstr "Fabricante"
+msgstr "Fabricante: "
 
 #: experiment/views.py:4998
 msgid "Gain: "
