@@ -639,8 +639,8 @@ def group_view(request, group_id, template_name="experiment/group_register.html"
         experimental_protocol_description = get_experimental_protocol_description(
             group.experimental_protocol, request.LANGUAGE_CODE)
 
-        experimental_protocol_image = get_experimental_protocol_image(
-            group.experimental_protocol, request.LANGUAGE_CODE)
+        # experimental_protocol_image = get_experimental_protocol_image(
+        #     group.experimental_protocol, request.LANGUAGE_CODE)
 
     context = {"can_change": can_change,
                "classification_of_diseases_list": group.classification_of_diseases.all(),
@@ -4666,8 +4666,8 @@ def subject_eeg_data_create(request, group_id, subject_id, eeg_configuration_id,
                 messages.success(request, _('EEG data collection created successfully.'))
                 messages.info(request, _('Now you can configure each electrode position'))
 
-                redirect_url = reverse("eeg_data_view", args=(eeg_data_added.id,
-                                                              2 if has_position_status else 1))
+                redirect_url = reverse("eeg_data_view", args=(eeg_data_added.id, 1))
+                                                              # 2 if has_position_status else 1))
                 return HttpResponseRedirect(redirect_url)
 
     context = {"can_change": True,
@@ -4696,46 +4696,60 @@ def reading_for_eeg_validation(eeg_data_added, request):
 
 def get_sensors_position(eeg_data):
     # Geração da imagem de localização dos electrodos
-    # if EGI
-    raw = mne.io.read_raw_egi(eeg_data.file.path, preload=False)
-    picks = mne.pick_types(raw.info, eeg=True)
-    ch_names = raw.info['ch_names']
-    channels = len(picks)
-    # If EGI 129 channels
-    montage = mne.channels.read_montage('GSN-HydroCel-129')
-    # label_names = montage.ch_names
-    i = 0
-    list1 = []
-    list2 = []
+    # Validate if EGI
+    #raw = mne.io.read_raw_egi(eeg_data.file.path, preload=False)
+    reading = eeg_data_reading(eeg_data, preload=False)
+    file_path = None
+    raw = reading.reading
 
-    for ch_name in ch_names:
-        i = i + 1
-        if i < 10:
-            label = 'EEG' + ' 00' + str(i)
-        if i > 9 and i < 100:
-            label = 'EEG' + ' 0' + str(i)
-        if i > 99 and i < channels:
-            label = 'EEG' + ' ' + str(i)
+    if raw is not None:
+        picks = mne.pick_types(raw.info, eeg=True)
+        ch_names = raw.info['ch_names']
+        channels = len(picks)
+        montage = ""
 
-        if ch_name == label:
-            list1.insert(i, 'E' + str(i))
-            list2.insert(i, ch_name)
+        # If EGI 129 channels
+        if channels == 129:
+            montage = mne.channels.read_montage('GSN-HydroCel-129')
+        else:
+            if channels == 128:
+                montage = mne.channels.read_montage('GSN-HydroCel-128')
+        # label_names = montage.ch_names
+        if montage != "":
+            i = 0
+            list1 = []
+            list2 = []
 
-    list1.insert(i + 1, 'Cz')
-    list2.insert(i + 1, 'EEG ' + str(channels))
-    mapping = dict(zip(list2, list1))
+            for ch_name in ch_names:
+                i = i + 1
+                if i < 10:
+                    label = 'EEG' + ' 00' + str(i)
+                if i > 9 and i < 100:
+                    label = 'EEG' + ' 0' + str(i)
+                if i > 99 and i < channels:
+                    label = 'EEG' + ' ' + str(i)
 
-    raw.rename_channels(mapping)
-    raw.set_montage(montage)
+                if ch_name == label:
+                    list1.insert(i, 'E' + str(i))
+                    list2.insert(i, ch_name)
 
-    file_name = 'sensors_position_' + str(eeg_data.id) + ".png"
-    # writing
-    errors, path_complete = create_directory(settings.MEDIA_ROOT, "temp")
+            list1.insert(i + 1, 'Cz')
+            list2.insert(i + 1, 'EEG ' + str(channels))
+            mapping = dict(zip(list2, list1))
 
-    fig = raw.plot_sensors(ch_type='eeg', show_names=True, show=False, title="Sensor positions")
-    fig.savefig(path.join(path_complete, file_name))
+            raw.rename_channels(mapping)
+            raw.set_montage(montage)
 
-    return path.join(path.join(settings.MEDIA_URL, "temp"), file_name)
+            file_name = 'sensors_position_' + str(eeg_data.id) + ".png"
+            # writing
+            errors, path_complete = create_directory(settings.MEDIA_ROOT, "temp")
+
+            fig = raw.plot_sensors(ch_type='eeg', show_names=True, show=False, title="Sensor positions")
+            fig.savefig(path.join(path_complete, file_name))
+
+            file_path = path.join(path.join(settings.MEDIA_URL, "temp"), file_name)
+
+    return file_path
 
 
 def eeg_data_reading(eeg_data, preload=False):
