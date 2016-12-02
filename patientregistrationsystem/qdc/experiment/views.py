@@ -4706,7 +4706,7 @@ def get_sensors_position(eeg_data):
         picks = mne.pick_types(raw.info, eeg=True)
         ch_names = raw.info['ch_names']
         channels = len(picks)
-        montage = ""
+        montage = None
 
         # If EGI 129 channels
         if channels == 129:
@@ -4715,7 +4715,7 @@ def get_sensors_position(eeg_data):
             if channels == 128:
                 montage = mne.channels.read_montage('GSN-HydroCel-128')
         # label_names = montage.ch_names
-        if montage != "":
+        if montage is not None:
             i = 0
             list1 = []
             list2 = []
