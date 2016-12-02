@@ -4,13 +4,13 @@ import datetime
 import json
 import random
 
-# import numpy as np
+import numpy as np
 
-# import nwb
+import nwb
 
 import pydot
 
-# from nwb.nwbco import *
+from nwb.nwbco import *
 
 import mne
 
@@ -5052,9 +5052,9 @@ def eeg_data_export_nwb(request, eeg_data_id, some_number, process_requisition):
     #   that specifies the lab and this experiment session
     # the function nwb.create_identifier() is recommended to use as it takes
     #   the string and appends the present date and time
-    # nwb_file_settings["identifier"] = nwb.create_identifier(
-    #     "Participant: " + subject_of_group.subject.patient.code +
-    #     "; NES experiment: " + clean(eeg_data.subject_of_group.group.experiment.title))
+    nwb_file_settings["identifier"] = nwb.create_identifier(
+        "Participant: " + subject_of_group.subject.patient.code +
+        "; NES experiment: " + clean(eeg_data.subject_of_group.group.experiment.title))
 
     # indicate that it's OK to overwrite exting file
     nwb_file_settings["overwrite"] = True
@@ -5073,14 +5073,14 @@ def eeg_data_export_nwb(request, eeg_data_id, some_number, process_requisition):
 
     # create the NWB object. this manages the file
     # print("Creating " + nwb_file_settings["filename"])
-    # neurodata = nwb.NWB(**nwb_file_settings)
+    neurodata = nwb.NWB(**nwb_file_settings)
 
     ########################################################################
     # general metadata section
     #
     update_process_requisition(request, process_requisition, 'reading_metadata', _('Reading metadata'))
 
-    # neurodata.set_metadata(EXPERIMENT_DESCRIPTION, clean(subject_of_group.group.experiment.description))
+    neurodata.set_metadata(EXPERIMENT_DESCRIPTION, clean(subject_of_group.group.experiment.description))
 
     history_data = eeg_data.history.all().order_by('history_date')
     if history_data:
@@ -5094,18 +5094,18 @@ def eeg_data_export_nwb(request, eeg_data_id, some_number, process_requisition):
         if experimenter.email:
             experimenter_description += ' - ' + experimenter.email
 
-        # neurodata.set_metadata(EXPERIMENTER, clean(experimenter_description))
+        neurodata.set_metadata(EXPERIMENTER, clean(experimenter_description))
 
-    # neurodata.set_metadata(SUBJECT_ID, subject_of_group.subject.patient.code)
-    # neurodata.set_metadata(SEX, clean(subject_of_group.subject.patient.gender.name))
-    # neurodata.set_metadata(SPECIES, "human")
-    # neurodata.set_metadata(
-    #     AGE, str((date.today() - subject_of_group.subject.patient.date_birth) // timedelta(days=365.2425)))
+    neurodata.set_metadata(SUBJECT_ID, subject_of_group.subject.patient.code)
+    neurodata.set_metadata(SEX, clean(subject_of_group.subject.patient.gender.name))
+    neurodata.set_metadata(SPECIES, "human")
+    neurodata.set_metadata(
+        AGE, str((date.today() - subject_of_group.subject.patient.date_birth) // timedelta(days=365.2425)))
 
-    # if social_demographic_data:
-    #     neurodata.set_metadata(GENOTYPE, clean(social_demographic_data.flesh_tone.name))
-    #     neurodata.set_metadata(SUBJECT, clean(social_demographic_data.natural_of))
-    #
+    if social_demographic_data:
+        neurodata.set_metadata(GENOTYPE, clean(social_demographic_data.flesh_tone.name))
+        neurodata.set_metadata(SUBJECT, clean(social_demographic_data.natural_of))
+
     ########################################################################
     # general devices section
     #
@@ -5136,7 +5136,7 @@ def eeg_data_export_nwb(request, eeg_data_id, some_number, process_requisition):
                 _('Common mode rejection ratio: ') + \
                 str(eeg_data.eeg_setting.eeg_amplifier_setting.eeg_amplifier.common_mode_rejection_ratio) + "; "
 
-        # neurodata.set_metadata(DEVICE(device_identification), clean(device_information))
+        neurodata.set_metadata(DEVICE(device_identification), clean(device_information))
 
     # EEG machine
     if eeg_data.eeg_setting.eeg_amplifier_setting:
@@ -5155,12 +5155,12 @@ def eeg_data_export_nwb(request, eeg_data_id, some_number, process_requisition):
             _("Number of used channels: ") + \
             str(eeg_data.eeg_setting.eeg_amplifier_setting.number_of_channels_used) + "; "
 
-        # neurodata.set_metadata(DEVICE(device_identification), clean(device_information))
+        neurodata.set_metadata(DEVICE(device_identification), clean(device_information))
 
     # Ephys: Filter device setting
-    # if eeg_data.eeg_setting.eeg_filter_setting:
-    #     neurodata.set_metadata(EXTRA_FILTERING,
-    #                            clean(get_nwb_eeg_filter_description(eeg_data.eeg_setting.eeg_filter_setting)))
+    if eeg_data.eeg_setting.eeg_filter_setting:
+        neurodata.set_metadata(EXTRA_FILTERING,
+                               clean(get_nwb_eeg_filter_description(eeg_data.eeg_setting.eeg_filter_setting)))
 
     # EEG Electrode NET
     if eeg_data.eeg_setting.eeg_electrode_layout_setting:
@@ -5175,27 +5175,27 @@ def eeg_data_export_nwb(request, eeg_data_id, some_number, process_requisition):
 
         device_information += _("Manufacturer: ") + eeg_electrode_net_system.eeg_electrode_net.manufacturer.name + "; "
 
-        # neurodata.set_metadata(DEVICE(device_identification), clean(device_information))
+        neurodata.set_metadata(DEVICE(device_identification), clean(device_information))
 
         # Electrode map and group
         electrode_map = []
         electrode_group = []
 
-        # for position in eeg_electrode_net_system.eeg_electrode_localization_system.electrode_positions.all():
-        #     position_name = clean(position.name)
-        #     electrode_group.append(position_name)
-        #     electrode_map.append([position.coordinate_x, position.coordinate_y, 0])
-        #     neurodata.set_metadata(EXTRA_SHANK_LOCATION(position_name),
-        #                            clean(_("Position: ") + position_name + "; " +
-        #                            _("Coordinates: (") +
-        #                            str(position.coordinate_x) + ", " +
-        #                            str(position.coordinate_y) + "); " +
-        #                            _("EEG electrode localization system: " +
-        #                              eeg_electrode_net_system.eeg_electrode_localization_system.name)))
-        #     neurodata.set_metadata(EXTRA_SHANK_DEVICE(position_name), device_identification)
-        #
-        # neurodata.set_metadata(EXTRA_ELECTRODE_MAP, electrode_map)
-        # neurodata.set_metadata(EXTRA_ELECTRODE_GROUP, electrode_group)
+        for position in eeg_electrode_net_system.eeg_electrode_localization_system.electrode_positions.all():
+            position_name = clean(position.name)
+            electrode_group.append(position_name)
+            electrode_map.append([position.coordinate_x, position.coordinate_y, 0])
+            neurodata.set_metadata(EXTRA_SHANK_LOCATION(position_name),
+                                   clean(_("Position: ") + position_name + "; " +
+                                   _("Coordinates: (") +
+                                   str(position.coordinate_x) + ", " +
+                                   str(position.coordinate_y) + "); " +
+                                   _("EEG electrode localization system: " +
+                                     eeg_electrode_net_system.eeg_electrode_localization_system.name)))
+            neurodata.set_metadata(EXTRA_SHANK_DEVICE(position_name), device_identification)
+
+        neurodata.set_metadata(EXTRA_ELECTRODE_MAP, electrode_map)
+        neurodata.set_metadata(EXTRA_ELECTRODE_GROUP, electrode_group)
 
     ########################################################################
     # acquisition section
@@ -5209,28 +5209,28 @@ def eeg_data_export_nwb(request, eeg_data_id, some_number, process_requisition):
 
             number_of_channels = len(mne.pick_types(eeg_reading.reading.info, eeg=True))
 
-            # number_of_samples = len(eeg_reading.reading._data[0])
-            #
-            # sampling_rate = 0
-            # if eeg_data.eeg_setting.eeg_amplifier_setting and \
-            #         eeg_data.eeg_setting.eeg_amplifier_setting.sampling_rate:
-            #     sampling_rate = eeg_data.eeg_setting.eeg_amplifier_setting.sampling_rate
-            #
-            # timestamps = np.arange(number_of_samples) * ((1 / sampling_rate) if sampling_rate else 0)
-            #
-            # array_data = np.zeros((number_of_samples, number_of_channels))
-            # for index_channel in range(number_of_channels):
-            #     channel_reading = \
-            #         eeg_reading.reading._data[mne.pick_types(eeg_reading.reading.info, eeg=True)[index_channel]]
-            #     for index, value in enumerate(channel_reading):
-            #         array_data[index][index_channel] = value
-            #
-            # acquisition = neurodata.create_timeseries("ElectricalSeries", "data_collection", "acquisition")
-            # acquisition.set_data(array_data, resolution=1.2345e-6)
-            # acquisition.set_time(timestamps)
-            # acquisition.set_value("num_samples", number_of_samples)
-            # acquisition.set_value("electrode_idx", list(range(number_of_channels)))
-            # acquisition.finalize()
+            number_of_samples = len(eeg_reading.reading._data[0])
+
+            sampling_rate = 0
+            if eeg_data.eeg_setting.eeg_amplifier_setting and \
+                    eeg_data.eeg_setting.eeg_amplifier_setting.sampling_rate:
+                sampling_rate = eeg_data.eeg_setting.eeg_amplifier_setting.sampling_rate
+
+            timestamps = np.arange(number_of_samples) * ((1 / sampling_rate) if sampling_rate else 0)
+
+            array_data = np.zeros((number_of_samples, number_of_channels))
+            for index_channel in range(number_of_channels):
+                channel_reading = \
+                    eeg_reading.reading._data[mne.pick_types(eeg_reading.reading.info, eeg=True)[index_channel]]
+                for index, value in enumerate(channel_reading):
+                    array_data[index][index_channel] = value
+
+            acquisition = neurodata.create_timeseries("ElectricalSeries", "data_collection", "acquisition")
+            acquisition.set_data(array_data, resolution=1.2345e-6)
+            acquisition.set_time(timestamps)
+            acquisition.set_value("num_samples", number_of_samples)
+            acquisition.set_value("electrode_idx", list(range(number_of_channels)))
+            acquisition.finalize()
 
         # if eeg_reading.file_format.nes_code == "NEO-RawBinarySignalIO":
         #
@@ -5261,7 +5261,7 @@ def eeg_data_export_nwb(request, eeg_data_id, some_number, process_requisition):
         #         acquisition.finalize()
 
     # when all data is entered, close the file
-    # neurodata.close()
+    neurodata.close()
 
     response = HttpResponse(open(nwb_file_settings["filename"], "rb").read())
     response['Content-Type'] = 'application/force-download'
