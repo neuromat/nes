@@ -1160,8 +1160,8 @@ class TMSDataForm(ModelForm):
 
         fields = ['date', 'time', 'tms_setting', 'coil_orientation', 'direction_of_induced_current',
                   'resting_motor_threshold', 'test_pulse_intensity_of_simulation', 'interval_between_pulses',
-                  'interval_between_pulses_unit', 'time_between_mep_trials_high', 'time_between_mep_trials_low',
-                  'time_between_mep_trials_unit', 'repetitive_pulse_frequency', 'description']
+                  'interval_between_pulses_unit', 'time_between_mep_trials', 'time_between_mep_trials_unit',
+                  'coil_orientation_angle', 'repetitive_pulse_frequency', 'description', 'second_test_pulse_intensity']
 
         widgets = {
             'date': DateInput(format=_("%m/%d/%Y"),
@@ -1172,13 +1172,14 @@ class TMSDataForm(ModelForm):
             'tms_setting': Select(attrs={'class': 'form-control', 'required': "",
                                          'data-error': _('TMS setting type must be filled.')}),
             'coil_orientation': Select(attrs={'class': 'form-control'}),
+            'coil_orientation_angle': TextInput(attrs={'class': 'form-control'}),
             'direction_of_induced_current': Select(attrs={'class': 'form-control'}),
             'resting_motor_threshold': TextInput(attrs={'class': 'form-control'}),
             'test_pulse_intensity_of_simulation': TextInput(attrs={'class': 'form-control'}),
+            'second_test_pulse_intensity': TextInput(attrs={'class': 'form-control'}),
             'interval_between_pulses': TextInput(attrs={'class': 'form-control'}),
             'interval_between_pulses_unit': Select(attrs={'class': 'form-control'}),
-            'time_between_mep_trials_low': TextInput(attrs={'class': 'form-control'}),
-            'time_between_mep_trials_high': TextInput(attrs={'class': 'form-control'}),
+            'time_between_mep_trials': TextInput(attrs={'class': 'form-control'}),
             'time_between_mep_trials_unit': Select(attrs={'class': 'form-control'}),
             'repetitive_pulse_frequency': TextInput(attrs={'class': 'form-control'}),
             'description': Textarea(attrs={'class': 'form-control',
