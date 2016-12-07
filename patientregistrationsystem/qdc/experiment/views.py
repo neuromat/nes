@@ -4523,7 +4523,7 @@ def subject_eeg_view(request, group_id, subject_id,
             # can export to nwb?
             if eeg_data_file.eeg_reading.file_format:
                 if eeg_data_file.eeg_reading.file_format.nes_code == "MNE-RawFromEGI" and \
-                        eeg_data_file.eeg_setting.eeg_amplifier_setting and \
+                        hasattr(eeg_data_file.eeg_setting, 'eeg_amplifier_setting') and \
                         eeg_data_file.eeg_setting.eeg_amplifier_setting.number_of_channels_used and \
                         eeg_data_file.eeg_setting.eeg_amplifier_setting.number_of_channels_used == \
                         len(mne.pick_types(eeg_data_file.eeg_reading.reading.info, eeg=True)):
@@ -5171,8 +5171,10 @@ def eeg_data_export_nwb(request, eeg_data_id, some_number, process_requisition):
         AGE, str((date.today() - subject_of_group.subject.patient.date_birth) // timedelta(days=365.2425)))
 
     if social_demographic_data:
-        neurodata.set_metadata(GENOTYPE, clean(social_demographic_data.flesh_tone.name))
-        neurodata.set_metadata(SUBJECT, clean(social_demographic_data.natural_of))
+        if social_demographic_data.flesh_tone:
+            neurodata.set_metadata(GENOTYPE, clean(social_demographic_data.flesh_tone.name))
+        if social_demographic_data.natural_of:
+            neurodata.set_metadata(SUBJECT, clean(social_demographic_data.natural_of))
 
     ########################################################################
     # general devices section
