@@ -5183,7 +5183,7 @@ def eeg_data_export_nwb(request, eeg_data_id, some_number, process_requisition):
     update_process_requisition(request, process_requisition, 'reading_device_data', _('Reading device data'))
 
     # Amplifier device setting
-    if eeg_data.eeg_setting.eeg_amplifier_setting:
+    if hasattr(eeg_data.eeg_setting, 'eeg_amplifier_setting'):
         device_identification = clean(eeg_data.eeg_setting.eeg_amplifier_setting.eeg_amplifier.identification)
         device_information = _("Device type: Amplifier; ")
 
@@ -5209,7 +5209,7 @@ def eeg_data_export_nwb(request, eeg_data_id, some_number, process_requisition):
         neurodata.set_metadata(DEVICE(device_identification), clean(device_information))
 
     # EEG machine
-    if eeg_data.eeg_setting.eeg_amplifier_setting:
+    if hasattr(eeg_data.eeg_setting, 'eeg_amplifier_setting'):
 
         device_identification = clean(eeg_data.eeg_setting.eeg_amplifier_setting.eeg_amplifier.identification)
         device_information = _("Device type: EEG Amplifier; ")
@@ -5228,12 +5228,12 @@ def eeg_data_export_nwb(request, eeg_data_id, some_number, process_requisition):
         neurodata.set_metadata(DEVICE(device_identification), clean(device_information))
 
     # Ephys: Filter device setting
-    if eeg_data.eeg_setting.eeg_filter_setting:
+    if hasattr(eeg_data.eeg_setting, 'eeg_filter_setting'):
         neurodata.set_metadata(EXTRA_FILTERING,
                                clean(get_nwb_eeg_filter_description(eeg_data.eeg_setting.eeg_filter_setting)))
 
     # EEG Electrode NET
-    if eeg_data.eeg_setting.eeg_electrode_layout_setting:
+    if hasattr(eeg_data.eeg_setting, 'eeg_electrode_layout_setting'):
 
         eeg_electrode_net_system = eeg_data.eeg_setting.eeg_electrode_layout_setting.eeg_electrode_net_system
 
@@ -5283,7 +5283,7 @@ def eeg_data_export_nwb(request, eeg_data_id, some_number, process_requisition):
             number_of_samples = len(eeg_reading.reading._data[0])
 
             sampling_rate = 0
-            if eeg_data.eeg_setting.eeg_amplifier_setting and \
+            if hasattr(eeg_data.eeg_setting, 'eeg_amplifier_setting') and \
                     eeg_data.eeg_setting.eeg_amplifier_setting.sampling_rate:
                 sampling_rate = eeg_data.eeg_setting.eeg_amplifier_setting.sampling_rate
 
