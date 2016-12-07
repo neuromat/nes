@@ -13,7 +13,7 @@ import pydot
 from nwb.nwbco import *
 
 # v1.5
-# import mne
+import mne
 
 from datetime import date, timedelta
 from functools import partial
@@ -4521,14 +4521,14 @@ def subject_eeg_view(request, group_id, subject_id,
 
             # v1.5
             # can export to nwb?
-            # if eeg_data_file.eeg_reading.file_format:
-            #     if eeg_data_file.eeg_reading.file_format.nes_code == "MNE-RawFromEGI" and \
-            #             eeg_data_file.eeg_setting.eeg_amplifier_setting and \
-            #             eeg_data_file.eeg_setting.eeg_amplifier_setting.number_of_channels_used and \
-            #             eeg_data_file.eeg_setting.eeg_amplifier_setting.number_of_channels_used == \
-            #             len(mne.pick_types(eeg_data_file.eeg_reading.reading.info, eeg=True)):
-            #
-            #         eeg_data_file.can_export_to_nwb = True
+            if eeg_data_file.eeg_reading.file_format:
+                if eeg_data_file.eeg_reading.file_format.nes_code == "MNE-RawFromEGI" and \
+                        eeg_data_file.eeg_setting.eeg_amplifier_setting and \
+                        eeg_data_file.eeg_setting.eeg_amplifier_setting.number_of_channels_used and \
+                        eeg_data_file.eeg_setting.eeg_amplifier_setting.number_of_channels_used == \
+                        len(mne.pick_types(eeg_data_file.eeg_reading.reading.info, eeg=True)):
+
+                    eeg_data_file.can_export_to_nwb = True
 
         eeg_collections.append(
             {'eeg_configuration': eeg_configuration,
@@ -4697,62 +4697,62 @@ def reading_for_eeg_validation(eeg_data_added, request):
 
 
 # v1.5
-# def get_sensors_position(eeg_data):
-#     # Geração da imagem de localização dos electrodos
-#     # Validate if EGI
-#     #raw = mne.io.read_raw_egi(eeg_data.file.path, preload=False)
-#     reading = eeg_data_reading(eeg_data, preload=False)
-#     file_path = None
-#     raw = reading.reading
-#
-#     if raw is not None:
-#         picks = mne.pick_types(raw.info, eeg=True)
-#         ch_names = raw.info['ch_names']
-#         channels = len(picks)
-#         montage = ""
-#
-#         # If EGI 129 channels
-#         if channels == 129:
-#             montage = mne.channels.read_montage('GSN-HydroCel-129')
-#         else:
-#             if channels == 128:
-#                 montage = mne.channels.read_montage('GSN-HydroCel-128')
-#         # label_names = montage.ch_names
-#         if montage != "":
-#             i = 0
-#             list1 = []
-#             list2 = []
-#
-#             for ch_name in ch_names:
-#                 i = i + 1
-#                 if i < 10:
-#                     label = 'EEG' + ' 00' + str(i)
-#                 if i > 9 and i < 100:
-#                     label = 'EEG' + ' 0' + str(i)
-#                 if i > 99 and i < channels:
-#                     label = 'EEG' + ' ' + str(i)
-#
-#                 if ch_name == label:
-#                     list1.insert(i, 'E' + str(i))
-#                     list2.insert(i, ch_name)
-#
-#             list1.insert(i + 1, 'Cz')
-#             list2.insert(i + 1, 'EEG ' + str(channels))
-#             mapping = dict(zip(list2, list1))
-#
-#             raw.rename_channels(mapping)
-#             raw.set_montage(montage)
-#
-#             file_name = 'sensors_position_' + str(eeg_data.id) + ".png"
-#             # writing
-#             errors, path_complete = create_directory(settings.MEDIA_ROOT, "temp")
-#
-#             fig = raw.plot_sensors(ch_type='eeg', show_names=True, show=False, title="Sensor positions")
-#             fig.savefig(path.join(path_complete, file_name))
-#
-#             file_path = path.join(path.join(settings.MEDIA_URL, "temp"), file_name)
-#
-#     return file_path
+def get_sensors_position(eeg_data):
+    # Geração da imagem de localização dos electrodos
+    # Validate if EGI
+    #raw = mne.io.read_raw_egi(eeg_data.file.path, preload=False)
+    reading = eeg_data_reading(eeg_data, preload=False)
+    file_path = None
+    raw = reading.reading
+
+    if raw is not None:
+        picks = mne.pick_types(raw.info, eeg=True)
+        ch_names = raw.info['ch_names']
+        channels = len(picks)
+        montage = ""
+
+        # If EGI 129 channels
+        if channels == 129:
+            montage = mne.channels.read_montage('GSN-HydroCel-129')
+        else:
+            if channels == 128:
+                montage = mne.channels.read_montage('GSN-HydroCel-128')
+        # label_names = montage.ch_names
+        if montage != "":
+            i = 0
+            list1 = []
+            list2 = []
+
+            for ch_name in ch_names:
+                i = i + 1
+                if i < 10:
+                    label = 'EEG' + ' 00' + str(i)
+                if i > 9 and i < 100:
+                    label = 'EEG' + ' 0' + str(i)
+                if i > 99 and i < channels:
+                    label = 'EEG' + ' ' + str(i)
+
+                if ch_name == label:
+                    list1.insert(i, 'E' + str(i))
+                    list2.insert(i, ch_name)
+
+            list1.insert(i + 1, 'Cz')
+            list2.insert(i + 1, 'EEG ' + str(channels))
+            mapping = dict(zip(list2, list1))
+
+            raw.rename_channels(mapping)
+            raw.set_montage(montage)
+
+            file_name = 'sensors_position_' + str(eeg_data.id) + ".png"
+            # writing
+            errors, path_complete = create_directory(settings.MEDIA_ROOT, "temp")
+
+            fig = raw.plot_sensors(ch_type='eeg', show_names=True, show=False, title="Sensor positions")
+            fig.savefig(path.join(path_complete, file_name))
+
+            file_path = path.join(path.join(settings.MEDIA_URL, "temp"), file_name)
+
+    return file_path
 
 
 def eeg_data_reading(eeg_data, preload=False):
@@ -4762,17 +4762,17 @@ def eeg_data_reading(eeg_data, preload=False):
     # For known formats, try to access data in order to validate the format
 
     # v1.5
-    # if eeg_data.file_format.nes_code == "MNE-RawFromEGI":
-    #
-        # eeg_reading.file_format = eeg_data.file_format
-        #
-        # try:
-        #     # Trying to read the segments
-        #     reading = mne.io.read_raw_egi(eeg_data.file.path, preload=preload)
-        # except:
-        #     reading = None
-        #
-        # eeg_reading.reading = reading
+    if eeg_data.file_format.nes_code == "MNE-RawFromEGI":
+
+        eeg_reading.file_format = eeg_data.file_format
+
+        try:
+            # Trying to read the segments
+            reading = mne.io.read_raw_egi(eeg_data.file.path, preload=preload)
+        except:
+            reading = None
+
+        eeg_reading.reading = reading
 
     # if eeg_data.file_format.nes_code == "NEO-RawBinarySignalIO":
     #
@@ -4825,8 +4825,8 @@ def eeg_data_view(request, eeg_data_id, tab, template_name="experiment/subject_e
 
     # Geração da imagem de localização dos electrodos
     # v1.5
-    sensors_positions_image = None
-    # sensors_positions_image = get_sensors_position(eeg_data)
+    # sensors_positions_image = None
+    sensors_positions_image = get_sensors_position(eeg_data)
 
     if request.method == "POST":
 
@@ -5276,7 +5276,7 @@ def eeg_data_export_nwb(request, eeg_data_id, some_number, process_requisition):
         if eeg_reading.file_format.nes_code == "MNE-RawFromEGI":
 
             # v1.5
-            # number_of_channels = len(mne.pick_types(eeg_reading.reading.info, eeg=True))
+            number_of_channels = len(mne.pick_types(eeg_reading.reading.info, eeg=True))
 
             number_of_samples = len(eeg_reading.reading._data[0])
 
@@ -5288,19 +5288,19 @@ def eeg_data_export_nwb(request, eeg_data_id, some_number, process_requisition):
             timestamps = np.arange(number_of_samples) * ((1 / sampling_rate) if sampling_rate else 0)
 
             # v1.5
-            # array_data = np.zeros((number_of_samples, number_of_channels))
-            # for index_channel in range(number_of_channels):
-            #     channel_reading = \
-            #         eeg_reading.reading._data[mne.pick_types(eeg_reading.reading.info, eeg=True)[index_channel]]
-            #     for index, value in enumerate(channel_reading):
-            #         array_data[index][index_channel] = value
-            #
-            # acquisition = neurodata.create_timeseries("ElectricalSeries", "data_collection", "acquisition")
-            # acquisition.set_data(array_data, resolution=1.2345e-6)
-            # acquisition.set_time(timestamps)
-            # acquisition.set_value("num_samples", number_of_samples)
-            # acquisition.set_value("electrode_idx", list(range(number_of_channels)))
-            # acquisition.finalize()
+            array_data = np.zeros((number_of_samples, number_of_channels))
+            for index_channel in range(number_of_channels):
+                channel_reading = \
+                    eeg_reading.reading._data[mne.pick_types(eeg_reading.reading.info, eeg=True)[index_channel]]
+                for index, value in enumerate(channel_reading):
+                    array_data[index][index_channel] = value
+
+            acquisition = neurodata.create_timeseries("ElectricalSeries", "data_collection", "acquisition")
+            acquisition.set_data(array_data, resolution=1.2345e-6)
+            acquisition.set_time(timestamps)
+            acquisition.set_value("num_samples", number_of_samples)
+            acquisition.set_value("electrode_idx", list(range(number_of_channels)))
+            acquisition.finalize()
 
         # if eeg_reading.file_format.nes_code == "NEO-RawBinarySignalIO":
         #
