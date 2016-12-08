@@ -115,9 +115,11 @@
     <div class="tab-pane fade in active" id="menuUserTab">
     <div class="col-md-10">
 
-        <div style="text-align: right; color: steelblue">
-            <input type="checkbox" id="id_show_unanswered_checkbox"> <label >{% trans "show unanswered questions" %}</label>
-        </div>
+        {% if completed %}
+            <div style="text-align: right; color: steelblue">
+                <input type="checkbox" id="id_show_unanswered_checkbox"> <label >{% trans "show unanswered questions" %}</label>
+            </div>
+        {% endif %}
 
         <ul class="nav nav-tabs">
             <!-- Link to the header of the questionnaire fill -->
