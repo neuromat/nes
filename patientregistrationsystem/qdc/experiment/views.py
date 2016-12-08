@@ -4747,6 +4747,10 @@ def get_sensors_position(eeg_data):
             # writing
             errors, path_complete = create_directory(settings.MEDIA_ROOT, "temp")
 
+            # the operation below ensures that the properly backend is set
+            import matplotlib as mpl
+            mpl.use('agg')
+
             fig = raw.plot_sensors(ch_type='eeg', show_names=True, show=False, title="Sensor positions")
             fig.savefig(path.join(path_complete, file_name))
 
