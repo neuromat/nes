@@ -6049,7 +6049,7 @@ def get_subgraph(block: Block, node_identifier=""):
     last_node = None
 
     # create a subgraph
-    subgraph = pydot.Cluster(graph_name='subgraph_' + node_identifier, label=clean(block.identification),
+    subgraph = pydot.Cluster(graph_name='subgraph_' + node_identifier, label=block.identification,
                              labeljust="left", pencolor="#757575")
 
     # Paralel blocks have additional start and end points
@@ -6116,8 +6116,8 @@ def get_subgraph(block: Block, node_identifier=""):
 
             new_node = pydot.Node(
                 'node_' + node_identifier + '_' + str(component_configuration.id),
-                label=clean(split_node_identification_for_graph(component.identification + ' (' +
-                                                                get_component_name(component.component_type) + ')')),
+                label=split_node_identification_for_graph(component.identification + ' (' +
+                                                                get_component_name(component.component_type) + ')'),
                 style="filled", fillcolor=color_node, shape='rectangle')
 
             subgraph.add_node(new_node)
