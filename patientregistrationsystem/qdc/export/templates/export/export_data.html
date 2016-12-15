@@ -66,7 +66,7 @@
             <div class="col-md-10">
                 {#            {% ifequal contacts.number 1 %}#}
             {% if perms.patient.export_patient %}
-
+                {% if questionnaires_fields_list %}
                 <div class="container span6 offset3 well ">
                     <div class="row">
                         <div class="col-xs-12 col-sm-12">
@@ -87,31 +87,13 @@
                                            class="control-label">{% trans "Per participant" %}</label>
                                      <div class="help-block with-errors"> </div>
                                 </div>
-{#                                <div class="help-block with-errors">#}
-{#                                    {% if export_form.per_participant.errors %}#}
-{#                                        <span>#}
-{#                                        {% for error in export_form.per_participant.errors %}{{ error }}{% endfor %}#}
-{#                                        </span>#}
-{#                                    {% endif %}#}
-{#                                </div>#}
-{#                                <div class="help-block with-errors">#}
-{#                                    {% for error in export_form.errors.per_participant %}#}
-{#                                        <div>{{ error }}</div>#}
-{#                                    {% endfor %}#}
-{#                                </div>#}
 
-                                <div class="checkbox">
-                                    {{ export_form.per_questionnaire }}
-                                    <label for="per_questionnaire"
-                                           class="control-label">{% trans "Per questionnaire" %}</label>
-                                </div>
-{#                                <div class="help-block with-errors">#}
-{#                                    {% if export_form.per_questionnaire.errors %}#}
-{#                                        <span>#}
-{#                                        {% for error in export_form.per_questionnaire.errors %}{{ error }}{% endfor %}#}
-{#                                        </span>#}
-{#                                    {% endif %}#}
-{#                                </div>#}
+                                    <div class="checkbox">
+                                        {{ export_form.per_questionnaire }}
+                                        <label for="per_questionnaire"
+                                               class="control-label">{% trans "Per questionnaire" %}</label>
+                                    </div>
+
                                 <div class="help-block with-errors">
                                     {% for error in export_form.errors.per_questionnaire %}
                                         <div>{{ error }}</div>
@@ -144,125 +126,110 @@
                                 </div>
                             </div>
                             <div class="col-xs-6 col-sm-6">
-{#                                <div class="form-group {% if export_form.errors.responses %}has-error{% endif %}">#}
                                     <label>{% trans "Responses" %}</label>
 
                                     <div class="form-group {% if export_form.errors.responses %}has-error{% endif %}">
-{#                                        <div class="checkbox">#}
                                             {% for check in export_form.responses %}
                                                 <div class="checkbox">
                                                     {{ check }}
                                                 </div>
                                             {% endfor %}
-{#                                        </div>#}
                                     </div>
-{#                                </div>#}
-
-
-{#                                <div class="help-block with-errors">#}
-{#                                    {% if export_form.responses.errors %}#}
-{#                                        <span>#}
-{#                                        {% for error in export_form.responses.errors %}{{ error }}{% endfor %}#}
-{#                                        </span>#}
-{#                                    {% endif %}#}
-{#                                </div>#}
 
                             </div>
                         </div>
-
-
-
-
                 </div>
 
-                <div class="container span6 offset3 well ">
+                    <div class="container span6 offset3 well ">
                     <h4>{% trans "Questionnaire information" %}</h4>
 
 
-                    <div class="row">
-                        {#                        <label class="control-label">{% trans "Questionnaire - Entrance evaluation" %} </label>#}
+                        <div class="row">
+                            {#                        <label class="control-label">{% trans "Questionnaire - Entrance evaluation" %} </label>#}
 
-                        <div class="panel-group" id="accordion">
-                            {% for survey in questionnaires_fields_list %}
-                                <div class="panel panel-default">
-                                    <div class="panel-heading">
-                                        <h9 class="panel-title">
-                                            <a data-toggle="collapse" data-parent="#accordion"
-                                               href="#collapse_{{ survey.sid }}">
-                                            <span style="background-color: #428bca" id="badge_{{ survey.sid }}"
-                                                  class="badge">{{ survey.selected_counter }} </span> {{ survey.sid }}
-                                                - {{ survey.title }} </a>
-                                        </h9>
-                                    </div>
-                                    <div id="collapse_{{ survey.sid }}" class="panel-collapse collapse">
-                                        <div class="panel-body">
+                            <div class="panel-group" id="accordion">
+                                {% for survey in questionnaires_fields_list %}
+                                    <div class="panel panel-default">
+                                        <div class="panel-heading">
+                                            <h9 class="panel-title">
+                                                <a data-toggle="collapse" data-parent="#accordion"
+                                                   href="#collapse_{{ survey.sid }}">
+                                                <span style="background-color: #428bca" id="badge_{{ survey.sid }}"
+                                                      class="badge">{{ survey.selected_counter }} </span> {{ survey.sid }}
+                                                    - {{ survey.title }} </a>
+                                            </h9>
+                                        </div>
+                                        <div id="collapse_{{ survey.sid }}" class="panel-collapse collapse">
+                                            <div class="panel-body">
 
-                                            <div class="col-md-5 col-sm-12">
-                                                <div class="form-group">
-                                                    <label class="control-label">{% trans "Fields available:" %} </label>
+                                                <div class="col-md-5 col-sm-12">
+                                                    <div class="form-group">
+                                                        <label class="control-label">{% trans "Fields available:" %} </label>
 
-                                                    <select class="form-control" size="13"
-                                                            id="multiselect_{{ survey.sid }}"
-                                                            name="from[]" multiple="multiple"
-                                                            data-error={% trans "Please, select a questionnaire from the list." %}>
+                                                        <select class="form-control" size="13"
+                                                                id="multiselect_{{ survey.sid }}"
+                                                                name="from[]" multiple="multiple"
+                                                                data-error={% trans "Please, select a questionnaire from the list." %}>
+                                                            {% for field in survey.output_list %}
+                                                                {#                                            {% if selected_ev_quest %}#}
+                                                                {% if not field.selected %}
+                                                                    <option title="{{ field.description }}"
+                                                                            value="{{ survey.sid }}*{{ survey.title }}*{{ field.field }}*{{ field.header }}">
+                                                                        [{{ field.field }}] {{ field.description }}
+                                                                    </option>
+                                                                {% endif %}
+
+                                                            {% endfor %}
+                                                        </select>
+
+                                                    </div>
+                                                </div>
+
+
+                                                <div class="col-md-2 col-sm-2">
+                                                    <button type="button" id="multiselect_{{ survey.sid }}_rightAll"
+                                                            class="btn btn-block"><i
+                                                            class="glyphicon glyphicon-forward"></i></button>
+                                                    <button type="button" id="multiselect_{{ survey.sid }}_rightSelected"
+                                                            class="btn btn-block"><i
+                                                            class="glyphicon glyphicon-chevron-right"></i></button>
+                                                    <button type="button" id="multiselect_{{ survey.sid }}_leftSelected"
+                                                            class="btn btn-block"><i
+                                                            class="glyphicon glyphicon-chevron-left"></i></button>
+                                                    <button type="button" id="multiselect_{{ survey.sid }}_leftAll"
+                                                            class="btn btn-block"><i
+                                                            class="glyphicon glyphicon-backward"></i></button>
+                                                </div>
+
+                                                <div class="col-md-5 col-sm-10">
+                                                    <label class="control-label">{% trans "Fields chosen:" %} </label>
+
+                                                    <select name="to[]" id="multiselect_{{ survey.sid }}_to"
+                                                            class="form-control" size="13"
+                                                            multiple="multiple">
                                                         {% for field in survey.output_list %}
-                                                            {#                                            {% if selected_ev_quest %}#}
-                                                            {% if not field.selected %}
+                                                            {% if field.selected %}
                                                                 <option title="{{ field.description }}"
                                                                         value="{{ survey.sid }}*{{ survey.title }}*{{ field.field }}*{{ field.header }}">
                                                                     [{{ field.field }}] {{ field.description }}
                                                                 </option>
                                                             {% endif %}
-
                                                         {% endfor %}
+
                                                     </select>
-
                                                 </div>
+
                                             </div>
-
-
-                                            <div class="col-md-2 col-sm-2">
-                                                <button type="button" id="multiselect_{{ survey.sid }}_rightAll"
-                                                        class="btn btn-block"><i
-                                                        class="glyphicon glyphicon-forward"></i></button>
-                                                <button type="button" id="multiselect_{{ survey.sid }}_rightSelected"
-                                                        class="btn btn-block"><i
-                                                        class="glyphicon glyphicon-chevron-right"></i></button>
-                                                <button type="button" id="multiselect_{{ survey.sid }}_leftSelected"
-                                                        class="btn btn-block"><i
-                                                        class="glyphicon glyphicon-chevron-left"></i></button>
-                                                <button type="button" id="multiselect_{{ survey.sid }}_leftAll"
-                                                        class="btn btn-block"><i
-                                                        class="glyphicon glyphicon-backward"></i></button>
-                                            </div>
-
-                                            <div class="col-md-5 col-sm-10">
-                                                <label class="control-label">{% trans "Fields chosen:" %} </label>
-
-                                                <select name="to[]" id="multiselect_{{ survey.sid }}_to"
-                                                        class="form-control" size="13"
-                                                        multiple="multiple">
-                                                    {% for field in survey.output_list %}
-                                                        {% if field.selected %}
-                                                            <option title="{{ field.description }}"
-                                                                    value="{{ survey.sid }}*{{ survey.title }}*{{ field.field }}*{{ field.header }}">
-                                                                [{{ field.field }}] {{ field.description }}
-                                                            </option>
-                                                        {% endif %}
-                                                    {% endfor %}
-
-                                                </select>
-                                            </div>
-
                                         </div>
                                     </div>
-                                </div>
-                            {% endfor %}
+                                {% endfor %}
+                            </div>
+
                         </div>
 
                     </div>
+                {% endif %}
 
-                </div>
             {% endif %}
 
                 <div class="container span6 offset3 well ">

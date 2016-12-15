@@ -4,7 +4,11 @@
 
 {% block header %}
     {% load static %}
-{#    <script src="{% static 'quiz/js/filter_selection.js' %}"></script>#}
+    <script>
+        $( function() {
+            $( "#accordion" ).accordion();
+          } );
+    </script>
 
     {% block specific_header %}
     {% endblock %}
@@ -51,6 +55,14 @@
                                     <label class="control-label">{% trans "* use ctrl-click to select more than one field. (command-click on Mac)" %} </label>
                                 <div class="help-block with-errors"></div>
                             </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <div class="row">
+                        <div id="accordion">
+
                         </div>
                     </div>
                 </div>

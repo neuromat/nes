@@ -35,9 +35,9 @@ class ExportForm(Form):
     # patient_fields_selected = MultipleChoiceField(required=True,
     #                                               widget=CheckboxSelectMultiple, choices=FAVORITE_COLORS_CHOICES)
 
-    headings = ChoiceField(widget=RadioSelect(), choices=HEADINGS_CHOICES)
+    headings = ChoiceField(widget=RadioSelect(), choices=HEADINGS_CHOICES, required=False)
     responses = MultipleChoiceField(widget=CheckboxSelectMultiple(attrs={'data-error': _('Response must be selected')}),
-                                    choices=RESPONSES_CHOICES, )
+                                    choices=RESPONSES_CHOICES, required=False )
     #
     # questionnaire_entrance_fields_selected = []
     #
