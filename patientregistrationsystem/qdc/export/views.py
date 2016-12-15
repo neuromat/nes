@@ -1,12 +1,14 @@
 # -*- coding: utf-8 -*-
-# import json
+import json
 from django.shortcuts import render
 from django.conf import settings
 from django.contrib.auth.decorators import login_required
 from django.contrib import messages
+from django.core import serializers
 from django.core.urlresolvers import reverse
 # from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
 from django.http import HttpResponse, HttpResponseRedirect
+from django.shortcuts import get_object_or_404
 from django.utils.encoding import smart_str
 from django.utils.translation import ugettext as ug_, ugettext_lazy as _
 
@@ -31,6 +33,8 @@ from patient.views import check_limesurvey_access
 from survey.models import Survey
 from survey.abc_search_engine import Questionnaires
 from survey.views import get_questionnaire_language
+
+from experiment.models import ResearchProject, Experiment, Group
 
 JSON_FILENAME = "json_export.json"
 EXPORT_DIRECTORY = "export"
@@ -909,12 +913,127 @@ def filter_participants(request):
 
     context = {
         "participant_selection_form": participant_selection_form,
-        "age_interval_form": age_interval_form}
+        "age_interval_form": age_interval_form,
+        "study_selected_list": request.session['study_selected_list']}
 
     return render(request, "export/participant_selection.html", context)
 
 
 @login_required
 def export_main(request):
-    redirect_url = reverse("filter_participants", args=())
+    redirect_url = reverse("export_menu", args=())
     return HttpResponseRedirect(redirect_url)
+
+
+@login_required
+def export_menu(request, template_name="export/export_menu.html"):
+
+    export_type_list = [
+        {
+            'item': _('Information from input questionnaires'),
+            'href': reverse("filter_participants", args=()),
+        },
+        {
+            'item': _('Information from experiments'),
+            'href': reverse("experiment_selection", args=()),
+        },
+    ]
+
+    context = {
+        "export_type_list": export_type_list
+    }
+
+
+    return render(request, template_name, context)
+
+
+@login_required
+def experiment_selection(request, template_name="export/experiment_selection.html"):
+    research_projects = ResearchProject.objects.order_by('start_date')
+    study_list = []
+    study_selected = []
+    index = 0
+
+    if request.method == "POST":
+        if request.POST['action'] == "next-step-participants":
+            study_selected = request.POST.getlist('research_projects_selected')
+            request.session['study_selected_list'] = [study_selected]
+
+            redirect_url = reverse("filter_participants", args=())
+            return HttpResponseRedirect(redirect_url)
+
+    for research in research_projects:
+        research_project = get_object_or_404(ResearchProject, pk=research.id)
+        if hasattr(Experiment, 'research_project'):
+            experiments = Experiment.objects.filter(research_project=research_project)
+            for exp in experiments:
+                experiment = get_object_or_404(Experiment, pk=exp.id)
+                if hasattr(Group, 'experiment'):
+                    groups = Group.objects.filter(experiment=experiment)
+                    for group in groups:
+                        index = index + 1
+                        study_list.append({
+                            'study_index': index,
+                            'study_id': research.id,
+                            'study_title': research_project.title,
+                            'experiment_id': experiment.id,
+                            'experiment_title': experiment.title,
+                            'group_id': group.id,
+                            'group_title': group.title
+                        })
+
+    # putting the list of participants in the user session
+    # request.session['filtered_participant_data'] = [item.id for item in participants_list]
+
+    context = {
+        "study_list": study_list,
+        "study_selected": study_selected,
+        "creating": True,
+        "editing": True,
+    }
+
+    return render(request, template_name, context)
+
+
+@login_required
+def get_json_experiment_by_study(request, study_list):
+    experiments_list = []
+    for study_id in study_list:
+        research_project = get_object_or_404(ResearchProject, pk=study_id)
+        if hasattr(Experiment, 'research_project'):
+            experiments = Experiment.objects.filter(research_project=research_project)
+            for exp in experiments:
+                experiment = get_object_or_404(Experiment, pk=exp.id)
+                if hasattr(Group, 'experiment'):
+                    groups = Group.objects.filter(experiment=experiment)
+                    for group in groups:
+                        experiments_list.append({
+                            'study_id': study_id,
+                            'study_name': research_project.title,
+                            'experiment_id': experiment.id,
+                            'experiment_name': experiment.title,
+                            'group_id': group.id,
+                            'group_name': group.title
+                        })
+
+            for experiment in experiments:
+                experiments_list.append({
+                    'study_id': study_id,
+                    'study_name': research_project.title,
+                    'experiment_id':experiment.id,
+                    'experiment_name': experiment.title
+                })
+    json_list = serializers.serialize("json", experiments_list)
+
+    return HttpResponse(json_list, content_type='application/json')
+
+
+@login_required
+def get_json_group_by_experiment(request, experiment_id):
+    experiment = get_object_or_404(Experiment, pk=experiment_id)
+    group_list = []
+    if hasattr(Group, 'experiment'):
+        group_list = Group.objects.filter(experiment=experiment)
+    json_list = serializers.serialize("json", group_list)
+
+    return HttpResponse(json_list, content_type='application/json')

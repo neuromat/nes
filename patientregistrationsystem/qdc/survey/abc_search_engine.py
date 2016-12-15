@@ -258,7 +258,7 @@ class ABCSearchEngine(ABC):
 
         return responses_txt
 
-    def get_header_response(self, sid, language, token, heading_type='code'):
+    def get_header_response(self, sid, language, token, heading_type='full'):
         """ obtains header responses
         :param sid: survey ID
         :param language: language
