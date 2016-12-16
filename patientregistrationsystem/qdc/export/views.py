@@ -25,7 +25,7 @@ from .forms import ExportForm, ParticipantsSelectionForm, AgeIntervalForm
 from .models import Export
 from .export import ExportExecution, perform_csv_response, create_directory
 
-from export.input_export import build_complete_export_structure
+from export.input_export import build_complete_export_structure, build_partial_export_structure
 
 from patient.models import QuestionnaireResponse, Patient
 from patient.views import check_limesurvey_access
@@ -360,9 +360,11 @@ def export_create(request, export_id, input_filename, template_name="export/expo
 
         input_data = export.read_configuration_data(input_filename)
 
-        if not export.is_input_data_consistent() or not input_data:
-            messages.error(request, _("Inconsistent data read from json file"))
-            return render(request, template_name)
+        # gady #####
+        # if not export.is_input_data_consistent() or not input_data:
+        #     messages.error(request, _("Inconsistent data read from json file"))
+        #     return render(request, template_name)
+        ##########################################
 
         # create directory base for export: /NES_EXPORT
         error_msg = export.create_export_directory()
@@ -375,10 +377,12 @@ def export_create(request, export_id, input_filename, template_name="export/expo
 
         # process per questionnaire data
 
-        error_msg = export.process_per_questionnaire()
-        if error_msg != "":
-            messages.error(request, error_msg)
-            return render(request, template_name)
+        #### gady ##################
+        # error_msg = export.process_per_questionnaire()
+        # if error_msg != "":
+        #     messages.error(request, error_msg)
+        #     return render(request, template_name)
+        ##################################################
 
         # process per participant data
         error_msg = export.process_per_participant()
@@ -411,25 +415,27 @@ def export_create(request, export_id, input_filename, template_name="export/expo
                     export_writer.writerow(row)
 
         # process  diagnosis file
-        diagnosis_input_data = export.get_input_data("diagnosis")
-
-        if diagnosis_input_data[0]['output_list'] and participants_list:
-            export_rows_diagnosis = process_participant_data(diagnosis_input_data, participants_list)
-
-            export_filename = "%s.csv" % export.get_input_data('diagnosis')[0]["output_filename"]  # "export.csv"
-
-            base_directory = export.get_input_data("base_directory")   # /NES_EXPORT
-            base_export_directory = export.get_export_directory()
-
-            complete_filename = path.join(base_export_directory, export_filename)
-
-            # files_to_zip_list.append(complete_filename)
-            export.files_to_zip_list.append([complete_filename, base_directory])
-
-            with open(complete_filename.encode('utf-8'), 'w', newline='', encoding='UTF-8') as csv_file:
-                export_writer = writer(csv_file)
-                for row in export_rows_diagnosis:
-                    export_writer.writerow(row)
+        #### gady #################
+        # diagnosis_input_data = export.get_input_data("diagnosis")
+        #
+        # if diagnosis_input_data[0]['output_list'] and participants_list:
+        #     export_rows_diagnosis = process_participant_data(diagnosis_input_data, participants_list)
+        #
+        #     export_filename = "%s.csv" % export.get_input_data('diagnosis')[0]["output_filename"]  # "export.csv"
+        #
+        #     base_directory = export.get_input_data("base_directory")   # /NES_EXPORT
+        #     base_export_directory = export.get_export_directory()
+        #
+        #     complete_filename = path.join(base_export_directory, export_filename)
+        #
+        #     # files_to_zip_list.append(complete_filename)
+        #     export.files_to_zip_list.append([complete_filename, base_directory])
+        #
+        #     with open(complete_filename.encode('utf-8'), 'w', newline='', encoding='UTF-8') as csv_file:
+        #         export_writer = writer(csv_file)
+        #         for row in export_rows_diagnosis:
+        #             export_writer.writerow(row)
+        #######################################################
 
         # create zip file and include files
         export_complete_filename = ""
@@ -656,8 +662,7 @@ def export_view(request, template_name="export/export_data.html"):
                 input_filename = path.join(settings.MEDIA_ROOT, input_export_file)
                 create_directory(settings.MEDIA_ROOT, path.split(input_export_file)[0])
 
-                build_complete_export_structure(per_participant, participants_list, diagnosis_list,
-                                                questionnaires_list, input_filename, request.LANGUAGE_CODE)
+                build_partial_export_structure(per_participant, participants_list, input_filename,request.LANGUAGE_CODE)
 
                 complete_filename = export_create(request, export_instance.id, input_filename)
 
