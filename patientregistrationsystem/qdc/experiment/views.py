@@ -640,8 +640,8 @@ def group_view(request, group_id, template_name="experiment/group_register.html"
         experimental_protocol_description = get_experimental_protocol_description(
             group.experimental_protocol, request.LANGUAGE_CODE)
 
-        # experimental_protocol_image = get_experimental_protocol_image(
-        #     group.experimental_protocol, request.LANGUAGE_CODE)
+        experimental_protocol_image = get_experimental_protocol_image(
+            group.experimental_protocol, request.LANGUAGE_CODE)
 
     context = {"can_change": can_change,
                "classification_of_diseases_list": group.classification_of_diseases.all(),
@@ -4521,7 +4521,7 @@ def subject_eeg_view(request, group_id, subject_id,
 
             # v1.5
             # can export to nwb?
-            if eeg_data_file.eeg_reading.file_format:
+            if eeg_data_file.eeg_reading.file_format and eeg_data_file.eeg_reading.reading:
                 if eeg_data_file.eeg_reading.file_format.nes_code == "MNE-RawFromEGI" and \
                         hasattr(eeg_data_file.eeg_setting, 'eeg_amplifier_setting') and \
                         eeg_data_file.eeg_setting.eeg_amplifier_setting.number_of_channels_used and \
