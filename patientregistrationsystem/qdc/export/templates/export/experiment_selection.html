@@ -5,9 +5,9 @@
 {% block header %}
     {% load static %}
     <script>
-        $( function() {
-            $( "#accordion" ).accordion();
-          } );
+{#        $( function() {#}
+{#            $( "#accordion" ).accordion();#}
+{#          } );#}
     </script>
 
     {% block specific_header %}
@@ -59,13 +59,29 @@
                     </div>
                 </div>
 
-                <div class="form-group">
-                    <div class="row">
-                        <div id="accordion">
-
-                        </div>
+                <div class="panel-group">
+                    <div class="panel panel-default">
+                        {% for study in study_list %}
+                            <div class="panel-heading">
+                                <h4 class="panel-title">
+                                    <a data-toggle="collapse" href="#s{{ study.study_id }}">{{ study.study_title }}</a>
+                                </h4>
+                            </div>
+                            <div id="s{{ study.study_id }}" class="panel-collapse collapse">
+                                <div class="panel-body">
+                                    <a data-toggle="collapse" href="#e{{ study.experiment_id }}">{{ study.experiment_title }}</a>
+                                </div>
+                            </div>
+                            <div id="e{{ study.experiment_id }}" class="panel-collapse collapse">
+                                <div class="panel-body">
+                                    <a data-toggle="collapse" href="#{{ study.group_id }}">{{ study.group_title }}</a>
+                                </div>
+                            </div>
+                        {% endfor %}
                     </div>
                 </div>
+
+
             </div>
 
             <div class="btn-toolbar">
