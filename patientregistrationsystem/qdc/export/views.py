@@ -94,8 +94,6 @@ patient_fields = [
     {"field": 'country', "header": 'country', "description": _("Country")},
     {"field": 'socialdemographicdata__natural_of', "header": 'natural_of', "description": _("Natural of")},
     {"field": 'socialdemographicdata__schooling', "header": 'schooling', "description": _("Schooling")},
-    {"field": 'socialdemographicdata__patient_schooling', "header": 'patient_schooling',
-     "description": _("Schooling of the patient")},
     {"field": 'socialdemographicdata__profession', "header": 'profession', "description": _("Profession")},
     {"field": 'socialdemographicdata__social_class', "header": 'social_class',
      "description": _("Calculated social class")},
@@ -153,7 +151,7 @@ Diagnosis._meta.get_all_field_names()
 
 SocialDemographicData._meta.get_all_field_names()
 ['natural_of', 'changed_by_id', 'tv', 'wash_machine', 'flesh_tone', 'payment_id',
-'house_maid', 'automobile', 'patient_schooling', 'schooling', 'radio', 'profession', 'dvd', 'bath', 'freezer',
+'house_maid', 'automobile', 'schooling', 'radio', 'profession', 'dvd', 'bath', 'freezer',
 'social_class', 'schooling_id', 'occupation', 'changed_by', 'benefit_government', 'religion_id',
 'flesh_tone_id', 'refrigerator', 'patient', 'religion', 'citizenship', 'id', 'patient_id', 'payment']
 

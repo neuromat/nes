@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2016-09-30 17:27-0300\n"
+"POT-Creation-Date: 2016-08-22 10:28-0300\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -673,269 +673,6 @@ msgstr ""
 msgid "Senior researcher"
 msgstr ""
 
-#: team/models.py:7
-msgid "first name"
-msgstr ""
-
-#: team/models.py:8
-msgid "last name"
-msgstr ""
-
-#: team/models.py:9
-msgid "email address"
-msgstr ""
-
-#: team/templates/team/person_list.html:42
-#: team/templates/team/person_register.html:51
-#: team/templates/team/registers.html:42 team/templates/team/team_list.html:42
-#: team/templates/team/team_person_register.html:51
-#: team/templates/team/team_register.html:51
-#: templates/registration/logged_out.html:4
-msgid "Home"
-msgstr ""
-
-#: team/templates/team/person_list.html:43
-#: team/templates/team/person_register.html:52
-#: team/templates/team/registers.html:43 team/templates/team/team_list.html:43
-#: team/templates/team/team_list.html:44
-#: team/templates/team/team_register.html:52
-#: team/templates/team/team_register.html:53 team/views.py:28
-msgid "Teams"
-msgstr ""
-
-#: team/templates/team/person_list.html:44
-#: team/templates/team/person_register.html:53
-#: team/templates/team/team_register.html:104 team/views.py:23
-msgid "Persons"
-msgstr ""
-
-#: team/templates/team/person_list.html:52
-msgid "Person list"
-msgstr ""
-
-#: team/templates/team/person_list.html:57
-#: team/templates/team/person_register.html:92
-msgid "First name"
-msgstr ""
-
-#: team/templates/team/person_list.html:58
-#: team/templates/team/person_register.html:99
-msgid "Last name"
-msgstr ""
-
-#: team/templates/team/person_list.html:59
-#: team/templates/team/person_register.html:110
-#: team/templates/team/team_register.html:111
-#: templates/registration/password_reset_form.html:83
-msgid "E-mail"
-msgstr ""
-
-#: team/templates/team/person_list.html:60 templates/registration/login.html:91
-msgid "User"
-msgstr ""
-
-#: team/templates/team/person_list.html:67
-#: team/templates/team/team_list.html:65
-#: team/templates/team/team_register.html:121
-#: team/templates/team/team_register.html:124
-msgid "Visualize"
-msgstr ""
-
-#: team/templates/team/person_list.html:86
-#: team/templates/team/team_list.html:81
-msgid "Insert new"
-msgstr ""
-
-#: team/templates/team/person_list.html:93
-#: team/templates/team/person_register.html:145
-#: team/templates/team/team_list.html:88
-#: team/templates/team/team_person_register.html:125
-#: team/templates/team/team_register.html:196
-msgid "Back"
-msgstr ""
-
-#: team/templates/team/person_register.html:56
-#: team/templates/team/team_person_register.html:55
-#: team/templates/team/team_register.html:56
-msgid "New"
-msgstr ""
-
-#: team/templates/team/person_register.html:60
-#: team/templates/team/team_register.html:60
-msgid "Editing"
-msgstr ""
-
-#: team/templates/team/person_register.html:73
-msgid "Person"
-msgstr ""
-
-#: team/templates/team/person_register.html:78
-msgid "Existent user"
-msgstr ""
-
-#: team/templates/team/person_register.html:123
-#: team/templates/team/team_person_register.html:103
-#: team/templates/team/team_register.html:95
-msgid "Edit"
-msgstr ""
-
-#: team/templates/team/person_register.html:132
-#: team/templates/team/person_register.html:161
-#: team/templates/team/team_person_register.html:112
-#: team/templates/team/team_person_register.html:141
-#: team/templates/team/team_register.html:212
-msgid "Delete"
-msgstr ""
-
-#: team/templates/team/person_register.html:137
-#: team/templates/team/team_person_register.html:117
-#: team/templates/team/team_register.html:188
-#: templates/registration/change_password_custom.html:109
-msgid "Save"
-msgstr ""
-
-#: team/templates/team/person_register.html:141
-#: team/templates/team/person_register.html:160
-#: team/templates/team/team_person_register.html:121
-#: team/templates/team/team_person_register.html:140
-#: team/templates/team/team_register.html:192
-#: team/templates/team/team_register.html:211
-#: templates/registration/change_password_custom.html:112
-msgid "Cancel"
-msgstr ""
-
-#: team/templates/team/person_register.html:157
-#: team/templates/team/team_person_register.html:137
-msgid "Are you sure you want to delete person?"
-msgstr ""
-
-#: team/templates/team/registers.html:51
-msgid "Registers"
-msgstr ""
-
-#: team/templates/team/registers.html:58
-msgid "List view"
-msgstr ""
-
-#: team/templates/team/team_list.html:52
-msgid "Team list"
-msgstr ""
-
-#: team/templates/team/team_list.html:57
-#: team/templates/team/team_register.html:78
-msgid "Name"
-msgstr ""
-
-#: team/templates/team/team_list.html:58
-#: team/templates/team/team_register.html:85
-msgid "Acronym"
-msgstr ""
-
-#: team/templates/team/team_person_register.html:52
-msgid "TeamPersons"
-msgstr ""
-
-#: team/templates/team/team_person_register.html:67
-msgid "TeamPerson"
-msgstr ""
-
-#: team/templates/team/team_person_register.html:72
-msgid "Existent team_person"
-msgstr ""
-
-#: team/templates/team/team_person_register.html:86
-#: team/templates/team/team_person_register.html:93
-msgid "Is_coordinator"
-msgstr ""
-
-#: team/templates/team/team_register.html:73
-msgid "Team"
-msgstr ""
-
-#: team/templates/team/team_register.html:109
-msgid "First Name"
-msgstr ""
-
-#: team/templates/team/team_register.html:110
-msgid "Last Name"
-msgstr ""
-
-#: team/templates/team/team_register.html:112
-msgid "Is coordinator"
-msgstr ""
-
-#: team/templates/team/team_register.html:113
-msgid "Remove"
-msgstr ""
-
-#: team/templates/team/team_register.html:154
-msgid "is coordinator"
-msgstr ""
-
-#: team/templates/team/team_register.html:161
-msgid "Insert"
-msgstr ""
-
-#: team/templates/team/team_register.html:183
-msgid "Delete team"
-msgstr ""
-
-#: team/templates/team/team_register.html:208
-msgid "Are you sure you want to delete this team?"
-msgstr ""
-
-#: team/views.py:63
-msgid "Person created successfully."
-msgstr ""
-
-#: team/views.py:68 team/views.py:181 team/views.py:285
-msgid "Information not saved."
-msgstr ""
-
-#: team/views.py:71 team/views.py:184 team/views.py:288
-msgid "Action not available."
-msgstr ""
-
-#: team/views.py:95
-msgid "Person removed successfully."
-msgstr ""
-
-#: team/views.py:98
-msgid "Error trying to delete person."
-msgstr ""
-
-#: team/views.py:121
-msgid "Person updated successfully."
-msgstr ""
-
-#: team/views.py:123 team/views.py:247
-msgid "There is no changes to save."
-msgstr ""
-
-#: team/views.py:175
-msgid "Team created successfully."
-msgstr ""
-
-#: team/views.py:209
-msgid "Team removed successfully."
-msgstr ""
-
-#: team/views.py:212
-msgid "Error trying to delete a team."
-msgstr ""
-
-#: team/views.py:221
-msgid "Person added to the team successfully."
-msgstr ""
-
-#: team/views.py:245
-msgid "Team updated successfully."
-msgstr ""
-
-#: team/views.py:279
-msgid "Team person created successfully."
-msgstr ""
-
 #: templates/admin/base_site.html:4
 msgid "QDC site admin test"
 msgstr ""
@@ -959,6 +696,18 @@ msgid ""
 "uppercase letter, digit or special character."
 msgstr ""
 
+#: templates/registration/change_password_custom.html:109
+msgid "Save"
+msgstr ""
+
+#: templates/registration/change_password_custom.html:112
+msgid "Cancel"
+msgstr ""
+
+#: templates/registration/logged_out.html:4
+msgid "Home"
+msgstr ""
+
 #: templates/registration/logged_out.html:8
 msgid "Thanks for spending some quality time with the Web site today."
 msgstr ""
@@ -970,6 +719,10 @@ msgstr ""
 #: templates/registration/login.html:8
 #: templates/registration/password_reset_form.html:9
 msgid "Neuroscience Experiments System - NES"
+msgstr ""
+
+#: templates/registration/login.html:91
+msgid "User"
 msgstr ""
 
 #: templates/registration/login.html:95
@@ -1077,9 +830,8 @@ msgstr ""
 msgid "Please enter your e-mail to receive instructions for password reset."
 msgstr ""
 
-#: templates/registration/password_reset_subject.txt:2
-#, python-format
-msgid "Password reset on %(site_name)s"
+#: templates/registration/password_reset_form.html:83
+msgid "E-mail"
 msgstr ""
 
 #~ msgid "Alterar senha"
@@ -1225,6 +977,9 @@ msgstr ""
 
 #~ msgid "Não é possível salvar exame sem arquivos."
 #~ msgstr "It is not possible to create user."
+
+#~ msgid "Exame removido com sucesso."
+#~ msgstr "User deleted successfully."
 
 #~ msgid "Nome do médico"
 #~ msgstr "User name"

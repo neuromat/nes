@@ -85,7 +85,7 @@
                                 </tr>
                             </thead>
                             <tbody>
-                                {% for position_setting in eeg_setting.eeg_electrode_layout_setting.positions_setting.all|dictsort:"channel_index" %}
+                                {% for position_setting in eeg_setting.eeg_electrode_layout_setting.positions_setting.all %}
                                 <tr>
                                     <td>
                                         {{ position_setting.eeg_electrode_position.name }}

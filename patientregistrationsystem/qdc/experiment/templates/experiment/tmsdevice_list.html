@@ -56,6 +56,7 @@
                             <tr>
                                 <th>{% trans "Identification" %}</th>
                                 <th>{% trans "Manufacturer" %}</th>
+                                <th>{% trans "Coil Model" %}</th>
                                 <th>{% trans "Pulse Type" %}</th>
                             </tr>
                         </thead>
@@ -72,6 +73,9 @@
                                     {% endif %}
                                 </td>
                                 <td>{{ equipment.manufacturer }}</td>
+                                <td>
+                                    {{ equipment.coil_model|default:"" }}
+                                </td>
                                 <td>
                                     {{ equipment.pulse_type|default:"" }}
                                 </td>

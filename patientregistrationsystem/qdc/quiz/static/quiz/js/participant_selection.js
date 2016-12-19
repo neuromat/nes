@@ -21,7 +21,6 @@ $(document).ready(function () {
     selected_participants_radio.click(function () {
         participants_filter_div.prop('disabled', false);
         participants_filter_div.css('visibility', 'visible');
-        participants_filter_div.collapse('show')
     });
 
     all_participants_radio.click(function () {
@@ -32,7 +31,6 @@ $(document).ready(function () {
         if (age_checkbox.is(":checked")) {age_checkbox.click();}
 
         participants_filter_div.css('visibility', 'hidden');
-        participants_filter_div.collapse('hide');
     });
 
     gender_checkbox.click(function() {

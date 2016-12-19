@@ -110,7 +110,7 @@
                 <div class="row">
                     <div class="col-xs-12 col-sm-12">
                         <div class="form-group {% if equipment_form.signal_to_noise_rate.errors %}has-error{% endif %}">
-                            <label class="control-label">{% trans "Signal-to-noise ratio/SNR (dB)" %}</label>
+                            <label class="control-label">{% trans "Signal_to_noise rate" %}</label>
                             {{ equipment_form.signal_to_noise_rate }}
                             <div class="help-block with-errors">
                                 {% for error in equipment_form.signal_to_noise_rate.errors %}
@@ -123,7 +123,7 @@
                 <div class="row">
                     <div class="col-xs-12 col-sm-12">
                         <div class="form-group {% if equipment_form.sampling_rate.errors %}has-error{% endif %}">
-                            <label class="control-label">{% trans "Sampling rate (Hz)" %}</label>
+                            <label class="control-label">{% trans "Sampling rate" %}</label>
                             {{ equipment_form.sampling_rate }}
                             <div class="help-block with-errors">
                                 {% for error in equipment_form.sampling_rate.errors %}
@@ -136,7 +136,7 @@
                 <div class="row">
                     <div class="col-xs-12 col-sm-12">
                         <div class="form-group {% if equipment_form.resolution.errors %}has-error{% endif %}">
-                            <label class="control-label">{% trans "Resolution (bits)" %}</label>
+                            <label class="control-label">{% trans "Resolution" %}</label>
                             {{ equipment_form.resolution }}
                             <div class="help-block with-errors">
                                 {% for error in equipment_form.resolution.errors %}

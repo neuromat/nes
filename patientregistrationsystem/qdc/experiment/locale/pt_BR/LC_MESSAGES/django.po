@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2016-09-30 17:27-0300\n"
+"POT-Creation-Date: 2016-08-22 10:28-0300\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -23,31 +23,30 @@ msgid "Title must be filled."
 msgstr "Título deve ser preenchido."
 
 #: experiment/forms.py:34 experiment/forms.py:52 experiment/forms.py:263
-#: experiment/forms.py:316 experiment/forms.py:362 experiment/forms.py:846
-#: experiment/forms.py:886 experiment/forms.py:926 experiment/forms.py:1056
-#: experiment/forms.py:1113
+#: experiment/forms.py:315 experiment/forms.py:361 experiment/forms.py:422
+#: experiment/forms.py:855 experiment/forms.py:895 experiment/forms.py:917
+#: experiment/forms.py:1047 experiment/forms.py:1104
 msgid "Description must be filled."
 msgstr "Descrição deve ser preenchida."
 
 #: experiment/forms.py:64 experiment/forms.py:264 experiment/forms.py:267
-#: experiment/forms.py:303 experiment/forms.py:835 experiment/forms.py:878
-#: experiment/forms.py:902 experiment/forms.py:906 experiment/views.py:4013
+#: experiment/forms.py:303 experiment/forms.py:845 experiment/forms.py:887
+#: experiment/views.py:4099
 msgid "%m/%d/%Y"
 msgstr "%d/%m/%Y"
 
 #: experiment/forms.py:65 experiment/forms.py:265 experiment/forms.py:268
-#: experiment/forms.py:304 experiment/forms.py:836 experiment/forms.py:879
-#: experiment/forms.py:903 experiment/forms.py:907
+#: experiment/forms.py:304 experiment/forms.py:846 experiment/forms.py:888
 msgid "mm/dd/yyyy"
 msgstr "dd/mm/aaaa"
 
-#: experiment/forms.py:67 experiment/forms.py:306 experiment/forms.py:838
-#: experiment/forms.py:881
+#: experiment/forms.py:67 experiment/forms.py:306 experiment/forms.py:848
+#: experiment/forms.py:890
 msgid "Fill date must be filled."
 msgstr "Data de preenchimento deve ser preenchida"
 
-#: experiment/forms.py:92 experiment/forms.py:514 experiment/forms.py:620
-#: experiment/forms.py:638 experiment/forms.py:689
+#: experiment/forms.py:92 experiment/forms.py:510 experiment/forms.py:530
+#: experiment/forms.py:631 experiment/forms.py:648 experiment/forms.py:699
 msgid "Identification must be filled."
 msgstr "Identificação deve ser preenchida."
 
@@ -91,11 +90,11 @@ msgstr "Instrução deve ser preenchida."
 msgid "Stimulus type must be filled."
 msgstr "Tipo do estímulo deve ser preenchido."
 
-#: experiment/forms.py:183 experiment/forms.py:309
+#: experiment/forms.py:183 experiment/forms.py:308
 msgid "EEG setting type must be filled."
 msgstr "Tipo de configuração de EEG deve ser preenchido."
 
-#: experiment/forms.py:201 experiment/forms.py:841
+#: experiment/forms.py:201 experiment/forms.py:850
 msgid "EMG setting type must be filled."
 msgstr "Tipo de configuração de EMG deve ser preenchido."
 
@@ -129,32 +128,32 @@ msgstr "Responsável"
 msgid "Initial date must be filled."
 msgstr "Data de início deve ser preenchida"
 
-#: experiment/forms.py:311
+#: experiment/forms.py:310
 msgid "Cap size type must be filled."
 msgstr "Tamanho da touca deve ser preenchido."
 
-#: experiment/forms.py:313 experiment/forms.py:843 experiment/forms.py:883
+#: experiment/forms.py:312 experiment/forms.py:852 experiment/forms.py:892
 msgid "File format must be chosen."
 msgstr "Formato de arquivo deve ser escolhido."
 
-#: experiment/forms.py:319 experiment/forms.py:849 experiment/forms.py:889
+#: experiment/forms.py:318 experiment/forms.py:858 experiment/forms.py:898
 msgid "File format description must be filled."
 msgstr "Descrição do formato do arquivo deve ser preenchida."
 
-#: experiment/forms.py:323 experiment/forms.py:853
+#: experiment/forms.py:322 experiment/forms.py:862
 msgid "Reason for change must be filled."
 msgstr "Razão para mudança deve ser preenchida."
 
-#: experiment/forms.py:358 experiment/forms.py:478 experiment/forms.py:534
-#: experiment/forms.py:552 experiment/forms.py:567 experiment/forms.py:586
-#: experiment/forms.py:600 experiment/forms.py:707 experiment/forms.py:769
-#: experiment/forms.py:781 experiment/forms.py:796 experiment/forms.py:810
-#: experiment/forms.py:823 experiment/forms.py:922 experiment/forms.py:1053
-#: experiment/forms.py:1109
+#: experiment/forms.py:357 experiment/forms.py:495 experiment/forms.py:546
+#: experiment/forms.py:564 experiment/forms.py:579 experiment/forms.py:598
+#: experiment/forms.py:612 experiment/forms.py:717 experiment/forms.py:779
+#: experiment/forms.py:791 experiment/forms.py:806 experiment/forms.py:820
+#: experiment/forms.py:833 experiment/forms.py:913 experiment/forms.py:1044
+#: experiment/forms.py:1100
 msgid "Name must be filled."
 msgstr "Nome deve ser preenchido."
 
-#: experiment/forms.py:403
+#: experiment/forms.py:398
 msgid ""
 "Number of channels should be between 0 and the number of channels of the EEG "
 "machine."
@@ -162,76 +161,73 @@ msgstr ""
 "Quantidade de canais deve ser entre 0 e a quantidade de canais da máquina de "
 "EEG"
 
-#: experiment/forms.py:449 experiment/forms.py:463
+#: experiment/forms.py:466 experiment/forms.py:480
 msgid "Name field must be filled."
 msgstr "Nome deve ser preenchido."
 
-#: experiment/forms.py:512 experiment/forms.py:539 experiment/forms.py:618
-#: experiment/forms.py:636 experiment/forms.py:687 experiment/forms.py:807
+#: experiment/forms.py:508 experiment/forms.py:528 experiment/forms.py:551
+#: experiment/forms.py:629 experiment/forms.py:646 experiment/forms.py:697
+#: experiment/forms.py:817
 msgid "Manufacturer must be filled."
 msgstr "Fabricante deve ser preenchido"
 
-#: experiment/forms.py:574 experiment/forms.py:1058
+#: experiment/forms.py:586 experiment/forms.py:1049
 msgid "Electrode type is required"
 msgstr "Tipo de eletrodo é necessário"
 
-#: experiment/forms.py:605
+#: experiment/forms.py:617
 msgid "Coil shape must be filled."
 msgstr "Forma da bobina deve ser preenchida"
 
-#: experiment/forms.py:642
+#: experiment/forms.py:634
+msgid "Coil model must be filled."
+msgstr "Modelo de bobina deve ser preenchida"
+
+#: experiment/forms.py:652
 msgid "Electrode model default must be filled in."
 msgstr "Modelo de eletrodo deve ser preenchido"
 
-#: experiment/forms.py:658
+#: experiment/forms.py:668
 msgid "Material must be filled."
 msgstr "Material deve ser preenchido"
 
-#: experiment/forms.py:671
+#: experiment/forms.py:681
 msgid "Size must be filled."
 msgstr "Tamanho deve ser preenchido."
 
-#: experiment/forms.py:674
+#: experiment/forms.py:684
 msgid "Electrode adjacent distance must be filled."
 msgstr "Distância entre eletrodos deve ser preenchida"
 
-#: experiment/forms.py:722 experiment/forms.py:740 experiment/forms.py:755
+#: experiment/forms.py:732 experiment/forms.py:750 experiment/forms.py:765
 msgid "Muscle subdivision is required."
 msgstr "Subdivisão do músculo é necessário"
 
-#: experiment/forms.py:904
-msgid "Start date must be filled."
-msgstr "Data de início deve ser preenchida"
-
-#: experiment/forms.py:908
-msgid "End date must be filled."
-msgstr "Data de fim deve ser preenchida"
-
-#: experiment/forms.py:938
+#: experiment/forms.py:929
 msgid "Filter type is required"
 msgstr "Tipo de filtro é necessário"
 
-#: experiment/forms.py:955
+#: experiment/forms.py:946
 msgid "AD converter is required"
 msgstr "Conversor A/D é necessário"
 
-#: experiment/forms.py:968
+#: experiment/forms.py:959
 msgid "Electrode is required"
 msgstr "Eletrodo é necessário"
 
-#: experiment/forms.py:985
+#: experiment/forms.py:976
 msgid "Electrode placement is required"
 msgstr "Colocação do eletrodo é necessária"
 
-#: experiment/forms.py:988
+#: experiment/forms.py:979
 msgid "Muscle side is required"
 msgstr "Lado do músculo é necessário"
 
-#: experiment/forms.py:1000 experiment/forms.py:1019
+#: experiment/forms.py:991 experiment/forms.py:1010
 msgid "Amplifier is required"
 msgstr "Amplificador é necessário"
 
-#: experiment/forms.py:1125
+#: experiment/forms.py:1116
 msgid "TMS device is required"
 msgstr "Dispositivo de TMS é necessário"
 
@@ -283,7 +279,7 @@ msgstr ""
 msgid "Gigaohm(s)"
 msgstr ""
 
-#: experiment/models.py:37 experiment/tests.py:1566
+#: experiment/models.py:37 experiment/tests.py:1576
 msgid "Date cannot be greater than today's date."
 msgstr "Data de preenchimento não pode ser maior que a data de hoje."
 
@@ -296,9 +292,9 @@ msgstr "Máquina EEG"
 #: experiment/templates/experiment/amplifier_list.html:44
 #: experiment/templates/experiment/amplifier_register.html:53
 #: experiment/templates/experiment/amplifier_register.html:72
-#: experiment/templates/experiment/eeg_setting_register.html:115
-#: experiment/templates/experiment/emg_electrode_setting_amplifier.html:101
-#: experiment/views.py:8750
+#: experiment/templates/experiment/eeg_setting_register.html:143
+#: experiment/templates/experiment/emg_electrode_setting_amplifier.html:85
+#: experiment/views.py:8405
 msgid "Amplifier"
 msgstr "Amplificador"
 
@@ -308,7 +304,7 @@ msgid "EEG Solution"
 msgstr "Solução de EEG"
 
 #: experiment/models.py:116
-#: experiment/templates/experiment/eeg_setting_register.html:166
+#: experiment/templates/experiment/eeg_setting_register.html:192
 msgid "Filter"
 msgstr "Filtro"
 
@@ -322,138 +318,137 @@ msgid "A/D Converter"
 msgstr "Conversor A/D"
 
 #: experiment/models.py:119
+#: experiment/templates/experiment/tms_setting_register.html:115
 #: experiment/templates/experiment/tms_setting_tms_device.html:82
-#: experiment/templates/experiment/tmsdevice_new.html:53
-#: experiment/templates/experiment/tmsdevice_new.html:72
 #: experiment/templates/experiment/tmsdevice_register.html:53
 #: experiment/templates/experiment/tmsdevice_register.html:72
-#: experiment/views.py:8775
+#: experiment/views.py:8430
 msgid "TMS device"
-msgstr "Dispositivo TMS"
+msgstr ""
 
 #: experiment/models.py:132 experiment/models.py:133
 msgid "Equipment"
 msgstr "Equipamento"
 
-#: experiment/models.py:196
+#: experiment/models.py:201
 msgid "Disposable"
 msgstr "Descartável"
 
-#: experiment/models.py:197
+#: experiment/models.py:202
 msgid "Reusable"
 msgstr "Reutilizável"
 
-#: experiment/models.py:200 experiment/models.py:515
+#: experiment/models.py:205 experiment/models.py:508
 msgid "Surface"
 msgstr "Superfície"
 
-#: experiment/models.py:201 experiment/models.py:516
+#: experiment/models.py:206 experiment/models.py:509
 msgid "Intramuscular"
 msgstr ""
 
-#: experiment/models.py:202 experiment/models.py:517
+#: experiment/models.py:207 experiment/models.py:510
 msgid "Needle"
 msgstr "Agulha"
 
-#: experiment/models.py:205 experiment/models.py:286
+#: experiment/models.py:210 experiment/models.py:291
 msgid "millimeter(s)"
 msgstr "milímetro(s)"
 
-#: experiment/models.py:206 experiment/models.py:287
+#: experiment/models.py:211 experiment/models.py:292
 msgid "centimeter(s)"
 msgstr "centíetro(s)"
 
-#: experiment/models.py:250
+#: experiment/models.py:255
 msgid "Gelled"
 msgstr "Gelificado"
 
-#: experiment/models.py:251
+#: experiment/models.py:256
 msgid "Dry"
 msgstr "Seco"
 
-#: experiment/models.py:254
+#: experiment/models.py:259
 msgid "Active"
 msgstr "Ativo"
 
-#: experiment/models.py:255
+#: experiment/models.py:260
 msgid "Passive"
 msgstr "Passivo"
 
-#: experiment/models.py:273
+#: experiment/models.py:278
 msgid "Single"
 msgstr "Simples"
 
-#: experiment/models.py:274
+#: experiment/models.py:279
 msgid "Multi"
 msgstr ""
 
-#: experiment/models.py:378
+#: experiment/models.py:370
 msgid "Air core coil"
 msgstr "Bobina de núcleo de ar"
 
-#: experiment/models.py:379
+#: experiment/models.py:371
 msgid "Solid core coil"
 msgstr "Bobina de núcleo sólido"
 
-#: experiment/models.py:393
+#: experiment/models.py:385
 msgid "Monophase"
 msgstr "Monofásico"
 
-#: experiment/models.py:394
+#: experiment/models.py:386
 msgid "Biphase"
 msgstr "Bifásico"
 
-#: experiment/models.py:637
+#: experiment/models.py:630
 msgid "Single pulse"
 msgstr "Simple pulso"
 
-#: experiment/models.py:638
+#: experiment/models.py:631
 msgid "Paired pulse"
 msgstr "Pulso pareado"
 
-#: experiment/models.py:639
+#: experiment/models.py:632
 msgid "Repetitive pulse"
 msgstr "Pulso repetitivo"
 
-#: experiment/models.py:649
+#: experiment/models.py:641
 msgid "Set of steps"
 msgstr "Conjunto de passos"
 
-#: experiment/models.py:650
+#: experiment/models.py:642
 msgid "Instruction"
 msgstr "Instrução"
 
-#: experiment/models.py:651
+#: experiment/models.py:643
 msgid "Pause"
 msgstr "Pausa"
 
-#: experiment/models.py:652
+#: experiment/models.py:644
 #: experiment/templates/experiment/subject_questionnaire_response_form.html:121
 #: experiment/templates/experiment/subject_questionnaire_response_list.html:67
 msgid "Questionnaire"
 msgstr "Questionário"
 
-#: experiment/models.py:653
+#: experiment/models.py:645
 msgid "Stimulus"
 msgstr "Estímulo"
 
-#: experiment/models.py:654
+#: experiment/models.py:646
 msgid "Task for participant"
 msgstr "Tarefa para o participante"
 
-#: experiment/models.py:655
+#: experiment/models.py:647
 msgid "Task for experimenter"
 msgstr "Tarefa para o experimentador"
 
-#: experiment/models.py:656 experiment/templates/experiment/subjects.html:162
+#: experiment/models.py:648 experiment/templates/experiment/subjects.html:160
 msgid "EEG"
 msgstr "EEG"
 
-#: experiment/models.py:657 experiment/templates/experiment/subjects.html:180
+#: experiment/models.py:649 experiment/templates/experiment/subjects.html:178
 msgid "EMG"
 msgstr "EMG"
 
-#: experiment/models.py:658
+#: experiment/models.py:650
 msgid "TMS"
 msgstr ""
 
@@ -513,19 +508,17 @@ msgstr ""
 #: experiment/templates/experiment/standardization_system_list.html:42
 #: experiment/templates/experiment/standardization_system_register.html:51
 #: experiment/templates/experiment/subject_additional_data_form.html:115
-#: experiment/templates/experiment/subject_eeg_collection_list.html:22
-#: experiment/templates/experiment/subject_eeg_data_form.html:178
+#: experiment/templates/experiment/subject_eeg_collection_list.html:26
+#: experiment/templates/experiment/subject_eeg_data_form.html:151
 #: experiment/templates/experiment/subject_eeg_image_data.html:55
 #: experiment/templates/experiment/subject_emg_collection_list.html:26
 #: experiment/templates/experiment/subject_emg_data_form.html:142
 #: experiment/templates/experiment/subject_questionnaire_response_form.html:24
 #: experiment/templates/experiment/subject_questionnaire_response_list.html:26
-#: experiment/templates/experiment/subject_step_data_form.html:25
 #: experiment/templates/experiment/subjects.html:25
 #: experiment/templates/experiment/tms_setting_register.html:51
 #: experiment/templates/experiment/tms_setting_tms_device.html:53
 #: experiment/templates/experiment/tmsdevice_list.html:42
-#: experiment/templates/experiment/tmsdevice_new.html:51
 #: experiment/templates/experiment/tmsdevice_register.html:51
 #: experiment/templates/experiment/upload_consent_form.html:20
 msgid "Home"
@@ -569,16 +562,15 @@ msgstr "Inicio"
 #: experiment/templates/experiment/standardization_system_list.html:43
 #: experiment/templates/experiment/standardization_system_register.html:52
 #: experiment/templates/experiment/tmsdevice_list.html:43
-#: experiment/templates/experiment/tmsdevice_new.html:52
 #: experiment/templates/experiment/tmsdevice_register.html:52
 msgid "Set up"
-msgstr "Cadastros"
+msgstr ""
 
 #: experiment/templates/experiment/ad_converter_list.html:44
 #: experiment/templates/experiment/ad_converter_register.html:53
 #: experiment/templates/experiment/ad_converter_register.html:72
 #: experiment/templates/experiment/emg_setting_ad_converter.html:82
-#: experiment/views.py:8765
+#: experiment/views.py:8420
 msgid "A/D converter"
 msgstr "Conversor A/D"
 
@@ -601,7 +593,6 @@ msgstr "Lista de conversor A/D"
 #: experiment/templates/experiment/eegmachine_list.html:57
 #: experiment/templates/experiment/eegmachine_register.html:85
 #: experiment/templates/experiment/tmsdevice_list.html:57
-#: experiment/templates/experiment/tmsdevice_new.html:85
 #: experiment/templates/experiment/tmsdevice_register.html:85
 msgid "Identification"
 msgstr "Identificação"
@@ -621,41 +612,37 @@ msgstr "Identificação"
 #: experiment/templates/experiment/eegmachine_register.html:76
 #: experiment/templates/experiment/eegsolution_list.html:59
 #: experiment/templates/experiment/eegsolution_register.html:94
-#: experiment/templates/experiment/emg_electrode_setting_amplifier.html:85
-#: experiment/templates/experiment/emg_electrode_setting_preamplifier.html:84
 #: experiment/templates/experiment/manufacturer_list.html:44
 #: experiment/templates/experiment/manufacturer_register.html:53
 #: experiment/templates/experiment/manufacturer_register.html:72
 #: experiment/templates/experiment/software_list.html:58
 #: experiment/templates/experiment/software_register.html:78
 #: experiment/templates/experiment/tmsdevice_list.html:58
-#: experiment/templates/experiment/tmsdevice_new.html:76
 #: experiment/templates/experiment/tmsdevice_register.html:76
-#: experiment/views.py:8726
+#: experiment/views.py:8377
 msgid "Manufacturer"
 msgstr "Fabricante"
 
 #: experiment/templates/experiment/ad_converter_list.html:59
-msgid "Signal-to-noise ratio / SNR (dB)"
-msgstr "Relação sinal-ruído (dB)"
+#: experiment/templates/experiment/ad_converter_register.html:113
+msgid "Signal_to_noise rate"
+msgstr "Taxa de sinal_para_ruído"
 
 #: experiment/templates/experiment/ad_converter_list.html:60
 #: experiment/templates/experiment/ad_converter_register.html:126
-#: experiment/templates/experiment/eeg_setting_amplifier.html:96
-#: experiment/templates/experiment/emg_setting_ad_converter.html:103
-msgid "Sampling rate (Hz)"
-msgstr "Taxa de amostragem (Hz)"
+msgid "Sampling rate"
+msgstr "Taxa de amostragem:"
 
 #: experiment/templates/experiment/ad_converter_list.html:61
 #: experiment/templates/experiment/ad_converter_register.html:139
-msgid "Resolution (bits)"
-msgstr "Resolução (bits)"
+msgid "Resolution"
+msgstr "Resolução"
 
 #: experiment/templates/experiment/ad_converter_list.html:68
 #: experiment/templates/experiment/amplifier_list.html:67
 #: experiment/templates/experiment/coil_list.html:68
 #: experiment/templates/experiment/eeg_electrode_localization_system_list.html:67
-#: experiment/templates/experiment/eeg_electrode_localization_system_register.html:149
+#: experiment/templates/experiment/eeg_electrode_localization_system_register.html:145
 #: experiment/templates/experiment/eegelectrodenet_list.html:68
 #: experiment/templates/experiment/eegelectrodenet_register.html:196
 #: experiment/templates/experiment/eegmachine_list.html:68
@@ -672,14 +659,14 @@ msgstr "Resolução (bits)"
 #: experiment/templates/experiment/software_list.html:66
 #: experiment/templates/experiment/software_register.html:128
 #: experiment/templates/experiment/standardization_system_list.html:66
-#: experiment/templates/experiment/tmsdevice_list.html:66
+#: experiment/templates/experiment/tmsdevice_list.html:67
 msgid "Visualize"
 msgstr "Ver"
 
 #: experiment/templates/experiment/ad_converter_list.html:95
 #: experiment/templates/experiment/amplifier_list.html:89
 #: experiment/templates/experiment/coil_list.html:95
-#: experiment/templates/experiment/eeg_electrode_localization_system_register.html:176
+#: experiment/templates/experiment/eeg_electrode_localization_system_register.html:163
 #: experiment/templates/experiment/eegelectrodenet_list.html:91
 #: experiment/templates/experiment/eegmachine_list.html:93
 #: experiment/templates/experiment/eegsolution_list.html:87
@@ -698,25 +685,25 @@ msgstr "Ver"
 #: experiment/templates/experiment/software_list.html:83
 #: experiment/templates/experiment/software_register.html:137
 #: experiment/templates/experiment/standardization_system_list.html:87
-#: experiment/templates/experiment/tmsdevice_list.html:85
+#: experiment/templates/experiment/tmsdevice_list.html:89
 msgid "Insert new"
 msgstr "Inserir novo"
 
 #: experiment/templates/experiment/ad_converter_list.html:102
 #: experiment/templates/experiment/ad_converter_register.html:177
 #: experiment/templates/experiment/add_equipment_to_eeg_setting.html:182
-#: experiment/templates/experiment/additional_data_collection_list.html:152
+#: experiment/templates/experiment/additional_data_collection_list.html:132
 #: experiment/templates/experiment/amplifier_list.html:96
-#: experiment/templates/experiment/amplifier_register.html:230
+#: experiment/templates/experiment/amplifier_register.html:184
 #: experiment/templates/experiment/coil_list.html:102
 #: experiment/templates/experiment/coil_register.html:146
 #: experiment/templates/experiment/component_list.html:117
-#: experiment/templates/experiment/component_template.html:298
+#: experiment/templates/experiment/component_template.html:294
 #: experiment/templates/experiment/eeg_electrode_coordinates_register.html:168
 #: experiment/templates/experiment/eeg_electrode_localization_system_list.html:97
-#: experiment/templates/experiment/eeg_electrode_localization_system_register.html:203
+#: experiment/templates/experiment/eeg_electrode_localization_system_register.html:190
 #: experiment/templates/experiment/eeg_electrode_position_register.html:156
-#: experiment/templates/experiment/eeg_setting_register.html:255
+#: experiment/templates/experiment/eeg_setting_register.html:281
 #: experiment/templates/experiment/eeg_setting_type_template.html:119
 #: experiment/templates/experiment/eegelectrodenet_list.html:98
 #: experiment/templates/experiment/eegelectrodenet_register.html:268
@@ -727,8 +714,8 @@ msgstr "Inserir novo"
 #: experiment/templates/experiment/eegsolution_register.html:128
 #: experiment/templates/experiment/electrodemodel_list.html:102
 #: experiment/templates/experiment/electrodemodel_register.html:197
-#: experiment/templates/experiment/emg_electrode_setting_amplifier.html:210
-#: experiment/templates/experiment/emg_electrode_setting_preamplifier.html:151
+#: experiment/templates/experiment/emg_electrode_setting_amplifier.html:195
+#: experiment/templates/experiment/emg_electrode_setting_preamplifier.html:135
 #: experiment/templates/experiment/emg_placement_register_template.html:152
 #: experiment/templates/experiment/emg_setting_ad_converter.html:133
 #: experiment/templates/experiment/emg_setting_digital_filter.html:189
@@ -754,22 +741,20 @@ msgstr "Inserir novo"
 #: experiment/templates/experiment/standardization_system_list.html:94
 #: experiment/templates/experiment/standardization_system_register.html:174
 #: experiment/templates/experiment/subject_additional_data_form.html:263
-#: experiment/templates/experiment/subject_eeg_collection_list.html:149
-#: experiment/templates/experiment/subject_eeg_data_form.html:528
+#: experiment/templates/experiment/subject_eeg_collection_list.html:141
+#: experiment/templates/experiment/subject_eeg_data_form.html:476
 #: experiment/templates/experiment/subject_emg_collection_list.html:129
-#: experiment/templates/experiment/subject_emg_data_form.html:347
+#: experiment/templates/experiment/subject_emg_data_form.html:336
 #: experiment/templates/experiment/subject_questionnaire_response_form.html:262
 #: experiment/templates/experiment/subject_questionnaire_response_form.html:266
 #: experiment/templates/experiment/subject_questionnaire_response_form.html:269
 #: experiment/templates/experiment/subject_questionnaire_response_list.html:155
-#: experiment/templates/experiment/subject_step_data_form.html:142
-#: experiment/templates/experiment/subjects.html:212
+#: experiment/templates/experiment/subjects.html:210
 #: experiment/templates/experiment/tms_setting_register.html:165
 #: experiment/templates/experiment/tms_setting_tms_device.html:129
-#: experiment/templates/experiment/tmsdevice_list.html:92
-#: experiment/templates/experiment/tmsdevice_new.html:182
-#: experiment/templates/experiment/tmsdevice_register.html:145
-#: experiment/templates/experiment/upload_consent_form.html:97
+#: experiment/templates/experiment/tmsdevice_list.html:96
+#: experiment/templates/experiment/tmsdevice_register.html:146
+#: experiment/templates/experiment/upload_consent_form.html:95
 msgid "Back"
 msgstr "Voltar"
 
@@ -792,7 +777,6 @@ msgstr "Voltar"
 #: experiment/templates/experiment/software_register.html:56
 #: experiment/templates/experiment/software_version_register.html:57
 #: experiment/templates/experiment/standardization_system_register.html:56
-#: experiment/templates/experiment/tmsdevice_new.html:56
 #: experiment/templates/experiment/tmsdevice_register.html:56
 msgid "New"
 msgstr "Novo"
@@ -833,7 +817,6 @@ msgstr "Novo"
 #: experiment/templates/experiment/standardization_system_register.html:60
 #: experiment/templates/experiment/tms_setting_register.html:61
 #: experiment/templates/experiment/tms_setting_tms_device.html:64
-#: experiment/templates/experiment/tmsdevice_new.html:60
 #: experiment/templates/experiment/tmsdevice_register.html:60
 msgid "Editing"
 msgstr "Edição"
@@ -856,8 +839,8 @@ msgstr "Edição"
 #: experiment/templates/experiment/eegelectrodenet_register.html:96
 #: experiment/templates/experiment/eegmachine_register.html:94
 #: experiment/templates/experiment/electrodemodel_register.html:85
-#: experiment/templates/experiment/emg_electrode_setting_amplifier.html:111
-#: experiment/templates/experiment/emg_electrode_setting_preamplifier.html:111
+#: experiment/templates/experiment/emg_electrode_setting_amplifier.html:96
+#: experiment/templates/experiment/emg_electrode_setting_preamplifier.html:95
 #: experiment/templates/experiment/emg_setting_ad_converter.html:93
 #: experiment/templates/experiment/emg_setting_digital_filter.html:93
 #: experiment/templates/experiment/emg_setting_electrode.html:102
@@ -881,7 +864,6 @@ msgstr "Edição"
 #: experiment/templates/experiment/standardization_system_list.html:58
 #: experiment/templates/experiment/standardization_system_register.html:85
 #: experiment/templates/experiment/tms_setting_register.html:86
-#: experiment/templates/experiment/tmsdevice_new.html:94
 #: experiment/templates/experiment/tmsdevice_register.html:94
 msgid "Description"
 msgstr "Descrição"
@@ -894,17 +876,11 @@ msgstr "Descrição"
 #: experiment/templates/experiment/eegelectrodenet_register.html:105
 #: experiment/templates/experiment/eegmachine_list.html:59
 #: experiment/templates/experiment/eegmachine_register.html:103
-#: experiment/templates/experiment/tmsdevice_new.html:103
-#: experiment/templates/experiment/tmsdevice_register.html:112
 msgid "Serial number"
 msgstr "Número de série"
 
-#: experiment/templates/experiment/ad_converter_register.html:113
-msgid "Signal-to-noise ratio/SNR (dB)"
-msgstr "Relação sinal-ruído (dB)"
-
 #: experiment/templates/experiment/ad_converter_register.html:152
-#: experiment/templates/experiment/amplifier_register.html:205
+#: experiment/templates/experiment/amplifier_register.html:159
 #: experiment/templates/experiment/coil_register.html:121
 #: experiment/templates/experiment/component_list.html:90
 #: experiment/templates/experiment/component_list.html:92
@@ -914,10 +890,10 @@ msgstr "Relação sinal-ruído (dB)"
 #: experiment/templates/experiment/configuration_line.html:15
 #: experiment/templates/experiment/configuration_line.html:47
 #: experiment/templates/experiment/configuration_line.html:49
-#: experiment/templates/experiment/eeg_electrode_localization_system_register.html:109
+#: experiment/templates/experiment/eeg_electrode_localization_system_register.html:108
 #: experiment/templates/experiment/eeg_electrode_position_register.html:129
 #: experiment/templates/experiment/eeg_setting_electrode_position_status.html:111
-#: experiment/templates/experiment/eeg_setting_electrode_position_status_model.html:66
+#: experiment/templates/experiment/eeg_setting_electrode_position_status_model.html:54
 #: experiment/templates/experiment/eeg_setting_register.html:95
 #: experiment/templates/experiment/eeg_setting_type_template.html:96
 #: experiment/templates/experiment/eegelectrodenet_register.html:246
@@ -925,8 +901,8 @@ msgstr "Relação sinal-ruído (dB)"
 #: experiment/templates/experiment/eegmachine_register.html:134
 #: experiment/templates/experiment/eegsolution_register.html:103
 #: experiment/templates/experiment/electrodemodel_register.html:172
-#: experiment/templates/experiment/emg_electrode_setting_amplifier.html:192
-#: experiment/templates/experiment/emg_electrode_setting_preamplifier.html:134
+#: experiment/templates/experiment/emg_electrode_setting_amplifier.html:177
+#: experiment/templates/experiment/emg_electrode_setting_preamplifier.html:118
 #: experiment/templates/experiment/emg_placement_register_template.html:125
 #: experiment/templates/experiment/emg_setting_ad_converter.html:116
 #: experiment/templates/experiment/emg_setting_digital_filter.html:172
@@ -954,14 +930,13 @@ msgstr "Relação sinal-ruído (dB)"
 #: experiment/templates/experiment/standardization_system_register.html:93
 #: experiment/templates/experiment/standardization_system_register.html:117
 #: experiment/templates/experiment/subject_additional_data_form.html:234
-#: experiment/templates/experiment/subject_eeg_data_form.html:366
-#: experiment/templates/experiment/subject_eeg_data_form.html:421
-#: experiment/templates/experiment/subject_eeg_data_form.html:493
-#: experiment/templates/experiment/subject_emg_data_form.html:314
+#: experiment/templates/experiment/subject_eeg_data_form.html:326
+#: experiment/templates/experiment/subject_eeg_data_form.html:368
+#: experiment/templates/experiment/subject_eeg_data_form.html:440
+#: experiment/templates/experiment/subject_emg_data_form.html:303
 #: experiment/templates/experiment/tms_setting_register.html:94
 #: experiment/templates/experiment/tms_setting_tms_device.html:112
-#: experiment/templates/experiment/tmsdevice_new.html:130
-#: experiment/templates/experiment/tmsdevice_register.html:120
+#: experiment/templates/experiment/tmsdevice_register.html:121
 msgid "Edit"
 msgstr "Editar"
 
@@ -969,24 +944,24 @@ msgstr "Editar"
 #: experiment/templates/experiment/ad_converter_register.html:193
 #: experiment/templates/experiment/add_equipment_to_eeg_setting.html:169
 #: experiment/templates/experiment/add_equipment_to_eeg_setting.html:200
-#: experiment/templates/experiment/amplifier_register.html:217
-#: experiment/templates/experiment/amplifier_register.html:246
+#: experiment/templates/experiment/amplifier_register.html:171
+#: experiment/templates/experiment/amplifier_register.html:200
 #: experiment/templates/experiment/block_component.html:106
 #: experiment/templates/experiment/block_component.html:243
 #: experiment/templates/experiment/block_component.html:350
 #: experiment/templates/experiment/coil_register.html:133
 #: experiment/templates/experiment/coil_register.html:162
-#: experiment/templates/experiment/component_template.html:280
-#: experiment/templates/experiment/component_template.html:316
+#: experiment/templates/experiment/component_template.html:276
+#: experiment/templates/experiment/component_template.html:312
 #: experiment/templates/experiment/eeg_electrode_coordinates_register.html:155
 #: experiment/templates/experiment/eeg_electrode_coordinates_register.html:184
-#: experiment/templates/experiment/eeg_electrode_localization_system_register.html:190
-#: experiment/templates/experiment/eeg_electrode_localization_system_register.html:219
+#: experiment/templates/experiment/eeg_electrode_localization_system_register.html:177
+#: experiment/templates/experiment/eeg_electrode_localization_system_register.html:206
 #: experiment/templates/experiment/eeg_electrode_position_register.html:138
 #: experiment/templates/experiment/eeg_electrode_position_register.html:172
 #: experiment/templates/experiment/eeg_setting_register.html:110
-#: experiment/templates/experiment/eeg_setting_register.html:272
-#: experiment/templates/experiment/eeg_setting_register.html:288
+#: experiment/templates/experiment/eeg_setting_register.html:298
+#: experiment/templates/experiment/eeg_setting_register.html:314
 #: experiment/templates/experiment/eegelectrodenet_register.html:255
 #: experiment/templates/experiment/eegelectrodenet_register.html:284
 #: experiment/templates/experiment/eegelectrodenet_size_register.html:112
@@ -1034,32 +1009,30 @@ msgstr "Editar"
 #: experiment/templates/experiment/standardization_system_register.html:190
 #: experiment/templates/experiment/subject_additional_data_form.html:243
 #: experiment/templates/experiment/subject_additional_data_form.html:278
-#: experiment/templates/experiment/subject_eeg_data_form.html:508
-#: experiment/templates/experiment/subject_eeg_data_form.html:543
-#: experiment/templates/experiment/subject_emg_data_form.html:327
-#: experiment/templates/experiment/subject_emg_data_form.html:362
+#: experiment/templates/experiment/subject_eeg_data_form.html:456
+#: experiment/templates/experiment/subject_eeg_data_form.html:491
+#: experiment/templates/experiment/subject_emg_data_form.html:316
+#: experiment/templates/experiment/subject_emg_data_form.html:351
 #: experiment/templates/experiment/subject_questionnaire_response_form.html:240
 #: experiment/templates/experiment/subject_questionnaire_response_form.html:287
-#: experiment/templates/experiment/subject_step_data_form.html:129
-#: experiment/templates/experiment/subjects.html:230
+#: experiment/templates/experiment/subjects.html:228
+#: experiment/templates/experiment/tms_setting_register.html:109
 #: experiment/templates/experiment/tms_setting_register.html:182
 #: experiment/templates/experiment/tms_setting_register.html:198
-#: experiment/templates/experiment/tmsdevice_new.html:169
-#: experiment/templates/experiment/tmsdevice_new.html:198
-#: experiment/templates/experiment/tmsdevice_register.html:132
-#: experiment/templates/experiment/tmsdevice_register.html:161
-#: experiment/templates/experiment/upload_consent_form.html:113
+#: experiment/templates/experiment/tmsdevice_register.html:133
+#: experiment/templates/experiment/tmsdevice_register.html:162
+#: experiment/templates/experiment/upload_consent_form.html:111
 msgid "Delete"
 msgstr "Excluir"
 
 #: experiment/templates/experiment/ad_converter_register.html:169
-#: experiment/templates/experiment/amplifier_register.html:222
+#: experiment/templates/experiment/amplifier_register.html:176
 #: experiment/templates/experiment/coil_register.html:138
-#: experiment/templates/experiment/component_template.html:289
+#: experiment/templates/experiment/component_template.html:285
 #: experiment/templates/experiment/eeg_electrode_coordinates_register.html:160
-#: experiment/templates/experiment/eeg_electrode_localization_system_register.html:195
+#: experiment/templates/experiment/eeg_electrode_localization_system_register.html:182
 #: experiment/templates/experiment/eeg_electrode_position_register.html:143
-#: experiment/templates/experiment/eeg_setting_register.html:247
+#: experiment/templates/experiment/eeg_setting_register.html:273
 #: experiment/templates/experiment/eegelectrodenet_register.html:260
 #: experiment/templates/experiment/eegelectrodenet_size_register.html:117
 #: experiment/templates/experiment/eegmachine_register.html:151
@@ -1080,13 +1053,11 @@ msgstr "Excluir"
 #: experiment/templates/experiment/software_version_register.html:101
 #: experiment/templates/experiment/standardization_system_register.html:166
 #: experiment/templates/experiment/subject_additional_data_form.html:248
-#: experiment/templates/experiment/subject_eeg_data_form.html:513
+#: experiment/templates/experiment/subject_eeg_data_form.html:461
 #: experiment/templates/experiment/subject_eeg_image_data.html:146
-#: experiment/templates/experiment/subject_emg_data_form.html:332
-#: experiment/templates/experiment/subject_step_data_form.html:134
+#: experiment/templates/experiment/subject_emg_data_form.html:321
 #: experiment/templates/experiment/tms_setting_register.html:157
-#: experiment/templates/experiment/tmsdevice_new.html:174
-#: experiment/templates/experiment/tmsdevice_register.html:137
+#: experiment/templates/experiment/tmsdevice_register.html:138
 msgid "Save"
 msgstr "Salvar"
 
@@ -1094,26 +1065,26 @@ msgstr "Salvar"
 #: experiment/templates/experiment/ad_converter_register.html:192
 #: experiment/templates/experiment/add_equipment_to_eeg_setting.html:178
 #: experiment/templates/experiment/add_equipment_to_eeg_setting.html:198
-#: experiment/templates/experiment/amplifier_register.html:226
-#: experiment/templates/experiment/amplifier_register.html:245
+#: experiment/templates/experiment/amplifier_register.html:180
+#: experiment/templates/experiment/amplifier_register.html:199
 #: experiment/templates/experiment/block_component.html:347
 #: experiment/templates/experiment/block_component.html:366
 #: experiment/templates/experiment/coil_register.html:142
 #: experiment/templates/experiment/coil_register.html:161
 #: experiment/templates/experiment/component_list.html:131
-#: experiment/templates/experiment/component_template.html:294
-#: experiment/templates/experiment/component_template.html:314
-#: experiment/templates/experiment/component_template.html:332
+#: experiment/templates/experiment/component_template.html:290
+#: experiment/templates/experiment/component_template.html:310
+#: experiment/templates/experiment/component_template.html:328
 #: experiment/templates/experiment/eeg_electrode_coordinates_register.html:164
 #: experiment/templates/experiment/eeg_electrode_coordinates_register.html:183
-#: experiment/templates/experiment/eeg_electrode_localization_system_register.html:199
-#: experiment/templates/experiment/eeg_electrode_localization_system_register.html:218
+#: experiment/templates/experiment/eeg_electrode_localization_system_register.html:186
+#: experiment/templates/experiment/eeg_electrode_localization_system_register.html:205
 #: experiment/templates/experiment/eeg_electrode_position_register.html:148
 #: experiment/templates/experiment/eeg_electrode_position_register.html:151
 #: experiment/templates/experiment/eeg_electrode_position_register.html:171
-#: experiment/templates/experiment/eeg_setting_register.html:251
-#: experiment/templates/experiment/eeg_setting_register.html:270
-#: experiment/templates/experiment/eeg_setting_register.html:287
+#: experiment/templates/experiment/eeg_setting_register.html:277
+#: experiment/templates/experiment/eeg_setting_register.html:296
+#: experiment/templates/experiment/eeg_setting_register.html:313
 #: experiment/templates/experiment/eeg_setting_type_template.html:111
 #: experiment/templates/experiment/eeg_setting_type_template.html:114
 #: experiment/templates/experiment/eegelectrodenet_register.html:264
@@ -1126,8 +1097,8 @@ msgstr "Salvar"
 #: experiment/templates/experiment/eegsolution_register.html:143
 #: experiment/templates/experiment/electrodemodel_register.html:193
 #: experiment/templates/experiment/electrodemodel_register.html:212
-#: experiment/templates/experiment/emg_electrode_setting_amplifier.html:206
-#: experiment/templates/experiment/emg_electrode_setting_preamplifier.html:147
+#: experiment/templates/experiment/emg_electrode_setting_amplifier.html:191
+#: experiment/templates/experiment/emg_electrode_setting_preamplifier.html:131
 #: experiment/templates/experiment/emg_placement_register_template.html:147
 #: experiment/templates/experiment/emg_placement_register_template.html:167
 #: experiment/templates/experiment/emg_setting_ad_converter.html:129
@@ -1168,24 +1139,21 @@ msgstr "Salvar"
 #: experiment/templates/experiment/subject_additional_data_form.html:254
 #: experiment/templates/experiment/subject_additional_data_form.html:257
 #: experiment/templates/experiment/subject_additional_data_form.html:277
-#: experiment/templates/experiment/subject_eeg_data_form.html:519
-#: experiment/templates/experiment/subject_eeg_data_form.html:522
-#: experiment/templates/experiment/subject_eeg_data_form.html:542
-#: experiment/templates/experiment/subject_emg_data_form.html:338
-#: experiment/templates/experiment/subject_emg_data_form.html:341
-#: experiment/templates/experiment/subject_emg_data_form.html:361
+#: experiment/templates/experiment/subject_eeg_data_form.html:467
+#: experiment/templates/experiment/subject_eeg_data_form.html:470
+#: experiment/templates/experiment/subject_eeg_data_form.html:490
+#: experiment/templates/experiment/subject_emg_data_form.html:327
+#: experiment/templates/experiment/subject_emg_data_form.html:330
+#: experiment/templates/experiment/subject_emg_data_form.html:350
 #: experiment/templates/experiment/subject_questionnaire_response_form.html:286
-#: experiment/templates/experiment/subject_step_data_form.html:138
-#: experiment/templates/experiment/subjects.html:229
+#: experiment/templates/experiment/subjects.html:227
 #: experiment/templates/experiment/tms_setting_register.html:161
 #: experiment/templates/experiment/tms_setting_register.html:180
 #: experiment/templates/experiment/tms_setting_register.html:197
 #: experiment/templates/experiment/tms_setting_tms_device.html:125
-#: experiment/templates/experiment/tmsdevice_new.html:178
-#: experiment/templates/experiment/tmsdevice_new.html:197
-#: experiment/templates/experiment/tmsdevice_register.html:141
-#: experiment/templates/experiment/tmsdevice_register.html:160
-#: experiment/templates/experiment/upload_consent_form.html:111
+#: experiment/templates/experiment/tmsdevice_register.html:142
+#: experiment/templates/experiment/tmsdevice_register.html:161
+#: experiment/templates/experiment/upload_consent_form.html:109
 msgid "Cancel"
 msgstr "Cancelar"
 
@@ -1211,14 +1179,13 @@ msgstr "Tem certeza que deseja excluir conversor A/D?"
 #: experiment/templates/experiment/research_project_list.html:43
 #: experiment/templates/experiment/research_project_register.html:52
 #: experiment/templates/experiment/subject_additional_data_form.html:116
-#: experiment/templates/experiment/subject_eeg_collection_list.html:23
-#: experiment/templates/experiment/subject_eeg_data_form.html:179
+#: experiment/templates/experiment/subject_eeg_collection_list.html:27
+#: experiment/templates/experiment/subject_eeg_data_form.html:152
 #: experiment/templates/experiment/subject_eeg_image_data.html:56
 #: experiment/templates/experiment/subject_emg_collection_list.html:27
 #: experiment/templates/experiment/subject_emg_data_form.html:143
 #: experiment/templates/experiment/subject_questionnaire_response_form.html:36
 #: experiment/templates/experiment/subject_questionnaire_response_list.html:27
-#: experiment/templates/experiment/subject_step_data_form.html:26
 #: experiment/templates/experiment/subjects.html:26
 #: experiment/templates/experiment/tms_setting_register.html:52
 #: experiment/templates/experiment/tms_setting_tms_device.html:54
@@ -1245,12 +1212,12 @@ msgid "information"
 msgstr "Informação"
 
 #: experiment/templates/experiment/add_equipment_to_eeg_setting.html:174
-#: experiment/templates/experiment/component_template.html:287
+#: experiment/templates/experiment/component_template.html:283
 msgid "Insert"
 msgstr "Inserir"
 
 #: experiment/templates/experiment/add_equipment_to_eeg_setting.html:195
-#: experiment/templates/experiment/component_template.html:311
+#: experiment/templates/experiment/component_template.html:307
 msgid "Are you sure you want to delete step?"
 msgstr "Tem certeza que deseja excluir o passo?"
 
@@ -1258,8 +1225,8 @@ msgstr "Tem certeza que deseja excluir o passo?"
 #: experiment/templates/experiment/group_register.html:225
 #: experiment/templates/experiment/questionnaire_view.html:143
 #: experiment/templates/experiment/subject_additional_data_form.html:120
-#: experiment/templates/experiment/subject_eeg_collection_list.html:27
-#: experiment/templates/experiment/subject_eeg_data_form.html:183
+#: experiment/templates/experiment/subject_eeg_collection_list.html:31
+#: experiment/templates/experiment/subject_eeg_data_form.html:156
 #: experiment/templates/experiment/subject_eeg_image_data.html:60
 #: experiment/templates/experiment/subject_emg_collection_list.html:31
 #: experiment/templates/experiment/subject_emg_data_form.html:147
@@ -1267,7 +1234,6 @@ msgstr "Tem certeza que deseja excluir o passo?"
 #: experiment/templates/experiment/subject_questionnaire_response_form.html:42
 #: experiment/templates/experiment/subject_questionnaire_response_form.html:134
 #: experiment/templates/experiment/subject_questionnaire_response_list.html:31
-#: experiment/templates/experiment/subject_step_data_form.html:30
 #: experiment/templates/experiment/subjects.html:30
 #: experiment/templates/experiment/subjects.html:87
 #: experiment/templates/experiment/upload_consent_form.html:25
@@ -1286,31 +1252,12 @@ msgstr "Caminho dos arquivos de dados adicionais"
 msgid "Additional data file"
 msgstr "Arquivo de dados adicionais"
 
-#: experiment/templates/experiment/additional_data_collection_list.html:82
+#: experiment/templates/experiment/additional_data_collection_list.html:92
 #: experiment/templates/experiment/group_register.html:254
 msgid "Experimental protocol"
 msgstr "Protocolo Experimental"
 
-#: experiment/templates/experiment/additional_data_collection_list.html:90
-#: experiment/templates/experiment/additional_data_collection_list.html:96
-#: experiment/templates/experiment/additional_data_collection_list.html:98
-msgid "Set start and end date/time"
-msgstr "Configurar data/hora de início e fim"
-
-#: experiment/templates/experiment/additional_data_collection_list.html:93
-msgid "from"
-msgstr "de"
-
-#: experiment/templates/experiment/additional_data_collection_list.html:94
-#: experiment/templates/experiment/research_project_list.html:76
-msgid "to"
-msgstr "a"
-
-#: experiment/templates/experiment/additional_data_collection_list.html:103
-msgid "required"
-msgstr "obrigatório"
-
-#: experiment/templates/experiment/additional_data_collection_list.html:122
+#: experiment/templates/experiment/additional_data_collection_list.html:102
 #: experiment/templates/experiment/questionnaire_view.html:182
 #: experiment/templates/experiment/subject_eeg_collection_list.html:98
 #: experiment/templates/experiment/subject_emg_collection_list.html:98
@@ -1318,7 +1265,7 @@ msgstr "obrigatório"
 msgid "See details"
 msgstr "Ver detalhes"
 
-#: experiment/templates/experiment/additional_data_collection_list.html:136
+#: experiment/templates/experiment/additional_data_collection_list.html:116
 #: experiment/templates/experiment/subject_additional_data_form.html:125
 msgid "New additional data file"
 msgstr "Novo arquivo de dados adicionais"
@@ -1339,8 +1286,11 @@ msgstr "Lista de amplificadores"
 #: experiment/templates/experiment/amplifier_list.html:60
 #: experiment/templates/experiment/amplifier_register.html:146
 #: experiment/templates/experiment/eeg_setting_amplifier.html:64
-msgid "Gain (times)"
-msgstr "Ganho (vezes)"
+#: experiment/templates/experiment/eeg_setting_register.html:152
+#: experiment/templates/experiment/emg_electrode_setting_amplifier.html:106
+#: experiment/templates/experiment/emg_electrode_setting_preamplifier.html:105
+msgid "Gain"
+msgstr "Ganho"
 
 #: experiment/templates/experiment/amplifier_register.html:114
 #: experiment/templates/experiment/electrodemodel_register.html:142
@@ -1348,24 +1298,7 @@ msgstr "Ganho (vezes)"
 msgid "Category"
 msgstr "Categoria"
 
-#: experiment/templates/experiment/amplifier_register.html:159
-msgid "Maximum number of channels"
-msgstr "Número máximo de canais"
-
-#: experiment/templates/experiment/amplifier_register.html:172
-msgid "Minimum Common-mode Rejection (CMR) (dB)"
-msgstr "Taxa mínima de rejeição do modo comum (CMR) (dB): "
-
-#: experiment/templates/experiment/amplifier_register.html:185
-msgid "Input Impedance"
-msgstr "Impedância de entrada"
-
-#: experiment/templates/experiment/amplifier_register.html:197
-#: experiment/templates/experiment/electrodemodel_register.html:124
-msgid "Unit"
-msgstr "Unidade"
-
-#: experiment/templates/experiment/amplifier_register.html:242
+#: experiment/templates/experiment/amplifier_register.html:196
 msgid "Are you sure you want to delete amplifier?"
 msgstr "Tem certeza que deseja excluir o amplificador?"
 
@@ -1411,6 +1344,7 @@ msgstr "Passos com posição fixa"
 #: experiment/templates/experiment/emg_setting_electrode.html:221
 #: experiment/templates/experiment/emg_setting_register.html:196
 #: experiment/templates/experiment/standardization_system_register.html:107
+#: experiment/templates/experiment/tms_setting_register.html:107
 msgid "Type"
 msgstr "Tipo"
 
@@ -1430,12 +1364,9 @@ msgid "Name of use"
 msgstr "Nome do uso"
 
 #: experiment/templates/experiment/block_component.html:102
-#: experiment/templates/experiment/eeg_electrode_localization_system_register.html:141
-#: experiment/templates/experiment/eeg_setting_electrode_position_status_model.html:20
 #: experiment/templates/experiment/eeg_setting_filter.html:80
-#: experiment/templates/experiment/eeg_setting_register.html:179
+#: experiment/templates/experiment/eeg_setting_register.html:205
 #: experiment/templates/experiment/emg_setting_digital_filter.html:159
-#: experiment/templates/experiment/subject_eeg_data_form.html:381
 msgid "Order"
 msgstr "Ordem"
 
@@ -1478,7 +1409,7 @@ msgstr "Passos com posição aleatória"
 
 #: experiment/templates/experiment/block_component.html:363
 #: experiment/templates/experiment/component_list.html:128
-#: experiment/templates/experiment/component_template.html:329
+#: experiment/templates/experiment/component_template.html:325
 #: experiment/templates/experiment/group_register.html:387
 msgid ""
 "This experiment is in use, you can not change it! Do you want to copy this "
@@ -1489,7 +1420,7 @@ msgstr ""
 
 #: experiment/templates/experiment/block_component.html:367
 #: experiment/templates/experiment/component_list.html:132
-#: experiment/templates/experiment/component_template.html:333
+#: experiment/templates/experiment/component_template.html:329
 #: experiment/templates/experiment/group_register.html:391
 msgid "Copy experiment"
 msgstr "Copiar experimento"
@@ -1537,20 +1468,21 @@ msgstr "Lista de bobinas"
 #: experiment/templates/experiment/software_version_register.html:78
 #: experiment/templates/experiment/standardization_system_list.html:57
 #: experiment/templates/experiment/standardization_system_register.html:76
-#: experiment/templates/experiment/subject_eeg_data_form.html:456
+#: experiment/templates/experiment/subject_eeg_data_form.html:403
 #: experiment/templates/experiment/tms_setting_register.html:77
 msgid "Name"
 msgstr "Nome"
 
 #: experiment/templates/experiment/coil_list.html:59
 #: experiment/templates/experiment/coil_register.html:94
+#: experiment/templates/experiment/tms_setting_register.html:125
 msgid "Coil shape"
-msgstr "Forma da bobina"
+msgstr ""
 
 #: experiment/templates/experiment/coil_list.html:60
 #: experiment/templates/experiment/coil_register.html:103
 msgid "Coil design"
-msgstr "Desenho da bobina"
+msgstr ""
 
 #: experiment/templates/experiment/coil_list.html:61
 #: experiment/templates/experiment/coil_register.html:112
@@ -1560,12 +1492,13 @@ msgstr "Desenho da bobina"
 #: experiment/templates/experiment/material_list.html:44
 #: experiment/templates/experiment/material_register.html:53
 #: experiment/templates/experiment/material_register.html:72
-#: experiment/views.py:8705
+#: experiment/views.py:8356
 msgid "Material"
 msgstr "Material"
 
 #: experiment/templates/experiment/coil_register.html:53
 #: experiment/templates/experiment/coil_register.html:72
+#: experiment/templates/experiment/tmsdevice_list.html:59
 msgid "Coil Model"
 msgstr "Modelo de bobina"
 
@@ -1642,10 +1575,6 @@ msgstr "Intervalo entre repetições"
 msgid "Undefined"
 msgstr "Indefinido"
 
-#: experiment/templates/experiment/component_template.html:270
-msgid "Requires start and end date/time"
-msgstr "Requer configuração de data/hora de início e fim"
-
 #: experiment/templates/experiment/configuration_line.html:60
 msgid "Position for random step"
 msgstr "Posição para passo aleatório"
@@ -1679,7 +1608,7 @@ msgid "the EEG"
 msgstr "o EEG"
 
 #: experiment/templates/experiment/eeg_component.html:31
-#: experiment/templates/experiment/subject_eeg_data_form.html:287
+#: experiment/templates/experiment/subject_eeg_data_form.html:247
 msgid "EEG setting"
 msgstr "Configuração de EEG"
 
@@ -1690,7 +1619,7 @@ msgstr "Configuração de EEG"
 #: experiment/templates/experiment/eeg_electrode_localization_system_test.html:47
 #: experiment/templates/experiment/eeg_electrode_position_register.html:53
 #: experiment/templates/experiment/eeg_setting_eeg_electrode_net_system.html:66
-#: experiment/views.py:8715
+#: experiment/views.py:8366
 msgid "EEG electrode localization system"
 msgstr "Sistema de localização de eletrodos de EEG"
 
@@ -1710,13 +1639,13 @@ msgstr "Coordenadas X - Y"
 
 #: experiment/templates/experiment/eeg_electrode_coordinates_register.html:111
 #: experiment/templates/experiment/eeg_electrode_localization_system_register.html:72
-#: experiment/templates/experiment/subject_eeg_data_form.html:439
+#: experiment/templates/experiment/subject_eeg_data_form.html:386
 #: experiment/templates/experiment/subject_eeg_image_data.html:103
 msgid "EEG electrode localization system basic information"
 msgstr "Informação básica do sistema de localização de eletrodo de EEG"
 
 #: experiment/templates/experiment/eeg_electrode_coordinates_register.html:125
-#: experiment/templates/experiment/subject_eeg_data_form.html:453
+#: experiment/templates/experiment/subject_eeg_data_form.html:400
 msgid "List of positions"
 msgstr "Lista de posições"
 
@@ -1750,7 +1679,7 @@ msgstr ""
 "configuração de EEG"
 
 #: experiment/templates/experiment/eeg_electrode_coordinates_register.html:180
-#: experiment/templates/experiment/eeg_electrode_localization_system_register.html:215
+#: experiment/templates/experiment/eeg_electrode_localization_system_register.html:202
 msgid "Are you sure you want to delete localization system?"
 msgstr "Tem certeza que deseja excluir o sistema de localização?"
 
@@ -1770,34 +1699,28 @@ msgstr "Inserir novo sistema de localização"
 msgid "Map image file"
 msgstr "Mapear arquivo de imagem"
 
-#: experiment/templates/experiment/eeg_electrode_localization_system_register.html:132
+#: experiment/templates/experiment/eeg_electrode_localization_system_register.html:130
 msgid "Positions"
 msgstr "Nome da posição"
 
-#: experiment/templates/experiment/eeg_electrode_localization_system_register.html:137
-#: experiment/templates/experiment/eeg_setting_electrode_position_status_model.html:16
-#: experiment/templates/experiment/subject_eeg_data_form.html:377
-msgid "Channel index"
-msgstr "Índice do canal"
-
-#: experiment/templates/experiment/eeg_electrode_localization_system_register.html:138
+#: experiment/templates/experiment/eeg_electrode_localization_system_register.html:135
 #: experiment/templates/experiment/eeg_setting_electrode_position_status.html:83
 #: experiment/templates/experiment/eeg_setting_electrode_position_status_model.html:17
-#: experiment/templates/experiment/subject_eeg_data_form.html:378
+#: experiment/templates/experiment/subject_eeg_data_form.html:338
 #: experiment/templates/experiment/subject_eeg_image_data.html:118
 msgid "Position"
 msgstr "Posição"
 
-#: experiment/templates/experiment/eeg_electrode_localization_system_register.html:139
+#: experiment/templates/experiment/eeg_electrode_localization_system_register.html:136
 msgid "Coordinate (x,y)"
 msgstr "Coordenada (x,y)"
 
-#: experiment/templates/experiment/eeg_electrode_localization_system_register.html:140
+#: experiment/templates/experiment/eeg_electrode_localization_system_register.html:137
 #: experiment/templates/experiment/eeg_electrode_position_register.html:120
 msgid "Position reference"
 msgstr "Referência da posição"
 
-#: experiment/templates/experiment/eeg_electrode_localization_system_register.html:180
+#: experiment/templates/experiment/eeg_electrode_localization_system_register.html:167
 msgid "Insert using image map"
 msgstr "Inserir coordenada usando mapa de imagem"
 
@@ -1826,13 +1749,8 @@ msgid "EEG amplifier settings"
 msgstr "Configurações de amplificador de EEG"
 
 #: experiment/templates/experiment/eeg_setting_amplifier.html:80
-msgid "Configured gain (times)"
-msgstr "Configurar ganho (vezes)"
-
-#: experiment/templates/experiment/eeg_setting_amplifier.html:112
-#: experiment/templates/experiment/eeg_setting_eeg_machine.html:93
-msgid "Number of used channels"
-msgstr "Número de canais usados"
+msgid "Configured gain"
+msgstr "Configurar ganho"
 
 #: experiment/templates/experiment/eeg_setting_eeg_electrode_net_system.html:8
 msgid "Step 1 of 3"
@@ -1840,13 +1758,13 @@ msgstr "Passo 1 de 3"
 
 #: experiment/templates/experiment/eeg_setting_eeg_electrode_net_system.html:108
 #: experiment/templates/experiment/eeg_setting_electrode_position_status.html:118
-#: experiment/templates/experiment/eeg_setting_electrode_position_status_model.html:73
+#: experiment/templates/experiment/eeg_setting_electrode_position_status_model.html:61
 msgid "Previous"
 msgstr "Anterior"
 
 #: experiment/templates/experiment/eeg_setting_eeg_electrode_net_system.html:111
 #: experiment/templates/experiment/eeg_setting_electrode_position_status.html:121
-#: experiment/templates/experiment/eeg_setting_electrode_position_status_model.html:76
+#: experiment/templates/experiment/eeg_setting_electrode_position_status_model.html:64
 msgid "Next"
 msgstr "Próximo"
 
@@ -1886,6 +1804,11 @@ msgstr "Versão de software"
 msgid "Number of channels"
 msgstr "Número de canais"
 
+#: experiment/templates/experiment/eeg_setting_eeg_machine.html:93
+#: experiment/templates/experiment/eeg_setting_register.html:125
+msgid "Number of used channels"
+msgstr "Número de canais usados"
+
 #: experiment/templates/experiment/eeg_setting_eeg_solution.html:6
 msgid "EEG solution settings"
 msgstr "Configurações de solução de EEG"
@@ -1904,13 +1827,18 @@ msgstr "de"
 
 #: experiment/templates/experiment/eeg_setting_electrode_position_status.html:84
 #: experiment/templates/experiment/eeg_setting_electrode_position_status_model.html:18
-#: experiment/templates/experiment/subject_eeg_data_form.html:379
+#: experiment/templates/experiment/subject_eeg_data_form.html:339
 msgid "Used"
 msgstr "Usado"
 
 #: experiment/templates/experiment/eeg_setting_electrode_position_status_model.html:12
 msgid "Step 3 of 3"
 msgstr "Passo 3 de 3"
+
+#: experiment/templates/experiment/eeg_setting_electrode_position_status_model.html:16
+#: experiment/templates/experiment/subject_eeg_data_form.html:337
+msgid "#"
+msgstr "#"
 
 #: experiment/templates/experiment/eeg_setting_electrode_position_status_model.html:19
 #: experiment/templates/experiment/electrodemodel_register.html:53
@@ -1927,17 +1855,17 @@ msgstr "Configurações de Filtro de EEG"
 #: experiment/templates/experiment/filtertype_list.html:44
 #: experiment/templates/experiment/filtertype_register.html:53
 #: experiment/templates/experiment/filtertype_register.html:72
-#: experiment/views.py:8755
+#: experiment/views.py:8410
 msgid "Filter type"
 msgstr "Tipo de filtro"
 
 #: experiment/templates/experiment/eeg_setting_filter.html:48
 msgid "High pass cutoff (Hz)"
-msgstr "Corte passa-alta (Hz)"
+msgstr "Corte passa-alta"
 
 #: experiment/templates/experiment/eeg_setting_filter.html:64
 msgid "Low pass cutoff (Hz)"
-msgstr "Corte passa-baixa (Hz)"
+msgstr "Corte passa-baixa"
 
 #: experiment/templates/experiment/eeg_setting_register.html:57
 msgid "New EEG setting"
@@ -1948,6 +1876,7 @@ msgid "EEG Setting"
 msgstr "Configuração de EEG"
 
 #: experiment/templates/experiment/eeg_setting_register.html:103
+#: experiment/templates/experiment/tms_setting_register.html:102
 msgid "Settings:"
 msgstr "Configurações:"
 
@@ -1955,74 +1884,76 @@ msgstr "Configurações:"
 #: experiment/templates/experiment/emg_setting_electrode.html:222
 #: experiment/templates/experiment/emg_setting_register.html:123
 #: experiment/templates/experiment/emg_setting_register.html:197
+#: experiment/templates/experiment/tms_setting_register.html:108
 msgid "Setting"
 msgstr "Configuração"
 
-#: experiment/templates/experiment/eeg_setting_register.html:124
-#: experiment/templates/experiment/emg_electrode_setting_amplifier.html:121
-#: experiment/templates/experiment/emg_electrode_setting_preamplifier.html:121
-msgid "Gain"
-msgstr "Ganho"
+#: experiment/templates/experiment/eeg_setting_register.html:116
+#: experiment/templates/experiment/eegmachine_register.html:53
+#: experiment/templates/experiment/eegmachine_register.html:72
+#: experiment/views.py:8385
+msgid "EEG machine"
+msgstr "Máquina de EEG"
 
-#: experiment/templates/experiment/eeg_setting_register.html:126
-msgid "Sampling rate"
-msgstr "Taxa de amostragem:"
-
-#: experiment/templates/experiment/eeg_setting_register.html:132
-#: experiment/templates/experiment/eeg_setting_register.html:154
-#: experiment/templates/experiment/eeg_setting_register.html:185
-#: experiment/templates/experiment/eeg_setting_register.html:219
+#: experiment/templates/experiment/eeg_setting_register.html:131
+#: experiment/templates/experiment/eeg_setting_register.html:158
+#: experiment/templates/experiment/eeg_setting_register.html:180
+#: experiment/templates/experiment/eeg_setting_register.html:211
+#: experiment/templates/experiment/eeg_setting_register.html:245
 #: experiment/templates/experiment/emg_setting_electrode.html:243
 #: experiment/templates/experiment/emg_setting_electrode.html:275
 #: experiment/templates/experiment/emg_setting_register.html:222
 #: experiment/templates/experiment/emg_setting_register.html:247
+#: experiment/templates/experiment/tms_setting_register.html:130
 msgid "+ Add setting"
 msgstr "+ Incluir configuração"
 
-#: experiment/templates/experiment/eeg_setting_register.html:138
-#: experiment/templates/experiment/eeg_setting_register.html:160
-#: experiment/templates/experiment/eeg_setting_register.html:191
-#: experiment/templates/experiment/eeg_setting_register.html:225
+#: experiment/templates/experiment/eeg_setting_register.html:137
+#: experiment/templates/experiment/eeg_setting_register.html:164
+#: experiment/templates/experiment/eeg_setting_register.html:186
+#: experiment/templates/experiment/eeg_setting_register.html:217
+#: experiment/templates/experiment/eeg_setting_register.html:251
 #: experiment/templates/experiment/emg_setting_electrode.html:248
 #: experiment/templates/experiment/emg_setting_electrode.html:280
 #: experiment/templates/experiment/emg_setting_register.html:171
 #: experiment/templates/experiment/emg_setting_register.html:227
 #: experiment/templates/experiment/emg_setting_register.html:252
+#: experiment/templates/experiment/tms_setting_register.html:135
 msgid "Delete setting from list"
 msgstr "Remover configuração da lista"
 
-#: experiment/templates/experiment/eeg_setting_register.html:144
-#: experiment/views.py:8745
+#: experiment/templates/experiment/eeg_setting_register.html:170
+#: experiment/views.py:8400
 msgid "Solution"
 msgstr "Solução"
 
-#: experiment/templates/experiment/eeg_setting_register.html:175
-#: experiment/templates/experiment/emg_setting_digital_filter.html:117
-msgid "High pass (Hz)"
-msgstr "Passa-alta (Hz)"
+#: experiment/templates/experiment/eeg_setting_register.html:201
+#: experiment/templates/experiment/emg_electrode_setting_amplifier.html:136
+msgid "High pass"
+msgstr "Passa-alta"
 
-#: experiment/templates/experiment/eeg_setting_register.html:177
-#: experiment/templates/experiment/emg_setting_digital_filter.html:103
-msgid "Low pass (Hz)"
-msgstr "Passa-baixa (Hz)"
+#: experiment/templates/experiment/eeg_setting_register.html:203
+#: experiment/templates/experiment/emg_electrode_setting_amplifier.html:122
+msgid "Low pass"
+msgstr "Passa-baixa"
 
-#: experiment/templates/experiment/eeg_setting_register.html:197
+#: experiment/templates/experiment/eeg_setting_register.html:223
 msgid "EEG electrode layout"
 msgstr "Layout de eletrodo de EEG"
 
-#: experiment/templates/experiment/eeg_setting_register.html:208
+#: experiment/templates/experiment/eeg_setting_register.html:234
 msgid "Material:"
 msgstr ""
 
-#: experiment/templates/experiment/eeg_setting_register.html:242
+#: experiment/templates/experiment/eeg_setting_register.html:268
 msgid "Delete EEG setting"
 msgstr "Remover configuração de EEG"
 
-#: experiment/templates/experiment/eeg_setting_register.html:267
+#: experiment/templates/experiment/eeg_setting_register.html:293
 msgid "Are you sure you want to delete this EEG setting?"
 msgstr "Tem certeza que deseja excluir esta configuração de EEG?"
 
-#: experiment/templates/experiment/eeg_setting_register.html:284
+#: experiment/templates/experiment/eeg_setting_register.html:310
 msgid "Are you sure you want to delete equipment from list?"
 msgstr "Tem certeza que deseja excluir equipamento da lista?"
 
@@ -2031,8 +1962,8 @@ msgid "Add setting"
 msgstr "+ Incluir configuração"
 
 #: experiment/templates/experiment/eeg_setting_type_template.html:106
-#: experiment/templates/experiment/emg_electrode_setting_amplifier.html:202
-#: experiment/templates/experiment/emg_electrode_setting_preamplifier.html:143
+#: experiment/templates/experiment/emg_electrode_setting_amplifier.html:187
+#: experiment/templates/experiment/emg_electrode_setting_preamplifier.html:127
 #: experiment/templates/experiment/emg_setting_ad_converter.html:125
 #: experiment/templates/experiment/emg_setting_digital_filter.html:181
 #: experiment/templates/experiment/emg_setting_electrode.html:297
@@ -2102,11 +2033,6 @@ msgstr "Tem certeza que deseja excluir o tamanho da touca?"
 msgid "EEG Machine List"
 msgstr "Lista de máquinas EEG"
 
-#: experiment/templates/experiment/eegmachine_register.html:53
-#: experiment/templates/experiment/eegmachine_register.html:72
-msgid "EEG machine"
-msgstr "Máquina de EEG"
-
 #: experiment/templates/experiment/eegmachine_register.html:171
 msgid "Are you sure you want to delete EEG machine?"
 msgstr "Tem certeza que deseja excluir a máquina de EEG?"
@@ -2130,7 +2056,7 @@ msgid "Are you sure you want to delete EEG solution?"
 msgstr "Tem certeza que deseja excluir a solução de EEG?"
 
 #: experiment/templates/experiment/electrodemodel_list.html:44
-#: experiment/views.py:8735
+#: experiment/views.py:8390
 msgid "Electrode model"
 msgstr "Modelo de eletrodos"
 
@@ -2152,6 +2078,10 @@ msgstr "Impedância"
 msgid "Impedance unit"
 msgstr "Unidade de impedância"
 
+#: experiment/templates/experiment/electrodemodel_register.html:124
+msgid "Unit"
+msgstr "Unidade"
+
 #: experiment/templates/experiment/electrodemodel_register.html:209
 msgid "Are you sure you want to delete electrode model?"
 msgstr "Tem certeza que deseja excluir o model de eletrodo?"
@@ -2167,7 +2097,7 @@ msgid "the EMG"
 msgstr "o EMG"
 
 #: experiment/templates/experiment/emg_component.html:31
-#: experiment/templates/experiment/subject_emg_data_form.html:245
+#: experiment/templates/experiment/subject_emg_data_form.html:234
 msgid "EMG setting"
 msgstr "Configuração de EMG"
 
@@ -2179,28 +2109,20 @@ msgstr "Inserir configurações de amplificador e filtro"
 msgid "EMG Amplifier settings"
 msgstr "Configurações de amplificador de EMG"
 
-#: experiment/templates/experiment/emg_electrode_setting_amplifier.html:121
-#: experiment/templates/experiment/emg_electrode_setting_preamplifier.html:121
+#: experiment/templates/experiment/emg_electrode_setting_amplifier.html:106
+#: experiment/templates/experiment/emg_electrode_setting_preamplifier.html:105
 msgid "(times)"
 msgstr "(vezes)"
 
-#: experiment/templates/experiment/emg_electrode_setting_amplifier.html:132
+#: experiment/templates/experiment/emg_electrode_setting_amplifier.html:117
 msgid "Analog filter settings"
 msgstr "Configurações de filtro analógico"
 
-#: experiment/templates/experiment/emg_electrode_setting_amplifier.html:137
-msgid "Low pass"
-msgstr "Passa-baixa"
-
-#: experiment/templates/experiment/emg_electrode_setting_amplifier.html:151
-msgid "High pass"
-msgstr "Passa-alta"
-
-#: experiment/templates/experiment/emg_electrode_setting_amplifier.html:165
+#: experiment/templates/experiment/emg_electrode_setting_amplifier.html:150
 msgid "Band pass"
 msgstr "Passa banda"
 
-#: experiment/templates/experiment/emg_electrode_setting_amplifier.html:179
+#: experiment/templates/experiment/emg_electrode_setting_amplifier.html:164
 msgid "Notch"
 msgstr "Corte (Notch)"
 
@@ -2212,7 +2134,7 @@ msgstr "Adicionar configurações de pré-amplificador"
 msgid "EMG Preamplifier settings"
 msgstr "Configurações de pré-amplificador de EMG"
 
-#: experiment/templates/experiment/emg_electrode_setting_preamplifier.html:100
+#: experiment/templates/experiment/emg_electrode_setting_preamplifier.html:84
 #: experiment/templates/experiment/emg_setting_electrode.html:229
 msgid "Preamplifier"
 msgstr "Pré-amplificador"
@@ -2221,11 +2143,11 @@ msgstr "Pré-amplificador"
 #: experiment/templates/experiment/emg_intramuscular_placement_register.html:18
 #: experiment/templates/experiment/emg_intramuscular_placement_register.html:24
 msgid "New intramuscular placement"
-msgstr "Novo posicionamento intramuscular"
+msgstr ""
 
 #: experiment/templates/experiment/emg_intramuscular_placement_register.html:13
 msgid "the intramuscular placement"
-msgstr "O posicionamento intramuscular"
+msgstr ""
 
 #: experiment/templates/experiment/emg_intramuscular_placement_register.html:32
 #: experiment/templates/experiment/emg_setting_electrode.html:180
@@ -2275,8 +2197,7 @@ msgstr "Foto não adicionada"
 
 #: experiment/templates/experiment/emg_placement_register_template.html:164
 msgid "Are you sure you want to delete this emg electrode placement?"
-msgstr ""
-"Tem certeza que deseja excluir este posicionamento de eletrodos de EMG?"
+msgstr "Tem certeza que deseja excluir este posicionamento de eletrodos de EMG?"
 
 #: experiment/templates/experiment/emg_setting_ad_converter.html:60
 msgid "Add A/D converter setting"
@@ -2286,6 +2207,10 @@ msgstr "Incluir configuração de conversor A/D"
 msgid "EMG A/D converter settings"
 msgstr "Configurações de conversor A/D de EMG"
 
+#: experiment/templates/experiment/emg_setting_ad_converter.html:103
+msgid "Sampling rate (Hz)"
+msgstr "Taxa de amostragem (Hz)"
+
 #: experiment/templates/experiment/emg_setting_digital_filter.html:60
 msgid "Add digital filter setting"
 msgstr "Adicionar configuração de filtro digital"
@@ -2293,6 +2218,14 @@ msgstr "Adicionar configuração de filtro digital"
 #: experiment/templates/experiment/emg_setting_digital_filter.html:77
 msgid "EMG digital filter settings"
 msgstr "Configurações de filtro digital de EMG"
+
+#: experiment/templates/experiment/emg_setting_digital_filter.html:103
+msgid "Low pass (Hz)"
+msgstr "Passa-baixa (Hz)"
+
+#: experiment/templates/experiment/emg_setting_digital_filter.html:117
+msgid "High pass (Hz)"
+msgstr "Passa-alta (Hz)"
 
 #: experiment/templates/experiment/emg_setting_digital_filter.html:131
 msgid "Band pass (Hz)"
@@ -2370,20 +2303,20 @@ msgid "Amplifier and filter"
 msgstr "Amplificador e filtro"
 
 #: experiment/templates/experiment/emg_setting_electrode.html:266
-msgid "low pass (Hz):"
-msgstr "passa-baixa (Hz)"
+msgid "low pass:"
+msgstr "passa-baixa:"
 
 #: experiment/templates/experiment/emg_setting_electrode.html:267
-msgid "high pass (Hz):"
-msgstr "passa-alta (Hz)"
+msgid "high pass:"
+msgstr "passa-alta:"
 
 #: experiment/templates/experiment/emg_setting_electrode.html:268
-msgid "band pass (Hz):"
-msgstr "passa banda (Hz)"
+msgid "band pass:"
+msgstr "passa-banda:"
 
 #: experiment/templates/experiment/emg_setting_electrode.html:269
-msgid "notch: (Hz)"
-msgstr "notch (Hz)"
+msgid "notch:"
+msgstr "corte"
 
 #: experiment/templates/experiment/emg_setting_electrode.html:324
 #: experiment/templates/experiment/emg_setting_register.html:311
@@ -2437,20 +2370,20 @@ msgid "Analog filter setting: "
 msgstr "Configuração de filtro analógico"
 
 #: experiment/templates/experiment/emg_setting_register.html:160
-msgid "low pass (Hz): "
-msgstr "passa-baixa (Hz)"
+msgid "low pass: "
+msgstr "passa-baixa: "
 
 #: experiment/templates/experiment/emg_setting_register.html:161
-msgid "high pass (Hz): "
-msgstr "passa-alta (Hz):"
+msgid "high pass: "
+msgstr "passa-alta: "
 
 #: experiment/templates/experiment/emg_setting_register.html:162
-msgid "band pass (Hz): "
-msgstr "passa banda (Hz):"
+msgid "band pass: "
+msgstr "passa-banda: "
 
 #: experiment/templates/experiment/emg_setting_register.html:163
-msgid "notch (Hz): "
-msgstr "notch (Hz):"
+msgid "notch: "
+msgstr "corte:"
 
 #: experiment/templates/experiment/emg_setting_register.html:183
 msgid "Add new"
@@ -2465,20 +2398,20 @@ msgid "Digital filter"
 msgstr "Filtro digital"
 
 #: experiment/templates/experiment/emg_setting_register.html:213
-msgid "Low pass (Hz):"
-msgstr "Passa-baixa (Hz):"
+msgid "Low pass:"
+msgstr "Passa-baixa:"
 
 #: experiment/templates/experiment/emg_setting_register.html:214
-msgid "High pass (Hz):"
-msgstr "Passa-alta (Hz):"
+msgid "High pass:"
+msgstr "Passa-alta:"
 
 #: experiment/templates/experiment/emg_setting_register.html:215
-msgid "Band pass (Hz):"
-msgstr "Passa banda (Hz):"
+msgid "Band pass:"
+msgstr "Passa-banda:"
 
 #: experiment/templates/experiment/emg_setting_register.html:216
-msgid "Notch (Hz):"
-msgstr "Notch (Hz):"
+msgid "Notch:"
+msgstr "Corte:"
 
 #: experiment/templates/experiment/emg_setting_register.html:217
 msgid "order:"
@@ -2738,7 +2671,7 @@ msgstr "Tem certeza que deseja excluir o material?"
 #: experiment/templates/experiment/muscle_side_register.html:53
 #: experiment/templates/experiment/muscle_subdivision_register.html:53
 #: experiment/templates/experiment/standardization_system_register.html:108
-#: experiment/views.py:8710
+#: experiment/views.py:8361
 msgid "Muscle"
 msgstr "Músculo"
 
@@ -2855,7 +2788,7 @@ msgstr "(Não há participantes cadastrados)"
 #: experiment/templates/experiment/questionnaire_view.html:173
 #: experiment/templates/experiment/questionnaire_view.html:197
 #: experiment/templates/experiment/subject_questionnaire_response_list.html:125
-#: experiment/templates/experiment/subjects.html:151
+#: experiment/templates/experiment/subjects.html:149
 msgid "No status"
 msgstr "Não há status"
 
@@ -2885,6 +2818,10 @@ msgstr "Lista de estudos"
 msgid "Term"
 msgstr "Vigência"
 
+#: experiment/templates/experiment/research_project_list.html:76
+msgid "to"
+msgstr "a"
+
 #: experiment/templates/experiment/research_project_list.html:79
 msgid "From"
 msgstr "A partir de"
@@ -2902,7 +2839,6 @@ msgid "Initial date"
 msgstr "Data de início"
 
 #: experiment/templates/experiment/research_project_register.html:95
-#: experiment/templates/experiment/subject_step_data_form.html:102
 msgid "End date"
 msgstr "Data de fim"
 
@@ -2933,13 +2869,13 @@ msgstr "Lista"
 
 #: experiment/templates/experiment/setup_menu.html:82
 msgid "Equipment / Device registers"
-msgstr "Equipamentos / Cadastro de dispositivos"
+msgstr "Equipos / Cadastro de dispositivos"
 
 #: experiment/templates/experiment/software_list.html:44
 #: experiment/templates/experiment/software_register.html:53
 #: experiment/templates/experiment/software_register.html:73
 #: experiment/templates/experiment/software_version_register.html:53
-#: experiment/views.py:8760
+#: experiment/views.py:8415
 msgid "Software"
 msgstr ""
 
@@ -2977,9 +2913,7 @@ msgstr "Posicionamento de eletrodo de inserção"
 
 #: experiment/templates/experiment/standardization_system_register.html:186
 msgid "Are you sure you want to delete this EMG electrode placement system?"
-msgstr ""
-"Tem certeza que deseja excluir este sistema de posicionamento de electrodos "
-"de EMG?"
+msgstr "Tem certeza que deseja excluir este sistema de posicionamento de electrodos de EMG?"
 
 #: experiment/templates/experiment/stimulus_component.html:8
 #: experiment/templates/experiment/stimulus_component.html:18
@@ -3008,20 +2942,20 @@ msgid "Additional data collection"
 msgstr "Coleta de dados adicionais"
 
 #: experiment/templates/experiment/subject_additional_data_form.html:171
-#: experiment/templates/experiment/subject_eeg_data_form.html:260
+#: experiment/templates/experiment/subject_eeg_data_form.html:233
 #: experiment/templates/experiment/subject_emg_data_form.html:220
 msgid "Date"
 msgstr "Data"
 
 #: experiment/templates/experiment/subject_additional_data_form.html:185
-#: experiment/templates/experiment/subject_eeg_data_form.html:317
-#: experiment/templates/experiment/subject_emg_data_form.html:265
+#: experiment/templates/experiment/subject_eeg_data_form.html:277
+#: experiment/templates/experiment/subject_emg_data_form.html:254
 msgid "File format"
 msgstr "Formato de arquivo"
 
 #: experiment/templates/experiment/subject_additional_data_form.html:195
-#: experiment/templates/experiment/subject_eeg_data_form.html:327
-#: experiment/templates/experiment/subject_emg_data_form.html:275
+#: experiment/templates/experiment/subject_eeg_data_form.html:287
+#: experiment/templates/experiment/subject_emg_data_form.html:264
 msgid "File format description"
 msgstr "Descrição de formato de arquivo"
 
@@ -3030,8 +2964,8 @@ msgid "Additional data collection description"
 msgstr "Descrição de coleta de dados adicionais"
 
 #: experiment/templates/experiment/subject_additional_data_form.html:215
-#: experiment/templates/experiment/subject_eeg_data_form.html:347
-#: experiment/templates/experiment/subject_emg_data_form.html:295
+#: experiment/templates/experiment/subject_eeg_data_form.html:307
+#: experiment/templates/experiment/subject_emg_data_form.html:284
 msgid "File"
 msgstr "Arquivo"
 
@@ -3039,7 +2973,7 @@ msgstr "Arquivo"
 msgid "Are you sure you want to delete additional data?"
 msgstr "Tem certeza que deseja excluir os dados adicionais?"
 
-#: experiment/templates/experiment/subject_eeg_collection_list.html:29
+#: experiment/templates/experiment/subject_eeg_collection_list.html:33
 msgid "EEG data files"
 msgstr "Arquivo de dados de EEG"
 
@@ -3059,105 +2993,85 @@ msgstr "(Não há coleta de EEG)"
 msgid "Download file"
 msgstr "Baixar arquivo"
 
-#: experiment/templates/experiment/subject_eeg_collection_list.html:108
+#: experiment/templates/experiment/subject_eeg_collection_list.html:106
 msgid "Export nwb file format"
 msgstr "Exportar arquivo no formato NWB"
 
-#: experiment/templates/experiment/subject_eeg_collection_list.html:112
-msgid ""
-"Unable to export as nwb file. The uploaded data file is not an EEG file. Its "
-"format is not valid, or the number of channels is not set."
-msgstr ""
-
-#: experiment/templates/experiment/subject_eeg_collection_list.html:118
+#: experiment/templates/experiment/subject_eeg_collection_list.html:110
 msgid "Valid EEG file format"
 msgstr "Formato de arquivo de EEG válido"
 
-#: experiment/templates/experiment/subject_eeg_collection_list.html:120
+#: experiment/templates/experiment/subject_eeg_collection_list.html:112
 msgid "Not valid EEG file format"
 msgstr "Formato de arquivo de EEG não válido"
 
-#: experiment/templates/experiment/subject_eeg_collection_list.html:123
+#: experiment/templates/experiment/subject_eeg_collection_list.html:115
 msgid "File format not validated"
 msgstr "Formato de arquivo não válido"
 
-#: experiment/templates/experiment/subject_eeg_collection_list.html:132
-#: experiment/templates/experiment/subject_eeg_data_form.html:188
+#: experiment/templates/experiment/subject_eeg_collection_list.html:124
+#: experiment/templates/experiment/subject_eeg_data_form.html:161
 #: experiment/templates/experiment/subject_eeg_image_data.html:65
 msgid "New EEG data file"
 msgstr "Novo arquivo de dados de EEG"
 
-#: experiment/templates/experiment/subject_eeg_collection_list.html:161
-msgid "Exporting data file in NWB format"
-msgstr "Exportar arquivo no formato NWB"
-
-#: experiment/templates/experiment/subject_eeg_collection_list.html:164
-msgid "Waiting for status..."
-msgstr "Aguardando..."
-
-#: experiment/templates/experiment/subject_eeg_data_form.html:229
+#: experiment/templates/experiment/subject_eeg_data_form.html:202
 msgid "EEG data collection"
 msgstr "Coleta de dados de EEG"
 
-#: experiment/templates/experiment/subject_eeg_data_form.html:234
-#: experiment/templates/experiment/subject_eeg_data_form.html:240
+#: experiment/templates/experiment/subject_eeg_data_form.html:207
+#: experiment/templates/experiment/subject_eeg_data_form.html:213
 msgid "Data collection"
 msgstr "Coleta de dados de EEG"
 
-#: experiment/templates/experiment/subject_eeg_data_form.html:235
-#: experiment/templates/experiment/subject_eeg_data_form.html:243
+#: experiment/templates/experiment/subject_eeg_data_form.html:208
+#: experiment/templates/experiment/subject_eeg_data_form.html:216
 msgid "Electrode positions status"
 msgstr "Status das posições dos eletrodos"
 
-#: experiment/templates/experiment/subject_eeg_data_form.html:236
-#: experiment/templates/experiment/subject_eeg_data_form.html:246
+#: experiment/templates/experiment/subject_eeg_data_form.html:209
+#: experiment/templates/experiment/subject_eeg_data_form.html:219
 msgid "Image of the electrode positions"
 msgstr "Imagem das posições dos eletrodos"
 
-#: experiment/templates/experiment/subject_eeg_data_form.html:272
-#: experiment/templates/experiment/subject_emg_data_form.html:231
-msgid "Hour"
-msgstr "Hora"
-
-#: experiment/templates/experiment/subject_eeg_data_form.html:297
+#: experiment/templates/experiment/subject_eeg_data_form.html:257
 msgid "Reason for change the EEG setting"
 msgstr "Razão de mudança de EEG setting"
 
-#: experiment/templates/experiment/subject_eeg_data_form.html:307
+#: experiment/templates/experiment/subject_eeg_data_form.html:267
 msgid "Cap size"
 msgstr "Tamanho da touca"
 
-#: experiment/templates/experiment/subject_eeg_data_form.html:337
+#: experiment/templates/experiment/subject_eeg_data_form.html:297
 msgid "EEG data collection description"
 msgstr "Descrição de coleta de dados de EEG"
 
-#: experiment/templates/experiment/subject_eeg_data_form.html:380
-#: experiment/templates/experiment/subject_eeg_data_form.html:457
+#: experiment/templates/experiment/subject_eeg_data_form.html:340
+#: experiment/templates/experiment/subject_eeg_data_form.html:404
 #: experiment/templates/experiment/subject_eeg_image_data.html:119
 msgid "Worked"
 msgstr "Funcionou"
 
-#: experiment/templates/experiment/subject_eeg_data_form.html:426
+#: experiment/templates/experiment/subject_eeg_data_form.html:373
 msgid "There is not electrode position status data for this data collection"
-msgstr "Não há dados de status de posição de eletrodo para esta coleção de dados"
+msgstr ""
 
-#: experiment/templates/experiment/subject_eeg_data_form.html:480
+#: experiment/templates/experiment/subject_eeg_data_form.html:427
 msgid ""
 "To mark or unmark any position as 'worked' or 'did not worked' you can click "
 "on the image on the selected position"
-msgstr "Para marcar ou desmarcar qualquer posição como 'trabalhou' ou 'não funcionou' você pode clicar"
-" na imagem na posição selecionada"
+msgstr ""
 
-#: experiment/templates/experiment/subject_eeg_data_form.html:483
+#: experiment/templates/experiment/subject_eeg_data_form.html:430
 msgid ""
 "or you can check or uncheck the checkbox selected in the list of positions. "
-msgstr "ou você pode marcar ou desmarcar checkbox selecionado na lista de posições"
+msgstr ""
 
-#: experiment/templates/experiment/subject_eeg_data_form.html:499
+#: experiment/templates/experiment/subject_eeg_data_form.html:448
 msgid "There is not image"
 msgstr "Não há imagem."
 
-#: experiment/templates/experiment/subject_eeg_data_form.html:539
+#: experiment/templates/experiment/subject_eeg_data_form.html:487
 msgid "Are you sure you want to delete EEG data?"
 msgstr "Tem certeza que deseja excluir os dados de EEG?"
 
@@ -3186,15 +3100,15 @@ msgstr "Novo arquivo de dados de EMG"
 msgid "EMG data collection"
 msgstr "Coleta de dados de EMG"
 
-#: experiment/templates/experiment/subject_emg_data_form.html:255
+#: experiment/templates/experiment/subject_emg_data_form.html:244
 msgid "Reason for change the EMG setting"
 msgstr "Razão de mudança de EMG setting"
 
-#: experiment/templates/experiment/subject_emg_data_form.html:285
+#: experiment/templates/experiment/subject_emg_data_form.html:274
 msgid "EMG data collection description"
 msgstr "Descrição de coleta de dados de EMG"
 
-#: experiment/templates/experiment/subject_emg_data_form.html:358
+#: experiment/templates/experiment/subject_emg_data_form.html:347
 msgid "Are you sure you want to delete EMG data?"
 msgstr "Tem certeza que deseja excluir os dados de EMG?"
 
@@ -3241,20 +3155,6 @@ msgstr "Intervalo entre preenchimentos:"
 msgid "undefined"
 msgstr "indefinido"
 
-#: experiment/templates/experiment/subject_step_data_form.html:34
-#: experiment/templates/experiment/subject_step_data_form.html:72
-msgid "Subject step data"
-msgstr "Dado de passo do sujeito"
-
-#: experiment/templates/experiment/subject_step_data_form.html:77
-msgid "Start date"
-msgstr "Data inicial"
-
-#: experiment/templates/experiment/subject_step_data_form.html:88
-#: experiment/templates/experiment/subject_step_data_form.html:113
-msgid "time"
-msgstr "vezes"
-
 #: experiment/templates/experiment/subjects.html:65
 msgid "Insert participant"
 msgstr "Inserir participante"
@@ -3289,35 +3189,35 @@ msgstr "Excluir participante"
 msgid "Upload consent form"
 msgstr "Termo de consentimento carregado"
 
-#: experiment/templates/experiment/subjects.html:127
+#: experiment/templates/experiment/subjects.html:125
 msgid "Attached"
 msgstr "Anexado"
 
-#: experiment/templates/experiment/subjects.html:129
+#: experiment/templates/experiment/subjects.html:127
 msgid "No attachments"
 msgstr "Sem anexo"
 
-#: experiment/templates/experiment/subjects.html:139
+#: experiment/templates/experiment/subjects.html:137
 msgid "Fill questionnaires"
 msgstr "Preencher questionários"
 
-#: experiment/templates/experiment/subjects.html:161
+#: experiment/templates/experiment/subjects.html:159
 msgid "Uploaded EEG data files"
 msgstr "Arquivos de dados de EEG carregados"
 
-#: experiment/templates/experiment/subjects.html:179
+#: experiment/templates/experiment/subjects.html:177
 msgid "Uploaded EMG data files"
 msgstr "Arquivos de dados de EMG carregados"
 
-#: experiment/templates/experiment/subjects.html:196
+#: experiment/templates/experiment/subjects.html:194
 msgid "Uploaded additional data files"
 msgstr "Arquivos de dados adicionais carregados"
 
-#: experiment/templates/experiment/subjects.html:197
+#: experiment/templates/experiment/subjects.html:195
 msgid "Additional"
 msgstr "Adicionais"
 
-#: experiment/templates/experiment/subjects.html:226
+#: experiment/templates/experiment/subjects.html:224
 msgid "Are you sure you want to delete participant?"
 msgstr "Tem certeza que deseja excluir o participante?"
 
@@ -3359,6 +3259,10 @@ msgstr "Nova Configuração de TMS"
 msgid "TMS Setting"
 msgstr "Configuração de TMS"
 
+#: experiment/templates/experiment/tms_setting_register.html:124
+msgid "Coil name"
+msgstr "Nome da bobina"
+
 #: experiment/templates/experiment/tms_setting_register.html:152
 msgid "Delete TMS setting"
 msgstr "Remover configuração de TMS"
@@ -3387,458 +3291,479 @@ msgstr "Dispositivo TMS"
 msgid "TMS Device List"
 msgstr "Lista de dispositivos de TMS"
 
-#: experiment/templates/experiment/tmsdevice_list.html:59
+#: experiment/templates/experiment/tmsdevice_list.html:60
 msgid "Pulse Type"
 msgstr "Tipo de Pulso"
 
-#: experiment/templates/experiment/tmsdevice_new.html:194
-#: experiment/templates/experiment/tmsdevice_register.html:157
-msgid "Are you sure you want to delete TMS device?"
-msgstr "Tem certeza que deseja excluir este dispositivo TMS?"
-
 #: experiment/templates/experiment/tmsdevice_register.html:103
+#: experiment/views.py:8425
+msgid "Coil model"
+msgstr "Modelo de bobina"
+
+#: experiment/templates/experiment/tmsdevice_register.html:112
 msgid "Pulse type"
 msgstr "Tipo de pulso"
 
-#: experiment/templates/experiment/upload_consent_form.html:93
+#: experiment/templates/experiment/tmsdevice_register.html:158
+msgid "Are you sure you want to delete TMS device?"
+msgstr "Tem certeza que deseja excluir este dispositivo TMS?"
+
+#: experiment/templates/experiment/upload_consent_form.html:91
 msgid "Upload"
 msgstr "Carregar"
 
-#: experiment/templates/experiment/upload_consent_form.html:108
+#: experiment/templates/experiment/upload_consent_form.html:106
 msgid "Are you sure you want to delete attachment?"
 msgstr "Tem certeza que deseja remover o anexo?"
 
-#: experiment/tests.py:1731 experiment/tests.py:2277 experiment/tests.py:2397
-#: experiment/tests.py:2465 experiment/tests.py:2542 experiment/tests.py:2619
-#: experiment/tests.py:2696 experiment/tests.py:2769 experiment/tests.py:2839
-#: experiment/tests.py:2909 experiment/tests.py:2982 experiment/tests.py:3054
-#: experiment/tests.py:3124 experiment/tests.py:3192 experiment/tests.py:3264
-#: experiment/tests.py:3392 experiment/tests.py:3465 experiment/tests.py:3537
-#: experiment/tests.py:3612 experiment/tests.py:3684 experiment/tests.py:3763
-#: experiment/views.py:135 experiment/views.py:1587 experiment/views.py:1762
-#: experiment/views.py:1866 experiment/views.py:1969 experiment/views.py:2076
-#: experiment/views.py:2153 experiment/views.py:2335 experiment/views.py:2437
-#: experiment/views.py:2539 experiment/views.py:2643 experiment/views.py:2741
-#: experiment/views.py:2849 experiment/views.py:2955 experiment/views.py:3050
-#: experiment/views.py:3144 experiment/views.py:3268 experiment/views.py:3500
-#: experiment/views.py:3600 experiment/views.py:7295 experiment/views.py:7518
+#: experiment/tests.py:1741 experiment/tests.py:2285 experiment/tests.py:2405
+#: experiment/tests.py:2471 experiment/tests.py:2546 experiment/tests.py:2621
+#: experiment/tests.py:2696 experiment/tests.py:2767 experiment/tests.py:2835
+#: experiment/tests.py:2903 experiment/tests.py:2976 experiment/tests.py:3048
+#: experiment/tests.py:3118 experiment/tests.py:3186 experiment/tests.py:3258
+#: experiment/tests.py:3386 experiment/tests.py:3459 experiment/tests.py:3531
+#: experiment/tests.py:3606 experiment/tests.py:3678 experiment/tests.py:3746
+#: experiment/views.py:131 experiment/views.py:1576 experiment/views.py:1673
+#: experiment/views.py:1849 experiment/views.py:1953 experiment/views.py:2056
+#: experiment/views.py:2163 experiment/views.py:2240 experiment/views.py:2422
+#: experiment/views.py:2524 experiment/views.py:2626 experiment/views.py:2730
+#: experiment/views.py:2828 experiment/views.py:2936 experiment/views.py:3042
+#: experiment/views.py:3136 experiment/views.py:3230 experiment/views.py:3354
+#: experiment/views.py:3586 experiment/views.py:3686 experiment/views.py:6994
+#: experiment/views.py:7177
 msgid "Action not available."
 msgstr "Ação não disponível"
 
-#: experiment/tests.py:1742 experiment/tests.py:2269 experiment/tests.py:2389
-#: experiment/tests.py:2457 experiment/tests.py:2533 experiment/tests.py:2610
-#: experiment/tests.py:2687 experiment/tests.py:2761 experiment/tests.py:2831
-#: experiment/tests.py:2901 experiment/tests.py:2974 experiment/tests.py:3046
-#: experiment/tests.py:3116 experiment/tests.py:3184 experiment/tests.py:3256
-#: experiment/tests.py:3384 experiment/tests.py:3457 experiment/tests.py:3529
-#: experiment/tests.py:3604 experiment/tests.py:3676 experiment/tests.py:3754
-#: experiment/views.py:132 experiment/views.py:1584 experiment/views.py:1759
-#: experiment/views.py:1863 experiment/views.py:1966 experiment/views.py:2073
-#: experiment/views.py:2150 experiment/views.py:2332 experiment/views.py:2434
-#: experiment/views.py:2536 experiment/views.py:2640 experiment/views.py:2738
-#: experiment/views.py:2846 experiment/views.py:2952 experiment/views.py:3047
-#: experiment/views.py:3141 experiment/views.py:3265 experiment/views.py:3497
-#: experiment/views.py:3597 experiment/views.py:7293 experiment/views.py:7516
+#: experiment/tests.py:1752 experiment/tests.py:2277 experiment/tests.py:2397
+#: experiment/tests.py:2463 experiment/tests.py:2537 experiment/tests.py:2612
+#: experiment/tests.py:2687 experiment/tests.py:2759 experiment/tests.py:2827
+#: experiment/tests.py:2895 experiment/tests.py:2968 experiment/tests.py:3040
+#: experiment/tests.py:3110 experiment/tests.py:3178 experiment/tests.py:3250
+#: experiment/tests.py:3378 experiment/tests.py:3451 experiment/tests.py:3523
+#: experiment/tests.py:3598 experiment/tests.py:3670 experiment/tests.py:3738
+#: experiment/views.py:128 experiment/views.py:1573 experiment/views.py:1670
+#: experiment/views.py:1846 experiment/views.py:1950 experiment/views.py:2053
+#: experiment/views.py:2160 experiment/views.py:2237 experiment/views.py:2419
+#: experiment/views.py:2521 experiment/views.py:2623 experiment/views.py:2727
+#: experiment/views.py:2825 experiment/views.py:2933 experiment/views.py:3039
+#: experiment/views.py:3133 experiment/views.py:3227 experiment/views.py:3351
+#: experiment/views.py:3583 experiment/views.py:3683 experiment/views.py:6992
+#: experiment/views.py:7175
 msgid "Information not saved."
 msgstr "Informação não salva."
 
-#: experiment/views.py:127
+#: experiment/views.py:123
 msgid "Study created successfully."
 msgstr "Estudo criado com sucesso."
 
-#: experiment/views.py:179 experiment/views.py:7382
+#: experiment/views.py:175 experiment/views.py:7042
 msgid "Study removed successfully."
 msgstr "Estudo excluído com sucesso."
 
-#: experiment/views.py:182
+#: experiment/views.py:178
 msgid "Error trying to delete research."
 msgstr "Erro ao tentar excluir o estudo."
 
-#: experiment/views.py:188 experiment/views.py:386
+#: experiment/views.py:184 experiment/views.py:374
 msgid ""
 "Impossible to delete group because there is (are) questionnaire(s) answered."
 msgstr ""
 "Não foi possível excluir o grupo, pois há questionário(s) respondido(s)."
 
-#: experiment/views.py:220
+#: experiment/views.py:216
 msgid "Research updated successfully."
 msgstr "Estudo atualizado com sucesso."
 
-#: experiment/views.py:222 experiment/views.py:419 experiment/views.py:615
-#: experiment/views.py:734 experiment/views.py:1610 experiment/views.py:1789
-#: experiment/views.py:1891 experiment/views.py:1998 experiment/views.py:2104
-#: experiment/views.py:2256 experiment/views.py:2363 experiment/views.py:2500
-#: experiment/views.py:2602 experiment/views.py:2702 experiment/views.py:2800
-#: experiment/views.py:2877 experiment/views.py:3008 experiment/views.py:3103
-#: experiment/views.py:3168 experiment/views.py:3369 experiment/views.py:3527
-#: experiment/views.py:3627 experiment/views.py:4731 experiment/views.py:5394
-#: experiment/views.py:5594 experiment/views.py:5689 experiment/views.py:6795
-#: experiment/views.py:6824 experiment/views.py:6834 experiment/views.py:7428
-#: experiment/views.py:7594 experiment/views.py:7727 experiment/views.py:7827
-#: experiment/views.py:7928 experiment/views.py:8312 experiment/views.py:8398
-#: experiment/views.py:8471 experiment/views.py:8588 experiment/views.py:8684
+#: experiment/views.py:218 experiment/views.py:407 experiment/views.py:603
+#: experiment/views.py:724 experiment/views.py:1599 experiment/views.py:1697
+#: experiment/views.py:1876 experiment/views.py:1978 experiment/views.py:2085
+#: experiment/views.py:2191 experiment/views.py:2343 experiment/views.py:2450
+#: experiment/views.py:2587 experiment/views.py:2689 experiment/views.py:2789
+#: experiment/views.py:2887 experiment/views.py:2964 experiment/views.py:3095
+#: experiment/views.py:3189 experiment/views.py:3254 experiment/views.py:3455
+#: experiment/views.py:3613 experiment/views.py:3713 experiment/views.py:4816
+#: experiment/views.py:5233 experiment/views.py:5427 experiment/views.py:6494
+#: experiment/views.py:6523 experiment/views.py:6533 experiment/views.py:7087
+#: experiment/views.py:7253 experiment/views.py:7386 experiment/views.py:7486
+#: experiment/views.py:7587 experiment/views.py:7972 experiment/views.py:8054
+#: experiment/views.py:8123 experiment/views.py:8239 experiment/views.py:8335
 msgid "There is no changes to save."
 msgstr "Não há alterações para salvar."
 
-#: experiment/views.py:330
+#: experiment/views.py:326
 msgid "Experiment created successfully."
 msgstr "Experimento criado com sucesso."
 
-#: experiment/views.py:370 experiment/views.py:6360
-msgid ""
-"It was not possible to exclude because there is data collection associated."
-msgstr "Não foi possível excluir porque há dados de coleta associados."
-
-#: experiment/views.py:376
+#: experiment/views.py:364
 msgid "Experiment removed successfully."
 msgstr "Experimento excluído com sucesso."
 
-#: experiment/views.py:380
+#: experiment/views.py:368
 msgid ""
 "It was not possible to delete experiment, because there are groups connected."
 msgstr "Não foi possível excluir o experimento, pois há grupos associados"
 
-#: experiment/views.py:417
+#: experiment/views.py:405
 msgid "Experiment updated successfully."
 msgstr "Experimento atualizado com sucesso."
 
-#: experiment/views.py:449
+#: experiment/views.py:437
 msgid "Group included successfully."
 msgstr "Grupo incluído com sucesso."
 
-#: experiment/views.py:553
+#: experiment/views.py:541
 msgid "Group removed successfully."
 msgstr "Grupo excluído com sucesso."
 
-#: experiment/views.py:557
+#: experiment/views.py:545
 msgid "Impossible to delete group, because there are dependencies."
 msgstr "Não foi possível excluir o grupo, pois há dependências."
 
-#: experiment/views.py:562
+#: experiment/views.py:550
 msgid ""
 "Impossible to delete group because there is (are) data collection associated."
 msgstr "Não foi possível excluir o grupo porque há dados coletados."
 
-#: experiment/views.py:572 experiment/views.py:5845 experiment/views.py:6600
-#: experiment/views.py:6845
+#: experiment/views.py:560 experiment/views.py:5582 experiment/views.py:6299
+#: experiment/views.py:6544
 msgid "The experiment was copied."
 msgstr "O experimento foi copiado."
 
-#: experiment/views.py:613
+#: experiment/views.py:601
 msgid "Group updated successfully."
 msgstr "Grupo atualizado com sucesso."
 
-#: experiment/views.py:644
+#: experiment/views.py:632
 msgid "EEG setting included successfully."
 msgstr "Configuração de EEG incluída com sucesso."
 
-#: experiment/views.py:680
+#: experiment/views.py:668
 msgid "EEG setting was removed successfully."
 msgstr "Configuração de EEG excluído com sucesso."
 
-#: experiment/views.py:704 experiment/views.py:7684 experiment/views.py:8147
-#: experiment/views.py:8556
+#: experiment/views.py:694 experiment/views.py:7343 experiment/views.py:7806
+#: experiment/views.py:8207
 msgid "Setting was removed successfully."
 msgstr "Configuração foi excluída com sucesso."
 
-#: experiment/views.py:732
+#: experiment/views.py:722
 msgid "EEG setting updated successfully."
 msgstr "Configuração de EEG foi alterado com sucesso."
 
-#: experiment/views.py:796
+#: experiment/views.py:782
+msgid "EEG machine setting created successfully."
+msgstr "Configuração de máquina de EEG criada com sucesso."
+
+#: experiment/views.py:802
 msgid "EEG amplifier setting created sucessfully."
 msgstr "Configuração de amplificador de EEG criada com sucesso."
 
-#: experiment/views.py:810
+#: experiment/views.py:816
 msgid "EEG solution setting created sucessfully."
 msgstr "Configuração de solução de EEG criada com sucesso."
 
-#: experiment/views.py:828
+#: experiment/views.py:834
 msgid "EEG filter setting created sucessfully."
 msgstr "Configuração de filtro de EEG criada com sucesso."
 
-#: experiment/views.py:862
+#: experiment/views.py:867
 msgid "Now you can set each electrode position."
 msgstr "Agora você pode configurar cada posição de eletrodo."
 
-#: experiment/views.py:864
+#: experiment/views.py:869
 msgid "EEG electrode net system setting created sucessfully."
 msgstr "Configuração de sistema de rede de eletrodo de EEG criada com sucesso."
 
-#: experiment/views.py:1044
-msgid "EEG Amplifier setting updated successfully."
-msgstr "Configuração de amplificador de EEG alterada com sucesso."
+#: experiment/views.py:1065
+msgid "EEG machine setting updated successfully."
+msgstr "Configuração de máquina de EEG alterada com sucesso."
 
-#: experiment/views.py:1062
+#: experiment/views.py:1083
 msgid "EEG amplifier setting updated sucessfully."
 msgstr "Configuração de amplificador de EEG alterada com sucesso."
 
-#: experiment/views.py:1076
+#: experiment/views.py:1097
 msgid "EEG solution setting updated sucessfully."
 msgstr "Configuração de solução de EEG alterada com sucesso."
 
-#: experiment/views.py:1101
+#: experiment/views.py:1122
 msgid "EEG filter setting updated sucessfully."
 msgstr "Configuração de filtro de EEG alterada com sucesso."
 
-#: experiment/views.py:1150
+#: experiment/views.py:1170
 msgid "EEG electrode net system setting updated sucessfully."
 msgstr ""
 "Configuração de sistema de rede de eletrodo de EEG alterada com sucesso."
 
-#: experiment/views.py:1416 experiment/views.py:1469 experiment/views.py:4827
+#: experiment/views.py:1442 experiment/views.py:1495 experiment/views.py:4912
 msgid "Setting saved successfully."
 msgstr "Configuração gravada com sucesso."
 
-#: experiment/views.py:1579
+#: experiment/views.py:1568
 msgid "Manufacturer created successfully."
 msgstr "Fabricante criado com sucesso."
 
-#: experiment/views.py:1608
+#: experiment/views.py:1597
 msgid "Manufacturer updated successfully."
 msgstr "Fabricante alterado com sucesso."
 
-#: experiment/views.py:1637
+#: experiment/views.py:1626
 msgid "Manufacturer removed successfully."
 msgstr "Fabricante excluído com sucesso."
 
-#: experiment/views.py:1640
+#: experiment/views.py:1629
 msgid "Error trying to delete manufacturer."
 msgstr "Erro ao tentar excluir o fabricante."
 
-#: experiment/views.py:1754
+#: experiment/views.py:1665
+msgid "EEG machine created successfully."
+msgstr "Máquina de EEG criada com sucesso."
+
+#: experiment/views.py:1695
+msgid "EEG machine updated successfully."
+msgstr "Máquina de EEG alterada com sucesso."
+
+#: experiment/views.py:1724
+msgid "EEG machine removed successfully."
+msgstr "Máquina de EEG excluída com sucesso."
+
+#: experiment/views.py:1727
+msgid "Error trying to delete eegmachine."
+msgstr "Erro ao tentar excluir a máquina de EEG."
+
+#: experiment/views.py:1841
 msgid "Amplifier created successfully."
 msgstr "Amplificador criado com sucesso."
 
-#: experiment/views.py:1787
+#: experiment/views.py:1874
 msgid "Amplifier updated successfully."
 msgstr "Amplificador alterado com sucesso."
 
-#: experiment/views.py:1819
+#: experiment/views.py:1906
 msgid "Amplifier removed successfully."
 msgstr "Amplificador excluído com sucesso."
 
-#: experiment/views.py:1822
+#: experiment/views.py:1909
 msgid "Error trying to delete amplifier."
 msgstr "Erro ao tentar excluir o amplificador."
 
-#: experiment/views.py:1858
+#: experiment/views.py:1945
 msgid "EEG solution created successfully."
 msgstr "Solução de EEG criada com sucesso."
 
-#: experiment/views.py:1889
+#: experiment/views.py:1976
 msgid "EEG solution updated successfully."
 msgstr "Solução de EEG foi alterado com sucesso."
 
-#: experiment/views.py:1918
+#: experiment/views.py:2005
 msgid "EEG solution removed successfully."
 msgstr "Solução de EEG excluído com sucesso."
 
-#: experiment/views.py:1921
+#: experiment/views.py:2008
 msgid "Error trying to delete eegsolution."
 msgstr "Erro ao tentar excluir a solução de EEG."
 
-#: experiment/views.py:1961
+#: experiment/views.py:2048
 msgid "Filter type created successfully."
 msgstr "Tipo de filtro criado com sucesso."
 
-#: experiment/views.py:1996
+#: experiment/views.py:2083
 msgid "Filter type updated successfully."
 msgstr "Tipo de filtro alterado com sucesso."
 
-#: experiment/views.py:2029
+#: experiment/views.py:2116
 msgid "Filter type removed successfully."
 msgstr "Tipo de filtro excluído com sucesso."
 
-#: experiment/views.py:2032
+#: experiment/views.py:2119
 msgid "Error trying to delete filter type."
 msgstr "Erro ao deletar o tipo de filtro."
 
-#: experiment/views.py:2068
+#: experiment/views.py:2155
 msgid "Standardization system created successfully."
 msgstr "Sistema de padronização alterado com sucesso."
 
-#: experiment/views.py:2102
+#: experiment/views.py:2189
 msgid "Standardization system updated successfully."
 msgstr "Sistema de padronização alterado com sucesso."
 
-#: experiment/views.py:2145
+#: experiment/views.py:2232
 msgid "Electrode placement subdivision created successfully."
 msgstr "Sub-divisão do posicionamento do eletrodo criada com sucesso."
 
-#: experiment/views.py:2197
+#: experiment/views.py:2284
 msgid "EMG electrode placement removed successfully."
 msgstr "Posicionamento de eletrodos de EMG excluída com sucesso."
 
-#: experiment/views.py:2201
+#: experiment/views.py:2288
 msgid "Error trying to delete EMG electrode placement."
 msgstr "Erro ao tentar excluir o posicionamento de eletrodos de EMG."
 
-#: experiment/views.py:2254
+#: experiment/views.py:2341
 msgid "EMG electrode placement was updated successfully."
 msgstr "O posicionamento de eletrodos de EMG alterada com sucesso."
 
-#: experiment/views.py:2286
+#: experiment/views.py:2373
 msgid "Standardization system removed successfully."
 msgstr "Sistema de padronização excluído com sucesso."
 
-#: experiment/views.py:2289
+#: experiment/views.py:2376
 msgid "Error trying to delete standardization system."
 msgstr "Erro ao tentar excluir sistema de padronização."
 
-#: experiment/views.py:2327
+#: experiment/views.py:2414
 msgid "Muscle created successfully."
 msgstr "Músculo criado com sucesso."
 
-#: experiment/views.py:2361
+#: experiment/views.py:2448
 msgid "Muscle updated successfully."
 msgstr "Músculo atualizado com sucesso."
 
-#: experiment/views.py:2394
+#: experiment/views.py:2481
 msgid "Muscle removed successfully."
 msgstr "Músculo excluído com sucesso."
 
-#: experiment/views.py:2397
+#: experiment/views.py:2484
 msgid "Error trying to delete muscle."
 msgstr "Erro ao tentar excluir o músculo."
 
-#: experiment/views.py:2429
+#: experiment/views.py:2516
 msgid "Muscle subdivision created successfully."
 msgstr "Sub-divisão do músculo criada com sucesso."
 
-#: experiment/views.py:2465
+#: experiment/views.py:2552
 msgid "Muscle subdivision removed successfully."
 msgstr "Sub-divisão do músculo excluída com sucesso."
 
-#: experiment/views.py:2469
+#: experiment/views.py:2556
 msgid "Error trying to delete muscle subdivision."
 msgstr "Erro ao tentar excluir a sub-divisão do músculo."
 
-#: experiment/views.py:2498
+#: experiment/views.py:2585
 msgid "Muscle subdivision updated successfully."
 msgstr "Sub-divisão do músculo foi alterada com sucesso."
 
-#: experiment/views.py:2531
+#: experiment/views.py:2618
 msgid "Muscle side created successfully."
 msgstr "Lado do músculo criado com sucesso."
 
-#: experiment/views.py:2567
+#: experiment/views.py:2654
 msgid "Muscle side removed successfully."
 msgstr "Lado do músculo excluído com sucesso."
 
-#: experiment/views.py:2571
+#: experiment/views.py:2658
 msgid "Error trying to delete muscle side."
 msgstr "Erro ao tentar excluir o lado do músculo."
 
-#: experiment/views.py:2600
+#: experiment/views.py:2687
 msgid "Muscle side updated successfully."
 msgstr "Lado do músculo atualizado com sucesso."
 
-#: experiment/views.py:2635
+#: experiment/views.py:2722
 msgid "Software created successfully."
 msgstr "Software criado com sucesso."
 
-#: experiment/views.py:2670
+#: experiment/views.py:2757
 msgid "Software removed successfully."
 msgstr "Software excluído com sucesso."
 
-#: experiment/views.py:2673
+#: experiment/views.py:2760
 msgid "Error trying to delete software."
 msgstr "Erro ao tentar excluir Software."
 
-#: experiment/views.py:2700
+#: experiment/views.py:2787
 msgid "Software updated successfully."
 msgstr "Software alterado com sucesso."
 
-#: experiment/views.py:2732
+#: experiment/views.py:2819
 msgid "Software version created successfully."
 msgstr "Versão do software criado com sucesso."
 
-#: experiment/views.py:2768
+#: experiment/views.py:2855
 msgid "Software version removed successfully."
 msgstr "Versão do software excluída com sucesso."
 
-#: experiment/views.py:2772
+#: experiment/views.py:2859
 msgid "Error trying to delete software version."
 msgstr "Erro ao tentar excluir a versão do software ."
 
-#: experiment/views.py:2798
+#: experiment/views.py:2885
 msgid "Software version updated successfully."
 msgstr "Versão do software foi alterada com sucesso."
 
-#: experiment/views.py:2841
+#: experiment/views.py:2928
 msgid "Electrode model created successfully."
 msgstr "Modelo de eletrodo criado com sucesso."
 
-#: experiment/views.py:2875
+#: experiment/views.py:2962
 msgid "Electrode model updated successfully."
 msgstr "Modelo de eletrodo alterado com sucesso."
 
-#: experiment/views.py:2908
+#: experiment/views.py:2995
 msgid "Electrode model removed successfully."
 msgstr "Modelo de eletrodo excluído com sucesso."
 
-#: experiment/views.py:2911
+#: experiment/views.py:2998
 msgid "Error trying to delete electrode model."
 msgstr "Erro ao tentar excluir o modelo de eletrodo."
 
-#: experiment/views.py:2947
+#: experiment/views.py:3034
 msgid "Coil Model created successfully."
 msgstr "Modelo da bobina criado com sucesso"
 
-#: experiment/views.py:2979
+#: experiment/views.py:3066
 msgid "Coil model removed successfully."
 msgstr "Modelo da bobina excluído com sucesso."
 
-#: experiment/views.py:2982
+#: experiment/views.py:3069
 msgid "Error trying to delete coil model."
 msgstr "Erro ao tentar excluir o modelo da bobina."
 
-#: experiment/views.py:3006
+#: experiment/views.py:3093
 msgid "Coil Model updated successfully."
 msgstr "Modelo da bobina alterado com sucesso."
 
-#: experiment/views.py:3042
+#: experiment/views.py:3128
 msgid "TMS device created successfully."
 msgstr "Dispositivo TMS criado com sucesso."
 
-#: experiment/views.py:3074
+#: experiment/views.py:3160
 msgid "TMS device removed successfully."
 msgstr "Dispositivo TMS excluído com sucesso."
 
-#: experiment/views.py:3077
+#: experiment/views.py:3163
 msgid "Error trying to delete TMS device."
 msgstr "Erro ao tentar excluir dispositivo TMS."
 
-#: experiment/views.py:3101
+#: experiment/views.py:3187
 msgid "TMS device updated successfully."
 msgstr "Dispositivo TMS atualizado com sucesso."
 
-#: experiment/views.py:3136
+#: experiment/views.py:3222
 msgid "Material created successfully."
 msgstr "Material criado com sucesso."
 
-#: experiment/views.py:3166
+#: experiment/views.py:3252
 msgid "Material updated successfully."
 msgstr "Material alterado com sucesso."
 
-#: experiment/views.py:3195
+#: experiment/views.py:3281
 msgid "Material removed successfully."
 msgstr "Material excluído com sucesso."
 
-#: experiment/views.py:3198
+#: experiment/views.py:3284
 msgid "Error trying to delete material."
 msgstr "Erro ao deletar o material"
 
-#: experiment/views.py:3260
+#: experiment/views.py:3346
 msgid "EEG electrode net created successfully."
 msgstr "Rede de eletrodo de EEG criada com sucesso."
 
-#: experiment/views.py:3367
+#: experiment/views.py:3453
 msgid "EEG electrode net updated successfully."
 msgstr "Rede de eletrodos de EEG alterada com sucesso."
 
-#: experiment/views.py:3427
+#: experiment/views.py:3513
 msgid ""
 "EEG electrode net cannot be removed because it is used in EEG electrode "
 "system."
@@ -3846,7 +3771,7 @@ msgstr ""
 "Rede de eletrodos de EEG não pode ser removida porque é usada em sistema de "
 "eletrodos de EEG."
 
-#: experiment/views.py:3437
+#: experiment/views.py:3523
 msgid ""
 "EEG electrode net cannot be removed because cap size is associated with EEG "
 "data."
@@ -3854,51 +3779,51 @@ msgstr ""
 "Rede de eletrodos de EEG não pode ser removida porque tamanho da touca está "
 "associado a dados de EEG."
 
-#: experiment/views.py:3445
+#: experiment/views.py:3531
 msgid "EEG electrode net removed successfully."
 msgstr "Rede de eletrodos de EEG excluída com sucesso."
 
-#: experiment/views.py:3448
+#: experiment/views.py:3534
 msgid "Error trying to delete EEG Electrode Net."
 msgstr "Erro ao tentar excluir a rede de eletrodos de EEG."
 
-#: experiment/views.py:3492
+#: experiment/views.py:3578
 msgid "EEG cap size created successfully."
 msgstr "Tamanho da touca de EEG criada com sucesso."
 
-#: experiment/views.py:3525
+#: experiment/views.py:3611
 msgid "Cap size updated successfully."
 msgstr "Tamanho da touca atualizado com sucesso."
 
-#: experiment/views.py:3556
+#: experiment/views.py:3642
 msgid "Cap size removed successfully."
 msgstr "Tamanho da touca excluído com sucesso."
 
-#: experiment/views.py:3560
+#: experiment/views.py:3646
 msgid "Error trying to delete cap size."
 msgstr "Erro ao tentar excluir tamanho da touca."
 
-#: experiment/views.py:3592
+#: experiment/views.py:3678
 msgid "A/D converter created successfully."
 msgstr "Conversor A/D criado com sucesso."
 
-#: experiment/views.py:3625
+#: experiment/views.py:3711
 msgid "A/D converter updated successfully."
 msgstr "Conversor A/D alterado com sucesso."
 
-#: experiment/views.py:3655
+#: experiment/views.py:3741
 msgid "A/D converter removed successfully."
 msgstr "Conversor A/D removido com sucesso."
 
-#: experiment/views.py:3658
+#: experiment/views.py:3744
 msgid "Error trying to delete A/D converter."
 msgstr "Erro ao tentar excluir o conversor A/D."
 
-#: experiment/views.py:3954
+#: experiment/views.py:4040
 msgid "Participant deleted from experiment."
 msgstr "Participante deletado do experimento."
 
-#: experiment/views.py:3956
+#: experiment/views.py:4042
 msgid ""
 "It was not possible to delete participant, because there are answers or eeg "
 "data associated"
@@ -3906,20 +3831,20 @@ msgstr ""
 "Não foi possível excluir o participante, pois há respostas de questionários "
 "ou arquivos de eeg associados"
 
-#: experiment/views.py:3988
+#: experiment/views.py:4074
 msgid "Fill not available - Table of tokens was not started."
 msgstr "Preenchimento não disponível - Tabela de tokens não iniciada"
 
-#: experiment/views.py:3992
+#: experiment/views.py:4078
 msgid "Fill not available - Questionnaire is not activated."
 msgstr "Preenchimento não disponível - Questionário não está ativo"
 
-#: experiment/views.py:3996
+#: experiment/views.py:4082
 msgid "Fill not available - Questionnaire does not contain standard fields."
 msgstr ""
 "Preenchimento não disponível - Questionário não contém campos padronizados"
 
-#: experiment/views.py:4005
+#: experiment/views.py:4091
 msgid ""
 "Fail trying to generate token to answer questionnaire. Check if "
 "questionnaire is active."
@@ -3927,300 +3852,197 @@ msgstr ""
 "Falha ao gerar token para responder questionário. Verifique se o "
 "questionário está ativo"
 
-#: experiment/views.py:4132
+#: experiment/views.py:4218
 msgid "You will be redirected to questionnaire. Please wait."
 msgstr "Você será redirecionado para o questionário. Aguarde."
 
-#: experiment/views.py:4154 experiment/views.py:4309
+#: experiment/views.py:4240 experiment/views.py:4395
 msgid "Fill deleted successfully."
 msgstr "Preenchimento removido com sucesso"
 
-#: experiment/views.py:4156 experiment/views.py:4311
+#: experiment/views.py:4242 experiment/views.py:4397
 msgid "Error trying to delete fill"
 msgstr "Erro ao deletar o preenchimento"
 
-#: experiment/views.py:4559
+#: experiment/views.py:4644
 msgid "EEG data collection created successfully."
 msgstr "Coleta de dados de EEG criada com sucesso."
 
-#: experiment/views.py:4560
+#: experiment/views.py:4645
 msgid "Now you can configure each electrode position"
 msgstr "Agora você pode configurar cada posição de eletrodo."
 
-#: experiment/views.py:4585
+#: experiment/views.py:4670
 msgid "EEG data file format validated."
 msgstr "Formato de arquivo de dados de EEG validado."
 
-#: experiment/views.py:4587
+#: experiment/views.py:4672
 msgid "Not valid EEG file format."
 msgstr "Formato de arquivo de EEG não válido"
 
-#: experiment/views.py:4655
+#: experiment/views.py:4740
 msgid "EEG data removed successfully."
 msgstr "Dados de EEG excluídos com sucesso."
 
-#: experiment/views.py:4729
+#: experiment/views.py:4814
 msgid "EEG data updated successfully."
 msgstr "Dados de EEG alterado com sucesso."
 
-#: experiment/views.py:4738 experiment/views.py:4745
+#: experiment/views.py:4823 experiment/views.py:4830
 msgid "EEG position data updated successfully."
 msgstr "Dados da posição alterados com sucesso."
 
-#: experiment/views.py:4847
-msgid "Waiting for status"
-msgstr "Esperando por status"
-
-#: experiment/views.py:4872
-msgid "Reading source file"
-msgstr "Lendo arquivo fonte"
-
-#: experiment/views.py:4890 experiment/views.py:5157
-msgid "Finished"
-msgstr "Terminado"
-
-#: experiment/views.py:4894
-msgid ""
-"It was not possible to open the data file. Check if the number of channels "
-"configured is correct."
-msgstr ""
-"Não foi possível abrir o arquivo de dados. Verifique se o número de canais "
-"configurado está correto."
-
-#: experiment/views.py:4951
-msgid "Reading metadata"
-msgstr "Lendo metadados"
-
-#: experiment/views.py:4983
-msgid "Reading device data"
-msgstr "Lendo dados do dispositivo"
-
-#: experiment/views.py:4988
-msgid "Device type: Amplifier; "
-msgstr "Tipo de dispositivo: Amplificador; "
-
-#: experiment/views.py:4991 experiment/views.py:5020 experiment/views.py:5053
-msgid "Description: "
-msgstr "Descrição:"
-
-#: experiment/views.py:4995 experiment/views.py:5024 experiment/views.py:5057
-msgid "Manufacturer: "
-msgstr "Fabricante: "
-
-#: experiment/views.py:4998
-msgid "Gain: "
-msgstr "Ganho: "
-
-#: experiment/views.py:5002
-msgid "Impedance: "
-msgstr "Impedância: "
-
-#: experiment/views.py:5007
-msgid "Common mode rejection ratio: "
-msgstr "Taxa de rejeição do modo comum: "
-
-#: experiment/views.py:5016
-msgid "Device type: EEG Amplifier; "
-msgstr "Tipo de dispositivo: Amplificador de EEG; "
-
-#: experiment/views.py:5028
-msgid "Number of used channels: "
-msgstr "Número de canais usados: "
-
-#: experiment/views.py:5049
-msgid "Device type: EEG Electrode Net; "
-msgstr "Tipo de dispositivo: Rede de eletrodos de EEG; "
-
-#: experiment/views.py:5071
-msgid "Position: "
-msgstr "Posição: "
-
-#: experiment/views.py:5072
-msgid "Coordinates: ("
-msgstr "Coordenadas: ("
-
-#: experiment/views.py:5075
-msgid "EEG electrode localization system: "
-msgstr "Sistema de localização de eletrodos de EEG: "
-
-#: experiment/views.py:5086
-msgid "Reading acquisition data"
-msgstr "Lendo dados de aquisição"
-
-#: experiment/views.py:5163
-msgid "Filter type:"
-msgstr "Tipo de filtro:"
-
-#: experiment/views.py:5168
-msgid "High pass: "
-msgstr "Passa-alta: "
-
-#: experiment/views.py:5170
-msgid "Low pass: "
-msgstr "Passa-baixa: "
-
-#: experiment/views.py:5172
-msgid "Order: "
-msgstr "Ordem: "
-
-#: experiment/views.py:5307
+#: experiment/views.py:5146
 msgid "EMG data collection created successfully."
 msgstr "Coleta de dados de EMG criada com sucesso."
 
-#: experiment/views.py:5351
+#: experiment/views.py:5190
 msgid "EMG data removed successfully."
 msgstr "Dados de EMG excluídos com sucesso."
 
-#: experiment/views.py:5392
+#: experiment/views.py:5231
 msgid "EMG data updated successfully."
 msgstr "Dados de EMG alterado com sucesso."
 
-#: experiment/views.py:5514
+#: experiment/views.py:5347
 msgid "Additional data collection created successfully."
 msgstr "Coleta de dados adicionais criada com sucesso."
 
-#: experiment/views.py:5551
+#: experiment/views.py:5384
 msgid "Additional data removed successfully."
 msgstr "Dados adicionais excluídos com sucesso."
 
-#: experiment/views.py:5592
+#: experiment/views.py:5425
 msgid "Additional data updated successfully."
 msgstr "Dados adicionais alterados com sucesso."
 
-#: experiment/views.py:5653
-msgid "Subject step data was created successfully."
-msgstr "Dados do passo do participante criado com sucesso."
-
-#: experiment/views.py:5687
-msgid "Subject step data updated successfully."
-msgstr "Dados do passo do participante alterado com sucesso."
-
-#: experiment/views.py:5758
+#: experiment/views.py:5495
 msgid "Participant has already been inserted in this group."
 msgstr "Participante já foi incluído neste grupo"
 
-#: experiment/views.py:5811
+#: experiment/views.py:5548
 msgid "Consent term saved successfully."
 msgstr "Termo salvo com sucesso."
 
-#: experiment/views.py:5816
+#: experiment/views.py:5553
 msgid "There are not attachments to save"
 msgstr "Não existem anexos para salvar"
 
-#: experiment/views.py:5820
+#: experiment/views.py:5557
 msgid "Attachment deleted successfully."
 msgstr "Anexo removido com sucesso."
 
-#: experiment/views.py:6037 experiment/views.py:7095 experiment/views.py:7213
-#: experiment/views.py:7234
+#: experiment/views.py:5774 experiment/views.py:6796 experiment/views.py:6912
+#: experiment/views.py:6933
 msgid "Step included successfully."
 msgstr "Passo incluído com sucesso."
 
-#: experiment/views.py:6083
+#: experiment/views.py:5820
 msgid "Use of step "
 msgstr "Uso do passo "
 
-#: experiment/views.py:6169
+#: experiment/views.py:5906
 msgid " years "
 msgstr " anos "
 
-#: experiment/views.py:6169
+#: experiment/views.py:5906
 msgid " year "
 msgstr " ano "
 
-#: experiment/views.py:6174
+#: experiment/views.py:5911
 msgid " months "
 msgstr " meses "
 
-#: experiment/views.py:6174
+#: experiment/views.py:5911
 msgid " month "
 msgstr " mês "
 
-#: experiment/views.py:6179
+#: experiment/views.py:5916
 msgid " weeks "
 msgstr " semanas "
 
-#: experiment/views.py:6179
+#: experiment/views.py:5916
 msgid " week "
 msgstr " semana "
 
-#: experiment/views.py:6184
+#: experiment/views.py:5921
 msgid " days "
 msgstr " dias "
 
-#: experiment/views.py:6184
+#: experiment/views.py:5921
 msgid " day "
 msgstr " dia "
 
-#: experiment/views.py:6189
+#: experiment/views.py:5926
 msgid " hours "
 msgstr " horas "
 
-#: experiment/views.py:6189
+#: experiment/views.py:5926
 msgid " hour "
 msgstr " hora "
 
-#: experiment/views.py:6194
+#: experiment/views.py:5931
 msgid " minutes "
 msgstr " minutos "
 
-#: experiment/views.py:6194
+#: experiment/views.py:5931
 msgid " minute "
 msgstr " minuto "
 
-#: experiment/views.py:6199
+#: experiment/views.py:5936
 msgid " seconds "
 msgstr " segundos "
 
-#: experiment/views.py:6199
+#: experiment/views.py:5936
 msgid " second "
 msgstr " segundo "
 
-#: experiment/views.py:6204
+#: experiment/views.py:5941
 msgid " miliseconds "
 msgstr " milesegundos "
 
-#: experiment/views.py:6204
+#: experiment/views.py:5941
 msgid " milisecond "
 msgstr " milesegundo "
 
-#: experiment/views.py:6219
+#: experiment/views.py:5956
 msgid " and "
 msgstr " e "
 
-#: experiment/views.py:6432 experiment/views.py:6446 experiment/views.py:6467
+#: experiment/views.py:6131 experiment/views.py:6145 experiment/views.py:6166
+#: experiment/views.py:6219
 msgid "Copy of"
 msgstr "Cópia de"
 
-#: experiment/views.py:6566 experiment/views.py:6832
+#: experiment/views.py:6265 experiment/views.py:6531
 msgid "Step use updated successfully."
 msgstr "Uso do passo atualizado com sucesso."
 
-#: experiment/views.py:6572 experiment/views.py:6841
+#: experiment/views.py:6271 experiment/views.py:6540
 msgid "Component deleted successfully."
 msgstr "Componente removido com sucesso."
 
-#: experiment/views.py:6793 experiment/views.py:6822
+#: experiment/views.py:6492 experiment/views.py:6521
 msgid "Step updated successfully."
 msgstr "Passo alterado com sucesso."
 
-#: experiment/views.py:7068
+#: experiment/views.py:6769
 msgid "Experimental protocol included successfully."
 msgstr "Protocolo experimental incluído com sucesso."
 
-#: experiment/views.py:7093 experiment/views.py:7232
+#: experiment/views.py:6794 experiment/views.py:6931
 msgid "Steps included successfully."
 msgstr "Passos incluídos com sucesso."
 
-#: experiment/views.py:7287
+#: experiment/views.py:6986
 msgid "EEG electrode localization system created successfully."
 msgstr "Sistema de localização de eletrodo de EEG criado com sucesso."
 
-#: experiment/views.py:7385
+#: experiment/views.py:7045
 msgid "Error trying to delete localization system."
 msgstr "Erro ao tentar excluir sistema de localização."
 
-#: experiment/views.py:7393
+#: experiment/views.py:7053
 msgid ""
 "Impossible to delete localization system because there is (are) Electrode "
 "Net associated."
@@ -4228,192 +4050,116 @@ msgstr ""
 "Não foi possível excluir sistema de localização, pois há  rede de eletrodos "
 "associado."
 
-#: experiment/views.py:7426
+#: experiment/views.py:7085
 msgid "Localization system updated successfully."
 msgstr "Sistema de localização alterado com sucesso."
 
-#: experiment/views.py:7475
+#: experiment/views.py:7134
 msgid "EEG electrode positions updated successfully."
 msgstr "Posição de eletrodo de EEG atualizada com sucesso."
 
-#: experiment/views.py:7509
+#: experiment/views.py:7168
 msgid "EEG electrode position created successfully."
 msgstr "Posição de eletrodo de EEG criada com sucesso."
 
-#: experiment/views.py:7550
+#: experiment/views.py:7209
 msgid "Position removed successfully."
 msgstr "Posição excluída com sucesso."
 
-#: experiment/views.py:7556
+#: experiment/views.py:7215
 msgid "Error trying to delete position."
 msgstr "Erro ao tentar excluir a posição."
 
-#: experiment/views.py:7563
+#: experiment/views.py:7222
 msgid ""
 "Impossible to delete position because there is (are) Position Setting "
 "associated."
 msgstr ""
 "Não foi possível excluir posição, pois há configuração de posição associada."
 
-#: experiment/views.py:7592
+#: experiment/views.py:7251
 msgid "Position updated successfully."
 msgstr "Posição foi alterada com sucesso."
 
-#: experiment/views.py:7624
+#: experiment/views.py:7283
 msgid "EMG setting included successfully."
 msgstr "Configuração de EMG incluída com sucesso."
 
-#: experiment/views.py:7662
+#: experiment/views.py:7321
 msgid "EMG setting was removed successfully."
 msgstr "Configuração de EMG excluído com sucesso."
 
-#: experiment/views.py:7725
+#: experiment/views.py:7384
 msgid "EMG setting updated successfully."
 msgstr "Configuração de EMG foi alterado com sucesso."
 
-#: experiment/views.py:7783
+#: experiment/views.py:7442
 msgid "EMG digital filter setting created successfully."
 msgstr "Configuração de filtro digital de EMG criada com sucesso."
 
-#: experiment/views.py:7825
+#: experiment/views.py:7484
 msgid "EMG digital filter setting updated successfully."
 msgstr "Configuração de filtro digital de EMG alterada com sucesso."
 
-#: experiment/views.py:7884
+#: experiment/views.py:7543
 msgid "EMG A/D converter setting created successfully."
 msgstr "Configuração de conversor A/D de EMG criada com sucesso."
 
-#: experiment/views.py:7926
+#: experiment/views.py:7585
 msgid "EMG A/D converter setting updated successfully."
 msgstr "Configuração de conversor A/D de EMG alterada com sucesso."
 
-#: experiment/views.py:8080
+#: experiment/views.py:7739
 msgid "EMG electrode setting created successfully."
 msgstr "Comfiguração de eletrodo de EMG criada com sucesso."
 
-#: experiment/views.py:8200
+#: experiment/views.py:7867
 msgid "EMG electrode setting was updated successfully."
 msgstr "Configuração de eletrodo de EMG alterada com sucesso."
 
-#: experiment/views.py:8264
+#: experiment/views.py:7928
 msgid "EMG preamplifier setting created successfully."
 msgstr "Configuração de pré-amplificador de EMG criada com sucesso."
 
-#: experiment/views.py:8310
+#: experiment/views.py:7970
 msgid "EMG Preamplifier setting updated successfully."
 msgstr "Configuração de pré-amplificador de EMG alterada com sucesso."
 
-#: experiment/views.py:8396
+#: experiment/views.py:8052
 msgid "EMG amplifier setting created successfully."
 msgstr "Configuração de amplificador de EMG criada com sucesso."
 
-#: experiment/views.py:8469
+#: experiment/views.py:8121
 msgid "EMG Amplifier setting updated successfully."
 msgstr "Configuração de amplificador de EMG alterada com sucesso."
 
-#: experiment/views.py:8505
+#: experiment/views.py:8156
 msgid "TMS setting included successfully."
 msgstr "Configuração de TMS incluída com sucesso."
 
-#: experiment/views.py:8539
+#: experiment/views.py:8190
 msgid "TMS setting was removed successfully."
 msgstr "Configuração de TMS excluído com sucesso."
 
-#: experiment/views.py:8586
+#: experiment/views.py:8237
 msgid "TMS setting updated successfully."
 msgstr "Configuração de TMS foi alterado com sucesso."
 
-#: experiment/views.py:8642
+#: experiment/views.py:8293
 msgid "TMS device setting created successfully."
 msgstr "Comfiguração de dispositivos de TMS criada com sucesso."
 
-#: experiment/views.py:8682
+#: experiment/views.py:8333
 msgid "TMS device setting updated successfully."
 msgstr "Configuração de dispositivos de TMS foi alterado com sucesso."
 
-#: experiment/views.py:8720
+#: experiment/views.py:8371
 msgid "EMG placement system"
 msgstr "Sistema de posicionamento de EMG"
 
-#: experiment/views.py:8740
+#: experiment/views.py:8395
 msgid "EEG electrode net / Cap"
 msgstr "Rede de eletrodos de EEG / Touca"
-
-#: experiment/views.py:8770
-msgid "Coil model"
-msgstr "Modelo de bobina"
-
-#~ msgid "#"
-#~ msgstr "#"
-
-#~ msgid "low pass:"
-#~ msgstr "passa-baixa:"
-
-#~ msgid "high pass:"
-#~ msgstr "passa-alta:"
-
-#~ msgid "band pass:"
-#~ msgstr "passa-banda:"
-
-#~ msgid "notch:"
-#~ msgstr "corte"
-
-#~ msgid "low pass: "
-#~ msgstr "passa-baixa: "
-
-#~ msgid "high pass: "
-#~ msgstr "passa-alta: "
-
-#~ msgid "band pass: "
-#~ msgstr "passa-banda: "
-
-#~ msgid "notch: "
-#~ msgstr "corte:"
-
-#~ msgid "Low pass:"
-#~ msgstr "Passa-baixa:"
-
-#~ msgid "High pass:"
-#~ msgstr "Passa-alta:"
-
-#~ msgid "Band pass:"
-#~ msgstr "Passa-banda:"
-
-#~ msgid "Notch:"
-#~ msgstr "Corte:"
-
-#~ msgid "not set"
-#~ msgstr "não configurado"
-
-#~ msgid "EEG machine setting created successfully."
-#~ msgstr "Configuração de máquina de EEG criada com sucesso."
-
-#~ msgid "EEG machine setting updated successfully."
-#~ msgstr "Configuração de máquina de EEG alterada com sucesso."
-
-#~ msgid "EEG machine created successfully."
-#~ msgstr "Máquina de EEG criada com sucesso."
-
-#~ msgid "EEG machine updated successfully."
-#~ msgstr "Máquina de EEG alterada com sucesso."
-
-#~ msgid "EEG machine removed successfully."
-#~ msgstr "Máquina de EEG excluída com sucesso."
-
-#~ msgid "Error trying to delete eegmachine."
-#~ msgstr "Erro ao tentar excluir a máquina de EEG."
-
-#~ msgid "Device type: EEG Machine; "
-#~ msgstr "Tipo de dispositivo: Máquina de EEG; "
-
-#~ msgid "Software version: "
-#~ msgstr "Versão de software: "
-
-#~ msgid "Coil model must be filled."
-#~ msgstr "Modelo de bobina deve ser preenchida"
-
-#~ msgid "Coil name"
-#~ msgstr "Nome da bobina"
 
 #~ msgid "Gain setted"
 #~ msgstr "Ganho configurado"
@@ -4423,6 +4169,12 @@ msgstr "Modelo de bobina"
 
 #~ msgid "Number of channels setted:"
 #~ msgstr "Número de canais configurados:"
+
+#~ msgid "Gain:"
+#~ msgstr "Ganho:"
+
+#~ msgid "Order:"
+#~ msgstr "Ordem:"
 
 #~ msgid "Standardization system"
 #~ msgstr "Sistema de padronização"

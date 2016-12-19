@@ -157,11 +157,10 @@
                                                             <br/>
                                                             <br/>
                                                             {% trans "Analog filter setting: " %}<br/>
-                                                            {% trans "low pass (Hz): " %} {{ electrode_setting.emg_amplifier_setting.emg_analog_filter_setting.low_pass|default:'' }}<br/>
-                                                            {% trans "high pass (Hz): " %} {{ electrode_setting.emg_amplifier_setting.emg_analog_filter_setting.high_pass|default:'' }}<br/>
-                                                            {% trans "band pass (Hz): " %} {{ electrode_setting.emg_amplifier_setting.emg_analog_filter_setting.low_band_pass|default:'' }} - {{ electrode_setting.emg_amplifier_setting.emg_analog_filter_setting.high_band_pass|default:'' }}<br/>
-                                                            {% trans "notch (Hz): " %} {{ electrode_setting.emg_amplifier_setting.emg_analog_filter_setting.low_notch|default:'' }} - {{ electrode_setting.emg_amplifier_setting.emg_analog_filter_setting.high_notch|default:'' }}<br/>
-                                                            {% trans "order (Hz): " %} {{ electrode_setting.emg_amplifier_setting.emg_analog_filter_setting.order|default:'' }}
+                                                            {% trans "low pass: " %} {{ electrode_setting.emg_amplifier_setting.emg_analog_filter_setting.low_pass|default:'' }}<br/>
+                                                            {% trans "high pass: " %} {{ electrode_setting.emg_amplifier_setting.emg_analog_filter_setting.high_pass|default:'' }}<br/>
+                                                            {% trans "band pass: " %} {{ electrode_setting.emg_amplifier_setting.emg_analog_filter_setting.band_pass|default:'' }}<br/>
+                                                            {% trans "notch: " %} {{ electrode_setting.emg_amplifier_setting.emg_analog_filter_setting.notch|default:'' }}
                                                         {% endif %}
                                                     {% endif %}
 
@@ -211,10 +210,10 @@
                                             </a>
                                             <blockquote>
                                                 <i><h6>
-                                                    {% trans "Low pass (Hz):" %} {{ emg_setting.emg_digital_filter_setting.low_pass|default:"" }}<br/>
-                                                    {% trans "High pass (Hz):" %} {{ emg_setting.emg_digital_filter_setting.high_pass|default:"" }}<br/>
-                                                    {% trans "Band pass (Hz):" %} {{ emg_setting.emg_digital_filter_setting.low_band_pass|default:"" }} - {{ emg_setting.emg_digital_filter_setting.high_band_pass|default:"" }}<br/>
-                                                    {% trans "Notch (Hz):" %} {{ emg_setting.emg_digital_filter_setting.low_notch|default:"" }} - {{ emg_setting.emg_digital_filter_setting.high_notch|default:"" }}<br/>
+                                                    {% trans "Low pass:" %} {{ emg_setting.emg_digital_filter_setting.low_pass|default:"" }}<br/>
+                                                    {% trans "High pass:" %} {{ emg_setting.emg_digital_filter_setting.high_pass|default:"" }}<br/>
+                                                    {% trans "Band pass:" %} {{ emg_setting.emg_digital_filter_setting.band_pass|default:"" }}<br/>
+                                                    {% trans "Notch:" %} {{ emg_setting.emg_digital_filter_setting.notch|default:"" }}<br/>
                                                     {% trans "order:" %} {{ emg_setting.emg_digital_filter_setting.order|default:"" }}
                                                 </h6></i>
                                             </blockquote>

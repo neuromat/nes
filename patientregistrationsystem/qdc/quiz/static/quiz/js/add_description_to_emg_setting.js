@@ -7,47 +7,6 @@ $(document).ready(function () {
     var select_ad_converter = $("select#id_ad_converter");
     var select_preamplifier = $("select#id_amplifier");
     var select_electrodo = $("select#id_electrodo");
-    var select_manufacturer = $("select#id_manufacturer");
-    var select_equipment = $("select#id_equipment_selection");
-
-    select_manufacturer.change(function() {
-        var manufacturer_id = $(this).val();
-
-        if (manufacturer_id == "") {
-            manufacturer_id = "0";
-        }
-
-        var url = "/experiment/equipment/get_equipment_by_manufacturer/amplifier/" + manufacturer_id;
-
-        $.getJSON(url, function(all_equipment) {
-            var options = '<option value="" selected="selected">---------</option>';
-            for (var i = 0; i < all_equipment.length; i++) {
-                    options += '<option value="' + all_equipment[i].pk + '">' + all_equipment[i].fields['identification'] + '</option>';
-            }
-
-            select_preamplifier.html(options);
-            select_preamplifier.change();
-        });
-    });
-
-    select_equipment.change(function() {
-
-        var equipment_id = $(this).val();
-        var description_field = $("#id_description");
-        var gain = $("#id_gain");
-
-        if (equipment_id == "") {
-            description_field.prop('value', "");
-        } else {
-            var url = "/experiment/equipment/" + equipment_id + "/attributes";
-
-            $.getJSON(url, function(equipment) {
-                description_field.prop('value', equipment['description']);
-                gain.prop('value', equipment['gain']);
-            });
-        }
-        
-    });
 
     select_filter_type.change(function(){
 
@@ -83,17 +42,14 @@ $(document).ready(function () {
     select_preamplifier.change(function () {
        var preamplifier_id = $(this).val();
        var description_field = $("#id_description");
-        var gain = $("#id_gain");
         
        var url = "/experiment/equipment/" + preamplifier_id + "/attributes";
         
        if(preamplifier_id == ""){
            description_field.prop('value', "");
-           gain.prop('value', "");
        }else{
            $.getJSON(url, function (preamplifier) {
                description_field.prop('value', preamplifier['description']);
-               gain.prop('value', preamplifier['gain']);
            })
        }
     });
@@ -112,7 +68,5 @@ $(document).ready(function () {
            })
        }
     });
-
-    
     
 });

@@ -132,7 +132,7 @@
                                                                                 </td>
                                                                                 {% if component.type == "sequence" %}
                                                                                     <td class="col-md-3">
-                                                                                        <span class="glyphicon glyphicon-chevron-right btn-link"></span>
+                                                                                        <a class="glyphicon glyphicon-chevron-right"></a>
                                                                                         {{ accordion|length }} {% trans "uses grouped" %}
                                                                                     </td>
                                                                                     <td  class="text-right col-md-1">
@@ -149,7 +149,7 @@
                                                                                     </td>
                                                                                 {% else %}
                                                                                     <td class="col-md-5">
-                                                                                        <span class="glyphicon glyphicon-chevron-right btn-link"></span>
+                                                                                        <a class="glyphicon glyphicon-chevron-right"></a>
                                                                                         {{ accordion|length }} {% trans "uses grouped" %}
                                                                                     </td>
                                                                                 {% endif %}
@@ -161,14 +161,14 @@
                                                                                     {{ accordion.0.component.identification }}
                                                                                 </td>
                                                                                 <td class="col-md-5">
-                                                                                    <span class="glyphicon glyphicon-chevron-right btn-link"></span>
+                                                                                    <a class="glyphicon glyphicon-chevron-right"></a>
                                                                                     {{ accordion|length }} {% trans "uses grouped" %}
                                                                                 </td>
                                                                             {% endif %}
                                                                         </tr>
                                                                     {% else %}
                                                                         <td class="text-center" colspan="{% if not component_configuration and can_change %}6{% else %}3{% endif %}">
-                                                                            <span class="glyphicon glyphicon-chevron-right btn-link"></span>
+                                                                            <a class="glyphicon glyphicon-chevron-right"></a>
                                                                             {{ accordion|length }} {% trans "positions for random step grouped" %}
                                                                         </td>
                                                                     {% endif %}
@@ -266,7 +266,7 @@
                                                                                 {{ accordion.0.component.identification }}
                                                                             </td>
                                                                             <td class="col-md-5">
-                                                                                <span class="glyphicon glyphicon-chevron-right btn-link"></span>
+                                                                                <a class="glyphicon glyphicon-chevron-right"></a>
                                                                                 {{ accordion|length }} {% trans "uses grouped" %}
                                                                             </td>
                                                                             {% if not component_configuration and can_change %}

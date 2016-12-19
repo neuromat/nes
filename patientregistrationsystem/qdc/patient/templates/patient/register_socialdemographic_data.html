@@ -99,27 +99,17 @@
                             </div>
                         </div>
                     </div>
-                    <div class="row">
-                        <div class="col-xs-6 col-sm-6">
-
-                            <div class="form-group">
-                                <label>{% trans "Level of education (schooling)" %}</label>
-
-                                <div class="input-group input-group-sm">
-                                    {{ social_demographic_form.patient_schooling }}
-                                </div>
-                            </div>
-                        </div>
-                    </div>
                 </div>
                 <div class="container span6 offset3 well ">
-                    <h4>{% trans "Social class" %}</h4>
-                    <br/>
                     <div class="row">
-                        <div class="col-xs-6 col-sm-6">
+                        <div class="col-xs-12 col-sm-12">
+                            <label>
+                                <h4>{% trans "Social class" %}</h4>
+                                <br/>
+                            </label>
 
                             <div class="form-group">
-                                <label>{% trans "Level of education of the householder - Criterion Brazil 2013" %}</label>
+                                <label>{% trans "Schooling" %}</label>
 
                                 <div class="input-group input-group-sm">
                                     {{ social_demographic_form.schooling }}

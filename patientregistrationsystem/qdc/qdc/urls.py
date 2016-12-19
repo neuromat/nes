@@ -17,7 +17,6 @@ urlpatterns = patterns(
     url(r'^admin/', include(admin.site.urls)),
     url(r'^patient/', include('patient.urls')),
     url(r'^user/', include('custom_user.urls')),
-    url(r'^team/', include('team.urls')),
     url(r'^experiment/', include('experiment.urls')),
     url(r'^survey/', include('survey.urls')),
     url(r'^export/', include('export.urls')),

@@ -232,17 +232,18 @@
 
                     {% if creating or editing %}
                         <li {% if tab == '1' %}class="active"{% else %}class="disabled"{% endif %}><a href="#">{% trans "Data collection" %}</a></li>
-                        <li {% if tab == '2' %}class="active"{% else %}class="disabled"{% endif %}><a href="#">{% trans "Electrodes position status" %}</a></li>
-                        <li {% if tab == '3' %}class="active"{% else %}class="disabled"{% endif %}><a href="#">{% trans "Electrodes operating status" %}</a></li>
+                        <li {% if tab == '2' %}class="active"{% else %}class="disabled"{% endif %}><a href="#">{% trans "Electrode positions status" %}</a>
+                        <li {% if tab == '3' %}class="active"{% else %}class="disabled"{% endif %}><a href="#">{% trans "Image of the electrode positions" %}</a>
+                        </li>
                     {% else %}
                         <li {% if tab == '1' %}class="active"{% endif %}>
                             <a data-toggle="tab" href="#data_collection">{% trans "Data collection" %}</a>
                         </li>
                         <li {% if tab == '2' %}class="active"{% endif %}>
-                            <a {% if not creating %}data-toggle="tab"{% endif %} href="#electrode_position_status">{% trans "Electrodes position status" %}</a>
+                            <a {% if not creating %}data-toggle="tab"{% endif %} href="#electrode_position_status">{% trans "Electrode positions status" %}</a>
                         </li>
                         <li {% if tab == '3' %}class="active"{% endif %}>
-                            <a {% if not creating %}data-toggle="tab"{% endif %} href="#electrodes_operating_status">{% trans "Electrodes operating status" %}</a>
+                            <a {% if not creating %}data-toggle="tab"{% endif %} href="#image_electrode_position">{% trans "Image of the electrode positions" %}</a>
                         </li>
                     {% endif %}
 
@@ -360,14 +361,6 @@
                             </div>
                         </div>
 
-                        {% if sensors_image != None and not creating %}
-                            <div class="row">
-                                <div class="panel-body">
-                                    <img src="{% static sensors_image %}" class="img-responsive center-block" width="800" height="600" style="margin: auto" >
-                                </div>
-                            </div>
-                        {% endif %}
-
                         {% if not editing and can_change %}
                             <div class="btn-group pull-left">
                                 <a href="/experiment/eeg_data/edit/{{ eeg_data.id }}/1" class="btn btn-primary">{% trans "Edit" %}</a>
@@ -381,19 +374,18 @@
                             <table class="table table-striped" style="margin-top:10px; margin-left:10px;">
                                 <thead>
                                     <tr>
-                                        <th>{% trans "Channel index" %}</th>
+                                        <th>{% trans "#" %}</th>
                                         <th>{% trans "Position" %}</th>
                                         <th>{% trans "Used" %}</th>
                                         <th>{% trans "Worked" %}</th>
-                                        <th colspan="2" style="text-align: center">{% trans "Order" %}</th>
                                         <th></th>
                                     </tr>
                                 </thead>
                                 <tbody>
-                                    {% for position_status in eeg_data.electrode_positions.all|dictsort:"channel_index" %}
+                                    {% for position_status in eeg_data.electrode_positions.all %}
                                     <tr>
                                         <td>
-                                            {{ position_status.channel_index }}
+                                            {{ forloop.counter }}
                                         </td>
                                         <td>
                                             {{ position_status.eeg_electrode_position_setting.eeg_electrode_position.name }}
@@ -406,18 +398,6 @@
                                                    {% if not editing or not position_status.eeg_electrode_position_setting.used %}disabled{% endif %}
                                                    {% if position_status.worked %}checked="checked"{% endif %}/>
                                         </td>
-
-                                        <td class="text-right col-md-1">
-                                            {% if not forloop.last %}
-                                                <a class="btn glyphicon glyphicon-arrow-down" href="/experiment/eeg_electrode_position_collection_status/change_the_order/{{ position_status.id }}/down/"></a>
-                                            {% endif %}
-                                        </td>
-                                        <td class="col-md-1">
-                                            {% if not forloop.first %}
-                                                <a class="btn glyphicon glyphicon-arrow-up" href="/experiment/eeg_electrode_position_collection_status/change_the_order/{{ position_status.id }}/up/"></a>
-                                            {% endif %}
-                                        </td>
-
                                     </tr>
                                     {% endfor %}
                                 </tbody>
@@ -434,7 +414,7 @@
                         {% endif %}
                     </div>
 
-                    <div id="electrodes_operating_status" {% if tab == '3' %}class="tab-pane fade in active"{% else %}class="tab-pane fade"{% endif %}>
+                    <div id="image_electrode_position" {% if tab == '3' %}class="tab-pane fade in active"{% else %}class="tab-pane fade"{% endif %}>
                         {% if image %}
                             <div class="col-md-10">
                                 <div hidden="hidden">

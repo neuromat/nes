@@ -13,19 +13,18 @@
             <table class="table table-striped" style="margin-top:10px; margin-left:10px;">
                 <thead>
                     <tr>
-                        <th>{% trans "Channel index" %}</th>
+                        <th>{% trans "#" %}</th>
                         <th>{% trans "Position" %}</th>
                         <th>{% trans "Used" %}</th>
                         <th>{% trans "Electrode Model" %}</th>
-                        <th colspan="2" style="text-align: center">{% trans "Order" %}</th>
                         <th></th>
                     </tr>
                 </thead>
                 <tbody>
-                    {% for position_setting in eeg_setting.eeg_electrode_layout_setting.positions_setting.all|dictsort:"channel_index" %}
+                    {% for position_setting in eeg_setting.eeg_electrode_layout_setting.positions_setting.all %}
                     <tr>
                         <td>
-                            {{ position_setting.channel_index }}
+                            {{ forloop.counter }}
                         </td>
                         <td>
                             {{ position_setting.eeg_electrode_position.name }}
@@ -40,17 +39,6 @@
                                 {% endfor %}
                             </select>
                         </td>
-                        <td class="text-right col-md-1">
-                            {% if not forloop.last %}
-                                <a class="btn glyphicon glyphicon-arrow-down" href="/experiment/eeg_electrode_position_setting/change_the_order/{{ position_setting.id }}/down/"></a>
-                            {% endif %}
-                        </td>
-                        <td class="col-md-1">
-                            {% if not forloop.first %}
-                                <a class="btn glyphicon glyphicon-arrow-up" href="/experiment/eeg_electrode_position_setting/change_the_order/{{ position_setting.id }}/up/"></a>
-                            {% endif %}
-                        </td>
-
                     </tr>
                     {% endfor %}
                 </tbody>
@@ -78,6 +66,18 @@
             </div>
 
         {% endif %}
+
+
+{#        <div class="btn-toolbar pull-right">#}
+{##}
+{#            <div class="btn-group">#}
+{#                <a href="/experiment/eeg_setting/eeg_electrode_position_status/{{ eeg_setting.id }}" class="btn" style="background-color: #f5f5f5">{% trans "Back" %}</a>#}
+{#            </div>#}
+{#            <div class="btn-group">#}
+{#                <button type="submit" name="action" value="save" class="btn btn-primary">{% trans "Save model setting" %}</button>#}
+{#            </div>#}
+{##}
+{#        </div>#}
 
     </div>
 
