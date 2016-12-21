@@ -359,9 +359,9 @@ def export_create(request, export_id, input_filename, template_name="export/expo
         input_data = export.read_configuration_data(input_filename)
 
         # gady #####
-        # if not export.is_input_data_consistent() or not input_data:
-        #     messages.error(request, _("Inconsistent data read from json file"))
-        #     return render(request, template_name)
+        if not export.is_input_data_consistent() or not input_data:
+            messages.error(request, _("Inconsistent data read from json file"))
+            return render(request, template_name)
         ##########################################
 
         # create directory base for export: /NES_EXPORT
@@ -376,10 +376,10 @@ def export_create(request, export_id, input_filename, template_name="export/expo
         # process per questionnaire data
 
         #### gady ##################
-        # error_msg = export.process_per_questionnaire()
-        # if error_msg != "":
-        #     messages.error(request, error_msg)
-        #     return render(request, template_name)
+        error_msg = export.process_per_questionnaire()
+        if error_msg != "":
+            messages.error(request, error_msg)
+            return render(request, template_name)
         ##################################################
 
         # process per participant data
@@ -413,27 +413,25 @@ def export_create(request, export_id, input_filename, template_name="export/expo
                     export_writer.writerow(row)
 
         # process  diagnosis file
-        #### gady #################
-        # diagnosis_input_data = export.get_input_data("diagnosis")
-        #
-        # if diagnosis_input_data[0]['output_list'] and participants_list:
-        #     export_rows_diagnosis = process_participant_data(diagnosis_input_data, participants_list)
-        #
-        #     export_filename = "%s.csv" % export.get_input_data('diagnosis')[0]["output_filename"]  # "export.csv"
-        #
-        #     base_directory = export.get_input_data("base_directory")   # /NES_EXPORT
-        #     base_export_directory = export.get_export_directory()
-        #
-        #     complete_filename = path.join(base_export_directory, export_filename)
-        #
-        #     # files_to_zip_list.append(complete_filename)
-        #     export.files_to_zip_list.append([complete_filename, base_directory])
-        #
-        #     with open(complete_filename.encode('utf-8'), 'w', newline='', encoding='UTF-8') as csv_file:
-        #         export_writer = writer(csv_file)
-        #         for row in export_rows_diagnosis:
-        #             export_writer.writerow(row)
-        #######################################################
+        diagnosis_input_data = export.get_input_data("diagnosis")
+
+        if diagnosis_input_data[0]['output_list'] and participants_list:
+            export_rows_diagnosis = process_participant_data(diagnosis_input_data, participants_list)
+
+            export_filename = "%s.csv" % export.get_input_data('diagnosis')[0]["output_filename"]  # "export.csv"
+
+            base_directory = export.get_input_data("base_directory")   # /NES_EXPORT
+            base_export_directory = export.get_export_directory()
+
+            complete_filename = path.join(base_export_directory, export_filename)
+
+            # files_to_zip_list.append(complete_filename)
+            export.files_to_zip_list.append([complete_filename, base_directory])
+
+            with open(complete_filename.encode('utf-8'), 'w', newline='', encoding='UTF-8') as csv_file:
+                export_writer = writer(csv_file)
+                for row in export_rows_diagnosis:
+                    export_writer.writerow(row)
 
         # create zip file and include files
         export_complete_filename = ""
@@ -487,36 +485,7 @@ def export_create(request, export_id, input_filename, template_name="export/expo
 def export_view(request, template_name="export/export_data.html"):
     export_form = ExportForm(request.POST or None, initial={'title': 'title',
                                                             'responses': ['short'], 'headings': 'code'})
-    # , 'per_participant': False,
-    #                                                         'per_questinnaire': False})
-    # export_form.per_participant = False
-    # export_form.per_questionnaire = True
 
-    # context = {}
-
-    # test with pagination
-    # a = [{"b": "2", "c": "3"}, {"d": "7", "e": "8"}]
-    # b = [1, 2, 3, 4, 5]
-    # c = [7, 9, (4, 3, 2)]
-    #
-    # contact_list = [a, b, c]
-    #
-    # paginator = Paginator(contact_list, 1)  # Show 1 info per page
-    #
-    # page = request.GET.get('page')
-    # try:
-    #     contacts = paginator.page(page)
-    # except PageNotAnInteger:
-    #     # If page is not an integer, deliver first page.
-    #     page = 1
-    #     contacts = paginator.page(1)
-    # except EmptyPage:
-    #     # If page is out of range (e.g. 9999), deliver last page of results.
-    #     page = paginator.num_pages
-    #     contacts = paginator.page(paginator.num_pages)
-    # page = 1
-    #
-    # if page == 1:
 
     selected_ev_quest = []
     selected_participant = []
@@ -567,35 +536,42 @@ def export_view(request, template_name="export/export_data.html"):
         for diagnosis in diagnosis_selected_list:
             diagnosis_list.append(diagnosis.split("*"))
 
-        # selected_data_available = (len(questionnaires_selected_list) or
-        #                            len(participant_selected_list) or len(diagnosis_selected_list))
+        selected_data_available = (len(questionnaires_selected_list) or
+                                   len(participant_selected_list) or len(diagnosis_selected_list))
 
-        selected_data_available = (len(participant_selected_list) or len(diagnosis_selected_list))
+        # selected_data_available = (len(participant_selected_list) or len(diagnosis_selected_list))
 
-        if selected_data_available and questionnaires_selected_list:
+        if selected_data_available:
 
             if export_form.is_valid():
                 print("valid data")
 
-                per_participant = export_form.cleaned_data['per_participant']
-                per_questionnaire = export_form.cleaned_data['per_questionnaire']
+                if questionnaires_selected_list:
+                    per_participant = export_form.cleaned_data['per_participant']
+                    per_questionnaire = export_form.cleaned_data['per_questionnaire']
+                    heading_type = export_form.cleaned_data['headings']
+                    responses_type = export_form.cleaned_data['responses']
+                    questionnaires_list = update_questionnaire_list(questionnaires_list, heading_type,
+                                                                    request.LANGUAGE_CODE)
+                    # insert participation_code
+                    update_participants_list(participants_list, heading_type)
+                    update_diagnosis_list(diagnosis_list, heading_type)
+                else:
+                    per_participant = True
+                    per_questionnaire = False
+                    heading_type = None
+                    responses_type = None
+                    questionnaires_list = []
 
-                heading_type = export_form.cleaned_data['headings']
-                responses_type = export_form.cleaned_data['responses']
+                # heading_type = export_form.cleaned_data['headings']
+                # responses_type = export_form.cleaned_data['responses']
 
-                questionnaires_list = update_questionnaire_list(questionnaires_list, heading_type,
-                                                                request.LANGUAGE_CODE)
+                # questionnaires_list = update_questionnaire_list(questionnaires_list, heading_type,
+                #                                                 request.LANGUAGE_CODE)
 
                 # insert participation_code
-                update_participants_list(participants_list, heading_type)
-                update_diagnosis_list(diagnosis_list, heading_type)
-
-                # output_filename =
-                # "/Users/sueli/PycharmProjects/nes/patientregistrationsystem/qdc/export/json_export_output2.json"
-
-                # MEDIA_ROOT/export/username_id/export_id
-
-                # input_export_file = create_initial_directory(request.user)
+                # update_participants_list(participants_list, heading_type)
+                # update_diagnosis_list(diagnosis_list, heading_type)
 
                 export_instance = create_export_instance(request.user)
 
@@ -617,14 +593,6 @@ def export_view(request, template_name="export/export_data.html"):
                 if complete_filename:
 
                     messages.success(request, _("Export was finished correctly"))
-
-                    # return file to the user
-
-                    # error_message = "a"
-                    # return_response = complete_filename
-                    #
-                    # redirect_url = reverse("export_result", args=(return_response, error_message))
-                    # return HttpResponseRedirect(redirect_url )
 
                     print("antes do fim: httpResponse")
 
@@ -648,38 +616,38 @@ def export_view(request, template_name="export/export_data.html"):
                     selected_diagnosis.append(diagnosis[0])
         else:
             # if not questionnaires_selected_list
-            if not questionnaires_selected_list:
-                # per_participant = export_form.cleaned_data['per_participant']
-                per_participant = True
-                export_instance = create_export_instance(request.user)
-                input_export_file = path.join(EXPORT_DIRECTORY,
-                                              path.join(str(request.user.id),
-                                                        path.join(str(export_instance.id), str(JSON_FILENAME))))
-
-                # copy data to .../media/export/<user_id>/<export_id>/
-                input_filename = path.join(settings.MEDIA_ROOT, input_export_file)
-                create_directory(settings.MEDIA_ROOT, path.split(input_export_file)[0])
-
-                build_partial_export_structure(per_participant, participants_list, input_filename,request.LANGUAGE_CODE)
-
-                complete_filename = export_create(request, export_instance.id, input_filename)
-
-                if complete_filename:
-
-                    messages.success(request, _("Export was finished correctly"))
-
-                    print("antes do fim: httpResponse")
-
-                    zip_file = open(complete_filename, 'rb')
-                    response = HttpResponse(zip_file, content_type='application/zip')
-                    response['Content-Disposition'] = 'attachment; filename="export.zip"'
-                    response['Content-Length'] = path.getsize(complete_filename)
-                    return response
-                else:
-                    messages.error(request, _("Export data was not generated."))
-
-            else:
-                messages.error(request, _("No data was select. Export data was not generated."))
+            # if not questionnaires_selected_list:
+            #     # per_participant = export_form.cleaned_data['per_participant']
+            #     per_participant = True
+            #     export_instance = create_export_instance(request.user)
+            #     input_export_file = path.join(EXPORT_DIRECTORY,
+            #                                   path.join(str(request.user.id),
+            #                                             path.join(str(export_instance.id), str(JSON_FILENAME))))
+            #
+            #     # copy data to .../media/export/<user_id>/<export_id>/
+            #     input_filename = path.join(settings.MEDIA_ROOT, input_export_file)
+            #     create_directory(settings.MEDIA_ROOT, path.split(input_export_file)[0])
+            #
+            #     build_partial_export_structure(per_participant, participants_list, input_filename,request.LANGUAGE_CODE)
+            #
+            #     complete_filename = export_create(request, export_instance.id, input_filename)
+            #
+            #     if complete_filename:
+            #
+            #         messages.success(request, _("Export was finished correctly"))
+            #
+            #         print("antes do fim: httpResponse")
+            #
+            #         zip_file = open(complete_filename, 'rb')
+            #         response = HttpResponse(zip_file, content_type='application/zip')
+            #         response['Content-Disposition'] = 'attachment; filename="export.zip"'
+            #         response['Content-Length'] = path.getsize(complete_filename)
+            #         return response
+            #     else:
+            #         messages.error(request, _("Export data was not generated."))
+            #
+            # else:
+            messages.error(request, _("No data was select. Export data was not generated."))
 
     # else:
     # page 1 - list of questionnaires
@@ -1020,6 +988,8 @@ def export_menu(request, template_name="export/export_menu.html"):
             'href': reverse("experiment_selection", args=()),
         },
     ]
+    if 'study_selected_list' in request.session.keys():
+        del request.session['study_selected_list']
 
     context = {
         "export_type_list": export_type_list

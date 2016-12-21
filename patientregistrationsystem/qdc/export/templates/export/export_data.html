@@ -27,7 +27,7 @@
         <div class="col-md-10">
             <ol class="breadcrumb">
                 <li><a href="/home">{% trans "Home" %}</a></li>
-                <li><a href="/home">{% trans "Export" %}</a></li>
+                <li><a href="/export">{% trans "Export" %}</a></li>
                 <li class="active">{% trans "Structure and fields selection" %}</li>
             </ol>
         </div>
@@ -256,7 +256,7 @@
                     {% endif %}
                 </div>
                 <div class="container span6 offset3 well ">
-                    {% if perms.patient.export_medicalrecorddata %}
+                    {% if perms.patient.export_medicalrecorddata and diagnosis_fields %}
                         <h4>{% trans "Diagnosis" %}</h4>
 
                         <div class="row">
