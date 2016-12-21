@@ -501,10 +501,11 @@ def export_view(request, template_name="export/export_data.html"):
 
         # fields = {}
 
-        previous_questionnaire_id = 0
+        # previous_questionnaire_id = 0
+        previous_questionnaire_id = -1
         output_list = []
         for questionnaire in questionnaires_selected_list:
-            sid, title, field, header = questionnaire.split("*")
+            index, sid, title, field, header = questionnaire.split("*")
 
             sid = int(sid)    # transform to integer
             #
@@ -512,13 +513,15 @@ def export_view(request, template_name="export/export_data.html"):
             #     fields[sid] = []
             # fields[sid].append(field)
 
-            if sid != previous_questionnaire_id:
+            # if sid != previous_questionnaire_id:
+            if index != previous_questionnaire_id:
                 if previous_questionnaire_id != 0:
                     output_list = []
 
-                questionnaires_list.append([sid, title, output_list])
+                questionnaires_list.append([index, sid, title, output_list])
 
-                previous_questionnaire_id = sid
+                # previous_questionnaire_id = sid
+                previous_questionnaire_id = index
 
             output_list.append((field, header))
 
@@ -661,9 +664,6 @@ def export_view(request, template_name="export/export_data.html"):
             group = get_object_or_404(Group, pk=group_id)
             if group.experimental_protocol is not None:
                 for path_experiment in create_list_of_trees(group.experimental_protocol, "questionnaire"):
-                    # questionnaire_response = ComponentConfiguration.objects.get(pk=path_experiment[-1][0])
-                    # data_configuration_tree_id = list_data_configuration_tree(questionnaire_response.id,
-                    #                                                           [item[0] for item in path_experiment])
                     questionnaire_configuration = get_object_or_404(ComponentConfiguration, pk=path_experiment[-1][0])
                     questionnaire = Questionnaire.objects.get(id=questionnaire_configuration.component.id)
                     survey_list.append(questionnaire.survey.lime_survey_id)
@@ -697,7 +697,6 @@ def export_view(request, template_name="export/export_data.html"):
     # ev_questionnaire_ids_list = entrance_evaluation_questionnaires.values_list("survey")
     surveys_with_ev_list = Survey.objects.filter(id__in=entrance_evaluation_questionnaire_ids_list)
 
-    # terrivel demora !!!!!!!!!!!!!!
     if 'study_selected_list' in request.session:
         for survey_item in survey_list:
             for questionnaire in questionnaires_list:
@@ -725,8 +724,11 @@ def export_view(request, template_name="export/export_data.html"):
     else:
         questionnaire_ids = ()
 
+    index = 0
     for questionnaire in questionnaires_fields_list:
         questionnaire["selected_counter"] = questionnaire_ids.count(questionnaire["sid"])
+        questionnaire["index"] = index
+        index += 1
         for output_list in questionnaire["output_list"]:
             if (questionnaire["sid"], output_list["field"]) in selected_ev_quest:
                 output_list["selected"] = True
