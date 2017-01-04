@@ -48,7 +48,8 @@ from experiment.models import Experiment, Subject, QuestionnaireResponse, Subjec
     ADConverter, StandardizationSystem, Muscle, MuscleSubdivision, MuscleSide, \
     EMGElectrodePlacement, EMGSurfacePlacement, TMS, TMSSetting, TMSDeviceSetting, TMSDevice, Software, \
     EMGIntramuscularPlacement, EMGNeedlePlacement, SubjectStepData, EMGPreamplifierFilterSetting, \
-    EMGElectrodePlacementSetting, TMSData, CoilOrientation, ResearchProjectCollaboration, TMSLocalizationSystem, HotSpot
+    EMGElectrodePlacementSetting, TMSData, CoilOrientation, ResearchProjectCollaboration, TMSLocalizationSystem, \
+    Goolkeeper_game
 from experiment.forms import ExperimentForm, QuestionnaireResponseForm, FileForm, GroupForm, InstructionForm, \
     ComponentForm, StimulusForm, BlockForm, ComponentConfigurationForm, ResearchProjectForm, NumberOfUsesToInsertForm, \
     EEGDataForm, EEGSettingForm, EquipmentForm, EEGForm, EEGAmplifierForm, \
@@ -66,7 +67,7 @@ from experiment.forms import ExperimentForm, QuestionnaireResponseForm, FileForm
     SoftwareRegisterForm, SoftwareVersionRegisterForm, EMGIntramuscularPlacementForm, \
     EMGSurfacePlacementRegisterForm, EMGIntramuscularPlacementRegisterForm, EMGNeedlePlacementRegisterForm, \
     SubjectStepDataForm, EMGPreamplifierFilterSettingForm, CoilModelForm, TMSDataForm, TMSLocalizationSystemForm, \
-    HotSpotForm, CollaborationForm
+    HotSpotForm, CollaborationForm, Goolkeeper_gameForm
 
 from export.export import create_directory
 
@@ -90,7 +91,8 @@ icon_class = {
     'eeg': 'glyphicon glyphicon-flash',
     'emg': 'glyphicon glyphicon-stats',
     'tms': 'glyphicon glyphicon-magnet',
-    'experimental_protocol': 'glyphicon glyphicon-tasks'
+    'experimental_protocol': 'glyphicon glyphicon-tasks',
+    'goolkeeper_game': 'glyphicon glyphicon-tasks'
 }
 
 delimiter = "-"
@@ -8061,6 +8063,8 @@ def component_add_new(request, path_of_the_components, component_type):
     elif component_type == 'block':
         specific_form = BlockForm(request.POST or None, initial={'number_of_mandatory_components': None})
         duration_string = "0"
+    elif component_type == 'goolkeeper_game':
+        specific_form = Goolkeeper_gameForm(request.POST or None)
 
     if request.method == "POST":
         new_specific_component = None

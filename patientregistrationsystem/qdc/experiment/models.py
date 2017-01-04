@@ -732,6 +732,7 @@ class Component(models.Model):
         ("eeg", _("EEG")),
         ("emg", _("EMG")),
         ("tms", _("TMS")),
+        ("goolkeeper_game", _("Goolkeeper game")),
     )
 
     identification = models.CharField(null=False, max_length=50, blank=False)
@@ -812,6 +813,13 @@ class EMG(Component):
 
 class TMS(Component):
     tms_setting = models.ForeignKey(TMSSetting)
+
+    def save(self, *args, **kwargs):
+        super(Component, self).save(*args, **kwargs)
+
+
+class Goolkeeper_game(Component):
+    text = models.TextField(null=False, blank=False)
 
     def save(self, *args, **kwargs):
         super(Component, self).save(*args, **kwargs)

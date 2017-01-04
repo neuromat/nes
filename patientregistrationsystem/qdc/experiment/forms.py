@@ -16,7 +16,7 @@ from experiment.models import Experiment, QuestionnaireResponse, SubjectOfGroup,
     ADConverter, StandardizationSystem, Muscle, MuscleSide, MuscleSubdivision, TMS, TMSSetting, TMSDeviceSetting, \
     Software, SoftwareVersion, CoilModel, TMSDevice, EMGIntramuscularPlacement, EMGNeedlePlacement, SubjectStepData, \
     EMGPreamplifierFilterSetting, TMSData, HotSpot, CoilOrientation, DirectionOfTheInducedCurrent, \
-    ResearchProjectCollaboration, TMSLocalizationSystem
+    ResearchProjectCollaboration, TMSLocalizationSystem, Goolkeeper_game
 
 
 class ExperimentForm(ModelForm):
@@ -237,6 +237,17 @@ class TMSForm(ModelForm):
         initial = kwargs.get('initial')
         if initial:
             self.fields['tms_setting'].queryset = TMSSetting.objects.filter(experiment=initial['experiment'])
+
+
+class Goolkeeper_gameForm(ModelForm):
+    class Meta:
+        model = Goolkeeper_game
+        fields = ['text']
+
+        widgets = {
+            'text': Textarea(attrs={'class': 'form-control', 'required': "", 'rows': '6',
+                                    'data-error': _('Instruction must be filled.')}),
+        }
 
 
 class BlockForm(ModelForm):
