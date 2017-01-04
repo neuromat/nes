@@ -488,7 +488,6 @@ def export_view(request, template_name="export/export_data.html"):
     export_form = ExportForm(request.POST or None, initial={'title': 'title',
                                                             'responses': ['short'], 'headings': 'code'})
 
-
     selected_ev_quest = []
     selected_participant = []
     selected_diagnosis = []
