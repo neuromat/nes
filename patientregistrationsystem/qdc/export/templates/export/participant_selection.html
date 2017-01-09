@@ -74,24 +74,122 @@
                         </div>
 
                         <div class="form-group">
+                            <input id="id_location_checkbox" name="location_checkbox" type="checkbox" value="location_selected">
+                                {% trans "Locations" %}
+                            </input>
+                        </div>
+
+                        <div id="id_locations" class="panel panel-default" style="border:1px solid lightgray;">
+{#                            <div class="panel-heading"><b>{% trans "Locations" %}</b></div>#}
+                            <div class="panel-body" style="background-color: whitesmoke">
+                                <div class="row">
+                                    <div class="col-xs-6 col-sm-6">
+                                        <div class="radio" style="margin-top: 0px">
+                                            <input id="id_all_countries_radio" name="all_countries_radio" type="radio" value="all">
+                                                {% trans "All countries" %}
+                                            </input>
+                                        </div>
+                                    </div>
+                                    <div class="col-xs-6 col-sm-6">
+                                        <div class="col-xs-6 col-sm-6">
+                                            <input id="id_brazil_radio" name="brazil_radio" type="radio" value="brazil" >
+                                                {% trans "Brazil" %}
+                                            </input>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="row">
+                                    <div class="col-xs-12 col-sm-12">
+                                        <div class="radio" style="margin-top: 0px">
+                                            <input id="id_choose_radio" name="all_choose_radio" type="radio" value="choose">
+                                                {% trans "Let me choose ..." %}
+                                            </input>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="row">
+                                    <div class="col-xs-12 col-sm-12">
+                                        <div class="input-group input-group-sm">
+                                            <span class="input-group-addon"> <span class="glyphicon glyphicon-search"></span></span>
+                                            <input class="form-control" id="get_location" type="text"
+                                                   placeholder="{% trans "Enter a location" %}">
+                                        </div>
+                                        {% csrf_token %}
+                                        <ul id="search-results-locations" style="list-style: none;">
+                                        </ul>
+                                    </div>
+                                </div>
+                                <div class="row">
+                                    <div class="col-xs-12 col-sm-12">
+                                        <div class="form-group">
+                                            <table class="table table-striped">
+                                                <thead>
+                                                    <tr>
+                                                        <th>{% trans "Country" %}</th>
+                                                        <th>{% trans "State" %}</th>
+                                                        <th>{% trans "City" %}</th>
+                                                    </tr>
+                                                </thead>
+                                                <tbody>
+
+                                                </tbody>
+                                            </table>
+                                        </div>
+                                    </div>
+                                </div>
+
+                            </div>
+                        </div>
+
+                        <div class="form-group">
+                            <input id="id_diagnosis" name="diagnosis_checkbox" type="checkbox" value="diagnosis_selected">
+                                {% trans "Diagnosis" %}
+                            </input>
+                        </div>
+
+                        <div id="id_age" class="panel panel-default" style="border:1px solid lightgray;">
+                            <div class="panel-body" style="background-color: whitesmoke">
+                                <div class="row">
+                                    <div class="col-xs-12 col-sm-12">
+                                        <div class="input-group input-group-sm">
+                                            <span class="input-group-addon"> <span class="glyphicon glyphicon-search"></span></span>
+                                            <input class="form-control" id="get_diagnosis" type="text"
+                                                   placeholder="{% trans "Enter a diagnosis" %}">
+                                        </div>
+                                        {% csrf_token %}
+                                        <ul id="search-results-diagnoses" style="list-style: none;">
+                                        </ul>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+
+                        <div class="form-group">
                             <input id="id_age_checkbox" name="age_checkbox" type="checkbox" value="age_selected">
                                 {% trans "Age" %}
                             </input>
                         </div>
 
-                        <div class="col-xs-6 col-sm-2">
-                            <div class="form-group">
-                                {{ age_interval_form.min_age }}
+                        <div id="id_age" class="panel panel-default" style="border:1px solid lightgray;">
+                            <div class="panel-body" style="background-color: whitesmoke">
+                                <div class="col-xs-6 col-sm-2">
+                                    <div class="form-group">
+                                        {{ age_interval_form.min_age }}
+                                    </div>
+                                </div>
+                                <div class="col-xs-1">
+                                    <span>{% trans "to" %}</span>
+                                </div>
+                                <div class="col-xs-6 col-sm-2">
+                                    <div class="form-group">
+                                        {{ age_interval_form.max_age }}
+                                    </div>
+                                </div>
                             </div>
                         </div>
-                        <div class="col-xs-1">
-                            <span>{% trans "to" %}</span>
-                        </div>
-                        <div class="col-xs-6 col-sm-2">
-                            <div class="form-group">
-                                {{ age_interval_form.max_age }}
-                            </div>
-                        </div>
+
+
                     </div>
 
                 </div>

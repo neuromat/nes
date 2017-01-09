@@ -1,5 +1,6 @@
 # -*- coding: utf-8 -*-
 import json
+import re
 from django.shortcuts import render
 from django.conf import settings
 from django.contrib.auth.decorators import login_required
@@ -8,7 +9,7 @@ from django.core import serializers
 from django.core.urlresolvers import reverse
 # from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
 from django.http import HttpResponse, HttpResponseRedirect
-from django.shortcuts import get_object_or_404
+from django.shortcuts import render, render_to_response, get_object_or_404
 from django.utils.encoding import smart_str
 from django.utils.translation import ugettext as ug_, ugettext_lazy as _
 
@@ -27,7 +28,7 @@ from .export import ExportExecution, perform_csv_response, create_directory
 
 from export.input_export import build_complete_export_structure, build_partial_export_structure
 
-from patient.models import QuestionnaireResponse, Patient
+from patient.models import QuestionnaireResponse, Patient, Diagnosis
 from patient.views import check_limesurvey_access
 
 from survey.models import Survey
@@ -936,6 +937,13 @@ def filter_participants(request):
                     date_birth_max = datetime.now() - relativedelta(years=int(request.POST['min_age']))
                     participants_list = participants_list.filter(date_birth__range=(date_birth_min, date_birth_max))
 
+                if "location_checkbox" in request.POST:
+                    location_list = None
+                    participants_list = participants_list.filter(country__id__in=location_list)
+
+                if "diagnosis_checkbox" in request.POST:
+                    diagnosis_list = None
+
                 # putting the list of participants in the user session
                 request.session['filtered_participant_data'] = [item.id for item in participants_list]
 
@@ -1237,3 +1245,38 @@ def list_data_configuration_tree(eeg_configuration_id, list_of_path):
                 data_configuration_tree_id = None
 
     return data_configuration_tree_id
+
+
+def search_locations(request):
+    location_list = ''
+
+    if request.method == "POST":
+        search_text = request.POST['search_text']
+
+        if search_text:
+            if re.match('[a-zA-Z ]+', search_text):
+                location_list = \
+                    Patient.objects.filter(country__icontains=search_text).exclude(removed=True)
+            # else:
+            #     location_list = \
+            #         Patient.objects.filter(country__icontains=search_text).exclude(removed=True)
+
+        return render_to_response('export/locations.html', {'location_list': location_list})
+
+
+def search_diagnoses(request):
+    diagnosis_list = ''
+
+    if request.method == "POST":
+        search_text = request.POST['search_text']
+
+        if search_text:
+            if re.match('[a-zA-Z ]+', search_text):
+                diagnosis_list = \
+                    Diagnosis.objects.filter(description__icontains=search_text)
+                # else:
+                #     location_list = \
+                #         Patient.objects.filter(country__icontains=search_text).exclude(removed=True)
+
+        return render_to_response('export/diagnoses.html', {'diagnosis_list': diagnosis_list})
+

@@ -1,0 +1,10 @@
+{% load i18n %}
+<ul style="list-style-type: none; padding: 0; margin: 0;">
+    {% if location_list.count > 0 %}
+        {% for location in location_list %}
+            <li><a href="/export/{{ location.id }}">{{ location.id }} - {{ location.id }}</a></li>
+        {% endfor %}
+    {% else %}
+        <li>{% trans "No locations found!" %}</li>
+    {% endif %}
+</ul>

@@ -1,0 +1,10 @@
+{% load i18n %}
+<ul style="list-style-type: none; padding: 0; margin: 0;">
+    {% if diagnosis_list.count > 0 %}
+        {% for diagnosis in diagnosis_list %}
+            <li><a href="/export/{{ diagnosis.id }}">{{ diagnosis.id }} - {{ diagnosis.description }}</a></li>
+        {% endfor %}
+    {% else %}
+        <li>{% trans "No diagnosis found!" %}</li>
+    {% endif %}
+</ul>

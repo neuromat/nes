@@ -5,7 +5,7 @@ from django.forms import ModelForm, Form, TextInput, CharField, BooleanField, Mu
 from django.utils.translation import ugettext_lazy as _
 
 
-from patient.models import Patient
+from patient.models import Patient, Diagnosis
 
 
 # SEARCH_PARTICIPANTS_CHOICES = (
@@ -68,18 +68,24 @@ class ParticipantsSelectionForm(ModelForm):
         model = Patient
 
         fields = [
-            'gender', 'marital_status'
+            'gender', 'marital_status', 'country', 'city', 'state'
         ]
 
         widgets = {
             'gender': SelectMultiple(attrs={'class': 'form-control', 'required': "", 'disabled': ''}),
             'marital_status': SelectMultiple(attrs={'class': 'form-control', 'required': "", 'disabled': ''}),
+            'country': SelectMultiple(attrs={'class': 'form-control', 'required': "", 'disabled': ''}),
+            'state': SelectMultiple(attrs={'class': 'form-control', 'required': "", 'disabled': ''}),
+            'city': SelectMultiple(attrs={'class': 'form-control', 'required': "", 'disabled': ''}),
         }
 
     def __init__(self, *args, **kwargs):
         super(ParticipantsSelectionForm, self).__init__(*args, **kwargs)
         self.fields['gender'].empty_label = None
         self.fields['marital_status'].empty_label = None
+        self.fields['country'].empty_label = None
+        self.fields['state'].empty_label = None
+        self.fields['city'].empty_label = None
 
 
 class AgeIntervalForm(Form):
@@ -90,3 +96,15 @@ class AgeIntervalForm(Form):
     max_age = IntegerField(min_value=0, widget=NumberInput(attrs={'class': 'form-control', 'required': "",
                                                                   'data-error': _('Max age must be filled.'),
                                                                   'disabled': ''}))
+
+
+class DiagnosisSelectionForm(ModelForm):
+
+    class Meta:
+        model = Diagnosis
+
+        fields = ['description']
+
+        widgets = {
+            'description': SelectMultiple(attrs={'class': 'form-control', 'required': "", 'disabled': ''}),
+        }

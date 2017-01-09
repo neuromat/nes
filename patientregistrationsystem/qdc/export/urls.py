@@ -15,7 +15,6 @@ urlpatterns = patterns(
     url(r'^experiment_selection/$', 'experiment_selection', name='experiment_selection'),
 
 # export (ajax)
-#     url(r'^get_experiment_by_study/(?P<study_list>[\w-]+)/$','get_json_experiment_by_study'),
-#     url(r'^get_group_by_experiment/(?P<experiment_id>\d+)/$','get_json_group_by_experiment'),
-
+    url(r'^get_locations/$', 'search_locations', name='search_locations'),
+    url(r'^get_diagnoses/$', 'search_diagnoses', name='search_diagnoses'),
 )
