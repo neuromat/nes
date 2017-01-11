@@ -143,48 +143,87 @@ $(document).ready(function () {
         $('#search-results-diagnoses').html(data);
     }
 
-    $('#local_selected').click(function () {
-        var local = $(this).text();
+    // $('#local_selected').click(function () {
+    //     var local = $(this).text();
+    //     //checkbox
+    //     var checknode = document.createElement('input');
+    //     checknode.type = 'checkbox';
+    //     checknode.name = 'selected_locals';
+    //     checknode.value = local;
+    //     checknode.setAttribute("checked", true);
+    //     checknode.style.display = "none";
+    //     //label
+    //     var textnode=document.createTextNode(local);
+    //     //botão
+    //     var btn_node = document.createElement('BUTTON');
+    //     btn_node.className = "btn btn-default unbuttonmize";
+    //     btn_node.appendChild(checknode);
+    //     btn_node.appendChild(textnode);
+    //
+    //     //criar span element
+    //     var spannode = document.createElement('span');
+    //     spannode.className = "glyphicon glyphicon-remove";
+    //     // spannode.data-toggle("tooltip");
+    //     spannode.style.color = "indianred";
+    //     spannode.style.verticalAlign = "-10%";
+    //     spannode.title = "Remover";
+    //
+    //     //criar a tag
+    //     var tagnode = document.createElement('a');
+    //     tagnode.onclick = function (event) {
+    //         alert("remove");
+    //     }
+    //     tagnode.appendChild(spannode);
+    //     btn_node.appendChild(tagnode);
+    //
+    //     //container
+    //     var localization_div = document.getElementById("localization_list")
+    //     localization_div.appendChild(btn_node);
+    //
+    // })
+
+
+});
+
+//Cria os elementos html dinamicamente
+function add_location(location) {
+        var ul_location_results = document.getElementById('search-results-locations');
+        // ul_location_results.
         //checkbox
         var checknode = document.createElement('input');
         checknode.type = 'checkbox';
         checknode.name = 'selected_locals';
-        checknode.value = local;
+        checknode.value = location;
         checknode.setAttribute("checked", true);
         checknode.style.display = "none";
         //label
-        var textnode=document.createTextNode(local);
+        var textnode=document.createTextNode(location);
         //botão
         var btn_node = document.createElement('BUTTON');
-        btn_node.id = id;
-        var t = document.createTextNode(gettext("delete"));
-        btn_node.appendChild(t);
-        btn_node.onclick = function(event){
-            var i = this.parentNode.parentNode.rowIndex;
-            document.getElementById("cap_positions").deleteRow(i);
-            setted(this.id);
+        // btn_node.id = location;
+        btn_node.type = "button"
+        btn_node.className = "btn btn-default unbuttonmize";
+        btn_node.appendChild(checknode);
+        btn_node.appendChild(textnode);
+        // btn_node.onclick = null;
+
+        //criar span element
+        var spannode = document.createElement('span');
+        spannode.className = "glyphicon glyphicon-remove";
+        // spannode.data-toggle("tooltip");
+        spannode.style.color = "indianred";
+        spannode.style.verticalAlign = "-10%";
+        spannode.title = "Remover";
+
+        //criar a tag
+        var tagnode = document.createElement('a');
+        tagnode.onclick = function (event) {
+            alert("remove");
         }
+        tagnode.appendChild(spannode);
+        btn_node.appendChild(tagnode);
 
         //container
         var localization_div = document.getElementById("localization_list")
-        localization_div.appendChild(checknode);
-        localization_div.appendChild(textnode);
-
-        //Table
-        // var localizationTable = document.getElementById("localization_list").getElementsByTagName('tbody')[0];
-        // var row = localizationTable.insertRow(localizationTable.rows.length);
-        //
-        // var cell1 = row.insertCell(0);
-        // var cell2 = row.insertCell(1);
-        //
-        // cell1.appendChild(checknode);
-        // cell2.appendChild(textnode);
-        //
-        // row.appendChild(cell1);
-        // row.appendChild(cell2);
-        //
-        // localizationTable.appendChild(row);
-    })
-
-});
-
+        localization_div.appendChild(btn_node);
+}

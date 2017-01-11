@@ -11,7 +11,7 @@
 <ul style="list-style-type: none; padding: 0; margin: 0;">
     {% if location_list.count > 0 %}
         {% for location in location_list %}
-            <li><a id="local_selected">{{ location.city }}</a></li>
+            <li><a href="#" onclick="add_location('{{ location.city }}'); return false;">{{ location.city }}</a></li>
         {% endfor %}
     {% else %}
         <li>{% trans "No locations found!" %}</li>
