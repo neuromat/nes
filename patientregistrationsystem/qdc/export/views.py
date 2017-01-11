@@ -963,7 +963,8 @@ def filter_participants(request):
 
             context = {
                 "participant_selection_form": participant_selection_form,
-                "age_interval_form": age_interval_form}
+                "age_interval_form": age_interval_form,
+            }
 
             return render(request, "export/participant_selection.html", context)
 
@@ -1256,7 +1257,11 @@ def search_locations(request):
         if search_text:
             if re.match('[a-zA-Z ]+', search_text):
                 location_list = \
-                    Patient.objects.filter(country__icontains=search_text).exclude(removed=True)
+                    Patient.objects.filter(city__icontains=search_text).exclude(removed=True).distinct('city')
+                #  = []
+                # for patient in patient_list:
+                #     location_list.append(patient.city)
+
             # else:
             #     location_list = \
             #         Patient.objects.filter(country__icontains=search_text).exclude(removed=True)
@@ -1279,4 +1284,3 @@ def search_diagnoses(request):
                 #         Patient.objects.filter(country__icontains=search_text).exclude(removed=True)
 
         return render_to_response('export/diagnoses.html', {'diagnosis_list': diagnosis_list})
-

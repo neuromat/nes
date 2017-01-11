@@ -1,0 +1,64 @@
+{% extends "quiz/template.html" %}
+
+{% load i18n admin_static %}
+
+{#information from http://stackoverflow.com/questions/6451304/django-simple-custom-template-tag-example#}
+{% load subjects_tags %}
+
+{% block activeAdvancedResearchProject %}class="active"{% endblock %}
+
+{% block header %}
+    <script src="{% static 'quiz/js/subjects.js' %}"></script>
+{% endblock %}
+
+{% block form %}
+    <div class="row">
+    <form id="subject_form" method="post">
+    {% csrf_token %}
+{% endblock %}
+
+{% block content %}
+
+    <div class="tab-pane fade in active" id="subjectBreadCrumb">
+        <div class="col-md-10">
+            <ol class="breadcrumb">
+                <li><a href="/home">{% trans "Home" %}</a></li>
+                <li><a href="/experiment/research_project/list">{% trans "Studies" %}</a></li>
+                <li><a href="/experiment/research_project/{{ group.experiment.research_project.id }}">{{ group.experiment.research_project.title }}</a></li>
+                <li><a href="/experiment/{{ group.experiment.id }}">{{ group.experiment.title }}</a></li>
+                <li><a href="/experiment/group/{{ group.id }}">{{ group.title }}</a></li>
+                <li class="active">{% trans "Participant" %}</li>
+            </ol>
+        </div>
+    </div>
+
+    {% if messages %}
+        {% for message in messages %}
+
+            {% if message.tags == "success" %}
+                <script>showSuccessMessage('{{ message }}')</script>
+            {% endif %}
+
+            {% if message.tags == "warning" %}
+                <script>showWarningMessage('{{ message }}')</script>
+            {% endif %}
+
+            {% if message.tags == "error" %}
+                <script>showErrorMessage('{{ message }}')</script>
+            {% endif %}
+
+            {% if message.tags == "info" %}
+                <script>showInfoMessage('{{ message }}')</script>
+            {% endif %}
+
+        {% endfor %}
+    {% endif %}
+
+
+
+{% endblock %}
+
+{% block end_form %}
+    </form>
+    </div>
+{% endblock %}

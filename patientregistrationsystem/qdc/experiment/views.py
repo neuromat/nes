@@ -4066,6 +4066,30 @@ def subjects(request, group_id, template_name="experiment/subjects.html"):
     return render(request, template_name, context)
 
 
+@login_required
+@permission_required('experiment.view_researchproject')
+def search_subjects(request, group_id, template_name="experiment/search_subjects.html"):
+
+    experimental_protocol_info = {'number_of_questionnaires': 0,
+                                  'number_of_eeg_data': 0,
+                                  'number_of_emg_data': 0,
+                                  'number_of_tms_data': 0}
+
+    group = get_object_or_404(Group, id=group_id)
+
+    subject_id = None
+
+    context = {
+        "can_change": get_can_change(request.user, group.experiment.research_project),
+        'group': group,
+        'subject_id': subject_id,
+        # "limesurvey_available": limesurvey_available,
+        "experimental_protocol_info": experimental_protocol_info
+    }
+
+    return render(request, template_name, context)
+
+
 def subject_questionnaire_response_start_fill_questionnaire(request, subject_id, group_id, questionnaire_id,
                                                             list_of_path):
     questionnaire_response_form = QuestionnaireResponseForm(request.POST)

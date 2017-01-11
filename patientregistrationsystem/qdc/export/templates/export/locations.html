@@ -1,8 +1,17 @@
 {% load i18n %}
+
+{% block header %}
+    {% load static %}
+    <script src="{% static 'quiz/js/participant_selection.js' %}"></script>
+
+    {% block specific_header %}
+    {% endblock %}
+{% endblock %}
+
 <ul style="list-style-type: none; padding: 0; margin: 0;">
     {% if location_list.count > 0 %}
         {% for location in location_list %}
-            <li><a href="/export/{{ location.id }}">{{ location.id }} - {{ location.id }}</a></li>
+            <li><a id="local_selected">{{ location.city }}</a></li>
         {% endfor %}
     {% else %}
         <li>{% trans "No locations found!" %}</li>

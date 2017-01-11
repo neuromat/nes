@@ -17,4 +17,5 @@ urlpatterns = patterns(
 # export (ajax)
     url(r'^get_locations/$', 'search_locations', name='search_locations'),
     url(r'^get_diagnoses/$', 'search_diagnoses', name='search_diagnoses'),
+
 )

@@ -102,7 +102,7 @@
                                     <div class="col-xs-12 col-sm-12">
                                         <div class="radio" style="margin-top: 0px">
                                             <input id="id_choose_radio" name="all_choose_radio" type="radio" value="choose">
-                                                {% trans "Let me choose ..." %}
+                                                {% trans "Choose the city ..." %}
                                             </input>
                                         </div>
                                     </div>
@@ -112,7 +112,7 @@
                                         <div class="input-group input-group-sm">
                                             <span class="input-group-addon"> <span class="glyphicon glyphicon-search"></span></span>
                                             <input class="form-control" id="get_location" type="text"
-                                                   placeholder="{% trans "Enter a location" %}">
+                                                   placeholder="{% trans "Enter a city" %}">
                                         </div>
                                         {% csrf_token %}
                                         <ul id="search-results-locations" style="list-style: none;">
@@ -121,19 +121,18 @@
                                 </div>
                                 <div class="row">
                                     <div class="col-xs-12 col-sm-12">
-                                        <div class="form-group">
-                                            <table class="table table-striped">
-                                                <thead>
-                                                    <tr>
-                                                        <th>{% trans "Country" %}</th>
-                                                        <th>{% trans "State" %}</th>
-                                                        <th>{% trans "City" %}</th>
-                                                    </tr>
-                                                </thead>
-                                                <tbody>
-
-                                                </tbody>
-                                            </table>
+                                        <div id="localization_list" class="form-group">
+                                            <button type="button" class="btn btn-default unbuttonmize">
+                                                <input name="chosen_cities" value="Buenos Aires" type="checkbox" style="display: none"/> Caracas
+                                                <a><span class="glyphicon glyphicon-remove" data-toggle="tooltip" style="color: indianred; vertical-align: -10%;" title="Remover">
+                                                </span></a>
+                                            </button>
+{#                                            <label>{% trans "List of localizations" %}</label>#}
+{#                                            <table id="localization_list"  class="table table-striped header-fixed" style="margin-top:10px; margin-left:10px;">#}
+{#                                                <tbody>#}
+{##}
+{#                                                </tbody>#}
+{#                                            </table>#}
                                         </div>
                                     </div>
                                 </div>

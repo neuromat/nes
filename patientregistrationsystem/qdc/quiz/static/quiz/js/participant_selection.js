@@ -143,4 +143,48 @@ $(document).ready(function () {
         $('#search-results-diagnoses').html(data);
     }
 
+    $('#local_selected').click(function () {
+        var local = $(this).text();
+        //checkbox
+        var checknode = document.createElement('input');
+        checknode.type = 'checkbox';
+        checknode.name = 'selected_locals';
+        checknode.value = local;
+        checknode.setAttribute("checked", true);
+        checknode.style.display = "none";
+        //label
+        var textnode=document.createTextNode(local);
+        //botão
+        var btn_node = document.createElement('BUTTON');
+        btn_node.id = id;
+        var t = document.createTextNode(gettext("delete"));
+        btn_node.appendChild(t);
+        btn_node.onclick = function(event){
+            var i = this.parentNode.parentNode.rowIndex;
+            document.getElementById("cap_positions").deleteRow(i);
+            setted(this.id);
+        }
+
+        //container
+        var localization_div = document.getElementById("localization_list")
+        localization_div.appendChild(checknode);
+        localization_div.appendChild(textnode);
+
+        //Table
+        // var localizationTable = document.getElementById("localization_list").getElementsByTagName('tbody')[0];
+        // var row = localizationTable.insertRow(localizationTable.rows.length);
+        //
+        // var cell1 = row.insertCell(0);
+        // var cell2 = row.insertCell(1);
+        //
+        // cell1.appendChild(checknode);
+        // cell2.appendChild(textnode);
+        //
+        // row.appendChild(cell1);
+        // row.appendChild(cell2);
+        //
+        // localizationTable.appendChild(row);
+    })
+
 });
+

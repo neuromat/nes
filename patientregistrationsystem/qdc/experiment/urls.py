@@ -284,6 +284,7 @@ urlpatterns = patterns(
     url(r'^subject/search/$', 'search_patients_ajax', name='subject_search'),
     url(r'^group/(?P<group_id>\d+)/add_subject/(?P<patient_id>\d+)/$', 'subjects_insert', name='subject_insert'),
     url(r'^group/(?P<group_id>\d+)/subject/(?P<subject_id>\d+)/upload_file/$', 'upload_file', name='upload_file'),
+    url(r'^group/(?P<group_id>\d+)/search_subjects/$', 'search_subjects', name='search_subjects'),
 
     # subject + questionnaire
     url(r'^group/(?P<group_id>\d+)/subject/(?P<subject_id>\d+)/$',
