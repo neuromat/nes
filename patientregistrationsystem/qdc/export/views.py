@@ -938,8 +938,13 @@ def filter_participants(request):
                     participants_list = participants_list.filter(date_birth__range=(date_birth_min, date_birth_max))
 
                 if "location_checkbox" in request.POST:
-                    location_list = None
-                    participants_list = participants_list.filter(country__id__in=location_list)
+                    location_list = []
+                    if 'brazil_radio' in request.POST:
+                        location_list.append('Rio de Janeiro')
+                        participants_list = participants_list.filter(city__in=location_list)
+                    if 'all_choose_radio' in request.POST:
+                        location_list = request.POST.getlist('selected_locals')
+                        participants_list = participants_list.filter(city__in=location_list)
 
                 if "diagnosis_checkbox" in request.POST:
                     diagnosis_list = None

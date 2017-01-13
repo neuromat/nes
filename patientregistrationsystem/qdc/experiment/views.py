@@ -72,6 +72,7 @@ from experiment.forms import ExperimentForm, QuestionnaireResponseForm, FileForm
 from export.export import create_directory
 
 from patient.models import Patient, QuestionnaireResponse as PatientQuestionnaireResponse, SocialDemographicData
+from export.forms import ParticipantsSelectionForm, AgeIntervalForm
 
 from survey.abc_search_engine import Questionnaires
 from survey.models import Survey
@@ -4079,12 +4080,17 @@ def search_subjects(request, group_id, template_name="experiment/search_subjects
 
     subject_id = None
 
+    participant_selection_form = ParticipantsSelectionForm(None)
+    age_interval_form = AgeIntervalForm(None)
+
     context = {
         "can_change": get_can_change(request.user, group.experiment.research_project),
         'group': group,
         'subject_id': subject_id,
         # "limesurvey_available": limesurvey_available,
-        "experimental_protocol_info": experimental_protocol_info
+        "experimental_protocol_info": experimental_protocol_info,
+        "participant_selection_form": participant_selection_form,
+        "age_interval_form": age_interval_form
     }
 
     return render(request, template_name, context)

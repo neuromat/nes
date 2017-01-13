@@ -19,16 +19,19 @@ $(document).ready(function () {
     var max_age_field = $("#id_max_age");
     
     var location_checkbox = $("#id_location_checkbox");
+    var diagnosis_checkbox = $("#id_diagnosis_checkbox");
     var all_countries_radio = $("#id_all_countries_radio");
     var brazil_radio = $("#id_brazil_radio");
     var choose_radio = $("#id_choose_radio");
-    var name_location = $("#nameKey");
+    var get_location = $("#get_location");
+    var get_diagnosis = $("#get_diagnosis");
 
     selected_participants_radio.click(function () {
         all_countries_radio.prop('disabled', true);
         brazil_radio.prop('disabled', true);
         choose_radio.prop('disabled', true);
-        name_location.prop('disabled', true);
+        get_location.prop('disabled', true);
+        get_diagnosis.prop('disabled', true);
         participants_filter_div.prop('disabled', false);
         participants_filter_div.css('visibility', 'visible');
         participants_filter_div.collapse('show')
@@ -75,10 +78,12 @@ $(document).ready(function () {
     location_checkbox.click(function () {
         if (location_checkbox.is(":checked")) {
             all_countries_radio.prop('disabled', false);
+            all_countries_radio.prop('checked', true);
             brazil_radio.prop('disabled', false);
             choose_radio.prop('disabled', false);
         }else{
             all_countries_radio.prop('disabled', true);
+            all_countries_radio.prop('checked', false);
             brazil_radio.prop('disabled', true);
             choose_radio.prop('disabled', true);
             all_countries_radio.prop('checked', false);
@@ -90,19 +95,26 @@ $(document).ready(function () {
     all_countries_radio.click(function () {
         brazil_radio.prop('checked', false);
         choose_radio.prop('checked', false);
-        name_location.prop('disabled', true);
+        get_location.prop('disabled', true);
     })
 
     brazil_radio.click(function () {
         all_countries_radio.prop('checked', false);
         choose_radio.prop('checked', false);
-        name_location.prop('disabled', true);
+        get_location.prop('disabled', true);
     })
 
     choose_radio.click(function () {
         all_countries_radio.prop('checked', false);
         brazil_radio.prop('checked', false);
-        name_location.prop('disabled', false);
+        get_location.prop('disabled', false);
+    })
+
+    diagnosis_checkbox.click(function () {
+        if (diagnosis_checkbox.is(":checked"))
+            get_diagnosis.prop('disabled', false);
+        else
+            get_diagnosis.prop('disabled', true);
     })
 
     $('#get_location').keyup(function() {
@@ -143,52 +155,19 @@ $(document).ready(function () {
         $('#search-results-diagnoses').html(data);
     }
 
-    // $('#local_selected').click(function () {
-    //     var local = $(this).text();
-    //     //checkbox
-    //     var checknode = document.createElement('input');
-    //     checknode.type = 'checkbox';
-    //     checknode.name = 'selected_locals';
-    //     checknode.value = local;
-    //     checknode.setAttribute("checked", true);
-    //     checknode.style.display = "none";
-    //     //label
-    //     var textnode=document.createTextNode(local);
-    //     //botão
-    //     var btn_node = document.createElement('BUTTON');
-    //     btn_node.className = "btn btn-default unbuttonmize";
-    //     btn_node.appendChild(checknode);
-    //     btn_node.appendChild(textnode);
-    //
-    //     //criar span element
-    //     var spannode = document.createElement('span');
-    //     spannode.className = "glyphicon glyphicon-remove";
-    //     // spannode.data-toggle("tooltip");
-    //     spannode.style.color = "indianred";
-    //     spannode.style.verticalAlign = "-10%";
-    //     spannode.title = "Remover";
-    //
-    //     //criar a tag
-    //     var tagnode = document.createElement('a');
-    //     tagnode.onclick = function (event) {
-    //         alert("remove");
-    //     }
-    //     tagnode.appendChild(spannode);
-    //     btn_node.appendChild(tagnode);
-    //
-    //     //container
-    //     var localization_div = document.getElementById("localization_list")
-    //     localization_div.appendChild(btn_node);
-    //
-    // })
-
-
 });
 
 //Cria os elementos html dinamicamente
 function add_location(location) {
-        var ul_location_results = document.getElementById('search-results-locations');
-        // ul_location_results.
+        //limpa a lista de resultados
+        var ul_search_locations = document.getElementById('search-results-locations');
+        var ul_location_list = document.getElementById('ul-location-list');
+        ul_search_locations.removeChild(ul_location_list);
+
+        //limpa o campo de entrada para a busca por cidade
+        var input_location = document.getElementById("get_location");
+        input_location.value = "";
+
         //checkbox
         var checknode = document.createElement('input');
         checknode.type = 'checkbox';
@@ -200,7 +179,7 @@ function add_location(location) {
         var textnode=document.createTextNode(location);
         //botão
         var btn_node = document.createElement('BUTTON');
-        // btn_node.id = location;
+        btn_node.id = "btn" + location;
         btn_node.type = "button"
         btn_node.className = "btn btn-default unbuttonmize";
         btn_node.appendChild(checknode);
@@ -217,8 +196,11 @@ function add_location(location) {
 
         //criar a tag
         var tagnode = document.createElement('a');
+        tagnode.id = location;
         tagnode.onclick = function (event) {
-            alert("remove");
+            alert("remove" + this.id);
+            var localization_div = document.getElementById("localization_list");
+            localization_div.removeChild("btn"+ this.id);
         }
         tagnode.appendChild(spannode);
         btn_node.appendChild(tagnode);
