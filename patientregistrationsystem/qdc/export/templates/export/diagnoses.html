@@ -1,8 +1,18 @@
 {% load i18n %}
+
+{% block header %}
+    {% load static %}
+    <script src="{% static 'quiz/js/participant_selection.js' %}"></script>
+
+    {% block specific_header %}
+    {% endblock %}
+{% endblock %}
+
 <ul style="list-style-type: none; padding: 0; margin: 0;">
     {% if diagnosis_list.count > 0 %}
         {% for diagnosis in diagnosis_list %}
-            <li><a href="/export/{{ diagnosis.id }}">{{ diagnosis.id }} - {{ diagnosis.description }}</a></li>
+{#            <li><a href="/export/{{ diagnosis.id }}">{{ diagnosis.id }} - {{ diagnosis.description }}</a></li>#}
+            <li><a href="#" onclick="add_disease('{{ diagnosis.id }}', '{{ diagnosis.description }}'); return false;">{{ diagnosis.description }}</a></li>
         {% endfor %}
     {% else %}
         <li>{% trans "No diagnosis found!" %}</li>

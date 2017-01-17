@@ -21,14 +21,14 @@ $(document).ready(function () {
     var location_checkbox = $("#id_location_checkbox");
     var diagnosis_checkbox = $("#id_diagnosis_checkbox");
     var all_countries_radio = $("#id_all_countries_radio");
-    var brazil_radio = $("#id_brazil_radio");
+    var brazil_checkbox = $("#id_brazil_checkbox");
     var choose_radio = $("#id_choose_radio");
     var get_location = $("#get_location");
     var get_diagnosis = $("#get_diagnosis");
 
     selected_participants_radio.click(function () {
         all_countries_radio.prop('disabled', true);
-        brazil_radio.prop('disabled', true);
+        brazil_checkbox.prop('disabled', true);
         choose_radio.prop('disabled', true);
         get_location.prop('disabled', true);
         get_diagnosis.prop('disabled', true);
@@ -79,26 +79,26 @@ $(document).ready(function () {
         if (location_checkbox.is(":checked")) {
             all_countries_radio.prop('disabled', false);
             all_countries_radio.prop('checked', true);
-            brazil_radio.prop('disabled', false);
+            brazil_checkbox.prop('disabled', false);
             choose_radio.prop('disabled', false);
         }else{
             all_countries_radio.prop('disabled', true);
             all_countries_radio.prop('checked', false);
-            brazil_radio.prop('disabled', true);
+            brazil_checkbox.prop('disabled', true);
             choose_radio.prop('disabled', true);
             all_countries_radio.prop('checked', false);
-            brazil_radio.prop('checked', false);
+            brazil_checkbox.prop('checked', false);
             choose_radio.prop('checked', false);
         }
     })
 
     all_countries_radio.click(function () {
-        brazil_radio.prop('checked', false);
+        brazil_checkbox.prop('checked', false);
         choose_radio.prop('checked', false);
         get_location.prop('disabled', true);
     })
 
-    brazil_radio.click(function () {
+    brazil_checkbox.click(function () {
         all_countries_radio.prop('checked', false);
         choose_radio.prop('checked', false);
         get_location.prop('disabled', true);
@@ -106,7 +106,7 @@ $(document).ready(function () {
 
     choose_radio.click(function () {
         all_countries_radio.prop('checked', false);
-        brazil_radio.prop('checked', false);
+        // brazil_radio.prop('checked', false);
         get_location.prop('disabled', false);
     })
 
@@ -155,7 +155,21 @@ $(document).ready(function () {
         $('#search-results-diagnoses').html(data);
     }
 
+
 });
+
+function show_modal_remove (subject_id){
+        var  modal_remove = document.getElementById('remove-participant');
+        modal_remove.removeAttribute("disabled");
+        modal_remove.setAttribute("value", 'remove-' + subject_id);
+        $('#modalRemove').modal('show');
+    }
+
+function disable_remove_button (){
+    var  modal_remove = document.getElementById('remove-participant');
+    modal_remove.setAttribute("disabled", "disabled");
+    modal_remove.setAttribute("value", 'remove');
+}
 
 //Cria os elementos html dinamicamente
 function add_location(location) {
@@ -198,9 +212,10 @@ function add_location(location) {
         var tagnode = document.createElement('a');
         tagnode.id = location;
         tagnode.onclick = function (event) {
-            alert("remove" + this.id);
+            // alert("remove " + this.id);
             var localization_div = document.getElementById("localization_list");
-            localization_div.removeChild("btn"+ this.id);
+            var node = document.getElementById("btn"+ this.id);
+            localization_div.removeChild(node);
         }
         tagnode.appendChild(spannode);
         btn_node.appendChild(tagnode);
@@ -208,4 +223,8 @@ function add_location(location) {
         //container
         var localization_div = document.getElementById("localization_list")
         localization_div.appendChild(btn_node);
+}
+
+function add_disease(id, disease){
+    
 }

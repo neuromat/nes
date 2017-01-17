@@ -28,7 +28,7 @@ from .export import ExportExecution, perform_csv_response, create_directory
 
 from export.input_export import build_complete_export_structure, build_partial_export_structure
 
-from patient.models import QuestionnaireResponse, Patient, Diagnosis
+from patient.models import QuestionnaireResponse, Patient, ClassificationOfDiseases
 from patient.views import check_limesurvey_access
 
 from survey.models import Survey
@@ -939,11 +939,13 @@ def filter_participants(request):
 
                 if "location_checkbox" in request.POST:
                     location_list = []
-                    if 'brazil_radio' in request.POST:
+                    if 'brazil_checkbox' in request.POST:
                         location_list.append('Rio de Janeiro')
-                        participants_list = participants_list.filter(city__in=location_list)
                     if 'all_choose_radio' in request.POST:
-                        location_list = request.POST.getlist('selected_locals')
+                        locations_selected = request.POST.getlist('selected_locals')
+                        for selected in locations_selected:
+                            location_list.append(selected)
+                    if not 'all_countries_radio' in request.POST:
                         participants_list = participants_list.filter(city__in=location_list)
 
                 if "diagnosis_checkbox" in request.POST:
@@ -1283,7 +1285,7 @@ def search_diagnoses(request):
         if search_text:
             if re.match('[a-zA-Z ]+', search_text):
                 diagnosis_list = \
-                    Diagnosis.objects.filter(description__icontains=search_text)
+                    ClassificationOfDiseases.objects.filter(description__icontains=search_text)
                 # else:
                 #     location_list = \
                 #         Patient.objects.filter(country__icontains=search_text).exclude(removed=True)
