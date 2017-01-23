@@ -154,6 +154,14 @@ $(document).ready(function () {
     function searchSuccessDiagnoses(data, textStatus, jqXHR) {
         $('#search-results-diagnoses').html(data);
     }
+    
+    $('#id_research_projects').click(function () {
+        $.ajax({
+            type: "POST",
+            url: "/export/select_experiments/" + $('#research_project_id').val,
+        })
+        
+    })
 
 
 });

@@ -1021,6 +1021,8 @@ def export_menu(request, template_name="export/export_menu.html"):
 @login_required
 def experiment_selection(request, template_name="export/experiment_selection.html"):
     research_projects = ResearchProject.objects.order_by('start_date')
+    experiment_list = Experiment.objects.all()
+    group_list = Group.objects.all()
     study_list = []
     study_selected = []
     index = 0
@@ -1033,25 +1035,25 @@ def experiment_selection(request, template_name="export/experiment_selection.htm
             redirect_url = reverse("filter_participants", args=())
             return HttpResponseRedirect(redirect_url)
 
-    for research in research_projects:
-        research_project = get_object_or_404(ResearchProject, pk=research.id)
-        if hasattr(Experiment, 'research_project'):
-            experiments = Experiment.objects.filter(research_project=research_project)
-            for exp in experiments:
-                experiment = get_object_or_404(Experiment, pk=exp.id)
-                if hasattr(Group, 'experiment'):
-                    groups = Group.objects.filter(experiment=experiment)
-                    for group in groups:
-                        index = index + 1
-                        study_list.append({
-                            'study_index': index,
-                            'study_id': research.id,
-                            'study_title': research_project.title,
-                            'experiment_id': experiment.id,
-                            'experiment_title': experiment.title,
-                            'group_id': group.id,
-                            'group_title': group.title
-                        })
+    # for research in research_projects:
+    #     research_project = get_object_or_404(ResearchProject, pk=research.id)
+    #     if hasattr(Experiment, 'research_project'):
+    #         experiments = Experiment.objects.filter(research_project=research_project)
+    #         for exp in experiments:
+    #             experiment = get_object_or_404(Experiment, pk=exp.id)
+    #             if hasattr(Group, 'experiment'):
+    #                 groups = Group.objects.filter(experiment=experiment)
+    #                 for group in groups:
+    #                     index = index + 1
+    #                     study_list.append({
+    #                         'study_index': index,
+    #                         'study_id': research.id,
+    #                         'study_title': research_project.title,
+    #                         'experiment_id': experiment.id,
+    #                         'experiment_title': experiment.title,
+    #                         'group_id': group.id,
+    #                         'group_title': group.title
+    #                     })
 
     # putting the list of participants in the user session
     # request.session['filtered_participant_data'] = [item.id for item in participants_list]
@@ -1059,8 +1061,11 @@ def experiment_selection(request, template_name="export/experiment_selection.htm
     context = {
         "study_list": study_list,
         "study_selected": study_selected,
+        "experiment_list": experiment_list,
+        "group_list": group_list,
         "creating": True,
         "editing": True,
+        "research_projects": research_projects
     }
 
     return render(request, template_name, context)
@@ -1291,3 +1296,9 @@ def search_diagnoses(request):
                 #         Patient.objects.filter(country__icontains=search_text).exclude(removed=True)
 
         return render_to_response('export/diagnoses.html', {'diagnosis_list': diagnosis_list})
+
+
+def select_experiments(request, research_project_id):
+    research_project = ResearchProject.objects.filter(pk= research_project_id)
+
+    experiment_list = Experiment.objects.filter(research_project=research_project)
