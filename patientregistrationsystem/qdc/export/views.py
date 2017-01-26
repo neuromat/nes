@@ -945,12 +945,10 @@ def filter_participants(request):
 
                 if "diagnosis_checkbox" in request.POST:
                     classification_of_diseases_list = request.POST.getlist('selected_diagnoses')
-                    diagnosis_list = Diagnosis.objects.filter(
-                        classification_of_diseases_id__in=classification_of_diseases_list).values(
-                        'medical_record_data__patient_id')
+
                     participants_list = participants_list.filter(
-                        changed_by__medicalrecorddata__patient_id__in=diagnosis_list).distinct(
-                        'changed_by__medicalrecorddata__patient_id')
+                        medicalrecorddata__diagnosis__classification_of_diseases__in=classification_of_diseases_list).\
+                        distinct()
 
                 # putting the list of participants in the user session
                 request.session['filtered_participant_data'] = [item.id for item in participants_list]
