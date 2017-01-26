@@ -18,5 +18,6 @@ urlpatterns = patterns(
     url(r'^get_locations/$', 'search_locations', name='search_locations'),
     url(r'^get_diagnoses/$', 'search_diagnoses', name='search_diagnoses'),
     url(r'^get_experiments_by_study/(?P<study_id>\d+)/$', 'select_experiments_by_study'),
+    url(r'^get_groups_by_experiment/(?P<experiment_id>\d+)/$', 'select_groups_by_experiment'),
 
 )

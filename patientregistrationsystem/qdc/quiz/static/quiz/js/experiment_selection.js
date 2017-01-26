@@ -23,72 +23,34 @@ $(document).ready(function () {
                 options += '<option value="' + experiments_list[i].pk + '">' + experiments_list[i].fields['title'] + '</option>';
             }
             select_experiments.html(options);
-            // select_experiments.change();
+            select_experiments.change();
         });
         
     });
 
-    $("button").click(function(){
-        var values = $('#id_research_projects').val();
-        var studies = String(values);
-        // var studies = [];
-        // for(var i in values){
-        //     studies.push({
-        //         study_id:values[i]
-        //     })
-        // }
+    select_experiments.change(function () {
+       var experiment_id = $(this).val();
 
-        var url = "/export/get_experiment_by_study/" + studies;
+        if (experiment_id == "") {
+            experiment_id = "0";
+        }
 
-        $.getJSON(url, function(experiments_list) {
-            var options = '<option value="" selected="selected">---------</option>';
-            for (var i = 0; i < experiments_list.length; i++) {
-                options += '<option value="' + experiments_list[i].pk + '">' + experiments_list[i].fields['title'] + '</option>';
+        var url = "/export/get_groups_by_experiment/" + experiment_id;
+
+        $.getJSON(url, function (group_list) {
+           var options = '<option value="" selected="selected">---------</option>';
+           for (var i = 0; i < group_list.length; i++) {
+                options += '<option value="' + group_list[i].pk + '">' + group_list[i].fields['title'] + '</option>';
             }
-            select_experiments.html(options);
-            // select_experiments.change();
-        });
 
+            select_groups.html(options);
+            // select_groups.change();
+        });
     });
+
+
     
-    // select_research_project.change(function () {
-    //     var study_id = $(this).val();
-    //
-    //     if (study_id == "") {
-    //         study_id = "0";
-    //     }
-    //
-    //     var url = "/export/get_experiment_by_study/" + study_id;
-    //    
-    //     $.getJSON(url, function(experiments_list) {
-    //         var options = '<option value="" selected="selected">---------</option>';
-    //         for (var i = 0; i < experiments_list.length; i++) {
-    //             options += '<option value="' + experiments_list[i].pk + '">' + experiments_list[i].fields['title'] + '</option>';
-    //         }
-    //         select_experiments.html(options);
-    //         // select_experiments.change();
-    //     });
-    // });
-    
-    // select_experiments.change(function () {
-    //    var experiment_id = $(this).val();
-    //    
-    //     if (experiment_id == "") {
-    //         experiment_id = "0";
-    //     }
-    //
-    //     var url = "/export/get_group_by_experiment/" + experiment_id;
-    //    
-    //     $.getJSON(url, function (group_list) {
-    //        var options = '<option value="" selected="selected">---------</option>';
-    //        for (var i = 0; i < group_list.length; i++) {
-    //             options += '<option value="' + group_list[i].pk + '">' + group_list[i].fields['title'] + '</option>';
-    //         }
-    //
-    //         select_groups.html(options);
-    //         select_groups.change();
-    //     });
-    // });
+
 
 });
     

@@ -76,7 +76,7 @@
                         <div class="col-xs-12 col-xs-12">
                             <div class="form-group">
                                 <label class="control-label">{% trans "Experiments" %} <b style="color: red;">*</b></label>
-                                <select class="form-control" id="id_experiments" name="">
+                                <select class="form-control" id="id_experiments" name="experiment_selected">
                                     <option value>-------</option>
                                     {% for experiment in experiment_list %}
                                         <option {% if not creating and experiment.id == experiment_selected.id %}selected="selected"{% endif %} value="{{ experiment.id }}">{{ experiment.title }}</option>
@@ -92,7 +92,7 @@
                         <div class="col-xs-12 col-xs-12">
                             <div class="form-group">
                                 <label class="control-label">{% trans "Groups" %} <b style="color: red;">*</b></label>
-                                <select class="form-control" id="id_groups" name="">
+                                <select class="form-control" id="id_groups" name="group_selected">
                                     <option value>-------</option>
                                     {% for group in group_list %}
                                         <option {% if not creating and group.id == group_selected.id %}selected="selected"{% endif %} value="{{ group.id }}">{{ group.title }}</option>

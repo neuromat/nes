@@ -1032,12 +1032,28 @@ def experiment_selection(request, template_name="export/experiment_selection.htm
     index = 0
 
     if request.method == "POST":
+        participants_list = Patient.objects.filter(removed=False)
         if request.POST['action'] == "next-step-participants":
-            study_selected = request.POST.getlist('research_projects_selected')
-            request.session['study_selected_list'] = [study_selected]
+            subject_list = []
+            group_selected = request.POST['group_selected']
+            subject_of_group = SubjectOfGroup.objects.filter(group=group_selected)
+            for subject in subject_of_group:
+                patient = subject.subject.patient
+                if patient.id not in subject_list:
+                    subject_list.append(patient.id)
 
-            redirect_url = reverse("filter_participants", args=())
-            return HttpResponseRedirect(redirect_url)
+            participants_list = participants_list.filter(pk__in=subject_list)
+
+            context = {
+                "total_of_participants": len(participants_list),
+                "participants_list": participants_list
+            }
+            return render(request, "export/show_selected_participants.html", context)
+
+            # request.session['study_selected_list'] = [study_selected]
+
+            # redirect_url = reverse("filter_participants", args=())
+            # return HttpResponseRedirect(redirect_url)
 
     # for research in research_projects:
     #     research_project = get_object_or_404(ResearchProject, pk=research.id)
@@ -1305,3 +1321,13 @@ def select_experiments_by_study(request, study_id):
     json_experiment_list = serializers.serialize("json", experiment_list)
 
     return HttpResponse(json_experiment_list, content_type='application/json')
+
+
+def select_groups_by_experiment(request, experiment_id):
+    experiment = Experiment.objects.filter(pk= experiment_id)
+
+    group_list = Group.objects.filter(experiment=experiment)
+
+    json_group_list = serializers.serialize("json", group_list)
+
+    return HttpResponse(json_group_list, content_type='application/json')
