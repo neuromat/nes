@@ -4123,15 +4123,9 @@ def search_subjects(request, group_id, template_name="experiment/search_subjects
                     participants_list = participants_list.filter(date_birth__range=(date_birth_min, date_birth_max))
 
                 if "location_checkbox" in request.POST:
-                    location_list = []
-                    if 'brazil_checkbox' in request.POST:
-                        location_list.append('Rio de Janeiro')
-                    if 'all_choose_radio' in request.POST:
+                    if 'selected_locals' in request.POST:
                         locations_selected = request.POST.getlist('selected_locals')
-                        for selected in locations_selected:
-                            location_list.append(selected)
-                    if not 'all_countries_radio' in request.POST:
-                        participants_list = participants_list.filter(city__in=location_list)
+                        participants_list = participants_list.filter(city__in=locations_selected)
 
                 if "diagnosis_checkbox" in request.POST:
                     classification_of_diseases_list = request.POST.getlist('selected_diagnoses')

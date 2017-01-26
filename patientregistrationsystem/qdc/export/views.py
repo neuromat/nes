@@ -939,21 +939,18 @@ def filter_participants(request):
                     participants_list = participants_list.filter(date_birth__range=(date_birth_min, date_birth_max))
 
                 if "location_checkbox" in request.POST:
-                    location_list = []
-                    if 'brazil_checkbox' in request.POST:
-                        location_list.append('Rio de Janeiro')
-                    if 'all_choose_radio' in request.POST:
+                    if 'selected_locals' in request.POST:
                         locations_selected = request.POST.getlist('selected_locals')
-                        for selected in locations_selected:
-                            location_list.append(selected)
-                    if not 'all_countries_radio' in request.POST:
-                        participants_list = participants_list.filter(city__in=location_list)
+                        participants_list = participants_list.filter(city__in=locations_selected)
 
                 if "diagnosis_checkbox" in request.POST:
                     classification_of_diseases_list = request.POST.getlist('selected_diagnoses')
-                    diagnosis_list = Diagnosis.objects.filter(classification_of_diseases_id__in=classification_of_diseases_list).values('medical_record_data__patient_id')
-                    participants_list = participants_list.filter(changed_by__medicalrecorddata__patient_id__in=diagnosis_list).distinct('changed_by__medicalrecorddata__patient_id')
-
+                    diagnosis_list = Diagnosis.objects.filter(
+                        classification_of_diseases_id__in=classification_of_diseases_list).values(
+                        'medical_record_data__patient_id')
+                    participants_list = participants_list.filter(
+                        changed_by__medicalrecorddata__patient_id__in=diagnosis_list).distinct(
+                        'changed_by__medicalrecorddata__patient_id')
 
                 # putting the list of participants in the user session
                 request.session['filtered_participant_data'] = [item.id for item in participants_list]
