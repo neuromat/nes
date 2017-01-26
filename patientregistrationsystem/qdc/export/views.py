@@ -12,6 +12,7 @@ from django.http import HttpResponse, HttpResponseRedirect
 from django.shortcuts import render, render_to_response, get_object_or_404
 from django.utils.encoding import smart_str
 from django.utils.translation import ugettext as ug_, ugettext_lazy as _
+from django.db.models import Q
 
 from datetime import datetime
 from dateutil.relativedelta import relativedelta
@@ -28,7 +29,7 @@ from .export import ExportExecution, perform_csv_response, create_directory
 
 from export.input_export import build_complete_export_structure, build_partial_export_structure
 
-from patient.models import QuestionnaireResponse, Patient, ClassificationOfDiseases
+from patient.models import QuestionnaireResponse, Patient, ClassificationOfDiseases, Diagnosis, MedicalRecordData
 from patient.views import check_limesurvey_access
 
 from survey.models import Survey
@@ -949,7 +950,10 @@ def filter_participants(request):
                         participants_list = participants_list.filter(city__in=location_list)
 
                 if "diagnosis_checkbox" in request.POST:
-                    diagnosis_list = None
+                    classification_of_diseases_list = request.POST.getlist('selected_diagnoses')
+                    diagnosis_list = Diagnosis.objects.filter(classification_of_diseases_id__in=classification_of_diseases_list).values('medical_record_data__patient_id')
+                    participants_list = participants_list.filter(changed_by__medicalrecorddata__patient_id__in=diagnosis_list).distinct('changed_by__medicalrecorddata__patient_id')
+
 
                 # putting the list of participants in the user session
                 request.session['filtered_participant_data'] = [item.id for item in participants_list]
@@ -1270,13 +1274,6 @@ def search_locations(request):
             if re.match('[a-zA-Z ]+', search_text):
                 location_list = \
                     Patient.objects.filter(city__icontains=search_text).exclude(removed=True).distinct('city')
-                #  = []
-                # for patient in patient_list:
-                #     location_list.append(patient.city)
-
-            # else:
-            #     location_list = \
-            #         Patient.objects.filter(country__icontains=search_text).exclude(removed=True)
 
         return render_to_response('export/locations.html', {'location_list': location_list})
 
@@ -1289,13 +1286,15 @@ def search_diagnoses(request):
 
         if search_text:
             if re.match('[a-zA-Z ]+', search_text):
-                diagnosis_list = \
-                    ClassificationOfDiseases.objects.filter(description__icontains=search_text)
-                # else:
-                #     location_list = \
-                #         Patient.objects.filter(country__icontains=search_text).exclude(removed=True)
+                # classification_of_diseases_list = \
+                #     Diagnosis.objects.filter(classification_of_diseases__description__icontains=search_text).\
+                #         distinct('classification_of_diseases')
+                classification_of_diseases_list =  ClassificationOfDiseases.objects.\
+                    filter(Q(abbreviated_description__icontains=search_text) | Q(description__icontains=search_text) |
+                           Q(code__icontains=search_text)).distinct('description')
 
-        return render_to_response('export/diagnoses.html', {'diagnosis_list': diagnosis_list})
+        return render_to_response('export/diagnoses.html',
+                                  {'classification_of_diseases_list': classification_of_diseases_list})
 
 
 def select_experiments(request, research_project_id):

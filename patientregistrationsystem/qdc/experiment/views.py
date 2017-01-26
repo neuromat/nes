@@ -72,7 +72,8 @@ from experiment.forms import ExperimentForm, QuestionnaireResponseForm, FileForm
 
 from export.export import create_directory
 
-from patient.models import Patient, QuestionnaireResponse as PatientQuestionnaireResponse, SocialDemographicData
+from patient.models import Patient, QuestionnaireResponse as PatientQuestionnaireResponse, SocialDemographicData, \
+    Diagnosis
 from export.forms import ParticipantsSelectionForm, AgeIntervalForm
 
 from survey.abc_search_engine import Questionnaires
@@ -3751,7 +3752,8 @@ def search_cid10_ajax(request):
 
         if search_text:
             cid_10_list = ClassificationOfDiseases.objects.filter(Q(abbreviated_description__icontains=search_text) |
-                                                                  Q(description__icontains=search_text))
+                                                                  Q(description__icontains=search_text) |
+                                                                  Q(code__icontains=search_text))
 
         return render_to_response('experiment/ajax_cid10.html', {'cid_10_list': cid_10_list, 'group_id': group_id})
 
@@ -4132,7 +4134,13 @@ def search_subjects(request, group_id, template_name="experiment/search_subjects
                         participants_list = participants_list.filter(city__in=location_list)
 
                 if "diagnosis_checkbox" in request.POST:
-                    diagnosis_list = None
+                    classification_of_diseases_list = request.POST.getlist('selected_diagnoses')
+                    diagnosis_list = Diagnosis.objects.filter(
+                        classification_of_diseases_id__in=classification_of_diseases_list).values(
+                        'medical_record_data__patient_id')
+                    participants_list = participants_list.filter(
+                        changed_by__medicalrecorddata__patient_id__in=diagnosis_list).distinct(
+                        'changed_by__medicalrecorddata__patient_id')
 
             # putting the list of participants in the user session
             request.session['filtered_participant_data'] = [item.id for item in participants_list]

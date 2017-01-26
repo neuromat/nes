@@ -20,16 +20,12 @@ $(document).ready(function () {
     
     var location_checkbox = $("#id_location_checkbox");
     var diagnosis_checkbox = $("#id_diagnosis_checkbox");
-    var all_countries_radio = $("#id_all_countries_radio");
-    var brazil_checkbox = $("#id_brazil_checkbox");
-    var choose_radio = $("#id_choose_radio");
+    // var choose_radio = $("#id_choose_radio");
     var get_location = $("#get_location");
     var get_diagnosis = $("#get_diagnosis");
 
     selected_participants_radio.click(function () {
-        all_countries_radio.prop('disabled', true);
-        brazil_checkbox.prop('disabled', true);
-        choose_radio.prop('disabled', true);
+        // choose_radio.prop('disabled', true);
         get_location.prop('disabled', true);
         get_diagnosis.prop('disabled', true);
         participants_filter_div.prop('disabled', false);
@@ -77,44 +73,28 @@ $(document).ready(function () {
 
     location_checkbox.click(function () {
         if (location_checkbox.is(":checked")) {
-            all_countries_radio.prop('disabled', false);
-            all_countries_radio.prop('checked', true);
-            brazil_checkbox.prop('disabled', false);
-            choose_radio.prop('disabled', false);
+            $('#get_location').prop('disabled',false);
+            // choose_radio.prop('disabled', false);
         }else{
-            all_countries_radio.prop('disabled', true);
-            all_countries_radio.prop('checked', false);
-            brazil_checkbox.prop('disabled', true);
-            choose_radio.prop('disabled', true);
-            all_countries_radio.prop('checked', false);
-            brazil_checkbox.prop('checked', false);
-            choose_radio.prop('checked', false);
+            $('#get_location').prop('disabled',true);
+            var div_location_list = document.getElementById('localization_list');
+
+            while (div_location_list.hasChildNodes()) {
+                div_location_list.removeChild(div_location_list.lastChild);
+            }
         }
-    })
-
-    all_countries_radio.click(function () {
-        brazil_checkbox.prop('checked', false);
-        choose_radio.prop('checked', false);
-        get_location.prop('disabled', true);
-    })
-
-    brazil_checkbox.click(function () {
-        all_countries_radio.prop('checked', false);
-        choose_radio.prop('checked', false);
-        get_location.prop('disabled', true);
-    })
-
-    choose_radio.click(function () {
-        all_countries_radio.prop('checked', false);
-        // brazil_radio.prop('checked', false);
-        get_location.prop('disabled', false);
-    })
+    });
 
     diagnosis_checkbox.click(function () {
         if (diagnosis_checkbox.is(":checked"))
             get_diagnosis.prop('disabled', false);
         else
             get_diagnosis.prop('disabled', true);
+        var div_diagnosis_list = document.getElementById('diagnosis_list');
+
+        while (div_diagnosis_list.hasChildNodes()){
+            div_diagnosis_list.removeChild(div_diagnosis_list.lastChild);
+        }
     })
 
     $('#get_location').keyup(function() {
@@ -137,6 +117,8 @@ $(document).ready(function () {
     }
 
     $('#get_diagnosis').keyup(function() {
+
+        if(this.value.length < 4) return;
 
         $.ajax({
             type: "POST",
@@ -181,7 +163,7 @@ function disable_remove_button (){
 
 //Cria os elementos html dinamicamente
 function add_location(location) {
-        //limpa a lista de resultados
+        //remove um item ds lista de resultados
         var ul_search_locations = document.getElementById('search-results-locations');
         var ul_location_list = document.getElementById('ul-location-list');
         ul_search_locations.removeChild(ul_location_list);
@@ -234,5 +216,57 @@ function add_location(location) {
 }
 
 function add_disease(id, disease){
-    
+    // alert("id: " + id + "class of diseases: " + disease);
+    //remove um item da lista de resultados
+    var ul_search_diagnoses = document.getElementById('search-results-diagnoses');
+    var ul_diagnosis_list = document.getElementById('ul-diagnosis-list');
+    ul_search_diagnoses.removeChild(ul_diagnosis_list);
+
+    //limpa o campo de entrada para a busca por cidade
+    var input_diagnosis = document.getElementById("get_diagnosis");
+    input_diagnosis.value = "";
+
+    //checkbox
+    var checknode = document.createElement('input');
+    checknode.type = 'checkbox';
+    checknode.name = 'selected_diagnoses';
+    checknode.value = id;
+    checknode.setAttribute("checked", true);
+    checknode.style.display = "none";
+    //label
+    var textnode=document.createTextNode(disease);
+    // textnode.name = 'selected_classification_of_diseases';
+    textnode.value = disease;
+    //botão
+    var btn_node = document.createElement('BUTTON');
+    btn_node.id = "btn" + disease;
+    btn_node.type = "button"
+    btn_node.className = "btn btn-default unbuttonmize";
+    btn_node.appendChild(checknode);
+    btn_node.appendChild(textnode);
+    // btn_node.onclick = null;
+
+    //criar span element
+    var spannode = document.createElement('span');
+    spannode.className = "glyphicon glyphicon-remove";
+    // spannode.data-toggle("tooltip");
+    spannode.style.color = "indianred";
+    spannode.style.verticalAlign = "-10%";
+    spannode.title = "Remover";
+
+    //criar a tag
+    var tagnode = document.createElement('a');
+    tagnode.id = disease;
+    tagnode.onclick = function (event) {
+        // alert("remove " + this.id);
+        var diagnosis_div = document.getElementById("diagnosis_list");
+        var node = document.getElementById("btn"+ this.id);
+        diagnosis_div.removeChild(node);
+    }
+    tagnode.appendChild(spannode);
+    btn_node.appendChild(tagnode);
+
+    //container
+    var diagnosis_div = document.getElementById("diagnosis_list")
+    diagnosis_div.appendChild(btn_node);
 }

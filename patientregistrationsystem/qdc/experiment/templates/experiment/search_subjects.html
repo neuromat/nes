@@ -107,31 +107,31 @@
                         <div id="id_locations" class="panel panel-default" style="border:1px solid lightgray;">
 {#                            <div class="panel-heading"><b>{% trans "Locations" %}</b></div>#}
                             <div class="panel-body" style="background-color: whitesmoke">
-                                <div class="row">
-                                    <div class="col-xs-6 col-sm-6">
-                                        <div class="radio" style="margin-top: 0px">
-                                            <input id="id_all_countries_radio" name="all_countries_radio" type="radio" value="all">
-                                                {% trans "All cities" %}
-                                            </input>
-                                        </div>
-                                    </div>
-                                    <div class="col-xs-6 col-sm-6">
-                                        <div class="col-xs-6 col-sm-6">
-                                            <input id="id_brazil_checkbox" name="brazil_checkbox" type="checkbox" value="brazil" >
-                                                {% trans "Rio de Janeiro" %}
-                                            </input>
-                                        </div>
-                                    </div>
-                                </div>
-                                <div class="row">
-                                    <div class="col-xs-12 col-sm-12">
-                                        <div class="radio" style="margin-top: 0px">
-                                            <input id="id_choose_radio" name="all_choose_radio" type="radio" value="choose">
-                                                {% trans "Choose the city ..." %}
-                                            </input>
-                                        </div>
-                                    </div>
-                                </div>
+{#                                <div class="row">#}
+{#                                    <div class="col-xs-6 col-sm-6">#}
+{#                                        <div class="radio" style="margin-top: 0px">#}
+{#                                            <input id="id_all_countries_radio" name="all_countries_radio" type="radio" value="all">#}
+{#                                                {% trans "All cities" %}#}
+{#                                            </input>#}
+{#                                        </div>#}
+{#                                    </div>#}
+{#                                    <div class="col-xs-6 col-sm-6">#}
+{#                                        <div class="col-xs-6 col-sm-6">#}
+{#                                            <input id="id_brazil_checkbox" name="brazil_checkbox" type="checkbox" value="brazil" >#}
+{#                                                {% trans "Rio de Janeiro" %}#}
+{#                                            </input>#}
+{#                                        </div>#}
+{#                                    </div>#}
+{#                                </div>#}
+{#                                <div class="row">#}
+{#                                    <div class="col-xs-12 col-sm-12">#}
+{#                                        <div class="radio" style="margin-top: 0px">#}
+{#                                            <input id="id_choose_radio" name="all_choose_radio" type="radio" value="choose">#}
+{#                                                {% trans "Choose the city ..." %}#}
+{#                                            </input>#}
+{#                                        </div>#}
+{#                                    </div>#}
+{#                                </div>#}
                                 <div class="row">
                                     <div id="div-search-locations" class="col-xs-12 col-sm-12">
                                         <div class="input-group input-group-sm">
@@ -178,6 +178,13 @@
                                         {% csrf_token %}
                                         <ul id="search-results-diagnoses" style="list-style: none;">
                                         </ul>
+                                    </div>
+                                </div>
+                                <div class="row">
+                                    <div class="col-xs-12 col-sm-12">
+                                        <div id="diagnosis_list" class="form-group">
+
+                                        </div>
                                     </div>
                                 </div>
                             </div>
