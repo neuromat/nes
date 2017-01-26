@@ -474,7 +474,7 @@ class SoftwareVersion(models.Model):
     name = models.CharField(max_length=150)
 
     def __str__(self):
-        return self.name
+        return self.software.name + ' - ' + self.name
 
 
 class ADConverter(Equipment):
@@ -732,7 +732,7 @@ class Component(models.Model):
         ("eeg", _("EEG")),
         ("emg", _("EMG")),
         ("tms", _("TMS")),
-        ("goolkeeper_game", _("Goolkeeper game")),
+        ("digital_game_phase", _("Digital game phase")),
     )
 
     identification = models.CharField(null=False, max_length=50, blank=False)
@@ -740,7 +740,7 @@ class Component(models.Model):
     duration_value = models.IntegerField(null=True, blank=True, validators=[MinValueValidator(1)])
     duration_unit = models.CharField(null=True, blank=True, max_length=15, choices=TIME_UNITS)
     experiment = models.ForeignKey(Experiment, null=False)
-    component_type = models.CharField(null=False, max_length=15, choices=COMPONENT_TYPES)
+    component_type = models.CharField(null=False, max_length=30, choices=COMPONENT_TYPES)
 
 
 class Task(Component):
@@ -818,8 +818,24 @@ class TMS(Component):
         super(Component, self).save(*args, **kwargs)
 
 
-class Goolkeeper_game(Component):
-    text = models.TextField(null=False, blank=False)
+def get_context_tree_dir(instance, filename):
+    return "context_tree/%s/%s" % (instance.id, filename)
+
+
+class ContextTree(models.Model):
+    experiment = models.ForeignKey(Experiment)
+    name = models.CharField(max_length=50)
+    description = models.TextField()
+    setting_text = models.TextField(null=True, blank=True)
+    setting_file = models.FileField(upload_to=get_context_tree_dir, null=True)
+
+    def __str__(self):
+        return self.name
+
+
+class DigitalGamePhase(Component):
+    software_version = models.ForeignKey(SoftwareVersion)
+    context_tree = models.ForeignKey(ContextTree)
 
     def save(self, *args, **kwargs):
         super(Component, self).save(*args, **kwargs)

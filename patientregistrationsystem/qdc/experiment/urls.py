@@ -270,6 +270,11 @@ urlpatterns = patterns(
     url(r'^tms_setting/(?P<tms_setting_id>\d+)/coil_model/$',
         'tms_setting_coil_model', name='tms_setting_coil_model'),
 
+    # context tree setting
+    url(r'^(?P<experiment_id>\d+)/context_tree/new/$', 'context_tree_create', name='context_tree_new'),
+    url(r'^context_tree/(?P<context_tree_id>\d+)/$', 'context_tree_view', name='context_tree_view'),
+    url(r'^context_tree/edit/(?P<context_tree_id>\d+)/$', 'context_tree_update', name='context_tree_edit'),
+
     # cid
     url(r'^group_diseases/cid-10/$', 'search_cid10_ajax', name='cid10_search'),
 
