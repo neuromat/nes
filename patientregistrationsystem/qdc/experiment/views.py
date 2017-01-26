@@ -42,14 +42,15 @@ from experiment.models import Experiment, Subject, QuestionnaireResponse, Subjec
     EEGAmplifierSetting, EEGSolutionSetting, EEGFilterSetting, EEGElectrodeLayoutSetting, \
     FilterType, EEGSolution, EEGElectrodeLocalizationSystem, EEGElectrodeNetSystem, EEGElectrodePositionSetting, \
     ElectrodeModel, EEGElectrodePositionCollectionStatus, EEGCapSize, EEGElectrodeCap, EEGElectrodePosition, \
-    Material, AdditionalData, Tag, CoilModel, TMS, \
+    Material, AdditionalData, Tag, CoilModel, \
     EMGData, EMGSetting, SoftwareVersion, EMGDigitalFilterSetting, EMGADConverterSetting, \
     EMGElectrodeSetting, EMGPreamplifierSetting, EMGAmplifierSetting, EMGAnalogFilterSetting, \
     ADConverter, StandardizationSystem, Muscle, MuscleSubdivision, MuscleSide, \
     EMGElectrodePlacement, EMGSurfacePlacement, TMS, TMSSetting, TMSDeviceSetting, TMSDevice, Software, \
     EMGIntramuscularPlacement, EMGNeedlePlacement, SubjectStepData, EMGPreamplifierFilterSetting, \
-    EMGElectrodePlacementSetting, TMSData, CoilOrientation, ResearchProjectCollaboration, TMSLocalizationSystem, \
-    Goolkeeper_game
+    EMGElectrodePlacementSetting, TMSData, ResearchProjectCollaboration, TMSLocalizationSystem, \
+    DigitalGamePhase, ContextTree
+
 from experiment.forms import ExperimentForm, QuestionnaireResponseForm, FileForm, GroupForm, InstructionForm, \
     ComponentForm, StimulusForm, BlockForm, ComponentConfigurationForm, ResearchProjectForm, NumberOfUsesToInsertForm, \
     EEGDataForm, EEGSettingForm, EquipmentForm, EEGForm, EEGAmplifierForm, \
@@ -67,7 +68,7 @@ from experiment.forms import ExperimentForm, QuestionnaireResponseForm, FileForm
     SoftwareRegisterForm, SoftwareVersionRegisterForm, EMGIntramuscularPlacementForm, \
     EMGSurfacePlacementRegisterForm, EMGIntramuscularPlacementRegisterForm, EMGNeedlePlacementRegisterForm, \
     SubjectStepDataForm, EMGPreamplifierFilterSettingForm, CoilModelForm, TMSDataForm, TMSLocalizationSystemForm, \
-    HotSpotForm, CollaborationForm, Goolkeeper_gameForm
+    HotSpotForm, CollaborationForm, DigitalGamePhaseForm, ContextTreeForm
 
 from export.export import create_directory
 
@@ -92,7 +93,7 @@ icon_class = {
     'emg': 'glyphicon glyphicon-stats',
     'tms': 'glyphicon glyphicon-magnet',
     'experimental_protocol': 'glyphicon glyphicon-tasks',
-    'goolkeeper_game': 'glyphicon glyphicon-tasks'
+    'digital_game_phase': 'glyphicon glyphicon-play-circle'
 }
 
 delimiter = "-"
@@ -408,6 +409,7 @@ def experiment_view(request, experiment_id, template_name="experiment/experiment
     eeg_setting_list = EEGSetting.objects.filter(experiment=experiment)
     emg_setting_list = EMGSetting.objects.filter(experiment=experiment)
     tms_setting_list = TMSSetting.objects.filter(experiment=experiment)
+    context_tree_list = ContextTree.objects.filter(experiment=experiment).order_by('name')
     experiment_form = ExperimentForm(request.POST or None, instance=experiment)
 
     for field in experiment_form.fields:
@@ -454,6 +456,7 @@ def experiment_view(request, experiment_id, template_name="experiment/experiment
                "eeg_setting_list": eeg_setting_list,
                "emg_setting_list": emg_setting_list,
                "tms_setting_list": tms_setting_list,
+               "context_tree_list": context_tree_list,
                "research_project": experiment.research_project}
 
     return render(request, template_name, context)
@@ -6139,6 +6142,8 @@ def get_subgraph(block: Block, node_identifier=""):
                 color_node = "#f1cbff"
             elif component.component_type == "tms":
                 color_node = "#fe8181"
+            elif component.component_type == "digital_game_phase":
+                color_node = "#80ced6"
 
             new_node = pydot.Node(
                 'node_' + node_identifier + '_' + str(component_configuration.id),
@@ -6309,6 +6314,8 @@ def get_component_attributes(component, language_code):
     elif component.component_type == 'emg':
         specific_attributes = []
     elif component.component_type == 'tms':
+        specific_attributes = []
+    elif component.component_type == 'digital_game_phase':
         specific_attributes = []
 
     for attribute in specific_attributes:
@@ -6930,6 +6937,8 @@ def component_create(request, experiment_id, component_type):
         specific_form = BlockForm(request.POST or None, initial={'number_of_mandatory_components': None})
         # component_form.fields['duration_value'].widget.attrs['disabled'] = True
         # component_form.fields['duration_unit'].widget.attrs['disabled'] = True
+    elif component_type == 'digital_game_phase':
+        specific_form = DigitalGamePhaseForm(request.POST or None, initial={'experiment': experiment})
 
     if request.method == "POST":
         new_specific_component = None
@@ -7575,6 +7584,10 @@ def create_component(component, new_experiment):
     elif component_type == 'task_experiment':
         clone = TaskForTheExperimenter()
 
+    elif component_type == 'digital_game_phase':
+        digital_game_phase = get_object_or_404(DigitalGamePhase, pk=component.id)
+        clone = DigitalGamePhase(context_tree_id=digital_game_phase.context_tree_id)
+
     else:
         clone = Component()
 
@@ -7839,6 +7852,10 @@ def component_update(request, path_of_the_components):
         duration_value, has_unlimited = calculate_block_duration(block)
         # Criate a string converting to appropriate units
         duration_string = convert_to_string(duration_value)
+    elif component_type == 'digital_game_phase':
+        digital_game_phase = get_object_or_404(DigitalGamePhase, pk=component.id)
+        specific_form = DigitalGamePhaseForm(request.POST or None, instance=digital_game_phase,
+                                             initial={'experiment': experiment})
 
     can_change = get_can_change(request.user, experiment.research_project)
 
@@ -8087,8 +8104,8 @@ def component_add_new(request, path_of_the_components, component_type):
     elif component_type == 'block':
         specific_form = BlockForm(request.POST or None, initial={'number_of_mandatory_components': None})
         duration_string = "0"
-    elif component_type == 'goolkeeper_game':
-        specific_form = Goolkeeper_gameForm(request.POST or None)
+    elif component_type == 'digital_game_phase':
+        specific_form = DigitalGamePhaseForm(request.POST or None)
 
     if request.method == "POST":
         new_specific_component = None
@@ -8251,6 +8268,11 @@ def component_reuse(request, path_of_the_components, component_id):
         duration_value, has_unlimited = calculate_block_duration(sub_block)
         # Create a string converting to appropriate units
         duration_string = convert_to_string(duration_value)
+
+    elif component_type == 'digital_game_phase':
+        digital_game_phase = get_object_or_404(DigitalGamePhase, pk=component_to_add.id)
+        specific_form = DigitalGamePhaseForm(request.POST or None, instance=digital_game_phase,
+                                             initial={'experiment': experiment})
 
     if component_type == 'questionnaire':
         for field in component_form.fields:
@@ -10079,6 +10101,105 @@ def tms_localization_system_update(
 #                "editing": False}
 #
 #     return render(request, template_name, context)
+
+
+@login_required
+@permission_required('experiment.add_subject')
+def context_tree_create(request, experiment_id, template_name="experiment/context_tree_register.html"):
+    experiment = get_object_or_404(Experiment, pk=experiment_id)
+
+    check_can_change(request.user, experiment.research_project)
+
+    context_tree_form = ContextTreeForm(request.POST or None, request.FILES)
+
+    if request.method == "POST":
+        if request.POST['action'] == "save":
+            if context_tree_form.is_valid():
+                context_tree_added = context_tree_form.save(commit=False)
+                context_tree_added.experiment_id = experiment_id
+                context_tree_added.save()
+
+                messages.success(request, _('Context tree included successfully.'))
+
+                redirect_url = reverse("context_tree_view", args=(context_tree_added.id,))
+                return HttpResponseRedirect(redirect_url)
+
+    context = {"context_tree_form": context_tree_form,
+               "creating": True,
+               "editing": True,
+               "experiment": experiment
+               }
+
+    return render(request, template_name, context)
+
+
+@login_required
+@permission_required('experiment.view_researchproject')
+def context_tree_view(request, context_tree_id, template_name="experiment/context_tree_register.html"):
+
+    context_tree = get_object_or_404(ContextTree, pk=context_tree_id)
+    context_tree_form = ContextTreeForm(request.POST or None, instance=context_tree)
+
+    for field in context_tree_form.fields:
+        context_tree_form.fields[field].widget.attrs['disabled'] = True
+
+    can_change = get_can_change(request.user, context_tree.experiment.research_project)
+
+    if request.method == "POST":
+        if can_change:
+            if request.POST['action'] == "remove":
+
+                experiment_id = context_tree.experiment_id
+
+                context_tree.delete()
+
+                messages.success(request, _('Context tree was removed successfully.'))
+
+                redirect_url = reverse("experiment_view", args=(experiment_id,))
+                return HttpResponseRedirect(redirect_url)
+
+    context = {"can_change": can_change,
+               "context_tree_form": context_tree_form,
+               "experiment": context_tree.experiment,
+               "context_tree": context_tree,
+               "editing": False
+               }
+
+    return render(request, template_name, context)
+
+
+@login_required
+@permission_required('experiment.change_experiment')
+def context_tree_update(request, context_tree_id, template_name="experiment/context_tree_register.html"):
+    context_tree = get_object_or_404(ContextTree, pk=context_tree_id)
+
+    check_can_change(request.user, context_tree.experiment.research_project)
+
+    if request.method == "POST":
+
+        context_tree_form = ContextTreeForm(request.POST, request.FILES, instance=context_tree)
+
+        if request.POST['action'] == "save":
+            if context_tree_form.is_valid():
+
+                if context_tree_form.has_changed():
+                    context_tree_form.save()
+                    messages.success(request, _('Context tree updated successfully.'))
+                else:
+                    messages.success(request, _('There is no changes to save.'))
+
+                redirect_url = reverse("context_tree_view", args=(context_tree_id,))
+                return HttpResponseRedirect(redirect_url)
+    else:
+        context_tree_form = ContextTreeForm(request.POST or None, instance=context_tree)
+
+    context = {"context_tree_form": context_tree_form,
+               "editing": True,
+               "experiment": context_tree.experiment,
+               "context_tree": context_tree
+               }
+
+    return render(request, template_name, context)
 
 
 @login_required
