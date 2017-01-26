@@ -1,8 +1,17 @@
 {% load i18n %}
-<ul style="list-style-type: none; padding: 0; margin: 0;">
-    {% if diagnosis_list.count > 0 %}
-        {% for diagnosis in diagnosis_list %}
-            <li><a href="/export/{{ diagnosis.id }}">{{ diagnosis.id }} - {{ diagnosis.description }}</a></li>
+
+{% block header %}
+    {% load static %}
+    <script src="{% static 'quiz/js/participant_selection.js' %}"></script>
+
+    {% block specific_header %}
+    {% endblock %}
+{% endblock %}
+
+<ul id="ul-diagnosis-list" style="list-style-type: none; padding: 0; margin: 0;">
+    {% if classification_of_diseases_list.count > 0 %}
+        {% for classification_of_diseases in classification_of_diseases_list %}
+            <li><a href="#" onclick="add_disease('{{ classification_of_diseases.id }}', '{{ classification_of_diseases.abbreviated_description }}'); return false;">{{ classification_of_diseases.code }} - {{ classification_of_diseases.abbreviated_description }}</a></li>
         {% endfor %}
     {% else %}
         <li>{% trans "No diagnosis found!" %}</li>

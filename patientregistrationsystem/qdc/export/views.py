@@ -12,6 +12,7 @@ from django.http import HttpResponse, HttpResponseRedirect
 from django.shortcuts import render, render_to_response, get_object_or_404
 from django.utils.encoding import smart_str
 from django.utils.translation import ugettext as ug_, ugettext_lazy as _
+from django.db.models import Q
 
 from datetime import datetime
 from dateutil.relativedelta import relativedelta
@@ -28,7 +29,7 @@ from .export import ExportExecution, perform_csv_response, create_directory
 
 from export.input_export import build_complete_export_structure, build_partial_export_structure
 
-from patient.models import QuestionnaireResponse, Patient, Diagnosis
+from patient.models import QuestionnaireResponse, Patient, ClassificationOfDiseases, Diagnosis, MedicalRecordData
 from patient.views import check_limesurvey_access
 
 from survey.models import Survey
@@ -938,11 +939,21 @@ def filter_participants(request):
                     participants_list = participants_list.filter(date_birth__range=(date_birth_min, date_birth_max))
 
                 if "location_checkbox" in request.POST:
-                    location_list = None
-                    participants_list = participants_list.filter(country__id__in=location_list)
+                    location_list = []
+                    if 'brazil_checkbox' in request.POST:
+                        location_list.append('Rio de Janeiro')
+                    if 'all_choose_radio' in request.POST:
+                        locations_selected = request.POST.getlist('selected_locals')
+                        for selected in locations_selected:
+                            location_list.append(selected)
+                    if not 'all_countries_radio' in request.POST:
+                        participants_list = participants_list.filter(city__in=location_list)
 
                 if "diagnosis_checkbox" in request.POST:
-                    diagnosis_list = None
+                    classification_of_diseases_list = request.POST.getlist('selected_diagnoses')
+                    diagnosis_list = Diagnosis.objects.filter(classification_of_diseases_id__in=classification_of_diseases_list).values('medical_record_data__patient_id')
+                    participants_list = participants_list.filter(changed_by__medicalrecorddata__patient_id__in=diagnosis_list).distinct('changed_by__medicalrecorddata__patient_id')
+
 
                 # putting the list of participants in the user session
                 request.session['filtered_participant_data'] = [item.id for item in participants_list]
@@ -1014,37 +1025,55 @@ def export_menu(request, template_name="export/export_menu.html"):
 @login_required
 def experiment_selection(request, template_name="export/experiment_selection.html"):
     research_projects = ResearchProject.objects.order_by('start_date')
+    experiment_list = Experiment.objects.all()
+    group_list = Group.objects.all()
     study_list = []
     study_selected = []
     index = 0
 
     if request.method == "POST":
+        participants_list = Patient.objects.filter(removed=False)
         if request.POST['action'] == "next-step-participants":
-            study_selected = request.POST.getlist('research_projects_selected')
-            request.session['study_selected_list'] = [study_selected]
+            subject_list = []
+            group_selected = request.POST['group_selected']
+            subject_of_group = SubjectOfGroup.objects.filter(group=group_selected)
+            for subject in subject_of_group:
+                patient = subject.subject.patient
+                if patient.id not in subject_list:
+                    subject_list.append(patient.id)
 
-            redirect_url = reverse("filter_participants", args=())
-            return HttpResponseRedirect(redirect_url)
+            participants_list = participants_list.filter(pk__in=subject_list)
 
-    for research in research_projects:
-        research_project = get_object_or_404(ResearchProject, pk=research.id)
-        if hasattr(Experiment, 'research_project'):
-            experiments = Experiment.objects.filter(research_project=research_project)
-            for exp in experiments:
-                experiment = get_object_or_404(Experiment, pk=exp.id)
-                if hasattr(Group, 'experiment'):
-                    groups = Group.objects.filter(experiment=experiment)
-                    for group in groups:
-                        index = index + 1
-                        study_list.append({
-                            'study_index': index,
-                            'study_id': research.id,
-                            'study_title': research_project.title,
-                            'experiment_id': experiment.id,
-                            'experiment_title': experiment.title,
-                            'group_id': group.id,
-                            'group_title': group.title
-                        })
+            context = {
+                "total_of_participants": len(participants_list),
+                "participants_list": participants_list
+            }
+            return render(request, "export/show_selected_participants.html", context)
+
+            # request.session['study_selected_list'] = [study_selected]
+
+            # redirect_url = reverse("filter_participants", args=())
+            # return HttpResponseRedirect(redirect_url)
+
+    # for research in research_projects:
+    #     research_project = get_object_or_404(ResearchProject, pk=research.id)
+    #     if hasattr(Experiment, 'research_project'):
+    #         experiments = Experiment.objects.filter(research_project=research_project)
+    #         for exp in experiments:
+    #             experiment = get_object_or_404(Experiment, pk=exp.id)
+    #             if hasattr(Group, 'experiment'):
+    #                 groups = Group.objects.filter(experiment=experiment)
+    #                 for group in groups:
+    #                     index = index + 1
+    #                     study_list.append({
+    #                         'study_index': index,
+    #                         'study_id': research.id,
+    #                         'study_title': research_project.title,
+    #                         'experiment_id': experiment.id,
+    #                         'experiment_title': experiment.title,
+    #                         'group_id': group.id,
+    #                         'group_title': group.title
+    #                     })
 
     # putting the list of participants in the user session
     # request.session['filtered_participant_data'] = [item.id for item in participants_list]
@@ -1052,8 +1081,11 @@ def experiment_selection(request, template_name="export/experiment_selection.htm
     context = {
         "study_list": study_list,
         "study_selected": study_selected,
+        "experiment_list": experiment_list,
+        "group_list": group_list,
         "creating": True,
         "editing": True,
+        "research_projects": research_projects
     }
 
     return render(request, template_name, context)
@@ -1258,13 +1290,6 @@ def search_locations(request):
             if re.match('[a-zA-Z ]+', search_text):
                 location_list = \
                     Patient.objects.filter(city__icontains=search_text).exclude(removed=True).distinct('city')
-                #  = []
-                # for patient in patient_list:
-                #     location_list.append(patient.city)
-
-            # else:
-            #     location_list = \
-            #         Patient.objects.filter(country__icontains=search_text).exclude(removed=True)
 
         return render_to_response('export/locations.html', {'location_list': location_list})
 
@@ -1277,10 +1302,32 @@ def search_diagnoses(request):
 
         if search_text:
             if re.match('[a-zA-Z ]+', search_text):
-                diagnosis_list = \
-                    Diagnosis.objects.filter(description__icontains=search_text)
-                # else:
-                #     location_list = \
-                #         Patient.objects.filter(country__icontains=search_text).exclude(removed=True)
+                # classification_of_diseases_list = \
+                #     Diagnosis.objects.filter(classification_of_diseases__description__icontains=search_text).\
+                #         distinct('classification_of_diseases')
+                classification_of_diseases_list =  ClassificationOfDiseases.objects.\
+                    filter(Q(abbreviated_description__icontains=search_text) | Q(description__icontains=search_text) |
+                           Q(code__icontains=search_text)).distinct('description')
 
-        return render_to_response('export/diagnoses.html', {'diagnosis_list': diagnosis_list})
+        return render_to_response('export/diagnoses.html',
+                                  {'classification_of_diseases_list': classification_of_diseases_list})
+
+
+def select_experiments_by_study(request, study_id):
+    research_project = ResearchProject.objects.filter(pk= study_id)
+
+    experiment_list = Experiment.objects.filter(research_project=research_project)
+
+    json_experiment_list = serializers.serialize("json", experiment_list)
+
+    return HttpResponse(json_experiment_list, content_type='application/json')
+
+
+def select_groups_by_experiment(request, experiment_id):
+    experiment = Experiment.objects.filter(pk= experiment_id)
+
+    group_list = Group.objects.filter(experiment=experiment)
+
+    json_group_list = serializers.serialize("json", group_list)
+
+    return HttpResponse(json_group_list, content_type='application/json')

@@ -1,12 +1,11 @@
 # coding=utf-8
-from django.forms import ModelForm, Form, TextInput, CharField, BooleanField, MultipleChoiceField, \
+from django.forms import ModelForm, Form, TextInput, Textarea, CharField, BooleanField, MultipleChoiceField, \
     CheckboxSelectMultiple, ChoiceField, SelectMultiple, IntegerField, NumberInput, RadioSelect
 
 from django.utils.translation import ugettext_lazy as _
 
 
 from patient.models import Patient, Diagnosis
-
 
 # SEARCH_PARTICIPANTS_CHOICES = (
 #     ('all', _('All participants')),
@@ -108,3 +107,4 @@ class DiagnosisSelectionForm(ModelForm):
         widgets = {
             'description': SelectMultiple(attrs={'class': 'form-control', 'required': "", 'disabled': ''}),
         }
+

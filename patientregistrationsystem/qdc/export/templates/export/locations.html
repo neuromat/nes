@@ -8,7 +8,7 @@
     {% endblock %}
 {% endblock %}
 
-<ul style="list-style-type: none; padding: 0; margin: 0;">
+<ul id="ul-location-list" style="list-style-type: none; padding: 0; margin: 0;">
     {% if location_list.count > 0 %}
         {% for location in location_list %}
             <li><a href="#" onclick="add_location('{{ location.city }}'); return false;">{{ location.city }}</a></li>

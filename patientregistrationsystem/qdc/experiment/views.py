@@ -1,6 +1,6 @@
 # coding=utf-8
 import re
-import datetime
+# import datetime
 import json
 import random
 
@@ -15,7 +15,8 @@ from nwb.nwbco import *
 # v1.5
 import mne
 
-from datetime import date, timedelta
+from datetime import date, timedelta, datetime
+from dateutil.relativedelta import relativedelta
 from functools import partial
 
 from operator import itemgetter
@@ -72,7 +73,9 @@ from experiment.forms import ExperimentForm, QuestionnaireResponseForm, FileForm
 
 from export.export import create_directory
 
-from patient.models import Patient, QuestionnaireResponse as PatientQuestionnaireResponse, SocialDemographicData
+from patient.models import Patient, QuestionnaireResponse as PatientQuestionnaireResponse, SocialDemographicData, \
+    Diagnosis
+from export.forms import ParticipantsSelectionForm, AgeIntervalForm
 
 from survey.abc_search_engine import Questionnaires
 from survey.models import Survey
@@ -3752,7 +3755,8 @@ def search_cid10_ajax(request):
 
         if search_text:
             cid_10_list = ClassificationOfDiseases.objects.filter(Q(abbreviated_description__icontains=search_text) |
-                                                                  Q(description__icontains=search_text))
+                                                                  Q(description__icontains=search_text) |
+                                                                  Q(code__icontains=search_text))
 
         return render_to_response('experiment/ajax_cid10.html', {'cid_10_list': cid_10_list, 'group_id': group_id})
 
@@ -4082,12 +4086,136 @@ def search_subjects(request, group_id, template_name="experiment/search_subjects
 
     subject_id = None
 
+    participant_selection_form = ParticipantsSelectionForm(None)
+    age_interval_form = AgeIntervalForm(None)
+
+    if request.method == "POST":
+
+        if request.POST['action'] == "next-step-1":
+
+            participants_list = Patient.objects.filter(removed=False)
+            # selecting participants according the study/experiment/group
+            if 'study_selected_list' in request.session:
+                subject_list = []
+                study_selected_list = request.session['study_selected_list'][0]
+                for study in study_selected_list:
+                    group_id = study.split('-')[2]
+                    subject_of_group = SubjectOfGroup.objects.filter(group_id=group_id)
+
+                    for subject in subject_of_group:
+                        patient = subject.subject.patient
+                        if patient.id not in subject_list:
+                            subject_list.append(patient.id)
+
+                participants_list = participants_list.filter(pk__in=subject_list)
+
+            if request.POST['type_of_selection_radio'] == 'selected':
+
+                # selecting participants according the filters
+                if "gender_checkbox" in request.POST and 'gender' in request.POST:
+                    gender_list = request.POST.getlist('gender')
+                    participants_list = participants_list.filter(gender__id__in=gender_list)
+
+                if "marital_status_checkbox" in request.POST and 'marital_status' in request.POST:
+                    marital_status_list = request.POST.getlist('marital_status')
+                    participants_list = participants_list.filter(marital_status__id__in=marital_status_list)
+
+                if "age_checkbox" in request.POST and 'max_age' in request.POST and 'min_age' in request.POST:
+                    date_birth_min = datetime.now() - relativedelta(years=int(request.POST['max_age']))
+                    date_birth_max = datetime.now() - relativedelta(years=int(request.POST['min_age']))
+                    participants_list = participants_list.filter(date_birth__range=(date_birth_min, date_birth_max))
+
+                if "location_checkbox" in request.POST:
+                    location_list = []
+                    if 'brazil_checkbox' in request.POST:
+                        location_list.append('Rio de Janeiro')
+                    if 'all_choose_radio' in request.POST:
+                        locations_selected = request.POST.getlist('selected_locals')
+                        for selected in locations_selected:
+                            location_list.append(selected)
+                    if not 'all_countries_radio' in request.POST:
+                        participants_list = participants_list.filter(city__in=location_list)
+
+                if "diagnosis_checkbox" in request.POST:
+                    classification_of_diseases_list = request.POST.getlist('selected_diagnoses')
+                    diagnosis_list = Diagnosis.objects.filter(
+                        classification_of_diseases_id__in=classification_of_diseases_list).values(
+                        'medical_record_data__patient_id')
+                    participants_list = participants_list.filter(
+                        changed_by__medicalrecorddata__patient_id__in=diagnosis_list).distinct(
+                        'changed_by__medicalrecorddata__patient_id')
+
+            # putting the list of participants in the user session
+            request.session['filtered_participant_data'] = [item.id for item in participants_list]
+
+            context = {
+                "total_of_participants": len(participants_list),
+                "participants_list": participants_list,
+                "group": group,
+            }
+            return render(request, "experiment/show_selected_participants.html", context)
+
+            # else:
+            #
+            #     context = {
+            #         "total_of_participants": len(participants_list),
+            #         "participants_list": participants_list,
+            #         "group": group,
+            #     }
+            #     return render(request, "experiment/show_selected_participants.html", context)
+
+        if request.POST['action'] == 'previous-step-2':
+            context = {
+                "participant_selection_form": participant_selection_form,
+                "age_interval_form": age_interval_form,
+                "group": group,
+            }
+
+            return render(request, "experiment/search_subjects.html", context)
+
+        if request.POST['action'] == 'next-step-2':
+            participants_list =  request.session['filtered_participant_data']
+            for participant in participants_list:
+                patient = get_object_or_404(Patient, pk=participant)
+
+                subject = Subject()
+
+                try:
+                    subject = Subject.objects.get(patient=patient)
+                except subject.DoesNotExist:
+                    subject.patient = patient
+                    subject.save()
+
+                if not SubjectOfGroup.objects.all().filter(group=group, subject=subject):
+                    SubjectOfGroup(subject=subject, group=group).save()
+                else:
+                    messages.warning(request, _('Participant has already been inserted in this group.'))
+
+            redirect_url = reverse("subjects", args=(group_id,))
+            return HttpResponseRedirect(redirect_url)
+
+        if request.POST['action'][:7] == 'remove-':
+            action_parts = request.POST['action'].split(delimiter)
+            participants_list = request.session['filtered_participant_data']
+            participants_list.remove(int(action_parts[1]))
+            participants_list = Patient.objects.filter(pk__in=participants_list)
+
+            context = {
+                "total_of_participants": len(participants_list),
+                "participants_list": participants_list,
+                "group": group,
+            }
+            return render(request, "experiment/show_selected_participants.html", context)
+
+
     context = {
         "can_change": get_can_change(request.user, group.experiment.research_project),
         'group': group,
         'subject_id': subject_id,
         # "limesurvey_available": limesurvey_available,
-        "experimental_protocol_info": experimental_protocol_info
+        "experimental_protocol_info": experimental_protocol_info,
+        "participant_selection_form": participant_selection_form,
+        "age_interval_form": age_interval_form
     }
 
     return render(request, template_name, context)
