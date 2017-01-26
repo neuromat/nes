@@ -9,6 +9,25 @@ $(document).ready(function () {
     var select_groups = $("#id_groups");
     // var values = $('#id_research_projects').val();
 
+    select_research_project.click(function () {
+        var study_id = $(this).val();
+        if (study_id == "") {
+            study_id = "0";
+        }
+
+        var url = "/export/get_experiments_by_study/" + study_id;
+        
+        $.getJSON(url, function(experiments_list) {
+            var options = '<option value="" selected="selected">---------</option>';
+            for (var i = 0; i < experiments_list.length; i++) {
+                options += '<option value="' + experiments_list[i].pk + '">' + experiments_list[i].fields['title'] + '</option>';
+            }
+            select_experiments.html(options);
+            // select_experiments.change();
+        });
+        
+    });
+
     $("button").click(function(){
         var values = $('#id_research_projects').val();
         var studies = String(values);

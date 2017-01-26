@@ -1297,7 +1297,11 @@ def search_diagnoses(request):
                                   {'classification_of_diseases_list': classification_of_diseases_list})
 
 
-def select_experiments(request, research_project_id):
-    research_project = ResearchProject.objects.filter(pk= research_project_id)
+def select_experiments_by_study(request, study_id):
+    research_project = ResearchProject.objects.filter(pk= study_id)
 
     experiment_list = Experiment.objects.filter(research_project=research_project)
+
+    json_experiment_list = serializers.serialize("json", experiment_list)
+
+    return HttpResponse(json_experiment_list, content_type='application/json')

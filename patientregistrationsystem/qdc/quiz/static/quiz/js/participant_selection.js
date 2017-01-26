@@ -74,42 +74,50 @@ $(document).ready(function () {
     location_checkbox.click(function () {
         if (location_checkbox.is(":checked")) {
             $('#get_location').prop('disabled',false);
-            // choose_radio.prop('disabled', false);
         }else{
+            $('#get_location').val("");
             $('#get_location').prop('disabled',true);
-            var div_location_list = document.getElementById('localization_list');
-
-            while (div_location_list.hasChildNodes()) {
-                div_location_list.removeChild(div_location_list.lastChild);
-            }
+            var ul_location_list = $('#ul-location-list');
+            ul_location_list.hide();
+            var div_location_list = $('#localization_list');
+            div_location_list.hide();
         }
     });
 
     diagnosis_checkbox.click(function () {
         if (diagnosis_checkbox.is(":checked"))
-            get_diagnosis.prop('disabled', false);
-        else
-            get_diagnosis.prop('disabled', true);
-        var div_diagnosis_list = document.getElementById('diagnosis_list');
-
-        while (div_diagnosis_list.hasChildNodes()){
-            div_diagnosis_list.removeChild(div_diagnosis_list.lastChild);
+            $('#get_diagnosis').prop('disabled', false);
+        else{
+            $('#get_diagnosis').val("");
+            $('#get_diagnosis').prop('disabled', true);
+            var ul_diagnosis_list = $('#ul-diagnosis-list');
+            ul_diagnosis_list.hide();
+            var div_diagnosis_list = $('#diagnosis_list');
+            div_diagnosis_list.hide();
         }
+
     })
 
     $('#get_location').keyup(function() {
         
-        $.ajax({
-            type: "POST",
-            url: "/export/get_locations/",
-            data: {
-                'search_text': $('#get_location').val(),
-                'csrfmiddlewaretoken': $("input[name=csrfmiddlewaretoken]").val(),
-            },
-            success: searchSuccessLocations,
-            dataType: 'html'
+        if(this.value.length == 0){
+            var ul_location_list = $('#ul-location-list');
+            ul_location_list.hide();
+            return;
+        }else{
+            $.ajax({
+                type: "POST",
+                url: "/export/get_locations/",
+                data: {
+                    'search_text': $('#get_location').val(),
+                    'csrfmiddlewaretoken': $("input[name=csrfmiddlewaretoken]").val(),
+                },
+                success: searchSuccessLocations,
+                dataType: 'html'
 
-        });
+            });
+        }
+
     });
 
     function searchSuccessLocations(data, textStatus, jqXHR) {
@@ -118,19 +126,26 @@ $(document).ready(function () {
 
     $('#get_diagnosis').keyup(function() {
 
-        if(this.value.length < 4) return;
+        if(this.value.length < 4){
+            if(this.value.length == 0){
+                var ul_diagnosis_list = $('#ul-diagnosis-list');
+                ul_diagnosis_list.hide();
+            }
+            return;
+        }else{
+            $.ajax({
+                type: "POST",
+                url: "/export/get_diagnoses/",
+                data: {
+                    'search_text': $('#get_diagnosis').val(),
+                    'csrfmiddlewaretoken': $("input[name=csrfmiddlewaretoken]").val(),
+                },
+                success: searchSuccessDiagnoses,
+                dataType: 'html'
 
-        $.ajax({
-            type: "POST",
-            url: "/export/get_diagnoses/",
-            data: {
-                'search_text': $('#get_diagnosis').val(),
-                'csrfmiddlewaretoken': $("input[name=csrfmiddlewaretoken]").val(),
-            },
-            success: searchSuccessDiagnoses,
-            dataType: 'html'
+            });
+        }
 
-        });
     });
 
     function searchSuccessDiagnoses(data, textStatus, jqXHR) {
