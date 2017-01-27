@@ -238,10 +238,8 @@ msgid "TMS device is required"
 msgstr "O dispositivo TMS é necessário"
 
 #: experiment/forms.py:1158
-#, fuzzy
-#| msgid "Electrode is required"
 msgid "Coil model is required"
-msgstr "O eletrodo é necessário"
+msgstr "Modelo de bobina é necessário"
 
 #: experiment/models.py:17
 msgid "milisecond(s)"

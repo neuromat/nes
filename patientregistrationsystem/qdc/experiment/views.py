@@ -187,7 +187,7 @@ def research_project_view(request, research_project_id, template_name="experimen
                 collaborator.save()
                 messages.success(request, _('Is coordinator status successfully changed.'))
             except ProtectedError:
-                messages.error(request, _("Error trying to the status of the coordinator."))
+                messages.error(request, _("Error trying to change the status of the coordinator."))
             redirect_url = reverse("research_project_view", args=(research_project_id,))
             return HttpResponseRedirect(redirect_url)
 
