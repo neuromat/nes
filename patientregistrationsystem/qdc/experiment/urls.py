@@ -347,6 +347,17 @@ urlpatterns = patterns(
     #tms_data(ajax)
     url(r'^get_pulse_by_tms_setting/(?P<tms_setting_id>\d+)/$', 'get_pulse_by_tms_setting'),
 
+    # subject + digital_game_phase_data
+    url(r'^group/(?P<group_id>\d+)/subject/(?P<subject_id>\d+)/digital_game_phase/$',
+        'subject_digital_game_phase_view', name='subject_digital_game_phase_view'),
+    url(r'^group/(?P<group_id>\d+)/subject/(?P<subject_id>\d+)/digital_game_phase/'
+        r'(?P<digital_game_phase_configuration_id>[0-9-]+)/add_digital_game_phase_data/$',
+        'subject_digital_game_phase_data_create', name='subject_digital_game_phase_data_create'),
+    url(r'^digital_game_phase_data/(?P<digital_game_phase_data_id>\d+)/$',
+        'digital_game_phase_data_view', name='digital_game_phase_data_view'),
+    url(r'^digital_game_phase_data/edit/(?P<digital_game_phase_data_id>\d+)/$',
+        'digital_game_phase_data_edit', name='digital_game_phase_data_edit'),
+
     # subject + additional data
     url(r'^group/(?P<group_id>\d+)/subject/(?P<subject_id>\d+)/additional_data/$',
         'subject_additional_data_view', name='subject_additional_data_view'),

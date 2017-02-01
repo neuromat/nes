@@ -50,7 +50,7 @@ from experiment.models import Experiment, Subject, QuestionnaireResponse, Subjec
     EMGElectrodePlacement, EMGSurfacePlacement, TMS, TMSSetting, TMSDeviceSetting, TMSDevice, Software, \
     EMGIntramuscularPlacement, EMGNeedlePlacement, SubjectStepData, EMGPreamplifierFilterSetting, \
     EMGElectrodePlacementSetting, TMSData, ResearchProjectCollaboration, TMSLocalizationSystem, \
-    DigitalGamePhase, ContextTree
+    DigitalGamePhase, ContextTree, DigitalGamePhaseData
 
 from experiment.forms import ExperimentForm, QuestionnaireResponseForm, FileForm, GroupForm, InstructionForm, \
     ComponentForm, StimulusForm, BlockForm, ComponentConfigurationForm, ResearchProjectForm, NumberOfUsesToInsertForm, \
@@ -69,7 +69,7 @@ from experiment.forms import ExperimentForm, QuestionnaireResponseForm, FileForm
     SoftwareRegisterForm, SoftwareVersionRegisterForm, EMGIntramuscularPlacementForm, \
     EMGSurfacePlacementRegisterForm, EMGIntramuscularPlacementRegisterForm, EMGNeedlePlacementRegisterForm, \
     SubjectStepDataForm, EMGPreamplifierFilterSettingForm, CoilModelForm, TMSDataForm, TMSLocalizationSystemForm, \
-    HotSpotForm, CollaborationForm, DigitalGamePhaseForm, ContextTreeForm
+    HotSpotForm, CollaborationForm, DigitalGamePhaseForm, ContextTreeForm, DigitalGamePhaseDataForm
 
 from export.export import create_directory
 
@@ -3870,7 +3870,8 @@ def subjects(request, group_id, template_name="experiment/subjects.html"):
     experimental_protocol_info = {'number_of_questionnaires': 0,
                                   'number_of_eeg_data': 0,
                                   'number_of_emg_data': 0,
-                                  'number_of_tms_data': 0}
+                                  'number_of_tms_data': 0,
+                                  'number_of_digital_game_phase_data': 0}
 
     group = get_object_or_404(Group, id=group_id)
 
@@ -3897,11 +3898,15 @@ def subjects(request, group_id, template_name="experiment/subjects.html"):
         list_of_eeg_configuration = create_list_of_trees(group.experimental_protocol, "eeg")
         list_of_emg_configuration = create_list_of_trees(group.experimental_protocol, "emg")
         list_of_tms_configuration = create_list_of_trees(group.experimental_protocol, "tms")
+        list_of_digital_game_phase_configuration = create_list_of_trees(group.experimental_protocol,
+                                                                        "digital_game_phase")
 
         experimental_protocol_info = {'number_of_questionnaires': len(list_of_questionnaires_configuration),
                                       'number_of_eeg_data': len(list_of_eeg_configuration),
                                       'number_of_emg_data': len(list_of_emg_configuration),
-                                      'number_of_tms_data': len(list_of_tms_configuration)}
+                                      'number_of_tms_data': len(list_of_tms_configuration),
+                                      'number_of_digital_game_phase_data':
+                                          len(list_of_digital_game_phase_configuration)}
 
         # For each subject of the group...
         for subject_of_group in subject_list:
@@ -4007,11 +4012,29 @@ def subjects(request, group_id, template_name="experiment/subjects.html"):
                 percentage_of_tms_data_files_uploaded = \
                     100 * number_of_tms_data_files_uploaded / len(list_of_tms_configuration)
 
-            # If any questionnaire has responses or any eeg/emg/tms data file was uploaded,
+            # Digital game phase data files
+            number_of_digital_game_phase_data_files_uploaded = 0
+            # for each component_configuration of tms...
+            for digital_game_phase_configuration in list_of_digital_game_phase_configuration:
+                path = [item[0] for item in digital_game_phase_configuration]
+                data_configuration_tree_id = list_data_configuration_tree(path[-1], path)
+                digital_game_phase_data_files = \
+                    DigitalGamePhaseData.objects.filter(subject_of_group=subject_of_group,
+                                                        data_configuration_tree_id=data_configuration_tree_id)
+                if len(digital_game_phase_data_files):
+                    number_of_digital_game_phase_data_files_uploaded += 1
+
+            percentage_of_digital_game_phase_data_files_uploaded = 0
+            if len(list_of_digital_game_phase_configuration) > 0:
+                percentage_of_digital_game_phase_data_files_uploaded = \
+                    100 * number_of_digital_game_phase_data_files_uploaded / len(list_of_digital_game_phase_configuration)
+
+            # If any questionnaire has responses or any eeg/emg/tms/digital_game_phase data file was uploaded,
             # the subject can't be removed from the group.
             if number_of_eeg_data_files_uploaded or \
                     number_of_emg_data_files_uploaded or \
                     number_of_tms_data_files_uploaded or \
+                    number_of_digital_game_phase_data_files_uploaded or \
                     number_of_questionnaires_filled:
                 can_remove = False
 
@@ -4032,6 +4055,11 @@ def subjects(request, group_id, template_name="experiment/subjects.html"):
                  'number_of_tms_data_files_uploaded': number_of_tms_data_files_uploaded,
                  'total_of_tms_data_files': len(list_of_tms_configuration),
                  'percentage_of_tms_data_files_uploaded': int(percentage_of_tms_data_files_uploaded),
+
+                 'number_of_digital_game_phase_data_files_uploaded': number_of_digital_game_phase_data_files_uploaded,
+                 'total_of_digital_game_phase_data_files': len(list_of_digital_game_phase_configuration),
+                 'percentage_of_digital_game_phase_data_files_uploaded':
+                     int(percentage_of_digital_game_phase_data_files_uploaded),
 
                  'number_of_additional_data_uploaded':
                      AdditionalData.objects.filter(subject_of_group=subject_of_group).count()},
@@ -5779,7 +5807,6 @@ def tms_data_edit(request, tms_data_id, tab):
                 hotspot_form = HotSpotForm(request.POST or None)
                 localization_system_selected = None
 
-
     context = {"group": tms_data.subject_of_group.group,
                "subject": tms_data.subject_of_group.subject,
                "tms_data_form": tms_data_form,
@@ -5794,6 +5821,192 @@ def tms_data_edit(request, tms_data_id, tab):
                }
 
     return render(request, template_name, context)
+
+
+@login_required
+@permission_required('experiment.view_researchproject')
+def subject_digital_game_phase_view(request, group_id, subject_id,
+                                    template_name="experiment/subject_digital_game_phase_collection_list.html"):
+    group = get_object_or_404(Group, id=group_id)
+    subject = get_object_or_404(Subject, id=subject_id)
+
+    digital_game_phase_collections = []
+
+    list_of_paths = create_list_of_trees(group.experimental_protocol, "digital_game_phase")
+
+    subject_of_group = get_object_or_404(SubjectOfGroup, group=group, subject=subject)
+
+    for path in list_of_paths:
+
+        digital_game_phase_configuration = ComponentConfiguration.objects.get(pk=path[-1][0])
+
+        data_configuration_tree_id = \
+            list_data_configuration_tree(digital_game_phase_configuration.id, [item[0] for item in path])
+
+        digital_game_phase_data_files = DigitalGamePhaseData.objects.filter(
+            subject_of_group=subject_of_group, data_configuration_tree__id=data_configuration_tree_id)
+
+        digital_game_phase_collections.append(
+            {'digital_game_phase_configuration': digital_game_phase_configuration,
+             'path': path,
+             'digital_game_phase_data_files': digital_game_phase_data_files}
+        )
+
+    context = {"can_change": get_can_change(request.user, group.experiment.research_project),
+               'group': group,
+               'subject': subject,
+               'digital_game_phase_collections': digital_game_phase_collections
+               }
+
+    return render(request, template_name, context)
+
+
+@login_required
+@permission_required('experiment.add_questionnaireresponse')
+def subject_digital_game_phase_data_create(request, group_id, subject_id, digital_game_phase_configuration_id,
+                                           template_name="experiment/subject_digital_game_phase_data_form.html"):
+
+    group = get_object_or_404(Group, id=group_id)
+
+    list_of_path = [int(item) for item in digital_game_phase_configuration_id.split('-')]
+    digital_game_phase_configuration_id = list_of_path[-1]
+
+    check_can_change(request.user, group.experiment.research_project)
+
+    digital_game_phase_configuration = get_object_or_404(ComponentConfiguration, id=digital_game_phase_configuration_id)
+
+    redirect_url = None
+    digital_game_phase_data_id = None
+
+    digital_game_phase_data_form = DigitalGamePhaseDataForm(None, initial={'experiment': group.experiment})
+
+    if request.method == "POST":
+        if request.POST['action'] == "save":
+
+            digital_game_phase_data_form = DigitalGamePhaseDataForm(request.POST, request.FILES)
+
+            if digital_game_phase_data_form.is_valid():
+
+                data_configuration_tree_id = list_data_configuration_tree(digital_game_phase_configuration_id,
+                                                                          list_of_path)
+                if not data_configuration_tree_id:
+                    data_configuration_tree_id = create_data_configuration_tree(list_of_path)
+
+                subject = get_object_or_404(Subject, pk=subject_id)
+                subject_of_group = get_object_or_404(SubjectOfGroup, subject=subject, group_id=group_id)
+
+                digital_game_phase_data_added = digital_game_phase_data_form.save(commit=False)
+                digital_game_phase_data_added.subject_of_group = subject_of_group
+                digital_game_phase_data_added.component_configuration = digital_game_phase_configuration
+                digital_game_phase_data_added.data_configuration_tree_id = data_configuration_tree_id
+
+                # PS: it was necessary adding these 2 lines because Django raised, I do not why (Evandro),
+                # the following error 'DigitalGamePhaseData' object has no attribute 'group'
+                digital_game_phase_data_added.group = group
+                digital_game_phase_data_added.subject = subject
+
+                digital_game_phase_data_added.save()
+
+                messages.success(request, _('Digital game phase data collection created successfully.'))
+
+                redirect_url = reverse("digital_game_phase_data_view", args=(digital_game_phase_data_added.id,))
+                return HttpResponseRedirect(redirect_url)
+
+    context = {"can_change": True,
+               "creating": True,
+               "editing": True,
+               "group": group,
+               "digital_game_phase_configuration": digital_game_phase_configuration,
+               "digital_game_phase_data_form": digital_game_phase_data_form,
+               "digital_game_phase_data_id": digital_game_phase_data_id,
+               "subject": get_object_or_404(Subject, pk=subject_id),
+               "URL": redirect_url
+               }
+
+    return render(request, template_name, context)
+
+
+@login_required
+@permission_required('experiment.change_experiment')
+def digital_game_phase_data_view(request, digital_game_phase_data_id,
+                                 template_name="experiment/subject_digital_game_phase_data_form.html"):
+
+    digital_game_phase_data = get_object_or_404(
+        DigitalGamePhaseData,
+        pk=digital_game_phase_data_id)
+
+    digital_game_phase_data_form = DigitalGamePhaseDataForm(request.POST or None, instance=digital_game_phase_data)
+
+    for field in digital_game_phase_data_form.fields:
+        digital_game_phase_data_form.fields[field].widget.attrs['disabled'] = True
+
+    if request.method == "POST":
+        if request.POST['action'] == "remove":
+
+            check_can_change(request.user, digital_game_phase_data.subject_of_group.group.experiment.research_project)
+
+            subject_of_group = digital_game_phase_data.subject_of_group
+            digital_game_phase_data.delete()
+            messages.success(request, _('Digital game phase data removed successfully.'))
+            return redirect('subject_digital_game_phase_view',
+                            group_id=subject_of_group.group_id,
+                            subject_id=subject_of_group.subject_id)
+
+    context = {"can_change": get_can_change(request.user,
+                                            digital_game_phase_data.subject_of_group.group.experiment.research_project),
+               "editing": False,
+               "group": digital_game_phase_data.subject_of_group.group,
+               "subject": digital_game_phase_data.subject_of_group.subject,
+               "digital_game_phase_data_form": digital_game_phase_data_form,
+               "digital_game_phase_data": digital_game_phase_data
+               }
+
+    return render(request, template_name, context)
+
+
+@login_required
+@permission_required('experiment.change_experiment')
+def digital_game_phase_data_edit(request, digital_game_phase_data_id):
+
+    digital_game_phase_data = get_object_or_404(
+        DigitalGamePhaseData, pk=digital_game_phase_data_id)
+
+    check_can_change(request.user, digital_game_phase_data.subject_of_group.group.experiment.research_project)
+
+    if request.method == "POST" and request.POST['action'] == "save":
+
+        digital_game_phase_data_form = DigitalGamePhaseDataForm(request.POST, request.FILES,
+                                                                instance=digital_game_phase_data)
+        if digital_game_phase_data_form.is_valid() and digital_game_phase_data_form.has_changed():
+
+            digital_game_phase_data_to_update = digital_game_phase_data_form.save(commit=False)
+            digital_game_phase_data_to_update.group = digital_game_phase_data.subject_of_group.group
+            digital_game_phase_data_to_update.subject = digital_game_phase_data.subject_of_group.subject
+            digital_game_phase_data_to_update.save()
+
+            messages.success(request, _('Digital game phase data updated successfully.'))
+        else:
+            messages.success(request, _('There is no changes to save.'))
+
+        redirect_url = reverse("digital_game_phase_data_view", args=(digital_game_phase_data_id,))
+
+        return HttpResponseRedirect(redirect_url)
+
+    else:
+
+        digital_game_phase_data_form = DigitalGamePhaseDataForm(
+            request.POST or None,
+            instance=digital_game_phase_data,
+            initial={'experiment': digital_game_phase_data.subject_of_group.group.experiment})
+
+    context = {"group": digital_game_phase_data.subject_of_group.group,
+               "subject": digital_game_phase_data.subject_of_group.subject,
+               "digital_game_phase_data_form": digital_game_phase_data_form,
+               "digital_game_phase_data": digital_game_phase_data,
+               "editing": True
+               }
+
+    return render(request, "experiment/subject_digital_game_phase_data_form.html", context)
 
 
 def get_pulse_stimulus_name(pulse_stimulus_type):

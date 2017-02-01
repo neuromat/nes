@@ -16,7 +16,7 @@ from experiment.models import Experiment, QuestionnaireResponse, SubjectOfGroup,
     ADConverter, StandardizationSystem, Muscle, MuscleSide, MuscleSubdivision, TMS, TMSSetting, TMSDeviceSetting, \
     Software, SoftwareVersion, CoilModel, TMSDevice, EMGIntramuscularPlacement, EMGNeedlePlacement, SubjectStepData, \
     EMGPreamplifierFilterSetting, TMSData, HotSpot, CoilOrientation, DirectionOfTheInducedCurrent, \
-    ResearchProjectCollaboration, TMSLocalizationSystem, DigitalGamePhase, ContextTree
+    ResearchProjectCollaboration, TMSLocalizationSystem, DigitalGamePhase, ContextTree, DigitalGamePhaseData
 
 
 class ExperimentForm(ModelForm):
@@ -1277,6 +1277,33 @@ class ContextTreeForm(ModelForm):
             'description': Textarea(attrs={'class': 'form-control',
                                            'rows': '4', 'required': "",
                                            'data-error': _('Description must be filled.')}),
-            'setting_text': Textarea(attrs={'class': 'form-control',
-                                           'rows': '4'})
+            'setting_text': Textarea(attrs={'class': 'form-control', 'rows': '4'})
         }
+
+
+class DigitalGamePhaseDataForm(ModelForm):
+    class Meta:
+        model = DigitalGamePhaseData
+
+        fields = ['date', 'time', 'file_format', 'description', 'file', 'file_format_description']
+
+        widgets = {
+            'date': DateInput(format=_("%m/%d/%Y"),
+                              attrs={'class': 'form-control datepicker', 'placeholder': _('mm/dd/yyyy'),
+                                     'required': "",
+                                     'data-error': _("Fill date must be filled.")}, ),
+            'time': TimeInput(attrs={'class': 'form-control', 'placeholder': 'HH:mm:ss'}),
+            'file_format': Select(attrs={'class': 'form-control', 'required': "",
+                                         'data-error': _('File format must be chosen.')}),
+            'description': Textarea(attrs={'class': 'form-control',
+                                           'rows': '4', 'required': "",
+                                           'data-error': _('Description must be filled.')}),
+            'file_format_description': Textarea(attrs={'class': 'form-control',
+                                                       'rows': '4', 'required': "",
+                                                       'data-error': _('File format description must be filled.')}),
+            # It is not possible to set the 'required' attribute because it affects the edit screen
+            # 'file': FileInput(attrs={'required': ""})
+        }
+
+    def __init__(self, *args, **kwargs):
+        super(DigitalGamePhaseDataForm, self).__init__(*args, **kwargs)
