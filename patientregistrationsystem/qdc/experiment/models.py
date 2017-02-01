@@ -85,6 +85,8 @@ class Experiment(models.Model):
     title = models.CharField(null=False, max_length=150, blank=False)
     description = models.TextField(null=False, blank=False)
     research_project = models.ForeignKey(ResearchProject, null=False, blank=False)
+    is_public = models.BooleanField(default=False)
+    data_acquisition_is_concluded = models.BooleanField(default=False)
 
     # Audit trail - Simple History
     history = HistoricalRecords()

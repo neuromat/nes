@@ -23,7 +23,7 @@ class ExperimentForm(ModelForm):
     class Meta:
         model = Experiment
 
-        fields = ['research_project', 'title', 'description']
+        fields = ['research_project', 'title', 'description', 'is_public', 'data_acquisition_is_concluded']
 
         widgets = {
             'research_project': Select(attrs={'class': 'form-control'}),

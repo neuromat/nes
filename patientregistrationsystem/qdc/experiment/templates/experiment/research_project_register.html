@@ -164,17 +164,16 @@
                     </div>
                 </div>
 
-
                 <div class="container span6 offset3 well ">
                     <h4>{% trans "Collaborators" %}</h4>
                     <div class="form-group">
                         <table class="table table-striped">
                             <thead>
                                 <tr>
-                                    <td style="text-align: left">{% trans "Person" %}</td>
-                                    <td style="text-align: left">{% trans "Team" %}</td>
-                                    <td style="text-align: right">{% trans "Is_coordinator" %}</td>
-                                    <td style="text-align: right">{% trans "Remove" %}</td>
+                                    <th style="text-align: left">{% trans "Person" %}</th>
+                                    <th style="text-align: left">{% trans "Team" %}</th>
+                                    <th style="text-align: center">{% trans "Is_coordinator" %}</th>
+                                    <th style="text-align: center">{% trans "Remove" %}</th>
                                 </tr>
                             </thead>
                             <tbody>
@@ -188,7 +187,7 @@
                                         {{ collaborator.team_person.team.name }}
                                     </td>
 
-                                    <td style="text-align: right">
+                                    <td style="text-align: center">
                                         {% if collaborator.is_coordinator %}
                                             <a href="#"><span class="glyphicon glyphicon-check" onclick="show_modal_alter_coll_is_coordinator({{ collaborator.id }});"></span></a>
                                         {% else %}
@@ -196,7 +195,7 @@
                                         {% endif %}
                                     </td>
 
-                                    <td style="text-align: right">
+                                    <td style="text-align: center">
                                         {% if can_change %}
                                             <a class="btn glyphicon glyphicon-remove" style="color: indianred;" data-toggle="tooltip" data-placement="right" onclick="show_modal_remove_collaborator({{ collaborator.id }});" title="{% trans "Remove person from the collaboration team" %}"></a>
                                         {% endif %}
@@ -204,7 +203,6 @@
 
                                 </tr>
                             {% endfor %}
-
 
                             </tbody>
                         </table>
@@ -216,7 +214,6 @@
                     {% endif %}
                 </div>
 
-
                 <div class="container span6 offset3 well ">
                     <h4>{% trans "Experiments" %}</h4>
                     <div class="form-group">
@@ -225,6 +222,8 @@
                                 <tr>
                                     <th>{% trans "Title" %}</th>
                                     <th>{% trans "Description" %}</th>
+                                    <th style="text-align: center">{% trans "Is public" %}</th>
+                                    <th style="text-align: center">{% trans "Data acquisition is concluded" %}</th>
                                 </tr>
                             </thead>
                             <tbody>
@@ -236,6 +235,8 @@
                                         {{ experiment.title }}
                                         {% endif %}
                                     <td>{{ experiment.description }}</td>
+                                    <td style="text-align: center">{% if experiment.is_public %}<span class="glyphicon glyphicon-ok" style="color: royalblue"></span> {% endif %}</td>
+                                    <td style="text-align: center">{% if experiment.data_acquisition_is_concluded %}<span class="glyphicon glyphicon-ok" style="color: royalblue"></span> {% endif %}</td>
                                 </tr>
                             {% endfor %}
                             </tbody>
