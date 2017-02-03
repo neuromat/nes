@@ -106,8 +106,12 @@
                             {% if editing %}
                                 {{ context_tree_form.setting_file }}
                             {% else %}
-                                {{ context_tree_form.setting_file.value }}
-                                <button class="btn btn-default" type="button" onclick="location.href='{{ context_tree.setting_file.url }}'"><span class="glyphicon glyphicon-download-alt" style="color: royalblue"></span></button>
+                                {% if context_tree_form.setting_file.value %}
+                                    {{ context_tree_form.setting_file.value }}
+                                    <button class="btn btn-default" type="button" onclick="location.href='{{ context_tree.setting_file.url }}'"><span class="glyphicon glyphicon-download-alt" style="color: royalblue"></span></button>
+                                {% else %}
+                                    {% trans "There is no setting file associated." %}
+                                {% endif %}
                             {% endif %}
                             <div class="help-block with-errors">
                                 {% for error in context_tree_form.setting_file.errors %}
