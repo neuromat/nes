@@ -1276,7 +1276,7 @@ def list_data_configuration_tree(eeg_configuration_id, list_of_path):
 
 
 def search_locations(request):
-    location_list = ''
+    location_list = []
 
     if request.method == "POST":
         search_text = request.POST['search_text']
@@ -1290,22 +1290,35 @@ def search_locations(request):
 
 
 def search_diagnoses(request):
-    diagnosis_list = ''
 
-    if request.method == "POST":
-        search_text = request.POST['search_text']
+    classification_of_diseases_list = []
+    # if request.method == "POST":
+    if request.is_ajax():
+        search_text = request.GET.get('term', '')
+        # search_text = request.POST['search_text']
 
         if search_text:
-            if re.match('[a-zA-Z ]+', search_text):
-                # classification_of_diseases_list = \
-                #     Diagnosis.objects.filter(classification_of_diseases__description__icontains=search_text).\
-                #         distinct('classification_of_diseases')
-                classification_of_diseases_list =  ClassificationOfDiseases.objects.\
-                    filter(Q(abbreviated_description__icontains=search_text) | Q(description__icontains=search_text) |
-                           Q(code__icontains=search_text)).distinct('description')
+            classification_of_diseases_list = Diagnosis.objects.filter(
+                Q(classification_of_diseases__description__icontains=search_text) |
+                Q(classification_of_diseases__description__icontains=search_text) |
+                Q(classification_of_diseases__code__icontains=search_text)).values(
+                'classification_of_diseases_id','classification_of_diseases__abbreviated_description',
+                'classification_of_diseases__code').distinct()
 
-        return render_to_response('export/diagnoses.html',
-                                  {'classification_of_diseases_list': classification_of_diseases_list})
+            results = []
+            for classification_of_diseases in classification_of_diseases_list:
+                label = classification_of_diseases['classification_of_diseases__code'] + ' - ' + classification_of_diseases['classification_of_diseases__abbreviated_description']
+                diseases_dict = {'id': classification_of_diseases['classification_of_diseases_id'],
+                                 'label': label,
+                                 'value': classification_of_diseases['classification_of_diseases__abbreviated_description']}
+                results.append(diseases_dict)
+            data = json.dumps(results)
+        else:
+            data = 'fail'
+
+        mimetype = 'application/json'
+
+        return HttpResponse(data, mimetype)
 
 
 def select_experiments_by_study(request, study_id):

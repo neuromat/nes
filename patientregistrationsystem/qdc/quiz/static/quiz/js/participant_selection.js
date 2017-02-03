@@ -20,14 +20,16 @@ $(document).ready(function () {
     
     var location_checkbox = $("#id_location_checkbox");
     var diagnosis_checkbox = $("#id_diagnosis_checkbox");
-    // var choose_radio = $("#id_choose_radio");
+    var diseases_checkbox = $("#id_diseases_checkbox");
     var get_location = $("#get_location");
     var get_diagnosis = $("#get_diagnosis");
+    var get_diseases = $("#get_diseases");
 
     selected_participants_radio.click(function () {
         // choose_radio.prop('disabled', true);
         get_location.prop('disabled', true);
         get_diagnosis.prop('disabled', true);
+        get_diseases.prop('disabled', true);
         participants_filter_div.prop('disabled', false);
         participants_filter_div.css('visibility', 'visible');
         participants_filter_div.collapse('show')
@@ -98,6 +100,20 @@ $(document).ready(function () {
 
     })
 
+    diseases_checkbox.click(function () {
+        if (diseases_checkbox.is(":checked"))
+            $('#get_diseases').prop('disabled', false);
+        else{
+            $('#get_diseases').val("");
+            $('#get_diseases').prop('disabled', true);
+            var ul_diagnosis_list = $('#ul-diagnosis-list');
+            ul_diagnosis_list.hide();
+            var div_diagnosis_list = $('#diagnosis_list');
+            div_diagnosis_list.hide();
+        }
+
+    })
+
     $('#get_location').keyup(function() {
         
         if(this.value.length == 0){
@@ -124,44 +140,94 @@ $(document).ready(function () {
         $('#search-results-locations').html(data);
     }
 
-    $('#get_diagnosis').keyup(function() {
+    // $('#get_diagnosis').keyup(function() {
+        // var get_diagnosis = $('#get_diagnosis');
 
-        if(this.value.length < 4){
-            if(this.value.length == 0){
-                var ul_diagnosis_list = $('#ul-diagnosis-list');
-                ul_diagnosis_list.hide();
-            }
-            return;
-        }else{
-            $.ajax({
-                type: "POST",
-                url: "/export/get_diagnoses/",
-                data: {
-                    'search_text': $('#get_diagnosis').val(),
-                    'csrfmiddlewaretoken': $("input[name=csrfmiddlewaretoken]").val(),
-                },
-                success: searchSuccessDiagnoses,
-                dataType: 'html'
-
-            });
-        }
-
-    });
+        // $.ajax({
+        //     type: "POST",
+        //     url: "/export/get_diagnoses/",
+        //     minLength: 2,
+        //     data: {
+        //         'search_text': $('#get_diagnosis').val(),
+        //         'csrfmiddlewaretoken': $("input[name=csrfmiddlewaretoken]").val(),
+        //     },
+        //     success: searchSuccessDiagnoses,
+        //     dataType: 'html'
+        //
+        // });
+    
+    // });
+    
 
     function searchSuccessDiagnoses(data, textStatus, jqXHR) {
         $('#search-results-diagnoses').html(data);
     }
     
-    $('#id_research_projects').click(function () {
+    $('#get_diseases').keyup(function() {
+        var get_diseases = $('#get_diseases');
         $.ajax({
             type: "POST",
-            url: "/export/select_experiments/" + $('#research_project_id').val,
-        })
-        
-    })
+            url: "/experiment/group_diseases/cid-10/",
+            data: {
+                'search_text': (get_diseases.val().length >= 3 ? get_diseases.val() : ''),
+                'csrfmiddlewaretoken': $("input[name=csrfmiddlewaretoken]").val(),
+                'group_id': ''
+            },
+            success: searchSuccessDiseases,
+            dataType: 'html'
+
+        });
+    });
+
+    function searchSuccessDiseases(data, textStatus, jqXHR) {
+        $('#search-results-diagnoses').html(data);
+    }
 
 
 });
+
+// $( function() {
+//     function log( message ) {
+//       $( "<div>" ).text( message ).prependTo( "#log" );
+//       $( "#log" ).scrollTop( 0 );
+//     }
+//
+//     $("#birds").autocomplete({
+//        source: "/export/get_diagnoses",
+//        minLength: 2,
+//        select:function (event, ui) {
+//            log("Selected: " + ui.item.value + " - " + ui.item.id);
+//        }
+//     });
+ 
+  //   $( "#birds" ).autocomplete({
+  //     source: function( request, response ) {
+  //       $.ajax( {
+  //         url: "/export/get_diagnoses/",
+  //         dataType: "json",
+  //         data: {
+  //           term: request.term
+  //         },
+  //         success: function( data ) {
+  //           // response( data );
+  //             for(var i=0; i<data.length; i++){
+  //                 diseases_id = data[i].classification_of_diseases_id;
+  //                 diseases_name = data[i].classification_of_diseases__abbreviated_description;
+  //                 diseases_code = data[i].classification_of_diseases__code;
+  //                 $('#search-results-diagnoses').append('<li><a href="#" onclick="add_disease(diseases_id, diseases_name); return false;">'+ diseases_code + '-' + diseases_name + '</a></li>');
+  //             }
+  //
+  //         }
+  //       } );
+  //     },
+  //     minLength: 2,
+  //     // select: function( event, ui ) {
+  //     //   log( "Selected: " + ui.item.value + " aka " + ui.item.id );
+  //     // }
+  //   } );
+  // } );
+
+
 
 function show_modal_remove (subject_id){
         var  modal_remove = document.getElementById('remove-participant');
@@ -235,10 +301,12 @@ function add_disease(id, disease){
     //remove um item da lista de resultados
     var ul_search_diagnoses = document.getElementById('search-results-diagnoses');
     var ul_diagnosis_list = document.getElementById('ul-diagnosis-list');
-    ul_search_diagnoses.removeChild(ul_diagnosis_list);
+    if(ul_diagnosis_list != null) ul_search_diagnoses.removeChild(ul_diagnosis_list);
 
     //limpa o campo de entrada para a busca por cidade
     var input_diagnosis = document.getElementById("get_diagnosis");
+    if(input_diagnosis == null)
+        input_diagnosis = document.getElementById("get_diseases");
     input_diagnosis.value = "";
 
     //checkbox

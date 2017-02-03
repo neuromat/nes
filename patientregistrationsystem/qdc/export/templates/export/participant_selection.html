@@ -4,6 +4,18 @@
 
 {% block header %}
     {% load static %}
+    <script>
+    $(function () {
+        $("#get_diagnosis").autocomplete({
+            source: "/export/get_diagnoses",
+            minLength: 2,
+            select: function (event, ui) {
+                add_disease(ui.item.id, ui.item.value);
+            }
+        });
+
+    });
+    </script>
     <script src="{% static 'quiz/js/participant_selection.js' %}"></script>
 
     {% block specific_header %}
@@ -42,6 +54,7 @@
                             {% trans "All participants" %}
                         </input>
                     </div>
+
                     <div class="radio">
                         <input id="id_type_of_selection_radio_1" name="type_of_selection_radio" type="radio" value="selected">
                             {% trans "Selected participants" %}
@@ -80,33 +93,8 @@
                         </div>
 
                         <div id="id_locations" class="panel panel-default" style="border:1px solid lightgray;">
-{#                            <div class="panel-heading"><b>{% trans "Locations" %}</b></div>#}
                             <div class="panel-body" style="background-color: whitesmoke">
-{#                                <div class="row">#}
-{#                                    <div class="col-xs-6 col-sm-6">#}
-{#                                        <div class="radio" style="margin-top: 0px">#}
-{#                                            <input id="id_all_countries_radio" name="all_countries_radio" type="radio" value="all">#}
-{#                                                {% trans "All cities" %}#}
-{#                                            </input>#}
-{#                                        </div>#}
-{#                                    </div>#}
-{#                                    <div class="col-xs-6 col-sm-6">#}
-{#                                        <div class="col-xs-6 col-sm-6">#}
-{#                                            <input id="id_brazil_checkbox" name="brazil_checkbox" type="checkbox" value="brazil" >#}
-{#                                                {% trans "Rio de Janeiro" %}#}
-{#                                            </input>#}
-{#                                        </div>#}
-{#                                    </div>#}
-{#                                </div>#}
-{#                                <div class="row">#}
-{#                                    <div class="col-xs-12 col-sm-12">#}
-{#                                        <div class="radio" style="margin-top: 0px">#}
-{#                                            <input id="id_choose_radio" name="all_choose_radio" type="radio" value="choose">#}
-{#                                                {% trans "Choose a city ..." %}#}
-{#                                            </input>#}
-{#                                        </div>#}
-{#                                    </div>#}
-{#                                </div>#}
+
                                 <div class="row">
                                     <div id="div-search-locations" class="col-xs-12 col-sm-12">
                                         <div class="input-group input-group-sm">
@@ -136,20 +124,28 @@
                             </input>
                         </div>
 
-                        <div id="id_age" class="panel panel-default" style="border:1px solid lightgray;">
+                        <div id="id_diagnosis" class="panel panel-default" style="border:1px solid lightgray;">
                             <div class="panel-body" style="background-color: whitesmoke">
                                 <div class="row">
                                     <div class="col-xs-12 col-sm-12">
-                                        <div class="input-group input-group-sm">
-                                            <span class="input-group-addon"> <span class="glyphicon glyphicon-search"></span></span>
-                                            <input class="form-control" id="get_diagnosis" type="text"
-                                                   placeholder="{% trans "Enter a diagnosis" %}">
+
+                                        <div class="ui-widget" style="margin-top: 2em; font-family: Arial">
+{#                                          <label for="diagnosis">Diagnostico: </label>#}
+                                          <input id="get_diagnosis">
                                         </div>
-                                        {% csrf_token %}
-                                        <ul id="search-results-diagnoses" style="list-style: none;">
-                                        </ul>
+
+{#                                        <div class="input-group input-group-sm">#}
+{#                                            <span class="input-group-addon"> <span class="glyphicon glyphicon-search"></span></span>#}
+{#                                            <input class="form-control" id="get_diagnosis" type="text"#}
+{#                                                   placeholder="{% trans "Enter a diagnosis" %}">#}
+{#                                            #}
+{#                                        </div>#}
+{#                                        {% csrf_token %}#}
+{#                                        <ul id="search-results-diagnoses" style="list-style: none;">#}
+{#                                        </ul>#}
                                     </div>
                                 </div>
+
                                 <div class="row">
                                     <div class="col-xs-12 col-sm-12">
                                         <div id="diagnosis_list" class="form-group">

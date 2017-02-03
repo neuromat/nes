@@ -134,6 +134,10 @@
 {#                                </div>#}
                                 <div class="row">
                                     <div id="div-search-locations" class="col-xs-12 col-sm-12">
+                                        <div hidden="hidden">
+                                            <input id="group_id" value="{{ group.id }}" type="text">
+                                        </div>
+
                                         <div class="input-group input-group-sm">
                                             <span class="input-group-addon"> <span class="glyphicon glyphicon-search"></span></span>
                                             <input class="form-control" id="get_location" type="text"
@@ -161,7 +165,7 @@
                         </div>
 
                         <div class="form-group">
-                            <input id="id_diagnosis_checkbox" name="diagnosis_checkbox" type="checkbox" value="diagnosis_selected">
+                            <input id="id_diseases_checkbox" name="diseases_checkbox" type="checkbox" value="diseases_selected">
                                 {% trans "Diagnosis" %}
                             </input>
                         </div>
@@ -172,7 +176,7 @@
                                     <div class="col-xs-12 col-sm-12">
                                         <div class="input-group input-group-sm">
                                             <span class="input-group-addon"> <span class="glyphicon glyphicon-search"></span></span>
-                                            <input class="form-control" id="get_diagnosis" type="text"
+                                            <input class="form-control" id="get_diseases" type="text"
                                                    placeholder="{% trans "Enter a diagnosis" %}">
                                         </div>
                                         {% csrf_token %}
