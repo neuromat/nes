@@ -326,9 +326,9 @@ class ExportQuestionnaireTest(TestCase):
         response = self.client.get(reverse('export_view'))
         self.assertEqual(response.status_code, 200)
 
-        questionnaire_selected = ["271192*title*id*id",
-                                  "271192*title*famliacanhoto2*famliacanhoto2",
-                                  "271192*title*idteste[1][1]*idteste[1][1]"]
+        questionnaire_selected = ["0*271192*title*id*id",
+                                  "0*271192*title*famliacanhoto2*famliacanhoto2",
+                                  "0*271192*title*idteste[1][1]*idteste[1][1]"]
 
         patient_selected = ["id*id"]
 
@@ -478,8 +478,8 @@ class InputExportTest(TestCase):
         self.assertIn("participants", input_data.data)
 
         questionnaire_list = [
-            (271192, "title", [("header1", "field1")]),
-            (271193, "title", [("header2", "field2")])
+            (0, 271192, "title", [("header1", "field1")]),
+            (1, 271193, "title", [("header2", "field2")])
         ]
 
         self.assertNotIn("questionnaires", input_data.data)
@@ -496,8 +496,8 @@ class InputExportTest(TestCase):
             ]
 
         questionnaires_list = [
-            (271192, "title", [("header1", "field1")]),
-            (271193, "title", [("header2", "field2")])
+            (0, 271192, "title", [("header1", "field1")]),
+            (1, 271193, "title", [("header2", "field2")])
         ]
 
         diagnosis_field_header_list = ""

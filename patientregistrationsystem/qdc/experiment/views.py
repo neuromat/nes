@@ -4283,7 +4283,7 @@ def subject_questionnaire_response_start_fill_questionnaire(request, subject_id,
         questionnaire_response.subject_of_group = subject_of_group
         questionnaire_response.component_configuration = questionnaire_config
         questionnaire_response.token_id = result['token_id']
-        questionnaire_response.date = datetime.datetime.strptime(request.POST['date'], _('%m/%d/%Y'))
+        questionnaire_response.date = datetime.strptime(request.POST['date'], _('%m/%d/%Y'))
         questionnaire_response.questionnaire_responsible = request.user
         questionnaire_response.save()
 

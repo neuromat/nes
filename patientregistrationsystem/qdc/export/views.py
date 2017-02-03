@@ -772,15 +772,18 @@ def update_questionnaire_list(questionnaire_list, heading_type, current_language
 
         # position 0: id, postion 1: title
 
-        questionnaire_id = questionnaire[0]
+        questionnaire_id = questionnaire[1]
 
         # position 2: output_list (field, header)
-        fields, headers = zip(*questionnaire[2])
+        fields, headers = zip(*questionnaire[3])
 
         questionnaire_field_header = get_questionnaire_header(questionnaire_lime_survey, questionnaire_id,
                                                               fields, heading_type, current_language)
 
-        questionnaire_list_updated.append([questionnaire_id, questionnaire[1], questionnaire_field_header])
+        questionnaire_list_updated.append([questionnaire[0],
+                                           questionnaire_id,
+                                           questionnaire[2],
+                                           questionnaire_field_header])
 
     questionnaire_lime_survey.release_session_key()
 
