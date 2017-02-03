@@ -1039,7 +1039,7 @@ class TMSData(DataCollection):
     time_between_mep_trials_unit = models.CharField(null=True, blank=True, max_length=15, choices=TIME_UNITS)
     repetitive_pulse_frequency = models.IntegerField(null=True, blank=True, validators=[MinValueValidator(0)])
     coil_orientation = models.ForeignKey(CoilOrientation, null=True, blank=True)
-    coil_orientation_angle = models.IntegerField(null=True,blank=True,validators=[MinValueValidator(0)])
+    coil_orientation_angle = models.IntegerField(null=True, blank=True, validators=[MinValueValidator(0)])
     direction_of_induced_current = models.ForeignKey(DirectionOfTheInducedCurrent, null=True, blank=True)
     description = models.TextField(null=False, blank=False)
 

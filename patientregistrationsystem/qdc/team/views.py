@@ -14,6 +14,7 @@ from django.utils.translation import ugettext as _
 from .forms import PersonRegisterForm, TeamRegisterForm, TeamPersonRegisterForm, UserPersonForm
 from .models import Person, Team, TeamPerson
 
+
 @login_required
 @permission_required('team.change_team')
 def registers(request, template_name="team/registers.html"):
@@ -143,7 +144,6 @@ def person_view(request, person_id, template_name="team/person_register.html"):
     person = get_object_or_404(Person, pk=person_id)
 
     person_form = PersonRegisterForm(request.POST or None, instance=person)
-    # user_form = UserPersonForm(request.POST or None)
 
     group_permissions = []
 
@@ -157,13 +157,6 @@ def person_view(request, person_id, template_name="team/person_register.html"):
 
     for field in person_form.fields:
         person_form.fields[field].widget.attrs['disabled'] = True
-
-
-
-        # user = get_object_or_404(User, pk=user_id)
-
-    # if user and user.is_active:
-    #     form = UserFormUpdate(request.POST or None, instance=user)
 
     if request.method == "POST":
         if request.POST['action'] == "remove":
@@ -405,6 +398,7 @@ def team_update(request, team_id, template_name="team/team_register.html"):
 
     return render(request, template_name, context)
 
+
 @login_required
 @permission_required('team.add_team')
 def team_person_create(request, team_id, template_name="team/team_person_register.html"):
@@ -431,4 +425,3 @@ def team_person_create(request, team_id, template_name="team/team_person_registe
                }
 
     return render(request, template_name, context)
-

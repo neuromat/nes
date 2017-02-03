@@ -379,7 +379,7 @@ def export_create(request, export_id, input_filename, template_name="export/expo
 
         # process per questionnaire data
 
-        #### gady ##################
+        # ### gady ##################
         error_msg = export.process_per_questionnaire()
         if error_msg != "":
             messages.error(request, error_msg)
@@ -621,38 +621,6 @@ def export_view(request, template_name="export/export_data.html"):
                 for diagnosis in diagnosis_list:
                     selected_diagnosis.append(diagnosis[0])
         else:
-            # if not questionnaires_selected_list
-            # if not questionnaires_selected_list:
-            #     # per_participant = export_form.cleaned_data['per_participant']
-            #     per_participant = True
-            #     export_instance = create_export_instance(request.user)
-            #     input_export_file = path.join(EXPORT_DIRECTORY,
-            #                                   path.join(str(request.user.id),
-            #                                             path.join(str(export_instance.id), str(JSON_FILENAME))))
-            #
-            #     # copy data to .../media/export/<user_id>/<export_id>/
-            #     input_filename = path.join(settings.MEDIA_ROOT, input_export_file)
-            #     create_directory(settings.MEDIA_ROOT, path.split(input_export_file)[0])
-            #
-            #     build_partial_export_structure(per_participant, participants_list, input_filename,request.LANGUAGE_CODE)
-            #
-            #     complete_filename = export_create(request, export_instance.id, input_filename)
-            #
-            #     if complete_filename:
-            #
-            #         messages.success(request, _("Export was finished correctly"))
-            #
-            #         print("antes do fim: httpResponse")
-            #
-            #         zip_file = open(complete_filename, 'rb')
-            #         response = HttpResponse(zip_file, content_type='application/zip')
-            #         response['Content-Disposition'] = 'attachment; filename="export.zip"'
-            #         response['Content-Length'] = path.getsize(complete_filename)
-            #         return response
-            #     else:
-            #         messages.error(request, _("Export data was not generated."))
-            #
-            # else:
             messages.error(request, _("No data was select. Export data was not generated."))
 
     # else:
@@ -1016,7 +984,6 @@ def export_menu(request, template_name="export/export_menu.html"):
         "export_type_list": export_type_list
     }
 
-
     return render(request, template_name, context)
 
 
@@ -1125,7 +1092,7 @@ def get_component_configuration_attributes(configuration):
     attributes.append({
         _('Position in the set of steps '): _('Random') if configuration.random_position else _('Fixed')})
     attributes.append({
-        _('Requires start and end datetime'): _('Yes') if configuration.requires_start_and_end_datetime else _('No') })
+        _('Requires start and end datetime'): _('Yes') if configuration.requires_start_and_end_datetime else _('No')})
 
     return attributes
 
@@ -1300,10 +1267,7 @@ def search_diagnoses(request):
 
         if search_text:
             if re.match('[a-zA-Z ]+', search_text):
-                # classification_of_diseases_list = \
-                #     Diagnosis.objects.filter(classification_of_diseases__description__icontains=search_text).\
-                #         distinct('classification_of_diseases')
-                classification_of_diseases_list =  ClassificationOfDiseases.objects.\
+                classification_of_diseases_list = ClassificationOfDiseases.objects.\
                     filter(Q(abbreviated_description__icontains=search_text) | Q(description__icontains=search_text) |
                            Q(code__icontains=search_text)).distinct('description')
 
@@ -1312,7 +1276,7 @@ def search_diagnoses(request):
 
 
 def select_experiments_by_study(request, study_id):
-    research_project = ResearchProject.objects.filter(pk= study_id)
+    research_project = ResearchProject.objects.filter(pk=study_id)
 
     experiment_list = Experiment.objects.filter(research_project=research_project)
 
@@ -1322,7 +1286,7 @@ def select_experiments_by_study(request, study_id):
 
 
 def select_groups_by_experiment(request, experiment_id):
-    experiment = Experiment.objects.filter(pk= experiment_id)
+    experiment = Experiment.objects.filter(pk=experiment_id)
 
     group_list = Group.objects.filter(experiment=experiment)
 

@@ -4027,7 +4027,8 @@ def subjects(request, group_id, template_name="experiment/subjects.html"):
             percentage_of_digital_game_phase_data_files_uploaded = 0
             if len(list_of_digital_game_phase_configuration) > 0:
                 percentage_of_digital_game_phase_data_files_uploaded = \
-                    100 * number_of_digital_game_phase_data_files_uploaded / len(list_of_digital_game_phase_configuration)
+                    100 * number_of_digital_game_phase_data_files_uploaded / \
+                    len(list_of_digital_game_phase_configuration)
 
             # If any questionnaire has responses or any eeg/emg/tms/digital_game_phase data file was uploaded,
             # the subject can't be removed from the group.
@@ -4194,7 +4195,7 @@ def search_subjects(request, group_id, template_name="experiment/search_subjects
             return render(request, "experiment/search_subjects.html", context)
 
         if request.POST['action'] == 'next-step-2':
-            participants_list =  request.session['filtered_participant_data']
+            participants_list = request.session['filtered_participant_data']
             for participant in participants_list:
                 patient = get_object_or_404(Patient, pk=participant)
 
@@ -4226,7 +4227,6 @@ def search_subjects(request, group_id, template_name="experiment/search_subjects
                 "group": group,
             }
             return render(request, "experiment/show_selected_participants.html", context)
-
 
     context = {
         "can_change": get_can_change(request.user, group.experiment.research_project),
@@ -4846,7 +4846,6 @@ def subject_eeg_data_create(request, group_id, subject_id, eeg_configuration_id,
                 messages.info(request, _('Now you can configure each electrode position'))
 
                 redirect_url = reverse("eeg_data_view", args=(eeg_data_added.id, 1))
-                                                              # 2 if has_position_status else 1))
                 return HttpResponseRedirect(redirect_url)
 
     context = {"can_change": True,
@@ -4877,7 +4876,7 @@ def reading_for_eeg_validation(eeg_data_added, request):
 def get_sensors_position(eeg_data):
     # Geração da imagem de localização dos electrodos
     # Validate if EGI
-    #raw = mne.io.read_raw_egi(eeg_data.file.path, preload=False)
+    # raw = mne.io.read_raw_egi(eeg_data.file.path, preload=False)
     reading = eeg_data_reading(eeg_data, preload=False)
     file_path = None
     raw = reading.reading
@@ -5641,7 +5640,7 @@ def subject_tms_data_create(request, group_id, subject_id, tms_configuration_id,
     tms_data_form = TMSDataForm(None, initial={'experiment': group.experiment,
                                                'tms_setting': tms_step.tms_setting_id})
 
-    tms_setting = get_object_or_404(TMSSetting,id=tms_step.tms_setting_id)
+    tms_setting = get_object_or_404(TMSSetting, id=tms_step.tms_setting_id)
 
     pulse_stimulus = get_pulse_stimulus_name(tms_setting.tms_device_setting.pulse_stimulus_type)
 
@@ -6060,7 +6059,7 @@ def tms_data_position_setting_register(request, tms_data_id, template_name="expe
                     hotspot_to_update.tms_localization_system = localization_system
                     hotspot_to_update.tms_data = tms_data
                     hotspot_to_update.save()
-                        # Se der erro aqui, como fazer reverse de tms_position????
+                    # Se der erro aqui, como fazer reverse de tms_position????
 
                     messages.success(request, _('TMS position updated successfully.'))
 
@@ -6481,7 +6480,7 @@ def get_subgraph(block: Block, node_identifier=""):
             new_node = pydot.Node(
                 'node_' + node_identifier + '_' + str(component_configuration.id),
                 label=split_node_identification_for_graph(component.identification + ' (' +
-                                                                get_component_name(component.component_type) + ')'),
+                                                          get_component_name(component.component_type) + ')'),
                 style="filled", fillcolor=color_node, shape='rectangle')
 
             subgraph.add_node(new_node)
@@ -6728,7 +6727,7 @@ def get_component_configuration_attributes(configuration):
     attributes.append({
         _('Position in the set of steps '): _('Random') if configuration.random_position else _('Fixed')})
     attributes.append({
-        _('Requires start and end datetime'): _('Yes') if configuration.requires_start_and_end_datetime else _('No') })
+        _('Requires start and end datetime'): _('Yes') if configuration.requires_start_and_end_datetime else _('No')})
 
     return attributes
 
@@ -8272,7 +8271,7 @@ def component_update(request, path_of_the_components):
         if limesurvey_available:
             questionnaire_title = surveys.get_survey_title(
                 questionnaire.survey.lime_survey_id,
-                get_questionnaire_language(surveys,questionnaire.survey.lime_survey_id, request.LANGUAGE_CODE))
+                get_questionnaire_language(surveys, questionnaire.survey.lime_survey_id, request.LANGUAGE_CODE))
 
         surveys.release_session_key()
 
@@ -9757,8 +9756,8 @@ def emg_electrode_setting_preamplifier_edit(request, emg_electrode_setting_id,
     if hasattr(emg_preamplifier_setting, 'emg_preamplifier_filter_setting'):
 
         emg_preamplifier_filter_setting = emg_electrode_setting.emg_preamplifier_setting.emg_preamplifier_filter_setting
-        emg_preamplifier_filter_setting_form = EMGPreamplifierFilterSettingForm(request.POST or None,
-                                                                    instance=emg_preamplifier_filter_setting)
+        emg_preamplifier_filter_setting_form = EMGPreamplifierFilterSettingForm(
+            request.POST or None, instance=emg_preamplifier_filter_setting)
     else:
         emg_preamplifier_filter_setting_form = EMGPreamplifierFilterSettingForm(request.POST or None)
 
@@ -9773,7 +9772,8 @@ def emg_electrode_setting_preamplifier_edit(request, emg_electrode_setting_id,
                     emg_preamplifier_setting_form.save()
                     changed = True
 
-                if emg_preamplifier_filter_setting_form.has_changed() or emg_preamplifier_filter_setting_form.has_changed():
+                if emg_preamplifier_filter_setting_form.has_changed() or \
+                        emg_preamplifier_filter_setting_form.has_changed():
 
                     if hasattr(emg_preamplifier_setting, 'emg_preamplifier_filter_setting'):
                         emg_preamplifier_filter_setting_form.save()
@@ -10279,8 +10279,7 @@ def tms_localization_system_view(
                 return redirect('tms_localization_system_list')
             except ProtectedError:
                 messages.error(request, _("Error trying to delete localization system."))
-                redirect_url = reverse("tms_localization_system_view",
-                                           args=(tms_localization_system_id,))
+                redirect_url = reverse("tms_localization_system_view", args=(tms_localization_system_id,))
                 return HttpResponseRedirect(redirect_url)
 
     context = {"can_change": True,
