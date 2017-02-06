@@ -85,6 +85,8 @@ class Experiment(models.Model):
     title = models.CharField(null=False, max_length=150, blank=False)
     description = models.TextField(null=False, blank=False)
     research_project = models.ForeignKey(ResearchProject, null=False, blank=False)
+    is_public = models.BooleanField(default=False)
+    data_acquisition_is_concluded = models.BooleanField(default=False)
 
     # Audit trail - Simple History
     history = HistoricalRecords()
@@ -827,7 +829,7 @@ class ContextTree(models.Model):
     name = models.CharField(max_length=50)
     description = models.TextField()
     setting_text = models.TextField(null=True, blank=True)
-    setting_file = models.FileField(upload_to=get_context_tree_dir, null=True)
+    setting_file = models.FileField(upload_to=get_context_tree_dir, null=True, blank=True)
 
     def __str__(self):
         return self.name
@@ -1037,7 +1039,7 @@ class TMSData(DataCollection):
     time_between_mep_trials_unit = models.CharField(null=True, blank=True, max_length=15, choices=TIME_UNITS)
     repetitive_pulse_frequency = models.IntegerField(null=True, blank=True, validators=[MinValueValidator(0)])
     coil_orientation = models.ForeignKey(CoilOrientation, null=True, blank=True)
-    coil_orientation_angle = models.IntegerField(null=True,blank=True,validators=[MinValueValidator(0)])
+    coil_orientation_angle = models.IntegerField(null=True, blank=True, validators=[MinValueValidator(0)])
     direction_of_induced_current = models.ForeignKey(DirectionOfTheInducedCurrent, null=True, blank=True)
     description = models.TextField(null=False, blank=False)
 
@@ -1089,6 +1091,24 @@ class AdditionalData(DataFile, DataCollection):
 class EMGData(DataFile, DataCollection):
     emg_setting = models.ForeignKey(EMGSetting)
     emg_setting_reason_for_change = models.TextField(null=True, blank=True, default='')
+
+    # Audit trail - Simple History
+    history = HistoricalRecords()
+    # changed_by = models.ForeignKey('auth.User')
+
+    def __str__(self):
+        return self.description
+
+    @property
+    def _history_user(self):
+        return self.changed_by
+
+    @_history_user.setter
+    def _history_user(self, value):
+        self.changed_by = value
+
+
+class DigitalGamePhaseData(DataFile, DataCollection):
 
     # Audit trail - Simple History
     history = HistoricalRecords()

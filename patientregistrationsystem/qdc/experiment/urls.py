@@ -18,7 +18,8 @@ urlpatterns = patterns(
         name='research_project_edit'),
 
     # collaborator
-    url(r'^research_project/(?P<research_project_id>\d+)/new_collaborator/$', 'collaborator_create', name='collaborator_new'),
+    url(r'^research_project/(?P<research_project_id>\d+)/new_collaborator/$',
+        'collaborator_create', name='collaborator_new'),
 
     # experiment
     url(r'^research_project/(?P<research_project_id>\d+)/new_experiment/$', 'experiment_create', name='experiment_new'),
@@ -145,7 +146,7 @@ urlpatterns = patterns(
     url(r'^tmsdevice/(?P<tmsdevice_id>\d+)/$', 'tmsdevice_view', name='tmsdevice_view'),
     url(r'^tmsdevice/edit/(?P<tmsdevice_id>\d+)/$', 'tmsdevice_update', name='tmsdevice_edit'),
 
-    #TMS Localization system and position
+    # TMS Localization system and position
     url(r'^tms_localization_system/list/$',
         'tms_localization_system_list', name='tms_localization_system_list'),
     url(r'^tms_localization_system/new/$',
@@ -344,8 +345,19 @@ urlpatterns = patterns(
     url(r'^tms_data/(?P<tms_data_id>\d+)/position_setting_view/$', 'tms_data_position_setting_view',
         name='tms_data_position_setting_view'),
 
-    #tms_data(ajax)
+    # tms_data(ajax)
     url(r'^get_pulse_by_tms_setting/(?P<tms_setting_id>\d+)/$', 'get_pulse_by_tms_setting'),
+
+    # subject + digital_game_phase_data
+    url(r'^group/(?P<group_id>\d+)/subject/(?P<subject_id>\d+)/digital_game_phase/$',
+        'subject_digital_game_phase_view', name='subject_digital_game_phase_view'),
+    url(r'^group/(?P<group_id>\d+)/subject/(?P<subject_id>\d+)/digital_game_phase/'
+        r'(?P<digital_game_phase_configuration_id>[0-9-]+)/add_digital_game_phase_data/$',
+        'subject_digital_game_phase_data_create', name='subject_digital_game_phase_data_create'),
+    url(r'^digital_game_phase_data/(?P<digital_game_phase_data_id>\d+)/$',
+        'digital_game_phase_data_view', name='digital_game_phase_data_view'),
+    url(r'^digital_game_phase_data/edit/(?P<digital_game_phase_data_id>\d+)/$',
+        'digital_game_phase_data_edit', name='digital_game_phase_data_edit'),
 
     # subject + additional data
     url(r'^group/(?P<group_id>\d+)/subject/(?P<subject_id>\d+)/additional_data/$',

@@ -26,7 +26,9 @@ class Migration(migrations.Migration):
         migrations.CreateModel(
             name='DigitalGamePhase',
             fields=[
-                ('component_ptr', models.OneToOneField(to='experiment.Component', parent_link=True, auto_created=True, serialize=False, primary_key=True)),
+                ('component_ptr', models.OneToOneField(to='experiment.Component',
+                                                       parent_link=True, auto_created=True,
+                                                       serialize=False, primary_key=True)),
                 ('context_tree', models.ForeignKey(to='experiment.ContextTree')),
                 ('software_version', models.ForeignKey(to='experiment.SoftwareVersion')),
             ],
@@ -35,6 +37,12 @@ class Migration(migrations.Migration):
         migrations.AlterField(
             model_name='component',
             name='component_type',
-            field=models.CharField(choices=[('block', 'Set of steps'), ('instruction', 'Instruction'), ('pause', 'Pause'), ('questionnaire', 'Questionnaire'), ('stimulus', 'Stimulus'), ('task', 'Task for participant'), ('task_experiment', 'Task for experimenter'), ('eeg', 'EEG'), ('emg', 'EMG'), ('tms', 'TMS'), ('digital_game_phase', 'Digital game phase')], max_length=15),
+            field=models.CharField(choices=[('block', 'Set of steps'), ('instruction', 'Instruction'),
+                                            ('pause', 'Pause'), ('questionnaire', 'Questionnaire'),
+                                            ('stimulus', 'Stimulus'), ('task', 'Task for participant'),
+                                            ('task_experiment', 'Task for experimenter'), ('eeg', 'EEG'),
+                                            ('emg', 'EMG'), ('tms', 'TMS'),
+                                            ('digital_game_phase', 'Digital game phase')],
+                                   max_length=15),
         ),
     ]

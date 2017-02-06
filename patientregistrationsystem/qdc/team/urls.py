@@ -19,7 +19,5 @@ urlpatterns = patterns(
     url(r'^team/(?P<team_id>\d+)/$', 'team_view', name='team_view'),
     url(r'^team/edit/(?P<team_id>\d+)/$', 'team_update', name='team_edit'),
 
-    url(r'^team/team_person_register/(?P<team_id>\d+)/new_person/$','team_person_create', name='team_person_new'),
-
-
+    url(r'^team/team_person_register/(?P<team_id>\d+)/new_person/$', 'team_person_create', name='team_person_new'),
 )

@@ -15,16 +15,19 @@ class Migration(migrations.Migration):
         migrations.AddField(
             model_name='historicalsocialdemographicdata',
             name='patient_schooling',
-            field=models.ForeignKey(db_constraint=False, related_name='+', to='patient.Schooling', on_delete=django.db.models.deletion.DO_NOTHING, null=True, blank=True),
+            field=models.ForeignKey(db_constraint=False, related_name='+', to='patient.Schooling',
+                                    on_delete=django.db.models.deletion.DO_NOTHING, null=True, blank=True),
         ),
         migrations.AddField(
             model_name='socialdemographicdata',
             name='patient_schooling',
-            field=models.ForeignKey(verbose_name='Schooling of the patient', to='patient.Schooling', related_name='patient_schooling_set', null=True, blank=True),
+            field=models.ForeignKey(verbose_name='Schooling of the patient', to='patient.Schooling',
+                                    related_name='patient_schooling_set', null=True, blank=True),
         ),
         migrations.AlterField(
             model_name='socialdemographicdata',
             name='schooling',
-            field=models.ForeignKey(verbose_name='Schooling of the householder', to='patient.Schooling', null=True, blank=True),
+            field=models.ForeignKey(verbose_name='Schooling of the householder', to='patient.Schooling',
+                                    null=True, blank=True),
         ),
     ]

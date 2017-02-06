@@ -3,6 +3,7 @@ from __future__ import unicode_literals
 
 from django.db import migrations, models
 
+
 def backwards_data(apps, schema_editor):
     emg_analog_filter_setting_model = apps.get_model("experiment", "EMGAnalogFilterSetting")
 
@@ -23,6 +24,7 @@ def load_data(apps, schema_editor):
         emg_analog_filter_setting.low_notch = emg_analog_filter_setting.notch
         emg_analog_filter_setting.high_notch = emg_analog_filter_setting.notch
         emg_analog_filter_setting.save()
+
 
 class Migration(migrations.Migration):
 

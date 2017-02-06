@@ -36,7 +36,7 @@ class ExportForm(Form):
 
     headings = ChoiceField(widget=RadioSelect(), choices=HEADINGS_CHOICES, required=False)
     responses = MultipleChoiceField(widget=CheckboxSelectMultiple(attrs={'data-error': _('Response must be selected')}),
-                                    choices=RESPONSES_CHOICES, required=False )
+                                    choices=RESPONSES_CHOICES, required=False)
     #
     # questionnaire_entrance_fields_selected = []
     #
@@ -107,4 +107,3 @@ class DiagnosisSelectionForm(ModelForm):
         widgets = {
             'description': SelectMultiple(attrs={'class': 'form-control', 'required': "", 'disabled': ''}),
         }
-
