@@ -4,15 +4,15 @@
 
 {% block header %}
     {% load static %}
-    <script>
+    <script xmlns="http://www.w3.org/1999/html">
     $(function () {
-        $("#get_diagnosis").autocomplete({
-            source: "/export/get_diagnoses",
-            minLength: 2,
-            select: function (event, ui) {
-                add_disease(ui.item.id, ui.item.value);
-            }
-        });
+{#        $("#get_diagnosis").autocomplete({#}
+{#            source: "/export/get_diagnoses",#}
+{#            minLength: 2,#}
+{#            select: function (event, ui) {#}
+{#                add_disease(ui.item.id, ui.item.value);#}
+{#            }#}
+{#        });#}
 
     });
     </script>
@@ -99,10 +99,11 @@
                                     <div id="div-search-locations" class="col-xs-12 col-sm-12">
                                         <div class="input-group input-group-sm">
                                             <span class="input-group-addon"> <span class="glyphicon glyphicon-search"></span></span>
-                                            <input class="form-control" id="get_location" type="text"
-                                                   placeholder="{% trans "Enter a city" %}">
+                                            <div class="ui-widget">
+                                              <input id="get_location" placeholder="{% trans "Enter a city" %}" class="form-control">
+                                            </div>
                                         </div>
-                                        {% csrf_token %}
+
                                         <ul id="search-results-locations" style="list-style: none;">
                                         </ul>
                                     </div>
@@ -128,21 +129,15 @@
                             <div class="panel-body" style="background-color: whitesmoke">
                                 <div class="row">
                                     <div class="col-xs-12 col-sm-12">
-
-                                        <div class="ui-widget" style="margin-top: 2em; font-family: Arial">
-{#                                          <label for="diagnosis">Diagnostico: </label>#}
-                                          <input id="get_diagnosis">
+                                        <div class="input-group input-group-sm">
+                                            <span class="input-group-addon"> <span class="glyphicon glyphicon-search"></span></span>
+                                            <div class="ui-widget">
+                                              <input id="get_diagnosis" placeholder="{% trans "Enter a diagnosis" %}" class="form-control">
+                                            </div>
                                         </div>
+                                        <ul id="search-results-locations" style="list-style: none;">
+                                        </ul>
 
-{#                                        <div class="input-group input-group-sm">#}
-{#                                            <span class="input-group-addon"> <span class="glyphicon glyphicon-search"></span></span>#}
-{#                                            <input class="form-control" id="get_diagnosis" type="text"#}
-{#                                                   placeholder="{% trans "Enter a diagnosis" %}">#}
-{#                                            #}
-{#                                        </div>#}
-{#                                        {% csrf_token %}#}
-{#                                        <ul id="search-results-diagnoses" style="list-style: none;">#}
-{#                                        </ul>#}
                                     </div>
                                 </div>
 

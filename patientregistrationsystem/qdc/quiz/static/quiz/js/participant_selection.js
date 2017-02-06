@@ -114,54 +114,32 @@ $(document).ready(function () {
 
     })
 
-    $('#get_location').keyup(function() {
-        
-        if(this.value.length == 0){
-            var ul_location_list = $('#ul-location-list');
-            ul_location_list.hide();
-            return;
-        }else{
-            $.ajax({
-                type: "POST",
-                url: "/export/get_locations/",
-                data: {
-                    'search_text': $('#get_location').val(),
-                    'csrfmiddlewaretoken': $("input[name=csrfmiddlewaretoken]").val(),
-                },
-                success: searchSuccessLocations,
-                dataType: 'html'
-
-            });
+    
+    $('#get_location').autocomplete({
+       source: "/export/get_locations",
+        select: function (event, ui) {
+            add_location(ui.item.value);
+            $('ul').empty();
+        },
+        close: function () {
+          $("#get_location").val("");
+            $("#get_location").attr('placeholder', 'Enter a city');
         }
-
     });
 
-    function searchSuccessLocations(data, textStatus, jqXHR) {
-        $('#search-results-locations').html(data);
-    }
+    $("#get_diagnosis").autocomplete({
+            source: "/export/get_diagnoses",
+            minLength: 2,
+            select: function (event, ui) {
+                add_disease(ui.item.id, ui.item.value);
+                $('ul').empty();
+            },
+            close: function () {
+                $("#get_diagnosis").val("");
+                $("#get_diagnosis").attr('placeholder', 'Enter a diagnosis');
+            },
+        });
 
-    // $('#get_diagnosis').keyup(function() {
-        // var get_diagnosis = $('#get_diagnosis');
-
-        // $.ajax({
-        //     type: "POST",
-        //     url: "/export/get_diagnoses/",
-        //     minLength: 2,
-        //     data: {
-        //         'search_text': $('#get_diagnosis').val(),
-        //         'csrfmiddlewaretoken': $("input[name=csrfmiddlewaretoken]").val(),
-        //     },
-        //     success: searchSuccessDiagnoses,
-        //     dataType: 'html'
-        //
-        // });
-    
-    // });
-    
-
-    function searchSuccessDiagnoses(data, textStatus, jqXHR) {
-        $('#search-results-diagnoses').html(data);
-    }
     
     $('#get_diseases').keyup(function() {
         var get_diseases = $('#get_diseases');
@@ -186,49 +164,6 @@ $(document).ready(function () {
 
 });
 
-// $( function() {
-//     function log( message ) {
-//       $( "<div>" ).text( message ).prependTo( "#log" );
-//       $( "#log" ).scrollTop( 0 );
-//     }
-//
-//     $("#birds").autocomplete({
-//        source: "/export/get_diagnoses",
-//        minLength: 2,
-//        select:function (event, ui) {
-//            log("Selected: " + ui.item.value + " - " + ui.item.id);
-//        }
-//     });
- 
-  //   $( "#birds" ).autocomplete({
-  //     source: function( request, response ) {
-  //       $.ajax( {
-  //         url: "/export/get_diagnoses/",
-  //         dataType: "json",
-  //         data: {
-  //           term: request.term
-  //         },
-  //         success: function( data ) {
-  //           // response( data );
-  //             for(var i=0; i<data.length; i++){
-  //                 diseases_id = data[i].classification_of_diseases_id;
-  //                 diseases_name = data[i].classification_of_diseases__abbreviated_description;
-  //                 diseases_code = data[i].classification_of_diseases__code;
-  //                 $('#search-results-diagnoses').append('<li><a href="#" onclick="add_disease(diseases_id, diseases_name); return false;">'+ diseases_code + '-' + diseases_name + '</a></li>');
-  //             }
-  //
-  //         }
-  //       } );
-  //     },
-  //     minLength: 2,
-  //     // select: function( event, ui ) {
-  //     //   log( "Selected: " + ui.item.value + " aka " + ui.item.id );
-  //     // }
-  //   } );
-  // } );
-
-
-
 function show_modal_remove (subject_id){
         var  modal_remove = document.getElementById('remove-participant');
         modal_remove.removeAttribute("disabled");
@@ -247,7 +182,7 @@ function add_location(location) {
         //remove um item ds lista de resultados
         var ul_search_locations = document.getElementById('search-results-locations');
         var ul_location_list = document.getElementById('ul-location-list');
-        ul_search_locations.removeChild(ul_location_list);
+        if(ul_location_list != null) ul_search_locations.removeChild(ul_location_list);
 
         //limpa o campo de entrada para a busca por cidade
         var input_location = document.getElementById("get_location");
@@ -303,12 +238,6 @@ function add_disease(id, disease){
     var ul_diagnosis_list = document.getElementById('ul-diagnosis-list');
     if(ul_diagnosis_list != null) ul_search_diagnoses.removeChild(ul_diagnosis_list);
 
-    //limpa o campo de entrada para a busca por cidade
-    var input_diagnosis = document.getElementById("get_diagnosis");
-    if(input_diagnosis == null)
-        input_diagnosis = document.getElementById("get_diseases");
-    input_diagnosis.value = "";
-
     //checkbox
     var checknode = document.createElement('input');
     checknode.type = 'checkbox';
@@ -337,6 +266,13 @@ function add_disease(id, disease){
     spannode.style.verticalAlign = "-10%";
     spannode.title = "Remover";
 
+    //limpa o campo de entrada para a busca por diagnostico
+    var input_diagnosis = document.getElementById("get_diagnosis");
+    if(input_diagnosis == null)
+        input_diagnosis = document.getElementById("get_diseases");
+    input_diagnosis.value = "";
+    input_diagnosis.placeholder = "";
+
     //criar a tag
     var tagnode = document.createElement('a');
     tagnode.id = disease;
@@ -345,6 +281,7 @@ function add_disease(id, disease){
         var diagnosis_div = document.getElementById("diagnosis_list");
         var node = document.getElementById("btn"+ this.id);
         diagnosis_div.removeChild(node);
+        input_diagnosis.value = "";
     }
     tagnode.appendChild(spannode);
     btn_node.appendChild(tagnode);
@@ -352,4 +289,5 @@ function add_disease(id, disease){
     //container
     var diagnosis_div = document.getElementById("diagnosis_list")
     diagnosis_div.appendChild(btn_node);
+
 }

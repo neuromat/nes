@@ -1246,26 +1246,35 @@ def list_data_configuration_tree(eeg_configuration_id, list_of_path):
 
 
 def search_locations(request):
-    location_list = []
 
-    if request.method == "POST":
-        search_text = request.POST['search_text']
+    if request.is_ajax():
+        search_text = request.GET.get('term', '')
 
         if search_text:
-            if re.match('[a-zA-Z ]+', search_text):
-                location_list = \
-                    Patient.objects.filter(city__icontains=search_text).exclude(removed=True).distinct('city')
+            location_list = Patient.objects.filter(city__icontains=search_text).exclude(removed=True).values('id', 'city').distinct('city');
 
-        return render_to_response('export/locations.html', {'location_list': location_list})
+            results = []
+            for location in location_list:
+                location_dict = {
+                    'id': location['city'],
+                    'label': location['city'],
+                    'value': location['city']
+                }
+                results.append(location_dict)
+
+            data = json.dumps(results)
+        else:
+            data = 'fail'
+
+        mimetype='application/json'
+
+        return HttpResponse(data, mimetype)
 
 
 def search_diagnoses(request):
 
-    classification_of_diseases_list = []
-    # if request.method == "POST":
     if request.is_ajax():
         search_text = request.GET.get('term', '')
-        # search_text = request.POST['search_text']
 
         if search_text:
             classification_of_diseases_list = Diagnosis.objects.filter(
