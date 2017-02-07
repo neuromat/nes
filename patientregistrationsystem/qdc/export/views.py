@@ -1,15 +1,12 @@
 # -*- coding: utf-8 -*-
 import json
-import re
-from django.shortcuts import render
 from django.conf import settings
 from django.contrib.auth.decorators import login_required
 from django.contrib import messages
 from django.core import serializers
 from django.core.urlresolvers import reverse
-# from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
 from django.http import HttpResponse, HttpResponseRedirect
-from django.shortcuts import render, render_to_response, get_object_or_404
+from django.shortcuts import render, get_object_or_404
 from django.utils.encoding import smart_str
 from django.utils.translation import ugettext as ug_, ugettext_lazy as _
 from django.db.models import Q
@@ -27,9 +24,9 @@ from .forms import ExportForm, ParticipantsSelectionForm, AgeIntervalForm
 from .models import Export
 from .export import ExportExecution, perform_csv_response, create_directory
 
-from export.input_export import build_complete_export_structure, build_partial_export_structure
+from export.input_export import build_complete_export_structure
 
-from patient.models import QuestionnaireResponse, Patient, ClassificationOfDiseases, Diagnosis, MedicalRecordData
+from patient.models import QuestionnaireResponse, Patient, Diagnosis
 from patient.views import check_limesurvey_access
 
 from survey.models import Survey
@@ -123,8 +120,8 @@ diagnosis_fields = [
     {"field": "medicalrecorddata__diagnosis__date", "header": 'diagnosis_date', "description": _("Date")},
     {"field": "medicalrecorddata__diagnosis__description", "header": 'diagnosis_description',
      "description": _("Observation")},
-    {"field": "medicalrecorddata__diagnosis__classification_of_diseases_id", "header": 'classification_of_diseases_id',
-     "description": _("Disease code (ICD)")},
+    {"field": "medicalrecorddata__diagnosis__classification_of_diseases__code",
+     "header": 'classification_of_diseases_code', "description": _("Disease code (ICD)")},
     {"field": "medicalrecorddata__diagnosis__classification_of_diseases__description",
      "header": 'classification_of_diseases_description', "description": _("Disease Description")},
     {"field": "medicalrecorddata__diagnosis__classification_of_diseases__abbreviated_description",
@@ -137,8 +134,8 @@ patient_fields_inclusion = [
 ]
 
 diagnosis_fields_inclusion = [
-    ["medicalrecorddata__patient__code", {"code": "participation_code", "full": _("Participation code"),
-                                          "abbreviated": _("Participation code")}],
+    ["code", {"code": "participation_code", "full": _("Participation code"),
+              "abbreviated": _("Participation code")}],
 ]
 
 questionnaire_evaluation_fields_excluded = [
@@ -1286,10 +1283,12 @@ def search_diagnoses(request):
 
             results = []
             for classification_of_diseases in classification_of_diseases_list:
-                label = classification_of_diseases['classification_of_diseases__code'] + ' - ' + classification_of_diseases['classification_of_diseases__abbreviated_description']
-                diseases_dict = {'id': classification_of_diseases['classification_of_diseases_id'],
-                                 'label': label,
-                                 'value': classification_of_diseases['classification_of_diseases__abbreviated_description']}
+                label = classification_of_diseases['classification_of_diseases__code'] + ' - ' + \
+                        classification_of_diseases['classification_of_diseases__abbreviated_description']
+                diseases_dict = \
+                    {'id': classification_of_diseases['classification_of_diseases_id'],
+                     'label': label,
+                     'value': classification_of_diseases['classification_of_diseases__abbreviated_description']}
                 results.append(diseases_dict)
             data = json.dumps(results)
         else:
