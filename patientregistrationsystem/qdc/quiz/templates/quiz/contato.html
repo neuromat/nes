@@ -37,13 +37,22 @@
         <div class="col-md-1">
         </div>
         <div class="col-md-10">
+
             <h3>{% trans "Neuroscience Experiments System - NES" %}</h3>
-            <h4><span class="fa fa-institution"></span> {{ institution_config.name }}</h4>
-            <h5><span class="fa fa-user"></span> {{ contact_config.name }}</h5>
-            <h5><span class="fa fa-envelope"></span> <a href="mailto:{{ contact_config.email }}?Subject=NES" target="_top">{{ contact_config.email }}</a></h5>
+
+            {% if institution_config.name %}
+                <h4><span class="fa fa-institution"></span> {{ institution_config.name }}</h4>
+            {% endif %}
+
+            {% if contact_config.name %}
+                <h5><span class="fa fa-user"></span> {{ contact_config.name }}</h5>
+            {% endif %}
+
+            {% if contact_config.email %}
+                <h5><span class="fa fa-envelope"></span> <a href="mailto:{{ contact_config.email }}?Subject=NES" target="_top">{{ contact_config.email }}</a></h5>
+            {% endif %}
 
             <br/>
-
 
             <div class="col-lg-3 col-md-4 col-xs-6 thumb">
                 <a class="thumbnail" href="http://ccsl.ime.usp.br/">
