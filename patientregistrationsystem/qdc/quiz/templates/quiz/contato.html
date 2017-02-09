@@ -4,7 +4,12 @@
 
 {% load i18n admin_static %}
 
+{% load solo_tags %}
+
 {% block content %}
+
+    {% get_solo 'configuration.Institution' as institution_config %}
+    {% get_solo 'configuration.Contact' as contact_config %}
 
     {% if messages %}
         {% for message in messages %}
@@ -33,9 +38,9 @@
         </div>
         <div class="col-md-10">
             <h3>{% trans "Neuroscience Experiments System - NES" %}</h3>
-            <h4>{{ contact_institution }}</h4>
-            <h5>{% trans "System Registration and Socio-Demographic and Clinical Data Query" %}</h5>
-            <h5>{% trans "Doubts and Suggestions" %}: {{ contact_email }}</h5>
+            <h4>{{ institution_config.name }}</h4>
+{#            <h5>{% trans "System Registration and Socio-Demographic and Clinical Data Query" %}</h5>#}
+            <h5>{% trans "Contact" %}: {{ contact_config.name }} ({{ contact_config.email }})</h5>
             <br/>
 
 
@@ -75,11 +80,18 @@
                          alt="Logo da FAPESP">
                 </a>
             </div>
-            {% if contact_url %}
+            {% if institution_config.url %}
                 <div class="col-lg-3 col-md-4 col-xs-6 thumb">
-                    <a class="thumbnail" href="{{ contact_url }}">
+                    <a class="thumbnail" href="{{ institution_config.url }}">
+
+                    {% if institution_config.logo %}
+                        <img class="img-responsive" src="media/{{ institution_config.logo }}"
+                             alt="Logo do {{ institution_config.name }}">
+                    {% else %}
                         <img class="img-responsive" src="{{STATIC_URL}}quiz/imgs/{{ logo_institution }}"
-                             alt="Logo do {{ contact_institution }}">
+                             alt="Logo do {{ institution_config.name }}">
+                    {% endif %}
+
                     </a>
                 </div>
             {% endif %}

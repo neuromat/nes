@@ -47,7 +47,7 @@ INSTALLED_APPS = (
     'simple_history',
     # 'cep',
     'jsonrpc_requests',
-    # 'south'
+    'solo'
 )
 
 PROJECT_APPS = (
@@ -59,6 +59,7 @@ PROJECT_APPS = (
     'cep',
     'export',
     'team',
+    'configuration'
 )
 
 PROJECT_TAGS_APPS = (
