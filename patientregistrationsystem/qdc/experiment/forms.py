@@ -7,14 +7,16 @@ from django.utils.translation import ugettext_lazy as _
 
 from experiment.models import Experiment, QuestionnaireResponse, SubjectOfGroup, Group, \
     Component, Stimulus, Block, Instruction, ComponentConfiguration, ResearchProject, EEGData, \
-    EEGSetting, Equipment, EEG, EMG, EEGMachine, EEGMachineSetting, Amplifier, EEGAmplifierSetting, \
+    EEGSetting, Equipment, EEG, EMG, Amplifier, EEGAmplifierSetting, \
     EEGSolution, EEGFilterSetting, FilterType, EEGElectrodeLocalizationSystem, \
     EEGCapSize, EEGElectrodeCap, EEGElectrodePosition, Manufacturer, ElectrodeModel, EEGElectrodeNet, Material, \
     AdditionalData, EMGData, FileFormat, EMGSetting, EMGDigitalFilterSetting, EMGADConverterSetting, \
     EMGElectrodeSetting, EMGElectrodePlacementSetting, \
     EMGPreamplifierSetting, EMGAmplifierSetting, EMGAnalogFilterSetting, EMGSurfacePlacement, \
     ADConverter, StandardizationSystem, Muscle, MuscleSide, MuscleSubdivision, TMS, TMSSetting, TMSDeviceSetting, \
-    Software, SoftwareVersion, CoilModel, TMSDevice, EMGIntramuscularPlacement, EMGNeedlePlacement
+    Software, SoftwareVersion, CoilModel, TMSDevice, EMGIntramuscularPlacement, EMGNeedlePlacement, SubjectStepData, \
+    EMGPreamplifierFilterSetting, TMSData, HotSpot, CoilOrientation, DirectionOfTheInducedCurrent, \
+    ResearchProjectCollaboration, TMSLocalizationSystem
 
 
 class ExperimentForm(ModelForm):
@@ -32,6 +34,17 @@ class ExperimentForm(ModelForm):
             'description': Textarea(attrs={'class': 'form-control',
                                            'rows': '4', 'required': "",
                                            'data-error': _('Description must be filled.')}),
+        }
+
+
+class CollaborationForm(ModelForm):
+    class Meta:
+        model = ResearchProjectCollaboration
+
+        fields = ['team_person', 'is_coordinator']
+
+        widgets = {
+            'team_person': Select(attrs={'class': 'form-control', 'required': ''}),
         }
 
 
@@ -134,7 +147,7 @@ class ComponentConfigurationForm(ModelForm):
     class Meta:
         model = ComponentConfiguration
         fields = ['name', 'random_position', 'number_of_repetitions', 'interval_between_repetitions_value',
-                  'interval_between_repetitions_unit']
+                  'interval_between_repetitions_unit', 'requires_start_and_end_datetime']
 
         widgets = {
             'name': TextInput(attrs={'class': 'form-control'}),
@@ -373,53 +386,36 @@ class EquipmentForm(ModelForm):
         }
 
 
-class EEGMachineForm(ModelForm):
-    class Meta:
-        model = EEGMachine
-        fields = ['number_of_channels', 'software_version']
-
-        widgets = {
-            'number_of_channels': TextInput(attrs={'class': 'form-control', 'disabled': ''}),
-            'software_version': TextInput(attrs={'class': 'form-control', 'disabled': ''})
-        }
-
-
-class EEGMachineSettingForm(ModelForm):
-    class Meta:
-        model = EEGMachineSetting
-        fields = ['number_of_channels_used']
-
-        widgets = {
-            'number_of_channels_used':
-                NumberInput(attrs={
-                    'class': 'form-control',
-                    'required': "",
-                    "min": "0",
-                    'data-error':
-                    _('Number of channels should be between 0 and the number of channels of the EEG machine.')})
-        }
-
-
 class EEGAmplifierForm(ModelForm):
     class Meta:
         model = Amplifier
-        localized_fields = ('gain', )
-        fields = ['gain']
+        localized_fields = ('gain', 'number_of_channels')
+        fields = ['gain', 'number_of_channels']
 
         widgets = {
-            'gain': TextInput(attrs={'class': 'form-control', 'disabled': ''})
+            'gain': TextInput(attrs={'class': 'form-control', 'disabled': ''}),
+            'number_of_channels': TextInput(attrs={'class': 'form-control', 'disabled': ''}),
         }
 
 
 class EEGAmplifierSettingForm(ModelForm):
     class Meta:
         model = EEGAmplifierSetting
-        localized_fields = ('gain', 'sampling_rate', )
-        fields = ['gain', 'sampling_rate']
+        localized_fields = ('gain', 'sampling_rate', 'number_of_channels_used')
+        fields = ['gain', 'sampling_rate', 'number_of_channels_used']
 
         widgets = {
             'gain': TextInput(attrs={'class': 'form-control'}),
-            'sampling_rate': TextInput(attrs={'class': 'form-control'})
+            'sampling_rate': TextInput(attrs={'class': 'form-control'}),
+            'number_of_channels_used':
+                NumberInput(attrs={
+                    'class': 'form-control',
+                    'required': "",
+                    "min": "0",
+                    'data-error':
+                        _('Number of channels should be between 0 and the number of channels of the EEG machine.')}),
+
+
         }
 
 
@@ -446,12 +442,16 @@ class EEGFilterForm(ModelForm):
 class EEGFilterSettingForm(ModelForm):
     class Meta:
         model = EEGFilterSetting
-        localized_fields = ('high_pass', 'low_pass')
-        fields = ['high_pass', 'low_pass', 'order']
+        localized_fields = ('high_pass', 'low_pass', 'low_band_pass', 'high_band_pass', 'low_notch', 'high_notch')
+        fields = ['high_pass', 'low_pass', 'low_band_pass', 'high_band_pass', 'low_notch', 'high_notch', 'order']
 
         widgets = {
             'high_pass': TextInput(attrs={'class': 'form-control'}),
             'low_pass': TextInput(attrs={'class': 'form-control'}),
+            'low_band_pass': TextInput(attrs={'class': 'form-control'}),
+            'high_band_pass': TextInput(attrs={'class': 'form-control'}),
+            'low_notch': TextInput(attrs={'class': 'form-control'}),
+            'high_notch': TextInput(attrs={'class': 'form-control'}),
             'order': NumberInput(attrs={'class': 'form-control'})
         }
 
@@ -466,6 +466,20 @@ class EEGElectrodeLocalizationSystemRegisterForm(ModelForm):
                                      'data-error': _('Name field must be filled.'),
                                      'autofocus': ''}),
             'description': Textarea(attrs={'class': 'form-control', 'rows': '4'}),
+        }
+
+
+class TMSLocalizationSystemForm(ModelForm):
+    class Meta:
+        model = TMSLocalizationSystem
+        fields = ['name', 'description', 'tms_localization_system_image', 'brain_area']
+
+        widgets = {
+            'name': TextInput(attrs={'class': 'form-control', 'required': "",
+                                     'data-error': _('Name field must be filled.'),
+                                     'autofocus': ''}),
+            'description': Textarea(attrs={'class': 'form-control', 'rows':'4'}),
+            'brain_area': Select(attrs={'class': 'form-control'}),
         }
 
 
@@ -496,32 +510,34 @@ class ManufacturerRegisterForm(ModelForm):
         }
 
 
-class EEGMachineRegisterForm(ModelForm):
-    class Meta:
-        model = EEGMachine
-        fields = ['manufacturer', 'identification', 'description', 'serial_number',
-                  'number_of_channels', 'software_version']
-
-        widgets = {
-
-            'manufacturer': Select(attrs={'class': 'form-control', 'required': "",
-                                          'data-error': _('Manufacturer must be filled.')}),
-            'identification': TextInput(attrs={'class': 'form-control', 'required': "",
-                                               'data-error': _('Identification must be filled.')}),
-            'description': Textarea(attrs={'class': 'form-control', 'rows': '4'}),
-            'serial_number': TextInput(attrs={'class': 'form-control'}),
-            'number_of_channels': NumberInput(attrs={'class': 'form-control'}),
-            'software_version': TextInput(attrs={'class': 'form-control'})
-        }
+# class EEGMachineRegisterForm(ModelForm):
+#     class Meta:
+#         model = EEGMachine
+#         fields = ['manufacturer', 'identification', 'description', 'serial_number',
+#                   'number_of_channels', 'software_version']
+#
+#         widgets = {
+#
+#             'manufacturer': Select(attrs={'class': 'form-control', 'required': "",
+#                                           'data-error': _('Manufacturer must be filled.')}),
+#             'identification': TextInput(attrs={'class': 'form-control', 'required': "",
+#                                                'data-error': _('Identification must be filled.')}),
+#             'description': Textarea(attrs={'class': 'form-control', 'rows': '4'}),
+#             'serial_number': TextInput(attrs={'class': 'form-control'}),
+#             'number_of_channels': NumberInput(attrs={'class': 'form-control'}),
+#             'software_version': TextInput(attrs={'class': 'form-control'})
+#         }
 
 
 class AmplifierRegisterForm(ModelForm):
     class Meta:
         model = Amplifier
 
-        localized_fields = ('gain',)
+        localized_fields = ('gain', 'common_mode_rejection_ratio', 'input_impedance')
 
-        fields = ['manufacturer', 'identification', 'description', 'serial_number', 'gain']
+        fields = ['manufacturer', 'identification', 'description', 'serial_number', 'gain', 'number_of_channels',
+                  'common_mode_rejection_ratio', 'input_impedance', 'input_impedance_unit', 'amplifier_detection_type',
+                  'tethering_system']
 
         widgets = {
             'manufacturer': Select(attrs={'class': 'form-control', 'required': "",
@@ -530,7 +546,13 @@ class AmplifierRegisterForm(ModelForm):
                                                'data-error': _('Identification must be filled.')}),
             'description': Textarea(attrs={'class': 'form-control', 'rows': '4'}),
             'serial_number': TextInput(attrs={'class': 'form-control'}),
-            'gain': TextInput(attrs={'class': 'form-control'})
+            'gain': TextInput(attrs={'class': 'form-control'}),
+            'number_of_channels': NumberInput(attrs={'class': 'form-control'}),
+            'common_mode_rejection_ratio': TextInput(attrs={'class': 'form-control'}),
+            'input_impedance': TextInput(attrs={'class': 'form-control'}),
+            'input_impedance_unit': Select(attrs={'class': 'form-control'}),
+            'tethering_system': Select(attrs={'class': 'form-control'}),
+            'amplifier_detection_type': Select(attrs={'class': 'form-control'})
         }
 
 
@@ -622,7 +644,8 @@ class CoilModelRegisterForm(ModelForm):
 class TMSDeviceRegisterForm(ModelForm):
     class Meta:
         model = TMSDevice
-        fields = ['manufacturer', 'identification', 'description', 'coil_model', 'pulse_type']
+        # fields = ['manufacturer', 'identification', 'description', 'coil_model', 'pulse_type']
+        fields = ['manufacturer', 'identification', 'description', 'pulse_type', 'serial_number']
 
         widgets = {
             'manufacturer': Select(attrs={'class': 'form-control', 'required': "",
@@ -630,9 +653,10 @@ class TMSDeviceRegisterForm(ModelForm):
             'identification': TextInput(attrs={'class': 'form-control', 'required': "",
                                                'data-error': _('Identification must be filled.')}),
             'description': Textarea(attrs={'class': 'form-control', 'rows': '4'}),
-            'coil_model': Select(attrs={'class': 'form-control', 'required': "",
-                                        'data-error': _('Coil model must be filled.')}),
-            'pulse_type': Select(attrs={'class': 'form-control'})
+            # 'coil_model': Select(attrs={'class': 'form-control', 'required': "",
+            #                             'data-error': _('Coil model must be filled.')}),
+            'pulse_type': Select(attrs={'class': 'form-control'}),
+            'serial_number': TextInput(attrs={'class': 'form-control'})
         }
 
 
@@ -902,6 +926,24 @@ class AdditionalDataForm(ModelForm):
         }
 
 
+class SubjectStepDataForm(ModelForm):
+    class Meta:
+        model = SubjectStepData
+
+        fields = ['start_date', 'start_time', 'end_date', 'end_time']
+
+        widgets = {
+            'start_date': DateInput(format=_("%m/%d/%Y"),
+                                    attrs={'class': 'form-control datepicker', 'placeholder': _('mm/dd/yyyy'),
+                                           'required': "", 'data-error': _("Start date must be filled.")}, ),
+            'start_time': TimeInput(attrs={'class': 'form-control', 'placeholder': 'HH:mm:ss'}),
+            'end_date': DateInput(format=_("%m/%d/%Y"),
+                                  attrs={'class': 'form-control datepicker', 'placeholder': _('mm/dd/yyyy'),
+                                         'required': "", 'data-error': _("End date must be filled.")}, ),
+            'end_time': TimeInput(attrs={'class': 'form-control', 'placeholder': 'HH:mm:ss'}),
+        }
+
+
 class EMGSettingForm(ModelForm):
     class Meta:
         model = EMGSetting
@@ -922,16 +964,18 @@ class EMGSettingForm(ModelForm):
 class EMGDigitalFilterSettingForm(ModelForm):
     class Meta:
         model = EMGDigitalFilterSetting
-        localized_fields = ('low_pass', 'high_pass', 'band_pass', 'notch', 'order')
-        fields = ['filter_type', 'low_pass', 'high_pass', 'band_pass', 'notch', 'order']
+        localized_fields = ('low_pass', 'high_pass', 'low_band_pass', 'high_band_pass', 'low_notch', 'high_notch', 'order')
+        fields = ['filter_type', 'low_pass', 'high_pass', 'low_band_pass', 'high_band_pass', 'low_notch', 'high_notch', 'order']
 
         widgets = {
             'filter_type': Select(attrs={'class': 'form-control', 'required': "",
                                          'data-error': _('Filter type is required')}),
             'low_pass': TextInput(attrs={'class': 'form-control'}),
             'high_pass': TextInput(attrs={'class': 'form-control'}),
-            'band_pass': TextInput(attrs={'class': 'form-control'}),
-            'notch': TextInput(attrs={'class': 'form-control'}),
+            'low_band_pass': TextInput(attrs={'class': 'form-control'}),
+            'low_notch': TextInput(attrs={'class': 'form-control'}),
+            'high_band_pass': TextInput(attrs={'class': 'form-control'}),
+            'high_notch': TextInput(attrs={'class': 'form-control'}),
             'order': NumberInput(attrs={'class': 'form-control'})
         }
 
@@ -999,6 +1043,24 @@ class EMGPreamplifierSettingForm(ModelForm):
         self.fields['amplifier'].queryset = Amplifier.objects.filter(tags__name="EMG")
 
 
+class EMGPreamplifierFilterSettingForm(ModelForm):
+    class Meta:
+        model = EMGPreamplifierFilterSetting
+
+        localized_fields = ('low_pass', 'high_pass', 'low_band_pass', 'low_notch', 'high_band_pass', 'high_notch')
+        fields = ['low_pass', 'high_pass', 'low_band_pass', 'low_notch', 'high_band_pass', 'high_notch', 'order']
+
+        widgets = {
+            'low_pass': TextInput(attrs={'class': 'form-control'}),
+            'high_pass': TextInput(attrs={'class': 'form-control'}),
+            'low_band_pass': TextInput(attrs={'class': 'form-control'}),
+            'low_notch': TextInput(attrs={'class': 'form-control'}),
+            'high_band_pass': TextInput(attrs={'class': 'form-control'}),
+            'high_notch': TextInput(attrs={'class': 'form-control'}),
+            'order': NumberInput(attrs={'class': 'form-control'})
+        }
+
+
 class EMGAmplifierSettingForm(ModelForm):
     class Meta:
         model = EMGAmplifierSetting
@@ -1022,14 +1084,17 @@ class EMGAnalogFilterSettingForm(ModelForm):
     class Meta:
         model = EMGAnalogFilterSetting
 
-        localized_fields = ('low_pass', 'high_pass', 'band_pass', 'notch',)
-        fields = ['low_pass', 'high_pass', 'band_pass', 'notch']
+        localized_fields = ('low_pass', 'high_pass', 'low_band_pass', 'low_notch', 'high_band_pass', 'high_notch')
+        fields = ['low_pass', 'high_pass', 'low_band_pass', 'low_notch', 'high_band_pass', 'high_notch', 'order']
 
         widgets = {
             'low_pass': TextInput(attrs={'class': 'form-control'}),
             'high_pass': TextInput(attrs={'class': 'form-control'}),
-            'band_pass': TextInput(attrs={'class': 'form-control'}),
-            'notch': TextInput(attrs={'class': 'form-control'}),
+            'low_band_pass': TextInput(attrs={'class': 'form-control'}),
+            'low_notch': TextInput(attrs={'class': 'form-control'}),
+            'high_band_pass': TextInput(attrs={'class': 'form-control'}),
+            'high_notch': TextInput(attrs={'class': 'form-control'}),
+            'order': NumberInput(attrs={'class': 'form-control'})
         }
 
 
@@ -1089,6 +1154,83 @@ class EMGNeedlePlacementForm(ModelForm):
         }
 
 
+class TMSDataForm(ModelForm):
+    class Meta:
+        model = TMSData
+
+        fields = ['date', 'time', 'tms_setting', 'coil_orientation', 'direction_of_induced_current',
+                  'resting_motor_threshold', 'test_pulse_intensity_of_simulation', 'interval_between_pulses',
+                  'interval_between_pulses_unit', 'time_between_mep_trials', 'time_between_mep_trials_unit',
+                  'coil_orientation_angle', 'repetitive_pulse_frequency', 'description', 'second_test_pulse_intensity']
+
+        widgets = {
+            'date': DateInput(format=_("%m/%d/%Y"),
+                              attrs={'class': 'form-control datepicker', 'placeholder': _('mm/dd/yyyy'),
+                                     'required': "",
+                                     'data-error': _("Fill date must be filled.")}, ),
+            'time': TimeInput(attrs={'class': 'form-control', 'placeholder': 'HH:mm:ss'}),
+            'tms_setting': Select(attrs={'class': 'form-control', 'required': "",
+                                         'data-error': _('TMS setting type must be filled.')}),
+            'coil_orientation': Select(attrs={'class': 'form-control'}),
+            'coil_orientation_angle': TextInput(attrs={'class': 'form-control'}),
+            'direction_of_induced_current': Select(attrs={'class': 'form-control'}),
+            'resting_motor_threshold': TextInput(attrs={'class': 'form-control'}),
+            'test_pulse_intensity_of_simulation': TextInput(attrs={'class': 'form-control'}),
+            'second_test_pulse_intensity': TextInput(attrs={'class': 'form-control'}),
+            'interval_between_pulses': TextInput(attrs={'class': 'form-control'}),
+            'interval_between_pulses_unit': Select(attrs={'class': 'form-control'}),
+            'time_between_mep_trials': TextInput(attrs={'class': 'form-control'}),
+            'time_between_mep_trials_unit': Select(attrs={'class': 'form-control'}),
+            'repetitive_pulse_frequency': TextInput(attrs={'class': 'form-control'}),
+            'description': Textarea(attrs={'class': 'form-control',
+                                           'rows': '4', 'required': "",
+                                           'data-error': _('Description must be filled.')}),
+        }
+
+    def __init__(self, *args, **kwargs):
+        super(TMSDataForm, self).__init__(*args, **kwargs)
+
+        # self.fields['file_format'].queryset = FileFormat.objects.filter(tags__name="TMS")
+
+        initial = kwargs.get('initial')
+        if initial and 'experiment' in initial:
+            self.fields['tms_setting'].queryset = TMSSetting.objects.filter(experiment=initial['experiment'])
+        if initial and 'tms_setting' in initial:
+            tms_setting = get_object_or_404(TMSSetting, pk=initial['tms_setting'])
+            self.fields['coil_orientation'].queryset = CoilOrientation.objects.all()
+            self.fields['direction_of_induced_current'].queryset = DirectionOfTheInducedCurrent.objects.all()
+
+
+# class TMSPositionForm(ModelForm):
+#     class Meta:
+#         model = TMSPosition
+#
+#         fields = ['name']
+#
+#         widgets = {
+#             'name': TextInput(attrs={'class': 'form-control',
+#                                      'required': "",
+#                                      'data-error': _('Name must be filled.')}),
+#         }
+
+
+class HotSpotForm(ModelForm):
+    class Meta:
+        model = HotSpot
+
+        fields = ['name','coordinate_x', 'coordinate_y']
+
+        widgets = {
+            'name': TextInput(attrs={'class': 'form-control'}),
+            'coordinate_x': TextInput(attrs={'class': 'form-control',
+                                             'required': "",
+                                             'data-error': _('The coordinate must be filled.')}),
+            'coordinate_y': TextInput(attrs={'class': 'form-control',
+                                             'required': "",
+                                             'data-error': _('The coordinate must be filled.')}),
+        }
+
+
 class TMSSettingForm(ModelForm):
     class Meta:
         model = TMSSetting
@@ -1110,10 +1252,24 @@ class TMSDeviceSettingForm(ModelForm):
     class Meta:
         model = TMSDeviceSetting
 
-        fields = ['tms_device', 'pulse_stimulus_type']
+        fields = ['tms_device', 'pulse_stimulus_type', 'coil_model']
 
         widgets = {
             'tms_device': Select(attrs={'class': 'form-control', 'required': "",
                                         'data-error': _('TMS device is required')}),
+            'coil_model': Select(attrs={'class': 'form-control', 'required': "",
+                                        'data-error': _('Coil model is required')}),
             'pulse_stimulus_type': Select(attrs={'class': 'form-control'})
+        }
+
+
+class CoilModelForm(ModelForm):
+    class Meta:
+        model = CoilModel
+
+        fields = ['description']
+
+        widgets = {
+            'description': Textarea(attrs={'class': 'form-control', 'rows': '4', 'disabled': '',
+                                           'id':'id_coil_description'})
         }

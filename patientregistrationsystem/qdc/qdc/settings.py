@@ -58,6 +58,7 @@ PROJECT_APPS = (
     'survey',
     'cep',
     'export',
+    'team',
 )
 
 PROJECT_TAGS_APPS = (
@@ -194,4 +195,4 @@ try:
 except ImportError:
     pass
 
-VERSION = '1.0.1'
+VERSION = '1.6.0'

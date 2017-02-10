@@ -86,6 +86,19 @@ class InputExport:
         questionnaire_lime_survey.release_session_key()
 
 
+def build_partial_export_structure(export_per_participant, participant_field_header_list, output_filename,
+                                   language=DEFAULT_LANGUAGE):
+
+    json_data = InputExport()
+
+    json_data.build_header()
+    json_data.build_dynamic_header("export_per_participant", export_per_participant)
+    json_data.build_diagnosis_participant("participants", OUTPUT_FILENAME_PARTICIPANTS, participant_field_header_list)
+    # json_data.build_diagnosis_participant("diagnosis", OUTPUT_FILENAME_DIAGNOSIS, diagnosis_field_header_list)
+    # json_data.build_questionnaire(questionnaires_list, language)
+    json_data.write(output_filename)
+
+
 def build_complete_export_structure(export_per_participant, export_per_questionnaire, participant_field_header_list,
                                     diagnosis_field_header_list, questionnaires_list, response_type, heading_type,
                                     output_filename, language=DEFAULT_LANGUAGE):

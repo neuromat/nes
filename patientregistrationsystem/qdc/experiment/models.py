@@ -12,6 +12,8 @@ from simple_history.models import HistoricalRecords
 
 from patient.models import Patient, ClassificationOfDiseases
 from survey.models import Survey
+from team.models import TeamPerson
+
 
 TIME_UNITS = (
     ("ms", _("milisecond(s)")),
@@ -71,6 +73,12 @@ class ResearchProject(models.Model):
             ("view_researchproject", "Can view research project"),
             ("change_researchproject_from_others", "Can change research project created by others"),
         )
+
+
+class ResearchProjectCollaboration(models.Model):
+    team_person = models.ForeignKey(TeamPerson, related_name='collaborators')
+    research_project = models.ForeignKey(ResearchProject, related_name='collaborators')
+    is_coordinator = models.BooleanField()
 
 
 class Experiment(models.Model):
@@ -135,11 +143,6 @@ class Equipment(models.Model):
         permissions = (
             ("register_equipment", "Can register equipment"),
         )
-
-
-class EEGMachine(Equipment):
-    number_of_channels = models.IntegerField(null=True, blank=True, validators=[MinValueValidator(0)])
-    software_version = models.CharField(max_length=150, null=True, blank=True)
 
 
 class AmplifierDetectionType(models.Model):
@@ -347,9 +350,22 @@ class EEGElectrodePosition(models.Model):
     coordinate_x = models.IntegerField(null=True, blank=True, validators=[MinValueValidator(0)])
     coordinate_y = models.IntegerField(null=True, blank=True, validators=[MinValueValidator(0)])
     position_reference = models.ForeignKey('self', null=True, blank=True, related_name='children')
+    channel_default_index = models.IntegerField()
+
+    class Meta:
+        unique_together = ('eeg_electrode_localization_system', 'channel_default_index')
 
     def __str__(self):
         return self.eeg_electrode_localization_system.name + ' - ' + self.name
+
+    def save(self, force_insert=False, force_update=False, using=None, update_fields=None):
+        if not self.pk and not self.channel_default_index:
+            top = \
+                EEGElectrodePosition.objects.filter(
+                    eeg_electrode_localization_system=self.eeg_electrode_localization_system).order_by(
+                    '-channel_default_index').first()
+            self.channel_default_index = top.channel_default_index + 1 if top else 1
+        super(EEGElectrodePosition, self).save()
 
 
 class EEGElectrodeNetSystem(models.Model):
@@ -386,7 +402,6 @@ class TMSDevice(Equipment):
         ("biphase", _("Biphase")),
     )
 
-    coil_model = models.ForeignKey(CoilModel)
     pulse_type = models.CharField(null=True, blank=True, max_length=50, choices=PULSE_TYPES)
 
     def __str__(self):
@@ -404,17 +419,12 @@ class EEGSetting(models.Model):
         return self.name
 
 
-class EEGMachineSetting(models.Model):
-    eeg_setting = models.OneToOneField(EEGSetting, primary_key=True, related_name='eeg_machine_setting')
-    eeg_machine = models.ForeignKey(EEGMachine)
-    number_of_channels_used = models.IntegerField(validators=[MinValueValidator(0)])
-
-
 class EEGAmplifierSetting(models.Model):
     eeg_setting = models.OneToOneField(EEGSetting, primary_key=True, related_name='eeg_amplifier_setting')
     eeg_amplifier = models.ForeignKey(Amplifier)
     gain = models.FloatField(null=True, blank=True, validators=[MinValueValidator(0)])
     sampling_rate = models.FloatField(null=True, blank=True, validators=[MinValueValidator(0)])
+    number_of_channels_used = models.IntegerField(null=True, validators=[MinValueValidator(0)])
 
 
 class EEGSolutionSetting(models.Model):
@@ -427,6 +437,10 @@ class EEGFilterSetting(models.Model):
     eeg_filter_type = models.ForeignKey(FilterType)
     high_pass = models.FloatField(null=True, blank=True, validators=[MinValueValidator(0)])
     low_pass = models.FloatField(null=True, blank=True, validators=[MinValueValidator(0)])
+    high_band_pass = models.FloatField(null=True, blank=True, validators=[MinValueValidator(0)])
+    low_band_pass = models.FloatField(null=True, blank=True, validators=[MinValueValidator(0)])
+    high_notch = models.FloatField(null=True, blank=True, validators=[MinValueValidator(0)])
+    low_notch = models.FloatField(null=True, blank=True, validators=[MinValueValidator(0)])
     order = models.IntegerField(null=True, blank=True, validators=[MinValueValidator(0)])
 
 
@@ -440,6 +454,10 @@ class EEGElectrodePositionSetting(models.Model):
     eeg_electrode_position = models.ForeignKey(EEGElectrodePosition)
     used = models.BooleanField()
     electrode_model = models.ForeignKey(ElectrodeModel)
+    channel_index = models.IntegerField()
+
+    class Meta:
+        unique_together = ('eeg_electrode_layout_setting', 'channel_index')
 
 
 class Software(models.Model):
@@ -559,8 +577,10 @@ class EMGDigitalFilterSetting(models.Model):
     filter_type = models.ForeignKey(FilterType)
     low_pass = models.FloatField(null=True, blank=True, validators=[MinValueValidator(0)])
     high_pass = models.FloatField(null=True, blank=True, validators=[MinValueValidator(0)])
-    band_pass = models.FloatField(null=True, blank=True, validators=[MinValueValidator(0)])
-    notch = models.FloatField(null=True, blank=True, validators=[MinValueValidator(0)])
+    low_band_pass = models.FloatField(null=True, blank=True, validators=[MinValueValidator(0)])
+    high_band_pass = models.FloatField(null=True, blank=True, validators=[MinValueValidator(0)])
+    low_notch = models.FloatField(null=True, blank=True, validators=[MinValueValidator(0)])
+    high_notch = models.FloatField(null=True, blank=True, validators=[MinValueValidator(0)])
     order = models.IntegerField(null=True, blank=True, validators=[MinValueValidator(0)])
 
 
@@ -588,8 +608,11 @@ class EMGPreamplifierFilterSetting(models.Model):
                                                            related_name='emg_preamplifier_filter_setting')
     low_pass = models.FloatField(null=True, blank=True, validators=[MinValueValidator(0)])
     high_pass = models.FloatField(null=True, blank=True, validators=[MinValueValidator(0)])
-    band_pass = models.FloatField(null=True, blank=True, validators=[MinValueValidator(0)])
-    notch = models.FloatField(null=True, blank=True, validators=[MinValueValidator(0)])
+    low_band_pass = models.FloatField(null=True, blank=True, validators=[MinValueValidator(0)])
+    low_notch = models.FloatField(null=True, blank=True, validators=[MinValueValidator(0)])
+    high_band_pass = models.FloatField(null=True, blank=True, validators=[MinValueValidator(0)])
+    high_notch = models.FloatField(null=True, blank=True, validators=[MinValueValidator(0)])
+    order = models.IntegerField(null=True, blank=True, validators=[MinValueValidator(0)])
 
 
 class EMGAmplifierSetting(models.Model):
@@ -604,8 +627,11 @@ class EMGAnalogFilterSetting(models.Model):
                                                  primary_key=True, related_name='emg_analog_filter_setting')
     low_pass = models.FloatField(null=True, blank=True, validators=[MinValueValidator(0)])
     high_pass = models.FloatField(null=True, blank=True, validators=[MinValueValidator(0)])
-    band_pass = models.FloatField(null=True, blank=True, validators=[MinValueValidator(0)])
-    notch = models.FloatField(null=True, blank=True, validators=[MinValueValidator(0)])
+    low_band_pass = models.FloatField(null=True, blank=True, validators=[MinValueValidator(0)])
+    low_notch = models.FloatField(null=True, blank=True, validators=[MinValueValidator(0)])
+    high_band_pass = models.FloatField(null=True, blank=True, validators=[MinValueValidator(0)])
+    high_notch = models.FloatField(null=True, blank=True, validators=[MinValueValidator(0)])
+    order = models.IntegerField(null=True, blank=True, validators=[MinValueValidator(0)])
 
 
 class EMGElectrodePlacementSetting(models.Model):
@@ -635,6 +661,63 @@ class TMSDeviceSetting(models.Model):
     tms_setting = models.OneToOneField(TMSSetting, primary_key=True, related_name='tms_device_setting')
     tms_device = models.ForeignKey(TMSDevice)
     pulse_stimulus_type = models.CharField(null=True, blank=True, max_length=50, choices=PULSE_STIMULUS_TYPES)
+    coil_model = models.ForeignKey(CoilModel)
+
+
+def get_tms_brain_area_dir(instance, filename):
+    return "tms_brain_area_files/%s/%s" % \
+           (instance.id, filename)
+
+
+class BrainAreaSystem(models.Model):
+    name = models.CharField(null=False, max_length=50, blank=False)
+    description = models.TextField(null=True, blank=True)
+
+    def __str__(self):
+        return self.name
+
+
+class BrainAreaSystemPerspective(models.Model):
+    brain_area_image = models.FileField(upload_to=get_tms_brain_area_dir, null=True, blank=True)
+    brain_area_system = models.ForeignKey(BrainAreaSystem)
+
+
+def get_tms_localization_system_dir(instance, filename):
+    return "tms_localization_system_files/%s/%s" % \
+           (instance.id, filename)
+
+
+class BrainArea(models.Model):
+    name = models.CharField(null=False, max_length=50, blank=False)
+    description = models.TextField(null=True, blank=True)
+    brain_area_system = models.ForeignKey(BrainAreaSystem)
+
+    def __str__(self):
+        return self.name
+
+
+class TMSLocalizationSystem(models.Model):
+    name = models.CharField(null=False, max_length=50, blank=False)
+    description = models.TextField(null=True, blank=True)
+    tms_localization_system_image = models.FileField(upload_to=get_tms_localization_system_dir, null=True, blank=True)
+    brain_area = models.ForeignKey(BrainArea)
+
+    def __str__(self):
+        return self.name
+
+
+class CoilOrientation(models.Model):
+    name = models.CharField(max_length=150)
+
+    def __str__(self):
+        return self.name
+
+
+class DirectionOfTheInducedCurrent(models.Model):
+    name = models.CharField(max_length=150)
+
+    def __str__(self):
+        return self.name
 
 
 class Component(models.Model):
@@ -704,10 +787,10 @@ class Questionnaire(Component):
 class Block(Component):
     SEQUENCE = 'sequence'
     PARALLEL_BLOCK = 'parallel_block'
+    BLOCK_TYPES = ((SEQUENCE, _("Sequence")), (PARALLEL_BLOCK, _("Parallel")))
     number_of_mandatory_components = models.IntegerField(null=True, blank=True, validators=[MinValueValidator(0)])
     type = models.CharField(null=False, max_length=20,
-                            choices=((SEQUENCE, "Sequence component"),
-                                     (PARALLEL_BLOCK, "Parallel block component")))
+                            choices=BLOCK_TYPES)
 
     def save(self, *args, **kwargs):
         super(Component, self).save(*args, **kwargs)
@@ -752,6 +835,8 @@ class ComponentConfiguration(models.Model):
 
     # This is null when the parent is a parallel block.
     random_position = models.NullBooleanField(blank=True)
+
+    requires_start_and_end_datetime = models.BooleanField(default=False)
 
     class Meta:
         unique_together = ('parent', 'order',)
@@ -810,6 +895,21 @@ class SubjectOfGroup(models.Model):
 class DataConfigurationTree(models.Model):
     component_configuration = models.ForeignKey(ComponentConfiguration, on_delete=models.PROTECT)
     parent = models.ForeignKey('self', null=True, related_name='children')
+
+
+class SubjectStepData(models.Model):
+    # data_configuration_tree null means that the DataCollection is associated to the whole experimental protocol
+    data_configuration_tree = models.ForeignKey(DataConfigurationTree, null=True, blank=True)
+
+    subject_of_group = models.ForeignKey(SubjectOfGroup)
+
+    start_date = models.DateField(default=datetime.date.today, null=True, blank=True,
+                                  validators=[validate_date_questionnaire_response])
+    start_time = models.TimeField(null=True, blank=True)
+
+    end_date = models.DateField(default=datetime.date.today, null=True, blank=True,
+                                validators=[validate_date_questionnaire_response])
+    end_time = models.TimeField(null=True, blank=True)
 
 
 class DataCollection(models.Model):
@@ -900,6 +1000,50 @@ class EEGData(DataFile, DataCollection):
         self.changed_by = value
 
 
+class TMSData(DataCollection):
+    tms_setting = models.ForeignKey(TMSSetting)
+    resting_motor_threshold = models.FloatField(null=True, blank=True, validators=[MinValueValidator(0)])
+    test_pulse_intensity_of_simulation = models.FloatField(null=True, blank=True, validators=[MinValueValidator(0)])
+    second_test_pulse_intensity = models.FloatField(null=True, blank=True, validators=[MinValueValidator(0)])
+    interval_between_pulses = models.IntegerField(null=True, blank=True, validators=[MinValueValidator(0)])
+    interval_between_pulses_unit = models.CharField(null=True, blank=True, max_length=15, choices=TIME_UNITS)
+    # time_between_mep_trials_low = models.IntegerField(null=True, blank=True, validators=[MinValueValidator(0)])
+    time_between_mep_trials = models.IntegerField(null=True, blank=True, validators=[MinValueValidator(0)])
+    # time_between_mep_trials_high = models.IntegerField(null=True, blank=True, validators=[MinValueValidator(0)])
+    time_between_mep_trials_unit = models.CharField(null=True, blank=True, max_length=15, choices=TIME_UNITS)
+    repetitive_pulse_frequency = models.IntegerField(null=True, blank=True, validators=[MinValueValidator(0)])
+    coil_orientation = models.ForeignKey(CoilOrientation, null=True, blank=True)
+    coil_orientation_angle = models.IntegerField(null=True,blank=True,validators=[MinValueValidator(0)])
+    direction_of_induced_current = models.ForeignKey(DirectionOfTheInducedCurrent, null=True, blank=True)
+    description = models.TextField(null=False, blank=False)
+
+    # Audit trail - Simple History
+    history = HistoricalRecords()
+    # changed_by = models.ForeignKey('auth.User')
+
+    def __str__(self):
+        return self.description
+
+    @property
+    def _history_user(self):
+        return self.changed_by
+
+    @_history_user.setter
+    def _history_user(self, value):
+        self.changed_by = value
+
+
+class HotSpot(models.Model):
+    name = models.CharField(max_length=50)
+    coordinate_x = models.IntegerField(null=True, blank=True, validators=[MinValueValidator(0)])
+    coordinate_y = models.IntegerField(null=True, blank=True, validators=[MinValueValidator(0)])
+    tms_data = models.OneToOneField(TMSData, primary_key=True)
+    tms_localization_system = models.ForeignKey(TMSLocalizationSystem, related_name='hotspots')
+
+    def __str__(self):
+        return self.name
+
+
 class AdditionalData(DataFile, DataCollection):
 
     # Audit trail - Simple History
@@ -942,6 +1086,10 @@ class EEGElectrodePositionCollectionStatus(models.Model):
     eeg_data = models.ForeignKey(EEGData, related_name='electrode_positions')
     eeg_electrode_position_setting = models.ForeignKey(EEGElectrodePositionSetting)
     worked = models.BooleanField()
+    channel_index = models.IntegerField()
+
+    class Meta:
+        unique_together = ('eeg_data', 'channel_index')
 
     def __str__(self):
         return self.eeg_electrode_position_setting.eeg_electrode_position.name
