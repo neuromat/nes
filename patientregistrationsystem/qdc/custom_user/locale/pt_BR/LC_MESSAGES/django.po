@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2016-08-22 10:28-0300\n"
+"POT-Creation-Date: 2017-01-27 09:50-0200\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -31,7 +31,7 @@ msgid "Type user name"
 msgstr "Entrar nome do usuário"
 
 #: custom_user/forms.py:24 custom_user/forms.py:47
-#: custom_user/templates/custom_user/register_users.html:219
+#: custom_user/templates/custom_user/register_users.html:203
 msgid "Type password"
 msgstr "Entrar senha"
 
@@ -43,28 +43,28 @@ msgstr "Entra e-mail"
 msgid "E-mail is not registered"
 msgstr ""
 
-#: custom_user/templates/custom_user/register_users.html:132
+#: custom_user/templates/custom_user/register_users.html:116
 msgid "Basic Information"
 msgstr "Informações Básicas"
 
-#: custom_user/templates/custom_user/register_users.html:136
+#: custom_user/templates/custom_user/register_users.html:120
 msgid "First name"
 msgstr "Nome"
 
-#: custom_user/templates/custom_user/register_users.html:145
+#: custom_user/templates/custom_user/register_users.html:129
 msgid "Last name"
 msgstr "Sobrenome"
 
-#: custom_user/templates/custom_user/register_users.html:157
+#: custom_user/templates/custom_user/register_users.html:141
 #: custom_user/templates/custom_user/user_list.html:36
 msgid "User name"
 msgstr "Nome de usuário"
 
-#: custom_user/templates/custom_user/register_users.html:191
+#: custom_user/templates/custom_user/register_users.html:175
 msgid "Update password"
 msgstr "Alterar senha"
 
-#: custom_user/templates/custom_user/register_users.html:198
+#: custom_user/templates/custom_user/register_users.html:182
 msgid ""
 "Password must contain at least 8 characters, including at least one "
 "uppercase letter, digit or special character."
@@ -72,41 +72,41 @@ msgstr ""
 "Senha deve conter pelo menos 8 caracteres, incluindo ao menos uma letra "
 "maiúscula, dígito ou caractere especial."
 
-#: custom_user/templates/custom_user/register_users.html:200
+#: custom_user/templates/custom_user/register_users.html:184
 msgid "Password"
 msgstr "Senha"
 
-#: custom_user/templates/custom_user/register_users.html:215
+#: custom_user/templates/custom_user/register_users.html:199
 msgid "Please confirm password"
 msgstr "Confirmar senha"
 
-#: custom_user/templates/custom_user/register_users.html:236
+#: custom_user/templates/custom_user/register_users.html:219
 msgid "Profiles"
 msgstr "Perfis"
 
-#: custom_user/templates/custom_user/register_users.html:238
+#: custom_user/templates/custom_user/register_users.html:221
 msgid "In which these profiles does user identify?"
 msgstr "Em quais desses perfis o usuário se identifica?"
 
-#: custom_user/templates/custom_user/register_users.html:265
-#: custom_user/templates/custom_user/register_users.html:291
+#: custom_user/templates/custom_user/register_users.html:248
+#: custom_user/templates/custom_user/register_users.html:274
 msgid "Delete"
 msgstr "Remover"
 
-#: custom_user/templates/custom_user/register_users.html:269
+#: custom_user/templates/custom_user/register_users.html:252
 msgid "Save"
 msgstr "Salvar"
 
+#: custom_user/templates/custom_user/register_users.html:256
 #: custom_user/templates/custom_user/register_users.html:273
-#: custom_user/templates/custom_user/register_users.html:290
 msgid "Cancel"
 msgstr "Cancelar"
 
-#: custom_user/templates/custom_user/register_users.html:275
+#: custom_user/templates/custom_user/register_users.html:258
 msgid "Back"
 msgstr "Voltar"
 
-#: custom_user/templates/custom_user/register_users.html:287
+#: custom_user/templates/custom_user/register_users.html:270
 msgid "Are you sure you want to delete user?"
 msgstr "Tem certeza que deseja excluir o usuário?"
 

@@ -69,7 +69,7 @@ class InputExport:
 
         questionnaire_lime_survey = Questionnaires()
 
-        for sid, title, field_header_list in questionnaire_list:
+        for index, sid, title, field_header_list in questionnaire_list:
             language = get_questionnaire_language(questionnaire_lime_survey, sid, language)
 
             self.data["questionnaires"].append({"id": sid, "language": language,

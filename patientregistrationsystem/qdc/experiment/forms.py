@@ -16,14 +16,14 @@ from experiment.models import Experiment, QuestionnaireResponse, SubjectOfGroup,
     ADConverter, StandardizationSystem, Muscle, MuscleSide, MuscleSubdivision, TMS, TMSSetting, TMSDeviceSetting, \
     Software, SoftwareVersion, CoilModel, TMSDevice, EMGIntramuscularPlacement, EMGNeedlePlacement, SubjectStepData, \
     EMGPreamplifierFilterSetting, TMSData, HotSpot, CoilOrientation, DirectionOfTheInducedCurrent, \
-    ResearchProjectCollaboration, TMSLocalizationSystem
+    ResearchProjectCollaboration, TMSLocalizationSystem, DigitalGamePhase, ContextTree, DigitalGamePhaseData
 
 
 class ExperimentForm(ModelForm):
     class Meta:
         model = Experiment
 
-        fields = ['research_project', 'title', 'description']
+        fields = ['research_project', 'title', 'description', 'is_public', 'data_acquisition_is_concluded']
 
         widgets = {
             'research_project': Select(attrs={'class': 'form-control'}),
@@ -237,6 +237,26 @@ class TMSForm(ModelForm):
         initial = kwargs.get('initial')
         if initial:
             self.fields['tms_setting'].queryset = TMSSetting.objects.filter(experiment=initial['experiment'])
+
+
+class DigitalGamePhaseForm(ModelForm):
+    class Meta:
+        model = DigitalGamePhase
+        fields = ['software_version', 'context_tree']
+
+        widgets = {
+            'software_version': Select(attrs={'class': 'form-control', 'required': "",
+                                              'data-error': _('Software version must be filled.')}),
+            'context_tree': Select(attrs={'class': 'form-control', 'required': "",
+                                          'data-error': _('Context tree must be filled.')})
+        }
+
+    def __init__(self, *args, **kwargs):
+        super(DigitalGamePhaseForm, self).__init__(*args, **kwargs)
+        initial = kwargs.get('initial')
+        if initial:
+            self.fields['context_tree'].queryset = \
+                ContextTree.objects.filter(experiment=initial['experiment'])
 
 
 class BlockForm(ModelForm):
@@ -478,7 +498,7 @@ class TMSLocalizationSystemForm(ModelForm):
             'name': TextInput(attrs={'class': 'form-control', 'required': "",
                                      'data-error': _('Name field must be filled.'),
                                      'autofocus': ''}),
-            'description': Textarea(attrs={'class': 'form-control', 'rows':'4'}),
+            'description': Textarea(attrs={'class': 'form-control', 'rows': '4'}),
             'brain_area': Select(attrs={'class': 'form-control'}),
         }
 
@@ -508,25 +528,6 @@ class ManufacturerRegisterForm(ModelForm):
                                      'required': "",
                                      'data-error': _('Name must be filled.')})
         }
-
-
-# class EEGMachineRegisterForm(ModelForm):
-#     class Meta:
-#         model = EEGMachine
-#         fields = ['manufacturer', 'identification', 'description', 'serial_number',
-#                   'number_of_channels', 'software_version']
-#
-#         widgets = {
-#
-#             'manufacturer': Select(attrs={'class': 'form-control', 'required': "",
-#                                           'data-error': _('Manufacturer must be filled.')}),
-#             'identification': TextInput(attrs={'class': 'form-control', 'required': "",
-#                                                'data-error': _('Identification must be filled.')}),
-#             'description': Textarea(attrs={'class': 'form-control', 'rows': '4'}),
-#             'serial_number': TextInput(attrs={'class': 'form-control'}),
-#             'number_of_channels': NumberInput(attrs={'class': 'form-control'}),
-#             'software_version': TextInput(attrs={'class': 'form-control'})
-#         }
 
 
 class AmplifierRegisterForm(ModelForm):
@@ -964,8 +965,10 @@ class EMGSettingForm(ModelForm):
 class EMGDigitalFilterSettingForm(ModelForm):
     class Meta:
         model = EMGDigitalFilterSetting
-        localized_fields = ('low_pass', 'high_pass', 'low_band_pass', 'high_band_pass', 'low_notch', 'high_notch', 'order')
-        fields = ['filter_type', 'low_pass', 'high_pass', 'low_band_pass', 'high_band_pass', 'low_notch', 'high_notch', 'order']
+        localized_fields = ('low_pass', 'high_pass', 'low_band_pass', 'high_band_pass', 'low_notch',
+                            'high_notch', 'order')
+        fields = ['filter_type', 'low_pass', 'high_pass', 'low_band_pass', 'high_band_pass', 'low_notch',
+                  'high_notch', 'order']
 
         widgets = {
             'filter_type': Select(attrs={'class': 'form-control', 'required': "",
@@ -1190,8 +1193,6 @@ class TMSDataForm(ModelForm):
     def __init__(self, *args, **kwargs):
         super(TMSDataForm, self).__init__(*args, **kwargs)
 
-        # self.fields['file_format'].queryset = FileFormat.objects.filter(tags__name="TMS")
-
         initial = kwargs.get('initial')
         if initial and 'experiment' in initial:
             self.fields['tms_setting'].queryset = TMSSetting.objects.filter(experiment=initial['experiment'])
@@ -1201,24 +1202,11 @@ class TMSDataForm(ModelForm):
             self.fields['direction_of_induced_current'].queryset = DirectionOfTheInducedCurrent.objects.all()
 
 
-# class TMSPositionForm(ModelForm):
-#     class Meta:
-#         model = TMSPosition
-#
-#         fields = ['name']
-#
-#         widgets = {
-#             'name': TextInput(attrs={'class': 'form-control',
-#                                      'required': "",
-#                                      'data-error': _('Name must be filled.')}),
-#         }
-
-
 class HotSpotForm(ModelForm):
     class Meta:
         model = HotSpot
 
-        fields = ['name','coordinate_x', 'coordinate_y']
+        fields = ['name', 'coordinate_x', 'coordinate_y']
 
         widgets = {
             'name': TextInput(attrs={'class': 'form-control'}),
@@ -1271,5 +1259,51 @@ class CoilModelForm(ModelForm):
 
         widgets = {
             'description': Textarea(attrs={'class': 'form-control', 'rows': '4', 'disabled': '',
-                                           'id':'id_coil_description'})
+                                           'id': 'id_coil_description'})
         }
+
+
+class ContextTreeForm(ModelForm):
+    class Meta:
+        model = ContextTree
+
+        fields = ['name', 'description', 'setting_text', 'setting_file']
+
+        widgets = {
+            'name': TextInput(attrs={'class': 'form-control',
+                                     'required': "",
+                                     'data-error': _('Name must be filled.'),
+                                     'autofocus': ''}),
+            'description': Textarea(attrs={'class': 'form-control',
+                                           'rows': '4', 'required': "",
+                                           'data-error': _('Description must be filled.')}),
+            'setting_text': Textarea(attrs={'class': 'form-control', 'rows': '4'})
+        }
+
+
+class DigitalGamePhaseDataForm(ModelForm):
+    class Meta:
+        model = DigitalGamePhaseData
+
+        fields = ['date', 'time', 'file_format', 'description', 'file', 'file_format_description']
+
+        widgets = {
+            'date': DateInput(format=_("%m/%d/%Y"),
+                              attrs={'class': 'form-control datepicker', 'placeholder': _('mm/dd/yyyy'),
+                                     'required': "",
+                                     'data-error': _("Fill date must be filled.")}, ),
+            'time': TimeInput(attrs={'class': 'form-control', 'placeholder': 'HH:mm:ss'}),
+            'file_format': Select(attrs={'class': 'form-control', 'required': "",
+                                         'data-error': _('File format must be chosen.')}),
+            'description': Textarea(attrs={'class': 'form-control',
+                                           'rows': '4', 'required': "",
+                                           'data-error': _('Description must be filled.')}),
+            'file_format_description': Textarea(attrs={'class': 'form-control',
+                                                       'rows': '4', 'required': "",
+                                                       'data-error': _('File format description must be filled.')}),
+            # It is not possible to set the 'required' attribute because it affects the edit screen
+            # 'file': FileInput(attrs={'required': ""})
+        }
+
+    def __init__(self, *args, **kwargs):
+        super(DigitalGamePhaseDataForm, self).__init__(*args, **kwargs)

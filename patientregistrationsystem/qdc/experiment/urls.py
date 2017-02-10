@@ -17,6 +17,10 @@ urlpatterns = patterns(
     url(r'^research_project/edit/(?P<research_project_id>\d+)/$', 'research_project_update',
         name='research_project_edit'),
 
+    # collaborator
+    url(r'^research_project/(?P<research_project_id>\d+)/new_collaborator/$',
+        'collaborator_create', name='collaborator_new'),
+
     # experiment
     url(r'^research_project/(?P<research_project_id>\d+)/new_experiment/$', 'experiment_create', name='experiment_new'),
     url(r'^(?P<experiment_id>\d+)/$', 'experiment_view', name='experiment_view'),
@@ -35,12 +39,6 @@ urlpatterns = patterns(
     url(r'^manufacturer/new/$', 'manufacturer_create', name='manufacturer_new'),
     url(r'^manufacturer/(?P<manufacturer_id>\d+)/$', 'manufacturer_view', name='manufacturer_view'),
     url(r'^manufacturer/edit/(?P<manufacturer_id>\d+)/$', 'manufacturer_update', name='manufacturer_edit'),
-
-    # register eeg machine
-    url(r'^eegmachine/list/$', 'eegmachine_list', name='eegmachine_list'),
-    url(r'^eegmachine/new/$', 'eegmachine_create', name='eegmachine_new'),
-    url(r'^eegmachine/(?P<eegmachine_id>\d+)/$', 'eegmachine_view', name='eegmachine_view'),
-    url(r'^eegmachine/edit/(?P<eegmachine_id>\d+)/$', 'eegmachine_update', name='eegmachine_edit'),
 
     # register amplifier
     url(r'^amplifier/list/$', 'amplifier_list', name='amplifier_list'),
@@ -148,6 +146,22 @@ urlpatterns = patterns(
     url(r'^tmsdevice/(?P<tmsdevice_id>\d+)/$', 'tmsdevice_view', name='tmsdevice_view'),
     url(r'^tmsdevice/edit/(?P<tmsdevice_id>\d+)/$', 'tmsdevice_update', name='tmsdevice_edit'),
 
+    # TMS Localization system and position
+    url(r'^tms_localization_system/list/$',
+        'tms_localization_system_list', name='tms_localization_system_list'),
+    url(r'^tms_localization_system/new/$',
+        'tms_localization_system_create', name='tms_localization_system_new'),
+    url(r'^tms_localization_system/(?P<tms_localization_system_id>\d+)/$',
+        'tms_localization_system_view', name='tms_localization_system_view'),
+    url(r'^tms_localization_system/edit/(?P<tms_localization_system_id>\d+)/$',
+        'tms_localization_system_update', name='tms_localization_system_update'),
+    # url(r'^tms_localization_system/(?P<tms_localization_system_id>\d+)/new_tms_position/$',
+    #     'tms_localization_system_position_create', name='tms_localization_system_position_create'),
+    # url(r'^tms_localization_system/(?P<tms_localization_system_id>\d+)/tms_position/(?P<tms_position_id>\d+)$',
+    #     'tms_localization_system_position_view', name='tms_localization_system_position_view'),
+    # url(r'^tms_localization_system/(?P<tms_localization_system_id>\d+)/tms_position/edit/(?P<tms_position_id>\d+)$',
+    #     'tms_localization_system_position_update', name='tms_localization_system_position_update'),
+
     # Localization system and position
     url(r'^eeg_electrode_localization_system/list/$',
         'eeg_electrode_localization_system_list', name='eeg_electrode_localization_system_list'),
@@ -167,6 +181,8 @@ urlpatterns = patterns(
         'eeg_electrode_coordinates_create', name='eeg_electrode_coordinates_create'),
     url(r'^eeg_electrode_localization_system/test/(?P<eeg_electrode_localization_system_id>\d+)/$',
         'eeg_electrode_localization_system_test', name='eeg_electrode_localization_system_test'),
+    url(r'^eeg_electrode_position/change_the_order/(?P<eeg_electrode_position_id>\d+)/(?P<command>\w+)/$',
+        'eeg_electrode_position_change_the_order', name='eeg_electrode_position_change_the_order'),
 
     # eeg setting
     url(r'^(?P<experiment_id>\d+)/eeg_setting/new/$', 'eeg_setting_create', name='eeg_setting_new'),
@@ -176,8 +192,6 @@ urlpatterns = patterns(
         'view_eeg_setting_type', name='view_eeg_setting_type'),
     url(r'^eeg_setting/(?P<eeg_setting_id>\d+)/(?P<eeg_setting_type>\w+)/edit/$',
         'edit_eeg_setting_type', name='edit_eeg_setting_type'),
-    # url(r'^eeg_setting/(?P<eeg_setting_id>\d+)/equipment/(?P<equipment_id>\d+)/$',
-    #     'equipment_view', name='equipment_view'),
     url(r'^eeg_setting/eeg_electrode_position_status/(?P<eeg_setting_id>\d+)/$',
         'eeg_electrode_position_setting', name='eeg_electrode_position_setting'),
     url(r'^eeg_setting/eeg_electrode_cap/(?P<eeg_setting_id>\d+)/$',
@@ -188,6 +202,9 @@ urlpatterns = patterns(
         'eeg_electrode_position_setting_model', name='eeg_electrode_position_setting_model'),
     url(r'^eeg_setting/eeg_electrode_position_status_model/edit/(?P<eeg_setting_id>\d+)/$',
         'edit_eeg_electrode_position_setting_model', name='edit_eeg_electrode_position_setting_model'),
+    url(r'^eeg_electrode_position_setting/change_the_order/(?P<eeg_electrode_position_setting_id>\d+)/'
+        r'(?P<command>\w+)/$',
+        'eeg_electrode_position_setting_change_the_order', name='eeg_electrode_position_setting_change_the_order'),
 
     # eeg setting (ajax)
     url(r'^equipment/get_equipment_by_manufacturer/(?P<equipment_type>\w+)/(?P<manufacturer_id>\d+)/$',
@@ -195,8 +212,6 @@ urlpatterns = patterns(
     url(r'^equipment/(?P<equipment_id>\d+)/attributes/$', 'get_json_equipment_attributes'),
     url(r'^solution/(?P<solution_id>\d+)/attributes/$', 'get_json_solution_attributes'),
     url(r'^filter/(?P<filter_id>\d+)/attributes/$', 'get_json_filter_attributes'),
-    # url(r'^eeg_localization_system/(?P<eeg_localization_system_id>\d+)/attributes/$',
-    #     'get_json_eeg_localization_system_attributes'),
     url(r'^equipment/get_localization_system_by_electrode_net/(?P<equipment_id>\d+)/$',
         'get_localization_system_by_electrode_net'),
     url(r'^equipment/get_equipment_by_manufacturer_and_localization_system/'
@@ -243,6 +258,7 @@ urlpatterns = patterns(
         'get_electrode_placement_by_type'),
     url(r'^emg_setting/get_description_by_placement/(?P<emg_electrode_type>\w+)/(?P<emg_electrode_placement_id>\d+)/$',
         'get_anatomical_description_by_placement'),
+    url(r'^coilmodel/(?P<coilmodel_id>\d+)/attributes/$', 'get_json_coilmodel_attributes'),
 
     # tms setting
     url(r'^(?P<experiment_id>\d+)/tms_setting/new/$', 'tms_setting_create', name='tms_setting_new'),
@@ -252,6 +268,13 @@ urlpatterns = patterns(
         'tms_setting_tms_device', name='tms_setting_tms_device'),
     url(r'^tms_setting/(?P<tms_setting_id>\d+)/tms_device/edit/$',
         'tms_setting_tms_device_edit', name='tms_setting_tms_device_edit'),
+    url(r'^tms_setting/(?P<tms_setting_id>\d+)/coil_model/$',
+        'tms_setting_coil_model', name='tms_setting_coil_model'),
+
+    # context tree setting
+    url(r'^(?P<experiment_id>\d+)/context_tree/new/$', 'context_tree_create', name='context_tree_new'),
+    url(r'^context_tree/(?P<context_tree_id>\d+)/$', 'context_tree_view', name='context_tree_view'),
+    url(r'^context_tree/edit/(?P<context_tree_id>\d+)/$', 'context_tree_update', name='context_tree_edit'),
 
     # cid
     url(r'^group_diseases/cid-10/$', 'search_cid10_ajax', name='cid10_search'),
@@ -267,6 +290,7 @@ urlpatterns = patterns(
     url(r'^subject/search/$', 'search_patients_ajax', name='subject_search'),
     url(r'^group/(?P<group_id>\d+)/add_subject/(?P<patient_id>\d+)/$', 'subjects_insert', name='subject_insert'),
     url(r'^group/(?P<group_id>\d+)/subject/(?P<subject_id>\d+)/upload_file/$', 'upload_file', name='upload_file'),
+    url(r'^group/(?P<group_id>\d+)/search_subjects/$', 'search_subjects', name='search_subjects'),
 
     # subject + questionnaire
     url(r'^group/(?P<group_id>\d+)/subject/(?P<subject_id>\d+)/$',
@@ -289,6 +313,10 @@ urlpatterns = patterns(
     url(r'^eeg_data/edit_image/(?P<eeg_data_id>\d+)/(?P<tab>\d+)/$', 'eeg_image_edit', name='eeg_image_edit'),
     url(r'^eeg_data/(?P<eeg_data_id>\d+)/export_nwb/(?P<some_number>\d+)/(?P<process_requisition>\d+)/$',
         'eeg_data_export_nwb', name='eeg_data_export_nwb'),
+    url(r'^eeg_electrode_position_collection_status/change_the_order/'
+        r'(?P<eeg_electrode_position_collection_status_id>\d+)/(?P<command>\w+)/$',
+        'eeg_electrode_position_collection_status_change_the_order',
+        name='eeg_electrode_position_collection_status_change_the_order'),
 
     # eeg_data (ajax)
     url(r'^equipment/get_cap_size_list_from_eeg_setting/(?P<eeg_setting_id>\d+)/$',
@@ -305,6 +333,32 @@ urlpatterns = patterns(
     url(r'^emg_data/(?P<emg_data_id>\d+)/$', 'emg_data_view', name='emg_data_view'),
     url(r'^emg_data/edit/(?P<emg_data_id>\d+)/$', 'emg_data_edit', name='emg_data_edit'),
 
+    # subject + tms_data
+    url(r'^group/(?P<group_id>\d+)/subject/(?P<subject_id>\d+)/tms/$',
+        'subject_tms_view', name='subject_tms_view'),
+    url(r'^group/(?P<group_id>\d+)/subject/(?P<subject_id>\d+)/tms/(?P<tms_configuration_id>[0-9-]+)/add_tms_data/$',
+        'subject_tms_data_create', name='subject_tms_data_create'),
+    url(r'^tms_data/(?P<tms_data_id>\d+)/$', 'tms_data_view', name='tms_data_view'),
+    url(r'^tms_data/edit/(?P<tms_data_id>\d+)/(?P<tab>\d+)/$', 'tms_data_edit', name='tms_data_edit'),
+    url(r'^tms_data/(?P<tms_data_id>\d+)/position_setting_register/$', 'tms_data_position_setting_register',
+        name='tms_data_position_setting_register'),
+    url(r'^tms_data/(?P<tms_data_id>\d+)/position_setting_view/$', 'tms_data_position_setting_view',
+        name='tms_data_position_setting_view'),
+
+    # tms_data(ajax)
+    url(r'^get_pulse_by_tms_setting/(?P<tms_setting_id>\d+)/$', 'get_pulse_by_tms_setting'),
+
+    # subject + digital_game_phase_data
+    url(r'^group/(?P<group_id>\d+)/subject/(?P<subject_id>\d+)/digital_game_phase/$',
+        'subject_digital_game_phase_view', name='subject_digital_game_phase_view'),
+    url(r'^group/(?P<group_id>\d+)/subject/(?P<subject_id>\d+)/digital_game_phase/'
+        r'(?P<digital_game_phase_configuration_id>[0-9-]+)/add_digital_game_phase_data/$',
+        'subject_digital_game_phase_data_create', name='subject_digital_game_phase_data_create'),
+    url(r'^digital_game_phase_data/(?P<digital_game_phase_data_id>\d+)/$',
+        'digital_game_phase_data_view', name='digital_game_phase_data_view'),
+    url(r'^digital_game_phase_data/edit/(?P<digital_game_phase_data_id>\d+)/$',
+        'digital_game_phase_data_edit', name='digital_game_phase_data_edit'),
+
     # subject + additional data
     url(r'^group/(?P<group_id>\d+)/subject/(?P<subject_id>\d+)/additional_data/$',
         'subject_additional_data_view', name='subject_additional_data_view'),
@@ -313,6 +367,11 @@ urlpatterns = patterns(
         'subject_additional_data_create', name='subject_additional_data_create'),
     url(r'^additional_data/(?P<additional_data_id>\d+)/$', 'additional_data_view', name='additional_data_view'),
     url(r'^additional_data/edit/(?P<additional_data_id>\d+)/$', 'additional_data_edit', name='additional_data_edit'),
+    url(r'^group/(?P<group_id>\d+)/subject/(?P<subject_id>\d+)/subject_step_data/'
+        r'(?P<path_of_configuration>[0-9-]+)/add/$',
+        'subject_step_data_create', name='subject_step_data_create'),
+    url(r'^subject_step_data/edit/(?P<subject_step_data_id>\d+)/$',
+        'subject_step_data_edit', name='subject_step_data_edit'),
 
     # experimental protocol components
     url(r'^(?P<experiment_id>\d+)/components/$', 'component_list', name='component_list'),

@@ -5,6 +5,8 @@ from django.http import HttpResponseRedirect
 from django.shortcuts import render
 from django.utils.translation import activate, LANGUAGE_SESSION_KEY, ugettext as _
 
+from configuration.models import Institution
+
 
 def qdc_permission_denied_view(request, template_name="admin/qdc_403.html"):
 
@@ -16,9 +18,6 @@ def qdc_permission_denied_view(request, template_name="admin/qdc_403.html"):
 @login_required
 def contact(request):
     context = {
-        'contact_email': settings.CONTACT_EMAIL,
-        'contact_institution': settings.CONTACT_INSTITUTION,
-        'contact_url': settings.CONTACT_URL,
         'logo_institution': settings.LOGO_INSTITUTION,
     }
 

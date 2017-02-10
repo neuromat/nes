@@ -4,12 +4,7 @@
 
 {% block header %}
     {% load static %}
-    <script>
-{#        $( function() {#}
-{#            $( "#accordion" ).accordion();#}
-{#          } );#}
-    </script>
-
+    <script src="{% static 'quiz/js/experiment_selection.js' %}"></script>
     {% block specific_header %}
     {% endblock %}
 {% endblock %}
@@ -39,21 +34,70 @@
             <div id="studies_container" class="container span6 offset3 well ">
                 <h4>{% trans "Filters selection" %}</h4>
 
+{#                <div class="form-group">#}
+{#                    <div class="row">#}
+{#                        <div class="col-xs-12 col-sm-12">#}
+{#                            <div class="form-group">#}
+{#                                <label class="control-label">{% trans "Studies" %} <b style="color: red;">*</b></label>#}
+{#                                    <select class="form-control" size="13" id="id_research_projects" name="research_projects_selected"#}
+{#                                            multiple="multiple"#}
+{#                                            data-error={% trans "Please, select a study from the list." %}>#}
+{#                                        {% for study in study_list %}#}
+{#                                            <option {% if study.study_index == study_selected %}selected{% endif %}#}
+{#                                                    value="{{ study.study_id }}-{{ study.experiment_id }}-{{ study.group_id }}"> {{ study.study_title }} - {{ study.experiment_title }} - {{ study.group_title }}</option>#}
+{#                                        {% endfor %}#}
+{#                                    </select>#}
+{#                                    <label class="control-label">{% trans "* use ctrl-click to select more than one field. (command-click on Mac)" %} </label>#}
+{#                                <div class="help-block with-errors"></div>#}
+{#                            </div>#}
+{#                        </div>#}
+{#                    </div>#}
+{#                </div>#}
+
                 <div class="form-group">
                     <div class="row">
                         <div class="col-xs-12 col-sm-12">
                             <div class="form-group">
                                 <label class="control-label">{% trans "Studies" %} <b style="color: red;">*</b></label>
-                                    <select class="form-control" size="13" id="id_research_projects" name="research_projects_selected"
-                                            multiple="multiple"
-                                            data-error={% trans "Please, select a study from the list." %}>
-                                        {% for study in study_list %}
-                                            <option {% if study.study_index == study_selected %}selected{% endif %}
-                                                    value="{{ study.study_id }}-{{ study.experiment_id }}-{{ study.group_id }}"> {{ study.study_title }} - {{ study.experiment_title }} - {{ study.group_title }}</option>
-                                        {% endfor %}
-                                    </select>
-                                    <label class="control-label">{% trans "* use ctrl-click to select more than one field. (command-click on Mac)" %} </label>
+                                <select class="form-control" id="id_research_projects" name="research_projects_selected">
+                                    <option value>-------</option>
+                                    {% for research_project in research_projects %}
+                                        <option {% if research_project.id == research_project_selected.id %}selected="selected"{% endif %} value="{{ research_project.id }}">{{ research_project.title }}</option>
+                                    {% endfor %}
+                                </select>
                                 <div class="help-block with-errors"></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <div class="row">
+                        <div class="col-xs-12 col-xs-12">
+                            <div class="form-group">
+                                <label class="control-label">{% trans "Experiments" %} <b style="color: red;">*</b></label>
+                                <select class="form-control" id="id_experiments" name="experiment_selected">
+                                    <option value>-------</option>
+                                    {% for experiment in experiment_list %}
+                                        <option {% if not creating and experiment.id == experiment_selected.id %}selected="selected"{% endif %} value="{{ experiment.id }}">{{ experiment.title }}</option>
+                                    {% endfor %}
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <div class="row">
+                        <div class="col-xs-12 col-xs-12">
+                            <div class="form-group">
+                                <label class="control-label">{% trans "Groups" %} <b style="color: red;">*</b></label>
+                                <select class="form-control" id="id_groups" name="group_selected">
+                                    <option value>-------</option>
+                                    {% for group in group_list %}
+                                        <option {% if not creating and group.id == group_selected.id %}selected="selected"{% endif %} value="{{ group.id }}">{{ group.title }}</option>
+                                    {% endfor %}
+                                </select>
                             </div>
                         </div>
                     </div>

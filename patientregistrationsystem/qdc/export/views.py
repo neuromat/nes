@@ -1,16 +1,15 @@
 # -*- coding: utf-8 -*-
 import json
-from django.shortcuts import render
 from django.conf import settings
 from django.contrib.auth.decorators import login_required
 from django.contrib import messages
 from django.core import serializers
 from django.core.urlresolvers import reverse
-# from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
 from django.http import HttpResponse, HttpResponseRedirect
-from django.shortcuts import get_object_or_404
+from django.shortcuts import render, get_object_or_404
 from django.utils.encoding import smart_str
 from django.utils.translation import ugettext as ug_, ugettext_lazy as _
+from django.db.models import Q
 
 from datetime import datetime
 from dateutil.relativedelta import relativedelta
@@ -25,9 +24,9 @@ from .forms import ExportForm, ParticipantsSelectionForm, AgeIntervalForm
 from .models import Export
 from .export import ExportExecution, perform_csv_response, create_directory
 
-from export.input_export import build_complete_export_structure, build_partial_export_structure
+from export.input_export import build_complete_export_structure
 
-from patient.models import QuestionnaireResponse, Patient
+from patient.models import QuestionnaireResponse, Patient, Diagnosis
 from patient.views import check_limesurvey_access
 
 from survey.models import Survey
@@ -119,8 +118,8 @@ diagnosis_fields = [
     {"field": "medicalrecorddata__diagnosis__date", "header": 'diagnosis_date', "description": _("Date")},
     {"field": "medicalrecorddata__diagnosis__description", "header": 'diagnosis_description',
      "description": _("Observation")},
-    {"field": "medicalrecorddata__diagnosis__classification_of_diseases_id", "header": 'classification_of_diseases_id',
-     "description": _("Disease code (ICD)")},
+    {"field": "medicalrecorddata__diagnosis__classification_of_diseases__code",
+     "header": 'classification_of_diseases_code', "description": _("Disease code (ICD)")},
     {"field": "medicalrecorddata__diagnosis__classification_of_diseases__description",
      "header": 'classification_of_diseases_description', "description": _("Disease Description")},
     {"field": "medicalrecorddata__diagnosis__classification_of_diseases__abbreviated_description",
@@ -133,8 +132,8 @@ patient_fields_inclusion = [
 ]
 
 diagnosis_fields_inclusion = [
-    ["medicalrecorddata__patient__code", {"code": "participation_code", "full": _("Participation code"),
-                                          "abbreviated": _("Participation code")}],
+    ["code", {"code": "participation_code", "full": _("Participation code"),
+              "abbreviated": _("Participation code")}],
 ]
 
 questionnaire_evaluation_fields_excluded = [
@@ -375,7 +374,7 @@ def export_create(request, export_id, input_filename, template_name="export/expo
 
         # process per questionnaire data
 
-        #### gady ##################
+        # ### gady ##################
         error_msg = export.process_per_questionnaire()
         if error_msg != "":
             messages.error(request, error_msg)
@@ -486,7 +485,6 @@ def export_view(request, template_name="export/export_data.html"):
     export_form = ExportForm(request.POST or None, initial={'title': 'title',
                                                             'responses': ['short'], 'headings': 'code'})
 
-
     selected_ev_quest = []
     selected_participant = []
     selected_diagnosis = []
@@ -499,10 +497,11 @@ def export_view(request, template_name="export/export_data.html"):
 
         # fields = {}
 
-        previous_questionnaire_id = 0
+        # previous_questionnaire_id = 0
+        previous_questionnaire_id = -1
         output_list = []
         for questionnaire in questionnaires_selected_list:
-            sid, title, field, header = questionnaire.split("*")
+            index, sid, title, field, header = questionnaire.split("*")
 
             sid = int(sid)    # transform to integer
             #
@@ -510,13 +509,15 @@ def export_view(request, template_name="export/export_data.html"):
             #     fields[sid] = []
             # fields[sid].append(field)
 
-            if sid != previous_questionnaire_id:
+            # if sid != previous_questionnaire_id:
+            if index != previous_questionnaire_id:
                 if previous_questionnaire_id != 0:
                     output_list = []
 
-                questionnaires_list.append([sid, title, output_list])
+                questionnaires_list.append([index, sid, title, output_list])
 
-                previous_questionnaire_id = sid
+                # previous_questionnaire_id = sid
+                previous_questionnaire_id = index
 
             output_list.append((field, header))
 
@@ -615,38 +616,6 @@ def export_view(request, template_name="export/export_data.html"):
                 for diagnosis in diagnosis_list:
                     selected_diagnosis.append(diagnosis[0])
         else:
-            # if not questionnaires_selected_list
-            # if not questionnaires_selected_list:
-            #     # per_participant = export_form.cleaned_data['per_participant']
-            #     per_participant = True
-            #     export_instance = create_export_instance(request.user)
-            #     input_export_file = path.join(EXPORT_DIRECTORY,
-            #                                   path.join(str(request.user.id),
-            #                                             path.join(str(export_instance.id), str(JSON_FILENAME))))
-            #
-            #     # copy data to .../media/export/<user_id>/<export_id>/
-            #     input_filename = path.join(settings.MEDIA_ROOT, input_export_file)
-            #     create_directory(settings.MEDIA_ROOT, path.split(input_export_file)[0])
-            #
-            #     build_partial_export_structure(per_participant, participants_list, input_filename,request.LANGUAGE_CODE)
-            #
-            #     complete_filename = export_create(request, export_instance.id, input_filename)
-            #
-            #     if complete_filename:
-            #
-            #         messages.success(request, _("Export was finished correctly"))
-            #
-            #         print("antes do fim: httpResponse")
-            #
-            #         zip_file = open(complete_filename, 'rb')
-            #         response = HttpResponse(zip_file, content_type='application/zip')
-            #         response['Content-Disposition'] = 'attachment; filename="export.zip"'
-            #         response['Content-Length'] = path.getsize(complete_filename)
-            #         return response
-            #     else:
-            #         messages.error(request, _("Export data was not generated."))
-            #
-            # else:
             messages.error(request, _("No data was select. Export data was not generated."))
 
     # else:
@@ -659,9 +628,6 @@ def export_view(request, template_name="export/export_data.html"):
             group = get_object_or_404(Group, pk=group_id)
             if group.experimental_protocol is not None:
                 for path_experiment in create_list_of_trees(group.experimental_protocol, "questionnaire"):
-                    # questionnaire_response = ComponentConfiguration.objects.get(pk=path_experiment[-1][0])
-                    # data_configuration_tree_id = list_data_configuration_tree(questionnaire_response.id,
-                    #                                                           [item[0] for item in path_experiment])
                     questionnaire_configuration = get_object_or_404(ComponentConfiguration, pk=path_experiment[-1][0])
                     questionnaire = Questionnaire.objects.get(id=questionnaire_configuration.component.id)
                     survey_list.append(questionnaire.survey.lime_survey_id)
@@ -695,7 +661,6 @@ def export_view(request, template_name="export/export_data.html"):
     # ev_questionnaire_ids_list = entrance_evaluation_questionnaires.values_list("survey")
     surveys_with_ev_list = Survey.objects.filter(id__in=entrance_evaluation_questionnaire_ids_list)
 
-    # terrivel demora !!!!!!!!!!!!!!
     if 'study_selected_list' in request.session:
         for survey_item in survey_list:
             for questionnaire in questionnaires_list:
@@ -723,8 +688,11 @@ def export_view(request, template_name="export/export_data.html"):
     else:
         questionnaire_ids = ()
 
+    index = 0
     for questionnaire in questionnaires_fields_list:
         questionnaire["selected_counter"] = questionnaire_ids.count(questionnaire["sid"])
+        questionnaire["index"] = index
+        index += 1
         for output_list in questionnaire["output_list"]:
             if (questionnaire["sid"], output_list["field"]) in selected_ev_quest:
                 output_list["selected"] = True
@@ -767,15 +735,18 @@ def update_questionnaire_list(questionnaire_list, heading_type, current_language
 
         # position 0: id, postion 1: title
 
-        questionnaire_id = questionnaire[0]
+        questionnaire_id = questionnaire[1]
 
         # position 2: output_list (field, header)
-        fields, headers = zip(*questionnaire[2])
+        fields, headers = zip(*questionnaire[3])
 
         questionnaire_field_header = get_questionnaire_header(questionnaire_lime_survey, questionnaire_id,
                                                               fields, heading_type, current_language)
 
-        questionnaire_list_updated.append([questionnaire_id, questionnaire[1], questionnaire_field_header])
+        questionnaire_list_updated.append([questionnaire[0],
+                                           questionnaire_id,
+                                           questionnaire[2],
+                                           questionnaire_field_header])
 
     questionnaire_lime_survey.release_session_key()
 
@@ -933,6 +904,18 @@ def filter_participants(request):
                     date_birth_max = datetime.now() - relativedelta(years=int(request.POST['min_age']))
                     participants_list = participants_list.filter(date_birth__range=(date_birth_min, date_birth_max))
 
+                if "location_checkbox" in request.POST:
+                    if 'selected_locals' in request.POST:
+                        locations_selected = request.POST.getlist('selected_locals')
+                        participants_list = participants_list.filter(city__in=locations_selected)
+
+                if "diagnosis_checkbox" in request.POST:
+                    classification_of_diseases_list = request.POST.getlist('selected_diagnoses')
+
+                    participants_list = participants_list.filter(
+                        medicalrecorddata__diagnosis__classification_of_diseases__in=classification_of_diseases_list).\
+                        distinct()
+
                 # putting the list of participants in the user session
                 request.session['filtered_participant_data'] = [item.id for item in participants_list]
 
@@ -952,7 +935,8 @@ def filter_participants(request):
 
             context = {
                 "participant_selection_form": participant_selection_form,
-                "age_interval_form": age_interval_form}
+                "age_interval_form": age_interval_form,
+            }
 
             return render(request, "export/participant_selection.html", context)
 
@@ -995,44 +979,61 @@ def export_menu(request, template_name="export/export_menu.html"):
         "export_type_list": export_type_list
     }
 
-
     return render(request, template_name, context)
 
 
 @login_required
 def experiment_selection(request, template_name="export/experiment_selection.html"):
     research_projects = ResearchProject.objects.order_by('start_date')
+    experiment_list = Experiment.objects.all()
+    group_list = Group.objects.all()
     study_list = []
     study_selected = []
     index = 0
 
     if request.method == "POST":
+        participants_list = Patient.objects.filter(removed=False)
         if request.POST['action'] == "next-step-participants":
-            study_selected = request.POST.getlist('research_projects_selected')
-            request.session['study_selected_list'] = [study_selected]
+            subject_list = []
+            group_selected = request.POST['group_selected']
+            subject_of_group = SubjectOfGroup.objects.filter(group=group_selected)
+            for subject in subject_of_group:
+                patient = subject.subject.patient
+                if patient.id not in subject_list:
+                    subject_list.append(patient.id)
 
-            redirect_url = reverse("filter_participants", args=())
-            return HttpResponseRedirect(redirect_url)
+            participants_list = participants_list.filter(pk__in=subject_list)
 
-    for research in research_projects:
-        research_project = get_object_or_404(ResearchProject, pk=research.id)
-        if hasattr(Experiment, 'research_project'):
-            experiments = Experiment.objects.filter(research_project=research_project)
-            for exp in experiments:
-                experiment = get_object_or_404(Experiment, pk=exp.id)
-                if hasattr(Group, 'experiment'):
-                    groups = Group.objects.filter(experiment=experiment)
-                    for group in groups:
-                        index = index + 1
-                        study_list.append({
-                            'study_index': index,
-                            'study_id': research.id,
-                            'study_title': research_project.title,
-                            'experiment_id': experiment.id,
-                            'experiment_title': experiment.title,
-                            'group_id': group.id,
-                            'group_title': group.title
-                        })
+            context = {
+                "total_of_participants": len(participants_list),
+                "participants_list": participants_list
+            }
+            return render(request, "export/show_selected_participants.html", context)
+
+            # request.session['study_selected_list'] = [study_selected]
+
+            # redirect_url = reverse("filter_participants", args=())
+            # return HttpResponseRedirect(redirect_url)
+
+    # for research in research_projects:
+    #     research_project = get_object_or_404(ResearchProject, pk=research.id)
+    #     if hasattr(Experiment, 'research_project'):
+    #         experiments = Experiment.objects.filter(research_project=research_project)
+    #         for exp in experiments:
+    #             experiment = get_object_or_404(Experiment, pk=exp.id)
+    #             if hasattr(Group, 'experiment'):
+    #                 groups = Group.objects.filter(experiment=experiment)
+    #                 for group in groups:
+    #                     index = index + 1
+    #                     study_list.append({
+    #                         'study_index': index,
+    #                         'study_id': research.id,
+    #                         'study_title': research_project.title,
+    #                         'experiment_id': experiment.id,
+    #                         'experiment_title': experiment.title,
+    #                         'group_id': group.id,
+    #                         'group_title': group.title
+    #                     })
 
     # putting the list of participants in the user session
     # request.session['filtered_participant_data'] = [item.id for item in participants_list]
@@ -1040,8 +1041,11 @@ def experiment_selection(request, template_name="export/experiment_selection.htm
     context = {
         "study_list": study_list,
         "study_selected": study_selected,
+        "experiment_list": experiment_list,
+        "group_list": group_list,
         "creating": True,
         "editing": True,
+        "research_projects": research_projects
     }
 
     return render(request, template_name, context)
@@ -1083,7 +1087,7 @@ def get_component_configuration_attributes(configuration):
     attributes.append({
         _('Position in the set of steps '): _('Random') if configuration.random_position else _('Fixed')})
     attributes.append({
-        _('Requires start and end datetime'): _('Yes') if configuration.requires_start_and_end_datetime else _('No') })
+        _('Requires start and end datetime'): _('Yes') if configuration.requires_start_and_end_datetime else _('No')})
 
     return attributes
 
@@ -1234,3 +1238,80 @@ def list_data_configuration_tree(eeg_configuration_id, list_of_path):
                 data_configuration_tree_id = None
 
     return data_configuration_tree_id
+
+
+def search_locations(request):
+
+    if request.is_ajax():
+        search_text = request.GET.get('term', '')
+
+        if search_text:
+            location_list = Patient.objects.filter(city__icontains=search_text).exclude(removed=True).values('id', 'city').distinct('city');
+
+            results = []
+            for location in location_list:
+                location_dict = {
+                    'id': location['city'],
+                    'label': location['city'],
+                    'value': location['city']
+                }
+                results.append(location_dict)
+
+            data = json.dumps(results)
+        else:
+            data = 'fail'
+
+        mimetype='application/json'
+
+        return HttpResponse(data, mimetype)
+
+
+def search_diagnoses(request):
+
+    if request.is_ajax():
+        search_text = request.GET.get('term', '')
+
+        if search_text:
+            classification_of_diseases_list = Diagnosis.objects.filter(
+                Q(classification_of_diseases__description__icontains=search_text) |
+                Q(classification_of_diseases__description__icontains=search_text) |
+                Q(classification_of_diseases__code__icontains=search_text)).values(
+                'classification_of_diseases_id','classification_of_diseases__abbreviated_description',
+                'classification_of_diseases__code').distinct()
+
+            results = []
+            for classification_of_diseases in classification_of_diseases_list:
+                label = classification_of_diseases['classification_of_diseases__code'] + ' - ' + \
+                        classification_of_diseases['classification_of_diseases__abbreviated_description']
+                diseases_dict = \
+                    {'id': classification_of_diseases['classification_of_diseases_id'],
+                     'label': label,
+                     'value': classification_of_diseases['classification_of_diseases__abbreviated_description']}
+                results.append(diseases_dict)
+            data = json.dumps(results)
+        else:
+            data = 'fail'
+
+        mimetype = 'application/json'
+
+        return HttpResponse(data, mimetype)
+
+
+def select_experiments_by_study(request, study_id):
+    research_project = ResearchProject.objects.filter(pk=study_id)
+
+    experiment_list = Experiment.objects.filter(research_project=research_project)
+
+    json_experiment_list = serializers.serialize("json", experiment_list)
+
+    return HttpResponse(json_experiment_list, content_type='application/json')
+
+
+def select_groups_by_experiment(request, experiment_id):
+    experiment = Experiment.objects.filter(pk=experiment_id)
+
+    group_list = Group.objects.filter(experiment=experiment)
+
+    json_group_list = serializers.serialize("json", group_list)
+
+    return HttpResponse(json_group_list, content_type='application/json')
